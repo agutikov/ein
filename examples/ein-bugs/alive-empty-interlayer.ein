@@ -21,6 +21,19 @@
 ;; singleton writeback, not the cache — which is what made this the harder of
 ;; the two witnesses and why both were banked.
 ;;
+;; ── 2026-11-03 — what it answers now, and what it is to answer ───────────
+;;
+;; The `Contradiction` above was the walk's, and its hand derivation read the
+;; search's own negatives as the state's (Q-M1e.7 ruling A). Under R a node is
+;; `sat(root ∪ C)` with nothing the search wrote, so no `(not (p Z))` is ever
+;; stored, `mutex` and `totality` never fire, and R is the 4 states the
+;; `:expect` below lists, maximal `{(p A), (p B)}` (M1e2 S1e2.1a.5's switch).
+;; And `totality` concludes `(false)` from `(absent (p A))` over `p`, which the
+;; hrule proposes: the shape the user ruled out on 2026-11-02 (*forbid*,
+;; Q-M1e2.5), so the right answer is a refusal at load, which M1e2 S1e2.2.5
+;; builds. Until then the program loads and the `:expect` states R. Register
+;; row W1/alive-empty-interlayer, re-opened at the revisit (S1e2.1.7).
+;;
 ;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
 ;;
 ;; The banked claim named `is-a` because the recorded model contained no `p`

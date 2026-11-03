@@ -27,6 +27,11 @@
 ;;; scope** (recommended), **uncertified unless covered**, or **open-world,
 ;;; not wrong**.
 ;;;
+;;; **Ruled 2026-11-03** by the user: *scoped, and the read-out says so*. R is
+;;; over the universe as the ladder scopes it (what the obligations owe), so
+;;; `exhausted = true` is true of R, and the read-out is to state that `knows`
+;;; is outside it, which M1e2 S1e2.2.8 builds.
+;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 (import std.algebra :symbols (total-owed surjective-owed))
 

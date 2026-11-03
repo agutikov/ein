@@ -46,6 +46,21 @@
 ;;; The under-determined variant is where it mattered: 55 reported
 ;;; models against 32 real ones.
 ;;;
+;;; ── 2026-11-03 — R has two maximal states, not one ───────────
+;;;
+;;; Under the region definition (M1e2; docs/kernel/inference/
+;;; solution_semantics.md § 2) this file is not determinate: R has
+;;; 6 states and two maximal. One is the solution above. The other
+;;; is a 7-candidate partial assignment (Spaniard, Dog and
+;;; Chesterfields in House-5, Fox in House-4, Zebra in House-1,
+;;; Snail and Old_Gold in House-3) every one-candidate extension of
+;;; which dies. The rules do not refute it, because totality is
+;;; stated here as a restriction on explicit exclusions, not as an
+;;; obligation. The walk recorded the first only, so the `Solution`
+;;; above was its answer; `ein solve --maximal` reports both.
+;;; Register row W1/zebra2-hints, confirmed at the revisit (M1e2
+;;; S1e2.1.7).
+;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
 ;;; The pre-B1 zebra2 used a single symmetric+transitive

@@ -17,6 +17,11 @@
 ;;; program it does not. Recommended: the certification names its scope —
 ;;; here, that `r3` was never hypothesised.
 ;;;
+;;; **Ruled 2026-11-03** by the user: *scoped, and the read-out says so*. R is
+;;; over the universe as the blind rung builds it (arity 3 unenumerated), so
+;;; `exhausted = true` is true of R, and the read-out is to state that the
+;;; goal relation `r3` is outside it, which M1e2 S1e2.2.8 builds.
+;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 (relation is-a T T)
 (relation r3 T T T)

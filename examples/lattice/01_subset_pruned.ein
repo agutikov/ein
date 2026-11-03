@@ -27,7 +27,15 @@
 ;;; Expected verdict + counts under contradictions_solve with
 ;;; max_set_size=3:
 ;;;
-;;;   verdict          Contradiction (mode contract)
+;;;   verdict          NOT Contradiction. This line said "Contradiction (mode
+;;;                    contract)", P1.5b's reading. {a, b} dies and every
+;;;                    other pair is alive, so the answer is a region of 12
+;;;                    nodes whose maximal line is {a, c, d} and {b, c, d}:
+;;;                    two maximal states, which `ein solve --maximal`
+;;;                    reports and the walk's `-L` run did not. Register row
+;;;                    W1/lattice-01-L, confirmed at the revisit (M1e2
+;;;                    S1e2.1.7) 2026-11-03; the region is Q-M1e2.7
+;;;                    (plans/m1e2_correctness/).
 ;;;   enterings_total  12  (4 + 6 + 2)
 ;;;   dead_commitments 1   (the {a,b} death; the 3-set deaths
 ;;;                         we'd see WITHOUT the pruning never

@@ -106,11 +106,19 @@ cascade (§ 6.3).
 
 **H must contain every fact a model needs** (ruling (h), 2026-10-16). If it
 does not, either the program is wrong (a name it never mentions) or the engine
-is (a candidate it never proposes, [W4](../../../corpus/wrong_answers.toml) and
-[W6](../../../corpus/wrong_answers.toml)). The universe is defined by the
-generator today. A declarative definition, every type-correct ground atom of
-every hypothesisable relation, is what a check of the generator would be held
-to, and is not written yet.
+is (a candidate it never proposes, [W4](../../../corpus/wrong_answers.toml)).
+The universe is defined by the generator today. A declarative definition,
+every type-correct ground atom of every hypothesisable relation, is what a
+check of the generator would be held to, and is not written yet.
+
+**What the universe leaves out, the read-out names** (Q-M1e2.3, the user's
+ruling of 2026-11-03, *scoped*). R is over H as the ladder scopes it, so
+`exhausted` certifies all of R over H and nothing beyond it. Where H holds no
+candidate of a relation the program can conclude or ask about, the read-out
+states that the relation is outside the universe:
+[W6](../../../corpus/wrong_answers.toml)'s `knows`, which no obligation owes,
+and its `r3`, an arity the blind rung does not enumerate. M1e2 S1e2.2.8 builds
+that sentence.
 
 ### 1.5 Commitment, node, state
 

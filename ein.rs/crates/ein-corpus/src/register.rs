@@ -60,13 +60,16 @@ pub const ANSWERED_BY: [&str; 2] = ["walk", "region"];
 /// The verdict words, as `--json-summary`'s `verdict.type` spells them.
 pub const VERDICTS: [&str; 4] = ["Solution", "Ambiguity", "Contradiction", "Open"];
 
-/// What the user's review (M1e2 S1e2.1.7) may rule on a row.
-pub const REVIEW_VERDICTS: [&str; 5] = [
+/// What the review (M1e2 S1e2.1.7) may rule on a row. `deferred` since
+/// 2026-11-03, the user's ruling on W8: the row's reading waits on a followup,
+/// and the row stays `open` with that followup as its `owner`.
+pub const REVIEW_VERDICTS: [&str; 6] = [
     "confirmed",
     "right-answer-corrected",
     "not-wrong",
     "split",
     "merge",
+    "deferred",
 ];
 
 /// What a `look_at` pointer may name — the pages of a review-bundle run
@@ -191,6 +194,12 @@ fn is_date(d: &str) -> bool {
 
 fn is_commit(c: &str) -> bool {
     c.len() >= 7 && c.bytes().all(|b| b.is_ascii_hexdigit())
+}
+
+/// A followup's id, `F<n>`, as `plans/followups/` names them.
+fn is_followup(o: &str) -> bool {
+    o.strip_prefix('F')
+        .is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()))
 }
 
 /// One review verdict, as the user gave it.
@@ -571,6 +580,15 @@ impl Register {
                     "status `not-wrong` and review verdict `not-wrong` go together".to_string(),
                 ));
             }
+            if r.review.as_ref().is_some_and(|v| v.verdict == "deferred")
+                && (r.status != "open" || !is_followup(&r.owner))
+            {
+                out.push(at(format!(
+                    "a `deferred` review is an open row owned by the followup it waits on \
+                     (F<n>); this one is {:?}, owned by {:?}",
+                    r.status, r.owner
+                )));
+            }
             for (label, a) in r.answers() {
                 let at = |m: String| format!("{} [{label}]: {m}", r.id);
                 if !a.run.starts_with("solve") {
@@ -683,15 +701,22 @@ impl Register {
                 ));
             }
         }
-        // The rows of one case describe one case.
-        let mut by_case = std::collections::BTreeMap::<&str, (&str, &str)>::new();
+        // The rows of one case describe one case: one title, and one owner
+        // per status, since a fixed row names the stage that fixed it and an
+        // open one the stage that will. A row the review re-opened can move
+        // to another stage (M1e2 S1e2.1.7: `W1/alive-empty-interlayer`'s
+        // refusal is S1e2.2.5's while W1's fixed rows stay S1e2.1a.5's).
+        let mut by_case = std::collections::BTreeMap::<&str, &str>::new();
+        let mut by_status = std::collections::BTreeMap::<(&str, &str), &str>::new();
         for r in &self.case {
-            let first = *by_case
-                .entry(r.case.as_str())
-                .or_insert((r.title.as_str(), r.owner.as_str()));
-            if first != (r.title.as_str(), r.owner.as_str()) {
+            let title = *by_case.entry(r.case.as_str()).or_insert(r.title.as_str());
+            let owner = *by_status
+                .entry((r.case.as_str(), r.status.as_str()))
+                .or_insert(r.owner.as_str());
+            if (title, owner) != (r.title.as_str(), r.owner.as_str()) {
                 out.push(format!(
-                    "{}: title or owner differs from the case's first row",
+                    "{}: title differs from the case's first row, or owner from the first \
+                     row of its case and status",
                     r.id
                 ));
             }
@@ -835,6 +860,33 @@ mod tests {
             }
         }
         assert!(bad.is_empty(), "{}", bad.join("\n"));
+    }
+
+    /// **A deferred row**, M1e2 S1e2.1.7: the user deferred W8's reading to
+    /// F21 on 2026-11-03, so its rows stay open and the followup owns them.
+    /// A `deferred` review on a row that is not open, or that a stage owns, is
+    /// a defect.
+    #[test]
+    fn a_deferred_row_is_open_and_owned_by_its_followup() {
+        let mut row = register()
+            .case
+            .into_iter()
+            .find(|r| r.review.as_ref().is_some_and(|v| v.verdict == "deferred"))
+            .expect("W8's rows are deferred");
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        let owner = std::mem::replace(&mut row.owner, "S1e2.2.6".to_string());
+        assert!(defects(&row).iter().any(|d| d.contains("`deferred`")));
+        row.owner = owner;
+        row.status = "not-wrong".to_string();
+        assert!(defects(&row).iter().any(|d| d.contains("`deferred`")));
+        assert!(is_followup("F21") && !is_followup("F") && !is_followup("S1e2.2.6"));
     }
 
     #[test]

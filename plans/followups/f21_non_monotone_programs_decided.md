@@ -393,6 +393,16 @@ emulated, is measured in § 12.4 there. **Each option's consequences, per
 program**: [`monotonicity.md` § 8.1, D2](../../docs/kernel/inference/monotonicity.md#d2-what-a-nodes-state-is).
 **Until decided:** (A).
 
+**At M1e2's wrong-answer revisit** ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03),
+2026-11-03) the user kept this deferral and amended the milestone's acceptance
+instead (*"(2) Amend acceptance"*): W8's two rows, `W8/features-07` and
+`W8/stale-naf-fork`, stay `open` in `corpus/wrong_answers.toml`, reviewed
+`deferred`, with **F21 as their `owner`**, and M1e2 closes naming them. Deciding
+D2 settles them. `W1/d3-unsat-core` and `W11/d3-unsat-core` were confirmed
+there under (A), today's node, on which fork and scratch agree on all 32 of
+their witness's nodes. (D) refuses that witness, so taking it re-opens both
+rows with a refusal as `right`, as M1e2 S1e2.2.5's F2 would if it takes `via`.
+
 ### D3 — path dependence as a constraint on incremental search
 
 Must a node's state be a function of C alone, so that a route that builds a

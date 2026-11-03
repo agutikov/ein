@@ -616,7 +616,8 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     # 8 — what to check.
     lines += ["## 8 · What to check", "", "The review (S1e2.1.7) answers these for this row:", ""]
     lines += [f"- [ ] {q}" for q in checklist(row)]
-    lines += ["", "Verdict: *confirmed* · *right answer corrected* · *not wrong* · *split* · *merge*", ""]
+    lines += ["", "Verdict: *confirmed* · *right answer corrected* · *not wrong* · *split* · *merge* · "
+              "*deferred* (the user deferred the reading to a followup, which owns the open row)", ""]
     if right:
         write(out / "right" / "README.md", "\n".join(
             [f"# {row['id']} — the right answer", "", f"[The case](../README.md) · from `corpus/wrong_answers.toml`", "",

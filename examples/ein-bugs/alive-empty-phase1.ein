@@ -23,6 +23,17 @@
 ;; two configurations answer differently, and that is a fact about the program
 ;; rather than about the read-out.
 ;;
+;; ── 2026-11-03 — R is {∅} ─────────────────────────────────────────────────
+;;
+;; That `Contradiction` read the kill cache's negatives as root's (Q-M1e.7
+;; ruling A). Under R a node is `sat(root ∪ C)` with nothing the search wrote
+;; (solve_interface.md § 0, approved 2026-10-16): root stores no `(not (p A))`,
+;; `totality` never fires, root is alive and discharged, and R is {∅}, which
+;; the `:expect` below states and the `-K` run above already answered. So the
+;; `unsat core (0 facts)` it printed belonged to no answer of this program.
+;; Register rows W9/alive-empty-phase1-K and W12/alive-empty-phase1, confirmed
+;; at the revisit (M1e2 S1e2.1.7, 2026-11-03).
+;;
 ;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
 ;;
 ;; The banked claim was `(model (is-a A T) (is-a B T))` with the goal moved off

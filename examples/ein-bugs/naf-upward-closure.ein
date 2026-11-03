@@ -58,6 +58,16 @@
 ;;; `(open ?R)` for. The engine's complaint is not wrong; the word is. That
 ;;; reading is why the diagnostic names `(open ?R)` as one of its two
 ;;; replacements — the other being `total`'s stored-negative discipline.
+;;;
+;;; ── 2026-11-02 — *forbid* ──────────────────────────────────────────────
+;;;
+;;; The user ruled *forbid* (Q-M1e2.5, M1e2 S1e2.4.1 § 5): `bad` concludes
+;;; `(false)` from `(absent (q ?x))` over `q`, which a commitment can still
+;;; extend, so the right answer to this program is a refusal at load, the
+;;; error naming the replacement. M1e2 S1e2.2.5 builds it. Until then the
+;;; program loads, and R's maximal state is the `{(p A), (q A)}` above, what
+;;; *respect* would have answered. Register row W3/naf-upward-closure, confirmed at the
+;;; revisit (S1e2.1.7, 2026-11-03).
 
 (config :warn-derived-naf true)
 

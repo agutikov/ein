@@ -114,6 +114,10 @@ constrained-reasoning research.
   same commit, so it reads 25 and 10. The user's *forbid* of 2026-11-02 (S1e2.4.1:
   a refutation may not rest on an `absent` over a relation a commitment can
   still extend) re-opened W3's four with a refusal as `right`: 21 and 14.
+  The review (S1e2.1.7) finished on 2026-11-03 with every row read: W12 closed
+  by `solve_interface.md` § 0, `W1/alive-empty-interlayer` re-opened under
+  *forbid*, C1 ruled not wrong, and W8's two `deferred` to F21 and kept open,
+  so it reads 21 fixed, 13 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -15,16 +15,16 @@ rule on, not five stage files to find.
 | Q | title | needed by | status |
 |---|---|---|---|
 | [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | **ruled 2026-11-01**: *literal*, k = \|R\| = 7, as Q-M1e2.7's (a) had said; W5's `right` restated |
-| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md)'s [S1e2.1b.2](p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md) (the evidence, done), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | **deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D1–D3); W8's tension with the milestone's acceptance is parked for the revisit |
-| [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
-| [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
-| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's [S1e2.1b.4](p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md) | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's |
+| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md)'s [S1e2.1b.2](p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md) (the evidence, done), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | **deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D1–D3); W8's tension with the milestone's acceptance **ruled 2026-11-03**: *amend the acceptance*, W8's rows open with F21 as owner ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)) |
+| [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | **ruled 2026-11-03: (a)**, *scoped, and the read-out says so* ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)) |
+| [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | **closed 2026-11-03** at the revisit, by `solve_interface.md` § 0: W12's R is {∅}, so no core; no region run reports a 0-fact core (below) |
+| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's [S1e2.1b.4](p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md) | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's; applied at the revisit (2026-11-03) to `W1/alive-empty-interlayer` too |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope; [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | **ruled 2026-11-02**: yes, after P1e2.1c; **specified the same day**, four stages, 5 d; **closed 2026-11-03** at its S1e2.3.4, every surface of the re-take gone, each under its stage's ruling ([§ Closed](#closed-2026-11-03--every-surface-gone-under-its-ruling)) |
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
-and is not re-filed.
+and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
 
 ---
 
@@ -99,6 +99,13 @@ and P1e2.1b's detector says so wherever R is reported. W8's two rows stay
 `open`; their tension with the milestone's acceptance is parked for the
 revisit in [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance).
 
+**Ruled 2026-11-03**, the user at the revisit ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)): *"(2) Amend
+acceptance"*. Q-M1e2.2 stays deferred to F21's D2. W8's two rows stay `open`,
+reviewed `deferred` (a verdict added to the register for them), with F21 as
+`owner`, and the milestone's acceptance lets such a row stay open, named at the
+close. S1e2.2.6 stays as restated: after S1e2.2.5's F2 it re-checks the
+reading.
+
 ## Q-M1e2.3 — What does `exhausted` certify when the rung leaves relations uncovered?
 
 `completeness.md` §3c's fixture is `exhausted = true` with `knows` never
@@ -108,6 +115,17 @@ about the program it is not. Three answers: **scoped, and the read-out says
 the scope** (recommended), **uncertified unless covered**, or **open-world,
 not wrong**.
 
+**Ruled 2026-11-03: (a), *scoped, and the read-out says so*** ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)). The
+revisit had found the question narrowed and not decided: ruling (g) of
+2026-10-16 makes `exhausted` *"the reported region is all of R"*, partial only
+under a budget, and (h) makes the universe the candidate list, which rules out
+*uncertified unless covered* as worded; whether `knows` and `r3` belong in the
+universe no ruling said. The user's answer: R is over the universe as scoped,
+and the read-out must state that `knows` and `r3` are outside it. Written where
+the definition lives,
+[`solution_semantics.md` § 1.4](../../docs/kernel/inference/solution_semantics.md#14-candidate-and-universe).
+W6's two rows are confirmed, and S1e2.2.8 builds the sentence.
+
 ## Q-M1e2.4 — Is an empty unsat core a core?
 
 `alive-empty-phase1.ein`'s exhausted `Contradiction` is right and prints
@@ -115,6 +133,18 @@ not wrong**.
 writes. M1e's S1e.3.1 called it honest. S1e2.2.13 argues it is false: ∅ with
 this program's rules is consistent, and the engine knows which deaths the
 writes came from.
+
+**Closed 2026-11-03 by `solve_interface.md` § 0** (approved 2026-10-16), at the
+revisit ([S1e2.1.7](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#revisited-2026-11-03)).
+Under R a node is `sat(root ∪ C)` with nothing the search wrote, so the kill
+cache's premise-less negatives are no node's. R on `alive-empty-phase1.ein` is
+{∅}, root alive and discharged, and the `Contradiction` whose core was empty is
+no answer of the program. The 2-fact core of the other reading was Q-M1e.7
+ruling A's node, which § 0 replaced. No answer reports a 0-fact core today:
+every corpus entry with a declared `solve` run and every register witness,
+`ein solve FILE --json-summary` and `--single`, 474 runs over 237 files at
+`d4ff0f46`, of which 27 report a core and none has 0 facts (2026-11-03). W12 is
+`fixed`, and S1e2.2.13 dropped.
 
 ## Q-M1e2.5 — Does S1f.10.8's ruling move here?
 

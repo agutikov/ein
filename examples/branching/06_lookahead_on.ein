@@ -49,6 +49,22 @@
 ;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
 ;; when the user retired the flag: no route reads it, and a program that sets
 ;; it is refused at load.
+;;
+;; **No lever changes the answer** (the user's ruling of 2026-10-15,
+;; docs/kernel/configuration.md § 2.5), so the verdicts measured above for the
+;; two halves were the walk's, and the OFF half's `Contradiction` was wrong:
+;; register row W1/branching-07, confirmed at the revisit (M1e2 S1e2.1.7,
+;; 2026-11-03). Since the line above went, 06 and 07 are one program, and
+;; their answer is R: 22 maximal states of k_s = 74, which `ein solve
+;; --maximal` reports. That every one of them places a colour in a *type*
+;; (`Color`, `House`) is C1's question, Q-M1e.12.
+;;
+;; **Not wrong** (register row C1/branching-06, the user's ruling of
+;; 2026-11-03, Q-M1e.12 (a)): this program is under-specified.
+;; `(relation co-located T T)` admits `(co-located Blue Color)`, and the engine
+;; does what the signature says. M1e2 S1e2.2.10 retypes the relation here and
+;; in 07, as `04_two_levels.ein`'s S1.7.23 signature does, and warns when an
+;; untyped rung binds a type as an object.
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)

@@ -1,8 +1,11 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~19 weeks: 7 estimated phases and 50 stages, four of them
-dropped, **96.5 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21,
-P1e2.1c 16.5, P1e2.2 13.5, P1e2.3 8.5, P1e2.4 2). It was 95.5 until the user put
+**Estimate:** ~19 weeks: 7 estimated phases and 50 stages, five of them
+dropped, **95.5 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21,
+P1e2.1c 16.5, P1e2.2 12.5, P1e2.3 8.5, P1e2.4 2). It was 96.5 until the revisit,
+S1e2.1.7, on 2026-11-03: it dropped P1e2.2's S1e2.2.13 (0.5 day, W12 closed by
+`solve_interface.md` § 0), and the user's ruling on C1 restated S1e2.2.10 (2
+days → 1.5). It was 95.5 until the user put
 P1e2.3's N1–N4 in a stage, S1e2.3.7 (four lines that misname what they print,
 1 day), on 2026-11-03. It was 93 until the user
 added P1e2.3's S1e2.3.5 (test scratch left in `/tmp`, 1 day) and S1e2.3.6 (the
@@ -164,11 +167,11 @@ where it is cheap and exact, and
 
 | ID | title | stages | est. | ends with |
 |---|---|---:|---:|---|
-| [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
+| [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held**: done 2026-11-03, every row reviewed |
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
 | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 16.5 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. **Done 2026-11-03**: no row closed by construction, four of P1e2.2's stages dropped, the walk deleted around S4 and `-L`, `-K` and four `enable-*` fields retired on the user's rulings, `-y` the spot check unbounded. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
-| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13, 4 dropped | 13.5 d | every register row `fixed` or ruled `not-wrong`; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before), nine stages live; no wrong answer at default settings; no lever that changes a certified answer |
+| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13, 5 dropped | 12.5 d | every register row `fixed` or ruled `not-wrong`, or `deferred` to a followup by the user; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before) and by the review the same day (S1e2.2.13 dropped, S1e2.2.10 restated), eight stages live; no wrong answer at default settings; no lever that changes a certified answer |
 | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 7 | 8.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; **S1e2.3.5 done 2026-11-03**: the gate checks its own scratch; **S1e2.3.7 done 2026-11-03**: N1–N4 say what they print, each held by a test, no exit code moved; **S1e2.3.6 done 2026-11-03**: every nightly step green under `./run_tests.sh --nightly`, which `nightly_steps.rs` holds to the workflow, the mutation bank's eight kills explained (165 of 217). **Closed 2026-11-03**, its acceptance re-taken line by line |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
@@ -185,7 +188,12 @@ revisit is the agent's first. The user, verbatim:
 So the revisit reads every unreviewed row against the definitions as they
 stand then, on a bundle rebuilt at that commit, and settles each row a
 stated criterion decides. Only what it leaves ambiguous goes to the user. P1e2.3
-closed on 2026-11-03, so by this order the revisit, S1e2.1.7, is next.
+closed on 2026-11-03, so by this order the revisit, S1e2.1.7, was next. **It
+ran and closed on 2026-11-03**: 23 rows settled by stated criteria, and the
+five no criterion decided ruled by the user the same day
+([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
+**The milestone's next step is P1e2.2**, in its stage order
+([P1e2.2 § Stages](p1e2.2_wrong_answers/README.md#stages)).
 
 ### P1e2.3 — Surfaces that misreport the answer
 
@@ -220,7 +228,7 @@ scheduled run after the next push is the confirmation.
 |---|---|
 | [Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set): `exhausted` certifies the lattice, not the model set | W1, S1e2.2.1 |
 | [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent): `dead` and `absent` | W3, S1e2.2.5; the language ruling moved here from M1f's S1f.10.8 on 2026-11-01, as P1e2.4's S1e2.4.1, and was ruled *forbid* on 2026-11-02 |
-| [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object): the untyped blind rung | C1, S1e2.2.10 |
+| [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object): the untyped blind rung | C1, S1e2.2.10; ruled (a) 2026-11-03, C1 not wrong |
 | [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported): the alternatives cap | W10, S1e2.2.11 |
 | [Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7 |
 | [Q-M1e.21](../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about): fresh constants | W4, S1e2.2.4 |
@@ -236,12 +244,18 @@ milestone cites them across the boundary, as M1f does.
 - **No register row is `open`.** Every case in
   `corpus/wrong_answers.toml` is `fixed`, with the test that holds it, or
   `not-wrong`, with the review's reason in the row and in the witness's header.
+  **The one exception, the user's ruling of 2026-11-03** (*"(2) Amend
+  acceptance"*): a row whose reading the user deferred to a followup stays
+  `open`, reviewed `deferred`, with that followup as its `owner`, and the
+  milestone closes naming it. W8's two rows are those, owned by
+  [F21](../followups/f21_non_monotone_programs_decided.md)'s D2.
 - **No wrong answer at default settings.** No lever changes an answer the
   engine *certifies*. A lever may change cost, and may decline to certify
   (`exhausted = false`, said why), and that is all.
 - **Every contested case has a ruling**, the user's, written where the
   definition lives (`solution_semantics.md`, `absent_semantics.md`), not only in
-  a stage file.
+  a stage file, or the user's deferral of it to a followup, written in the
+  followup (W8: F21's D2, 2026-11-03).
 - **The inventory is re-taken at the close.** [`probes/capture.sh`](probes/capture.sh)
   re-runs every witness, and every W-case answers its right answer. The
   corpus sweeps of [inventory § 4](inventory.md#4-reach--corpus-sweeps-run-for-this-inventory)
@@ -279,9 +293,10 @@ milestone cites them across the boundary, as M1f does.
 - **W8's reading is now a followup's.** On 2026-11-02 the user deferred
   Q-M1e2.2 to [F21](../followups/f21_non_monotone_programs_decided.md), and
   the acceptance below asks that no register row be `open` and that every
-  contested case have a ruling. W8's two rows meet both head on. Parked for
-  the revisit, not asked now: it reads W8 under today's documented node, or
-  the acceptance is amended
+  contested case have a ruling. W8's two rows meet both head on. **Ruled
+  2026-11-03**, the user at the revisit: the acceptance is amended, and W8's
+  rows stay open with F21 as owner (§ Acceptance). The two ways were: read W8
+  under today's documented node, or amend the acceptance
   ([S1e2.2.6 § The deferral](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance)).
 - **Overlap with M1f.** S1f.10.3 (the restricted join), S1f.10.4 (bounded
   groups) and S1f.10.8 (refutation under `absent`) all touch what this

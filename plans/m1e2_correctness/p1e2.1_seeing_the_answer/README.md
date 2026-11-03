@@ -19,7 +19,11 @@ rest of the review. **Resumed 2026-11-01** on the bundle built at `17422b32`
 every case page draws its run on R, and the twelve unread cases were handed
 back. **Deferred 2026-11-02** to after P1e2.4, P1e2.1b, P1e2.1c and P1e2.3,
 and revisited by the agent first, with the user reading only what stays
-ambiguous ([S1e2.1.7](s1e2.1.7_the_review.md)).
+ambiguous ([S1e2.1.7](s1e2.1.7_the_review.md)). **S1e2.1.7 done 2026-11-03**:
+revisited on the bundle rebuilt at `3ee7796a`, 22 rows confirmed and one right
+answer corrected by stated criteria, and the five no criterion decided ruled
+by the user the same day (W6 confirmed, C1 not wrong, W8 deferred to F21).
+Every register row carries a review, and every stage of this phase is done.
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its
@@ -86,7 +90,7 @@ Taken 2026-10-14 against `71dd237`.
 | [S1e2.1.4](s1e2.1.4_a_model_you_can_read.md) | A model you can read | 2 d | a model rendered as the **grid** where the program's shape allows one and as **root + what the commitment added** everywhere; two model sets diffed (missing / spurious / per-fact) |
 | [S1e2.1.5](s1e2.1.5_every_artefact_rendered.md) | Every artefact, rendered | 2.5 d | **one run, fully explicit**: every artefact the engine can write for it, including `--trace --full-kb-snapshots`, `--dump-states`, `--events`, `--json-summary`, `--dump-answer` and `--dump-lattice`, kept raw and rendered as pages. The trace is split and every graph rasterised, the timeline and every layer's pre → post diff are tables, events grouped by kind, and five cross-checks between the artefacts |
 | [S1e2.1.6](s1e2.1.6_the_case_page.md) | The case page, and the bundle | 1.5 d | `utils/review_bundle.py` → `build/review/`: an index and one page per case, putting the wrong run, the control, any twin and the right answer side by side, the models diffed, and links to the exact layer, entering and reductio where it went wrong |
-| [S1e2.1.7](s1e2.1.7_the_review.md) | The review | 1 d (+ the user's reading) | the user's verdict on every case (*confirmed* / *not wrong* / *right answer corrected* / *split* / *merge*), written into the register, and P1e2.2's stage list edited to match |
+| [S1e2.1.7](s1e2.1.7_the_review.md) | The review (**done 2026-11-03**) | 1 d (+ the user's reading) | the user's verdict on every case (*confirmed* / *not wrong* / *right answer corrected* / *split* / *merge*), written into the register, and P1e2.2's stage list edited to match |
 
 **Work order is id order except for one pair.** S1e2.1.2 and S1e2.1.3 are
 independent and touch different flags. S1e2.1.4 needs both, because a grid is

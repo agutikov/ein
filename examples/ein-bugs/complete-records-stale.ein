@@ -24,6 +24,15 @@
 ;; recorded states are written since their last saturation, and 6 of them —
 ;; all in this directory — refute.
 ;;
+;; ── 2026-11-03 — R's maximal line is the `-K` row's ───────────────────────
+;;
+;; Under R a node is `sat(root ∪ C)` with nothing the search wrote
+;; (solve_interface.md § 0, approved 2026-10-16), so the cache's negatives are
+;; no state's, and the `-K` row above is the right one: R has 5 states,
+;; maximal `{(q A)}` and `{(p A), (p B)}`, which the `:expect` below states.
+;; The `now` row was the walk's, and the section below is its record. Register
+;; row W9/complete-records-stale-K, confirmed at the revisit (M1e2 S1e2.1.7).
+;;
 ;; ── Why this file now carries an `:expect` ────────────────────────────────
 ;;
 ;; It could not before. Its two models populated **different** relations —
