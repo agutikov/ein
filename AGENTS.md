@@ -569,6 +569,9 @@ constrained-reasoning research.
 ```sh
 ./run_tests.sh                                               # the whole per-commit tier
 ./run_tests.sh --tests-only                                  # skip the static checks
+./run_tests.sh --nightly                                     # M1e2 S1e2.3.6: instead of the gate, every step of nightly.yml, its three jobs in order
+EIN_FUZZ_ITERS=1000000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test fuzz_properties   # the nightly's fuzz job, once per seed (1, 987654321)
+cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 14 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
@@ -794,6 +797,17 @@ remote one is a local gate that lies — keep the two lists the same.
 | `cargo fmt --all --check` | **three** unformatted files, all from M1c's own `:expect` work |
 | `cargo clippy --workspace --all-targets -D warnings` | a `for i in 0..n` indexing a slice, and **four** `&file` where `file` was already a `&str` — the four latent, because clippy stops at the first crate that fails and had never reached `ein-cli` |
 | `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | **twelve** unresolved intra-doc links and **seven** public items whose docs linked to a private one, plus a `<path>` read as an HTML tag. Nothing here had ever run rustdoc, whose default for all of it is a *warning* |
+
+**`./run_tests.sh --nightly` runs the nightly**, since M1e2 S1e2.3.6: every
+step of `.github/workflows/nightly.yml` instead of the gate's, its three jobs
+one after another (`deep-corpus`, the fuzzer once per seed, the bench smoke),
+so the nightly can be run before a push. Nothing local ran those steps before,
+and the nightly was red from 2026-10-17 to 11-03 behind a green gate.
+`ein-cli/tests/nightly_steps.rs` diffs its list against the workflow's, as
+`gate_steps.rs` does the gate's against `per-commit.yml`, so a step added to
+one and not the other fails `cargo test`. Its test steps run under a checked
+`TMPDIR`, as the gate's do. It took 9 min 50 s here on 2026-11-03, half of
+it `stdlib_census.py`; the runner's `deep-corpus` alone took 18 min that day.
 
 A reference that cannot be a link is still fine as `` `code` ``, and that is
 the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`

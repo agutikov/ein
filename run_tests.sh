@@ -3,7 +3,8 @@
 # run_tests.sh — the gate.
 #
 #     ./run_tests.sh                 # six static checks, the tests and their scratch check, the review-bundle smoke, the bench smoke
-#     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
+#     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1) and 8 id seeds
+#     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --tests-only    # cargo test, its scratch check and the review-bundle smoke — no static checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
@@ -22,7 +23,7 @@
 # `id_order_invariance` 11.5 s.
 #
 #   EIN_BLESS=1 ./run_tests.sh          # re-bank every golden
-#   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 2 slow corpus entries, 12 cells
+#   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the slow entries' cells, and every test's slow half
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
 #
 # **This runs what CI runs** — every step of the per-commit tier
@@ -67,6 +68,24 @@
 # silently — a missing `rustfmt`, `clippy` or `python3` is exit 127 here, the
 # same as a missing `cargo` or `dot`.
 #
+# **`--nightly` runs the nightly instead of the gate** (M1e2 S1e2.3.6): every
+# step of `.github/workflows/nightly.yml`, its three jobs one after another in
+# the file's order (`deep-corpus`, the fuzzer once per seed of its matrix, the
+# bench smoke), from the repo root, so that the nightly can be run before a
+# push. Nothing local ran those steps before, and the nightly failed on every
+# run from 2026-10-17 to 2026-11-03 while this gate stayed green. It takes no
+# other argument and runs none of the gate's steps. A step is the statement
+# after a `nightly_step "…"` banner, and `ein-cli/tests/nightly_steps.rs`
+# diffs that list against the workflow's, as `gate_steps.rs` does the gate's.
+# Its four test steps run under their own `build/gate-tmp-<pid>`, checked as
+# the gate's is. The fuzz and bench jobs are in it because they are cheap:
+# both fuzz seeds and the bench smoke took 15 s together, against
+# `deep-corpus`'s 594 s, in S1e2.3.6's sweep of 2026-11-03.
+# One thing differs from the runner's fresh checkout: the bundle step writes
+# `build/review/` over what an earlier run left there, case by case, and the
+# link check after it reads the whole directory, so a gallery that
+# `review_bundle.py --regions` left in `build/review/regions/` is checked too.
+#
 # **Since M1e2 S1e2.3.5 the gate checks its own scratch.** `cargo test` runs
 # with `TMPDIR` set to `build/gate-tmp-<pid>`, fresh and empty, and
 # `utils/check_test_scratch.py` fails the gate on anything a test left there,
@@ -103,16 +122,20 @@ if ! command -v dot >/dev/null 2>&1; then
     exit 127
 fi
 
-# `--slow` is the nightly tier in one flag: the 12 slow corpus cells and
-# eight id-space permutations instead of one. It read 118 until S1a.9.0
-# re-priced the tier and 19 until T1a.7.2.0 took `branching/07` out of it —
-# `corpus/corpus.toml` is the authority and `cost_ms` is the measurement.
+# `--slow` is the gate with the two depths the nightly's test steps set, for
+# every test at once: `EIN_CORPUS_SLOW=1` (the slow entries' cells, and the
+# slow half of every test that has one) and eight id-space permutations
+# instead of one. It is not the nightly, which runs four test targets at those
+# depths and five scripts besides: `--nightly` is. `corpus/corpus.toml` is the
+# authority on what is slow, and `cost_ms` is the measurement.
 ARGS=()
 CHECKS=1
+NIGHTLY=0
 for arg in "$@"; do
     case "${arg}" in
         --slow)       export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
         --tests-only) CHECKS=0 ;;
+        --nightly)    NIGHTLY=1 ;;
         *)            ARGS+=( "${arg}" ) ;;
     esac
 done
@@ -125,6 +148,71 @@ step() {
     while (( ${#rule} < width )); do rule="${rule}─"; done
     echo "── ${label} ${rule}" >&2
 }
+
+# `--nightly` (the header's paragraph): nightly.yml's steps and nothing else,
+# then exit. `nightly_step` is defined on one line on purpose:
+# `gate_steps.rs` reads every line that *starts* `step "` as one of the gate's
+# banners, and a body line `step "$@"` would be one.
+nightly_step() { step "$@"; }
+
+if [[ "${NIGHTLY}" == 1 ]]; then
+    if [[ $# -ne 1 ]]; then
+        echo "error: --nightly takes no other argument: it runs nightly.yml's steps as written." >&2
+        exit 2
+    fi
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo "error: no python3 on PATH — the nightly's scripts did not run." >&2
+        exit 127
+    fi
+    # The workflow runs its scripts from the checkout's root, and
+    # `doc_audit.py` reads `build/review` relative to where it runs.
+    cd "${SCRIPT_DIR}"
+    GATE_TMP="${SCRIPT_DIR}/build/gate-tmp-$$"
+    rm -rf "${GATE_TMP}"
+    mkdir -p "${GATE_TMP}"
+    trap 'rm -rf "${GATE_TMP}"' EXIT
+
+    # ── deep-corpus ──
+    nightly_step "deep-corpus: corpus_cli, the slow entries"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test corpus_cli
+
+    nightly_step "deep-corpus: id_order_invariance, eight seeds"
+    EIN_ID_SEEDS="8" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --release --test id_order_invariance
+
+    nightly_step "deep-corpus: answer_dump"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_dump
+
+    nightly_step "deep-corpus: lever_invariance, the slow cells"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test lever_invariance
+
+    nightly_step "deep-corpus: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    nightly_step "deep-corpus: utils/stdlib_census.py --check"
+    python3 "${SCRIPT_DIR}/utils/stdlib_census.py" --check
+
+    nightly_step "deep-corpus: utils/review_bundle.py"
+    python3 "${SCRIPT_DIR}/utils/review_bundle.py"
+
+    nightly_step "deep-corpus: utils/doc_audit.py --links --check build/review"
+    python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check build/review
+
+    nightly_step "deep-corpus: utils/stdlib_mutants.py --check"
+    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check
+
+    # ── frontend-fuzz, once per seed of its matrix ──
+    nightly_step "frontend-fuzz: seed 1"
+    EIN_FUZZ_ITERS="1000000" EIN_FUZZ_SEED="1" cargo test --manifest-path "${MANIFEST}" -p ein-ir --release --test fuzz_properties
+
+    nightly_step "frontend-fuzz: seed 987654321"
+    EIN_FUZZ_ITERS="1000000" EIN_FUZZ_SEED="987654321" cargo test --manifest-path "${MANIFEST}" -p ein-ir --release --test fuzz_properties
+
+    # ── benches ──
+    nightly_step "benches: cargo bench --bench engine -- --test"
+    cargo bench --manifest-path "${MANIFEST}" --bench engine -- --test
+
+    exit 0
+fi
 
 if [[ "${CHECKS}" == 1 ]]; then
     for tool in python3 rustfmt; do

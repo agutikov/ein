@@ -475,8 +475,9 @@ sub-language, the reserved names and the stdlib API are the rest of
 ### Development loop
 
 ```sh
-./run_tests.sh             # the gate: cargo test --workspace — 619 tests, ~1 m 51 s
-./run_tests.sh --slow      # + the two slow corpus entries, + 8 id-space seeds (the nightly tier)
+./run_tests.sh             # the gate: six static checks, cargo test --workspace and three more steps — 329 s on 2026-11-03
+./run_tests.sh --slow      # + every test's slow half (EIN_CORPUS_SLOW=1), + 8 id-space seeds
+./run_tests.sh --nightly   # instead of the gate: every step of .github/workflows/nightly.yml
 cd ein.rs && cargo fmt && cargo clippy --workspace --all-targets -- -D warnings
 EIN_BLESS=1 ./run_tests.sh # re-bank the goldens, deliberately
 ```
@@ -484,8 +485,9 @@ EIN_BLESS=1 ./run_tests.sh # re-bank the goldens, deliberately
 The gate needs **Graphviz** on `PATH`: `dot_wellformed.rs` is the only
 authority the DOT views have on being well-formed, and it fails rather than
 skips without it. CI runs the gate per commit and the slow tier, eight id-space
-seeds and a two-million-mutation frontend fuzz nightly
-([`.github/workflows/`](.github/workflows/)).
+seeds, the stdlib censuses, the review bundle and a two-million-mutation
+frontend fuzz nightly ([`.github/workflows/`](.github/workflows/)), and
+`./run_tests.sh --nightly` runs the nightly's steps here.
 
 ## Scheduled — the roadmap
 

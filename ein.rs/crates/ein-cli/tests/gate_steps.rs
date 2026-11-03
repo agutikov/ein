@@ -27,6 +27,11 @@
 //! not recognise **fails**, because the failure this file exists to prevent is
 //! CI gaining a step the gate does not have.
 //!
+//! **Its sibling is `nightly_steps.rs`** (M1e2 S1e2.3.6), which holds
+//! `run_tests.sh --nightly` to `nightly.yml` the same way, with the shell parse
+//! and the normalisation shared from `steps/mod.rs`. The nightly's banners are
+//! `nightly_step "…"`, which this file's parse does not read.
+//!
 //! ## What it does not catch
 //!
 //! A step whose *flags* drift within one command is caught; a step that
@@ -47,6 +52,12 @@
 
 use ein_corpus::repo_root;
 
+// The shell parse and the normalisation, shared with `nightly_steps.rs`
+// (M1e2 S1e2.3.6), so the two diffs read `run_tests.sh` the same way.
+#[allow(dead_code)]
+mod steps;
+use steps::{env_prefix, normalise, shell_steps};
+
 /// The workflow's `- run:` lines that are **not** gate steps, with the reason.
 ///
 /// Provisioning: CI has to install what a developer's machine already has.
@@ -64,51 +75,6 @@ const NOT_GATE_STEPS: &[(&str, &str)] = &[
          itself just before its test step",
     ),
 ];
-
-/// The gate steps of `run_tests.sh`, in order.
-fn shell_steps(text: &str) -> Vec<String> {
-    let lines: Vec<&str> = text.lines().collect();
-    let mut out = Vec::new();
-    for (i, line) in lines.iter().enumerate() {
-        if !line.trim_start().starts_with("step \"") {
-            continue;
-        }
-        // The command is the next statement — one logical line, which may be
-        // spread over several physical ones by a trailing backslash.
-        let mut j = i + 1;
-        let mut cmd = String::new();
-        while j < lines.len() {
-            let piece = lines[j].trim();
-            cmd.push_str(piece.strip_suffix('\\').unwrap_or(piece));
-            if !piece.ends_with('\\') {
-                break;
-            }
-            cmd.push(' ');
-            j += 1;
-        }
-        let cmd = cmd
-            .trim_start_matches("if ! ")
-            .trim_end_matches("; then")
-            .replace("--manifest-path \"${MANIFEST}\" ", "")
-            .replace(" -q ", " ")
-            .replace("${ARGS[@]+\"${ARGS[@]}\"}", "");
-        // `"${SCRIPT_DIR}/utils/x.py"` is `utils/x.py` with the quoting a
-        // shell needs and a workflow does not. Rewritten per token, so the
-        // quotes that are *semantic* — `RUSTDOCFLAGS="-D warnings"` — survive
-        // and are still compared.
-        out.push(normalise(
-            cmd.split_whitespace()
-                .map(|t| {
-                    t.strip_prefix("\"${SCRIPT_DIR}/")
-                        .and_then(|t| t.strip_suffix('"'))
-                        .unwrap_or(t)
-                })
-                .collect::<Vec<_>>()
-                .join(" "),
-        ));
-    }
-    out
-}
 
 /// The gate steps of `per-commit.yml`, in order, plus every `run:` it saw.
 fn workflow_steps(text: &str) -> (Vec<String>, Vec<String>) {
@@ -132,22 +98,12 @@ fn workflow_steps(text: &str) -> (Vec<String>, Vec<String>) {
         // shell's `RUSTDOCFLAGS="-D warnings" cargo …` prefix in YAML.
         let env = lines
             .get(i + 1)
-            .and_then(|l| l.trim().strip_prefix("env: { "))
-            .and_then(|l| l.strip_suffix(" }"))
-            .and_then(|kv| kv.split_once(": "))
-            .map(|(k, v)| format!("{k}={v} "))
+            .copied()
+            .and_then(env_prefix)
             .unwrap_or_default();
         steps.push(normalise(format!("{env}{cmd}")));
     }
     (steps, all)
-}
-
-/// One space between words, nothing at the ends.
-fn normalise(cmd: impl AsRef<str>) -> String {
-    cmd.as_ref()
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ")
 }
 
 /// The two lists are the same list.
@@ -158,7 +114,7 @@ fn the_gate_runs_what_ci_runs() {
     let yml = std::fs::read_to_string(root.join(".github/workflows/per-commit.yml"))
         .expect("per-commit.yml");
 
-    let gate = shell_steps(&shell);
+    let gate = shell_steps(&shell, "step");
     let (ci, _) = workflow_steps(&yml);
 
     assert_eq!(

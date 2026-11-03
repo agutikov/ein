@@ -2,7 +2,19 @@
 #
 # Budget: an hour. Everything the per-commit tier cannot afford, plus the check
 # that only makes sense over time: does anything the corpus does not cover
-# break.
+# break. The three jobs run side by side, and `deep-corpus` is the long one:
+# 18 min on the run of 2026-11-03, about half of it `stdlib_census.py`
+# (`gh run view 41620115500 --json jobs`).
+#
+# **`./run_tests.sh --nightly` runs every step of this file**, since M1e2
+# S1e2.3.6: the three jobs one after another, in this file's order, the fuzz
+# job once per seed of its matrix. `ein-cli/tests/nightly_steps.rs` diffs the
+# two lists, so a step added here and not there fails a test. Every `run:`
+# here is a step of that list, or a provisioning step the test names with its
+# reason (Graphviz, the tests' `TMPDIR`). Until that stage nothing local ran
+# these steps, and this workflow failed on every run from 2026-10-17 to 11-03
+# without anybody here seeing it
+# (plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.6_the_nightly_workflow.md).
 
 name: nightly
 
@@ -15,12 +27,20 @@ jobs:
     name: ein.rs — the slow corpus entries, and the id space permuted
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
+    # M1e2 S1e2.3.6 — the tests' `TMPDIR`, a fresh directory under `build/`,
+    # as in the per-commit tier since S1e2.3.5: the four test steps run under
+    # it, and `check_test_scratch.py` holds it empty after them. The slow cells
+    # are tests the per-commit tier never runs, so this is the one place their
+    # scratch is checked. `run_tests.sh --nightly` names its own
+    # `build/gate-tmp-<pid>`; the steps that read it are spelt the same.
+    env: { GATE_TMP: "${{ github.workspace }}/build/gate-tmp" }
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
       - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: mkdir -p "${GATE_TMP}"
       # The `slow = true` entries the per-commit sweep skips, every declared
       # cell of each: 14 entries on 2026-11-03
       # (`grep -c '^slow *= *true' corpus/corpus.toml`). `slow` is a measured
@@ -30,12 +50,12 @@ jobs:
       # `the_slow_flag_still_describes_the_sweep`, whose timing half runs only
       # under `EIN_CORPUS_SLOW` on `--release`, which is this step
       # (docs/history/m1a_rust/measurements/corpus_cost.md).
-      - run: cargo test -p ein-cli --release --test corpus_cli
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
       # Eight id-space permutations of every corpus file, where the per-commit
       # tier runs `EIN_ID_SEEDS`' default of one: does any output depend on an
       # ordering accident.
-      - run: cargo test -p ein-render --release --test id_order_invariance
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --release --test id_order_invariance
         env: { EIN_ID_SEEDS: "8" }
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
       # program (`docs/kernel/inference/answer_dump.md`). **This step runs what
@@ -44,14 +64,20 @@ jobs:
       # switch (`fbcae3b2`, 2026-10-18); nothing in `answer_dump.rs` has read
       # `EIN_CORPUS_SLOW` since. Whether it gets a slow cell back is parked in
       # S1e2.3.6's notes.
-      - run: cargo test -p ein-cli --release --test answer_dump
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test answer_dump
         env: { EIN_CORPUS_SLOW: "1" }
       # M1e2 S1e2.1a.6 — every mode's read-out and summary under every lever,
       # held to the default's, with the cells the per-commit tier leaves out
       # for their cost: the declared lever cells of the slow entries (the
       # zebra2 pair's) and the register's witnesses that are slow.
-      - run: cargo test -p ein-cli --release --test lever_invariance
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test lever_invariance
         env: { EIN_CORPUS_SLOW: "1" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.14" }
+      # M1e2 S1e2.3.6 — the four test steps left nothing in their `TMPDIR`,
+      # every entry named with the file that writes it (S1e2.3.5's check).
+      - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
+        working-directory: ${{ github.workspace }}
       # ── The two `--check` censuses — M1e S1e.4.5, `TE-L4` ──
       #
       # Both read the release `ein` the steps above have already built
@@ -67,21 +93,16 @@ jobs:
       # `working-directory` overrides the job's `ein.rs`: both scripts resolve
       # the repo from `__file__` and run the engine with `cwd=REPO`, but the
       # `python3 utils/...` path is root-relative.
-      #
-      # **Nothing in the workspace reads this file**, so deleting these two
-      # steps fails no test: `ein-cli/tests/gate_steps.rs` diffs `run_tests.sh`
-      # against the *per-commit* workflow only. That is accepted rather than
-      # unnoticed — teaching that test a second marker convention is more than
-      # a Low finding is worth, and the cadence is stated in `utils/README.md`
-      # where a reader of the numbers will find it.
-      - uses: actions/setup-python@v6
-        with: { python-version: "3.14" }
       - run: python3 utils/stdlib_census.py --check
         working-directory: ${{ github.workspace }}
       # M1e2 S1e2.1.6 — the whole review bundle, every register case, with the
-      # release `ein` the corpus step above built; a case whose page fails to
-      # build exits 1, and so does a dangling link or image in it.
-      - run: python3 utils/review_bundle.py && python3 utils/doc_audit.py --links --check build/review
+      # release `ein` the corpus step above built: a case whose page fails to
+      # build exits 1. Then every link and image in it resolves. Two steps
+      # since S1e2.3.6, where they were one `a && b`: `run_tests.sh --nightly`
+      # runs under `set -e`, which does not stop on the left of an `&&`.
+      - run: python3 utils/review_bundle.py
+        working-directory: ${{ github.workspace }}
+      - run: python3 utils/doc_audit.py --links --check build/review
         working-directory: ${{ github.workspace }}
       # M1e S1e.3.6 — would `tests/` notice a defect in the rule it tests: four
       # mechanical mutation families over every `(rule …)` in `stdlib/`, each
@@ -107,9 +128,7 @@ jobs:
       # find is minimised and written to corpus/fuzz_findings/, which the
       # failure artifact carries out.
       - run: cargo test -p ein-ir --release --test fuzz_properties
-        env:
-          EIN_FUZZ_ITERS: "1000000"
-          EIN_FUZZ_SEED: ${{ matrix.seed }}
+        env: { EIN_FUZZ_ITERS: "1000000", EIN_FUZZ_SEED: "${{ matrix.seed }}" }
       - uses: actions/upload-artifact@v6
         if: failure()
         with:

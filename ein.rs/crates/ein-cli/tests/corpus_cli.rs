@@ -522,8 +522,9 @@ fn the_slow_flag_still_describes_the_sweep() {
         // (`.github/workflows/nightly.yml`), which is the profile `cost_ms`
         // was measured on — so gating it does not weaken the band, it moves
         // it to where it is truer. If that env line ever loses
-        // `EIN_CORPUS_SLOW`, this assertion stops existing and nothing says
-        // so: `gate_steps.rs` diffs the **per-commit** workflow only.
+        // `EIN_CORPUS_SLOW`, this assertion stops existing; since M1e2
+        // S1e2.3.6 `nightly_steps::the_slow_cells_run_under_release_with_the_flag`
+        // is what says so.
         if let Some(c) = e.cost_ms.filter(|c| *c as u128 >= floor) {
             let (c, f) = (c as u128, COST_FACTOR as u128);
             if ms > c * f || ms * f < c {
