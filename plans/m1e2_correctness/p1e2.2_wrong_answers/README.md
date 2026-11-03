@@ -1,7 +1,10 @@
 # P1e2.2 — The wrong answers, one stage each
 
-**Estimate:** ~2.5 weeks: 13 stages, eight live and five dropped, **12.5
-days**, since the revisit, [S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#revisited-2026-11-03), dropped S1e2.2.13 and the user's ruling on C1
+**Estimate:** ~3 weeks: 15 stages, ten live and five dropped, **16 days**,
+since S1e2.2.14 (W15, 2 days) and S1e2.2.15 (W14, 1.5 days) were filed on
+2026-11-04 from S1e2.2.4's residue probe and the user's ruling on names
+([Q-M1e2.9](../open_questions.md#q-m1e29--which-constants-are-names-of-the-program)).
+It was 12.5 days since the revisit, [S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#revisited-2026-11-03), dropped S1e2.2.13 and the user's ruling on C1
 restated S1e2.2.10 (2 → 1.5), both 2026-11-03 (§ Stages' S1e2.1.7 column). It
 was 13.5 after [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)
 re-scoped it the same day (its outcome column), and 27.5 before.
@@ -16,7 +19,9 @@ the same day, *via, per activator*. **It is done** (2026-11-04): every
 program whose refutation rests on an `absent` a commitment can fill is refused,
 W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` are fixed
 by it (`597b2b7e`), `:warn-derived-naf` is retired, and the register reads 29
-fixed, 5 open and 1 not-wrong. Next is S1e2.2.6, W8's one row.
+fixed, 5 open and 1 not-wrong. Next is **S1e2.2.14**, then S1e2.2.15, both
+filed on 2026-11-04 (§ Dependencies inside the phase), then S1e2.2.6, W8's one
+row.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -55,7 +60,7 @@ cannot pay is `Open`, not `Contradiction`. The answer is one of:
 | class | what is false | stages |
 |---|---|---|
 | **1 — verdict / `k`** | the verdict word, or the count of models | S1e2.2.1, .2, .3, .9 |
-| **2 — model set** | a model missing, one that is not a model, a derivation lost | S1e2.2.4, .5, .6, .7, .10 |
+| **2 — model set** | a model missing, one that is not a model, a derivation lost | S1e2.2.4, .5, .6, .7, .10, .14, .15 |
 | **3 — certification** | `exhausted = true` (or the unhedged wording) over a claim it does not license | S1e2.2.1, .2, .3, .8 |
 | **4 — the core** | an unsat core other than the one the docs promise | S1e2.2.11, .12, .13 |
 
@@ -81,6 +86,8 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.3](s1e2.2.3_obligations_join_superset.md) | **W5** the obligations rung records a superset of a model, chosen by name order | 1 + 2 + 3 | **default** (any obligation program) | new | 0 (2.5) d | **drop** | confirmed | the join re-checks its subsets; a model set that is invariant under renaming a constant; lattice and tree agree |
 | [S1e2.2.4](s1e2.2.4_fresh_name_unreachable.md) | **W4** a rule's fresh constant never becomes a hypothesis. **Done 2026-11-04**: seeded, both rows fixed, the residue refused | 2 | **default** | [Q-M1e.21](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | 2.5 (3) d | keep | confirmed | Q-M1e.21's candidate taken; the fresh-name fixtures answer the model `{(q A Z),(q B Z)}` |
 | [S1e2.2.5](s1e2.2.5_naf_upward_closure.md) | **W3** `dead` is not upward-closed under `absent`. **Done 2026-11-04**: *forbid*'s refusal built with F2's *via*, six rows fixed by it and the two `d3-unsat-core` rows restated to it, `:warn-derived-naf` retired | 2 | **default** | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), F18, S1f.10.8 | 2.5 (3) d | shrink | confirmed; gains `W1/alive-empty-interlayer` | the language ruling taken first; then the program is refused, or the three mechanisms stop learning from a refutation that rests on an `absent` |
+| [S1e2.2.14](s1e2.2.14_unread_names.md) | **W15** a name written only in a `:match` or inside a nested fact never becomes a candidate. Filed 2026-11-04 | 2 | **default** | [Q-M1e2.9](../open_questions.md#q-m1e29--which-constants-are-names-of-the-program), ruled (a) 2026-11-04; S1e2.2.4's parked note | 2 d | — | — (filed after it) | every constant a fact names at any depth, or a rule's `:match` or `:assert`, is a candidate; the seven corpus programs and the two banked witnesses answer their declared twins' R |
+| [S1e2.2.15](s1e2.2.15_obligations_rung_universe.md) | **W14** the obligations rung never proposes a domain value a commitment derives. Filed 2026-11-04 | 2 | **default** (an obligation whose guard reads a relation in D) | Q-M1e2.7's ruling (h); S1e2.2.4's parked note | 1.5 d | — | — (filed after it) | the rung declines on a guard over D and the blind enumerator answers; the witnesses answer their `-declared` controls' R |
 | [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |
@@ -128,12 +135,19 @@ went with those stages.
   `via`) decides whether W8's two witnesses still load. S1e2.2.6's reading is
   F21's D2, deferred, and what is left of it is the revisit's. **F2 took
   `via` on 2026-11-04**: `stale-naf-fork` does not load, and W8 is one row.
+- **S1e2.2.14 and S1e2.2.15 next, in that order, then S1e2.2.6** (filed
+  2026-11-04). S1e2.2.14 runs **before S1e2.2.7**: W7's two witnesses are
+  among the seven programs whose R the names ruling moves, so W7's `right` is
+  restated there first. S1e2.2.15 runs after S1e2.2.14 because both change
+  how H is built, and its fallback, the blind enumerator, then carries every
+  name of the program.
 - **S1e2.2.4 and S1e2.2.10 no longer share a sitting**: C1's reading was ruled on 2026-11-03, (a), so each runs alone. Until then: **S1e2.2.4 and S1e2.2.10 in one sitting.** Both ask what the candidate list's
   universe is, and answering one alone risks answering the other by accident.
 - **S1e2.2.12 after S1e2.2.11**, if the second visit to W11 asks for a canonical
   tie-break among equal-size cores: it is written once.
-- **S1e2.2.7, S1e2.2.8 and S1e2.2.11 are independent** (S1e2.2.13 dropped at the revisit) of everything
-  above, and can run in parallel with any of it.
+- **S1e2.2.8 and S1e2.2.11 are independent** (S1e2.2.13 dropped at the
+  revisit) of everything above, and can run in parallel with any of it.
+  S1e2.2.7 was too until 2026-11-04, and now waits for S1e2.2.14.
 
 ## Acceptance
 

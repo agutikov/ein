@@ -22,6 +22,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope; [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | **ruled 2026-11-02**: yes, after P1e2.1c; **specified the same day**, four stages, 5 d; **closed 2026-11-03** at its S1e2.3.4, every surface of the re-take gone, each under its stage's ruling ([§ Closed](#closed-2026-11-03--every-surface-gone-under-its-ruling)) |
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
+| [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1153,3 +1154,38 @@ default is: *"the default simple `solve` without flags we get exhausive
 certifying full region description"*, with flags that simplify the task.
 Option 1 is [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md),
 and option 2 is [P1e2.1c](p1e2.1c_the_region_search/README.md).
+
+## Q-M1e2.9 — Which constants are names of the program?
+
+Put to the user on 2026-11-04, after S1e2.2.4 seeded the blind enumerator's
+objects with every constant a rule's `:assert` names (Q-M1e.21 (b)).
+[`solution_semantics.md` § 1.2](../../docs/kernel/inference/solution_semantics.md)
+says *a name is a constant the program mentions, in a fact or in a rule*, and
+the engine's candidates were narrower: the arguments of the KB's top-level
+facts, plus the `:assert` constants. A read-only probe at `16a05caf`
+(`build/s1e2.2.4-probe/r2/`, `r3/`) found three kinds of constant the program
+writes that never become a candidate:
+
+1. **only in a rule's `:match`**, e.g. `(q ?a Z) → (good ?a)`. No corpus
+   program has one.
+2. **only inside a nested fact**, e.g. `(not (q Z A))`. Declaring each such
+   name moves R on seven corpus programs: the three
+   `hypothesis-contradiction/*-disproved` and W7's `binding-key-layout` pair
+   (k_s 1 → 2 each), `syntax/equality.ein` (k_s 64 → 4 096) and
+   `syntax/arg-kinds.ein` (H 19 → 41, both runs partial).
+3. **only in a `(query …)`**: `syntax/query-full.ein`'s `Water` and
+   `ein-bugs/query-goal-free-head-unsat.ein`'s `b`, neither of whose R moves.
+
+The options were (a) § 1.2 literally, kinds 1 and 2 are names and 3 is not;
+(b) all three; (c) today's set, and § 1.2 amended to say it.
+
+**Ruled 2026-11-04: (a)**, *§ 1.2 literally*. Every constant written in a fact
+at any depth, or anywhere in a rule (`:match` and `:assert`), is a name of the
+program and so a candidate object. A constant written only in a query is not:
+R is the program's, and a query asks about it, so adding a query never changes
+R. Under ruling (h) of [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice)
+a candidate list that lacks a name a model needs is an engine bug, so kinds 1
+and 2 are a wrong answer, filed as **W15** and fixed by
+[S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md), which runs
+before [S1e2.2.7](p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)
+because W7's two witnesses are among the seven.

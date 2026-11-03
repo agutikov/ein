@@ -1,8 +1,10 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~19 weeks: 7 estimated phases and 50 stages, five of them
-dropped, **95.5 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21,
-P1e2.1c 16.5, P1e2.2 12.5, P1e2.3 8.5, P1e2.4 2). It was 96.5 until the revisit,
+**Estimate:** ~20 weeks: 7 estimated phases and 52 stages, five of them
+dropped, **99 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21,
+P1e2.1c 16.5, P1e2.2 16, P1e2.3 8.5, P1e2.4 2). It was 95.5 until P1e2.2
+gained S1e2.2.14 (W15, the user's ruling on names, 2 days) and S1e2.2.15
+(W14, the obligations rung's universe, 1.5 days) on 2026-11-04. It was 96.5 until the revisit,
 S1e2.1.7, on 2026-11-03: it dropped P1e2.2's S1e2.2.13 (0.5 day, W12 closed by
 `solve_interface.md` § 0), and the user's ruling on C1 restated S1e2.2.10 (2
 days → 1.5). It was 95.5 until the user put
@@ -171,7 +173,7 @@ where it is cheap and exact, and
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
 | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 16.5 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. **Done 2026-11-03**: no row closed by construction, four of P1e2.2's stages dropped, the walk deleted around S4 and `-L`, `-K` and four `enable-*` fields retired on the user's rulings, `-y` the spot check unbounded. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
-| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13, 5 dropped | 12.5 d | every register row `fixed` or ruled `not-wrong`, or `deferred` to a followup by the user; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before) and by the review the same day (S1e2.2.13 dropped, S1e2.2.10 restated), eight stages live; no wrong answer at default settings; no lever that changes a certified answer. **Started 2026-11-04; S1e2.2.4 done** that day: W4's two rows fixed by seeding the candidates with a rule's constants, 23 fixed, 11 open, 1 not-wrong. **S1e2.2.5 done** the same day: *forbid*'s refusal built, with the user's F2, *via, per activator*; W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` fixed by it, `:warn-derived-naf` retired, 29 fixed, 5 open, 1 not-wrong |
+| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 15, 5 dropped | 16 d | every register row `fixed` or ruled `not-wrong`, or `deferred` to a followup by the user; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before) and by the review the same day (S1e2.2.13 dropped, S1e2.2.10 restated), eight stages live; no wrong answer at default settings; no lever that changes a certified answer. **Started 2026-11-04; S1e2.2.4 done** that day: W4's two rows fixed by seeding the candidates with a rule's constants, 23 fixed, 11 open, 1 not-wrong. **S1e2.2.5 done** the same day: *forbid*'s refusal built, with the user's F2, *via, per activator*; W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` fixed by it, `:warn-derived-naf` retired, 29 fixed, 5 open, 1 not-wrong. **S1e2.2.14 (W15) and S1e2.2.15 (W14) filed** the same day, ten stages live |
 | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 7 | 8.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; **S1e2.3.5 done 2026-11-03**: the gate checks its own scratch; **S1e2.3.7 done 2026-11-03**: N1–N4 say what they print, each held by a test, no exit code moved; **S1e2.3.6 done 2026-11-03**: every nightly step green under `./run_tests.sh --nightly`, which `nightly_steps.rs` holds to the workflow, the mutation bank's eight kills explained (165 of 217). **Closed 2026-11-03**, its acceptance re-taken line by line |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
@@ -194,8 +196,12 @@ five no criterion decided ruled by the user the same day
 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
 **The milestone's next step is P1e2.2**, in its stage order
 ([P1e2.2 § Stages](p1e2.2_wrong_answers/README.md#stages)). It started on
-2026-11-04 with S1e2.2.4 and S1e2.2.5, both done that day; S1e2.2.6 is
-next.
+2026-11-04 with S1e2.2.4 and S1e2.2.5, both done that day. Two stages were
+filed the same day from S1e2.2.4's residue probe: S1e2.2.14 (W15, a name the
+program writes outside a top-level fact or an `:assert`, on the user's ruling
+[Q-M1e2.9](open_questions.md#q-m1e29--which-constants-are-names-of-the-program))
+and S1e2.2.15 (W14, the obligations rung's universe). They are next, in that
+order, then S1e2.2.6.
 
 ### P1e2.3 — Surfaces that misreport the answer
 
