@@ -200,6 +200,27 @@ id. Where the key is *displayed* — `--dump-states` orders its nodes — the
 `repr` order of §2.2 is used instead, because that is the order every
 checked-in dump was baselined against.
 
+### 2.5 A render view labels an IR form as written, a keyword pair as `:key value`
+
+The DOT views that draw the program rather than a KB — `render constraints`,
+`render program`, `render rules` — label an IR value with
+`ein_render::value_label`, which recurses into a nested form. A keyword pair
+anywhere below the form a view draws is labelled `:key value`, the spelling the
+`(query …)` and `(solve …)` note nodes already gave their keywords, so
+`(tracex (step s1 :rule from-condition …))` draws its step as
+`(step s1 :rule from-condition :using (c10) :derives (lives-in N H1))`. A view's
+own filter still drops the keyword pairs of the form it draws, which is a
+presentation choice the view keeps; what is defined is that no keyword pair
+below it aborts the process. Until M1e2 S1e2.3.2 one did, exit 101 on both
+`render constraints` and `render program`, on a program the loader accepts.
+The user ruled the rendering on 2026-11-03 (option (a) of
+[the stage's question](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md#the-question)),
+against filtering the pairs at every depth. Held by
+`dot_util::tests::a_keyword_pair_below_a_form_is_labelled_key_value` and by
+the corpus entry
+[`examples/ein-bugs/kwpair-below-the-filter.ein`](../../examples/ein-bugs/kwpair-below-the-filter.ein),
+whose two runs `corpus_cli.rs` holds at exit 0.
+
 ## 3. Search
 
 ### 3.1 `--shuffle` is the Mersenne Twister, exactly
