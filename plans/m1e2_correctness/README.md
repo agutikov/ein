@@ -194,7 +194,8 @@ five no criterion decided ruled by the user the same day
 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
 **The milestone's next step is P1e2.2**, in its stage order
 ([P1e2.2 § Stages](p1e2.2_wrong_answers/README.md#stages)). It started on
-2026-11-04 with S1e2.2.4, done that day; S1e2.2.5 is next.
+2026-11-04 with S1e2.2.4, done that day; S1e2.2.5 started the same day
+and is paused on its F2, the user's.
 
 ### P1e2.3 — Surfaces that misreport the answer
 

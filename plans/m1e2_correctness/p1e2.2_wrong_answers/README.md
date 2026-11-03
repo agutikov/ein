@@ -10,7 +10,9 @@ re-scoped it the same day (its outcome column), and 27.5 before.
 objects (Q-M1e.21 (b)), W4's two rows are `fixed` (`02e9fb5f`), and the one
 shape the seed cannot hold, a relation parameter bound to an integer, is
 refused at load and at compile. The register reads 23 fixed, 11 open and 1
-not-wrong. Next is S1e2.2.5.
+not-wrong. **S1e2.2.5 started the same day and is paused on F2**: its
+witnesses re-taken and every move listed under each reading of `via`, which
+is put to the user ([T1e2.2.5.1](s1e2.2.5_naf_upward_closure.md#task-t1e2251--the-ruling)).
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
