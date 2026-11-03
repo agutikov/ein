@@ -946,7 +946,9 @@ snmalloc, one process per row. *route*, *read-out* and *print* are `-t`'s.
 - **For the budget question** (S1e2.1c.2's T1e2.1c.2.6, the user's): the
   default of 2¹⁹ facts already describes the zebra family. What it leaves
   partial is the seven cubes' state count and the pair. § 9.5 prices each
-  step past it.
+  step past it. **Ruled 2026-11-03: 2²⁰** — after 2²⁴, whose gate cost is
+  in the stage file — which certifies `zebra`'s three modes below and every
+  state of the pair's R as a member.
 - **For [S1e2.1c.4](s1e2.1c.4_the_flags_at_scale.md)**: the modes are still
   route 1 with a cut, and describe now does less than they do on `zebra`. At
   the default budget `--single`, `--maximal` and `--minimal` stop partial

@@ -370,6 +370,36 @@ cost — `corpus/README.md`'s rule — so the zebra family is in
 (`--single`, bare and `-n 1`). Whether the default budget should be cheaper on
 these is the speed P1e2.1c owes, not a reason to move the threshold.
 
+## 9. The third re-take — 2026-11-03, M1e2 S1e2.1c.2's default of 2²⁰
+
+**Six entries joined the slow set and two left it.** M1e2 S1e2.1c.2 made the
+state route describe's route, and the user ruled the default
+`--region-budget` up from 2¹⁹ to 2²⁰ facts (its T1e2.1c.2.6). They first ruled
+2²⁴, and the same re-take at 2²⁴ found `zebra2`'s `solve -n 3` at 112 s and the
+`zebra2-minus-15` pair at 79 s a cell. The gate's sweeps ran out of memory at
+2²⁴, and the smaller raise followed. `utils/bench_env.sh --cores PT python3
+utils/corpus_cost.py --timeout 900 --json cost.json`, 2026-11-03, commit
+`cf8e8e70` plus T1e2.1c.2.6's working tree, release, P-cores:
+
+| entry | cost | slowest cell | flag |
+|---|---:|---|---|
+| `zebra2`, `zebra2-obligations` | 18.6 / 18.5 s | `solve -n 3`, 9.4 s | `cost_ms` 38 095 / 39 241 → 18 588 / 18 495 |
+| `zebra2-minus-15`, `-obligations` | 7.86 / 7.87 s | `solve`, 7.83 s | `cost_ms` 4 846 / 4 847 → 7 862 / 7 874 |
+| `lattice/06_friends_tables` | 5.20 s | `render lattice`, 2.69 s | `cost_ms` 5 048 → 5 198 |
+| `lattice/07_two_pairs_two_tables` | 3.91 s | `oracle --dump`, 3.87 s | `cost_ms` 3 890 → 3 905 |
+| `features/01_not_and_absent` | 2.27 s | `solve`, 1.67 s | `cost_ms` 3 459 → 2 267 |
+| `zebra` | 2.07 s | `render lattice`, 1.02 s | `cost_ms` 3 624 → 2 074 |
+| `square-bwd/*`, `square-fwd/*` (six) | 1.58–1.66 s | `render lattice`, 1.57–1.65 s | `slow` **added** |
+| `zebra2-hints` | 268 ms | `render lattice`, 114 ms | `slow` **removed** (was 5.56 s) |
+| `features/02_star_in_identifiers` | 98 ms | `render lattice`, 84 ms | `slow` **removed** (was 1.28 s) |
+| `branching/06_lookahead_on`, `/07_lookahead_off` | 143 ms each | `solve`, 64 ms | `cost_ms` 794 / 754 → 143 / 143 |
+
+Fourteen entries are slow where ten were. The state route made the zebra
+family's bare describe cheap: `zebra2` halved, and its dearest cell is now
+`solve -n 3`, which is still route 1 with a cut and runs to the budget. That
+is S1e2.1c.4's to route. The six cubes' `render lattice` counts their states
+as far as 2²⁰ goes. **No cell was dropped** for its cost.
+
 ## Reproducing this file
 
 ```sh

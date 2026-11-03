@@ -323,7 +323,8 @@ them. **Describe** stops at the default budget, partial, and R is still
 decided: ∅ is in R, and one saturation of ⊤ finds it alive and owing nothing,
 so R is the whole cube (L1, L2). k_c, both lines, the one component, the one
 sub-cube and N are exact. What is not is the states: 27 559 of them, and the
-state route counts those of up to six candidates before its budget. The two
+state route counts those of up to eight candidates before the default budget of
+2²⁰ facts (ruled 2026-11-03; at 2²¹ it counts them all). The two
 line states are what it lists. The other members it met go to
 `--dump-answer`, not to the screen, and the query's one class is printed
 without `as :expect`, since it is a lower bound.

@@ -34,7 +34,7 @@ COMMAND ein render kb
   POSITIONAL file required=True help=
 COMMAND ein render lattice
   ABOUT the nodes a describing `ein solve` run visits, as a DAG: R green, owing amber, dead red (M1e2)
-  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the run's budget, as `ein solve --region-budget`'s (default 2^19); a run that reaches it is drawn as far as it went
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the run's budget, as `ein solve --region-budget`'s (default 2^20); a run that reaches it is drawn as far as it went
   OPTION --view -- metavar=VIEW arity=1 default='solution' choices=full|solution group=- required=False help='solution' the nodes of R and the nodes one fact above them that are not (default), or 'full' every node the run visited
   POSITIONAL file required=True help=
 COMMAND ein render program
@@ -84,7 +84,7 @@ COMMAND ein solve
   OPTION --print-final-positive -P metavar=- arity=0 default=False choices=- group=- required=False help=like --print-final-state but drops the (not …) facts
   OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, each listed state's facts beyond root: its model
   OPTION --progress-every -g metavar=PROGRESS_EVERY arity=1 default='100' choices=- group=- required=False help=under --verbose, log every N-th node (default 100; set 1 to log every node)
-  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the budget: facts derived beyond root, summed over every saturation (default 2^19 = 524288). A run that reaches it prints what it established and bounds, never a different answer
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the budget: facts derived beyond root, summed over every saturation (default 2^20 = 1048576). A run that reaches it prints what it established and bounds, never a different answer
   OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=the most candidates a program the static check flags gets the whole cube for: 2^N saturations (default 16). Past it a question that needs the cube is answered in part
   OPTION --relevant -l metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) prune each derivation to the goal-relevant slice
   OPTION --reorder -R metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) cluster each section's steps by target entity instead of engine order
@@ -103,7 +103,7 @@ COMMAND ein test
   OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the file's run as ein-summary/2 to FILE, as `ein solve` does. Additive, and refused when the selection is more than one file.
   OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort a file after N wall-clock seconds. An abort is an ERROR, never a pass and never a failure: nothing was established either way
   OPTION --quiet -q metavar=- arity=0 default=False choices=- group=volume required=False help=the summary line, and whatever was not ok
-  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=each file's budget, as `ein solve --region-budget`'s (default 2^19 = 524288). A claim the run could not decide within it is NOT CHECKED
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=each file's budget, as `ein solve --region-budget`'s (default 2^20 = 1048576). A claim the run could not decide within it is NOT CHECKED
   OPTION --verbose -v metavar=- arity=0 default=False choices=- group=volume required=False help=one line per claim, held ones included, with what the run found
   POSITIONAL path required=True help=a .ein file, or a directory to walk for them
 COMMAND ein saturate

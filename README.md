@@ -207,10 +207,11 @@ solve · examples/zebra2.ein --single
 Every word of that answer comes from the **puzzle**, not the engine: the
 `(query … :goal-text "…")` template renders the headline from the goal
 variables, and `--single` decides that R holds no other state, which is what
-makes the answer *the* answer. A bare `ein solve examples/zebra2.ein` finds the
-same one state and stops at the default `--region-budget` before it has proved
-there is no other (3.6 s, release build, 2026-10-18; `--single` 3.8 s), and
-`-n 1` prints it in 30 ms without the proof.
+makes the answer *the* answer. A bare `ein solve examples/zebra2.ein` describes
+all of R since M1e2 S1e2.1c.2, by the state route, and it is the same one state:
+374 saturations, 0.54 s at `-j 1` (release build, 2026-11-03). Until then it
+stopped at the default `--region-budget` before it had proved there is no
+other (3.6 s, 2026-10-18). `-n 1` prints it in 30 ms without the proof.
 
 ### The kernel's operations, and where each sits in the literature
 
@@ -413,7 +414,7 @@ ein oracle <file>                  # R by brute force, the cube every mode is he
 The flag names the part of R asked about, and each question does the least
 work it needs ([`solve_interface.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)).
 The budgets are `--region-budget F` (the facts a description may derive,
-default 524 288 — past it the run stops with an answer, bounds and a
+default 1 048 576 = 2²⁰ since 2026-11-03 — past it the run stops with an answer, bounds and a
 `note:`), `--region-limit N` (the cube a flagged program may need) and
 `--max-time`. `--jobs N` changes the wall clock and nothing else, and no config
 option changes R ([`configuration.md` § 2.5](docs/kernel/configuration.md)).

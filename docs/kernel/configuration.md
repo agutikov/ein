@@ -368,8 +368,10 @@ different question or stopping early.
   `-T`/`--max-time`. The first four choose what is asked about R, and
   `--monotone` (M1e2 S1e2.1b.5) asks about the program instead: root's
   fixpoint and the static check, no node built, every verdict exit 0, and
-  exclusive with the four. The budget, the cube's limit
-  and the deadline stop a run, and then every surface says the answer is
+  exclusive with the four. The budget (`--region-budget`, default
+  2²⁰ = 1 048 576 facts beyond root for every mode, ruled 2026-11-03; it was
+  2¹⁹; `ein solve --help` states it, from `downset::DEFAULT_BUDGET`), the
+  cube's limit and the deadline stop a run, and then every surface says the answer is
   partial: a lower bound, a `note:` on stderr, `exhausted no` and why. A
   `-T` abort exits 2 and prints no answer, because a machine-dependent limit
   is never an answer. **`-n 0` is refused**, exit 2, since M1e

@@ -72,6 +72,13 @@ fn solutions_spec(s: &str) -> Result<i64, String> {
     }
 }
 
+/// `2^24 = 16777216`: the default budget as the help states it, from the one
+/// constant that defines it ([`ein_infer::downset::DEFAULT_BUDGET`]).
+fn default_budget() -> String {
+    let b = ein_infer::downset::DEFAULT_BUDGET;
+    format!("2^{} = {b}", b.trailing_zeros())
+}
+
 /// `--region-budget`'s count — one or more: a budget of nothing would be a
 /// run that answers nothing, which is not a question anyone asks.
 fn region_budget_spec(s: &str) -> Result<i64, String> {
@@ -316,11 +323,12 @@ fn render_command() -> Command {
                         .long("region-budget")
                         .value_name("FACTS")
                         .value_parser(region_budget_spec)
-                        .help(
+                        .help(format!(
                             "the run's budget, as `ein solve --region-budget`'s \
-                             (default 2^19); a run that reaches it is drawn as far \
+                             (default 2^{}); a run that reaches it is drawn as far \
                              as it went",
-                        ),
+                            ein_infer::downset::DEFAULT_BUDGET.trailing_zeros()
+                        )),
                 )
                 // The walk's depth cap, retired with `solve -m`.
                 .arg(
@@ -442,12 +450,12 @@ fn solve_command() -> Command {
                 .long("region-budget")
                 .value_name("FACTS")
                 .value_parser(region_budget_spec)
-                .help(
+                .help(format!(
                     "the budget: facts derived beyond root, summed over every \
-                     saturation (default 2^19 = 524288). A run that reaches it \
-                     prints what it established and bounds, never a different \
-                     answer",
-                ),
+                     saturation (default {}). A run that reaches it prints what it \
+                     established and bounds, never a different answer",
+                    default_budget()
+                )),
         )
         .arg(
             Arg::new("region-limit")
@@ -716,11 +724,11 @@ fn test_command() -> Command {
                 .long("region-budget")
                 .value_name("FACTS")
                 .value_parser(region_budget_spec)
-                .help(
+                .help(format!(
                     "each file's budget, as `ein solve --region-budget`'s (default \
-                     2^19 = 524288). A claim the run could not decide within it \
-                     is NOT CHECKED",
-                ),
+                     {}). A claim the run could not decide within it is NOT CHECKED",
+                    default_budget()
+                )),
         )
         .arg(
             Arg::new("max-time")

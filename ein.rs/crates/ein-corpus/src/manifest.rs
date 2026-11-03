@@ -326,7 +326,7 @@ mod tests {
     }
 
     #[test]
-    fn the_slow_set_is_exactly_these_ten() {
+    fn the_slow_set_is_exactly_these_fourteen() {
         let manifest = corpus();
         let slow: Vec<&str> = manifest
             .entry
@@ -336,18 +336,24 @@ mod tests {
             .collect();
         assert_eq!(
             slow,
-            // Seven joined and `features/04_open` left at M1e2 S1e2.1a.5's
-            // switch, re-taken 2026-10-18: a bare `solve` describes R and runs
-            // to the default `--region-budget` on the zebra family, and no
-            // cell runs the walk that OOMed on `04_open`
-            // (`measurements/corpus_cost.md` § 8).
+            // Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20
+            // facts (`measurements/corpus_cost.md` § 9): the six `square-*`
+            // joined, their `render lattice` counting the states 2^20 reaches,
+            // and `features/02` and `zebra2-hints` left, the state route
+            // describing each in milliseconds. Seven joined and
+            // `features/04_open` left at M1e2 S1e2.1a.5's switch, re-taken
+            // 2026-10-18 (§ 8).
             [
                 "examples/features/01_not_and_absent.ein",
-                "examples/features/02_star_in_identifiers.ein",
                 "examples/lattice/06_friends_tables.ein",
                 "examples/lattice/07_two_pairs_two_tables.ein",
+                "examples/saturation/square-bwd/floors.ein",
+                "examples/saturation/square-bwd/houses.ein",
+                "examples/saturation/square-bwd/meetings.ein",
+                "examples/saturation/square-fwd/floors.ein",
+                "examples/saturation/square-fwd/houses.ein",
+                "examples/saturation/square-fwd/meetings.ein",
                 "examples/zebra.ein",
-                "examples/zebra2-hints.ein",
                 "examples/zebra2-minus-15.ein",
                 "examples/zebra2-minus-15-obligations.ein",
                 "examples/zebra2-obligations.ein",

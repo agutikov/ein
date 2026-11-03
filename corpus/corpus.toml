@@ -58,15 +58,15 @@ levers = ["-L", "-K", "-y"]
 path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 794
-note   = "the lookahead A/B's on side. `solve -e` is 214 ms against its sibling 07's 315 ms, for the same bytes — it was 245 against 916 until M1a T1a.7.2.0 took 07's layer stack apart, which is what stopped 07 being the corpus's slow entry and left this one the most expensive cell that is not slow. Was slow = true until S1a.9.0 measured it."
+cost_ms = 143
+note   = "the lookahead A/B's on side. `solve -e` is 214 ms against its sibling 07's 315 ms, for the same bytes — it was 245 against 916 until M1a T1a.7.2.0 took 07's layer stack apart, which is what stopped 07 being the corpus's slow entry and left this one the most expensive cell that is not slow. Was slow = true until S1a.9.0 measured it. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 143 ms together, the slowest `solve` at 64 ms."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 754
-note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.32 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does. Was slow = true at 2.12 s until M1a T1a.7.2.0 coalesced root's layer stack at the layer barrier: its 162 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, which was 2.8x of this entry."
+cost_ms = 143
+note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.32 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does. Was slow = true at 2.12 s until M1a T1a.7.2.0 coalesced root's layer stack at the layer barrier: its 162 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, which was 2.8x of this entry. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 143 ms together, the slowest `solve` at 64 ms."
 
 [[entry]]
 path   = "examples/branching/08_hypothesis_relation_whitelist.ein"
@@ -155,16 +155,15 @@ path   = "examples/features/01_not_and_absent.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 3459
-note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.67 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row."
+cost_ms = 2267
+note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.67 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 2.27 s together, the slowest `solve` at 1.67 s."
 
 [[entry]]
 path   = "examples/features/02_star_in_identifiers.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-cost_ms = 1280
-note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question. Slow since M1e2 S1e2.1a.5's switch, at 1.28 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 1.27 s."
+cost_ms = 98
+note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question. Slow since M1e2 S1e2.1a.5's switch, at 1.28 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 1.27 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 98 ms together, the slowest `render lattice` at 84 ms; `slow` removed, since the state route describes it in milliseconds."
 
 [[entry]]
 path   = "examples/features/03_forall.ein"
@@ -267,8 +266,8 @@ path   = "examples/lattice/06_friends_tables.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice"]
 slow   = true
-cost_ms = 5048
-note   = "the user's seating example of 2026-10-16: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. Not monotone by construction (an obligation trigger): R is 21 isolated nodes with 166 holes, and the walk recorded 8 of them. 19 candidates: the `solve` cell records route 2 stopping at --region-limit 16 with all 21 found, and since M1e2 S1e2.1a.5 there is no oracle cell, because `ein oracle` refuses the 2^19 cube at its default limit (exit 2) — the walk's `--dump-region` cell recorded the same refusal as a note. Slow since M1e2 S1e2.1a.5's switch, at 5.05 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 2.57 s."
+cost_ms = 5198
+note   = "the user's seating example of 2026-10-16: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. Not monotone by construction (an obligation trigger): R is 21 isolated nodes with 166 holes, and the walk recorded 8 of them. 19 candidates: the `solve` cell records route 2 stopping at --region-limit 16 with all 21 found, and since M1e2 S1e2.1a.5 there is no oracle cell, because `ein oracle` refuses the 2^19 cube at its default limit (exit 2) — the walk's `--dump-region` cell recorded the same refusal as a note. Slow since M1e2 S1e2.1a.5's switch, at 5.05 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 2.57 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 5.20 s together, the slowest `render lattice` at 2.69 s."
 
 [[entry]]
 path   = "examples/lattice/06_friends_tables_everyone_sits.ein"
@@ -281,8 +280,8 @@ path   = "examples/lattice/07_two_pairs_two_tables.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 slow   = true
-cost_ms = 3890
-note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 components — in 2 projection classes by table (M1e2 P1e2.1a, 2026-10-16). Slow because its question is the region, and n = 16 is 2^16 saturations: the --dump-region cell is 3.87 s of the 3.89 (utils/corpus_cost.py, 2026-10-16). The run stays — it is the one that asks the question."
+cost_ms = 3905
+note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 components — in 2 projection classes by table (M1e2 P1e2.1a, 2026-10-16). Slow because its question is the region, and n = 16 is 2^16 saturations: the --dump-region cell is 3.87 s of the 3.89 (utils/corpus_cost.py, 2026-10-16). The run stays — it is the one that asks the question. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 3.90 s together, the slowest `oracle --dump {out}/region` at 3.87 s."
 
 [[entry]]
 path   = "examples/lattice/08_absent_witness_hole.ein"
@@ -384,37 +383,49 @@ runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constr
 path   = "examples/saturation/square-bwd/floors.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
+slow   = true
+cost_ms = 1595
+note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 1.59 s together, the slowest `render lattice` at 1.58 s; `slow` added: its `render lattice` describes at the default, where the state route counts the states 2^20 reaches."
 
 [[entry]]
 path   = "examples/saturation/square-bwd/houses.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
+slow   = true
+cost_ms = 1584
+note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 1.58 s together, the slowest `render lattice` at 1.57 s; `slow` added: its `render lattice` describes at the default, where the state route counts the states 2^20 reaches."
 
 [[entry]]
 path   = "examples/saturation/square-bwd/meetings.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
+slow   = true
+cost_ms = 1643
+note   = "no solve, solve -e: a per-rule demo of `square-bwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 1.64 s together, the slowest `render lattice` at 1.63 s; `slow` added: its `render lattice` describes at the default, where the state route counts the states 2^20 reaches."
 
 [[entry]]
 path   = "examples/saturation/square-fwd/floors.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
+slow   = true
+cost_ms = 1631
+note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 1.63 s together, the slowest `render lattice` at 1.62 s; `slow` added: its `render lattice` describes at the default, where the state route counts the states 2^20 reaches."
 
 [[entry]]
 path   = "examples/saturation/square-fwd/houses.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
+slow   = true
+cost_ms = 1587
+note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 1.59 s together, the slowest `render lattice` at 1.57 s; `slow` added: its `render lattice` describes at the default, where the state route counts the states 2^20 reaches."
 
 [[entry]]
 path   = "examples/saturation/square-fwd/meetings.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms."
+slow   = true
+cost_ms = 1663
+note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturation/README.md) — one rule, one firing, no hypothesis structure. Both runs walked the blind enumerator to the -m cap for 315 ms and a Contradiction (Q-M1d.6); `saturate` answers the demo in 3.5 ms. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 1.66 s together, the slowest `render lattice` at 1.65 s; `slow` added: its `render lattice` describes at the default, where the state route counts the states 2^20 reaches."
 
 [[entry]]
 path   = "examples/saturation/square-unique/corner-house.ein"
@@ -484,32 +495,31 @@ path   = "examples/zebra.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
-cost_ms = 3624
-note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding. Slow since M1e2 S1e2.1a.5's switch, at 3.62 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 1.82 s."
+cost_ms = 2074
+note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding. Slow since M1e2 S1e2.1a.5's switch, at 3.62 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 1.82 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 2.07 s together, the slowest `render lattice` at 1.02 s."
 
 [[entry]]
 path   = "examples/zebra2-hints.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-cost_ms = 5561
-note   = "Slow since M1e2 S1e2.1a.5's switch, at 5.56 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 2.77 s."
+cost_ms = 268
+note   = "Slow since M1e2 S1e2.1a.5's switch, at 5.56 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 2.77 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 268 ms together, the slowest `render lattice` at 114 ms; `slow` removed, since the state route describes it in milliseconds."
 
 [[entry]]
 path   = "examples/zebra2-minus-15.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
 slow   = true
-cost_ms = 4846
-note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, and M1d P1d.10 measured what proving that costs. All 32 are found by depth 3 (48 745 enterings, 25 s); the lattice does not end until **layer 22 and 17 204 592 enterings** — 24 min 56 s at -j16, `exhausted = true`, and not one further model. no solve -e: the -m 5 cut alone is 618 076 enterings, 416 s at --jobs 1 and 50 s at -j16, against a `slow` threshold of 1 s — so the exclusion is kept for a measured reason rather than for the 30-minute kill this note used to cite, which was a 2026-08-20 session and not this engine (M1d T1d.10.5.4). `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. **M1d did not lift these; it priced them.** What would lift them is a cheaper argument for the same claim, and P1d.10 has one measured out of process at 171 nodes — S1d.10.6's to ship, not a run list's to assume. Slow since M1e2 S1e2.1a.5's switch, at 4.85 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 4.82 s."
+cost_ms = 7862
+note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, and M1d P1d.10 measured what proving that costs. All 32 are found by depth 3 (48 745 enterings, 25 s); the lattice does not end until **layer 22 and 17 204 592 enterings** — 24 min 56 s at -j16, `exhausted = true`, and not one further model. no solve -e: the -m 5 cut alone is 618 076 enterings, 416 s at --jobs 1 and 50 s at -j16, against a `slow` threshold of 1 s — so the exclusion is kept for a measured reason rather than for the 30-minute kill this note used to cite, which was a 2026-08-20 session and not this engine (M1d T1d.10.5.4). `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. **M1d did not lift these; it priced them.** What would lift them is a cheaper argument for the same claim, and P1d.10 has one measured out of process at 171 nodes — S1d.10.6's to ship, not a run list's to assume. Slow since M1e2 S1e2.1a.5's switch, at 4.85 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 4.82 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 7.86 s together, the slowest `solve` at 7.83 s."
 
 [[entry]]
 path   = "examples/zebra2-minus-15-obligations.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
 slow   = true
-cost_ms = 4847
-note   = "M1d S1d.2.5 — the under-determined regime with no hypothesis rule: `zebra2-minus-15.ein` with the `(hrule guess …)` and the `:hrules` clause deleted, generated by the same script that makes the other three variants so that \"nothing else changed\" is checked rather than claimed. Its twin's run list, verbatim, and for the same reasons, now priced there (M1d T1d.10.5.4) — no `solve -e` (618 076 enterings at -m 5 and 17 204 592 before the lattice ends at layer 22, for the same 32 models depth 3 already had), no `render lattice`. What it banks is that the obligations rung finds **the same 32 models in the same 48 745 enterings** as the hrule path at `-m 3`, which is the milestone's completeness claim on the one corpus entry where the model set is large enough to be worth comparing. Slow since M1e2 S1e2.1a.5's switch, at 4.85 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 4.82 s."
+cost_ms = 7874
+note   = "M1d S1d.2.5 — the under-determined regime with no hypothesis rule: `zebra2-minus-15.ein` with the `(hrule guess …)` and the `:hrules` clause deleted, generated by the same script that makes the other three variants so that \"nothing else changed\" is checked rather than claimed. Its twin's run list, verbatim, and for the same reasons, now priced there (M1d T1d.10.5.4) — no `solve -e` (618 076 enterings at -m 5 and 17 204 592 before the lattice ends at layer 22, for the same 32 models depth 3 already had), no `render lattice`. What it banks is that the obligations rung finds **the same 32 models in the same 48 745 enterings** as the hrule path at `-m 3`, which is the milestone's completeness claim on the one corpus entry where the model set is large enough to be worth comparing. Slow since M1e2 S1e2.1a.5's switch, at 4.85 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 4.82 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 7.87 s together, the slowest `solve` at 7.84 s."
 
 [[entry]]
 path   = "examples/zebra2-obligations.ein"
@@ -517,8 +527,8 @@ group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
 levers = ["-L", "-K", "-y"]
 slow   = true
-cost_ms = 39241
-note   = "M1d S1d.2.5 — the fixture the obligations rung needed, because every searching entry before it carried `:hrules`. `zebra2.ein` with the hypothesis rule and its activator clause deleted and nothing else: the five `(bijective *-loc)` declarations fan out into `total-owed` / `surjective-owed`, and the rung branches on what they owe. Layer 1 is **56 candidates against the blind enumerator's 3 734**, and the whole search is the hrule path's, entering for entering — 101 enterings, 2 layers, one model, the same one. Its run list is `zebra2.ein`'s so the two are comparable cell by cell. Slow since M1e2 S1e2.1a.5's switch, at 39.24 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve -n 3` at 5.43 s."
+cost_ms = 18495
+note   = "M1d S1d.2.5 — the fixture the obligations rung needed, because every searching entry before it carried `:hrules`. `zebra2.ein` with the hypothesis rule and its activator clause deleted and nothing else: the five `(bijective *-loc)` declarations fan out into `total-owed` / `surjective-owed`, and the rung branches on what they owe. Layer 1 is **56 candidates against the blind enumerator's 3 734**, and the whole search is the hrule path's, entering for entering — 101 enterings, 2 layers, one model, the same one. Its run list is `zebra2.ein`'s so the two are comparable cell by cell. Slow since M1e2 S1e2.1a.5's switch, at 39.24 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve -n 3` at 5.43 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 18.50 s together, the slowest `solve -n 3` at 9.42 s."
 
 [[entry]]
 path   = "examples/zebra2.ein"
@@ -526,8 +536,8 @@ group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice", "solve --region-budget 1"]
 levers = ["-L", "-K", "-y"]
 slow   = true
-cost_ms = 38095
-note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0. **`solve -E 1` is the corpus's only budgeted run** and is here for M1e S1e.3.6 T4 (`TE-M4`): it exits **2**, the same code a usage error takes, and `no_cell_crashes` used to read that code as *the manifest names an argv the CLI refuses*. The cell is what makes the distinction exercised rather than merely written down. Slow since M1e2 S1e2.1a.5's switch, at 38.09 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve -n 3` at 5.07 s."
+cost_ms = 18588
+note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0. **`solve -E 1` is the corpus's only budgeted run** and is here for M1e S1e.3.6 T4 (`TE-M4`): it exits **2**, the same code a usage error takes, and `no_cell_crashes` used to read that code as *the manifest names an argv the CLI refuses*. The cell is what makes the distinction exercised rather than merely written down. Slow since M1e2 S1e2.1a.5's switch, at 38.09 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve -n 3` at 5.07 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 18.59 s together, the slowest `solve -n 3` at 9.44 s."
 
 
 # ── regression: examples/ein-bugs/ ──────────────────────────

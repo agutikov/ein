@@ -324,11 +324,18 @@ constrained-reasoning research.
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   ([corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md) is the
-  measurement, `utils/corpus_cost.py` re-takes it). **Ten** entries are slow
-  since M1e2 S1e2.1a.5's switch (re-taken 2026-10-18): a bare describe runs to
-  the default `--region-budget` on the zebra family, 3.6–5 s a cell, so
-  `zebra2` and `zebra2-obligations` cost 38–39 s apiece, and `features/04_open`
-  stopped being slow because no cell runs the walk. It was three before, and
+  measurement, `utils/corpus_cost.py` re-takes it). **Fourteen** entries are
+  slow since M1e2 S1e2.1c.2 (re-taken 2026-11-03, `utils/bench_env.sh --cores
+  PT python3 utils/corpus_cost.py`). Describe takes the state route since
+  that stage, and the default `--region-budget` is 2²⁰ facts, which the user
+  ruled after 2²⁴ ran the gate's sweeps out of memory. The six `square-*` cubes
+  joined, their `render lattice` counting states to the budget (1.6 s each).
+  `features/02` and `zebra2-hints` left, which the state route describes in
+  milliseconds. `zebra2` and `zebra2-obligations` dropped to 18.6 s apiece,
+  9.4 s of it `solve -n 3`, which is still route 1 with a cut, and the
+  `zebra2-minus-15` pair rose to 7.9 s. It was ten at M1e2 S1e2.1a.5's
+  switch (2026-10-18), when `features/04_open` stopped being slow because no
+  cell runs the walk, three before that, and
   seventeen before M1a T1a.7.2.0 made `branching/07_lookahead_off` 2.8×
   cheaper and the re-take took its flag off — the mechanism working both ways
   ([corpus_cost.md
@@ -542,7 +549,7 @@ constrained-reasoning research.
 ./run_tests.sh                                               # the whole per-commit tier
 ./run_tests.sh --tests-only                                  # skip the static checks
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 10 slow entries
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 14 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens

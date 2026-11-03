@@ -1285,7 +1285,8 @@ them. **Describe** stops at the default budget, partial, and R is still
 decided: ∅ is in R, and one saturation of ⊤ finds it alive and owing nothing,
 so R is the whole cube (L1, L2). k_c, both lines, the one component, the one
 sub-cube and N are exact. What is not is the states: 27 559 of them, and the
-state route counts those of up to six candidates before its budget. The two
+state route counts those of up to eight candidates before the default budget of
+2²⁰ facts (ruled 2026-11-03; at 2²¹ it counts them all). The two
 line states are what it lists. The other members it met go to
 `--dump-answer`, not to the screen, and the query's one class is printed
 without `as :expect`, since it is a lower bound.
@@ -1296,9 +1297,9 @@ without `as :expect`, since it is a lower bound.
 solve · examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
-  states (k_s)      17 449   (a lower bound: complete up to states of 6 candidates)
+  states (k_s)      23 390   (a lower bound: complete up to states of 8 candidates)
   commitments (k_c) 1 048 576
-  exhausted         no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube (L1, L2), and only its states are not all counted. The state route stopped before the states of 7 candidates: their 21 752 extensions project 195 768 facts on top of the 426 484 spent, past --region-budget 524288
+  exhausted         no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube (L1, L2), and only its states are not all counted. The state route stopped before the states of 9 candidates: their 16 853 extensions project 185 383 facts on top of the 994 197 spent, past --region-budget 1048576
   ∅                 in R — root is alive and owes nothing
   minimal line      1 state — ∅, the trivial line: no obligation is stated
   maximal line      1 state — ⊤, every candidate: no node is dead, the trivial line, certified by one saturation
@@ -1309,7 +1310,7 @@ solve · examples/saturation/square-bwd/floors.ein
   lattice           monotone (the static check) — R is convex: no hole
   universe          20 candidates, 0 dead alone
   route             the state route, every alive state once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              42 711 saturations · 426 508 facts beyond root · 8 layers
+  work              85 574 saturations · 994 221 facts beyond root · 10 layers
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
   ;; state 1 of 2 — ∅, root itself · minimal
@@ -1330,15 +1331,15 @@ solve · examples/saturation/square-bwd/floors.ein
          (co-located Floor4 Floor4) (co-located Floor4 Floor5)
          (co-located Floor5 Floor1) (co-located Floor5 Floor2)
          (co-located Floor5 Floor4) (co-located Floor5 Floor5))
-  ;; 17 447 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
+  ;; 23 388 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
 
   query             (co-located Floor2 Floor5)
-  over              all of R — 17 449 states → 1 projection class  (a lower bound)
-    class 1 of 1    17 449 states
+  over              all of R — 23 390 states → 1 projection class  (a lower bound)
+    class 1 of 1    23 390 states
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: note: examples/saturation/square-bwd/floors.ein: partial — the state route stopped before the states of 7 candidates at --region-budget 524288
+stderr: note: examples/saturation/square-bwd/floors.ein: partial — the state route stopped before the states of 9 candidates at --region-budget 1048576
 
 exit 0
 ```

@@ -56,10 +56,14 @@ use crate::monotone::Monotonicity;
 use crate::region::{Axes, Candidate, Cost, DEAD, OWING, Prepared, fan_out, pool_of, prepare};
 use crate::solve::SolveError;
 
-/// Facts beyond root past which the route declines: `2¹⁹`, ruled 2026-10-16
-/// on T1e2.1a.9.1's measurement (`route1_reach.md` § 4) — the smallest budget
-/// that loses nothing the corpus has below the zebra family.
-pub const DEFAULT_BUDGET: u64 = 1 << 19;
+/// Facts beyond root past which a run stops, in every mode: `2²⁰`, ruled
+/// 2026-11-03 (S1e2.1c.2's T1e2.1c.2.6). The user first ruled `2²⁴`, which a
+/// bare describe needs to reach every monotone corpus program by the state
+/// route; at that value the gate's sweeps ran out of memory, and they ruled the
+/// smaller raise. `2²⁰` certifies `zebra.ein`'s `--single`, `--maximal` and
+/// `--minimal` (`alive_set_reach.md` § 9.6). It was `2¹⁹`, ruled 2026-10-16 on
+/// T1e2.1a.9.1's measurement (`route1_reach.md` § 4).
+pub const DEFAULT_BUDGET: u64 = 1 << 20;
 
 /// Nodes per fan-out, as the oracle's.
 const BATCH: usize = 1024;

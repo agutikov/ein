@@ -562,7 +562,11 @@ that stage is P1e2.2's re-scoping.
   lever is retired: `-o`, `-z`, `-d`, and the five order fields. The
   alternative was a witness that changes with a lever, which the config
   principle reads as a lever changing what is printed.
-- **One budget, in facts, for every mode**, default 2¹⁹. A mode the user asked
+- **One budget, in facts, for every mode**, default 2¹⁹. *Its value is
+  superseded 2026-11-03*: the user ruled the default **2²⁰ facts (1 048 576)**
+  at [S1e2.1c.2's T1e2.1c.2.6](../p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md#task-t1e21c26--the-budget-question).
+  They ruled 2²⁴ first, and took the smaller raise when the gate's sweeps ran
+  out of memory at it. One budget for every mode stands. A mode the user asked
   for explicitly still stops at it. Otherwise `--single` on a flagged program
   with n = 40 would ask for 2⁴⁰ saturations without saying so.
 - **`-m`, `-E`, `-e`, `-D` and `--dump-region` are usage errors that name the
