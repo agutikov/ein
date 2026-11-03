@@ -18,8 +18,9 @@ The user added S1e2.3.5 and S1e2.3.6 on 2026-11-03, and **S1e2.3.5 is done**
 fails on anything they leave. The user ruled on 2026-11-03 for
 [N1–N4](#candidates-found-on-the-way) in S1e2.3.7, and **S1e2.3.7 is done**
 (2026-11-03): the four lines say what they print, each held by a test, and no
-exit code moved. **The phase stays open** for S1e2.3.6, last, which has not
-started. The survey of 2026-10-14 named
+exit code moved. **The phase stays open** for S1e2.3.6, last, which started
+2026-11-03: every nightly step was run at `0d40f3a3`, and one fails, the
+mutation bank's eight kills. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
 they *become a phase*, after P1e2.1c, *specified when it starts*
