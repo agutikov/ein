@@ -477,6 +477,42 @@ fn every_mode_is_the_oracle() {
             if a.route == explore::Route::DownSet && !monotone {
                 failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
             }
+            // Each mode's route (S1e2.1c.4): a flagged program keeps the cube
+            // and its warning; a monotone one whose root is alive takes the
+            // state route for describe and the modes' routes over states
+            // otherwise, naming L5 exactly when the obligation tree used it.
+            let describe = mode
+                == Mode {
+                    which: Which::All,
+                    ask: Ask::Describe,
+                };
+            let route_ok = if !monotone {
+                a.route == explore::Route::Cube && a.warning.is_some()
+            } else if describe {
+                a.route == explore::Route::States
+            } else if a.root_dead {
+                a.route == explore::Route::DownSet
+            } else {
+                matches!(a.route, explore::Route::States | explore::Route::Tree)
+            };
+            if !route_ok {
+                failures.push(format!(
+                    "{rel} {mode:?}: route {:?} (warning {}) on a {} program",
+                    a.route,
+                    a.warning.is_some(),
+                    if monotone { "monotone" } else { "flagged" }
+                ));
+            }
+            let l5 = a.licences.contains(&explore::Licence::Exhaustive);
+            if l5 != (a.route == explore::Route::Tree) {
+                failures.push(format!(
+                    "{rel} {mode:?}: route {:?} with licences {:?}",
+                    a.route, a.licences
+                ));
+            }
+            *counted
+                .entry(if l5 { "tree" } else { "other" })
+                .or_default() += 1;
             failures.extend(against(&rel, &r, &a, false));
             // C3: a budget that stops many runs on the way. The cube is
             // bounded by the limit and not by the budget, so a flagged
@@ -499,6 +535,13 @@ fn every_mode_is_the_oracle() {
             && counted.get("flagged").copied().unwrap_or(0) >= 10,
         "{counted:?}"
     );
+    // L5 is used, not only licensed: the obligation tree answered real cells,
+    // 168 of them on 2026-11-03.
+    assert!(
+        counted.get("tree").copied().unwrap_or(0) >= 100,
+        "{counted:?}"
+    );
+    eprintln!("{counted:?}");
 }
 
 /// **C4**: one job and four give the same answer, the same work and the same

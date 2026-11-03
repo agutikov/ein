@@ -30,15 +30,18 @@
 //!
 //! **Describe** on a monotone program takes **the state route**
 //! ([`crate::states`], M1e2 S1e2.1c.2): every alive state once, its one-up
-//! extensions saturated, `R` read off the states. Every other question on a
-//! monotone program takes **route 1**, the alive down-set
-//! ([`crate::downset`]), with a cut per mode on what it expands and when it
-//! stops, plus the **climb**: from a node of `R`, add the lowest-index
-//! candidate whose extension is alive, until none is. A flagged program takes
+//! extensions saturated, `R` read off the states. **Every other question on a
+//! monotone program** takes the least of the same lattice of states it needs
+//! (`crate::tree`, M1e2 S1e2.1c.4): the **obligation tree**, where an owing
+//! state branches on one owed instance's alternatives (L5), for `-n`,
+//! `--single` and a first state of either line; a **climb** and **dualise
+//! and advance** for the maximal line; a **shrink** and the duality against
+//! the maximal owing states for the minimal line. Until S1e2.1c.4 they took
+//! route 1 ([`crate::downset`]) with a cut per mode. A flagged program takes
 //! **route 2**, the cube: in layer order where the question can be decided
 //! early (`-n`, `--single`, over all of `R` or the minimal line), and whole
-//! ([`crate::region`]) where it cannot. A flagged program whose root is dead
-//! is decided by route 1 in one saturation (L0).
+//! ([`crate::region`]) where it cannot. A program whose root is dead is
+//! decided by route 1 in one saturation (L0, L1).
 //!
 //! ### Describe's route — a decision taken without a ruling
 //!
@@ -68,7 +71,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::compile::SharedMemo;
 use crate::described::{self, Described};
 use crate::detector::{self, StaleCheck, StaleNode, Status, Warning};
-use crate::downset::{self, Declined, is_subset, join};
+use crate::downset::{self, Declined, is_subset};
 use crate::events::Events;
 use crate::monotone::Monotonicity;
 use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, fan_out, pool_of};
@@ -141,9 +144,15 @@ pub enum Route {
     DownSet,
     /// Route 2: the cube, in layer order or whole.
     Cube,
-    /// The state route: a monotone program's alive states, each once, and
-    /// `R` read off them ([`crate::states`]). Describe only, since S1e2.1c.2.
+    /// The state route: a monotone program's alive states, each at most once,
+    /// and `R` read off them ([`crate::states`]) — describe's since
+    /// S1e2.1c.2, and the modes' over states (`crate::tree`) since
+    /// S1e2.1c.4 where no owed instance's alternatives were branched on.
     States,
+    /// The obligation tree (`crate::tree`, M1e2 S1e2.1c.4): the modes' route
+    /// over states on a monotone program, where an owing state branched on one
+    /// owed instance's alternatives (L5).
+    Tree,
 }
 
 /// A theorem a mode used to skip work —
@@ -167,6 +176,11 @@ pub enum Licence {
     Closure,
     /// L4: a node of `R` is maximal when every one-up extension is dead.
     LocalLines,
+    /// L5: an owed instance's alternatives are exhaustive — an owing state
+    /// branches on one owed instance's alternatives, and one whose every
+    /// alternative is dead has no member of `R` above it
+    /// (`crate::tree`, M1e2 S1e2.1c.4).
+    Exhaustive,
     /// L7: every node of the cube, nothing skipped.
     TheCube,
 }
@@ -179,6 +193,7 @@ impl Licence {
             Licence::DischargedUpward => "L2 discharged is upward-closed",
             Licence::Closure => "L3 a commitment's state is its closure's",
             Licence::LocalLines => "L4 the lines are local",
+            Licence::Exhaustive => "L5 an owed instance's alternatives are exhaustive",
             Licence::TheCube => "L7 the cube",
         }
     }
@@ -357,14 +372,14 @@ pub fn run_with(
                 describe_route_1(root, terms, ast, prepared, t0, opts, events)?
             }
         } else {
+            // The modes' routes over states (`crate::tree`, S1e2.1c.4); a dead
+            // root is the whole answer, in one saturation (L0, L1).
             let mut sp = Space::open(root, terms, ast, prepared, opts, events);
-            let out = match (opts.mode.which, opts.mode.ask) {
-                (Which::All, Ask::Find(n)) => sp.find_all(n),
-                (Which::All, Ask::Single) => sp.single_all(),
-                (Which::Minimal, ask) => sp.minimal(ask),
-                (Which::Maximal, ask) => sp.maximal(ask),
-                (Which::All, Ask::Describe) => unreachable!("route 1 above"),
-            }?;
+            let out = if sp.root_dead {
+                sp.dead_root(opts.mode)?
+            } else {
+                crate::tree::answer(&mut sp, opts.mode)?
+            };
             sp.answer(opts.mode, Route::DownSet, out)
         }
     } else {
@@ -388,35 +403,40 @@ pub fn run_with(
 
 /// What one commitment is, as the explorations remember it.
 #[derive(Clone, Debug)]
-struct Seen {
-    dead: bool,
-    owes: u32,
+pub(crate) struct Seen {
+    pub(crate) dead: bool,
+    pub(crate) owes: u32,
     /// Its state, numbered in the order states were first met.
-    class: u32,
-    closure: Box<[u32]>,
+    pub(crate) class: u32,
+    pub(crate) closure: Box<[u32]>,
+    /// The instances of L5's table it owes ([`crate::region::NodeOut::owed`]),
+    /// when the run carries one.
+    pub(crate) owed: Box<[u32]>,
 }
 
 impl Seen {
-    fn in_r(&self) -> bool {
+    pub(crate) fn in_r(&self) -> bool {
         !self.dead && self.owes == 0
     }
 }
 
 /// What a mode found, before it is wrapped into an [`Answer`].
 #[derive(Default)]
-struct Found {
-    states: Vec<State>,
-    minimal: Vec<(Box<[u32]>, usize)>,
-    exhausted: bool,
-    verdict: Option<Verdict>,
-    stopped: Option<Stopped>,
-    licences: Vec<Licence>,
+pub(crate) struct Found {
+    pub(crate) states: Vec<State>,
+    pub(crate) minimal: Vec<(Box<[u32]>, usize)>,
+    pub(crate) exhausted: bool,
+    pub(crate) verdict: Option<Verdict>,
+    pub(crate) stopped: Option<Stopped>,
+    pub(crate) licences: Vec<Licence>,
     /// Commitments of `R` met — `k_c`'s lower bound, where a run reports one.
-    members: u64,
+    pub(crate) members: u64,
+    /// The route that answered, when it is not the one the caller names.
+    pub(crate) route: Option<Route>,
 }
 
 /// The prepared program, the node function, and the work done.
-struct Space<'a> {
+pub(crate) struct Space<'a> {
     root: &'a Kb,
     snapshot: Snapshot,
     terms: &'a mut Terms,
@@ -447,7 +467,7 @@ struct Space<'a> {
 }
 
 /// `Ok(Err(stop))`: the step was not taken.
-type Step<T> = Result<Result<T, Stopped>, SolveError>;
+pub(crate) type Step<T> = Result<Result<T, Stopped>, SolveError>;
 
 impl<'a> Space<'a> {
     fn open(
@@ -501,11 +521,12 @@ impl<'a> Space<'a> {
         }
     }
 
-    fn n(&self) -> usize {
+    pub(crate) fn n(&self) -> usize {
         self.facts.len()
     }
 
     fn answer(self, mode: Mode, route: Route, found: Found) -> Answer {
+        let route = found.route.unwrap_or(route);
         let (n, nodes, stale) = (self.n(), self.saturations, self.stale);
         let warning = (!self.monotonicity.is_monotone()).then(|| {
             Box::new(Warning {
@@ -559,7 +580,7 @@ impl<'a> Space<'a> {
 
     /// The nodes of `sets`, in order — each computed once per run, every
     /// later ask answered from memory. One step: afforded first.
-    fn eval(&mut self, sets: &[Box<[u32]>]) -> Step<Vec<Seen>> {
+    pub(crate) fn eval(&mut self, sets: &[Box<[u32]>]) -> Step<Vec<Seen>> {
         let mut fresh: Vec<&Box<[u32]>> = Vec::new();
         let mut uniq: FxHashSet<&[u32]> = FxHashSet::default();
         for s in sets {
@@ -638,6 +659,7 @@ impl<'a> Space<'a> {
                     owes: o.owes,
                     class,
                     closure: o.closure.into_boxed_slice(),
+                    owed: o.owed.into_boxed_slice(),
                 },
             );
         }
@@ -700,309 +722,58 @@ impl<'a> Space<'a> {
         detector::status_of(&cube, &sites, &root_plans, &mut reader, self.ast).map(Some)
     }
 
-    /// The layer after `layer`, from its alive (or kept) sets: the
-    /// singletons after root, the prefix join after that.
-    fn next_layer(&self, layer: usize, kept: &[Box<[u32]>]) -> Vec<Box<[u32]>> {
-        if kept.is_empty() {
-            Vec::new()
-        } else if layer == 0 {
-            (0..self.n() as u32).map(|b| Box::from([b])).collect()
-        } else {
-            join(kept)
-        }
-    }
-
-    /// Climb from `start`, a node of `R`: add the lowest-index candidate
-    /// whose extension is alive, until none is. Every extension of a node of
-    /// `R` that is alive is in `R` (L2), and a candidate whose extension died
-    /// below stays dead above (L1), so one ascending pass ends at a node of
-    /// `R` whose every one-up extension is dead — maximal, by L4.
-    fn climb(&mut self, start: &[u32]) -> Step<Box<[u32]>> {
-        let mut top: Vec<u32> = start.to_vec();
-        for b in 0..self.n() as u32 {
-            if top.binary_search(&b).is_ok() {
-                continue;
-            }
-            let mut up = top.clone();
-            let at = up.partition_point(|&x| x < b);
-            up.insert(at, b);
-            let seen = match self.eval(&[up.into_boxed_slice()])? {
-                Ok(v) => v.into_iter().next().expect("one"),
-                Err(stop) => return Ok(Err(stop)),
-            };
-            if !seen.dead {
-                top = seen.closure.to_vec();
-            }
-        }
-        Ok(Ok(top.into_boxed_slice()))
-    }
-
-    /// `-n N` over all of `R`: layer order from `∅`, expanding every alive
-    /// node, stopping at the `N`-th state of `R`.
-    fn find_all(&mut self, want: u64) -> Result<Found, SolveError> {
-        let mut f = Found {
-            licences: vec![Licence::DeadUpward],
-            ..Found::default()
-        };
-        let mut classes: FxHashSet<u32> = FxHashSet::default();
-        let mut frontier: Vec<Box<[u32]>> = vec![Box::default()];
-        let mut layer = 0;
-        while !frontier.is_empty() {
-            let mut alive = Vec::new();
-            for chunk in doubling(&frontier) {
-                let outs = match self.eval(chunk)? {
-                    Ok(v) => v,
-                    Err(stop) => {
-                        f.stopped = Some(stop);
-                        return Ok(f);
-                    }
-                };
-                for (set, o) in chunk.iter().zip(outs) {
-                    if o.dead {
-                        continue;
-                    }
-                    alive.push(set.clone());
-                    if o.in_r() && classes.insert(o.class) {
-                        f.states.push(State {
-                            set: set.clone(),
-                            closure: o.closure.clone(),
-                        });
-                        if f.states.len() as u64 >= want {
-                            return Ok(f);
-                        }
-                    }
-                }
-            }
-            frontier = self.next_layer(layer, &alive);
-            layer += 1;
-        }
-        f.exhausted = true;
-        Ok(f)
-    }
-
-    /// The minimal line: layer order from `∅`, expanding **owing** nodes
-    /// only. A node is generated only when every one-smaller subset owes, so
-    /// every node of `R` it meets is minimal (L2), and every minimal one is
-    /// met. `-n N` stops at its `N`-th state, `--single` at the second.
-    fn minimal(&mut self, ask: Ask) -> Result<Found, SolveError> {
-        let mut f = Found {
-            licences: vec![Licence::DeadUpward, Licence::DischargedUpward],
-            ..Found::default()
-        };
-        let mut index: FxHashMap<u32, usize> = FxHashMap::default();
-        let mut any_alive = false;
-        let mut frontier: Vec<Box<[u32]>> = vec![Box::default()];
-        let mut layer = 0;
-        while !frontier.is_empty() {
-            let mut owing = Vec::new();
-            for chunk in doubling(&frontier) {
-                let outs = match self.eval(chunk)? {
-                    Ok(v) => v,
-                    Err(stop) => {
-                        f.stopped = Some(stop);
-                        return Ok(f);
-                    }
-                };
-                for (set, o) in chunk.iter().zip(outs) {
-                    if o.dead {
-                        continue;
-                    }
-                    any_alive = true;
-                    if o.owes > 0 {
-                        owing.push(set.clone());
-                        continue;
-                    }
-                    let next = f.states.len();
-                    let at = *index.entry(o.class).or_insert(next);
-                    if at == next {
-                        f.states.push(State {
-                            set: set.clone(),
-                            closure: o.closure.clone(),
-                        });
-                    }
-                    f.minimal.push((set.clone(), at));
-                    match ask {
-                        Ask::Find(want) if f.states.len() as u64 >= want => return Ok(f),
-                        Ask::Single if f.states.len() >= 2 => {
-                            f.verdict = Some(Verdict::Ambiguity);
-                            f.states.truncate(2);
-                            return Ok(f);
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            frontier = self.next_layer(layer, &owing);
-            layer += 1;
-        }
-        f.exhausted = true;
-        if ask == Ask::Single {
-            f.verdict = Some(match (f.states.len(), any_alive) {
-                (1, _) => Verdict::Solution,
-                (_, true) => Verdict::Open,
-                (_, false) => Verdict::Contradiction,
-            });
-        }
-        Ok(f)
-    }
-
-    /// `--single` over all of `R`: is `k_s = 1`?
-    ///
-    /// - **∅ ∈ R**: every alive node is in `R` (L2), so `k_s = 1` exactly
-    ///   when no candidate outside root's closure is alive alone — at most
-    ///   `n` saturations, stopping at the first that is.
-    /// - **∅ ∉ R**: the minimal line, stopping when two of its nodes reach
-    ///   different states; then the one state `s` must be maximal, since an
-    ///   alive extension of it would be a second state of `R` (L2, L4).
-    fn single_all(&mut self) -> Result<Found, SolveError> {
-        let root = match self.eval(&[Box::default()])? {
-            Ok(v) => v.into_iter().next().expect("one"),
-            Err(stop) => {
-                return Ok(Found {
-                    stopped: Some(stop),
-                    ..Found::default()
-                });
-            }
-        };
-        if root.dead {
+    /// A dead root decides every mode in one saturation: no node is alive
+    /// (L1, and on a flagged program L0), so every part of `R` is empty.
+    fn dead_root(&mut self, mode: Mode) -> Result<Found, SolveError> {
+        if let Err(stop) = self.eval(&[Box::default()])? {
             return Ok(Found {
-                licences: vec![Licence::DeadUpward],
-                exhausted: true,
-                verdict: Some(Verdict::Contradiction),
+                stopped: Some(stop),
                 ..Found::default()
             });
         }
-        let (mut f, s) = if root.in_r() {
-            let f = Found {
-                licences: vec![Licence::DeadUpward, Licence::DischargedUpward],
-                states: vec![State {
-                    set: Box::default(),
-                    closure: root.closure.clone(),
-                }],
-                ..Found::default()
-            };
-            (f, root.closure.clone())
-        } else {
-            let mut f = self.minimal(Ask::Single)?;
-            f.licences.push(Licence::LocalLines);
-            if f.stopped.is_some() || f.verdict != Some(Verdict::Solution) {
-                return Ok(f);
-            }
-            f.verdict = None;
-            f.exhausted = false;
-            f.minimal.clear();
-            let s = f.states[0].closure.clone();
-            (f, s)
-        };
-        // Every one-up extension of `s`'s closure: one alive is a second state.
-        let ups: Vec<Box<[u32]>> = (0..self.n() as u32)
-            .filter(|b| s.binary_search(b).is_err())
-            .map(|b| {
-                let mut up = s.to_vec();
-                let at = up.partition_point(|&x| x < b);
-                up.insert(at, b);
-                up.into_boxed_slice()
-            })
-            .collect();
-        for chunk in doubling(&ups) {
-            let outs = match self.eval(chunk)? {
-                Ok(v) => v,
-                Err(stop) => {
-                    f.stopped = Some(stop);
-                    return Ok(f);
-                }
-            };
-            if let Some((set, o)) = chunk.iter().zip(outs).find(|(_, o)| !o.dead) {
-                f.states.push(State {
-                    set: set.clone(),
-                    closure: o.closure,
-                });
-                f.verdict = Some(Verdict::Ambiguity);
-                return Ok(f);
-            }
-        }
-        f.verdict = Some(Verdict::Solution);
-        f.exhausted = true;
-        Ok(f)
-    }
-
-    /// The maximal line: layer order from `∅` over the alive nodes **not
-    /// under a maximal state found so far**, climbing from every node of `R`
-    /// it meets. A node under a found maximum is alive (L1) and kept for the
-    /// join without a visit. A maximal state not yet found lies under no
-    /// found one, so the join reaches it. `-n N` stops at the `N`-th,
-    /// `--single` at the second.
-    fn maximal(&mut self, ask: Ask) -> Result<Found, SolveError> {
-        let mut f = Found {
-            licences: vec![
+        let licences = match mode.which {
+            Which::All => vec![Licence::DeadUpward],
+            Which::Minimal => vec![Licence::DeadUpward, Licence::DischargedUpward],
+            Which::Maximal => vec![
                 Licence::DeadUpward,
                 Licence::DischargedUpward,
                 Licence::LocalLines,
             ],
-            ..Found::default()
         };
-        let mut tops: Vec<Box<[u32]>> = Vec::new();
-        let under = |tops: &[Box<[u32]>], set: &[u32]| tops.iter().any(|t| is_subset(set, t));
-        let mut any_alive = false;
-        let mut frontier: Vec<Box<[u32]>> = vec![Box::default()];
-        let mut layer = 0;
-        while !frontier.is_empty() {
-            let mut kept = Vec::new();
-            for chunk in doubling(&frontier) {
-                let todo: Vec<Box<[u32]>> =
-                    chunk.iter().filter(|s| !under(&tops, s)).cloned().collect();
-                if let Err(stop) = self.eval(&todo)? {
-                    f.stopped = Some(stop);
-                    return Ok(f);
-                }
-                for set in chunk {
-                    if under(&tops, set) {
-                        kept.push(set.clone());
-                        continue;
-                    }
-                    let o = self.seen[set].clone();
-                    if o.dead {
-                        continue;
-                    }
-                    any_alive = true;
-                    kept.push(set.clone());
-                    if !o.in_r() {
-                        continue;
-                    }
-                    let top = match self.climb(&o.closure)? {
-                        Ok(t) => t,
-                        Err(stop) => {
-                            f.stopped = Some(stop);
-                            return Ok(f);
-                        }
-                    };
-                    tops.push(top.clone());
-                    f.states.push(State {
-                        set: top.clone(),
-                        closure: top,
-                    });
-                    match ask {
-                        Ask::Find(want) if f.states.len() as u64 >= want => return Ok(f),
-                        Ask::Single if f.states.len() >= 2 => {
-                            f.verdict = Some(Verdict::Ambiguity);
-                            return Ok(f);
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            frontier = self.next_layer(layer, &kept);
-            layer += 1;
+        Ok(Found {
+            licences,
+            exhausted: true,
+            verdict: (mode.ask == Ask::Single).then_some(Verdict::Contradiction),
+            ..Found::default()
+        })
+    }
+
+    /// L5's table ([`crate::oblgen::alternatives`]), read at root's fixpoint
+    /// on a monotone program that states an obligation, and handed to the
+    /// node function so every node names the instances it owes. `None` on
+    /// any other program.
+    pub(crate) fn alternatives(
+        &mut self,
+    ) -> Result<Option<std::sync::Arc<crate::oblgen::Alternatives>>, SolveError> {
+        if !self.monotonicity.is_monotone() || self.root.program().obligations.is_empty() {
+            return Ok(None);
         }
-        f.exhausted = true;
-        if ask == Ask::Single {
-            f.verdict = Some(match (f.states.len(), any_alive) {
-                (1, _) => Verdict::Solution,
-                (_, true) => Verdict::Open,
-                (_, false) => Verdict::Contradiction,
-            });
-        }
-        Ok(f)
+        let candidates: FxHashMap<FactId, u32> = self
+            .facts
+            .iter()
+            .enumerate()
+            .map(|(i, &f)| (f, i as u32))
+            .collect();
+        let table = std::sync::Arc::new(crate::oblgen::alternatives(
+            self.root,
+            self.terms,
+            self.ast,
+            &self.memo,
+            &self.monotonicity,
+            &candidates,
+        )?);
+        self.axes = self.axes.clone().owing_of(table.clone());
+        Ok(Some(table))
     }
 
     /// A flagged program's cube in layer order, for the questions it can
@@ -1195,7 +966,7 @@ impl<'a> Space<'a> {
 }
 
 /// Steps of 1, 2, 4, … up to [`BATCH`] nodes.
-fn doubling<T>(items: &[T]) -> impl Iterator<Item = &[T]> {
+pub(crate) fn doubling<T>(items: &[T]) -> impl Iterator<Item = &[T]> {
     let (mut start, mut size) = (0usize, 1usize);
     std::iter::from_fn(move || {
         if start >= items.len() {

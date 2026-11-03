@@ -100,7 +100,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>) -> i32 {
         &Inputs {
             source: file,
             argv: file,
-            route: crate::modes::route_words(answer.route),
+            route: crate::modes::route_words(&answer),
             candidates: &candidates,
         },
         full,

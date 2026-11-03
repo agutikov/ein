@@ -309,10 +309,13 @@ whole `(region …)`, whose `(merged …)` lists all 63 minimal commitments. Tha
 is what pins k_c, and it reads back as the claim.
 """)
 add(block(["--uncut", "examples/zebra2.ein"], note="`DIR/answer.txt`"))
-add("""**`--maximal -n 1`**: a complete solution, 54 saturations.
+add("""**`--maximal -n 1`**: a complete solution, 42 saturations: the obligation
+tree's first leaf, then the climb (M1e2 S1e2.1c.4). It was 54 on route 1.
 """)
 add(block(["--maximal", "-n", "1", "examples/zebra2.ein"]))
-add("""**`--single`**: `Solution`, 8 616 saturations, at the default budget.
+add("""**`--single`**: `Solution`, 45 saturations, at the default budget: the
+obligation tree, whose one leaf has every extension dead (L4, L5). It was
+8 616 on route 1 until S1e2.1c.4.
 """)
 add(block(["--single", "examples/zebra2.ein"]))
 
@@ -332,7 +335,9 @@ without `as :expect`, since it is a lower bound.
 add(block(["examples/saturation/square-bwd/floors.ein"]))
 add("""**The first questions** cost what [`solve_interface.md` § 3.4](solve_interface.md#34-what-it-costs)
 said they would: `-n 1` is root (one saturation), `--single` is `Ambiguity`
-in two, `--maximal -n 1` is the climb (eleven).
+in two, `--maximal -n 1` is the climb (eleven). The climb ends at ⊤, so every
+node is alive (L1) and ⊤ is the whole maximal line: since M1e2 S1e2.1c.4 the
+run says so, where it said *as asked*.
 """)
 add(block(["-n", "1", "examples/saturation/square-bwd/floors.ein"]))
 add(block(["--single", "examples/saturation/square-bwd/floors.ein"]))

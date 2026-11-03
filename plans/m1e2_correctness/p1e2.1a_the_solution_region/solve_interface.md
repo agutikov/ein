@@ -324,14 +324,25 @@ for.
 
 | mode | stops when | now: route 1 with a cut | at P1e2.1c | licences |
 |---|---|---|---|---|
-| `-n N` | the N-th state | layer order from ∅, stopping at the N-th distinct state. When ∅ ∈ R, root is the first, one saturation | the obligation tree's leaves, in its own order, where L5 holds | L1, L2 |
-| `--maximal -n N` | the N-th maximal state | the first member of R, then the **climb**: add the lowest-index candidate whose extension is alive, until none is. For N > 1, `--maximal` stopped at N | the same, over states | L1, L4 |
-| `--minimal -n N` | the N-th state on the minimal line | layer order, expanding owing nodes only. The first node of R it meets has every proper subset owing, so it is minimal | a tree leaf, then shrink it while it stays discharged | L1, L2 |
-| `--single` | a second state, or decided | **∅ ∈ R:** R is the alive set (L2), so k_s = 1 exactly when no candidate outside root's closure is alive alone, at most n saturations. **∅ ∉ R:** `--minimal`'s exploration. `Ambiguity` as soon as two minimal nodes reach different states. Otherwise the one state s must be maximal (L4), at most n − \|s\| more | the tree: owing-meets-dead closes branches, then the same maximality check | L1, L2, L4, L5 |
-| `--maximal --single` | a second maximal state, or decided | climb to s. Then route 1 over the alive nodes **not under s**. A discharged one has a maximal extension other than s (L2), which is `Ambiguity`. If there is none, s is unique | the state route | L1, L2, L4 |
-| `--maximal` | no alive node is left outside the maxima found | as above, climbing from every discharged node found outside the maxima so far | the state route: at most alive states × n | L1–L4 |
-| `--minimal` | no owing node is left | route 1 expanding owing nodes only. Restrictions only: {∅}, one saturation | duality, S1e2.1c.2: output-sized | L1, L2, L6 |
+| `-n N` | the N-th state | layer order from ∅, stopping at the N-th distinct state. When ∅ ∈ R, root is the first, one saturation | the obligation tree's leaves, in its own order, where L5 holds. **Built (S1e2.1c.4)**: the tree's leaves, owing states taken by size, then the states of R above them, each extended once (L2). ∅ ∈ R: root, then the states above it | L1, L2, L3, L5 |
+| `--maximal -n N` | the N-th maximal state | the first member of R, then the **climb**: add the lowest-index candidate whose extension is alive, until none is. For N > 1, `--maximal` stopped at N | the same, over states. **Built**: root's state or the tree's first leaf, climbed over states; for N > 1, `--maximal` stopped at N. A climb that reaches ⊤ certifies the whole line (L1) | L1–L4, L5 |
+| `--minimal -n N` | the N-th state on the minimal line | layer order, expanding owing nodes only. The first node of R it meets has every proper subset owing, so it is minimal | a tree leaf, then shrink it while it stays discharged. **Built**: so, one pass per leaf (L2); when the leaves run out first, `--minimal`'s line | L1, L2, L3, L5 |
+| `--single` | a second state, or decided | **∅ ∈ R:** R is the alive set (L2), so k_s = 1 exactly when no candidate outside root's closure is alive alone, at most n saturations. **∅ ∉ R:** `--minimal`'s exploration. `Ambiguity` as soon as two minimal nodes reach different states. Otherwise the one state s must be maximal (L4), at most n − \|s\| more | the tree: owing-meets-dead closes branches, then the same maximality check. **Built**: so; `Ambiguity` at the tree's second leaf | L1–L4, L5 |
+| `--maximal --single` | a second maximal state, or decided | climb to s. Then route 1 over the alive nodes **not under s**. A discharged one has a maximal extension other than s (L2), which is `Ambiguity`. If there is none, s is unique | the state route. **Built, cheaper**: `--maximal`'s route, stopped at its second maximal state | L1–L4, L5 |
+| `--maximal` | no alive node is left outside the maxima found | as above, climbing from every discharged node found outside the maxima so far | the state route: at most alive states × n. **Built, cheaper**: the climb, then **dualise and advance** above each minimal state of R (Gunopulos et al., *PODS* 1997): R's minimal states from the tree, and above each a minimal transversal of the found maxima's complements saturated, an alive one climbed to a new maximum. The state route would cost `pets` 11 351 saturations where this costs 430 | L1–L4, L5 |
+| `--minimal` | no owing node is left | route 1 expanding owing nodes only. Restrictions only: {∅}, one saturation | duality, S1e2.1c.2: output-sized. **Built**: the tree's leaves shrunk, then every owing state extended once and the line by duality, as the alive minimal transversals of the maximal owing states' complements. Output-sized in its transversals, not in its saturations: it pays for the owing states, all of them (§ 3.4) | L1, L2, L3, L5 |
 | describe | the down-set is exhausted | route 1, unchanged; **since S1e2.1c.2 (2026-11-03) the state route**, the right-hand column | the state route, k_c by L3, the generators by minimal transversals (S1e2.1c.2). **Built**: N by duality from the maximal alive states, the lines read off the states | L1, L3, L4 |
+
+**The *at P1e2.1c* column is built since M1e2
+[S1e2.1c.4](../p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md)'s
+T1e2.1c.4.2** (2026-11-03), in [`ein_infer::tree`](../../../ein.rs/crates/ein-infer/src/tree.rs).
+Every route there is over states (L3), and a dead extension prunes its
+supersets (L1). The read-out's `route` row reads `the obligation tree, over
+states` where a branch used L5, and `the state route, each state at most
+once` otherwise. A program whose root is dead keeps route 1, decided in one
+saturation. A flagged program keeps § 3.3's cube and its warnings, and
+`every_mode_is_the_oracle` says so on every cell. The *now* column is the
+record of what they replaced.
 
 Why the cuts are sound, one line each:
 
@@ -347,6 +358,20 @@ Why the cuts are sound, one line each:
 - **The budget** is checked before each step: a layer for route 1, a climb
   step, a node for the tree. A stopped run has its certified part and its
   bounds, and nothing half-done (C3).
+- **The obligation tree** (L5): every member of R above an owing state holds
+  one of the branched instance's alternatives, so the branch loses none, and
+  a state whose every alternative is dead has none above it. Every minimal
+  state of R is a leaf: the chain of closed sets below it owes at every step.
+- **Dualise and advance**: a maximal state above a seed σ that is not found
+  yet holds σ and a minimal transversal of the found maxima's complements. So
+  when every such transversal is dead, the maxima above σ are all found, and
+  every maximal state of R lies above a minimal one.
+- **The shrink**: a subset of a commitment of R is alive (L1). If dropping x
+  fails once, it fails on every smaller set (L2), so one pass ends at a
+  minimal commitment.
+- **The minimal line by duality**: an alive set is outside R exactly when an
+  owing state holds it (L2), so the minimal commitments of R are the alive
+  minimal transversals of the maximal owing states' complements.
 
 ### 3.3 A program the static check flags
 

@@ -188,7 +188,7 @@ solve · --maximal examples/lattice/02_genuine_3set_death.ein
   exhausted         yes — this is all of the maximal line
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              7 saturations · 12 facts beyond root
 
   ;; state 1 of 3 — 2 candidates · maximal · from {(a-prop X), (b-prop X)}
@@ -220,7 +220,7 @@ solve · --minimal examples/lattice/02_genuine_3set_death.ein
   exhausted         yes — this is all of the minimal line
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed
   work              1 saturation · 0 facts beyond root
 
   ;; state 1 of 1 — ∅, root itself · minimal
@@ -248,7 +248,7 @@ solve · -n 2 examples/lattice/02_genuine_3set_death.ein
   exhausted         no — stopped as asked; each state shown is certified, nothing is said of the rest
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates
-  route             1, the alive down-set — L1 dead is upward-closed
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's
   work              2 saturations · 1 fact beyond root
 
   ;; state 1 of 2 — ∅, root itself
@@ -280,7 +280,7 @@ solve · --single examples/lattice/02_genuine_3set_death.ein
   decided           yes — two states settle it; the rest of R was not visited
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed
   work              2 saturations · 1 fact beyond root
 
   ;; state 1 of 2 — ∅, root itself
@@ -312,7 +312,7 @@ solve · --maximal --single examples/lattice/02_genuine_3set_death.ein
   decided           yes — two states settle it; the rest of the maximal line was not visited
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              6 saturations · 10 facts beyond root
 
   ;; state 1 of 2 — 2 candidates · maximal · from {(a-prop X), (b-prop X)}
@@ -706,7 +706,7 @@ solve · --single tests/stdlib/closure/03_closed_and_owing.ein
   decided           yes — R is empty
   lattice           monotone (the static check) — R is convex: no hole
   universe          0 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              1 saturation · 0 facts beyond root
 
   query             (closed-here ?R)
@@ -1197,7 +1197,8 @@ solve · examples/zebra2.ein
 exit 0
 ```
 
-**`--maximal -n 1`**: a complete solution, 54 saturations.
+**`--maximal -n 1`**: a complete solution, 42 saturations: the obligation
+tree's first leaf, then the climb (M1e2 S1e2.1c.4). It was 54 on route 1.
 
 `ein solve --maximal -n 1 examples/zebra2.ein`
 
@@ -1209,8 +1210,8 @@ solve · --maximal -n 1 examples/zebra2.ein
   exhausted         no — stopped as asked; each state shown is certified, nothing is said of the rest
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
-  work              54 saturations · 8 016 facts beyond root
+  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  work              42 saturations · 7 036 facts beyond root
 
   ;; state 1 of 1 — 18 candidates · maximal · from {(color-loc Green House-5), (color-loc Ivory House-4), (color-loc Red House-3), (drink-loc Coffee House-5), (drink-loc Juice House-4), (drink-loc Tea House-2), (nation-loc Englishman House-3), (nation-loc Japanese House-5), (nation-loc Spaniard House-4), (nation-loc Ukrainian House-2), (pet-loc Dog House-4), (pet-loc Fox House-1), (pet-loc Snail House-3), (pet-loc Zebra House-5), (smoke-loc Chesterfields House-2), (smoke-loc Lucky_Strike House-4), (smoke-loc Old_Gold House-3), (smoke-loc Parliament House-5)}
   (model (color-loc Blue House-2) (color-loc Green House-5)
@@ -1236,7 +1237,9 @@ solve · --maximal -n 1 examples/zebra2.ein
 exit 0
 ```
 
-**`--single`**: `Solution`, 8 616 saturations, at the default budget.
+**`--single`**: `Solution`, 45 saturations, at the default budget: the
+obligation tree, whose one leaf has every extension dead (L4, L5). It was
+8 616 on route 1 until S1e2.1c.4.
 
 `ein solve --single examples/zebra2.ein`
 
@@ -1248,10 +1251,10 @@ solve · --single examples/zebra2.ein
   decided           yes — R holds no other state
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
-  work              8 616 saturations · 418 806 facts beyond root
+  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  work              45 saturations · 7 582 facts beyond root
 
-  ;; state 1 of 1 — 18 candidates · from {(drink-loc Juice House-4)}
+  ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (nation-loc Ukrainian House-2)}
   (model (color-loc Blue House-2) (color-loc Green House-5)
          (color-loc Ivory House-4) (color-loc Red House-3)
          (color-loc Yellow House-1) (drink-loc Coffee House-5)
@@ -1346,7 +1349,9 @@ exit 0
 
 **The first questions** cost what [`solve_interface.md` § 3.4](solve_interface.md#34-what-it-costs)
 said they would: `-n 1` is root (one saturation), `--single` is `Ambiguity`
-in two, `--maximal -n 1` is the climb (eleven).
+in two, `--maximal -n 1` is the climb (eleven). The climb ends at ⊤, so every
+node is alive (L1) and ⊤ is the whole maximal line: since M1e2 S1e2.1c.4 the
+run says so, where it said *as asked*.
 
 `ein solve -n 1 examples/saturation/square-bwd/floors.ein`
 
@@ -1358,7 +1363,7 @@ solve · -n 1 examples/saturation/square-bwd/floors.ein
   exhausted         no — stopped as asked; each state shown is certified, nothing is said of the rest
   lattice           monotone (the static check) — R is convex: no hole
   universe          20 candidates
-  route             1, the alive down-set — L1 dead is upward-closed
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's
   work              1 saturation · 0 facts beyond root
 
   ;; state 1 of 1 — ∅, root itself
@@ -1384,7 +1389,7 @@ solve · --single examples/saturation/square-bwd/floors.ein
   decided           yes — two states settle it; the rest of R was not visited
   lattice           monotone (the static check) — R is convex: no hole
   universe          20 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed
   work              2 saturations · 1 fact beyond root
 
   ;; state 1 of 2 — ∅, root itself
@@ -1410,11 +1415,11 @@ exit 0
 solve · --maximal -n 1 examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             1 state of the maximal line (-n 1)
-  maximal line      1 state, as asked — the maximal line may hold more
-  exhausted         no — stopped as asked; each state shown is certified, nothing is said of the rest
+  maximal line      1 state — all of them
+  exhausted         yes — this is all of the maximal line
   lattice           monotone (the static check) — R is convex: no hole
   universe          20 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              11 saturations · 139 facts beyond root
 
   ;; state 1 of 1 — 20 candidates · maximal · from {(above-of Floor1 Floor2), (above-of Floor1 Floor4), (above-of Floor1 Floor5), (above-of Floor2 Floor4), (above-of Floor2 Floor5), (above-of Floor4 Floor1), (above-of Floor4 Floor2), (above-of Floor4 Floor5), (above-of Floor5 Floor1), (above-of Floor5 Floor2), (co-located Floor1 Floor2), (co-located Floor1 Floor5), (co-located Floor2 Floor1), (co-located Floor2 Floor4), (co-located Floor4 Floor1), (co-located Floor4 Floor2), (co-located Floor4 Floor5), (co-located Floor5 Floor1), (co-located Floor5 Floor2), (co-located Floor5 Floor4)}
@@ -1435,7 +1440,7 @@ solve · --maximal -n 1 examples/saturation/square-bwd/floors.ein
 
   query             (co-located Floor2 Floor5)
   over              the 1 state listed — 1 state → 1 projection class  (a lower bound)
-    class 1 of 1    1 state
+    class 1 of 1    1 state (1)
                       the goal holds: it has no variable
   as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 

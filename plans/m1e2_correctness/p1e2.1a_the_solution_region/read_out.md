@@ -122,7 +122,7 @@ and the rule under it, so a transcript still starts the same way.
 | `E` | the minimal discharging sets. **Cube only**: route 1 computes only E's alive members, which are the minimal line | X8: `1 minimal discharging set` |
 | `lattice` | the static check, and on a flagged program the detector's warning under it and the holes (§ 6.3) | `monotone (the static check) — R is convex: no hole` |
 | `universe` | n, and how many candidates are dead alone, which no state can hold | `9 candidates, 6 dead alone`; X6: `no candidate: R is {∅} or empty, decided by root alone` |
-| `route` | the route, and the licences it used | `1, the alive down-set — licence L1, dead is upward-closed`; describe on a monotone program since M1e2 S1e2.1c.2: `the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local` |
+| `route` | the route, and the licences it used | `1, the alive down-set — licence L1, dead is upward-closed`; describe on a monotone program since M1e2 S1e2.1c.2: `the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local`; a mode on one since S1e2.1c.4: `the obligation tree, over states — … · L5 an owed instance's alternatives are exhaustive` where a branch used L5, `the state route, each state at most once — …` where none did |
 | `work` | saturations, facts beyond root and layers, as the interface's § 2.1 asks of every run. They do not depend on the machine or on `-j` (`every_mode_at_four_jobs_is_every_mode_at_one`). A speed lever may move them, which C4 allows (*cost counters aside*), so the lever sweeps compare every row but this one (§ 12). The wall clock stays behind `-s` and `-t` | `14 saturations · 66 facts beyond root · 4 layers` |
 
 **Then the region itself**, in the form S1e2.1a.4 reads back:
@@ -215,8 +215,9 @@ runs one program under each.
   state`, or `— the maximal line is one state`.
 - **`route`, `lattice`, `universe` and `work` are printed under every mode**,
   as the interface's § 2.1 asks. The cost of a question is visible on its
-  own run: zebra2's `--maximal -n 1` is 54 saturations, and `--single` is
-  8 616 (X10).
+  own run: zebra2's `--maximal -n 1` is 42 saturations, and `--single` is
+  45 (X10), since M1e2 S1e2.1c.4's routes. They were 54 and 8 616 on route
+  1.
 - **A line is not a claim.** No `(region …)` wraps it, because read back it
   would say that these states are all of R. The one form that names a line is
   a query's `:over`, and its answer is printed (§ 7).

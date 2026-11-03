@@ -60,6 +60,7 @@ pub mod solve;
 pub mod spec_audit;
 pub mod states;
 pub mod transversal;
+pub(crate) mod tree;
 pub mod verdict;
 
 pub use apriori::{

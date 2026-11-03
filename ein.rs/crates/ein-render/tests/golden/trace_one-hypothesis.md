@@ -6,8 +6,8 @@
   exhausted         yes — this is all of the maximal line
   lattice           monotone (the static check) — R is convex: no hole
   universe          25 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
-  work              62 saturations · 846 facts beyond root
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              50 saturations · 672 facts beyond root
 ```
 
 ## Root — 7 steps

@@ -702,6 +702,9 @@ pub(crate) struct Axes {
     narration: Option<Level>,
     /// Read each node's stale facts: on a flagged program only.
     stale: Option<Arc<StaleCheck>>,
+    /// Report which of root's owed instances each node still owes — L5's
+    /// table, on the modes' obligation tree only (M1e2 S1e2.1c.4).
+    instances: Option<Arc<crate::oblgen::Alternatives>>,
 }
 
 impl Axes {
@@ -719,6 +722,7 @@ impl Axes {
             keep_states,
             narration: None,
             stale: None,
+            instances: None,
         }
     }
 
@@ -732,6 +736,13 @@ impl Axes {
     /// The same axes, narrating each node at `narration` (`None`: silent).
     pub(crate) fn narrating(mut self, narration: Option<Level>) -> Axes {
         self.narration = narration;
+        self
+    }
+
+    /// The same axes, each node naming the instances of `table` it owes
+    /// ([`NodeOut::owed`]).
+    pub(crate) fn owing_of(mut self, table: Arc<crate::oblgen::Alternatives>) -> Axes {
+        self.instances = Some(table);
         self
     }
 }
@@ -757,6 +768,10 @@ pub(crate) struct NodeOut {
     /// Its stale facts, `fact ← rule (absent …)`, sorted — read only when the
     /// axes check them ([`Axes::checking_stale`]).
     pub stale: Vec<String>,
+    /// The instances it owes, as places in the axes' table
+    /// ([`Axes::owing_of`]), in report order; `u32::MAX` for one the table
+    /// does not hold. Empty when the axes carry no table.
+    pub owed: Vec<u32>,
 }
 
 #[cfg(feature = "parallel")]
@@ -1212,6 +1227,17 @@ fn node_in_region(
     }
     let owes = crate::obligations::tally(&fork, terms, ast, memo, &mut ev)?;
     node.owes = owes.total() as u32;
+    let owed: Vec<u32> = match &axes.instances {
+        Some(t) => owes
+            .instances()
+            .iter()
+            .map(|o| {
+                let key = (o.rule, o.activator.clone(), o.bindings.clone());
+                t.index.get(&key).copied().unwrap_or(u32::MAX)
+            })
+            .collect(),
+        None => Vec::new(),
+    };
     node.owed = owes
         .instances()
         .iter()
@@ -1268,6 +1294,7 @@ fn node_in_region(
         closure,
         events: axes.narration.map(|_| ev),
         stale,
+        owed,
     })
 }
 

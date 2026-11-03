@@ -93,6 +93,7 @@ fn computed(path: &Path) -> Result<Region, String> {
             Route::DownSet => "route 1",
             Route::Cube => "route 2",
             Route::States => "state route",
+            Route::Tree => "obligation tree",
         }
         .to_string(),
         monotone: a.monotonicity.is_monotone(),

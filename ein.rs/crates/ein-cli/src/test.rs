@@ -817,6 +817,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             explore::Route::DownSet => "route 1",
             explore::Route::Cube => "route 2",
             explore::Route::States => "state route",
+            explore::Route::Tree => "obligation tree",
         };
         rows[i].outcome = came.key();
         rows[i].region = Some(RegionRan {

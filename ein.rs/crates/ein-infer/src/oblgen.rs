@@ -641,9 +641,11 @@ pub type InstanceKey = (Symbol, Box<[Symbol]>, Box<[(Symbol, Value)]>);
 
 /// Every obligation instance root owes, each with the candidates that can
 /// witness it — licence L5's alternatives — or why that set is not known.
-/// Built once at root by `alternatives`, and held to the oracle by
+/// Built once at root by `alternatives`, held to the oracle by
 /// `ein-infer/tests/region.rs`'s
-/// `l5_is_the_oracle_on_every_monotone_program_it_reaches`.
+/// `l5_is_the_oracle_on_every_monotone_program_it_reaches`, and read by the
+/// modes' obligation tree (`crate::tree`, T1e2.1c.4.2), whose every node
+/// names the instances it owes by their place here.
 #[derive(Clone, Debug, Default)]
 pub struct Alternatives {
     /// In [`crate::obligations::tally`]'s report order.

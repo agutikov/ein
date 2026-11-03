@@ -371,6 +371,7 @@ fn region_op(
                         explore::Route::DownSet => "1, the alive down-set",
                         explore::Route::Cube => "2, the cube",
                         explore::Route::States => "the state route, every alive state once",
+                        explore::Route::Tree => "the obligation tree, over states",
                     },
                     candidates: &candidates,
                 },

@@ -253,7 +253,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let (Some(dir), Some(v)) = (lattice_dir.as_deref(), visits.as_ref()) {
         let v = v.lock().expect("the watch is done").clone();
         let candidates: Vec<String> = r.answer.candidates.iter().map(|c| c.text.clone()).collect();
-        let route = route_words(r.answer.route);
+        let route = route_words(&r.answer);
         let inputs = ein_render::dump::region_lattice::Inputs {
             source: &file,
             argv: &header_argv("solve"),
@@ -759,13 +759,21 @@ impl Watcher {
     }
 }
 
-/// `1, the alive down-set` or `2, the cube`: the route, as the read-out names
-/// it.
-pub(crate) fn route_words(route: explore::Route) -> &'static str {
-    match route {
+/// `1, the alive down-set` or `2, the cube`: the route an answer took, as the
+/// read-out names it. A mode on the state route meets only the states its
+/// question needs (M1e2 S1e2.1c.4); describe meets every alive one.
+pub(crate) fn route_words(answer: &explore::Answer) -> &'static str {
+    let describe = answer.mode
+        == explore::Mode {
+            which: explore::Which::All,
+            ask: explore::Ask::Describe,
+        };
+    match answer.route {
         explore::Route::DownSet => "1, the alive down-set",
         explore::Route::Cube => "2, the cube",
-        explore::Route::States => "the state route, every alive state once",
+        explore::Route::States if describe => "the state route, every alive state once",
+        explore::Route::States => "the state route, each state at most once",
+        explore::Route::Tree => "the obligation tree, over states",
     }
 }
 

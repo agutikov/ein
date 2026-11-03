@@ -999,6 +999,10 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             "the state route, every alive state once — {}",
             licences(&a.licences)
         ),
+        (Route::Tree, _) => format!(
+            "the obligation tree, over states — {}",
+            licences(&a.licences)
+        ),
         (Route::Cube, "oracle") => "2, the cube — no licence: asked for by name".to_string(),
         (Route::Cube, _) => {
             "2, the cube — no licence: the static check flags the program".to_string()
@@ -1166,7 +1170,10 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
             match a.route {
                 Route::DownSet => "1, the alive down-set",
                 Route::Cube => "2, the cube",
-                Route::States => "the state route, every alive state once",
+                // A mode's cut of the route: it meets only the states its
+                // question needs (M1e2 S1e2.1c.4).
+                Route::States => "the state route, each state at most once",
+                Route::Tree => "the obligation tree, over states",
             },
             licences(&a.licences)
         ),

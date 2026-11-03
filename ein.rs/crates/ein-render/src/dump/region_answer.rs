@@ -341,6 +341,7 @@ fn route(r: Route) -> &'static str {
         Route::DownSet => "1",
         Route::Cube => "2",
         Route::States => "states",
+        Route::Tree => "tree",
     }
 }
 

@@ -175,10 +175,10 @@ solve · examples/zebra2.ein --single
   decided           yes — R holds no other state
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
-  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
-  work              8 616 saturations · 418 806 facts beyond root
+  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  work              45 saturations · 7 582 facts beyond root
 
-  ;; state 1 of 1 — 18 candidates · from {(drink-loc Juice House-4)}
+  ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (nation-loc Ukrainian House-2)}
   (model (color-loc Blue House-2) (color-loc Green House-5)
          (color-loc Ivory House-4) (color-loc Red House-3)
          (color-loc Yellow House-1) (drink-loc Coffee House-5)
