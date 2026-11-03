@@ -710,6 +710,91 @@ fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
     }
 }
 
+/// **`ein saturate --max-steps N` says where it stopped, in Ein's spelling,
+/// and exits 0** — M1e2 S1e2.3.7's N3, the user's ruling of 2026-11-03.
+///
+/// The line spelt the last firing as a Python repr, `Firing(rule='transitive',
+/// …, Fact(relation_name='co-located', …))`, sent the reader to a
+/// `Saturator._last_firing` no crate defines, and said *without reaching fixed
+/// point* on `colocation-chain.ein` at `--max-steps 1`, whose one firing is
+/// the whole saturation. The help said it *raises SaturatorStepLimitError*.
+/// A step limit leaves the KB where it stopped, which is what the flag asks
+/// for, so nothing goes to stderr and the exit code is 0 (`read_out.md` § 9).
+#[test]
+fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
+    const LINE: &str = "!! saturator step limit hit: ";
+    const CHAIN: &str = "examples/saturation/transitive/colocation-chain.ein";
+    let limit = |args: &[&str]| -> (Run, Vec<String>) {
+        let mut a = vec!["saturate"];
+        a.extend(args);
+        let r = ein(&a);
+        assert_eq!(r.code, 0, "{args:?}: {}", r.err);
+        assert!(r.err.is_empty(), "{args:?} wrote to stderr:\n{}", r.err);
+        let lines = r
+            .out
+            .lines()
+            .filter(|l| l.starts_with(LINE))
+            .map(|l| l[LINE.len()..].to_string())
+            .collect();
+        (r, lines)
+    };
+    let (one, l) = limit(&["--max-steps", "1", CHAIN]);
+    assert_eq!(
+        l,
+        [
+            "--max-steps 1 stopped saturation after 1 firing, before it checked for a fixpoint. \
+             The last firing: (transitive co-located) with ?rel = co-located · ?a = A · ?b = B · \
+             ?c = C derived (co-located A C) from (co-located A B) (co-located B C)"
+        ]
+    );
+    assert!(one.out.contains("── per-rule firing breakdown at limit ──"));
+    // The same one firing is the whole saturation: the line may not say the
+    // KB fell short of its fixpoint.
+    let (all, none) = limit(&[CHAIN]);
+    assert!(none.is_empty(), "{none:?}");
+    assert_eq!(all.field("total firings").as_deref(), Some("1"));
+    assert_eq!(one.field("total firings").as_deref(), Some("1"));
+    // A redundant last firing re-derived what the KB held.
+    let (_, l) = limit(&["--max-steps", "5", "tests/stdlib/algebra/03_boolean.ein"]);
+    assert_eq!(
+        l,
+        [
+            "--max-steps 5 stopped saturation after 5 firings, before it checked for a fixpoint. \
+             The last firing: (join-r owns rents either) with ?R1 = owns · ?R2 = rents · \
+             ?R3 = either · ?a = Ann · ?b = Car re-derived (either Ann Car) from (rents Ann Car), \
+             which the KB already held"
+        ]
+    );
+    // 0 and a negative stop before the first firing, as typed.
+    for (arg, n) in [("--max-steps=0", "0"), ("--max-steps=-3", "-3")] {
+        let (_, l) = limit(&[arg, CHAIN]);
+        assert_eq!(
+            l,
+            [format!(
+                "--max-steps {n} stopped saturation after 0 firings, before it checked for a \
+                 fixpoint; nothing fired, so there is no last firing"
+            )]
+        );
+    }
+    let help = ein(&["saturate", "--help"]);
+    assert!(
+        help.ok().out.contains("Not an error: the exit code is 0."),
+        "{}",
+        help.out
+    );
+    for text in [&one.out, &help.out] {
+        for python in [
+            "Firing(",
+            "Fact(",
+            "_last_firing",
+            "SaturatorStepLimitError",
+            "fixed point",
+        ] {
+            assert!(!text.contains(python), "`{python}` is back:\n{text}");
+        }
+    }
+}
+
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.

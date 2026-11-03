@@ -578,52 +578,67 @@ fn tally_key(rule: &str, redundant: bool) -> String {
     format!("{rule}\u{0}{redundant}")
 }
 
-/// The step-limit error's message, whose tail is the last firing spelled
-/// `Firing(rule='…', activator=(…), bindings={…}, …)` — strings quoted and
-/// tuples parenthesised all the way down, which is why it goes through
-/// [`ein_core::repr`] rather than Rust's `{:?}`.
-fn step_limit_message(max_steps: i64, terms: &Terms, last: Option<&Firing>) -> String {
-    let shown = match last {
-        None => "None".to_string(),
-        Some(f) => repr_firing(terms, f),
-    };
-    format!(
-        "saturator hit max_steps={max_steps} without reaching fixed point — \
-         last firing was {shown}; see Saturator._last_firing for the runaway \
-         candidate."
-    )
+/// The step limit's line, in Ein's spelling (M1e2 S1e2.3.7's N3, the user's
+/// ruling of 2026-11-03): the flag as typed, the firings it let run, and the
+/// last of them as a program would write it — its activation `(rule args…)`,
+/// its bindings as `?v = value`, its facts as s-expressions.
+///
+/// The limit is checked before each step, so a run whose `done`-th firing was
+/// its last stops without asking whether it is at the fixpoint. The line says
+/// that, and never that the KB fell short of one.
+fn step_limit_message(max_steps: i64, done: usize, terms: &Terms, last: Option<&Firing>) -> String {
+    let stopped = format!(
+        "--max-steps {max_steps} stopped saturation after {done} firing{}, before it checked \
+         for a fixpoint",
+        if done == 1 { "" } else { "s" }
+    );
+    match last {
+        None => format!("{stopped}; nothing fired, so there is no last firing"),
+        Some(f) => format!("{stopped}. The last firing: {}", firing_text(terms, f)),
+    }
 }
 
-fn repr_firing(terms: &Terms, f: &Firing) -> String {
-    use ein_core::repr::{ReprValue, repr, repr_str};
-    let tuple = |vs: Vec<ReprValue>| repr(&ReprValue::Tuple(vs));
-    let activator = tuple(
-        f.activator
-            .iter()
-            .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
-            .collect(),
-    );
+/// A firing as Ein spells it: `(transitive co-located) with ?rel = co-located
+/// · ?a = A · … derived (co-located A C) from (co-located A B) (co-located B
+/// C)`. A redundant firing re-derived, from its premises, facts the KB
+/// already held.
+fn firing_text(terms: &Terms, f: &Firing) -> String {
+    let mut activation = vec![terms.sym(f.rule).to_string()];
+    activation.extend(f.activator.iter().map(|&a| terms.sym(a).to_string()));
     let bindings: Vec<String> = f
         .bindings
         .iter()
-        .map(|(k, v)| {
-            format!(
-                "{}: {}",
-                repr_str(terms.sym(*k)),
-                repr(&terms.repr_value(*v))
-            )
-        })
+        .map(|(k, v)| format!("?{} = {}", terms.sym(*k), events::sexpr_value(terms, *v)))
         .collect();
-    let facts =
-        |ids: &[ein_core::FactId]| tuple(ids.iter().map(|&id| terms.repr_fact(id)).collect());
+    let facts = |ids: &[ein_core::FactId]| -> String {
+        ids.iter()
+            .map(|&id| events::sexpr(terms, id))
+            .collect::<Vec<_>>()
+            .join(" ")
+    };
+    let with = if bindings.is_empty() {
+        String::new()
+    } else {
+        format!(" with {}", bindings.join(" · "))
+    };
+    let derived = if f.derived.is_empty() {
+        "nothing".to_string()
+    } else {
+        facts(&f.derived)
+    };
+    let (verb, held) = if f.redundant {
+        ("re-derived", ", which the KB already held")
+    } else {
+        ("derived", "")
+    };
+    let from = if f.premises.is_empty() {
+        String::new()
+    } else {
+        format!(" from {}", facts(&f.premises))
+    };
     format!(
-        "Firing(rule={}, activator={activator}, bindings={{{}}}, derived={}, \
-         premises={}, redundant={})",
-        repr_str(terms.sym(f.rule)),
-        bindings.join(", "),
-        facts(&f.derived),
-        facts(&f.premises),
-        if f.redundant { "True" } else { "False" },
+        "({}){with} {verb} {derived}{from}{held}",
+        activation.join(" ")
     )
 }
 
@@ -713,6 +728,7 @@ fn bench(
             if max_steps.is_some_and(|m| i as i64 >= m) {
                 limit_msg = Some(step_limit_message(
                     max_steps.expect("checked"),
+                    i,
                     s.terms,
                     sat.last_firing(),
                 ));

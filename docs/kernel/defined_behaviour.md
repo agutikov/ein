@@ -439,7 +439,6 @@ names the failure's class, and exiting non-zero:
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
 | `:assert` head that is not a fact | `TypeError: <message>` | 1 |
-| `--max-firings` budget exhausted | `ein.inference.saturator.SaturatorStepLimitError: <message>` | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
@@ -447,6 +446,18 @@ names the failure's class, and exiting non-zero:
 The last row is the odd one out and belongs to §5 rather than here: it is
 `clap`'s wording, and what is fixed about it is the **exit code and the
 stream**, which is what a script can depend on.
+
+**The step limit left this table on 2026-11-03** (M1e2
+[S1e2.3.7](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.7_four_lines_that_misname.md),
+N3, on the user's ruling of that day). Its row read *`--max-firings` budget
+exhausted*, `ein.inference.saturator.SaturatorStepLimitError: <message>`,
+exit 1. No command spells `--max-firings`. No command reaches that error
+either: it is the library's own budget on `Saturator::saturate`, and `ein
+saturate` drives the saturator one step at a time. The binary's limit is `ein
+saturate --max-steps N`. It prints one line on stdout and exits **0**, because
+a KB stopped at N firings is what the flag asks for, not a failure. So it is
+§ 5's, [*`ein saturate --max-steps N` stops at N
+firings*](#5-the-cli-surface).
 
 The class names are the strongest candidate on this page for deliberate
 change, and the reason nothing has changed yet is that every one of them is a
@@ -915,6 +926,34 @@ error: invalid value '-1' for '--progress-every <PROGRESS_EVERY>': invalid progr
 
 Held by
 `cli_semantics.rs::progress_every_is_zero_for_no_node_lines_and_refuses_a_negative`.
+
+**`ein saturate --max-steps N` stops at N firings, says where in Ein's
+spelling, and exits 0** (M1e2
+[S1e2.3.7](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.7_four_lines_that_misname.md),
+N3, the user's ruling of 2026-11-03). The limit is checked before each step.
+So N firings run, and then the run stops without asking whether the KB is at
+its fixpoint, even when the N-th firing was the last there was. One line on
+stdout names the flag as typed, the firings it let run and the last of them:
+its activation as a program writes it, its bindings as `?v = value`, and its
+facts as s-expressions. A redundant last firing says it *re-derived* what the
+KB already held. The state AFTER, the firing breakdowns, a per-rule breakdown
+*at limit* and `--dump` follow, and they are the KB where the run stopped.
+Nothing goes to stderr, and the exit code is 0, as for every answer
+([`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#9-exit-codes)).
+0 and a negative stop before the first firing.
+
+```text
+$ ein saturate --max-steps 1 examples/saturation/transitive/colocation-chain.ein
+…
+!! saturator step limit hit: --max-steps 1 stopped saturation after 1 firing, before it checked for a fixpoint. The last firing: (transitive co-located) with ?rel = co-located · ?a = A · ?b = B · ?c = C derived (co-located A C) from (co-located A B) (co-located B C)
+```
+
+Until then the line spelt the firing as a Python repr, `Firing(rule='transitive',
+activator=('co-located',), …)`. It sent the reader to `Saturator._last_firing`,
+which no crate defines, and it said *without reaching fixed point* on this
+run, whose one firing is the whole saturation. The help said the flag *raises
+SaturatorStepLimitError*. Held by
+`cli_semantics.rs::the_step_limit_is_one_line_in_eins_spelling_and_exits_0`.
 
 **M1d P1d.10 added the 51st option, and it moves no byte of stdout.** `ein
 solve --layer-progress` streams the **per-layer census** to stderr and nothing

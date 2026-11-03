@@ -984,9 +984,13 @@ pub fn saturate_command() -> Command {
                     .value_name("MAX_STEPS")
                     .value_parser(int_arg)
                     .help(
-                        "hard cap on saturator firings (raises SaturatorStepLimitError \
-                         when exceeded); useful for runaway-debugging on a fresh \
-                         input. Default: no cap.",
+                        "hard cap on saturator firings. At N, saturation stops before \
+                         it checks for a fixpoint, and a '!! saturator step limit hit' \
+                         line names the last firing; the state AFTER, the firing \
+                         breakdowns and --dump that follow are the KB where it \
+                         stopped. Not an error: the exit code is 0. 0 or less stops \
+                         before the first firing. Useful for runaway-debugging on a \
+                         fresh input. Default: no cap.",
                     ),
             )
             .arg(
