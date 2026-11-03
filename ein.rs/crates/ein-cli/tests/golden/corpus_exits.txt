@@ -318,6 +318,10 @@
 1    examples/ein-bugs/int-goal-binding.ein :: render rules
 0    examples/ein-bugs/int-goal-binding.ein :: saturate
 0    examples/ein-bugs/int-goal-binding.ein :: solve
+0    examples/ein-bugs/kwpair-below-the-filter.ein :: render constraints
+0    examples/ein-bugs/kwpair-below-the-filter.ein :: render program
+0    examples/ein-bugs/kwpair-below-the-filter.ein :: saturate
+0    examples/ein-bugs/kwpair-below-the-filter.ein :: solve
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve
 0    examples/ein-bugs/naf-upward-closure.ein :: saturate
 0    examples/ein-bugs/naf-upward-closure.ein :: solve

@@ -1,5 +1,19 @@
 # kwpair-below-the-filter
 
+**Fixed 2026-11-03, M1e2
+[S1e2.3.2](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md)**,
+on the user's ruling (a): `dot_util::value_label` labels a keyword pair
+`:key value` for every caller, the spelling `ir_dot`'s `(query …)` note already
+used, so both views below draw each `(step …)` as written and exit 0. The
+witness is banked as the `regression` corpus entry
+[`examples/ein-bugs/kwpair-below-the-filter.ein`](../../examples/ein-bugs/kwpair-below-the-filter.ein),
+whose `render constraints` and `render program` runs `corpus_cli.rs` holds at
+exit 0; `corpus_shapes.rs` and `dot_wellformed.rs` run every view over it. The
+second door, `render program`, arrived at M1e2 S1e2.1.3, after the finding.
+This file and the `.ein` beside it stay: the panic signature below is what
+`utils/fuzz_engine.py` dedups a recurrence on, and the `.ein` is one of the
+frontend fuzzer's seeds.
+
 - found: 2026-08-23, `utils/fuzz_engine.py --seed 20260823 --iters 5000
   --no-id-order --jobs 8`, mode `mixed` — the
   [T1a.7.2.6](../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)

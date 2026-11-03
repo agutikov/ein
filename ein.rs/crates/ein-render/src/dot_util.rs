@@ -120,8 +120,13 @@ pub fn fact_label_parts(terms: &Terms, relation_name: &str, args: &[Value]) -> S
 /// A human-readable single-line label for an IR *value* node — what an edge
 /// label or a constraint operand shows.
 ///
-/// Panics on a [`Node::KwPair`]: a keyword pair is not a value, and every
-/// caller filters them out before getting here.
+/// Total: a [`Node::KwPair`] is labelled `:key value`, the spelling
+/// `ir_dot`'s `render_note` gives a `(query …)` block's keywords. A view's
+/// own filter drops the keyword pairs of the form it draws, but this function
+/// recurses into nested forms, and a keyword pair below the filter used to
+/// panic here (*not a value node: KwPair*, exit 101 on `render constraints`
+/// and `render program`). M1e2 S1e2.3.2, the user's ruling (a) of 2026-11-03;
+/// the witness is `examples/ein-bugs/kwpair-below-the-filter.ein`.
 pub fn value_label(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(s) => ast.sym(s).to_string(),
@@ -147,13 +152,37 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
                 format!("({head} {})", inner.join(" "))
             }
         }
-        Node::KwPair { .. } => panic!("not a value node: KwPair"),
+        Node::KwPair { key, value } => {
+            format!("{} {}", value_label(ast, key), value_label(ast, value))
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// M1e2 S1e2.3.2, ruling (a): a keyword pair below a form is labelled
+    /// `:key value` at every depth, and the form as written is the label.
+    /// The program is the fuzz witness's first step, the one that panicked.
+    #[test]
+    fn a_keyword_pair_below_a_form_is_labelled_key_value() {
+        let src = "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1)))";
+        let mut ast = Ast::new();
+        let top = ein_ir::parse(&mut ast, src, None).expect("the witness parses")[0];
+        let step = ast.form_args(top)[0];
+        assert_eq!(
+            value_label(&ast, step),
+            "(step s1 :rule from-condition :using (c10) :derives (lives-in N H1))"
+        );
+        let pair = ast.form_args(step)[1];
+        assert!(matches!(ast.node(pair), Node::KwPair { .. }));
+        assert_eq!(value_label(&ast, pair), ":rule from-condition");
+        assert_eq!(
+            value_label(&ast, top),
+            "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1)))"
+        );
+    }
 
     #[test]
     fn the_node_id_is_the_first_ten_hex_digits_of_the_md5() {

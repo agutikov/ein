@@ -1,0 +1,25 @@
+;;; **A keyword pair below a form crashed two render views.**
+;;;
+;;; Found 2026-08-23 by `utils/fuzz_engine.py` (property `no-crash`), which
+;;; mutated `examples/syntax/trace-steps.ein`'s `trace` to `tracex`; the note
+;;; is `corpus/fuzz_findings/kwpair-below-the-filter.md`. `tracex` is neither a
+;;; kernel head nor a declared relation, so the loader reads the form as an
+;;; ontology fact and accepts it: `ein saturate` and `ein solve` answer it.
+;;;
+;;; Two render views label the form's arguments with `dot_util::value_label`,
+;;; which recursed into each `(step …)` and reached its keyword pairs:
+;;;
+;;;   ein render constraints  — `constraints.rs` filters a declaration's own
+;;;                             keyword pairs, one level deep
+;;;   ein render program      — `ir_dot`'s ontology path, with no filter
+;;;
+;;; Both exited 101, *not a value node: KwPair*. M1e2 S1e2.3.2, on the user's
+;;; ruling (a) of 2026-11-03: `value_label` labels a keyword pair `:key value`
+;;; for every caller, as `ir_dot`'s `(query …)` note already spelled one, and
+;;; both views now draw each step as written. The corpus runs every view over
+;;; this file, which is the check that was missing.
+
+(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))
+  (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))
+  (step s3 :using (s2))
+  (step s4 :derives (final X)))

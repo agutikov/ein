@@ -44,7 +44,7 @@ them. What the session found was one thing, and it is about the DOT renderer:
 
 | file | property | what it is |
 |---|---|---|
-| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing has chosen one, so it is a defined-behaviour question rather than a crash to paper over |
+| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing had chosen one, so it was a defined-behaviour question rather than a crash to paper over. **Fixed 2026-11-03 by M1e2 S1e2.3.2** (the user's ruling (a): `value_label` labels a keyword pair `:key value`), and promoted to the corpus as `examples/ein-bugs/kwpair-below-the-filter.ein`; the note and this `.ein` stay as the dedup signature and a frontend-fuzzer seed |
 
 ### 2026-10-14 — M1e2's register, and two files that are not a fuzzer's
 
