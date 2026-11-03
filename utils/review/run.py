@@ -438,13 +438,22 @@ def root_page(p: Pages, summary: dict | None, trace: list[dict]) -> None:
                    "`sat(root ∪ C)` — there are no root writes to show.")
     root = (summary or {}).get("root", {})
     if root:
-        lines += ["## Facts by relation", "", f"From `summary.json`'s `root` block — {root.get('facts', '?')} facts.", ""]
+        # The block is root's fixpoint and H as every route starts from them
+        # (M1e2 S1e2.3.1, the user's ruling (a) of 2026-11-03), so its count
+        # is the count of the KB the sentence above says is never written.
+        link = doc("docs/kernel/inference/answer_dump.md", page) + "#the-run-summary"
+        lines += ["## Facts by relation", "",
+                  f"From `summary.json`'s `root` block — root's fixpoint, {root.get('facts', '?')} facts "
+                  f"(`root.facts`, [`answer_dump.md` § The run summary]({link})).", ""]
         lines += table(["relation", "facts"], [[r, n] for r, n in (root.get("facts_by_relation") or {}).items()])
         lines.append("")
-        rest = {k: v for k, v in root.items() if k not in ("facts", "facts_by_relation")}
+        rest = root_rows(root, page, skip=("facts", "facts_by_relation"))
         if rest:
-            lines += ["## The rest of the block", ""]
-            lines += table(["field", "value"], [[k, json.dumps(v, ensure_ascii=False)] for k, v in rest.items()])
+            lines += ["## The rest of the block", "",
+                      f"`root.hypgen` is the pass that built H, the universe every route reads, so "
+                      f"`root.hypgen.emitted` is H's size. Meanings are [`answer_dump.md` § The run "
+                      f"summary]({link})'s, quoted.", ""]
+            lines += table(["field", "value", "meaning"], rest)
             lines.append("")
     inv = p.inv.get("render-root")
     if inv and inv.code == 0:
@@ -899,6 +908,28 @@ def counter_meanings() -> dict[str, str]:
     return out
 
 
+def root_rows(root: dict, page: Path, skip: tuple = ()) -> list[list[str]]:
+    """The `root` block as `[field, value, meaning]` rows, one per field
+    `answer_dump.md` defines: dotted down to the sparse blocks, whose keys are
+    data, and each meaning quoted from the page."""
+    meanings = counter_meanings()
+    sparse = ("facts_by_relation", "filtered", "pre_candidate")
+    out: list[list[str]] = []
+
+    def walk(v: dict, at: str) -> None:
+        for k, child in v.items():
+            name = f"{at}.{k}"
+            if isinstance(child, dict) and k not in sparse:
+                walk(child, name)
+            else:
+                out.append([f"`{name}`", cell(child),
+                            rebase(meanings.get(name, "**not defined on any page**"),
+                                   "docs/kernel/inference/answer_dump.md", page)])
+
+    walk({k: v for k, v in root.items() if k not in skip}, "root")
+    return out
+
+
 def yes(v) -> str:
     """A value as a page prints it: JSON's `true` / `false` / `null`."""
     return json.dumps(v) if isinstance(v, bool) or v is None else str(v)
@@ -943,7 +974,9 @@ def summary_page(p: Pages, s: dict | None) -> None:
                     for k, val in (s.get("work") or {}).items()])
     lines += ["", "## Monotonicity", ""]
     lines += table(["field", "value"], [[k, cell(v)] for k, v in (s.get("monotonicity") or {}).items()])
-    lines += ["", "## Root", ""] + table(["field", "value"], [[k, cell(val)] for k, val in (s.get("root") or {}).items()])
+    lines += ["", "## Root", "", "Root's fixpoint and how H was built, as every route starts from them; "
+              f"meanings are [`answer_dump.md` § The run summary]({link})'s, quoted.", ""]
+    lines += table(["field", "value", "meaning"], root_rows(s.get("root") or {}, page))
     lines += ["", "## Leftover", "", "```json", json.dumps(s.get("leftover"), indent=2, ensure_ascii=False), "```", ""]
     lines += ["## Resolved configuration", "",
               f"Every flag is documented in [`configuration.md`]({doc('docs/kernel/configuration.md', page)}).", ""]

@@ -385,7 +385,9 @@ Three consequences, each a number rather than a position:
   **leftover-open count** — and that number is measured, not hypothetical:
   `zebra2`'s *unique* model leaves **3 678** facts the blind enumerator would
   still propose, so open-world it is 2³⁶⁷⁸ interpretations
-  ([census §6](model_set_census.md)).
+  ([census §6](model_set_census.md)). *(Note, 2026-11-03: that was the count
+  through the walk's lookahead filter; config-free, as M1e2 S1e2.3.1 made the
+  probe, it is **8 203**, so 2⁸²⁰³ — `EIN_LEFTOVER=1 ein solve --maximal examples/zebra2.ein --json-summary J`.)*
 - **The gap is reportable today.** `EIN_LEFTOVER=1` fills `--json-summary`'s
   `leftover` block with exactly *n*, per recorded state, attributed by
   relation. `leftover = 0` is where the two readings **agree**, and

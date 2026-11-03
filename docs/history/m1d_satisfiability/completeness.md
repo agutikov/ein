@@ -118,6 +118,15 @@ the instrument, and split by relation it is exact:
 | `examples/zebra2-obligations.ein` | 1 | **3 678** | `is-a` 930, `is-a*` 900, `next-to` 922, `right-of` 926 |
 | the `uncovered.ein` fixture below | 3 | 33–34 | `is-a` 12, **`knows` 12**, `seats` 9–10 |
 
+*(Note, 2026-11-03: the zebra row's **3 678** was taken through the walk's
+lookahead filter, which the program switched on. M1e2
+[S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
+made the probe config-free on the user's ruling of that day, and the same
+model leaves **8 203**: the four relations below as they were, plus 905
+ill-typed arrows on each of the five `*-loc` relations, which the filter
+dropped — `EIN_LEFTOVER=1 ein solve --maximal examples/zebra2-obligations.ein
+--json-summary J`. What follows is the filtered count's reading.)*
+
 The zebra row is the argument holding. The leftover is **exactly the four
 `uncovered` relations and nothing else** — not one `*-loc` fact remains
 proposable, so the obligations and saturation between them decide every

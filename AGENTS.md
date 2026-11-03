@@ -64,7 +64,7 @@ constrained-reasoning research.
   [configuration reference](docs/kernel/configuration.md)** — the 3
   `(config …)` flags a program can set (fourteen more retired, nine at M1e2
   S1e2.1a.5, one at S1e2.1a.6 and four at S1e2.1c.5, each refused with the
-  stage and why), the 71 CLI options, the three `EIN_*` names the binary
+  stage and why), the 71 CLI options, the two `EIN_*` names the binary
   actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve
@@ -104,7 +104,8 @@ constrained-reasoning research.
   S1e2.1a.5's switch (2026-10-18) a bare `ein solve` describes R**: the walk
   has no CLI path (its library stayed, uncalled, until P1e2.1c measured what of
   it the modes reuse, and **S1e2.1c.5 deleted it on 2026-11-03**, keeping the
-  hypothesis generator the summary's `root` block calls), its nine options are
+  hypothesis generator the summary's `root` block called until S1e2.3.1 made
+  that block root's fixpoint and H as the routes have them), its nine options are
   refused with what replaced each,
   the four verdict words are `--single`'s alone, every answer exits 0 and only
   a refuted claim exits 1, and
@@ -452,7 +453,11 @@ constrained-reasoning research.
   ([model_set_census.md](docs/history/m1d_satisfiability/model_set_census.md)).
   It also carries the probe P1d.2 declined — `EIN_LEFTOVER=1`, above — and its
   number: `zebra2`'s **unique** model leaves **3 678** facts the blind
-  enumerator would still propose, none of them an attribute arrow.
+  enumerator would still propose, none of them an attribute arrow. That was
+  the count through the walk's lookahead filter, until 2026-11-03: config-free,
+  as H is since M1e2 S1e2.3.1, it is **8 203**, and 4 525 of them are
+  attribute arrows, 905 per `*-loc` relation, which the filter dropped
+  (`EIN_LEFTOVER=1 ein solve --maximal examples/zebra2.ein --json-summary J`).
   Since S1d.3.2 it has a second half, **`--form {envelope,key,list,diagram}`**,
   which renders a model set as one of the candidate *representations* rather
   than as a census row — because a representation argued about in prose and
@@ -585,9 +590,9 @@ python3 utils/read_out_examples.py                           # M1e2: the read-ou
 S1e2.1c.5 (2026-11-03) no code**, so several of the paragraphs below describe
 it as M1d and M1e left it — `EIN_OBLIGATION_CHOICE`, `EIN_TRAVERSAL`, the stop
 policy, `Ambiguity`'s qualifier and the walk's `:expect` wording are records
-of a library that was deleted. `EIN_OBLIGATION_CHOICE` is still read, by the
-generator the summary's `root` block calls; `EIN_TRAVERSAL` went with the
-walk. What
+of a library that was deleted. `EIN_OBLIGATION_CHOICE` was read by the
+generator the summary's `root` block called until M1e2 S1e2.3.1 retired it;
+`EIN_TRAVERSAL` went with the walk. What
 carried over: `--models list|key|grid`, now over the states a run lists;
 `EIN_LEFTOVER`'s block in `ein-summary/2`; and `ein test --json-report`, now
 `ein-test-report/3`, a query row carrying its classes. The read-out's
@@ -597,8 +602,8 @@ and its golden page, written by the binary, is
 [`read_out_examples.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md).
 
 **The `EIN_*` names in that block are the ones an agent needs, not the
-set.** The shipped binary reads **three** since M1e2 S1e2.1c.5 (eight
-before), the test harness reads ten more, `utils/` and the shell two — and six
+set.** The shipped binary reads **two** since M1e2 S1e2.3.1 (three after
+S1e2.1c.5, eight before), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
 `(config …)` fields and the 71 CLI options beside it and a *does it change the
@@ -606,14 +611,18 @@ answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.
 
-**`EIN_OBLIGATION_CHOICE`** is the obligations rung's measurement lever
-(default `rule-order`): `fail-first` walks the owed instances smallest-set
-first, and **`off` declines the rung altogether**, which is the pre-S1d.2.5
+**`EIN_OBLIGATION_CHOICE`** was the obligations rung's measurement lever
+(default `rule-order`): `fail-first` walked the owed instances smallest-set
+first, and **`off` declined the rung altogether**, which is the pre-S1d.2.5
 engine and the control arm every number in
 [`hypotheses_from_obligations.md`](docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
-is measured against. It is deliberately not a `(config …)` field: `SolverConfig`
+is measured against. It was deliberately not a `(config …)` field: `SolverConfig`
 is rendered into the KB-shape digest, so a knob whose settings are being
-compared would re-bless every shape golden in the corpus.
+compared would re-bless every shape golden in the corpus. **The user retired
+it on 2026-11-03** (M1e2 S1e2.3.1): no route walks the ladder, the universe is
+taken with the rung in report order, and once the summary's `root` block, its
+last reader, became root's fixpoint and H, it changed nothing the binary
+printed. The binary no longer reads it, and the rung's order stays pinned.
 
 **`EIN_TRAVERSAL=tree`** was M1d
 [S1d.10.6](docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s
@@ -710,13 +719,17 @@ would still propose at each recorded model or open state. `complete` means
 *the active rung proposes nothing*, so a node the hrule or obligations rung
 called complete can still have facts a guess could be about — and their count
 is what separates *one model* from *2ⁿ models* when the reading is open-world
-(`zebra2`'s **unique** model leaves **3 678**). It runs on a discarded fork,
+(`zebra2`'s **unique** model leaves **8 203**, config-free since M1e2
+S1e2.3.1; the **3 678** M1d measured was the count through the walk's
+lookahead filter, until 2026-11-03). It runs on a discarded fork,
 which is what makes it a read where
 [P1d.2 declined one](docs/history/m1d_satisfiability/hypotheses_from_obligations.md):
 with the lever on and off, every field of every summary outside that block is
 identical on all 121 entries that reach a fixpoint. Off by default because it
-costs a generation pass per recorded state (≈40 ms on the zebra family) and
-every corpus `solve` in `cargo test` writes a summary.
+costs a generation pass per listed state and every corpus `solve` in `cargo
+test` writes a summary: ≈40 ms on the zebra family through the lookahead, and
+≈3 ms on `zebra2` config-free (`ein solve --maximal examples/zebra2.ein`, best
+of five with the variable and without, 99 against 102 ms, 2026-11-03).
 
 **A failing `:expect` now says why on stderr too**, M1d
 [S1d.4.3](docs/history/m1d_satisfiability/the_vocabulary.md),

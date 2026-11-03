@@ -300,7 +300,8 @@ actually consulted, and its `mode` says how that went:
 | `declined` | it refused the whole call and the blind enumerator ran instead — an obligation whose guard scans a relation the rung itself proposes (the [domain contract](../../../docs/history/m1d_satisfiability/domain_contract.md)'s C4), or a projection that did not resolve for this activator |
 
 `reason` is the C4 or projection sentence for `declined`, and the walk order
-(`rule-order` / `fail-first`, `EIN_OBLIGATION_CHOICE`) otherwise. `owed` counts
+otherwise: `rule-order` on every call since M1e2 S1e2.3.1 retired
+`EIN_OBLIGATION_CHOICE`, which could set `fail-first`. `owed` counts
 the undischarged instances at this quiescence, `branches` those branched on,
 `declined` those scoped out — `owed = branches + declined` — and `candidates`
 the facts proposed before the filter pipeline, which is the `hyp` stream's

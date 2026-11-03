@@ -162,6 +162,12 @@ a graph that is K₂₃ minus five edges, minimum vertex separator **17 of 23**.
 It also carries the probe P1d.2 declined: `EIN_LEFTOVER=1`, and its number —
 `zebra2`'s **unique** model leaves **3 678** facts the blind enumerator would
 still propose, *none of them an attribute arrow*.
+*(Note, 2026-11-03: the 3 678 was the count through the walk's lookahead
+filter, which `zebra2` switched on. M1e2
+[S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
+made the probe config-free, as H is, on the user's ruling of that day: the
+same model leaves **8 203**, and 4 525 of them are ill-typed `*-loc` arrows,
+905 per relation, which the filter dropped — `EIN_LEFTOVER=1 ein solve --maximal examples/zebra2.ein --json-summary J`.)*
 
 ### S1d.3.2 — Representations
 [`representations.md`](representations.md) prices five forms on four columns —

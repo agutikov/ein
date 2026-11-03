@@ -233,6 +233,11 @@ this phase's to rule.
 The phase's [S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
 re-took it wider: `root.hypgen.emitted` differs from H on 71 of 212 files, and
 `root.facts` from root's fixpoint on 175, mostly by `emit_closed`'s writes.
+**Fixed 2026-11-03 by S1e2.3.1**, on the user's ruling (a) of that day: the
+block is root's fixpoint and H as every route starts from them, config-free,
+22 facts and 48 emitted on `branching/02`. `summary_properties.rs` holds it to
+both on every corpus cell, `lever_invariance.rs` compares it whole, and
+`EIN_OBLIGATION_CHOICE`, which then changed nothing printed, is retired.
 
 ## What it inherits from M1e
 

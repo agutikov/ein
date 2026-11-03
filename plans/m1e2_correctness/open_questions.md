@@ -191,6 +191,14 @@ alone. No answer moves. The witnesses and the reproduction are in
 [the README beside S4's row](README.md#p1e23--surfaces-that-misreport-the-answer-proposed).
 So the question is P1's and S4's.
 
+**Note, 2026-11-03 — S4 is fixed** by P1e2.3's
+[S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
+on the user's ruling (a) of that day: the block is root's fixpoint and H as
+every route starts from them. Root's fixpoint on `branching/02` holds 22, not
+the 23 the note above says (the 23 was the block with the program's lookahead
+off, still counting one `emit_closed` write); the block now reads 22 and 48.
+This question closes at S1e2.3.4.
+
 **Ruled 2026-11-02: P1e2.3 becomes a phase**, in the user's order of the
 milestone: P1e2.4, P1e2.1b, P1e2.1c, then P1e2.3, then the wrong answers
 ([README § Phases](README.md#phases)). It is specified when it starts, from P1,

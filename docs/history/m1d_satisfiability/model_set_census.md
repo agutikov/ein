@@ -347,6 +347,18 @@ on the zebra family, under 1 ms elsewhere.
 
 ### 6.2 The number
 
+> **Note, 2026-11-03.** Every count in this section was taken through the
+> walk's one-step lookahead filter wherever the program switched it on, as
+> `zebra2` and its family did. M1e2
+> [S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
+> made the probe config-free, as H is, on the user's ruling of that day. The
+> zebra2 family's **3 678** is **8 203** config-free: the same four relations,
+> plus 905 ill-typed arrows on each of the five `*-loc` relations, which the
+> filter dropped — so *not one attribute arrow* (§6.3) holds of the filtered
+> count only (`EIN_LEFTOVER=1 ein solve --maximal examples/zebra2.ein --json-summary J`). And `branching/12_typed_blind_solve`'s two states
+> (§6.4) leave 21 each, its type-wrong `color-of` fillers. The section stands
+> as the record of what was measured.
+
 **244 states probed across 95 entries.** 160 of them propose nothing at all.
 
 | entry | states | leftover, per state |

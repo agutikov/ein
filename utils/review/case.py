@@ -468,9 +468,14 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         if svgs:
             lines += [f"**{title}**", ""]
             lines += [f"![{s.stem}]({rel(s, page)})" for s in svgs] + [""]
+    # The summary's `root` block is root's fixpoint as every route starts from
+    # it (M1e2 S1e2.3.1, the user's ruling (a) of 2026-11-03): the same KB the
+    # `render kb` image above draws.
     root = (r.summary or {}).get("root", {})
     if root.get("facts_by_relation"):
-        lines += details(f"root's {root.get('facts', '?')} facts by relation",
+        lines += details(f"root's fixpoint: {root.get('facts', '?')} facts by relation "
+                         f"(`root.facts`; H, the candidates every route reads, is "
+                         f"{root.get('hypgen', {}).get('emitted', '?')})",
                          table(["relation", "facts"], [[k, v] for k, v in root["facts_by_relation"].items()]))
     def code(p: Path) -> list[str]:
         return [l for l in read(p).splitlines() if l.strip() and not l.strip().startswith(";")]

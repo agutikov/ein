@@ -54,7 +54,8 @@ depend on interner ids.
 
 **The universe** is the generator's list at root's fixpoint with **no config
 switch applied**: no lookahead filter, no kill cache, and the obligations rung
-at its default order whatever `EIN_OBLIGATION_CHOICE` says
+at its default order (`EIN_OBLIGATION_CHOICE`, which this pass never read,
+was retired at M1e2 S1e2.3.1)
 ([`generate_config_free`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)).
 The user ruled on 2026-10-15 that no config option may change the problem's
 lattice, so a candidate the lookahead would have dropped is still a node. The
