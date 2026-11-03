@@ -88,6 +88,14 @@
 # S1e2.1a.5, the stage that fixed them, as `owner`. The register still reads
 # **21 rows fixed and 14 open**.
 #
+# **The revisit (S1e2.1.7) reads the bundle built at `3ee7796a`** (2026-11-03):
+# `python3 utils/review_bundle.py --regions`, then `python3
+# utils/review_bundle.py`, on a clean tree → build/review/, 35 cases, 0 failed,
+# 6 632 pages and 1 680 SVGs, and the gallery's 20 program pages: 8 317 pages in
+# all, 0 dangling links. `3ee7796a` stopped a refused run's page linking dumps it
+# never wrote; the build before it, at `d4ff0f46`, dangled on one gallery page
+# and is kept at build/review.2026-11-03-d4ff0f46/.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
