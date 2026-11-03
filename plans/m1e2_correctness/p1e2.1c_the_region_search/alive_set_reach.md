@@ -15,7 +15,10 @@ the flagged programs past the limit with what they get today.
 P1e2.1a's record and the first answer. This page is the second, and it does
 not edit the first.
 
-**Status:** done 2026-11-03, T1e2.1c.1.1–.4, one commit each.
+**Status:** done 2026-11-03, T1e2.1c.1.1–.4, one commit each. **The second
+half**, § 9, is
+[S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md)'s measurement of the state
+route against this page's table, taken the same day.
 
 **This stage measures.** No golden, `:expect` or register row moved. The
 instrument is example code that no route reads:
@@ -709,3 +712,249 @@ Each of the 97 costs at most 5.9 ms.
 | `square-fwd/meetings` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.09 s | partial, layers 0–5 |
 | `zebra2-minus-15-obligations` *(not finished)* | 96 | ≥ 4 097 512 | ≥ 4 709 | ≥ 411 209 | ≥ 2 840 307 | ≥ 32 | — | — | — | ≥ 27 804 | 4 125 317 | 378 138 052 | 493.49 s | partial, layers 0–2 |
 | `zebra2-minus-15` *(not finished)* | 96 | ≥ 4 097 512 | ≥ 4 709 | ≥ 411 209 | ≥ 2 840 307 | ≥ 32 | — | — | — | ≥ 27 804 | 4 125 317 | 378 138 052 | 494.97 s | partial, layers 0–2 |
+
+## 9. The state route beside route 1
+
+**T1e2.1c.2.5's measurement**, for
+[S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md), the second half of this page.
+The state route ([`ein_infer::states`](../../../ein.rs/crates/ein-infer/src/states.rs))
+visits every alive state once and saturates its one-up extensions. A dead
+extension prunes its supersets (L1), and an extension that is a state already
+is read and not saturated (L3). It reads R off the states: k_c by L3, each
+state's minimal generators, both lines, N by duality, the components and the
+sub-cubes. Since T1e2.1c.2.4 it is describe's route on every monotone program.
+This section measures it against the route-1 table above, program by program.
+
+```sh
+./build.sh                                                   # the release ein, snmalloc linked
+(cd ein.rs && cargo build --release -p ein-infer --example state_reach)
+R=ein.rs/target/release/examples/state_reach
+CAP="systemd-run --user --scope -q -p MemoryMax=11G -p MemorySwapMax=0"
+
+# § 9.1, § 9.2: every monotone program but the zebra2-minus-15 pair, both routes, unbounded
+$CAP python3 peak.py both.jsonl -- timeout 1800 \
+  utils/bench_env.sh --cores PT $R --route1 --jobs 16 FILE…
+# § 9.3: the pair, the state route alone, with R per size and the duality checked
+$CAP python3 peak.py z.jsonl -- timeout 900 \
+  utils/bench_env.sh --cores PT $R --jobs 16 --by-size 6 --duality examples/zebra2-minus-15.ein
+# § 9.5: the binary, a bare describe, at -j 1 and -j 16
+$CAP python3 peak.py out.txt -- timeout 900 \
+  utils/bench_env.sh --cores PT ein.rs/target/release/ein solve FILE -s -t -j J [--region-budget F]
+```
+
+**Taken 2026-11-03 on `c5c45e37`**, release builds, with the machine state
+`utils/bench_env.sh` printed: an i9-14900HX pinned with `--cores PT` to
+cpu0–15 (8 physical P-cores), governor `powersave` (epp
+`balance_performance`), turbo on, load average under 3. The ceiling is the
+same as § 2's: `timeout 900` a run (1 800 for the sweep) and `MemoryMax=11G`.
+No run reached either. `peak.py` and the instrument's JSON line are § 2's.
+*Smallest budget* is the replay of § 5.1's rule over the state route's
+layers: before a layer, the facts spent plus its saturations times the facts
+per saturation so far.
+
+### 9.1 Every monotone program: never more than route 1
+
+Over the 181 monotone programs, both routes run to the end:
+
+- **The state route saturates fewer nodes than route 1 on 32 and as many on
+  149**, and derives fewer facts on the same 32 and as many on the rest. It
+  never does more of either. Summed, that is **1 341 309 saturations and
+  15 969 475 facts** against route 1's 7 732 817 and 177 557 787, and 6.3 s
+  of wall against 131.5 s.
+- **Where states do not collapse, it is route 1, node for node.** That is
+  `pets`, `constraint-scopes` and `arg-kinds`. L1's pruning closes § 3.4's
+  crossover: `pets`, `lattice/07_two_pairs_two_tables` and
+  `lattice/06_friends_tables_everyone_sits` cost route 1's 11 351, 177 and 345
+  saturations, where the unpruned count was 26 192, 1 073 and 3 045. Its wall
+  there can be a few milliseconds more than route 1's, since it builds its
+  description (`pets` 32.5 ms against 23.7 ms).
+- **Where they collapse, it wins by the collapse**: 724 times on `zebra2`, 609
+  on `zebra`, 108 on `zebra2-hints`, 20 on `branching/06` and `/07`, and 7.9
+  on the `square-*` six.
+
+The programs where the two differ, and every program route 1 needs more than
+4 000 saturations for:
+
+| program | n | alive states | saturations | facts | wall | route 1: saturations | facts | wall | route 1 ÷ state route, saturations |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `saturation/implies/org-chart.ein` | 2 | 3 | 3 | 3 | 0.3 ms | 4 | 5 | 0.3 ms | 1.3 |
+| `saturation/implies/parent-to-ancestor.ein` | 2 | 3 | 3 | 3 | 0.3 ms | 4 | 5 | 0.3 ms | 1.3 |
+| `saturation/implies/right-then-next.ein` | 2 | 3 | 3 | 3 | 0.2 ms | 4 | 5 | 0.3 ms | 1.3 |
+| `lattice/03_state_hash_collision.ein` | 3 | 5 | 7 | 13 | 0.3 ms | 8 | 16 | 0.3 ms | 1.1 |
+| `saturation/transitive/colocation-chain.ein` | 3 | 4 | 7 | 14 | 0.3 ms | 8 | 17 | 0.3 ms | 1.1 |
+| `saturation/transitive/mealtimes.ein` | 3 | 4 | 7 | 14 | 0.3 ms | 8 | 17 | 0.3 ms | 1.1 |
+| `saturation/transitive/taxonomy.ein` | 3 | 4 | 7 | 14 | 0.3 ms | 8 | 17 | 0.3 ms | 1.1 |
+| `tests/region/03_merged_or.ein` | 3 | 4 | 7 | 14 | 0.3 ms | 8 | 17 | 0.3 ms | 1.1 |
+| `branching/05_mini_zebra.ein` | 9 | 5 | 13 | 60 | 1.0 ms | 14 | 66 | 1.0 ms | 1.1 |
+| `lattice/synth/merged_states.ein` | 5 | 16 | 18 | 46 | 0.4 ms | 25 | 65 | 0.4 ms | 1.4 |
+| `tests/region/02_merged_single.ein` | 5 | 16 | 18 | 46 | 0.4 ms | 25 | 65 | 0.4 ms | 1.4 |
+| `branching/12_typed_blind_solve.ein` | 25 | 3 | 30 | 348 | 2.9 ms | 32 | 356 | 2.8 ms | 1.1 |
+| `features/03_forall.ein` | 5 | 21 | 22 | 56 | 0.5 ms | 32 | 92 | 0.5 ms | 1.5 |
+| `branching/10_kill_cache_on.ein` | 18 | 15 | 58 | 480 | 2.3 ms | 76 | 672 | 2.4 ms | 1.3 |
+| `branching/11_kill_cache_off.ein` | 18 | 15 | 58 | 480 | 2.2 ms | 76 | 672 | 2.3 ms | 1.3 |
+| `branching/04_two_levels.ein` | 46 | 7 | 71 | 236 | 1.0 ms | 85 | 284 | 1.1 ms | 1.2 |
+| `branching/03_five_hyps_one_alive.ein` | 132 | 2 | 133 | 440 | 1.9 ms | 134 | 442 | 2.0 ms | 1.0 |
+| `branching/02_one_dead_one_alive.ein` | 48 | 20 | 193 | 1 272 | 4.3 ms | 2 164 | 19 502 | 19.4 ms | 11.2 |
+| `syntax/constraint-scopes.ein` | 12 | 4 096 | 4 096 | 24 576 | 8.6 ms | 4 096 | 24 576 | 6.5 ms | 1.0 |
+| `branching/08_hypothesis_relation_whitelist.ein` | 38 | 34 | 335 | 2 716 | 2.8 ms | 5 946 | 55 506 | 27.1 ms | 17.7 |
+| `zebra2-hints.ein` | 36 | 6 | 78 | 6 733 | 79.4 ms | 8 389 | 309 545 | 506.9 ms | 107.6 |
+| `saturation/type-exclusivity/pets.ein` | 15 | 11 339 | 11 351 | 76 743 | 32.5 ms | 11 351 | 76 743 | 23.7 ms | 1.0 |
+| `branching/06_lookahead_on.ein` | 204 | 74 | 961 | 7 968 | 8.6 ms | 19 192 | 180 962 | 89.3 ms | 20.0 |
+| `branching/07_lookahead_off.ein` | 204 | 74 | 961 | 7 968 | 8.7 ms | 19 192 | 180 962 | 97.6 ms | 20.0 |
+| `features/02_star_in_identifiers.ein` | 15 | 728 | 1 736 | 21 364 | 20.4 ms | 32 768 | 470 616 | 316.0 ms | 18.9 |
+| `zebra2-obligations.ein` | 56 | 20 | 374 | 42 705 | 185.2 ms | 270 579 | 15 094 278 | 18.16 s | 723.5 |
+| `zebra2.ein` | 56 | 20 | 374 | 42 705 | 178.7 ms | 270 579 | 15 094 278 | 18.81 s | 723.5 |
+| `zebra.ein` | 56 | 27 | 445 | 106 829 | 276.3 ms | 270 912 | 30 251 060 | 25.82 s | 608.8 |
+| `syntax/arg-kinds.ein` | 19 | 524 288 | 524 288 | 4 980 736 | 1.81 s | 524 288 | 4 980 736 | 2.03 s | 1.0 |
+| `saturation/square-bwd/floors.ein` | 20 | 27 559 | 132 383 | 1 773 548 | 571.9 ms | 1 048 576 | 18 468 768 | 10.50 s | 7.9 |
+| `saturation/square-bwd/houses.ein` | 20 | 27 559 | 132 383 | 1 773 548 | 592.2 ms | 1 048 576 | 18 468 768 | 10.96 s | 7.9 |
+| `saturation/square-bwd/meetings.ein` | 20 | 27 559 | 132 383 | 1 773 548 | 602.2 ms | 1 048 576 | 18 468 768 | 11.18 s | 7.9 |
+| `saturation/square-fwd/floors.ein` | 20 | 27 559 | 132 383 | 1 773 548 | 553.8 ms | 1 048 576 | 18 468 768 | 11.59 s | 7.9 |
+| `saturation/square-fwd/houses.ein` | 20 | 27 559 | 132 383 | 1 773 548 | 638.3 ms | 1 048 576 | 18 468 768 | 10.65 s | 7.9 |
+| `saturation/square-fwd/meetings.ein` | 20 | 27 559 | 132 383 | 1 773 548 | 640.5 ms | 1 048 576 | 18 468 768 | 10.63 s | 7.9 |
+| `zebra2-minus-15.ein` | 96 | 4 709 | 99 505 | 9 481 774 | 12.51 s | ≥ 4 125 316, not finished | ≥ 378 138 052 | 495 s | — |
+| `zebra2-minus-15-obligations.ein` | 96 | 4 709 | 99 505 | 9 481 774 | 12.30 s | ≥ 4 125 316, not finished | ≥ 378 138 052 | 495 s | — |
+
+`route_invariance::the_state_route_and_route_1_print_one_read_out` holds
+both halves per commit, the read-out and *never more*, on the 169 programs
+both routes finish at the default budget, and on 179 with `EIN_CORPUS_SLOW=1`
+(390 s, release). On every monotone cube the oracle enumerates, the state
+route's every field is the oracle's
+(`the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`, 156
+cubes).
+
+### 9.2 What it describes, and what the default budget reaches
+
+R as the state route reads it, on every program past § 5's 32 768 facts and on
+the zebra family and the pair. Every number is route 1's (§ 2.1, § 5), where
+route 1 finishes. *description* is the read-off alone, single-threaded.
+
+| program | k_s | k_c | min | max | generators | merged | \|N\| | maximal alive | components | description | smallest budget | default |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `ein-bugs/zebra2-hints.ein` | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0.0 ms | 0 | yes |
+| `branching/05_mini_zebra.ein` | 5 | 8 | 1 | 1 | 7 | 1 | 6 | 1 | 1 | 0.0 ms | 60 | yes |
+| `lattice/07_two_pairs_two_tables.ein` | 8 | 8 | 8 | 8 | 8 | 0 | 64 | 24 | 8 | 0.2 ms | 448 | yes |
+| `zebra2-hints.ein` | 6 | 8 316 | 1 | 2 | 21 | 4 | 73 | 2 | 1 | 0.1 ms | 6 805 | yes |
+| `features/02_star_in_identifiers.ein` | 728 | 32 768 | 1 | 1 | 1 072 | 688 | 0 | 1 | 1 | 1.3 ms | 21 364 | yes |
+| `zebra2-obligations.ein` | 1 | 261 982 | 63 | 1 | 63 | 1 | 366 | 8 | 1 | 0.5 ms | 42 705 | yes |
+| `zebra2.ein` | 1 | 261 982 | 63 | 1 | 63 | 1 | 366 | 8 | 1 | 0.5 ms | 42 705 | yes |
+| `saturation/type-exclusivity/pets.ein` | 11 339 | 11 339 | 1 | 39 | 11 339 | 0 | 12 | 39 | 1 | 8.0 ms | 76 743 | yes |
+| `zebra.ein` | 1 | 261 982 | 63 | 1 | 63 | 1 | 458 | 9 | 1 | 0.6 ms | 106 829 | yes |
+| `saturation/square-bwd/floors.ein` | 27 559 | 1 048 576 | 1 | 1 | 29 711 | 23 896 | 0 | 1 | 1 | 57.1 ms | 1 773 548 | no |
+| `saturation/square-bwd/houses.ein` | 27 559 | 1 048 576 | 1 | 1 | 29 711 | 23 896 | 0 | 1 | 1 | 54.9 ms | 1 773 548 | no |
+| `saturation/square-bwd/meetings.ein` | 27 559 | 1 048 576 | 1 | 1 | 29 711 | 23 896 | 0 | 1 | 1 | 54.6 ms | 1 773 548 | no |
+| `saturation/square-fwd/floors.ein` | 27 559 | 1 048 576 | 1 | 1 | 29 711 | 23 896 | 0 | 1 | 1 | 54.8 ms | 1 773 548 | no |
+| `saturation/square-fwd/houses.ein` | 27 559 | 1 048 576 | 1 | 1 | 29 711 | 23 896 | 0 | 1 | 1 | 57.4 ms | 1 773 548 | no |
+| `saturation/square-fwd/meetings.ein` | 27 559 | 1 048 576 | 1 | 1 | 29 711 | 23 896 | 0 | 1 | 1 | 55.3 ms | 1 773 548 | no |
+| `syntax/arg-kinds.ein` | 524 288 | 524 288 | 1 | 1 | 524 288 | 0 | 0 | 1 | 1 | 927.1 ms | 4 980 736 | no |
+| `zebra2-minus-15.ein` | 32 | 241 462 963 | 12 068 | 32 | 12 068 | 32 | 27 804 | 467 | 32 | 398.9 ms | 9 481 774 | no |
+| `zebra2-minus-15-obligations.ein` | 32 | 241 462 963 | 12 068 | 32 | 12 068 | 32 | 27 804 | 467 | 32 | 401.7 ms | 9 481 774 | no |
+
+- **The zebra family fits the default budget.** `zebra` needs 106 829 facts
+  where route 1 needed 30 251 060. A bare `ein solve examples/zebra.ein`
+  describes R exhausted: one state, 261 982 commitments, 63 minimal
+  generators, |N| = 458.
+- **The default still does not count every state of eight programs**: the six
+  `square-*` cubes (1 773 548 facts), `arg-kinds` (4 980 736) and the pair
+  (9 481 774). The first seven are everything-alive cubes, so R itself is
+  decided (§ 9.4).
+- **Not a corpus program is past 2²⁴ facts** on the state route. Route 1 needed
+  2^24.85 for `zebra` alone, and did not finish the pair.
+
+### 9.3 `zebra2-minus-15`, described
+
+The open case of § 2.3, which route 1 could not finish at 2²² visits in 495 s.
+**The state route finishes it**: 99 505 saturations and 9 481 774 facts,
+12.5 s and a 90 MiB peak at `-j 16`, 23 layers by state size.
+
+- **4 709 alive states**, the count § 3.2 met by layer 6 and could not call a
+  total. None is generated only past layer 6.
+- **R is 32 states and 241 462 963 commitments**, in 32 components, one state
+  each. The minimal line is 12 068 commitments, every minimal generator of
+  every state, the least of 2 candidates. The maximal line is the 32 states,
+  as M1d's tree found.
+- **|N| = 27 804**, route 1's floor exactly: N through size 6 was all of N.
+  There are 467 maximal alive states, 435 of them owing.
+- **Route 1 agrees where it finished.** R's commitments per size, enumerated
+  from the generators, are § 2.3's layers 0–6, 0, 0, 221, 10 270, 107 963,
+  585 989 and 2 135 864, and N's members per size are its dead column,
+  1 428, 13 269, 11 799, 1 300 and 8.
+  `the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6` holds both
+  (`EIN_CORPUS_SLOW=1`).
+- **The duality holds the other way**: the complements of N's 467 minimal
+  transversals are exactly the maximal alive states. That direction costs
+  16.2 s of MMCS alone, more than the route (`state_reach --duality`).
+- The twin, `zebra2-minus-15-obligations`, is the same in every column.
+
+### 9.4 The everything-alive cubes, as describe prints them
+
+§ 4's decision, in the read-out since T1e2.1c.2.4. On a run its budget stops,
+the state route saturates ⊤ once, as route 1 did. With ∅ also in R, **R is
+decided**: k_c = 2ⁿ, both trivial lines, one component, one sub-cube of
+dimension n and N = 0, all printed exact. The `exhausted` row says that only
+the states are not all counted, and `merged` says *not known*. At the default
+budget:
+
+| program | k_s printed | of | saturations | facts | `-t` route + read-out, `-j 1` |
+|---|---:|---:|---:|---:|---:|
+| `square-*` (six) | ≥ 17 449, complete up to states of 6 candidates | 27 559 | 42 711 | 426 508 | 0.48 s + 0.22 s |
+| `syntax/arg-kinds` | ≥ 94 185, complete up to states of 6 candidates | 524 288 | 94 185 | 592 439 | 0.40 s + 0.36 s |
+
+`k_s` is counted, every state, at the smallest budgets of § 9.2: 1 773 548
+facts for a `square-*` cube, 4 980 736 for `arg-kinds`. Route 1 printed
+k_c ≥ 21 701 and ≥ 43 797 at the default, and no N, components or sub-cube.
+
+### 9.5 The binary: a bare `ein solve`
+
+`ein solve FILE -s -t -j J [--region-budget F]`, the release binary with
+snmalloc, one process per row. *route*, *read-out* and *print* are `-t`'s.
+*peak* is the process's.
+
+| program | `-j` | `--region-budget` | answer | work | route | read-out | print | peak |
+|---|---:|---|---|---|---:|---:|---:|---:|
+| `zebra` | 1 | default | exhausted, k_s 1 | 445 · 106 829 facts | 0.97 s | 1.9 ms | 0.1 ms | 14 MiB |
+| `zebra` | 16 | default | exhausted, k_s 1 | 445 · 106 829 | 0.23 s | 2.0 ms | 0.1 ms | 82 MiB |
+| `zebra2` | 1 | default | exhausted, k_s 1 | 374 · 42 705 | 0.54 s | 1.5 ms | 0.1 ms | 13 MiB |
+| `zebra2-obligations` | 1 | default | exhausted, k_s 1 | 374 · 42 705 | 0.55 s | 1.6 ms | 0.1 ms | 12 MiB |
+| `square-bwd/floors` | 1 | default | R decided, k_s ≥ 17 449 | 42 711 · 426 508 | 0.48 s | 0.22 s | 0.3 ms | 43 MiB |
+| `square-bwd/floors` | 1 | 2²¹ | exhausted, k_s 27 559 | 132 383 · 1 773 548 | 2.26 s | 0.47 s | 0.11 s | 127 MiB |
+| `square-bwd/floors` | 16 | 2²¹ | exhausted, k_s 27 559 | 132 383 · 1 773 548 | 0.72 s | 0.47 s | 0.11 s | 138 MiB |
+| `syntax/arg-kinds` | 1 | default | R decided, k_s ≥ 94 185 | 94 185 · 592 439 | 0.40 s | 0.36 s | 1.2 ms | 119 MiB |
+| `syntax/arg-kinds` | 1 | 2²³ | exhausted, k_s 2¹⁹ | 524 288 · 4 980 736 | 2.62 s | 2.50 s | 0.67 s | 1.12 GiB |
+| `syntax/arg-kinds` | 16 | 2²³ | exhausted, k_s 2¹⁹ | 524 288 · 4 980 736 | 1.79 s | 2.50 s | 0.67 s | 1.18 GiB |
+| `zebra2-minus-15` | 1 | default | partial, k_s ≥ 21 | 1 652 · 122 678 | 1.20 s | 20 ms | 0.2 ms | 16 MiB |
+| `zebra2-minus-15` | 16 | default | partial, k_s ≥ 21 | 1 652 · 122 678 | 0.60 s | 20 ms | 0.2 ms | 69 MiB |
+| `zebra2-minus-15` | 1 | 2²⁴ | exhausted, k_s 32 | 99 505 · 9 481 774 | 79.45 s | 29 ms | 6.3 ms | 47 MiB |
+| `zebra2-minus-15` | 16 | 2²⁴ | exhausted, k_s 32 | 99 505 · 9 481 774 | 10.07 s | 29 ms | 6.2 ms | 97 MiB |
+
+- **A bare describe of the zebra family costs under a second at `-j 1`**,
+  where at S1e2.1c.1 it was partial and `zebra` exhausted only at 30 251 060
+  facts, in 19.2 s at `-j 16` (§ 5.1).
+- **`zebra2-minus-15` is cheap to stop and dear to finish.** At the default
+  it stops at 122 678 facts, because its next layer, 6 739 extensions,
+  projects 498 686 more. It then certifies less than route 1 did at the same
+  budget: k_s ≥ 21 against ≥ 28, and N ≥ 294 against ≥ 1 428. Route 1 had
+  spent 478 948. To finish it costs 79 s at `-j 1` and 10 s at `-j 16`.
+- **`arg-kinds`' read-out still costs more than its route**, as § 5.1 found:
+  2.50 s of read-out and 0.67 s of print against 1.79 s of route at `-j 16`,
+  with a 1.18 GiB peak. The read-out reads each of its 2¹⁹ states' model, and
+  that is not this stage's work, so it is noted and not fixed. Its route is
+  route 1's, node for node.
+
+### 9.6 What it says
+
+- **For the budget question** (S1e2.1c.2's T1e2.1c.2.6, the user's): the
+  default of 2¹⁹ facts already describes the zebra family. What it leaves
+  partial is the seven cubes' state count and the pair. § 9.5 prices each
+  step past it.
+- **For [S1e2.1c.4](s1e2.1c.4_the_flags_at_scale.md)**: the modes are still
+  route 1 with a cut, and describe now does less than they do on `zebra`. At
+  the default budget `--single`, `--maximal` and `--minimal` stop partial
+  after 4 225–4 343 saturations and 476 432–513 614 facts, where describe is
+  exhausted in 445. At 2²⁰ they certify in 8 818–8 927 saturations
+  (`ein solve examples/zebra.ein MODE --region-budget N -s`, 2026-11-03). So
+  `zebra`'s *is it unique?* is answered by describe's `k_s` before `--single`
+  can answer it.
+- **For memory**: the state route keeps the states and the commitments it
+  met, not every alive commitment. The pair's peak is 90 MiB where route 1's
+  2²² visits held 3.59 GiB.

@@ -1687,3 +1687,74 @@ fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
     // and the same number on the rest.
     assert!(fewer >= 10, "fewer saturations on {fewer} programs");
 }
+
+/// R's commitments of each size `0 ..= k`, counted from the state route's
+/// description: every subset of a state of R that holds one of its minimal
+/// generators. Route 1 counts the same column layer by layer.
+fn r_by_size(s: &states::StateRoute, d: &states::Description, k: usize) -> Vec<u64> {
+    let mut out = vec![0u64; k + 1];
+    for &i in &d.r {
+        let st = &s.states[i as usize];
+        let at = |b: u32| st.closure.binary_search(&b).expect("in S");
+        let gens: Vec<u128> = d.generators[i as usize]
+            .iter()
+            .map(|g| g.iter().fold(0u128, |m, &b| m | 1 << at(b)))
+            .collect();
+        let m = st.closure.len();
+        // Every subset of S of at most k members, by a stack of positions.
+        let mut stack: Vec<(usize, u128, usize)> = vec![(0, 0, 0)];
+        while let Some((from, mask, size)) = stack.pop() {
+            if gens.iter().any(|&g| g & !mask == 0) {
+                out[size] += 1;
+            }
+            if size < k {
+                for j in from..m {
+                    stack.push((j + 1, mask | 1 << j, size + 1));
+                }
+            }
+        }
+    }
+    out
+}
+
+/// **Past the oracle's limit, the state route is route 1 where route 1
+/// finishes** — on `zebra2-minus-15`, which route 1 runs to layer 6 under a
+/// 2²² ceiling and no further (`alive_set_reach.md` § 2.3, 2026-11-03, 495 s at
+/// `-j 16`). Its R per size and its N per size, through layer 6, are route
+/// 1's, banked here from that run; and the state route finishes it, with the
+/// 32 states M1d's tree found. `EIN_CORPUS_SLOW=1` only: about 10 s at
+/// `-j 16` in a release build.
+#[test]
+fn the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6() {
+    if std::env::var_os("EIN_CORPUS_SLOW").is_none() {
+        return;
+    }
+    // Route 1's layers 0–6: in R, and dead (each a member of N).
+    const IN_R: [u64; 7] = [0, 0, 221, 10_270, 107_963, 585_989, 2_135_864];
+    const DEAD: [u64; 7] = [0, 0, 1_428, 13_269, 11_799, 1_300, 8];
+    let path = repo_root().join("examples/zebra2-minus-15.ein");
+    let (mut kb, mut terms, ast) = loaded(&path).expect("loads");
+    let jobs = std::thread::available_parallelism().map_or(1, |n| n.get());
+    let s = states::compute(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &downset::Options::unbounded(jobs),
+    )
+    .expect("the state route runs");
+    assert!(s.declined.is_none(), "{:?}", s.declined);
+    let d = states::describe(&s).expect("described");
+    assert_eq!(r_by_size(&s, &d, 6), IN_R);
+    let mut dead = [0u64; 7];
+    let nogoods = d.nogoods.as_ref().expect("N, exhausted");
+    for g in nogoods {
+        if g.len() <= 6 {
+            dead[g.len()] += 1;
+        }
+    }
+    assert_eq!(dead, DEAD);
+    // Nothing past layer 6 is dead: route 1 found N nearly stopped there.
+    assert_eq!(nogoods.len() as u64, DEAD.iter().sum::<u64>());
+    assert_eq!(d.r.len(), 32, "k_s");
+    assert_eq!(d.k_c, 241_462_963);
+}

@@ -273,9 +273,15 @@ has to say which:
 
 **The duality.** Without holes, the minimal line is E's alive members, and the
 maximal line is the largest sets containing no member of N, kept where
-discharged. It is Reiter's diagnosis duality and MUS/MCS enumeration's, and it
-is the route past the oracle's limit
-([P1e2.1c](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)).
+discharged. It is Reiter's diagnosis duality and MUS/MCS enumeration's.
+Past the oracle's limit, the **state route** reads it the other way
+([S1e2.1c.2](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md),
+2026-11-03). It takes the maximal alive states off the states it met, and N is
+the minimal transversals of their complements. It holds both directions on
+every monotone cube (`ein-infer/tests/region.rs`), and past the limit the
+complements of N's minimal transversals are the maximal alive states on
+`zebra2-minus-15`: 467 of them from |N| = 27 804 (`state_reach --duality`,
+2026-11-03).
 In the corpus it holds on every monotone region (§ 8). On a non-monotone one
 it is not guaranteed, with a hole or without one:
 [`synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein)
@@ -668,7 +674,9 @@ it cannot see a candidate the generator never proposes (W4, W6).
 | a node's state, dead, owing, closure, class | [`region.rs`](../../../ein.rs/crates/ein-infer/src/region.rs) `compute`, `Node` |
 | R, its lines, holes, components, sub-cubes, N, E, the duality | `region::Topology` |
 | R of a monotone program from its alive down-set (route 1), k_s, k_c, the merged classes | [`downset.rs`](../../../ein.rs/crates/ein-infer/src/downset.rs) `compute`, `Description` |
-| every question `ein solve` asks about R: the lines, `-n`, `--single`, each with its licences | [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs) `run`, `Mode`, `Answer` |
+| R of a monotone program from its alive states (the state route, describe's since M1e2 S1e2.1c.2): each state's commitments by L3, its minimal generators, both lines, N by duality, components, sub-cubes | [`states.rs`](../../../ein.rs/crates/ein-infer/src/states.rs) `compute`, `describe`; read out by [`described.rs`](../../../ein.rs/crates/ein-infer/src/described.rs) `of_states` |
+| minimal transversals (MMCS), the count of the sets that meet every edge | [`transversal.rs`](../../../ein.rs/crates/ein-infer/src/transversal.rs) |
+| every question `ein solve` asks about R: the lines, `-n`, `--single`, each with its licences, and describe's route | [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs) `run`, `Mode`, `Answer`, `Licence` (L3 is `Licence::Closure`) |
 | monotone | [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs) |
 | owes, discharged | [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) `tally` |
 | the walk's `alive₀` | `Run::phase1` → `compute_alive` → `hypgen::open_hypotheses` |

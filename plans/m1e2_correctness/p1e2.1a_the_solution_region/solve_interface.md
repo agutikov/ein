@@ -273,7 +273,11 @@ class.
 
 L1–L4 and L6 are [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
 §§ 1.5, 1.6 and 2.4, and the corpus agrees with them on every monotone cube
-(§ 8 there). **L5 is new.** Its argument: at a node C owing instance I, every
+(§ 8 there). **L3 is built since M1e2
+[S1e2.1c.2](../p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md)**
+(2026-11-03): `explore::Licence::Closure`, printed on describe's `route` row,
+and held to the oracle on every monotone cube by
+`the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`. **L5 is new.** Its argument: at a node C owing instance I, every
 discharged D ⊇ C holds a witness a of I. Since a ∈ H, a is in D's closure,
 so D's state is above C ∪ {a}; if that node is dead, so is D. Its
 precondition is checkable when the program loads. It is proved and held to
@@ -296,7 +300,7 @@ for.
 | `--maximal --single` | a second maximal state, or decided | climb to s. Then route 1 over the alive nodes **not under s**. A discharged one has a maximal extension other than s (L2), which is `Ambiguity`. If there is none, s is unique | the state route | L1, L2, L4 |
 | `--maximal` | no alive node is left outside the maxima found | as above, climbing from every discharged node found outside the maxima so far | the state route: at most alive states × n | L1–L4 |
 | `--minimal` | no owing node is left | route 1 expanding owing nodes only. Restrictions only: {∅}, one saturation | duality, S1e2.1c.2: output-sized | L1, L2, L6 |
-| describe | the down-set is exhausted | route 1, unchanged | the state route, k_c by L3, the generators by minimal transversals (S1e2.1c.2) | L1, L3 |
+| describe | the down-set is exhausted | route 1, unchanged; **since S1e2.1c.2 (2026-11-03) the state route**, the right-hand column | the state route, k_c by L3, the generators by minimal transversals (S1e2.1c.2). **Built**: N by duality from the maximal alive states, the lines read off the states | L1, L3, L4 |
 
 Why the cuts are sound, one line each:
 
@@ -372,6 +376,12 @@ measured count is under its derived bound.
   2²⁰, so `--region-budget 1048576` certifies each in about one second at
   `-j 8`. `zebra2.ein` fits the default: `--single` is 8 616 saturations and
   418 806 facts, `Solution`. At P1e2.1c they fit with room to spare.
+- **Describe at P1e2.1c, measured** (S1e2.1c.2, 2026-11-03, release,
+  `ein solve examples/zebra.ein -s`): the state route, **445 saturations and
+  106 829 facts**, exhausted at the default budget, against the ≤ 1 512 +
+  transversals this table derived. `zebra2.ein` is 374 and 42 705.
+  [`alive_set_reach.md` § 9](../p1e2.1c_the_region_search/alive_set_reach.md#9-the-state-route-beside-route-1)
+  has the corpus.
 - **`zebra2-hints.ein --maximal` gives both maximal states** in 128
   saturations at the default budget. The walk misses the 7-fact one
   ([`walk_and_region.md` § 4.3](walk_and_region.md#43-a-different-node)), and
@@ -392,7 +402,12 @@ alive and in R: k_c = 2²⁰, k_s = 27 559, the maximal line is {⊤}, ∅ ∈ R
 
 This is the minimum-work principle at its plainest. The questions a person
 asks first cost 1–21 saturations. Only *describe everything* pays for 27 559
-states, and it says so.
+states, and it says so. **Since S1e2.1c.2** (2026-11-03) describe takes the
+state route: R is decided by ∅ and ⊤ at the default budget, with k_c, both
+lines, the one component, the one sub-cube and N exact, and k_s counted up to
+states of 6 candidates (42 711 saturations). All 27 559 states cost 132 383
+saturations and 1 773 548 facts, against route 1's 2²⁰ and 18 468 768
+([`alive_set_reach.md` § 9](../p1e2.1c_the_region_search/alive_set_reach.md#9-the-state-route-beside-route-1)).
 
 ## 4. Guide: which command answers which question
 
