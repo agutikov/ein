@@ -30,11 +30,25 @@
 //! on a stderr line `cargo test` captures for a passing test. A check that
 //! reports a pass because its tool is absent is not a check, and "loudly" was
 //! the word doing the lying.
+//!
+//! **Nor does it skip a view that errors** (M1e2 S1e2.1c.5). Until then a view
+//! whose renderer returned an error was passed over in silence, so deleting
+//! the engine a view runs would have left this test green over views it no
+//! longer checked. A file that does not parse has no view, one that does not
+//! load has no KB view, and one whose root does not saturate has no
+//! `kb-since`, the one view that saturates: those are the corpus's load- and
+//! compile-error fixtures, and each is skipped by its reason. Every other
+//! error fails the sweep.
+//!
+//! **The walk's three views are left out by name**, `lattice`,
+//! `lattice-full` and `slice` (`ein_render::shape::SOLVE_VIEWS`): they render
+//! the walk's proof, which S1e2.1c.5 deletes on the user's ruling of
+//! 2026-11-03, and no command reaches them.
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
 use ein_ir::{Ast, parse};
-use ein_render::shape::{all_views, dot_shape};
+use ein_render::shape::{KB_VIEWS, SOLVE_VIEWS, all_views, dot_shape};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -172,10 +186,20 @@ fn a_view_splits_into_whole_digraphs() {
     assert_eq!(digraphs("digraph a { x; }\n").len(), 1);
 }
 
+/// The walk's views, which this no longer renders (the module note).
+const WALK_VIEWS: [&str; 3] = ["lattice", "lattice-full", "slice"];
+
 #[test]
 fn graphviz_accepts_every_view_of_every_corpus_file() {
     require_graphviz();
-    let views = all_views();
+    assert_eq!(
+        SOLVE_VIEWS, WALK_VIEWS,
+        "the views that run the engine are the walk's three"
+    );
+    let views: Vec<&str> = all_views()
+        .into_iter()
+        .filter(|v| !WALK_VIEWS.contains(v))
+        .collect();
     let (mut bad, mut checked) = (Vec::new(), 0usize);
     // Views that only Graphviz's own cross-graph bug objected to, kept for the
     // summary line: the check reached a verdict on them, it just took a second
@@ -186,14 +210,41 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
         let Ok(text) = std::fs::read_to_string(path) else {
             continue;
         };
-        for view in &views {
+        // A file that does not parse has no view, one that does not load has
+        // no KB view, and one whose root does not saturate has no `kb-since`:
+        // the corpus's load- and compile-error fixtures.
+        let (loads, saturates) = {
             let mut ast = Ast::new();
             let mut terms = Terms::new();
             let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
                 continue;
             };
-            let Ok(out) = dot_shape(&mut ast, &mut terms, &forms, path.parent(), view, 1) else {
-                continue;
+            match ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) {
+                Ok(mut kb) => (
+                    true,
+                    ein_infer::region::root_firings(
+                        &mut kb,
+                        &mut terms,
+                        &ast,
+                        &mut ein_infer::Events::off(),
+                    )
+                    .is_ok(),
+                ),
+                Err(_) => (false, false),
+            }
+        };
+        for view in &views {
+            let mut ast = Ast::new();
+            let mut terms = Terms::new();
+            let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
+            let out = match dot_shape(&mut ast, &mut terms, &forms, path.parent(), view, 1) {
+                Ok(out) => out,
+                Err(_) if !loads && KB_VIEWS.contains(view) => continue,
+                Err(_) if !saturates && *view == "kb-since" => continue,
+                Err(e) => {
+                    bad.push(format!("{name} [{view}]\n  the view errored: {e}"));
+                    continue;
+                }
             };
             let dot = digraphs_only(&out);
             // An empty view is not a broken one: a file with no rules renders

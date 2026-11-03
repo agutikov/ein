@@ -41,13 +41,51 @@
 //! default-lookahead twin as the fresh-name case alone: `Solution k = 1` over
 //! a model with no `q`. Both are rows of `corpus/wrong_answers.toml`.)
 
-use ein_core::Terms;
+//!
+//! # Since M1e2 S1e2.1c.5
+//!
+//! The walk these tests first ran on was deleted on the user's ruling of
+//! 2026-11-03, and the dynamic half reads the routes: what a run reaches is
+//! the states a describe meets ([`explore`]), each read through the node
+//! function every route uses ([`ein_infer::region::Nodes`]). The pair's two
+//! answers are R's, and R is where W4 (`corpus/wrong_answers.toml`) records
+//! them: `{∅}` for the twin, and the control's maximal state.
+
+use ein_core::{FactId, Kb, Terms};
 use ein_corpus::{corpus_files, repo_root};
-use ein_infer::events::Events;
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::invariant::Universe;
-use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
-use ein_infer::verdict::Answer;
+use ein_infer::region::Nodes;
 use ein_ir::{Ast, load_file};
+
+/// `ein solve FILE`, bounded for a sweep: a describe that stops at a small
+/// budget, and a flagged program's cube only where it is small, lists the
+/// states it met — what this file means by *what a run reaches*.
+fn describe_options() -> explore::Options {
+    let mut o = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    o.budget = 20_000;
+    o.limit = 10;
+    o
+}
+
+/// Every state the answer met and every owing frontier node, as the facts
+/// that reach it.
+fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
+    let Some(d) = a.described.as_deref() else {
+        return Vec::new();
+    };
+    let facts = |set: &[u32]| -> Vec<FactId> {
+        set.iter().map(|&b| a.candidates[b as usize].fact).collect()
+    };
+    d.states
+        .iter()
+        .map(|s| facts(&s.rep))
+        .chain(d.frontier.iter().map(|o| facts(&o.set)))
+        .collect()
+}
 
 /// **The whole of what the corpus does wrong**, as `(path, rendered breach)`.
 ///
@@ -93,13 +131,6 @@ const PAIR: [&str; 2] = [
     "examples/ein-bugs/alive-set-fresh-name.ein",
     "examples/ein-bugs/alive-set-fresh-name-declared.ein",
 ];
-
-fn states_of(a: &Answer) -> Vec<&ein_infer::Solution> {
-    match a {
-        Answer::Verdict(v) => v.states(),
-        Answer::Aborted { .. } => Vec::new(),
-    }
-}
 
 /// **R0 — the static check, over every corpus program.**
 ///
@@ -186,10 +217,11 @@ fn no_run_reaches_a_name_the_static_check_did_not_predict() {
             .iter()
             .map(|b| terms.sym(b.name).to_string())
             .collect();
-        let mut events = Events::off();
-        if ein_infer::saturate_events(&ast, &mut terms, &mut kb).is_err() {
+        // The route saturates root in place, once, and writes nothing else
+        // into it: what root holds after the run is root's fixpoint.
+        let Ok(answer) = explore::run(&mut kb, &mut terms, &ast, &describe_options()) else {
             continue;
-        }
+        };
         let at_root = kb.n_facts();
         let root_universe = Universe::of(&kb, &terms);
 
@@ -217,20 +249,19 @@ fn no_run_reaches_a_name_the_static_check_did_not_predict() {
         };
         collect(&loaded, &kb, &terms, at_load, &mut r1);
 
-        let opts = SolveOptions {
-            stop_after: None,
-            max_enterings: Some(60),
-            on_budget: OnBudget::Verdict,
-            ..SolveOptions::default()
-        };
-        let Ok(answer) = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts) else {
+        solved += 1;
+        let sets = reached(&answer);
+        let Ok(mut nodes) = Nodes::new(&mut kb, &mut terms, &ast, &answer.candidates) else {
             continue;
         };
-        solved += 1;
-        for s in states_of(&answer.answer) {
-            collect(&loaded, &s.kb, &terms, at_load, &mut r1);
-            collect(&root_universe, &s.kb, &terms, at_root, &mut r2);
-        }
+        nodes
+            .with_fixpoints(&sets, |kbs: &mut [Kb], terms: &mut Terms| {
+                for k in kbs.iter() {
+                    collect(&loaded, k, terms, at_load, &mut r1);
+                    collect(&root_universe, k, terms, at_root, &mut r2);
+                }
+            })
+            .unwrap_or_else(|e| panic!("{rel}: {e}"));
     }
     assert!(
         solved >= 155,
@@ -263,15 +294,17 @@ fn no_run_reaches_a_name_the_static_check_did_not_predict() {
     );
 }
 
-/// **What the invariant is worth: one name, and the verdict inverts.**
+/// **What the invariant is worth: one name, and the answer moves.**
 ///
 /// The two files differ by the single fact `(seen Z)`, over a relation nothing
 /// else mentions. It changes no rule, no constraint and no goal — all it does
-/// is put `Z` in the name universe before `alive₀` is taken.
+/// is put `Z` in the name universe before the candidates are taken.
 ///
-/// Without it the engine answers `Contradiction, k = 0, exhausted = true` — a
-/// refutation, not a truncation — and `{(q A Z), (q B Z)}` is a model it never
-/// enumerated. With it, that model is the answer.
+/// Without it the walk answered `Contradiction, k = 0, exhausted = true`, a
+/// refutation; since M1e2 R is `{∅}`, one state with no `q`, and
+/// `{(q A Z), (q B Z)}` is a state no route enumerates, because a rule's
+/// fresh constant is in no candidate (W4, `corpus/wrong_answers.toml`). With
+/// it, that state is R's maximal line.
 ///
 /// And the control does **not** break the invariant at all: `(seen Z)` puts
 /// `Z` in the ontology, which is exactly what clause 1 asks for. So the one
@@ -290,32 +323,36 @@ fn the_pair_differs_by_one_name_and_one_verdict() {
             .iter()
             .map(|b| b.render(&terms))
             .collect();
-        let opts = SolveOptions {
-            stop_after: None,
-            config: Some(kb.program().config.clone().unwrap_or_default()),
-            ..SolveOptions::default()
-        };
-        let mut events = Events::off();
-        let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-            .unwrap_or_else(|e| panic!("{rel}: {e:?}"));
-        let models: Vec<Vec<String>> = states_of(&solved.answer)
+        let a = explore::run(
+            &mut kb,
+            &mut terms,
+            &ast,
+            &explore::Options::new(Mode {
+                which: Which::Maximal,
+                ask: Ask::Describe,
+            }),
+        )
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        assert!(a.exhausted, "{rel}: the maximal line is not known");
+        let line: Vec<Vec<String>> = a
+            .states
             .iter()
             .map(|s| {
-                let mut v: Vec<String> =
-                    s.kb.facts()
-                        .map(|f| ein_infer::events::sexpr(&terms, f))
-                        .filter(|t| t.starts_with("(q "))
-                        .collect();
+                let mut v: Vec<String> = s
+                    .closure
+                    .iter()
+                    .map(|&b| a.candidates[b as usize].text.clone())
+                    .filter(|t| t.starts_with("(q "))
+                    .collect();
                 v.sort();
                 v
             })
             .collect();
-        let word = solved.answer.as_str().to_string();
-        (breaches, word, models, solved.stats.exhausted)
+        (breaches, line)
     };
 
-    let (broken_breach, broken_word, broken_models, broken_exhausted) = run(PAIR[0]);
-    let (control_breach, control_word, control_models, _) = run(PAIR[1]);
+    let (broken_breach, broken_line) = run(PAIR[0]);
+    let (control_breach, control_line) = run(PAIR[1]);
 
     // The same rule, the same invented name, in both.
     assert_eq!(
@@ -330,18 +367,14 @@ fn the_pair_differs_by_one_name_and_one_verdict() {
          reported {control_breach:?}"
     );
 
-    assert_eq!(broken_word, "Contradiction");
-    assert!(
-        broken_exhausted,
-        "the refutation is qualified after all, and the fixture's point is \
-         that it is not"
-    );
-    assert!(broken_models.is_empty());
-
-    assert_eq!(control_word, "Solution");
     assert_eq!(
-        control_models,
+        broken_line,
+        vec![Vec::<String>::new()],
+        "the twin's maximal line is ∅ alone: no route reaches a state naming Z"
+    );
+    assert_eq!(
+        control_line,
         vec![vec!["(q A Z)".to_string(), "(q B Z)".to_string()]],
-        "the control's model is not the one the twin cannot reach"
+        "the control's maximal state is not the one the twin cannot reach"
     );
 }

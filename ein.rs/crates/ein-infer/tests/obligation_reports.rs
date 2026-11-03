@@ -18,6 +18,16 @@
 //! puzzle author outside this suite needs to state the claim; until then a
 //! Rust test is the honest channel and costs no grammar.
 //!
+//!
+//! **Since M1e2 S1e2.1c.5 (2026-11-03) every claim here is read off a route**
+//! ([`ein_infer::explore`]), the walk these tests first ran on having been
+//! deleted on the user's ruling of that day. What a route reports of a
+//! quiescent state is root's tally ([`Described::root`]), each owing frontier
+//! node's (`Described::frontier`) and `--single`'s word; the two numbers
+//! about root's ledger read the same pass the routes call,
+//! [`ein_infer::obligations::tally`], over root's fixpoint, because describing
+//! `zebra2-minus-15`'s R to read root's tally would cost the slow tier's run.
+//!
 //! [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 //! [P1d.4]: `docs/history/m1d_satisfiability/README.md#p1d4--closing-the-model-set`
 
@@ -26,45 +36,74 @@ use std::path::{Path, PathBuf};
 
 use ein_core::{FactId, Kb, Symbol, Terms};
 use ein_corpus::repo_root;
+use ein_infer::SharedMemo;
+use ein_infer::described::Described;
 use ein_infer::events::{Buffer, Events, Level};
+use ein_infer::explore::{self, Answer, Ask, Mode, Verdict, Which};
 use ein_infer::obligations::Owes;
-use ein_infer::solve::{NoDumper, SolveOptions, Solved, solve};
 use ein_ir::{Ast, load_file};
 
-/// Solve one file the way `ein test` does, and hand back the run.
-fn run(rel: &str) -> (Ast, Terms, Kb, Solved) {
-    run_with(rel, &mut Events::off(), 5)
-}
-
-/// A file whose search is large enough that the cap is what keeps this suite
-/// fast.
-///
-/// **Every claim here is about a fixpoint, and root's is reached in Phase 1**
-/// — before the first candidate is generated — so a depth cap costs the tests
-/// nothing and saves `zebra2-minus-15` its 618 076 enterings. The suite's own
-/// fixtures are tiny and exhaust either way.
-fn run_shallow(rel: &str) -> (Ast, Terms, Kb, Solved) {
-    run_with(rel, &mut Events::off(), 1)
-}
-
-fn run_with(rel: &str, events: &mut Events, depth: u32) -> (Ast, Terms, Kb, Solved) {
+fn load(rel: &str) -> (Ast, Terms, Kb) {
     let path: PathBuf = repo_root().join(rel);
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let mut kb = load_file(&mut ast, &mut terms, &path).unwrap_or_else(|e| panic!("{rel}: {e}"));
-    let opts = SolveOptions {
-        config: Some(kb.program().config.clone().unwrap_or_default()),
-        max_set_size: depth,
-        ..SolveOptions::default()
-    };
-    let solved = solve(&mut kb, &mut terms, &ast, events, &mut NoDumper, &opts)
-        .unwrap_or_else(|e| panic!("{rel}: {e:?}"));
-    (ast, terms, kb, solved)
+    let kb = load_file(&mut ast, &mut terms, &path).unwrap_or_else(|e| panic!("{rel}: {e}"));
+    (ast, terms, kb)
 }
 
-/// The rendered `:why` of every outstanding obligation, in report order.
-fn whys(owes: &Owes) -> Vec<String> {
-    owes.instances().iter().map(|i| i.why.clone()).collect()
+/// Ask `mode` about one file, as `ein solve` does, optionally narrating.
+fn ask_with(rel: &str, mode: Mode, events: &mut Events) -> (Terms, Kb, Answer) {
+    let (ast, mut terms, mut kb) = load(rel);
+    let a = explore::run_with(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &explore::Options::new(mode),
+        events,
+    )
+    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    (terms, kb, a)
+}
+
+/// `ein solve FILE`: R described.
+fn describe(rel: &str) -> Described {
+    let mode = Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    };
+    let (_, _, a) = ask_with(rel, mode, &mut Events::off());
+    assert!(a.exhausted, "{rel}: R is not known");
+    *a.described
+        .unwrap_or_else(|| panic!("{rel}: describe describes"))
+}
+
+/// `ein solve FILE --single`: the word.
+fn single(rel: &str) -> &'static str {
+    let mode = Mode {
+        which: Which::All,
+        ask: Ask::Single,
+    };
+    let (_, _, a) = ask_with(rel, mode, &mut Events::off());
+    a.verdict
+        .map(Verdict::word)
+        .unwrap_or_else(|| panic!("{rel}: --single reached no verdict"))
+}
+
+/// Root's tally, by the pass every route calls on root's fixpoint
+/// (`region::prepare`): root saturated, then [`ein_infer::obligations::tally`].
+fn root_tally(rel: &str) -> (Terms, Kb, Owes) {
+    let (ast, mut terms, mut kb) = load(rel);
+    ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    let owes = ein_infer::obligations::tally(
+        &kb,
+        &mut terms,
+        &ast,
+        &SharedMemo::default(),
+        &mut Events::off(),
+    )
+    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    (terms, kb, owes)
 }
 
 // ── the conformance pairs ──────────────────────────────────────────
@@ -117,23 +156,30 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
         ("tests/stdlib/slots/12_owed_fill_satisfied.ein", 0, ""),
     ];
     for (rel, want, why) in cases {
-        let (_, _, _, solved) = run(rel);
-        let got = whys(&solved.owes.root);
+        let d = describe(rel);
+        let got = d.root.owed.clone();
         assert_eq!(
-            got.len(),
-            want,
+            (got.len(), d.root.owes as usize),
+            (want, want),
             "{rel}: root owes {} where the fixture states {want}:\n  {}",
-            got.len(),
+            d.root.owes,
             got.join("\n  "),
         );
-        // The model is a state of the same fixpoint, so the two tallies agree
-        // — and a fixture whose only solution is root is the common case here.
-        if let Some(first) = solved.owes.models.first() {
+        // Every fixture here is decided at root: an owing root is R's whole
+        // owing frontier, with root's own debts, and a discharged one is R's
+        // one state.
+        if want > 0 {
+            assert_eq!(d.k_s(), 0, "{rel}: a root that owes is no state of R");
             assert_eq!(
-                whys(first).len(),
-                want,
-                "{rel}: the recorded model owes a different number than root did"
+                d.frontier
+                    .iter()
+                    .map(|o| (o.set.len(), o.owed.clone()))
+                    .collect::<Vec<_>>(),
+                vec![(0, got.clone())],
+                "{rel}: the owing frontier is root, owing what root owes"
             );
+        } else {
+            assert!(d.root.in_r(), "{rel}: a discharged root is in R");
         }
         if !why.is_empty() {
             assert!(
@@ -156,41 +202,40 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
 /// word is `owes 1`, and the debt is the reason rather than a footnote beside
 /// a model.
 ///
-/// **The three numbers that must disagree**, because their disagreement is
-/// the whole of what shipped:
+/// **The numbers that must disagree**, because their disagreement is the
+/// whole of what shipped. The walk recorded the node and its read-out did not
+/// call it a model; since M1e2 a node is in R only when it is alive **and**
+/// discharged, so R is empty and its owing frontier is root, owing one:
 ///
 /// | | | |
 /// |---|---:|---|
-/// | `stats.solution_nodes` | 1 | what the *search* recorded — unchanged, and the reason no counter moved |
-/// | `verdict.k()` | 0 | what the *read-out* calls a model |
-/// | `owes.root.total()` | 1 | why |
-///
-/// A regression that reverted the read-out would keep the first and the third
-/// and lose the second, so the second is asserted explicitly rather than via
-/// the word.
+/// | `k_s` | 0 | what R holds |
+/// | the frontier | ∅ | the alive node that owes, with no alive node above it |
+/// | `root.owes` | 1 | why |
 ///
 /// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn a_state_that_owes_is_open_and_not_a_solution() {
-    let (_, _, _, solved) = run("tests/stdlib/algebra/23_total_owed.ein");
+    let rel = "tests/stdlib/algebra/23_total_owed.ein";
     assert_eq!(
-        solved.answer.as_str(),
+        single(rel),
         "Open",
         "a state that owes is not a model — S1d.2.6"
     );
-    assert_eq!(solved.owes.root.total(), 1, "and it owes one");
+    let (_, _, kb) = load(rel);
     assert_eq!(
-        solved.owes.declared, 1,
+        kb.program().obligations.len(),
+        1,
         "in scope: it states one obligation"
     );
-    let ein_infer::verdict::Answer::Verdict(v) = &solved.answer else {
-        panic!("a verdict")
-    };
-    assert_eq!(v.k(), 0, "no model");
-    assert_eq!(v.owed(), 1, "one debt, on the open state");
+    let d = describe(rel);
+    assert_eq!(d.k_s(), 0, "no model");
+    assert_eq!(d.root.owes, 1, "and it owes one");
+    assert!(d.root.alive, "alive: the debt is not a refutation");
     assert_eq!(
-        solved.stats.solution_nodes, 1,
-        "the search still recorded the node — S1d.2.6 moved the read-out, not the traversal"
+        d.frontier.iter().map(|o| o.owes).collect::<Vec<_>>(),
+        vec![1],
+        "one debt, on the one open state"
     );
 }
 
@@ -205,14 +250,15 @@ fn a_state_that_owes_is_open_and_not_a_solution() {
 /// twin, and `01_infer_closure.ein` is the neighbour that states nothing.
 #[test]
 fn a_program_that_states_no_obligation_keeps_its_word() {
-    let (_, _, _, solved) = run("tests/stdlib/closure/01_infer_closure.ein");
-    assert_eq!(solved.owes.declared, 0, "states no obligation");
+    let rel = "tests/stdlib/closure/01_infer_closure.ein";
+    let (_, _, kb) = load(rel);
+    assert!(kb.program().obligations.is_empty(), "states no obligation");
     assert!(
-        !solved.owes.in_scope(),
-        "so it is out of the read-out's scope"
+        !describe(rel).owing_met,
+        "so no node it reaches owes anything"
     );
     assert_eq!(
-        solved.answer.as_str(),
+        single(rel),
         "Solution",
         "and is judged by exhaustion, exactly as before P1d.2"
     );
@@ -227,20 +273,17 @@ fn a_program_that_states_no_obligation_keeps_its_word() {
 /// (`mode=stuck`), not by the verdict.
 #[test]
 fn the_closed_and_owing_pair_now_differs_by_a_word() {
-    let (_, _, _, sat) = run("tests/stdlib/closure/02_closed_and_satisfied.ein");
-    assert_eq!(sat.answer.as_str(), "Solution", "the witness discharges it");
-    assert_eq!(sat.owes.declared, 1, "and it is in scope");
+    let sat = "tests/stdlib/closure/02_closed_and_satisfied.ein";
+    assert_eq!(single(sat), "Solution", "the witness discharges it");
+    let (_, _, kb) = load(sat);
+    assert_eq!(kb.program().obligations.len(), 1, "and it is in scope");
 
-    let (_, _, _, owing) = run("tests/stdlib/closure/03_closed_and_owing.ein");
-    assert_eq!(
-        owing.answer.as_str(),
-        "Open",
-        "the same file, one fact fewer"
-    );
-    assert_eq!(owing.owes.root.total(), 1, "a1 owes a B");
+    let owing = "tests/stdlib/closure/03_closed_and_owing.ein";
+    assert_eq!(single(owing), "Open", "the same file, one fact fewer");
+    assert_eq!(describe(owing).root.owes, 1, "a1 owes a B");
     assert_ne!(
-        sat.answer.as_str(),
-        owing.answer.as_str(),
+        single(sat),
+        single(owing),
         "the corner is what a pair reporting one word for two states was"
     );
 }
@@ -261,8 +304,7 @@ fn the_closed_and_owing_pair_now_differs_by_a_word() {
 /// three owe 10. A tally that got 46 by any other route fails here.
 #[test]
 fn zebra2_minus_15_owes_the_number_the_hand_census_found() {
-    let (_, terms, _, solved) = run_shallow("examples/zebra2-minus-15.ein");
-    let owes = &solved.owes.root;
+    let (terms, _, owes) = root_tally("examples/zebra2-minus-15.ein");
     assert_eq!(owes.total(), 46, "root's tally");
 
     let mut by: Vec<(String, usize)> = owes
@@ -338,9 +380,9 @@ fn the_ledger_is_the_size_the_declarations_predict() {
     ];
     let mut audited = 0usize;
     for rel in files {
-        // The audit reads root's tally and root's fact store, both of them
-        // Phase 1's, so the depth cap is free here too.
-        let (_, terms, kb, solved) = run_shallow(rel);
+        // The audit reads root's tally and root's fact store, and nothing
+        // past root's fixpoint.
+        let (terms, kb, root_owes) = root_tally(rel);
         let Some(total_owed) = terms.syms.get("total-owed") else {
             panic!("{rel}: nothing derived a total-owed activator");
         };
@@ -392,7 +434,7 @@ fn the_ledger_is_the_size_the_declarations_predict() {
                 .filter(|b| !arrows.iter().any(|(x, y)| y == *b && dom.contains(x)))
                 .count();
             let predicted = forward + backward;
-            let emitted = solved.owes.root.owed_by(r);
+            let emitted = root_owes.owed_by(r);
             assert_eq!(
                 emitted,
                 predicted,
@@ -432,7 +474,13 @@ fn an_obligation_rule_never_reaches_the_firing_stream() {
     ] {
         let buffer = Buffer::new();
         let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
-        let (_, terms, kb, _) = run_with(rel, &mut events, 5);
+        // `--single`: root, then every node the obligation tree saturates,
+        // each narrated with its own firings and its own tally.
+        let mode = Mode {
+            which: Which::All,
+            ask: Ask::Single,
+        };
+        let (terms, kb, _) = ask_with(rel, mode, &mut events);
         let obligations: BTreeSet<String> = kb
             .program()
             .obligations
@@ -502,10 +550,16 @@ fn an_obligation_rule_never_reaches_the_firing_stream() {
 fn a_blind_run_never_proposes_an_obligation_activator() {
     let buffer = Buffer::new();
     let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
-    let (_, _, _, _) = run_with(
+    // Every candidate of H is narrated as a `hyp` line when the route builds
+    // the universe, before any node: describe's stream holds all of them.
+    let mode = Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    };
+    let _ = ask_with(
         "tests/stdlib/bijection/06_blind_enumeration.ein",
+        mode,
         &mut events,
-        5,
     );
     let names = [
         "total-owed",

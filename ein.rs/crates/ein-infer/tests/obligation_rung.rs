@@ -16,57 +16,101 @@
 //!
 //! [the record]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 
+//!
+//! **Since M1e2 S1e2.1c.5 (2026-11-03) it reads the routes**
+//! ([`ein_infer::explore`]): the walk it was written against was deleted on
+//! the user's ruling of that day. The ladder is what builds H, the candidates
+//! every route commits to, so the dispatch is a claim about the one `rung`
+//! line a route narrates when it builds H at root; and the completeness claim
+//! is that the hrule path and the obligation path build the same H, so their
+//! R is one, and the maximal lines the obligation tree reaches agree.
+
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
+use ein_infer::SharedMemo;
 use ein_infer::events::{Buffer, Events, Level};
+use ein_infer::explore::{self, Answer, Ask, Mode as Question, Which};
 use ein_infer::oblgen::{Choice, Mode};
-use ein_infer::solve::{NoDumper, SolveOptions, Solved, solve};
-use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::{Ast, load_file};
 
-/// Solve one file to `depth`, optionally narrating.
-fn run_with(rel: &str, events: &mut Events, depth: u32) -> (Ast, Terms, Kb, Solved) {
+/// Ask one question about one file, optionally narrating.
+fn ask_with(rel: &str, q: Question, events: &mut Events) -> Answer {
     let path: PathBuf = repo_root().join(rel);
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, &path).unwrap_or_else(|e| panic!("{rel}: {e}"));
-    let opts = SolveOptions {
-        config: Some(kb.program().config.clone().unwrap_or_default()),
-        max_set_size: depth,
-        stop_after: None,
-        ..SolveOptions::default()
-    };
-    let solved = solve(&mut kb, &mut terms, &ast, events, &mut NoDumper, &opts)
-        .unwrap_or_else(|e| panic!("{rel}: {e:?}"));
-    (ast, terms, kb, solved)
+    explore::run_with(&mut kb, &mut terms, &ast, &explore::Options::new(q), events)
+        .unwrap_or_else(|e| panic!("{rel}: {e}"))
 }
 
-/// Every model of a run, as a set of rendered fact sets.
+const SINGLE: Question = Question {
+    which: Which::All,
+    ask: Ask::Single,
+};
+
+/// Root's tally, by the pass every route calls on root's fixpoint.
+fn root_owes(rel: &str) -> usize {
+    let path: PathBuf = repo_root().join(rel);
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb: Kb =
+        load_file(&mut ast, &mut terms, &path).unwrap_or_else(|e| panic!("{rel}: {e}"));
+    ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    ein_infer::obligations::tally(
+        &kb,
+        &mut terms,
+        &ast,
+        &SharedMemo::default(),
+        &mut Events::off(),
+    )
+    .unwrap_or_else(|e| panic!("{rel}: {e}"))
+    .total()
+}
+
+/// The maximal line, as sets of the candidates each state holds, rendered.
 ///
-/// Text rather than `FactId`, because two runs intern independently and the
-/// question is whether they found the same *models* — which is a statement
+/// Text rather than indices, because two runs intern independently and the
+/// question is whether they found the same *states* — which is a statement
 /// about propositions, not about numbering.
-fn models(terms: &Terms, solved: &Solved) -> BTreeSet<BTreeSet<String>> {
-    let one = |kb: &Kb| -> BTreeSet<String> {
-        kb.facts()
-            .map(|f| ein_infer::events::sexpr(terms, f))
-            .collect()
-    };
-    match &solved.answer {
-        Answer::Verdict(Verdict::Solution(s)) => BTreeSet::from([one(&s.kb)]),
-        Answer::Verdict(Verdict::Ambiguity(v)) => v.iter().map(|s| one(&s.kb)).collect(),
-        _ => BTreeSet::new(),
-    }
+fn maximal(rel: &str) -> BTreeSet<BTreeSet<String>> {
+    let a = ask_with(
+        rel,
+        Question {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        },
+        &mut Events::off(),
+    );
+    assert!(a.exhausted, "{rel}: the maximal line is not known");
+    a.states
+        .iter()
+        .map(|s| {
+            s.closure
+                .iter()
+                .map(|&b| a.candidates[b as usize].text.clone())
+                .collect()
+        })
+        .collect()
+}
+
+/// H, rendered, in the route's order.
+fn universe(rel: &str) -> Vec<String> {
+    ask_with(rel, SINGLE, &mut Events::off())
+        .candidates
+        .into_iter()
+        .map(|c| c.text)
+        .collect()
 }
 
 /// The distinct `rung` lines a run narrated, in first-seen order.
-fn rungs(rel: &str, depth: u32) -> Vec<(String, u64, u64, u64)> {
+fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
     let buffer = Buffer::new();
     let mut events = Events::to(Box::new(buffer.clone()), Level::Normal);
-    let _ = run_with(rel, &mut events, depth);
+    let _ = ask_with(rel, SINGLE, &mut events);
     let mut out: Vec<(String, u64, u64, u64)> = Vec::new();
     for line in buffer.to_string_lossy().lines() {
         let ev: serde_json::Value = serde_json::from_str(line).expect("event line");
@@ -117,9 +161,8 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         ("examples/branching/02_one_dead_one_alive.ein", &[]),
     ];
     for (rel, want) in cases {
-        // Depth 1: the rung is decided at the root generation call, and the
-        // layers below cost seconds to re-confirm it.
-        let got: Vec<String> = rungs(rel, 1).into_iter().map(|(m, ..)| m).collect();
+        // H is built once, at root, and that is where the rung is decided.
+        let got: Vec<String> = rungs(rel).into_iter().map(|(m, ..)| m).collect();
         let uniq: BTreeSet<&str> = got.iter().map(String::as_str).collect();
         let want: BTreeSet<&str> = want.iter().copied().collect();
         assert_eq!(uniq, want, "{rel} took the wrong rung(s)");
@@ -127,9 +170,8 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
     // The override, stated as the thing it overrides: zebra2 owes 36 slots at
     // root — the same 36 `zebra2-obligations.ein` branches on — and its hrule
     // is why nothing above reports a rung for it.
-    let (_, _, _, solved) = run_with("examples/zebra2.ein", &mut Events::off(), 1);
     assert_eq!(
-        solved.owes.root.total(),
+        root_owes("examples/zebra2.ein"),
         36,
         "zebra2 owes what its twin owes"
     );
@@ -157,23 +199,19 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 #[test]
 fn owing_and_unable_to_branch_is_stuck_and_says_so() {
     let rel = "tests/stdlib/algebra/23_total_owed.ein";
-    let rows = rungs(rel, 1);
+    let rows = rungs(rel);
     assert_eq!(
         rows,
         [("stuck".to_string(), 1, 0, 1)],
         "{rel} owes one and branches on none"
     );
-    let (_, _, _, solved) = run_with(rel, &mut Events::off(), 1);
+    let a = ask_with(rel, SINGLE, &mut Events::off());
     assert_eq!(
-        solved.answer.as_str(),
-        "Open",
+        a.verdict.map(|v| v.word()),
+        Some("Open"),
         "a stuck state is not a model — S1d.2.6"
     );
-    assert_eq!(
-        solved.owes.root.total(),
-        1,
-        "and it still says what it owes"
-    );
+    assert_eq!(root_owes(rel), 1, "and it still says what it owes");
 }
 
 /// **A discharged state proposes nothing, and that is what completes it.**
@@ -185,7 +223,7 @@ fn owing_and_unable_to_branch_is_stuck_and_says_so() {
 /// both files report `k = 1` and only one of them owes.
 #[test]
 fn a_discharged_state_owes_nothing_and_declines_nothing() {
-    let rows = rungs("tests/stdlib/algebra/24_total_owed_satisfied.ein", 1);
+    let rows = rungs("tests/stdlib/algebra/24_total_owed_satisfied.ein");
     assert_eq!(rows, [("obligations".to_string(), 0, 0, 0)]);
 }
 
@@ -203,7 +241,7 @@ fn a_discharged_state_owes_nothing_and_declines_nothing() {
 fn the_candidates_are_what_the_guard_scans() {
     let buffer = Buffer::new();
     let mut events = Events::to(Box::new(buffer.clone()), Level::Normal);
-    let _ = run_with("examples/zebra2-obligations.ein", &mut events, 1);
+    let _ = ask_with("examples/zebra2-obligations.ein", SINGLE, &mut events);
     let first = buffer
         .to_string_lossy()
         .lines()
@@ -224,7 +262,7 @@ fn the_candidates_are_what_the_guard_scans() {
 
 // ── The completeness condition ─────────────────────────────────────
 
-/// **Every model the hrule path finds, the obligation path finds.**
+/// **Every state the hrule path finds, the obligation path finds.**
 ///
 /// T1d.2.5.3, and the phase's central claim: the ladder is exhaustive iff
 /// obligations and saturation between them determine every remaining open
@@ -233,39 +271,42 @@ fn the_candidates_are_what_the_guard_scans() {
 /// determinate puzzle and one genuinely under-determined one, because a
 /// comparison of two singleton sets proves much less.
 ///
-/// `zebra2-minus-15` runs to depth 3, which is where all 32 of its models are
-/// ([the layer census](../../../../docs/history/m1d_satisfiability/layer_census.md)
-/// §4); depths 4 and 5 exist only to prove there are no more, cost 416 s, and
-/// prove nothing this test is asking about.
+/// Since M1e2 a route commits to H, the candidates the ladder builds at root,
+/// and R is a function of the program's rules and H. The twins differ by the
+/// `(hrule …)` and the `:hrules` clause alone, which are no rule, so **one H
+/// is one R**: that is asserted on both pairs, and the maximal lines are
+/// compared on `zebra2`, where the obligation tree reaches its one state in
+/// 45 saturations. `zebra2-minus-15`'s 32 cost 2 346 a side (5 s in a release
+/// build, 2026-11-03), so `EIN_CORPUS_SLOW` compares those, the way the
+/// corpus sweep splits the same way.
 #[test]
 fn the_theory_finds_what_the_hrule_finds() {
-    // Depth 3 is where the last four of `zebra2-minus-15`'s 32 models are, and
-    // it costs 26 s a side. Depth 2 finds 28 of them for 1.6 s, which is the
-    // same claim about 28 models — so the gate runs that and `EIN_CORPUS_SLOW`
-    // runs the whole set, the way the corpus sweep splits the same way.
     let deep = std::env::var_os("EIN_CORPUS_SLOW").is_some();
-    let (depth, k) = if deep { (3, 32) } else { (2, 28) };
-    for (hrule, obligations, depth, k) in [
+    for (hrule, obligations, k, compare) in [
         (
             "examples/zebra2.ein",
             "examples/zebra2-obligations.ein",
-            2,
             1,
+            true,
         ),
         (
             "examples/zebra2-minus-15.ein",
             "examples/zebra2-minus-15-obligations.ein",
-            depth,
-            k,
+            32,
+            deep,
         ),
     ] {
-        let (_, ta, _, a) = run_with(hrule, &mut Events::off(), depth);
-        let (_, tb, _, b) = run_with(obligations, &mut Events::off(), depth);
-        let (ma, mb) = (models(&ta, &a), models(&tb, &b));
-        assert_eq!(ma.len(), k, "{hrule} found {} models, not {k}", ma.len());
+        let (ha, hb) = (universe(hrule), universe(obligations));
+        assert!(!ha.is_empty(), "{hrule}: an empty H");
+        assert_eq!(ha, hb, "{obligations} built a different H than {hrule}");
+        if !compare {
+            continue;
+        }
+        let (ma, mb) = (maximal(hrule), maximal(obligations));
+        assert_eq!(ma.len(), k, "{hrule} found {} states, not {k}", ma.len());
         assert_eq!(
             ma, mb,
-            "{obligations} found a different model set than {hrule}"
+            "{obligations} found a different maximal line than {hrule}"
         );
     }
 }

@@ -19,10 +19,17 @@
 //! **defines** the rules, and they actually **fire** — asserted against the
 //! rendered markdown rather than against the firing list, because the
 //! markdown is what a reader gets and the root section is part of it.
+//!
+//! **Since M1e2 S1e2.1c.5 (2026-11-03) the trace is the region trace**
+//! (`ein solve FILE --single --trace FILE.md`,
+//! [`ein_render::trace::region`]): root's derivation, then each state the
+//! read-out prints, derived from its first minimal commitment. The walk's
+//! `linearize` trace these tests first read was deleted with the walk, on the
+//! user's ruling of that day.
 
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
-use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, parse};
 use std::collections::BTreeSet;
 use std::path::Path;
@@ -126,39 +133,48 @@ fn provided(rel: &str) -> BTreeSet<String> {
         .collect()
 }
 
-/// The rules the **rendered trace** exhibits — `## Step N — \`rule\``.
+/// The rules the **rendered trace** exhibits — `### Step N — \`rule\``.
 ///
-/// Read out of the markdown rather than out of `proof.solutions[..].firings`
-/// on purpose: since S1a.6.9 the solution node's firings are the hypothesis's
-/// own, and root's are rendered as the *Before any assumption* section. What
-/// idea-08 promises is about the document, so the document is what is asserted.
-fn rules_in_trace(rel: &str, exhaustive: bool) -> BTreeSet<String> {
+/// Read out of the markdown rather than out of the firings on purpose: what
+/// idea-08 promises is about the document, so the document is what is
+/// asserted. The question is `--single`, the one that decides uniqueness, so
+/// the trace is root's derivation and the one state's, as `ein solve FILE
+/// --single --trace FILE.md` writes it.
+fn rules_in_trace(rel: &str) -> BTreeSet<String> {
     let (ast, mut terms, mut kb) = load(rel);
-    let opts = SolveOptions {
-        stop_after: if exhaustive { None } else { Some(1) },
-        max_set_size: 5,
-        on_budget: OnBudget::Verdict,
-        store_lattice: true,
-        ..SolveOptions::default()
-    };
     let mut events = ein_infer::events::Events::off();
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .expect("the puzzle solves");
-    let trace = ein_render::linearize(
+    let firings = ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut events)
+        .expect("root saturates");
+    let opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Single,
+    });
+    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts).expect("the puzzle solves");
+    let md = ein_render::trace::region::of_read_out(
+        &r,
+        &mut kb,
+        &mut terms,
         &ast,
-        &terms,
-        &kb,
-        &solved,
-        ein_render::LinearizeOpts {
+        &firings,
+        &ein_render::read_out::Options {
+            command: "solve",
+            argv: rel,
+            file: rel,
+            budget: opts.budget,
+            uncut: false,
+        },
+        ein_render::trace::region::Shape {
             // Off: the rule names are in the prose, and a digraph per step
             // makes this five times the text for nothing.
             diagrams: false,
-            ..ein_render::LinearizeOpts::new()
+            relevant: false,
+            reorder: false,
+            full_kb: false,
         },
-    );
-    let md = ein_render::render_markdown(&trace, ein_render::Mode::Engine, false);
+    )
+    .expect("the trace renders");
     md.lines()
-        .filter_map(|l| l.strip_prefix("## Step "))
+        .filter_map(|l| l.strip_prefix("### Step "))
         .filter_map(|l| l.split_once('`'))
         .filter_map(|(_, rest)| rest.split_once('`'))
         .map(|(rule, _)| rule.to_string())
@@ -198,10 +214,11 @@ fn the_generic_library_defines_the_walkthrough_rules() {
 
 // ── and the trace exhibits them ────────────────────────────────────
 
-/// The assertion S1a.6.9 nearly lost. Exhaustive.
+/// The assertion S1a.6.9 nearly lost, on the question that certifies the
+/// answer unique.
 #[test]
 fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
-    let fired = rules_in_trace("examples/zebra2.ein", true);
+    let fired = rules_in_trace("examples/zebra2.ein");
     assert!(
         missing(&FIRING_TARGET, &fired).is_empty(),
         "walkthrough rules the trace does not exhibit: {:?}\nexhibited: {:?}",
@@ -209,7 +226,7 @@ fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
         fired
     );
     // `symmetric` fires **only at root**, so it is in the trace only because
-    // the *Before any assumption* section is. Named separately from the set
+    // root's section is. Named separately from the set
     // above because it is the exact rule the near-miss dropped, and a set
     // assertion says "one of nine is missing" where this says which.
     assert!(
@@ -225,12 +242,11 @@ fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
 
 /// The generic-link encoding reaches the walkthrough by its own rules.
 ///
-/// `stop_after = 1`, not exhaustive: this asserts over the *solution path*,
-/// and the exhaustive certification is the acceptance gate's job
-/// (`ein-infer/tests/acceptance.rs`).
+/// This asserts over the *solution path*; that the state is the published
+/// answer is the acceptance gate's job (`ein-infer/tests/acceptance.rs`).
 #[test]
 fn the_generic_trace_exhibits_the_walkthrough_rules() {
-    let fired = rules_in_trace("examples/zebra.ein", false);
+    let fired = rules_in_trace("examples/zebra.ein");
     assert!(
         missing(&FIRING_TARGET_GENERIC, &fired).is_empty(),
         "walkthrough counterparts the trace does not exhibit: {:?}\nexhibited: {:?}",

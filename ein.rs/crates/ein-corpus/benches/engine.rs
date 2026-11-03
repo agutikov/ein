@@ -8,7 +8,9 @@
 //! a benchmark set chosen after seeing the numbers measures what the
 //! implementation happens to be good at — and each row went live as its engine
 //! landed. **As of S1a.4.5 none is pending**: the last two, `solve_fast` and
-//! `solve_exhaustive`, are the two the whole set exists for.
+//! `solve_exhaustive`, are the two the whole set exists for. Since M1e2
+//! S1e2.1c.5 they are `region_n1` and `region_single`, the same two questions
+//! asked of the routes, the walk they timed having been deleted.
 //!
 //! Refresh with `cargo bench`.
 
@@ -257,21 +259,25 @@ fn deductive(c: &mut Criterion) {
     group.finish();
 }
 
-/// The two the whole set exists for: `solve zebra2.ein` on the default
-/// `stop_after = 1` path and exhaustively.
+/// The two the whole set exists for: `ein solve zebra2.ein -n 1`, the first
+/// state of R, and `ein solve zebra2.ein --single`, which decides that R is
+/// that one state. Both take the obligation tree (`ein_infer::explore`).
 ///
 /// **These measure the search, not the run.** Parse and load have their own
 /// benches, so folding them in would credit this row with two others'
-/// results. What is timed is what P1a.4 wrote: root saturation plus the
-/// hypothesis search.
+/// results. What is timed is root's saturation, H and the route.
 ///
-/// The batch reloads the KB every iteration, because a solve mutates root —
-/// the singleton `(not h)` writeback and the forced-positive promotions are
-/// root writes by design — so a second solve on the same KB is a different
-/// problem.
+/// **They replace `solve_fast` and `solve_exhaustive`** (M1e2 S1e2.1c.5,
+/// 2026-11-03), which timed the walk, deleted on the user's ruling of that
+/// day. The new names are new rows, so that no table in `baseline.md` reads a
+/// route's number against the walk's.
+///
+/// The batch reloads the KB every iteration, because a route saturates root in
+/// place, so a second run on the same KB would start from a fixpoint.
 fn search(c: &mut Criterion) {
+    use ein_infer::explore::{self, Ask, Mode, Which};
     let path = repo_root().join("examples/zebra2.ein");
-    for (name, stop_after) in [("solve_fast", Some(1)), ("solve_exhaustive", None)] {
+    for (name, ask) in [("region_n1", Ask::Find(1)), ("region_single", Ask::Single)] {
         let mut group = c.benchmark_group(name);
         group.sample_size(10);
         group.bench_function("zebra2", |b| {
@@ -283,21 +289,12 @@ fn search(c: &mut Criterion) {
                     (ast, terms, kb)
                 },
                 |(ast, mut terms, mut kb)| {
-                    let mut events = ein_infer::Events::off();
-                    let opts = ein_infer::SolveOptions {
-                        stop_after,
-                        ..ein_infer::SolveOptions::default()
-                    };
-                    let solved = ein_infer::solve(
-                        &mut kb,
-                        &mut terms,
-                        &ast,
-                        &mut events,
-                        &mut ein_infer::NoDumper,
-                        &opts,
-                    )
-                    .expect("solves");
-                    std::hint::black_box(solved.stats.base.enterings_total);
+                    let opts = explore::Options::new(Mode {
+                        which: Which::All,
+                        ask,
+                    });
+                    let a = explore::run(&mut kb, &mut terms, &ast, &opts).expect("solves");
+                    std::hint::black_box(a.saturations);
                 },
                 criterion::BatchSize::SmallInput,
             )
