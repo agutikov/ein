@@ -173,7 +173,12 @@ instead — the owe counts in
 [`obligation_reports.rs`](../ein.rs/crates/ein-infer/tests/obligation_reports.rs),
 the rung modes in `obligation_rung.rs` — which is S1c.1.5's shape and the
 reason growing `:expect` a word for the verdict was deferred rather than
-needed.
+needed. **Since M1e2's switch one form can say that a state owes**, though not
+how much: `(solve … :expect (region (owing (model …))))` names an owing state,
+which R, the states that are alive *and discharged*, does not hold
+([`solution_semantics.md`](../docs/kernel/inference/solution_semantics.md)).
+The owe counts are still `obligation_reports.rs`'s. Eight mutants died of that
+word (below).
 
 **157 of 217 on 2026-08-31, and it is an instrument now** —
 [`utils/stdlib_mutants.py`](../utils/stdlib_mutants.py), M1e S1e.3.6 T6, the
@@ -203,9 +208,45 @@ strictly weaker** — its guard becomes satisfiable only where the conclusion is
 already true for another reason — so no contradiction fixture could ever have
 caught it, and only a program that *needs* the derivation can.
 
-**Where the remaining 60 are.** Forty-eight in `slots.ein`, which has the most
+**165 of 217 on 2026-11-03: the region claim killed eight**
+(`python3 utils/stdlib_mutants.py`, M1e2
+[S1e2.3.6](../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.6_the_nightly_workflow.md)).
+The nightly found them two weeks after they died: its `--check` failed on
+2026-11-02 and 11-03 with eight banked survivors now killed and none new, and
+from 10-17 to 11-01 a step before it had failed first. All eight are mutants of
+the four obligation rules, and they had survived for the reason the first
+paragraph of this section gives: no fixture could say what a state owes, so a
+mutant that changed only *whether* a debt is owed left every fact where it was.
+The region claim says it. A mutant that stops a debt being owed puts the state
+in R where the claim says R is empty, and one that invents a debt takes a
+discharged state out of R where the claim lists it. The claim's fixtures came
+in two commits, and the kills with them:
+
+| survivor until 2026-10-16 | killed by | what the run says | since |
+|---|---|---|---|
+| `algebra.ein::total-owed::swap-premise::(?isa ?a ?A)` | `region/04_owing`, `region/05_empty`, `region/07_cube`; since the switch also `stdlib/algebra/23_total_owed` and `stdlib/closure/03_closed_and_owing` | *the claim says R is empty, and R has 1 state*; on `07_cube`, *the claim lists 3 states and R has 4* | `0f9a6656`, T1e2.1a.4.2: the region claim, with its fixtures under `region/` |
+| `algebra.ein::surjective-owed::swap-premise::(?isa ?b ?B)` | `stdlib/algebra/25_surjective_owed` | *the claim says R is empty, and R has 1 state* | `fbcae3b2`, S1e2.1a.5's switch, which moved every fixture's claim about a state to `(solve … :expect (region …))` |
+| `slots.ein::slot-owed-room::swap-premise::(?isa ?a ?Ta)` | `stdlib/slots/09_owed_room` | the same | `fbcae3b2` |
+| `slots.ein::slot-owed-room::swap-premise::(?sub ?Ta ?super)` | `stdlib/slots/09_owed_room` | the same | `fbcae3b2` |
+| `slots.ein::slot-owed-fill::swap-premise::(?isa ?i ?index)` | `stdlib/slots/11_owed_fill` | the same | `fbcae3b2` |
+| `slots.ein::slot-owed-room::drop-neq::(neq ?Ta ?index)` | `stdlib/slots/01_partition`, `08_spatial_adjacent`, `10_owed_room_satisfied` | *the claim lists 1 state and R is empty*: a seat now owes a seat | `fbcae3b2` |
+| `slots.ein::slot-owed-fill::drop-neq::(neq ?Tv ?index)` | `stdlib/slots/01_partition`, `08_spatial_adjacent`, `12_owed_fill_satisfied` | the same, on the fill side | `fbcae3b2` |
+| `slots.ein::slot-owed-fill::swap-premise::(?sub ?Tv ?super)` | the same three | *the claim lists 1 state and R is empty* | `fbcae3b2` |
+
+The *since* column is measured, not read off the history: each commit's own
+`ein`, `tests/` and `stdlib/`, the mutant applied, `ein test tests/` run. All
+eight survive at `9c2815e0`, the commit before the region claim; at
+`0f9a6656` and at `d09ba6a7`, the switch's parent, `total-owed`'s alone dies;
+at `fbcae3b2` all eight do, killed by the files above (S1e2.3.6, 2026-11-03).
+`stdlib/` has not changed since the last green nightly (`git diff 3fde4ef1
+HEAD -- stdlib/` is empty), so the kills are the suite's and the engine's.
+**The bank's diff is those eight lines, removed, and nothing added**: 60 → 52,
+re-banked by `--bless` once each line was explained here.
+
+**Where the remaining 52 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the
-rest split between `algebra`, `bijection` and `elim`. That distribution is the
+rest split between `algebra` (4), `bijection` (4) and `elim` (2)
+(`grep -c '^slots' tests/mutation_survivors.txt`). That distribution is the
 useful part of the number, and it is what a score alone never said.
 
 ### What holds this directory up

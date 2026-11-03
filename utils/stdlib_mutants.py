@@ -12,10 +12,11 @@ negative case lowers it and nothing says so.
 
 **This is exhaustive where the hand sweep was one-per-family**, so the two
 numbers are not the same measurement: 217 mutants against 51, and 157 killed
-(2026-08-31). The survivors are banked as a *set* in
-`tests/mutation_survivors.txt`, and 48 of the 60 are in `slots.ein` — the
-module with the most parameterised, direction-sensitive rules and the fewest
-programs per rule.
+on 2026-08-31, 165 on 2026-11-03 (eight obligation-rule mutants killed by
+M1e2's region claim; `tests/README.md` says which program kills each). The
+survivors are banked as a *set* in `tests/mutation_survivors.txt`, and 42 of
+the 52 are in `slots.ein` — the module with the most parameterised,
+direction-sensitive rules and the fewest programs per rule.
 
     utils/stdlib_mutants.py                  # the table, to stdout
     utils/stdlib_mutants.py --json m.json    # + the machine copy
@@ -48,9 +49,8 @@ rather than remembered.
 
 `ein-infer/tests/stdlib_coverage.rs` is the gate and asks a cheaper question —
 every rule is *activated* by a program here. This asks whether the activation
-would notice a defect, which costs one process per mutant. On this tree that is
-about a hundred runs of a 0.04 s suite: a minute, and a nightly's business
-rather than a per-commit one.
+would notice a defect, which costs one run of the suite per mutant: 217 runs,
+45 s on 2026-11-03, and a nightly's business rather than a per-commit one.
 """
 
 from __future__ import annotations

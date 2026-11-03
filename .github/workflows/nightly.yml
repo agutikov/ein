@@ -21,28 +21,35 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
       - run: sudo apt-get update && sudo apt-get install -y graphviz
-      # The `slow` entries the per-commit sweep skips. **Two** of them since
-      # S1a.9.0 re-priced the tier and T1a.7.2.0 took a third off by making it
-      # 2.8x cheaper — `features/01_not_and_absent` and `features/04_open`, 12
-      # cells and 13.2 s of engine, where this line once meant 17 entries and
-      # four minutes. `cost_ms` in corpus/corpus.toml is the measurement and
-      # two tests hold the flag to it in both directions.
+      # The `slow = true` entries the per-commit sweep skips, every declared
+      # cell of each: 14 entries on 2026-11-03
+      # (`grep -c '^slow *= *true' corpus/corpus.toml`). `slow` is a measured
+      # claim, an entry whose declared runs cost 1 s or more together, recorded
+      # in `cost_ms`, and two tests hold the flag to it in both directions:
+      # `ein-corpus`'s `slow_matches_the_recorded_cost` and `corpus_cli.rs`'s
+      # `the_slow_flag_still_describes_the_sweep`, whose timing half runs only
+      # under `EIN_CORPUS_SLOW` on `--release`, which is this step
+      # (docs/history/m1a_rust/measurements/corpus_cost.md).
       - run: cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
-      # Eight id-space permutations rather than one: does any output depend on
-      # an ordering accident.
+      # Eight id-space permutations of every corpus file, where the per-commit
+      # tier runs `EIN_ID_SEEDS`' default of one: does any output depend on an
+      # ordering accident.
       - run: cargo test -p ein-render --release --test id_order_invariance
         env: { EIN_ID_SEEDS: "8" }
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
-      # program, with the one run the per-commit tier skips: `zebra2-minus-15
-      # -e -m 3`, 32 models, ~25 s of solve (`docs/kernel/inference/answer_dump.md`).
+      # program (`docs/kernel/inference/answer_dump.md`). **This step runs what
+      # the per-commit tier runs, under `--release`.** It was here for one slow
+      # run, `zebra2-minus-15 -e -m 3`, which went with `-e` at S1e2.1a.5's
+      # switch (`fbcae3b2`, 2026-10-18); nothing in `answer_dump.rs` has read
+      # `EIN_CORPUS_SLOW` since. Whether it gets a slow cell back is parked in
+      # S1e2.3.6's notes.
       - run: cargo test -p ein-cli --release --test answer_dump
         env: { EIN_CORPUS_SLOW: "1" }
-      # M1e2 S1e2.1a.6 — C4 under every lever, with the slow tier's declared
-      # cells: the zebra2 pair, whose bare describe runs to the default
-      # --region-budget, so a lever cell's cut answer must be the default's
-      # cut answer. The per-commit tier runs the rest of the file. 77 s on
-      # eight workers, 674 s of CPU (2026-11-01).
+      # M1e2 S1e2.1a.6 — every mode's read-out and summary under every lever,
+      # held to the default's, with the cells the per-commit tier leaves out
+      # for their cost: the declared lever cells of the slow entries (the
+      # zebra2 pair's) and the register's witnesses that are slow.
       - run: cargo test -p ein-cli --release --test lever_invariance
         env: { EIN_CORPUS_SLOW: "1" }
       # ── The two `--check` censuses — M1e S1e.4.5, `TE-L4` ──
@@ -51,9 +58,9 @@ jobs:
       # (`CARGO_BIN_EXE_ein` is `target/release/ein` under `--release`), so
       # this is two runs and not a job. Neither is the gate and neither should
       # be: the per-commit claim is `ein-infer/tests/stdlib_coverage.rs`,
-      # 0.04 s and scoped to `tests/stdlib/`, because a rule that fires only
+      # in-process and scoped to `tests/stdlib/`, because a rule that fires only
       # inside `examples/zebra.ein` has no test. These are the weaker
-      # corpus-wide claim and the sensitivity claim — the two that were, in the
+      # corpus-wide claim and the sensitivity claim, the two that were, in the
       # coverage test's own words, shaped like something that "runs when
       # somebody remembers it".
       #
@@ -76,6 +83,12 @@ jobs:
       # build exits 1, and so does a dangling link or image in it.
       - run: python3 utils/review_bundle.py && python3 utils/doc_audit.py --links --check build/review
         working-directory: ${{ github.workspace }}
+      # M1e S1e.3.6 — would `tests/` notice a defect in the rule it tests: four
+      # mechanical mutation families over every `(rule …)` in `stdlib/`, each
+      # run past `ein test tests/`, and the survivors held as a set to
+      # `tests/mutation_survivors.txt`. `--check` fails on a new survivor and on
+      # a banked one that is now killed. A change in the set is explained in
+      # `tests/README.md` before `--bless` re-banks it.
       - run: python3 utils/stdlib_mutants.py --check
         working-directory: ${{ github.workspace }}
 
@@ -90,8 +103,9 @@ jobs:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       # 10^6 mutations is P1a.1's acceptance number; the per-commit tier runs
-      # 2 000 of them. A find is minimised and written to
-      # corpus/fuzz_findings/, which the failure artifact carries out.
+      # 2 000 of them (`EIN_FUZZ_ITERS`' default in `fuzz_properties.rs`). A
+      # find is minimised and written to corpus/fuzz_findings/, which the
+      # failure artifact carries out.
       - run: cargo test -p ein-ir --release --test fuzz_properties
         env:
           EIN_FUZZ_ITERS: "1000000"
@@ -108,7 +122,8 @@ jobs:
     runs-on: ubuntu-latest
     # A shared runner is nobody's quiet machine, so this job
     # exists to prove the benches still *run*, not to publish a timing —
-    # `--test` is one iteration per case, which is exactly that check.
+    # `--test` is one iteration per case, which is exactly that check. The
+    # per-commit tier runs the same command as its last step.
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
