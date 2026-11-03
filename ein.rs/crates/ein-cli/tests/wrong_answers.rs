@@ -32,7 +32,7 @@ use std::path::Path;
 use std::process::Command;
 
 use ein_corpus::register::{Now, Row};
-use ein_corpus::{plan, register, repo_root};
+use ein_corpus::{Scratch, plan, register, repo_root};
 use serde_json::Value as J;
 
 /// What one run left behind: its exit code, stdout, stderr, and the summary.
@@ -170,8 +170,7 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
 #[test]
 fn every_row_answers_what_the_register_records() {
     let reg = register();
-    let scratch = std::env::temp_dir().join(format!("ein-wrong-answers-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&scratch);
+    let scratch = Scratch::new("ein-wrong-answers");
     let mut bad = Vec::new();
     let mut runs = 0usize;
 
@@ -223,7 +222,6 @@ fn every_row_answers_what_the_register_records() {
             diffs.join("\n    ")
         ));
     }
-    let _ = std::fs::remove_dir_all(&scratch);
     assert!(runs > 0, "the register recorded no runs");
     assert!(
         bad.is_empty(),

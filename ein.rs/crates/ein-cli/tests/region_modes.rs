@@ -16,10 +16,9 @@
 //! golden is `read_out_examples.md` (`read_out_examples.rs`); the rows here
 //! are read by label.
 
-use std::path::PathBuf;
 use std::process::Command;
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 
 struct Run {
     code: i32,
@@ -40,10 +39,8 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-fn scratch(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-region-modes-{}-{tag}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    dir
+fn scratch(tag: &str) -> Scratch {
+    Scratch::new(&format!("ein-region-modes-{tag}"))
 }
 
 const THREE: &str = "examples/lattice/02_genuine_3set_death.ein";
@@ -242,7 +239,8 @@ fn jobs_change_no_line_of_a_mode() {
 
 #[test]
 fn the_oracles_directory_has_no_walk_and_draws_with_none() {
-    let dir = scratch("oracle");
+    let tmp = scratch("oracle");
+    let dir = tmp.join("d");
     let d = dir.to_string_lossy().to_string();
     let r = ein(&["oracle", THREE, "--dump", &d]);
     assert_eq!(r.code, 0, "{}", r.err);
@@ -258,7 +256,6 @@ fn the_oracles_directory_has_no_walk_and_draws_with_none() {
     std::fs::write(dir.join("walk.json"), "{}").unwrap();
     assert_eq!(ein(&["oracle", THREE, "--dump", &d]).code, 0);
     assert!(!dir.join("walk.json").exists());
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 #[test]
@@ -320,7 +317,6 @@ fn the_listed_states_print_as_asked() {
         ],
     );
     let dir = scratch("diff");
-    std::fs::create_dir_all(&dir).unwrap();
     let want = dir.join("want.txt");
     std::fs::write(
         &want,
@@ -343,7 +339,6 @@ fn the_listed_states_print_as_asked() {
         "{}",
         r.err
     );
-    let _ = std::fs::remove_dir_all(&dir);
     // `--models grid` per state, here with the reason a program without a
     // row type gets; the cells themselves are `models_grid.rs`'s.
     let g = ein(&[
@@ -384,7 +379,6 @@ fn the_universe_and_the_trace() {
     assert!(m.out.contains("dead alone not known"), "{}", m.out);
 
     let dir = scratch("trace");
-    std::fs::create_dir_all(&dir).unwrap();
     let md = dir.join("t.md");
     let p = md.to_string_lossy().to_string();
     let bare = ein(&["solve", zebra, "--region-budget", "524288"]);
@@ -420,7 +414,6 @@ fn the_universe_and_the_trace() {
         text.contains("## Owing — 1 node") && text.contains("- **∅** owes"),
         "{text}"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// `--events FILE` under a region mode — T1e2.1a.5.2's seventh step,
@@ -432,7 +425,6 @@ fn the_universe_and_the_trace() {
 fn the_event_stream_is_the_runs_and_jobs_move_no_line() {
     let zebra = "examples/branching/05_mini_zebra.ein";
     let dir = scratch("events");
-    std::fs::create_dir_all(&dir).unwrap();
     let path = |j: &str| dir.join(format!("{j}.jsonl")).to_string_lossy().to_string();
     let bare = ein(&["solve", zebra, "--region-budget", "524288"]);
     let mut streams = Vec::new();
@@ -481,7 +473,6 @@ fn the_event_stream_is_the_runs_and_jobs_move_no_line() {
     );
     // Every line but `run`, whose argv names the -j, is the same at four jobs.
     assert_eq!(one[1..], streams[1][1..]);
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// The walk's other options, taken by the modes — T1e2.1a.5.3's first step.
@@ -610,7 +601,6 @@ fn the_lattice_dump_is_every_node_visited() {
         dumps.push(doc);
     }
     assert_eq!(dumps[0], dumps[1], "-j moved the dump");
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// `--trace`'s three shaping flags under a mode: `--relevant` keeps a slice,
@@ -620,7 +610,6 @@ fn the_lattice_dump_is_every_node_visited() {
 fn the_trace_takes_its_three_shaping_flags() {
     let zebra = "examples/branching/05_mini_zebra.ein";
     let dir = scratch("trace-shape");
-    std::fs::create_dir_all(&dir).unwrap();
     let trace = |extra: &[&str]| {
         let p = dir.join("t.md").to_string_lossy().to_string();
         let mut a = vec!["solve", zebra, "--single", "--no-diagrams", "--trace", &p];
@@ -646,7 +635,6 @@ fn the_trace_takes_its_three_shaping_flags() {
         2,
         "{full}"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// `ein oracle`'s five options from `ein solve` — T1e2.1a.5.3's first step,
@@ -654,7 +642,6 @@ fn the_trace_takes_its_three_shaping_flags() {
 #[test]
 fn the_oracle_takes_the_read_outs_options() {
     let dir = scratch("oracle-options");
-    std::fs::create_dir_all(&dir).unwrap();
     let bare = ein(&["oracle", THREE]);
     assert_eq!(bare.code, 0, "{}", bare.err);
     let p = dir.join("s.json").to_string_lossy().to_string();
@@ -683,7 +670,6 @@ fn the_oracle_takes_the_read_outs_options() {
     ]);
     assert_eq!(t.code, 2, "{}", t.err);
     assert!(t.err.contains("--max-time"), "{}", t.err);
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **`ein solve FILE --monotone`**, the explicit check the user approved on
@@ -775,7 +761,6 @@ fn the_monotone_question_is_about_the_program() {
         assert!(r.err.contains("cannot be used with"), "{other}: {}", r.err);
     }
     let dir = scratch("monotone");
-    std::fs::create_dir_all(&dir).expect("scratch");
     let summary = dir.join("s.json");
     let answer = dir.join("answer");
     let r = ein(&[
@@ -803,7 +788,6 @@ fn the_monotone_question_is_about_the_program() {
         std::fs::read_to_string(answer.join("answer.json")).expect("written"),
         std::fs::read_to_string(&summary).expect("written")
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **`ein solve FILE --count`** — M1e2 T1e2.1c.4.6, the user's ruling of
@@ -932,7 +916,6 @@ fn the_count_question_is_describes_counts() {
     // The summary and the answer directory: the read-out and the summary, no
     // state, and nothing a describe's dump left behind.
     let dir = scratch("count");
-    std::fs::create_dir_all(&dir).expect("scratch");
     let summary = dir.join("s.json");
     let answer = dir.join("answer");
     let a = answer.to_str().unwrap();
@@ -976,7 +959,6 @@ fn the_count_question_is_describes_counts() {
     );
     assert!(s["region"]["states"].is_null() && s["region"]["frontier"].is_null());
     assert_eq!(s["claim"]["outcome"], "not-checked");
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// The static rows of a read-out — `assumes`, `site`, `…`, `cycle`, `order`
@@ -1003,7 +985,6 @@ fn static_rows(out: &str) -> Vec<&str> {
 #[test]
 fn one_verdict_on_every_corpus_program() {
     let dir = scratch("one-verdict");
-    std::fs::create_dir_all(&dir).expect("scratch");
     let report = dir.join("report.json");
     let r = ein(&[
         "test",
@@ -1173,5 +1154,4 @@ fn one_verdict_on_every_corpus_program() {
         tested.values().any(|m| !m),
         "no flagged program carries a solve claim: the `ein test` half reads nothing"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }

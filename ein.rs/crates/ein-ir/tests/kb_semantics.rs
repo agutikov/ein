@@ -24,7 +24,7 @@ use ein_core::{
     BitSet, FactId, IntId, Justifications, Kb, Prov, ProvKind, Symbol, Tag, Terms, Value,
     build_derivation_dag, shape, unsat_core, walk_premises, walks::is_frontier,
 };
-use ein_corpus::{corpus_files, repo_root};
+use ein_corpus::{Scratch, corpus_files, repo_root};
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
 use ein_ir::stdlib::{self, MARKER, Source};
@@ -89,14 +89,11 @@ fn names<V>(terms: &Terms, registry: &ein_core::Registry<V>) -> Vec<String> {
     out
 }
 
-/// A private directory for a fixture project. Named after the process so two
-/// concurrent `cargo test` runs cannot collide, and cleared on entry so a
-/// crashed run leaves nothing behind for the next one to read.
-fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-kb-semantics-{}-{name}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("a scratch directory");
-    dir
+/// A private directory for a fixture project, removed when the test ends,
+/// passing or not ([`Scratch`]). It was cleared on entry and never on exit, so
+/// every run left six behind (M1e2 S1e2.3.5).
+fn scratch(name: &str) -> Scratch {
+    Scratch::new(&format!("ein-kb-semantics-{name}"))
 }
 
 fn write(dir: &Path, name: &str, text: &str) -> PathBuf {
@@ -661,7 +658,7 @@ fn the_resolved_stdlib_root_is_the_only_one_consulted() {
     write(&dir, "macro.ein", "(macro only-here (?p) (rel ?p))\n");
 
     assert_eq!(
-        Resolver::with_stdlib(Source::Override(dir.clone())).stdlib_macro_names(),
+        Resolver::with_stdlib(Source::Override(dir.to_path_buf())).stdlib_macro_names(),
         ["only-here"],
         "the override's macro.ein, and nothing from the checkout"
     );
@@ -721,7 +718,7 @@ fn an_override_without_the_marker_is_refused_and_names_the_variable() {
     let empty = scratch("empty-stdlib");
     assert!(!empty.join(MARKER).is_file(), "no marker, on purpose");
     assert!(
-        Source::Override(empty.clone()).modules().is_empty(),
+        Source::Override(empty.to_path_buf()).modules().is_empty(),
         "and no modules either"
     );
 
@@ -729,7 +726,7 @@ fn an_override_without_the_marker_is_refused_and_names_the_variable() {
     let text = std::fs::read_to_string(&zebra2).expect("readable");
     let mut ast = Ast::new();
     let forms = parse(&mut ast, &text, zebra2.to_str()).expect("parses");
-    let err = Resolver::with_stdlib(Source::Override(empty.clone()))
+    let err = Resolver::with_stdlib(Source::Override(empty.to_path_buf()))
         .resolve_imports(&mut ast, &forms, zebra2.parent())
         .expect_err("an unprovable override is refused");
     assert!(
@@ -764,7 +761,7 @@ fn an_override_without_the_marker_is_refused_and_names_the_variable() {
 fn editing_a_module_takes_effect_without_a_rebuild() {
     let dir = scratch("editable");
     let macro_ein = write(&dir, "macro.ein", "(macro forall (?p) (rel ?p))\n");
-    let resolver = Resolver::with_stdlib(Source::Override(dir.clone()));
+    let resolver = Resolver::with_stdlib(Source::Override(dir.to_path_buf()));
     assert_eq!(resolver.stdlib_macro_names(), ["forall"]);
 
     std::fs::write(

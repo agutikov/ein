@@ -11,10 +11,10 @@
 //! `pets.ein` is the witness: R is 11 339 states, the read-out lists 38 of
 //! them, and before the stage `--models grid` printed 34 143 lines.
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 
 const PETS: &str = "examples/saturation/type-exclusivity/pets.ein";
 /// Seven states, every form whole: nothing is cut.
@@ -39,11 +39,8 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-fn scratch(name: &str) -> PathBuf {
-    let d = std::env::temp_dir().join(format!("ein-forms-cut-{}-{name}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).expect("a scratch directory");
-    d
+fn scratch(name: &str) -> Scratch {
+    Scratch::new(&format!("ein-forms-cut-{name}"))
 }
 
 /// The lines after the read-out: what `extra` added to stdout. The header
@@ -220,7 +217,6 @@ fn on_pets_each_form_prints_what_fits_and_the_dump_holds_it_uncut() {
             _ => unreachable!(),
         }
     }
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **Where nothing is cut, the form on stdout is its file**: seven states,
@@ -256,7 +252,6 @@ fn where_nothing_is_cut_stdout_is_the_file() {
             "{flags:?}: stdout's form is not its file"
         );
     }
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **`ein oracle` writes no answer directory**, so its forms' cut names the
@@ -293,5 +288,4 @@ fn the_oracle_points_at_solve_and_a_second_dump_leaves_no_stale_form() {
     assert_eq!(ein(&["solve", THREE, "--count", "-p"]).code, 2);
     assert_eq!(dump(THREE, &["--count"], &d).code, 0);
     assert!(!d.join("forms").exists(), "--count's dump kept forms/");
-    let _ = std::fs::remove_dir_all(&dir);
 }

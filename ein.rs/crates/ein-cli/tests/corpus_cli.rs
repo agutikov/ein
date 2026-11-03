@@ -68,7 +68,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
-use ein_corpus::{corpus, golden, golden_path, plan, repo_root};
+use ein_corpus::{Scratch, corpus, golden, golden_path, plan, repo_root};
 
 /// One cell's result.
 struct Cell {
@@ -253,12 +253,12 @@ fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
 /// sweeps never share one, and until 2026-11-03 nothing removed it: every run
 /// of the gate left 88–257 MB in the temp directory (the slow entries are the
 /// difference): 49 of them, 4.7 GB, had piled up in a 16 GB tmpfs that
-/// filled once. A sweep that panics part way still leaves its root behind.
+/// filled once. Since M1e2 S1e2.3.5 the root is a [`Scratch`], so a sweep
+/// that panics part way removes it too.
 fn sweep() -> Vec<Cell> {
     let repo = repo_root();
     let bin = env!("CARGO_BIN_EXE_ein");
-    let root = std::env::temp_dir().join(format!("ein-corpus-cli-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&root);
+    let root = Scratch::new("ein-corpus-cli");
 
     let mut cells: Vec<(String, String)> = Vec::new();
     for e in &corpus().entry {
@@ -288,7 +288,6 @@ fn sweep() -> Vec<Cell> {
             took,
         });
     }
-    let _ = std::fs::remove_dir_all(&root);
     out
 }
 

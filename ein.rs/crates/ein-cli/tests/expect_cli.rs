@@ -18,6 +18,8 @@
 use std::path::PathBuf;
 use std::process::Command;
 
+use ein_corpus::Scratch;
+
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -46,26 +48,24 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-/// A scratch `.ein` the test owns and deletes.
-struct Fixture(PathBuf);
+/// A scratch `.ein` the test owns, in a directory of its own that goes with
+/// it ([`Scratch`]), beside whatever else the test writes. Its `Drop` used to
+/// remove the file and leave the directory (M1e2 S1e2.3.5).
+struct Fixture {
+    dir: Scratch,
+    path: PathBuf,
+}
 
 impl Fixture {
     fn new(tag: &str, body: &str) -> Fixture {
-        let dir = std::env::temp_dir().join(format!("ein-expect-cli-{}", std::process::id()));
-        std::fs::create_dir_all(&dir).expect("a scratch directory");
+        let dir = Scratch::new("ein-expect-cli");
         let path = dir.join(format!("{tag}.ein"));
         std::fs::write(&path, body).expect("writes");
-        Fixture(path)
+        Fixture { dir, path }
     }
 
     fn path(&self) -> String {
-        self.0.to_string_lossy().into_owned()
-    }
-}
-
-impl Drop for Fixture {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_file(&self.0);
+        self.path.to_string_lossy().into_owned()
     }
 }
 
@@ -250,7 +250,7 @@ fn an_artefact_flag_over_several_queries_writes_the_one_run() {
              (query :goal (p B ?h) :expect (model (p B H2)))\n"
         ),
     );
-    let out = std::env::temp_dir().join(format!("ein-expect-cli-{}.json", std::process::id()));
+    let out = f.dir.join("summary.json");
     let r = ein(&["solve", &f.path(), "--json-summary", &out.to_string_lossy()]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     let j: serde_json::Value =
@@ -261,14 +261,14 @@ fn an_artefact_flag_over_several_queries_writes_the_one_run() {
         queries.iter().all(|q| q["expect"]["outcome"] == "held"),
         "{j}"
     );
-    let _ = std::fs::remove_file(&out);
 }
 
 /// A single-query file is untouched by any of it: the flags still work, which
 /// is the whole corpus.
 #[test]
 fn one_query_keeps_its_artefacts() {
-    let out = std::env::temp_dir().join(format!("ein-expect-one-{}.jsonl", std::process::id()));
+    let dir = Scratch::new("ein-expect-one");
+    let out = dir.join("events.jsonl");
     let r = ein(&[
         "solve",
         "examples/features/10_expect.ein",
@@ -277,7 +277,6 @@ fn one_query_keeps_its_artefacts() {
     ]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     assert!(out.exists(), "the event log was written");
-    let _ = std::fs::remove_file(&out);
 }
 
 // ── Dumps and round-trips like every other keyword ─────────────────
@@ -299,7 +298,7 @@ fn the_container_round_trips_expect_and_the_query_index() {
              (query :goal (p B ?h) :expect (model (p B H3)))\n"
         ),
     );
-    let container = std::env::temp_dir().join(format!("ein-expect-{}.einb", std::process::id()));
+    let container = f.dir.join("einb.einb");
     let out = container.to_string_lossy().into_owned();
     let saved = ein(&["kb", "save", &f.path(), &out]);
     assert_eq!(saved.code, 0, "{}{}", saved.out, saved.err);
@@ -313,5 +312,4 @@ fn the_container_round_trips_expect_and_the_query_index() {
     assert!(binary.out.contains("query 2 of 2"), "{}", binary.out);
     assert!(binary.out.contains("holds"), "{}", binary.out);
     assert!(binary.out.contains("(p B H3)"), "{}", binary.out);
-    let _ = std::fs::remove_file(&container);
 }

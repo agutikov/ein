@@ -23,6 +23,8 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use ein_corpus::Scratch;
+
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../..")
@@ -85,11 +87,8 @@ fn normalise(text: &str, container: &str, source: &str) -> String {
 }
 
 /// A scratch directory that cleans up after itself.
-fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-einb-{}-{name}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("a scratch directory");
-    dir
+fn scratch(name: &str) -> Scratch {
+    Scratch::new(&format!("ein-einb-{name}"))
 }
 
 #[test]
@@ -128,7 +127,6 @@ fn a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source() {
             "{puzzle}: the comparison is only worth something if there was output"
         );
     }
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// The whole `solve` surface, not just its default: every diagnostic the
@@ -168,7 +166,6 @@ fn the_diagnostic_flags_agree_too() {
         );
         assert_eq!(from_container.code, from_text.code, "solve {flags:?}: exit");
     }
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// A saturated container starts from the fixpoint, so it is **not** claimed to
@@ -195,7 +192,6 @@ fn a_saturated_container_reaches_the_same_verdict() {
         from_text.stdout,
         "the answer must not depend on where the search started"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// The stdlib is the input whose divergence nothing else would notice
@@ -263,7 +259,6 @@ fn an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit() {
         moved.stderr
     );
     assert_eq!(moved.code, 0, "a cache miss is not an error");
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// The dispatch is on the magic bytes, not on the name (T1a.8.1.7).
@@ -303,7 +298,6 @@ fn a_container_is_recognised_under_any_name() {
         ),
         from_text.stdout
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 #[test]
@@ -331,7 +325,6 @@ fn a_container_the_engine_cannot_read_fails_as_a_load_error() {
         "and it says why: {:?}",
         run.stderr
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// `--saturate` is the only reason to write a container that is not a
@@ -368,7 +361,6 @@ fn a_container_is_not_larger_than_the_program_it_replaces() {
         container < source + imported,
         "a loaded zebra2 container is {container} bytes against {source} + {imported} of text"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// The container's own path, unused by anything else here: the file the CLI
@@ -393,7 +385,6 @@ fn what_the_cli_writes_is_a_file_the_library_recognises() {
         ein_einb::header::MAGIC
     );
     assert!(!looks_like_einb(Path::new("examples/zebra.ein")));
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// Named for what it returns, which the previous name (`ein_is_text`) was the

@@ -17,7 +17,7 @@
 use std::collections::BTreeSet;
 use std::process::Command;
 
-use ein_corpus::{ZEBRA_GRID, repo_root};
+use ein_corpus::{Scratch, ZEBRA_GRID, repo_root};
 
 struct Run {
     code: i32,
@@ -161,8 +161,7 @@ fn list_stays_the_default() {
 }
 
 fn diff(file: &str, flags: &[&str], expected: &str) -> String {
-    let dir = std::env::temp_dir().join(format!("ein-models-grid-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).expect("scratch");
+    let dir = Scratch::new("ein-models-grid");
     let path = dir.join(format!("{}.models", file.replace('/', "_")));
     std::fs::write(&path, expected).expect("writes");
     let mut args = vec!["solve", file];
@@ -171,7 +170,6 @@ fn diff(file: &str, flags: &[&str], expected: &str) -> String {
     args.extend(["--diff-models", &p]);
     let r = ein(&args);
     assert_eq!(r.code, 0, "{file}: {}", r.err);
-    let _ = std::fs::remove_file(&path);
     r.out
 }
 
@@ -225,8 +223,7 @@ fn the_diff_names_the_missing_the_spurious_and_the_one_fact_off() {
 
 #[test]
 fn a_file_the_diff_cannot_read_is_a_usage_error_before_anything_runs() {
-    let dir = std::env::temp_dir().join(format!("ein-models-grid-bad-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).expect("scratch");
+    let dir = Scratch::new("ein-models-grid-bad");
     let bad = dir.join("bad.models");
     std::fs::write(&bad, "(p A)\n").expect("writes");
     for path in [
@@ -238,5 +235,4 @@ fn a_file_the_diff_cannot_read_is_a_usage_error_before_anything_runs() {
         assert!(r.err.contains("--diff-models"), "{}", r.err);
         assert!(r.out.is_empty(), "it ran anyway");
     }
-    let _ = std::fs::remove_dir_all(&dir);
 }

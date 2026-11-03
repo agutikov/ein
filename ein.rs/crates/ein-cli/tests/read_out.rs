@@ -31,7 +31,7 @@
 
 use std::process::Command;
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 
 struct Run {
     out: String,
@@ -41,14 +41,11 @@ struct Run {
 /// One `ein solve`, with `--stats` and a summary beside it — the two surfaces
 /// whose labels collided, plus the machine copy that says what the answer was.
 fn solve(args: &[&str]) -> Run {
-    // A counter, not the argv: `cargo test` runs a file's tests as threads of
-    // one process, and two of the three below solve the same cells — a path
-    // derived from the arguments is one both would write and one delete.
-    static NTH: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
-    let nth = NTH.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-    let dir = std::env::temp_dir().join(format!("ein-read-out-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).expect("a scratch dir");
-    let json = dir.join(format!("{nth}.json"));
+    // A directory per run, not a path derived from the argv: `cargo test` runs
+    // a file's tests as threads of one process, and two of the three below
+    // solve the same cells.
+    let dir = Scratch::new("ein-read-out");
+    let json = dir.join("summary.json");
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .arg("solve")
         .args(args)
@@ -58,7 +55,6 @@ fn solve(args: &[&str]) -> Run {
         .output()
         .expect("the `ein` binary runs");
     let text = std::fs::read_to_string(&json).expect("a summary was written");
-    let _ = std::fs::remove_file(&json);
     Run {
         out: String::from_utf8_lossy(&out.stdout).into_owned(),
         summary: serde_json::from_str(&text).expect("the summary parses"),

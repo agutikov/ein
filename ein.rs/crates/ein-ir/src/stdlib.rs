@@ -189,6 +189,7 @@ pub fn resolve_with(from: &Path, over: Option<PathBuf>) -> Source {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ein_corpus::Scratch;
     use sha2::{Digest, Sha256};
 
     fn crate_dir() -> PathBuf {
@@ -249,12 +250,13 @@ mod tests {
     /// no override, and a walk that finds no marker.
     #[test]
     fn a_directory_without_the_marker_is_not_the_stdlib() {
-        let tmp = std::env::temp_dir().join("ein-stdlib-none");
+        let tmp = Scratch::new("ein-stdlib-none");
         std::fs::create_dir_all(tmp.join("stdlib")).expect("mkdir");
         // A bare `stdlib/` with no marker, and every ancestor of `temp_dir`
         // above it — on a machine where `/tmp` sits inside a checkout the walk
         // would find *that* marker, so the claim is asserted as the rule
-        // rather than as the outcome.
+        // rather than as the outcome. Under `./run_tests.sh` it does: the
+        // gate's `TMPDIR` is in `build/` (M1e2 S1e2.3.5).
         match resolve_with(&tmp, None) {
             Source::Embedded => {}
             Source::Checkout(p) => assert!(
@@ -293,9 +295,8 @@ mod tests {
             "{why}"
         );
 
-        let markerless = std::env::temp_dir().join("ein-stdlib-markerless");
-        std::fs::create_dir_all(&markerless).expect("mkdir");
-        let why = resolve_with(&crate_dir(), Some(markerless))
+        let markerless = Scratch::new("ein-stdlib-markerless");
+        let why = resolve_with(&crate_dir(), Some(markerless.to_path_buf()))
             .problem()
             .expect("a directory without the marker is refused");
         assert!(

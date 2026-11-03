@@ -39,6 +39,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ein_core::config::{FLAGS, FieldKind, RETIRED};
+use ein_corpus::Scratch;
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -57,16 +58,11 @@ fn page() -> String {
     std::fs::read_to_string(page_path()).expect("docs/kernel/configuration.md")
 }
 
-/// The scratch directory this file owns. One per process, so a parallel run of
-/// another test suite cannot collide with it.
-fn scratch() -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-config-reference-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).expect("a scratch directory");
-    dir
-}
-
-fn write_fixture(tag: &str, body: &str) -> PathBuf {
-    let path = scratch().join(format!("{tag}.ein"));
+/// A fixture `<tag>.ein` in `dir`, a [`Scratch`] the calling test owns, so it
+/// goes when the test does. Until M1e2 S1e2.3.5 they went to one directory per
+/// process that nothing removed, nineteen fixtures a run.
+fn write_fixture(dir: &Path, tag: &str, body: &str) -> PathBuf {
+    let path = dir.join(format!("{tag}.ein"));
     std::fs::write(&path, body).expect("writes");
     path
 }
@@ -96,7 +92,8 @@ const NO_CONFIG: &str = "(relation p T)\n(p A)\n";
 
 /// `--dump-config`'s block: the header line and the indented lines under it.
 fn dump_config_block() -> String {
-    let f = write_fixture("no-config", NO_CONFIG);
+    let dir = Scratch::new("ein-config-reference");
+    let f = write_fixture(&dir, "no-config", NO_CONFIG);
     let out = ein(&["solve", "--dump-config", &f.to_string_lossy()]);
     let mut lines = out.lines().skip_while(|l| *l != "config (resolved)");
     let head = lines.next().expect("--dump-config printed no config block");
@@ -506,6 +503,7 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
             .map(|l| format!("{l}\n"))
             .collect()
     };
+    let dir = Scratch::new("ein-config-reference");
     for path in fixtures {
         let src = std::fs::read_to_string(repo_root().join(path)).expect(path);
         let tag = Path::new(path)
@@ -514,9 +512,10 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
             .expect("a stem");
         // `(config …)` is last-wins, so appending a block overrides whatever
         // the fixture set.
-        let base = write_fixture(&format!("{tag}-base"), &src);
+        let base = write_fixture(&dir, &format!("{tag}-base"), &src);
         let want = run(&base);
         let alt = write_fixture(
+            &dir,
             &format!("{tag}-sanity"),
             &format!("{src}\n(config :lattice-sanity-check true)\n"),
         );
@@ -541,8 +540,10 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
 /// which stage retired them, and none is offered among the valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
+    let dir = Scratch::new("ein-config-reference");
     for (flag, stage, why) in RETIRED {
         let f = write_fixture(
+            &dir,
             &format!("retired-{flag}"),
             &format!("(config :{flag} true)\n(relation p T)\n(p A)\n"),
         );

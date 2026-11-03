@@ -9,7 +9,7 @@
 //! | [`manifest`] | `corpus/corpus.toml` — one entry per `.ein` file, the runs it is exercised under, and the completeness check that fails on a file with no entry |
 //! | [`plan`] | a run name → an `ein` argv, which is what makes a manifest row executable |
 //! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one (M1e2 S1e2.1.1) |
-//! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere |
+//! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere; and [`Scratch`], the one way a test makes a directory it does not keep |
 //!
 //! What is *not* here is a `skip` helper. A skip that prints to stderr —
 //! which `cargo test` captures for a passing test — reports a pass while
@@ -21,6 +21,7 @@ pub mod plan;
 pub mod register;
 
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub use manifest::{Corpus, Entry};
 pub use register::{Register, Row};
@@ -169,4 +170,112 @@ pub fn golden_path(krate: &str, name: &str) -> PathBuf {
         .join(krate)
         .join("tests/golden")
         .join(name)
+}
+
+/// **A scratch directory that removes itself** (M1e2 S1e2.3.5).
+///
+/// `<prefix>-<pid>-<n>` under [`std::env::temp_dir`], so `$TMPDIR` moves it.
+/// The pid keeps two test binaries, or two gate runs, apart; `n`, a counter
+/// of this process, keeps apart two tests of one binary, which are threads of
+/// one process. It is created empty, and removed with everything in it when
+/// the value is dropped, by a test that panics too, since the panic unwinds
+/// through the drop. [`Scratch::keep`] leaves it behind on purpose, for a
+/// human to read after a failure.
+///
+/// Before it each test file made its own scratch, and seven removed it on no
+/// path at all, nine more only when the test passed: 1 098 `/tmp/ein-*`
+/// directories had piled up by 2026-11-03, eleven more per gate run
+/// (S1e2.3.5's sweep). `./run_tests.sh` now runs the tests under a fresh
+/// `TMPDIR` and fails on anything left in it.
+///
+/// It dereferences to its [`Path`], so `scratch.join("x.ein")` and
+/// `scratch.display()` read as they would on a `PathBuf`.
+pub struct Scratch {
+    path: PathBuf,
+    keep: bool,
+}
+
+impl Scratch {
+    /// A fresh, empty `<prefix>-<pid>-<n>` under the temp directory.
+    ///
+    /// A directory of that name left by an earlier process with the same pid
+    /// is removed first, so what a test finds in it is what it wrote.
+    pub fn new(prefix: &str) -> Scratch {
+        static NTH: AtomicUsize = AtomicUsize::new(0);
+        let n = NTH.fetch_add(1, Ordering::Relaxed);
+        let path = std::env::temp_dir().join(format!("{prefix}-{}-{n}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&path);
+        std::fs::create_dir_all(&path)
+            .unwrap_or_else(|e| panic!("a scratch directory {}: {e}", path.display()));
+        Scratch { path, keep: false }
+    }
+
+    /// The directory.
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    /// Leave the directory where it is, and return its path: the one way a
+    /// test keeps its output for a human. Nothing removes it afterwards, and
+    /// the gate's scratch check fails on it if the run is otherwise green.
+    pub fn keep(mut self) -> PathBuf {
+        self.keep = true;
+        self.path.clone()
+    }
+}
+
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        if !self.keep {
+            let _ = std::fs::remove_dir_all(&self.path);
+        }
+    }
+}
+
+impl std::ops::Deref for Scratch {
+    type Target = Path;
+    fn deref(&self) -> &Path {
+        &self.path
+    }
+}
+
+impl AsRef<Path> for Scratch {
+    fn as_ref(&self) -> &Path {
+        &self.path
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Scratch;
+
+    /// Named `<prefix>-<pid>-<n>`, empty, distinct per call, gone on drop,
+    /// and still there after `keep`.
+    #[test]
+    fn a_scratch_directory_is_fresh_and_removes_itself() {
+        let (a, b) = (
+            Scratch::new("ein-corpus-scratch"),
+            Scratch::new("ein-corpus-scratch"),
+        );
+        assert_ne!(a.path(), b.path());
+        let name = a.file_name().unwrap().to_string_lossy().into_owned();
+        let pid = std::process::id().to_string();
+        let mut parts = name.rsplitn(3, '-');
+        let (n, p, prefix) = (parts.next(), parts.next(), parts.next());
+        assert!(n.is_some_and(|n| n.parse::<usize>().is_ok()), "{name}");
+        assert_eq!(
+            (prefix, p),
+            (Some("ein-corpus-scratch"), Some(pid.as_str()))
+        );
+        assert!(a.is_dir() && std::fs::read_dir(&*a).unwrap().next().is_none());
+
+        std::fs::write(a.join("f"), "x").unwrap();
+        let gone = a.to_path_buf();
+        drop(a);
+        assert!(!gone.exists(), "{} survived its drop", gone.display());
+
+        let kept = b.keep();
+        assert!(kept.is_dir(), "keep() removed it");
+        std::fs::remove_dir_all(&kept).unwrap();
+    }
 }

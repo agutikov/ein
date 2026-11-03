@@ -55,6 +55,7 @@ import shutil
 import statistics
 import subprocess
 import sys
+import tempfile
 import time
 import tomllib
 from pathlib import Path
@@ -198,35 +199,40 @@ def main() -> int:
     env = dict(os.environ)
     env.pop("EIN_STDLIB", None)
     env["LC_ALL"] = "C"
-    root = Path(os.environ.get("TMPDIR", "/tmp")) / f"ein-corpus-cost-{os.getpid()}"
 
     w = max(len(e["path"]) for e in entries) + 2
     print(f"{'entry':<{w}}{'run':<26}{'mean':>11}{'sd':>10}{'rsd':>7}{'n':>3}",
           file=sys.stderr)
     print("─" * (w + 57), file=sys.stderr)
     rows: list[dict] = []
-    for i, entry in enumerate(entries):
-        path = entry["path"]
-        declared = all_runs(entry)
-        for run in [*declared, *(r for r in extra if r not in declared)]:
-            if args.run and run not in args.run:
-                continue
-            out = root / f"{i:04d}" / slug(run)
-            argv = [str(args.bin), *argv_for(run, path, out)]
-            r = measure(argv, env, out, args)
-            shutil.rmtree(out, ignore_errors=True)  # `--dump-states` × n reps
-            row = {"path": path, "run": run, "declared": run in declared,
-                   "slow": bool(entry.get("slow")), "argv": shlex.join(argv), **r}
-            rows.append(row)
-            if "mean_ms" in r:
-                print(f"{path:<{w}}{run:<26}{fmt_ms(r['mean_ms']):>11}"
-                      f"{fmt_ms(r['sd_ms']):>10}{r['rsd_pct']:>6.1f}%{r['n']:>3}"
-                      + ("" if row["declared"] else "  (not declared)")
-                      + ("" if r["code"] == 0 else f"  exit {r['code']}"),
-                      file=sys.stderr)
-            else:
-                print(f"{path:<{w}}{run:<26}{'> ' + fmt_ms(r['timeout_s'] * 1e3):>11}"
-                      f"{'—':>10}{'—':>7}{r['n']:>3}  killed", file=sys.stderr)
+    # Every run's artefacts go under one scratch root that is removed however
+    # the sweep ends. Until M1e2 S1e2.3.5 only each run's own directory was
+    # removed, and the root stayed behind in $TMPDIR with an empty directory
+    # per entry.
+    with tempfile.TemporaryDirectory(prefix="ein-corpus-cost-") as scratch:
+        root = Path(scratch)
+        for i, entry in enumerate(entries):
+            path = entry["path"]
+            declared = all_runs(entry)
+            for run in [*declared, *(r for r in extra if r not in declared)]:
+                if args.run and run not in args.run:
+                    continue
+                out = root / f"{i:04d}" / slug(run)
+                argv = [str(args.bin), *argv_for(run, path, out)]
+                r = measure(argv, env, out, args)
+                shutil.rmtree(out, ignore_errors=True)  # `--dump-states` × n reps
+                row = {"path": path, "run": run, "declared": run in declared,
+                       "slow": bool(entry.get("slow")), "argv": shlex.join(argv), **r}
+                rows.append(row)
+                if "mean_ms" in r:
+                    print(f"{path:<{w}}{run:<26}{fmt_ms(r['mean_ms']):>11}"
+                          f"{fmt_ms(r['sd_ms']):>10}{r['rsd_pct']:>6.1f}%{r['n']:>3}"
+                          + ("" if row["declared"] else "  (not declared)")
+                          + ("" if r["code"] == 0 else f"  exit {r['code']}"),
+                          file=sys.stderr)
+                else:
+                    print(f"{path:<{w}}{run:<26}{'> ' + fmt_ms(r['timeout_s'] * 1e3):>11}"
+                          f"{'—':>10}{'—':>7}{r['n']:>3}  killed", file=sys.stderr)
 
     rc = summarise(rows, entries, args)
     if args.json:

@@ -16,7 +16,7 @@ use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 use serde_json::Value as J;
 
 struct Run {
@@ -40,11 +40,8 @@ fn ein(args: &[&str], env: &[String]) -> Run {
     }
 }
 
-fn scratch(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-region-dump-{}-{tag}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("scratch");
-    dir
+fn scratch(tag: &str) -> Scratch {
+    Scratch::new(&format!("ein-region-dump-{tag}"))
 }
 
 fn json(path: &Path) -> J {
@@ -105,7 +102,6 @@ fn the_flag_moves_no_answer() {
         assert_eq!(a.err, b.err, "{file}: stderr moved");
         assert_eq!(sa, sb, "{file}: the summary moved");
     }
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 fn sets(v: &J) -> BTreeSet<Vec<String>> {
@@ -317,7 +313,6 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
         moved > 0,
         "no node moved: the closure check compared identities"
     );
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **Any region can be written as a program** (S1e2.1a.8): `utils/region_synth.py
@@ -372,7 +367,6 @@ fn over_the_limit_the_oracle_refuses_and_says_why() {
     assert!(!dir.join("walk.json").exists());
     let md = std::fs::read_to_string(dir.join("region.md")).expect("region.md");
     assert!(md.contains("## No region"), "{md}");
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// `n` candidates and no rule: every subset is in R.
@@ -444,7 +438,6 @@ fn a_raised_limit_warns_with_the_projected_cost() {
     assert_eq!(r.code, 2, "{}", r.err);
     assert!(r.err.contains("over --region-limit 16"), "{}", r.err);
     assert!(!r.err.contains("warning:"), "{}", r.err);
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// `--states` keeps each node's state beyond root's.
@@ -475,7 +468,6 @@ fn region_states_keeps_every_nodes_state() {
     dump(file, &[], &without);
     let region = json(&without.join("region.json"));
     assert!(region["region"]["nodes"][0].get("state").is_none());
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **The warning** (M1e2 S1e2.1b.5, the wording the user approved on
@@ -573,5 +565,4 @@ fn the_warning_says_what_is_assumed_where_there_is_a_site() {
         assert_eq!(m["assumes"]["node"], "fork from root", "{file}");
         assert!(!r.out.contains("monotone lattice"), "{file}");
     }
-    let _ = std::fs::remove_dir_all(&root);
 }

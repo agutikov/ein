@@ -18,10 +18,10 @@
 //! a copy of the run's dump, which is the input the comparison is for.
 
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, Stdio};
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 use serde_json::Value as J;
 
 struct Run {
@@ -43,11 +43,8 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-fn scratch(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-region-render-{}-{tag}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("scratch");
-    dir
+fn scratch(tag: &str) -> Scratch {
+    Scratch::new(&format!("ein-region-render-{tag}"))
 }
 
 /// `ein oracle FILE FLAGS --dump DIR`, which has to write the directory —
@@ -274,7 +271,6 @@ fn every_view_is_drawn_and_auto_picks_the_measured_one() {
     assert_eq!(auto("05_mini_zebra.ein"), "border");
     assert_eq!(auto("colors.ein"), "lines");
     assert!(auto("02_genuine_3set_death.ein").starts_with("none"));
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **W1, drawn.** On `branching/15` `--maximal` reports both nodes of the
@@ -338,7 +334,6 @@ fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
         !dot.contains("\\nMISSING") && !dot.contains("\\nSPURIOUS"),
         "{dot}"
     );
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **W3, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
@@ -391,7 +386,6 @@ fn w3_the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
         )),
         "{table}"
     );
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **W2, drawn.** The walk's forced-positive cascade promoted `(q one)` into
@@ -421,7 +415,6 @@ fn w2_a_region_run_never_moves_root() {
     for word in ["\\nMISSING", "root after the cascade", "\\n≠ the cube"] {
         assert!(!dot.contains(word), "{word}:\n{dot}");
     }
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **Saturation is a move inside the cube.** On `05_mini_zebra` the describing
@@ -481,7 +474,6 @@ fn a_reported_state_counts_as_the_node_its_saturation_lands_on() {
         landed.contains("shape=octagon") && !landed.contains("MISSING"),
         "{landed}"
     );
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **The table's head names at most fifty nodes a list**, and how many
@@ -508,7 +500,6 @@ fn the_head_names_at_most_fifty_nodes_a_list() {
         "{line}"
     );
     assert_eq!(table.matches(" · not reached |").count(), 63, "{table}");
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **A run of another program** is refused, exit 1: its commitments are not
@@ -545,7 +536,6 @@ fn a_run_over_another_universe_is_an_error() {
     let r = ein(&["render", "region", &c, "--answer", &l]);
     assert_eq!(r.code, 1);
     assert!(r.err.contains("index.json"), "{}", r.err);
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **A directory that is not a dump** is an error naming the file, exit 1.
@@ -556,5 +546,4 @@ fn a_directory_without_the_files_is_an_error() {
     assert_eq!(r.code, 1);
     assert!(r.err.contains("region.json"), "{}", r.err);
     assert!(r.out.is_empty());
-    let _ = std::fs::remove_dir_all(&root);
 }

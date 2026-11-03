@@ -69,7 +69,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use ein_core::SolverConfig;
 use ein_core::config::{FLAGS, FieldKind, rendered_fields};
-use ein_corpus::{corpus, register, repo_root};
+use ein_corpus::{Scratch, corpus, register, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load, parse};
 use serde_json::Value as J;
@@ -243,11 +243,8 @@ struct Got {
 }
 
 fn solve(file: &str, flags: &[String]) -> Got {
-    static RUN: AtomicUsize = AtomicUsize::new(0);
-    let dir = std::env::temp_dir().join(format!("ein-lever-invariance-{}", std::process::id()));
-    std::fs::create_dir_all(&dir).expect("a scratch directory");
-    let json = dir.join(format!("{}.json", RUN.fetch_add(1, Ordering::Relaxed)));
-    let _ = std::fs::remove_file(&json);
+    let dir = Scratch::new("ein-lever-invariance");
+    let json = dir.join("summary.json");
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .arg("solve")
         .arg(file)
@@ -261,7 +258,6 @@ fn solve(file: &str, flags: &[String]) -> Got {
         .ok()
         .map(|s| serde_json::from_str(&s).expect("the summary parses"))
         .unwrap_or(J::Null);
-    let _ = std::fs::remove_file(&json);
     let config = scrub(&mut summary);
     Got {
         code: out.status.code().unwrap_or(-1),

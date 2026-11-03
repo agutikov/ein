@@ -8,7 +8,7 @@
 use std::path::Path;
 
 use ein_core::{FactId, Kb, Prov, Terms};
-use ein_corpus::{corpus_files, repo_root};
+use ein_corpus::{Scratch, corpus_files, repo_root};
 use ein_infer::canon::state_key;
 use ein_infer::compile::SharedMemo;
 use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static, Status, Warning};
@@ -656,8 +656,8 @@ fn a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split() {
 /// program races two `absent` rules over a static read.
 #[test]
 fn a_monotone_verdict_is_one_state_per_node_on_random_programs() {
-    let dir = std::env::temp_dir().join(format!("ein-detector-random-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
+    let tmp = Scratch::new("ein-detector-random");
+    let dir = tmp.join("d");
     let out = std::process::Command::new("python3")
         .arg("-I")
         .arg(repo_root().join("utils/region_synth.py"))
@@ -694,7 +694,6 @@ fn a_monotone_verdict_is_one_state_per_node_on_random_programs() {
                 .map(|d| format!("{name}: scratch {d}")),
         );
     }
-    let _ = std::fs::remove_dir_all(&dir);
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     eprintln!(
         "{programs} monotone random programs of {}, {nodes} nodes",

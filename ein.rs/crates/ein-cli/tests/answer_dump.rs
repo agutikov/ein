@@ -23,11 +23,11 @@
 //! cargo test -p ein-cli --test answer_dump
 //! ```
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
 use ein_core::Terms;
-use ein_corpus::{register, repo_root};
+use ein_corpus::{Scratch, register, repo_root};
 use ein_ir::Ast;
 use serde_json::Value as J;
 
@@ -52,11 +52,8 @@ fn ein(args: &[&str], env: &[String]) -> Run {
     }
 }
 
-fn scratch(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-answer-dump-{}-{tag}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("scratch");
-    dir
+fn scratch(tag: &str) -> Scratch {
+    Scratch::new(&format!("ein-answer-dump-{tag}"))
 }
 
 fn json(path: &Path) -> J {
@@ -193,7 +190,6 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
         let t = std::fs::read_to_string(dir.join("answer.txt")).expect("answer.txt");
         assert_eq!(t, r.out, "{file}: answer.txt is not stdout");
     }
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **Every state file is a fixpoint of its own program** — over every run
@@ -232,7 +228,6 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         assert_eq!(r.code, 0, "{file} {run}: exit {}\n{}", r.code, r.err);
         states += check_states(&dir, &format!("{file} :: {run}"), &mut bad);
     }
-    let _ = std::fs::remove_dir_all(&root);
     assert!(states > runs.len(), "no state file was checked");
     assert!(
         bad.is_empty(),
@@ -249,7 +244,8 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
 /// another state's file and fail.
 #[test]
 fn the_files_are_the_answer_in_the_read_outs_order() {
-    let dir = scratch("order").join("d");
+    let tmp = scratch("order");
+    let dir = tmp.join("d");
     let file = "examples/ein-bugs/wrong-answers/owed-seats.ein";
     let r = dump(file, &[], &[], &dir);
     assert_eq!(r.code, 0, "{}", r.err);
@@ -288,7 +284,6 @@ fn the_files_are_the_answer_in_the_read_outs_order() {
             );
         }
     }
-    let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
 
 /// **The flag moves no answer.** Stdout, stderr, the exit code, the summary
@@ -336,12 +331,12 @@ fn the_flag_moves_no_answer() {
         let body = |s: &str| s.lines().skip(1).map(str::to_string).collect::<Vec<_>>();
         assert_eq!(body(&ea), body(&eb), "{file}: the event stream moved");
     }
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 #[test]
 fn a_second_dump_into_one_directory_leaves_nothing_stale() {
-    let dir = scratch("stale").join("d");
+    let tmp = scratch("stale");
+    let dir = tmp.join("d");
     let r = dump(
         "examples/ein-bugs/wrong-answers/owed-seats.ein",
         &[],
@@ -372,7 +367,6 @@ fn a_second_dump_into_one_directory_leaves_nothing_stale() {
         "{k} states, {} files — got {left:?}",
         left.len()
     );
-    let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
 
 /// **A stopped run still says what it is**: a budget stop is an answer, so
@@ -381,7 +375,8 @@ fn a_second_dump_into_one_directory_leaves_nothing_stale() {
 /// empty.
 #[test]
 fn a_stopped_run_still_says_what_it_is() {
-    let dir = scratch("abort").join("d");
+    let tmp = scratch("abort");
+    let dir = tmp.join("d");
     let r = dump("examples/zebra2.ein", &["--region-budget", "1"], &[], &dir);
     assert_eq!(r.code, 0, "a budget stop is an answer\n{}", r.err);
     let index = json(&dir.join("index.json"));
@@ -403,7 +398,6 @@ fn a_stopped_run_still_says_what_it_is() {
         0,
         "an abort wrote files"
     );
-    let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
 
 #[test]
@@ -432,7 +426,6 @@ fn a_container_is_refused_because_it_carries_no_program() {
         r.err
     );
     assert!(r.out.is_empty(), "it ran anyway:\n{}", r.out);
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 /// **Every `work` counter and every `root` field a summary carries is
@@ -456,7 +449,8 @@ fn every_summary_counter_is_defined_on_this_page() {
         .filter_map(|l| l.split('`').next())
         .map(str::to_string)
         .collect();
-    let dir = scratch("counters").join("d");
+    let tmp = scratch("counters");
+    let dir = tmp.join("d");
     let r = dump("examples/zebra2.ein", &["-n", "1"], &[], &dir);
     assert_eq!(r.code, 0, "{}", r.err);
     let summary = json(&dir.with_extension("json"));
@@ -486,5 +480,4 @@ fn every_summary_counter_is_defined_on_this_page() {
         keys, rows,
         "the summary's counters and fields and the page's rows differ"
     );
-    let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }

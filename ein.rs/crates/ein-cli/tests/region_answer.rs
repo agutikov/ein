@@ -16,11 +16,11 @@
 //!   flags and without.
 
 use std::collections::BTreeSet;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
 use ein_core::Terms;
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 use ein_ir::Ast;
 use serde_json::Value as J;
 
@@ -43,10 +43,8 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-fn scratch(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-region-answer-{}-{tag}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    dir
+fn scratch(tag: &str) -> Scratch {
+    Scratch::new(&format!("ein-region-answer-{tag}"))
 }
 
 fn json(path: &Path) -> J {
@@ -99,7 +97,6 @@ fn the_summary_has_one_shape_on_every_arm_and_says_what_stdout_says() {
     let mut shapes: Vec<(String, BTreeSet<String>, BTreeSet<String>)> = Vec::new();
     for (i, (file, flags)) in ARMS.iter().enumerate() {
         let dir = scratch(&format!("summary-{i}"));
-        std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("s.json");
         let p = path.to_string_lossy().to_string();
         let mut args = vec!["solve", file];
@@ -142,7 +139,6 @@ fn the_summary_has_one_shape_on_every_arm_and_says_what_stdout_says() {
             "{file}"
         );
         shapes.push((format!("{file} {flags:?}"), keys(&s), keys(region)));
-        let _ = std::fs::remove_dir_all(&dir);
     }
     let (first, top, reg) = &shapes[0];
     for (label, t, r) in &shapes[1..] {
@@ -187,7 +183,8 @@ fn the_answer_directory_is_the_answer() {
     let mut bad: Vec<String> = Vec::new();
     let mut files = 0usize;
     for (i, (file, flags)) in ARMS.iter().enumerate() {
-        let dir = scratch(&format!("dump-{i}"));
+        let tmp = scratch(&format!("dump-{i}"));
+        let dir = tmp.join("d");
         let d = dir.to_string_lossy().to_string();
         let summary = dir.with_extension("json");
         let sp = summary.to_string_lossy().to_string();
@@ -239,8 +236,6 @@ fn the_answer_directory_is_the_answer() {
                 "{label}: nogoods.json"
             );
         }
-        let _ = std::fs::remove_dir_all(&dir);
-        let _ = std::fs::remove_file(&summary);
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     assert!(files >= 15, "{files} state files checked");
@@ -248,7 +243,8 @@ fn the_answer_directory_is_the_answer() {
 
 #[test]
 fn a_second_dump_leaves_nothing_stale() {
-    let dir = scratch("twice");
+    let tmp = scratch("twice");
+    let dir = tmp.join("d");
     let d = dir.to_string_lossy().to_string();
     let big = ein(&[
         "solve",
@@ -274,5 +270,4 @@ fn a_second_dump_leaves_nothing_stale() {
         listed, on_disk,
         "models/ holds files the index does not name"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }

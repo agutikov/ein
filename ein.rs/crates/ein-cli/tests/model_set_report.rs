@@ -32,7 +32,7 @@
 
 use std::process::Command;
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 
 struct Run {
     out: String,
@@ -125,9 +125,7 @@ fn an_unexhausted_run_reports_states_found() {
 /// block and the header's echo of the flags.
 #[test]
 fn the_key_form_changes_stdout_and_nothing_recorded() {
-    let dir = std::env::temp_dir().join(format!("ein-model-set-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("a scratch directory");
+    let dir = Scratch::new("ein-model-set");
     let a = dir.join("list.json");
     let b = dir.join("key.json");
     let entry = "examples/lattice/02_genuine_3set_death.ein";
@@ -171,7 +169,6 @@ fn the_key_form_changes_stdout_and_nothing_recorded() {
         "the key form adds its block:\n{}",
         keyed.out
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **the-key-determines-and-says-how.** The form itself, on the smallest
@@ -232,8 +229,8 @@ fn the_key_table_names_its_size_its_alternatives_and_one_row_per_state() {
 /// `--dump-answer`'s `forms/key.txt`.
 #[test]
 fn an_unaffordable_key_says_why() {
-    let dir = std::env::temp_dir().join(format!("ein-key-declines-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
+    let tmp = Scratch::new("ein-key-declines");
+    let dir = tmp.join("d");
     let d = dir.to_string_lossy().to_string();
     let run = ein(&[
         "solve",
@@ -281,7 +278,6 @@ fn an_unaffordable_key_says_why() {
         flat(&uncut).contains("C(42, 8) = 118 030 185 candidates is over the budget"),
         "the 22 states' key:\n{uncut}"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **only-a-set-has-a-key.** The flag is inert where one state or none is

@@ -14,7 +14,7 @@
 // Both are the golden test's, and the golden is of the *default* surface —
 // see `the_argument_surface_is_stable`.
 #[cfg(feature = "einb")]
-use ein_corpus::{golden, golden_path};
+use ein_corpus::{Scratch, golden, golden_path};
 
 /// The surface, counted from the parsers themselves — 64 options across 12
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
@@ -176,7 +176,8 @@ fn the_lattice_views_are_what_their_help_says() {
             .filter(|l| l.trim_start().starts_with('n') && l.contains("[label="))
             .count()
     };
-    let dir = std::env::temp_dir().join(format!("ein-help-lattice-{}", std::process::id()));
+    let tmp = Scratch::new("ein-help-lattice");
+    let dir = tmp.join("d");
     let d = dir.to_string_lossy().to_string();
     run(&["solve", file, "--dump-lattice", &d]);
     let doc: serde_json::Value =
@@ -193,7 +194,6 @@ fn the_lattice_views_are_what_their_help_says() {
         nodes(&solution) < visited && nodes(&solution) > 0,
         "{solution}"
     );
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **Every artefact `ein solve` can write, the review bundle drives** — M1e2

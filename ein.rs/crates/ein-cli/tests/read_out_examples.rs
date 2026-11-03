@@ -18,7 +18,7 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 
 const PAGE: &str = "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md";
 
@@ -64,27 +64,19 @@ fn blocks(page: &str) -> Vec<Block> {
     out
 }
 
-fn scratch() -> PathBuf {
-    static NTH: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
-    let nth = NTH.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-    let dir = std::env::temp_dir().join(format!(
-        "ein-read-out-examples-{}-{nth}",
-        std::process::id()
-    ));
-    let _ = std::fs::remove_dir_all(&dir);
-    dir
-}
-
 /// The block a run prints: stdout, the stderr lines, the exit code — the
 /// composition `utils/read_out_examples.py` writes.
 fn printed(args: &[String]) -> String {
     let mut run: Vec<String> = Vec::new();
+    // A `--dump-answer` goes to a fresh `answer/` in a scratch directory that
+    // is removed when this returns, or panics.
+    let tmp = Scratch::new("ein-read-out-examples");
     let mut dump: Option<PathBuf> = None;
     let mut it = args.iter();
     while let Some(a) = it.next() {
         if a == "--dump-answer" {
             it.next();
-            let d = scratch();
+            let d = tmp.join("answer");
             run.push(a.clone());
             run.push(d.to_string_lossy().to_string());
             dump = Some(d);
@@ -105,9 +97,6 @@ fn printed(args: &[String]) -> String {
             .replace(&d.to_string_lossy().to_string(), "DIR"),
         None => String::from_utf8_lossy(&out.stdout).into_owned(),
     };
-    if let Some(d) = dump {
-        let _ = std::fs::remove_dir_all(d);
-    }
     let stderr = String::from_utf8_lossy(&out.stderr).into_owned();
     let mut body = stdout.trim_end_matches('\n').to_string();
     if !stderr.trim().is_empty() {

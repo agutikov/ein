@@ -18,7 +18,7 @@
 
 use std::path::{Path, PathBuf};
 
-use ein_corpus::{golden, golden_path, repo_root};
+use ein_corpus::{Scratch, golden, golden_path, repo_root};
 use ein_ir::dump::dump_canonical;
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
@@ -438,15 +438,13 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
 /// a check.
 #[test]
 fn a_stdlib_module_may_not_import_a_file_relative_one() {
-    let dir = std::env::temp_dir().join(format!("ein-stdlib-rel-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("a scratch stdlib");
+    let dir = Scratch::new("ein-stdlib-rel");
     std::fs::write(dir.join("MANIFEST.sha256"), "").expect("the marker");
     std::fs::write(dir.join("sibling.ein"), "(relation s T)\n").expect("the sibling");
     std::fs::write(dir.join("hasrel.ein"), "(import sibling)\n(relation h T)\n")
         .expect("the offender");
 
-    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.clone()));
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.to_path_buf()));
     let mut ast = Ast::new();
     let forms = parse(&mut ast, "(import std.hasrel)\n", Some("<probe>")).expect("parses");
     let err = resolver
@@ -464,7 +462,6 @@ fn a_stdlib_module_may_not_import_a_file_relative_one() {
     resolver
         .resolve_imports(&mut ast, &forms, Some(&dir))
         .expect("a file-relative import from a file is not a stdlib import");
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **The embedded stdlib resolves**, which nothing here had ever asked.
@@ -524,14 +521,12 @@ fn the_embedded_stdlib_is_a_resolution_tier_that_works() {
 /// test can see.
 #[test]
 fn an_override_without_the_marker_is_refused_by_name() {
-    let dir = std::env::temp_dir().join(format!("ein-bad-stdlib-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("mkdir");
+    let dir = Scratch::new("ein-bad-stdlib");
     // A module is *there*, so this is a refusal on the marker and not a
     // "module not found" wearing a new coat.
     std::fs::write(dir.join("algebra.ein"), "(relation q T)\n").expect("write");
 
-    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.clone()));
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.to_path_buf()));
     let mut ast = Ast::new();
     let forms = parse(&mut ast, "(import std.algebra)\n", Some("<probe>")).expect("parses");
     let err = resolver
@@ -553,8 +548,6 @@ fn an_override_without_the_marker_is_refused_by_name() {
     let mut ast = Ast::new();
     let forms = parse(&mut ast, "(relation p T)\n(p A)\n", Some("<probe>")).expect("parses");
     assert!(resolver.resolve_imports(&mut ast, &forms, None).is_ok());
-
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **The route that inlines a puzzle's imports into a standalone program.**

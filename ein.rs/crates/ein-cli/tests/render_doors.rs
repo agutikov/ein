@@ -24,10 +24,9 @@
 //! one claim each door adds of its own.
 
 use std::io::Write;
-use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 
 struct Run {
     code: i32,
@@ -48,11 +47,8 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-fn scratch(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("ein-render-doors-{}-{tag}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).expect("scratch");
-    dir
+fn scratch(tag: &str) -> Scratch {
+    Scratch::new(&format!("ein-render-doors-{tag}"))
 }
 
 /// `dot -Tsvg` over the text, as `dot_wellformed.rs` does: Graphviz is a hard
@@ -132,7 +128,6 @@ fn every_door_prints_dot_that_dot_draws() {
     assert_eq!(r.code, 0, "--dump-lattice: {}", r.err);
     assert!(lattice.join("nodes.json").is_file());
     assert!(lattice.join("nodes.md").is_file());
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **The program is drawn before it is loaded**, so a program the loader
@@ -154,7 +149,8 @@ fn render_program_draws_what_the_loader_refuses() {
 /// `root.ein` beside its models.
 #[test]
 fn render_kb_since_root_emboldens_what_the_commitment_added() {
-    let dir = scratch("since").join("answer");
+    let tmp = scratch("since");
+    let dir = tmp.join("answer");
     let file = "examples/features/11_expect_ambiguity.ein";
     let r = ein(&["solve", file, "--dump-answer", &dir.to_string_lossy()]);
     assert_eq!(r.code, 0, "{}", r.err);
@@ -184,7 +180,6 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
         "the bold edges are not the commitment's:\n{}",
         bold.join("\n")
     );
-    let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
 
 /// **The dump is the run's nodes.** `nodes.json` lists, in visit order,
@@ -227,7 +222,6 @@ fn dump_lattice_lists_the_nodes_the_run_entered() {
         .filter(|n| n["kind"] == "in-r")
         .count();
     assert_eq!(in_r, 7, "owed-seats' R is seven states, each visited once");
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **The dump moves no answer, beside any other flag.** The walk had one
@@ -267,5 +261,4 @@ fn the_dump_combines_with_the_other_flags() {
         r.err
     );
     assert!(r.out.is_empty(), "a retired flag ran anyway");
-    let _ = std::fs::remove_dir_all(&dir);
 }
