@@ -114,7 +114,8 @@ The frontier of given facts across a set of conflicting facts, per
 the recorded derivations — the "given" premises that together derive
 the conflict. Output of the *contradictions* task class (idea 03).
 `kb.unsat_core(conflicting)` unions the frontier of each conflicting
-fact's primary derivation; `all_justifications=True` unions over every
+fact's primary derivation, each step's premises and the activator a node
+derived (below); `all_justifications=True` unions over every
 recorded derivation, which is monotonically *larger* — a soundness
 envelope ("no explanation names a fact outside this"), not a better
 explanation. Not a subset-minimal MUS; for a minimum-cardinality
@@ -139,6 +140,26 @@ offered, which may name another core and changes nothing else, the
 config principle's one exemption
 ([`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row),
 the user's ruling of 2026-11-04).
+
+**What a derivation rests on**: its premises, and the activator its plan
+was compiled from where a node derived or committed it — the fact `(rule
+args…)` that bound a rule's parameters, which every firing records since
+M1e2 S1e2.2.19 (`Prov::activator`, read by
+[`walks::node_activator`](../../ein.rs/crates/ein-core/src/walks.rs)).
+Root's activators, stated or derived, are the program's, as the plans root
+compiles from them are its rules, and no core names them: the user's ruling
+of 2026-11-04 on
+[Q-M1e2.12](../../plans/m1e2_correctness/open_questions.md#q-m1e212--which-activators-does-a-dead-nodes-core-follow),
+(c). So a dead node's core is a set of facts from which, with root's plans,
+saturation derives the contradiction, and it names the commitment a plan
+only a node compiles rests on. Until S1e2.2.19 no derivation recorded its
+activator and such a commitment was in no core (W19):
+`examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein`'s dead
+`{(p a)}` reported `(seed a)`, a fact root holds while root is alive, and
+`core-activator-guard-only.ein`'s, whose refuting plan matches no fact,
+reported nothing (`ein solve FILE --dump-answer DIR` at `a41eb76e`); they
+report `(p a) (seed a)` and `(p a)`, and no corpus core moved (the stage's
+sweep, 2026-11-04).
 
 **What the store keeps of every derivation**: a fact's primary, up to 32
 alternatives with the fewest premises (`MAX_ALT_JUSTIFICATIONS`), and,

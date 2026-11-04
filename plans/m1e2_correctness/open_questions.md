@@ -25,7 +25,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
 | [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
 | [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
-| [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's; W19's three rows fixed by it |
+| [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -170,6 +170,19 @@ every corpus entry with a declared `solve` run and every register witness,
 `ein solve FILE --json-summary` and `--single`, 474 runs over 237 files at
 `d4ff0f46`, of which 27 report a core and none has 0 facts (2026-11-03). W12 is
 `fixed`, and S1e2.2.13 dropped.
+
+**A dated note, 2026-11-04 (S1e2.2.19).** That census read root's cores, the
+summary's `region.core`; a dead node's core, which no summary carries, could
+be empty: `examples/ein-bugs/wrong-answers/core-activator-guard-only.ein`'s N
+member `{(p a)}` reported a 0-fact core (`ein solve FILE --dump-answer DIR`,
+`nogoods.json`, at `a41eb76e`), its refuting plan matching no fact and
+compiled from an activator the node derived, which no derivation recorded
+(W19). Since S1e2.2.19 (`94c7bcfb`) the core follows that activator and is
+`(p a)`. The closing above stands, a dead node's core included: over
+the stage's sweep (390 files, 2026-11-04), no dead node of an oracle cube
+and no member of N reports a 0-fact core but on a run stopped past
+`--region-limit`, which dumps the members it met with none
+(`lattice/06_friends_tables.ein`, 68; S1e2.2.19 § Notes).
 
 ## Q-M1e2.5 — Does S1f.10.8's ruling move here?
 
@@ -1424,6 +1437,16 @@ row's core; `alt-cap-core.ein` reports `(w1 X) (w2 X)`, its twin's, and
 `alt-cap-shared.ein` the three facts it did. No other corpus program's core
 moved (the sweep's 6 510 runs).
 
+**A dated note, 2026-11-04 (S1e2.2.19).** *Every derivation the program
+records* was over each derivation's premises, and a plan of a rule with
+parameters rests on the activator it was compiled from too, which no record
+named: a dead node's core left out a commitment that reaches its refutation
+only through one (W19). Since S1e2.2.19 a derivation's AND-node is its
+premises and the activator where a node derived or committed it, on the
+user's ruling on
+[Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow),
+(c); this ruling, the promise and the exemption are unchanged.
+
 ## Q-M1e2.12 — Which activators does a dead node's core follow?
 
 Put to the user on 2026-11-04 by
@@ -1503,3 +1526,15 @@ dead node's core, and root's activators, stated or derived, are not. The
 core of a refutation that rests on a plan only a node compiles names what
 the node added to compile it; root's plans are the program's rules, as
 before. S1e2.2.19 builds it, and W19's three rows are fixed by it.
+
+**Built 2026-11-04** by
+[S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md)
+(T1e2.2.19.2, `94c7bcfb`): every firing records its activator
+(`Prov::activator`), `walks::node_activator` follows one whose primary
+record is a fork's, and `explain`'s AND-node and `walk_premises` read it.
+W19's three witnesses report `(p a) (seed a)`, `(r2 a) (seed a)` and
+`(p a)`, in either build, `ein oracle` agreeing; the two boundaries keep
+`(p a)`; no corpus core moved (the stage's sweep, 390 files, 2026-11-04).
+`absent_premises` was left reading the premises: following the activator
+there moved the non-monotone detector's status on W17's witnesses studied
+past the refusal, a label (S1e2.2.19 § Notes).

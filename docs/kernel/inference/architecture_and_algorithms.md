@@ -560,7 +560,12 @@ minimiser is **NAF-unsound here** (S1.9.E19; corollary C3 of
 `absent_premises` make a *sound* variant conceivable, since a candidate
 subset would have to preserve every negative query as well, but nothing
 implements that and until something does the caveat stands).
-(2) **Every recorded derivation, as the store keeps it** — the derivations
+(2) **Every recorded derivation, as the store keeps it** — each an
+AND-node over its premises and, since M1e2 S1e2.2.19, the activator its plan
+was compiled from where a node derived or committed it (root's are the
+program's, the user's ruling on
+[Q-M1e2.12](../../../plans/m1e2_correctness/open_questions.md#q-m1e212--which-activators-does-a-dead-nodes-core-follow),
+(c); W19 until then) — the derivations
 are the firings the saturator attempted, so minimality stays relative to the
 rule set and the saturation strategy, and the store keeps, of each fact's, the
 primary, up to `MAX_ALT_JUSTIFICATIONS = 32` with the fewest premises, and

@@ -191,11 +191,14 @@ kb.has_alternative_justifications()  -> bool
 ```
 
 So a fact is an OR-node and each justification an AND-node over its
-`premises_raw` — the proof structure is an AND/OR **graph**, and the
+`premises_raw` and, since M1e2 S1e2.2.19, the activator its plan was
+compiled from where a node derived or committed it
+(`walks::node_activator`; root's, stated or derived, are the program's,
+Q-M1e2.12 (c)) — the proof structure is an AND/OR **graph**, and the
 two walkers below take an `all_justifications` keyword saying which
 reading they want. Which records are keepable (rule-kind, at least one
-premise, onto a non-terminal primary), the `(rule, premises_raw)`
-dedup key, the `MAX_ALT_JUSTIFICATIONS` cap and the smallest-closure
+premise, onto a non-terminal primary), the `(rule, premises_raw,
+activator)` dedup key, the `MAX_ALT_JUSTIFICATIONS` cap and the smallest-closure
 arrival kept beside it (M1e2 S1e2.2.11) are in
 [`01_entities.md` §3.1](01_entities.md); the store-side contracts are:
 
@@ -274,7 +277,8 @@ frontier upward.
 
 For each fact in `conflicting`, walks its premise closure (the shared
 `walk_premises`, with one `visited` set memoising across
-the conflicting facts) and accumulates the frontier terminals —
+the conflicting facts; each step's premises and, since M1e2 S1e2.2.19,
+the activator a node derived or committed) and accumulates the frontier terminals —
 source-kind, hypothesis-kind, or un-provenanced givens. The union is
 the **recorded source-frontier** that derives the conflict (per the
 recorded derivations — by default the primary justification of each

@@ -272,6 +272,9 @@ Provenance(
     #    that talks about the proof graph; `absent` is its S1.21.8 negative
     #    counterpart, recorded and not yet interpreted.
     bindings:      tuple[tuple[str, str], ...], # (var, name) pairs
+    activator:     FactId | None,               # M1e2 S1e2.2.19: the fact
+    #  `(rule args…)` the firing plan was compiled from; None for a rule
+    #  with no parameters. `Prov::activator`; not stored in a `.einb`.
     # hypothesis-kind:
     branch:        int | None,
     loc:           Loc | None,                  # metadata
@@ -325,9 +328,15 @@ itself such a record:
   [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md))
   whose contract is that provenance walks *ground out* on it.
 
-Two firings that consumed the same premises are the same
-justification: the table dedups on the AND-node `(rule,
-premises_raw)`. `bindings` is display metadata the trace reads off the
+Two firings that consumed the same premises from the same activator are
+the same justification: the table dedups on the AND-node `(rule,
+premises_raw, activator)`, the activator since M1e2 S1e2.2.19, since two
+plans of one rule compiled from two activators rest on two different
+facts. The AND-node the core search reads is the premises and, where a
+node derived or committed it, that activator (`walks::node_activator`,
+Q-M1e2.12 (c)); a rule-kind record with no premise is still taken for an
+engine writeback by the recording rule above, though the search follows
+its activator where a node derived it (S1e2.2.19 § Notes). `bindings` is display metadata the trace reads off the
 primary, so it is not part of that key — and an alternative recorded
 on the saturator's redundant path carries none at all. The per-fact
 list is capped at `MAX_ALT_JUSTIFICATIONS` (32) and kept sorted
