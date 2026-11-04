@@ -230,7 +230,7 @@ Flagged as Q-M1a.8.
 > `int` — so an `int` is in the key after all and two activators differing
 > only there both fire. What reaches neither component is a nested `Fact`.
 > The key above is unaffected. What changed is what the asymmetry costs, which
-> is [`defined_behaviour.md` §3.2](../../../kernel/defined_behaviour.md#32-a-rule-applications-identity-ignores-nested-fact-activator-arguments)
+> is [`defined_behaviour.md` §3.2](../../../kernel/defined_behaviour.md#32-a-rule-applications-identity-is-its-activators-every-argument)
 > and
 > [Q-M1e.16](../../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 

@@ -189,7 +189,8 @@
 # in either activator order and either build. The witness and its twin were
 # promoted from `corpus/fuzz_findings/` to `examples/ein-bugs/`, and W15's two
 # rows on them moved with them. The flipped row's `[case.fixed]` carried the
-# null id in the flipping commit, and the stage's next commit wrote the hash.
+# null id in the flipping commit, `180ec47e`, and the stage's next commit wrote
+# the hash.
 # The register reads **42 rows fixed, 4 open and 1 not-wrong**.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
@@ -268,9 +269,9 @@
 #               `:expect` cannot say (Q-M1e.13)
 #     models    every recorded model's facts over `closes`, as a multiset
 #     open      the same, per open state;  owes: each recorded state's owed total
-#     debug_panic   in a build with debug assertions the run aborted (exit 101):
-#               W7's record, read by no test since M1e2 S1e2.2.7 fixed it
-#                   and stderr carries this text; the other fields are release's
+#     debug_panic   in a build with debug assertions the run aborted (exit 101)
+#                   and stderr carried this text; the other fields are release's.
+#                   W7's record: no test reads it since M1e2 S1e2.2.7 fixed W7
 #     id_order  { op, seed } — the `id_order_invariance` op and seed under which
 #               the answer moves (W11)
 #
@@ -2064,7 +2065,7 @@ look_at  = ["events fire", "model 1"]
 note     = "the witness and its twin were promoted from corpus/fuzz_findings/binding-key-layout.ein and -swapped.ein by M1e2 S1e2.2.7 (T1e2.2.7.2), when a debug build stopped aborting on them; every recorded answer below was taken on the fuzz files, the same program without the header and the :expect. The noted facts [case.right] states are not in [case.now], whose states name the candidates' relations: binding-key-both.ein's :expect states them, in both states, and corpus_cli's `test` cell holds it"
 
 [case.fixed]
-commit = "0000000"
+commit = "180ec47e"
 by     = "S1e2.2.7 (T1e2.2.7.2), Q-M1e.16's fix (1): the binding key's activator half interns the compile key's argument list, every argument, so the int plan and the nested-fact plan each have a space of their own"
 date   = "2026-11-04"
 

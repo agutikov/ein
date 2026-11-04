@@ -244,42 +244,51 @@ unshuffled one. Fixing the exact generator is what lets a shuffled run be
 compared against a recorded one at all, and `--shuffle` runs are precisely the
 ones where a silent ordering difference would be easiest to dismiss.
 
-### 3.2 A rule application's identity ignores nested-`Fact` activator arguments
+### 3.2 A rule application's identity is its activator's every argument
 
-> **Corrected 2026-08-29** — M1e
+> **Fixed 2026-11-04** — M1e2
+> [S1e2.2.7](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)
+> (W7), which took
+> [Q-M1e.16](../history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)'s
+> first fix. Until then this section stated a **preserved defect**, the one
+> item on this page that was a latent bug rather than a quirk: the identity
+> kept an activator's *symbol* arguments only, and a program that put an
+> integer and a nested `Fact` in one activator position lost a derivation in
+> a release build and tripped an assertion in a debug one.
+>
+> **Corrected 2026-08-29** before that — M1e
 > [S1e.1.4](../history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-> the review's `Q3`. Until then this section said *integer*, and the engine has
-> never done what it described. The claim was written from one of the key's
-> three components; the probe that refuted it is
+> the review's `Q3`. Until then this section said *integer*, and the engine
+> had never done what it described; the probe that refuted it is
 > `ein-infer/tests/rule_semantics.rs::activators_differing_only_by_an_int_argument_both_fire`.
 
-The identity of a firing is `(rule, activator, bindings)`, and there are
-**three** keys over one activator, each keeping a different part of it:
+The identity of a firing is `(rule, activator, bindings)`, and three keys read
+one activator:
 
 | key | what it keeps of the activator |
 |---|---|
 | the compile cache key | **every** argument, stringified |
-| the identity's activator half (`plan.activator_args`) | the **symbol** arguments |
+| the identity's activator half | the same list: **every** argument |
 | the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — symbols *and* integers |
 
-An **integer** argument binds its parameter, so it is absent from the second
-key and present in the third: two activators differing only in an integer
-argument have **different** identities and both fire. A nested **`Fact`** binds
-nothing, so it reaches neither: two activators differing only there share one
-identity, and the second application is dropped before it is enqueued.
+So two activators of one rule that differ in **any** argument have different
+identities, and both fire. An integer reaches both halves, since it binds its
+parameter; a nested **`Fact`** binds nothing and reaches the activator half
+alone. Two activators differing only in a nested `Fact` compile to plans equal
+in every field but that list, so the second application concludes what the
+first did: a **redundant** firing, one more firing and nothing derived
+differently
+(`rule_semantics.rs::activators_differing_only_by_a_nested_fact_argument_both_fire`).
 
-That collision is by itself harmless, and the reason is worth stating because
-it is what makes the *next* paragraph the whole of the defect: the activator
-reaches the compiler at one site, which skips a `Fact` argument outright, so
-two activators differing only in a nested `Fact` compile to plans that are
-equal in **every** field. The dropped application is a duplicate.
-
-**Where it is not harmless is a mixed pair.** An integer in the position
-another activator gives a nested `Fact` puts two plans in one identity space
-with two *different register layouts* — `?f` is register 1 in one and register
-3 in the other — so the identity compares `(?R ?f ?a ?b)` against `(?R ?a ?b
-?f)` position by position. A vector that is a legitimate match of both then
-suppresses a firing whose conclusion nothing else derives:
+**Why the activator half is the whole list.** A plan's register layout is a
+function of the rule and of *which* parameters its activator bound, and an
+integer binds its parameter where a nested `Fact` does not. While the
+activator half kept the symbols alone, an integer in the position another
+activator gives a nested `Fact` put two plans with two *register layouts* in
+one identity space — `?f` is register 1 in one and register 3 in the other —
+so the identity compared `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)` position by
+position. A vector that is a legitimate match of both then suppressed a
+firing whose conclusion nothing else derives:
 
 ```lisp
 (relation edge  Node Node)
@@ -298,44 +307,38 @@ suppresses a firing whose conclusion nothing else derives:
 ```
 
 ```text
-$ ein saturate q_m1a8.ein --dump          # both activators
-;; ── DERIVED (3 facts) ──
+$ ein saturate examples/ein-bugs/binding-key-both.ein --dump    # until S1e2.2.7, release
   (noted 1 1 :rule note)
   (noted 2 1 :rule note)
   (noted 2 3 :rule note)
 
-$ ein saturate q_m1a8.ein --dump          # with the `(note edge 1)` line deleted
-;; ── DERIVED (4 facts) ──
+$ ein saturate examples/ein-bugs/binding-key-both.ein --dump    # since, either build
   (noted 1 1 :rule note)
-  (noted 1 3 :rule note)          ← lost above, silently
   (noted 2 1 :rule note)
+  (noted 1 3 :rule note)          ← lost above, silently
   (noted 2 3 :rule note)
 ```
 
-Adding an activator **removed** a conclusion, and swapping the two lines puts
-it back. `Engine::check_layout` asserts against exactly this shape — under
-`debug_assertions` only, so a release build is where the wrong answer lives.
-Its doc comment called the shape *"a shape no rule application has"*; the
-program above is thirteen lines.
+Adding an activator **removed** a conclusion, swapping the two lines put it
+back, and `Engine::check_layout`, which asserts the invariant under
+`debug_assertions`, aborted a debug build on both orders. Since the
+activator half is the compile key's list, two plans of one rule with one
+activator half have one compile key and are one plan, so the identity never
+compares two layouts; `check_layout` stays, as the guard that the two keys
+have not parted again.
 
-*Why it is here rather than fixed.* This is
-[Q-M1a.8](../history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args),
-closed 2026-08-29 as stated and refiled as its real self:
-[Q-M1e.16](../history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
-It stays because **no corpus program can reach it**: of the **153 143**
-activator arguments every plan compiled by `ein solve -m 2` over all 204 `.ein` files under `examples/`, `stdlib/` and
-`tests/` binds against — forks' plans included — **every one is a symbol**,
-not one integer and not one nested `Fact`, and **no** `(rule, activator)`
-space holds more than one plan (measured 2026-08-29). **It is the one item on this page that
-is a latent bug rather than a quirk** — a program that puts an integer and a
-nested `Fact` in one activator position loses a derivation, with no
-diagnostic.
-
-The program above is deliberately **not** a corpus fixture: `cargo test` builds
-with `debug_assertions`, where it trips the assertion instead of answering.
-Both halves are banked in `ein-infer/tests/rule_semantics.rs` instead, as
-`an_int_beside_a_nested_fact_in_one_position_loses_a_derivation` — which
-expects the panic in a debug build and the missing fact in a release one.
+**Where it is held.** The program is the corpus family
+`examples/ein-bugs/binding-key-{both,swapped,int-only,nested-only}.ein`: both
+activators in either order, and each alone. Each file's `:expect` states
+every state's `noted` facts, so `ein test` checks them in the corpus sweep,
+which runs a debug build, and the order-swap pair answers alike.
+`rule_semantics.rs::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`
+states the same in-process, in both profiles. No other corpus program has an
+activator argument that is not a symbol: of the 10 744 plans compiled under
+`ein solve`, `ein solve --single`, `ein oracle` and `ein saturate` over every
+corpus file, 92 have a compile key that differs from their symbol list, and
+every one is on W7's files (2026-11-04, an instrumented build, S1e2.2.7's
+T1), so the fix moved no other answer.
 
 ### 3.3 The M1 alive-set invariant, operationally
 

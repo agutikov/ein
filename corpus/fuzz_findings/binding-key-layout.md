@@ -1,5 +1,17 @@
 # binding-key-layout
 
+**Fixed 2026-11-04** by M1e2
+[S1e2.2.7](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md),
+[Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)'s
+fix (1): a rule application's identity interns its activator's every
+argument, as the compile cache's key does, so both files derive the four
+`noted` facts in a release build and a debug one. Promoted the same day to
+[`examples/ein-bugs/binding-key-both.ein`](../../examples/ein-bugs/binding-key-both.ein)
+and [`binding-key-swapped.ein`](../../examples/ein-bugs/binding-key-swapped.ein),
+with the single-activator controls beside them; the two files here stay as
+the dedup signature and frontend-fuzzer seeds, their text unchanged. The
+note below is the finding as it stood.
+
 - found: 2026-08-28, by hand — M1e
   [S1e.1.4](../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
   answering the review's Q3, and written down as

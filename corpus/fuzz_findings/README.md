@@ -51,13 +51,14 @@ them. What the session found was one thing, and it is about the DOT renderer:
 [`corpus/wrong_answers.toml`](../wrong_answers.toml) is M1e2's register of
 known wrong answers, one row per witness, and a row may point here when its
 witness violates a property the corpus sweeps assert — which is the reason
-this directory exists. Four files here are now witnesses, and a witness is
+this directory exists. Four files here were witnesses, and a witness is
 **owned**: the stage that fixes its case promotes it to `examples/` in the same
-commit, which is the steady-state rule above with a name on it.
+commit, which is the steady-state rule above with a name on it. Two are
+since M1e2 S1e2.2.7 promoted W7's pair (2026-11-04).
 
 | file | row | why it is here and not in `examples/` |
 |---|---|---|
-| [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `W7/binding-key-layout` | **not a fuzzer's find**: M1e S1e.1.4 wrote it by hand, as `defined_behaviour.md` § 3.2's thirteen lines. A debug build aborts on both files (`check_layout`), and every in-process corpus sweep is a debug test binary |
+| [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `W7/binding-key-layout` until 2026-11-04 | **not a fuzzer's find**: M1e S1e.1.4 wrote it by hand, as `defined_behaviour.md` § 3.2's thirteen lines. A debug build aborted on both files (`check_layout`), and every in-process corpus sweep is a debug test binary. **Fixed 2026-11-04 by M1e2 S1e2.2.7** (Q-M1e.16's fix (1)) and promoted to `examples/ein-bugs/binding-key-both.ein` and `binding-key-swapped.ein`, which the register's rows point at; the two `.ein`s and the note stay as the dedup signature and frontend-fuzzer seeds |
 | [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `W11/unsat-core-id-space` | moves under a permuted interner, which `id_order_invariance` asserts of every corpus file |
 | `d3-unsat-core.ein` | `W11/d3-unsat-core`, `W1/d3-unsat-core` | the same, at the third seed — so the nightly's `EIN_ID_SEEDS=8` would fail on it. **Refused since M1e2 S1e2.2.5** (2026-11-04): `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under `(absent (not (r1 o3 ?v1)))`, a relation a commitment can extend, so *forbid* with F2's *via* refuses the program, and both rows hold the refusal. The file is kept as found: its text keys `ein-ir`'s `fuzz_seeds.txt` |
 

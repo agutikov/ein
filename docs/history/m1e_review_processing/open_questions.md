@@ -31,7 +31,7 @@ records which question became which id.
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)** 2026-08-28 by the user. The guard **shipped** 2026-08-29 in [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 — the mode is re-read at every node the tree expands — and its regression test is owed to that stage, because no corpus program can flip the mode |
 | [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden. **Open, unowned on purpose** at the close: the next change to the parallel fan-out owns it |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](README.md#s1e13--what-the-core-promises-q2), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it. **Owned 2026-10-14** by [M1e2 S1e2.2.11](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) |
-| [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it. **Owned 2026-10-14** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md) (W7) |
+| [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | **closed 2026-11-04** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md): fix (1), the binding key's activator half is the compile key's every argument, and W7 is fixed — raised 2026-08-29 by [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it. **Owned 2026-10-14** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md) (W7) |
 | [Q-M1e.17](#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | Three `int_arg` options **silently reinterpret a negative** | **closed 2026-11-03**, by the user's ruling (b) on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q5 ([§ Closed](#closed-2026-11-03--each-of-the-three-rulings-applied)): `-m` and `-E` were retired at M1e2 S1e2.1a.5's switch, and the clamp had moved to `-g`, where `-g 0` now means no node lines, as `ein saturate --progress-every 0` does, and a negative is refused, exit 2 |
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../../../plans/m10_external_benchmarks/README.md)'s thesis. **Open, no owner** at the close, and the closing claim says so |
@@ -1180,6 +1180,23 @@ measured on something that is not one synthetic fixture.
 > bug that entry described, but a neighbour of it. The stage states the
 > behaviour; the fix is engine work and is **not** taken there.
 > **Owner unassigned.**
+>
+> **Closed 2026-11-04 by M1e2
+> [S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)**
+> (W7), which took fix (1), that stage's recommendation, with no ruling
+> asked, since (1) and (2) give the same answer: the engine interns the
+> compile key's argument list, every argument, as the binding key's
+> activator half. The program below derives the four `noted` facts in either
+> activator order and in either build
+> (`examples/ein-bugs/binding-key-{both,swapped,int-only,nested-only}.ein`,
+> `rule_semantics.rs::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`),
+> and `check_layout` stays as the guard that the two keys have not parted
+> again. Two things the entry did not say: the `Fact`/`Fact` collapse is
+> undone, so two activators differing only in a nested `Fact` both fire, the
+> second redundantly; and **no event field moved**, since `fire`, `enqueue`
+> and `owe` print `Plan::activator_args`, which the fix leaves alone, and
+> `compile` printed every argument already. The entry below is the question
+> as it was asked.
 
 `BindingKey` is `(rule, activator, values)`. `activator` is an interned
 `plan.activator_args` — the **symbol** arguments — and `values` is the plan's

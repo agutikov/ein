@@ -259,7 +259,7 @@ demonstrates it, and fix it after.
 > activator gives a nested `Fact`: same key space, **different register
 > layouts**, and the identity then compares different variables by position.
 > That is a live bug, it is stated in
-> [`defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md#32-a-rule-applications-identity-ignores-nested-fact-activator-arguments),
+> [`defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md#32-a-rule-applications-identity-is-its-activators-every-argument),
 > and it is owned by
 > [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 > No corpus program can reach any of the three shapes: every plan compiled by

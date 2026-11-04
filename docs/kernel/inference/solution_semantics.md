@@ -699,7 +699,8 @@ R by saturation alone and checked the **walk**, until M1e2 S1e2.1c.5 deleted
 it (2026-11-03); it checks every route since (`ein-infer/tests/explore.rs`).
 It shares the saturator with
 the engine, so it cannot see a derivation the saturator loses
-([W7](../../../corpus/wrong_answers.toml)). It takes H from the generator, so
+([W7](../../../corpus/wrong_answers.toml), until M1e2 S1e2.2.7 gave a rule
+application's identity its activator's every argument). It takes H from the generator, so
 it cannot see a candidate the generator never proposes (W6; W4 until M1e2
 S1e2.2.4 seeded the candidates with a rule's constants, and W15 until
 S1e2.2.14 made them every name of the program).
