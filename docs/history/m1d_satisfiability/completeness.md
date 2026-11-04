@@ -177,6 +177,18 @@ saying *these are the models*.
 and the same seatings — because both searches are asking the rung, and the rung
 owes nothing about `knows`.
 
+*(Note, 2026-11-04: settled by M1e2
+[S1e2.2.8](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md),
+on the user's ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped, and the read-out
+says so*. Since M1e2's switch the answer is the region R over the universe H,
+and the fixture, now the register's W6 witness
+`examples/ein-bugs/wrong-answers/uncovered.ein`, answers seven states over its
+four `seats` candidates, exhausted, which is all of R over H. The claim this
+section calls unqualified now carries its qualifier: every read-out names
+`knows` under `universe`, *knows — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives* (`ein solve
+examples/ein-bugs/wrong-answers/uncovered.ein`). The section above is the
+record of what the walk said.)*
+
 ### 3d. So the third part restated
 
 > A leaf is a model of the program **as the rung scopes it**. It is a model of

@@ -22,6 +22,17 @@
 ;;; `exhausted = true` is true of R, and the read-out is to state that the
 ;;; goal relation `r3` is outside it, which M1e2 S1e2.2.8 builds.
 ;;;
+;;; **Since M1e2 S1e2.2.8 (2026-11-04)** `ein solve` answers R, four states
+;;; over the two `r2` candidates, exhausted, and every question names what
+;;; the universe leaves out, under `universe`:
+;;;
+;;;   outside   r3 — no candidate: it has arity 3, and the blind enumerator
+;;;             proposes arity 1 and 2 only. R holds of it only what the
+;;;             program states and saturation derives
+;;;
+;;; `is-a` is not named: the program scopes it out itself. The register's
+;;; row is fixed.
+;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 (relation is-a T T)
 (relation r3 T T T)

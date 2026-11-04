@@ -125,6 +125,22 @@ and the rule under it, so a transcript still starts the same way.
 | `route` | the route, and the licences it used | `1, the alive down-set — licence L1, dead is upward-closed`; describe on a monotone program since M1e2 S1e2.1c.2: `the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local`; a mode on one since S1e2.1c.4: `the obligation tree, over states — … · L5 an owed instance's alternatives are exhaustive` where a branch used L5, `the state route, each state at most once — …` where none did |
 | `work` | saturations, facts beyond root and layers, as the interface's § 2.1 asks of every run. They do not depend on the machine or on `-j` (`every_mode_at_four_jobs_is_every_mode_at_one`). A speed lever may move them, which C4 allows (*cost counters aside*), so the lever sweeps compare every row but this one (§ 12). The wall clock stays behind `-s` and `-t` | `14 saturations · 66 facts beyond root · 4 layers` |
 
+**Amended 2026-11-04, M1e2
+[S1e2.2.8](../p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md)**, on the
+user's ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped, and the read-out says
+so*: under `universe`, every question that prints it (describe, `--count`, the
+lines, `--single`, `-n`, `--monotone`, `ein oracle`, and so `--trace`'s
+headline and `answer.txt`) prints an **`outside`** row when H leaves out a
+relation the program can conclude or ask about and does not scope out
+itself: X1's `is-a — no candidate: no hrule proposes it. R holds of it only
+what the program states and saturation derives`. It says what the relation is,
+why the rung that built H proposes none of its facts, and what every state of R
+then holds of it, as S1d.3.3's *a lower bound* says what a count licenses.
+`--json-summary` carries it on every run as `root.hypgen.outside` (§ 8.1's
+`root` block, `ein-summary/2` kept), `ein test` beside each claim it prints, as
+the warning is (§ 8.5), and `ein oracle --dump`'s `region.md` and
+`region.json` too.
+
 **Then the region itself**, in the form S1e2.1a.4 reads back:
 
 ```lisp

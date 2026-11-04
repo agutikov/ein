@@ -8,6 +8,11 @@
 ;;; is something its rung never proposes — so the original file's exhausted
 ;;; `k = 3` is exhaustive over `alive₀`, not over the program.
 ;;;
+;;; That was the walk's answer. Since M1e2's switch `ein solve` answers R, the
+;;; same seven states over the four `seats` candidates as `uncovered.ein`'s,
+;;; each holding the two `knows` facts, and since M1e2 S1e2.2.8 (2026-11-04)
+;;; every question names `knows` outside the universe, as on `uncovered.ein`.
+;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 (import std.algebra :symbols (total-owed surjective-owed))
 

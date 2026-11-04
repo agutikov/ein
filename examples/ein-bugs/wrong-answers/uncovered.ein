@@ -10,6 +10,8 @@
 ;;;
 ;;;   Ambiguity k = 3, `exhausted = true`; none of the three mentions `knows`.
 ;;;
+;;; That was the walk's answer, until M1e2 S1e2.1a.5's switch (2026-10-18).
+;;;
 ;;; The obligations rung proposes what discharges `seats`'s two families and
 ;;; nothing else, so `knows` — owed by nobody and not closed, because a rule
 ;;; concludes it — is never a hypothesis, and the `rung` event says
@@ -31,6 +33,19 @@
 ;;; over the universe as the ladder scopes it (what the obligations owe), so
 ;;; `exhausted = true` is true of R, and the read-out is to state that `knows`
 ;;; is outside it, which M1e2 S1e2.2.8 builds.
+;;;
+;;; ── Since M1e2 S1e2.2.8 (2026-11-04) ───────────────────────────────────────
+;;;
+;;; `ein solve` answers R, seven states over the four `seats` candidates,
+;;; exhausted, the minimal line the two matchings and the maximal all four
+;;; seats; and every question names what the universe leaves out, under
+;;; `universe`:
+;;;
+;;;   outside   knows — no candidate: no obligation owes it. R holds of it
+;;;             only what the program states and saturation derives
+;;;
+;;; `is-a` is not named: no rule concludes it and the goal does not ask about
+;;; it. The register's row is fixed.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 (import std.algebra :symbols (total-owed surjective-owed))

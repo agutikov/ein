@@ -63,6 +63,14 @@ walk started from `alive₀`, taken through the lookahead and after the
 forced-positive cascade, so the two lists could differ, and `walk.json`'s
 `universe` had both. Every route since the switch takes this list.
 
+**What it leaves out** is named since M1e2 S1e2.2.8 (2026-11-04, the user's
+ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped*): each relation the program can
+conclude or ask about, does not scope out itself, and of which the rung that
+built the list proposes no fact
+([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+`region.md` says it under its candidate count, as the read-out's `outside`
+row does, and `region.json` lists it as `outside`.
+
 **A node** is root's fixpoint with the commitment's facts written in and the
 saturation resumed to quiescence. It is never stopped at the first
 contradiction, so a dead node's debts are its fixpoint's. None of the search's
@@ -97,7 +105,10 @@ They are what a node *is* that its coordinates do not say.
 
 ## `region.json`
 
-`schema`, `source`, `n`, `limit`, `candidates`, `monotonicity` (below), then
+`schema`, `source`, `n`, `limit`, `candidates`, `outside` (since M1e2
+S1e2.2.8: one `{relation, arity, why}` per relation outside the universe,
+`--json-summary`'s `root.hypgen.outside`, `[]` when none), `monotonicity`
+(below), then
 either `region` with `refused: null`, or `region: null` with `refused`
 (`n`, `limit`, `note`). `region` holds:
 
@@ -249,9 +260,10 @@ are the user's ruling of 2026-10-15:
 
 It checks the **routes**: every `ein solve` mode is held to it
 (`ein-infer/tests/explore.rs`). It does not check the saturator, because they
-share it (W7), and it does not check that the candidate list is complete (W6;
-W4 until M1e2 S1e2.2.4 seeded it with a rule's constants, and W15 until
-S1e2.2.14 made it every name of the program).
+share it (W7), and it does not check that the candidate list is complete: a
+relation outside the universe is named since M1e2 S1e2.2.8 (W6), and W4 was
+missing until M1e2 S1e2.2.4 seeded it with a rule's constants, and W15 until
+S1e2.2.14 made it every name of the program.
 The per-subset route, [`utils/region.py`](../../../utils/region.py), is a
 second implementation for small programs. It runs one `ein saturate` per
 subset, and `ein-cli/tests/region_dump.rs` holds the two to the same nodes on

@@ -136,12 +136,24 @@ check of the generator would be held to, and is not written yet.
 
 **What the universe leaves out, the read-out names** (Q-M1e2.3, the user's
 ruling of 2026-11-03, *scoped*). R is over H as the ladder scopes it, so
-`exhausted` certifies all of R over H and nothing beyond it. Where H holds no
-candidate of a relation the program can conclude or ask about, the read-out
-states that the relation is outside the universe:
+`exhausted` certifies all of R over H and nothing beyond it. Where the rung
+that built H proposes no fact of a relation the program can conclude or ask
+about (a saturation rule writes it, or a query's `:goal` reads it), and the
+program does not scope the relation out itself (`(__closed__ R)`,
+`:hypothesis-relations`, `:no-hypothesis`), the read-out states that the
+relation is outside the universe:
 [W6](../../../corpus/wrong_answers.toml)'s `knows`, which no obligation owes,
-and its `r3`, an arity the blind rung does not enumerate. M1e2 S1e2.2.8 builds
-that sentence.
+and its `r3`, an arity the blind rung does not enumerate. **Built 2026-11-04
+by M1e2 S1e2.2.8** ([`ein_infer::scope`](../../../ein.rs/crates/ein-infer/src/scope.rs)):
+every question prints an `outside` row under `universe`, *knows — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives*, the
+summary carries it as `root.hypgen.outside`, `ein test` beside each claim, and
+`ein oracle --dump` in `region.md` and `region.json`. It names a relation on
+22 of the 234 programs of that day's sweep that reach H, 16 of them under the
+hrules, the zebra family's `is-a*` and `next-to` among them (T1e2.2.8.1,
+`build/s1e2.2.8/variants.py`, 2026-11-04). It is at relation grain: the facts
+of a covered relation the rung does not propose, the blind enumerator's
+self-edges and an obligation's typed candidates, are the declarative
+definition's above, not written yet.
 
 ### 1.5 Commitment, node, state
 
@@ -471,7 +483,7 @@ which `ein-cli/tests/read_out_examples.rs` holds to the binary:
 
 | question | flag | what it prints |
 |---|---|---|
-| all of R | none | k_s and k_c, `exhausted`, ∅, both lines, components, sub-cubes, merged states, N, the static check, H, the route and its licences, the work; then R as one `(region …)` and each query's projection classes |
+| all of R | none | k_s and k_c, `exhausted`, ∅, both lines, components, sub-cubes, merged states, N, the static check, H and what it leaves out (§ 1.4), the route and its licences, the work; then R as one `(region …)` and each query's projection classes |
 | a line | `--maximal`, `--minimal` | the line's states, exhausted or as far as the run went |
 | a part | `-n N` | `N` states of the part asked, each certified, nothing said of the rest |
 | one state? | `--single` | the word: `Solution` (one state), `Ambiguity` (two shown), `Contradiction` (every node dead), `Open` (every alive node owes) |
@@ -481,7 +493,9 @@ Every count that is not exact says so — *a lower bound* and how far it is
 complete — and a run a budget stopped writes one `note:`. Every answer exits
 0, and a claim the program states and the run refutes exits 1. A program the
 static check finds a site in says so on the `lattice` row and takes route 2,
-the cube.
+the cube. Every question prints `universe`, and under it, since M1e2
+S1e2.2.8, an `outside` row when H leaves out a relation the program can
+conclude or ask about (§ 1.4).
 
 ### 5.2 Ruled 2026-10-16, built by S1e2.1a.5
 
@@ -701,9 +715,10 @@ It shares the saturator with
 the engine, so it cannot see a derivation the saturator loses
 ([W7](../../../corpus/wrong_answers.toml), until M1e2 S1e2.2.7 gave a rule
 application's identity its activator's every argument). It takes H from the generator, so
-it cannot see a candidate the generator never proposes (W6; W4 until M1e2
-S1e2.2.4 seeded the candidates with a rule's constants, and W15 until
-S1e2.2.14 made them every name of the program).
+it cannot see a candidate the generator never proposes: a relation outside the
+universe, which every read-out names since M1e2 S1e2.2.8 (W6, § 1.4), and W4
+until M1e2 S1e2.2.4 seeded the candidates with a rule's constants, and W15
+until S1e2.2.14 made them every name of the program.
 
 ---
 

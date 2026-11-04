@@ -203,7 +203,7 @@
 # outside` records what a row's run names, which two W1 rows' runs do too, and
 # `[case.right] outside` what the right read-out names, its `qualifier` the
 # sentence. The flipped rows' `[case.fixed]` carried the null id in the
-# flipping commit.
+# flipping commit, `52004a68`, and the stage's next commit wrote the hash.
 # The register reads **44 rows fixed, 2 open and 1 not-wrong**.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
@@ -1946,7 +1946,7 @@ look_at  = ["events rung", "answer"]
 note     = "the third model is W5's superset; this case is only the certification. Until M1e2 S1e2.2.8 no read-out said `knows` is outside the universe: R was the same, and the `rung` event's `uncovered 2` (`is-a` and `knows`) was the one number that bore on it"
 
 [case.fixed]
-commit = "0000000"
+commit = "52004a68"
 by     = "S1e2.2.8 (T1e2.2.8.2), Q-M1e2.3 (a): the read-out's `outside` row under `universe`, on every question, and `root.hypgen.outside` in --json-summary, name the relations the program can conclude or ask about of which the rung that built H proposes no fact"
 date   = "2026-11-04"
 
@@ -2031,7 +2031,7 @@ status   = "fixed"
 look_at  = ["events hyp", "answer"]
 
 [case.fixed]
-commit = "0000000"
+commit = "52004a68"
 by     = "S1e2.2.8 (T1e2.2.8.2), Q-M1e2.3 (a): the read-out's `outside` row under `universe`, on every question, and `root.hypgen.outside` in --json-summary, name `r3`, whose arity the blind enumerator does not enumerate"
 date   = "2026-11-04"
 

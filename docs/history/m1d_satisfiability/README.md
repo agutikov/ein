@@ -379,7 +379,12 @@ Kept because a closed phase is where a finding gets lost.
 4. **`exhausted = true` over-claims when `uncovered ≠ 0`** over relations that
    are neither closed nor determined. The 25-line fixture in
    [`completeness.md` § 3c](completeness.md) reports `k = 3, exhausted = true`
-   where at least 6 models exist. Shipped behaviour.
+   where at least 6 models exist. Shipped behaviour. *(Owned and closed
+   2026-11-04 by M1e2
+   [S1e2.2.8](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md),
+   W6, on the user's ruling of 2026-11-03, Q-M1e2.3 (a): the answer is R over
+   H, `exhausted` certifies all of it, and every read-out names the relations
+   H leaves out, `knows` here.)*
 5. **Two root read-outs disagree in one binary** — `--json-summary`'s
    `root.hypgen` says `raw 230, emitted 96`; `-H` says `190 / 81`.
 6. **`commitment.rs`'s doc is stale**: *"`resume` is `None` on every shipping
