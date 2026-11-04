@@ -66,7 +66,12 @@ the `outside` row under `universe` and `root.hypgen.outside`, no answer
 moved, and the register reads 44 fixed, 2 open and 1 not-wrong.
 **S1e2.2.8 is done** (2026-11-04): `52004a68`, Q-M1e2.3 built, the pages and
 `completeness.md` § 3c's note, the M1d record's #4 closed, what moved step 1's
-list with no finding. Next is **S1e2.2.10**, C1.
+list with no finding. **S1e2.2.10 started the same day** (T1e2.2.10.2):
+`branching/06` and `/07` re-taken, the warning measured (13 of the 234
+programs that reach H, all under the blind enumerator, 11 after the retype),
+and every move of the retype and the warning listed before any edit: R moves
+on the two fixtures alone, 74 states to 2, and no exit code. The warning is a
+`types` row under `universe` and `root.hypgen.types_as_objects`, not an event.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
