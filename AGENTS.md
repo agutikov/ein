@@ -157,7 +157,12 @@ constrained-reasoning research.
   that no bounded retention keeps, is `open` and deferred to F22; and
   `:record-alternative-justifications false` may change a dead node's core
   and nothing else, the config principle's one exemption: 45 fixed, 2 open
-  (both deferred to a followup) and 1 not wrong.
+  (both deferred to a followup) and 1 not wrong. S1e2.2.12, the second of the
+  user's two visits to W11, found no corpus core that moves with the interner
+  once every core a run reports is compared, but a dead node's `refuted_by`
+  that does, through a resumed fork's `FactId`-ordered delta, and filed
+  `W11/fork-delta-order`, a program on which that order moves a core: 45
+  fixed, 3 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

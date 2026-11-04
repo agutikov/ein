@@ -98,7 +98,14 @@ is exempt from the config principle under
 open (both deferred) and 1 not-wrong. **S1e2.2.11 is done** (2026-11-04):
 `e8258f08`, Q-M1e.15 closed, every page that stated the core promise
 corrected, what moved step 1's list with four list corrections and no
-finding. Next is **S1e2.2.12**, W11.
+finding. **S1e2.2.12 started the same day** (T1e2.2.12.1), the second of
+the user's two visits to W11: both rows re-taken and confirmed, and with
+every core a run reports compared at eight seeds no corpus core moves; a
+dead node's `refuted_by` does, because a resumed fork's delta was sorted by
+`FactId`, and a program written for it moves a core of one size between two
+sets of facts. Filed as `W11/fork-delta-order`, `open`: 45 fixed, 3 open, 1
+not-wrong. No tie-break is needed, the fix is the delta's order, and every
+move of it is listed before any edit.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

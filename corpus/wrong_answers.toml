@@ -237,6 +237,15 @@
 # `e8258f08`, and the stage's next commit wrote the hash. The register reads **45 rows
 # fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
 #
+# **W11's third row was filed on 2026-11-04 by S1e2.2.12** (T1e2.2.12.1), the
+# second of the user's two visits to W11 (2026-10-16): with every core a run
+# reports compared under `EIN_ID_SEEDS=8`, no corpus core moved, but a dead
+# node's `refuted_by` did, because a resumed fork's delta was sorted by
+# `FactId`, and `W11/fork-delta-order` is a program written to make that order
+# reach a core. Its witness is under `corpus/fuzz_findings/` while it is open,
+# and its `wrong` is a region run's answer at `b364c11f`. The register reads
+# **45 rows fixed, 3 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -259,7 +268,10 @@
 #
 # Rows whose walk answer was visible only under a permuted interner (W11) keep
 # `wrong.id_order` as the record of it; `ein-render/tests/id_order_invariance.rs`
-# holds that a region run moves no line under that permutation.
+# holds that a region run moves no line under that permutation, its read-out
+# nor, since S1e2.2.12, any core it reports (`cores[…]`), and that an open
+# row's still moves. `W11/fork-delta-order`'s is a region run's, and names the
+# op that moved.
 #
 # ── Fields ────────────────────────────────────────────────────────────────────
 #
@@ -2721,6 +2733,63 @@ note    = "The user's ruling of 2026-11-04 on S1e2.2.5's F2, *via, per activator
 run     = "solve --maximal"
 line    = "maximal"
 refused = "rule 'fire-0' [activator T]: concludes (not …) from r1, which rule 'fire-1' derives resting on (absent …) over (not r1), a relation a commitment can still extend — so it calls a state that has not yet decided (not r1) a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (r1)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+
+[[case]]
+id       = "W11/fork-delta-order"
+case     = "W11"
+title    = "which core is reported depends on interner id order"
+class    = "core"
+settings = "default (under a permuted interner, seeds 1, 15839 and 23758 of 8)"
+owner    = "S1e2.2.12"
+witness  = "corpus/fuzz_findings/fork-delta-order.ein"
+not_in_corpus = "a dead node's core moves under a permuted interner at seed 1, which id_order_invariance asserts of every corpus file per commit"
+status   = "open"
+open_because = "a resumed fork's delta is in FactId order (Snapshot::new_facts_of), so the order a dead node's derivations arrive in is interning order, and with it which 33 of (false)'s 1 600 equal-size derivations the store keeps and so the core explain.rs picks from them"
+look_at  = ["refuted", "summary"]
+note     = "Filed by S1e2.2.12's second visit to W11 (T1e2.2.12.1, 2026-11-04): no corpus core moved under EIN_ID_SEEDS=8 with every core compared, but a dead node's refuted_by did, through a fork's FactId-ordered delta, and this program is written to make that order reach a core. The core is a member of N's, which no read-out line prints: the row's id-order half is id_order_invariance's cores[describe] op, and [case.now] holds R, which does not move"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` at b364c11f. As interned, N's member {(on A), (on B)} reports the core (g G08) (h H40) (on A) (on B) in nogoods.json, nodes.json, the oracle's region.json and --events' enter line; under id_order_invariance's permutation at seeds 1, 15839 and 23758 it reports (g G40) (h H08) (on A) (on B). R does not move"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["on"]
+models    = [[], ["(on A)"], ["(on B)"]]
+id_order  = { op = "cores[describe]", seed = 1 }
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [
+  ["(on A)"],
+  ["(on B)"],
+]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["on"]
+models    = [[], ["(on A)"], ["(on B)"]]
+derived   = "R, the oracle's: three states, the two maximal each candidate alone. And design/02: no observable depends on the order ids were assigned in, so N's member reports one core under every permutation. Which of its equal-size cores that is, is what the store keeps: over every derivation it is (g G01) (h H01) (on A) (on B), and the gap is W10/alt-cap-shared's class, deferred to F22, not this row's"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 3
+relations = ["on"]
+outside   = ["p", "q"]
+models    = [
+  [],
+  ["(on A)"],
+  ["(on B)"],
+]
 
 # ══ W12 — an exhausted `Contradiction` reports a 0-fact core ══════════════════
 [[case]]

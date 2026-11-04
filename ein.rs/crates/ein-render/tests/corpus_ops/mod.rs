@@ -55,6 +55,16 @@ pub fn ops() -> Vec<Op> {
     out
 }
 
+/// Every core a run reports, under each of [`READ_OUT_MODES`]'s questions —
+/// M1e2 S1e2.2.12. The read-out prints root's core and four minimal holes';
+/// what it does not print, every member of `N` and every dead node a route
+/// visited, a run writes into `--dump-answer`'s `nogoods.json` and
+/// `--dump-lattice`'s `nodes.json`, each with the rules that refuted it, and
+/// no op held those until this one.
+pub fn core_ops() -> Vec<Op> {
+    READ_OUT_MODES.iter().map(|(m, _)| Op::Cores(m)).collect()
+}
+
 /// The questions the sweep asks, as `ein solve`'s flags: describe, each line,
 /// `--single` and `-n 2`.
 pub const READ_OUT_MODES: [(&str, Mode); 5] = [
@@ -128,6 +138,11 @@ pub enum Op {
     RegionTrace,
     /// `ein render lattice`'s DOT.
     RegionLattice,
+    /// Under one of [`READ_OUT_MODES`]: the summary's `region` block
+    /// (`region.core`, every hole's), `--dump-answer`'s `nogoods.json` (each
+    /// member of `N`'s core) and `--dump-lattice`'s `nodes.json` (each visited
+    /// node's), each core beside the rules that refuted it — [`core_ops`].
+    Cores(&'static str),
 }
 
 impl std::fmt::Display for Op {
@@ -145,6 +160,7 @@ impl std::fmt::Display for Op {
             Op::ReadOut(m) => write!(f, "read-out[{m}]"),
             Op::RegionTrace => write!(f, "region-trace"),
             Op::RegionLattice => write!(f, "region-lattice"),
+            Op::Cores(m) => write!(f, "cores[{m}]"),
         }
     }
 }
@@ -227,7 +243,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
     }
     let outcome = match op {
         Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
-        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice => {
+        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice | Op::Cores(_) => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             region_op(&ast, terms, &mut kb, path, op, jobs)
         }
@@ -249,7 +265,8 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
                 | Op::Dot(_)
                 | Op::ReadOut(_)
                 | Op::RegionTrace
-                | Op::RegionLattice => {
+                | Op::RegionLattice
+                | Op::Cores(_) => {
                     unreachable!("handled above")
                 }
             }
@@ -294,7 +311,7 @@ fn region_op(
 ) -> Result<String, String> {
     let file = path.to_string_lossy().to_string();
     let mode = match op {
-        Op::ReadOut(m) => {
+        Op::ReadOut(m) | Op::Cores(m) => {
             READ_OUT_MODES
                 .iter()
                 .find(|(n, _)| *n == m)
@@ -363,18 +380,61 @@ fn region_op(
                 &ein_render::dump::region_lattice::Inputs {
                     source: &file,
                     argv: &file,
-                    route: match a.route {
-                        explore::Route::DownSet => "1, the alive down-set",
-                        explore::Route::Cube => "2, the cube",
-                        explore::Route::States => "the state route, every alive state once",
-                        explore::Route::Tree => "the obligation tree, over states",
-                    },
+                    route: route_words(&a),
                     candidates: &candidates,
                 },
                 false,
             ))
         }
+        Op::Cores(m) => {
+            // What `--json-summary`, `--dump-answer` and `--dump-lattice`
+            // write, from the same calls the binary makes.
+            use ein_render::dump::json::{Json, dumps_indent};
+            let visits = Arc::new(Mutex::new(Default::default()));
+            let mut events =
+                ein_infer::events::Events::off().watched(Box::new(Keep(visits.clone())));
+            let r = ein_infer::read_out::run_with(kb, terms, ast, &opts, &mut events)
+                .map_err(|e| e.to_string())?;
+            let region = ein_render::dump::region_answer::summary_blocks(&r)
+                .into_iter()
+                .find(|(k, _)| *k == "region")
+                .map_or(Json::Null, |(_, v)| v);
+            let nogoods = ein_render::dump::region_answer::nogoods(&r, kb, terms, ast)?;
+            let v = visits.lock().expect("done").clone();
+            let candidates: Vec<String> =
+                r.answer.candidates.iter().map(|c| c.text.clone()).collect();
+            let a = argv(m);
+            let nodes = ein_render::dump::region_lattice::json(
+                &v,
+                &ein_render::dump::region_lattice::Inputs {
+                    source: &file,
+                    argv: &a,
+                    route: route_words(&r.answer),
+                    candidates: &candidates,
+                },
+            );
+            Ok(format!(
+                "--- region\n{}\n--- nogoods.json\n{}\n--- nodes.json\n{}\n",
+                dumps_indent(&region),
+                dumps_indent(&nogoods),
+                dumps_indent(&nodes)
+            ))
+        }
         _ => unreachable!("a region op"),
+    }
+}
+
+/// The route's words, as the binary's `--dump-lattice` and `ein render
+/// lattice` print them (`ein-cli`'s `modes::route_words`).
+fn route_words(answer: &explore::Answer) -> &'static str {
+    let describe =
+        answer.mode.which == Which::All && matches!(answer.mode.ask, Ask::Describe | Ask::Count);
+    match answer.route {
+        explore::Route::DownSet => "1, the alive down-set",
+        explore::Route::Cube => "2, the cube",
+        explore::Route::States if describe => "the state route, every alive state once",
+        explore::Route::States => "the state route, each state at most once",
+        explore::Route::Tree => "the obligation tree, over states",
     }
 }
 

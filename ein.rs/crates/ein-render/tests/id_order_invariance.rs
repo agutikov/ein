@@ -56,7 +56,7 @@ mod corpus_ops;
 
 use std::path::PathBuf;
 
-use corpus_ops::{Op, ops, run};
+use corpus_ops::{Op, core_ops, ops, run};
 use ein_core::{FactId, IntId, Symbol, Tag, Terms, Value};
 use ein_corpus::{corpus_files, ein_files_under, repo_root};
 use ein_infer::mt19937::Mt19937;
@@ -389,13 +389,15 @@ fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
 /// something the binary can be asked for, so a row carrying `wrong.id_order`
 /// has its second half here, where the permutation is. Since M1e2 S1e2.1a.5
 /// the walk op it names is the record of what moved, and what is run is the
-/// read-out of the row's `[case.now]` question at the same seed: a **fixed**
-/// row's must not move by the cut the sweep applies, and an **open** one's
-/// must still. The witnesses are under `corpus/fuzz_findings/` for the reason
-/// this file is: as corpus entries they would fail the sweep above.
+/// row's `[case.now]` question at the same seed: its read-out, and since
+/// S1e2.2.12 every core the run reports ([`core_ops`]), the core of a member
+/// of `N` being one the read-out does not print. A **fixed** row's must not
+/// move by the cut the sweep applies, and an **open** one's must still. The
+/// witnesses are under `corpus/fuzz_findings/` while a row is open, for the
+/// reason this file is: as corpus entries they would fail the sweep above.
 #[test]
 fn the_register_s_id_order_rows_answer_what_they_record() {
-    let ops = ops();
+    let ops: Vec<Op> = ops().into_iter().chain(core_ops()).collect();
     let mut checked = 0usize;
     let mut bad = Vec::new();
     for row in ein_corpus::register().case {
@@ -406,31 +408,33 @@ fn the_register_s_id_order_rows_answer_what_they_record() {
             "all" => "describe",
             line => line,
         };
-        let name = format!("read-out[{mode}]");
-        let op = *ops
-            .iter()
-            .find(|o| o.to_string() == name)
-            .unwrap_or_else(|| panic!("{}: no op named {name:?}", row.id));
         let path = repo_root().join(&row.witness);
-        let mut base_terms = Terms::new();
-        let base = run(&mut base_terms, &path, op)
-            .unwrap_or_else(|| panic!("{}: [{op}] refused the plain run", row.id));
-        let mut terms = permuted(&base_terms, id.seed);
-        let got = run(&mut terms, &path, op)
-            .unwrap_or_else(|| panic!("{}: [{op}] refused the permuted run", row.id));
-        let moved = matches!(moved_by_the_cut(op, &base, &got), Moved::Answer(..));
+        let mut moved = None;
+        for name in [format!("read-out[{mode}]"), format!("cores[{mode}]")] {
+            let op = *ops
+                .iter()
+                .find(|o| o.to_string() == name)
+                .unwrap_or_else(|| panic!("{}: no op named {name:?}", row.id));
+            let mut base_terms = Terms::new();
+            let base = run(&mut base_terms, &path, op)
+                .unwrap_or_else(|| panic!("{}: [{op}] refused the plain run", row.id));
+            let mut terms = permuted(&base_terms, id.seed);
+            let got = run(&mut terms, &path, op)
+                .unwrap_or_else(|| panic!("{}: [{op}] refused the permuted run", row.id));
+            if moved.is_none() && matches!(moved_by_the_cut(op, &base, &got), Moved::Answer(..)) {
+                moved = Some((op, first_difference(&base, &got)));
+            }
+        }
         checked += 1;
         match (row.status.as_str(), moved) {
-            ("open" | "not-wrong", false) => bad.push(format!(
-                "{}: [{op}] seed {} no longer moves — an OPEN case changed answer; \
-                 the row moves in the same commit",
+            ("open" | "not-wrong", None) => bad.push(format!(
+                "{}: [read-out[{mode}]] and [cores[{mode}]] seed {} no longer move — an OPEN \
+                 case changed answer; the row moves in the same commit",
                 row.id, id.seed
             )),
-            ("fixed", true) => bad.push(format!(
-                "{}: [{op}] seed {} is FIXED and moves:\n{}",
-                row.id,
-                id.seed,
-                first_difference(&base, &got)
+            ("fixed", Some((op, diff))) => bad.push(format!(
+                "{}: [{op}] seed {} is FIXED and moves:\n{diff}",
+                row.id, id.seed
             )),
             _ => {}
         }

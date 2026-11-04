@@ -3,8 +3,8 @@
 Minimised inputs a fuzzer found something on, written by the two fuzzers
 (`cargo test -p ein-ir --test fuzz_properties` for the frontend,
 [`utils/fuzz_engine.py`](../../utils/fuzz_engine.py) for whole programs). "Something"
-is **a violated property**, named in the finding. Every file here is also one of the frontend
-fuzzer's seeds — `every_seed_and_finding_parses_the_way_it_was_recorded` reads
+is **a violated property**, named in the finding. Every file here of 2 KB or less is also one of the frontend
+fuzzer's seeds (all of them but `fork-delta-order.ein`) — `every_seed_and_finding_parses_the_way_it_was_recorded` reads
 this directory — so adding one changes `ein-ir/tests/golden/fuzz_seeds.txt`,
 and that is deliberate: a find that nothing re-parses is a souvenir.
 
@@ -54,13 +54,16 @@ witness violates a property the corpus sweeps assert — which is the reason
 this directory exists. Four files here were witnesses, and a witness is
 **owned**: the stage that fixes its case promotes it to `examples/` in the same
 commit, which is the steady-state rule above with a name on it. Two are
-since M1e2 S1e2.2.7 promoted W7's pair (2026-11-04).
+since M1e2 S1e2.2.7 promoted W7's pair (2026-11-04), and three since M1e2
+S1e2.2.12 banked a third file no fuzzer wrote, `fork-delta-order.ein`, the
+same day.
 
 | file | row | why it is here and not in `examples/` |
 |---|---|---|
 | [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `W7/binding-key-layout` until 2026-11-04 | **not a fuzzer's find**: M1e S1e.1.4 wrote it by hand, as `defined_behaviour.md` § 3.2's thirteen lines. A debug build aborted on both files (`check_layout`), and every in-process corpus sweep is a debug test binary. **Fixed 2026-11-04 by M1e2 S1e2.2.7** (Q-M1e.16's fix (1)) and promoted to `examples/ein-bugs/binding-key-both.ein` and `binding-key-swapped.ein`, which the register's rows point at; the two `.ein`s and the note stay as the dedup signature and frontend-fuzzer seeds |
 | [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `W11/unsat-core-id-space` | moves under a permuted interner, which `id_order_invariance` asserts of every corpus file |
 | `d3-unsat-core.ein` | `W11/d3-unsat-core`, `W1/d3-unsat-core` | the same, at the third seed — so the nightly's `EIN_ID_SEEDS=8` would fail on it. **Refused since M1e2 S1e2.2.5** (2026-11-04): `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under `(absent (not (r1 o3 ?v1)))`, a relation a commitment can extend, so *forbid* with F2's *via* refuses the program, and both rows hold the refusal. The file is kept as found: its text keys `ein-ir`'s `fuzz_seeds.txt` |
+| [`fork-delta-order.ein`](fork-delta-order.md) | `W11/fork-delta-order` | **not a fuzzer's find**: M1e2 S1e2.2.12 wrote it by hand on 2026-11-04, from the mechanism its eight-seed id-order sweep found. A dead node's core moves under a permuted interner at seed 1, in `nogoods.json`, `nodes.json` and the oracle's `region.json`, which `id_order_invariance` would assert of it as a corpus file. Promoted when its row is fixed |
 
 The id-order half of a W11 row is held by
 `id_order_invariance::the_register_s_id_order_rows_answer_what_they_record`,

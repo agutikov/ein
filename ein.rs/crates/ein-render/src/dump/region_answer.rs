@@ -596,6 +596,45 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
     )
 }
 
+/// `nogoods.json`: each member of `N` a describing run met, with its unsat
+/// core and the rules that refuted it, `[]` when the run described nothing.
+/// A member the route did not saturate (the state route reads `N` off the
+/// maximal alive states) is saturated here for its core, through the node
+/// function every route uses.
+pub fn nogoods(r: &ReadOut, root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Json, String> {
+    let solve = |e: SolveError| e.to_string();
+    let a = &r.answer;
+    let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
+    let facts = |set: &[u32]| -> Vec<FactId> {
+        set.iter().map(|&b| a.candidates[b as usize].fact).collect()
+    };
+    let mut dead: Vec<Json> = Vec::new();
+    if let Some(d) = r.described() {
+        let mut nodes = None;
+        for x in &d.dead {
+            let (core, refuted_by) =
+                if d.route == Route::States && x.core.is_empty() && !x.set.is_empty() {
+                    if nodes.is_none() {
+                        nodes = Some(Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?);
+                    }
+                    nodes
+                        .as_mut()
+                        .expect("made above")
+                        .refutation(&facts(&x.set))
+                        .map_err(solve)?
+                } else {
+                    (x.core.clone(), x.refuted_by.clone())
+                };
+            dead.push(Json::obj(vec![
+                ("set", set_json(&cands, &x.set)),
+                ("core", strs(&core)),
+                ("refuted_by", strs(&refuted_by)),
+            ]));
+        }
+    }
+    Ok(Json::Array(dead))
+}
+
 /// Write `ein-answer/2` into `dir`, which exists: `answer.txt`, `answer.json`,
 /// one loadable program per state the run reached under `models/` (listed or
 /// not: a partial run's other members are where its cut says they are), the
@@ -726,35 +765,9 @@ pub fn write(
             ("path", Json::str(path)),
         ]));
     }
-    let mut dead: Vec<Json> = Vec::new();
-    if let Some(d) = r.described() {
-        // A member of N the route did not saturate (the state route reads N
-        // off the maximal alive states) is saturated here for its core.
-        let mut nodes = None;
-        for x in &d.dead {
-            let (core, refuted_by) =
-                if d.route == Route::States && x.core.is_empty() && !x.set.is_empty() {
-                    if nodes.is_none() {
-                        nodes = Some(Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?);
-                    }
-                    nodes
-                        .as_mut()
-                        .expect("made above")
-                        .refutation(&facts(&x.set))
-                        .map_err(solve)?
-                } else {
-                    (x.core.clone(), x.refuted_by.clone())
-                };
-            dead.push(Json::obj(vec![
-                ("set", set_json(&cands, &x.set)),
-                ("core", strs(&core)),
-                ("refuted_by", strs(&refuted_by)),
-            ]));
-        }
-    }
     std::fs::write(
         dir.join("nogoods.json"),
-        dumps_indent(&Json::Array(dead)) + "\n",
+        dumps_indent(&nogoods(r, root, terms, ast)?) + "\n",
     )
     .map_err(io)?;
     let blocks = summary_blocks(r);

@@ -958,6 +958,13 @@ mod tests {
                     "a qualifier",
                 ),
                 (beyond_h, "facts over a relation no candidate is over"),
+                // An answer under a permuted interner, which a run of the
+                // binary cannot be asked for: `id_order_invariance` holds
+                // that half (M1e2 S1e2.2.12, `W11/fork-delta-order`).
+                (
+                    r.wrong.id_order.is_some(),
+                    "an answer under a permuted interner",
+                ),
             ]
             .into_iter()
             .filter_map(|(on, what)| on.then_some(what))

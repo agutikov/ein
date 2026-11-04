@@ -1,0 +1,54 @@
+;;; M1e2 W11 (`W11/fork-delta-order`) — which core a dead node reports moved
+;;; with interner ids. Written by hand by S1e2.2.12 (T1e2.2.12.1, 2026-11-04,
+;;; at b364c11f), from the mechanism its id-order sweep found: no corpus core
+;;; moved, and this is the shape that makes one.
+;;;
+;;; Two candidates, the hrule's `(on A)` and `(on B)`. Each alone is alive;
+;;; together `clash` derives (false) from every pair (p ?x) (q ?y), 40 × 40 =
+;;; 1 600 derivations of two premises each, every one the same closure size.
+;;; So every core of {(on A), (on B)} is four facts, (on A) (on B) (g x) (h y),
+;;; and explain.rs reports the rank-least (size, then `repr`) of those the
+;;; store offers it: (false)'s primary and the 32 alternatives a full list
+;;; keeps, the first to arrive, beside the smallest-closure arrival, the first
+;;; among equals (S1e2.2.11). Which arrive first is which side the fork
+;;; derives first: every (p x) and then each (q y) against all forty, or the
+;;; other way round. That is the order (on A) and (on B) entered the resumed
+;;; fork's delta, which `Snapshot::new_facts_of` sorted by `FactId`: interning
+;;; order, which is not the program's.
+;;;
+;;;   ein solve FILE --dump-answer D, D/nogoods.json, N's one member
+;;;   {(on A), (on B)}, b364c11f:
+;;;     as interned                     (g G08) (h H40) (on A) (on B)
+;;;     permuted, seeds 1, 15839, 23758 (g G40) (h H08) (on A) (on B)
+;;;   (EIN_ID_SEEDS=8, `ein-render/tests/id_order_invariance.rs`'s
+;;;   permutation; the other five seeds keep the first.)
+;;;
+;;; The same core moves in --dump-lattice's nodes.json and --events' `enter`
+;;; line; R does not (three states, ∅ and each candidate alone), nor does any
+;;; line of the read-out, which prints no member of N's core.
+;;;
+;;; Over every derivation (an uncapped store) the core is (g G01) (h H01)
+;;; (on A) (on B): every core is four facts, so the size the glossary promises
+;;; holds, and which of the equal-size ones a full list leaves is the store's
+;;; bounded retention (W10/alt-cap-shared's class, deferred to F22), not this
+;;; row's. This row asks only that it not move with the ids.
+;;;
+;;; The g and h facts are written in descending order so that the order they
+;;; are matched in, the index's, is not their rank's.
+
+(relation sw T)
+(relation on T)
+(relation g T)
+(relation h T)
+(relation p T)
+(relation q T)
+
+(sw A) (sw B)
+(g G40) (g G39) (g G38) (g G37) (g G36) (g G35) (g G34) (g G33) (g G32) (g G31) (g G30) (g G29) (g G28) (g G27) (g G26) (g G25) (g G24) (g G23) (g G22) (g G21) (g G20) (g G19) (g G18) (g G17) (g G16) (g G15) (g G14) (g G13) (g G12) (g G11) (g G10) (g G09) (g G08) (g G07) (g G06) (g G05) (g G04) (g G03) (g G02) (g G01)
+(h H40) (h H39) (h H38) (h H37) (h H36) (h H35) (h H34) (h H33) (h H32) (h H31) (h H30) (h H29) (h H28) (h H27) (h H26) (h H25) (h H24) (h H23) (h H22) (h H21) (h H20) (h H19) (h H18) (h H17) (h H16) (h H15) (h H14) (h H13) (h H12) (h H11) (h H10) (h H09) (h H08) (h H07) (h H06) (h H05) (h H04) (h H03) (h H02) (h H01)
+
+(rule mk-p () :match (and (on A) (g ?x)) :assert (p ?x))
+(rule mk-q () :match (and (on B) (h ?y)) :assert (q ?y))
+(rule clash () :match (and (p ?x) (q ?y)) :assert (false))
+
+(hrule guess () :match (sw ?s) :assert (on ?s) :why "guess: on {?s}?")
