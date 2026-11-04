@@ -92,13 +92,14 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 ///
 /// It stringifies **all** the activator's arguments while
 /// [`Plan::activator_args`] keeps only the string ones. That asymmetry is
-/// Q-M1a.8; it is reproduced exactly and deliberately not fixed here. What it
-/// does **not** cause is the collision the question used to claim: an `int`
-/// argument binds its parameter, so it seeds a register and reaches
-/// [`crate::firing::BindingKey`]'s third component even though it is missing
-/// from the second. A nested `Fact` binds nothing and reaches neither —
-/// M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-/// and see `BindingKey` for what that costs and where.
+/// Q-M1a.8. Since M1e2 S1e2.2.7 it reaches no identity: the engine interns
+/// *this* list as [`crate::firing::BindingKey`]'s activator half, so the
+/// compile key and the binding key are one list, and `Plan::activator_args`
+/// is what the narration and the static checks read. Until then the binding
+/// key interned the symbol list, a nested `Fact` reached neither of its
+/// halves (M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)),
+/// and an `int` beside a nested `Fact` in one position lost a derivation
+/// (Q-M1e.16, M1e2's W7); see `BindingKey`.
 ///
 /// Interning each argument's text has one collision: the integer `7` and the
 /// atom `7` both stringify to `"7"` and therefore share a key.

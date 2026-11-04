@@ -383,8 +383,8 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
 // ── 2. Every `(config …)` flag, in-process ────────────────────────────
 
 /// Every corpus program and register witness, less the slow tier (whose R a
-/// bare describe does not reach) and, in a debug build, the witnesses it
-/// aborts on (W7's two), as `explore.rs` leaves them out.
+/// bare describe does not reach). A debug build left out W7's two witnesses,
+/// which it aborted on, until M1e2 S1e2.2.7 fixed W7.
 fn programs() -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = corpus()
         .entry
@@ -395,9 +395,6 @@ fn programs() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in register().case {
         for (_, a) in row.answers() {
-            if cfg!(debug_assertions) && a.debug_panic.is_some() {
-                continue;
-            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }

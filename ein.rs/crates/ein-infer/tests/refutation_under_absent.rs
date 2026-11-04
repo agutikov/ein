@@ -118,10 +118,6 @@ const DESCRIBE: Mode = Mode {
 fn the_refused_set_is_exactly_these() {
     let mut files = corpus_files();
     for row in ein_corpus::register().case {
-        // W7's witness aborts a debug build, which is its defect.
-        if cfg!(debug_assertions) && row.wrong.debug_panic.is_some() {
-            continue;
-        }
         files.push(repo_root().join(&row.witness));
     }
     files.sort();

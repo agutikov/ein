@@ -46,7 +46,11 @@ the corpus measured (every plan's compile key is its symbol list outside
 W7's six files, so fix (1) moves nothing else by construction), the two
 single-activator controls banked, and every move of fix (1) listed before
 any edit, two of them the Fact/Fact collapse (1) undoes, which the stage
-file did not name.
+file did not name. **W7 is fixed the same day** (T1e2.2.7.2): the binding
+key's activator half interns the compile key's every argument, the pair is
+promoted to `examples/ein-bugs/`, both orders derive the same `noted` facts
+in release and debug, and the register reads 42 fixed, 4 open and 1
+not-wrong.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

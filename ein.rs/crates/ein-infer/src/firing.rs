@@ -212,32 +212,31 @@ pub fn new_prov(
 /// unbound one carries a sentinel no `Value` can forge, and the vector's order
 /// is fixed by the plan rather than by the match.
 ///
-/// `activator` is an id the engine interns for `plan.activator_args`, which
-/// keeps a key two words plus one small vector. `activator_args` holds the
-/// activator's **string** arguments only, while the *compile* cache key
-/// stringifies all of them — but that difference does **not** reach an `int`
-/// argument. An int binds its parameter, so it seeds a register and arrives in
-/// `values`: the key has three components and the arguments that reach none of
-/// them are exactly the nested `Fact`s, which bind nothing.
+/// `activator` is an id the engine interns for the plan's compile key,
+/// [`crate::compile::PlanKey::activator`] — **every** argument of the
+/// activator, stringified — which keeps a key two words plus one small vector.
+/// So within one engine an id names one plan, and the plans that share
+/// `(rule, activator)` are one plan with one register layout, the invariant a
+/// value vector needs to be comparable. `Engine::check_layout` asserts it in a
+/// debug build.
 ///
-/// That is Q-M1a.8, restated. The original claim named the `int`, and M1e
-/// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
-/// refuted it with a probe — `rule_semantics::activators_differing_only_by_an_int_argument_both_fire`.
-/// Two activators differing only in a nested `Fact` *do* share a key, and the
-/// application that loses is a duplicate: `Compiler::run` hands the activator
-/// to `bind_activator` and to nothing else, and `bind_activator` skips a
-/// `Fact`, so the two plans are equal in every field.
-///
-/// **The invariant this leans on, and it does not hold:** all plans sharing
-/// `(rule, activator)` must have the same register layout, or their value
-/// vectors are not comparable. The layout is a function of the rule and of
-/// *which* parameters the activator bound — and an `int` in the position
-/// another activator gives a nested `Fact` binds a parameter where the other
-/// does not. `Engine::check_layout` asserts the invariant where the plan list
-/// is built, **under `debug_assertions` only**; a release build compares two
-/// layouts as one and can lose a derivation with no diagnostic. That is
-/// [Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
-/// witnessed by `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`.
+/// **Until M1e2 S1e2.2.7 the id interned `plan.activator_args`**, the
+/// activator's **symbol** arguments. An `int` binds its parameter, so it
+/// seeds a register and arrives in `values`, and two activators differing
+/// only in one had two keys (M1e
+/// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
+/// which refuted Q-M1a.8's claim with
+/// `rule_semantics::activators_differing_only_by_an_int_argument_both_fire`).
+/// A nested `Fact` binds nothing and reached neither half: two activators
+/// differing only there shared a key, and the dropped application was a
+/// duplicate. But an `int` in the position another activator gives a nested
+/// `Fact` put two plans with **two register layouts** in one space, a release
+/// build compared them as one, and a derivation was lost with no diagnostic
+/// ([Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
+/// M1e2's W7). The id is the compile key's list since, which was Q-M1e.16's
+/// first fix: `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`
+/// is its regression, and two nested-`Fact` activators now each fire, the
+/// second redundantly (`…_differing_only_by_a_nested_fact_argument_both_fire`).
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct BindingKey {
     pub rule: Symbol,
@@ -245,7 +244,8 @@ pub struct BindingKey {
     pub values: Box<[Value]>,
 }
 
-/// An interned `plan.activator_args`.
+/// An interned compile key's argument list, [`crate::compile::PlanKey::activator`]
+/// — every argument of the activator, since M1e2 S1e2.2.7.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct ActivatorId(pub u32);
 

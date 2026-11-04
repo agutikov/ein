@@ -181,6 +181,17 @@
 # flipping commit, `bde8f53b`, and the stage's next commit wrote the hash. The
 # register reads **41 rows fixed, 5 open and 1 not-wrong**.
 #
+# **S1e2.2.7 fixed W7's row on 2026-11-04** (T1e2.2.7.2), Q-M1e.16's first
+# fix: a rule application's identity interns its activator's every argument,
+# the compile cache key's list, where it interned the symbols alone, so an
+# `int` and a nested fact in one activator position no longer put two
+# register layouts in one space, and the witness's states hold `(noted 1 3)`
+# in either activator order and either build. The witness and its twin were
+# promoted from `corpus/fuzz_findings/` to `examples/ein-bugs/`, and W15's two
+# rows on them moved with them. The flipped row's `[case.fixed]` carried the
+# null id in the flipping commit, and the stage's next commit wrote the hash.
+# The register reads **42 rows fixed, 4 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -257,7 +268,8 @@
 #               `:expect` cannot say (Q-M1e.13)
 #     models    every recorded model's facts over `closes`, as a multiset
 #     open      the same, per open state;  owes: each recorded state's owed total
-#     debug_panic   in a build with debug assertions the run aborts (exit 101)
+#     debug_panic   in a build with debug assertions the run aborted (exit 101):
+#               W7's record, read by no test since M1e2 S1e2.2.7 fixed it
 #                   and stderr carries this text; the other fields are release's
 #     id_order  { op, seed } — the `id_order_invariance` op and seed under which
 #               the answer moves (W11)
@@ -2043,14 +2055,18 @@ id       = "W7/binding-key-layout"
 case     = "W7"
 title    = "two activator layouts share a binding key, and a derivation is lost"
 class    = "model set"
-settings = "default (release); a debug build aborts"
+settings = "default (release; a debug build aborted)"
 owner    = "S1e2.2.7"
 question = ["Q-M1e.16"]
-witness  = "corpus/fuzz_findings/binding-key-layout.ein"
-not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary"
-status   = "open"
-open_because = "R shares the saturator this case is about: the lost derivation is lost in every node (solution_semantics.md § 6.6). The fix is S1e2.2.7's"
+witness  = "examples/ein-bugs/binding-key-both.ein"
+status   = "fixed"
 look_at  = ["events fire", "model 1"]
+note     = "the witness and its twin were promoted from corpus/fuzz_findings/binding-key-layout.ein and -swapped.ein by M1e2 S1e2.2.7 (T1e2.2.7.2), when a debug build stopped aborting on them; every recorded answer below was taken on the fuzz files, the same program without the header and the :expect. The noted facts [case.right] states are not in [case.now], whose states name the candidates' relations: binding-key-both.ein's :expect states them, in both states, and corpus_cli's `test` cell holds it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.7 (T1e2.2.7.2), Q-M1e.16's fix (1): the binding key's activator half interns the compile key's argument list, every argument, so the int plan and the nested-fact plan each have a space of their own"
+date   = "2026-11-04"
 
 [case.wrong]
 run         = "solve -e"
@@ -2062,7 +2078,7 @@ models      = [["(noted 1 1)", "(noted 2 1)", "(noted 2 3)"]]
 debug_panic = "two plans share (rule, activator) and disagree on their register layout"
 
 [[case.twin]]
-witness     = "corpus/fuzz_findings/binding-key-layout-swapped.ein"
+witness     = "examples/ein-bugs/binding-key-swapped.ein"
 run         = "solve -e"
 why         = "the two activator lines swapped: release derives all four"
 verdict     = "Solution"
@@ -2086,7 +2102,7 @@ k         = 1
 exhausted = true
 closes    = ["holds", "noted"]
 models    = [["(holds 1)", "(holds 3)", "(holds Y)", "(noted 1 1)", "(noted 1 3)", "(noted 1 Y)", "(noted 2 1)", "(noted 2 3)", "(noted 2 Y)"]]
-derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts"
+derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts. Since S1e2.2.7 the witness's two states hold the four and the six, as the swapped twin's and binding-key-nested-only.ein's do, in a release and a debug build alike (`ein solve FILE --dump-answer DIR` in every mode, `ein oracle`; build/s1e2.2.7/)"
 
 [case.review]
 verdict = "confirmed"
@@ -3344,10 +3360,10 @@ class    = "model set"
 settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
-witness  = "corpus/fuzz_findings/binding-key-layout.ein"
-not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary — W7's witness"
+witness  = "examples/ein-bugs/binding-key-both.ein"
 status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+note     = "W7's witness, promoted from corpus/fuzz_findings/binding-key-layout.ein by M1e2 S1e2.2.7 (T1e2.2.7.2), when a debug build stopped aborting on it; [case.wrong] was taken on the fuzz file, the same program without the header and the :expect"
 
 [case.fixed]
 commit = "15c9e700"
@@ -3399,10 +3415,10 @@ class    = "model set"
 settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
-witness  = "corpus/fuzz_findings/binding-key-layout-swapped.ein"
-not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary — W7's witness twin"
+witness  = "examples/ein-bugs/binding-key-swapped.ein"
 status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+note     = "W7's witness twin, promoted from corpus/fuzz_findings/binding-key-layout-swapped.ein by M1e2 S1e2.2.7 (T1e2.2.7.2), when a debug build stopped aborting on it; [case.wrong] was taken on the fuzz file, the same program without the header and the :expect"
 
 [case.fixed]
 commit = "15c9e700"

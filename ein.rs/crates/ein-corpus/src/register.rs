@@ -408,8 +408,9 @@ pub struct Answer {
     pub open: Option<Vec<Vec<String>>>,
     #[serde(default)]
     pub owes: Option<Vec<u64>>,
-    /// In a build with debug assertions the run aborts with this text on
-    /// stderr; every other field is the release build's.
+    /// In a build with debug assertions the run aborted with this text on
+    /// stderr; every other field is the release build's. A record: W7's,
+    /// which M1e2 S1e2.2.7 fixed, and no test skips a row on it since.
     #[serde(default)]
     pub debug_panic: Option<String>,
     #[serde(default)]

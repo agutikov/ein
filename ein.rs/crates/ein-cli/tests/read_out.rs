@@ -225,9 +225,6 @@ fn count_prints_describes_rows_and_reads_no_state() {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
         for (_, a) in row.answers() {
-            if cfg!(debug_assertions) && a.debug_panic.is_some() {
-                continue;
-            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }

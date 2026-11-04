@@ -1,0 +1,69 @@
+;;; Two activators of one rule, an `int` and a nested fact in one position,
+;;; lost a derivation — M1e2 **W7**, register row `W7/binding-key-layout`
+;;; (`corpus/wrong_answers.toml`), Q-M1e.16; fixed by S1e2.2.7 (2026-11-04).
+;;; Promoted from `corpus/fuzz_findings/binding-key-layout.ein`, which stays
+;;; there as a frontend-fuzzer seed.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `defined_behaviour.md` § 3.2's thirteen lines, as M1e S1e.1.4 wrote
+;;; them. `(note edge 1)` binds `?R` and `?f`; `(note edge (src Y))` binds
+;;; `?R` alone, since a nested fact binds no parameter, and leaves `?f` to
+;;; `(holds ?f)`. `binding-key-swapped.ein` is this file with the two
+;;; activator lines exchanged, and that pair is the test: the order two
+;;; facts are written in may not change what is derived.
+;;; `binding-key-int-only.ein` and `binding-key-nested-only.ein` keep one
+;;; activator each.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The nested-fact activator alone derives `(noted ?a ?f)` for every edge
+;;; source `?a` (1, 2) and every `?f` that holds; the int activator alone
+;;; derives the part of it with `?f` = 1. A rule set with one more
+;;; activator cannot conclude less, so root holds `(noted 1 1)`, `(noted 1
+;;; 3)`, `(noted 2 1)` and `(noted 2 3)`. `Y`, written only inside `(src Y)`,
+;;; is a name of the program (Q-M1e2.9 (a), ruled 2026-11-04), so H is the
+;;; one candidate `(holds Y)` and R is two states: ∅, and `{(holds Y)}`,
+;;; which adds `(noted 1 Y)` and `(noted 2 Y)`. It is
+;;; `binding-key-nested-only.ein`'s R, fact for fact.
+;;;
+;;; ── What the engine answered, and why it does not any more ─────────────
+;;;
+;;; Until S1e2.2.7 a rule application's identity, `(rule, activator,
+;;; values)`, interned only an activator's symbol arguments, so both plans
+;;; had the activator `[edge]` and their register files, `(?R ?f ?a ?b)` and
+;;; `(?R ?a ?b ?f)`, were compared position by position. The nested plan's
+;;; match `?a = 1, ?b = 2, ?f = 3` and the int plan's `?f = 1, ?a = 2, ?b =
+;;; 3` are the same vector, `(edge 1 2 3)`, so the second was dropped as a
+;;; repeat of the first and `(noted 1 3)` was derived in no state (`ein
+;;; solve FILE --dump-answer DIR` at `9c3c3fbc`, 2026-11-04). A build with
+;;; debug assertions aborted instead, in `check_layout`. Since S1e2.2.7 the
+;;; identity interns every argument of the activator, as the compile cache's
+;;; key does, so each plan has a space of its own; the `:expect` below
+;;; states the answer, and it holds in either build.
+
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds 3)
+
+(note edge 1)
+(note edge (src Y))
+
+(solve
+  ;; `holds` and `noted` are named, so both are closed: each state lists
+  ;; their complete extent, root's facts included.
+  :expect (region
+            ;; state 1 of 2 — ∅, root itself · minimal
+            (model (holds 1) (holds 3)
+                   (noted 1 1) (noted 1 3) (noted 2 1) (noted 2 3))
+            ;; state 2 of 2 — 1 candidate · maximal · from {(holds Y)}
+            (model (holds 1) (holds 3) (holds Y)
+                   (noted 1 1) (noted 1 3) (noted 1 Y)
+                   (noted 2 1) (noted 2 3) (noted 2 Y))))

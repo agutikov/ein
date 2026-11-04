@@ -642,24 +642,28 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
     );
 }
 
-// ── the activator's identity — Q-M1a.8 ─────────────────────────────────────
+// ── the activator's identity — Q-M1a.8, Q-M1e.16 ───────────────────────────
 //
-// `BindingKey` is `(rule, activator, values)` and there are **three** keys
-// over one activator, not two:
+// `BindingKey` is `(rule, activator, values)`, and three keys read one
+// activator:
 //
 // | key | what it keeps of the activator |
 // |---|---|
 // | [`PlanKey`] — the compile cache | every argument, stringified |
-// | `BindingKey.activator` — an interned `plan.activator_args` | the **symbol** arguments |
+// | `BindingKey.activator` — an interned `PlanKey.activator` | the same list: every argument |
 // | `BindingKey.values` — the register file | every argument that **binds a parameter**: symbols *and* ints |
 //
-// `defined_behaviour.md` §3.2 read the middle row alone and concluded that two
-// activators differing only in an `int` argument share an identity. They do
-// not: `bind_activator` seeds a register for every argument that is not a
-// nested `Fact` (`compile.rs`, `if a.as_fact().is_some() { continue; }`), so
-// the int is in `values`. The arguments that reach **neither** half are
-// exactly the nested `Fact`s. The three tests below are that correction, and
-// they are three because the third shape is the one that costs a derivation.
+// Until M1e2 S1e2.2.7 the middle row was an interned `plan.activator_args`,
+// the **symbol** arguments. `defined_behaviour.md` §3.2 read it alone and
+// concluded that two activators differing only in an `int` argument share an
+// identity. They did not: `bind_activator` seeds a register for every
+// argument that is not a nested `Fact` (`compile.rs`, `if a.as_fact().is_some()
+// { continue; }`), so the int is in `values` (M1e S1e.1.4). The arguments that
+// reached **neither** half were exactly the nested `Fact`s, and an int beside
+// a nested `Fact` in one position put two register layouts in one space and
+// cost a derivation (Q-M1e.16, M1e2's W7). Since S1e2.2.7 the middle row is
+// the compile key's list, so every plan has a space of its own. The three
+// tests below are the three shapes, held under the key as it is now.
 
 /// **Two activators differing only in an `int` argument both fire** — which is
 /// what `defined_behaviour.md` §3.2 said they could not do, and the probe that
@@ -707,30 +711,34 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
     }
 }
 
-/// **Two activators differing only in a nested `Fact` argument share one
-/// binding key** — the collision §3.2 was reaching for, at the argument kind
-/// that actually has it.
+/// **Two activators differing only in a nested `Fact` argument have two
+/// binding keys** since M1e2 S1e2.2.7, and the second application is a
+/// redundant firing — where until then they shared one key and it was never
+/// enqueued, the collision §3.2 was reaching for.
 ///
-/// A nested `Fact` binds no parameter, so it reaches neither half of the key.
-/// The same fixture is run four ways and only the *kind* of the second
-/// argument varies:
+/// A nested `Fact` binds no parameter, so it reaches `values` not at all; it
+/// reaches the activator half now that the half is the compile key's every
+/// argument. The same fixture is run four ways and only the *kind* of the
+/// second argument varies:
 ///
-/// | second argument | plans | firings |
-/// |---|---:|---:|
-/// | one nested `Fact` | 1 | 1 |
-/// | two nested `Fact`s | 2 | **1** |
-/// | two symbols | 2 | 2 |
-/// | two ints | 2 | 2 |
+/// | second argument | plans | firings | productive |
+/// |---|---:|---:|---:|
+/// | one nested `Fact` | 1 | 1 | 1 |
+/// | two nested `Fact`s | 2 | **2** (1 until S1e2.2.7) | 1 |
+/// | two symbols | 2 | 2 | 1 |
+/// | two ints | 2 | 2 | 1 |
 ///
-/// **And nothing is lost by it.** `activator` reaches the compiler at exactly
-/// one site — `Compiler::run` passes it to `bind_activator` and nowhere else —
-/// and `bind_activator` skips a `Fact` argument outright, so the two plans are
-/// equal in every field of [`Plan`]. The suppressed application is a
-/// *duplicate*: it would have derived what the survivor derived, which is why
-/// the derived set is the same in all four cells. The shape that does cost a
-/// derivation is the next test.
+/// **And nothing changes but a duplicate.** `activator` reaches the compiler
+/// at exactly one site — `Compiler::run` passes it to `bind_activator` and
+/// nowhere else — and `bind_activator` skips a `Fact` argument outright, so
+/// the two plans are equal in every field of [`Plan`] but their activator
+/// list. The second application derives what the first derived, which is why
+/// the derived set is the same in all four cells and one firing in each is
+/// productive. Q-M1e.16's second fix, the layout in the key, would have kept
+/// this collapse; the first, which S1e2.2.7 took, gives each plan its space.
+/// The shape the collapse's key cost a derivation on is the next test.
 #[test]
-fn activators_differing_only_by_a_nested_fact_argument_share_one_binding_key() {
+fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
     let program = |activators: &str| {
         format!(
             r#"
@@ -750,7 +758,7 @@ fn activators_differing_only_by_a_nested_fact_argument_share_one_binding_key() {
         (
             "two nested facts",
             "(note edge (src X)) (note edge (src Y))",
-            1,
+            2,
         ),
         ("two symbols", "(note edge sx) (note edge sy)", 2),
         ("two ints", "(note edge 1) (note edge 2)", 2),
@@ -761,8 +769,13 @@ fn activators_differing_only_by_a_nested_fact_argument_share_one_binding_key() {
             run.firings.len(),
             firings,
             "{what}: expected {firings} rule application(s), redundant ones \
-             included — a second plan whose binding key equals the first's is \
-             never enqueued at all"
+             included — each plan has a binding-key space of its own, so a \
+             second plan's application fires and finds its conclusion known"
+        );
+        assert_eq!(
+            run.productive().len(),
+            1,
+            "{what}: one application concludes, and every other is redundant"
         );
         assert_eq!(
             run.derived(),
@@ -774,33 +787,31 @@ fn activators_differing_only_by_a_nested_fact_argument_share_one_binding_key() {
     }
 }
 
-/// **An `int` in the position another activator gives a nested `Fact` loses a
-/// derivation, silently** — the real latent bug behind `Q-M1a.8`, and the one
-/// `defined_behaviour.md` §3.2 now states.
+/// **An `int` in the position another activator gives a nested `Fact` loses
+/// no derivation, in either order and in either build** — M1e2 S1e2.2.7's
+/// regression for the latent bug behind `Q-M1a.8`, which until then this test
+/// pinned as a defect.
 ///
-/// Both activators drop their second argument from `plan.activator_args`, so
-/// the two plans share a `(rule, activator)` binding-key space — but the int
-/// seeds a register and the `Fact` does not, so they disagree on their
-/// *register layout*: `?f` is register 1 in one plan and register 3 in the
-/// other. `BindingKey` then compares `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)`
-/// position by position, and `(edge 1 2 3)` is a legitimate match of both.
-/// Whichever fires first suppresses the other, and here the losing
-/// application is the only one that would have derived `(noted 1 3)`.
+/// Both activators drop their second argument from `plan.activator_args`, and
+/// until S1e2.2.7 that list was the binding key's activator half, so the two
+/// plans shared a `(rule, activator)` space. The int seeds a register and the
+/// `Fact` does not, so they disagree on their *register layout*: `?f` is
+/// register 1 in one plan and register 3 in the other, and `BindingKey`
+/// compared `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)` position by position.
+/// `(edge 1 2 3)` is a legitimate match of both, so whichever fired first
+/// suppressed the other, and with the int first the lost application was the
+/// only one that derives `(noted 1 3)`. `Engine::check_layout` asserted the
+/// invariant under `debug_assertions`, so a debug build panicked and a release
+/// one answered wrongly.
 ///
-/// **Two profiles, one claim.** `Engine::check_layout` asserts exactly this
-/// invariant — and only under `debug_assertions`, which is why the test
-/// expects the assertion in a `cargo test` build and the wrong answer in a
-/// release one. The premise its doc comment rested on (*"a shape no rule
-/// application has"*) is this seventeen-line program.
-///
-/// The fix is filed, not taken here:
-/// [Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+/// The fix,
+/// [Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)'s
+/// first: the activator half is the compile key's list, every argument, so
+/// the two plans have two spaces and both fire. `check_layout` stays, and
+/// cannot fire unless the two keys part again. The corpus family is
+/// `examples/ein-bugs/binding-key-{both,swapped,int-only,nested-only}.ein`.
 #[test]
-#[cfg_attr(
-    debug_assertions,
-    should_panic(expected = "disagree on their register layout")
-)]
-fn an_int_beside_a_nested_fact_in_one_position_loses_a_derivation() {
+fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
     let program = |activators: &str| {
         format!(
             r#"
@@ -817,8 +828,9 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_a_derivation() {
             "#
         )
     };
-    // The control runs in both profiles: one plan, no layout to disagree with,
-    // and the four conclusions the rule has.
+    // The controls: one plan each, no layout to disagree with. The nested-fact
+    // activator derives the four conclusions the rule has, the int one the two
+    // with `?f` = 1.
     let whole = BTreeSet::from([
         "(noted 1 1)".to_string(),
         "(noted 1 3)".to_string(),
@@ -830,21 +842,23 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_a_derivation() {
         whole,
         "the nested-fact activator alone derives every (noted ?a ?f)"
     );
-
-    // Debug: `check_layout` fires here and the test ends at this line.
-    let both = saturate(&program("(note edge 1) (note edge (src Y))"));
-
-    // Release: adding an activator *removed* a conclusion.
-    assert!(
-        !both.derived().contains("(noted 1 3)"),
-        "the collision is what this test is about — if (noted 1 3) is back, \
-         Q-M1e.16 was fixed and this test should be turned into its regression"
-    );
     assert_eq!(
-        both.derived(),
-        &whole - &BTreeSet::from(["(noted 1 3)".to_string()]),
-        "the int activator's own two conclusions are a subset of the nested \
-         one's, so the union of the two programs is `whole` — and running \
-         them together derives one fact fewer than running either alone"
+        saturate(&program("(note edge 1)")).derived(),
+        BTreeSet::from(["(noted 1 1)".to_string(), "(noted 2 1)".to_string()]),
+        "the int activator alone derives the two with ?f = 1"
     );
+
+    // Both, in both orders: a rule set with one more activator concludes the
+    // union, and the order two facts are written in changes nothing.
+    for order in [
+        "(note edge 1) (note edge (src Y))",
+        "(note edge (src Y)) (note edge 1)",
+    ] {
+        assert_eq!(
+            saturate(&program(order)).derived(),
+            whole,
+            "{order}: the two plans' bindings are compared within their own \
+             spaces, so neither suppresses the other and nothing is lost"
+        );
+    }
 }

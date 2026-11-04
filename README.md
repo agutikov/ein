@@ -294,13 +294,13 @@ The milestones in [§ Scheduled](#scheduled--the-roadmap) exist because these
 were measured, not assumed:
 
 - **The walk gave wrong answers on well-formed programs, at default
-  settings, and five of the register's rows are still open.** Twelve cases and
+  settings, and four of the register's rows are still open.** Twelve cases and
   one contested reading were re-run on 2026-10-14
   ([`inventory.md`](plans/m1e2_correctness/inventory.md)); the smallest was
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **41 of 47
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **42 of 47
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
   positive's unsound exclusions among them, which no route reads, W12 and W13,
   W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
@@ -308,13 +308,15 @@ were measured, not assumed:
   inside a nested fact, which M1e2 S1e2.2.14 made a candidate the same day on
   the user's ruling on names (Q-M1e2.9 (a)), W14, a domain value only a
   commitment derives, which the obligations rung never proposed until M1e2
-  S1e2.2.15 made it decline on such a guard (Q-M1e2.10 (a), the same day), and W3, one of W1's and one of W8's, whose right answer
+  S1e2.2.15 made it decline on such a guard (Q-M1e2.10 (a), the same day), W7,
+  an `int` and a nested fact in one activator position, which lost a
+  derivation until M1e2 S1e2.2.7 gave a rule application's identity the
+  activator's every argument (Q-M1e.16, the same day), and W3, one of W1's and one of W8's, whose right answer
   since the user's *forbid* of 2026-11-02 is a refusal at load, which M1e2
   S1e2.2.5 built the same day (a refutation may not rest on an `absent` over a
   relation a commitment can still extend, directly or through a fact a rule
-  derived under one) — one ruled not wrong (C1), and **5 open**, each saying
-  why: W7, where R shares the defect (the binding key); W10, which is in the
-  core; W6, whose fix follows the reading ruled on 2026-11-03; and W8's other
+  derived under one) — one ruled not wrong (C1), and **4 open**, each saying
+  why: W10, which is in the core; W6, whose fix follows the reading ruled on 2026-11-03; and W8's other
   row, deferred to a followup. P1e2.2 fixes
   them, one stage per case
   ([P1e2.2](plans/m1e2_correctness/p1e2.2_wrong_answers/README.md)).

@@ -47,7 +47,8 @@ pub struct Engine {
     arcs: Vec<Arc<Plan>>,
     keys: Vec<PlanKey>,
     by_key: FxHashMap<PlanKey, usize>,
-    /// The interned `plan.activator_args` of each plan, parallel to `plans`.
+    /// The interned compile key's argument list of each plan, `PlanKey::activator`
+    /// — every argument, since M1e2 S1e2.2.7 — parallel to `plans`.
     activators: Vec<ActivatorId>,
     activator_ids: FxHashMap<Box<[Symbol]>, ActivatorId>,
     /// Binding keys that have already been applied.
@@ -207,7 +208,14 @@ impl Engine {
         // only ever read by `check_layout`, which is a debug-build assertion,
         // and cloning it in the shipping build was one allocation per engine
         // miss for nothing at all.
-        let activator_id = self.intern_activator(&plan.activator_args);
+        //
+        // The activator id is the compile key's list, every argument, and not
+        // `plan.activator_args`, the symbols — M1e2 S1e2.2.7, Q-M1e.16's first
+        // fix. With the symbols an `int` and a nested `Fact` in one position
+        // gave two plans one binding-key space and two register layouts, and
+        // a release build lost a derivation (W7). With the compile key's list
+        // the id and the plan are one-to-one within an engine.
+        let activator_id = self.intern_activator(&key.activator);
         self.check_layout(plan.rule, activator_id, &plan.reg_names);
         self.plans.push(id);
         self.arcs.push(plan);
@@ -227,26 +235,27 @@ impl Engine {
     }
 
     /// The invariant [`BindingKey`] leans on, checked where the plan list is
-    /// built.
+    /// built: two plans sharing `(rule, activator)` have one register layout.
     ///
     /// A register layout is a function of the rule and of *which* parameters
-    /// the activator bound. Two activators with the same string arguments do
-    /// **not** therefore bind the same parameters: an `int` binds its
-    /// parameter and a nested `Fact` does not, and neither of them is a string
-    /// argument, so `(r a 1)` and `(r a (f X))` share this key and disagree
-    /// here. The doc comment this replaces called that *"a shape no rule
-    /// application has"*; M1e
+    /// the activator bound, and an `int` binds its parameter where a nested
+    /// `Fact` does not. Until M1e2 S1e2.2.7 the activator id interned the
+    /// **symbol** arguments, so `(r a 1)` and `(r a (f X))` shared an id and
+    /// disagreed here: M1e
     /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
-    /// wrote it in thirteen lines, and in a **release** build — where this
-    /// assertion is compiled out — it costs a derivation with no diagnostic
+    /// wrote the shape in thirteen lines, and in a **release** build, where
+    /// this assertion is compiled out, it cost a derivation with no diagnostic
     /// ([Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
-    /// `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`).
+    /// M1e2's W7). The doc comment before that called it *"a shape no rule
+    /// application has"*.
     ///
-    /// So this stays debug-only for now, and it is the *only* thing enforcing
-    /// [`BindingKey`]'s stated invariant. No corpus program can reach the
-    /// shape — all 153 143 activator arguments every plan compiled under
-    /// `examples/`, `stdlib/` and `tests/` binds against are symbols — which
-    /// is why it has never fired.
+    /// Since S1e2.2.7 the id interns the compile key's list, every argument,
+    /// so two plans of one rule with one id have one compile key and are one
+    /// plan, and this cannot fire. It stays, debug-only, as the guard that the
+    /// two keys have not parted again:
+    /// `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`
+    /// and `examples/ein-bugs/binding-key-both.ein` run the shape in a debug
+    /// build.
     fn check_layout(&self, rule: Symbol, activator: ActivatorId, reg_names: &[Symbol]) {
         if cfg!(debug_assertions) {
             for (i, other) in self.arcs.iter().enumerate() {

@@ -136,7 +136,11 @@ constrained-reasoning research.
   derives) as four open rows, and the user ruled Q-M1e2.10 (a) the same day:
   when an obligation's guard scans a relation a commitment can change (D),
   the rung declines and the blind enumerator builds H. All four are fixed by
-  that decline: 41 fixed, 5 open and 1 not wrong.
+  that decline: 41 fixed, 5 open and 1 not wrong. S1e2.2.7 fixed W7 the same
+  day with Q-M1e.16's first fix: a rule application's identity interns its
+  activator's every argument, as the compile key does, so an `int` and a
+  nested fact in one activator position no longer lose a derivation, in
+  either order and either build: 42 fixed, 4 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -245,7 +245,7 @@ reads the program's names at load (the facts' arguments at any depth, the
 rules' `:match` and `:assert` constants), and `hypgen::candidate_objects`
 seeds the blind enumerator's objects with them;
 `ein-infer/tests/alive_invariant.rs` names the corpus programs with a name the
-KB's names index does not hold — 41 names on 20 programs (2026-11-04), among
+KB's names index does not hold — 43 names on 22 programs (2026-11-04), among
 them `mixed-type-hypothesis.ein`'s `Ann`, `07_schroder.ein`'s `G`, W4's `Z`,
 W15's, W14's and W7's `Y` — holds each to the seed, and confirms that no run reaches a name
 outside the program's. The one shape that could name something else, a relation

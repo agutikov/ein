@@ -97,13 +97,13 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 ///   R a lower bound both ways).
 /// - `broken/compile/eq_arity_high.ein` — a `:match` constant on a program the
 ///   compiler refuses, so no run takes its candidates.
-/// - `ein-bugs/binding-key-nested-only.ein` — `Y`, inside an activator's
-///   nested `(src Y)`, M1e2's W7 family (S1e2.2.7): H is `(holds Y)`, as
-///   W15 made it on the pair the family is cut from.
+/// - `ein-bugs/binding-key-{both,swapped,nested-only}.ein` — `Y`, inside an
+///   activator's nested `(src Y)`, M1e2's W7 family (S1e2.2.7): H is
+///   `(holds Y)`, as W15 made it on the pair, which S1e2.2.7 promoted.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
-const SEEDED: [(&str, &[&str]); 20] = [
+const SEEDED: [(&str, &[&str]); 22] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -112,7 +112,15 @@ const SEEDED: [(&str, &[&str]); 20] = [
         ],
     ),
     (
+        "examples/ein-bugs/binding-key-both.ein",
+        &["`Y`, in (note edge (src Y))"],
+    ),
+    (
         "examples/ein-bugs/binding-key-nested-only.ein",
+        &["`Y`, in (note edge (src Y))"],
+    ),
+    (
+        "examples/ein-bugs/binding-key-swapped.ein",
         &["`Y`, in (note edge (src Y))"],
     ),
     (

@@ -1225,19 +1225,20 @@ impl Saturator {
     /// registers — can put it there, and it must carry a *different* guard
     /// set, since `seen` dedups the pair. That needs either one plan whose
     /// disjuncts ask different negative questions, or two plans sharing a
-    /// `(rule, activator)` binding-key space — the Q-M1a.8 asymmetry, where an
-    /// activator's **nested-`Fact`** arguments reach neither half of the key.
-    /// (Not its `int` arguments: an int binds a parameter and so seeds a
-    /// register — M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-    /// which corrected this comment along with the page it came from.)
+    /// `(rule, activator)` binding-key space. **The second cannot happen since
+    /// M1e2 S1e2.2.7**: the activator id is the compile key's list, every
+    /// argument, so each plan has a space of its own. Until then it was the
+    /// symbol list, the Q-M1a.8 asymmetry, and two activators differing only
+    /// in a **nested `Fact`** shared a space (not in an `int`, which binds a
+    /// parameter and so seeds a register — M1e
+    /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
+    /// which corrected this comment along with the page it came from). The
+    /// check below still reads both, at the cost of a set insert per plan.
     ///
-    /// **Neither holds anywhere in the corpus**: the branch is taken 0 times
+    /// **The first holds nowhere in the corpus**: the branch is taken 0 times
     /// across every `.ein` under `examples/` and `stdlib/`, and where a
     /// program does put it in reach the round walks with the check, exactly as
-    /// before. The second disjunct is out of reach for a blunter reason than
-    /// the first — of the **153 143** activator arguments every plan compiled
-    /// over the whole corpus binds against, **every one is a symbol**
-    /// (2026-08-29), so no two plans can share a space at all.
+    /// before.
     ///
     /// Sticky once true, because a plan that exists cannot stop existing — and
     /// a candidate parked while it was false could not have collided with

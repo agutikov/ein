@@ -16,8 +16,8 @@
 //! EIN_BLESS=1 cargo test -p ein-infer --test register_region   # re-bank the blocks
 //! ```
 //!
-//! A debug build skips the witnesses it aborts on (W7's), as `explore.rs`
-//! does; the release build holds them too.
+//! Both builds hold every row. A debug build skipped W7's witnesses, which
+//! it aborted on, until M1e2 S1e2.2.7 fixed W7.
 
 use std::path::Path;
 
@@ -229,9 +229,6 @@ fn every_row_states_its_witness_s_region() {
     let mut checked = 0usize;
     for row in &reg.case {
         if row.status.starts_with("merged:") {
-            continue;
-        }
-        if cfg!(debug_assertions) && row.wrong.debug_panic.is_some() {
             continue;
         }
         // A refused row (M1e2 S1e2.2.5, *forbid*) states no region, and the

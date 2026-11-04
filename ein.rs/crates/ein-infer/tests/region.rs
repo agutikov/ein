@@ -689,9 +689,11 @@ fn a_monotone_verdict_makes_saturation_a_closure_operator() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     eprintln!("{cubes} monotone cubes; saturation moves a node on {moving}");
-    // 153 monotone cubes in a debug build on 2026-11-02, saturation moving a
-    // node on 15 of them: `site_census`'s 155 less W7's two witnesses, which a
-    // debug build skips. A sweep that silently found none would pass.
+    // 172 monotone cubes in a debug build on 2026-11-04, saturation moving a
+    // node on 16 of them; 153 and 15 on 2026-11-02, when a debug build
+    // skipped W7's two witnesses, before M1e2 S1e2.2.7 fixed W7 and the
+    // stages since banked their witnesses. A sweep that silently found none
+    // would pass.
     assert!(cubes >= 150, "{cubes} monotone cubes checked");
     assert!(moving >= 10, "saturation moves a node on {moving} of them");
 
@@ -1136,15 +1138,12 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once — less the witnesses
-/// a debug build aborts on (W7's two), in a debug build.
+/// Every corpus file and every register witness, once. A debug build left
+/// out W7's two witnesses, which it aborted on, until M1e2 S1e2.2.7 fixed W7.
 fn corpus_and_register() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
         for (_, a) in row.answers() {
-            if cfg!(debug_assertions) && a.debug_panic.is_some() {
-                continue;
-            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }
