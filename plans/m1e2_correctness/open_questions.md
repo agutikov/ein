@@ -1231,6 +1231,14 @@ both ways. W7's `right` is restated to R under the ruling. The stdlib writes
 no constant in a rule's argument position, so no import moved a program's
 names.
 
+**A string, 2026-11-04** ([S1e2.2.18](p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md),
+W18): the ruling unchanged, read through a string. A string a rule writes is
+the symbol it names, as a fact's is, so it is a constant in a rule and a name
+of the program, as that atom is; the list did not read one until then, and
+the compiler did not lower one. A string that is a keyword's value inside a
+clause is text, and not a name. The fix moves the names of two corpus
+programs, W18's `str-in-assert` and `str-in-hrule` (`lbl`), and of no other.
+
 ## Q-M1e2.10 — When the obligations rung cannot trust its domain scan, whose candidates is R over?
 
 Put to the user on 2026-11-04 by

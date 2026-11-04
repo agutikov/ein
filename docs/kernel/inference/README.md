@@ -242,12 +242,13 @@ is reported as — is
 [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally).
 In short: [`ein_infer::invariant::program_names`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
 reads the program's names at load (the facts' arguments at any depth, the
-rules' `:match` and `:assert` constants), and `hypgen::candidate_objects`
+rules' `:match` and `:assert` constants, a string among them as the symbol it
+names since M1e2 S1e2.2.18), and `hypgen::candidate_objects`
 seeds the blind enumerator's objects with them;
 `ein-infer/tests/alive_invariant.rs` names the corpus programs with a name the
-KB's names index does not hold — 44 names on 23 programs (2026-11-04), among
+KB's names index does not hold — 46 names on 25 programs (2026-11-04), among
 them `mixed-type-hypothesis.ein`'s `Ann`, `07_schroder.ein`'s `G`, W4's `Z`,
-W15's, W14's, W7's `Y` and W16's `a` — holds each to the seed, and confirms that no run reaches a name
+W15's, W14's, W7's `Y`, W16's `a` and W18's `lbl` — holds each to the seed, and confirms that no run reaches a name
 outside the program's. The one shape that could name something else, a relation
 parameter bound to an integer, is refused at load or at compile
 ([`defined_behaviour.md` § 4.6](../defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).

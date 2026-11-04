@@ -448,6 +448,12 @@ def walk_answer(a: dict) -> str:
             + f" → {answer_words(a)}")
 
 
+def code_span(text: str) -> str:
+    """`text` as a Markdown code span, fenced with two backticks when it holds
+    one: the line `TypeError: an unrecognised `:assert` slot …` did."""
+    return f"`` {text} ``" if "`" in text else f"`{text}`"
+
+
 def error_cell(c) -> str:
     """The line a run ended with when it did not answer (M1e2 S1e2.2.18, W18):
     a recorded answer's `error`, or a run's stderr first line when it exited
@@ -455,18 +461,18 @@ def error_cell(c) -> str:
     if c.right is not None:
         return "—"
     if c.recorded:
-        return f"`{c.answer['error']}`" if c.answer.get("error") else "—"
+        return code_span(c.answer["error"]) if c.answer.get("error") else "—"
     inv = c.result.invocations[0] if c.result.invocations else None
     if inv is None or inv.code == 0:
         return "—"
-    return f"`{next((ln for ln in inv.stderr.splitlines() if ln), '')}`"
+    return code_span(next((ln for ln in inv.stderr.splitlines() if ln), ""))
 
 
 def answer_words(a: dict) -> str:
     """A recorded answer's verdict, k and exhausted, or the error it ended in
     (M1e2 S1e2.2.18, W18: exit 1 before any answer, schema /7)."""
     if a.get("error"):
-        return f"**an error**, exit 1: `{a['error']}`"
+        return f"**an error**, exit 1: {code_span(a['error'])}"
     return f"{a.get('verdict', '—')}, k = {a.get('k', '—')}, exhausted = {str(a.get('exhausted', '—')).lower()}"
 
 
@@ -518,7 +524,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         ["wrong", walk_answer(w) + f" — *{recorded_by(w)}, as the register records it*"
                   + (f": {w['why']}" if by_region(w) and w.get("why") else "")],
         ["now", (f"`ein {now['run']}` → **refused**, exit 1: `{now['refused']}`" if now.get("refused") else
-                 f"`ein {now['run']}` → **an error**, exit 1: `{now['error']}`" if now.get("error") else
+                 f"`ein {now['run']}` → **an error**, exit 1: {code_span(now['error'])}" if now.get("error") else
                  f"`ein {now['run']}` → " + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
                  + f", k = {now.get('k')}, exhausted = "
                  f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else ""))

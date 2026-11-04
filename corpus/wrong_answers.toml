@@ -326,7 +326,7 @@
 # witness answers its atom twin's R, in either build, and `str-in-assert`'s
 # run answers where it ended in an error, so its `now` is an answer and its
 # `wrong` keeps the error as the record. Each flipped row's `[case.fixed]`
-# carried the null id in the flipping commit, `0000000`, and the stage's next
+# carried the null id in the flipping commit, `259c16e4`, and the stage's next
 # commit wrote the hash. The register reads **60 rows fixed, 2 open and 1
 # not-wrong**, both open rows deferred to a followup.
 #
@@ -4180,7 +4180,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Filed by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/textkey/str-in-match.ein. Rules `t` (the atom b, which matches the fact the string \"b\" writes) and `u` (the int 1) are the controls in the file, and fire. The candidate (hit 1) is over the symbol 1, the value (holds \"1\") holds; the int 1 is not one of the blind enumerator's objects. By value: root.facts_by_relation.hit is 2 at ff023413, and 3 right. Fixed by T1e2.2.18.2: `s` fires, and root holds (hit s), (hit t) and (hit u) (root.facts_by_relation.hit 3), in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "259c16e4"
 by     = "S1e2.2.18 (T1e2.2.18.2): the rule compiler lowers a string in a :match as the symbol it names, so `s` matches (holds \"1\")"
 date   = "2026-11-04"
 
@@ -4233,7 +4233,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/textkey/str-in-assert.ein. The first row whose recorded answer is an error, schema /7 (`error`): every command that saturates exits 1, `ein saturate` with `TypeError: an unrecognised `:assert` slot has no value to store` and `ein solve` and `ein oracle` with the message alone. `lbl` is a name of the program once the string is one, a constant a rule's :assert writes (Q-M1e2.9 (a)), so the blind enumerator proposes (holds lbl) and (tag lbl a). Fixed by T1e2.2.18.2: root derives (tag 1 lbl) and (tag a lbl), R is four states, exit 0, in either build, and `ein saturate` saturates"
 
 [case.fixed]
-commit = "0000000"
+commit = "259c16e4"
 by     = "S1e2.2.18 (T1e2.2.18.2): the rule compiler lowers a string in an :assert as the symbol it names, and a string a rule writes is a name of the program"
 date   = "2026-11-04"
 
@@ -4283,7 +4283,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Found by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) probing the case's mechanism: a guard reads its arguments through guard_arg, not slot, so it is the fix's second half. Root derives (other a) and (other b) and no hit; the candidates are (hit a) and (hit b), where they should be (hit a) and (other b). Fixed by T1e2.2.18.2: root derives (hit b) and (other a), and H is (hit a) and (other b), in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "259c16e4"
 by     = "S1e2.2.18 (T1e2.2.18.2): a guard lowers a string as the symbol it names"
 date   = "2026-11-04"
 
@@ -4336,7 +4336,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Found by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) probing the case's mechanism: the witness's mechanism inside an absent, where it derives a conclusion the program refutes rather than losing one. Fixed by T1e2.2.18.2: `z` never fires, and no state holds (hit z), in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "259c16e4"
 by     = "S1e2.2.18 (T1e2.2.18.2): the rule compiler lowers a string under an absent as the symbol it names"
 date   = "2026-11-04"
 
@@ -4389,7 +4389,7 @@ look_at  = ["root", "summary"]
 note     = "Found by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) probing the case's mechanism: an hrule is compiled as a rule is, and its rung builds a template that fails as no candidate, where saturation stops. Fixed by T1e2.2.18.2: the hrule proposes (tag 1 lbl) and (tag a lbl), and R is their four subsets, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "259c16e4"
 by     = "S1e2.2.18 (T1e2.2.18.2): the rule compiler lowers a string in an hrule's template as the symbol it names, and a string a rule writes is a name of the program"
 date   = "2026-11-04"
 

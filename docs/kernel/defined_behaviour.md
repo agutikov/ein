@@ -381,6 +381,14 @@ T1), so the fix moved no other answer.
 > ([Q-M1e2.9](../../plans/m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program)
 > (a)). R0 below is that list; a name only a `:match` or a nested fact wrote
 > was missing from the candidates until then (M1e2's W15).
+>
+> **A string, 2026-11-04** — M1e2
+> [S1e2.2.18](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md).
+> A string a rule writes is the symbol it names, as a fact's is, so it is a
+> name of the program as that atom would be: `lbl` in `(tag ?x "lbl")`. The
+> compiler did not lower a string until then, and the names list did not
+> read one (M1e2's W18). A string that is a keyword's value inside a clause is
+> text, and not a name.
 
 The prose form is three clauses about a rule library. The evaluable form has
 to name the sets and the moment, and there are **three readings**, ordered by
@@ -459,10 +467,11 @@ until then a `warn` event, category `alive-set-invariant`, narrated each
 constant only a rule names, at root under `--events`; under the ruling none of
 them is new, so the line would say something false, and it left. The set is
 named by a test (`alive_invariant.rs::every_name_of_the_program_is_a_candidate_object`:
-44 names on 23 programs that the names index does not hold, 2026-11-04, three
+46 names on 25 programs that the names index does not hold, 2026-11-04, three
 of them W14's witnesses, banked by S1e2.2.15, three W7's family, banked by
-S1e2.2.7, and one W16's `activator-all-nested.ein`, banked by S1e2.2.16; it
-was `Ann`, `G` and `Z` until S1e2.2.14), and `ein solve FILE -H` lists the
+S1e2.2.7, one W16's `activator-all-nested.ein`, banked by S1e2.2.16, and two
+W18's `lbl`, a string a rule writes, banked by S1e2.2.18; it was `Ann`, `G`
+and `Z` until S1e2.2.14), and `ein solve FILE -H` lists the
 candidates the seed makes.
 The F5 typed form is what would make a violation unrepresentable rather than
 detected.
@@ -477,10 +486,40 @@ names the failure's class, and exiting non-zero:
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
-| `:assert` head that is not a fact | `TypeError: <message>` | 1 |
+| a conclusion no fact can hold: an `:assert` that is not a fact, or an argument that is a keyword pair, a range, a wildcard, or a relation written as a variable the activator does not bind | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
+
+**A conclusion no fact can hold names no class since 2026-11-04** (M1e2
+[S1e2.2.18](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md)).
+Its row read *`:assert` head that is not a fact*, `TypeError: <message>`:
+`ein saturate` printed `TypeError: expected NestedPattern at :assert
+top-level, got Atom` (or `Var`, `SForm`) and `TypeError: an unrecognised
+`:assert` slot has no value to store`, and `ein solve` the message alone, a
+Python class, the Python IR's class names, and no word of which rule. It is
+one line from every command now, the rule and the slot as the program writes
+them, in three forms:
+
+- `rule 's': its :assert writes 1..3 as an argument of tag, and no fact can
+  hold it — an argument is a name, a string, an int, a variable its :match
+  binds, or a fact (relation argument …)` (a range, a wildcard `_`, a keyword
+  pair such as `:source "x"`, at any depth);
+- `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
+  a fact (relation argument …), or an (and …) of facts` (an atom, a
+  variable, a string where a fact belongs);
+- `rule 's': its :assert writes (?x a b), whose relation ?x its activator
+  does not bind — a relation written as a variable is one of the rule's
+  parameters, which its activator binds to a name`.
+
+The run still stops at the rule's first firing, exit 1, so a rule that never
+fires is never checked; an hrule's template that builds no fact still
+proposes nothing, in silence. `ein-cli/tests/cli_semantics.rs`'s
+`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the eight
+shapes under `ein saturate` and `ein solve`. A **string** reached this line
+until the same stage, which lowered a string in a rule as the loader lowers
+one in a fact, the symbol it names (M1e2's W18;
+[`01_grammar.md`'s `STRING` row](ir/03-ein-lang/01_grammar.md)).
 
 The last row is the odd one out and belongs to §5 rather than here: it is
 `clap`'s wording, and what is fixed about it is the **exit code and the
@@ -499,8 +538,12 @@ a KB stopped at N firings is what the flag asks for, not a failure. So it is
 firings*](#5-the-cli-surface).
 
 The class names are the strongest candidate on this page for deliberate
-change, and the reason nothing has changed yet is that every one of them is a
-checked-in expected output, pinned by a corpus entry.
+change. Two changed in M1e2: the step limit's row left the table (S1e2.3.7),
+and `TypeError` gave way to the rule's own words (S1e2.2.18). The three left,
+`FileNotFoundError`, `ein.inference.compile.CompileError` and `KeyError`, are
+Python's spellings that a command prints; that is parked for the user in
+[S1e2.2.18 § Notes](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md#notes),
+beside S1e2.3.7's note on the ones no command prints.
 
 ### 4.1 The first errors that name no exception class — M1c S1c.1.2
 
