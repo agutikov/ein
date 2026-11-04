@@ -237,7 +237,11 @@ Each is already enforced locally; this page is the shared reason.
   refutation counts when it rests on the `absent` directly, through a fact a
   rule derived under one (`stale-naf-fork.ein`'s `p-and-q-clash` reading `p`),
   or through its activator. *Extendable* is the static check's `D`, at
-  relation grain (F1 (b)). [`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forbid.rs)
+  relation grain (F1 (b)), followed since M1e2 S1e2.2.17 (W17) through every
+  rule with parameters whose activator relation it holds, `D⁺`: a plan a node
+  compiles that root never had writes relations a commitment can change too,
+  and until then a refutation whose activator chain first appears at a node
+  loaded (`examples/ein-bugs/wrong-answers/forbid-chain-*.ein`). [`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forbid.rs)
   reads it after root's fixpoint, and every command that takes the universe
   refuses the program, one line per refusing rule naming the three forms
   ([`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)).

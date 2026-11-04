@@ -262,7 +262,15 @@ apart**, because the cube reads only the status (§ 7.9):
 - **the status**: the cube's violations (holes, dead nodes with an alive
   superset, discharged nodes with an owing superset), each attributed to the
   sites that made it by S1e2.1b.3's rule: *exercised*, *conservative*, or *not
-  known* where the run did not read the cube;
+  known* where the run did not read the cube. Where that rule names no site,
+  since M1e2 S1e2.2.17, the attribution follows the violation's derivation
+  through each plan's activator, a dead node's from its contradiction and an
+  owing one's from the owed instance's activator, and names the activator
+  sites of the rules on it root never compiled, else the `absent` sites over
+  its premises ([`lattice/12_activator_chain_hole.ein`](../../../examples/lattice/12_activator_chain_hole.ein):
+  *by serves*); where that names none either, the row says so, *by no site:
+  the violation's derivation, each plan's activator followed, reaches none*,
+  where until then it printed *by* and an empty list;
 - **the state**: every node the run computes is read for **stale facts**, a
   fact whose `absent` guard the node's own fixpoint falsifies (`node_census.md`
   § 4's check, with the engine's matcher), dead nodes included, because W8's
@@ -786,8 +794,13 @@ root's plans and, from its pattern, every rule with parameters whose activator
 relation is in D. Three items of the list below are covered since then: the
 derived refutation (c3, c9) and both activator shapes (c7, c12), the second
 for an activator with no symbol argument only since M1e2 S1e2.2.16 (W16), when
-the plan test stopped reading the activator's symbols. What it does not
-cover:
+the plan test stopped reading the activator's symbols. **Since M1e2
+S1e2.2.17** (W17) *extendable* is D followed through every rule with
+parameters whose activator relation it holds (`D⁺`,
+`monotone::through_activators`, `D` on a program with no activator site),
+every such rule is read from its pattern, and its own `absent` taints what it
+derives; § 5.1's `D`, the sites and the rung's decline are unchanged. What it
+does not cover:
 
 - an `absent` that concludes a **positive** fact: `derive-p` on `features/07`
   and `stale-naf-fork`, `soup-unless-allergic` on `lattice/08`. Every state
@@ -803,6 +816,14 @@ cover:
   **covered since 2026-11-04**, F2's `via` follows each plan's activator
   (measured before it, M1e2's
   [taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3));
+- a refutation whose **activator chain first appears at a node**: the
+  refuting rule's activator written only by a plan a node compiles, one link
+  past D or more (`examples/ein-bugs/wrong-answers/forbid-chain-1.ein`,
+  `-2.ein`), an `absent` read by such a plan (`-node-absent.ein`, and over its
+  parameter's relation, `-param-absent.ein`), or an `absent` over a relation
+  only such a plan writes (`-node-writes.ein`): **covered since M1e2
+  S1e2.2.17** (2026-11-04), W17, by `D⁺`. Until then each loaded with a dead
+  hole;
 - obligation **triggers and activators**, which refute nothing;
 - the **FIFO gap**.
 

@@ -733,9 +733,17 @@ binds a name, and a nested fact binds nothing.
 ([S1e2.4.1 § 5](../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)),
 with its F2 of 2026-11-04, *via, per activator*: a rule that concludes
 `(false)` or `(not …)` may not rest on an `(absent P)` over a relation a
-commitment can still extend, the static check's `D`
-([`monotonicity.md`](inference/monotonicity.md)), directly, through a fact a
-rule derived under one, or through its activator. Over such a relation the
+commitment can still extend, directly, through a fact a rule derived under
+one, or through its activator. *Extendable* is `D⁺`: the static check's `D`
+([`monotonicity.md`](inference/monotonicity.md)) followed through every rule
+with parameters whose activator relation it holds, since a node compiles a
+plan of such a rule that root never had, and what that plan writes a
+commitment can change too. The check reads root's plans and, from its
+pattern, every such rule, and an `absent` such a rule reads itself, over a
+relation in `D⁺` or over the relation its parameter names, taints what it
+derives. `D⁺` is `D` on a program with no activator site, and no reader but
+this one uses it: the static check, its sites and the obligations rung's
+decline read `D`. Over such a relation the
 shape calls a state that has not yet decided `P` a contradiction, so `dead`
 is not upward-closed. [`ein_infer::forbid`](../../ein.rs/crates/ein-infer/src/forbid.rs)
 reads it after root's fixpoint, where the static check runs, so it refuses
@@ -748,13 +756,23 @@ arguments; until M1e2 S1e2.2.16 the check asked whether the activator had a
 **symbol** argument, so one whose every argument is an int or a nested fact
 read as none and its refutation loaded (W16,
 `examples/ein-bugs/activator-all-int.ein`). The `[activator …]` label still
-prints the symbols, so such a line names none. One line per refusing rule,
-sorted by rule:
+prints the symbols, so such a line names none. **Until M1e2 S1e2.2.17**
+(W17, 2026-11-04) *extendable* was `D` itself, a rule with parameters was
+read from its pattern only when its activator relation was in `D`, and such a
+rule's own `absent` tainted nothing, so a refutation whose activator chain
+first appears at a node loaded with a dead hole: one or two activators past
+`D` (`examples/ein-bugs/wrong-answers/forbid-chain-1.ein`, `-2.ein`), an
+`absent` in the plan a node compiles (`-node-absent.ein`, and over its
+parameter's relation, `-param-absent.ein`), and an `absent` over a relation
+only such a plan writes (`-node-writes.ein`). Each is refused since, and
+`forbid-chain-no-absent.ein`, the chain with no `absent`, loads with its R
+unmoved. One line per refusing rule, sorted by rule:
 
 | cause | message | exit |
 |---|---|---|
 | the rule reads a relation in `D` inside an odd number of `absent`s | `rule '<r>'[ [activator <a…>]]: concludes <(false)\|(not …)> from (absent …) over <R>, a relation a commitment can still extend — <the rest>` | 1 (`ein test`: 2) |
 | it reads `<P>`, which rule `<d>` derives resting on such an `absent` | `… concludes <c> from <P>, which rule '<d>' derives resting on (absent …) over <R>, a relation a commitment can still extend — <the rest>` | 1 (2) |
+| ″, the `absent` over the relation a parameter of rule `<d>` names (since M1e2 S1e2.2.17) | `… concludes <c> from <P>, which rule '<d>' derives resting on (absent …) over the relation its parameter ?<p> names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — <the rest>` | 1 (2) |
 | its activator is such a fact | `… concludes <c> from its activator, which rule '<d>' derives resting on (absent …) over <R>, … — <the rest>` | 1 (2) |
 | a rule with parameters, whose activator a commitment can derive, reads its parameter's relation under an odd `absent` | `… concludes <c> from (absent …) over the relation its parameter ?<p> names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — <the rest>` | 1 (2) |
 
@@ -765,7 +783,9 @@ it; state a requirement as a decision or an obligation (`functional` +
 as `std.algebra`'s `total` does. Pinned by
 `ein-infer/tests/refutation_under_absent.rs`, which holds the refused set of
 the corpus and the register exactly and the two written activator programs,
-and by `corpus/wrong_answers.toml`'s eight refused rows.
+and by `corpus/wrong_answers.toml`'s fifteen refused rows (`python3 -c
+"import tomllib; print(sum(1 for r in tomllib.load(open('corpus/wrong_answers.toml','rb'))['case'] if r['right'].get('refused')))"`,
+2026-11-04).
 
 ## 5. The CLI surface
 

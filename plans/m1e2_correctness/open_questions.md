@@ -207,6 +207,18 @@ untainted beside an alive superset. What a route may learn before the refusal
 ships, and from whatever F2 and F3 leave loading, is
 [F21](../followups/f21_non_monotone_programs_decided.md)'s D6.
 
+**Note, 2026-11-04 — W17**
+([S1e2.2.17](p1e2.2_wrong_answers/s1e2.2.17_forbid_activator_chain.md)). The
+ruling's *a relation a commitment can still extend* was built as the static
+check's D, whose closure follows the plans root compiled. Where a plan a node
+compiles writes, D is too small: five programs whose refutation rests on an
+`absent` through an activator chain that first appears at a node loaded with
+a dead hole, and one of them, `forbid-chain-node-writes.ein`, was a
+counterexample to the taint test above read with D. *forbid* reads D⁺ since
+(`f5a0dca9`), D followed through every rule with parameters whose activator
+relation it holds, refuses all five, and the taint test reads D⁺ too. The
+ruling is unchanged: what moved is how *extendable* is computed.
+
 ## Q-M1e2.6 — Does P1e2.3 become a phase?
 
 Nine surfaces that misstate a run whose answer is right, and one reachable

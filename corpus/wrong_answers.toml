@@ -301,7 +301,7 @@
 # derives. Each witness is refused at every question about a commitment, and
 # D, the static check, its sites and the rung's decline are unmoved. Each
 # flipped row's `[case.fixed]` carried the null id in the flipping commit,
-# `0000000`, and the stage's next commit wrote the hash. The register reads
+# `f5a0dca9`, and the stage's next commit wrote the hash. The register reads
 # **55 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
 # followup.
 #
@@ -3956,7 +3956,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "Filed by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/extra/node-chain-sym.ein. The chain one link shorter, forbid-chain-0.ein, is refused at every question: `rule 'q': concludes (false) from its activator, which rule 'mk' derives resting on (absent …) over p2`. The witness with no `absent`, forbid-chain-no-absent.ein, loads with R two states and no hole, and is the control the fix must not move. The read-out's status line named no site for the hole, *exercised, by* and an empty list, and names `q` since T1e2.2.17.2, studied past the refusal. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
 
 [case.fixed]
-commit = "0000000"
+commit = "f5a0dca9"
 by     = "S1e2.2.17 (T1e2.2.17.2): *forbid* follows the activator chain, reading every rule with parameters whose activator relation is in D⁺, D followed through the rules root has no plan of"
 date   = "2026-11-04"
 
@@ -3994,7 +3994,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "forbid-chain-1.ein one link longer: `r2`'s plan asserts the activator (r3 a), and `r3`'s plan concludes (false). It pins that the chain is followed to any length, not one hop. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
 
 [case.fixed]
-commit = "0000000"
+commit = "f5a0dca9"
 by     = "S1e2.2.17 (T1e2.2.17.2): *forbid* follows the activator chain to any length, D⁺ closed through every rule with parameters it activates"
 date   = "2026-11-04"
 
@@ -4032,7 +4032,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: the `absent` is in the plan a node compiles, not in a plan of root's. Its (false) rests through the activator (r2 a) on the (absent (p2 a)) `q`'s plan read. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
 
 [case.fixed]
-commit = "0000000"
+commit = "f5a0dca9"
 by     = "S1e2.2.17 (T1e2.2.17.2): an open rule's own `absent` over D⁺ seeds N, as a plan of root's does"
 date   = "2026-11-04"
 
@@ -4070,7 +4070,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: `mk` derives the activator (watch p2), whose plan derives (y a) while (p2 a) is absent, and `bad` concludes (false) from (y a). Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
 
 [case.fixed]
-commit = "0000000"
+commit = "f5a0dca9"
 by     = "S1e2.2.17 (T1e2.2.17.2): an open rule's `absent` over its parameter's relation seeds N, conservatively, as Cause::Parameter refuses such a rule"
 date   = "2026-11-04"
 
@@ -4108,7 +4108,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: here the refutation is root's own plan, and the activator chain is on the `absent`'s side. The static check flags the program for `q2`'s activator site alone. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
 
 [case.fixed]
-commit = "0000000"
+commit = "f5a0dca9"
 by     = "S1e2.2.17 (T1e2.2.17.2): *forbid*'s extendable is D⁺, and x, written only by a plan a node compiles, is in it"
 date   = "2026-11-04"
 
