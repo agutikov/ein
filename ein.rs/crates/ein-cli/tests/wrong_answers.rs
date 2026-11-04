@@ -152,6 +152,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         run: row.now.run.clone(),
         line,
         refused: None,
+        error: None,
         exhausted: region["exhausted"] == true,
         k: states.len(),
         empty,
@@ -225,17 +226,23 @@ fn every_row_answers_what_the_register_records() {
             .find(|l| !l.is_empty())
             .unwrap_or("<empty>");
         // A refusal (M1e2 S1e2.2.5, *forbid*) is exit 1 and its first line,
-        // and no summary.
-        let diffs = if let Some(want) = &row.now.refused {
+        // and no summary; so is a run that ended in an error before it
+        // answered (M1e2 S1e2.2.18, W18).
+        let ended = match (&row.now.refused, &row.now.error) {
+            (Some(want), _) => Some(("refused", "a refusal", want)),
+            (None, Some(want)) => Some(("error", "an error", want)),
+            (None, None) => None,
+        };
+        let diffs = if let Some((field, what, want)) = ended {
             let mut d = Vec::new();
             if got.code != 1 {
-                d.push(format!("exit: recorded 1, a refusal, got {}", got.code));
+                d.push(format!("exit: recorded 1, {what}, got {}", got.code));
             }
             if first != want {
-                d.push(format!("refused: recorded {want:?}, got {first:?}"));
+                d.push(format!("{field}: recorded {want:?}, got {first:?}"));
             }
             if got.summary.is_some() {
-                d.push("a refused run wrote a summary".to_string());
+                d.push(format!("{what} wrote a summary"));
             }
             d
         } else if got.code != 0 {

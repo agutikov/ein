@@ -1,0 +1,37 @@
+;;; A string written in a rule's `:match` never matches — M1e2 **W18**,
+;;; register row `W18/str-in-match` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.18 (2026-11-04) from S1e2.2.16's parked note, where it was
+;;; `build/s1e2.2.16/textkey/str-in-match.ein`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Four `holds` facts: the int `1`, the string `"1"`, the atom `a` and the
+;;; string `"b"`. The loader holds a string written as a fact's argument as
+;;; the symbol it names (`01_grammar.md`'s `STRING` row), so `(holds "b")` is
+;;; the fact `(holds b)`, and `(holds "1")` holds the symbol `1`, a value
+;;; apart from the int. Three rules match one `holds` fact each: `s` writes
+;;; the string `"1"`, `t` the atom `b`, `u` the int `1`. `t` and `u` are the
+;;; controls.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A string in a rule means what it means in a fact, so `s` matches
+;;; `(holds "1")` as `t` matches `(holds "b")`: root derives `(hit s)`,
+;;; `(hit t)` and `(hit u)`. The blind enumerator proposes `(hit 1)`,
+;;; `(hit a)` and `(hit b)`, nothing refutes, so R is their eight subsets,
+;;; and every state holds the three `hit` facts root derives.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `t` and `u` fire and `s` never does: the rule compiler does not lower a
+;;; string, so in a `:match` it is an opaque slot that matches nothing
+;;; (`compile.rs`' `slot`). R is the eight subsets, and no state holds
+;;; `(hit s)`: `ein solve FILE --minimal` at `ff023413` prints root's state
+;;; as `(model (hit t) (hit u))`, the summary's `root.facts_by_relation.hit`
+;;; is 2, in a release build and a debug one.
+
+(relation holds Node) (relation hit Node)
+(holds 1) (holds "1") (holds a) (holds "b")
+(rule s () :match (holds "1") :assert (hit s))
+(rule t () :match (holds b) :assert (hit t))
+(rule u () :match (holds 1) :assert (hit u))

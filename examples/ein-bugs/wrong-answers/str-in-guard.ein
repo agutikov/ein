@@ -1,0 +1,32 @@
+;;; A string written in a guard never equals a value — M1e2 **W18**, register
+;;; row `W18/str-in-guard` (`corpus/wrong_answers.toml`), found by S1e2.2.18
+;;; (2026-11-04) probing the case's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `holds` facts, the atom `a` and the string `"b"`, which the loader
+;;; holds as the symbol `b`. `g` keeps the `holds` value that equals `"b"`,
+;;; and `n` every one that does not.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A string in a rule means what it means in a fact, so `(eq ?x "b")` holds
+;;; for `?x = b` and `(neq ?x "b")` for `?x = a`: root derives `(hit b)` and
+;;; `(other a)`. The blind enumerator proposes `(hit a)` and `(other b)`, so
+;;; R is four states, root's holding the two. It is the answer of this file
+;;; with `"b"` written `b` in its rules.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `g` never fires and `n` fires on both: the rule compiler lowers a guard's
+;;; string to a raw node, which equals no value (`compile.rs`' `guard_arg`,
+;;; `match_.rs`' `resolved_eq`), so `eq` never holds and `neq` always does.
+;;; Root derives `(other a)` and `(other b)` and no `hit`; the candidates are
+;;; `(hit a)` and `(hit b)`, and `ein solve FILE --minimal` at `ff023413`
+;;; prints root's state as `(model)`, over `hit` alone, in a release build
+;;; and a debug one.
+
+(relation holds Node) (relation hit Node) (relation other Node)
+(holds a) (holds "b")
+(rule g () :match (and (holds ?x) (eq ?x "b")) :assert (hit ?x))
+(rule n () :match (and (holds ?x) (neq ?x "b")) :assert (other ?x))

@@ -240,9 +240,10 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let mut states = 0;
     let mut runs: Vec<(String, String)> = Vec::new();
     for row in &register().case {
-        // A refused row (M1e2 S1e2.2.5) writes no state: `wrong_answers.rs`
-        // holds its refusal.
-        if row.status.starts_with("merged:") || row.now.refused.is_some() {
+        // A refused row (M1e2 S1e2.2.5) writes no state, nor one whose run
+        // ends in an error (S1e2.2.18): `wrong_answers.rs` holds both.
+        if row.status.starts_with("merged:") || row.now.refused.is_some() || row.now.error.is_some()
+        {
             continue;
         }
         runs.push((row.witness.clone(), row.now.run.clone()));

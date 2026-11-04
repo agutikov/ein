@@ -994,6 +994,36 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W17 (`W17/forbid-chain-node-writes`), found by S1e2.2.17: `chk` concludes (false) from `(absent (x ?y))`, and only `q2`'s plan, compiled at a node from an activator `(p2 a)` derives, writes `x`. *forbid*'s extendable was D, whose closure follows the plans root compiled, so `x` was not in it: R three states with the dead hole {(p a)}, exit 0, where the right answer is a refusal. Since S1e2.2.17's fix it is D⁺, which holds `x`, and `solve` exits 1 naming `chk`."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/str-in-match.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W18 (`W18/str-in-match`), banked by S1e2.2.18 from S1e2.2.16's parked note: `s` matches `(holds \"1\")`, a fact the program states, and never fires, because the rule compiler does not lower a string and an opaque slot matches nothing; `t` (an atom matching a string fact) and `u` (an int) are the controls and fire. R the eight subsets of three candidates, no state holding `(hit s)`, where every state should."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/str-in-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W18 (`W18/str-in-assert`), banked by S1e2.2.18 from S1e2.2.16's parked note: `s` concludes `(tag ?x \"lbl\")`, and every command that saturates stops at its first firing, exit 1 (`ein saturate`: `TypeError: an unrecognised `:assert` slot has no value to store`), where root should derive `(tag 1 lbl)` and `(tag a lbl)` and R be four states."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/str-in-guard.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W18 (`W18/str-in-guard`), found by S1e2.2.18: a guard's string is a raw node that equals no value, so `(eq ?x \"b\")` never holds and `(neq ?x \"b\")` always does. Root derives `(other a)` and `(other b)` and no `hit`, where it should derive `(hit b)` and `(other a)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/str-in-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W18 (`W18/str-in-absent`), found by S1e2.2.18: the pattern under `(absent (holds \"b\"))` is an opaque slot that matches nothing, so the `absent` always holds and `z` derives `(hit z)` though the program states `(holds \"b\")`. Every state holds it, where none should."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/str-in-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W18 (`W18/str-in-hrule`), found by S1e2.2.18: the hrule's template `(tag ?x \"lbl\")` holds an opaque slot, builds no fact, and the hrule rung drops it in silence, so H is empty and R is {∅}, where the hrule should propose `(tag 1 lbl)` and `(tag a lbl)` and R be their four subsets."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and

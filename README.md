@@ -295,13 +295,13 @@ The milestones in [§ Scheduled](#scheduled--the-roadmap) exist because these
 were measured, not assumed:
 
 - **The walk gave wrong answers on well-formed programs, at default
-  settings, and two of the register's rows are still open.** Twelve cases and
+  settings, and seven of the register's rows are still open.** Twelve cases and
   one contested reading were re-run on 2026-10-14
   ([`inventory.md`](plans/m1e2_correctness/inventory.md)); the smallest was
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **55 of 58
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **55 of 63
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
   positive's unsound exclusions among them, which no route reads, W12 and W13,
   W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
@@ -331,9 +331,13 @@ were measured, not assumed:
   chain that first appears at a node, which *forbid* missed until M1e2
   S1e2.2.17 read every rule a node can compile over D followed through the
   rules root has no plan of, the same day — one
-  ruled not wrong (C1), and **2 open**, both deferred to a followup by the
-  user, each saying why: W8's other row (F21) and W10's second, a saving
-  between two facts behind a full list, which no bounded list keeps (F22).
+  ruled not wrong (C1), and **7 open**: two deferred to a followup by the
+  user, each saying why, W8's other row (F21) and W10's second, a saving
+  between two facts behind a full list, which no bounded list keeps (F22);
+  and W18's five, filed by M1e2 S1e2.2.18 on 2026-11-04 and owned by it: a
+  string written in a rule, which the rule compiler does not lower as the
+  loader lowers it in a fact, so in a `:match` it matches nothing and in an
+  `:assert` it stops the run.
   P1e2.2 works one stage per case
   ([P1e2.2](plans/m1e2_correctness/p1e2.2_wrong_answers/README.md)).
 - **An under-determined puzzle still does not finish.**

@@ -42,8 +42,12 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// `root.hypgen.outside`), and a right answer can state them
 /// ([`Right::outside`]), W6's on Q-M1e2.3 (a). `/6` since M1e2 S1e2.2.11
 /// (2026-11-04): a `now` whose `right` states a core records the core its run
-/// reports ([`Now::core`], the summary's `region.core`), W10's.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/6";
+/// reports ([`Now::core`], the summary's `region.core`), W10's. `/7` since
+/// M1e2 S1e2.2.18 (2026-11-04): a recorded answer and a `now` can be a run
+/// that **ended in an error** before it answered ([`Answer::error`],
+/// [`Now::error`]), exit 1 with no verdict, W18's `str-in-assert`; such a
+/// `now` is never `right`, and states no [`Region`].
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/7";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -259,6 +263,15 @@ pub struct Now {
     /// the fields below keep their defaults.
     #[serde(default)]
     pub refused: Option<String>,
+    /// The run ended in an error before it answered — M1e2 S1e2.2.18 (W18):
+    /// exit 1, and this is the first line of its stderr. Not a refusal: the
+    /// program was accepted and a firing stopped the run, so the library
+    /// returns a saturation error where a refusal returns
+    /// `SolveError::Refused`. Such a run lists nothing, and is never
+    /// [`Right`]. (Not the summary's `region.stopped`, which says why a
+    /// search that answered stopped.)
+    #[serde(default)]
+    pub error: Option<String>,
     #[serde(default)]
     pub exhausted: bool,
     /// The states it lists.
@@ -305,6 +318,18 @@ impl Now {
     /// it.
     pub fn against(&self, right: &Right) -> Vec<String> {
         let mut out = Vec::new();
+        // An error is no answer at all, so it is never the right one (W18).
+        if self.error.is_some() {
+            out.push(format!(
+                "right: {}, now: an error",
+                if right.refused {
+                    "a refusal"
+                } else {
+                    "an answer"
+                }
+            ));
+            return out;
+        }
         // A refusal is the whole answer: it states no verdict, `k` or model.
         match (right.refused, self.refused.is_some()) {
             (true, true) => return out,
@@ -426,8 +451,16 @@ pub struct Answer {
     pub why: Option<String>,
     #[serde(default)]
     pub exit: i32,
+    /// The run ended in an error before it answered — M1e2 S1e2.2.18 (W18):
+    /// `exit` is 1 and this is the first line of its stderr, and `verdict`,
+    /// `k` and `exhausted` are not stated.
+    #[serde(default)]
+    pub error: Option<String>,
+    #[serde(default)]
     pub verdict: String,
+    #[serde(default)]
     pub k: usize,
+    #[serde(default)]
     pub exhausted: bool,
     #[serde(default)]
     pub core: Option<Vec<String>>,
@@ -594,6 +627,24 @@ impl Register {
                     "a refused [now] has no [case.region]: the library refuses it too".to_string(),
                 ));
             }
+            if r.now.error.is_some() {
+                if r.now.refused.is_some() {
+                    out.push(at("[now] is a refusal or an error, not both".to_string()));
+                }
+                if r.now.k != 0
+                    || r.now.exhausted
+                    || r.now.empty.is_some()
+                    || !r.now.models.is_empty()
+                    || !r.now.relations.is_empty()
+                {
+                    out.push(at("an error [now] lists nothing".to_string()));
+                }
+                if r.region.is_some() {
+                    out.push(at(
+                        "an error [now] has no [case.region]: the library stops too".to_string(),
+                    ));
+                }
+            }
             if (r.status == "open") != r.open_because.is_some() {
                 out.push(at(
                     "`open_because` is stated exactly when the row is open".to_string()
@@ -696,7 +747,24 @@ impl Register {
                         a.run
                     )));
                 }
-                if !VERDICTS.contains(&a.verdict.as_str()) {
+                if a.error.is_some() {
+                    // A run that ended in an error before it answered (M1e2
+                    // S1e2.2.18).
+                    if a.exit != 1
+                        || !a.verdict.is_empty()
+                        || a.k != 0
+                        || a.exhausted
+                        || a.models.is_some()
+                        || a.open.is_some()
+                        || a.core.is_some()
+                    {
+                        out.push(at(
+                            "a run that ends in an error exits 1 and states no verdict, k, \
+                             model or core"
+                                .to_string(),
+                        ));
+                    }
+                } else if !VERDICTS.contains(&a.verdict.as_str()) {
                     out.push(at(format!(
                         "verdict {:?} is not one of {VERDICTS:?}",
                         a.verdict
@@ -756,8 +824,9 @@ impl Register {
                 }
             }
             match &r.region {
-                // A refused row states no region (M1e2 S1e2.2.5): checked above.
-                None if r.now.refused.is_some() => {}
+                // A refused row states no region (M1e2 S1e2.2.5), nor one
+                // whose run ends in an error (S1e2.2.18): checked above.
+                None if r.now.refused.is_some() || r.now.error.is_some() => {}
                 None => out.push(format!("{}: no [case.region]", r.id)),
                 Some(g) => {
                     if !ROUTES.contains(&g.route.as_str()) {
@@ -1008,6 +1077,78 @@ mod tests {
         row.status = "not-wrong".to_string();
         assert!(defects(&row).iter().any(|d| d.contains("`deferred`")));
         assert!(is_followup("F21") && !is_followup("F") && !is_followup("S1e2.2.6"));
+    }
+
+    /// **A run that ends in an error**, schema /7 (M1e2 S1e2.2.18):
+    /// `W18/str-in-assert`'s `wrong` ended in one before it answered, exit 1,
+    /// and states no verdict. Such a `now` lists nothing, states no region, is
+    /// not also a refusal, and is never `right`, so a fixed row whose `now`
+    /// ends in an error is a defect.
+    #[test]
+    fn a_run_that_ends_in_an_error_is_no_answer() {
+        let row = register()
+            .case
+            .into_iter()
+            .find(|r| r.wrong.error.is_some())
+            .expect("W18/str-in-assert's wrong ended in an error");
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        let stated = "a run that ends in an error exits 1 and states no verdict";
+        let mut r = row.clone();
+        r.wrong.verdict = "Solution".to_string();
+        assert!(defects(&r).iter().any(|d| d.contains(stated)));
+        let mut r = row.clone();
+        r.wrong.exit = 0;
+        assert!(defects(&r).iter().any(|d| d.contains(stated)));
+
+        // A `now` that ends in an error: never right, lists nothing, states
+        // no region, and is not also a refusal.
+        let mut r = row.clone();
+        r.now = Now {
+            run: "solve --minimal".to_string(),
+            line: "minimal".to_string(),
+            refused: None,
+            error: Some("a line".to_string()),
+            exhausted: false,
+            k: 0,
+            empty: None,
+            relations: Vec::new(),
+            models: Vec::new(),
+            outside: Vec::new(),
+            core: None,
+        };
+        r.region = None;
+        assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
+        r.status = "fixed".to_string();
+        r.open_because = None;
+        r.fixed = Some(Fixed {
+            commit: "0000000".to_string(),
+            by: "a stage".to_string(),
+            date: "2026-11-04".to_string(),
+        });
+        assert!(defects(&r).iter().any(|d| {
+            d.contains("fixed, and [now] is not [right]: right: an answer, now: an error")
+        }));
+        let mut s = r.clone();
+        s.now.k = 1;
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("an error [now] lists nothing"))
+        );
+        let mut s = r.clone();
+        s.now.refused = Some("a line".to_string());
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("a refusal or an error, not both"))
+        );
     }
 
     #[test]

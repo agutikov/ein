@@ -1,0 +1,27 @@
+;;; A string written in an hrule's `:assert` proposes nothing — M1e2
+;;; **W18**, register row `W18/str-in-hrule` (`corpus/wrong_answers.toml`),
+;;; found by S1e2.2.18 (2026-11-04) probing the case's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `holds` facts, the int `1` and the atom `a`, and one hrule that
+;;; proposes tagging each with the string `"lbl"`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A string in a rule means what it means in a fact, the symbol it names,
+;;; so the hrule proposes `(tag 1 lbl)` and `(tag a lbl)`, H is the two, and
+;;; nothing refutes: R is their four subsets. It is the answer of this file
+;;; with `"lbl"` written `lbl`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R is `{∅}`: the rule compiler does not lower a string, so the hrule's
+;;; template holds an opaque slot, which builds no fact, and the hrule rung
+;;; drops a template that builds none in silence (`hrule.rs`). H is empty:
+;;; `ein solve FILE -H` at `ff023413` prints *no candidate: R is {∅} or
+;;; empty, decided by root alone*, in a release build and a debug one.
+
+(relation holds Node) (relation tag Node Node)
+(holds 1) (holds a)
+(hrule h () :match (holds ?x) :assert (tag ?x "lbl"))

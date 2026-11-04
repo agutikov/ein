@@ -184,6 +184,12 @@ constrained-reasoning research.
   activator relation reaches, and lets its own `absent` taint what it
   derives, with D, the static check and the rung's decline unmoved: 55
   fixed, 2 open (both deferred to a followup) and 1 not wrong.
+  S1e2.2.18 filed W18 from S1e2.2.16's notes the same day: the rule compiler
+  did not lower a string as the loader lowers it in a fact, so a string in a
+  rule's `:match` matched nothing, a guard's equalled no value, an `absent`
+  over one always held, an hrule's template proposed nothing, and one in an
+  `:assert` stopped the run, five witnesses, the register's schema `/7`
+  recording that stop: 55 fixed, 7 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

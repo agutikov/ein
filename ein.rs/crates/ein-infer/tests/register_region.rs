@@ -251,6 +251,26 @@ fn every_row_states_its_witness_s_region() {
             checked += 1;
             continue;
         }
+        // A row whose run ends in an error (M1e2 S1e2.2.18, W18) states no
+        // region either: the program loads, and the library stops where the
+        // binary does, at a firing, with a saturation error.
+        if row.now.error.is_some() {
+            let describe = Mode {
+                which: Which::All,
+                ask: Ask::Describe,
+            };
+            match try_ask(&repo_root().join(&row.witness), describe) {
+                Err(ein_infer::SolveError::Saturate(_)) => {}
+                other => bad.push(format!(
+                    "{} ({}): [now] is an error and the library answers {:?}",
+                    row.id,
+                    row.witness,
+                    other.map(|a| a.route)
+                )),
+            }
+            checked += 1;
+            continue;
+        }
         let got = match computed(&repo_root().join(&row.witness)) {
             Ok(g) => g,
             Err(e) => {

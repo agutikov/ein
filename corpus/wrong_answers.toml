@@ -305,6 +305,20 @@
 # **55 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
 # followup.
 #
+# **W18 was filed on 2026-11-04 by S1e2.2.18** (T1e2.2.18.1), from S1e2.2.16's
+# parked note: the rule compiler does not lower a string as the loader lowers
+# it in a fact, the symbol it names, so a string in a rule's `:match` is an
+# opaque slot that matches nothing, and one in an `:assert` stops the run. Five
+# rows, all `open`: the note's two witnesses, and three shapes the stage's
+# probes found by the same mechanism (a guard's string, which equals no value;
+# an `absent` over a string, which always holds; an hrule's template, which
+# proposes nothing). A row's `wrong` is a region run's at `ff023413`. **Schema
+# /7**: a recorded answer and a `now` can be a run that **ended in an error**
+# before it answered, exit 1 and its stderr's first line (`error`),
+# `W18/str-in-assert`'s; such a `now` is never `right` and states no
+# `[case.region]`. The register reads **55 rows fixed, 7 open and 1
+# not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -361,6 +375,10 @@
 #     line      all | minimal | maximal — which part of R its states are
 #     refused   (schema /4, M1e2 S1e2.2.5) the run refuses the program: exit 1,
 #               and this is its stderr's first line; nothing below is stated
+#     error     (schema /7, M1e2 S1e2.2.18) the run ended in an error before it
+#               answered: exit 1, and this is its stderr's first line; nothing
+#               below is stated, and the row states no [case.region] (not the
+#               summary's `region.stopped`, which is why a search stopped)
 #     exhausted, k (the states it lists)
 #     empty     dead | owing, when the run established R empty
 #     relations the candidates' relations, which a state's `(model …)` names
@@ -383,7 +401,12 @@
 #     env       ["NAME=value", …] set for the run
 #     why       (control, twin) what differs from the wrong run, in one line
 #     exit      default 0 — a failed `:expect` is 1
-#     verdict   Solution | Ambiguity | Contradiction | Open   (summary `verdict.type`)
+#     error     (schema /7, M1e2 S1e2.2.18) the run ended in an error before it
+#               answered: `exit` is 1, this is its stderr's first line, and
+#               verdict, k and exhausted are not stated (W18/str-in-assert's
+#               `wrong`)
+#     verdict   Solution | Ambiguity | Contradiction | Open   (summary `verdict.type`);
+#               not stated on a run that ends in an error
 #     k, exhausted
 #     core      the unsat core, as a set; required on every `Contradiction`
 #     closes    the relations a model is compared on — naming a relation
@@ -450,7 +473,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/6"
+schema = "ein-wrong-answers/7"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -4131,6 +4154,236 @@ derived   = "a refusal: `chk` concludes (false) from (absent (x ?y)), and `x` is
 run     = "solve"
 line    = "all"
 refused = "rule 'chk': concludes (false) from (absent …) over x, a relation a commitment can still extend — so it calls a state that has not yet decided x a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (x)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+
+# ══ W18 — a string written in a rule never matches, and in an `:assert` stops the run ══
+[[case]]
+id       = "W18/str-in-match"
+case     = "W18"
+title    = "a string written in a rule never matches, and in an :assert stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.18"
+witness  = "examples/ein-bugs/wrong-answers/str-in-match.ein"
+status   = "open"
+look_at  = ["root", "events fire", "summary"]
+open_because = "the rule compiler does not lower a string: in a :match it is an opaque slot that matches nothing (compile.rs' slot), so `s` never fires though the program states (holds \"1\"); S1e2.2.18's fix lowers it as the loader lowers it in a fact"
+note     = "Filed by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/textkey/str-in-match.ein. Rules `t` (the atom b, which matches the fact the string \"b\" writes) and `u` (the int 1) are the controls in the file, and fire. The candidate (hit 1) is over the symbol 1, the value (holds \"1\") holds; the int 1 is not one of the blind enumerator's objects. By value: root.facts_by_relation.hit is 2 at ff023413, and 3 right"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ff023413 (2026-11-04): R the eight subsets of (hit 1), (hit a) and (hit b), every state holding (hit t) and (hit u) and none (hit s) (root.facts_by_relation.hit = 2); `--minimal`, the run [case.now] holds while the row is open, lists root's state; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit t)", "(hit u)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(hit 1)", "(hit a)", "(hit b)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit s)", "(hit t)", "(hit u)"]]
+derived   = "A string in a rule means what it means in a fact, the symbol it names (01_grammar.md's STRING row since S1e2.2.16), so `s` matches (holds \"1\") as `t` matches (holds \"b\"): root derives (hit s), (hit t) and (hit u), and R is the eight subsets of the same three candidates, each state holding the three"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  ["(hit t)", "(hit u)"],
+]
+
+[[case]]
+id       = "W18/str-in-assert"
+case     = "W18"
+title    = "a string written in a rule never matches, and in an :assert stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.18"
+witness  = "examples/ein-bugs/wrong-answers/str-in-assert.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+open_because = "the rule compiler does not lower a string: in an :assert it is an opaque slot with no value to store, so the run stops at the rule's first firing; S1e2.2.18's fix lowers it as the loader lowers it in a fact"
+note     = "Filed by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/textkey/str-in-assert.ein. The first row whose recorded answer is an error, schema /7 (`error`): every command that saturates exits 1, `ein saturate` with `TypeError: an unrecognised `:assert` slot has no value to store` and `ein solve` and `ein oracle` with the message alone. `lbl` is a name of the program once the string is one, a constant a rule's :assert writes (Q-M1e2.9 (a)), so the blind enumerator proposes (holds lbl) and (tag lbl a)"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ff023413 (2026-11-04): exit 1 at `s`'s first firing, before any answer; every mode, `ein oracle` and `ein saturate` the same"
+exit      = 1
+error     = "an unrecognised `:assert` slot has no value to store"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds", "tag"]
+models    = [["(holds 1)", "(holds a)", "(tag 1 lbl)", "(tag a lbl)"]]
+derived   = "A string in a rule means what it means in a fact, the symbol it names, so `s` concludes (tag 1 lbl) and (tag a lbl) at root; R is four states over (holds lbl) and (tag lbl a), whose minimal line is root's. It is the answer of the file with \"lbl\" written lbl (`ein solve` on that copy at ff023413, build/s1e2.2.18/twins/)"
+
+[case.now]
+run     = "solve --minimal"
+line    = "minimal"
+error   = "an unrecognised `:assert` slot has no value to store"
+
+[[case]]
+id       = "W18/str-in-guard"
+case     = "W18"
+title    = "a string written in a rule never matches, and in an :assert stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.18"
+witness  = "examples/ein-bugs/wrong-answers/str-in-guard.ein"
+status   = "open"
+look_at  = ["root", "events fire", "summary"]
+open_because = "the rule compiler lowers a guard's string to a raw node, which equals no value (compile.rs' guard_arg), so (eq ?x \"b\") never holds and (neq ?x \"b\") always does; S1e2.2.18's fix lowers it as the loader lowers it in a fact"
+note     = "Found by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) probing the case's mechanism: a guard reads its arguments through guard_arg, not slot, so it is the fix's second half. Root derives (other a) and (other b) and no hit; the candidates are (hit a) and (hit b), where they should be (hit a) and (other b)"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ff023413 (2026-11-04): root derives (other a) and (other b), no hit (root.facts_by_relation: other 2); R four states over (hit a) and (hit b); `--minimal`, the run [case.now] holds while the row is open, lists root's state, which holds no fact over `hit`, the one candidate relation; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(hit a)", "(hit b)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit", "other"]
+models    = [["(hit b)", "(other a)"]]
+derived   = "A string in a rule means what it means in a fact, so (eq ?x \"b\") holds for ?x = b and (neq ?x \"b\") for ?x = a: root derives (hit b) and (other a), the blind enumerator proposes (hit a) and (other b), and R is four states whose minimal line is root's. It is the answer of the file with \"b\" written b in its rules (`ein solve` on that copy at ff023413, build/s1e2.2.18/twins/)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W18/str-in-absent"
+case     = "W18"
+title    = "a string written in a rule never matches, and in an :assert stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.18"
+witness  = "examples/ein-bugs/wrong-answers/str-in-absent.ein"
+status   = "open"
+look_at  = ["root", "events fire", "summary"]
+open_because = "the rule compiler does not lower a string, so the pattern under (absent (holds \"b\")) is an opaque slot that matches nothing and the absent always holds; S1e2.2.18's fix lowers it as the loader lowers it in a fact"
+note     = "Found by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) probing the case's mechanism: the witness's mechanism inside an absent, where it derives a conclusion the program refutes rather than losing one"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ff023413 (2026-11-04): root derives (hit z) though the program states (holds \"b\") (root.facts_by_relation.hit = 1); R four states over (hit a) and (hit b), each holding (hit z); `--minimal`, the run [case.now] holds while the row is open, lists root's state; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(hit a)", "(hit b)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [[]]
+derived   = "A string in a rule means what it means in a fact, so (absent (holds \"b\")) asks after the fact (holds b), which the program states, and `z` never fires: R is four states over (hit a) and (hit b), none holding (hit z), and root's holds no hit. It is the answer of the file with \"b\" written b in its rule (`ein solve` on that copy at ff023413, build/s1e2.2.18/twins/)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  ["(hit z)"],
+]
+
+[[case]]
+id       = "W18/str-in-hrule"
+case     = "W18"
+title    = "a string written in a rule never matches, and in an :assert stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.18"
+witness  = "examples/ein-bugs/wrong-answers/str-in-hrule.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+open_because = "the rule compiler does not lower a string, so the hrule's template holds an opaque slot, builds no fact, and the hrule rung drops it in silence (hrule.rs): H is empty; S1e2.2.18's fix lowers it as the loader lowers it in a fact"
+note     = "Found by S1e2.2.18 (T1e2.2.18.1, 2026-11-04) probing the case's mechanism: an hrule is compiled as a rule is, and its rung builds a template that fails as no candidate, where saturation stops"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ff023413 (2026-11-04): H empty, *no candidate: R is {∅} or empty, decided by root alone*, R {∅}; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["tag"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["tag"]
+models    = [["(tag 1 lbl)", "(tag a lbl)"]]
+derived   = "A string in a rule means what it means in a fact, so the hrule proposes (tag 1 lbl) and (tag a lbl), H is the two, nothing refutes, and R is their four subsets, whose maximal line holds both. It is the answer of the file with \"lbl\" written lbl (`ein solve` on that copy at ff023413, build/s1e2.2.18/twins/)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

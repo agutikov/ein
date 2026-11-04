@@ -1,0 +1,29 @@
+;;; An `(absent …)` over a string always holds — M1e2 **W18**, register row
+;;; `W18/str-in-absent` (`corpus/wrong_answers.toml`), found by S1e2.2.18
+;;; (2026-11-04) probing the case's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `holds` facts, the atom `a` and the string `"b"`, which the loader
+;;; holds as the symbol `b`. `z` concludes `(hit z)` while `a` holds and
+;;; `"b"` does not.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A string in a rule means what it means in a fact, so `(absent (holds
+;;; "b"))` asks after the fact `(holds b)`, which the program states: `z`
+;;; never fires. The blind enumerator proposes `(hit a)` and `(hit b)`, so R
+;;; is four states and none holds `(hit z)`. It is the answer of this file
+;;; with `"b"` written `b` in its rule.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `z` fires: the rule compiler does not lower a string, so the pattern
+;;; under `absent` is an opaque slot that matches nothing, and its `absent`
+;;; always holds. A conclusion the program refutes is in every state: `ein
+;;; solve FILE --minimal` at `ff023413` prints root's state as
+;;; `(model (hit z))`, in a release build and a debug one.
+
+(relation holds Node) (relation hit Node)
+(holds a) (holds "b")
+(rule z () :match (and (holds a) (absent (holds "b"))) :assert (hit z))

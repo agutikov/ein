@@ -127,18 +127,20 @@ def now_differences(want: dict, got: dict | None, run: RunResult | None = None) 
     """Every field where the run disagrees with the row's `[case.now]` —
     `wrong_answers.rs`'s `differences`, which the gate holds. A refused `now`
     (M1e2 S1e2.2.5, *forbid*) is exit 1, its stderr's first line, and no
-    summary."""
-    if want.get("refused"):
+    summary; so is one that ends in an error (M1e2 S1e2.2.18, W18)."""
+    field = "refused" if want.get("refused") else "error" if want.get("error") else None
+    if field:
+        what = "a refusal" if field == "refused" else "an error"
         inv = run.invocations[0] if run and run.invocations else None
         first = next((ln for ln in (inv.stderr if inv else "").splitlines() if ln), "<empty>")
         out = []
         if inv is None or inv.code != 1:
-            out.append(f"exit: recorded 1, a refusal, got {inv.code if inv else '?'}")
-        if first != want["refused"]:
-            out.append(f"refused: recorded {json.dumps(want['refused'], ensure_ascii=False)}, "
+            out.append(f"exit: recorded 1, {what}, got {inv.code if inv else '?'}")
+        if first != want[field]:
+            out.append(f"{field}: recorded {json.dumps(want[field], ensure_ascii=False)}, "
                        f"got {json.dumps(first, ensure_ascii=False)}")
         if got is not None:
-            out.append("a refused run wrote a summary")
+            out.append(f"{what} wrote a summary")
         return out
     if got is None:
         return ["no summary was written"]
@@ -399,12 +401,12 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
         # A refusal (M1e2 S1e2.2.5, *forbid*): the program is refused, which
         # is the register's `right`.
         return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
-                f"*{w.get('verdict')}, k = {w.get('k')}, exhausted = {str(w.get('exhausted')).lower()}* "
+                f"*{answer_words(w)}* "
                 f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now **refuses the program**, "
                 f"exit 1: *{now['refused']}* — which is the register's `right`, a refusal; `wrong_answers.rs` "
                 "holds `[case.now]` to it, and this build re-ran it (§ 3).", ""]
     return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
-            f"*{w.get('verdict')}, k = {w.get('k')}, exhausted = {str(w.get('exhausted')).lower()}* "
+            f"*{answer_words(w)}* "
             f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now answers {part}: "
             f"*{now.get('k')} state(s), exhausted = {str(now.get('exhausted')).lower()}*"
             + (f", R empty ({now['empty']})" if now.get("empty") else "")
@@ -443,7 +445,29 @@ def review_cell(row: dict) -> str:
 
 def walk_answer(a: dict) -> str:
     return (f"`ein {a['run']}`" + (f" `{' '.join(a['env'])}`" if a.get("env") else "")
-            + f" → {a.get('verdict', '—')}, k = {a.get('k', '—')}, exhausted = {str(a.get('exhausted', '—')).lower()}")
+            + f" → {answer_words(a)}")
+
+
+def error_cell(c) -> str:
+    """The line a run ended with when it did not answer (M1e2 S1e2.2.18, W18):
+    a recorded answer's `error`, or a run's stderr first line when it exited
+    non-zero, a refusal's or an error's."""
+    if c.right is not None:
+        return "—"
+    if c.recorded:
+        return f"`{c.answer['error']}`" if c.answer.get("error") else "—"
+    inv = c.result.invocations[0] if c.result.invocations else None
+    if inv is None or inv.code == 0:
+        return "—"
+    return f"`{next((ln for ln in inv.stderr.splitlines() if ln), '')}`"
+
+
+def answer_words(a: dict) -> str:
+    """A recorded answer's verdict, k and exhausted, or the error it ended in
+    (M1e2 S1e2.2.18, W18: exit 1 before any answer, schema /7)."""
+    if a.get("error"):
+        return f"**an error**, exit 1: `{a['error']}`"
+    return f"{a.get('verdict', '—')}, k = {a.get('k', '—')}, exhausted = {str(a.get('exhausted', '—')).lower()}"
 
 
 def region_cell(reg: dict | None) -> str:
@@ -494,6 +518,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         ["wrong", walk_answer(w) + f" — *{recorded_by(w)}, as the register records it*"
                   + (f": {w['why']}" if by_region(w) and w.get("why") else "")],
         ["now", (f"`ein {now['run']}` → **refused**, exit 1: `{now['refused']}`" if now.get("refused") else
+                 f"`ein {now['run']}` → **an error**, exit 1: `{now['error']}`" if now.get("error") else
                  f"`ein {now['run']}` → " + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
                  + f", k = {now.get('k')}, exhausted = "
                  f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else ""))
@@ -590,6 +615,9 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         ["qualifier", *per(field("qualifier", lambda c: "—"))],
         ["exit", *per(lambda c: "—" if c.right is not None else c.answer.get("exit", 0) if c.recorded
                       else c.result.invocations[0].code)],
+        # A run that exits non-zero, a refusal or an error (M1e2 S1e2.2.18,
+        # W18): its stderr's first line, recorded or run.
+        ["stderr, first line", *per(error_cell)],
         ["states", *per(lambda c: "—" if c.result is None else
                         "<br>".join(f"{i + 1}: from {set_text(s.get('from'))}" for i, s in enumerate(listed(c.result)))
                         or "—")],
@@ -719,8 +747,10 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
             if "qualifier" in r:
                 differs.append("qualifier")
             rows.append([f"[{row['id']}]({rel(p, page)})", row["owner"], row["settings"],
-                         f"{w['verdict']} k={w['k']}" + (" *(region run)*" if by_region(w) else ""),
+                         ("an error" if w.get("error") else f"{w['verdict']} k={w['k']}")
+                         + (" *(region run)*" if by_region(w) else ""),
                          (f"`{now['run']}` refused" if now.get("refused") else
+                          f"`{now['run']}` an error" if now.get("error") else
                           f"`{now['run']}` {got.now['line'] if got.now else '?'} k={got.k}")
                          + ("" if not diffs else " **(≠ the register: " + "; ".join(d.split(':')[0] for d in diffs) + ")**"),
                          "a refusal" if r.get("refused") else f"{r.get('verdict', '—')} k={r.get('k', '—')}",
