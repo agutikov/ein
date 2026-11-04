@@ -1,12 +1,18 @@
 # P1e2.3 — Surfaces that misreport the answer
 
 **Milestone:** [M1e2](../README.md) (Correctness)
-**Estimate:** 8.5 days, seven stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
-S1e2.3.4 1, S1e2.3.5 1, S1e2.3.7 1, S1e2.3.6 1.5. Each stage file gives its
-basis. It was 7.5 days and six stages until the user put N1–N4 in S1e2.3.7 on
+**Estimate:** 10 days, nine stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
+S1e2.3.4 1, S1e2.3.5 1, S1e2.3.7 1, S1e2.3.6 1.5, S1e2.3.8 1, S1e2.3.9 0.5.
+Each stage file gives its basis. It was 8.5 days and seven stages until the
+phase re-opened on 2026-11-05 for N5 and N6. It was 7.5 days and six stages until the user put N1–N4 in S1e2.3.7 on
 2026-11-03, and 5 days and four stages until the user added S1e2.3.5 and
 S1e2.3.6 the same day.
-**Status:** specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+**Status:** **re-opened 2026-11-05** for two stages, on the user's ruling of
+2026-11-04 that N5, the fact printer, is a new stage here
+([S1e2.3.8](s1e2.3.8_the_fact_printer.md)), with N6, a stopped run's empty
+cores, placed beside it by default ([S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md));
+both run after P1e2.2's S1e2.2.21, and the milestone's close re-runs the
+nightly after them. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
 every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
 re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
@@ -179,13 +185,18 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
 | [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each. **Done 2026-11-03**: N1–N4 fixed, each with a test; `-p` and `-P` named as the facts beyond the program as loaded, which is what they print | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
+| [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04 | 1 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart |
+| [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default | 0.5 d | no surface prints an empty core for a core the run did not take |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
 the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
 (both touch `lever_invariance.rs` and `config_reference.rs`). S1e2.3.7 runs
 after S1e2.3.5 and before S1e2.3.6, by the user's ruling of 2026-11-03. S1e2.3.6 is the
 last stage of the phase, by the user's request of 2026-11-03, because the
-nightly re-runs what every other stage changes. Every question below can be put
+nightly re-runs what every other stage changes. **S1e2.3.8 and S1e2.3.9**,
+added 2026-11-05 after the phase closed, run after P1e2.2's S1e2.2.21, in
+that order; S1e2.3.6's reason holds for them, so the milestone's close
+re-runs `./run_tests.sh --nightly`. Every question below can be put
 to the user at once, at the phase's start. Each one's evidence is already in
 its stage file.
 
@@ -273,7 +284,17 @@ by a test, and no exit code moved.
   re-loading `DIR/models/01.ein` holds three `holds` facts where the state
   held two (`build/s1e2.2.7/textkey/str-space.ein`). The int `1` and the
   string `"1"` print alike, so the read-out cannot tell two facts apart that
-  the KB holds apart.
+  the KB holds apart. **Placed by the user 2026-11-04**: a new stage here,
+  [S1e2.3.8](s1e2.3.8_the_fact_printer.md), filed 2026-11-05.
+- **N6. A stopped run's dump writes a core it did not take.** Found
+  2026-11-04 by S1e2.2.19's step 1 measuring every core
+  ([its § Notes](../p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md#notes)).
+  On a run stopped past `--region-limit`, `--dump-answer`'s `nogoods.json`
+  lists the members of N it met with an empty core and no refuting rule:
+  `lattice/06_friends_tables.ein`, 68 of 68 (`ein solve FILE --dump-answer
+  DIR` at `a41eb76e`). No answer moves. **Placed here by default** beside
+  N5, [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md), filed 2026-11-05;
+  the default fix says the core was not taken.
 
 ## Acceptance for the phase
 

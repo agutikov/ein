@@ -26,6 +26,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
 | [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
+| [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1538,3 +1539,29 @@ W19's three witnesses report `(p a) (seed a)`, `(r2 a) (seed a)` and
 `absent_premises` was left reading the premises: following the activator
 there moved the non-monotone detector's status on W17's witnesses studied
 past the refusal, a label (S1e2.2.19 § Notes).
+
+## Q-M1e2.13 — What does a wildcard or a range in a rule's pattern mean?
+
+Found 2026-11-04 by [S1e2.2.18](p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md)'s
+T3 writing the pages, and parked in its [§ Notes](p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md#notes).
+[`01_grammar.md`](../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s token
+table calls `_` a *head / arg wildcard in patterns*, and a `RANGE` such as
+`1..3` UML-style cardinality. The rule compiler lowers both, in a `:match`,
+as an opaque slot that matches nothing: `(rule w () :match (holds _) …)`
+never fires on `(holds a)`, and `(rule r () :match (n 1..3) …)` never on
+`(n 2)`, in silence; a head `_`, `(_ a)`, stops compilation with
+`ein.inference.compile.CompileError: unbound relation head ?Wildcard() …`, a
+Python spelling, exit 1 (re-taken at `876767e6`, `build/w20-probe/`). No
+rule under `examples/`, `tests/` or `stdlib/` writes either (711 rule
+forms, 2026-11-04).
+
+Put to the user on 2026-11-04 at P1e2.2's end, with three options: (a)
+**W20**: `_` matches any value, as the grammar says, in the head and in an
+argument, and a range in a rule is refused at load with a line in Ein's
+spelling, since no fact can hold one; (b) refuse both at load, the grammar's
+row corrected; (c) park to a followup, no row.
+
+**Ruled 2026-11-04: (a)**, the recommendation. W20 is
+[S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md),
+which records the defaults the ruling leaves (`_` under an `absent`, in a
+guard, in an `:assert`; a head `_`'s cost).

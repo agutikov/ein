@@ -1,7 +1,10 @@
 # P1e2.2 — The wrong answers, one stage each
 
-**Estimate:** ~4 weeks: 19 stages, fourteen live and five dropped, **21
-days**, since S1e2.2.19 (W19, a dead node's core missing the activator its
+**Estimate:** ~5 weeks: 21 stages, sixteen live and five dropped, **24.5
+days**, since S1e2.2.20 (W20, a wildcard or a range in a rule's pattern,
+1.5 days) and S1e2.2.21 (W21, a pair contradiction's core naming only its
+positive side, 2 days) were filed on 2026-11-05 on the user's rulings of
+2026-11-04. It was 21 days since S1e2.2.19 (W19, a dead node's core missing the activator its
 refutation rests on, 1.5 days) was filed on 2026-11-04 from
 [S1e2.2.17 § Notes](s1e2.2.17_forbid_activator_chain.md#notes). It was 19.5
 days since S1e2.2.17 (W17, *forbid* missing an activator chain, 1.5 days)
@@ -21,7 +24,7 @@ then was done the same day, S1e2.2.16 the last, and two more were filed from
 its notes: **S1e2.2.17 (W17) and S1e2.2.18 (W18) came next**, in that order,
 and are done; **S1e2.2.19 (W19), filed from S1e2.2.17's notes, is done
 too**, and S1e2.2.20 (W20) and S1e2.2.21 (W21), on the user's rulings of the
-same day, come next. **S1e2.2.4 is done**
+same day, filed 2026-11-05, come next. **S1e2.2.4 is done**
 (2026-11-04): a rule's `:assert` constants seed the blind enumerator's
 objects (Q-M1e.21 (b)), W4's two rows are `fixed` (`02e9fb5f`), and the one
 shape the seed cannot hold, a relation parameter bound to an integer, is
@@ -221,7 +224,12 @@ in a rule is refused at load); the pair contradiction's core, parked in
 S1e2.2.19 § Notes, is **W21**, stage **S1e2.2.21**; and N5, the fact
 printer, goes to P1e2.3 as **S1e2.3.8**. **Next: S1e2.2.20 (W20), S1e2.2.21
 (W21) and S1e2.3.8 (N5), filed after S1e2.2.19, then the milestone's close,
-which the user ruled.**
+which the user ruled.** **Filed 2026-11-05**: [S1e2.2.20](s1e2.2.20_wildcard_and_range_in_a_rule.md),
+[S1e2.2.21](s1e2.2.21_pair_core_one_side.md), and in P1e2.3
+[S1e2.3.8](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md)
+and, by default, [S1e2.3.9](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md)
+(N6, S1e2.2.19's note on a stopped run's empty cores). **S1e2.2.20 is
+next.**
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -260,9 +268,9 @@ cannot pay is `Open`, not `Contradiction`. The answer is one of:
 | class | what is false | stages |
 |---|---|---|
 | **1 — verdict / `k`** | the verdict word, or the count of models | S1e2.2.1, .2, .3, .9 |
-| **2 — model set** | a model missing, one that is not a model, a derivation lost | S1e2.2.4, .5, .6, .7, .10, .14, .15, .16, .17, .18 |
+| **2 — model set** | a model missing, one that is not a model, a derivation lost | S1e2.2.4, .5, .6, .7, .10, .14, .15, .16, .17, .18, .20 |
 | **3 — certification** | `exhausted = true` (or the unhedged wording) over a claim it does not license | S1e2.2.1, .2, .3, .8 |
-| **4 — the core** | an unsat core other than the one the docs promise | S1e2.2.11, .12, .13, .19 |
+| **4 — the core** | an unsat core other than the one the docs promise | S1e2.2.11, .12, .13, .19, .21 |
 
 Surfaces that misstate a run whose answer is right (the inventory's S1–S9),
 and the one reachable panic (P1), are not stages here. They are
@@ -292,6 +300,8 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.17](s1e2.2.17_forbid_activator_chain.md) | **W17** *forbid* misses a refutation whose activator chain first appears at a node. Filed 2026-11-04. **Started 2026-11-04**: five rows filed (the witness, one link longer, and three shapes of the same gap), the moves listed. **Done 2026-11-04**: *forbid* over D⁺, the five rows fixed (`f5a0dca9`), the status line names the site up the chain | 2 | **default** | S1e2.2.16's notes; *forbid* with F2 (*via, per activator*) | 1.5 d | — | — (filed after it) | the witness refused at every command that takes the universe; the status line names the site that exercised a hole; no other answer moves without the user's ruling |
 | [S1e2.2.18](s1e2.2.18_strings_in_rules.md) | **W18** a string written in a rule never matches, and in an `:assert` stops the run. Filed 2026-11-04. **Started 2026-11-04**: five rows filed (the two witnesses, and a guard's, an `absent`'s and an hrule's string), the moves listed. **Fixed 2026-11-04**: a string in a rule the symbol it names, the five rows fixed, `NotAFact`'s line in Ein's spelling. **Done 2026-11-04** (`259c16e4`) | 2 | **default** | S1e2.2.16's notes | 1 d | — | — (filed after it) | a string in a rule means the symbol it names, as in a fact; `s` fires and the `:assert` stores it in both profiles |
 | [S1e2.2.19](s1e2.2.19_core_misses_activator.md) | **W19** a dead node's core leaves out the activator its refutation rests on. Filed 2026-11-04. **Started 2026-11-04**: three rows filed (the witness, a committed activator, a guard-only plan), every core measured under three readings; paused on Q-M1e2.12, ruled (c) the same day. **Fixed 2026-11-04**: a firing records its activator, the core follows one a node derives or commits, three rows fixed. **Done 2026-11-04** (`94c7bcfb`) | 4 | **default** | S1e2.2.17's notes; Q-M1e2.12 | 1.5 d | — | — (filed after it) | each dead set's core is a set of facts from which, with the program's rules, saturation derives `(false)`, and it names the commitment; no other core moves without the user's ruling |
+| [S1e2.2.20](s1e2.2.20_wildcard_and_range_in_a_rule.md) | **W20** a wildcard or a range in a rule's pattern matches nothing. Filed 2026-11-05 on Q-M1e2.13 (a) | 2 | **default** | S1e2.2.18's notes | 1.5 d | — | — (filed after it) | `_` in a rule's pattern matches any value, head and argument; a range in a rule refused at load; no other answer moves |
+| [S1e2.2.21](s1e2.2.21_pair_core_one_side.md) | **W21** a pair contradiction's core names only its positive side. Filed 2026-11-05 | 4 | **default** | S1e2.2.19's notes | 2 d | — | — (filed after it) | every dead set's core names its commitment, and the claim is a corpus-wide test; no core moves that step 1 did not list |
 | [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard. **Done 2026-11-04, as far as the deferral allows**: one row re-checked, `deferred` to F21, the headers corrected, nothing moved | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost. **Done 2026-11-04**: Q-M1e.16's fix (1), the row fixed, the pair promoted, Q-M1e.16 closed | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises. **Done 2026-11-04**: Q-M1e2.3 (a) built, the `outside` row and `root.hypgen.outside`, both rows fixed | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |
@@ -361,6 +371,11 @@ went with those stages.
   corpus reports before any edit, and stops for the user if the fix moves one
   beyond its witnesses, or if following every activator and following only a
   derived one differ on any corpus core.
+- **S1e2.2.20, then S1e2.2.21** (filed 2026-11-05 on the user's rulings of
+  2026-11-04). S1e2.2.21 runs after S1e2.2.19, whose fix changed the frontier
+  search it changes, and after S1e2.2.20 only because both land in the same
+  READMEs. P1e2.3's S1e2.3.8 and S1e2.3.9 run after both, then the
+  milestone's close.
 - **S1e2.2.8 and S1e2.2.11 are independent** (S1e2.2.13 dropped at the
   revisit) of everything above, and can run in parallel with any of it.
   S1e2.2.7 was too until 2026-11-04, and now waits for S1e2.2.14.
