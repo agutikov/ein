@@ -304,6 +304,20 @@
 0    examples/domain_elim/b_only.ein :: saturate
 0    examples/domain_elim/b_only.ein :: saturate --dump
 0    examples/domain_elim/b_only.ein :: solve
+0    examples/ein-bugs/activator-all-int.ein :: saturate
+0    examples/ein-bugs/activator-all-int.ein :: solve
+0    examples/ein-bugs/activator-all-nested.ein :: saturate
+0    examples/ein-bugs/activator-all-nested.ein :: solve
+0    examples/ein-bugs/activator-all-symbol.ein :: saturate
+1    examples/ein-bugs/activator-all-symbol.ein :: solve
+0    examples/ein-bugs/activator-text-int-only.ein :: saturate
+0    examples/ein-bugs/activator-text-int-only.ein :: saturate --dump
+0    examples/ein-bugs/activator-text-int-only.ein :: solve
+0    examples/ein-bugs/activator-text-int-only.ein :: test
+0    examples/ein-bugs/activator-text-string-only.ein :: saturate
+0    examples/ein-bugs/activator-text-string-only.ein :: saturate --dump
+0    examples/ein-bugs/activator-text-string-only.ein :: solve
+0    examples/ein-bugs/activator-text-string-only.ein :: test
 1    examples/ein-bugs/alive-empty-interlayer.ein :: solve
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve
 0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: solve

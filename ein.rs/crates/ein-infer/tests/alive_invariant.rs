@@ -100,16 +100,23 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `ein-bugs/binding-key-{both,swapped,nested-only}.ein` — `Y`, inside an
 ///   activator's nested `(src Y)`, M1e2's W7 family (S1e2.2.7): H is
 ///   `(holds Y)`, as W15 made it on the pair, which S1e2.2.7 promoted.
+/// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`,
+///   M1e2's W16 (S1e2.2.16): its one candidate is the hrule's `(checked
+///   (box a))`, and the name is no candidate's.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
-const SEEDED: [(&str, &[&str]); 22] = [
+const SEEDED: [(&str, &[&str]); 23] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
             "`A`, matched by rule `three-way-equality`",
             "`B`, matched by rule `three-way-equality`",
         ],
+    ),
+    (
+        "examples/ein-bugs/activator-all-nested.ein",
+        &["`a`, in (item (box a))"],
     ),
     (
         "examples/ein-bugs/binding-key-both.ein",

@@ -440,8 +440,10 @@ pub struct Answer {
     #[serde(default)]
     pub owes: Option<Vec<u64>>,
     /// In a build with debug assertions the run aborted with this text on
-    /// stderr; every other field is the release build's. A record: W7's,
-    /// which M1e2 S1e2.2.7 fixed, and no test skips a row on it since.
+    /// stderr; every other field is the release build's. W7's is a record,
+    /// which M1e2 S1e2.2.7 fixed. W16's order pair's is read: in such a build
+    /// the in-process sweeps skip an answer that carries it, until M1e2
+    /// S1e2.2.16 fixes W16.
     #[serde(default)]
     pub debug_panic: Option<String>,
     #[serde(default)]

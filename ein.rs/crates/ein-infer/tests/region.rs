@@ -1138,12 +1138,19 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once. A debug build left
-/// out W7's two witnesses, which it aborted on, until M1e2 S1e2.2.7 fixed W7.
+/// Every corpus file and every register witness, once — less, in a debug
+/// build, the witnesses it aborts on, W16's order pair until M1e2 S1e2.2.16
+/// fixes W16. A debug build left out W7's two witnesses too, until M1e2
+/// S1e2.2.7 fixed W7.
 fn corpus_and_register() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
         for (_, a) in row.answers() {
+            // A debug build aborts on W16's order pair, the row's own claim
+            // (`wrong.debug_panic`), until M1e2 S1e2.2.16 fixes W16.
+            if cfg!(debug_assertions) && a.debug_panic.is_some() {
+                continue;
+            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }
@@ -1320,7 +1327,8 @@ fn route_1_against_oracle(rel: &str, r: &Region, d: &DownSet) -> Vec<String> {
 /// monotone, route 1 visits exactly the alive nodes and `N`, agrees with the
 /// cube on both bits of every node it visits, and gives the oracle's `R`: its
 /// lines, `k_c`, `k_s`, components, sub-cubes, `N`, states and merges. On
-/// every flagged program it declines. Its root is the oracle's — `sat(program)`
+/// every flagged program whose root is alive it declines, and where root is
+/// dead it reads root alone and is the oracle's. Its root is the oracle's — `sat(program)`
 /// — so the route writes nothing into root.
 #[test]
 fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
@@ -1356,7 +1364,15 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
         }
         if !r.monotonicity.is_monotone() {
             flagged += 1;
-            if d.declined != Some(Declined::NotMonotone) {
+            // A dead root decides a flagged program too (L0, a fork only
+            // adds: `downset::compute` since the switch), and route 1 reads
+            // root alone. No program the oracle answers had the shape until
+            // M1e2 S1e2.2.16 banked W16's second-shape witnesses, which
+            // *forbid* refuses once W16 is fixed; this expected a decline
+            // there until then.
+            if d.root_dead {
+                failures.extend(route_1_against_oracle(&rel, &r, &d));
+            } else if d.declined != Some(Declined::NotMonotone) {
                 failures.push(format!("{rel}: flagged, and route 1 did not decline"));
             }
             continue;

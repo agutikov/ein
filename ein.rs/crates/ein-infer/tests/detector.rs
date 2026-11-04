@@ -159,8 +159,12 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // banked W14's `oblig-stdlib-total-owed` pair the same day, each an
     // `obligation-trigger` site on `is-a`. 27 since S1e2.2.12 promoted the
     // fuzz finding `d3-unsat-core` into the corpus the same day, which the
-    // static check flags and *forbid* refuses (a `via` program).
-    assert_eq!(flagged, 27, "the flagged corpus programs");
+    // static check flags and *forbid* refuses (a `via` program). 30 since
+    // S1e2.2.16 banked W16's second shape the same day, three programs with an
+    // `absent` site and an `activator` site each: the symbol control, which
+    // *forbid* refuses, and the int and nested witnesses, which it reads as
+    // having no activator until W16's fix.
+    assert_eq!(flagged, 30, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

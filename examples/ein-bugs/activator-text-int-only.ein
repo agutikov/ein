@@ -1,0 +1,52 @@
+;;; W16's family, the `int` activator alone — M1e2 S1e2.2.16, register rows
+;;; `W16/int-and-string` and `W16/string-then-int`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; The stage file's program with `(note edge "1")` deleted. One activator
+;;; compiles one plan, so the compile key has no second activator to
+;;; collide with, and this file answers the same in either build and under
+;;; either key: it is a control, as `activator-text-string-only.ein` is for
+;;; the other activator. The pair that keeps both activators, in the two
+;;; orders, is `corpus/fuzz_findings/activator-text-key.ein` and its
+;;; `-swapped` twin until the commit that fixes W16 promotes it here: a
+;;; build with debug assertions aborts on both, and every in-process corpus
+;;; sweep is such a build.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The loader holds `1` and `"1"` as two values, an int and a symbol, so
+;;; the KB has two `holds` facts. `(note edge 1)` binds `?R` to `edge` and
+;;; `?f` to the int 1, so the rule derives `(noted ?a 1)` for each edge
+;;; source `?a`: `(noted 1 1)` and `(noted 2 1)`, both over the int, and
+;;; nothing over the string. H is empty (`ein solve -H`, 2026-11-04), so R
+;;; is `{∅}`: root, with those two.
+;;;
+;;; ── What the claim can see ─────────────────────────────────────────────
+;;;
+;;; A claim compares a state's facts as printed, and the fact printer drops
+;;; a string's quotes (P1e2.3's N5), so `(noted 1 1)` and `(noted 1 "1")`
+;;; are one line to it: the claim below holds of this file, of its
+;;; string-only twin and of the pair, before W16's fix and after it. What
+;;; tells the int from the string is a count: `ein saturate`'s table
+;;; (`noted 2` here), the summary's `root.facts_by_relation`, and
+;;; `rule_semantics.rs`, which compares the facts by value.
+
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds "1")
+
+(note edge 1)
+
+(solve
+  ;; `holds` and `noted` are named, so both are closed: each state lists
+  ;; their complete extent, root's facts included.
+  :expect (region
+            ;; state 1 of 1 — ∅, root itself · minimal · maximal
+            (model (holds 1) (holds "1") (noted 1 1) (noted 2 1))))

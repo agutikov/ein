@@ -207,8 +207,12 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let mut runs: Vec<(String, String)> = Vec::new();
     for row in &register().case {
         // A refused row (M1e2 S1e2.2.5) writes no state: `wrong_answers.rs`
-        // holds its refusal.
-        if row.status.starts_with("merged:") || row.now.refused.is_some() {
+        // holds its refusal. A debug build aborts on W16's order pair, the
+        // row's own claim, until M1e2 S1e2.2.16 fixes W16.
+        if row.status.starts_with("merged:")
+            || (row.wrong.debug_panic.is_some() && cfg!(debug_assertions))
+            || row.now.refused.is_some()
+        {
             continue;
         }
         runs.push((row.witness.clone(), row.now.run.clone()));

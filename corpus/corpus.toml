@@ -704,6 +704,36 @@ group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
 note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both."
 
+[[entry]]
+path   = "examples/ein-bugs/activator-text-int-only.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump", "test"]
+note   = "M1e2 W16's family (S1e2.2.16): the stage file's program, `(holds 1) (holds \"1\")`, with the string activator deleted, a control. One activator, one plan, so no second activator for the compile key to collide with: `(noted 1 1)` and `(noted 2 1)` over the int at root, in either build and under either key, and R = {∅}. The `:expect` states them, and cannot tell them from the string control's: a claim compares facts as printed, and the printer drops a string's quotes (P1e2.3's N5); `ein saturate`'s count does."
+
+[[entry]]
+path   = "examples/ein-bugs/activator-text-string-only.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump", "test"]
+note   = "M1e2 W16's family (S1e2.2.16): the stage file's program with the int activator deleted, a control: `(noted 1 \"1\")` and `(noted 2 \"1\")` over the string at root, in either build and under either key, and R = {∅}, which `:expect` states as written."
+
+[[entry]]
+path   = "examples/ein-bugs/activator-all-int.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W16's second shape (`W16/activator-all-int`), banked by S1e2.2.16 from S1e2.2.7's parked note: `flag` asserts the activator `(watch 1)` under `(absent (checked ?x))`, `watch` asserts `(alarm 1)`, and `alarm` concludes (false). *forbid* tests a plan for an activator as `!activator_args.is_empty()`, a list of the activator's symbols, so root's plan of `alarm` reads as having none and the program loads: R empty, every node dead, exit 0, where the symbol control is refused."
+
+[[entry]]
+path   = "examples/ein-bugs/activator-all-nested.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W16's second shape (`W16/activator-all-nested`): `activator-all-int.ein` with `(item (box a))`, an activator whose every argument is a nested fact, which *forbid* reads as no activator the same way. R empty, every node dead, exit 0, where the symbol control is refused."
+
+[[entry]]
+path   = "examples/ein-bugs/activator-all-symbol.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W16's second shape, the control: `activator-all-int.ein` with `(item a)`. Refused since S1e2.2.5 (*forbid*, F2's *per activator*): `alarm` concludes (false) from its activator, which `watch` derives resting on (absent …) over `checked`, so `solve` exits 1 naming it and `saturate` still saturates."
+
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
 # M1e2 S1e2.1.1 — witnesses of known wrong answers that existed only as

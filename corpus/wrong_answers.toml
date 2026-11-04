@@ -257,6 +257,19 @@
 # The register reads **46 rows fixed, 2 open and 1 not-wrong**, both open rows
 # deferred to a followup.
 #
+# **W16 was filed on 2026-11-04 by S1e2.2.16** (T1e2.2.16.1), the phase's last
+# stage, from S1e2.2.7's two parked notes: the compile key interned a
+# non-symbol activator argument's text, so the int `1` and the string `"1"`,
+# two values, gave one key and one plan, and the second activator's
+# conclusions were lost. Four rows, all `open`. Two are the order pair, whose
+# witnesses are under `corpus/fuzz_findings/` while a debug build aborts on
+# them: their `wrong.debug_panic`, on which the in-process sweeps skip a row in
+# such a build until the fix, as they did W7's until S1e2.2.7. Two are the
+# second shape, an activator whose every argument is an int or a nested fact,
+# which *forbid* read as no activator, so a refutation it refuses on the symbol
+# control loads. A row's `wrong` is a region run's at `6a775f3d`. The register
+# reads **46 rows fixed, 6 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -346,7 +359,9 @@
 #     open      the same, per open state;  owes: each recorded state's owed total
 #     debug_panic   in a build with debug assertions the run aborted (exit 101)
 #                   and stderr carried this text; the other fields are release's.
-#                   W7's record: no test reads it since M1e2 S1e2.2.7 fixed W7
+#                   W7's is a record since M1e2 S1e2.2.7 fixed W7. W16's pair's
+#                   is read: in such a build the in-process sweeps skip a row
+#                   whose answer carries it, until S1e2.2.16 fixes W16
 #     id_order  { op, seed } — the `id_order_invariance` op and seed under which
 #               the answer moves (W11)
 #
@@ -3684,6 +3699,227 @@ relations = ["r"]
 models    = [
   ["(r House-1 Red)", "(r House-1 a)", "(r House-1 b)", "(r Red House-1)", "(r Red a)", "(r Red b)", "(r a House-1)", "(r a Red)", "(r a b)", "(r b House-1)", "(r b Red)", "(r b a)"],
 ]
+
+# ══ W16 — an int and a string with the same text share a compile key ══════════
+[[case]]
+id       = "W16/int-and-string"
+case     = "W16"
+title    = "an int and a string with the same text share a compile key, and a derivation is lost"
+class    = "model set"
+settings = "default (release; a debug build aborts)"
+owner    = "S1e2.2.16"
+question = ["Q-M1a.8"]
+witness  = "corpus/fuzz_findings/activator-text-key.ein"
+not_in_corpus = "a build with debug assertions aborts on it (`Engine::compile_all`'s shortcut check, the debug-only proof that the plan list covers every activator), and every in-process corpus sweep is such a build; the commit that fixes W16 promotes it to examples/ein-bugs/, as S1e2.2.7 did W7's pair"
+status   = "open"
+open_because = "the compile key interns a non-symbol argument's text, so `(note edge 1)` and `(note edge \"1\")` give one key, and the string activator compiles no plan: root's fixpoint holds the int's two `noted` facts and not the string's"
+look_at  = ["events compile", "root", "summary"]
+note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's parked note: the stage file's program, the int activator first. The noted facts [case.right] states are not in [case.now], whose states name the candidates' relations (none here), and no claim can state them: a claim compares facts as printed, and the printer drops a string's quotes (P1e2.3's N5), so (noted 1 1) and (noted 1 \"1\") are one line to it. What tells them apart is a count, the summary's root.facts_by_relation (noted 2 here, 4 right) and ein saturate's table, and rule_semantics.rs, which compares by value"
+
+[case.wrong]
+run         = "solve"
+by          = "region"
+why         = "`ein solve` on the witness, release, at 6a775f3d (2026-11-04): R one state, root, whose fixpoint holds (noted 1 1) and (noted 2 1) over the int and nothing over the string (root.facts_by_relation.noted = 2, root.plans = 1; `--events` shows one `compile`, and every enqueue and fire the int plan's). `ein oracle` the same R; a debug build aborts"
+verdict     = "Solution"
+k           = 1
+exhausted   = true
+closes      = ["holds", "noted"]
+models      = [["(holds 1)", "(holds \"1\")", "(noted 1 1)", "(noted 2 1)"]]
+debug_panic = "the rule-application counter said nothing changed and a full walk disagreed"
+
+[case.control]
+witness   = "examples/ein-bugs/activator-text-string-only.ein"
+run       = "solve"
+by        = "region"
+why       = "the int activator deleted: one activator, one plan, the string's two noted facts at root (root.facts_by_relation.noted = 2), in either build; activator-text-int-only.ein, the other control, derives the int's two"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds", "noted"]
+models    = [["(holds 1)", "(holds \"1\")", "(noted 1 \"1\")", "(noted 2 \"1\")"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds", "noted"]
+models    = [["(holds 1)", "(holds \"1\")", "(noted 1 1)", "(noted 1 \"1\")", "(noted 2 1)", "(noted 2 \"1\")"]]
+derived   = "The loader holds 1 and \"1\" as two values, an int and a symbol (two holds facts), and each activator alone derives its own two noted facts (the two controls, `ein saturate`, 2026-11-04). A rule set with one more activator cannot conclude less, so both activators derive the union, four, as written here with the string quoted; H is empty, so R is {∅}, root, with the four. [case.region] is this answer's line and not its noted facts"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W16/string-then-int"
+case     = "W16"
+title    = "an int and a string with the same text share a compile key, and a derivation is lost"
+class    = "model set"
+settings = "default (release; a debug build aborts)"
+owner    = "S1e2.2.16"
+question = ["Q-M1a.8"]
+witness  = "corpus/fuzz_findings/activator-text-key-swapped.ein"
+not_in_corpus = "a build with debug assertions aborts on it, as on W16/int-and-string's witness; the commit that fixes W16 promotes it to examples/ein-bugs/"
+status   = "open"
+open_because = "the activators in the other order: the string's plan is compiled first and the int activator's key is the same text, so root's fixpoint holds the string's two `noted` facts and not the int's"
+look_at  = ["events compile", "root", "summary"]
+note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04): W16/int-and-string's witness with its two activator lines swapped. Unlike W7's twin, this order is wrong too, the other way: whichever activator is written first keeps its conclusions. The noted facts are held as W16/int-and-string's note says"
+
+[case.wrong]
+run         = "solve"
+by          = "region"
+why         = "`ein solve` on the witness, release, at 6a775f3d (2026-11-04): R one state, root, whose fixpoint holds (noted 1 \"1\") and (noted 2 \"1\") over the string and nothing over the int (root.facts_by_relation.noted = 2, root.plans = 1). `ein oracle` the same R; a debug build aborts"
+verdict     = "Solution"
+k           = 1
+exhausted   = true
+closes      = ["holds", "noted"]
+models      = [["(holds 1)", "(holds \"1\")", "(noted 1 \"1\")", "(noted 2 \"1\")"]]
+debug_panic = "the rule-application counter said nothing changed and a full walk disagreed"
+
+[case.control]
+witness   = "examples/ein-bugs/activator-text-int-only.ein"
+run       = "solve"
+by        = "region"
+why       = "the string activator deleted: the int's two noted facts at root, in either build"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds", "noted"]
+models    = [["(holds 1)", "(holds \"1\")", "(noted 1 1)", "(noted 2 1)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds", "noted"]
+models    = [["(holds 1)", "(holds \"1\")", "(noted 1 1)", "(noted 1 \"1\")", "(noted 2 1)", "(noted 2 \"1\")"]]
+derived   = "W16/int-and-string's: the order two facts are written in changes nothing, so this file's one state holds the four noted facts, the union of the two controls'"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W16/activator-all-int"
+case     = "W16"
+title    = "an int and a string with the same text share a compile key, and a derivation is lost"
+class    = "verdict"
+settings = "default"
+owner    = "S1e2.2.16"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/activator-all-int.ein"
+status   = "open"
+open_because = "*forbid* tests a saturation plan for an activator as `!activator_args.is_empty()`, and `Plan::activator_args` keeps the activator's symbol arguments only, so root's plan of `alarm`, compiled from `(alarm 1)`, reads as having no activator: its cause is never looked for and the program loads"
+look_at  = ["root", "refuted", "summary"]
+note     = "W16's second shape, probed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's second parked note: the same symbol-only list, read as *does the plan have an activator*. The control, activator-all-symbol.ein, the same program with (item a), is refused at every question, in either build: `rule 'alarm' [activator a]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked`. The chain takes three rules: with two, `alarm`'s activator relation is one a commitment can change, *forbid* reads the rule from its pattern, and an int activator is refused too (build/s1e2.2.16/extra/two-int.ein)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 6a775f3d (2026-11-04): R empty, every node dead, exit 0, root's fixpoint deriving (false) through (watch 1) and (alarm 1); every mode, `ein oracle` and a debug build the same"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(item 1)"]
+
+[case.region]
+route    = "route 1"
+monotone = false
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal, as the symbol control's: `alarm` concludes (false) from its activator (alarm 1), which `watch` derives from its own activator (watch 1), which `flag` derives resting on (absent (checked ?x)), and `checked` is in D, the relations a commitment can change. An int argument binds `alarm`'s parameter as a symbol does, so what the plan rests on is the same; every question about a commitment exits 1, and ein saturate still saturates"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["checked"]
+outside   = ["alarm", "watch"]
+models    = []
+
+[[case]]
+id       = "W16/activator-all-nested"
+case     = "W16"
+title    = "an int and a string with the same text share a compile key, and a derivation is lost"
+class    = "verdict"
+settings = "default"
+owner    = "S1e2.2.16"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/activator-all-nested.ein"
+status   = "open"
+open_because = "as W16/activator-all-int's, with an activator whose every argument is a nested fact, which `Plan::activator_args` drops as it drops an int"
+look_at  = ["root", "refuted", "summary"]
+note     = "W16's second shape with (item (box a)): a nested fact binds no parameter, so each plan in the chain matches over every item, here the one. The control is activator-all-symbol.ein, refused"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 6a775f3d (2026-11-04): R empty, every node dead, exit 0; every mode, `ein oracle` and a debug build the same"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(item (box a))"]
+
+[case.region]
+route    = "route 1"
+monotone = false
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal, as W16/activator-all-int's and the symbol control's: `alarm`'s (false) rests through two activators on (absent (checked ?x)), over a relation in D"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["checked"]
+outside   = ["alarm", "watch"]
+models    = []
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

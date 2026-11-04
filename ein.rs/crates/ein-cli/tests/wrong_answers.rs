@@ -215,6 +215,13 @@ fn every_row_answers_what_the_register_records() {
         if row.status.starts_with("merged:") {
             continue;
         }
+        // In a build with debug assertions W16's order pair aborts — the
+        // row's `debug_panic`, and the defect it records — so its `now` is
+        // the release build's and is held there, until M1e2 S1e2.2.16 fixes
+        // W16, as W7's was until S1e2.2.7.
+        if row.wrong.debug_panic.is_some() && cfg!(debug_assertions) {
+            continue;
+        }
         let dir = scratch.join(plan::slug(&row.id));
         std::fs::create_dir_all(&dir).expect("scratch dir");
         let got = run(row, &dir);

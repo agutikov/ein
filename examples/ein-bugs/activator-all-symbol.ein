@@ -1,0 +1,27 @@
+;;; The control for W16's second shape — M1e2 S1e2.2.16, register rows
+;;; `W16/activator-all-int` and `W16/activator-all-nested`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; `activator-all-int.ein` with `(item a)` for `(item 1)`, and nothing
+;;; else. Every activator in the chain carries a symbol, so root's plan of
+;;; `alarm`, compiled from `(alarm a)`, has an activator as *forbid* reads
+;;; one, and its `(false)` rests through two activators on
+;;; `(absent (checked ?x))`, over a relation a commitment can extend.
+;;;
+;;; Refused since M1e2 S1e2.2.5 (*forbid*, F2's *per activator*): every
+;;; question about a commitment exits 1 naming `alarm`, in either build
+;;; (`ein solve FILE` at `6a775f3d`), and `ein saturate` still saturates.
+;;; The two witnesses must answer this.
+
+(relation item    T)
+(relation checked T)
+(relation watch   T)
+(relation alarm   T)
+
+(hrule check () :match (item ?x) :assert (checked ?x))
+
+(rule flag () :match (and (item ?x) (absent (checked ?x))) :assert (watch ?x))
+(rule watch (?n) :match (item ?n) :assert (alarm ?n))
+(rule alarm (?k) :match (item ?k) :assert (false))
+
+(item a)

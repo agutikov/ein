@@ -225,6 +225,11 @@ fn count_prints_describes_rows_and_reads_no_state() {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
         for (_, a) in row.answers() {
+            // A debug build aborts on W16's order pair, the row's own claim
+            // (`wrong.debug_panic`), until M1e2 S1e2.2.16 fixes W16.
+            if cfg!(debug_assertions) && a.debug_panic.is_some() {
+                continue;
+            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }

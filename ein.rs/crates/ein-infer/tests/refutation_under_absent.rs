@@ -65,13 +65,16 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// four witnesses, `W1/alive-empty-interlayer` and the two `branching/`
 /// refusal fixtures; the `via` rows are W8's `stale-naf-fork` pair and the
 /// fuzz finding `d3-unsat-core`, a corpus entry since M1e2 S1e2.2.12
-/// promoted it (2026-11-04). `features/05` and `/12`, `direct` too, close
+/// promoted it (2026-11-04); the `per activator` row is W16's second-shape
+/// control, `activator-all-symbol`, banked by S1e2.2.16 the same day, whose
+/// int and nested-fact twins load until W16's fix. `features/05` and `/12`, `direct` too, close
 /// the relation their refutations read and load. The set is exact because
 /// both directions are findings: a new row is a program written with the
 /// shape, and a missing one is a rule rewritten or a refusal lost.
 const REFUSED: &str = "\
 examples/branching/13_lookahead_naf_world.ein::rule 'self-block': concludes (false) from (absent \u{2026}) over cand, a relation a commitment can still extend
 examples/branching/14_lookahead_unjudgeable.ein::rule 'premature-signoff': concludes (false) from (absent \u{2026}) over signed, a relation a commitment can still extend
+examples/ein-bugs/activator-all-symbol.ein::rule 'alarm' [activator a]: concludes (false) from its activator, which rule 'watch' derives resting on (absent \u{2026}) over checked, a relation a commitment can still extend
 examples/ein-bugs/alive-empty-interlayer.ein::rule 'totality': concludes (false) from (absent \u{2026}) over p, a relation a commitment can still extend
 examples/ein-bugs/d3-unsat-core.ein::rule 'fire-0' [activator T]: concludes (not \u{2026}) from r1, which rule 'fire-1' derives resting on (absent \u{2026}) over (not r1), a relation a commitment can still extend
 examples/ein-bugs/naf-upward-closure.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
@@ -119,6 +122,11 @@ const DESCRIBE: Mode = Mode {
 fn the_refused_set_is_exactly_these() {
     let mut files = corpus_files();
     for row in ein_corpus::register().case {
+        // W16's order pair aborts a debug build, which is its defect, until
+        // M1e2 S1e2.2.16 fixes W16.
+        if cfg!(debug_assertions) && row.wrong.debug_panic.is_some() {
+            continue;
+        }
         files.push(repo_root().join(&row.witness));
     }
     files.sort();

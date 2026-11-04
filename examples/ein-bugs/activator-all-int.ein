@@ -1,0 +1,46 @@
+;;; An activator whose every argument is an int reads as no activator to
+;;; *forbid* — M1e2 **W16**'s second shape, register row
+;;; `W16/activator-all-int` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.16 (2026-11-04) from S1e2.2.7's second parked note.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `check` proposes `(checked 1)`, the one candidate. While `1` is not
+;;; checked, `flag` asserts the activator `(watch 1)`; `watch` asserts the
+;;; activator `(alarm 1)`; and `alarm` concludes `(false)`. Root decides
+;;; nothing about `checked`, so its fixpoint has all three, and `(false)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `alarm`'s `(false)` rests on its activator, which `watch` derives from
+;;; its own activator, which `flag` derives under `(absent (checked ?x))`,
+;;; and `checked` is a relation a commitment can extend. That is *forbid*
+;;; with F2's *per activator* (ruled 2026-11-04): the program is refused,
+;;; as `activator-all-symbol.ein`, the same program with `(item a)`, is.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R empty, every node dead, exit 0 (`ein solve FILE` at `6a775f3d`, and
+;;; under every mode, `ein oracle` and a debug build alike). *forbid* asks
+;;; whether a plan has an activator as `!activator_args.is_empty()`, and
+;;; `Plan::activator_args` keeps an activator's symbol arguments only, so
+;;; root's plan of `alarm`, compiled from `(alarm 1)`, reads as a rule with
+;;; no activator and its cause is never looked for. `watch`'s plan is missed
+;;; the same way, but `watch`'s activator relation is one a commitment can
+;;; change, so *forbid* reads that rule from its pattern too and finds what
+;;; it derives; `alarm`'s is not, which is why the chain takes three rules
+;;; (with two the pattern reading refuses an int activator as well).
+;;; `activator-all-nested.ein` is the same shape with a nested fact.
+
+(relation item    T)
+(relation checked T)
+(relation watch   T)
+(relation alarm   T)
+
+(hrule check () :match (item ?x) :assert (checked ?x))
+
+(rule flag () :match (and (item ?x) (absent (checked ?x))) :assert (watch ?x))
+(rule watch (?n) :match (item ?n) :assert (alarm ?n))
+(rule alarm (?k) :match (item ?k) :assert (false))
+
+(item 1)

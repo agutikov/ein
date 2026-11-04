@@ -1,0 +1,44 @@
+;;; W16's family, the string activator alone — M1e2 S1e2.2.16, register rows
+;;; `W16/int-and-string` and `W16/string-then-int`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; The stage file's program with `(note edge 1)` deleted, a control, as
+;;; `activator-text-int-only.ein` is for the other activator: one activator
+;;; compiles one plan, and this file answers the same in either build and
+;;; under either key.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `"1"` is a string, which the loader holds as a symbol whose text is
+;;; `1`, and `1` an int: two values, and two `holds` facts.
+;;; `(note edge "1")` binds `?f` to the string, so the rule derives
+;;; `(noted 1 "1")` and `(noted 2 "1")`, and nothing over the int. H is
+;;; empty, so R is `{∅}`: root, with those two (`ein saturate --dump`,
+;;; 2026-11-04: `noted 2`).
+;;;
+;;; ── What the claim can see ─────────────────────────────────────────────
+;;;
+;;; The claim below compares the facts as printed, and the printer drops a
+;;; string's quotes (P1e2.3's N5), so it cannot tell this file's two
+;;; `noted` facts from the int control's; it states the answer as written.
+;;; `activator-text-int-only.ein`'s header says what does tell them apart.
+
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds "1")
+
+(note edge "1")
+
+(solve
+  ;; `holds` and `noted` are named, so both are closed: each state lists
+  ;; their complete extent, root's facts included.
+  :expect (region
+            ;; state 1 of 1 — ∅, root itself · minimal · maximal
+            (model (holds 1) (holds "1") (noted 1 "1") (noted 2 "1"))))

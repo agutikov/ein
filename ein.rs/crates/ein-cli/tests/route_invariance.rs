@@ -118,12 +118,18 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
     })
 }
 
-/// Every corpus file and register witness, once. A debug build left out W7's
-/// two witnesses, which it aborted on, until M1e2 S1e2.2.7 fixed W7.
+/// Every corpus file and register witness, once — less, in a debug build, the
+/// witnesses it aborts on, W16's order pair until M1e2 S1e2.2.16 fixes W16. A
+/// debug build left out W7's two witnesses too, until M1e2 S1e2.2.7 fixed W7.
 fn programs() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in register().case {
         for (_, a) in row.answers() {
+            // A debug build aborts on W16's order pair, the row's own claim
+            // (`wrong.debug_panic`), until M1e2 S1e2.2.16 fixes W16.
+            if cfg!(debug_assertions) && a.debug_panic.is_some() {
+                continue;
+            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }

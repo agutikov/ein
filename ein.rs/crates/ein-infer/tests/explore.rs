@@ -32,12 +32,19 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// Every corpus file and every register witness, once. A debug build left
-/// out W7's two witnesses, which it aborted on, until M1e2 S1e2.2.7 fixed W7.
+/// Every corpus file and every register witness, once — less, in a debug
+/// build, the witnesses it aborts on, W16's order pair until M1e2 S1e2.2.16
+/// fixes W16. A debug build left out W7's two witnesses too, until M1e2
+/// S1e2.2.7 fixed W7.
 fn corpus_and_register() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
         for (_, a) in row.answers() {
+            // A debug build aborts on W16's order pair, the row's own claim
+            // (`wrong.debug_panic`), until M1e2 S1e2.2.16 fixes W16.
+            if cfg!(debug_assertions) && a.debug_panic.is_some() {
+                continue;
+            }
             files.push(repo_root().join(row.witness_of(a)));
         }
     }
@@ -527,16 +534,24 @@ fn every_mode_is_the_oracle() {
                     "{rel} {mode:?}: root afterwards is not sat(program)"
                 ));
             }
-            if a.route == explore::Route::DownSet && !monotone {
+            if a.route == explore::Route::DownSet && !monotone && !a.root_dead {
                 failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
             }
             // Each mode's route (S1e2.1c.4): a flagged program keeps the cube
-            // and its warning; a monotone one whose root is alive takes the
-            // state route for describe and the modes' routes over states
-            // otherwise, naming L5 exactly when the obligation tree used it.
+            // and its warning, but where its root is dead, which decides it
+            // (L0, a fork only adds: `explore::run` since the switch), and
+            // route 1 reads root alone, with the warning; a monotone one whose
+            // root is alive takes the state route for describe and the modes'
+            // routes over states otherwise, naming L5 exactly when the
+            // obligation tree used it. No program the oracle answers had a
+            // flagged dead root until M1e2 S1e2.2.16 banked W16's second-shape
+            // witnesses, which *forbid* refuses once W16 is fixed; this
+            // expected the cube there until then.
             let describe =
                 mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
-            let route_ok = if !monotone {
+            let route_ok = if !monotone && a.root_dead {
+                a.route == explore::Route::DownSet && a.warning.is_some()
+            } else if !monotone {
                 a.route == explore::Route::Cube && a.warning.is_some()
             } else if describe {
                 a.route == explore::Route::States

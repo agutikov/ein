@@ -295,13 +295,13 @@ The milestones in [§ Scheduled](#scheduled--the-roadmap) exist because these
 were measured, not assumed:
 
 - **The walk gave wrong answers on well-formed programs, at default
-  settings, and two of the register's rows are still open.** Twelve cases and
+  settings, and six of the register's rows are still open.** Twelve cases and
   one contested reading were re-run on 2026-10-14
   ([`inventory.md`](plans/m1e2_correctness/inventory.md)); the smallest was
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **46 of 49
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **46 of 53
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
   positive's unsound exclusions among them, which no route reads, W12 and W13,
   W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
@@ -323,9 +323,13 @@ were measured, not assumed:
   W11's third witness, a dead node's core that moved with the interner, until
   M1e2 S1e2.2.12 put a fork's delta in the order its commitment was written,
   the same day — one
-  ruled not wrong (C1), and **2 open**, both deferred to a followup by the
-  user, each saying why: W8's other row (F21) and W10's second, a saving
-  between two facts behind a full list, which no bounded list keeps (F22).
+  ruled not wrong (C1), and **6 open**: two deferred to a followup by the
+  user, each saying why, W8's other row (F21) and W10's second, a saving
+  between two facts behind a full list, which no bounded list keeps (F22);
+  and W16's four, filed by M1e2 S1e2.2.16 on 2026-11-04 and owned by it: an
+  int and a string with one text, which keyed one compile plan, so the second
+  activator's conclusions were lost in either order, and an activator whose
+  every argument is an int or a nested fact, which *forbid* read as none.
   P1e2.2 works one stage per case
   ([P1e2.2](plans/m1e2_correctness/p1e2.2_wrong_answers/README.md)).
 - **An under-determined puzzle still does not finish.**
