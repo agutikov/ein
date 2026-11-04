@@ -6,8 +6,10 @@
 ;;; N is {(p a)}, and its core is `(p a)` (`ein solve FILE --dump-answer DIR`
 ;;; at `a41eb76e`), which names the commitment and, with the plan root
 ;;; compiled from the declaration, derives `(false)`. Whether the core also
-;;; names the declaration, `(p a) (r2 a)`, is Q-M1e2.12's first reading,
-;;; *every activator*; under the other two it does not move.
+;;; names the declaration, `(p a) (r2 a)`, was Q-M1e2.12's first reading,
+;;; *every activator*; under the other two it does not move. The user ruled
+;;; (c) on 2026-11-04, root's activators are the program's, and S1e2.2.19's
+;;; fix left this core where it was.
 
 (relation seed T) (relation p T) (relation p2 T) (relation r2 T)
 

@@ -23,7 +23,10 @@
 ;;; refutation rests on `(p a)` through the activators `(q a)` and `(r2 a)`,
 ;;; and a derivation records the premises its plan matched, not the
 ;;; activator the plan was compiled from. The core that names it is
-;;; `(p a) (seed a)`.
+;;; `(p a) (seed a)`, which it reports since S1e2.2.19's fix the same day, on
+;;; the user's ruling on Q-M1e2.12, (c): a firing records the activator its
+;;; plan was compiled from, and a dead node's core follows one the node
+;;; derived or committed, never root's.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
 

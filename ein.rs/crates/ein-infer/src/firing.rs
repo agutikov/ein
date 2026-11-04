@@ -250,6 +250,7 @@ pub fn new_prov(
     let mut prov = Prov::from_rule(plan.rule, env.premises.into(), None);
     prov.bindings = bindings;
     prov.absent = absent;
+    prov.activator = plan.activator;
     terms.provs.push(prov)
 }
 

@@ -1985,3 +1985,59 @@ fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
         }
     }
 }
+
+/// **A dead node's core follows the activator its refutation rests on, where
+/// a node derived or committed it** — M1e2 S1e2.2.19, W19, on the user's
+/// ruling of 2026-11-04 on Q-M1e2.12, (c).
+///
+/// A plan of a rule with parameters is compiled from an activator, and until
+/// S1e2.2.19 a derivation recorded the premises the plan matched and not the
+/// activator, so a commitment that reaches a refutation only through one was
+/// in no core: `forbid-chain-no-absent`'s dead `{(p a)}` reported `(seed a)`,
+/// a fact of root's while root is alive, `core-activator-committed`'s
+/// `{(r2 a)}` the same, and `core-activator-guard-only`'s `{(p a)}` nothing.
+/// Root's activators, stated (`core-activator-given`) or derived
+/// (`core-activator-root-derived`), are the program's, as the plans root
+/// compiles from them are its rules, and are followed into no core. W17's
+/// five, studied past *forbid*'s refusal, report the core that names the
+/// commitment too, but `-node-writes`, whose refutation matches it.
+#[test]
+fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
+    let dir = "examples/ein-bugs/wrong-answers";
+    let cases: [(&str, &[&str]); 11] = [
+        ("forbid-chain-no-absent", &["(p a)", "(seed a)"]),
+        ("core-activator-committed", &["(r2 a)", "(seed a)"]),
+        ("core-activator-guard-only", &["(p a)"]),
+        ("core-activator-given", &["(p a)"]),
+        ("core-activator-root-derived", &["(p a)"]),
+        ("forbid-chain-0", &["(p a)", "(seed a)"]),
+        ("forbid-chain-1", &["(p a)", "(seed a)"]),
+        ("forbid-chain-2", &["(p a)", "(seed a)"]),
+        ("forbid-chain-node-absent", &["(p a)", "(seed a)"]),
+        ("forbid-chain-param-absent", &["(p a)", "(seed a)"]),
+        ("forbid-chain-node-writes", &["(p a)"]),
+    ];
+    let mut bad = Vec::new();
+    for (name, want) in cases {
+        let rel = format!("{dir}/{name}.ein");
+        let (r, _) = region_of(&rel);
+        let mut dead = 0;
+        for (mask, node) in r.nodes.iter().enumerate() {
+            if r.status[mask] & region::DEAD == 0 {
+                continue;
+            }
+            dead += 1;
+            if node.core != want {
+                bad.push(format!(
+                    "{name}: dead {} reports core {:?}, where it rests on {want:?}",
+                    r.name(mask as u64),
+                    node.core
+                ));
+            }
+        }
+        if dead == 0 {
+            bad.push(format!("{name}: no dead node"));
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}

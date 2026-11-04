@@ -1424,7 +1424,12 @@ fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {
 }
 
 /// The `absent` premises anywhere in `witness`'s primary derivation, rendered
-/// and sorted — the guard a repairable failure rests on.
+/// and sorted — the guard a repairable failure rests on. The walk follows
+/// each step's premises and not the activator its plan was compiled from,
+/// which the core follows since M1e2 S1e2.2.19 where a node derived it: the
+/// non-monotone detector reads this list for its status, and following the
+/// activator here moved that label on W17's witnesses studied past *forbid*
+/// (S1e2.2.19 § Notes).
 fn absent_premises(kb: &Kb, terms: &Terms, witness: FactId) -> Vec<String> {
     let mut seen: FxHashSet<FactId> = FxHashSet::default();
     let mut stack = vec![witness];

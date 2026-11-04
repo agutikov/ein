@@ -158,6 +158,17 @@ pub struct Prov {
     pub absent: Box<[NafRef]>,
     pub branch: Option<u32>,
     pub loc: Option<Loc>,
+    /// The **activator** the firing plan was compiled from — the fact
+    /// `(rule args…)` that bound a rule's parameters — or `None` for a rule
+    /// with none, and for every record that is not a firing. M1e2 S1e2.2.19:
+    /// until then a derivation recorded the premises its plan matched and
+    /// not this, so a commitment that reaches a refutation only through an
+    /// activator was in no core (W19). What reads it is
+    /// [`crate::walks::node_activator`], which follows one a node derived or
+    /// committed and never root's (Q-M1e2.12 (c), the user's ruling of
+    /// 2026-11-04). A `.einb` does not store it: it holds root's KB, whose
+    /// activators no reader follows.
+    pub activator: Option<FactId>,
 }
 
 impl Prov {
@@ -208,6 +219,7 @@ impl Prov {
             absent: Box::new([]),
             branch: None,
             loc: None,
+            activator: None,
         }
     }
 
@@ -221,11 +233,16 @@ impl Prov {
         self.kind != ProvKind::Rule || self.premises.is_empty()
     }
 
-    /// The AND-node identity of a justification: `(rule, premises)`.
-    /// `bindings` is display metadata and is excluded, so two firings that
-    /// consumed the same premises collapse.
+    /// The AND-node identity of a justification: `(rule, premises,
+    /// activator)`. `bindings` is display metadata and is excluded, so two
+    /// firings that consumed the same premises collapse. The activator is
+    /// identity since M1e2 S1e2.2.19: two plans of one rule, compiled from
+    /// two activators, that match the same premises are two derivations, and
+    /// a frontier that follows one activator is not the other's.
     pub fn same_justification(&self, other: &Prov) -> bool {
-        self.rule == other.rule && self.premises == other.premises
+        self.rule == other.rule
+            && self.premises == other.premises
+            && self.activator == other.activator
     }
 }
 
@@ -607,5 +624,14 @@ mod tests {
             !a.same_justification(&reordered),
             "premise order is identity"
         );
+        // M1e2 S1e2.2.19: the activator a plan was compiled from is too.
+        let mut other = b.clone();
+        other.activator = Some(FactId(7));
+        assert!(
+            !a.same_justification(&other),
+            "another activator, another derivation"
+        );
+        a.activator = Some(FactId(7));
+        assert!(a.same_justification(&other));
     }
 }

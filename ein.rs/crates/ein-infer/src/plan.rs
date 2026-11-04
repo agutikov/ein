@@ -35,7 +35,7 @@
 //! directly. Register *numbers* are therefore free to be assigned in whatever
 //! order the compiler encounters them, and nothing observable reads them.
 
-use ein_core::{Symbol, Value};
+use ein_core::{FactId, Symbol, Value};
 use ein_ir::NodeId;
 
 use crate::predicates::Pred;
@@ -291,6 +291,13 @@ pub struct Plan {
     /// whether its rule has parameters: *forbid* read it so until M1e2
     /// S1e2.2.16, and a refutation resting on such an activator loaded (W16).
     pub activator_args: Box<[Symbol]>,
+    /// The activator fact this plan was compiled from, `None` for a rule
+    /// with no parameters — M1e2 S1e2.2.19. A plan is a pure function of its
+    /// [`crate::compile::PlanKey`], and the key's values are this fact's
+    /// arguments under the rule's name, so one key names one fact. Every
+    /// firing records it ([`ein_core::Prov::activator`]), and a dead node's
+    /// core follows it where the node derived or committed it (W19).
+    pub activator: Option<FactId>,
     /// The activator binding, materialised: register `i` holds `seed[i].1`
     /// at match start, and the name is what provenance renders.
     pub seed: Box<[(Symbol, Value)]>,

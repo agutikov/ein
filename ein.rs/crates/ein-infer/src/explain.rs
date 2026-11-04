@@ -48,6 +48,25 @@
 //! It is not a soundness question either way: a larger frontier is still a
 //! real explanation.
 //!
+//! ### What a derivation rests on
+//!
+//! **Its premises, and the activator its plan was compiled from where a node
+//! derived or committed it** ([`ein_core::walks::node_activator`], M1e2
+//! S1e2.2.19). A plan of a rule with parameters is compiled from an
+//! activator, `(rule args…)`, and a firing records it
+//! ([`ein_core::Prov::activator`]); the AND-node is the premises with that
+//! activator beside them. Root's activators, stated or derived, are the
+//! program's, as the plans root compiles from them are its rules, and are
+//! followed into no core: the user's ruling of 2026-11-04 on Q-M1e2.12, (c).
+//! So a core is a set of facts from which, with root's plans, saturation
+//! derives the contradiction, and it names the commitment a plan only a node
+//! compiles rests on. Until S1e2.2.19 no derivation recorded its activator,
+//! and such a commitment was in no core (W19):
+//! `examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein`'s dead
+//! `{(p a)}` reported `(seed a)`, a fact root holds, and
+//! `core-activator-guard-only.ein`'s, whose refuting plan matches no fact,
+//! reported nothing; they report `(p a) (seed a)` and `(p a)`.
+//!
 //! ### The algorithm
 //!
 //! A least fixpoint from the frontier upward. A `source` / `hypothesis` /
@@ -242,11 +261,19 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
             if prov.kind != ein_core::ProvKind::Rule {
                 continue;
             }
-            if prov.premises.is_empty() {
+            // Its premises, and the activator its plan was compiled from
+            // where a node derived or committed it (M1e2 S1e2.2.19).
+            let mut and_node = prov.premises.to_vec();
+            if let Some(a) = ein_core::walks::node_activator(kb, prov)
+                && !and_node.contains(&a)
+            {
+                and_node.push(a);
+            }
+            if and_node.is_empty() {
                 ands.clear(); // a synthetic ground-out wins
                 break;
             }
-            ands.push(prov.premises.to_vec());
+            ands.push(and_node);
         }
         if ands.is_empty() {
             g.seed.insert(fid, vec![Vec::new()]);

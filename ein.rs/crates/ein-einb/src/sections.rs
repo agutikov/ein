@@ -474,6 +474,10 @@ fn read_record(r: &mut Reader<'_>, maps: &Maps) -> Result<Prov> {
         absent: absent.into_boxed_slice(),
         branch,
         loc,
+        // Not stored (M1e2 S1e2.2.19): a `.einb` holds root's KB, and a
+        // core follows only an activator a node derived or committed
+        // (`ein_core::walks::node_activator`), never root's.
+        activator: None,
     })
 }
 

@@ -862,6 +862,7 @@ impl Saturator {
         let premises = self.entries.get(entry).premises.clone();
         let mut prov = Prov::from_rule(plan.rule, premises, None);
         prov.absent = absent;
+        prov.activator = plan.activator;
         let id = s.terms.provs.push(prov);
         for fact in targets {
             let recorded = s.kb.record_justification(s.terms, fact, id);

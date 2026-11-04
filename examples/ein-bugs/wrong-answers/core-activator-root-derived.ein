@@ -6,9 +6,10 @@
 ;;; plan of `r2`, which concludes `(false)` from the commitment `(p a)`. R is
 ;;; two states, ∅ and {(p2 a)}; N is {(p a)}, and its core is `(p a)` (`ein
 ;;; solve FILE --dump-answer DIR` at `a41eb76e`). Whether the core also names
-;;; what root derived the activator from, `(p a) (start a)`, is Q-M1e2.12:
+;;; what root derived the activator from, `(p a) (start a)`, was Q-M1e2.12:
 ;;; it does under *every activator* and under *a derived one*, the stage
-;;; file's two readings, and not under *one only a node derives*.
+;;; file's two readings, and not under *one only a node derives*, which the
+;;; user ruled on 2026-11-04; S1e2.2.19's fix left this core where it was.
 
 (relation seed T) (relation start T) (relation p T) (relation p2 T) (relation r2 T)
 

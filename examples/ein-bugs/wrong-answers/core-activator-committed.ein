@@ -17,17 +17,20 @@
 ;;; plan was compiled from: the core is `(r2 a) (seed a)`, which names the
 ;;; commitment. `(seed a)` alone is root's, and root is alive.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what holds since ─────────────────────
 ;;;
-;;; R as above, exit 0; and N's core is `(seed a)` alone, by `r2`, in
-;;; `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s `nodes.json`,
-;;; `--events`' `enter` line, `--trace` and `ein oracle --dump` (`ein solve
-;;; FILE --dump-answer DIR` at `a41eb76e`, release and debug). A derivation
-;;; records the premises its plan matched, not the activator the plan was
-;;; compiled from, so the core search never reaches the commitment. Which
-;;; activators a core follows is Q-M1e2.12, S1e2.2.19's question: read as
+;;; Until S1e2.2.19, R as above, exit 0; and N's core `(seed a)` alone, by
+;;; `r2`, in `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s
+;;; `nodes.json`, `--events`' `enter` line, `--trace` and `ein oracle
+;;; --dump` (`ein solve FILE --dump-answer DIR` at `a41eb76e`, release and
+;;; debug). A derivation recorded the premises its plan matched, not the
+;;; activator the plan was compiled from, so the core search never reached
+;;; the commitment. Which
+;;; activators a core follows was Q-M1e2.12, S1e2.2.19's question: read as
 ;;; the stage file's narrower reading is worded, *only an activator that is
-;;; itself derived*, this one, a commitment, would still be left out.
+;;; itself derived*, this one, a commitment, would still be left out. The
+;;; user ruled (c) on 2026-11-04, an activator a node derives or commits, and
+;;; since S1e2.2.19's fix N's core is `(r2 a) (seed a)`, in either build.
 
 (relation seed T) (relation r2 T) (relation p2 T)
 

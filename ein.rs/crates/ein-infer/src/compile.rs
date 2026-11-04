@@ -377,6 +377,7 @@ impl<'a> Compiler<'a> {
         Ok(Plan {
             rule: rule.name,
             activator_args,
+            activator,
             seed: self.seed.into_boxed_slice(),
             disjuncts: disjuncts.into_boxed_slice(),
             asserts: asserts.into_boxed_slice(),

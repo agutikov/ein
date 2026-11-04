@@ -51,6 +51,27 @@ fn resolve(kb: &Kb, premise: FactId) -> Option<FactId> {
     kb.contains(premise).then_some(premise)
 }
 
+/// The activator a derivation's frontier follows: the one its plan was
+/// compiled from ([`Prov::activator`]), where a **node** derived or committed
+/// it — its primary record is a fork's ([`crate::prov::ProvId::is_fork`]) —
+/// and `None` where root holds it, stated or derived.
+///
+/// M1e2 S1e2.2.19, on the user's ruling of 2026-11-04 on Q-M1e2.12, (c).
+/// Root's activators are the program's, as the plans root compiles from them
+/// are its rules, so a core does not name a declaration such as `(bijective
+/// color-loc)`, nor what root derived an activator from; a plan only a node
+/// compiles rests on what the node added to compile it, and the core
+/// follows that. Until S1e2.2.19 no derivation recorded its activator, and a
+/// commitment that reaches a refutation only through one was in no core
+/// (W19: `forbid-chain-no-absent.ein`'s dead `{(p a)}` reported `(seed a)`,
+/// root's).
+///
+/// [`Prov::activator`]: crate::prov::Prov::activator
+pub fn node_activator(kb: &Kb, prov: &crate::prov::Prov) -> Option<FactId> {
+    let a = prov.activator?;
+    kb.primary(a).is_some_and(|p| p.is_fork()).then_some(a)
+}
+
 /// Is this fact on the derivation **frontier** — what the engine treats as
 /// given?
 pub fn is_frontier(kb: &Kb, terms: &Terms, fact: FactId) -> bool {
@@ -100,6 +121,10 @@ pub fn walk_premises(
                 if let Some(premise) = resolve(kb, premise) {
                     stack.push(premise);
                 }
+            }
+            // The activator a node derived or committed (M1e2 S1e2.2.19).
+            if let Some(a) = node_activator(kb, prov).and_then(|a| resolve(kb, a)) {
+                stack.push(a);
             }
         }
     }

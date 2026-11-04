@@ -203,7 +203,11 @@ constrained-reasoning research.
   open and 1 not wrong. Which activators a core follows is Q-M1e2.12, put to
   the user: following every activator moves the cores of 40 corpus
   programs, a derived one those of three, and one only a node derives none
-  (S1e2.2.19's sweep, 2026-11-04).
+  (S1e2.2.19's sweep, 2026-11-04). The user ruled (c) the same day, and
+  S1e2.2.19 fixed all three: a firing records the activator its plan was
+  compiled from, and a dead node's core follows one a node derived or
+  committed, never root's: 63 fixed, 2 open (both deferred to a followup)
+  and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -345,6 +345,14 @@
 # under all three. A row's `wrong` is a region run's at `a41eb76e`. The
 # register reads **60 rows fixed, 5 open and 1 not-wrong**.
 #
+# **The user ruled Q-M1e2.12 (c) the same day, and S1e2.2.19 fixed W19's
+# three rows** (T1e2.2.19.2): a firing records the activator its plan was
+# compiled from, and a dead node's core follows one the node derived or
+# committed, never root's, stated or derived; no corpus core moved. Each
+# flipped row's `[case.fixed]` carried the null id in the flipping commit,
+# and the stage's next commit wrote the hash. The register reads **63 rows
+# fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -4461,10 +4469,14 @@ settings = "default"
 owner    = "S1e2.2.19"
 question = ["Q-M1e2.11", "Q-M1e2.12"]
 witness  = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
-status   = "open"
-open_because = "N's core is (seed a), root's: a derivation records the premises its plan matched, not the activator the plan was compiled from, so neither explain.rs's frontier search nor region.rs's absent_premises reaches the commitment; the fix follows the activator, and which activators a core follows is Q-M1e2.12, put to the user by T1e2.2.19.1 (2026-11-04): this row's right is the same under each of its three readings"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04) from S1e2.2.17 § Notes' first note; the witness is W17's loading control, banked by S1e2.2.17. The first row whose answer is a dead node's core, schema /8 (`nogoods`, --dump-answer's nogoods.json): the summary's region.core is root's. W17's five witnesses, studied past *forbid*'s refusal (forbid::studying), report the same core, (seed a), and the read-out's minimal hole line prints it (`dead: (seed a)`); refused at the CLI, they are no rows here"
+note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04) from S1e2.2.17 § Notes' first note; the witness is W17's loading control, banked by S1e2.2.17. The first row whose answer is a dead node's core, schema /8 (`nogoods`, --dump-answer's nogoods.json): the summary's region.core is root's. W17's five witnesses, studied past *forbid*'s refusal (forbid::studying), report the same core, (seed a), and the read-out's minimal hole line prints it (`dead: (seed a)`); refused at the CLI, they are no rows here. Fixed by T1e2.2.19.2: N's core is (p a) (seed a), in either build, on every surface that reports it, and `ein oracle` agrees; W17's five, studied past the refusal, report it too"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.19 (T1e2.2.19.2): a firing records the activator its plan was compiled from, and a dead node's core follows one a node derived or committed, never root's (Q-M1e2.12 (c), ruled 2026-11-04)"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"
@@ -4501,7 +4513,7 @@ models    = [
   [],
   ["(p2 a)"],
 ]
-nogoods   = [{ set = ["(p a)"], core = ["(seed a)"] }]
+nogoods   = [{ set = ["(p a)"], core = ["(p a)", "(seed a)"] }]
 
 [[case]]
 id       = "W19/core-activator-committed"
@@ -4512,10 +4524,14 @@ settings = "default"
 owner    = "S1e2.2.19"
 question = ["Q-M1e2.11", "Q-M1e2.12"]
 witness  = "examples/ein-bugs/wrong-answers/core-activator-committed.ein"
-status   = "open"
-open_because = "N's core is (seed a), root's: a derivation records the premises its plan matched, not the activator the plan was compiled from, so neither explain.rs's frontier search nor region.rs's absent_premises reaches the commitment; the fix follows the activator, and which activators a core follows is Q-M1e2.12, put to the user by T1e2.2.19.1 (2026-11-04): this row's right is the same under each of its three readings"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04), found by probing the witness's mechanism (build/s1e2.2.19/probes/hyp-activator.ein): the commitment is itself the activator, so no rule derives it. Read as the stage file's narrower reading is worded, an activator followed only where it is itself derived, this core would stay (seed a): the reading that keeps a declaration out has to keep a commitment in"
+note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04), found by probing the witness's mechanism (build/s1e2.2.19/probes/hyp-activator.ein): the commitment is itself the activator, so no rule derives it. Read as the stage file's narrower reading is worded, an activator followed only where it is itself derived, this core would stay (seed a): the reading that keeps a declaration out has to keep a commitment in. Fixed by T1e2.2.19.2: N's core is (r2 a) (seed a), in either build, and `ein oracle` agrees"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.19 (T1e2.2.19.2): a firing records the activator its plan was compiled from, and a dead node's core follows one a node derived or committed, never root's (Q-M1e2.12 (c), ruled 2026-11-04)"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"
@@ -4551,7 +4567,7 @@ models    = [
   [],
   ["(p2 a)"],
 ]
-nogoods   = [{ set = ["(r2 a)"], core = ["(seed a)"] }]
+nogoods   = [{ set = ["(r2 a)"], core = ["(r2 a)", "(seed a)"] }]
 
 [[case]]
 id       = "W19/core-activator-guard-only"
@@ -4562,10 +4578,14 @@ settings = "default"
 owner    = "S1e2.2.19"
 question = ["Q-M1e2.11", "Q-M1e2.12"]
 witness  = "examples/ein-bugs/wrong-answers/core-activator-guard-only.ein"
-status   = "open"
-open_because = "N's core is empty: a derivation records the premises its plan matched, not the activator the plan was compiled from, so neither explain.rs's frontier search nor region.rs's absent_premises reaches the commitment; the fix follows the activator, and which activators a core follows is Q-M1e2.12, put to the user by T1e2.2.19.1 (2026-11-04): this row's right is the same under each of its three readings"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04), found by probing the witness's mechanism (build/s1e2.2.19/probes/premiseless.ein): w's plan has a guard and no pattern, so the derivation of (false) records no premise and the core search reads it as an engine write, derivable from nothing. A dead node with a 0-fact core, which Q-M1e2.4's closing census (root cores, 2026-11-03) did not see"
+note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04), found by probing the witness's mechanism (build/s1e2.2.19/probes/premiseless.ein): w's plan has a guard and no pattern, so the derivation of (false) records no premise and the core search reads it as an engine write, derivable from nothing. A dead node with a 0-fact core, which Q-M1e2.4's closing census (root cores, 2026-11-03) did not see. Fixed by T1e2.2.19.2: N's core is (p a), in either build, and `ein oracle` agrees"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.19 (T1e2.2.19.2): a firing records the activator its plan was compiled from, and a dead node's core follows one a node derived or committed, never root's (Q-M1e2.12 (c), ruled 2026-11-04)"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"
@@ -4602,7 +4622,7 @@ models    = [
   [],
   ["(p2 a)"],
 ]
-nogoods   = [{ set = ["(p a)"], core = [] }]
+nogoods   = [{ set = ["(p a)"], core = ["(p a)"] }]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

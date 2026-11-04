@@ -974,7 +974,7 @@ note   = "M1e2 W17's refused control: forbid-chain-1.ein one link shorter, `q` c
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W17's loading control: forbid-chain-1.ein with no `absent` in `mk`. The chain still concludes (false) at a node, but nothing rests on an `absent`, so `dead` is upward-closed, there is no hole and nothing to refuse: R two states, ∅ and {(p2 a)}, which S1e2.2.17's fix did not move. Since S1e2.2.19 (2026-11-04) also M1e2 W19's witness (`W19/forbid-chain-no-absent`): N {(p a)} reports the core `(seed a)`, root's, where the refutation rests on `(p a)` through the activators `(q a)` and `(r2 a)`."
+note   = "M1e2 W17's loading control: forbid-chain-1.ein with no `absent` in `mk`. The chain still concludes (false) at a node, but nothing rests on an `absent`, so `dead` is upward-closed, there is no hole and nothing to refuse: R two states, ∅ and {(p2 a)}, which S1e2.2.17's fix did not move. Since S1e2.2.19 (2026-11-04) also M1e2 W19's witness (`W19/forbid-chain-no-absent`): N {(p a)} reported the core `(seed a)`, root's, where the refutation rests on `(p a)` through the activators `(q a)` and `(r2 a)`; `(p a) (seed a)` since S1e2.2.19's fix the same day."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
@@ -1028,25 +1028,25 @@ note   = "M1e2 W18 (`W18/str-in-hrule`), found by S1e2.2.18: the hrule's templat
 path   = "examples/ein-bugs/wrong-answers/core-activator-committed.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W19 (`W19/core-activator-committed`), found by S1e2.2.19 probing the witness's mechanism: the commitment `(r2 a)` is itself the activator whose plan concludes (false) from `(seed a)`. R two states, ∅ and {(p2 a)}; N {(r2 a)}, whose core is `(seed a)` alone, root's, where the refutation rests on the commitment too: a derivation records the premises its plan matched, not the activator the plan was compiled from."
+note   = "M1e2 W19 (`W19/core-activator-committed`), found by S1e2.2.19 probing the witness's mechanism: the commitment `(r2 a)` is itself the activator whose plan concludes (false) from `(seed a)`. R two states, ∅ and {(p2 a)}; N {(r2 a)}, whose core was `(seed a)` alone, root's, where the refutation rests on the commitment too: a derivation recorded the premises its plan matched, not the activator the plan was compiled from. Since S1e2.2.19's fix the same day (Q-M1e2.12 (c)) the core follows an activator a node derived or committed: `(r2 a) (seed a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-guard-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W19 (`W19/core-activator-guard-only`), found by S1e2.2.19: `mk` derives the activator `(w a)` from `(p a)`, and `w`'s plan, a guard and no pattern, concludes (false) with no premise. R two states, ∅ and {(p2 a)}; N {(p a)}, whose core is empty, a dead node with a 0-fact core, where the refutation rests on `(p a)` through the activator."
+note   = "M1e2 W19 (`W19/core-activator-guard-only`), found by S1e2.2.19: `mk` derives the activator `(w a)` from `(p a)`, and `w`'s plan, a guard and no pattern, concludes (false) with no premise. R two states, ∅ and {(p2 a)}; N {(p a)}, whose core was empty, a dead node with a 0-fact core, where the refutation rests on `(p a)` through the activator. Since S1e2.2.19's fix the same day it is `(p a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-given.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W19's boundary, a given activator: `(r2 a)` is stated, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`. Under Q-M1e2.12's *every activator* the core also names the declaration `(r2 a)`; under the other readings it does not move."
+note   = "M1e2 W19's boundary, a given activator: `(r2 a)` is stated, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`. Under Q-M1e2.12's *every activator* the core also names the declaration `(r2 a)`; under the other readings it does not move, and the user ruled (c), so S1e2.2.19's fix left it."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-root-derived.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W19's boundary, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`. Under Q-M1e2.12's *every activator* and *a derived one* the core also names `(start a)`; under *one only a node derives* it does not move."
+note   = "M1e2 W19's boundary, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`. Under Q-M1e2.12's *every activator* and *a derived one* the core also names `(start a)`; under *one only a node derives*, which the user ruled, it does not move, and S1e2.2.19's fix left it."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
