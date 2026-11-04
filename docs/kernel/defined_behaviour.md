@@ -1083,13 +1083,14 @@ on its own line rather than inside an 89-line text blob.
 
 ## 6. What is *not* defined, and is filed
 
-**Nothing, since M1e2's switch.** The one rendering below was genuinely
+**Nothing, since M1e2 S1e2.2.12** (2026-11-04). M1e2's switch left one that
+nobody had seen, the second item below, and the first was genuinely
 **under-determined** while the walk printed it. The region read-out sorts a
 class's goal rows and prints every one (M1e2 T1e2.1a.5.2), so no row is
 chosen, and its witness is the corpus entry
 [`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein)
 since M1e2 S1e2.3.4, which `ein-render/tests/id_order_invariance.rs` permutes
-on every commit. The item is kept as the record of what was filed:
+on every commit. The two items are kept as the record of what was filed:
 
 - **The goal row a solve table prints.** If a model satisfies `(query :goal
   …)` more than once, the table prints the first row of an *unsorted* match,
@@ -1102,6 +1103,19 @@ on every commit. The item is kept as the record of what was filed:
   is a decision, not a repair — print the lex-smallest row, at the cost of one
   visible change to a checked-in fixture. Reproducer and notes:
   [`corpus/fuzz_findings/`](../../corpus/fuzz_findings/README.md).
+- **A dead node's core and the rules it names.** A resumed fork's delta was
+  sorted by `FactId`, which is interning order, so a dead node's derivations
+  arrived in an order the program does not decide: the rules `refuted_by`
+  names and the `absent`s a refutation rests on moved under a permuted id
+  space on 34 corpus files (`EIN_ID_SEEDS=8`, 2026-11-04, with every core
+  compared), and the core, where a full alternatives list
+  keeps whichever arrive first, on
+  [`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein)
+  (M1e2 `W11/fork-delta-order`). Seen in `--dump-answer`'s `nogoods.json`,
+  `--dump-lattice`'s `nodes.json`, `ein oracle --dump` and `--events`, which
+  no sweep compared until M1e2 S1e2.2.12; fixed by it (`10858b96`): the delta is
+  in the order its commitment was written, and the sweep compares every core
+  and asserts that nothing moves.
 
 ## See also
 

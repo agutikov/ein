@@ -1,5 +1,14 @@
 # fork-delta-order
 
+**Fixed 2026-11-04** by M1e2 S1e2.2.12 (T1e2.2.12.2, `10858b96`): a resumed fork's
+delta is in the order its commitment was written, so N's member reports
+`(g G08) (h H40) (on A) (on B)` under every permutation, and nothing else a
+run reports moves either, narration included. Promoted the same day to
+[`examples/ein-bugs/fork-delta-order.ein`](../../examples/ein-bugs/fork-delta-order.ein),
+which the register's row points at and the id-order sweep permutes per
+commit; this file stays as the finding's record. The note below is the
+finding as it stood.
+
 - found: 2026-11-04, by hand — M1e2
   [S1e2.2.12](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.12_core_id_order.md)'s
   T1e2.2.12.1, the second of the user's two visits to W11, from the mechanism

@@ -110,7 +110,11 @@ move of it is listed before any edit. **W11 is fixed the same day**
 a run reports moves under a permuted interner, narration included, and the
 id-order sweep compares every core; `W11/fork-delta-order` is fixed and
 promoted with both findings to `examples/ein-bugs/`, and the register reads
-46 fixed, 2 open (both deferred) and 1 not-wrong.
+46 fixed, 2 open (both deferred) and 1 not-wrong. **S1e2.2.12 is done**
+(2026-11-04): `10858b96`, the second visit recorded in the review and the rows,
+`defined_behaviour.md` § 6 and the determinism rule corrected, what moved
+step 1's list with three list corrections and no finding. Next is
+**S1e2.2.16**, W16, the phase's last stage.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -184,7 +188,7 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.9](s1e2.2.9_kill_cache_off_entailment.md) | **W9** with the kill cache off, a state is recorded as consistent because an entailment went unnoticed | 1 | lever `-K` | Q-M1e.7 ruling A | 0 (1) d | **drop** | confirmed | `-K` changes cost and never an answer, or it is refused for certified runs |
 | [S1e2.2.10](s1e2.2.10_types_as_objects.md) | **C1** the untyped blind rung binds a type as an object. **Done 2026-11-04**: `branching/06` and `/07` typed, R two states; a `types` row on every read-out where the blind enumerator binds a type as an object; the two rows moved | 2 (contested) | **default** | [Q-M1e.12](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | 1.5 (2) d | keep | **not wrong**: (a), ruled by the user; restated to the fixture and the warning | one of Q-M1e.12's three readings ruled, and applied |
 | [S1e2.2.11](s1e2.2.11_alt_cap_core.md) | **W10** the alternatives cap decides which core is reported. **Done 2026-11-04** (Q-M1e2.11 (i)(b), (ii)(b), ruled the same day): (3) built, `W10/alt-cap-core` fixed, `W10/alt-cap-shared` deferred to F22, the core exempt under one flag, Q-M1e.15 closed | 4 | default | [Q-M1e.15](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported); [Q-M1e2.11](../open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it), put to the user 2026-11-04 | 1.5 d | keep | confirmed | Q-M1e.15's fix taken; the `alt-cap-core` pair report the same 2-fact core |
-| [S1e2.2.12](s1e2.2.12_core_id_order.md) | **W11** which core is reported depends on interner id order | 4 | default | `corpus/fuzz_findings/` | 0.5 (1.5) d | shrink | confirmed: the user's first visit | a canonical choice among equal-size cores; the id-order sweep green on both fuzz findings at every seed |
+| [S1e2.2.12](s1e2.2.12_core_id_order.md) | **W11** which core is reported depends on interner id order. **Done 2026-11-04**: the second visit, both rows confirmed; every core compared, none moved on the corpus; a fork's `FactId`-ordered delta could move one, `W11/fork-delta-order` filed and fixed (`10858b96`); no tie-break needed | 4 | default | `corpus/fuzz_findings/` | 0.5 (1.5) d | shrink | confirmed: the user's first visit | a canonical choice among equal-size cores; the id-order sweep green on both fuzz findings at every seed |
 | [S1e2.2.13](s1e2.2.13_empty_core.md) | **W12** an exhausted `Contradiction` reports a 0-fact core | 4 (contested) | default | S1e.3.1 § did not do | 0 (1) d | shrink | confirmed, fixed: **drop** | a reading; then the core names the facts the refutation rests on, or the read-out says why it cannot |
 
 **The outcome column is [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md#task-t1e21c52--the-stages-and-the-record)'s**

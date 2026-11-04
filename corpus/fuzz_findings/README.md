@@ -24,7 +24,7 @@ questions rather than fixes**, so they are here.
 | file | property | what it is |
 |---|---|---|
 | [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | an `(hrule …)` whose `:match` reads the `not` relation trips a `debug_assert!` in `Hrules::candidates`. Legal ein-lang; the release binary answers, the debug build aborts. The precondition is real and documented at the assertion — hypgen's kill cache writes `not` facts mid-enumeration — but nothing has decided what the right answer is |
-| [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | which facts the **unsat core** names, and how many, moves under a permuted id space. Six of 45 ops, including `trace[answer]`'s "unsat core: 1 facts" vs "2 facts" |
+| [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | which facts the **unsat core** names, and how many, moves under a permuted id space. Six of 45 ops, including `trace[answer]`'s "unsat core: 1 facts" vs "2 facts". **Settled 2026-11-04 by M1e2 S1e2.2.12**: the walk's core is gone, no core this program reports moves, and the one path left from the ids to a core, a fork's delta order, is fixed |
 | [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | already here since 2026-08-20 — **re-derived from a different seed to the identical seven forms**, and then shown to move with the fork path held fixed. See below: the resumed fork perturbs the row, it is not why the row is perturbable |
 
 The two `id-order` rows are the class
@@ -80,11 +80,13 @@ minimum from a different seed and then failing it under a permuted id space:
 
 | file | what differs | what is identical |
 |---|---|---|
-| `d3-unsat-core.ein` | the printed **unsat core**: 6 facts under `EIN_FORK_DELTA=0`, 4 on the resumed path — a strict subset | the verdict, `k`, every counter. Only the fork path differs, so it **is** the resumed fork saturator, and the id-space sweep is green on it — **at seed 1 only**: at the third seed, 15839, `trace[answer]` moves 4 → 6 facts in one build (M1e2 W11, re-taken 2026-10-14) |
+| `d3-unsat-core.ein` | the printed **unsat core**: 6 facts under `EIN_FORK_DELTA=0`, 4 on the resumed path — a strict subset | the verdict, `k`, every counter. Only the fork path differs, so it **is** the resumed fork saturator; the id-space sweep was green on it at seed 1 only, and at the third seed, 15839, the walk's `trace[answer]` moved 4 → 6 facts in one build (M1e2 W11, re-taken 2026-10-14). **Refused since M1e2 S1e2.2.5**, and the refusal is the same under all eight seeds (S1e2.2.12, 2026-11-04), which the sweep checks per commit since it promoted the file to `examples/ein-bugs/` |
 | `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not the resumed fork's, though it reaches it**: the row moves under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and either row is a legitimate one — the filename is kept for the links, the note corrects the attribution. **Gone since M1e2's read-out printed every row sorted, and promoted to `examples/ein-bugs/d3-goal-row-order.ein` by M1e2 S1e2.3.4 (2026-11-03)**, so the id-order sweep permutes it per commit |
 
-Neither is reachable from a corpus entry. Both were one command to reproduce,
-and since M1e2 S1e2.2.5 the first exits 1 with *forbid*'s refusal —
+Both are corpus entries since, `d3-goal-row-order.ein` by M1e2 S1e2.3.4 and
+`d3-unsat-core.ein` by S1e2.2.12 (2026-11-04), under `examples/ein-bugs/`.
+Both were one command to reproduce, and since M1e2 S1e2.2.5 the first exits 1
+with *forbid*'s refusal —
 
 ```sh
 ein solve corpus/fuzz_findings/d3-unsat-core.ein --max-set-size 2

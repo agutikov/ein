@@ -1,5 +1,14 @@
 # d3-unsat-core
 
+**2026-11-04**: refused since M1e2 S1e2.2.5 (*forbid* with F2's *via*: `fire-0`
+concludes `(not …)` from `r1`, which `fire-1` derives under an `absent` a
+commitment can lift), the refusal the same under eight permutations of the
+interner (S1e2.2.12), and promoted by S1e2.2.12 to
+[`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein).
+*The id-space sweep is green on it* below was true at seed 1 only, of the
+walk: at the third seed its core moved 4 → 6 (M1e2 W11). The note below is
+the finding as it stood.
+
 - found: 2026-08-20, `utils/fuzz_engine.py --seed 20260820`, mode `mixed`
 - run: `solve --max-set-size 2 --max-enterings 300`
 - minimised: 14 → 9 forms

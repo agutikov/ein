@@ -1,5 +1,23 @@
 # unsat-core-id-space
 
+**Settled 2026-11-04** by M1e2
+[S1e2.2.12](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.12_core_id_order.md),
+the second of the user's two visits to W11. The core this note is about was
+the walk's, gone with it: under R the program is three states and its four
+dead sets have one core each, none of which moves under eight permutations of
+the interner with every core a run reports compared. The *decision nobody has
+taken* below had been taken in `explain.rs`: the smallest frontier, then the
+least by `repr` rank, never by id. What could still move a core was what the
+store is offered, a resumed fork's delta sorted by `FactId`, which
+[`fork-delta-order.ein`](fork-delta-order.md) showed and `10858b96` fixed.
+Promoted to
+[`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein);
+this file and its `.ein` stay as the dedup signature and a frontend-fuzzer
+seed. The blind pigeonhole below was measured (S1e2.2.12, eight seeds: R =
+{∅}, each member of N one placement and one core, nothing moves) and is not
+checked in: it has no tie left to break. The note below is the finding as it
+stood.
+
 - found: 2026-08-21, `utils/fuzz_engine.py --seed 20260821 --minutes 4`, mode
   `mixed`, by the rewritten fuzzer
   ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer))

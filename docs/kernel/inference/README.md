@@ -644,7 +644,10 @@ coefficients); when it lands, the solver doesn't move.
 **Determinism rule for new code.** Any hash set or map
 whose iteration order influences user-visible output (branch
 IDs, trace ordering, log lines, fixture-dependent test
-assertions) must be sorted at the iteration boundary. Membership-only
+assertions) must be sorted at the iteration boundary, by content: a `Symbol`
+has no order, but a `FactId` has one and it is the interner's, and a fork's
+delta sorted by it carried interning order into which derivation a dead node
+recorded first until M1e2 S1e2.2.12 (W11). Membership-only
 structures — the fired set, the negated index, the seen set — do not need
 sorting. The audit point is the read site, not the storage site. The rule is
 mechanically checked by
@@ -660,7 +663,9 @@ went with the walk at M1e2 S1e2.1c.5 (2026-11-03);
 [`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
 runs the whole corpus a second time with every interned name and integer
 assigned in a shuffled order and the `FactId` space offset, and requires the
-same answer; and
+same bytes from every op, narration included, since M1e2 S1e2.2.12, which
+added every core a run reports and `ein oracle --dump`'s cube to what it
+compares; and
 [`jobs_invariance.rs`](../../../ein.rs/crates/ein-render/tests/jobs_invariance.rs)
 requires the same bytes at one job count and at several.
 

@@ -252,7 +252,8 @@
 # `id_order_invariance` compares every core since. Its witness and both of
 # W11's earlier ones are corpus entries under `examples/ein-bugs/`, and the
 # sweep permutes them per commit. The flipped row's `[case.fixed]` carried the
-# null id in the flipping commit, and the stage's next commit wrote the hash.
+# null id in the flipping commit, `10858b96`, and the stage's next commit wrote the
+# hash.
 # The register reads **46 rows fixed, 2 open and 1 not-wrong**, both open rows
 # deferred to a followup.
 #
@@ -1107,7 +1108,7 @@ question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/d3-unsat-core.ein"
 status   = "fixed"
 look_at  = ["summary"]
-note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2"
+note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2. Promoted to examples/ein-bugs/ with it by S1e2.2.12 (T1e2.2.12.2, 10858b96)"
 
 [case.fixed]
 commit = "597b2b7e"
@@ -2616,6 +2617,7 @@ owner    = "S1e2.2.12"
 witness  = "examples/ein-bugs/unsat-core-id-space.ein"
 status   = "fixed"
 look_at  = ["refuted", "summary"]
+note     = "The user's second visit to W11 (2026-10-16) is S1e2.2.12's, read by the agent on 2026-11-04 (T1e2.2.12.1): confirmed. With every core a run reports compared (id_order_invariance's cores and oracle ops, EIN_ID_SEEDS=8), nothing this program reports moves: R three states, N's four members one core each. Promoted to examples/ein-bugs/ by T1e2.2.12.2 (10858b96), where the sweep permutes it per commit"
 
 [case.fixed]
 commit = "fbcae3b2"
@@ -2693,7 +2695,7 @@ owner    = "S1e2.2.5"
 witness  = "examples/ein-bugs/d3-unsat-core.ein"
 status   = "fixed"
 look_at  = ["refuted", "summary"]
-note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
+note     = "corpus/fuzz_findings/README.md said this file was green under a permuted id space, which was true at seed 1 only, of the walk; corrected by S1e2.2.12 (2026-11-04). The user's second visit to W11 is S1e2.2.12's, read by the agent (T1e2.2.12.1): confirmed, the refusal the same at eight seeds. Promoted to examples/ein-bugs/ by T1e2.2.12.2 (10858b96), where the sweep permutes it per commit"
 
 [case.fixed]
 commit = "597b2b7e"
@@ -2751,10 +2753,10 @@ owner    = "S1e2.2.12"
 witness  = "examples/ein-bugs/fork-delta-order.ein"
 status   = "fixed"
 look_at  = ["refuted", "summary"]
-note     = "Filed by S1e2.2.12's second visit to W11 (T1e2.2.12.1, 2026-11-04): no corpus core moved under EIN_ID_SEEDS=8 with every core compared, but a dead node's refuted_by did, through a fork's FactId-ordered delta, and this program is written to make that order reach a core. The core is a member of N's, which no read-out line prints: the row's id-order half is id_order_invariance's cores[describe] op, and [case.now] holds R, which does not move"
+note     = "Filed by S1e2.2.12's second visit to W11 (T1e2.2.12.1, 2026-11-04): no corpus core moved under EIN_ID_SEEDS=8 with every core compared, but a dead node's refuted_by did, through a fork's FactId-ordered delta, and this program is written to make that order reach a core. The core is a member of N's, which no read-out line prints: the row's id-order half is id_order_invariance's cores[describe] op, and [case.now] holds R, which does not move. Fixed by T1e2.2.12.2 (10858b96): the delta in the order its commitment was written, and N's member reports (g G08) (h H40) (on A) (on B) under every seed"
 
 [case.fixed]
-commit = "0000000"
+commit = "10858b96"
 by     = "T1e2.2.12.2: a resumed fork's delta in the order its commitment was written"
 date   = "2026-11-04"
 
