@@ -195,6 +195,15 @@ constrained-reasoning research.
   conclusion no fact can hold still stops the run with is Ein's, the rule
   and the slot as written: 60 fixed, 2 open (both deferred to a followup)
   and 1 not wrong.
+  S1e2.2.19 filed W19 from S1e2.2.17's notes the same day: a dead node's
+  core leaves out the activator its refutation rests on, since a derivation
+  records the premises its plan matched and not the activator the plan was
+  compiled from, so a core names a fact root holds, or nothing, three
+  witnesses, the register's schema `/8` recording N's cores: 60 fixed, 5
+  open and 1 not wrong. Which activators a core follows is Q-M1e2.12, put to
+  the user: following every activator moves the cores of 40 corpus
+  programs, a derived one those of three, and one only a node derives none
+  (S1e2.2.19's sweep, 2026-11-04).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

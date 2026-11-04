@@ -25,6 +25,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
 | [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
 | [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
+| [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **open**, put to the user 2026-11-04 by T1e2.2.19.1, the stage paused on it: (a) every activator, (b) a derived one (the stage file's narrower reading), (c) one only a node derives, the agent's recommendation, which moves no corpus core |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1422,3 +1423,76 @@ keeps (format 1.1, a `CLOSURE` section); the register's schema /6 holds a
 row's core; `alt-cap-core.ein` reports `(w1 X) (w2 X)`, its twin's, and
 `alt-cap-shared.ein` the three facts it did. No other corpus program's core
 moved (the sweep's 6 510 runs).
+
+## Q-M1e2.12 — Which activators does a dead node's core follow?
+
+Put to the user on 2026-11-04 by
+[S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md)'s step 1
+([T1e2.2.19.1](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md#task-t1e22191--the-witnesses-banked-w19-filed-every-core-measured)).
+W19: a derivation records the premises its plan matched and not the activator
+the plan was compiled from, so a dead node's core leaves out a commitment that
+reaches its refutation only through an activator.
+[`forbid-chain-no-absent.ein`](../../examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein)'s
+dead `{(p a)}` reports `(seed a)`, a fact root holds while root is alive, and
+[`core-activator-guard-only.ein`](../../examples/ein-bugs/wrong-answers/core-activator-guard-only.ein)'s
+reports nothing. The fix records each derivation's activator and lets the
+frontier search follow it, as it follows a premise. Which activators it
+follows decides which facts a core names, and the stage file stops there: if
+following only a derived one moves a corpus core beyond the witnesses, or the
+two readings differ on one, *which facts a core names is the user's
+question*. Both happened.
+
+What step 1 measured: a prototype with the reading as a lever, and the
+stage's sweep, S1e2.2.18's with this stage's probes, 384 files × 24 runs,
+every core a run reports compared against `a41eb76e`'s (2026-11-04,
+`build/s1e2.2.19/`, the numbers the stage file's):
+
+| reading | an activator is followed when | corpus programs whose cores move, past the witness | cores moved | `corpus_shapes` lines |
+|---|---|---:|---:|---:|
+| (a) *every* | always | 40 | 69 057 | 471 |
+| (b) *a derived one*, the stage file's narrower | its own primary derivation is a rule's | 3 | 4 496 | 82 |
+| (c) *one only a node derives* | the node derived or committed it: a fork's record | 0 | 0 | 11 |
+
+- **(a) *every activator*.** A core then names the declarations its refuting
+  plans were compiled from: `(functional is-a)`, `(transitive co-located)`
+  and `(symmetric co-located)` across `branching/01`–`/11`, `(bijective
+  color-loc)` on `domain_elim/b_branch`, `(functional seats)` or
+  `(functional sits)` and their `injective` on `lattice/05`–`/07`, and in
+  root's core each stdlib
+  violation test's declaration (`tests/stdlib/algebra/09`–`/20`,
+  `bijection/04`–`/06`, `elim/02`–`/04`, `slots/05`–`/06`, `typing/02`). It
+  is the reading under which every core, read with the rules' text alone,
+  derives `(false)`. Some cores stop naming their commitment: with the
+  `(false)` derivations larger, a pair contradiction's positive side,
+  explained alone, wins more often (S1e2.2.19 § Notes): 4 103 more dead-node
+  cores name none of their commitment (`bijection/06` 4 097,
+  `branching/12` 6). A `.einb` must carry each record's activator, since
+  root's are followed: a format change.
+- **(b) *a derived activator*.** It does not keep a declaration out: one
+  enters through the activators root derives from it. `(bijective
+  color-loc)` joins 132 of `domain_elim/b_branch`'s 135 cores through
+  `(functional color-loc)` and `(injective color-loc)`, which root's
+  `bijective-properties` derives from it; `(type-hierarchy is-a*)` joins
+  `typing/02`'s root core; on `bijection/06` 263 cores gain `(bijective
+  seats)`, `(relation seats Guest Chair)` and `(typecheck-hierarchy is-a*)`
+  through `typecheck-setup`'s activators, and 4 097 swap the commitment
+  `(seats Ann Bob)` for root's `(seats Ann C1)`, the pair contradiction
+  again. As worded it leaves `W19/core-activator-committed` wrong, a
+  commitment that is the activator being no rule's; read as *a rule derived
+  it or the node committed it*, it moves the same corpus cores. A `.einb`
+  format change too.
+- **(c) *an activator only a node derives*** — **the agent's
+  recommendation**. Root's activators, stated or derived, are the program's,
+  as the plans root compiles from them are its rules; a plan only a node
+  compiles, the rules root has no plan of (S1e2.2.17's D⁺), rests on the
+  activator the node derived or committed, and the core follows it. W19's
+  three rows are fixed and no corpus core moves: the sweep moves 43 runs,
+  the witness's and the probes' cores, and two `alt` events on each of the
+  four `binding-key` programs, since a derivation's identity gains its
+  activator (narration). *With the program's rules* in the stage's
+  acceptance reads as root's plans: `(p a) (seed a)` derives `(q a)` by
+  `mk`, which compiles `q`'s plan, and so to `(false)`. No `.einb` change: a
+  `.einb` is root's KB, whose activators are never followed. The boundary
+  is two corpus entries banked for it, `core-activator-given.ein` and
+  `core-activator-root-derived.ein`, whose cores (a) moves and (b) moves
+  one of.

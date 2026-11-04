@@ -412,7 +412,34 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
             + (f", R empty ({now['empty']})" if now.get("empty") else "")
             + f", which is the register's `right`, *{right.get('verdict', '—')}, k = {right.get('k', '—')}* — "
             "`ein-corpus` holds `[case.now]` to it, and this build re-ran it (§ 3, § 4, § 5)."
-            + outside_clause(now, right) + core_clause(now, right), ""]
+            + outside_clause(now, right) + core_clause(now, right) + nogoods_clause(now, right), ""]
+
+
+def nogoods_text(n: list | None) -> str:
+    """N's members and their cores (schema /8, M1e2 S1e2.2.19, W19), one per
+    line: `{set} → core`."""
+    if n is None:
+        return "—"
+    return "<br>".join(f"{set_text(x.get('set'))} → {' '.join(x.get('core') or []) or '∅'}" for x in n) or "∅"
+
+
+def live_nogoods(r: RunResult | None) -> list | None:
+    """The run's `--dump-answer` `nogoods.json`, as the register spells it."""
+    if r is None:
+        return None
+    path = r.out / "raw" / "answer" / "nogoods.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text())
+
+
+def nogoods_clause(now: dict, right: dict) -> str:
+    """A fixed W19 row's N cores (M1e2 S1e2.2.19, schema /8): what the run
+    reports, `right`'s, and that `wrong_answers.rs` holds them."""
+    if right.get("nogoods") is None:
+        return ""
+    return (f" N's cores are {nogoods_text(now.get('nogoods'))}, as `right`'s are; `wrong_answers.rs` holds "
+            "`[case.now] nogoods`, `--dump-answer`'s `nogoods.json`, to them.")
 
 
 def core_clause(now: dict, right: dict) -> str:
@@ -631,6 +658,11 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
                       if c.right is not None else
                       (" ".join(c.answer.get("core", [])) or ("—" if "core" not in c.answer else "∅"))
                       if c.recorded else (" ".join(region.get("core") or []) or "—"))],
+        # N's members and their cores (schema /8, M1e2 S1e2.2.19, W19): a
+        # dead node's core, where `core` above is root's.
+        ["N's cores", *per(lambda c: nogoods_text(c.right.get("nogoods")) if c.right is not None else
+                           nogoods_text(c.answer.get("nogoods")) if c.recorded else
+                           nogoods_text(live_nogoods(c.result)))],
         ["the register's `now`", *per(lambda c: "—" if c.result is None else
                                       ("**matches**" if not diffs else "**differs**: " + "; ".join(diffs)))],
     ]

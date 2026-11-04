@@ -1,0 +1,37 @@
+;;; A dead node's core leaves out the activator its refutation rests on, where
+;;; the refuting plan matches no fact — M1e2 **W19**, register row
+;;; `W19/core-activator-guard-only` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.19 (2026-11-04), found by probing `forbid-chain-no-absent.ein`'s
+;;; mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two candidates, `(p a)` and `(p2 a)`. `mk` derives `(w a)` from `(p a)`.
+;;; `(w a)` is an activator: the plan of `w` it compiles has a guard and no
+;;; pattern, `(eq a a)`, which holds, so it concludes `(false)` with no
+;;; premise. Root holds no `p`, so it compiles no plan of `w`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is two states, ∅ and {(p2 a)}; N is {(p a)}. Its refutation rests on
+;;; the activator `(w a)`, which rests on `(p a)`: the core is `(p a)`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R as above, exit 0; and N's core is empty, by `w`, in `--dump-answer`'s
+;;; `nogoods.json`, `--dump-lattice`'s `nodes.json`, `--events`' `enter`
+;;; line, `--trace` and `ein oracle --dump` (`ein solve FILE --dump-answer
+;;; DIR` at `a41eb76e`, release and debug): a dead node with a 0-fact core,
+;;; which `open_questions.md`'s Q-M1e2.4 says no region run reports, a census
+;;; of root cores. The derivation of `(false)` records no premise, so the
+;;; core search reads it as an engine write, derivable from nothing.
+
+(relation seed T) (relation p T) (relation p2 T) (relation w T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk () :match (p ?x) :assert (w ?x))
+(rule w (?n) :match (eq ?n a) :assert (false))

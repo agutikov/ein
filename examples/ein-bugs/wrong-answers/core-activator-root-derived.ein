@@ -1,0 +1,22 @@
+;;; A boundary of M1e2 **W19** (`corpus/wrong_answers.toml`, S1e2.2.19,
+;;; 2026-11-04): the activator is one root derives from a fact the program
+;;; states.
+;;;
+;;; `mk0` derives `(r2 a)` from the given `(start a)`, so root compiles the
+;;; plan of `r2`, which concludes `(false)` from the commitment `(p a)`. R is
+;;; two states, ∅ and {(p2 a)}; N is {(p a)}, and its core is `(p a)` (`ein
+;;; solve FILE --dump-answer DIR` at `a41eb76e`). Whether the core also names
+;;; what root derived the activator from, `(p a) (start a)`, is Q-M1e2.12:
+;;; it does under *every activator* and under *a derived one*, the stage
+;;; file's two readings, and not under *one only a node derives*.
+
+(relation seed T) (relation start T) (relation p T) (relation p2 T) (relation r2 T)
+
+(seed a)
+(start a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk0 () :match (start ?x) :assert (r2 ?x))
+(rule r2 (?k) :match (p ?k) :assert (false))

@@ -1,0 +1,39 @@
+;;; A dead node's core leaves out the activator its refutation rests on, where
+;;; the activator is the commitment itself — M1e2 **W19**, register row
+;;; `W19/core-activator-committed` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.19 (2026-11-04), found by probing `forbid-chain-no-absent.ein`'s
+;;; mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two candidates, `(r2 a)` and `(p2 a)`. `(r2 a)` is an activator: the
+;;; plan of `r2` it compiles concludes `(false)` from `(seed a)`. Root holds
+;;; neither candidate, so it compiles no plan of `r2`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is two states, ∅ and {(p2 a)}; N is {(r2 a)}. Its refutation rests on
+;;; `(seed a)`, which the plan matched, and on `(r2 a)`, the activator the
+;;; plan was compiled from: the core is `(r2 a) (seed a)`, which names the
+;;; commitment. `(seed a)` alone is root's, and root is alive.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R as above, exit 0; and N's core is `(seed a)` alone, by `r2`, in
+;;; `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s `nodes.json`,
+;;; `--events`' `enter` line, `--trace` and `ein oracle --dump` (`ein solve
+;;; FILE --dump-answer DIR` at `a41eb76e`, release and debug). A derivation
+;;; records the premises its plan matched, not the activator the plan was
+;;; compiled from, so the core search never reaches the commitment. Which
+;;; activators a core follows is Q-M1e2.12, S1e2.2.19's question: read as
+;;; the stage file's narrower reading is worded, *only an activator that is
+;;; itself derived*, this one, a commitment, would still be left out.
+
+(relation seed T) (relation r2 T) (relation p2 T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (r2 ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule r2 (?k) :match (seed ?k) :assert (false))

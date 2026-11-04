@@ -330,6 +330,21 @@
 # commit wrote the hash. The register reads **60 rows fixed, 2 open and 1
 # not-wrong**, both open rows deferred to a followup.
 #
+# **W19 was filed on 2026-11-04 by S1e2.2.19** (T1e2.2.19.1), from
+# S1e2.2.17's parked note: a dead node's core leaves out the activator its
+# refutation rests on, because a derivation records the premises its plan
+# matched and not the activator the plan was compiled from. Three rows, all
+# `open`: S1e2.2.17's loading control `forbid-chain-no-absent`, whose core is
+# `(seed a)`, root's, though root is alive; a commitment that is itself the
+# activator; and a plan that matches no fact, whose core is empty. **Schema
+# /8**: a row can state the cores of `N`'s members (`nogoods`, each set and
+# its core), which `--dump-answer`'s `nogoods.json` reports and the summary
+# does not, its `region.core` being root's. Which activators a core follows
+# is Q-M1e2.12, put to the user by the same task, since the stage file's two
+# readings move cores beyond the witnesses; each row's `right` is the same
+# under all three. A row's `wrong` is a region run's at `a41eb76e`. The
+# register reads **60 rows fixed, 5 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -401,6 +416,11 @@
 #     core      (schema /6, M1e2 S1e2.2.11) the unsat core the run reports,
 #               the summary's `region.core`, sorted; stated exactly when
 #               `[case.right]` states a core (W10's rows)
+#     nogoods   (schema /8, M1e2 S1e2.2.19) each member of N the run reports
+#               and its core, `[{ set = [...], core = [...] }]`, each sorted
+#               and the list by set: `--dump-answer`'s `nogoods.json`, which
+#               `wrong_answers.rs` asks for; stated exactly when
+#               `[case.right]` states N's cores (W19's rows)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -420,6 +440,7 @@
 #               not stated on a run that ends in an error
 #     k, exhausted
 #     core      the unsat core, as a set; required on every `Contradiction`
+#     nogoods   (schema /8) N's members and their cores, as `[case.now]`'s
 #     closes    the relations a model is compared on — naming a relation
 #               closes it, `:expect`'s rule, so `models = [[]]` with
 #               `closes = ["q"]` is *one model with no q fact*, which
@@ -441,7 +462,8 @@
 #     read-out would add (W6). `outside` (schema /5, M1e2 S1e2.2.8) is the
 #     relations the right read-out names outside the universe; with it, the
 #     `qualifier` is that read-out's `outside` row, and `wrong_answers.rs`
-#     holds the run's stdout to print it.
+#     holds the run's stdout to print it. `nogoods` (schema /8, M1e2
+#     S1e2.2.19) is N's members and the core each should report.
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -484,7 +506,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/7"
+schema = "ein-wrong-answers/8"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -4428,6 +4450,159 @@ relations = ["tag"]
 models    = [
   ["(tag 1 lbl)", "(tag a lbl)"],
 ]
+
+# ══ W19 — a dead node's core leaves out the activator its refutation rests on ══
+[[case]]
+id       = "W19/forbid-chain-no-absent"
+case     = "W19"
+title    = "a dead node's core leaves out the activator its refutation rests on"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.19"
+question = ["Q-M1e2.11", "Q-M1e2.12"]
+witness  = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
+status   = "open"
+open_because = "N's core is (seed a), root's: a derivation records the premises its plan matched, not the activator the plan was compiled from, so neither explain.rs's frontier search nor region.rs's absent_premises reaches the commitment; the fix follows the activator, and which activators a core follows is Q-M1e2.12, put to the user by T1e2.2.19.1 (2026-11-04): this row's right is the same under each of its three readings"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04) from S1e2.2.17 § Notes' first note; the witness is W17's loading control, banked by S1e2.2.17. The first row whose answer is a dead node's core, schema /8 (`nogoods`, --dump-answer's nogoods.json): the summary's region.core is root's. W17's five witnesses, studied past *forbid*'s refusal (forbid::studying), report the same core, (seed a), and the read-out's minimal hole line prints it (`dead: (seed a)`); refused at the CLI, they are no rows here"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ff023413 and re-taken at a41eb76e (2026-11-04): R two states, ∅ and {(p2 a)}; N {(p a)}, whose core is (seed a) by r2 in --dump-answer's nogoods.json, and the same in --dump-lattice's nodes.json, --events' enter line, --trace and `ein oracle --dump`'s region.json, where the superset {(p a), (p2 a)} reports it too"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = ["(seed a)"] }]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p2 a)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = ["(p a)", "(seed a)"] }]
+derived   = "The core is the facts the refutation rests on, the smallest frontier over every derivation the program records (Q-M1e2.11 (i)(b)). (false) rests on r2's plan, which matched (seed a) and was compiled from the activator (r2 a); (r2 a) rests on q's plan, which matched (seed a) and was compiled from (q a); (q a) rests on (p a) through mk. So the core is (p a) (seed a), which names the commitment and derives (false) with the program's rules. (seed a) alone is root's, and root is alive: no refutation. Every reading of Q-M1e2.12 gives this core, since root holds neither activator"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["p", "p2"]
+outside   = ["q"]
+models    = [
+  [],
+  ["(p2 a)"],
+]
+nogoods   = [{ set = ["(p a)"], core = ["(seed a)"] }]
+
+[[case]]
+id       = "W19/core-activator-committed"
+case     = "W19"
+title    = "a dead node's core leaves out the activator its refutation rests on"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.19"
+question = ["Q-M1e2.11", "Q-M1e2.12"]
+witness  = "examples/ein-bugs/wrong-answers/core-activator-committed.ein"
+status   = "open"
+open_because = "N's core is (seed a), root's: a derivation records the premises its plan matched, not the activator the plan was compiled from, so neither explain.rs's frontier search nor region.rs's absent_premises reaches the commitment; the fix follows the activator, and which activators a core follows is Q-M1e2.12, put to the user by T1e2.2.19.1 (2026-11-04): this row's right is the same under each of its three readings"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04), found by probing the witness's mechanism (build/s1e2.2.19/probes/hyp-activator.ein): the commitment is itself the activator, so no rule derives it. Read as the stage file's narrower reading is worded, an activator followed only where it is itself derived, this core would stay (seed a): the reading that keeps a declaration out has to keep a commitment in"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at a41eb76e (2026-11-04): R two states, ∅ and {(p2 a)}; N {(r2 a)}, whose core is (seed a) by r2 in --dump-answer's nogoods.json, and the same in --dump-lattice's nodes.json, --events' enter line, --trace and `ein oracle --dump`'s region.json"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(r2 a)"], core = ["(seed a)"] }]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p2 a)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(r2 a)"], core = ["(r2 a)", "(seed a)"] }]
+derived   = "(false) rests on r2's plan, which matched (seed a) and was compiled from the activator (r2 a), the commitment. So the core is (r2 a) (seed a), which names the commitment. (seed a) alone is root's, and root is alive"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["p2", "r2"]
+models    = [
+  [],
+  ["(p2 a)"],
+]
+nogoods   = [{ set = ["(r2 a)"], core = ["(seed a)"] }]
+
+[[case]]
+id       = "W19/core-activator-guard-only"
+case     = "W19"
+title    = "a dead node's core leaves out the activator its refutation rests on"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.19"
+question = ["Q-M1e2.11", "Q-M1e2.12"]
+witness  = "examples/ein-bugs/wrong-answers/core-activator-guard-only.ein"
+status   = "open"
+open_because = "N's core is empty: a derivation records the premises its plan matched, not the activator the plan was compiled from, so neither explain.rs's frontier search nor region.rs's absent_premises reaches the commitment; the fix follows the activator, and which activators a core follows is Q-M1e2.12, put to the user by T1e2.2.19.1 (2026-11-04): this row's right is the same under each of its three readings"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.19 (T1e2.2.19.1, 2026-11-04), found by probing the witness's mechanism (build/s1e2.2.19/probes/premiseless.ein): w's plan has a guard and no pattern, so the derivation of (false) records no premise and the core search reads it as an engine write, derivable from nothing. A dead node with a 0-fact core, which Q-M1e2.4's closing census (root cores, 2026-11-03) did not see"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at a41eb76e (2026-11-04): R two states, ∅ and {(p2 a)}; N {(p a)}, whose core is empty, by w, in --dump-answer's nogoods.json, and the same in --dump-lattice's nodes.json, --events' enter line, --trace and `ein oracle --dump`'s region.json"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = [] }]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p2 a)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = ["(p a)"] }]
+derived   = "(false) rests on w's plan, which matched nothing and was compiled from the activator (w a); (w a) rests on (p a) through mk. So the core is (p a), the commitment"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["p", "p2"]
+outside   = ["w"]
+models    = [
+  [],
+  ["(p2 a)"],
+]
+nogoods   = [{ set = ["(p a)"], core = [] }]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

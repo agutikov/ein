@@ -20,6 +20,10 @@
 //! **Since M1e2 S1e2.2.5 a `now` can be a refusal** (*forbid*): the run exits
 //! 1, its stderr's first line is the recorded one, and it writes no summary.
 //!
+//! **Since M1e2 S1e2.2.19 a `now` can record `N`'s cores** (schema /8, W19):
+//! a dead node's core is not in the summary, whose `region.core` is root's,
+//! so the run also writes `--dump-answer`, and its `nogoods.json` is read.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -34,7 +38,7 @@
 use std::path::Path;
 use std::process::Command;
 
-use ein_corpus::register::{Now, Row};
+use ein_corpus::register::{Nogood, Now, Row, sorted_nogoods};
 use ein_corpus::{Scratch, plan, register, repo_root};
 use serde_json::Value as J;
 
@@ -44,12 +48,20 @@ struct Got {
     stdout: String,
     stderr: String,
     summary: Option<J>,
+    /// `--dump-answer`'s `nogoods.json`, where the row records `N`'s cores.
+    nogoods: Option<J>,
 }
 
 fn run(row: &Row, dir: &Path) -> Got {
     let mut argv = plan::argv(&row.now.run, &row.witness, dir);
     // `-H` lists H, whose relations are what a state's `(model …)` names.
     argv.push("-H".to_string());
+    // A dead node's core is the answer directory's (M1e2 S1e2.2.19, W19).
+    let answer = dir.join("answer");
+    if row.now.nogoods.is_some() {
+        argv.push("--dump-answer".to_string());
+        argv.push(answer.display().to_string());
+    }
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .args(&argv)
         .current_dir(repo_root())
@@ -58,12 +70,41 @@ fn run(row: &Row, dir: &Path) -> Got {
     let summary = std::fs::read_to_string(dir.join("summary.json"))
         .ok()
         .map(|s| serde_json::from_str(&s).expect("summary.json parses"));
+    let nogoods = std::fs::read_to_string(answer.join("nogoods.json"))
+        .ok()
+        .map(|s| serde_json::from_str(&s).expect("nogoods.json parses"));
     Got {
         code: out.status.code().unwrap_or(-1),
         stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
         stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
         summary,
+        nogoods,
     }
+}
+
+/// `nogoods.json`'s sets and cores, sorted as the register compares them.
+fn nogoods_of(j: &J) -> Vec<Nogood> {
+    let strs = |x: &J| -> Vec<String> {
+        x.as_array()
+            .map(|v| {
+                v.iter()
+                    .filter_map(|s| s.as_str().map(str::to_string))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    let n: Vec<Nogood> = j
+        .as_array()
+        .map(|v| {
+            v.iter()
+                .map(|x| Nogood {
+                    set: strs(&x["set"]),
+                    core: strs(&x["core"]),
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    sorted_nogoods(&n)
 }
 
 /// The relations `-H` lists, sorted.
@@ -148,6 +189,12 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         c.sort();
         c
     });
+    // N's cores, where the row records them (M1e2 S1e2.2.19, W19).
+    let nogoods = match (&row.now.nogoods, &got.nogoods) {
+        (None, _) => None,
+        (Some(_), Some(j)) => Some(nogoods_of(j)),
+        (Some(_), None) => return Err("no nogoods.json was written".to_string()),
+    };
     Ok(Now {
         run: row.now.run.clone(),
         line,
@@ -160,6 +207,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         models,
         outside,
         core,
+        nogoods,
     })
 }
 
@@ -201,6 +249,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "core",
         format!("{:?}", want.core),
         format!("{:?}", got.core),
+    );
+    field(
+        "nogoods",
+        format!("{:?}", want.nogoods.as_deref().map(sorted_nogoods)),
+        format!("{:?}", got.nogoods),
     );
     out
 }

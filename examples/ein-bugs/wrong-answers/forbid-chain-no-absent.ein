@@ -11,6 +11,19 @@
 ;;; `3efd3f5f`). The fix that refuses the witness reads the same chain here
 ;;; and must not refuse it, nor move R; since S1e2.2.17 it reads it, and
 ;;; neither moved.
+;;;
+;;; ── M1e2 W19 ───────────────────────────────────────────────────────────
+;;;
+;;; Since S1e2.2.19 (2026-11-04) this is also the witness of **W19**,
+;;; register row `W19/forbid-chain-no-absent`: a dead node's core leaves out
+;;; the activator its refutation rests on. N is {(p a)}, and its core is
+;;; `(seed a)` alone, by `r2` (`ein solve FILE --dump-answer DIR`'s
+;;; `nogoods.json` at `ff023413`, re-taken at `a41eb76e`, release and debug):
+;;; a fact root holds, and root is alive, so it refutes nothing. The
+;;; refutation rests on `(p a)` through the activators `(q a)` and `(r2 a)`,
+;;; and a derivation records the premises its plan matched, not the
+;;; activator the plan was compiled from. The core that names it is
+;;; `(p a) (seed a)`.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
 

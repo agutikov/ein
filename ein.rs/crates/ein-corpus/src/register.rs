@@ -46,8 +46,12 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// M1e2 S1e2.2.18 (2026-11-04): a recorded answer and a `now` can be a run
 /// that **ended in an error** before it answered ([`Answer::error`],
 /// [`Now::error`]), exit 1 with no verdict, W18's `str-in-assert`; such a
-/// `now` is never `right`, and states no [`Region`].
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/7";
+/// `now` is never `right`, and states no [`Region`]. `/8` since M1e2
+/// S1e2.2.19 (2026-11-04): a `now` whose `right` states the cores of `N`'s
+/// members records the cores its run reports ([`Now::nogoods`],
+/// `--dump-answer`'s `nogoods.json`), W19's: a dead node's core, where
+/// [`Now::core`] is root's.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/8";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -297,6 +301,40 @@ pub struct Now {
     /// which is a core row's: what W10 is about.
     #[serde(default)]
     pub core: Option<Vec<String>>,
+    /// Each member of `N` the run reports and its core — `--dump-answer`'s
+    /// `nogoods.json` (M1e2 S1e2.2.19, W19), each set and core sorted, the
+    /// list sorted by set. Recorded exactly where [`Right::nogoods`] is
+    /// stated: [`Self::core`] is root's, and a dead node's core is not.
+    #[serde(default)]
+    pub nogoods: Option<Vec<Nogood>>,
+}
+
+/// A minimal dead set and the core its run reports for it — schema `/8`
+/// (M1e2 S1e2.2.19, W19): one entry of `--dump-answer`'s `nogoods.json`,
+/// its `refuted_by` left out.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Nogood {
+    /// The commitment, sorted.
+    pub set: Vec<String>,
+    /// Its core, sorted.
+    pub core: Vec<String>,
+}
+
+/// `nogoods` as the register compares them: each set and core sorted, and
+/// the list sorted.
+pub fn sorted_nogoods(n: &[Nogood]) -> Vec<Nogood> {
+    let mut v: Vec<Nogood> = n
+        .iter()
+        .map(|x| {
+            let (mut set, mut core) = (x.set.clone(), x.core.clone());
+            set.sort();
+            core.sort();
+            Nogood { set, core }
+        })
+        .collect();
+    v.sort();
+    v
 }
 
 impl Now {
@@ -371,6 +409,14 @@ impl Now {
             want.sort();
             if Some(&want) != self.core.as_ref() {
                 out.push(format!("core: right {want:?}, now {:?}", self.core));
+            }
+        }
+        // N's cores (schema /8, M1e2 S1e2.2.19, W19).
+        if let Some(n) = &right.nogoods {
+            let want = sorted_nogoods(n);
+            let got = self.nogoods.as_deref().map(sorted_nogoods);
+            if Some(&want) != got.as_ref() {
+                out.push(format!("nogoods: right {want:?}, now {got:?}"));
             }
         }
         let over: Vec<String> = right
@@ -464,6 +510,10 @@ pub struct Answer {
     pub exhausted: bool,
     #[serde(default)]
     pub core: Option<Vec<String>>,
+    /// Each member of `N` and its core, as the run reported them — schema
+    /// `/8` (M1e2 S1e2.2.19, W19's `wrong`).
+    #[serde(default)]
+    pub nogoods: Option<Vec<Nogood>>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -535,6 +585,11 @@ pub struct Right {
     pub exhausted: Option<bool>,
     #[serde(default)]
     pub core: Option<Vec<String>>,
+    /// Each member of `N` and the core the definitions give it — schema `/8`
+    /// (M1e2 S1e2.2.19, W19): the facts its refutation rests on, which name
+    /// the commitment.
+    #[serde(default)]
+    pub nogoods: Option<Vec<Nogood>>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -665,6 +720,19 @@ impl Register {
                 && c.windows(2).any(|w| w[0] > w[1])
             {
                 out.push(at("[now] core is sorted".to_string()));
+            }
+            // N's cores (schema /8, M1e2 S1e2.2.19).
+            if r.now.nogoods.is_some() != r.right.nogoods.is_some() {
+                out.push(at(
+                    "[now] records N's cores exactly when [right] states them".to_string(),
+                ));
+            }
+            if let Some(n) = &r.now.nogoods
+                && sorted_nogoods(n) != *n
+            {
+                out.push(at(
+                    "[now] nogoods are sorted: each set and core, and the list by set".to_string(),
+                ));
             }
             if !LINES.contains(&r.now.line.as_str()) {
                 out.push(at(format!(
@@ -1122,6 +1190,7 @@ mod tests {
             models: Vec::new(),
             outside: Vec::new(),
             core: None,
+            nogoods: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
@@ -1148,6 +1217,57 @@ mod tests {
             defects(&s)
                 .iter()
                 .any(|d| d.contains("a refusal or an error, not both"))
+        );
+    }
+
+    /// **N's cores**, schema /8 (M1e2 S1e2.2.19, W19): a `now` records them
+    /// exactly where `right` states them, sorted, and a fixed row's must be
+    /// `right`'s, set for set.
+    #[test]
+    fn a_dead_nodes_core_is_compared_set_for_set() {
+        let row = register()
+            .case
+            .into_iter()
+            .find(|r| r.now.nogoods.is_some())
+            .expect("W19's rows record N's cores");
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        let mut r = row.clone();
+        r.right.nogoods = None;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("exactly when [right] states them"))
+        );
+        let mut r = row.clone();
+        r.now.nogoods = Some(vec![Nogood {
+            set: vec!["(z a)".to_string(), "(a a)".to_string()],
+            core: Vec::new(),
+        }]);
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("[now] nogoods are sorted"))
+        );
+        // The comparison: the right core against the run's, set for set.
+        let mut r = row.clone();
+        let right = r.right.nogoods.clone().expect("stated");
+        r.now.nogoods = Some(right.clone());
+        assert!(r.now.against(&r.right).is_empty());
+        let mut other = right;
+        other[0].core = vec!["(elsewhere)".to_string()];
+        r.now.nogoods = Some(other);
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .any(|d| d.starts_with("nogoods: "))
         );
     }
 
