@@ -261,6 +261,19 @@ by a test, and no exit code moved.
   corpus files moved, and on each of the 7 the named command exits 0 with the
   oracle's count of states. Held by
   `read_out::the_oracles_read_out_names_the_command_that_writes_its_rest`.
+- **N5. The fact printer does not print the fact.** Found after the phase
+  closed, 2026-11-04, while S1e2.2.16 (W16) was filed. **Parked, not
+  asked** (the user's *stay in phase scope*): it is put to the user when
+  P1e2.2 ends, with where it goes, since this phase is closed. A string
+  argument loses its quotes and a wildcard argument disappears.
+  `ein saturate --dump examples/syntax/arg-kinds.ein` prints `(r 7 "a
+  string")` as `(r 7 a string)` and `(r _ ?x)` as `(r ?x)` (at `5fd72d03`).
+  `ein solve --dump-answer DIR`, whose states are each to be loadable, writes
+  a state's facts the same way: `(holds "x")` is written `(holds x)`, and
+  re-loading `DIR/models/01.ein` holds three `holds` facts where the state
+  held two (`build/s1e2.2.7/textkey/str-space.ein`). The int `1` and the
+  string `"1"` print alike, so the read-out cannot tell two facts apart that
+  the KB holds apart.
 
 ## Acceptance for the phase
 
