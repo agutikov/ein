@@ -14,12 +14,14 @@
 ;;; is `∅` and `{(tag a)}`. It is the answer of `wild-in-hrule-twin.ein`,
 ;;; this file with `_` written as `?any`.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; H is empty: `_` is an opaque slot that matches nothing, so the hrule
-;;; matches no fact and proposes no candidate. `ein solve FILE` at
-;;; `c73a0796` prints *no candidate: R is {∅} or empty, decided by root
-;;; alone*, and R is `{∅}`, in a release build and a debug one.
+;;; Until S1e2.2.20 H was empty: `_` was an opaque slot that matched nothing,
+;;; so the hrule matched no fact and proposed no candidate. `ein solve FILE`
+;;; at `c73a0796` printed *no candidate: R is {∅} or empty, decided by root
+;;; alone*, and R was `{∅}`, in a release build and a debug one. Since then
+;;; `_` matches any value, the hrule proposes `(tag a)`, and the program
+;;; answers its twin's R.
 
 (relation holds Node Node) (relation tag Node)
 (holds a b)

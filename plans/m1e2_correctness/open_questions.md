@@ -27,7 +27,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
 | [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load |
-| [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **open**, put to the user 2026-11-05 by T1e2.2.20.1: the ruling's head `_` needs a second matching path; three ways measured, (c) recommended |
+| [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns* |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1641,3 +1641,12 @@ names, 18 relations and 26 rules; root holds 388 facts, its largest extent
 Whichever is ruled, the line the head `_` prints today goes: it is the
 Python IR's spelling of the pattern (`SForm(head=Wildcard(), …)`), under
 `ein saturate` with `ein.inference.compile.CompileError:` before it.
+
+**Ruled 2026-11-05: (c)** (the user, on T1e2.2.20.1's hand-back,
+`d8cfc4dd`): a head `_` is refused at load, with a line in Ein's spelling,
+as a range is, wherever a `_` would be a relation head: a premise's, a
+nested pattern's such as `(box (_ a))`, one under `absent` such as
+`(absent (_ b))`, and a conclusion's. The argument `_` matches any value, as
+prototyped. `W20/wild-in-head`'s `right` becomes a refusal, and
+`01_grammar.md`'s token table row reads *argument wildcard in patterns*.
+S1e2.2.20 builds it.

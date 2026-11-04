@@ -1576,7 +1576,7 @@ fn ground(plan: &Plan, g: &NafGuard, slot: &Slot, regs: &[Value]) -> NafArg {
                 .map(|s| ground(plan, g, s, regs))
                 .collect(),
         },
-        Slot::Opaque(_) => NafArg::Free,
+        Slot::Any | Slot::Opaque(_) => NafArg::Free,
     }
 }
 

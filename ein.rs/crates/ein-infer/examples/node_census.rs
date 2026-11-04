@@ -388,7 +388,7 @@ fn refs_of(plan: &Plan, d: &Disjunct, regs: &[Value]) -> Vec<NafRef> {
                     .map(|s| ground(plan, g, s, regs))
                     .collect(),
             },
-            Slot::Opaque(_) => NafArg::Free,
+            Slot::Any | Slot::Opaque(_) => NafArg::Free,
         }
     }
     fn collect(plan: &Plan, g: &NafGuard, span: Span, regs: &[Value], out: &mut Vec<NafRef>) {

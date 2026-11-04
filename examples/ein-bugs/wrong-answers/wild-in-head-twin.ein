@@ -2,10 +2,12 @@
 ;;; (2026-11-05): the same program with the head wildcard written out as the
 ;;; disjunction over the relations it has that a one-argument fact can
 ;;; belong to, `holds` and `hit`. A fresh variable is no twin for a head (M1
-;;; binds a relation head by the activator, Q29). Its answer is the
-;;; witness's right one: `w` fires on `(holds a)`, root holds `(hit w)`, and
-;;; R is `{(hit w)}` and `{(hit a), (hit w)}` (`ein solve FILE` at
-;;; `c73a0796`, release and debug).
+;;; binds a relation head by the activator, Q29). `w` fires on `(holds a)`,
+;;; root holds `(hit w)`, and R is `{(hit w)}` and `{(hit a), (hit w)}`
+;;; (`ein solve FILE` at `c73a0796`, release and debug). It was the witness's
+;;; right answer until the user ruled Q-M1e2.14 (c) on 2026-11-05: a head `_`
+;;; is refused at load, so the witness's right answer is that refusal, and
+;;; this is the answer of the program written out, which loads.
 
 (relation holds Node) (relation hit Node)
 (holds a)

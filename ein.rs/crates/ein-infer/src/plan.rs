@@ -85,9 +85,17 @@ pub enum Slot {
     Const(Value),
     /// A sub-pattern matched against a `Fact`-valued argument (Q40 option A).
     Nested { rel: Symbol, slots: Span },
-    /// An IR node the compiler's `slot` returned unchanged — a `String`, a `Wildcard`, a
-    /// `Range`, a `KwPair`, or an `SForm` whose head is neither an atom nor a
-    /// bound parameter.
+    /// The wildcard `_` in a pattern: it unifies with any value and binds
+    /// nothing (M1e2 S1e2.2.20, W20, Q-M1e2.13 (a)). In an `:assert` it is no
+    /// value, and the firing stops with the line
+    /// [`crate::firing::FireError::NotAFact`] prints.
+    Any,
+    /// An IR node the compiler's `slot` returned unchanged — a `KwPair` in a
+    /// nested pattern, or an `SForm` whose head is a variable the activator
+    /// does not bind. A `String` was one until M1e2 S1e2.2.18, and a
+    /// `Wildcard` and a `Range` until S1e2.2.20, which lowered the first to
+    /// [`Self::Any`] and refused the second, and a wildcard as a relation, at
+    /// load.
     ///
     /// The unifier compares it to the argument by equality, and no IR node is
     /// ever equal to a name, an integer or a `Fact`, so an opaque slot **never

@@ -39,6 +39,20 @@ fn loaded(path: &Path) -> (Kb, Terms, Ast) {
     (kb, terms, ast)
 }
 
+/// The load error of a witness the loader refuses, or `None` where it loads:
+/// a refusal at load (M1e2 S1e2.2.20, W20's range), which the binary prints
+/// as `kb load error: …` and the library cannot get past either.
+fn load_error(path: &Path) -> Option<String> {
+    let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, &text, path.to_str())
+        .unwrap_or_else(|e| panic!("{}: {e:?}", path.display()));
+    load(&mut ast, &mut terms, &forms, path.parent())
+        .err()
+        .map(|e| e.0)
+}
+
 fn ask(path: &Path, mode: Mode) -> Answer {
     try_ask(path, mode).unwrap_or_else(|e| panic!("{}: {e:?}", path.display()))
 }
@@ -233,8 +247,21 @@ fn every_row_states_its_witness_s_region() {
             continue;
         }
         // A refused row (M1e2 S1e2.2.5, *forbid*) states no region, and the
-        // library refuses its witness as the binary does.
-        if row.now.refused.is_some() {
+        // library refuses its witness as the binary does: at load since M1e2
+        // S1e2.2.20 (W20, a range or a wildcard relation in a rule), the
+        // binary's line the loader's, or by *forbid*.
+        if let Some(want) = &row.now.refused {
+            let path = repo_root().join(&row.witness);
+            if let Some(e) = load_error(&path) {
+                if want.strip_prefix("kb load error: ") != Some(e.as_str()) {
+                    bad.push(format!(
+                        "{} ({}): [now] is the refusal {want:?} and the loader says {e:?}",
+                        row.id, row.witness
+                    ));
+                }
+                checked += 1;
+                continue;
+            }
             let describe = Mode {
                 which: Which::All,
                 ask: Ask::Describe,

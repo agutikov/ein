@@ -1029,3 +1029,57 @@ fn a_string_in_a_rule_means_what_it_means_in_a_fact() {
         asserted.derived_values()
     );
 }
+
+/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard in a pattern matches
+/// any value and binds nothing**, in either build. Until S1e2.2.20 the rule
+/// compiler lowered `_` as an opaque slot, so `w` never fired on `(holds a)`.
+/// A rule application's identity is its rule, activator and bindings, so two
+/// matches that differ only under `_` are one application, its first match
+/// its derivation, where a fresh variable makes one per match: the narration
+/// differs, and what the rule concludes does not. The corpus witnesses are
+/// `examples/ein-bugs/wrong-answers/wild-in-*.ein`.
+#[test]
+fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
+    let run = saturate(
+        "(relation holds T) (relation pair T T) (relation hit T)
+         (holds a) (pair a b) (pair c d)
+         (rule w () :match (holds _) :assert (hit w))
+         (rule v () :match (pair _ _) :assert (hit v))",
+    );
+    assert_eq!(
+        run.derived(),
+        BTreeSet::from(["(hit v)", "(hit w)"].map(String::from)),
+        "`w` and `v` fire"
+    );
+    let v: Vec<&Firing> = run
+        .firings
+        .iter()
+        .filter(|f| run.rule_of(f) == "v")
+        .collect();
+    assert_eq!(
+        v.len(),
+        1,
+        "two matches under `_` alone are one application"
+    );
+    assert!(run.bindings_of(v[0]).is_empty(), "`_` binds nothing");
+    let fresh = saturate(
+        "(relation holds T) (relation pair T T) (relation hit T)
+         (holds a) (pair a b) (pair c d)
+         (rule w () :match (holds ?x) :assert (hit w))
+         (rule v () :match (pair ?x ?y) :assert (hit v))",
+    );
+    assert_eq!(
+        run.derived(),
+        fresh.derived(),
+        "what a fresh variable concludes"
+    );
+    assert_eq!(
+        fresh
+            .firings
+            .iter()
+            .filter(|f| fresh.rule_of(f) == "v")
+            .count(),
+        2,
+        "a fresh variable makes one application per match"
+    );
+}

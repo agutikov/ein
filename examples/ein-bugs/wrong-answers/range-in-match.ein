@@ -15,13 +15,16 @@
 ;;; is refused at load, with a line in Ein's spelling naming the rule and the
 ;;; slot. Every command that loads the program exits 1 (`ein test`: 2).
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; The program loads, and `r` never fires: the rule compiler lowers a range
-;;; as an opaque slot, which unifies with nothing (`compile.rs`' `slot`).
-;;; Root holds no `hit`, H is empty, and R is `{∅}`, exit 0, with no word of
-;;; the range (`ein solve FILE` at `c73a0796`, release and debug; every mode
-;;; and `ein oracle` the same).
+;;; Until S1e2.2.20 the program loaded, and `r` never fired: the rule
+;;; compiler lowered a range as an opaque slot, which unifies with nothing
+;;; (`compile.rs`' `slot`). Root held no `hit`, H was empty, and R was `{∅}`,
+;;; exit 0, with no word of the range (`ein solve FILE` at `c73a0796`,
+;;; release and debug; every mode and `ein oracle` the same). Since then the
+;;; loader refuses it: *kb load error: rule 'r': its :match writes 1..3 as an
+;;; argument of n, and no fact can hold it — a range is cardinality metadata,
+;;; and a rule matches and concludes facts*.
 
 (relation n Node) (relation hit Node)
 (n 2)

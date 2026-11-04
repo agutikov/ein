@@ -120,7 +120,7 @@ pub fn build_fact(
         let slot = plan.slots[i];
         // Storing the node itself would put an IR node in a fact's args — a
         // shape nothing downstream can read — so this refuses.
-        if let Slot::Opaque(_) = slot {
+        if let Slot::Opaque(_) | Slot::Any = slot {
             return Err(not_a_fact(terms, ast, plan, slot, Some(rel)));
         }
         args.push(resolve(terms, ast, plan, env, slot)?);
@@ -143,6 +143,7 @@ fn not_a_fact(
         Slot::Const(v) => terms.display(v),
         Slot::Reg(r) => format!("?{}", terms.sym(plan.reg_names[r as usize])),
         Slot::Nested { .. } => String::from("a fact"),
+        Slot::Any => String::from("_"),
         Slot::Opaque(node) => ein_ir::dump::dump_compact(ast, node),
     };
     let unbound_head = match slot {
@@ -193,8 +194,9 @@ fn resolve(
             Ok(v)
         }
         Slot::Nested { .. } => Ok(Value::fact(build_fact(terms, ast, plan, env, slot)?)),
-        // `build_fact` refuses an opaque argument before it gets here.
-        Slot::Opaque(_) => Err(not_a_fact(terms, ast, plan, slot, None)),
+        // `build_fact` refuses an opaque argument, or a wildcard, before it
+        // gets here.
+        Slot::Any | Slot::Opaque(_) => Err(not_a_fact(terms, ast, plan, slot, None)),
     }
 }
 

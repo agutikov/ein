@@ -281,6 +281,71 @@ fn a_string_in_a_rule_is_the_symbol_it_names() {
     assert!(slots.contains(&"    SCAN holds ['1']"), "{shape}");
 }
 
+/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard in a rule's pattern
+/// matches any value**, at the top of a premise, in a nested fact, under a
+/// `not` and under an `absent`, two of them independently: the program
+/// concludes what the same program with each `_` written as a fresh variable
+/// concludes, by value. Until then the compiler lowered `_` as an opaque slot,
+/// so every premise below that writes one never matched and `naf-no`'s
+/// `absent` always held. The slots are `_`, never an opaque node.
+#[test]
+fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
+    let program = |wild: bool| {
+        let mut n = 0;
+        let mut w = || {
+            n += 1;
+            if wild {
+                "_".to_string()
+            } else {
+                format!("?w{n}")
+            }
+        };
+        format!(
+            "(relation holds T) (relation pair T T) (relation wrap T) (relation hit T)
+(holds a) (pair a b) (wrap (box a)) (not (pair b a))
+(rule top    () :match (holds {})                 :assert (hit top))
+(rule nested () :match (wrap (box {}))            :assert (hit nested))
+(rule neg    () :match (not (pair {} ?y))         :assert (hit ?y))
+(rule two    () :match (pair {} {})               :assert (hit two))
+(rule naf-yes () :match (and (holds a) (absent (pair {} a))) :assert (hit naf-yes))
+(rule naf-no  () :match (and (holds a) (absent (pair a {}))) :assert (hit naf-no))
+",
+            w(),
+            w(),
+            w(),
+            w(),
+            w(),
+            w(),
+            w()
+        )
+    };
+    let mut wild = load_text(&program(true));
+    wild.saturate();
+    let mut fresh = load_text(&program(false));
+    fresh.saturate();
+    assert_eq!(
+        wild.facts_under("hit"),
+        fresh.facts_under("hit"),
+        "`_` matches what a fresh variable matches"
+    );
+    assert_eq!(
+        wild.facts_under("hit"),
+        [
+            "(hit a)",
+            "(hit naf-yes)",
+            "(hit nested)",
+            "(hit top)",
+            "(hit two)"
+        ],
+    );
+    let shape = wild.shape(true).expect("compiles");
+    assert!(
+        !shape.contains("Wildcard"),
+        "no slot holds `_` as an opaque node:\n{shape}"
+    );
+    assert!(shape.contains("    SCAN holds [_]"), "{shape}");
+}
+
 // ── S1.22.0's four refusals, and M1e's four ────────────────────────
 
 /// Each fixture under `examples/broken/compile/` is refused with exactly the

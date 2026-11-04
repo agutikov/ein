@@ -17,12 +17,14 @@
 ;;; is the answer of `wild-in-match-twin.ein`, this file with `_` written as
 ;;; a variable the rule reads nowhere else.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; `w` never fires: the rule compiler lowers `_` as an opaque slot, which
-;;; unifies with nothing (`compile.rs`' `slot`). Root holds no `hit`, and R
-;;; is `∅` and `{(hit a)}`, no state holding `(hit w)` (`ein solve FILE` at
-;;; `c73a0796`, release and debug; every mode and `ein oracle` the same).
+;;; Until S1e2.2.20 `w` never fired: the rule compiler lowered `_` as an
+;;; opaque slot, which unifies with nothing (`compile.rs`' `slot`). Root held
+;;; no `hit`, and R was `∅` and `{(hit a)}`, no state holding `(hit w)` (`ein
+;;; solve FILE` at `c73a0796`, release and debug; every mode and `ein oracle`
+;;; the same). Since then `_` is a slot that matches any value and binds
+;;; nothing, and the program answers its twin's R.
 
 (relation holds Node) (relation hit Node)
 (holds a)

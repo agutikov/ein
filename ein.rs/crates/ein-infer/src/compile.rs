@@ -832,6 +832,10 @@ impl<'a> Compiler<'a> {
                     }
                 }
             }
+            // A head the parser admits is an atom, a variable or `_`, and the
+            // loader refuses `_` as a relation since M1e2 S1e2.2.20
+            // (Q-M1e2.14 (c)), so no program it accepts reaches this arm;
+            // until then `(_ a)` did, and printed this line.
             _ => {
                 return Err(CompileError(format!(
                     "unbound relation head ?{} in a premise of `{}` — M1 \
@@ -918,17 +922,27 @@ impl<'a> Compiler<'a> {
     /// holds them in a fact (`from_ir::atomic_value`), so `"b"` and `b` are one
     /// value in a rule as in a fact, at any depth, in a `:match` and an
     /// `:assert` alike; `"1"` is the symbol `1`, not the int.
+    /// A `Wildcard` becomes [`Slot::Any`], which matches any value and binds
+    /// nothing, at any depth of a `:match`, an `absent` and a nested pattern;
+    /// in an `:assert` it is no value, and the firing stops
+    /// ([`crate::firing::FireError::NotAFact`]).
     /// An `SForm` becomes a nested pattern, with its head substituted from the
-    /// binding when it is a bound `Var`. Everything else — a `Wildcard`, a
-    /// `Range`, a `KwPair`, an `SForm` with an unusable head — is returned
-    /// as-is and compared by equality, which is the "unrecognised shape"
-    /// safety net and which never matches anything; in an `:assert` it stops
-    /// the firing ([`crate::firing::FireError::NotAFact`]).
+    /// binding when it is a bound `Var`. Everything else — a `KwPair`, an
+    /// `SForm` whose head is a variable the activator does not bind — is
+    /// returned as-is and compared by equality, which is the "unrecognised
+    /// shape" safety net and which never matches anything; in an `:assert` it
+    /// stops the firing. A range, and a wildcard written as a form's relation,
+    /// never reach here: the loader refuses both in a rule (`ein_ir::from_ir`,
+    /// M1e2 S1e2.2.20).
     ///
     /// **A string was such a node until M1e2 S1e2.2.18** (W18, 2026-11-04):
     /// `(rule s () :match (holds "1") …)` never fired though `(holds "1")` is
     /// a fact, an `(absent …)` over a string always held, and a string in an
-    /// `:assert` stopped saturation.
+    /// `:assert` stopped saturation. **So were a wildcard and a range until
+    /// M1e2 S1e2.2.20** (W20, 2026-11-05, Q-M1e2.13 (a)): `(rule w () :match
+    /// (holds _) …)` never fired on `(holds a)`, an `(absent …)` over a `_`
+    /// always held, an hrule with one proposed nothing, and `(n 1..3)` matched
+    /// nothing, in silence.
     fn slot(&mut self, node: NodeId) -> Result<Slot, CompileError> {
         match self.ast.node(node) {
             Node::Var(s) => {
@@ -948,6 +962,7 @@ impl<'a> Compiler<'a> {
                     self.terms.value_int(&text).expect("room for an int"),
                 ))
             }
+            Node::Wildcard => Ok(Slot::Any),
             Node::SForm { head, args } => {
                 let rel = match self.ast.node(head) {
                     Node::Atom(s) => {
@@ -1073,7 +1088,7 @@ impl<'a> Compiler<'a> {
             match self.slots[i] {
                 Slot::Reg(r) => out.push(self.reg_name(r)),
                 Slot::Nested { slots, .. } => self.collect_vars(slots, out),
-                Slot::Const(_) | Slot::Opaque(_) => {}
+                Slot::Const(_) | Slot::Any | Slot::Opaque(_) => {}
             }
         }
     }
@@ -1173,6 +1188,7 @@ impl<'a> Compiler<'a> {
                     self.guard_keys.push(3);
                     self.encode_node(n);
                 }
+                Slot::Any => self.guard_keys.push(4),
             }
         }
     }
@@ -1282,7 +1298,7 @@ impl<'a> Compiler<'a> {
                             // A doubly-nested pattern would need a two-level
                             // key the index does not hold; an opaque slot has
                             // no value at all.
-                            Slot::Nested { .. } | Slot::Opaque(_) => continue,
+                            Slot::Nested { .. } | Slot::Any | Slot::Opaque(_) => continue,
                         };
                         self.probes.push(Probe {
                             slot: i as u16,
@@ -1291,8 +1307,9 @@ impl<'a> Compiler<'a> {
                         });
                     }
                 }
-                // An opaque slot has no value at all.
-                Slot::Opaque(_) => {}
+                // An opaque slot has no value at all, and a wildcard none to
+                // key on.
+                Slot::Any | Slot::Opaque(_) => {}
             }
         }
         Span {
@@ -1590,19 +1607,57 @@ mod tests {
     fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
         let (_, _terms, plan) = compile(
             "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes 1..3 ?b))\n  :assert (likes ?b ?b))\n",
+             (rule r ()\n  :match (not (likes _ ?b))\n  :assert (likes ?b ?b))\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         let Step::Rel(first) = steps[0] else {
             panic!("expected a relation step")
         };
-        // A range is an opaque slot — it never matches anything, so it is not
-        // a key either; `?b` still is. The example was a string until M1e2
-        // S1e2.2.18, which made a string the symbol it names (the next test).
+        // A wildcard has no value to key on, so it is not a key; `?b` still
+        // is. The example was a string until M1e2 S1e2.2.18, which made a
+        // string the symbol it names (the next test), and a range until
+        // S1e2.2.20, which refused one in a rule at load.
         let probes = plan.probes(first.probe);
         assert_eq!(probes.len(), 1, "`?b` alone");
         assert_eq!((probes[0].slot, probes[0].inner), (0, 1));
         assert!(matches!(probes[0].src, ProbeSrc::Reg(_)));
+    }
+
+    /// M1e2 S1e2.2.20 — a wildcard in a pattern is [`Slot::Any`], which
+    /// matches any value and binds nothing: no register, no probe, no shared
+    /// variable, and two of them in one premise are independent. Until then it
+    /// was an opaque slot that matched nothing (W20).
+    #[test]
+    fn a_wildcard_matches_any_value_and_binds_nothing() {
+        let (_, terms, plan) = compile(
+            "(relation likes A B)\n\
+             (rule r ()\n  :match (and (likes _ ?b) (likes ?b _) (likes _ _))\n  :assert (likes ?b ?b))\n",
+        );
+        let names: Vec<&str> = plan.reg_names.iter().map(|&s| terms.sym(s)).collect();
+        assert_eq!(names, ["b"], "`_` takes no register");
+        let steps = plan.steps(plan.disjuncts[0].steps);
+        let rel = |i: usize| match steps[i] {
+            Step::Rel(r) => r,
+            _ => panic!("expected a relation step"),
+        };
+        assert!(matches!(
+            plan.slots(rel(0).slots),
+            [Slot::Any, Slot::Reg(_)]
+        ));
+        assert!(matches!(
+            plan.slots(rel(1).slots),
+            [Slot::Reg(_), Slot::Any]
+        ));
+        assert!(matches!(plan.slots(rel(2).slots), [Slot::Any, Slot::Any]));
+        assert!(rel(1).join, "the second premise shares `?b`, and only `?b`");
+        assert_eq!(plan.shared(rel(1).shared).len(), 1);
+        assert!(!rel(2).join, "two wildcards share nothing");
+        // No probe keys on a wildcard: the first premise probes on `?b` alone,
+        // the third on nothing.
+        let probes = plan.probes(rel(0).probe);
+        assert_eq!(probes.len(), 1);
+        assert_eq!(probes[0].slot, 1);
+        assert!(plan.probes(rel(2).probe).is_empty());
     }
 
     /// M1e2 S1e2.2.18 — a string in a `:match` is the symbol it names, as the

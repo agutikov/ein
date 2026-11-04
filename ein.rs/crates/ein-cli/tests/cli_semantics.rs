@@ -802,9 +802,10 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
 /// Atom` or `TypeError: an unrecognised `:assert` slot has no value to store`
 /// under `ein saturate`, and the message alone under `ein solve`: a Python
 /// class, a Python IR class's name, and no word of which rule or what it
-/// wrote. A string reached it until S1e2.2.18 lowered one (W18); these shapes
-/// still do, each a program the loader accepts and the rule's first firing
-/// stops, exit 1 as before. The line names the rule and the slot as the
+/// wrote. A string reached it until S1e2.2.18 lowered one (W18), and a range
+/// until S1e2.2.20 refused one in a rule at load (W20, the next test); these
+/// shapes still do, each a program the loader accepts and the rule's first
+/// firing stops, exit 1 as before. The line names the rule and the slot as the
 /// program writes it.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
@@ -815,14 +816,10 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     const HEAD: &str = "its activator does not bind — a relation written as a variable is one \
                         of the rule's parameters, which its activator binds to a name";
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
-    let cases: [(&str, String); 8] = [
+    let cases: [(&str, String); 7] = [
         (
             r#"(tag ?x b :source "x")"#,
             format!(r#"its :assert writes :source "x" as an argument of tag, {ARG}"#),
-        ),
-        (
-            "(tag ?x 1..3)",
-            format!("its :assert writes 1..3 as an argument of tag, {ARG}"),
         ),
         (
             "(tag ?x _)",
@@ -882,6 +879,73 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     let r = ein(&["saturate", "--dump", &file.to_string_lossy()]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(r.out.contains("  (tag a lbl :rule s)\n"), "{}", r.out);
+}
+
+/// **A range in a rule, and a wildcard written as a relation, are refused at
+/// load** — M1e2 S1e2.2.20 (W20), on the user's rulings of 2026-11-04
+/// (Q-M1e2.13 (a)) and 2026-11-05 (Q-M1e2.14 (c)).
+///
+/// One line in Ein's spelling, naming the rule and the slot, from every
+/// command that loads the program: `ein saturate`, `ein solve` and `ein
+/// oracle` exit 1 and `ein test` 2, a load error's codes. Until then a range
+/// in a `:match` matched nothing, in silence, a range in an `:assert` stopped
+/// the run at the rule's first firing with the line the test above holds, and
+/// a wildcard head stopped compilation with `unbound relation head
+/// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling.
+#[test]
+fn a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load() {
+    const RANGE: &str = "and no fact can hold it — a range is cardinality metadata, and a rule \
+                         matches and concludes facts";
+    const HEAD: &str = "with the wildcard _ as its relation — a relation is named by a name or \
+                        by a parameter its activator binds, and _ stands for an argument";
+    let scratch = ein_corpus::Scratch::new("ein-refused-at-load");
+    let cases = [
+        (
+            ":match (n 1..3) :assert (hit r)",
+            format!("rule 'r': its :match writes 1..3 as an argument of n, {RANGE}"),
+        ),
+        (
+            ":match (n ?x) :assert (tag ?x 1..3)",
+            format!("rule 'r': its :assert writes 1..3 as an argument of tag, {RANGE}"),
+        ),
+        (
+            ":match (_ 2) :assert (hit r)",
+            format!("rule 'r': its :match writes (_ 2) {HEAD}"),
+        ),
+        (
+            ":match (box (_ 2)) :assert (hit r)",
+            format!("rule 'r': its :match writes (_ 2) {HEAD}"),
+        ),
+        (
+            ":match (absent (_ b)) :assert (hit r)",
+            format!("rule 'r': its :match writes (_ b) {HEAD}"),
+        ),
+    ];
+    for (i, (clauses, line)) in cases.iter().enumerate() {
+        let file = scratch.path().join(format!("{i}.ein"));
+        std::fs::write(
+            &file,
+            format!(
+                "(relation n Node) (relation hit Node) (relation box Node) (relation tag Node Node)\n\
+                 (n 2) (box (n 2))\n(rule r () {clauses})\n"
+            ),
+        )
+        .expect("the program is written");
+        let file = file.to_string_lossy();
+        let want = format!("kb load error: {line}");
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} on {clauses}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().rfind(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} on {clauses}"
+            );
+            for python in ["CompileError", "Wildcard()", "SForm"] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything

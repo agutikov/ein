@@ -16,13 +16,15 @@
 ;;; `{(hit a)}`, no state holding `(hit z)`. It is the answer of
 ;;; `wild-in-absent-twin.ein`, this file with `_` written as `?any`.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; `z` fires: `_` is an opaque slot that matches nothing, so the pattern
-;;; under `absent` finds no fact and the `absent` always holds. A conclusion
-;;; the program refutes is in every state: root holds `(hit z)`, and R is
-;;; `{(hit z)}` and `{(hit a), (hit z)}` (`ein solve FILE` at `c73a0796`,
-;;; release and debug; every mode and `ein oracle` the same).
+;;; Until S1e2.2.20 `z` fired: `_` was an opaque slot that matched nothing,
+;;; so the pattern under `absent` found no fact and the `absent` always held.
+;;; A conclusion the program refutes was in every state: root held `(hit z)`,
+;;; and R was `{(hit z)}` and `{(hit a), (hit z)}` (`ein solve FILE` at
+;;; `c73a0796`, release and debug; every mode and `ein oracle` the same).
+;;; Since then `_` matches any value, `z` never fires, and the program answers
+;;; its twin's R.
 
 (relation holds Node) (relation hit Node)
 (holds a)

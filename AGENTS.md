@@ -216,7 +216,11 @@ constrained-reasoning research.
   and an hrule: 63 fixed, 7 open and 1 not wrong. How a head `_` matches
   every relation is Q-M1e2.14, put to the user: it needs a second path, a
   plan per relation or a step over every relation, and the agent recommends
-  refusing it at load (S1e2.2.20's census, 2026-11-05).
+  refusing it at load (S1e2.2.20's census, 2026-11-05). The user ruled (c)
+  the same day, and S1e2.2.20 fixed all five: `_` in a rule's pattern is a
+  slot that matches any value and binds nothing, and a range, or a `_`
+  written as a relation, is refused at load, one line in Ein's spelling per
+  slot: 68 fixed, 2 open (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

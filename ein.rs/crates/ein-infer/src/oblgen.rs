@@ -571,6 +571,9 @@ fn project(plan: &Arc<Plan>, terms: &ein_core::Terms) -> Option<Proj> {
 fn bears_local(plan: &Plan, guard: &NafGuard, slots: Span) -> bool {
     plan.slots(slots).iter().any(|s| match s {
         Slot::Reg(r) => guard.scope_of.get(*r as usize).copied().flatten().is_none(),
+        // A wildcard is a slot the guard introduces, as a fresh variable is
+        // (M1e2 S1e2.2.20).
+        Slot::Any => true,
         _ => false,
     })
 }

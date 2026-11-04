@@ -702,3 +702,96 @@ fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
     let min = run(Which::Minimal, Ask::Describe);
     assert_eq!((min.saturations, min.minimal.len()), (1, 1), "∅ ∈ R");
 }
+
+/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard answers what a fresh
+/// variable does**: on each program below, `_` in a rule's, an hrule's or an
+/// obligation's pattern gives the same candidates, the same root and the same
+/// R as the program with each `_` written `?wN`, a variable read nowhere else.
+/// Until S1e2.2.20 the compiler lowered `_` as an opaque slot that matched
+/// nothing, and the loader refused the obligation as *ground*.
+#[test]
+fn a_wildcard_answers_what_a_fresh_variable_does() {
+    fn loaded_text(text: &str) -> (Kb, Terms, Ast) {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, text, Some("<fixture>")).expect("parses");
+        let kb = load(&mut ast, &mut terms, &forms, None).unwrap_or_else(|e| panic!("{e}"));
+        (kb, terms, ast)
+    }
+    fn answer(
+        text: &str,
+    ) -> (
+        BTreeSet<String>,
+        Vec<String>,
+        BTreeSet<BTreeSet<String>>,
+        bool,
+    ) {
+        let (mut kb, mut terms, ast) = loaded_text(text);
+        let mode = Mode {
+            which: Which::All,
+            ask: Ask::Describe,
+        };
+        let a = explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode))
+            .unwrap_or_else(|e| panic!("{e}"));
+        let mut candidates: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
+        candidates.sort();
+        let states = a
+            .states
+            .iter()
+            .map(|s| {
+                s.closure
+                    .iter()
+                    .map(|&b| a.candidates[b as usize].text.clone())
+                    .collect()
+            })
+            .collect();
+        (facts_text(&kb, &terms), candidates, states, a.exhausted)
+    }
+    let programs = [
+        // A premise, a nested fact and a `not`.
+        "(relation holds T) (relation pair T T) (relation wrap T) (relation hit T)
+         (holds a) (wrap (box a)) (not (pair b a))
+         (rule w () :match (holds _) :assert (hit w))
+         (rule n () :match (wrap (box _)) :assert (hit n))
+         (rule g () :match (not (pair _ ?y)) :assert (hit ?y))",
+        // An `absent`, over a relation no commitment extends.
+        "(relation holds T) (relation hit T)
+         (holds a)
+         (rule z () :match (absent (holds _)) :assert (hit z))
+         (solve :no-hypothesis (holds))",
+        // Two in one premise, independent.
+        "(relation pair T T) (relation hit T)
+         (pair a b)
+         (rule t () :match (pair _ _) :assert (hit t))
+         (rule u () :match (and (pair ?x _) (pair _ ?x)) :assert (hit u))",
+        // An hrule.
+        "(relation holds T T) (relation tag T)
+         (holds a b)
+         (hrule h () :match (holds ?x _) :assert (tag ?x))",
+        // An obligation whose witness premise writes `_`, with an hrule and
+        // without one.
+        "(relation item T) (relation tag T T) (relation lbl T)
+         (item a) (item b) (lbl x) (lbl y)
+         (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag))
+         (hrule h () :match (and (item ?x) (lbl ?l)) :assert (tag ?x ?l))",
+        "(relation item T) (relation tag T T) (relation lbl T)
+         (item a) (item b) (lbl x) (lbl y)
+         (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag))",
+    ];
+    for wild in programs {
+        let mut n = 0;
+        let fresh: String = wild
+            .split('_')
+            .enumerate()
+            .map(|(i, part)| {
+                if i == 0 {
+                    part.to_string()
+                } else {
+                    n += 1;
+                    format!("?w{n}{part}")
+                }
+            })
+            .collect();
+        assert_eq!(answer(wild), answer(&fresh), "{wild}");
+    }
+}
