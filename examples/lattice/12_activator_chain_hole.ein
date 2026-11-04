@@ -18,9 +18,11 @@
 ;;; `serves`'s plan, which root never compiled, writes it), so it is no site.
 ;;; The status attributes an owing hole to the trigger site of the debt new
 ;;; there, else to the activator site of the obligation, else to an `absent`
-;;; site, and here there is none of the three: the status line reads
-;;; *exercised, by* and an empty list (`ein solve FILE` at `3efd3f5f`). The
-;;; site that made the hole is `serves`, one activator up.
+;;; site, and here there is none of the three: until S1e2.2.17 the status
+;;; line read *exercised, by* and an empty list (`ein solve FILE` at
+;;; `3efd3f5f`). Since then, where those name none, it follows the owed
+;;; instance's activator to the plan that derived it, and names `serves`,
+;;; one activator up.
 ;;;
 ;;; No `absent` concludes a refutation here, so *forbid* has nothing to
 ;;; refuse. What R means on it is open, F21's; this file's question is the

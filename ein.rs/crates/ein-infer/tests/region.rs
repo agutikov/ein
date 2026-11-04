@@ -979,17 +979,19 @@ fn census_for_inspection() {
 // ── A refutation's taint — S1e2.1b.4 ────────────────────────────────
 
 /// Every dead node of `r`, as `(mask, untainted, a proper superset is
-/// alive)`, its taint read by `walk` off the node's own fixpoint. `kb` is the
-/// load `r` was computed on.
+/// alive)`, its taint read by `walk` off the node's own fixpoint, a premise
+/// tainted when its relation's label is in `extendable`. `kb` is the load `r`
+/// was computed on.
 fn deaths(
     kb: &mut Kb,
     terms: &mut Terms,
     ast: &Ast,
     r: &Region,
+    extendable: &[String],
     walk: taint::Walk,
 ) -> Vec<(u64, bool, bool)> {
     let root: rustc_hash::FxHashSet<ein_core::FactId> = kb.facts().collect();
-    let d = taint::Dynamic::of(r.monotonicity.dynamic.iter().map(|x| x.label(terms)));
+    let d = taint::Dynamic::of(extendable.iter().cloned());
     let size = r.status.len() as u64;
     let alive_above = |m: u64| {
         (0..size).any(|x| x != m && x & m == m && r.status[x as usize] & region::DEAD == 0)
@@ -1026,6 +1028,12 @@ fn deaths(
 /// `examples/shared/taint.rs`: every contradiction, both sides of a pair, and
 /// the activator of each plan a fact was derived by.
 ///
+/// **`D` is read as *forbid* reads it** since M1e2 S1e2.2.17: `D⁺`, the
+/// static check's `D` followed through the rules root has no plan of
+/// (`forbid::extendable`). Read as `D`, W17's `forbid-chain-node-writes` is a
+/// counterexample: its death rests on `(absent (x a))`, `x` outside `D`, and
+/// a plan only a node compiles writes `x` at the alive superset.
+///
 /// The activator half is not optional. On `ACTIVATOR_UNDER_ABSENT` the dead
 /// hole `{(p A), (r A)}` is refuted by a plan compiled from an activator `act`
 /// derived under `(absent (q ?x))`, and a derivation does not record its
@@ -1042,25 +1050,26 @@ fn an_untainted_death_is_dead_in_every_superset() {
     let mut failures: Vec<String> = Vec::new();
     let (mut cubes, mut dead, mut untainted) = (0usize, 0usize, 0usize);
     let mut check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| {
-        // W17's `forbid-chain-node-writes` (M1e2 S1e2.2.17, banked 2026-11-04)
-        // is a counterexample to what this test reads as `D`: its dead hole
-        // {(p a)} rests on `(absent (x a))`, and `x` is outside `D`, whose
-        // closure follows the plans root compiled, while a plan a node
-        // compiles writes it at the alive superset. That is W17's own gap, so
-        // the row is skipped here until its fix, which makes this test read
-        // the relations *forbid* calls extendable.
-        if name == "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein" {
-            return;
-        }
         // The static check first, on its own load, so a monotone cube is
-        // never enumerated.
+        // never enumerated; and what *forbid* calls extendable, `D⁺`, the
+        // static check's `D` followed through the rules root has no plan of.
+        // Until M1e2 S1e2.2.17 this read `D`, and W17's
+        // `forbid-chain-node-writes` was a counterexample to that reading and
+        // not to the claim: its dead hole {(p a)} rests on `(absent (x a))`,
+        // and only a plan a node compiles writes `x`, at the alive superset.
         let Some((mut kb, mut terms, ast)) = load() else {
             return;
         };
-        match census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(())) {
-            Some((root, ())) if !root.monotonicity.is_monotone() => {}
-            _ => return,
-        }
+        let extendable: Vec<String> =
+            match census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(())) {
+                Some((root, ())) if !root.monotonicity.is_monotone() => {
+                    forbid::extendable(&kb, &terms, &ast, &root.plans, &root.monotonicity)
+                        .iter()
+                        .map(|r| r.label(&terms))
+                        .collect()
+                }
+                _ => return,
+            };
         let (mut kb, mut terms, ast) = load().expect("loaded once already");
         // A study of the shape: the programs *forbid* refuses are read too
         // (M1e2 S1e2.2.5), since every dead hole is on one of them.
@@ -1071,7 +1080,7 @@ fn an_untainted_death_is_dead_in_every_superset() {
         };
         cubes += 1;
         let holes: BTreeSet<u64> = r.topology.holes.iter().copied().collect();
-        for (m, clean, alive_above) in deaths(&mut kb, &mut terms, &ast, &r, full) {
+        for (m, clean, alive_above) in deaths(&mut kb, &mut terms, &ast, &r, &extendable, full) {
             dead += 1;
             if clean {
                 untainted += 1;
@@ -1121,11 +1130,18 @@ fn an_untainted_death_is_dead_in_every_superset() {
     assert_eq!(names(&r, &r.topology.holes), ["{(p A), (r A)}"]);
     let hole = r.topology.holes[0];
     assert!(r.nodes[hole as usize].absent_premises.is_empty());
+    let d: Vec<String> = r
+        .monotonicity
+        .dynamic
+        .iter()
+        .map(|x| x.label(&terms))
+        .collect();
     let bare = deaths(
         &mut kb,
         &mut terms,
         &ast,
         &r,
+        &d,
         taint::Walk { activators: false },
     );
     assert!(

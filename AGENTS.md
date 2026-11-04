@@ -179,7 +179,11 @@ constrained-reasoning research.
   is in D, and D's closure follows reads, not activators, so a refutation
   resting on an `absent` through an activator chain that first appears at a
   node loaded with a dead hole, five witnesses: 50 fixed, 7 open and 1 not
-  wrong.
+  wrong. It fixed all five the same day: *forbid* reads *extendable* as D
+  followed through the rules root has no plan of, reads every such rule its
+  activator relation reaches, and lets its own `absent` taint what it
+  derives, with D, the static check and the rung's decline unmoved: 55
+  fixed, 2 open (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

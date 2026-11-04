@@ -293,6 +293,18 @@
 # A row's `wrong` is a region run's at `3efd3f5f`. The register reads **50
 # rows fixed, 7 open and 1 not-wrong**.
 #
+# **S1e2.2.17 fixed W17's five rows the same day** (T1e2.2.17.2): *forbid*
+# reads *extendable* as D⁺, the static check's D followed through every rule
+# with parameters whose activator relation it holds, read from its pattern;
+# such a rule is read whenever its activator relation is in D⁺, and its own
+# `absent`, over a relation in D⁺ or over its parameter's, taints what it
+# derives. Each witness is refused at every question about a commitment, and
+# D, the static check, its sites and the rung's decline are unmoved. Each
+# flipped row's `[case.fixed]` carried the null id in the flipping commit,
+# `0000000`, and the stage's next commit wrote the hash. The register reads
+# **55 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
+# followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -3939,10 +3951,14 @@ settings = "default"
 owner    = "S1e2.2.17"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
-status   = "open"
-open_because = "*forbid* reads a rule with parameters root has no plan of from its pattern only when its activator relation is in D, and D's closure follows the plans root compiled, not activators: `r2`'s activator relation is written only by `q`'s plan, which root never compiled, so `r2` is never read, and the program loads"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "Filed by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/extra/node-chain-sym.ein. The chain one link shorter, forbid-chain-0.ein, is refused at every question: `rule 'q': concludes (false) from its activator, which rule 'mk' derives resting on (absent …) over p2`. The witness with no `absent`, forbid-chain-no-absent.ein, loads with R two states and no hole, and is the control the fix must not move. The read-out's status line names no site for the hole: *exercised, by* and an empty list"
+note     = "Filed by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/extra/node-chain-sym.ein. The chain one link shorter, forbid-chain-0.ein, is refused at every question: `rule 'q': concludes (false) from its activator, which rule 'mk' derives resting on (absent …) over p2`. The witness with no `absent`, forbid-chain-no-absent.ein, loads with R two states and no hole, and is the control the fix must not move. The read-out's status line named no site for the hole, *exercised, by* and an empty list, and names `q` since T1e2.2.17.2, studied past the refusal. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.17 (T1e2.2.17.2): *forbid* follows the activator chain, reading every rule with parameters whose activator relation is in D⁺, D followed through the rules root has no plan of"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -3954,27 +3970,15 @@ exhausted = true
 closes    = ["p", "p2"]
 models    = [["(p a)", "(p2 a)"]]
 
-[case.region]
-route    = "route 2"
-monotone = false
-k_s      = 3
-k_c      = 3
-minimal  = [[]]
-maximal  = [["(p a)", "(p2 a)"]]
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal: `r2` concludes (false) from its activator (r2 a), which `q`'s plan derives from its own activator (q a), which `mk` derives resting on (absent (p2 ?x)), and `p2` is a relation a commitment can extend. {(p a)} is dead and {(p a), (p2 a)} alive, the dead hole *forbid* exists to refuse; every question about a commitment exits 1, and ein saturate still saturates"
 
 [case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["p", "p2"]
-outside   = ["q"]
-models    = [["(p a)", "(p2 a)"]]
+run     = "solve"
+line    = "all"
+refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p2)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-2"
@@ -3985,10 +3989,14 @@ settings = "default"
 owner    = "S1e2.2.17"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/wrong-answers/forbid-chain-2.ein"
-status   = "open"
-open_because = "as W17/forbid-chain-1's, one activator further: neither `r2`'s activator relation nor `r3`'s is in D, so *forbid* reads neither rule"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "forbid-chain-1.ein one link longer: `r2`'s plan asserts the activator (r3 a), and `r3`'s plan concludes (false). It pins that the chain is followed to any length, not one hop"
+note     = "forbid-chain-1.ein one link longer: `r2`'s plan asserts the activator (r3 a), and `r3`'s plan concludes (false). It pins that the chain is followed to any length, not one hop. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.17 (T1e2.2.17.2): *forbid* follows the activator chain to any length, D⁺ closed through every rule with parameters it activates"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -4000,27 +4008,15 @@ exhausted = true
 closes    = ["p", "p2"]
 models    = [["(p a)", "(p2 a)"]]
 
-[case.region]
-route    = "route 2"
-monotone = false
-k_s      = 3
-k_c      = 3
-minimal  = [[]]
-maximal  = [["(p a)", "(p2 a)"]]
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal: `r3`'s (false) rests through the activators (r3 a), (r2 a) and (q a) on (absent (p2 ?x)), over a relation a commitment can extend; every question about a commitment exits 1, and ein saturate still saturates"
 
 [case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["p", "p2"]
-outside   = ["q"]
-models    = [["(p a)", "(p2 a)"]]
+run     = "solve"
+line    = "all"
+refused = "rule 'r3': concludes (false) from its activator, which rule 'r2' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p2)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-node-absent"
@@ -4031,10 +4027,14 @@ settings = "default"
 owner    = "S1e2.2.17"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
-status   = "open"
-open_because = "*forbid* reads `q`, a rule with parameters root has no plan of, from its pattern for what it derives from a tainted relation or activator, but not for the `absent` it reads itself, so `(r2 ?n)` is never tainted; and `r2`'s activator relation is not in D, so `r2` is never read"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: the `absent` is in the plan a node compiles, not in a plan of root's. Its (false) rests through the activator (r2 a) on the (absent (p2 a)) `q`'s plan read"
+note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: the `absent` is in the plan a node compiles, not in a plan of root's. Its (false) rests through the activator (r2 a) on the (absent (p2 a)) `q`'s plan read. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.17 (T1e2.2.17.2): an open rule's own `absent` over D⁺ seeds N, as a plan of root's does"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -4046,27 +4046,15 @@ exhausted = true
 closes    = ["p", "p2"]
 models    = [["(p a)", "(p2 a)"]]
 
-[case.region]
-route    = "route 2"
-monotone = false
-k_s      = 3
-k_c      = 3
-minimal  = [[]]
-maximal  = [["(p a)", "(p2 a)"]]
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal: `r2` concludes (false) from its activator (r2 a), which `q`'s plan derives resting on (absent (p2 ?n)), and `p2` is a relation a commitment can extend; every question about a commitment exits 1, and ein saturate still saturates"
 
 [case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["p", "p2"]
-outside   = ["q"]
-models    = [["(p a)", "(p2 a)"]]
+run     = "solve"
+line    = "all"
+refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p2)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-param-absent"
@@ -4077,10 +4065,14 @@ settings = "default"
 owner    = "S1e2.2.17"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein"
-status   = "open"
-open_because = "*forbid* reads `watch`, a rule with parameters root has no plan of, from its pattern, and would refuse it as the refutation (its parameter's relation read under an `absent`), but does not taint what it derives under that `absent`, so `bad`'s read of `y` rests on nothing *forbid* sees"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: `mk` derives the activator (watch p2), whose plan derives (y a) while (p2 a) is absent, and `bad` concludes (false) from (y a)"
+note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: `mk` derives the activator (watch p2), whose plan derives (y a) while (p2 a) is absent, and `bad` concludes (false) from (y a). Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.17 (T1e2.2.17.2): an open rule's `absent` over its parameter's relation seeds N, conservatively, as Cause::Parameter refuses such a rule"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -4092,27 +4084,15 @@ exhausted = true
 closes    = ["p", "p2"]
 models    = [["(p a)", "(p2 a)"]]
 
-[case.region]
-route    = "route 2"
-monotone = false
-k_s      = 3
-k_c      = 3
-minimal  = [[]]
-maximal  = [["(p a)", "(p2 a)"]]
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal: `bad` concludes (false) from (y a), which `watch`'s plan for p2 derives resting on (absent (p2 ?x)), and `p2` is a relation a commitment can extend (F2's *via*); every question about a commitment exits 1, and ein saturate still saturates"
 
 [case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["p", "p2"]
-outside   = ["watch"]
-models    = [["(p a)", "(p2 a)"]]
+run     = "solve"
+line    = "all"
+refused = "rule 'bad': concludes (false) from y, which rule 'watch' derives resting on (absent …) over the relation its parameter ?R names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — so it calls a state that has not yet decided that relation a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (…)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-node-writes"
@@ -4123,10 +4103,14 @@ settings = "default"
 owner    = "S1e2.2.17"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein"
-status   = "open"
-open_because = "*forbid*'s extendable is D, whose closure follows the plans root compiled, and `x` is written only by `q2`'s plan, which a node compiles from the activator `mk2` derives: `x` is not in D, so `chk`'s (absent (x ?y)) reads, to *forbid* and to the static check, as over a static relation"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: here the refutation is root's own plan, and the activator chain is on the `absent`'s side. The static check flags the program for `q2`'s activator site alone"
+note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: here the refutation is root's own plan, and the activator chain is on the `absent`'s side. The static check flags the program for `q2`'s activator site alone. Fixed by T1e2.2.17.2: refused at every question about a commitment, ein saturate still saturating"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.17 (T1e2.2.17.2): *forbid*'s extendable is D⁺, and x, written only by a plan a node compiles, is in it"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -4138,27 +4122,15 @@ exhausted = true
 closes    = ["p", "p2"]
 models    = [["(p a)", "(p2 a)"]]
 
-[case.region]
-route    = "route 2"
-monotone = false
-k_s      = 3
-k_c      = 3
-minimal  = [[]]
-maximal  = [["(p a)", "(p2 a)"]]
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal: `chk` concludes (false) from (absent (x ?y)), and `x` is a relation a commitment can extend, through the activator (q2 a) a commitment derives; {(p a)} is dead and {(p a), (p2 a)} alive. Every question about a commitment exits 1, and ein saturate still saturates"
 
 [case.now]
-run       = "solve --maximal"
-line      = "maximal"
-exhausted = true
-k         = 1
-relations = ["p", "p2"]
-outside   = ["q2"]
-models    = [["(p a)", "(p2 a)"]]
+run     = "solve"
+line    = "all"
+refused = "rule 'chk': concludes (false) from (absent …) over x, a relation a commitment can still extend — so it calls a state that has not yet decided x a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (x)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

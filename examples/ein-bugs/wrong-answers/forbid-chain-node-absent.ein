@@ -19,14 +19,18 @@
 ;;; *via, per activator*: the program is refused at every command that takes
 ;;; the universe.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `3efd3f5f` it loads: R three states, the one dead hole {(p a)}, exit
-;;; 0, in every mode and `ein oracle`. *forbid* reads `q` from its pattern
-;;; (its activator relation is in D), but only for what it derives from a
-;;; tainted relation, not for the `absent` it reads itself, so `(r2 ?n)` is
-;;; never tainted; and `r2`'s activator relation is not in D, so `r2` is
-;;; never read. The status line names no site.
+;;; Until S1e2.2.17 it loaded: R three states, the one dead hole {(p a)},
+;;; exit 0, in every mode and `ein oracle` (at `3efd3f5f`). *forbid* read `q`
+;;; from its pattern (its activator relation is in D), but only for what it
+;;; derives from a tainted relation, not for the `absent` it reads itself, so
+;;; `(r2 ?n)` was never tainted; and `r2`'s activator relation is not in D,
+;;; so `r2` was never read. The status line named no site. Since then an
+;;; open rule's own `absent` over a relation in D⁺ taints what it derives,
+;;; `r2` is read over D⁺, and every question about a commitment exits 1:
+;;; `rule 'r2': concludes (false) from its activator, which rule 'q' derives
+;;; resting on (absent …) over p2`.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
 

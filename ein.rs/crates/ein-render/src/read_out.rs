@@ -557,7 +557,10 @@ pub fn warning_line(m: &Monotonicity, w: Option<&Warning>, root_dead: bool) -> S
     let Some(w) = w else { return s };
     s.push_str(&match &w.status {
         Status::Exercised { by, .. } => {
-            format!(" · status non-monotone (exercised, by {})", by.join(", "))
+            format!(
+                " · status non-monotone (exercised, {})",
+                ein_infer::detector::by_words(by)
+            )
         }
         Status::Conservative => " · status monotone (conservative)".to_string(),
         Status::PastLimit { n, .. } | Status::NotRead { n } | Status::RootDead { n, .. } => {
@@ -622,8 +625,8 @@ pub fn status_text(s: &Status) -> String {
             dead_not_upward_closed,
             discharged_not_upward_closed,
         } => format!(
-            "non-monotone here (exercised, by {}) — the cube: {}",
-            by.join(", "),
+            "non-monotone here (exercised, {}) — the cube: {}",
+            ein_infer::detector::by_words(by),
             violation_counts(
                 *holes,
                 *dead_not_upward_closed,

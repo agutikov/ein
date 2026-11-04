@@ -741,8 +741,8 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
                     dead_not_upward_closed,
                     discharged_not_upward_closed,
                 } => format!(
-                    "non-monotone here (exercised, by {}) — {}",
-                    by.join(", "),
+                    "non-monotone here (exercised, {}) — {}",
+                    ein_infer::detector::by_words(by),
                     crate::read_out::violation_counts(
                         *holes,
                         *dead_not_upward_closed,

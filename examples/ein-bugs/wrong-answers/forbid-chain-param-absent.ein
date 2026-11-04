@@ -17,14 +17,19 @@
 ;;; relation a commitment can extend. *forbid* with F2's *via*: the program
 ;;; is refused at every command that takes the universe.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `3efd3f5f` it loads: R three states, the one dead hole {(p a)}, exit
-;;; 0, in every mode and `ein oracle`. *forbid* reads `watch` from its
-;;; pattern (its activator relation is in D) and would refuse it were it the
-;;; refutation (its parameter's relation read under an `absent`), but it
-;;; does not follow what `watch` derives into N, so `bad`'s read of `y` is
-;;; never tainted. The status line names no site.
+;;; Until S1e2.2.17 it loaded: R three states, the one dead hole {(p a)},
+;;; exit 0, in every mode and `ein oracle` (at `3efd3f5f`). *forbid* read
+;;; `watch` from its pattern (its activator relation is in D) and would have
+;;; refused it were it the refutation (its parameter's relation read under an
+;;; `absent`), but it did not follow what `watch` derives into N, so `bad`'s
+;;; read of `y` was never tainted. The status line named no site. Since then
+;;; an open rule's `absent` over its parameter's relation taints what it
+;;; derives, whatever a node binds the parameter to, and every question
+;;; about a commitment exits 1: `rule 'bad': concludes (false) from y, which
+;;; rule 'watch' derives resting on (absent …) over the relation its
+;;; parameter ?R names`.
 
 (relation seed T) (relation p T) (relation p2 T) (relation y T) (relation watch T)
 

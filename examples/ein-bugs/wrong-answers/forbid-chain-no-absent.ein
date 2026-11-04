@@ -9,7 +9,8 @@
 ;;; cube (the static check flags `q`'s activator site, and the status is
 ;;; *monotone here (conservative)*), exit 0 (`ein solve FILE` at
 ;;; `3efd3f5f`). The fix that refuses the witness reads the same chain here
-;;; and must not refuse it, nor move R.
+;;; and must not refuse it, nor move R; since S1e2.2.17 it reads it, and
+;;; neither moved.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
 

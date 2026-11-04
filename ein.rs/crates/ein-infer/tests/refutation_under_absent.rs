@@ -68,11 +68,14 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// promoted it (2026-11-04); the three `per activator` rows are W16's second
 /// shape, banked by S1e2.2.16 the same day: the symbol control, and its int
 /// and nested-fact twins, which loaded until W16's fix, *forbid* reading an
-/// activator with no symbol argument as none; and `forbid-chain-0`, W17's
-/// refused control (M1e2 S1e2.2.17, 2026-11-04), an activator `mk` derives
-/// resting on an `absent`, compiling a refutation root has no plan of, read
-/// from its pattern because its activator relation is in D. W17's witnesses,
-/// the same chain one link longer and its siblings, load until its fix.
+/// activator with no symbol argument as none; and W17's family (M1e2
+/// S1e2.2.17, 2026-11-04): `forbid-chain-0`, its control, an activator `mk`
+/// derives resting on an `absent` compiling a refutation root has no plan of,
+/// refused since S1e2.2.5 because its activator relation is in D, and its
+/// five witnesses, which loaded until *forbid* followed the chain past D:
+/// one and two links longer, the `absent` in a plan a node compiles (over a
+/// relation, and over a parameter's), and over a relation only such a plan
+/// writes, `x`, in D⁺ and not in D.
 /// `features/05` and `/12`, `direct` too, close
 /// the relation their refutations read and load. The set is exact because
 /// both directions are findings: a new row is a program written with the
@@ -87,6 +90,11 @@ examples/ein-bugs/alive-empty-interlayer.ein::rule 'totality': concludes (false)
 examples/ein-bugs/d3-unsat-core.ein::rule 'fire-0' [activator T]: concludes (not \u{2026}) from r1, which rule 'fire-1' derives resting on (absent \u{2026}) over (not r1), a relation a commitment can still extend
 examples/ein-bugs/naf-upward-closure.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/forbid-chain-0.ein::rule 'q': concludes (false) from its activator, which rule 'mk' derives resting on (absent \u{2026}) over p2, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/forbid-chain-1.ein::rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent \u{2026}) over p2, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/forbid-chain-2.ein::rule 'r3': concludes (false) from its activator, which rule 'r2' derives resting on (absent \u{2026}) over p2, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein::rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent \u{2026}) over p2, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein::rule 'chk': concludes (false) from (absent \u{2026}) over x, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein::rule 'bad': concludes (false) from y, which rule 'watch' derives resting on (absent \u{2026}) over the relation its parameter ?R names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/naf-nowb.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/stale-naf-fork.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend

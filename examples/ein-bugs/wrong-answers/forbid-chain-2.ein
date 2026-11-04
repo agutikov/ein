@@ -18,12 +18,15 @@
 ;;; activator*: the program is refused at every command that takes the
 ;;; universe.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `3efd3f5f` it loads, as `forbid-chain-1.ein` does: R three states, the
-;;; one dead hole {(p a)}, exit 0, in every mode and `ein oracle`. Neither
-;;; `r2`'s activator relation nor `r3`'s is in D, so *forbid* reads neither,
-;;; and the status line names no site.
+;;; Until S1e2.2.17 it loaded, as `forbid-chain-1.ein` did: R three states,
+;;; the one dead hole {(p a)}, exit 0, in every mode and `ein oracle` (at
+;;; `3efd3f5f`). Neither `r2`'s activator relation nor `r3`'s is in D, so
+;;; *forbid* read neither, and the status line named no site. Both are in
+;;; D⁺ since, and every question about a commitment exits 1: `rule 'r3':
+;;; concludes (false) from its activator, which rule 'r2' derives resting on
+;;; (absent …) over p2`.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
 (relation r3 T)

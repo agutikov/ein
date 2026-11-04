@@ -16,26 +16,37 @@
 //!
 //! ### What counts
 //!
-//! *Extendable* is F1's reading (b): the relation is in `D`, the static
-//! check's relations a commitment can change ([`crate::monotone`]), at
-//! relation grain. A refutation is a saturation plan whose `:assert` writes
-//! `(false)` or a stored negative. It is refused when it rests on such an
-//! `absent`:
+//! *Extendable* is F1's reading (b), at relation grain: the relation is in
+//! `D⁺`, the static check's `D` ([`crate::monotone`]), the relations a
+//! commitment can change, followed through the rules root has no plan of
+//! (`monotone::through_activators`, M1e2 S1e2.2.17). A refutation is a
+//! saturation plan whose `:assert` writes `(false)` or a stored negative. It
+//! is refused when it rests on such an `absent`:
 //!
 //! | cause | the plan… |
 //! |---|---|
-//! | [`Cause::Direct`] | reads a relation in `D` inside an odd number of `absent`s |
+//! | [`Cause::Direct`] | reads a relation in `D⁺` inside an odd number of `absent`s |
 //! | [`Cause::Via`] | reads positively a relation in `N`: one a rule derives resting on such an `absent` (F2, *via*, ruled 2026-11-04) |
 //! | [`Cause::Activator`] | is compiled from an activator in `N` (F2, *per activator*) |
-//! | [`Cause::Parameter`] | is a rule with parameters whose activator a commitment can derive, and reads a parameter's relation inside an odd number of `absent`s: a node can compile it over a relation in `D` (F3) |
+//! | [`Cause::Parameter`] | is a rule with parameters whose activator a commitment can derive, and reads a parameter's relation inside an odd number of `absent`s: a node can compile it over a relation in `D⁺` (F3) |
 //!
-//! `N` is the relations a saturation plan with a [`crate::monotone::SiteKind::Absent`]
-//! site writes, closed under *a saturation plan that reads `N` positively, or
-//! is compiled from an activator in `N`, writes `N`*. The check reads root's
-//! plans, and every rule with parameters whose activator relation is in `D`
-//! from its pattern, since a node can compile a plan of it that root never
-//! had. On a program the static check calls monotone it reads nothing: every
-//! cause needs a site.
+//! The check reads root's plans, and every **open** rule from its pattern: a
+//! rule with parameters whose activator relation is in `D⁺`, since a node can
+//! compile a plan of it that root never had. `N` is the relations a plan of
+//! root's or an open rule writes when it reads, inside an odd number of
+//! `absent`s, a relation in `D⁺` (an open rule's parameter's relation too,
+//! whatever a node binds it to), closed under *a plan that reads `N`
+//! positively, or is compiled from an activator in `N`, writes `N`*. On a
+//! program the static check calls monotone it reads nothing: every cause
+//! needs a site.
+//!
+//! **Until M1e2 S1e2.2.17** (W17) *extendable* was `D` and an open rule's
+//! activator relation had to be in `D`, so a chain of activators past the
+//! first plan root never compiled was not followed, and an open rule's own
+//! `absent` tainted nothing it derived: a refutation whose activator chain
+//! first appears at a node loaded with a dead hole
+//! (`examples/ein-bugs/wrong-answers/forbid-chain-*.ein`). `D⁺` is `D` on a
+//! program with no activator site.
 //!
 //! ### Where it runs
 //!
@@ -86,14 +97,52 @@ pub enum Cause {
     Direct { over: Rel, depth: u32 },
     /// The plan reads `premise` positively, and rule `by` derives it resting
     /// on an `absent` over `over`.
-    Via { premise: Rel, by: Symbol, over: Rel },
+    Via {
+        premise: Rel,
+        by: Symbol,
+        over: Over,
+    },
     /// The plan's activator is in `N`: rule `by` derives it resting on an
     /// `absent` over `over`.
-    Activator { by: Symbol, over: Rel },
+    Activator { by: Symbol, over: Over },
     /// A rule with parameters, whose activator a commitment can derive, reads
     /// the relation its parameter `param` names at odd `absent` depth.
     Parameter { param: Symbol },
 }
+
+/// What the `absent` a fact of `N` rests on reads: a relation in `D⁺`, or
+/// the relation an open rule's parameter names, which a node binds — read
+/// conservatively, as [`Cause::Parameter`] is (M1e2 S1e2.2.17).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Over {
+    Rel(Rel),
+    Param(Symbol),
+}
+
+impl Over {
+    /// `(absent …) over R, a relation a commitment can still extend`, or, for
+    /// a parameter, what [`Cause::Parameter`]'s line has always said.
+    fn text(self, terms: &Terms) -> String {
+        match self {
+            Over::Rel(r) => format!("(absent …) over {}, {EXTENDABLE}", r.label(terms)),
+            Over::Param(p) => format!(
+                "(absent …) over the relation its parameter ?{} names, and a commitment can \
+                 derive its activator, so a node can compile it over {EXTENDABLE}",
+                terms.sym(p)
+            ),
+        }
+    }
+
+    /// What the line says the state has not yet decided.
+    fn undecided(self, terms: &Terms) -> String {
+        match self {
+            Over::Rel(r) => r.label(terms),
+            Over::Param(_) => "that relation".to_string(),
+        }
+    }
+}
+
+const EXTENDABLE: &str = "a relation a commitment can still extend";
 
 /// One refused refutation.
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -119,50 +168,41 @@ impl Refusal {
             format!(" [activator {}]", a.join(" "))
         };
         let concl = self.concludes.as_str();
-        const EXTENDABLE: &str = "a relation a commitment can still extend";
         let (from, rel) = match &self.cause {
-            Cause::Direct { over, .. } => {
-                let r = over.label(terms);
-                (format!("(absent …) over {r}, {EXTENDABLE}"), r)
-            }
-            Cause::Via { premise, by, over } => {
-                let r = over.label(terms);
-                (
-                    format!(
-                        "{}, which rule '{}' derives resting on (absent …) over {r}, {EXTENDABLE}",
-                        premise.label(terms),
-                        terms.sym(*by)
-                    ),
-                    r,
-                )
-            }
-            Cause::Activator { by, over } => {
-                let r = over.label(terms);
-                (
-                    format!(
-                        "its activator, which rule '{}' derives resting on (absent …) over \
-                         {r}, {EXTENDABLE}",
-                        terms.sym(*by)
-                    ),
-                    r,
-                )
-            }
-            Cause::Parameter { param } => (
+            Cause::Direct { over, .. } => (Over::Rel(*over).text(terms), over.label(terms)),
+            Cause::Via { premise, by, over } => (
                 format!(
-                    "(absent …) over the relation its parameter ?{} names, and a commitment can \
-                     derive its activator, so a node can compile it over {EXTENDABLE}",
-                    terms.sym(*param)
+                    "{}, which rule '{}' derives resting on {}",
+                    premise.label(terms),
+                    terms.sym(*by),
+                    over.text(terms)
                 ),
-                "that relation".to_string(),
+                over.undecided(terms),
+            ),
+            Cause::Activator { by, over } => (
+                format!(
+                    "its activator, which rule '{}' derives resting on {}",
+                    terms.sym(*by),
+                    over.text(terms)
+                ),
+                over.undecided(terms),
+            ),
+            Cause::Parameter { param } => (
+                Over::Param(*param).text(terms),
+                Over::Param(*param).undecided(terms),
             ),
         };
         // A stored negative's relation is closed by closing its positive.
         let close = match &self.cause {
             Cause::Direct { over, .. }
-            | Cause::Via { over, .. }
-            | Cause::Activator { over, .. }
-                if over.name != terms.kernel.not =>
-            {
+            | Cause::Via {
+                over: Over::Rel(over),
+                ..
+            }
+            | Cause::Activator {
+                over: Over::Rel(over),
+                ..
+            } if over.name != terms.kernel.not => {
                 format!("(solve :no-hypothesis ({}))", terms.sym(over.name))
             }
             _ => "(solve :no-hypothesis (…))".to_string(),
@@ -216,7 +256,6 @@ pub fn check(
         return Vec::new();
     }
     let program = kb.program();
-    let in_d = |r: Rel| m.changes(r, terms);
     let saturation: Vec<&Plan> = plans
         .iter()
         .filter(|p| program.rules.contains(p.rule))
@@ -240,6 +279,13 @@ pub fn check(
         .iter()
         .map(|p| monotone::reads_of(p, terms))
         .collect();
+    // Every rule with parameters, read from its pattern, and `D⁺`, the
+    // relations a commitment can extend: `D` followed through the plans a
+    // node can compile that root never had (M1e2 S1e2.2.17, W17). Until then
+    // this read `D` itself, whose closure follows root's plans only.
+    let bodies = bodies_of(kb, terms, ast);
+    let extendable = extendable_over(m, &saturation, &reads, &bodies, terms);
+    let in_d = |r: Rel| monotone::in_set(&extendable, r, terms);
     let odd_d = |rs: &[(Rel, u32)]| -> Option<(Rel, u32)> {
         let mut v: Vec<(Rel, u32)> = rs
             .iter()
@@ -249,23 +295,51 @@ pub fn check(
         v.sort_by(|a, b| a.0.label(terms).cmp(&b.0.label(terms)).then(a.1.cmp(&b.1)));
         v.into_iter().next()
     };
-    // The rules with parameters a node can compile a plan of that root
-    // never had, read from their patterns.
-    let open_rules: Vec<(&Rule, Body)> = program
-        .rules
-        .values()
-        .filter(|r| !r.params.is_empty() && in_d(pos(r.name)))
-        .map(|r| (r, Body::of(ast, terms, r)))
+    // The open rules: those with parameters a node can compile a plan of
+    // that root never had, their activator relation in `D⁺`. Until M1e2
+    // S1e2.2.17, in `D`, so a chain of activators past the first was not
+    // followed (`forbid-chain-1.ein`'s `r2`).
+    let open_rules: Vec<(&Rule, &Body)> = bodies
+        .iter()
+        .filter(|(r, _)| in_d(pos(r.name)))
+        .map(|(r, b)| (*r, b))
         .collect();
 
     // N, each relation with the rule that derives it and the `absent` it
-    // rests on.
+    // rests on: seeded by every plan of root's, and since M1e2 S1e2.2.17 by
+    // every open rule, that reads inside an odd number of `absent`s a
+    // relation in `D⁺` — or, an open rule, its parameter's relation, which a
+    // node binds (`forbid-chain-node-absent.ein`, `-param-absent.ein`).
     let mut n = Tainted::default();
     for (p, rs) in saturation.iter().zip(&reads) {
         if let Some((over, _)) = odd_d(rs) {
             for w in monotone::writes_of(p, terms) {
                 if w.name != terms.kernel.r#false {
-                    n.insert(w, p.rule, over);
+                    n.insert(w, p.rule, Over::Rel(over));
+                }
+            }
+        }
+    }
+    for (rule, body) in &open_rules {
+        let mut odd: Vec<(Rel, u32)> = body
+            .reads
+            .iter()
+            .filter_map(|&(r, d)| match r {
+                Read::Rel(r) if d % 2 == 1 && in_d(r) => Some((r, d)),
+                _ => None,
+            })
+            .collect();
+        odd.sort_by(|a, b| a.0.label(terms).cmp(&b.0.label(terms)).then(a.1.cmp(&b.1)));
+        let over = odd.first().map(|&(r, _)| Over::Rel(r)).or_else(|| {
+            body.reads.iter().find_map(|&(r, d)| match r {
+                Read::Param(p) if d % 2 == 1 => Some(Over::Param(p)),
+                _ => None,
+            })
+        });
+        if let Some(over) = over {
+            for &w in &body.writes {
+                if w.name != terms.kernel.r#false {
+                    n.insert(w, rule.name, over);
                 }
             }
         }
@@ -388,6 +462,68 @@ pub fn check(
     out
 }
 
+/// The relations *forbid* calls extendable, `D⁺`, sorted by label: the static
+/// check's `D` followed through the rules root has no plan of
+/// (`monotone::through_activators`, M1e2 S1e2.2.17). `plans` are root's, `m`
+/// the static check over them. For a reader that studies the shape *forbid*
+/// names, as `ein-infer/tests/region.rs`' test of F21's D6 (b) does; it is
+/// `D` on a program with no activator site.
+pub fn extendable(
+    kb: &Kb,
+    terms: &Terms,
+    ast: &Ast,
+    plans: &[Arc<Plan>],
+    m: &Monotonicity,
+) -> Vec<Rel> {
+    let program = kb.program();
+    let saturation: Vec<&Plan> = plans
+        .iter()
+        .filter(|p| program.rules.contains(p.rule))
+        .map(|p| &**p)
+        .collect();
+    let reads: Vec<Vec<(Rel, u32)>> = saturation
+        .iter()
+        .map(|p| monotone::reads_of(p, terms))
+        .collect();
+    let bodies = bodies_of(kb, terms, ast);
+    // determinism-ok: sorted by label on the next line.
+    let mut out: Vec<Rel> = extendable_over(m, &saturation, &reads, &bodies, terms)
+        .into_iter()
+        .collect();
+    out.sort_by_key(|r| r.label(terms));
+    out
+}
+
+/// Every rule with parameters, with its pattern read.
+fn bodies_of<'k>(kb: &'k Kb, terms: &Terms, ast: &Ast) -> Vec<(&'k Rule, Body)> {
+    kb.program()
+        .rules
+        .values()
+        .filter(|r| !r.params.is_empty())
+        .map(|r| (r, Body::of(ast, terms, r)))
+        .collect()
+}
+
+/// `D⁺` over root's saturation plans and the rules with parameters.
+fn extendable_over(
+    m: &Monotonicity,
+    saturation: &[&Plan],
+    reads: &[Vec<(Rel, u32)>],
+    bodies: &[(&Rule, Body)],
+    terms: &Terms,
+) -> rustc_hash::FxHashSet<Rel> {
+    let plans: Vec<(&Plan, &[(Rel, u32)])> = saturation
+        .iter()
+        .zip(reads)
+        .map(|(p, r)| (*p, r.as_slice()))
+        .collect();
+    let open: Vec<(Rel, &[Rel])> = bodies
+        .iter()
+        .map(|(r, b)| (pos(r.name), b.writes.as_slice()))
+        .collect();
+    monotone::through_activators(m, &plans, &open, terms)
+}
+
 /// The refusals as [`crate::SolveError::Refused`]'s message: one line each.
 pub fn message(refusals: &[Refusal], terms: &Terms) -> String {
     refusals
@@ -420,12 +556,12 @@ fn refutes(writes: &[Rel], terms: &Terms) -> Option<Concludes> {
 /// `N`, in insertion order — the first derivation found is the one a message
 /// names.
 #[derive(Default)]
-struct Tainted(Vec<(Rel, Symbol, Rel)>);
+struct Tainted(Vec<(Rel, Symbol, Over)>);
 
 impl Tainted {
     /// `r ∈ N`, the wildcard negative read both ways, as
     /// [`Monotonicity::changes`] reads `D`.
-    fn get(&self, r: Rel, terms: &Terms) -> Option<(Symbol, Rel)> {
+    fn get(&self, r: Rel, terms: &Terms) -> Option<(Symbol, Over)> {
         let any_neg = |x: Rel| x.negated && x.name == terms.kernel.not;
         self.0
             .iter()
@@ -433,7 +569,7 @@ impl Tainted {
             .map(|&(_, by, over)| (by, over))
     }
 
-    fn insert(&mut self, r: Rel, by: Symbol, over: Rel) -> bool {
+    fn insert(&mut self, r: Rel, by: Symbol, over: Over) -> bool {
         if self.0.iter().any(|&(x, _, _)| x == r) {
             return false;
         }

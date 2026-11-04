@@ -412,7 +412,8 @@ pub fn classify(
         .collect();
     // determinism-ok: the seed of a set, closed to a fixpoint; nothing reads
     // its order.
-    let dynamic = close(hypothesised.iter().copied(), &saturation, terms);
+    let seed = hypothesised.iter().copied().map(Rel::pos);
+    let dynamic = close(seed, &saturation, &[], terms);
 
     let mut out = Monotonicity {
         plans: (
@@ -527,18 +528,48 @@ pub(crate) fn dynamic(
         .collect();
     let saturation: Vec<(&Plan, &[(Rel, u32)])> =
         saturation.iter().map(|(p, r)| (*p, r.as_slice())).collect();
-    close(hypothesised, &saturation, terms)
+    // determinism-ok: the seed of a set, closed to a fixpoint; nothing reads
+    // its order.
+    let seed = hypothesised.into_iter().map(Rel::pos);
+    close(seed, &saturation, &[], terms)
 }
 
-/// The closure [`dynamic`] and [`classify`] share, over the saturation plans
-/// and their reads.
-fn close(
-    hypothesised: impl IntoIterator<Item = Symbol>,
+/// `D` followed through the rules root has no plan of — M1e2
+/// [S1e2.2.17](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.17_forbid_activator_chain.md),
+/// W17: the relations *forbid* calls extendable.
+///
+/// `D` is closed over the plans root compiled. A rule with parameters whose
+/// activator relation is in `D` is an activator site: a node compiles a plan
+/// of it root never had, and what that plan writes a commitment can change
+/// too, though `D` does not hold it, nor what a rule activated by it writes.
+/// `open` is every rule with parameters, as *its activator relation, the
+/// relations its pattern writes*; the result is `m`'s `D` closed under
+/// `saturation` (root's plans, `D`'s own rule) and under each such rule whose
+/// activator relation it holds. It is `D` on a program with no activator site.
+/// [`crate::forbid`] reads it; the static check and every other reader of `D`
+/// do not, so no site, no rung decline and no summary moves with it.
+pub(crate) fn through_activators(
+    m: &Monotonicity,
     saturation: &[(&Plan, &[(Rel, u32)])],
+    open: &[(Rel, &[Rel])],
+    terms: &Terms,
+) -> FxHashSet<Rel> {
+    close(m.dynamic.iter().copied(), saturation, open, terms)
+}
+
+/// The one closure of `D`: `seed`, closed under *a saturation plan that reads
+/// a relation in it asserts into it* and, for each `(activator, writes)` of
+/// `open`, *a rule whose activator relation is in it writes `writes` into
+/// it*. [`dynamic`] and [`classify`] pass no `open`; [`through_activators`]
+/// passes the rules with parameters.
+fn close(
+    seed: impl IntoIterator<Item = Rel>,
+    saturation: &[(&Plan, &[(Rel, u32)])],
+    open: &[(Rel, &[Rel])],
     terms: &Terms,
 ) -> FxHashSet<Rel> {
     // determinism-ok: a set built from a set; nothing reads its order.
-    let mut dynamic: FxHashSet<Rel> = hypothesised.into_iter().map(Rel::pos).collect();
+    let mut dynamic: FxHashSet<Rel> = seed.into_iter().collect();
     loop {
         let mut grew = false;
         for (plan, reads) in saturation {
@@ -546,6 +577,14 @@ fn close(
                 continue;
             }
             for w in writes_of(plan, terms) {
+                grew |= dynamic.insert(w);
+            }
+        }
+        for &(activator, writes) in open {
+            if !in_set(&dynamic, activator, terms) {
+                continue;
+            }
+            for &w in writes {
                 grew |= dynamic.insert(w);
             }
         }

@@ -116,7 +116,10 @@ pub fn run(m: &ArgMatches) -> i32 {
     // stale fact, which the status cannot show (M1e2 S1e2.1b.5).
     let flagged_close = r.warning.as_deref().map(|w| match &w.status {
         ein_infer::detector::Status::Exercised { by, .. } => {
-            format!(" — the status is not monotone here, by {}", by.join(", "))
+            format!(
+                " — the status is not monotone here, {}",
+                ein_infer::detector::by_words(by)
+            )
         }
         _ => {
             let k = w.state.stale.len();

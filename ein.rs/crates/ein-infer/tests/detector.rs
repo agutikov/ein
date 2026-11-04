@@ -385,6 +385,38 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
             "examples/lattice/synth/trigger_hole.ein",
             exercised(&["dead-1", "owe-2"], 7, 3, 4),
         ),
+        // M1e2 S1e2.2.17: where S1e2.1b.3's rule names no site, the
+        // derivation followed through each plan's activator. `lattice/12`'s
+        // `total-owed` activator is derived by a plan of `serves`, which root
+        // never compiled; W17's witnesses, studied past *forbid*, die through
+        // `r2`, `r3` or `bad`, compiled at a node, none of them a site.
+        (
+            "examples/lattice/12_activator_chain_hole.ein",
+            exercised(&["serves"], 1, 0, 1),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/forbid-chain-1.ein",
+            exercised(&["q"], 1, 1, 0),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/forbid-chain-2.ein",
+            exercised(&["q"], 1, 1, 0),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein",
+            exercised(&["q"], 1, 1, 0),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein",
+            exercised(&["watch"], 1, 1, 0),
+        ),
+        // ... and where that names none either, the row says so: `chk`'s death
+        // rests on `(absent (x a))`, no site reads `x`, and no rule on the
+        // derivation is an activator site.
+        (
+            "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein",
+            exercised(&[], 1, 1, 0),
+        ),
         (
             "examples/branching/13_lookahead_naf_world.ein",
             Status::Conservative,
@@ -398,6 +430,14 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
             "{rel}"
         );
     }
+    assert_eq!(
+        ein_infer::detector::by_words(&[]),
+        "by no site: the violation's derivation, each plan's activator followed, reaches none"
+    );
+    assert_eq!(
+        ein_infer::detector::by_words(&["q".to_string(), "r".to_string()]),
+        "by q, r"
+    );
     let rel = "examples/ein-bugs/naf-upward-closure.ein";
     assert_eq!(
         warned(rel, DESCRIBE, 1).status,

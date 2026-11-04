@@ -21,17 +21,22 @@
 ;;; program is refused at every command that takes the universe, as
 ;;; `forbid-chain-0.ein`, the same chain one link shorter, is.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `3efd3f5f` it loads: R three states, ∅, {(p2 a)} and {(p a), (p2 a)},
-;;; the one dead hole {(p a)}, exit 0, in every mode and `ein oracle`.
-;;; *forbid* reads a rule with parameters root has no plan of from its
-;;; pattern only when its activator relation is in D, and D's closure
-;;; follows reads, not activators: `q`'s is (root's plan of `mk` writes it),
-;;; `r2`'s is not (only `q`'s plan, which root never compiled, writes it),
-;;; so `r2` is never read. The read-out's status line names no site:
-;;; *exercised, by* and an empty list. `forbid-chain-2.ein` is the chain one
-;;; link longer.
+;;; Until S1e2.2.17 it loaded: R three states, ∅, {(p2 a)} and
+;;; {(p a), (p2 a)}, the one dead hole {(p a)}, exit 0, in every mode and
+;;; `ein oracle` (`ein solve FILE` at `3efd3f5f`). *forbid* read a rule with
+;;; parameters root has no plan of from its pattern only when its activator
+;;; relation was in D, and D's closure follows reads, not activators: `q`'s
+;;; is (root's plan of `mk` writes it), `r2`'s is not (only `q`'s plan, which
+;;; root never compiled, writes it), so `r2` was never read, and the
+;;; read-out's status line named no site: *exercised, by* and an empty list.
+;;; Since then *forbid* reads such a rule whenever its activator relation is
+;;; in D⁺, D followed through the rules root has no plan of, and every
+;;; question about a commitment exits 1: `rule 'r2': concludes (false) from
+;;; its activator, which rule 'q' derives resting on (absent …) over p2`.
+;;; Studied past the refusal, the status names `q`, the activator site the
+;;; chain runs through. `forbid-chain-2.ein` is the chain one link longer.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
 

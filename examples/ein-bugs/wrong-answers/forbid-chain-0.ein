@@ -9,9 +9,10 @@
 ;;; `rule 'q': concludes (false) from its activator, which rule 'mk' derives
 ;;; resting on (absent …) over p2`, every question about a commitment exit 1
 ;;; (`ein solve FILE` at `3efd3f5f`), `ein saturate` still saturating. The
-;;; witnesses, one link longer and two, load at that commit, because the
+;;; witnesses, one link longer and two, loaded at that commit, because the
 ;;; refuting rule's activator relation is written only by a plan root never
-;;; compiled.
+;;; compiled; since S1e2.2.17's fix *forbid* follows the chain, and they are
+;;; refused as this is.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q T)
 

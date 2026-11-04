@@ -18,14 +18,20 @@
 ;;; *forbid*'s `direct` case (the user's ruling of 2026-11-02): the program
 ;;; is refused at every command that takes the universe.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; At `3efd3f5f` it loads: R three states, the one dead hole {(p a)}, exit
-;;; 0, in every mode and `ein oracle`. *forbid*'s *extendable* is D, and `x`
-;;; is not in D: D's closure follows the plans root compiled, and only a plan
-;;; root never compiled writes `x`. The static check calls `chk`'s read of
-;;; `x` static, and flags the program for `q2`'s activator site alone. The
-;;; status line names no site.
+;;; Until S1e2.2.17 it loaded: R three states, the one dead hole {(p a)},
+;;; exit 0, in every mode and `ein oracle` (at `3efd3f5f`). *forbid*'s
+;;; *extendable* was D, and `x` is not in D: D's closure follows the plans
+;;; root compiled, and only a plan root never compiled writes `x`. Since
+;;; then it is D⁺, D followed through the rules root has no plan of, which
+;;; holds `x`, and every question about a commitment exits 1: `rule 'chk':
+;;; concludes (false) from (absent …) over x`. The static check still calls
+;;; `chk`'s read of `x` static and flags the program for `q2`'s activator
+;;; site alone: D is unchanged for every reader but *forbid*. Studied past
+;;; the refusal, the status names no site and says why: the death rests on
+;;; `(absent (x a))`, which no site reads, and no rule on its derivation is
+;;; an activator site.
 
 (relation seed T) (relation p T) (relation p2 T) (relation q2 T) (relation x T)
 

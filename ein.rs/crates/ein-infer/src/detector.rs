@@ -18,8 +18,11 @@
 //!
 //! - **the status**: the cube's violations — holes, dead nodes with an alive
 //!   superset, discharged nodes with an owing superset — each attributed to
-//!   the sites that made it (S1e2.1b.3's rule, `status_of`): *exercised* or
-//!   *conservative*, and *not known* where the run did not read the cube;
+//!   the sites that made it (S1e2.1b.3's rule, `status_of`; where it names
+//!   none, since M1e2 S1e2.2.17, the derivation followed through each plan's
+//!   activator, and where that names none either, [`by_words`] says so):
+//!   *exercised* or *conservative*, and *not known* where the run did not read
+//!   the cube;
 //! - **the state**: every node the run computes is read for **stale facts**
 //!   ([`stale_facts`], `node_census.md` § 4's check, in
 //!   [`crate::region`]'s node function), dead nodes included, because W8's
@@ -727,6 +730,17 @@ impl Status {
     }
 }
 
+/// The sites an `Exercised` status names, as its row says them: `by a, b`,
+/// or, where the attribution reaches none, why (M1e2 S1e2.2.17).
+pub fn by_words(by: &[String]) -> String {
+    if by.is_empty() {
+        "by no site: the violation's derivation, each plan's activator followed, reaches none"
+            .to_string()
+    } else {
+        format!("by {}", by.join(", "))
+    }
+}
+
 /// One node holding a stale fact.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StaleNode {
@@ -1089,7 +1103,8 @@ fn absent_label(premise: &str) -> String {
 /// The sites a dead node falls to: the activator site of a refuting rule root
 /// never compiled; else the `absent` sites over a premise's relation, those
 /// whose rule refuted it where there are any (S1e2.1b.3's rule, the
-/// `attribution` example's `dead`).
+/// `attribution` example's `dead`). Where it names none, [`status_of`] asks
+/// [`dead_chain_sites`] (M1e2 S1e2.2.17).
 fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTreeSet<String>) {
     let mut found = false;
     for s in sites.iter().filter(|s| s.kind == SiteKind::Activator) {
@@ -1125,11 +1140,117 @@ fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTr
     }
 }
 
+/// A dead node [`dead_sites`] names no site of — M1e2 S1e2.2.17: its first
+/// contradiction's derivation, followed through each plan's activator (F2's
+/// *per activator*, read for a label). A derivation does not record the
+/// activator its plan was compiled from, so where a chain of activators runs
+/// at a node, the refuting rule is no site and its premises carry no
+/// `absent`: on W17's witnesses, studied past *forbid*'s refusal, the rule
+/// above named nothing, and the status row read *by* and an empty list.
+fn dead_chain_sites(
+    nodes: &mut Nodes<'_>,
+    sites: &[SiteText],
+    root: &RootPlans,
+    facts: &[FactId],
+) -> Result<BTreeSet<String>, SolveError> {
+    nodes.with_fixpoints(&[facts.to_vec()], |kbs, terms| {
+        let kb = &kbs[0];
+        let Some(first) = crate::contradiction::detect(kb, terms).into_iter().next() else {
+            return BTreeSet::new();
+        };
+        let seeds: Vec<FactId> = [first.positive, Some(first.negative)]
+            .into_iter()
+            .flatten()
+            .collect();
+        chain_sites(sites, root, &chain_of(kb, terms, &seeds))
+    })
+}
+
+/// What a derivation rests on, each plan's activator a premise: the rules
+/// that derived a fact on it, and the relations of the `absent` premises
+/// recorded on it, as [`monotone::Rel::label`] writes them.
+struct Chain {
+    rules: FxHashSet<Symbol>,
+    absent: BTreeSet<String>,
+}
+
+/// The derivations of `seeds` in `kb`, walked through every fact's primary
+/// derivation and, for a fact a rule with parameters derived, through that
+/// rule's applications in `kb`: the activators its plans were compiled from,
+/// which provenance does not name, so every one of them (the
+/// `examples/shared/taint.rs` walk's reading).
+fn chain_of(kb: &Kb, terms: &Terms, seeds: &[FactId]) -> Chain {
+    // determinism-ok: membership only; nothing reads its order.
+    let mut rules: FxHashSet<Symbol> = FxHashSet::default();
+    let mut absent = BTreeSet::new();
+    // determinism-ok: membership only; nothing reads its order.
+    let mut seen: FxHashSet<FactId> = FxHashSet::default();
+    let mut stack: Vec<FactId> = seeds.to_vec();
+    while let Some(f) = stack.pop() {
+        if !seen.insert(f) {
+            continue;
+        }
+        let Some(p) = kb.primary(f) else { continue };
+        let prov = terms.provs.get(p);
+        for r in prov.absent.iter() {
+            absent.insert(naf_rel_label(terms, r));
+        }
+        stack.extend(prov.premises.iter().copied());
+        let Some(rule) = prov.rule else { continue };
+        rules.insert(rule);
+        let program = kb.program();
+        let has_params = program
+            .rules
+            .get(rule)
+            .or_else(|| program.obligations.get(rule))
+            .is_some_and(|r| !r.params.is_empty());
+        if has_params {
+            stack.extend(kb.rule_apps_by_rule(rule));
+        }
+    }
+    Chain { rules, absent }
+}
+
+/// An `absent` premise's relation: `q`, `(not q)`, or `(not ?)`.
+fn naf_rel_label(terms: &Terms, r: &NafRef) -> String {
+    if r.rel == terms.kernel.not {
+        return match r.args.first() {
+            Some(NafArg::Nested { rel, .. }) => format!("(not {})", terms.sym(*rel)),
+            _ => "(not ?)".to_string(),
+        };
+    }
+    terms.sym(r.rel).to_string()
+}
+
+/// The sites a chain names: the activator sites of the rules on it root never
+/// compiled; else the `absent` sites over its premises' relations.
+fn chain_sites(sites: &[SiteText], root: &RootPlans, chain: &Chain) -> BTreeSet<String> {
+    let acts: BTreeSet<String> = sites
+        .iter()
+        .filter(|s| s.kind == SiteKind::Activator)
+        .filter(|s| chain.rules.contains(&s.rule) && !root.rules.contains(&s.rule))
+        .map(|s| s.name.clone())
+        .collect();
+    if !acts.is_empty() {
+        return acts;
+    }
+    sites
+        .iter()
+        .filter(|s| s.kind == SiteKind::Absent)
+        .filter(|s| {
+            chain.absent.contains(&s.label)
+                || (s.label == "(not ?)" && chain.absent.iter().any(|x| x.starts_with("(not ")))
+        })
+        .map(|s| s.name.clone())
+        .collect()
+}
+
 /// The sites an owing node `at` falls to, by each debt new against `below`: a
 /// trigger site of the instance; else the activator site of an obligation
 /// whose plan root never compiled; else an `absent` site whose rule derived a
 /// fact `below` holds and `at` does not (the `attribution` example's
-/// `owing`).
+/// `owing`); else, since M1e2 S1e2.2.17, the sites [`chain_sites`] names on
+/// the obligation's activator's derivation.
 fn owing_sites(
     nodes: &mut Nodes<'_>,
     ast: &Ast,
@@ -1174,12 +1295,35 @@ fn owing_sites(
                     continue;
                 }
             }
-            out.extend(
-                sites
-                    .iter()
-                    .filter(|s| s.kind == SiteKind::Absent && lost.contains(&s.rule))
-                    .map(|s| s.name.clone()),
-            );
+            let lost_sites: Vec<&SiteText> = sites
+                .iter()
+                .filter(|s| s.kind == SiteKind::Absent && lost.contains(&s.rule))
+                .collect();
+            if !lost_sites.is_empty() {
+                out.extend(lost_sites.iter().map(|s| s.name.clone()));
+                continue;
+            }
+            // None of the three (M1e2 S1e2.2.17): the obligation's activator,
+            // followed to the plans that derived it, as a dead node's
+            // refutation is (`lattice/12_activator_chain_hole.ein`, whose
+            // `total-owed` activator a plan of `serves` derives).
+            let mut seeds: Vec<FactId> = kbs[1]
+                .rule_apps_by_rule(o.rule)
+                .filter(|&f| {
+                    let args: Vec<Symbol> = terms
+                        .facts
+                        .get(f)
+                        .1
+                        .iter()
+                        .filter_map(|v| v.as_sym())
+                        .collect();
+                    *args == *o.activator
+                })
+                .collect();
+            if seeds.is_empty() {
+                seeds = kbs[1].rule_apps_by_rule(o.rule).collect();
+            }
+            out.extend(chain_sites(sites, root, &chain_of(&kbs[1], terms, &seeds)));
         }
         out
     })?;
@@ -1229,7 +1373,12 @@ pub(crate) fn status_of(
                 &mut named,
             )?,
             _ if status & DEAD != 0 => {
-                dead_sites(sites, root, &cube.nodes[mask as usize], &mut named)
+                let mut here: BTreeSet<String> = BTreeSet::new();
+                dead_sites(sites, root, &cube.nodes[mask as usize], &mut here);
+                if here.is_empty() {
+                    here = dead_chain_sites(nodes, sites, root, &cube.facts_of(mask))?;
+                }
+                named.extend(here);
             }
             _ if status & OWING != 0 => {
                 let below = cube
