@@ -784,8 +784,10 @@ on 2026-11-04** ([`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forb
 with F1 (b), D, and the user's F2 of that day, *via, per activator*; F3 reads
 root's plans and, from its pattern, every rule with parameters whose activator
 relation is in D. Three items of the list below are covered since then: the
-derived refutation (c3, c9) and both activator shapes (c7, c12). What it does
-not cover:
+derived refutation (c3, c9) and both activator shapes (c7, c12), the second
+for an activator with no symbol argument only since M1e2 S1e2.2.16 (W16), when
+the plan test stopped reading the activator's symbols. What it does not
+cover:
 
 - an `absent` that concludes a **positive** fact: `derive-p` on `features/07`
   and `stale-naf-fork`, `soup-unless-allergic` on `lattice/08`. Every state

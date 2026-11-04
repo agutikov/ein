@@ -23,7 +23,7 @@ documentation split.
 | `WILDCARD` | `_`                            | `_`                                      | head / arg wildcard in patterns                   |
 | `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms (e.g. `:priority 10`)               |
 | `RANGE`    | `[0-9]+\.\.([0-9]+|\*)`        | `0..1`, `1..1`, `1..*`                  | UML-style cardinality                             |
-| `STRING`   | `"…"` with `\\` escape          | `"condition (10)"`, `"{?r} is transitive"` | source-sentence provenance + `:why` templates only |
+| `STRING`   | `"…"` with `\\` escape          | `"condition (10)"`, `"{?r} is transitive"` | `:source` provenance, `:why` templates and other keyword values; and a **fact's argument**, top-level or nested, which the loader holds as a symbol whose text is the string's body: `"foo"` and `foo` are one value, and `"1"` is not the int `1` (`examples/syntax/arg-kinds.ein`; M1e2 S1e2.2.16, 2026-11-04). In a rule's `:match` a string is not lowered and matches nothing, and in its `:assert` saturation stops with a `TypeError` (parked, [S1e2.2.16 § Notes](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.16_activator_text_key.md#notes)) |
 
 The regexes above are the readable form.
 [`00_ebnf.md` §1](00_ebnf.md#1-lexical-grammar) is the exact one, including

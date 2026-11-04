@@ -88,6 +88,16 @@ every run `corpus/wrong_answers.toml` records and seven cases of its own, and
 it checks one thing more: the file holds every candidate of its state's
 closure and no other candidate.
 
+**Not where the printer merges two facts** (M1e2 S1e2.2.16, 2026-11-04). The
+state's facts are written through the fact printer, which drops a string's
+quotes (P1e2.3's N5), so a state holding `(noted 1 1)` and `(noted 1 "1")`
+writes one line twice: the file loads one of them, and saturating it derives
+the other, though the state is a fixpoint. W16's two witnesses,
+`activator-text-int-and-string.ein` and its swapped twin, are the register's
+only such states, and the test names them rather than checking them
+(`printed_alike`), the list held to exactly those two runs until N5 is
+decided.
+
 **`--dump-states`' and `--dump-lattice`'s snapshots are a lesser thing.**
 They carry a state's facts and no rules. They load and reload to the same
 facts (`ein-render/tests/dump_states_load.rs`), so `ein render kb` draws them,

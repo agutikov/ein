@@ -267,12 +267,24 @@ one activator:
 
 | key | what it keeps of the activator |
 |---|---|
-| the compile cache key | **every** argument, stringified |
+| the compile cache key | **every** argument, as a value |
 | the identity's activator half | the same list: **every** argument |
 | the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — symbols *and* integers |
 
 So two activators of one rule that differ in **any** argument have different
-identities, and both fire. An integer reaches both halves, since it binds its
+identities, and both fire. **"Differ" is by value since M1e2 S1e2.2.16**
+(2026-11-04). Until then the compile key rendered every argument that is not
+a symbol and interned its text, so the int `1` and the string `"1"`, two
+values the loader keeps apart, gave one key and one plan: of the activators
+`(note edge 1)` and `(note edge "1")` the second compiled nothing, its two
+conclusions were lost in a release build, whichever came second, and a
+debug build aborted in `Engine::compile_all`'s check that its shortcut
+skipped no activator (W16;
+`examples/ein-bugs/activator-text-int-and-string.ein` and its swapped twin,
+`rule_semantics.rs::an_int_and_a_string_with_one_text_are_two_activators`).
+`compile.rs` called it *the one collision* and kept it. A string and an atom
+with one text are one value, a symbol, so they are one key, as they are one
+fact. An integer reaches both halves, since it binds its
 parameter; a nested **`Fact`** binds nothing and reaches the activator half
 alone. Two activators differing only in a nested `Fact` compile to plans equal
 in every field but that list, so the second application concludes what the
@@ -730,8 +742,14 @@ reads it after root's fixpoint, where the static check runs, so it refuses
 **every command that takes the universe**: `ein solve` in every mode
 (`--monotone` and `--count` too), every `(solve :expect)` check, `ein test`,
 `ein oracle` and `ein render lattice`. `ein saturate` and `ein render
-rules|constraints|program|kb` take no universe and do not refuse. One line per
-refusing rule, sorted by rule:
+rules|constraints|program|kb` take no universe and do not refuse. A plan has
+an activator when its rule has parameters, whatever the activator's
+arguments; until M1e2 S1e2.2.16 the check asked whether the activator had a
+**symbol** argument, so one whose every argument is an int or a nested fact
+read as none and its refutation loaded (W16,
+`examples/ein-bugs/activator-all-int.ein`). The `[activator …]` label still
+prints the symbols, so such a line names none. One line per refusing rule,
+sorted by rule:
 
 | cause | message | exit |
 |---|---|---|

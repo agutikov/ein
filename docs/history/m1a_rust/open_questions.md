@@ -265,6 +265,14 @@ demonstrates it, and fix it after.
 > No corpus program can reach any of the three shapes: every plan compiled by
 > `ein solve -m 2` over all 204 corpus `.ein` files binds against 153 143
 > activator arguments, and every one is a symbol.
+>
+> **2026-11-04 — the plan cache key's *renders* was a collision of its own.**
+> Rendering an argument and interning its text gave the int `1` and the string
+> `"1"` one key and one plan, and the second activator's conclusions were
+> lost (M1e2's W16). Since M1e2
+> [S1e2.2.16](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.16_activator_text_key.md)
+> the key is the arguments' values, and the identity's activator half, which
+> interns that key since S1e2.2.7, with it.
 
 ## Q-M1a.9 — Where do goldens live?
 

@@ -277,7 +277,7 @@
 # parameters, so the second shape is refused as its symbol control is. The
 # pair's witnesses were promoted to `examples/ein-bugs/`, and the in-process
 # sweeps skip no row since. Each flipped row's `[case.fixed]` carried the null
-# id in the flipping commit, and the stage's next commit wrote the hash. The
+# id in the flipping commit, `3257488f`, and the stage's next commit wrote the hash. The
 # register reads **50 rows fixed, 2 open and 1 not-wrong**, both open rows
 # deferred to a followup.
 #
@@ -3725,7 +3725,7 @@ look_at  = ["events compile", "root", "summary"]
 note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's parked note: the stage file's program, the int activator first. Fixed by T1e2.2.16.2 and promoted from corpus/fuzz_findings/activator-text-key.ein, on which every record below was taken, the same program without the header and the :expect. The noted facts [case.right] states are not in [case.now], whose states name the candidates' relations (none here), and no claim can state them: a claim compares facts as printed, and the printer drops a string's quotes (P1e2.3's N5), so (noted 1 1) and (noted 1 \"1\") are one line to it. What tells them apart is a count, the summary's root.facts_by_relation (noted 2 here, 4 right) and ein saturate's table, and rule_semantics.rs, which compares by value"
 
 [case.fixed]
-commit = "0000000"
+commit = "3257488f"
 by     = "S1e2.2.16 (T1e2.2.16.2): the compile key is the activator's values, not their text, so an int and a string with one text key two plans and both fire"
 date   = "2026-11-04"
 
@@ -3791,7 +3791,7 @@ look_at  = ["events compile", "root", "summary"]
 note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04): W16/int-and-string's witness with its two activator lines swapped. Unlike W7's twin, this order is wrong too, the other way: whichever activator is written first keeps its conclusions. The noted facts are held as W16/int-and-string's note says. Fixed by T1e2.2.16.2 and promoted from corpus/fuzz_findings/activator-text-key-swapped.ein, on which the records below were taken"
 
 [case.fixed]
-commit = "0000000"
+commit = "3257488f"
 by     = "S1e2.2.16 (T1e2.2.16.2): the compile key is the activator's values, not their text"
 date   = "2026-11-04"
 
@@ -3857,7 +3857,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "W16's second shape, probed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's second parked note: the same symbol-only list, read as *does the plan have an activator*. The control, activator-all-symbol.ein, the same program with (item a), is refused at every question, in either build: `rule 'alarm' [activator a]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked`. The chain takes three rules: with two, `alarm`'s activator relation is one a commitment can change, *forbid* reads the rule from its pattern, and an int activator is refused too (build/s1e2.2.16/extra/two-int.ein). Fixed by T1e2.2.16.2: the witness is refused as the control is, its line naming no activator, since the label prints the symbols"
 
 [case.fixed]
-commit = "0000000"
+commit = "3257488f"
 by     = "S1e2.2.16 (T1e2.2.16.2): *forbid* asks whether a plan has an activator by its rule's parameters, not by the symbol arguments"
 date   = "2026-11-04"
 
@@ -3894,7 +3894,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "W16's second shape with (item (box a)): a nested fact binds no parameter, so each plan in the chain matches over every item, here the one. The control is activator-all-symbol.ein, refused. Fixed by T1e2.2.16.2, as W16/activator-all-int"
 
 [case.fixed]
-commit = "0000000"
+commit = "3257488f"
 by     = "S1e2.2.16 (T1e2.2.16.2): *forbid* asks whether a plan has an activator by its rule's parameters"
 date   = "2026-11-04"
 

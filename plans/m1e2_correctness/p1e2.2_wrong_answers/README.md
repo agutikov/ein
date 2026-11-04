@@ -10,7 +10,9 @@ It was 12.5 days since the revisit, [S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.
 restated S1e2.2.10 (2 → 1.5), both 2026-11-03 (§ Stages' S1e2.1.7 column). It
 was 13.5 after [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)
 re-scoped it the same day (its outcome column), and 27.5 before.
-**Status:** **started 2026-11-04**, in the order below. **S1e2.2.4 is done**
+**Status:** **started 2026-11-04**, in the order below; **every live stage
+done the same day** (S1e2.2.16 the last), two rows open and deferred to a
+followup by the user, the phase not closed. **S1e2.2.4 is done**
 (2026-11-04): a rule's `:assert` constants seed the blind enumerator's
 objects (Q-M1e.21 (b)), W4's two rows are `fixed` (`02e9fb5f`), and the one
 shape the seed cannot hold, a relation parameter bound to an integer, is
@@ -128,6 +130,19 @@ derive the four `noted` facts in release and debug, and *forbid* asks a
 plan's rule for its parameters, so the second shape is refused as its
 symbol control is; the pair is promoted to `examples/ein-bugs/`, and the
 register reads 50 fixed, 2 open (both deferred) and 1 not-wrong.
+**S1e2.2.16 is done** (2026-11-04): `3257488f`, the pages that stated the key
+or *forbid*'s test corrected, `01_grammar.md`'s `STRING` row among them, what
+moved step 1's list with one finding and no answer (a dumped state of the
+pair is not a fixpoint as written, the fact printer's N5). **Every live stage
+of the phase is done**: eleven live, five dropped. What remains open is the
+two rows the user deferred to a followup, `W8/features-07` (F21's D2) and
+`W10/alt-cap-shared` (F22), which the phase's acceptance allows; no row is
+open otherwise. Closing the phase is the user's. Three things found on the
+way are parked for the user in [S1e2.2.16 § Notes](s1e2.2.16_activator_text_key.md#notes):
+a refutation *forbid* misses with symbols only, when a chain's last activator
+first appears at a node; a string in a rule's `:match`, which matches
+nothing, or `:assert`, which stops saturation; and P1e2.3's N5, the fact
+printer, met three times without an answer moving.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -194,7 +209,7 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.5](s1e2.2.5_naf_upward_closure.md) | **W3** `dead` is not upward-closed under `absent`. **Done 2026-11-04**: *forbid*'s refusal built with F2's *via*, six rows fixed by it and the two `d3-unsat-core` rows restated to it, `:warn-derived-naf` retired | 2 | **default** | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), F18, S1f.10.8 | 2.5 (3) d | shrink | confirmed; gains `W1/alive-empty-interlayer` | the language ruling taken first; then the program is refused, or the three mechanisms stop learning from a refutation that rests on an `absent` |
 | [S1e2.2.14](s1e2.2.14_unread_names.md) | **W15** a name written only in a `:match` or inside a nested fact never becomes a candidate. Filed 2026-11-04. **Done 2026-11-04**: one list of the program's names, eight rows fixed, W7's `right` restated | 2 | **default** | [Q-M1e2.9](../open_questions.md#q-m1e29--which-constants-are-names-of-the-program), ruled (a) 2026-11-04; S1e2.2.4's parked note | 2 d | — | — (filed after it) | every constant a fact names at any depth, or a rule's `:match` or `:assert`, is a candidate; the seven corpus programs and the two banked witnesses answer their declared twins' R |
 | [S1e2.2.15](s1e2.2.15_obligations_rung_universe.md) | **W14** the obligations rung never proposes a domain value a commitment derives. Filed 2026-11-04. **Done 2026-11-04**: Q-M1e2.10 ruled (a), the rung declines on a guard over D, four rows fixed | 2 | **default** (an obligation whose guard reads a relation in D) | Q-M1e2.7's ruling (h); S1e2.2.4's parked note; Q-M1e2.10 | 1.5 d | — | — (filed after it) | the rung declines on a guard over D and the blind enumerator answers; the witnesses answer their `-declared` controls' R |
-| [S1e2.2.16](s1e2.2.16_activator_text_key.md) | **W16** an int and a string with the same text share a compile key, and a derivation is lost. Filed 2026-11-04. **Started 2026-11-04**: the second shape reproduces (*forbid*'s *has an activator*), four rows `open` | 2 | **default** | S1e2.2.7's notes; Q-M1a.8's collision | 1 d | — | — (filed after it) | a plan keyed by its activator's values; both activator orders derive the four `noted` facts in both profiles; *has an activator* probed for an all-int activator |
+| [S1e2.2.16](s1e2.2.16_activator_text_key.md) | **W16** an int and a string with the same text share a compile key, and a derivation is lost. Filed 2026-11-04. **Done 2026-11-04**: a plan keyed by its activator's values; the second shape reproduced (*forbid*'s *has an activator*) and fixed by the rule's parameters; four rows fixed | 2 | **default** | S1e2.2.7's notes; Q-M1a.8's collision | 1 d | — | — (filed after it) | a plan keyed by its activator's values; both activator orders derive the four `noted` facts in both profiles; *has an activator* probed for an all-int activator |
 | [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard. **Done 2026-11-04, as far as the deferral allows**: one row re-checked, `deferred` to F21, the headers corrected, nothing moved | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost. **Done 2026-11-04**: Q-M1e.16's fix (1), the row fixed, the pair promoted, Q-M1e.16 closed | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises. **Done 2026-11-04**: Q-M1e2.3 (a) built, the `outside` row and `root.hypgen.outside`, both rows fixed | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |
