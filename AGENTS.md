@@ -174,6 +174,12 @@ constrained-reasoning research.
   day: the compile key is the activator's values, not their text, and
   *forbid* asks whether a plan has an activator by its rule's parameters: 50
   fixed, 2 open (both deferred to a followup) and 1 not wrong.
+  S1e2.2.17 filed W17 from S1e2.2.16's notes the same day: *forbid* read a
+  rule with parameters root has no plan of only where its activator relation
+  is in D, and D's closure follows reads, not activators, so a refutation
+  resting on an `absent` through an activator chain that first appears at a
+  node loaded with a dead hole, five witnesses: 50 fixed, 7 open and 1 not
+  wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -281,6 +281,18 @@
 # register reads **50 rows fixed, 2 open and 1 not-wrong**, both open rows
 # deferred to a followup.
 #
+# **W17 was filed on 2026-11-04 by S1e2.2.17** (T1e2.2.17.1), from
+# S1e2.2.16's parked note: *forbid* reads a rule with parameters root has no
+# plan of from its pattern, but only where its activator relation is in D,
+# and D's closure follows the plans root compiled, not activators; so a
+# refutation whose activator chain first appears at a node loads with a dead
+# hole. Five rows, all `open`, each with a refusal as `right`: the witness and
+# the chain one link longer, and three shapes the stage's probes found by the
+# same mechanism (the `absent` read by a plan a node compiles, over a
+# parameter's relation there, and over a relation only such a plan writes).
+# A row's `wrong` is a region run's at `3efd3f5f`. The register reads **50
+# rows fixed, 7 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -3916,6 +3928,237 @@ derived   = "a refusal, as W16/activator-all-int's and the symbol control's: `al
 run     = "solve"
 line    = "all"
 refused = "rule 'alarm': concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+
+# ══ W17 — *forbid* misses a refutation whose activator chain first appears at a node ══
+[[case]]
+id       = "W17/forbid-chain-1"
+case     = "W17"
+title    = "*forbid* misses a refutation whose activator chain first appears at a node"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.17"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
+status   = "open"
+open_because = "*forbid* reads a rule with parameters root has no plan of from its pattern only when its activator relation is in D, and D's closure follows the plans root compiled, not activators: `r2`'s activator relation is written only by `q`'s plan, which root never compiled, so `r2` is never read, and the program loads"
+look_at  = ["root", "refuted", "summary"]
+note     = "Filed by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) from S1e2.2.16's parked note, where the witness was build/s1e2.2.16/extra/node-chain-sym.ein. The chain one link shorter, forbid-chain-0.ein, is refused at every question: `rule 'q': concludes (false) from its activator, which rule 'mk' derives resting on (absent …) over p2`. The witness with no `absent`, forbid-chain-no-absent.ein, loads with R two states and no hole, and is the control the fix must not move. The read-out's status line names no site for the hole: *exercised, by* and an empty list"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3efd3f5f (2026-11-04): R three states, ∅, {(p2 a)} and {(p a), (p2 a)}, the one dead hole {(p a)}, exit 0; `--maximal`, the run [case.now] holds while the row is open, lists the one maximal state; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "p2"]
+models    = [["(p a)", "(p2 a)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p a)", "(p2 a)"]]
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal: `r2` concludes (false) from its activator (r2 a), which `q`'s plan derives from its own activator (q a), which `mk` derives resting on (absent (p2 ?x)), and `p2` is a relation a commitment can extend. {(p a)} is dead and {(p a), (p2 a)} alive, the dead hole *forbid* exists to refuse; every question about a commitment exits 1, and ein saturate still saturates"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "p2"]
+outside   = ["q"]
+models    = [["(p a)", "(p2 a)"]]
+
+[[case]]
+id       = "W17/forbid-chain-2"
+case     = "W17"
+title    = "*forbid* misses a refutation whose activator chain first appears at a node"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.17"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/wrong-answers/forbid-chain-2.ein"
+status   = "open"
+open_because = "as W17/forbid-chain-1's, one activator further: neither `r2`'s activator relation nor `r3`'s is in D, so *forbid* reads neither rule"
+look_at  = ["root", "refuted", "summary"]
+note     = "forbid-chain-1.ein one link longer: `r2`'s plan asserts the activator (r3 a), and `r3`'s plan concludes (false). It pins that the chain is followed to any length, not one hop"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3efd3f5f (2026-11-04): R three states, the one dead hole {(p a)}, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "p2"]
+models    = [["(p a)", "(p2 a)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p a)", "(p2 a)"]]
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal: `r3`'s (false) rests through the activators (r3 a), (r2 a) and (q a) on (absent (p2 ?x)), over a relation a commitment can extend; every question about a commitment exits 1, and ein saturate still saturates"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "p2"]
+outside   = ["q"]
+models    = [["(p a)", "(p2 a)"]]
+
+[[case]]
+id       = "W17/forbid-chain-node-absent"
+case     = "W17"
+title    = "*forbid* misses a refutation whose activator chain first appears at a node"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.17"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
+status   = "open"
+open_because = "*forbid* reads `q`, a rule with parameters root has no plan of, from its pattern for what it derives from a tainted relation or activator, but not for the `absent` it reads itself, so `(r2 ?n)` is never tainted; and `r2`'s activator relation is not in D, so `r2` is never read"
+look_at  = ["root", "refuted", "summary"]
+note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: the `absent` is in the plan a node compiles, not in a plan of root's. Its (false) rests through the activator (r2 a) on the (absent (p2 a)) `q`'s plan read"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3efd3f5f (2026-11-04): R three states, the one dead hole {(p a)}, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "p2"]
+models    = [["(p a)", "(p2 a)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p a)", "(p2 a)"]]
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal: `r2` concludes (false) from its activator (r2 a), which `q`'s plan derives resting on (absent (p2 ?n)), and `p2` is a relation a commitment can extend; every question about a commitment exits 1, and ein saturate still saturates"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "p2"]
+outside   = ["q"]
+models    = [["(p a)", "(p2 a)"]]
+
+[[case]]
+id       = "W17/forbid-chain-param-absent"
+case     = "W17"
+title    = "*forbid* misses a refutation whose activator chain first appears at a node"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.17"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein"
+status   = "open"
+open_because = "*forbid* reads `watch`, a rule with parameters root has no plan of, from its pattern, and would refuse it as the refutation (its parameter's relation read under an `absent`), but does not taint what it derives under that `absent`, so `bad`'s read of `y` rests on nothing *forbid* sees"
+look_at  = ["root", "refuted", "summary"]
+note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: `mk` derives the activator (watch p2), whose plan derives (y a) while (p2 a) is absent, and `bad` concludes (false) from (y a)"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3efd3f5f (2026-11-04): R three states, the one dead hole {(p a)}, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "p2"]
+models    = [["(p a)", "(p2 a)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p a)", "(p2 a)"]]
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal: `bad` concludes (false) from (y a), which `watch`'s plan for p2 derives resting on (absent (p2 ?x)), and `p2` is a relation a commitment can extend (F2's *via*); every question about a commitment exits 1, and ein saturate still saturates"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "p2"]
+outside   = ["watch"]
+models    = [["(p a)", "(p2 a)"]]
+
+[[case]]
+id       = "W17/forbid-chain-node-writes"
+case     = "W17"
+title    = "*forbid* misses a refutation whose activator chain first appears at a node"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.17"
+question = ["Q-M1e2.5"]
+witness  = "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein"
+status   = "open"
+open_because = "*forbid*'s extendable is D, whose closure follows the plans root compiled, and `x` is written only by `q2`'s plan, which a node compiles from the activator `mk2` derives: `x` is not in D, so `chk`'s (absent (x ?y)) reads, to *forbid* and to the static check, as over a static relation"
+look_at  = ["root", "refuted", "summary"]
+note     = "Found by S1e2.2.17 (T1e2.2.17.1, 2026-11-04) probing the witness's mechanism: here the refutation is root's own plan, and the activator chain is on the `absent`'s side. The static check flags the program for `q2`'s activator site alone"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3efd3f5f (2026-11-04): R three states, the one dead hole {(p a)}, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "p2"]
+models    = [["(p a)", "(p2 a)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p a)", "(p2 a)"]]
+
+[case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
+refused   = true
+derived   = "a refusal: `chk` concludes (false) from (absent (x ?y)), and `x` is a relation a commitment can extend, through the activator (q2 a) a commitment derives; {(p a)} is dead and {(p a), (p2 a)} alive. Every question about a commitment exits 1, and ein saturate still saturates"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "p2"]
+outside   = ["q2"]
+models    = [["(p a)", "(p2 a)"]]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

@@ -1,0 +1,39 @@
+;;; *forbid* misses a refutation resting on an `absent` over a relation only
+;;; a plan a node compiles writes — M1e2 **W17**, register row
+;;; `W17/forbid-chain-node-writes` (`corpus/wrong_answers.toml`), found by
+;;; S1e2.2.17 (2026-11-04) probing the witness's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `chk` concludes `(false)` from `(p ?y)` while `(x ?y)` is absent. Only
+;;; `q2`'s plan writes `x`, and it is compiled from the activator `(q2 a)`,
+;;; which `mk2` derives from `(p2 a)`. Root holds neither candidate, so it
+;;; compiles no plan of `q2` and derives no `x`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(p a)}` dies on `(absent (x a))`, and `{(p a), (p2 a)}` lives, `q2`'s
+;;; plan deriving `(x a)` there: a dead hole. `x` is a relation a commitment
+;;; can extend, through the activator a commitment derives, so this is
+;;; *forbid*'s `direct` case (the user's ruling of 2026-11-02): the program
+;;; is refused at every command that takes the universe.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; At `3efd3f5f` it loads: R three states, the one dead hole {(p a)}, exit
+;;; 0, in every mode and `ein oracle`. *forbid*'s *extendable* is D, and `x`
+;;; is not in D: D's closure follows the plans root compiled, and only a plan
+;;; root never compiled writes `x`. The static check calls `chk`'s read of
+;;; `x` static, and flags the program for `q2`'s activator site alone. The
+;;; status line names no site.
+
+(relation seed T) (relation p T) (relation p2 T) (relation q2 T) (relation x T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk2 ()    :match (p2 ?x) :assert (q2 ?x))
+(rule q2  (?n)  :match (seed ?n) :assert (x ?n))
+(rule chk ()    :match (and (p ?y) (absent (x ?y))) :assert (false))

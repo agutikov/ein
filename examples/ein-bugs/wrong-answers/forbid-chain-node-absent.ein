@@ -1,0 +1,40 @@
+;;; *forbid* misses a refutation whose `absent` is read by a plan only a node
+;;; compiles — M1e2 **W17**, register row `W17/forbid-chain-node-absent`
+;;; (`corpus/wrong_answers.toml`), found by S1e2.2.17 (2026-11-04) probing
+;;; the witness's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `mk` derives the activator `(q a)` from `(p a)`, with no `absent`. The
+;;; plan of `q` it compiles reads `(absent (p2 ?n))` itself and, while `a`
+;;; has no `p2`, asserts the activator `(r2 a)`, whose plan concludes
+;;; `(false)`. Root holds neither candidate and compiles no plan of `q` or of
+;;; `r2`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(p a)}` dies, its `(false)` resting through `r2`'s activator on
+;;; `(absent (p2 a))`, which `q`'s plan read, and `{(p a), (p2 a)}` lives: a
+;;; dead hole over a relation a commitment can extend. *forbid* with F2's
+;;; *via, per activator*: the program is refused at every command that takes
+;;; the universe.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; At `3efd3f5f` it loads: R three states, the one dead hole {(p a)}, exit
+;;; 0, in every mode and `ein oracle`. *forbid* reads `q` from its pattern
+;;; (its activator relation is in D), but only for what it derives from a
+;;; tainted relation, not for the `absent` it reads itself, so `(r2 ?n)` is
+;;; never tainted; and `r2`'s activator relation is not in D, so `r2` is
+;;; never read. The status line names no site.
+
+(relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk () :match (p ?x) :assert (q ?x))
+(rule q  (?n) :match (and (seed ?n) (absent (p2 ?n))) :assert (r2 ?n))
+(rule r2 (?k) :match (seed ?k) :assert (false))

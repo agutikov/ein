@@ -163,8 +163,11 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // S1e2.2.16 banked W16's second shape the same day, three programs with an
     // `absent` site and an `activator` site each: the symbol control and the
     // int and nested witnesses, all three refused by *forbid* since W16's
-    // fix, which keep their static half as the refused programs above do.
-    assert_eq!(flagged, 30, "the flagged corpus programs");
+    // fix, which keep their static half as the refused programs above do. 38
+    // since S1e2.2.17 banked W17's family the same day: its five witnesses,
+    // its two controls (`forbid-chain-0`, refused, and `-no-absent`) and
+    // `lattice/12_activator_chain_hole.ein`, each with an `activator` site.
+    assert_eq!(flagged, 38, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

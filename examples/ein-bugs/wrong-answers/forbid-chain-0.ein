@@ -1,0 +1,24 @@
+;;; A control for M1e2 **W17** (`corpus/wrong_answers.toml`, S1e2.2.17,
+;;; 2026-11-04): `forbid-chain-1.ein` one link shorter, refused since
+;;; S1e2.2.5.
+;;;
+;;; `mk` derives the activator `(q a)` from `(p a)` while `a` has no `p2`,
+;;; and the plan of `q` it compiles concludes `(false)` itself. `q`'s
+;;; activator relation is in D (root's plan of `mk` writes it), so *forbid*
+;;; reads `q` from its pattern though root has no plan of it, and refuses:
+;;; `rule 'q': concludes (false) from its activator, which rule 'mk' derives
+;;; resting on (absent …) over p2`, every question about a commitment exit 1
+;;; (`ein solve FILE` at `3efd3f5f`), `ein saturate` still saturating. The
+;;; witnesses, one link longer and two, load at that commit, because the
+;;; refuting rule's activator relation is written only by a plan root never
+;;; compiled.
+
+(relation seed T) (relation p T) (relation p2 T) (relation q T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk () :match (and (p ?x) (absent (p2 ?x))) :assert (q ?x))
+(rule q  (?n) :match (seed ?n) :assert (false))

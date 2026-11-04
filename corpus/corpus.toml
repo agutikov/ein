@@ -308,6 +308,12 @@ runs   = ["solve", "saturate", "render rules", "render constraints", "render lat
 note   = "10_fifo_gap with `a` given and only `b` a candidate: `q` is static, the static check calls the program monotone, and route 1 answers it. Built from scratch, {b} holds a stale p that the fork, which inherits root's q, does not: a *Monotone* verdict is relative to root (monotonicity.md § 7.6; M1e2 S1e2.1b.7, node_census.md § 12)."
 
 [[entry]]
+path   = "examples/lattice/12_activator_chain_hole.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
+note   = "lattice/09's owing hole one activator further from root: opening the kitchen derives `(serves K1)`, whose plan derives `(total-owed meal is-a)`, so a commitment compiles two plans root never had. `serves` is an activator site and `total-owed` is none, its activator relation written only by `serves`'s plan, so the status's attribution, which reads the obligation's own activator site, named no site: *exercised, by* and an empty list (M1e2 S1e2.2.17)."
+
+[[entry]]
 path   = "examples/lattice/synth/local_not_global.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
@@ -945,6 +951,48 @@ path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
 note   = "M1e2 W14's control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. Until S1e2.2.15 the rung built H (2) and R was one state; `total-owed` scans `is-a`, in D here too, so since then the rung declines (Q-M1e2.10 (a)), H is 6 and R sixteen states, which its `:expect` states and its witness answers. Flagged as its witness is."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-1.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17 (`W17/forbid-chain-1`), banked by S1e2.2.17 from S1e2.2.16's parked note: `mk` derives the activator `(q a)` under `(absent (p2 ?x))`, `q`'s plan the activator `(r2 a)`, and `r2`'s plan concludes (false), all at a node. *forbid* reads a rule with parameters root has no plan of only when its activator relation is in D, and D's closure follows reads, not activators, so `r2` is never read: R three states with the dead hole {(p a)}, exit 0, where the right answer is a refusal."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-2.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17 (`W17/forbid-chain-2`): forbid-chain-1.ein one activator longer, `r2` asserting `(r3 a)` and `r3` concluding (false). Loads with the same dead hole, where the right answer is a refusal."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-0.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17's refused control: forbid-chain-1.ein one link shorter, `q` concluding (false) itself. `q`'s activator relation is in D, so *forbid* reads `q` from its pattern and refuses it (since S1e2.2.5): `solve` exits 1 naming `q`, `saturate` still saturates."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17's loading control: forbid-chain-1.ein with no `absent` in `mk`. The chain still concludes (false) at a node, but nothing rests on an `absent`, so `dead` is upward-closed, there is no hole and nothing to refuse: R two states, ∅ and {(p2 a)}, which the fix must not move."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17 (`W17/forbid-chain-node-absent`), found by S1e2.2.17 probing the witness's mechanism: the `absent` is read by `q`'s plan, which only a node compiles, and `r2`'s plan concludes (false) from the activator `q` asserts. *forbid* reads `q` from its pattern for what it derives from a tainted relation, not for the `absent` it reads itself: R three states with the dead hole {(p a)}, exit 0, where the right answer is a refusal."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17 (`W17/forbid-chain-param-absent`), found by S1e2.2.17: `watch`'s plan, compiled at a node from `(watch p2)`, derives `(y a)` while `(p2 a)` is absent, and `bad` concludes (false) from `y`. *forbid* reads `watch` from its pattern but does not follow what it derives under the `absent` over its parameter's relation into N: R three states with the dead hole {(p a)}, exit 0, where the right answer is a refusal."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W17 (`W17/forbid-chain-node-writes`), found by S1e2.2.17: `chk` concludes (false) from `(absent (x ?y))`, and only `q2`'s plan, compiled at a node from an activator `(p2 a)` derives, writes `x`. *forbid*'s extendable is D, whose closure follows the plans root compiled, so `x` is not in it: R three states with the dead hole {(p a)}, exit 0, where the right answer is a refusal."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

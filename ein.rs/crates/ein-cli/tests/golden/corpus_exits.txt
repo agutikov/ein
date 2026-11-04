@@ -391,6 +391,20 @@
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: test
 0    examples/ein-bugs/wrong-answers/arity3.ein :: solve
 0    examples/ein-bugs/wrong-answers/f07-fpoff.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-0.ein :: saturate
+1    examples/ein-bugs/wrong-answers/forbid-chain-0.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-1.ein :: saturate
+0    examples/ein-bugs/wrong-answers/forbid-chain-1.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-2.ein :: saturate
+0    examples/ein-bugs/wrong-answers/forbid-chain-2.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/forbid-chain-no-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein :: saturate
+0    examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein :: solve
+0    examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-1-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve
@@ -597,6 +611,12 @@
 0    examples/lattice/11_fifo_gap_static.ein :: render rules
 0    examples/lattice/11_fifo_gap_static.ein :: saturate
 0    examples/lattice/11_fifo_gap_static.ein :: solve
+0    examples/lattice/12_activator_chain_hole.ein :: oracle --dump {out}/region
+0    examples/lattice/12_activator_chain_hole.ein :: render constraints
+0    examples/lattice/12_activator_chain_hole.ein :: render lattice
+0    examples/lattice/12_activator_chain_hole.ein :: render rules
+0    examples/lattice/12_activator_chain_hole.ein :: saturate
+0    examples/lattice/12_activator_chain_hole.ein :: solve
 0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/local_not_global.ein :: render lattice
 0    examples/lattice/synth/local_not_global.ein :: saturate

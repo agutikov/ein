@@ -1,0 +1,38 @@
+;;; *forbid* misses a refutation resting on an `absent` over the relation a
+;;; parameter names, in a plan only a node compiles — M1e2 **W17**, register
+;;; row `W17/forbid-chain-param-absent` (`corpus/wrong_answers.toml`), found
+;;; by S1e2.2.17 (2026-11-04) probing the witness's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `mk` derives the activator `(watch p2)` from `(p a)`. The plan of `watch`
+;;; it compiles binds `?R` to `p2`: while `a` has no `p2` it asserts
+;;; `(y a)`, and `bad` concludes `(false)` from any `y`. Root holds neither
+;;; candidate, so it compiles no plan of `watch` and derives no `y`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(p a)}` dies, `bad`'s `(false)` resting through `(y a)` on
+;;; `(absent (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole over a
+;;; relation a commitment can extend. *forbid* with F2's *via*: the program
+;;; is refused at every command that takes the universe.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; At `3efd3f5f` it loads: R three states, the one dead hole {(p a)}, exit
+;;; 0, in every mode and `ein oracle`. *forbid* reads `watch` from its
+;;; pattern (its activator relation is in D) and would refuse it were it the
+;;; refutation (its parameter's relation read under an `absent`), but it
+;;; does not follow what `watch` derives into N, so `bad`'s read of `y` is
+;;; never tainted. The status line names no site.
+
+(relation seed T) (relation p T) (relation p2 T) (relation y T) (relation watch T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk    ()   :match (p ?x) :assert (watch p2))
+(rule watch (?R) :match (and (seed ?x) (absent (?R ?x))) :assert (y ?x))
+(rule bad   ()   :match (y ?x) :assert (false))

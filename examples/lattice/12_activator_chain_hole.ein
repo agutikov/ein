@@ -1,0 +1,53 @@
+;;; A hole made by an activator chain — M1e2 S1e2.2.17 (2026-11-04),
+;;; lattice/09's cube one activator further from root.
+;;;
+;;; Opening the kitchen derives `(serves K1)`, an activator; the plan of
+;;; `serves` it compiles derives `(total-owed meal is-a)`, the activator that
+;;; compiles the stdlib rule for `meal`. So, as in lattice/09, opening the
+;;; kitchen declares that every guest owes a meal, now through two plans root
+;;; never had:
+;;;
+;;;   ∅                    in R  — nothing is owed
+;;;   {(opens K1)}         owing — Ann owes a meal                  ← a hole
+;;;   {(meal Ann Soup)}    in R
+;;;   both                 in R  — the soup pays
+;;;
+;;; The static check reads compiled plans, and D's closure follows the plans
+;;; root compiled: `serves` is in D (root's plan of `kitchen-opens` writes
+;;; it), so `serves` is an activator site, and `total-owed` is not (only
+;;; `serves`'s plan, which root never compiled, writes it), so it is no site.
+;;; The status attributes an owing hole to the trigger site of the debt new
+;;; there, else to the activator site of the obligation, else to an `absent`
+;;; site, and here there is none of the three: the status line reads
+;;; *exercised, by* and an empty list (`ein solve FILE` at `3efd3f5f`). The
+;;; site that made the hole is `serves`, one activator up.
+;;;
+;;; No `absent` concludes a refutation here, so *forbid* has nothing to
+;;; refuse. What R means on it is open, F21's; this file's question is the
+;;; status line.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a   T T)
+(relation opens  Kitchen)
+(relation serves Kitchen)
+(relation meal   Guest Food)
+
+(is-a Ann Guest) (is-a K1 Kitchen) (is-a Soup Food)
+
+(rule kitchen-opens ()
+  :match  (opens ?k)
+  :assert (serves ?k)
+  :why    "{?k} is open, so it serves"
+  :priority 200)
+
+(rule serves (?k)
+  :match  (is-a ?k Kitchen)
+  :assert (total-owed meal is-a)
+  :why    "{?k} serves, so every guest owes a meal"
+  :priority 200)
+
+(hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k))
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f))
+
+(query :goal (meal ?g ?f))

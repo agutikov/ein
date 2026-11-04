@@ -1,0 +1,45 @@
+;;; *forbid* misses a refutation whose activator chain first appears at a
+;;; node — M1e2 **W17**, register row `W17/forbid-chain-1`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.17 (2026-11-04) from
+;;; S1e2.2.16's parked note, where it was
+;;; `build/s1e2.2.16/extra/node-chain-sym.ein`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two candidates, `(p a)` and `(p2 a)`. While `a` has no `p2`, `mk`
+;;; derives `(q a)` from `(p a)`. `(q a)` is an activator: the plan of `q`
+;;; it compiles asserts `(r2 a)`, another activator, and the plan of `r2`
+;;; that one compiles concludes `(false)`. Root holds neither candidate, so
+;;; it derives none of this and compiles no plan of `q` or of `r2`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(p a)}` dies, its `(false)` resting through two activators on
+;;; `(absent (p2 a))`, and `{(p a), (p2 a)}` lives: a dead hole. `p2` is a
+;;; relation a commitment can extend, so this is *forbid* with F2's *via,
+;;; per activator* (the user's rulings of 2026-11-02 and 2026-11-04): the
+;;; program is refused at every command that takes the universe, as
+;;; `forbid-chain-0.ein`, the same chain one link shorter, is.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; At `3efd3f5f` it loads: R three states, ∅, {(p2 a)} and {(p a), (p2 a)},
+;;; the one dead hole {(p a)}, exit 0, in every mode and `ein oracle`.
+;;; *forbid* reads a rule with parameters root has no plan of from its
+;;; pattern only when its activator relation is in D, and D's closure
+;;; follows reads, not activators: `q`'s is (root's plan of `mk` writes it),
+;;; `r2`'s is not (only `q`'s plan, which root never compiled, writes it),
+;;; so `r2` is never read. The read-out's status line names no site:
+;;; *exercised, by* and an empty list. `forbid-chain-2.ein` is the chain one
+;;; link longer.
+
+(relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
+
+(seed a)
+
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+
+(rule mk () :match (and (p ?x) (absent (p2 ?x))) :assert (q ?x))
+(rule q  (?n) :match (seed ?n) :assert (r2 ?n))
+(rule r2 (?k) :match (seed ?k) :assert (false))
