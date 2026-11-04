@@ -24,6 +24,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
 | [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
+| [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **open**, put to the user 2026-11-04 by T1e2.2.11.1: (i) Q-M1e.15's (3) is not exact, and no bounded retention is; (ii) `:record-alternative-justifications false` decides the core today, and the fix makes `alt-cap-core.ein` show it. Recommended: (i)(b), (3) with the residual filed and deferred; (ii)(b), the core exempt under that one flag |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1296,3 +1297,83 @@ propose, for the rung and for the static check alike; the `rung` line says
 rows are fixed, each witness answering its control's R under the decline (1,
 12, 1 and 16 states) and the oracle's. No program already in the corpus
 moved (3 366 sweep runs).
+
+## Q-M1e2.11 — Which derivations is the unsat core the smallest over, and may a config flag change it?
+
+Put to the user on 2026-11-04 by
+[S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)'s step 1
+([T1e2.2.11.1](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md#task-t1e22111--the-closure-size)).
+W10: `Kb::record_justification` keeps at most 32 alternatives per fact, by
+premise count, and `explain.rs` minimises frontier size over what it kept, so
+`examples/ein-bugs/alt-cap-core.ein` reports a 3-fact core where every
+derivation gives a 2-fact one. [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)
+was never ruled, and the stage took its recommendation, (3): keep beside the
+capped list the arrival with the smallest closure, *bounded and exact for
+what the search asks*.
+
+What step 1 measured (every number the stage file's, at `3011fae2`): a
+prototype of (3) and an uncapped build (`MAX_ALT_JUSTIFICATIONS = 1 000 000`)
+move the same 8 of the corpus sweep's 6 510 runs, every one `alt-cap-core`'s
+core, 3 facts → 2. Ten programs reach the cap under R's routes, always on
+`(false)` in a dead node, and none of their cores moves. `zebra2-bad`'s core
+is unchanged. (3) costs +7 % (528 → 566 ms, `utils/bench_env.sh --core 4`, best of 7) on `ein solve examples/zebra2.ein`, the
+uncapped build ×2.15 (528 → 1 133 ms). Two findings make the fix a ruling:
+
+**(i) (3) is not exact, and no bounded retention is.** A fact's best
+derivation for its own sake need not be the one the target needs: the saving
+can lie between two facts. [`probes/alt-cap-shared.ein`](probes/alt-cap-shared.ein):
+`(x K)` has 33 one-given derivations and a 34th over `(a K)` `(b K)`, `(z K)`
+only that pair, and `(false)` both; over every derivation the core is `{(a
+K), (b K)}`, but the 34th is `(x K)`'s per-fact worst, so premise count, (1)'s
+estimate and (3)'s closure all drop it at the full list, and the core is `{(a
+K), (b K), (c C01)}`. Today 3, under (3) 3, uncapped 2. Any list of fixed
+length must drop one of more incomparable derivations, and a program can need
+the dropped one. The search's own budget (64 environments a label) has the
+same shape, but its cut is reported, `Explanation::exhausted`; the cap's is
+not.
+
+- **(a) *kept*** — (3), and the promise says what it is over: the smallest
+  frontier over the derivations the store keeps, every derivation of a fact
+  up to 32, past that the 32 with fewest premises and the one with the
+  smallest closure. `alt-cap-shared` is the promise's stated limit, pinned by
+  a test, and no row. W10 fixed.
+- **(b) *every derivation, the residual deferred*** — **the agent's
+  recommendation**. (3) now, and the promise stays the revisit's, the
+  smallest frontier over the program's derivations. `alt-cap-core` is fixed;
+  `alt-cap-shared` is filed as a second W10 row, `open`, its witness promoted
+  to the corpus, and deferred to a followup that makes the core exact without
+  the cap's memory: re-derive a full list's refused derivations when the
+  search reaches that fact, which bounds memory and pays only on the ten
+  programs above. (2)'s objection, *a less likely wrong answer*, is (3)'s too,
+  and this keeps it visible.
+- **(c) *no cap*** — exact by construction, at ×2.15 (528 → 1 133 ms) on `zebra2`'s
+  describe, and a fact derived n ways holds n records, unbounded.
+
+**(ii) `:record-alternative-justifications false` decides the core, today.**
+[`probes/alt-cap-below.ein`](probes/alt-cap-below.ein) is `alt-cap-core` with
+two witnesses, so no list is full; [`alt-cap-below-noalts.ein`](probes/alt-cap-below-noalts.ein)
+adds `(config :record-alternative-justifications false)`. At HEAD the first
+reports `(w1 X) (w2 X)` and the second `(p1 Y01) (p2 Y01) (p3 Y01)`: off, the
+proof is a tree, and the core is the primary chain's. No corpus program
+separates the two settings, which is why `lever_invariance.rs` holds; any fix
+of W10, (a), (b) or (c), makes `alt-cap-core` separate them, and that test
+fails (1 of 5 640 cells under the prototype). `configuration.md` § 2.2 calls
+the flag *explanation only*, and § 2.5 and the test hold the read-out uncut,
+its core rows among them. `examples/zebra.ein` sets the flag off on purpose:
+without it `ein solve examples/zebra.ein` takes 188.1 s against
+0.95 s and reports the same read-out and the same core on each of N's 458
+members. On the corpus the flag buys speed and changes no core; on
+`alt-cap-core`, once W10 is fixed, it changes one.
+
+- **(a) *retire the flag*** — as `enable-symmetric-mirror` was at W13: every
+  program records alternatives, and a `(config …)` that sets the flag is
+  refused with the stage and why. `zebra.ein` loses its config line and pays
+  188.1 s where it took 0.95 s, for the same cores.
+- **(b) *the core is exempt under that one flag*** — **the agent's
+  recommendation**. The flag stays, as what lets `zebra.ein` solve at all;
+  `configuration.md` § 2.5 says that it may change which core a dead node's
+  refutation names and nothing else (R, every state, the verdict words and
+  `refuted by` do not move, since the primary is the same either way); the
+  core promise says it is over the derivations the program records; and
+  `lever_invariance.rs` holds every row but the core's under it, with the
+  flag named as the one exemption.

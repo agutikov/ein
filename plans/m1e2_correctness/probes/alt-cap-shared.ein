@@ -1,0 +1,63 @@
+;;; S1e2.2.11 (W10), T1e2.2.11.1: a saving between two facts, behind a full
+;;; list. Neither (1) nor (3) of Q-M1e.15 keeps it.
+;;;
+;;; (x K) is derivable 33 ways through `x-chain`, one premise each, a given:
+;;; a frontier of 1 apiece, the per-fact best. It is derivable once more
+;;; through `x-join`, over (a K) and (b K): a frontier of 2, the per-fact
+;;; worst. (z K) has one derivation, `z-join`, over the same two givens.
+;;; (false) needs both, so its smallest frontier over every derivation is
+;;; {(a K), (b K)}, 2, through x-join; through any x-chain it is
+;;; {(c Cnn), (a K), (b K)}, 3.
+;;;
+;;; `x-chain` fires first (priority 100), so (x K)'s primary and its 32
+;;; alternatives are one-premise chains, and `x-join` arrives at a full list
+;;; with two premises and is refused. Any retention that ranks a fact's
+;;; derivations by a per-fact metric, premise count (today), a frontier
+;;; estimate ((1)) or the smallest closure ((3)), ranks x-join last of the 34,
+;;; because its saving is only visible from (false), between (x K) and (z K).
+;;;
+;;;   ein solve FILE, 2026-11-04 at 3011fae2:
+;;;     today, MAX_ALT_JUSTIFICATIONS = 32     unsat core (a K) (b K) (c C01)
+;;;     (3) prototype (build/s1e2.2.11/proto3.diff)  the same three
+;;;     MAX_ALT_JUSTIFICATIONS = 1 000 000     unsat core (a K) (b K)
+;;;
+;;; The explanation search is itself budgeted: past 64 incomparable
+;;; environments a label is cut too, and that cut is reported
+;;; (Explanation::exhausted). The cap's is not.
+
+(relation c T :why "{?1} has c")
+(relation a T :why "{?1} has a")
+(relation b T :why "{?1} has b")
+(relation x T :why "{?1} is x")
+(relation z T :why "{?1} is z")
+
+(c C01) (c C02) (c C03) (c C04) (c C05) (c C06) (c C07) (c C08) (c C09) (c C10) (c C11)
+(c C12) (c C13) (c C14) (c C15) (c C16) (c C17) (c C18) (c C19) (c C20) (c C21) (c C22)
+(c C23) (c C24) (c C25) (c C26) (c C27) (c C28) (c C29) (c C30) (c C31) (c C32) (c C33)
+(a K) (b K)
+
+(rule x-chain ()
+  :match  (c ?y)
+  :assert (x K)
+  :priority 100
+  :why    "{?y} makes K an x")
+
+(rule x-join ()
+  :match  (and (a ?k) (b ?k))
+  :assert (x ?k)
+  :priority 200
+  :why    "{?k} has a and b")
+
+(rule z-join ()
+  :match  (and (a ?k) (b ?k))
+  :assert (z ?k)
+  :priority 300
+  :why    "{?k} has a and b")
+
+(rule clash ()
+  :match  (and (x ?k) (z ?k))
+  :assert (false)
+  :priority 400
+  :why    "{?k} is both")
+
+(solve :expect (false))

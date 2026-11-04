@@ -1,0 +1,51 @@
+;;; S1e2.2.11 (W10), T1e2.2.11.1: `alt-cap-core.ein` with two witnesses, so no
+;;; list reaches the cap, and `:record-alternative-justifications` at its default, on.
+;;; Read with its twin, `alt-cap-below-noalts.ein`; they differ in the config
+;;; line and nothing else.
+;;;
+;;;   ein solve FILE, 2026-11-04 at 3011fae2 (no fix, no cap reached):
+;;;     alternatives on (the default)   unsat core (w1 X) (w2 X)
+;;;     alternatives off                unsat core (p1 Y01) (p2 Y01) (p3 Y01)
+;;;
+;;; Off, `wide`'s re-derivation of (false) is dropped, the proof is a tree,
+;;; and the core is `narrow`'s primary chain. So the flag decides the core on
+;;; a program the cap never reaches, today; no corpus program separates the
+;;; two settings, which is why `lever_invariance.rs` holds. Once W10 is fixed
+;;; `alt-cap-core.ein` separates them (2 against 3) and that test fails.
+
+(relation p1 T :why "{?1} has p1")
+(relation p2 T :why "{?1} has p2")
+(relation p3 T :why "{?1} has p3")
+(relation q  T :why "{?1} is a witness")
+(relation w1 T :why "{?1} has w1")
+(relation w2 T :why "{?1} has w2")
+
+;; Two witnesses, each three givens deep: (false)'s list is never full.
+(p1 Y01) (p2 Y01) (p3 Y01) (p1 Y02) (p2 Y02) (p3 Y02)
+
+;; …and one two-given pair, which is the smaller explanation.
+(w1 X) (w2 X)
+
+(rule mk-q ()
+  :match  (and (p1 ?y) (p2 ?y) (p3 ?y))
+  :assert (q ?y)
+  :priority 100
+  :why    "{?y} has all three")
+
+;; One premise, and that premise is three givens deep. Fires twice.
+(rule narrow ()
+  :match  (q ?y)
+  :assert (false)
+  :priority 200
+  :why    "{?y} is a witness")
+
+;; Two premises, both givens: the smallest frontier there is.
+(rule wide ()
+  :match  (and (w1 ?x) (w2 ?x))
+  :assert (false)
+  :priority 300
+  :why    "{?x} has both")
+
+(solve :expect (false))
+
+(query :goal (q ?y))
