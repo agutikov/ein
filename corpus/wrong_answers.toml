@@ -378,7 +378,7 @@
 # this stage as well as *forbid*'s), and `wild-in-head`'s `right` became that
 # refusal on the ruling, the twin the record of what the head would have
 # matched. Each flipped row's `[case.fixed]` carried the null id in the
-# flipping commit, and the stage's next commit wrote the hash. The
+# flipping commit, `eddea251`, and the stage's next commit wrote the hash. The
 # register reads **68 rows fixed, 2 open and 1 not-wrong**, both open rows
 # deferred to a followup.
 #
@@ -4670,7 +4670,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from S1e2.2.18 § Notes' first note, where the witness was build/s1e2.2.18/probes/wild-in-match.ein, on the user's ruling of 2026-11-04 (Q-M1e2.13 (a)). The twin, wild-in-match-twin.ein, writes `_` as `?any`, a variable the rule reads nowhere else, and is the right answer. By value: root.facts_by_relation.hit is 0 at c73a0796, and 1 right. Fixed by T1e2.2.20.2: `w` fires, and root holds (hit w) (root.facts_by_relation.hit 1), in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "eddea251"
 by     = "S1e2.2.20 (T1e2.2.20.2): the rule compiler lowers `_` in a pattern as a slot that matches any value and binds nothing (Slot::Any), so `w` matches (holds a)"
 date   = "2026-11-05"
 
@@ -4724,7 +4724,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `_` matches any value in the head too. A run that ends in an error (schema /7): every command that compiles the rule exits 1, `ein saturate` with the line prefixed `ein.inference.compile.CompileError:`. A fresh variable is no twin for a head (M1 binds a relation head by the activator, Q29); the twin, wild-in-head-twin.ein, writes the head out as `(or (holds a) (hit a))`, the program's relations a one-argument fact can belong to, and was the right answer until the user ruled Q-M1e2.14 (c) on 2026-11-05: a head `_` is refused at load, as a range is, so the right answer is that refusal and the twin the answer of another program. Fixed by T1e2.2.20.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "eddea251"
 by     = "S1e2.2.20 (T1e2.2.20.2): the loader refuses a wildcard written as a relation, at any depth of a rule's clauses (Q-M1e2.14 (c))"
 date   = "2026-11-05"
 
@@ -4759,7 +4759,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from S1e2.2.18 § Notes' first note, where the witness was build/s1e2.2.18/probes/range-in-match.ein, on the user's ruling of 2026-11-04 (Q-M1e2.13 (a)). Its twin is the refusal, so no file. Fixed by T1e2.2.20.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "eddea251"
 by     = "S1e2.2.20 (T1e2.2.20.2): the loader refuses a range in a rule, written as a pattern's argument at any depth of either clause (Q-M1e2.13 (a))"
 date   = "2026-11-05"
 
@@ -4797,7 +4797,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Found by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) probing the case's mechanism: the same opaque slot under an `absent`, which then always holds, so a conclusion the program refutes is in every state. `holds` is closed, so the program is monotone. The twin, wild-in-absent-twin.ein, writes `_` as `?any`, and is the right answer. Fixed by T1e2.2.20.2: `z` never fires, and no state holds (hit z), in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "eddea251"
 by     = "S1e2.2.20 (T1e2.2.20.2): the rule compiler lowers `_` under an `absent` as a slot that matches any value, so (absent (holds _)) fails beside (holds a)"
 date   = "2026-11-05"
 
@@ -4851,7 +4851,7 @@ look_at  = ["root", "summary"]
 note     = "Found by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) probing the case's mechanism: an hrule is compiled as a rule is, so its `_` matches nothing and it proposes no candidate. The twin, wild-in-hrule-twin.ein, writes `_` as `?any`, and is the right answer. Fixed by T1e2.2.20.2: the hrule proposes (tag a), and R is ∅ and {(tag a)}, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "eddea251"
 by     = "S1e2.2.20 (T1e2.2.20.2): the rule compiler lowers `_` in an hrule's :match as a slot that matches any value, so `h` matches (holds a b)"
 date   = "2026-11-05"
 

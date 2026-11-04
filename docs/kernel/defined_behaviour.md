@@ -486,7 +486,7 @@ names the failure's class, and exiting non-zero:
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
-| a conclusion no fact can hold: an `:assert` that is not a fact, or an argument that is a keyword pair, a range, a wildcard, or a relation written as a variable the activator does not bind | `rule '<r>': its :assert …`, naming no class (below) | 1 |
+| a conclusion no fact can hold: an `:assert` that is not a fact, or an argument that is a keyword pair, a wildcard, or a relation written as a variable the activator does not bind | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
@@ -501,10 +501,11 @@ Python class, the Python IR's class names, and no word of which rule. It is
 one line from every command now, the rule and the slot as the program writes
 them, in three forms:
 
-- `rule 's': its :assert writes 1..3 as an argument of tag, and no fact can
+- `rule 's': its :assert writes _ as an argument of tag, and no fact can
   hold it — an argument is a name, a string, an int, a variable its :match
-  binds, or a fact (relation argument …)` (a range, a wildcard `_`, a keyword
-  pair such as `:source "x"`, at any depth);
+  binds, or a fact (relation argument …)` (a wildcard `_`, a keyword pair such
+  as `:source "x"`, at any depth; a range until M1e2 S1e2.2.20, which refuses
+  one in a rule at load, § 4.8);
 - `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
   a fact (relation argument …), or an (and …) of facts` (an atom, a
   variable, a string where a fact belongs);
@@ -515,8 +516,9 @@ them, in three forms:
 The run still stops at the rule's first firing, exit 1, so a rule that never
 fires is never checked; an hrule's template that builds no fact still
 proposes nothing, in silence. `ein-cli/tests/cli_semantics.rs`'s
-`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the eight
-shapes under `ein saturate` and `ein solve`. A **string** reached this line
+`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the seven
+shapes under `ein saturate` and `ein solve` (eight until M1e2 S1e2.2.20, the
+range among them). A **string** reached this line
 until the same stage, which lowered a string in a rule as the loader lowers
 one in a fact, the symbol it names (M1e2's W18;
 [`01_grammar.md`'s `STRING` row](ir/03-ein-lang/01_grammar.md)).
@@ -829,6 +831,41 @@ the corpus and the register exactly and the two written activator programs,
 and by `corpus/wrong_answers.toml`'s fifteen refused rows (`python3 -c
 "import tomllib; print(sum(1 for r in tomllib.load(open('corpus/wrong_answers.toml','rb'))['case'] if r['right'].get('refused')))"`,
 2026-11-04).
+
+### 4.8 A range, or a wildcard as a relation, in a rule — M1e2 S1e2.2.20
+
+A range, `1..3` or `2..*`, is cardinality metadata, and no fact can hold
+one; a wildcard `_` stands for an argument, and a relation is named by a name
+or by a parameter its activator binds (Q29). So, on the user's rulings of
+2026-11-04 and 2026-11-05
+([Q-M1e2.13](../../plans/m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
+(a), [Q-M1e2.14](../../plans/m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
+(c)), the loader refuses a range written where a pattern's argument goes, at
+any depth of a rule's `:match` or `:assert` (an `absent`, a `not`, a nested
+fact, a guard's argument) or as a whole clause, and a `_` written as a form's
+relation, `(_ a)`, at any depth of either clause, in a rule, an hrule or an
+obligation. One line per slot, `; `-joined with every other loader error, in
+ein's own words:
+
+| input | message | exit |
+|---|---|---|
+| a range in a rule | `<rule\|hrule> '<r>': its <:match\|:assert> writes 1..3 as an argument of <rel>, and no fact can hold it — a range is cardinality metadata, and a rule matches and concludes facts` (`… its :match is 1..3, …` for a whole clause) | 1 (`ein test`: 2) |
+| a wildcard as a relation | `<rule\|hrule> '<r>': its <:match\|:assert> writes (_ a) with the wildcard _ as its relation — a relation is named by a name or by a parameter its activator binds, and _ stands for an argument` | 1 (`ein test`: 2) |
+
+A keyword's value inside a clause, `(n ?x :where 1..3)`, is no slot, which
+the compiler drops, and loads. A `_` as an argument matches any value
+([`01_grammar.md`'s `WILDCARD` row](ir/03-ein-lang/01_grammar.md#1-lexical-rules)).
+Pinned by `ein-ir`'s `from_ir.rs`
+`a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load` and
+`ein-cli/tests/cli_semantics.rs`'s test of the same name, and by
+`corpus/wrong_answers.toml`'s `W20/range-in-match` and `W20/wild-in-head`.
+**Until S1e2.2.20** (W20) a range was a slot that matched nothing, in silence,
+and one in an `:assert` stopped the run at the rule's first firing with
+§ 4's *conclusion no fact can hold* line; a `_` head stopped compilation with
+§ 4's second row, `ein.inference.compile.CompileError: unbound relation head
+?Wildcard() in a premise of `SForm(head=Wildcard(), …)` …`, the Python IR's
+spelling, which no `_` reaches since. A variable head no parameter binds,
+`(?r a)`, still does.
 
 ## 5. The CLI surface
 

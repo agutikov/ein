@@ -41,7 +41,8 @@ compiler enforce well-formedness against the rules below.
 | ground atoms             | `Red`, `House-1`                        | —         | match literally                                 |
 | relation pattern         | `(?r ?a ?b [?c …])`                     | —         | VAR head binds the relation name; args bind positions |
 | named relation pattern   | `(co-located ?a ?b)`                    | —         | match a specific relation's instances                  |
-| head wildcard            | `(_ ?a ?b)`                             | —         | match any binary list head                      |
+| argument wildcard        | `(holds _)`, `(pair ?a _)`              | —         | match any value, binding nothing; two are independent (M1e2 S1e2.2.20) |
+| ~~head wildcard~~        | `(_ ?a ?b)`                             | —         | **refused at load** since M1e2 S1e2.2.20 (Q-M1e2.14 (c)): a relation is a name or a parameter its activator binds. This row read *match any binary list head*, which no engine did: the compiler stopped on it (W20) |
 | **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
