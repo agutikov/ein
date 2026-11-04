@@ -220,6 +220,23 @@
 # is that warning. The register reads **44 rows fixed, 2 open and 1
 # not-wrong**, unmoved.
 #
+# **S1e2.2.11 fixed `W10/alt-cap-core` on 2026-11-04** (T1e2.2.11.2), on the
+# user's ruling of that day on Q-M1e2.11, (i)(b) *every; defer rest*: a full
+# alternatives list keeps beside it the arrival with the smallest closure
+# (Q-M1e.15's (3)), so `wide`'s two-given derivation of `(false)` reaches the
+# search and the core is `(w1 X) (w2 X)`, its twin's. **Schema /6**: a
+# `[case.now]` whose `right` states a core records the core its run reports,
+# the summary's `region.core`, and `wrong_answers.rs` holds it. The same
+# ruling filed **`W10/alt-cap-shared`**, `open` and reviewed `deferred`, owned
+# by F22: a saving between two facts behind a full list, the derivation a
+# target needs being its own fact's worst, which no bounded retention keeps;
+# the milestone closes naming it beside `W8/features-07`. Its ruling (ii)
+# exempts the core, and nothing else, under `:record-alternative-justifications
+# false` from the config principle, so no row is filed for that flag. The
+# flipped row's `[case.fixed]` carries the null id in the flipping commit, and
+# the stage's next commit writes the hash. The register reads **45 rows
+# fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -234,8 +251,9 @@
 #   fixed      `now` answers `right`, every field `right` states — the verdict
 #              its states make, k, exhausted, the models over `closes` (and over
 #              the candidates' relations, which is what a state's `(model …)`
-#              names), the open states of an owing empty R, and the relations
-#              the read-out names outside the universe (schema /5).
+#              names), the open states of an owing empty R, the relations
+#              the read-out names outside the universe (schema /5), and the
+#              core (schema /6).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`.
 #
@@ -251,7 +269,7 @@
 #             S1e2.1c.5 dropped its P1e2.2 stage (S1e2.1a.5; S1e2.1a.6 for W13),
 #             or where the revisit did (S1e2.1.7: W12's, S1e2.1a.5); for a row
 #             whose reading the user deferred, the followup (W8/features-07's:
-#             F21). A case's rows of one status share an owner, and fixed rows
+#             F21; W10/alt-cap-shared's: F22). A case's rows of one status share an owner, and fixed rows
 #             one per commit that fixed them;
 #             question: the ids that carried it
 #   witness   a `corpus/corpus.toml` entry, or a file under `corpus/fuzz_findings/`
@@ -280,6 +298,9 @@
 #               omitted when it names none
 #     models    each listed state's `(model …)`, sorted; for an owing empty R,
 #               the frontier's — the open states
+#     core      (schema /6, M1e2 S1e2.2.11) the unsat core the run reports,
+#               the summary's `region.core`, sorted; stated exactly when
+#               `[case.right]` states a core (W10's rows)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -357,7 +378,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/5"
+schema = "ein-wrong-answers/6"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -2452,9 +2473,13 @@ settings = "default"
 owner    = "S1e2.2.11"
 question = ["Q-M1e.15"]
 witness  = "examples/ein-bugs/alt-cap-core.ein"
-status   = "open"
-open_because = "the read-out's unsat core is still the alternatives cap's: (p1 Y01), (p2 Y01), (p3 Y01), where the smallest frontier is {(w1 X), (w2 X)}. The core is explain.rs's, S1e2.2.11"
+status   = "fixed"
 look_at  = ["summary", "events alt"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.11 (T1e2.2.11.2), Q-M1e.15's (3): a full alternatives list keeps beside it the arrival with the smallest closure, so wide's two-given derivation reaches explain.rs (Q-M1e2.11 (i)(b), ruled 2026-11-04)"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"
@@ -2502,6 +2527,62 @@ k         = 0
 empty     = "dead"
 relations = ["p1", "p2", "p3", "q", "w1", "w2"]
 models    = []
+core      = ["(w1 X)", "(w2 X)"]
+
+[[case]]
+id       = "W10/alt-cap-shared"
+case     = "W10"
+title    = "the alternatives cap decides which core is reported"
+class    = "core"
+settings = "default"
+owner    = "F22"
+question = ["Q-M1e.15", "Q-M1e2.11"]
+witness  = "examples/ein-bugs/wrong-answers/alt-cap-shared.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1e2.11 (i)(b), the user, 2026-11-04): the smallest frontier over every derivation is {(a K), (b K)}, through (x K)'s x-join, which is (x K)'s per-fact worst derivation, so its full list refuses it and the smallest-closure arrival kept beside it is an x-chain; the core is {(a K), (b K), (c C01)}. No bounded per-fact retention keeps it; F22 re-derives what a full list refused when the search reaches it"
+look_at  = ["summary", "events alt"]
+note     = "banked by S1e2.2.11 (T1e2.2.11.1) as plans/m1e2_correctness/probes/alt-cap-shared.ein, the reason (3) is not exact, and promoted here on the ruling"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3011fae2 (2026-11-04), before S1e2.2.11: R empty, root dead, and the core the cap leaves; S1e2.2.11's (3) reports the same three facts, and MAX_ALT_JUSTIFICATIONS = 1 000 000 the right two"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(a K)", "(b K)", "(c C01)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(a K)", "(b K)"]
+derived   = "the file's header: (false) through x-join and z-join rests on (a K) and (b K) alone, the smallest frontier over every derivation the program records, the promise Q-M1e2.11 (i)(b) keeps; an uncapped store (MAX_ALT_JUSTIFICATIONS = 1 000 000) reports it (2026-11-04, build/s1e2.2.11/ein-cap1e6)"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-04"
+bundle  = "5e5be3bc"
+note    = "The user's ruling of 2026-11-04 on Q-M1e2.11 (i), '(b) Every; defer rest', on T1e2.2.11.1's hand-back (5e5be3bc): the promise stays the smallest frontier over every derivation, S1e2.2.11 builds (3), and this row stays open, owned by F22, which re-derives a full list's refused derivations when the core search reaches that fact. The milestone's amended acceptance names it at the close, beside W8/features-07."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["a", "b", "c", "x", "z"]
+models    = []
+core      = ["(a K)", "(b K)", "(c C01)"]
 
 # ══ W11 — which core is reported depends on interner id order ═════════════════
 [[case]]

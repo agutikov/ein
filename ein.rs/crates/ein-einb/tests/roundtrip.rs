@@ -139,6 +139,8 @@ fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
 
 /// The saturated case — the one the format exists for, and the one with
 /// derived provenance, alternative justifications and a `(not …)` index in it.
+/// `alt-cap-core.ein` is the one whose full list keeps an arrival beside it
+/// (format 1.1's `CLOSURE`, M1e2 S1e2.2.11), which `Kb::diff` compares.
 #[test]
 fn a_saturated_kb_round_trips_with_its_derivations() {
     for rel in [
@@ -147,6 +149,7 @@ fn a_saturated_kb_round_trips_with_its_derivations() {
         "examples/features/01_not_and_absent.ein",
         "examples/features/03_forall.ein",
         "examples/zebra2-hints.ein",
+        "examples/ein-bugs/alt-cap-core.ein",
     ] {
         let path = repo_root().join(rel);
         if !path.is_file() {
@@ -177,6 +180,17 @@ fn a_saturated_kb_round_trips_with_its_derivations() {
         assert!(!opened.derived_dropped);
         if let Err(why) = kb.diff(&opened.kb) {
             panic!("{rel}: {why}");
+        }
+        if rel.ends_with("alt-cap-core.ein") {
+            assert!(
+                opened
+                    .kb
+                    .closures()
+                    .iter()
+                    .any(|(f, _, best)| best
+                        .is_some_and(|b| !opened.kb.alternatives(*f).contains(&b))),
+                "{rel}: no arrival kept beside a full list came back"
+            );
         }
         if let Err(why) = same_shape(&shape(&kb, &terms), &shape(&opened.kb, &fresh)) {
             panic!("{rel}: {why}");

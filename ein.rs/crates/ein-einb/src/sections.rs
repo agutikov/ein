@@ -701,3 +701,46 @@ pub fn read_nogoods(body: &[u8], kb: &Kb, maps: &Maps) -> Result<()> {
     }
     Ok(())
 }
+
+// ── CLOSURE ────────────────────────────────────────────────────────
+
+/// Each derived fact's closure, in the order of the believed facts, and the
+/// arrival that gave it where one did (M1e2 S1e2.2.11): what
+/// [`Kb::record_justification`] compares a later arrival against, so a KB
+/// read back keeps the same arrivals a saturation of the `.ein` would.
+/// Empty when the KB has no closure entry, and then not written.
+///
+/// [`Kb::record_justification`]: ein_core::Kb::record_justification
+pub fn write_closure(kb: &Kb) -> Vec<u8> {
+    let rows = kb.closures();
+    if rows.is_empty() {
+        return Vec::new();
+    }
+    let mut w = Writer::new();
+    w.u32(rows.len() as u32);
+    for (fact, closure, best) in rows {
+        w.u32(fact.0);
+        w.u32(closure);
+        if let Some(b) = best {
+            assert!(!b.is_fork(), "a fork's provenance cannot be saved");
+        }
+        w.opt_u32(best.map(|b| b.0));
+    }
+    w.align(crate::header::ALIGN);
+    w.into_vec()
+}
+
+pub fn read_closure(body: &[u8], kb: &mut Kb, maps: &Maps) -> Result<()> {
+    let mut r = Reader::new(body);
+    let n = r.count(9)?;
+    for _ in 0..n {
+        let fact = maps.fact(r.u32()?)?;
+        let closure = r.u32()?;
+        let best = match r.opt_u32()? {
+            Some(p) => Some(maps.prov(p)?),
+            None => None,
+        };
+        kb.restore_closure(fact, closure, best);
+    }
+    Ok(())
+}

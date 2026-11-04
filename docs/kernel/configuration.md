@@ -121,7 +121,7 @@ config (resolved)
 | flag | type | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|---|
 | `lattice-sanity-check` | `bool` | `false` | `-y`'s: the detector's parent-path spot check, **unbounded and on every program** — every one-step parent of every printed state of two commitments or more, built and saturated again (the user's ruling of 2026-11-03, M1e2 S1e2.1c.5; the walk's re-saturation of every parent path until then). On a program the static check flags it fills the warning's `paths` row and never fails the run; on a monotone one a path that reaches another state contradicts the § 5.1 theorem, and the run is an engine error, exit 2. A clean check prints its `paths` row; its saturations are that row's, outside `work`. `-y` sets it `true` | no | no | check |
-| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It decides which minimal core a dead node's refutation names — the read-out's `unsat core`, the trace's `N` and `nogoods.json` | explanation only | no | contract |
+| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It may change which core a dead node's refutation names — the read-out's `unsat core` and `source` rows, the summary's `region.core`, the trace's `N` and `nogoods.json` — **and nothing else**: R, every state, the verdict words and `refuted by` stay (the user's ruling of 2026-11-04, Q-M1e2.11 (ii); § 2.5). Off, the core is the smallest over each fact's first derivation; on, over every derivation the program records. `examples/zebra.ein` turns it off for speed, 0.95 s against 188 s, with the same core on each of N's 458 members (`ein solve`, 2026-11-04) | explanation only | no | contract |
 
 ### 2.3 Reading the judgement columns
 
@@ -211,7 +211,8 @@ them. With the flag off it derives **0 facts instead of 3** and the query goal
 moved nothing, because no program there has a dead node with two minimal
 cores; what it buys and costs is measured on
 [`examples/zebra.ein`](../../examples/zebra.ein), whose own `(config …)` turns
-it off and says why.
+it off and says why. Since M1e2 S1e2.2.11 (2026-11-04) it moves one program's
+core, `alt-cap-core.ein`'s, and nothing else: § 2.5's one exemption.
 
 ### 2.5 The config principle, read against every row
 
@@ -256,6 +257,26 @@ facts of every state in R
   environment cells through the binary, 14 s on this machine's eight workers.
   One flag moved: `enable-symmetric-mirror`, as above. With it retired the
   in-process sweep is 16 464 cells, and nothing moves.
+- **One exemption, the core under `record-alternative-justifications`**
+  (the user's ruling of 2026-11-04 on
+  [Q-M1e2.11](../../plans/m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it)
+  (ii), M1e2 S1e2.2.11). Off, the flag drops every re-derivation, the
+  proof is a tree, and the explanation search is offered each fact's first
+  derivation alone, so the core it names can be another. That is all it may
+  change: R, every state and class, the verdict words and `refuted by` (the
+  first derivation's rule either way) do not move. It moved nothing printed
+  on any corpus program until W10's fix, after which
+  [`alt-cap-core.ein`](../../examples/ein-bugs/alt-cap-core.ein) reports
+  `(w1 X) (w2 X)` with it on and `(p1 Y01) (p2 Y01) (p3 Y01)` with it off;
+  `examples/zebra.ein` sets it off for speed (0.95 s against 188.1 s on
+  2026-11-04, the same core on each of N's 458 members), and the core
+  promise is over the derivations the program records
+  ([`glossary.md` § Smallest contradiction frontier](glossary.md#smallest-contradiction-frontier)).
+  `lever_invariance.rs` compares the flag's cells less the core rows and
+  `region.core`, and `the_core_exemption_is_one_flag_and_the_core_rows`
+  holds the exemption that narrow: one flag, the `unsat core` and `source`
+  rows and the summary's core and nothing else, on the one program that
+  shows it, which it fails without.
 - **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
   which the static check flags non-monotone, failed the probe with

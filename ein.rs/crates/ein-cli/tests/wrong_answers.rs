@@ -135,6 +135,19 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         .filter_map(|o| o["relation"].as_str().map(str::to_string))
         .collect();
     outside.sort();
+    // The core, where the row records one (M1e2 S1e2.2.11, W10).
+    let core = row.now.core.as_ref().map(|_| {
+        let mut c: Vec<String> = region["core"]
+            .as_array()
+            .map(|v| {
+                v.iter()
+                    .filter_map(|x| x.as_str().map(str::to_string))
+                    .collect()
+            })
+            .unwrap_or_default();
+        c.sort();
+        c
+    });
     Ok(Now {
         run: row.now.run.clone(),
         line,
@@ -145,6 +158,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         relations: relations(&got.stdout),
         models,
         outside,
+        core,
     })
 }
 
@@ -181,6 +195,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "outside",
         format!("{:?}", want.outside),
         format!("{:?}", got.outside),
+    );
+    field(
+        "core",
+        format!("{:?}", want.core),
+        format!("{:?}", got.core),
     );
     out
 }

@@ -150,6 +150,14 @@ constrained-reasoning research.
   the warning*): their R is two states, Blue in H5, and where the blind
   enumerator binds a type as an object every read-out says so, a `types` row
   under `universe` and `root.hypgen.types_as_objects`: still 44, 2 and 1.
+  S1e2.2.11 fixed `W10/alt-cap-core` the same day, on the user's two rulings
+  on Q-M1e2.11: a full alternatives list keeps beside it the arrival with the
+  smallest closure (Q-M1e.15's (3)), so the `alt-cap-core` pair report one
+  core; W10's second witness, a saving between two facts behind a full list
+  that no bounded retention keeps, is `open` and deferred to F22; and
+  `:record-alternative-justifications false` may change a dead node's core
+  and nothing else, the config principle's one exemption: 45 fixed, 2 open
+  (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

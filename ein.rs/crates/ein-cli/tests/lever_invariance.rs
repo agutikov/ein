@@ -38,6 +38,13 @@
 //!   its stderr lines and exit code, and the summary. This is the route a flag
 //!   takes into the saturator, which every mode's every node runs.
 //!
+//! **One exemption** (M1e2 S1e2.2.11, the user's ruling of 2026-11-04 on
+//! Q-M1e2.11 (ii)): `:record-alternative-justifications false` makes the proof
+//! a tree, and may change which core a dead node's refutation names, the
+//! read-out's `unsat core` and `source` rows and the summary's `region.core`,
+//! and nothing else ([`CORE_FLAG`], [`without_core`]).
+//! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
+//!
 //! **Byte for byte, cost counters included**, because no route reads a lever
 //! today. The day one does, its `work` row and block may move, and this file
 //! is where that is relaxed, on purpose (`jobs_invariance.rs`'s stance).
@@ -484,6 +491,41 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
     )
 }
 
+/// The one flag the core is exempt under (M1e2 S1e2.2.11, Q-M1e2.11 (ii)):
+/// off, a re-derivation is dropped rather than recorded, the explanation
+/// search is offered each fact's first derivation alone, and the core it
+/// names can be another. The classic zebra puzzle's own `(config …)` sets
+/// it off for speed (0.95 s against 188 s, the same 458 cores, 2026-11-04;
+/// `configuration.md` § 2.2); `alt-cap-core.ein` is where it changes a core.
+const CORE_FLAG: &str = "record-alternative-justifications";
+
+/// The rows that name a dead node's core: the read-out's `unsat core` and
+/// `source`.
+fn is_core_row(line: &str) -> bool {
+    line.starts_with("  unsat core ") || line.starts_with("  source ")
+}
+
+/// [`printed`] less the core: its rows ([`is_core_row`]) and the summary's
+/// `region.core`. Everything else, `refuted by` among it, must not move.
+fn without_core(text: &str) -> String {
+    let (head, summary) = text.split_once("--- summary\n").unwrap_or((text, ""));
+    let head: String = head
+        .lines()
+        .filter(|l| !is_core_row(l))
+        .map(|l| format!("{l}\n"))
+        .collect();
+    let summary = match serde_json::from_str::<J>(summary.trim_end()) {
+        Ok(mut j) => {
+            if let Some(r) = j.get_mut("region").and_then(J::as_object_mut) {
+                r.remove("core");
+            }
+            serde_json::to_string_pretty(&j).expect("serialises")
+        }
+        Err(_) => summary.trim_end().to_string(),
+    };
+    format!("{head}--- summary\n{summary}\n")
+}
+
 /// [`printed`] less `-y`'s own output ([`without_spot`]): the `paths` row of
 /// the read-out, and the summary's `monotonicity.paths`.
 fn printed_without_spot(text: &str) -> String {
@@ -592,7 +634,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             defaults.insert(i, out);
         }
     }
-    let (mut cells, mut bad) = (0usize, Vec::new());
+    let (mut cells, mut bad, mut exempt) = (0usize, Vec::new(), BTreeSet::new());
     // `--count` at the default budget prints describe's rows, but `asked` and
     // the warning's `paths` (M1e2 T1e2.1c.4.6): one tool, one count, on every
     // program whose R is known. `read_out.rs` holds the same at a small
@@ -640,6 +682,11 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             // `:lattice-sanity-check true` is `-y`: its row is its own.
             let (want, got) = if flag == "lattice-sanity-check" {
                 (printed_without_spot(want), printed_without_spot(got))
+            } else if flag == CORE_FLAG {
+                if want != got {
+                    exempt.insert(rel.clone());
+                }
+                (without_core(want), without_core(got))
             } else {
                 (want.clone(), got.clone())
             };
@@ -655,7 +702,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     }
     eprintln!(
         "{} programs whose R is known, {cells} cells; {partial} partial at the default \
-         budget, {none} with no read-out",
+         budget, {none} with no read-out; the core moved under :{CORE_FLAG} on {exempt:?}",
         known.len()
     );
     assert!(
@@ -668,4 +715,88 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     );
     // 180 on 2026-11-01, of 255 files: 12 partial, 63 with no read-out.
     assert!(known.len() >= 180, "{} programs compared", known.len());
+}
+
+/// **The core exemption is one flag and the core rows** (M1e2 S1e2.2.11, the
+/// user's ruling of 2026-11-04 on Q-M1e2.11 (ii)).
+///
+/// [`no_config_flag_moves_a_line_of_any_mode`] compares
+/// [`CORE_FLAG`]'s cells less the core. This holds the exemption to what the
+/// ruling grants: the flag is a `(config …)` flag, the rows taken out are the
+/// core's and nothing else on any line, and on `alt-cap-core.ein`, the
+/// program where the flag changes a core, every question prints the same
+/// read-out and summary but those rows, while the rows do differ. The day
+/// they stop differing there the exemption has no witness, and this fails
+/// rather than let it outlive its reason.
+#[test]
+fn the_core_exemption_is_one_flag_and_the_core_rows() {
+    assert!(
+        FLAGS.iter().any(|(f, _)| *f == CORE_FLAG),
+        ":{CORE_FLAG} is not a (config …) flag"
+    );
+    for (row, core) in [
+        ("  unsat core        (w1 X)", true),
+        (
+            "  source            (color-loc Green House-1) :source \"x\"",
+            true,
+        ),
+        ("  refuted by        narrow", false),
+        ("  unsat corel", false),
+        ("    source", false),
+        ("  universe          70 candidates, 70 dead alone", false),
+    ] {
+        assert_eq!(is_core_row(row), core, "{row:?}");
+    }
+
+    let path = repo_root().join("examples/ein-bugs/alt-cap-core.ein");
+    let Reach::Known(k) = reach(&path) else {
+        panic!("alt-cap-core.ein: R is not known");
+    };
+    let flipped_text = format!("{}{}", k.text, flipped(&k.resolved, CORE_FLAG));
+    let mut moved = 0usize;
+    for (flags, mode) in &k.questions {
+        let want = printed(&k.path, &k.text, flags, *mode);
+        let got = printed(&k.path, &flipped_text, flags, *mode);
+        let at = flags.join(" ");
+        assert_eq!(
+            without_core(&want),
+            without_core(&got),
+            "alt-cap-core.ein {at}: :{CORE_FLAG} moved more than the core"
+        );
+        let rows = |t: &str| -> Vec<String> {
+            t.lines()
+                .filter(|l| is_core_row(l))
+                .map(str::to_string)
+                .collect()
+        };
+        let summary_core = |t: &str| -> J {
+            let s = t.split_once("--- summary\n").map_or("", |(_, s)| s);
+            serde_json::from_str::<J>(s.trim_end())
+                .map(|j| j["region"]["core"].clone())
+                .unwrap_or(J::Null)
+        };
+        if want != got {
+            moved += 1;
+            assert_ne!(
+                rows(&want),
+                rows(&got),
+                "{at}: moved, but not in a core row"
+            );
+            assert_eq!(
+                (summary_core(&want), summary_core(&got)),
+                (
+                    serde_json::json!(["(w1 X)", "(w2 X)"]),
+                    serde_json::json!(["(p1 Y01)", "(p2 Y01)", "(p3 Y01)"])
+                ),
+                "{at}: the summary's core, alternatives on and off"
+            );
+        }
+    }
+    // Describe and `--count` print the core; the lines and `-n` print no core
+    // on an empty R.
+    assert!(
+        moved >= 1,
+        "alt-cap-core.ein: :{CORE_FLAG} no longer changes its core, so the \
+         exemption has no witness — retire it from no_config_flag_moves_a_line_of_any_mode"
+    );
 }

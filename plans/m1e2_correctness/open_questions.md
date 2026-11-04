@@ -24,7 +24,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
 | [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
-| [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **open**, put to the user 2026-11-04 by T1e2.2.11.1: (i) Q-M1e.15's (3) is not exact, and no bounded retention is; (ii) `:record-alternative-justifications false` decides the core today, and the fix makes `alt-cap-core.ein` show it. Recommended: (i)(b), (3) with the residual filed and deferred; (ii)(b), the core exempt under that one flag |
+| [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1321,7 +1321,7 @@ uncapped build ×2.15 (528 → 1 133 ms). Two findings make the fix a ruling:
 
 **(i) (3) is not exact, and no bounded retention is.** A fact's best
 derivation for its own sake need not be the one the target needs: the saving
-can lie between two facts. [`probes/alt-cap-shared.ein`](probes/alt-cap-shared.ein):
+can lie between two facts. [`alt-cap-shared.ein`](../../examples/ein-bugs/wrong-answers/alt-cap-shared.ein) (a probe under `probes/` until T1e2.2.11.2 promoted it):
 `(x K)` has 33 one-given derivations and a 34th over `(a K)` `(b K)`, `(z K)`
 only that pair, and `(false)` both; over every derivation the core is `{(a
 K), (b K)}`, but the 34th is `(x K)`'s per-fact worst, so premise count, (1)'s
@@ -1377,3 +1377,28 @@ members. On the corpus the flag buys speed and changes no core; on
   core promise says it is over the derivations the program records; and
   `lever_invariance.rs` holds every row but the core's under it, with the
   flag named as the one exemption.
+
+**Ruled 2026-11-04: (i)(b) and (ii)(b)** (the user: *"(b) Every; defer
+rest"* and *"(b) Exempt the core"*). The promise stays the smallest frontier
+over every derivation the program records; S1e2.2.11 builds (3), and
+`W10/alt-cap-core` is fixed by it; `alt-cap-shared` is W10's second row,
+`open`, its witness promoted to `examples/ein-bugs/wrong-answers/` with a
+corpus entry, reviewed `deferred` and owned by a new followup,
+[F22](../followups/f22_exact_core_past_the_cap.md), which re-derives a full
+list's refused derivations when the core search reaches that fact, and which
+the milestone's amended acceptance names at the close. The flag stays:
+`configuration.md` § 2.2 and § 2.5 say it may change which core a dead
+node's refutation names and nothing else, the core promise says it is over
+the derivations the program records, and `lever_invariance.rs` holds every
+row but the core's under it, the flag named as the one exemption, with a
+test that it stays that narrow. The `alt-cap-below` probes stay probes:
+`alt-cap-core.ein` is the exemption's witness once W10 is fixed.
+
+**Built 2026-11-04** by [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)
+(T1e2.2.11.2): `ein-core::kb` keeps, per fact, the smallest closure an arrival
+has given it and that arrival beside the capped list (`Kb::closure`,
+`Kb::best`), which `Kb::justifications` offers the search and the `.einb`
+keeps (format 1.1, a `CLOSURE` section); the register's schema /6 holds a
+row's core; `alt-cap-core.ein` reports `(w1 X) (w2 X)`, its twin's, and
+`alt-cap-shared.ein` the three facts it did. No other corpus program's core
+moved (the sweep's 6 510 runs).

@@ -32,7 +32,7 @@ use crate::entities::{NameCategory, Registry};
 use crate::facts::FactId;
 use crate::intern::{Overflow, Symbol};
 use crate::program::Program;
-use crate::prov::ProvId;
+use crate::prov::{ProvId, ProvKind};
 use crate::terms::Terms;
 use crate::value::{Tag, Value};
 use rustc_hash::{FxHashMap, FxHashSet};
@@ -42,55 +42,41 @@ use std::sync::{Arc, RwLock};
 ///
 /// A hot fact can be re-derived hundreds of times (an exhaustive `zebra2`
 /// makes ~194 k redundant firings) and keeping every one costs memory for
-/// environments that repeat. The list is kept sorted by premise count, so the
-/// cap retains the shortest — the ones a minimum-cardinality explanation
-/// search can actually use.
+/// environments that repeat. The list is kept sorted by premise count, and at
+/// the cap an arrival with fewer premises evicts the longest.
 ///
-/// # What it costs
+/// # What it costs, and what is kept beside it
 ///
-/// **M1e S1e.1.3, answering the review's Q2 — and the answer is that the cap
-/// can change which unsat core is reported.** Retention is by **premise
-/// count**, which is local; `ein-infer`'s label search minimises **frontier
-/// size**, which is transitive. A one-premise step whose premise unfolds into
-/// a deep chain wins the first metric and loses the second, so a derivation
-/// with the *smaller frontier* can be refused at the cap and the search never
-/// sees it. Witness: `examples/ein-bugs/alt-cap-core.ein` reports a 3-fact
-/// core where a 2-fact one exists, and its `-reordered` twin — one `:priority`
-/// apart, same facts, same rules — reports the 2-fact one. Held by
-/// `ein-infer/tests/explain_semantics.rs`'s
-/// `the_alternatives_cap_can_enlarge_the_reported_core`; the fix is
-/// `Q-M1e.15`.
+/// **M1e S1e.1.3, answering the review's Q2: the cap could change which unsat
+/// core is reported.** Retention is by **premise count**, which is local;
+/// `ein-infer`'s label search minimises **frontier size**, which is
+/// transitive. A one-premise step whose premise unfolds into a deep chain wins
+/// the first and loses the second, so a full list refused the derivation with
+/// the smaller frontier: `examples/ein-bugs/alt-cap-core.ein` reported a
+/// 3-fact core where a 2-fact one exists, and its `-reordered` twin, one
+/// `:priority` apart, the 2-fact one (W10, `Q-M1e.15`).
 ///
-/// So the promise is *smallest over the derivations the store **retained***,
-/// and this is what retention means. It also means the reported core is
-/// order-independent only over what was kept, and what is kept depends on
-/// firing order — which is the guarantee `crate::kb` gives back one level
-/// above where `explain.rs` established it.
+/// **Since M1e2 S1e2.2.11 a fact also keeps, beside the list, the arrival with
+/// the smallest closure** ([`Kb::closure`], [`Kb::best`]), Q-M1e.15's (3), so
+/// the pair report the same 2-fact core. The list is unchanged: every list a
+/// corpus program keeps is kept as it was.
 ///
-/// **Measured 2026-08-29, all 202 corpus entries** (bounded exhaustive solve,
-/// alternatives on):
+/// That is not every derivation, and no list of fixed length is: where the
+/// saving lies *between* two facts, the derivation a target needs is its own
+/// fact's worst, and a full list refuses it
+/// (`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`, `W10/alt-cap-shared`,
+/// deferred to F22, which re-derives what a full list refused when the
+/// search reaches it). So the promise is *the smallest frontier over every
+/// derivation the program records*, and that row is where it does not hold.
 ///
-/// | | |
-/// |---|---:|
-/// | entries recording any alternative | 50 |
-/// | alternatives recorded | 12 337 500 |
-/// | entries that **reach** the cap | **1** — `examples/ein-bugs/zebra2-bad.ein` |
-/// | arrivals it refused there | 1 017 of 2 425 |
-/// | longest list without the cap | 1 049 |
-/// | evictions (an arrival displacing a longer one) corpus-wide | **0** |
-/// | next-longest list anywhere | **8** |
-///
-/// **The cap can only change an answer on an entry that reaches it**, and one
-/// does. Its core is `(color-loc Green House-1)`, one fact, at 32 and at 10⁶
-/// alike; and every corpus file's *root* explanation — the `explain` shape
-/// with alternatives on and off, over an unbudgeted saturation — is
-/// byte-identical between the two caps, all 202 of them. So the cap is live on
-/// exactly the program the README names as the unsat-core fixture and costs it
-/// nothing.
-///
-/// The sorted-by-premise-count retention, meanwhile, has never actually
-/// re-ordered a list: **0 evictions** means every over-cap arrival was simply
-/// refused, and the sort has only ever meant *the first 32 win*.
+/// **Where the cap is reached**, 2026-11-04 (`ein solve FILE --events`, every
+/// `alt` event counted per entering and fact, the corpus's 310 files): ten
+/// programs, always on `(false)` in a dead node — the `zebra2` family's dead
+/// nodes, `lattice/06_friends_tables`, `branching/12_typed_blind_solve`,
+/// `zebra2-bad`'s root and the `alt-cap-core` pair. Uncapped, the longest list
+/// is 1 049, on `zebra2-bad` and on `zebra2`'s dead nodes. An uncapped store
+/// moves no core on any of them but `alt-cap-core.ein`'s, and costs `zebra2`
+/// ×2.15 (M1e2 S1e2.2.11 T1, `build/s1e2.2.11/`).
 pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
 /// A key of the participation index (S1.8.B-idx): relation, argument
@@ -201,6 +187,17 @@ pub struct Layer {
     /// arrival can land in the middle and the cap evicts from the end — so
     /// concatenation would be wrong here where it is right everywhere else.
     alts: FxHashMap<FactId, Box<[ProvId]>>,
+    /// The smallest **closure** a fact has been given so far — the frontier
+    /// estimate [`Kb::record_justification`] compares arrivals by (M1e2
+    /// S1e2.2.11, Q-M1e.15's (3)). Set for a derived fact, a writeback's 0
+    /// among them, when it is first derived; lowered by an arrival with a
+    /// smaller one. A fact with no entry is a leaf, 1. Last layer wins, as
+    /// `primary` does.
+    closure: FxHashMap<FactId, u32>,
+    /// The arrival that last lowered [`Layer::closure`], kept **beside** the
+    /// capped `alts` list whether or not the list took it, so the explanation
+    /// search is offered it even when a full list refused it. Last layer wins.
+    best: FxHashMap<FactId, ProvId>,
 }
 
 impl Default for Layer {
@@ -218,6 +215,8 @@ impl Default for Layer {
             names: Registry::new(),
             primary: FxHashMap::default(),
             alts: FxHashMap::default(),
+            closure: FxHashMap::default(),
+            best: FxHashMap::default(),
         }
     }
 }
@@ -245,7 +244,10 @@ impl Layer {
     }
 
     fn is_empty(&self) -> bool {
-        self.facts.is_empty() && self.alts.is_empty()
+        self.facts.is_empty()
+            && self.alts.is_empty()
+            && self.closure.is_empty()
+            && self.best.is_empty()
     }
 
     /// Does this layer cite a record from the arena's fork region?
@@ -257,6 +259,8 @@ impl Layer {
         self.primary.values().any(|p| p.is_fork())
             // determinism-ok: the second of the two, and the same reason.
             || self.alts.values().flatten().any(|p| p.is_fork())
+            // determinism-ok: the third, and the same reason.
+            || self.best.values().any(|p| p.is_fork())
     }
 
     /// Re-point this layer's fork citations at the copies a promotion made.
@@ -277,6 +281,12 @@ impl Layer {
                 if let Some(&to) = map.get(p) {
                     *p = to;
                 }
+            }
+        }
+        // determinism-ok: as above.
+        for p in self.best.values_mut() {
+            if let Some(&to) = map.get(p) {
+                *p = to;
             }
         }
     }
@@ -322,6 +332,8 @@ impl Layer {
                 .values()
                 .map(|v| v.len() * size_of::<ProvId>())
                 .sum::<usize>()
+            + self.closure.capacity() * (size_of::<FactId>() + size_of::<u32>())
+            + self.best.capacity() * (size_of::<FactId>() + size_of::<ProvId>())
     }
 
     /// Field-by-field comparison, naming the first disagreement.
@@ -374,6 +386,12 @@ impl Layer {
         }
         if self.alts != other.alts {
             return Err("alternative justifications differ".to_string());
+        }
+        if self.closure != other.closure {
+            return Err("closures differ".to_string());
+        }
+        if self.best != other.best {
+            return Err("smallest-closure justifications differ".to_string());
         }
         Ok(())
     }
@@ -1025,6 +1043,12 @@ impl Kb {
             for (k, v) in &layer.alts {
                 out.alts.insert(*k, v.clone());
             }
+            for (k, v) in &layer.closure {
+                out.closure.insert(*k, *v);
+            }
+            for (k, v) in &layer.best {
+                out.best.insert(*k, *v);
+            }
         }
         out
     }
@@ -1282,6 +1306,15 @@ impl Kb {
             };
             return Ok(Added::Existing { id, alt });
         }
+        // A derivation's closure, from its premises' as they stand, and a
+        // writeback's 0 (M1e2 S1e2.2.11); a leaf takes no entry.
+        if let Some(p) = prov {
+            let p = terms.provs.get(p);
+            if p.kind == ProvKind::Rule {
+                let c = self.closure_of(&p.premises);
+                self.top.closure.insert(id, c);
+            }
+        }
         self.push_fact(id, prov);
         self.index_fact(terms, id);
         Ok(Added::New(id))
@@ -1400,6 +1433,8 @@ impl Kb {
             present: merged.present,
             primary: merged.primary,
             alts: merged.alts,
+            closure: merged.closure,
+            best: merged.best,
             ..Layer::default()
         };
 
@@ -1620,20 +1655,57 @@ impl Kb {
             .find_map(|l| l.primary.get(&fact).copied())
     }
 
-    /// The recorded alternatives, in stored order (shortest first).
+    /// The recorded alternatives, in stored order (fewest premises first).
     pub fn alternatives(&self, fact: FactId) -> &[ProvId] {
         self.layers_rev()
             .find_map(|l| l.alts.get(&fact))
             .map_or(&[], |v| v)
     }
 
-    /// Every recorded justification — primary first, then the alternatives.
-    /// The fact's OR-node.
+    /// The arrival that gave a fact its smallest closure, kept beside the
+    /// capped list ([`Kb::record_justification`]); `None` when no
+    /// alternative ever lowered the primary's.
+    pub fn best(&self, fact: FactId) -> Option<ProvId> {
+        self.layers_rev().find_map(|l| l.best.get(&fact).copied())
+    }
+
+    /// Every recorded justification — primary first, then the alternatives,
+    /// then the smallest-closure arrival where the list does not hold it. The
+    /// fact's OR-node, and all `explain.rs` searches over.
     pub fn justifications(&self, fact: FactId) -> Vec<ProvId> {
         let mut out = Vec::new();
         out.extend(self.primary(fact));
         out.extend_from_slice(self.alternatives(fact));
+        if let Some(b) = self.best(fact)
+            && !out.contains(&b)
+        {
+            out.push(b);
+        }
         out
+    }
+
+    /// A fact's **closure** — the size of the smallest frontier any of its
+    /// recorded derivations has shown, as [`Kb::record_justification`]
+    /// estimates it (M1e2 S1e2.2.11): 1 for a leaf ([`crate::walks::is_frontier`]'s:
+    /// no primary, a `source`, a `hypothesis`), 0 for a writeback, and for a
+    /// derived fact the smallest [`Kb::closure_of`] its arrivals have had.
+    ///
+    /// An **estimate**: a sum over premises counts a given twice where two
+    /// premises share it, and an arrival is measured by its premises'
+    /// closures as they stood when it arrived. It decides only which arrival
+    /// a full list keeps beside it; the search measures frontiers itself.
+    pub fn closure(&self, fact: FactId) -> u32 {
+        self.layers_rev()
+            .find_map(|l| l.closure.get(&fact).copied())
+            .unwrap_or(1)
+    }
+
+    /// The closure a derivation over `premises` would give: the sum of the
+    /// premises' [`Kb::closure`]s, saturating.
+    pub fn closure_of(&self, premises: &[FactId]) -> u32 {
+        premises
+            .iter()
+            .fold(0u32, |acc, &q| acc.saturating_add(self.closure(q)))
     }
 
     pub fn has_alternative_justifications(&self) -> bool {
@@ -1671,6 +1743,8 @@ impl Kb {
                     .flat_map(|a| a.iter().copied())
                     .filter(|p| p.is_fork()),
             );
+            // determinism-ok: the same set through the third.
+            cited.extend(l.best.values().copied().filter(|p| p.is_fork()));
         }
         if cited.is_empty() {
             return;
@@ -1725,6 +1799,48 @@ impl Kb {
         self.top.alts.insert(fact, alts);
     }
 
+    /// Reinstate a fact's [`Kb::closure`] and, where it has one, its
+    /// smallest-closure arrival, verbatim — the `.einb` reader's counterpart
+    /// to [`Kb::record_justification`]'s third half, for the reason
+    /// [`Kb::restore_alternatives`] gives.
+    pub fn restore_closure(&mut self, fact: FactId, closure: u32, best: Option<ProvId>) {
+        self.top.closure.insert(fact, closure);
+        if let Some(b) = best {
+            self.top.best.insert(fact, b);
+        }
+    }
+
+    /// Every closure entry and smallest-closure arrival, in the order of
+    /// the believed facts — what the `.einb` writer stores.
+    pub fn closures(&self) -> Vec<(FactId, u32, Option<ProvId>)> {
+        let mut out = Vec::new();
+        for f in self.facts() {
+            if let Some(c) = self.layers_rev().find_map(|l| l.closure.get(&f).copied()) {
+                out.push((f, c, self.best(f)));
+            }
+        }
+        out
+    }
+
+    /// Set a closure entry for every believed fact whose primary is a
+    /// derivation and that has none, in insertion order, from its primary:
+    /// what a `.einb` written before M1e2 S1e2.2.11 restores, since a
+    /// primary's premises were believed before it.
+    pub fn rebuild_closures(&mut self, terms: &Terms) {
+        let facts: Vec<FactId> = self.facts().collect();
+        for f in facts {
+            if self.layers_rev().any(|l| l.closure.contains_key(&f)) {
+                continue;
+            }
+            let Some(p) = self.primary(f) else { continue };
+            let p = terms.provs.get(p);
+            if p.kind == ProvKind::Rule {
+                let c = self.closure_of(&p.premises);
+                self.top.closure.insert(f, c);
+            }
+        }
+    }
+
     /// Field-by-field comparison against another KB — what "identical" means
     /// when a round trip has to prove it
     /// ([design/10 §6](../../../../docs/history/m1a_rust/design/10_binary_format.md)).
@@ -1758,16 +1874,18 @@ impl Kb {
         Ok(())
     }
 
-    /// Could `fact` still take an alternative justification with
-    /// `n_premises` premises?
+    /// Could `fact` still take an alternative justification over
+    /// `premises`?
     ///
     /// The cheap pre-check that lets the saturator's redundant-firing path
     /// skip *building* a record (and stringifying its bindings) for the common
     /// case of a hot fact whose list is already full of shorter derivations. A
     /// `true` answer is not a promise — [`Kb::record_justification`] still
-    /// applies the duplicate and ground-out rules.
-    pub fn accepts_justification(&self, terms: &Terms, fact: FactId, n_premises: usize) -> bool {
-        if n_premises == 0 {
+    /// applies the duplicate and ground-out rules. At a full list it is
+    /// [`Kb::closure_of`] the premises against the fact's [`Kb::closure`]: an
+    /// arrival that would lower it is kept beside the list.
+    pub fn accepts_justification(&self, terms: &Terms, fact: FactId, premises: &[FactId]) -> bool {
+        if premises.is_empty() {
             return false;
         }
         if let Some(pp) = self.primary(fact)
@@ -1777,7 +1895,8 @@ impl Kb {
         }
         let current = self.alternatives(fact);
         current.len() < MAX_ALT_JUSTIFICATIONS
-            || n_premises < terms.provs.get(current[current.len() - 1]).premises.len()
+            || premises.len() < terms.provs.get(current[current.len() - 1]).premises.len()
+            || self.closure_of(premises) < self.closure(fact)
     }
 
     /// Record an **alternative** justification for an already-known fact.
@@ -1792,13 +1911,27 @@ impl Kb {
     /// environment, "derivable from nothing", collapsing every explanation
     /// through it. Symmetrically, a fact whose *primary* is already a terminal
     /// takes no alternatives at all: a clue that happens to be re-derivable is
-    /// still a clue.
+    /// still a clue. A derivation the fact already holds, in the list or
+    /// beside it, is not recorded twice.
     ///
-    /// The list is capped and kept **sorted by premise count**, so at the cap
-    /// an arrival with fewer premises evicts the longest: the cap biases
-    /// towards the small explanations the minimality search is looking for,
-    /// rather than towards whichever fired first. Sorted order is also what
-    /// makes the rejection O(1).
+    /// What is kept is two things (M1e2 S1e2.2.11, Q-M1e.15's (3)):
+    ///
+    /// - **The list**, capped at [`MAX_ALT_JUSTIFICATIONS`] and kept **sorted
+    ///   by premise count**, so at the cap an arrival with fewer premises
+    ///   evicts the longest. Sorted order is also what makes the refusal
+    ///   O(1).
+    /// - **Beside it, the smallest-closure arrival** ([`Kb::best`]): an
+    ///   arrival whose [`Kb::closure_of`] is below the fact's
+    ///   [`Kb::closure`] lowers it and is kept, whatever the list does. The
+    ///   list ranks by premise count, which is local, and the explanation
+    ///   search minimises frontier size, which is transitive; this is what
+    ///   keeps a full list from refusing the derivation with the smaller
+    ///   frontier, `examples/ein-bugs/alt-cap-core.ein`'s `wide`.
+    ///
+    /// Neither is every derivation. A saving that lies *between* two facts
+    /// makes the derivation a target needs its own fact's worst, so a full
+    /// list can still refuse it: `examples/ein-bugs/wrong-answers/alt-cap-shared.ein`,
+    /// `W10/alt-cap-shared`, deferred to F22.
     pub fn record_justification(&mut self, terms: &Terms, fact: FactId, prov: ProvId) -> bool {
         let p = terms.provs.get(prov);
         if p.is_terminal() {
@@ -1813,28 +1946,41 @@ impl Kb {
         let current: Vec<ProvId> = self.alternatives(fact).to_vec();
         let n = p.premises.len();
         let full = current.len() >= MAX_ALT_JUSTIFICATIONS;
-        if full && n >= terms.provs.get(current[current.len() - 1]).premises.len() {
+        let refused = full && n >= terms.provs.get(current[current.len() - 1]).premises.len();
+        let closure = self.closure_of(&p.premises);
+        let lowers = closure < self.closure(fact);
+        if refused && !lowers {
             return false;
         }
-        let mut at = current.len();
-        for (i, &q) in current.iter().enumerate() {
-            let q = terms.provs.get(q);
-            if q.same_justification(p) {
-                return false;
-            }
-            if at == current.len() && q.premises.len() > n {
-                at = i;
-            }
+        if current
+            .iter()
+            .any(|&q| terms.provs.get(q).same_justification(p))
+            || self
+                .best(fact)
+                .is_some_and(|b| terms.provs.get(b).same_justification(p))
+        {
+            return false;
         }
+        if lowers {
+            self.top.closure.insert(fact, closure);
+            self.top.best.insert(fact, prov);
+        }
+        if refused {
+            return true;
+        }
+        let at = current
+            .iter()
+            .position(|&q| terms.provs.get(q).premises.len() > n)
+            .unwrap_or(current.len());
         let kept = if full {
             &current[..current.len() - 1]
         } else {
             &current[..]
         };
         let mut next = Vec::with_capacity(kept.len() + 1);
-        next.extend_from_slice(&kept[..at]);
+        next.extend_from_slice(&kept[..at.min(kept.len())]);
         next.push(prov);
-        next.extend_from_slice(&kept[at..]);
+        next.extend_from_slice(&kept[at.min(kept.len())..]);
         self.top.alts.insert(fact, next.into_boxed_slice());
         true
     }
@@ -2385,7 +2531,7 @@ mod tests {
             .id();
         let rule = sym(&mut terms, "symmetric");
         let derivation = firing(&mut terms, rule, &[FactId(7)]);
-        assert!(!kb.accepts_justification(&terms, fact, 1));
+        assert!(!kb.accepts_justification(&terms, fact, &[FactId(7)]));
         assert!(!kb.record_justification(&terms, fact, derivation));
         assert!(kb.alternatives(fact).is_empty());
     }
@@ -2423,19 +2569,96 @@ mod tests {
         // Full, and the arrival is no shorter than the longest kept — the
         // O(1) rejection.
         let longest = *lengths.last().expect("non-empty");
-        assert!(!kb.accepts_justification(&terms, fact, longest));
         let premises: Vec<FactId> = (100..100 + longest as u32).map(FactId).collect();
+        assert!(!kb.accepts_justification(&terms, fact, &premises));
         let too_long = firing(&mut terms, rule, &premises);
         assert!(!kb.record_justification(&terms, fact, too_long));
 
         // A shorter one evicts the longest.
-        assert!(kb.accepts_justification(&terms, fact, 1));
+        assert!(kb.accepts_justification(&terms, fact, &[FactId(50)]));
         let short = firing(&mut terms, rule, &[FactId(50)]);
         assert!(kb.record_justification(&terms, fact, short));
         let after = kb.alternatives(fact).to_vec();
         assert_eq!(after.len(), MAX_ALT_JUSTIFICATIONS);
         assert_eq!(after[0], short);
         assert!(!after.contains(kept.last().expect("non-empty")));
+    }
+
+    /// **A full list keeps the smallest-closure arrival beside it** — M1e2
+    /// S1e2.2.11, Q-M1e.15's (3), `alt-cap-core.ein`'s shape in miniature.
+    /// The primary and 32 alternatives each rest on one derived premise three
+    /// leaves deep (closure 3); a two-premise arrival over two leaves
+    /// (closure 2) is refused by the list's premise count and kept beside it.
+    #[test]
+    fn a_full_list_keeps_the_smallest_closure_beside_it() {
+        let (mut terms, mut kb) = fixture();
+        let rule = sym(&mut terms, "symmetric");
+        let rel = sym(&mut terms, "co-located");
+        let leaf = |kb: &mut Kb, terms: &mut Terms, name: &str| add(kb, terms, "next-to", &[name]);
+        // 33 premises, each derived from three leaves of its own.
+        let mut deep = Vec::new();
+        for i in 0..=MAX_ALT_JUSTIFICATIONS {
+            let leaves: Vec<FactId> = (0..3)
+                .map(|j| leaf(&mut kb, &mut terms, &format!("p{i}-{j}")))
+                .collect();
+            let q = firing(&mut terms, rule, &leaves);
+            let arg = [terms.value_text(&format!("q{i}")).expect("room")];
+            let id = kb
+                .add_and_index_fact(&mut terms, rel, &arg, Some(q))
+                .expect("room")
+                .id();
+            assert_eq!(kb.closure(id), 3, "three leaves deep");
+            deep.push(id);
+        }
+        let args = [terms.value_text("false").expect("room")];
+        let primary = firing(&mut terms, rule, &[deep[0]]);
+        let fact = kb
+            .add_and_index_fact(&mut terms, rel, &args, Some(primary))
+            .expect("room")
+            .id();
+        for &q in &deep[1..] {
+            let prov = firing(&mut terms, rule, &[q]);
+            assert!(kb.record_justification(&terms, fact, prov));
+        }
+        let list = kb.alternatives(fact).to_vec();
+        assert_eq!(list.len(), MAX_ALT_JUSTIFICATIONS);
+        assert_eq!((kb.closure(fact), kb.best(fact)), (3, None));
+
+        // Two premises against a longest-kept one: the list refuses it, and
+        // its closure, 2, is below the fact's 3, so it is kept beside it.
+        let w = [
+            leaf(&mut kb, &mut terms, "w1"),
+            leaf(&mut kb, &mut terms, "w2"),
+        ];
+        assert!(kb.accepts_justification(&terms, fact, &w));
+        let wide = firing(&mut terms, rule, &w);
+        assert!(kb.record_justification(&terms, fact, wide));
+        assert_eq!(kb.alternatives(fact), &list[..], "the list is unchanged");
+        assert_eq!((kb.closure(fact), kb.best(fact)), (2, Some(wide)));
+        assert_eq!(kb.justifications(fact).last(), Some(&wide));
+        assert_eq!(kb.justifications(fact).len(), MAX_ALT_JUSTIFICATIONS + 2);
+
+        // The same derivation again, and one no smaller: neither is kept.
+        let again = firing(&mut terms, rule, &w);
+        assert!(!kb.record_justification(&terms, fact, again));
+        let v = [
+            leaf(&mut kb, &mut terms, "v1"),
+            leaf(&mut kb, &mut terms, "v2"),
+        ];
+        assert!(!kb.accepts_justification(&terms, fact, &v));
+        let level = firing(&mut terms, rule, &v);
+        assert!(!kb.record_justification(&terms, fact, level));
+        assert_eq!(kb.best(fact), Some(wide));
+
+        // A fork's smaller one stays in the fork.
+        let mut fork = kb.fork();
+        let one = [leaf(&mut fork, &mut terms, "u1")];
+        let narrowest = firing(&mut terms, rule, &one);
+        assert!(fork.record_justification(&terms, fact, narrowest));
+        assert_eq!((fork.closure(fact), fork.best(fact)), (1, Some(narrowest)));
+        assert_eq!((kb.closure(fact), kb.best(fact)), (2, Some(wide)));
+        // …and a materialised copy says the same.
+        assert!(fork.materialise().diff(&fork.materialise()).is_ok());
     }
 
     #[test]

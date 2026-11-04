@@ -785,6 +785,12 @@ runs   = ["solve"]
 note   = "M1e2 W6's twin: uncovered.ein plus (knows Ann Bob) — three consistent states the original's rung never proposes."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/alt-cap-shared.ein"
+group  = "regression"
+runs   = ["solve", "test"]
+note   = "M1e2 W10 (`W10/alt-cap-shared`, open, deferred to F22): `(false)` needs `(x K)` and `(z K)`; `(x K)` has 33 one-given derivations and a 34th over `(a K) (b K)`, `(z K)` only that pair. Over every derivation the core is `{(a K), (b K)}`; the 34th is `(x K)`'s per-fact worst, so a full list refuses it, and Q-M1e.15's (3), which S1e2.2.11 built, keeps `(x K)`'s smallest-closure arrival, not it: the core is 3 facts. Banked by S1e2.2.11 (T1e2.2.11.1) as the reason no bounded retention is exact; promoted on the user's ruling of 2026-11-04 on Q-M1e2.11 (i)(b)."
+
+[[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity3.ein"
 group  = "regression"
 runs   = ["solve"]

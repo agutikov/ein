@@ -296,37 +296,28 @@ fn fact_set(f: &Fixture) -> Vec<String> {
     out
 }
 
-/// **`MAX_ALT_JUSTIFICATIONS` decides which unsat core is reported.**
+/// **A full alternatives list no longer decides which unsat core is
+/// reported** — W10, fixed by M1e2 S1e2.2.11.
 ///
-/// The review's Q2, answered **yes** (M1e S1e.1.3). `Kb::record_justification`
-/// retains by **premise count**, which is local; `explain` minimises **frontier
-/// size**, which is transitive. Where the two disagree, a derivation with the
-/// smaller frontier can be refused at the cap and the search never sees it.
+/// The review's Q2, answered *yes* by M1e S1e.1.3: `Kb::record_justification`
+/// retains by **premise count**, which is local, and `explain` minimises
+/// **frontier size**, which is transitive, so a full list refused the
+/// derivation with the smaller frontier. The two files are one `:priority`
+/// apart and nothing else — same facts, same rules, same verdict:
 ///
-/// The two files are one `:priority` apart and nothing else — same facts, same
-/// rules, same verdict — and they report cores of different sizes:
+/// | | `(false)`'s primary | core until S1e2.2.11 | core since |
+/// |---|---|---|---|
+/// | `alt-cap-core.ein` | `narrow`, one premise three givens deep | 3 — `(p1 Y01) (p2 Y01) (p3 Y01)` | **2** — `(w1 X) (w2 X)` |
+/// | `alt-cap-core-reordered.ein` | `wide`, two premises over givens | 2 | 2 |
 ///
-/// | | `(false)`'s primary | core |
-/// |---|---|---|
-/// | `alt-cap-core.ein` | `narrow`, one premise three givens deep | **3** — `(p1 Y01) (p2 Y01) (p3 Y01)` |
-/// | `alt-cap-core-reordered.ein` | `wide`, two premises over givens | **2** — `(w1 X) (w2 X)` |
-///
-/// The 2-fact explanation is available in *both*: `(w1 X)` and `(w2 X)` are
-/// stated facts and `wide` fires in both. What differs is whether the store
-/// still holds its derivation when the search runs. Verified against the cause
-/// rather than inferred: at `MAX_ALT_JUSTIFICATIONS = 1_000_000` the first
-/// file reports the same 2-fact core as the second.
-///
-/// This is *not* a soundness bug — a larger core is still a real explanation —
-/// and no shipped puzzle is changed by it: corpus-wide the cap is reached by
-/// one entry, `examples/ein-bugs/zebra2-bad.ein`, whose core is a single fact
-/// at either cap — and only an entry that reaches it can be changed by it. The
-/// fix is [Q-M1e.15]; what is banked here is the shape, so the fix has
-/// something to move.
-///
-/// [Q-M1e.15]: `docs/history/m1e_review_processing/open_questions.md`
+/// Since S1e2.2.11 (Q-M1e.15's (3), the user's ruling of 2026-11-04 on
+/// Q-M1e2.11) a fact keeps beside its list the arrival with the smallest
+/// closure, so `wide`'s two-given derivation is offered to the search in the
+/// first file too, and the core is the one an uncapped store reports
+/// (`MAX_ALT_JUSTIFICATIONS = 1_000_000`, measured 2026-11-04). The list
+/// itself is as it was: 32 one-premise `narrow` entries.
 #[test]
-fn the_alternatives_cap_can_enlarge_the_reported_core() {
+fn a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core() {
     let mut capped = load_path("examples/ein-bugs/alt-cap-core.ein");
     let mut reordered = load_path("examples/ein-bugs/alt-cap-core-reordered.ein");
     capped.saturate();
@@ -348,42 +339,70 @@ fn the_alternatives_cap_can_enlarge_the_reported_core() {
         a.exhausted && b.exhausted,
         "a budget was hit, so neither core is a claim about the cap"
     );
-    assert_eq!(
-        capped.names(&a.frontier),
-        ["p1", "p2", "p3"].map(String::from).into_iter().collect(),
-        "the capped file should report the three-given chain"
-    );
-    assert_eq!(
-        reordered.names(&b.frontier),
-        ["w1", "w2"].map(String::from).into_iter().collect(),
-        "the reordered file should report the two-given pair"
-    );
-    assert_eq!((a.len(), b.len()), (3, 2), "the sizes are the finding");
+    let pair = ["w1", "w2"].map(String::from).into_iter().collect();
+    assert_eq!(capped.names(&a.frontier), pair, "alt-cap-core.ein");
+    assert_eq!(reordered.names(&b.frontier), pair, "its twin");
+    assert_eq!((a.len(), b.len()), (2, 2), "one core, whatever the order");
 
-    // …and the mechanism, so a failure says which half moved. `(false)` takes
-    // 33 justifications in both — one primary and a full list of 32 — and the
-    // only difference is whether `wide`'s is among them.
+    // …and the mechanism, so a failure says which half moved. `(false)`'s
+    // list is full in both, a primary and 32 alternatives; in the first file
+    // `wide`'s arrival is refused by the list and kept beside it.
     let f_capped = capped.fact("false", &[]);
     let f_reordered = reordered.fact("false", &[]);
     assert_eq!(
         (
-            capped.kb.justifications(f_capped).len(),
-            reordered.kb.justifications(f_reordered).len()
+            capped.kb.alternatives(f_capped).len(),
+            reordered.kb.alternatives(f_reordered).len()
         ),
-        (33, 33),
-        "one primary plus MAX_ALT_JUSTIFICATIONS alternatives"
+        (32, 32),
+        "MAX_ALT_JUSTIFICATIONS alternatives in each list"
     );
+    let best = capped.kb.best(f_capped).expect("wide's arrival is kept");
+    assert!(!capped.kb.alternatives(f_capped).contains(&best));
+    assert_eq!(capped.kb.justifications(f_capped).len(), 34);
+    assert_eq!(capped.kb.closure(f_capped), 2, "wide's two givens");
     assert_eq!(
         capped.rules_deriving(f_capped),
-        ["narrow"].map(String::from).into_iter().collect(),
-        "`wide` fired, and the full list refused its derivation — 2 premises \
-         against a longest-kept 1, and the refusal is by premise count"
+        ["narrow", "wide"].map(String::from).into_iter().collect(),
+        "`wide` fired last, and its derivation is offered beside the full list"
     );
     assert_eq!(
         reordered.rules_deriving(f_reordered),
         ["narrow", "wide"].map(String::from).into_iter().collect(),
         "`wide` fired first here, so its derivation is the primary — and a \
          primary is never evicted"
+    );
+}
+
+/// **A saving between two facts, behind a full list, is still refused** —
+/// `W10/alt-cap-shared`, open, deferred to F22 by the user's ruling of
+/// 2026-11-04 on Q-M1e2.11 (i)(b).
+///
+/// `(x K)` has 33 one-given derivations and a 34th over `(a K)` `(b K)`, and
+/// `(false)` needs `(z K)` too, whose only derivation is over the same two.
+/// The smallest frontier over every derivation is `{(a K), (b K)}`, but the
+/// 34th is `(x K)`'s per-fact worst, so its full list refuses it and the
+/// smallest-closure arrival kept beside it is an `x-chain`: the core is three
+/// facts. No bounded per-fact retention keeps it, which is why the row is
+/// F22's and not this stage's. Pinned as the promise's one known gap: the
+/// day this reports two, F22 has landed and the row flips.
+#[test]
+fn a_saving_between_two_facts_behind_a_full_list_is_still_refused() {
+    let mut f = load_path("examples/ein-bugs/wrong-answers/alt-cap-shared.ein");
+    f.saturate();
+    let e = f.explain_contradiction(&ExplanationBudget::default());
+    assert!(e.exhausted, "a budget was hit");
+    assert_eq!(
+        f.names(&e.frontier),
+        ["a", "b", "c"].map(String::from).into_iter().collect(),
+        "(a K) (b K) and one (c Cnn): W10/alt-cap-shared's wrong core"
+    );
+    let x = f.fact("x", &["K"]);
+    assert_eq!(f.kb.alternatives(x).len(), 32, "(x K)'s list is full");
+    assert_eq!(
+        f.rules_deriving(x),
+        ["x-chain"].map(String::from).into_iter().collect(),
+        "x-join was refused and not kept: its closure, 2, is above x-chain's 1"
     );
 }
 

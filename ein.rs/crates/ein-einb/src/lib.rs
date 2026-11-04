@@ -17,7 +17,9 @@
 //! tables, in id order), `PRESENT` (which of those facts this KB believes, in
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
-//! and optionally `NOGOODS` and `SOLUTIONS`.
+//! and optionally `NOGOODS`, `SOLUTIONS` and, since format 1.1 (M1e2
+//! S1e2.2.11), `CLOSURE` (each derived fact's closure and smallest-closure
+//! arrival, which a full alternatives list keeps beside it).
 //!
 //! ## What is not a section
 //!
@@ -223,6 +225,10 @@ pub fn save_to_vec(
     if let Some(s) = &opts.solutions {
         bodies.push((Kind::Solutions, solutions::write(s)));
     }
+    let closure = sections::write_closure(kb);
+    if !closure.is_empty() {
+        bodies.push((Kind::Closure, closure));
+    }
 
     // The table's size is known from the section count, so offsets can be laid
     // out before a byte of it is written.
@@ -354,7 +360,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         entries.push(Entry::read(&mut r)?);
     }
 
-    let mut found: [Option<&[u8]>; 11] = [None; 11];
+    let mut found: [Option<&[u8]>; 12] = [None; 12];
     for e in &entries {
         if e.flags != 0 || e.len != e.raw_len {
             return Err(EinbError::Compressed);
@@ -411,6 +417,13 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     )?;
     if let Some(body) = found[Kind::Nogoods as usize] {
         sections::read_nogoods(body, &kb, &maps)?;
+    }
+    // A file written before format 1.1 carries no closures: its derived
+    // facts take their primaries' (M1e2 S1e2.2.11).
+    match found[Kind::Closure as usize] {
+        Some(body) => sections::read_closure(body, &mut kb, &maps)?,
+        None if head.minor < 1 => kb.rebuild_closures(terms),
+        None => {}
     }
     // The rebuild is from the file's fact list; the rules-by-relation snapshot
     // is not, and `loaded` is where a load-time one comes from.

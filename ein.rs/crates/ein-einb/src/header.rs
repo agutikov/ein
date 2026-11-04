@@ -18,7 +18,9 @@ pub const FORMAT_MAJOR: u16 = 1;
 
 /// Bumped when a section kind is added. A reader of the same major **ignores**
 /// section kinds it does not know, which is what makes a minor bump additive.
-pub const FORMAT_MINOR: u16 = 0;
+///
+/// `1` since M1e2 S1e2.2.11: [`Kind::Closure`].
+pub const FORMAT_MINOR: u16 = 1;
 
 pub const HEADER_LEN: usize = 64;
 pub const ENTRY_LEN: usize = 32;
@@ -44,6 +46,10 @@ pub enum Kind {
     Indexes = 8,
     Nogoods = 9,
     Solutions = 10,
+    /// Each derived fact's closure and smallest-closure arrival
+    /// ([`ein_core::Kb::closures`]), M1e2 S1e2.2.11; written when the KB has
+    /// any, which a saturated one does.
+    Closure = 11,
 }
 
 impl Kind {
@@ -61,6 +67,7 @@ impl Kind {
             8 => Kind::Indexes,
             9 => Kind::Nogoods,
             10 => Kind::Solutions,
+            11 => Kind::Closure,
             _ => return None,
         })
     }

@@ -298,7 +298,11 @@ milestone cites them across the boundary, as M1f does.
   [F21](../followups/f21_non_monotone_programs_decided.md)'s D2; since
   2026-11-04 one is, `W8/features-07`, because S1e2.2.5's F2 (*via*, the
   user's ruling of that day) refuses `stale-naf-fork` and fixes its row by the
-  refusal.
+  refusal. **A second since 2026-11-04**: `W10/alt-cap-shared`, owned by
+  [F22](../followups/f22_exact_core_past_the_cap.md), on the user's ruling
+  of that day on [Q-M1e2.11](open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it)
+  (i)(b): a saving between two facts behind a full alternatives list, which
+  no bounded list keeps; S1e2.2.11 fixed W10's first witness.
 - **No wrong answer at default settings.** No lever changes an answer the
   engine *certifies*. A lever may change cost, and may decline to certify
   (`exhausted = false`, said why), and that is all.

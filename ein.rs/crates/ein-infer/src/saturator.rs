@@ -832,17 +832,18 @@ impl Saturator {
         existing: &[FactId],
         guards: Span,
     ) {
-        let n = self.entries.get(entry).premises.len();
-        if n == 0 {
+        if self.entries.get(entry).premises.is_empty() {
             return;
         }
         // Built only once at least one conclusion can still take an
         // alternative, so a hot fact whose list is full of shorter derivations
-        // costs one O(1) check and nothing else.
+        // costs one check and nothing else: O(1), and at a full list the
+        // premises' closures against the fact's (M1e2 S1e2.2.11).
+        let premises = &self.entries.get(entry).premises;
         let targets: Vec<FactId> = existing
             .iter()
             .copied()
-            .filter(|&f| s.kb.contains(f) && s.kb.accepts_justification(s.terms, f, n))
+            .filter(|&f| s.kb.contains(f) && s.kb.accepts_justification(s.terms, f, premises))
             .collect();
         if targets.is_empty() {
             return;
@@ -1477,7 +1478,7 @@ impl Saturator {
                 // justification graph genuinely cyclic — `(R a b)` and
                 // `(R b a)` justify each other — which the explanation search
                 // handles by taking a least fixpoint from the sources up.
-                if self.record_alternatives && s.kb.accepts_justification(s.terms, mirror, 1) {
+                if self.record_alternatives && s.kb.accepts_justification(s.terms, mirror, &[src]) {
                     let prov = Prov::from_rule(self.sym_sym, Box::new([src]), None);
                     let id = s.terms.provs.push(prov);
                     s.kb.record_justification(s.terms, mirror, id);

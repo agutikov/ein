@@ -1,0 +1,79 @@
+;;; **W10's second witness (`W10/alt-cap-shared`): a saving between two facts,
+;;; behind a full list, which no fix of the cap that keeps it bounded keeps.**
+;;;
+;;; M1e2 S1e2.2.11. Banked at T1e2.2.11.1 as a probe, promoted into the corpus
+;;; at T1e2.2.11.2 on the user's ruling of 2026-11-04 on Q-M1e2.11, (i)(b):
+;;; the core promise is the smallest frontier over **every** derivation the
+;;; program records, `alt-cap-core.ein` is fixed by keeping each fact's
+;;; smallest-closure arrival beside its list (Q-M1e.15's (3)), and this row
+;;; stays `open`, deferred to F22.
+;;;
+;;; ── The shape ──────────────────────────────────────────────────────────────
+;;;
+;;; (x K) is derivable 33 ways through `x-chain`, one premise each, a given:
+;;; a frontier of 1 apiece, the per-fact best. It is derivable once more
+;;; through `x-join`, over (a K) and (b K): a frontier of 2, the per-fact
+;;; worst. (z K) has one derivation, `z-join`, over the same two givens.
+;;; (false) needs both, so its smallest frontier over every derivation is
+;;; {(a K), (b K)}, 2, through x-join; through any x-chain it is
+;;; {(c Cnn), (a K), (b K)}, 3.
+;;;
+;;; `x-chain` fires first (priority 100), so (x K)'s primary and its 32
+;;; alternatives are one-premise chains, and `x-join` arrives at a full list
+;;; with two premises and is refused. Any retention that ranks a fact's
+;;; derivations by a per-fact metric, premise count, a frontier estimate (Q-M1e.15's
+;;; (1)) or the smallest closure ((3), what the engine does since S1e2.2.11),
+;;; ranks x-join last of the 34, because its saving is only visible from
+;;; (false), between (x K) and (z K). A list of any fixed length drops one of
+;;; a larger set of incomparable derivations, and a program can need it.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   ein solve FILE, 2026-11-04:
+;;;     at 3011fae2, MAX_ALT_JUSTIFICATIONS = 32    unsat core (a K) (b K) (c C01)
+;;;     since S1e2.2.11, (3)                        the same three
+;;;     MAX_ALT_JUSTIFICATIONS = 1 000 000          unsat core (a K) (b K)
+;;;
+;;; R is empty and exhausted either way, and `(solve :expect (false))` holds:
+;;; only the core is wrong. F22 is to re-derive a full list's refused
+;;; derivations when the search reaches the fact, which makes the core exact
+;;; with bounded memory. The explanation search's own budget has the same
+;;; shape past 64 incomparable environments a label, and its cut is reported
+;;; (`Explanation::exhausted`); the cap's is not.
+
+(relation c T :why "{?1} has c")
+(relation a T :why "{?1} has a")
+(relation b T :why "{?1} has b")
+(relation x T :why "{?1} is x")
+(relation z T :why "{?1} is z")
+
+(c C01) (c C02) (c C03) (c C04) (c C05) (c C06) (c C07) (c C08) (c C09) (c C10) (c C11)
+(c C12) (c C13) (c C14) (c C15) (c C16) (c C17) (c C18) (c C19) (c C20) (c C21) (c C22)
+(c C23) (c C24) (c C25) (c C26) (c C27) (c C28) (c C29) (c C30) (c C31) (c C32) (c C33)
+(a K) (b K)
+
+(rule x-chain ()
+  :match  (c ?y)
+  :assert (x K)
+  :priority 100
+  :why    "{?y} makes K an x")
+
+(rule x-join ()
+  :match  (and (a ?k) (b ?k))
+  :assert (x ?k)
+  :priority 200
+  :why    "{?k} has a and b")
+
+(rule z-join ()
+  :match  (and (a ?k) (b ?k))
+  :assert (z ?k)
+  :priority 300
+  :why    "{?k} has a and b")
+
+(rule clash ()
+  :match  (and (x ?k) (z ?k))
+  :assert (false)
+  :priority 400
+  :why    "{?k} is both")
+
+(solve :expect (false))

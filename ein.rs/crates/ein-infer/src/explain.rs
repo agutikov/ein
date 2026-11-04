@@ -16,24 +16,37 @@
 //! *combination* of justifications is the minimum-axiom-set problem,
 //! worst-case exponential, so it needs a real search and an explicit budget.
 //!
-//! ### …and what the cap in front of it costs
+//! ### What it searches over
 //!
-//! **M1e S1e.1.3, the review's Q2.** The search is over
-//! [`ein_core::Kb::justifications`], which is the primary plus at most
-//! [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`] alternatives — and the store retains
-//! those by **premise count** while this module minimises **frontier size**.
-//! The two metrics disagree: a one-premise step whose premise unfolds into a
-//! deep chain is retained ahead of a two-premise step over givens whose
-//! frontier is smaller. So a full list can refuse the derivation this search
-//! would have chosen, and the order-independence established above is
-//! order-independence *over what the store kept*.
+//! **Every justification the store holds for a fact**,
+//! [`ein_core::Kb::justifications`]: the primary, up to
+//! [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`] alternatives kept by **premise
+//! count**, and, beside them, the arrival with the **smallest closure**
+//! ([`ein_core::Kb::best`], M1e2 S1e2.2.11, Q-M1e.15's (3)). The promise is
+//! the smallest frontier over **every derivation the program records**, and
+//! the third is what keeps a full list from hiding the derivation this search
+//! would choose: premise count is local and frontier size transitive, so a
+//! one-premise step over a deep chain is retained ahead of a two-premise step
+//! over givens. `examples/ein-bugs/alt-cap-core.ein` and its `-reordered`
+//! twin, one `:priority` apart, reported a 3-fact core against a 2-fact one
+//! until S1e2.2.11 and report the same 2-fact core since.
 //!
-//! `examples/ein-bugs/alt-cap-core.ein` and its `-reordered` twin are that,
-//! one `:priority` apart: 3-fact core against 2-fact, same facts, same rules,
-//! same verdict. It is not a soundness failure — a larger frontier is still a
-//! real explanation — and no shipped puzzle reaches it, but it is why every
-//! statement of this module's promise has to say *retained* and not
-//! *recorded*.
+//! Two limits, each a ruling of the user's (2026-11-04, Q-M1e2.11):
+//!
+//! - **A saving between two facts, behind a full list, is not offered.** The
+//!   derivation a target needs can be its own fact's worst, and no list of
+//!   fixed length keeps every such one:
+//!   `examples/ein-bugs/wrong-answers/alt-cap-shared.ein` reports 3 facts
+//!   where every derivation gives 2. It is `W10/alt-cap-shared`, open and
+//!   deferred to F22, which re-derives what a full list refused when this
+//!   search reaches it. [`Explanation::exhausted`] does not see it.
+//! - **`:record-alternative-justifications false` records no alternative**,
+//!   so the search is offered each fact's first derivation alone and the core
+//!   can be another: the one config flag that may change which core is
+//!   named, and nothing else (`configuration.md` § 2.5).
+//!
+//! It is not a soundness question either way: a larger frontier is still a
+//! real explanation.
 //!
 //! ### The algorithm
 //!
@@ -114,15 +127,17 @@ pub struct Explanation {
     pub frontier: Vec<FactId>,
     /// The fact explained; for a contradiction search, the witness that won.
     pub target: Option<FactId>,
-    /// True iff no cap was hit anywhere: `frontier` is a true minimum **over
-    /// the derivations the store retained**. False means "sound, but possibly
-    /// not smallest".
+    /// True iff no budget was hit anywhere: `frontier` is a true minimum
+    /// **over the justifications the store holds** ([`ein_core::Kb::justifications`]).
+    /// False means "sound, but possibly not smallest".
     ///
-    /// It reports [`ExplanationBudget`] and nothing else. The *other* cap —
-    /// [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`], which decides which derivations
-    /// this search is offered at all — is upstream of the graph and invisible
-    /// here, so `exhausted = true` is not a claim that no smaller explanation
-    /// exists (M1e S1e.1.3; see the module note).
+    /// It reports [`ExplanationBudget`] and nothing else. Which derivations
+    /// the store holds is decided upstream, by the alternatives cap and the
+    /// smallest-closure arrival kept beside it (M1e2 S1e2.2.11), and this
+    /// flag does not see it: where a saving between two facts sits behind a
+    /// full list, `exhausted = true` beside a core larger than the smallest
+    /// over every derivation (`W10/alt-cap-shared`, F22's; see the module
+    /// note).
     pub exhausted: bool,
     pub rounds: usize,
     pub facts_considered: usize,

@@ -40,8 +40,10 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// `/5` since M1e2 S1e2.2.8 (2026-11-04): a `now` records the relations its
 /// run names outside the universe ([`Now::outside`], the summary's
 /// `root.hypgen.outside`), and a right answer can state them
-/// ([`Right::outside`]), W6's on Q-M1e2.3 (a).
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/5";
+/// ([`Right::outside`]), W6's on Q-M1e2.3 (a). `/6` since M1e2 S1e2.2.11
+/// (2026-11-04): a `now` whose `right` states a core records the core its run
+/// reports ([`Now::core`], the summary's `region.core`), W10's.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/6";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -277,6 +279,11 @@ pub struct Now {
     /// conclude or ask about and the rung that built H proposes no fact of.
     #[serde(default)]
     pub outside: Vec<String>,
+    /// The unsat core the run reports, sorted — the summary's `region.core`
+    /// (M1e2 S1e2.2.11). Recorded exactly where [`Right::core`] is stated,
+    /// which is a core row's: what W10 is about.
+    #[serde(default)]
+    pub core: Option<Vec<String>>,
 }
 
 impl Now {
@@ -333,6 +340,13 @@ impl Now {
                 "outside the universe: right {o:?}, now {:?}",
                 self.outside
             ));
+        }
+        if let Some(c) = &right.core {
+            let mut want = c.clone();
+            want.sort();
+            if Some(&want) != self.core.as_ref() {
+                out.push(format!("core: right {want:?}, now {:?}", self.core));
+            }
         }
         let over: Vec<String> = right
             .closes
@@ -589,6 +603,16 @@ impl Register {
                     "[now] run {:?} is not a solve — the register reads --json-summary",
                     r.now.run
                 )));
+            }
+            if r.now.core.is_some() != r.right.core.is_some() {
+                out.push(at(
+                    "[now] records a core exactly when [right] states one".to_string()
+                ));
+            }
+            if let Some(c) = &r.now.core
+                && c.windows(2).any(|w| w[0] > w[1])
+            {
+                out.push(at("[now] core is sorted".to_string()));
             }
             if !LINES.contains(&r.now.line.as_str()) {
                 out.push(at(format!(
@@ -875,7 +899,9 @@ mod tests {
         let mut row = reg
             .case
             .iter()
-            .find(|r| r.wrong.by.as_deref() == Some("region"))
+            // The first *fixed* one: W10/alt-cap-shared, filed open by M1e2
+            // S1e2.2.11, comes before W13 and is a region run's too.
+            .find(|r| r.wrong.by.as_deref() == Some("region") && r.status == "fixed")
             .expect("W13's wrong is a region run's")
             .clone();
         let defects = |r: &Row| {
@@ -906,11 +932,13 @@ mod tests {
     /// its stage and its question, and the revisit (S1e2.1.7) reads it. A
     /// `right` that states what `[case.now]` does not record keeps the row
     /// open on that field, and the row's run shows it, not this comparison:
-    /// a refusal, which states no verdict; a core; a qualifier the register
+    /// a refusal, which states no verdict; a qualifier the register
     /// does not record as `outside` (M1e2 S1e2.2.8); or facts over
     /// a relation no candidate is over, since a state's `(model …)` names H's
     /// relations only (W7's `noted`, W8's `p`). Taken 2026-11-03: no row
-    /// closed, and W12 is the one contested row (i) holds for.
+    /// closed, and W12 is the one contested row (i) holds for. A core has
+    /// been recorded since M1e2 S1e2.2.11 ([`Now::core`]), so it is compared,
+    /// not exempt.
     #[test]
     fn an_open_row_is_open_by_the_method() {
         let mut bad = Vec::new();
@@ -925,7 +953,6 @@ mod tests {
                 && r.right.closes.iter().any(|c| !r.now.relations.contains(c));
             let unrecorded: Vec<&str> = [
                 (r.right.verdict.is_none(), "a refusal or no answer"),
-                (r.right.core.is_some(), "a core"),
                 (
                     r.right.qualifier.is_some() && r.right.outside.is_none(),
                     "a qualifier",
