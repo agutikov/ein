@@ -16,6 +16,30 @@
 ;
 ; The one-at-a-time discipline is a soundness requirement, not a throttle, and
 ; the argument for it is a fixture rather than a comment.
+;
+; ── 2026-11-04 — what the search answers: M1e2 W8, deferred to F21 ─────────
+;
+; Saturation derives `(p one)` alone. The search then commits the one
+; candidate, `(q one)`, in a node built by fork from root, so that node holds
+; `(p one)`, derived under `(absent (q one))`, beside `(q one)`: the `{p, q}`
+; above. Re-taken at M1e2 S1e2.2.6 (2026-11-04; `ein solve` in each mode and
+; `ein oracle`, every one exiting 0): R is two states, ∅ (root) and
+; `{(q one)}` (the fork, holding both). `--maximal` prints `(q one)`,
+; `--minimal` ∅, `--single` `Ambiguity`, and the oracle the same R. Every
+; read-out carries P1e2.1b's detector: not monotone, two `absent` sites in an
+; even cycle, and the stale fact, `(p one) ← derive-p (absent (q one))`, in R.
+;
+; Whether that is wrong is Q-M1e2.2, what a node holds when a guard's witness
+; arrives in its commitment: register row `W8/features-07`
+; (`corpus/wrong_answers.toml`), contested. Under *guards are premises* the
+; maximal state is `{(q one)}` alone; under *refuse what cannot be stratified*
+; this file is a load error; under *append-only* today's R stands. The user
+; deferred the reading to F21's D2 and amended M1e2's acceptance on
+; 2026-11-03 (*"(2) Amend acceptance"*): the row stays `open`, reviewed
+; `deferred`, owner F21, and the milestone closes naming it. *Forbid* (M1e2
+; S1e2.2.5), which refuses `stale-naf-fork.ein`, does not reach this file:
+; both rules conclude a positive fact, so nothing here refutes. No `:expect`
+; is stated, so `ein test` has nothing to check.
 (relation thing Thing)
 (relation p Thing)
 (relation q Thing)

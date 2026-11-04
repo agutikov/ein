@@ -1,6 +1,7 @@
 ;;; A positive derived under `(absent (q one))` survives into a world that
-;;; commits `(q one)` — M1e2 **W8**, contested. Register row
-;;; `W8/stale-naf-fork` (`corpus/wrong_answers.toml`).
+;;; commits `(q one)` — M1e2 **W8**, contested until *forbid* refused the
+;;; program (below). Register row `W8/stale-naf-fork`
+;;; (`corpus/wrong_answers.toml`), fixed by the refusal since M1e2 S1e2.2.5.
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;
@@ -8,14 +9,20 @@
 ;;; together are a contradiction. The goal is `q`, so the rung proposes
 ;;; `(q one)`.
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the engine said, until it refused ─────────────────────────────────
+;;;
+;;; The walk, as banked:
 ;;;
 ;;;   Solution k = 1, `{(p one)}` plus `(not (q one))`, `exhausted = true`
 ;;;
 ;;; Committing `(q one)` falsifies `derive-p`'s guard, but nothing retracts
 ;;; (`absent_semantics.md`: *retraction / truth maintenance: not provided*), so
-;;; the fork holds the stale `(p one)` beside `(q one)`, the clash fires, and
-;;; the lookahead kills the candidate. The state `{(q one)}` is unreachable.
+;;; the fork held the stale `(p one)` beside `(q one)`, the clash fired, and
+;;; the lookahead killed the candidate: the state `{(q one)}` was unreachable.
+;;; R said the same once the walk was gone (S1e2.2.5's re-take, banked in
+;;; `c887a35b` on 2026-11-04): one state, ∅, root holding `(p one)`, and the
+;;; fork `{(q one)}` dead, the one of the cube's two nodes holding a stale
+;;; fact.
 ;;;
 ;;; ── The answer, by hand: a reading ─────────────────────────────────────────
 ;;;
@@ -25,7 +32,7 @@
 ;;;   guards are premises   committing `(q one)` withdraws `(p one)`, the
 ;;;                         clash never fires, `{(q one)}` is alive, and root
 ;;;                         is not maximal: **`Solution`, k = 1, `{(q one)}`**.
-;;;   append-only           today's answer is right: the fork with both is
+;;;   append-only           the answer above was right: the fork with both is
 ;;;                         dead, and root is the solution.
 ;;;
 ;;; The program is stratified (`q` is no rule's conclusion), so the third
@@ -33,11 +40,14 @@
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 ;;;
-;;; ── 2026-11-04 — refused, *via* (M1e2 S1e2.2.5) ───────────────────────────
+;;; ── 2026-11-04 — refused, *forbid*'s *via* (M1e2 S1e2.2.5) ────────────────
 ;;;
-;;; The user ruled F2 *via, per activator*: a refutation resting on an
-;;; `absent` only through a fact a rule derived under it counts. Here
-;;; `p-and-q-clash` reads `(p ?x)`, which `derive-p` derives under
+;;; *Forbid* (Q-M1e2.5, the user's of 2026-11-02): a refutation may not rest
+;;; on an `absent` over a relation a commitment can still extend, because a
+;;; state that has not yet decided it would be called dead, and a commitment
+;;; would lift that. The user ruled its F2 *via, per activator*: a refutation
+;;; resting on an `absent` only through a fact a rule derived under it
+;;; counts. Here `p-and-q-clash` reads `(p ?x)`, which `derive-p` derives under
 ;;; `(absent (q ?x))`, and `q` is a relation a commitment can extend; unfolded
 ;;; it is `(thing ?x) (absent (q ?x)) (q ?x) ⟹ (false)`. So the program is
 ;;; refused at load, every question about a commitment exits 1 naming
@@ -45,6 +55,14 @@
 ;;; left F21's deferral, fixed with the refusal as its right answer. The two
 ;;; readings above are what Q-M1e2.2 (F21's D2) asks of a program that loads;
 ;;; this one no longer does, and `W8/features-07` keeps the question.
+;;;
+;;; Re-taken at M1e2 S1e2.2.6 (2026-11-04): `ein solve` in every mode,
+;;; `ein oracle` and `ein render lattice` exit 1 with that one line on
+;;; stderr. `ein test` exits 2: here because no `:expect` is stated
+;;; (*nothing to check*), and on a copy stating one because the file does not
+;;; load. `ein saturate` still saturates, deriving `(p one)`, and the views
+;;; that take no universe (`render rules`, `constraints`, `program`, `kb`)
+;;; still draw.
 (relation thing T)
 (relation p T)
 (relation q T)

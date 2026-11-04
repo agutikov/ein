@@ -35,8 +35,13 @@ is larger than the control's, so which is `right` went to the user, the
 recommendation the decline. **The user ruled (a), the decline, the same
 day**, and **S1e2.2.15 is done** (2026-11-04): the rung declines on a guard
 over a relation in D (`bde8f53b`), W14's four rows are fixed, and the
-register reads 41 fixed, 5 open and 1 not-wrong. Next is **S1e2.2.6**, W8's
-one row.
+register reads 41 fixed, 5 open and 1 not-wrong. **S1e2.2.6 is done**
+(2026-11-04), as far as the deferral allows: W8's one row re-checked at
+`cfcd8527`, `features/07` answering its `[case.now]` and `stale-naf-fork`
+refused at every command that takes the universe, the witnesses' headers
+corrected, nothing moved; `W8/features-07` stays `open`, `deferred` to F21's
+D2, and the register still reads 41 fixed, 5 open and 1 not-wrong. Next is
+**S1e2.2.7**, W7.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -103,7 +108,7 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.5](s1e2.2.5_naf_upward_closure.md) | **W3** `dead` is not upward-closed under `absent`. **Done 2026-11-04**: *forbid*'s refusal built with F2's *via*, six rows fixed by it and the two `d3-unsat-core` rows restated to it, `:warn-derived-naf` retired | 2 | **default** | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), F18, S1f.10.8 | 2.5 (3) d | shrink | confirmed; gains `W1/alive-empty-interlayer` | the language ruling taken first; then the program is refused, or the three mechanisms stop learning from a refutation that rests on an `absent` |
 | [S1e2.2.14](s1e2.2.14_unread_names.md) | **W15** a name written only in a `:match` or inside a nested fact never becomes a candidate. Filed 2026-11-04. **Done 2026-11-04**: one list of the program's names, eight rows fixed, W7's `right` restated | 2 | **default** | [Q-M1e2.9](../open_questions.md#q-m1e29--which-constants-are-names-of-the-program), ruled (a) 2026-11-04; S1e2.2.4's parked note | 2 d | — | — (filed after it) | every constant a fact names at any depth, or a rule's `:match` or `:assert`, is a candidate; the seven corpus programs and the two banked witnesses answer their declared twins' R |
 | [S1e2.2.15](s1e2.2.15_obligations_rung_universe.md) | **W14** the obligations rung never proposes a domain value a commitment derives. Filed 2026-11-04. **Done 2026-11-04**: Q-M1e2.10 ruled (a), the rung declines on a guard over D, four rows fixed | 2 | **default** (an obligation whose guard reads a relation in D) | Q-M1e2.7's ruling (h); S1e2.2.4's parked note; Q-M1e2.10 | 1.5 d | — | — (filed after it) | the rung declines on a guard over D and the blind enumerator answers; the witnesses answer their `-declared` controls' R |
-| [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
+| [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard. **Done 2026-11-04, as far as the deferral allows**: one row re-checked, `deferred` to F21, the headers corrected, nothing moved | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |
 | [S1e2.2.9](s1e2.2.9_kill_cache_off_entailment.md) | **W9** with the kill cache off, a state is recorded as consistent because an entailment went unnoticed | 1 | lever `-K` | Q-M1e.7 ruling A | 0 (1) d | **drop** | confirmed | `-K` changes cost and never an answer, or it is refused for certified runs |
@@ -185,9 +190,10 @@ repeated in the stage files:
 - `./run_tests.sh` green.
 
 **For the phase.** No register row is `open`, but a row whose reading the
-user deferred to a followup: W8's two, `deferred` to F21 on 2026-11-03 (the
-milestone's acceptance, amended that day). No wrong answer at default
-settings remains. A lever may still change *cost*, and no lever changes an
+user deferred to a followup: W8's, `deferred` to F21 on 2026-11-03 (the
+milestone's acceptance, amended that day), two rows then and one,
+`W8/features-07`, since S1e2.2.5's F2 refused `stale-naf-fork`
+(2026-11-04). No wrong answer at default settings remains. A lever may still change *cost*, and no lever changes an
 answer the engine certifies.
 
 ## Where this phase meets M1f
