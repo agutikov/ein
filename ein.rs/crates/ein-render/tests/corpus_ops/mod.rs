@@ -29,7 +29,10 @@ use std::sync::{Arc, Mutex};
 /// the match, hypothesis generation, the NAF map, the explain shapes, every
 /// DOT view, and — since M1e2 S1e2.1a.5's switch — what `ein solve` prints:
 /// the read-out under each question, the region trace, and `ein render
-/// lattice`'s drawing of the nodes a description visits. The walk's surfaces
+/// lattice`'s drawing of the nodes a description visits; and since M1e2
+/// S1e2.2.12 every core a run reports, under each question ([`core_ops`]),
+/// and `ein oracle --dump`'s cube, which hold the dead nodes' cores no line
+/// of the read-out prints. The walk's surfaces
 /// (its solve table, trace, `--dump-states` tree, lattice proof and commit
 /// shape) left with its CLI path, and its three DOT views went with the walk
 /// at M1e2 S1e2.1c.5. An id leak that reaches an output reaches
@@ -52,6 +55,8 @@ pub fn ops() -> Vec<Op> {
     out.extend(READ_OUT_MODES.iter().map(|(m, _)| Op::ReadOut(m)));
     out.push(Op::RegionTrace);
     out.push(Op::RegionLattice);
+    out.extend(core_ops());
+    out.push(Op::Oracle);
     out
 }
 
@@ -60,7 +65,9 @@ pub fn ops() -> Vec<Op> {
 /// what it does not print, every member of `N` and every dead node a route
 /// visited, a run writes into `--dump-answer`'s `nogoods.json` and
 /// `--dump-lattice`'s `nodes.json`, each with the rules that refuted it, and
-/// no op held those until this one.
+/// no op held those until these: a dead node's `refuted_by` moved with the
+/// interner on 19 corpus files, and on `examples/ein-bugs/fork-delta-order.ein`
+/// its core did (`W11/fork-delta-order`).
 pub fn core_ops() -> Vec<Op> {
     READ_OUT_MODES.iter().map(|(m, _)| Op::Cores(m)).collect()
 }
@@ -143,6 +150,9 @@ pub enum Op {
     /// member of `N`'s core) and `--dump-lattice`'s `nodes.json` (each visited
     /// node's), each core beside the rules that refuted it — [`core_ops`].
     Cores(&'static str),
+    /// `ein oracle FILE --dump DIR`'s `region.json` and `region.md`, at the
+    /// sweep's cube limit: every node of the cube, each dead one's core.
+    Oracle,
 }
 
 impl std::fmt::Display for Op {
@@ -161,6 +171,7 @@ impl std::fmt::Display for Op {
             Op::RegionTrace => write!(f, "region-trace"),
             Op::RegionLattice => write!(f, "region-lattice"),
             Op::Cores(m) => write!(f, "cores[{m}]"),
+            Op::Oracle => write!(f, "oracle"),
         }
     }
 }
@@ -173,9 +184,12 @@ impl Op {
     /// **rendered derivation compared for presence only** — how a `slice`
     /// view is treated.
     ///
-    /// Under `EIN_NARRATION_STRICT=1` nothing is cut and **all 66** movements
-    /// are reported, by op: it is not a configuration the suite passes, it is
-    /// the measurement of what the relaxation covers.
+    /// Under `EIN_NARRATION_STRICT=1` nothing is cut and every movement is
+    /// reported, by op: the measurement of what the relaxation covers. Under a
+    /// permuted interner that was 66 renderings, and 158 at eight seeds
+    /// (2026-11-04), until M1e2 S1e2.2.12 stopped a fork's delta following
+    /// the ids: `id_order_invariance` passes strict since, and asserts that
+    /// nothing moves either way.
     pub fn narrow(self, text: &str) -> Option<String> {
         if ein_narration::strict() {
             return Some(text.to_string());
@@ -243,7 +257,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
     }
     let outcome = match op {
         Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
-        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice | Op::Cores(_) => {
+        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice | Op::Cores(_) | Op::Oracle => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             region_op(&ast, terms, &mut kb, path, op, jobs)
         }
@@ -266,7 +280,8 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
                 | Op::ReadOut(_)
                 | Op::RegionTrace
                 | Op::RegionLattice
-                | Op::Cores(_) => {
+                | Op::Cores(_)
+                | Op::Oracle => {
                     unreachable!("handled above")
                 }
             }
@@ -418,6 +433,40 @@ fn region_op(
                 dumps_indent(&region),
                 dumps_indent(&nogoods),
                 dumps_indent(&nodes)
+            ))
+        }
+        Op::Oracle => {
+            let o = ein_infer::region::Options {
+                limit: SWEEP_LIMIT,
+                keep_states: false,
+                jobs,
+                deadline: None,
+            };
+            let outcome = ein_infer::region::compute(kb, terms, ast, &o, &mut |_| {})
+                .map_err(|e| e.to_string())?;
+            let inputs = ein_render::dump::RegionInputs {
+                source: &file,
+                limit: SWEEP_LIMIT,
+            };
+            // `## Cost`'s line is wall-clock, the one line the page says
+            // differs between two runs: kept as a placeholder, so a page that
+            // lost it still differs.
+            let md: Vec<String> = ein_render::dump::region::region_md(&outcome, terms, &inputs)
+                .lines()
+                .map(|l| {
+                    if l.ends_with("differ between two runs.") {
+                        "<the cost line: wall-clock>".to_string()
+                    } else {
+                        l.to_string()
+                    }
+                })
+                .collect();
+            Ok(format!(
+                "--- region.json\n{}\n--- region.md\n{}\n",
+                ein_render::dump::json::dumps_indent(&ein_render::dump::region::region_json(
+                    &outcome, terms, &inputs
+                )),
+                md.join("\n")
             ))
         }
         _ => unreachable!("a region op"),

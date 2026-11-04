@@ -333,9 +333,15 @@
 0    examples/ein-bugs/complete-records-stale.ein :: solve
 0    examples/ein-bugs/d3-goal-row-order.ein :: saturate
 0    examples/ein-bugs/d3-goal-row-order.ein :: solve
+0    examples/ein-bugs/d3-unsat-core.ein :: saturate
+1    examples/ein-bugs/d3-unsat-core.ein :: solve
 1    examples/ein-bugs/fact-goal-binding.ein :: render rules
 0    examples/ein-bugs/fact-goal-binding.ein :: saturate
 0    examples/ein-bugs/fact-goal-binding.ein :: solve
+0    examples/ein-bugs/fork-delta-order.ein :: oracle --dump {out}/region
+0    examples/ein-bugs/fork-delta-order.ein :: saturate
+0    examples/ein-bugs/fork-delta-order.ein :: solve
+0    examples/ein-bugs/fork-delta-order.ein :: solve --dump-lattice {out}/lattice
 1    examples/ein-bugs/int-goal-binding.ein :: render rules
 0    examples/ein-bugs/int-goal-binding.ein :: saturate
 0    examples/ein-bugs/int-goal-binding.ein :: solve
@@ -356,6 +362,9 @@
 1    examples/ein-bugs/unbound-assert-var.ein :: saturate
 1    examples/ein-bugs/unbound-assert-var.ein :: solve
 1    examples/ein-bugs/unbound-relation-head.ein :: solve
+0    examples/ein-bugs/unsat-core-id-space.ein :: oracle --dump {out}/region
+0    examples/ein-bugs/unsat-core-id-space.ein :: saturate
+0    examples/ein-bugs/unsat-core-id-space.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: test
 0    examples/ein-bugs/wrong-answers/arity3.ein :: solve

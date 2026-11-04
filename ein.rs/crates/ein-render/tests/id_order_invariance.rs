@@ -42,10 +42,14 @@
 //! for that is this file and there is no second copy of it, so the fuzzer
 //! writes a batch to a directory and points this sweep at it.
 //!
-//! Two of the assertions below are about the *corpus* rather than about the
-//! engine — the coverage floor, and "some rendering moved" — and they are
-//! skipped under the override, named as skipped in the summary line. The
-//! invariance claim itself is not: that is the whole point of the seam.
+//! One of the assertions below is about the *corpus* rather than about the
+//! engine — the coverage floor — and it is skipped under the override, named
+//! as skipped in the summary line. The invariance claim itself is not: that
+//! is the whole point of the seam. Since M1e2 S1e2.2.12 the claim is that
+//! nothing moves, narration included: a resumed fork's delta was in `FactId`
+//! order, which made a dead node's derivations arrive in interning order, and
+//! the floor that asked for *some rendering moved*, the narration cut's
+//! evidence of use, turned over with it.
 //!
 //! ```text
 //! EIN_ID_SEEDS=8 cargo test -p ein-render --test id_order_invariance
@@ -56,7 +60,7 @@ mod corpus_ops;
 
 use std::path::PathBuf;
 
-use corpus_ops::{Op, core_ops, ops, run};
+use corpus_ops::{Op, ops, run};
 use ein_core::{FactId, IntId, Symbol, Tag, Terms, Value};
 use ein_corpus::{corpus_files, ein_files_under, repo_root};
 use ein_infer::mt19937::Mt19937;
@@ -311,16 +315,20 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
         "the weakest permutation moved {moved} of {permutable} ids — \
          the sweep is comparing a run against itself"
     );
-    // The cut has to be load-bearing here too, or it is a tolerance nobody is
-    // examining: if no rendering moves under a permutation, the claim below
-    // about *which* observables move has stopped being measured.
-    // …over the corpus. A caller-named file set is whatever it is: a batch of
-    // small generated programs can legitimately move nothing, and reporting
-    // that as a broken instrument would make the seam useless.
+    // Nothing moves, narration included — M1e2 S1e2.2.12. The cut above was
+    // load-bearing here until a resumed fork's delta stopped being sorted by
+    // `FactId`: a dead node's derivations arrived in interning order, so which
+    // of a fact's equally good derivations a fork recorded first, the rules
+    // `refuted_by` names, and the core a full list leaves, moved with the ids
+    // (158 renderings over the corpus at eight seeds, 2026-11-04). The delta
+    // is in the order the caller wrote it since, and a rendering that moves
+    // at all is the id leak this sweep exists for, whichever side of the cut
+    // it falls on.
     assert!(
-        !is_corpus || ein_narration::strict() || moved_at_all > 0,
-        "no rendering moved under a permuted id space — \
-         either the perturbation stopped perturbing or the proof stopped depending on it"
+        moved_at_all == 0,
+        "{moved_at_all} renderings moved under a permuted id space \
+         ({moved_stopping_point} only where a dying fork stopped, {moved_proof} only in the \
+         derivation they narrate) — an order the ids were assigned in reached an output"
     );
     assert!(
         !is_corpus || compared - vacuous >= 1500,
@@ -336,7 +344,7 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
         if is_corpus {
             String::new()
         } else {
-            " [EIN_ID_FILES; the corpus-shaped floors are skipped]".to_string()
+            " [EIN_ID_FILES; the corpus-shaped floor is skipped]".to_string()
         },
         compared - vacuous,
         files.len(),
@@ -390,14 +398,14 @@ fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
 /// has its second half here, where the permutation is. Since M1e2 S1e2.1a.5
 /// the walk op it names is the record of what moved, and what is run is the
 /// row's `[case.now]` question at the same seed: its read-out, and since
-/// S1e2.2.12 every core the run reports ([`core_ops`]), the core of a member
+/// S1e2.2.12 every core the run reports (`corpus_ops::core_ops`), the core of a member
 /// of `N` being one the read-out does not print. A **fixed** row's must not
 /// move by the cut the sweep applies, and an **open** one's must still. The
 /// witnesses are under `corpus/fuzz_findings/` while a row is open, for the
 /// reason this file is: as corpus entries they would fail the sweep above.
 #[test]
 fn the_register_s_id_order_rows_answer_what_they_record() {
-    let ops: Vec<Op> = ops().into_iter().chain(core_ops()).collect();
+    let ops = ops();
     let mut checked = 0usize;
     let mut bad = Vec::new();
     for row in ein_corpus::register().case {

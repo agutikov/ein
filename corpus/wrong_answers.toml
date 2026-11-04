@@ -246,6 +246,16 @@
 # and its `wrong` is a region run's answer at `b364c11f`. The register reads
 # **45 rows fixed, 3 open and 1 not-wrong**.
 #
+# **S1e2.2.12 fixed it the same day** (T1e2.2.12.2): a resumed fork's delta is
+# in the order its commitment was written, candidate order, so nothing a run
+# reports moves under a permuted interner, narration included, and
+# `id_order_invariance` compares every core since. Its witness and both of
+# W11's earlier ones are corpus entries under `examples/ein-bugs/`, and the
+# sweep permutes them per commit. The flipped row's `[case.fixed]` carried the
+# null id in the flipping commit, and the stage's next commit wrote the hash.
+# The register reads **46 rows fixed, 2 open and 1 not-wrong**, both open rows
+# deferred to a followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -1094,8 +1104,7 @@ class    = "verdict + certification"
 settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.8"]
-witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
-not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
+witness  = "examples/ein-bugs/d3-unsat-core.ein"
 status   = "fixed"
 look_at  = ["summary"]
 note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2"
@@ -2604,8 +2613,7 @@ title    = "which core is reported depends on interner id order"
 class    = "core"
 settings = "default (under a permuted interner)"
 owner    = "S1e2.2.12"
-witness  = "corpus/fuzz_findings/unsat-core-id-space.ein"
-not_in_corpus = "it moves under a permuted interner, which id_order_invariance asserts of every corpus file"
+witness  = "examples/ein-bugs/unsat-core-id-space.ein"
 status   = "fixed"
 look_at  = ["refuted", "summary"]
 
@@ -2682,8 +2690,7 @@ title    = "which core is reported depends on interner id order"
 class    = "core"
 settings = "default (under a permuted interner, seed 15839)"
 owner    = "S1e2.2.5"
-witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
-not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
+witness  = "examples/ein-bugs/d3-unsat-core.ein"
 status   = "fixed"
 look_at  = ["refuted", "summary"]
 note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
@@ -2741,12 +2748,15 @@ title    = "which core is reported depends on interner id order"
 class    = "core"
 settings = "default (under a permuted interner, seeds 1, 15839 and 23758 of 8)"
 owner    = "S1e2.2.12"
-witness  = "corpus/fuzz_findings/fork-delta-order.ein"
-not_in_corpus = "a dead node's core moves under a permuted interner at seed 1, which id_order_invariance asserts of every corpus file per commit"
-status   = "open"
-open_because = "a resumed fork's delta is in FactId order (Snapshot::new_facts_of), so the order a dead node's derivations arrive in is interning order, and with it which 33 of (false)'s 1 600 equal-size derivations the store keeps and so the core explain.rs picks from them"
+witness  = "examples/ein-bugs/fork-delta-order.ein"
+status   = "fixed"
 look_at  = ["refuted", "summary"]
 note     = "Filed by S1e2.2.12's second visit to W11 (T1e2.2.12.1, 2026-11-04): no corpus core moved under EIN_ID_SEEDS=8 with every core compared, but a dead node's refuted_by did, through a fork's FactId-ordered delta, and this program is written to make that order reach a core. The core is a member of N's, which no read-out line prints: the row's id-order half is id_order_invariance's cores[describe] op, and [case.now] holds R, which does not move"
+
+[case.fixed]
+commit = "0000000"
+by     = "T1e2.2.12.2: a resumed fork's delta in the order its commitment was written"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"

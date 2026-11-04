@@ -20,8 +20,10 @@
 //! each fact's equally valid justifications recorded first, and — with
 //! `enable_fail_fast_fork` on — a different stopping point for a fork that
 //! dies. Run the corpus twice with the id space permuted and 66 renderings
-//! move, every one of them a dying fork's stopping point, a firing count, or
-//! which of a fact's equally valid justifications was recorded first. What is
+//! moved, every one of them a dying fork's stopping point, a firing count, or
+//! which of a fact's equally valid justifications was recorded first — until
+//! M1e2 S1e2.2.12 found why they moved under that permutation in particular,
+//! a resumed fork's delta sorted by `FactId`, and none has since. What is
 //! *not* relaxed in any direction is the **answer** and the **search**: the
 //! verdict, the model, the unsat core, every counter. So the rule is a
 //! statement about what a derivation *is*, which is why it is a normalisation
@@ -32,7 +34,7 @@
 //! | call site | to what |
 //! |---|---|
 //! | `ein-render/tests/corpus_ops/mod.rs` | every op of every corpus file — `Op::narrow`, which both invariance sweeps compare through |
-//! | `ein-render/tests/id_order_invariance.rs` | every op, twice, under a permuted id space — and it is what says the 66 are the narrated 66 |
+//! | `ein-render/tests/id_order_invariance.rs` | every op, twice, under a permuted id space — it said the 66 were the narrated 66, and since M1e2 S1e2.2.12 asserts that nothing moves, narrated or not |
 //! | `ein-render/tests/jobs_invariance.rs` | every op, at `--jobs 1` and again at `--jobs N` |
 //! | `ein-render/src/shape.rs` | [`NARRATED`], so a shape and a golden agree on the word |
 //! | `ein-infer/tests/event_cut_control.rs` | [`events`], through a deliberately mutated stream |
@@ -62,8 +64,8 @@
 //! [`strict()`] — `EIN_NARRATION_STRICT=1` — compares every byte, narration
 //! included. It is not a configuration the suite passes: it is how the
 //! relaxation gets *measured*, by running a sweep under it and reading off
-//! what the cut was covering. `id_order_invariance` prints the 66 by op under
-//! it; relaxed, it asserts they are zero.
+//! what the cut was covering. `id_order_invariance` prints what moved by op
+//! under it, and asserts since M1e2 S1e2.2.12 that nothing does, either way.
 
 pub mod events;
 

@@ -64,15 +64,16 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// rule, what it concludes, and what it rests on. The `direct` rows are W3's
 /// four witnesses, `W1/alive-empty-interlayer` and the two `branching/`
 /// refusal fixtures; the `via` rows are W8's `stale-naf-fork` pair and the
-/// fuzz finding `d3-unsat-core`. `features/05` and `/12`, `direct` too, close
+/// fuzz finding `d3-unsat-core`, a corpus entry since M1e2 S1e2.2.12
+/// promoted it (2026-11-04). `features/05` and `/12`, `direct` too, close
 /// the relation their refutations read and load. The set is exact because
 /// both directions are findings: a new row is a program written with the
 /// shape, and a missing one is a rule rewritten or a refusal lost.
 const REFUSED: &str = "\
-corpus/fuzz_findings/d3-unsat-core.ein::rule 'fire-0' [activator T]: concludes (not \u{2026}) from r1, which rule 'fire-1' derives resting on (absent \u{2026}) over (not r1), a relation a commitment can still extend
 examples/branching/13_lookahead_naf_world.ein::rule 'self-block': concludes (false) from (absent \u{2026}) over cand, a relation a commitment can still extend
 examples/branching/14_lookahead_unjudgeable.ein::rule 'premature-signoff': concludes (false) from (absent \u{2026}) over signed, a relation a commitment can still extend
 examples/ein-bugs/alive-empty-interlayer.ein::rule 'totality': concludes (false) from (absent \u{2026}) over p, a relation a commitment can still extend
+examples/ein-bugs/d3-unsat-core.ein::rule 'fire-0' [activator T]: concludes (not \u{2026}) from r1, which rule 'fire-1' derives resting on (absent \u{2026}) over (not r1), a relation a commitment can still extend
 examples/ein-bugs/naf-upward-closure.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/naf-nowb.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend

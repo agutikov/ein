@@ -105,7 +105,12 @@ dead node's `refuted_by` does, because a resumed fork's delta was sorted by
 `FactId`, and a program written for it moves a core of one size between two
 sets of facts. Filed as `W11/fork-delta-order`, `open`: 45 fixed, 3 open, 1
 not-wrong. No tie-break is needed, the fix is the delta's order, and every
-move of it is listed before any edit.
+move of it is listed before any edit. **W11 is fixed the same day**
+(T1e2.2.12.2): the delta is in the order the commitment was written, nothing
+a run reports moves under a permuted interner, narration included, and the
+id-order sweep compares every core; `W11/fork-delta-order` is fixed and
+promoted with both findings to `examples/ein-bugs/`, and the register reads
+46 fixed, 2 open (both deferred) and 1 not-wrong.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

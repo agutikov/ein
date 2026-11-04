@@ -192,46 +192,6 @@ Assuming **(color-of H2 Green), (color-of H3 Blue)**.
 
 ### Step 1 — `functional-negative`
 
-> color-of functional: (color-of H3 Blue) ⟹ (not (color-of H3 Red)).
-
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
-
-Derives `not(color-of(H3, Red))`.
-
-<dot>
-
-### Step 2 — `functional-negative`
-
-> color-of functional: (color-of H3 Blue) ⟹ (not (color-of H3 Green)).
-
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(Green, Color)`
-
-Derives `not(color-of(H3, Green))`.
-
-<dot>
-
-### Step 3 — `injective-negative`
-
-> color-of injective: (color-of H3 Blue) ⟹ (not (color-of H1 Blue)).
-
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(H1, House)`
-
-Derives `not(color-of(H1, Blue))`.
-
-<dot>
-
-### Step 4 — `injective-negative`
-
-> color-of injective: (color-of H3 Blue) ⟹ (not (color-of H2 Blue)).
-
-Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(H2, House)`
-
-Derives `not(color-of(H2, Blue))`.
-
-<dot>
-
-### Step 5 — `functional-negative`
-
 > color-of functional: (color-of H2 Green) ⟹ (not (color-of H2 Red)).
 
 Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
@@ -240,7 +200,7 @@ Derives `not(color-of(H2, Red))`.
 
 <dot>
 
-### Step 6 — `functional-negative`
+### Step 2 — `functional-negative`
 
 > color-of functional: (color-of H2 Green) ⟹ (not (color-of H2 Blue)).
 
@@ -250,7 +210,7 @@ Derives `not(color-of(H2, Blue))`.
 
 <dot>
 
-### Step 7 — `injective-negative`
+### Step 3 — `injective-negative`
 
 > color-of injective: (color-of H2 Green) ⟹ (not (color-of H1 Green)).
 
@@ -260,13 +220,53 @@ Derives `not(color-of(H1, Green))`.
 
 <dot>
 
-### Step 8 — `injective-negative`
+### Step 4 — `injective-negative`
 
 > color-of injective: (color-of H2 Green) ⟹ (not (color-of H3 Green)).
 
 Premises: `color-of(H2, Green)`, `relation(color-of, House, Color)`, `is-a(H3, House)`
 
 Derives `not(color-of(H3, Green))`.
+
+<dot>
+
+### Step 5 — `functional-negative`
+
+> color-of functional: (color-of H3 Blue) ⟹ (not (color-of H3 Red)).
+
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(Red, Color)`
+
+Derives `not(color-of(H3, Red))`.
+
+<dot>
+
+### Step 6 — `functional-negative`
+
+> color-of functional: (color-of H3 Blue) ⟹ (not (color-of H3 Green)).
+
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(Green, Color)`
+
+Derives `not(color-of(H3, Green))`.
+
+<dot>
+
+### Step 7 — `injective-negative`
+
+> color-of injective: (color-of H3 Blue) ⟹ (not (color-of H1 Blue)).
+
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(H1, House)`
+
+Derives `not(color-of(H1, Blue))`.
+
+<dot>
+
+### Step 8 — `injective-negative`
+
+> color-of injective: (color-of H3 Blue) ⟹ (not (color-of H2 Blue)).
+
+Premises: `color-of(H3, Blue)`, `relation(color-of, House, Color)`, `is-a(H2, House)`
+
+Derives `not(color-of(H2, Blue))`.
 
 <dot>
 

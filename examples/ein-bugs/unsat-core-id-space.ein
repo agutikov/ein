@@ -1,0 +1,38 @@
+;;; Which core a program reported moved with interner ids — M1e2 **W11**,
+;;; register row `W11/unsat-core-id-space` (`corpus/wrong_answers.toml`).
+;;; Promoted from `corpus/fuzz_findings/unsat-core-id-space.ein` by S1e2.2.12
+;;; (2026-11-04), which stays there as a frontend-fuzzer seed.
+;;;
+;;; ── What this program was ──────────────────────────────────────────────
+;;;
+;;; The rewritten engine fuzzer's find of 2026-08-21 (`utils/fuzz_engine.py`,
+;;; 19 forms minimised to 4): the walk called it `Contradiction` and reported
+;;; the core (r1 o4 o5) as interned and (r1 o1 o5) (r1 o4 o1) under a
+;;; permuted interner, one build and two answers
+;;; (`corpus/fuzz_findings/unsat-core-id-space.md`).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Root holds (r1 o4 o5) and is consistent. `fire-2` derives (false) from a
+;;; two-step r1 chain, or from an r1 fact beside a stored (not (r1 …)), which
+;;; no rule writes. Of the five candidates, (r1 o1 o4), (r1 o5 o1) and
+;;; (r1 o5 o4) chain with (r1 o4 o5) and are dead alone; (r1 o1 o5) and
+;;; (r1 o4 o1) are alive alone and chain with each other. So R is three
+;;; states, ∅, {(r1 o1 o5)} and {(r1 o4 o1)}, and N has four members, each
+;;; with one derivation of (false) and so one core.
+;;;
+;;; ── Since M1e2 ─────────────────────────────────────────────────────────
+;;;
+;;; The walk's `Contradiction` rested on what its search wrote into root, the
+;;; kill cache's and the writeback's negatives, which no route writes
+;;; (S1e2.1a.5's switch, 2026-10-18; `solve_interface.md` § 0). S1e2.2.12
+;;; compared every core a run reports under eight permutations of the
+;;; interner, and none of this program's moved; `id_order_invariance`
+;;; permutes it per commit.
+
+(relation r1 T T)
+(is-a o1 T)
+(r1 o4 o5)
+(rule fire-2 ()
+  :match  (or (and (r1 ?v0 ?v1) (r1 ?v4 ?v0)) (and (r1 ?v0 ?v1) (r1 ?v0 ?v1) (not (r1 ?v2 ?v3))))
+  :assert (false))

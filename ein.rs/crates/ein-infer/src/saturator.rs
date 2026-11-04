@@ -392,12 +392,19 @@ pub struct Snapshot {
 
 impl Snapshot {
     /// The facts `kb` has and the snapshot did not — the first half of a
-    /// resumed fork's delta, in `FactId` order so the sequence is a function
-    /// of the input alone.
+    /// resumed fork's delta — in the order `kb` holds them, which is the
+    /// order the caller wrote them: every route writes a commitment in
+    /// candidate order, rendered text.
+    ///
+    /// Not `FactId` order, which this sorted by until M1e2 S1e2.2.12: a
+    /// `FactId` is the order names were interned in, not a function of the
+    /// program. A fork is FIFO within a priority band, so the delta's order
+    /// is the order a dead node's derivations arrive in, and what reads the
+    /// first of them, a fact's primary (the rules `refuted_by` names, the
+    /// `absent`s a refutation rests on) and a full alternatives list (the
+    /// core), moved with the interner (`W11/fork-delta-order`).
     pub fn new_facts_of(&self, kb: &Kb) -> Vec<FactId> {
-        let mut out: Vec<FactId> = kb.facts().filter(|f| !self.facts.contains(f)).collect();
-        out.sort_unstable();
-        out
+        kb.facts().filter(|f| !self.facts.contains(f)).collect()
     }
 }
 
@@ -1783,6 +1790,54 @@ mod tests {
             n_resumed < n_fresh,
             "the resumed run narrated {n_resumed} firings and the fresh one \
              {n_fresh} — the point is that it narrates fewer"
+        );
+    }
+
+    /// M1e2 S1e2.2.12 (`W11/fork-delta-order`): a resumed fork's delta is in
+    /// the order its facts were written, never in `FactId` order. The two
+    /// facts here are interned one way round and written the other.
+    #[test]
+    fn a_resumed_forks_delta_is_in_the_order_it_was_written() {
+        let src = "(relation edge T T)\n(relation path T T)\n\
+                   (rule step () :match (edge ?a ?b) :assert (path ?a ?b))\n\
+                   (edge A B)\n";
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let snapshot = {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: SharedMemo::default(),
+            };
+            let mut sat = Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+            sat.snapshot(s.kb)
+        };
+        let edge = terms.syms.get("edge").expect("interned");
+        let mut args = |a: &str, b: &str| {
+            [
+                Value::sym(terms.intern_text(a).expect("room")),
+                Value::sym(terms.intern_text(b).expect("room")),
+            ]
+        };
+        let (cd, de) = (args("C", "D"), args("D", "E"));
+        let early = terms.intern_fact(edge, &cd).expect("room");
+        let late = terms.intern_fact(edge, &de).expect("room");
+        assert!(early < late, "interned in this order");
+        let mut fork = kb.fork();
+        for a in [de, cd] {
+            fork.add_and_index_fact(&mut terms, edge, &a, None)
+                .expect("room");
+        }
+        assert_eq!(
+            snapshot.new_facts_of(&fork),
+            vec![late, early],
+            "the delta is the order the facts were written, not their ids'"
         );
     }
 

@@ -597,6 +597,24 @@ runs   = ["solve", "test"]
 note   = "M1e S1e.1.3 / Q2 — `alt-cap-core.ein` with `wide` at priority 50 instead of 300 and nothing else changed. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it. Since M1e2 S1e2.2.11 (2026-11-04) the store keeps each fact's smallest-closure arrival beside its full list, and both files report the 2-fact core."
 
 [[entry]]
+path   = "examples/ein-bugs/unsat-core-id-space.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "oracle --dump {out}/region"]
+note   = "M1e2 W11's first witness (`W11/unsat-core-id-space`), promoted from `corpus/fuzz_findings/` by S1e2.2.12 (2026-11-04): the walk called it `Contradiction` and printed one core as interned and another under a permuted interner. Under R it is three states, ∅ and two singletons, and N's four members have one core each; S1e2.2.12 compared every core a run reports under eight permutations and none moved, and `id_order_invariance` permutes it per commit."
+
+[[entry]]
+path   = "examples/ein-bugs/d3-unsat-core.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W11's and W1's witness (`W11/d3-unsat-core`, `W1/d3-unsat-core`), promoted from `corpus/fuzz_findings/` by S1e2.2.12 (2026-11-04). The walk's unsat core moved between 4 and 6 facts with the fork path and with the interner. **Refused since M1e2 S1e2.2.5** (*forbid* with F2's *via*): `fire-0` concludes (not …) from r1, which `fire-1` derives under an `absent` a commitment can lift, so `solve` exits 1 naming them and `saturate` still saturates; the refusal is the same under every permutation `id_order_invariance` takes."
+
+[[entry]]
+path   = "examples/ein-bugs/fork-delta-order.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "solve --dump-lattice {out}/lattice", "oracle --dump {out}/region"]
+note   = "M1e2 W11 (`W11/fork-delta-order`), written by S1e2.2.12 (T1e2.2.12.1, 2026-11-04) and promoted from `corpus/fuzz_findings/` by its fix: `(false)` has 1 600 equal-size derivations in N's one member, so its core is whichever four facts the 33 arrivals a full list keeps offer, and a resumed fork's delta, sorted by `FactId`, made those arrive in interning order (the core moved at three of eight seeds). Fixed by T1e2.2.12.2: the delta is in the order the commitment was written, and the core is (g G08) (h H40) (on A) (on B) under every seed, in nogoods.json, nodes.json and the oracle's region.json."
+
+[[entry]]
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
 group  = "regression"
 runs   = ["solve"]

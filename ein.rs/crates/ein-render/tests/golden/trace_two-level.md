@@ -190,9 +190,9 @@ Derives `co-located(H2, Blue)`.
 
 > co-located sym
 
-Premises: `co-located(H2, Blue)`
+Premises: `co-located(Green, H3)`
 
-Derives `co-located(Blue, H2)`.
+Derives `co-located(H3, Green)`.
 
 <dot>
 
@@ -200,9 +200,9 @@ Derives `co-located(Blue, H2)`.
 
 > co-located sym
 
-Premises: `co-located(Green, H3)`
+Premises: `co-located(H2, Blue)`
 
-Derives `co-located(H3, Green)`.
+Derives `co-located(Blue, H2)`.
 
 <dot>
 
@@ -234,9 +234,9 @@ Derives `co-located(H3, Blue)`.
 
 > co-located sym
 
-Premises: `co-located(H3, Blue)`
+Premises: `co-located(Green, H2)`
 
-Derives `co-located(Blue, H3)`.
+Derives `co-located(H2, Green)`.
 
 <dot>
 
@@ -244,9 +244,9 @@ Derives `co-located(Blue, H3)`.
 
 > co-located sym
 
-Premises: `co-located(Green, H2)`
+Premises: `co-located(H2, Green)`
 
-Derives `co-located(H2, Green)`.
+Derives `co-located(Green, H2)`.
 
 <dot>
 
@@ -254,8 +254,8 @@ Derives `co-located(H2, Green)`.
 
 > co-located sym
 
-Premises: `co-located(H2, Green)`
+Premises: `co-located(H3, Blue)`
 
-Derives `co-located(Green, H2)`.
+Derives `co-located(Blue, H3)`.
 
 <dot>

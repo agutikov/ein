@@ -579,7 +579,11 @@ def id_order(directory: Path, seeds: int) -> tuple[str | None, str]:
     report = proc.stdout + proc.stderr
     if proc.returncode == 0:
         return None, report
-    if PANIC.search(report) and "pairs move when the ids do" not in report:
+    # An answer that moves, or since M1e2 S1e2.2.12 any rendering at all,
+    # narration included: both are the sweep's own assertions, not a panic.
+    moved = ("pairs move when the ids do" in report
+             or "moved under a permuted id space" in report)
+    if PANIC.search(report) and not moved:
         return "no-crash", report
     return "id-order", report
 

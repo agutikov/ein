@@ -430,7 +430,9 @@ fn outside_of(oracle: &Outcome) -> &[ein_infer::scope::Outside] {
     }
 }
 
-fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
+/// `region.json`, as [`write_cube_dir`] writes it — public for the corpus
+/// sweeps, which compare it in-process (M1e2 S1e2.2.12).
+pub fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
     let (candidates, monotonicity) = match oracle {
         Outcome::Region(r) => (&r.candidates, &r.monotonicity),
         Outcome::Refused {
@@ -675,7 +677,9 @@ fn md_sets(r: &Region, ms: &[u64]) -> String {
         .join(", ")
 }
 
-fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> String {
+/// `region.md`, as [`write_cube_dir`] writes it — public for the same reason
+/// as [`region_json`].
+pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> String {
     let mut out = format!("# Region · {}\n\n", inputs.source);
     let (candidates, m) = match oracle {
         Outcome::Region(r) => (&r.candidates, &r.monotonicity),

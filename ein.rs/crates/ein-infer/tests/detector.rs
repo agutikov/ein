@@ -157,11 +157,14 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // of them, and are monotone; the programs it refuses keep their static
     // half, which `checked` reads before the refusal. 26 since S1e2.2.15
     // banked W14's `oblig-stdlib-total-owed` pair the same day, each an
-    // `obligation-trigger` site on `is-a`.
-    assert_eq!(flagged, 26, "the flagged corpus programs");
+    // `obligation-trigger` site on `is-a`. 27 since S1e2.2.12 promoted the
+    // fuzz finding `d3-unsat-core` into the corpus the same day, which the
+    // static check flags and *forbid* refuses (a `via` program).
+    assert_eq!(flagged, 27, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [
+            "examples/ein-bugs/d3-unsat-core.ein odd: fire-1: (not r1) →¬ r1",
             "examples/ein-bugs/wrong-answers/f07-fpoff.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
             "examples/features/07_unstratifiable.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
         ]
@@ -179,8 +182,8 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
 }
 
 /// The cycle through an `absent` over `D`, with its parity, on the three
-/// programs `node_census.md` § 5 found it on; `d3-unsat-core` is a fuzz
-/// finding with no corpus entry.
+/// programs `node_census.md` § 5 found it on; `d3-unsat-core`, a fuzz
+/// finding, is a corpus entry since M1e2 S1e2.2.12 promoted it (2026-11-04).
 #[test]
 fn a_cycle_through_an_absent_is_found_with_its_parity() {
     for rel in [
@@ -194,7 +197,7 @@ fn a_cycle_through_an_absent_is_found_with_its_parity() {
             "{rel}"
         );
     }
-    let (m, _) = file("corpus/fuzz_findings/d3-unsat-core.ein");
+    let (m, _) = file("examples/ein-bugs/d3-unsat-core.ein");
     assert_eq!(cycles(&m.detector), ["odd: fire-1: (not r1) →¬ r1"]);
 }
 
@@ -462,7 +465,7 @@ fn the_spot_check_reads_three_parents_of_each_printed_state() {
         ),
         ("examples/lattice/09_activator_hole.ein", 1, 2, 0, 4, &[]),
         (
-            "corpus/fuzz_findings/d3-unsat-core.ein",
+            "examples/ein-bugs/d3-unsat-core.ein",
             14,
             34,
             0,
