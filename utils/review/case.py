@@ -409,7 +409,19 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
             f"*{now.get('k')} state(s), exhausted = {str(now.get('exhausted')).lower()}*"
             + (f", R empty ({now['empty']})" if now.get("empty") else "")
             + f", which is the register's `right`, *{right.get('verdict', '—')}, k = {right.get('k', '—')}* — "
-            "`ein-corpus` holds `[case.now]` to it, and this build re-ran it (§ 3, § 4, § 5).", ""]
+            "`ein-corpus` holds `[case.now]` to it, and this build re-ran it (§ 3, § 4, § 5)."
+            + outside_clause(now, right), ""]
+
+
+def outside_clause(now: dict, right: dict) -> str:
+    """What a fixed row's read-out names outside the universe, when its
+    `right` states it (W6, M1e2 S1e2.2.8): the relations, and the sentence
+    `wrong_answers.rs` holds the run's `outside` row to."""
+    if right.get("outside") is None:
+        return ""
+    names = ", ".join(f"`{r}`" for r in now.get("outside") or []) or "nothing"
+    return (f" Its read-out names {names} outside the universe, as `right` does, in the `outside` row under "
+            f"`universe`: *{right.get('qualifier', '')}*.")
 
 
 def review_cell(row: dict) -> str:

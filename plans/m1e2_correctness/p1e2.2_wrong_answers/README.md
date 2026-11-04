@@ -60,7 +60,10 @@ lost; it runs last. **S1e2.2.8 started the same day** (T1e2.2.8.1): W6's
 witnesses re-taken, the scope gap measured (22 of the 234 programs that reach
 H have a relation the program concludes or asks about and the rung proposes
 no fact of; no claim names one), and every move of the `outside` row and
-`root.hypgen.outside` listed before any edit: no verdict, R or exit code.
+`root.hypgen.outside` listed before any edit: no verdict, R or exit code. **W6 is
+fixed the same day** (T1e2.2.8.2): every question names what H leaves out,
+the `outside` row under `universe` and `root.hypgen.outside`, no answer
+moved, and the register reads 44 fixed, 2 open and 1 not-wrong.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

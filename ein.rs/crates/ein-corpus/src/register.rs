@@ -37,7 +37,11 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// the record of what the walk said. `/4` since M1e2 S1e2.2.5 (2026-11-04):
 /// a right answer and a `now` can be a **refusal** ([`Right::refused`],
 /// [`Now::refused`]), *forbid*'s, and a refused row states no [`Region`].
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/4";
+/// `/5` since M1e2 S1e2.2.8 (2026-11-04): a `now` records the relations its
+/// run names outside the universe ([`Now::outside`], the summary's
+/// `root.hypgen.outside`), and a right answer can state them
+/// ([`Right::outside`]), W6's on Q-M1e2.3 (a).
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/5";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -268,6 +272,11 @@ pub struct Now {
     /// frontier's, which are the open states.
     #[serde(default)]
     pub models: Vec<Vec<String>>,
+    /// The relations the run names outside the universe, sorted — the
+    /// summary's `root.hypgen.outside` (M1e2 S1e2.2.8): what the program can
+    /// conclude or ask about and the rung that built H proposes no fact of.
+    #[serde(default)]
+    pub outside: Vec<String>,
 }
 
 impl Now {
@@ -316,6 +325,14 @@ impl Now {
             && e != self.exhausted
         {
             out.push(format!("exhausted: right {e}, now {}", self.exhausted));
+        }
+        if let Some(o) = &right.outside
+            && o != &self.outside
+        {
+            out.push(format!(
+                "outside the universe: right {o:?}, now {:?}",
+                self.outside
+            ));
         }
         let over: Vec<String> = right
             .closes
@@ -478,9 +495,16 @@ pub struct Right {
     pub open: Option<Vec<Vec<String>>>,
     #[serde(default)]
     pub owes: Option<Vec<u64>>,
-    /// A sentence the right read-out would add.
+    /// A sentence the right read-out would add. On a fixed row that states
+    /// [`Self::outside`], the read-out's `outside` row, which
+    /// `wrong_answers.rs` holds the run's stdout to.
     #[serde(default)]
     pub qualifier: Option<String>,
+    /// The relations the right read-out names outside the universe, sorted —
+    /// M1e2 S1e2.2.8, Q-M1e2.3 (a): R is over H, and the read-out says what
+    /// H leaves out.
+    #[serde(default)]
+    pub outside: Option<Vec<String>>,
     /// The answer under each other reading of a contested case.
     #[serde(default)]
     pub alternative: Vec<Right>,
@@ -882,7 +906,8 @@ mod tests {
     /// its stage and its question, and the revisit (S1e2.1.7) reads it. A
     /// `right` that states what `[case.now]` does not record keeps the row
     /// open on that field, and the row's run shows it, not this comparison:
-    /// a refusal, which states no verdict; a core; a qualifier; or facts over
+    /// a refusal, which states no verdict; a core; a qualifier the register
+    /// does not record as `outside` (M1e2 S1e2.2.8); or facts over
     /// a relation no candidate is over, since a state's `(model …)` names H's
     /// relations only (W7's `noted`, W8's `p`). Taken 2026-11-03: no row
     /// closed, and W12 is the one contested row (i) holds for.
@@ -901,7 +926,10 @@ mod tests {
             let unrecorded: Vec<&str> = [
                 (r.right.verdict.is_none(), "a refusal or no answer"),
                 (r.right.core.is_some(), "a core"),
-                (r.right.qualifier.is_some(), "a qualifier"),
+                (
+                    r.right.qualifier.is_some() && r.right.outside.is_none(),
+                    "a qualifier",
+                ),
                 (beyond_h, "facts over a relation no candidate is over"),
             ]
             .into_iter()

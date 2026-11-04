@@ -102,6 +102,12 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
                             .as_str()
                     }),
                 ),
+                // What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)):
+                // on every run, `[]` when nothing.
+                (
+                    "outside",
+                    ein_render::dump::region::outside_json(&stats.outside),
+                ),
             ]),
         ),
     ])

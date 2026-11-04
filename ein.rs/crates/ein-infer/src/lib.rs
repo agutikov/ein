@@ -53,6 +53,7 @@ pub mod predicates;
 pub mod read_out;
 pub mod region;
 pub mod saturator;
+pub mod scope;
 pub mod shape;
 pub mod states;
 pub mod transversal;

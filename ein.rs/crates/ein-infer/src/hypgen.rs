@@ -842,6 +842,24 @@ fn closed_relations(kb: &Kb, terms: &Terms) -> FxHashSet<Symbol> {
     out
 }
 
+/// The program's own three scopings, as every rung reads them: the
+/// `:hypothesis-relations` list (`None` when absent or empty), the
+/// `:no-hypothesis` list, and the relations with `(__closed__ R)` at this
+/// state — what [`crate::scope`] does not name, because the program said it.
+pub(crate) fn scoping(
+    s: &Session<'_>,
+) -> (
+    Option<FxHashSet<Symbol>>,
+    FxHashSet<Symbol>,
+    FxHashSet<Symbol>,
+) {
+    (
+        query_relations(s, HYPOTHESIS_RELATIONS),
+        query_relations(s, NO_HYPOTHESIS).unwrap_or_default(),
+        closed_relations(s.kb, s.terms),
+    )
+}
+
 /// Which relations **this program's generator can still propose** — the
 /// eligibility M1e S1e.2.3's refutation warning is stated over.
 ///

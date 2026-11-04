@@ -900,8 +900,9 @@ fn the_trace_goes_to_a_file_and_the_answer_to_stdout() {
 ///
 /// One object per run, and `schema` first: a consumer that reads
 /// `ein-summary/2` knows what the rest means, and one that reads something
-/// else can refuse instead of guessing. `root.hypgen`'s four keys are the
-/// invariant behind them — `raw == emitted + Σ filtered`.
+/// else can refuse instead of guessing. `root.hypgen`'s first four keys are
+/// the invariant behind them — `raw == emitted + Σ filtered` — and since M1e2
+/// S1e2.2.8 `outside`, what the universe leaves out, is the fifth.
 #[test]
 fn the_json_summary_declares_its_schema_and_its_block_shape() {
     let scratch = Scratch::new("schema");
@@ -921,7 +922,7 @@ fn the_json_summary_declares_its_schema_and_its_block_shape() {
         .collect::<BTreeSet<String>>();
     assert_eq!(
         hypgen,
-        ["emitted", "filtered", "pre_candidate", "raw"]
+        ["emitted", "filtered", "outside", "pre_candidate", "raw"]
             .iter()
             .map(|s| s.to_string())
             .collect::<BTreeSet<String>>(),

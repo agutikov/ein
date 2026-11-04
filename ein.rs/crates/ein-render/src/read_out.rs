@@ -28,6 +28,7 @@ use ein_infer::explore::{Ask, Checked, Licence, Route, Stopped, Verdict, Which};
 use ein_infer::monotone::Monotonicity;
 use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
 use ein_infer::region::Class;
+use ein_infer::scope::{Outside, Why};
 use ein_ir::expect::Over;
 
 /// The rule under the header.
@@ -384,6 +385,45 @@ fn sub_row(label: &str, value: impl AsRef<str>) -> String {
     format!("    {label:<16}{}", value.as_ref())
 }
 
+/// What the universe leaves out, as one sentence — M1e2 S1e2.2.8 (W6), the
+/// user's ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped, and the read-out
+/// says so*: the relations [`ein_infer::scope`] names, why the rung that
+/// built H proposes none of their facts, and what R holds of them. `None`
+/// when it leaves nothing out. The read-out prints it as the `outside` row
+/// under `universe`, `ein test` beside each claim it prints, and `ein oracle
+/// --dump`'s `region.md` under its candidate count.
+pub fn outside_text(outside: &[Outside]) -> Option<String> {
+    let first = outside.first()?;
+    let one = outside.len() == 1;
+    let it = if one { "it" } else { "them" };
+    let why = match first.why {
+        Why::NotOwed => format!("no obligation owes {it}"),
+        Why::NoHrule => format!("no hrule proposes {it}"),
+        Why::Arity if one => format!(
+            "it has arity {}, and the blind enumerator proposes arity 1 and 2 only",
+            first.arity
+        ),
+        Why::Arity => {
+            "they have arity 3 or more, and the blind enumerator proposes arity 1 and 2 only"
+                .to_string()
+        }
+    };
+    let names: Vec<&str> = outside.iter().map(|o| o.relation.as_str()).collect();
+    Some(format!(
+        "{} — no candidate: {why}. R holds of {it} only what the program states and saturation \
+         derives",
+        names.join(", ")
+    ))
+}
+
+/// The `outside` row under `universe`, when the universe leaves a relation
+/// out: every question prints it, since every question is over the same H.
+fn outside_row(out: &mut Out, outside: &[Outside]) {
+    if let Some(t) = outside_text(outside) {
+        out.line(sub_row("outside", t));
+    }
+}
+
 /// The warning's static half, as rows under its first: `assumes`, a `site`
 /// per site (at most [`WARNING_ROWS`] unless `uncut`), each `cycle`, each
 /// `order` — what `ein solve --monotone` prints, and every flagged read-out's
@@ -674,6 +714,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
         out.line(sub_row("bit", bit));
     }
     out.row("universe", plural(c.n as u64, "candidate", "candidates"));
+    outside_row(&mut out, &c.root.outside);
     out.row(
         "route",
         "none — a question about the program: root's fixpoint, then the static check",
@@ -1128,6 +1169,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             ),
         );
     }
+    outside_row(out, &a.root.outside);
     let route = match (d.route, o.command) {
         (Route::DownSet, _) => format!("1, the alive down-set — {}", licences(&a.licences)),
         (Route::States, _) => format!(
@@ -1304,6 +1346,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         holes,
     );
     out.row("universe", plural(a.n() as u64, "candidate", "candidates"));
+    outside_row(out, &a.root.outside);
     out.row(
         "route",
         format!(

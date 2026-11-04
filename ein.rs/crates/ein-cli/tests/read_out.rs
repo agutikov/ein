@@ -497,3 +497,123 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
         "{solve}"
     );
 }
+
+/// **What the universe leaves out is one sentence, on every surface that
+/// reports R** — M1e2 S1e2.2.8 (W6), the user's ruling of 2026-11-03 on
+/// Q-M1e2.3, (a) *scoped, and the read-out says so*. R is over H, and the
+/// read-out names each relation the program can conclude or ask about, does
+/// not scope out itself, and of which the rung that built H proposes no fact
+/// (`ein_infer::scope`). Every question prints the same `outside` row under
+/// `universe`, `ein oracle` and its dump say it, `ein test` says it beside a
+/// claim, and the summary lists the relations in `root.hypgen.outside`, on
+/// `--monotone` too. One witness per rung: `uncovered.ein`'s obligations,
+/// `arity3.ein`'s blind enumerator (whose `is-a`, scoped out by
+/// `:no-hypothesis`, is not named), `tests/region/07_cube.ein`'s hrules, which
+/// states a claim; and a program that leaves nothing out prints no row and an
+/// empty list.
+#[test]
+fn the_universes_scope_is_one_sentence_on_every_surface() {
+    const TAIL: &str = "R holds of it only what the program states and saturation derives";
+    let cases: [(&str, &[&str], String); 4] = [
+        (
+            "examples/ein-bugs/wrong-answers/uncovered.ein",
+            &["knows"],
+            format!("knows — no candidate: no obligation owes it. {TAIL}"),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/arity3.ein",
+            &["r3"],
+            format!(
+                "r3 — no candidate: it has arity 3, and the blind enumerator proposes arity 1 \
+                 and 2 only. {TAIL}"
+            ),
+        ),
+        (
+            "tests/region/07_cube.ein",
+            &["is-a"],
+            format!("is-a — no candidate: no hrule proposes it. {TAIL}"),
+        ),
+        ("tests/region/01_states.ein", &[], String::new()),
+    ];
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs");
+        let stdout = String::from_utf8_lossy(&out.stdout).into_owned();
+        assert_eq!(out.status.code(), Some(0), "ein {args:?}:\n{stdout}");
+        stdout
+    };
+    let rows = |text: &str| -> Vec<String> {
+        text.lines()
+            .filter_map(|l| l.strip_prefix("    outside         "))
+            .map(str::to_string)
+            .collect()
+    };
+    let listed = |json: &serde_json::Value| -> Vec<String> {
+        json.as_array()
+            .expect("an array on every run")
+            .iter()
+            .map(|o| o["relation"].as_str().expect("a relation").to_string())
+            .collect()
+    };
+    for (file, relations, sentence) in &cases {
+        let want: Vec<String> = if sentence.is_empty() {
+            Vec::new()
+        } else {
+            vec![sentence.clone()]
+        };
+        let tmp = Scratch::new("ein-scope");
+        let questions: [&[&str]; 7] = [
+            &[],
+            &["--maximal"],
+            &["--minimal"],
+            &["--single"],
+            &["-n", "1"],
+            &["--count"],
+            &["--monotone"],
+        ];
+        for (i, flags) in questions.iter().enumerate() {
+            let json = tmp.join(format!("summary-{i}.json"));
+            let json = json.to_str().expect("a UTF-8 path");
+            let mut args = vec!["solve", file];
+            args.extend_from_slice(flags);
+            args.extend_from_slice(&["--json-summary", json]);
+            let out = run(&args);
+            assert_eq!(rows(&out), want, "ein solve {file} {flags:?}:\n{out}");
+            let summary: serde_json::Value =
+                serde_json::from_str(&std::fs::read_to_string(json).expect("a summary"))
+                    .expect("it parses");
+            assert_eq!(
+                listed(&summary["root"]["hypgen"]["outside"]),
+                *relations,
+                "{file} {flags:?}: root.hypgen.outside"
+            );
+        }
+        let dump = tmp.join("cube");
+        let dump = dump.to_str().expect("a UTF-8 path");
+        let out = run(&["oracle", file, "--dump", dump]);
+        assert_eq!(rows(&out), want, "ein oracle {file}:\n{out}");
+        let md = std::fs::read_to_string(tmp.join("cube/region.md")).expect("region.md");
+        assert_eq!(
+            md.contains("**Outside it**: "),
+            !sentence.is_empty(),
+            "{file}: region.md"
+        );
+        if !sentence.is_empty() {
+            assert!(md.contains(&format!("**Outside it**: {sentence}.")), "{md}");
+        }
+        let cube: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(tmp.join("cube/region.json")).expect("region.json"),
+        )
+        .expect("it parses");
+        assert_eq!(listed(&cube["outside"]), *relations, "{file}: region.json");
+    }
+    // `ein test`, beside the claim it prints.
+    let out = run(&["test", "-v", "tests/region/07_cube.ein"]);
+    assert!(
+        out.contains(&format!("    outside the universe: {}\n", cases[2].2)),
+        "{out}"
+    );
+}

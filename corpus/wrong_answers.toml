@@ -193,6 +193,19 @@
 # the hash.
 # The register reads **42 rows fixed, 4 open and 1 not-wrong**.
 #
+# **S1e2.2.8 fixed W6's two rows on 2026-11-04** (T1e2.2.8.2), on the user's
+# ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped, and the read-out says so*: R
+# is over H, and the read-out's `outside` row, under `universe` on every
+# question, names each relation the program can conclude or ask about of which
+# the rung that built H proposes no fact (`knows`, which no obligation owes;
+# `r3`, of an arity the blind enumerator does not enumerate), as the summary's
+# `root.hypgen.outside` does. No answer moved. **Schema /5**: `[case.now]
+# outside` records what a row's run names, which two W1 rows' runs do too, and
+# `[case.right] outside` what the right read-out names, its `qualifier` the
+# sentence. The flipped rows' `[case.fixed]` carried the null id in the
+# flipping commit.
+# The register reads **44 rows fixed, 2 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -207,7 +220,8 @@
 #   fixed      `now` answers `right`, every field `right` states — the verdict
 #              its states make, k, exhausted, the models over `closes` (and over
 #              the candidates' relations, which is what a state's `(model …)`
-#              names), and the open states of an owing empty R.
+#              names), the open states of an owing empty R, and the relations
+#              the read-out names outside the universe (schema /5).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`.
 #
@@ -247,6 +261,9 @@
 #     exhausted, k (the states it lists)
 #     empty     dead | owing, when the run established R empty
 #     relations the candidates' relations, which a state's `(model …)` names
+#     outside   (schema /5, M1e2 S1e2.2.8) the relations the run names outside
+#               the universe, the summary's `root.hypgen.outside`, sorted;
+#               omitted when it names none
 #     models    each listed state's `(model …)`, sorted; for an owing empty R,
 #               the frontier's — the open states
 #
@@ -280,7 +297,10 @@
 #     states no verdict, `k` or model. `derived` says from what; `reading` names the ruling it assumes
 #     when the case is contested, and `[[case.right.alternative]]` gives the
 #     answer under each other reading. A `qualifier` is a sentence the right
-#     read-out would add (W6).
+#     read-out would add (W6). `outside` (schema /5, M1e2 S1e2.2.8) is the
+#     relations the right read-out names outside the universe; with it, the
+#     `qualifier` is that read-out's `outside` row, and `wrong_answers.rs`
+#     holds the run's stdout to print it.
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -323,7 +343,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/4"
+schema = "ein-wrong-answers/5"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -889,6 +909,7 @@ line      = "maximal"
 exhausted = true
 k         = 2
 relations = ["drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
+outside   = ["is-a*", "next-to"]
 models    = [
   ["(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"],
   ["(drink-loc Coffee House-5)", "(drink-loc Milk House-3)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-5)", "(pet-loc Dog House-5)", "(pet-loc Fox House-4)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-1)", "(smoke-loc Chesterfields House-5)", "(smoke-loc Kools House-1)", "(smoke-loc Old_Gold House-3)"],
@@ -1248,6 +1269,7 @@ line      = "maximal"
 exhausted = true
 k         = 2
 relations = ["proposed"]
+outside   = ["incompat"]
 models    = [
   ["(proposed a)", "(proposed c)", "(proposed d)"],
   ["(proposed b)", "(proposed c)", "(proposed d)"],
@@ -1919,10 +1941,14 @@ settings = "default"
 owner    = "S1e2.2.8"
 question = ["Q-M1e2.3", "M1d eight measurements #4"]
 witness  = "examples/ein-bugs/wrong-answers/uncovered.ein"
-status   = "open"
-open_because = "Q-M1e2.3 ruled *scoped, and the read-out says so* (the user, 2026-11-03): R is over the universe as scoped, and the read-out is to state that `knows` is outside it, which it does not yet; that sentence is S1e2.2.8's. R's minimal line is the right block's two matchings"
+status   = "fixed"
 look_at  = ["events rung", "answer"]
-note     = "the third model is W5's superset; this case is only the certification"
+note     = "the third model is W5's superset; this case is only the certification. Until M1e2 S1e2.2.8 no read-out said `knows` is outside the universe: R was the same, and the `rung` event's `uncovered 2` (`is-a` and `knows`) was the one number that bore on it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.8 (T1e2.2.8.2), Q-M1e2.3 (a): the read-out's `outside` row under `universe`, on every question, and `root.hypgen.outside` in --json-summary, name the relations the program can conclude or ask about of which the rung that built H proposes no fact"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve -e"
@@ -1956,9 +1982,11 @@ maximal  = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C
 [case.right]
 reading   = "Q-M1e2.3 *scoped, and the read-out says so*, the user's ruling of 2026-11-03: the certification holds over the universe as scoped, and the read-out names what is outside it"
 verdict   = "Ambiguity"
+k         = 2
 exhausted = true
-qualifier = "exhaustive over the hypotheses the obligations rung proposes; knows is never hypothesised"
-derived   = "Q-M1e.6's second clarification (alive₀ is the rung's L1 set); completeness.md § 3c. k is W5's to settle. Under R this is the minimal line: R has 7 states, two minimal and one maximal, all four seats ([case.region], route 1). The obligations rung asks for the minimal line"
+qualifier = "knows — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives"
+outside   = ["knows"]
+derived   = "Q-M1e.6's second clarification (alive₀ is the rung's L1 set); completeness.md § 3c. Under R this is the minimal line, and k = 2 is its two matchings (W5's k ruled *literal*, 2026-11-01, Q-M1e2.1): R has 7 states, two minimal and one maximal, all four seats ([case.region], route 1). The obligations rung asks for the minimal line. The qualifier is the read-out's `outside` row since M1e2 S1e2.2.8"
 
 [[case.right.alternative]]
 reading   = "Q-M1e2.3 uncertified unless covered"
@@ -1984,6 +2012,7 @@ line      = "minimal"
 exhausted = true
 k         = 2
 relations = ["seats"]
+outside   = ["knows"]
 models    = [
   ["(seats Ann C1)", "(seats Bob C2)"],
   ["(seats Ann C2)", "(seats Bob C1)"],
@@ -1998,9 +2027,13 @@ settings = "default"
 owner    = "S1e2.2.8"
 question = ["Q-M1e2.3"]
 witness  = "examples/ein-bugs/wrong-answers/arity3.ein"
-status   = "open"
-open_because = "Q-M1e2.3 ruled *scoped, and the read-out says so* (the user, 2026-11-03): R is over the universe the blind rung builds, which does not enumerate arity 3, and the read-out is to state that `r3` is outside it, which it does not yet; that sentence is S1e2.2.8's. R's maximal line agrees with the right block's model"
+status   = "fixed"
 look_at  = ["events hyp", "answer"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.8 (T1e2.2.8.2), Q-M1e2.3 (a): the read-out's `outside` row under `universe`, on every question, and `root.hypgen.outside` in --json-summary, name `r3`, whose arity the blind enumerator does not enumerate"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve -e"
@@ -2025,7 +2058,8 @@ k         = 1
 exhausted = true
 closes    = ["r2", "r3"]
 models    = [["(r2 A B)", "(r2 B A)"]]
-qualifier = "exhaustive over the hypotheses the blind rung proposes; r3 (arity 3, the goal) is never hypothesised"
+qualifier = "r3 — no candidate: it has arity 3, and the blind enumerator proposes arity 1 and 2 only. R holds of it only what the program states and saturation derives"
+outside   = ["r3"]
 derived   = "hypgen's fill_slot: arity ≥ 3 is unenumerated. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [[case.right.alternative]]
@@ -2046,6 +2080,7 @@ line      = "maximal"
 exhausted = true
 k         = 1
 relations = ["r2"]
+outside   = ["r3"]
 models    = [
   ["(r2 A B)", "(r2 B A)"],
 ]

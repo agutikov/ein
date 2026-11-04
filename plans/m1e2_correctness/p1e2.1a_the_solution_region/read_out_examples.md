@@ -67,6 +67,7 @@ solve · examples/branching/05_mini_zebra.ein
   N                 6 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          9 candidates, 6 dead alone
+    outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              13 saturations · 60 facts beyond root · 4 layers
 
@@ -854,6 +855,7 @@ solve · examples/lattice/04_obligation_trigger_hole.ein
     paths           every parent path checked reaches the same state — 2 parents of 1 printed state
     minimal hole    {(seats Ann C1)} — owes 1
   universe          2 candidates, 0 dead alone
+    outside         is-a — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives
   route             2, the cube — no licence: the static check flags the program
   work              4 saturations · 6 facts beyond root
 
@@ -1077,6 +1079,7 @@ solve · examples/zebra2.ein
   N                 366 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              374 saturations · 42 705 facts beyond root · 12 layers
 
@@ -1132,6 +1135,7 @@ solve · examples/zebra2.ein
   N                 366 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              374 saturations · 42 705 facts beyond root · 12 layers
 
@@ -1273,6 +1277,7 @@ solve · --maximal -n 1 examples/zebra2.ein
   exhausted         no — stopped as asked; each state shown is certified, nothing is said of the rest
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
   work              42 saturations · 7 036 facts beyond root
 
@@ -1314,6 +1319,7 @@ solve · --single examples/zebra2.ein
   decided           yes — R holds no other state
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
   work              45 saturations · 7 582 facts beyond root
 

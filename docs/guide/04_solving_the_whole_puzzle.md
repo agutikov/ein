@@ -67,6 +67,7 @@ solve · examples/zebra2.ein --single
   decided           yes — R holds no other state
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
   work              45 saturations · 7 582 facts beyond root
 

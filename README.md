@@ -177,6 +177,7 @@ solve · examples/zebra2.ein --single
   decided           yes — R holds no other state
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
   work              45 saturations · 7 582 facts beyond root
 
@@ -294,13 +295,13 @@ The milestones in [§ Scheduled](#scheduled--the-roadmap) exist because these
 were measured, not assumed:
 
 - **The walk gave wrong answers on well-formed programs, at default
-  settings, and four of the register's rows are still open.** Twelve cases and
+  settings, and two of the register's rows are still open.** Twelve cases and
   one contested reading were re-run on 2026-10-14
   ([`inventory.md`](plans/m1e2_correctness/inventory.md)); the smallest was
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **42 of 47
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **44 of 47
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
   positive's unsound exclusions among them, which no route reads, W12 and W13,
   W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
@@ -311,13 +312,14 @@ were measured, not assumed:
   S1e2.2.15 made it decline on such a guard (Q-M1e2.10 (a), the same day), W7,
   an `int` and a nested fact in one activator position, which lost a
   derivation until M1e2 S1e2.2.7 gave a rule application's identity the
-  activator's every argument (Q-M1e.16, the same day), and W3, one of W1's and one of W8's, whose right answer
+  activator's every argument (Q-M1e.16, the same day), W6, a relation outside
+  the universe that no read-out named, which every question's `outside` row
+  names since M1e2 S1e2.2.8 (Q-M1e2.3 (a), *scoped*, the same day), and W3, one of W1's and one of W8's, whose right answer
   since the user's *forbid* of 2026-11-02 is a refusal at load, which M1e2
   S1e2.2.5 built the same day (a refutation may not rest on an `absent` over a
   relation a commitment can still extend, directly or through a fact a rule
-  derived under one) — one ruled not wrong (C1), and **4 open**, each saying
-  why: W10, which is in the core; W6, whose fix follows the reading ruled on 2026-11-03; and W8's other
-  row, deferred to a followup. P1e2.2 fixes
+  derived under one) — one ruled not wrong (C1), and **2 open**, each saying
+  why: W10, which is in the core, and W8's other row, deferred to a followup. P1e2.2 fixes
   them, one stage per case
   ([P1e2.2](plans/m1e2_correctness/p1e2.2_wrong_answers/README.md)).
 - **An under-determined puzzle still does not finish.**

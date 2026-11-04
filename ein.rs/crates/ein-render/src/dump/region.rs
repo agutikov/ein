@@ -375,6 +375,32 @@ fn absents_json(m: &Monotonicity, terms: &Terms) -> Json {
     )
 }
 
+/// What the universe leaves out, as data — M1e2 S1e2.2.8: one object per
+/// relation [`ein_infer::scope`] names, sorted, `[]` when it names none.
+/// `--json-summary`'s `root.hypgen.outside` and `region.json`'s `outside`.
+pub fn outside_json(outside: &[ein_infer::scope::Outside]) -> Json {
+    Json::Array(
+        outside
+            .iter()
+            .map(|o| {
+                Json::obj(vec![
+                    ("relation", Json::str(&o.relation)),
+                    ("arity", Json::int(o.arity as i64)),
+                    ("why", Json::str(o.why.key())),
+                ])
+            })
+            .collect(),
+    )
+}
+
+/// The universe's scope, whichever arm the cube took.
+fn outside_of(oracle: &Outcome) -> &[ein_infer::scope::Outside] {
+    match oracle {
+        Outcome::Region(r) => &r.root.outside,
+        Outcome::Refused { outside, .. } => outside,
+    }
+}
+
 fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
     let (candidates, monotonicity) = match oracle {
         Outcome::Region(r) => (&r.candidates, &r.monotonicity),
@@ -409,6 +435,7 @@ fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
             "candidates",
             Json::Array(candidates.iter().map(|c| Json::str(&c.text)).collect()),
         ),
+        ("outside", outside_json(outside_of(oracle))),
         ("monotonicity", m),
     ];
     let mut pairs = head;
@@ -633,6 +660,9 @@ fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> String 
          fixpoint with no config switch applied (`docs/kernel/inference/region_dump.md`).\n\n",
         candidates.len()
     ));
+    if let Some(t) = crate::read_out::outside_text(outside_of(oracle)) {
+        out.push_str(&format!("**Outside it**: {t}.\n\n"));
+    }
     if m.is_monotone() {
         out.push_str(&format!(
             "**Monotone by construction**: no read a commitment can undo \

@@ -127,6 +127,14 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     models.sort();
     let asked = &s["asked"];
     let line = asked["which"].as_str().unwrap_or("?").to_string();
+    // What the universe leaves out (M1e2 S1e2.2.8): on every run.
+    let mut outside: Vec<String> = s["root"]["hypgen"]["outside"]
+        .as_array()
+        .ok_or("no root.hypgen.outside")?
+        .iter()
+        .filter_map(|o| o["relation"].as_str().map(str::to_string))
+        .collect();
+    outside.sort();
     Ok(Now {
         run: row.now.run.clone(),
         line,
@@ -136,6 +144,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         empty,
         relations: relations(&got.stdout),
         models,
+        outside,
     })
 }
 
@@ -168,6 +177,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
     w.iter_mut().for_each(|m| m.sort());
     w.sort();
     field("models", format!("{w:?}"), format!("{:?}", got.models));
+    field(
+        "outside",
+        format!("{:?}", want.outside),
+        format!("{:?}", got.outside),
+    );
     out
 }
 
@@ -212,7 +226,18 @@ fn every_row_answers_what_the_register_records() {
             )]
         } else {
             match now_of(row, &got) {
-                Ok(now) => differences(&row.now, &now),
+                Ok(now) => {
+                    let mut d = differences(&row.now, &now);
+                    // A right that names what the universe leaves out states
+                    // the sentence too (M1e2 S1e2.2.8, W6): the `outside` row.
+                    if row.right.outside.is_some()
+                        && let Some(q) = &row.right.qualifier
+                        && !got.stdout.contains(&format!("    outside         {q}\n"))
+                    {
+                        d.push(format!("the read-out does not print {q:?}"));
+                    }
+                    d
+                }
                 Err(e) => vec![e],
             }
         };

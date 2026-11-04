@@ -141,6 +141,11 @@ constrained-reasoning research.
   activator's every argument, as the compile key does, so an `int` and a
   nested fact in one activator position no longer lose a derivation, in
   either order and either build: 42 fixed, 4 open and 1 not wrong.
+  S1e2.2.8 fixed W6's two rows the same day on the user's ruling of
+  2026-11-03 (Q-M1e2.3 (a), *scoped, and the read-out says so*): R is over H,
+  and every question names what H leaves out, an `outside` row under
+  `universe` and `root.hypgen.outside` in the summary, with no answer moved:
+  44 fixed, 2 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

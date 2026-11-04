@@ -77,7 +77,8 @@ impl Hrules {
 
     /// The relations these plans conclude — what an hrule-driven search can
     /// still propose, for M1e S1e.2.3's eligibility
-    /// ([`crate::hypgen::eligible_relations`]).
+    /// ([`crate::hypgen::eligible_relations`]) and, since M1e2 S1e2.2.8, what
+    /// the hrules' universe covers ([`crate::scope`]).
     pub(crate) fn asserted_relations(
         &self,
         terms: &ein_core::Terms,

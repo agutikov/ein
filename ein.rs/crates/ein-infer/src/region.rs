@@ -219,6 +219,10 @@ pub struct RootStats {
     /// at root's fixpoint. Its `emitted` is `H`'s size: `seen_in_call` drops a
     /// repeat before `emitted` counts one.
     pub hypgen: HypGenStats,
+    /// What the universe leaves out ([`crate::scope`], M1e2 S1e2.2.8): the
+    /// relations the program can conclude or ask about, which it does not
+    /// scope out itself, and of which the rung that built H proposes no fact.
+    pub outside: Vec<crate::scope::Outside>,
 }
 
 impl Region {
@@ -245,7 +249,12 @@ impl Region {
 }
 
 /// What the oracle did.
+///
+/// One per oracle run, returned and matched once, so the refused arm's size
+/// beside the boxed region costs nothing worth an indirection; M1e2
+/// S1e2.2.8's `outside` took it past clippy's bound.
 #[derive(Clone, Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum Outcome {
     Region(Box<Region>),
     /// `n` is over the limit: nothing was enumerated, and the static check
@@ -255,6 +264,8 @@ pub enum Outcome {
         limit: u32,
         candidates: Vec<Candidate>,
         monotonicity: Monotonicity,
+        /// What the universe leaves out, as [`RootStats::outside`].
+        outside: Vec<crate::scope::Outside>,
     },
 }
 
@@ -330,6 +341,7 @@ pub(crate) fn compute_prepared(
             limit: opts.limit,
             candidates,
             monotonicity,
+            outside: root_stats.outside,
         });
     }
     let cost_root = t_root.elapsed();
@@ -660,6 +672,19 @@ pub(crate) fn prepare_with(
         .collect();
     let plans = crate::monotone::plans_of(&memo);
     let monotonicity = crate::monotone::classify(root, terms, &plans, &hypothesised);
+    // What the universe leaves out, read off the rung the pass took and the
+    // plans root compiled: no event, since nothing is generated.
+    root_stats.outside = {
+        let mut silent = Events::off();
+        let mut s = Session {
+            kb: root,
+            terms,
+            ast,
+            events: &mut silent,
+            memo: memo.clone(),
+        };
+        crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans)?
+    };
     // *Forbid* (M1e2 S1e2.2.5): a refutation resting on an `absent` over a
     // relation a commitment can still extend refuses the program, here, after
     // root's fixpoint and the static check, so every question about a
