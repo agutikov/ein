@@ -28,6 +28,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
 | [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load. The head half re-ruled by Q-M1e2.14 (c). **Built 2026-11-05** by S1e2.2.20 (`eddea251`): W20's five rows fixed |
 | [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns*. **Built 2026-11-05** by S1e2.2.20 (`eddea251`) |
+| [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **put to the user 2026-11-05** by T1e2.2.21.1, with the agent's recommendation, (b): a universal's support, each fact at its smallest frontier |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1671,3 +1672,85 @@ refuses a `_` written as a relation beside a range, one line per slot, and
 prototype before the edit, the head refusal moved 216 runs on nine files, W20's
 head witness and the head probes, and nothing else; no program the loader
 accepts reaches the compiler's unbound-head arm through `_` since.
+
+## Q-M1e2.15 — What does a derivation through a `forall` rest on?
+
+Put to the user on 2026-11-05 by
+[S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md)'s step 1
+([T1e2.2.21.1](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md#task-t1e22211--a-witness-banked-w21-filed-every-core-measured)).
+W21: a pair contradiction's core is its positive side's frontier alone, so
+where `X` is root's it names none of the commitment
+([`pair-core-root-given.ein`](../../examples/ein-bugs/wrong-answers/pair-core-root-given.ein)
+reports `(p a)` for the dead `{(q a)}`). The stage's default fix explains a
+pair's two sides together. Prototyped, and every core the corpus reports
+compared against `cdcc3994`'s (the stage's sweep, 441 files × 24 runs,
+2026-11-05, `build/s1e2.2.21/`), it does what it was filed for, and the
+other way too. The stage file stops on both: a contradiction other than a
+pair with W21's defect, and cores that named their commitment and stop.
+
+**What moved.** 69 201 dead-node cores start naming their set
+(`branching/01`, `/02`, `/12`, `tests/stdlib/bijection/06`). 2 172 stop:
+`zebra.ein` 372, `zebra2` and `zebra2-obligations` 127 each,
+`zebra2-minus-15` and its `-obligations` twin 773 each; and `zebra2-hints`'
+73 still name none. Each is then decided by a **direct ⊥ concluded through
+a `forall`**: `zebra2`'s `{(drink-loc Tea House-4)}` reports `(is-a Blue
+Color) (relation color-loc Color House)` by `total`, root's. `(forall ?b G
+B)` is `(absent (and G (absent B)))`, and a firing records the facts its plan
+matched (`Prov::premises`) and an `absent` it judged as a pattern
+(`Prov::absent`, *recorded, not interpreted*). A universal that holds rests
+on facts, though: for each `?b` that G matches, the fact B matched. `total`'s
+`(false)` rests on the five `(not (color-loc Blue House-k))`, which the
+commitment derives, and records the two facts it matched. At HEAD it lost to
+a pair's one-fact core; once a pair's core covers both sides, it wins. A
+positive concluded through a `forall` is the same, and its frontier leaves
+out the values it excluded every other one by. Ten stdlib rules write one:
+`total`, `surjective`, `slot-no-room`, `slot-no-fill`, `slot-elimination`,
+`slot-fill`, and the two `domain-elimination`s, `range-elimination` and
+`no-room-left`. The defect is not new: it is why some of HEAD's cores fail
+the derivation half of the class-4 claim (110 of 1 255 distinct parts, on
+`zebra.ein`, `zebra2` and `zebra2-minus-15` and their twins, and the three
+`type-exclusivity` programs, `build/s1e2.2.21/derivecheck.py`), and the pair
+fix only makes it decide more cores.
+
+Measured, beside HEAD and the pair fix alone:
+
+| reading | cores naming none of their set, of 214 964 | parts deriving no contradiction | `ein solve examples/zebra2.ein` | `zebra2-minus-15.ein` |
+|---|---:|---:|---:|---:|
+| HEAD | 71 208 | 110 of 1 255 | 0.59 s | 8.11 s |
+| (a) the pair alone | 4 179 | 0 of 1 316 | 1.30 s | 15.08 s |
+| (b) and a `forall`'s support, each at its smallest | 68 (`lattice/06`, N6) | 0 of 5 427 | 3.68 s | 31.65 s |
+| (c) and its support, searched | 0 of 73 on `zebra2-hints` | — | stopped at 150 s | — |
+
+(best of three, release, 2026-11-05, not through `bench_env.sh`; no core at
+all, `zebra2` 0.50 s and `zebra2-minus-15` 7.37 s.)
+
+- **(a) *A universal rests on nothing it read; the pair alone, the universal
+  later*.** W21's fix lands as filed, and the universal is a new case, its
+  own stage or a followup. Meanwhile 2 172 cores that named their
+  commitment stop, `zebra2-hints`' 73 still name none, and the corpus-wide
+  test this stage owes cannot hold on those six programs, so W21's
+  acceptance is not met for them.
+- **(b) *A universal rests on the facts it read, each at its smallest
+  frontier*** — **the agent's recommendation**. A firing records, for each
+  `forall` it judged, the facts its body matched, and the core search folds
+  each in at its smallest environment, beside the premises it searches as
+  today. Every core the corpus reports names its set and, with root,
+  derives a contradiction, but `lattice/06`'s 68 empty ones, which are
+  P1e2.3's N6. Cores grow (`zebra2`'s N, one fact each at HEAD, 2 to 32);
+  a `.einb` carries the support (format 1.2). It is not the smallest over
+  every derivation: on `zebra2-hints`, 13 of N's 73 cores are larger than
+  (c)'s, the promise's residual, which joins `W10/alt-cap-shared`'s in
+  [F22](../followups/f22_exact_core_past_the_cap.md). It costs ×6 on
+  `zebra2`'s bare `ein solve`, which prints no core and takes one for every
+  dead node it visits; taking a core only where a surface reports it would
+  give that back under any reading, parked in the stage file's § Notes.
+- **(c) *Its support, searched like a premise*.** Exact over the recorded
+  derivations, and unaffordable as the search stands: 7.5 s per member of N
+  against 3 ms on `zebra2-hints`, cut by its budget (`exhausted = false`),
+  542 s for its `--dump-answer`.
+
+Whichever is ruled, a pair's two sides are folded **jointly**, the smallest
+union over both sides' environments (the stage's default 2): under (b) the
+stage file's literal *each side at its smallest* differs on `zebra2` and
+its twin (36 cores each) and `zebra2-minus-15` and its twin (121 each), a
+larger core on 99 of each 157 and the same size on the rest, never smaller.

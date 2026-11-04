@@ -1,0 +1,33 @@
+;;; A pair contradiction's core names only its positive side, where that side
+;;; is a fact root derives — M1e2 **W21**, register row
+;;; `W21/pair-core-root-derived` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.21 (2026-11-05), the witness's mechanism one derivation deeper.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Root derives `(p a)` from `(seed a)` by `mk`. One candidate, `(q a)`:
+;;; committed, it derives `(not (p a))` by `neg`, a pair whose positive side
+;;; root derives and whose negative side the commitment derives.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is {∅}, and N is {(q a)}. The pair rests on `(p a)`, which rests on
+;;; `(seed a)`, and on `(not (p a))`, which rests on `(q a)`: the core is
+;;; `(q a) (seed a)`, which names the commitment. `(seed a)` alone is
+;;; root's, and root is alive.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R as above, exit 0; and N's core `(seed a)` alone, refuted by `mk` and
+;;; `neg`, on every surface that reports it (`ein solve FILE --dump-answer
+;;; DIR` at `cdcc3994`, release and debug): the positive side's frontier.
+
+(relation seed T) (relation p T) (relation q T)
+
+(seed a)
+
+(rule mk () :match (seed ?x) :assert (p ?x))
+
+(hrule g () :match (seed ?x) :assert (q ?x))
+
+(rule neg () :match (q ?x) :assert (not (p ?x)))

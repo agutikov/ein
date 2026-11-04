@@ -1102,6 +1102,24 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W20's twin of `wild-in-hrule.ein`, banked by S1e2.2.20: `_` written as `?any`. H {(tag a)}, R ∅ and {(tag a)}: the witness's right answer."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W21 (`W21/pair-core-root-given`), banked by S1e2.2.21 from S1e2.2.19 § Notes: the commitment `(q a)` derives `(not (p a))`, and the program states `(p a)`, a pair contradiction. R {∅}; N {(q a)}, whose core is `(p a)` alone, root's, where the pair rests on both sides: the core search explains a pair by its positive side alone. Right: `(p a) (q a)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pair-core-root-derived.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W21 (`W21/pair-core-root-derived`), banked by S1e2.2.21: the witness one derivation deeper, `(p a)` derived at root from `(seed a)`. R {∅}; N {(q a)}, whose core is `(seed a)` alone, the positive side's frontier. Right: `(q a) (seed a)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pair-core-root-negative.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W21's boundary, banked by S1e2.2.21: the pair's negative side is the program's, `(not (p a))`, and the commitment derives `(p a)`. R {∅}; N {(q a)}, whose core `(q a)` names the commitment, the positive side's frontier, and leaves out the stated `(not (p a))`; the fix grows it to `(not (p a)) (q a)`. No row: it names its commitment either way."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and

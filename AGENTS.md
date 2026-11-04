@@ -221,6 +221,17 @@ constrained-reasoning research.
   slot that matches any value and binds nothing, and a range, or a `_`
   written as a relation, is refused at load, one line in Ein's spelling per
   slot: 68 fixed, 2 open (both deferred to a followup) and 1 not wrong.
+  S1e2.2.21 filed W21 the same day, from S1e2.2.19's notes: a pair
+  contradiction's core names only its positive side, since the core search
+  explains each contradiction by its witness, a pair's positive `X`, so where
+  `X` is root's the core names none of the commitment; four rows, two
+  witnesses and two corpus programs, the rest held by the stage's
+  corpus-wide test: 68 fixed, 6 open and 1 not wrong. Explaining a pair's
+  two sides together moved other cores the wrong way, through refutations
+  that rest on a `forall`, whose support a firing does not record. What a
+  `forall` rests on is Q-M1e2.15, put to the user, and the agent recommends
+  following its support at each fact's smallest frontier (S1e2.2.21's
+  sweep, 2026-11-05).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

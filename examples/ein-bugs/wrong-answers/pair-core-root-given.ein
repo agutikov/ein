@@ -1,0 +1,37 @@
+;;; A pair contradiction's core names only its positive side, where that side
+;;; is a fact the program states — M1e2 **W21**, register row
+;;; `W21/pair-core-root-given` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.21 (2026-11-05) from S1e2.2.19 § Notes.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One candidate, `(q a)`, which the hrule proposes. Committed, it derives
+;;; `(not (p a))` by `neg`, and the program states `(p a)`: a pair
+;;; contradiction whose positive side is root's and whose negative side the
+;;; commitment derives.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive, and {(q a)} is dead, N's one member. The pair
+;;; rests on both its sides: `(p a)`, stated, and `(not (p a))`, which `neg`
+;;; derives from `(q a)`. So the core is `(p a) (q a)`, which names the
+;;; commitment, and from it, with the program's rules, saturation derives
+;;; the pair. `(p a)` alone is root's, and root is alive: no refutation.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R as above, exit 0; and N's core `(p a)` alone, refuted by `(given)` and
+;;; `neg`, in `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s
+;;; `nodes.json`, `--events`' `enter` line, `--trace` and `ein oracle --dump`
+;;; (`ein solve FILE --dump-answer DIR` at `cdcc3994`, release and debug).
+;;; The core search explains each contradiction by its witness alone, and a
+;;; pair's witness is its positive side
+;;; (`contradiction::Contradiction::witness`).
+
+(relation p T) (relation q T)
+
+(p a)
+
+(hrule g () :match (p ?x) :assert (q ?x))
+
+(rule neg () :match (q ?x) :assert (not (p ?x)))

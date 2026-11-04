@@ -382,6 +382,21 @@
 # register reads **68 rows fixed, 2 open and 1 not-wrong**, both open rows
 # deferred to a followup.
 #
+# **W21 was filed on 2026-11-05 by S1e2.2.21** (T1e2.2.21.1), from
+# S1e2.2.19's parked note: a pair contradiction's core names only its
+# positive side, because the core search explains each contradiction by its
+# witness alone, and a pair's witness is its positive `X`; where `X` is
+# root's, the core names none of the commitment. Four rows, all `open`: two
+# banked witnesses, `X` stated and `X` derived at root, and two corpus
+# programs whose N cores name none of their set, `branching/12` and
+# `bijection/06`. The other corpus programs W21 bites are held by the
+# stage's corpus-wide test instead, and its file says which and why. Each
+# row's `right` is its cores with a pair's two sides together, the same under
+# each reading of Q-M1e2.15: the stage's default fix moved other cores the
+# wrong way, through refutations that rest on a `forall`, and the stage is
+# paused on that question. A row's `wrong` is a region run's at `cdcc3994`.
+# The register reads **68 rows fixed, 6 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -4889,6 +4904,338 @@ k         = 1
 relations = ["tag"]
 models    = [
   ["(tag a)"],
+]
+
+# ══ W21 — a pair contradiction's core names only its positive side ═══════════
+[[case]]
+id       = "W21/pair-core-root-given"
+case     = "W21"
+title    = "a pair contradiction's core names only its positive side"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.21"
+question = ["Q-M1e2.11", "Q-M1e2.15"]
+witness  = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
+status   = "open"
+open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05) from S1e2.2.19 § Notes' first note, which found the defect measuring every core the corpus reports; the witness is its mechanism in four lines. Schema /8 (`nogoods`, --dump-answer's nogoods.json). Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides (jointly or each at its smallest)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at cdcc3994 (2026-11-05): R {∅}; N {(q a)}, whose core is (p a) by (given) and neg in --dump-answer's nogoods.json, and the same in --dump-lattice's nodes.json, --events' enter line, --trace and `ein oracle --dump`'s region.json"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [{ set = ["(q a)"], core = ["(p a)"] }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [{ set = ["(q a)"], core = ["(p a)", "(q a)"] }]
+derived   = "The core is the facts the refutation rests on, the smallest frontier over every derivation the program records (Q-M1e2.11 (i)(b)). The pair rests on both its sides: (p a), stated, and (not (p a)), which neg derives from (q a). So the core is (p a) (q a), which names the commitment and, with the program's rules, derives the pair. (p a) alone is root's, and root is alive: no refutation"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+nogoods   = [{ set = ["(q a)"], core = ["(p a)"] }]
+
+[[case]]
+id       = "W21/pair-core-root-derived"
+case     = "W21"
+title    = "a pair contradiction's core names only its positive side"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.21"
+question = ["Q-M1e2.11", "Q-M1e2.15"]
+witness  = "examples/ein-bugs/wrong-answers/pair-core-root-derived.ein"
+status   = "open"
+open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): the witness one derivation deeper, the pair's positive side derived at root rather than stated. Its right is the same under each reading of Q-M1e2.15"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at cdcc3994 (2026-11-05): R {∅}; N {(q a)}, whose core is (seed a) by mk and neg, the positive side's frontier, on every surface that reports it"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [{ set = ["(q a)"], core = ["(seed a)"] }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [{ set = ["(q a)"], core = ["(q a)", "(seed a)"] }]
+derived   = "The pair rests on (p a), which mk derives from (seed a), and on (not (p a)), which neg derives from (q a): the core is (q a) (seed a), which names the commitment. (seed a) alone is root's, and root is alive"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = ["q"]
+outside   = ["p"]
+models    = [
+  [],
+]
+nogoods   = [{ set = ["(q a)"], core = ["(seed a)"] }]
+
+[[case]]
+id       = "W21/typed-blind-solve"
+case     = "W21"
+title    = "a pair contradiction's core names only its positive side"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.21"
+question = ["Q-M1e2.11", "Q-M1e2.15"]
+witness  = "examples/branching/12_typed_blind_solve.ein"
+status   = "open"
+open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 10 of N's 25, each (color-of H1 Red), the program's own clue. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides. The other corpus programs W21 bites are held by the corpus-wide test instead (S1e2.2.21's step 4, the stage file says which)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at cdcc3994 (2026-11-05): R three states; N 25 sets, 10 of whose cores are (color-of H1 Red), the stated clue, the positive side of the pair or of the contradiction the commitment completes, naming none of their set; the same on every surface that reports them"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [
+  { set = ["(color-of Blue Green)"], core = ["(color-of Blue Green)"] },
+  { set = ["(color-of Blue H1)"], core = ["(color-of Blue H1)"] },
+  { set = ["(color-of Blue H2)"], core = ["(color-of Blue H2)"] },
+  { set = ["(color-of Blue H3)"], core = ["(color-of Blue H3)"] },
+  { set = ["(color-of Blue Red)"], core = ["(color-of Blue Red)"] },
+  { set = ["(color-of Green Blue)"], core = ["(color-of Green Blue)"] },
+  { set = ["(color-of Green H1)"], core = ["(color-of Green H1)"] },
+  { set = ["(color-of Green H2)"], core = ["(color-of Green H2)"] },
+  { set = ["(color-of Green H3)"], core = ["(color-of Green H3)"] },
+  { set = ["(color-of Green Red)"], core = ["(color-of Green Red)"] },
+  { set = ["(color-of H1 H2)"], core = ["(color-of H1 H2)"] },
+  { set = ["(color-of H1 H3)"], core = ["(color-of H1 H3)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H2 Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H3 Blue)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 Green)", "(color-of H3 Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 H1)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 H3)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H3 Blue)", "(color-of H3 Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H3 H1)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H3 H2)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of Red Blue)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of Red Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of Red H1)"], core = ["(color-of Red H1)"] },
+  { set = ["(color-of Red H2)"], core = ["(color-of Red H2)"] },
+  { set = ["(color-of Red H3)"], core = ["(color-of Red H3)"] },
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 3
+k_c      = 7
+minimal  = [[]]
+maximal  = [
+  ["(color-of H2 Blue)", "(color-of H3 Green)"],
+  ["(color-of H2 Green)", "(color-of H3 Blue)"],
+]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [
+  { set = ["(color-of Blue Green)"], core = ["(color-of Blue Green)"] },
+  { set = ["(color-of Blue H1)"], core = ["(color-of Blue H1)"] },
+  { set = ["(color-of Blue H2)"], core = ["(color-of Blue H2)"] },
+  { set = ["(color-of Blue H3)"], core = ["(color-of Blue H3)"] },
+  { set = ["(color-of Blue Red)"], core = ["(color-of Blue Red)"] },
+  { set = ["(color-of Green Blue)"], core = ["(color-of Green Blue)"] },
+  { set = ["(color-of Green H1)"], core = ["(color-of Green H1)"] },
+  { set = ["(color-of Green H2)"], core = ["(color-of Green H2)"] },
+  { set = ["(color-of Green H3)"], core = ["(color-of Green H3)"] },
+  { set = ["(color-of Green Red)"], core = ["(color-of Green Red)"] },
+  { set = ["(color-of H1 H2)"], core = ["(color-of H1 H2)"] },
+  { set = ["(color-of H1 H3)"], core = ["(color-of H1 H3)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H2 Green)"], core = ["(color-of H2 Blue)", "(color-of H2 Green)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H3 Blue)"], core = ["(color-of H2 Blue)", "(color-of H3 Blue)"] },
+  { set = ["(color-of H2 Green)", "(color-of H3 Green)"], core = ["(color-of H2 Green)", "(color-of H3 Green)"] },
+  { set = ["(color-of H2 H1)"], core = ["(color-of H2 H1)"] },
+  { set = ["(color-of H2 H3)"], core = ["(color-of H2 H3)"] },
+  { set = ["(color-of H3 Blue)", "(color-of H3 Green)"], core = ["(color-of H3 Blue)", "(color-of H3 Green)"] },
+  { set = ["(color-of H3 H1)"], core = ["(color-of H3 H1)"] },
+  { set = ["(color-of H3 H2)"], core = ["(color-of H3 H2)"] },
+  { set = ["(color-of Red Blue)"], core = ["(color-of Red Blue)"] },
+  { set = ["(color-of Red Green)"], core = ["(color-of Red Green)"] },
+  { set = ["(color-of Red H1)"], core = ["(color-of Red H1)"] },
+  { set = ["(color-of Red H2)"], core = ["(color-of Red H2)"] },
+  { set = ["(color-of Red H3)"], core = ["(color-of Red H3)"] },
+]
+derived   = "Each core is the facts its refutation rests on, the smallest frontier over every derivation the program records (Q-M1e2.11 (i)(b)), a pair's two sides together. Each of the ten that named (color-of H1 Red) alone is the commitment: one fact for a house written as a colour or a colour as a house, two for two colours of one house or one colour of two houses; the node holds a contradiction every derivation of which rests on those facts alone, and root with them derives it (build/s1e2.2.21/derivecheck.py, 2026-11-05). The other fifteen do not move"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 3
+relations = ["color-of"]
+models    = [
+  ["(color-of H1 Red)"],
+  ["(color-of H1 Red)", "(color-of H2 Blue)", "(color-of H3 Green)"],
+  ["(color-of H1 Red)", "(color-of H2 Green)", "(color-of H3 Blue)"],
+]
+nogoods   = [
+  { set = ["(color-of Blue Green)"], core = ["(color-of Blue Green)"] },
+  { set = ["(color-of Blue H1)"], core = ["(color-of Blue H1)"] },
+  { set = ["(color-of Blue H2)"], core = ["(color-of Blue H2)"] },
+  { set = ["(color-of Blue H3)"], core = ["(color-of Blue H3)"] },
+  { set = ["(color-of Blue Red)"], core = ["(color-of Blue Red)"] },
+  { set = ["(color-of Green Blue)"], core = ["(color-of Green Blue)"] },
+  { set = ["(color-of Green H1)"], core = ["(color-of Green H1)"] },
+  { set = ["(color-of Green H2)"], core = ["(color-of Green H2)"] },
+  { set = ["(color-of Green H3)"], core = ["(color-of Green H3)"] },
+  { set = ["(color-of Green Red)"], core = ["(color-of Green Red)"] },
+  { set = ["(color-of H1 H2)"], core = ["(color-of H1 H2)"] },
+  { set = ["(color-of H1 H3)"], core = ["(color-of H1 H3)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H2 Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H3 Blue)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 Green)", "(color-of H3 Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 H1)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 H3)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H3 Blue)", "(color-of H3 Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H3 H1)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H3 H2)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of Red Blue)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of Red Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of Red H1)"], core = ["(color-of Red H1)"] },
+  { set = ["(color-of Red H2)"], core = ["(color-of Red H2)"] },
+  { set = ["(color-of Red H3)"], core = ["(color-of Red H3)"] },
+]
+
+[[case]]
+id       = "W21/blind-enumeration"
+case     = "W21"
+title    = "a pair contradiction's core names only its positive side"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.21"
+question = ["Q-M1e2.11", "Q-M1e2.15"]
+witness  = "tests/stdlib/bijection/06_blind_enumeration.ein"
+status   = "open"
+open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 7 of N's 16, each (seats Ann C1), the program's stated fact; the oracle's cube reports 32 512 more. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at cdcc3994 (2026-11-05): R one state; N 16 sets, 7 of whose cores are (seats Ann C1), stated, naming none of their set; `ein oracle --dump` reports (seats Ann C1) for 32 512 of the cube's 65 535 dead nodes"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [
+  { set = ["(seats Ann Bob)"], core = ["(seats Ann Bob)"] },
+  { set = ["(seats Ann Sortal)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Bob Ann)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Bob Sortal)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C1 Ann)"], core = ["(seats C1 Ann)"] },
+  { set = ["(seats C1 Bob)"], core = ["(seats C1 Bob)"] },
+  { set = ["(seats C1 C2)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C1 Sortal)"], core = ["(seats C1 Sortal)"] },
+  { set = ["(seats C2 Ann)"], core = ["(seats C2 Ann)"] },
+  { set = ["(seats C2 Bob)"], core = ["(seats C2 Bob)"] },
+  { set = ["(seats C2 C1)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C2 Sortal)"], core = ["(seats C2 Sortal)"] },
+  { set = ["(seats Sortal Ann)"], core = ["(seats Sortal Ann)"] },
+  { set = ["(seats Sortal Bob)"], core = ["(seats Sortal Bob)"] },
+  { set = ["(seats Sortal C1)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Sortal C2)"], core = ["(seats Ann C1)"] },
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [
+  { set = ["(seats Ann Bob)"], core = ["(seats Ann Bob)"] },
+  { set = ["(seats Ann Sortal)"], core = ["(seats Ann Sortal)"] },
+  { set = ["(seats Bob Ann)"], core = ["(seats Bob Ann)"] },
+  { set = ["(seats Bob Sortal)"], core = ["(seats Bob Sortal)"] },
+  { set = ["(seats C1 Ann)"], core = ["(seats C1 Ann)"] },
+  { set = ["(seats C1 Bob)"], core = ["(seats C1 Bob)"] },
+  { set = ["(seats C1 C2)"], core = ["(seats C1 C2)"] },
+  { set = ["(seats C1 Sortal)"], core = ["(seats C1 Sortal)"] },
+  { set = ["(seats C2 Ann)"], core = ["(seats C2 Ann)"] },
+  { set = ["(seats C2 Bob)"], core = ["(seats C2 Bob)"] },
+  { set = ["(seats C2 C1)"], core = ["(seats C2 C1)"] },
+  { set = ["(seats C2 Sortal)"], core = ["(seats C2 Sortal)"] },
+  { set = ["(seats Sortal Ann)"], core = ["(seats Sortal Ann)"] },
+  { set = ["(seats Sortal Bob)"], core = ["(seats Sortal Bob)"] },
+  { set = ["(seats Sortal C1)"], core = ["(seats Sortal C1)"] },
+  { set = ["(seats Sortal C2)"], core = ["(seats Sortal C2)"] },
+]
+derived   = "Each core is the facts its refutation rests on, the smallest frontier over every derivation the program records (Q-M1e2.11 (i)(b)), a pair's two sides together. Each of the seven commitments is its own core: the node holds a contradiction every derivation of which rests on the commitment alone, and root with the commitment derives it (build/s1e2.2.21/derivecheck.py, 2026-11-05). (seats Ann C1) alone is root's, the positive side of a pair the commitment's negative completes, and root is alive. The other nine do not move"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = ["seats"]
+models    = [
+  ["(seats Ann C1)", "(seats Bob C2)"],
+]
+nogoods   = [
+  { set = ["(seats Ann Bob)"], core = ["(seats Ann Bob)"] },
+  { set = ["(seats Ann Sortal)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Bob Ann)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Bob Sortal)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C1 Ann)"], core = ["(seats C1 Ann)"] },
+  { set = ["(seats C1 Bob)"], core = ["(seats C1 Bob)"] },
+  { set = ["(seats C1 C2)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C1 Sortal)"], core = ["(seats C1 Sortal)"] },
+  { set = ["(seats C2 Ann)"], core = ["(seats C2 Ann)"] },
+  { set = ["(seats C2 Bob)"], core = ["(seats C2 Bob)"] },
+  { set = ["(seats C2 C1)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C2 Sortal)"], core = ["(seats C2 Sortal)"] },
+  { set = ["(seats Sortal Ann)"], core = ["(seats Sortal Ann)"] },
+  { set = ["(seats Sortal Bob)"], core = ["(seats Sortal Bob)"] },
+  { set = ["(seats Sortal C1)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Sortal C2)"], core = ["(seats Ann C1)"] },
 ]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════

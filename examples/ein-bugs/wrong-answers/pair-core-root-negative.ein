@@ -1,0 +1,32 @@
+;;; A boundary of M1e2 **W21**, banked by S1e2.2.21 (2026-11-05): a pair
+;;; contradiction whose *negative* side is root's. No register row: the core
+;;; the engine reports names the commitment.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The program states `(not (p a))`. One candidate, `(q a)`: committed, it
+;;; derives `(p a)` by `pos`, a pair whose positive side the commitment
+;;; derives and whose negative side root states.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is {∅}, and N is {(q a)}. The pair rests on `(p a)`, which rests on
+;;; `(q a)`, and on `(not (p a))`, stated: the core is `(not (p a)) (q a)`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R as above, exit 0; and N's core `(q a)`, refuted by `(given)` and `pos`
+;;; (`ein solve FILE --dump-answer DIR` at `cdcc3994`, release and debug):
+;;; the positive side's frontier, which here is the commitment's, so the core
+;;; names it, and it leaves out the stated `(not (p a))` the pair rests on
+;;; too. W21's fix grows it to `(not (p a)) (q a)`; it names the commitment
+;;; either way, which is why this file is a boundary and not a row.
+
+(relation p T) (relation q T) (relation seed T)
+
+(seed a)
+(not (p a))
+
+(hrule g () :match (seed ?x) :assert (q ?x))
+
+(rule pos () :match (q ?x) :assert (p ?x))
