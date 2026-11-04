@@ -165,8 +165,7 @@ constrained-reasoning research.
   fixed it the same day: the delta is in the order the commitment was
   written, nothing a run reports moves under a permuted interner, narration
   included, and the id-order sweep compares every core: 46 fixed, 2 open
-  (both deferred to a followup) and 1 not wrong. S1e2.2.16, the phase's last
-  stage, filed W16 from S1e2.2.7's notes the same day: the compile key
+  (both deferred to a followup) and 1 not wrong. S1e2.2.16 filed W16 from S1e2.2.7's notes the same day: the compile key
   interned an activator argument's text, so the int `1` and the string `"1"`
   keyed one plan and the second activator's conclusions were lost, in either
   order; and *forbid* read an activator whose every argument is an int or a
