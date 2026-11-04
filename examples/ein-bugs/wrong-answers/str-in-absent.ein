@@ -16,13 +16,14 @@
 ;;; is four states and none holds `(hit z)`. It is the answer of this file
 ;;; with `"b"` written `b` in its rule.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; `z` fires: the rule compiler does not lower a string, so the pattern
-;;; under `absent` is an opaque slot that matches nothing, and its `absent`
-;;; always holds. A conclusion the program refutes is in every state: `ein
-;;; solve FILE --minimal` at `ff023413` prints root's state as
-;;; `(model (hit z))`, in a release build and a debug one.
+;;; Until S1e2.2.18 `z` fired: the rule compiler did not lower a string, so
+;;; the pattern under `absent` was an opaque slot that matched nothing, and
+;;; its `absent` always held. A conclusion the program refutes was in every
+;;; state: `ein solve FILE --minimal` at `ff023413` printed root's state as
+;;; `(model (hit z))`, in a release build and a debug one. Since then the
+;;; compiler lowers a string as the loader does, and no state holds `(hit z)`.
 
 (relation holds Node) (relation hit Node)
 (holds a) (holds "b")

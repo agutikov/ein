@@ -7,6 +7,7 @@
 
 use ein_core::repr::{ReprValue, repr, repr_str};
 use ein_core::{FactId, Kb, NafRef, Overflow, Prov, ProvId, Symbol, Terms, Value};
+use ein_ir::{Ast, Node};
 
 use crate::plan::{Plan, Reg, Slot};
 
@@ -71,7 +72,14 @@ pub enum FireError {
     /// no unbound var reaches an `:assert` template, so this is an invariant
     /// violation rather than a rejected input — which is why it is loud.
     UnboundVar(String),
-    /// `expected NestedPattern at :assert top-level, got …`.
+    /// A conclusion no fact can hold: a top-level `:assert` that is not a
+    /// fact, or an argument that is not a value — a keyword pair, a range, a
+    /// wildcard, a relation written as a variable the activator does not
+    /// bind. One line in Ein's spelling, naming the rule and the slot as
+    /// written (`firing::not_a_fact`). It was *TypeError: expected
+    /// NestedPattern at :assert top-level, got …* and *TypeError: an
+    /// unrecognised `:assert` slot has no value to store* until M1e2
+    /// S1e2.2.18, which also stopped a string reaching it.
     NotAFact(String),
     /// The interner filled up. Structurally possible, never seen.
     Overflow(Overflow),
@@ -99,24 +107,78 @@ impl From<Overflow> for FireError {
 /// deliberately separate from [`fire`].
 pub fn build_fact(
     terms: &mut Terms,
+    ast: &Ast,
     plan: &Plan,
     env: Env<'_>,
     template: Slot,
 ) -> Result<FactId, FireError> {
     let Slot::Nested { rel, slots } = template else {
-        return Err(FireError::NotAFact(format!(
-            "expected NestedPattern at :assert top-level, got {}",
-            slot_type_name(template)
-        )));
+        return Err(not_a_fact(terms, ast, plan, template, None));
     };
     let mut args: Vec<Value> = Vec::with_capacity(slots.len());
     for i in slots.range() {
-        args.push(resolve(terms, plan, env, plan.slots[i])?);
+        let slot = plan.slots[i];
+        // Storing the node itself would put an IR node in a fact's args — a
+        // shape nothing downstream can read — so this refuses.
+        if let Slot::Opaque(_) = slot {
+            return Err(not_a_fact(terms, ast, plan, slot, Some(rel)));
+        }
+        args.push(resolve(terms, ast, plan, env, slot)?);
     }
     Ok(terms.intern_fact(rel, &args)?)
 }
 
-fn resolve(terms: &mut Terms, plan: &Plan, env: Env<'_>, slot: Slot) -> Result<Value, FireError> {
+/// The line a conclusion no fact can hold stops the run with, in Ein's
+/// spelling: the rule, and the slot as the program writes it. `within` is the
+/// relation whose argument it is, or `None` for a top-level conclusion.
+fn not_a_fact(
+    terms: &Terms,
+    ast: &Ast,
+    plan: &Plan,
+    slot: Slot,
+    within: Option<Symbol>,
+) -> FireError {
+    let rule = terms.sym(plan.rule);
+    let written = match slot {
+        Slot::Const(v) => terms.display(v),
+        Slot::Reg(r) => format!("?{}", terms.sym(plan.reg_names[r as usize])),
+        Slot::Nested { .. } => String::from("a fact"),
+        Slot::Opaque(node) => ein_ir::dump::dump_compact(ast, node),
+    };
+    let unbound_head = match slot {
+        Slot::Opaque(node) => match ast.node(node) {
+            Node::SForm { head, .. } => Some(ein_ir::dump::dump_compact(ast, head)),
+            _ => None,
+        },
+        _ => None,
+    };
+    FireError::NotAFact(match (unbound_head, within) {
+        (Some(head), _) => format!(
+            "rule '{rule}': its :assert writes {written}, whose relation {head} \
+             its activator does not bind — a relation written as a variable is \
+             one of the rule's parameters, which its activator binds to a name"
+        ),
+        (None, Some(rel)) => format!(
+            "rule '{rule}': its :assert writes {written} as an argument of {}, \
+             and no fact can hold it — an argument is a name, a string, an int, \
+             a variable its :match binds, or a fact (relation argument …)",
+            terms.sym(rel)
+        ),
+        (None, None) => format!(
+            "rule '{rule}': its :assert concludes {written}, which is not a fact \
+             — a conclusion is a fact (relation argument …), or an (and …) of \
+             facts"
+        ),
+    })
+}
+
+fn resolve(
+    terms: &mut Terms,
+    ast: &Ast,
+    plan: &Plan,
+    env: Env<'_>,
+    slot: Slot,
+) -> Result<Value, FireError> {
     match slot {
         Slot::Const(v) => Ok(v),
         Slot::Reg(r) => {
@@ -130,23 +192,9 @@ fn resolve(terms: &mut Terms, plan: &Plan, env: Env<'_>, slot: Slot) -> Result<V
             }
             Ok(v)
         }
-        Slot::Nested { .. } => Ok(Value::fact(build_fact(terms, plan, env, slot)?)),
-        // Storing the node itself would put an IR node in a fact's args — a
-        // shape nothing downstream can read — so this refuses, and the
-        // loader's validator already makes it unreachable.
-        Slot::Opaque(_) => Err(FireError::NotAFact(
-            "an unrecognised `:assert` slot has no value to store".to_string(),
-        )),
-    }
-}
-
-fn slot_type_name(slot: Slot) -> &'static str {
-    match slot {
-        // The IR node kind's name, for the shapes a template can actually be.
-        Slot::Reg(_) => "Var",
-        Slot::Const(_) => "Atom",
-        Slot::Nested { .. } => "NestedPattern",
-        Slot::Opaque(_) => "SForm",
+        Slot::Nested { .. } => Ok(Value::fact(build_fact(terms, ast, plan, env, slot)?)),
+        // `build_fact` refuses an opaque argument before it gets here.
+        Slot::Opaque(_) => Err(not_a_fact(terms, ast, plan, slot, None)),
     }
 }
 
@@ -160,6 +208,7 @@ fn slot_type_name(slot: Slot) -> &'static str {
 pub fn fire(
     kb: &mut Kb,
     terms: &mut Terms,
+    ast: &Ast,
     plan: &Plan,
     env: Env<'_>,
     absent: Box<[NafRef]>,
@@ -171,7 +220,7 @@ pub fn fire(
     let prov = new_prov(terms, plan, env, bindings.clone(), absent);
     let mut derived: Vec<FactId> = Vec::with_capacity(plan.asserts.len());
     for i in 0..plan.asserts.len() {
-        let id = build_fact(terms, plan, env, plan.asserts[i])?;
+        let id = build_fact(terms, ast, plan, env, plan.asserts[i])?;
         let (rel, args) = terms.facts.get(id);
         let args = args.to_vec();
         // Dedup is by `(relation, args)`, so an already-known conclusion is
@@ -328,7 +377,7 @@ mod tests {
             trail: &trail,
             premises: prems,
         };
-        let firing = fire(&mut kb, &mut terms, &plan, env, Box::new([]))
+        let firing = fire(&mut kb, &mut terms, &ast, &plan, env, Box::new([]))
             .expect("fires")
             .expect("has an assert");
         assert_eq!(firing.derived.len(), 2);
@@ -347,7 +396,7 @@ mod tests {
     /// does is an invariant violation — and it says so, bindings included.
     #[test]
     fn an_unbound_assert_var_quotes_the_bindings() {
-        let (_ast, mut terms, _kb, plan) = setup(
+        let (ast, mut terms, _kb, plan) = setup(
             "(relation a Thing)\n(relation b A B)\n\
              (rule r ()\n  :match (a ?x)\n  :assert (b ?x ?never))\n",
         );
@@ -363,7 +412,7 @@ mod tests {
             trail: &[x as Reg],
             premises: &[],
         };
-        let err = build_fact(&mut terms, &plan, env, plan.asserts[0]).expect_err("unbound");
+        let err = build_fact(&mut terms, &ast, &plan, env, plan.asserts[0]).expect_err("unbound");
         assert_eq!(
             err.to_string(),
             "unbound var ?never in :assert — bindings: {'x': 'thing1'}"

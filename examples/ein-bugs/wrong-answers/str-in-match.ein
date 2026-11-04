@@ -21,14 +21,16 @@
 ;;; `(hit a)` and `(hit b)`, nothing refutes, so R is their eight subsets,
 ;;; and every state holds the three `hit` facts root derives.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; `t` and `u` fire and `s` never does: the rule compiler does not lower a
-;;; string, so in a `:match` it is an opaque slot that matches nothing
-;;; (`compile.rs`' `slot`). R is the eight subsets, and no state holds
-;;; `(hit s)`: `ein solve FILE --minimal` at `ff023413` prints root's state
-;;; as `(model (hit t) (hit u))`, the summary's `root.facts_by_relation.hit`
-;;; is 2, in a release build and a debug one.
+;;; Until S1e2.2.18 `t` and `u` fired and `s` never did: the rule compiler
+;;; did not lower a string, so in a `:match` it was an opaque slot that
+;;; matched nothing (`compile.rs`' `slot`). R was the eight subsets, and no
+;;; state held `(hit s)`: `ein solve FILE --minimal` at `ff023413` printed
+;;; root's state as `(model (hit t) (hit u))`, the summary's
+;;; `root.facts_by_relation.hit` 2, in a release build and a debug one.
+;;; Since then the compiler lowers a string as the loader does, the symbol it
+;;; names, and root's state is `(model (hit s) (hit t) (hit u))`.
 
 (relation holds Node) (relation hit Node)
 (holds 1) (holds "1") (holds a) (holds "b")

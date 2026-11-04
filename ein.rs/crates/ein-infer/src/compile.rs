@@ -913,11 +913,21 @@ impl<'a> Compiler<'a> {
     ///
     /// A `Var` the activator bound becomes a `Const`, so the unifier treats it
     /// uniformly with a literal.
+    /// An `Atom` and a `String` become the symbol they name, as the loader
+    /// holds them in a fact (`from_ir::atomic_value`), so `"b"` and `b` are one
+    /// value in a rule as in a fact, at any depth, in a `:match` and an
+    /// `:assert` alike; `"1"` is the symbol `1`, not the int.
     /// An `SForm` becomes a nested pattern, with its head substituted from the
-    /// binding when it is a bound `Var`. Everything else — a `String`, a
-    /// `Wildcard`, a `Range`, a `KwPair`, an `SForm` with an unusable head —
-    /// is returned as-is and compared by equality, which is the
-    /// "unrecognised shape" safety net and which never matches anything.
+    /// binding when it is a bound `Var`. Everything else — a `Wildcard`, a
+    /// `Range`, a `KwPair`, an `SForm` with an unusable head — is returned
+    /// as-is and compared by equality, which is the "unrecognised shape"
+    /// safety net and which never matches anything; in an `:assert` it stops
+    /// the firing ([`crate::firing::FireError::NotAFact`]).
+    ///
+    /// **A string was such a node until M1e2 S1e2.2.18** (W18, 2026-11-04):
+    /// `(rule s () :match (holds "1") …)` never fired though `(holds "1")` is
+    /// a fact, an `(absent …)` over a string always held, and a string in an
+    /// `:assert` stopped saturation.
     fn slot(&mut self, node: NodeId) -> Result<Slot, CompileError> {
         match self.ast.node(node) {
             Node::Var(s) => {
@@ -927,7 +937,7 @@ impl<'a> Compiler<'a> {
                     None => Ok(Slot::Reg(self.var_reg(name)?)),
                 }
             }
-            Node::Atom(s) => {
+            Node::Atom(s) | Node::Str(s) => {
                 let name = self.ast.sym(s).to_string();
                 Ok(Slot::Const(Value::sym(self.intern(&name))))
             }
@@ -991,7 +1001,8 @@ impl<'a> Compiler<'a> {
                 let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
                 GuardArgKind::Reg(self.var_reg(name)?)
             }
-            Node::Atom(s) => {
+            // A string is the symbol it names, as in `slot` (M1e2 S1e2.2.18).
+            Node::Atom(s) | Node::Str(s) => {
                 let name = self.ast.sym(s).to_string();
                 GuardArgKind::Const(Value::sym(self.intern(&name)))
             }
@@ -1578,18 +1589,47 @@ mod tests {
     fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
         let (_, _terms, plan) = compile(
             "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes \"lit\" ?b))\n  :assert (likes ?b ?b))\n",
+             (rule r ()\n  :match (not (likes 1..3 ?b))\n  :assert (likes ?b ?b))\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         let Step::Rel(first) = steps[0] else {
             panic!("expected a relation step")
         };
-        // A `String` literal is an opaque slot — it never matches anything, so
-        // it is not a key either; `?b` still is.
+        // A range is an opaque slot — it never matches anything, so it is not
+        // a key either; `?b` still is. The example was a string until M1e2
+        // S1e2.2.18, which made a string the symbol it names (the next test).
         let probes = plan.probes(first.probe);
+        assert_eq!(probes.len(), 1, "`?b` alone");
+        assert_eq!((probes[0].slot, probes[0].inner), (0, 1));
+        assert!(matches!(probes[0].src, ProbeSrc::Reg(_)));
+    }
+
+    /// M1e2 S1e2.2.18 — a string in a `:match` is the symbol it names, as the
+    /// loader holds it in a fact, so it is a key as an atom is: the nested
+    /// premise probes on `"lit"` and on `?b`, and the constant is the symbol
+    /// `lit`. Until then it was an opaque slot that matched nothing (W18).
+    #[test]
+    fn a_string_in_a_pattern_is_the_symbol_it_names() {
+        let (_, mut terms, plan) = compile(
+            "(relation likes A B)\n\
+             (rule r ()\n  :match (not (likes \"lit\" ?b))\n  :assert (likes ?b \"lit\"))\n",
+        );
+        let lit = Value::sym(terms.intern_text("lit").expect("room"));
+        let steps = plan.steps(plan.disjuncts[0].steps);
+        let Step::Rel(first) = steps[0] else {
+            panic!("expected a relation step")
+        };
+        let probes = plan.probes(first.probe);
+        assert_eq!(probes.len(), 2, "the string, then `?b`");
+        assert_eq!((probes[0].slot, probes[0].inner), (0, 0));
+        assert!(matches!(probes[0].src, ProbeSrc::Const(v) if v == lit));
+        assert_eq!((probes[1].slot, probes[1].inner), (0, 1));
+        let Slot::Nested { slots, .. } = plan.asserts[0] else {
+            panic!("a fact template")
+        };
         assert!(
-            probes.iter().all(|p| p.slot == 0),
-            "every probe keys inside the nested argument"
+            matches!(plan.slots(slots)[1], Slot::Const(v) if v == lit),
+            "the `:assert`'s string is the same symbol"
         );
     }
 

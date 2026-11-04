@@ -124,7 +124,7 @@ impl Lookahead {
                             };
                             // Defensive: a malformed assert template never
                             // kills a candidate.
-                            let Ok(f) = build_fact(s.terms, plan, env, template) else {
+                            let Ok(f) = build_fact(s.terms, s.ast, plan, env, template) else {
                                 continue;
                             };
                             if is_contradiction(s.kb, s.terms, f, h) {

@@ -16,15 +16,17 @@
 ;;; R is four states, root's holding the two. It is the answer of this file
 ;;; with `"b"` written `b` in its rules.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; `g` never fires and `n` fires on both: the rule compiler lowers a guard's
-;;; string to a raw node, which equals no value (`compile.rs`' `guard_arg`,
-;;; `match_.rs`' `resolved_eq`), so `eq` never holds and `neq` always does.
-;;; Root derives `(other a)` and `(other b)` and no `hit`; the candidates are
-;;; `(hit a)` and `(hit b)`, and `ein solve FILE --minimal` at `ff023413`
-;;; prints root's state as `(model)`, over `hit` alone, in a release build
-;;; and a debug one.
+;;; Until S1e2.2.18 `g` never fired and `n` fired on both: the rule compiler
+;;; lowered a guard's string to a raw node, which equals no value
+;;; (`compile.rs`' `guard_arg`, `match_.rs`' `resolved_eq`), so `eq` never
+;;; held and `neq` always did. Root derived `(other a)` and `(other b)` and no
+;;; `hit`; the candidates were `(hit a)` and `(hit b)`, and `ein solve FILE
+;;; --minimal` at `ff023413` printed root's state as `(model)`, over `hit`
+;;; alone, in a release build and a debug one. Since then a guard lowers a
+;;; string as the loader does, and root's state is `(model (hit b) (other
+;;; a))`.
 
 (relation holds Node) (relation hit Node) (relation other Node)
 (holds a) (holds "b")

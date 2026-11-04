@@ -215,7 +215,7 @@ pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
                 let Some(p) = pattern.as_ref() else {
                     continue;
                 };
-                walk_constants(ast, NodeId(p.expr.0), true, &mut |text, head| {
+                walk_constants(ast, NodeId(p.expr.0), true, false, &mut |text, head| {
                     if head {
                         return;
                     }
@@ -484,9 +484,22 @@ impl Universe {
 /// asserts about `p` and `q`, not about `and` and `not`. A keyword pair
 /// contributes its value only — `:priority 250` names no relation — and a
 /// variable contributes nothing at all.
-fn walk_constants(ast: &Ast, node: NodeId, head_pos: bool, f: &mut impl FnMut(&str, bool)) {
+///
+/// A **string** is the symbol it names, as the compiler lowers it
+/// ([`crate::compile`]'s `slot`) and the loader holds it in a fact, so
+/// `(tag ?x "lbl")` names `lbl` as `(tag ?x lbl)` does — M1e2 S1e2.2.18. Not
+/// under a keyword pair (`kw`): the compiler lowers nothing there, and a
+/// keyword's string value keeps its meaning, text.
+fn walk_constants(
+    ast: &Ast,
+    node: NodeId,
+    head_pos: bool,
+    kw: bool,
+    f: &mut impl FnMut(&str, bool),
+) {
     match ast.node(node) {
         Node::Atom(s) => f(ast.sym(s), head_pos),
+        Node::Str(s) if !kw => f(ast.sym(s), head_pos),
         Node::SForm { head, .. } => {
             let structural = ast
                 .atom_name(head)
@@ -497,10 +510,10 @@ fn walk_constants(ast: &Ast, node: NodeId, head_pos: bool, f: &mut impl FnMut(&s
                 f(name, true);
             }
             for &a in ast.form_args(node) {
-                walk_constants(ast, a, false, f);
+                walk_constants(ast, a, false, kw, f);
             }
         }
-        Node::KwPair { value, .. } => walk_constants(ast, value, false, f),
+        Node::KwPair { value, .. } => walk_constants(ast, value, false, true, f),
         _ => {}
     }
 }

@@ -777,7 +777,7 @@ impl Saturator {
         // several). Cheap — a pure walk over each template.
         let mut tentative = Vec::with_capacity(plan.asserts.len());
         for i in 0..plan.asserts.len() {
-            tentative.push(build_fact(s.terms, &plan, env, plan.asserts[i])?);
+            tentative.push(build_fact(s.terms, s.ast, &plan, env, plan.asserts[i])?);
         }
         let all_known = tentative.iter().all(|&f| s.kb.contains(f));
 
@@ -820,7 +820,7 @@ impl Saturator {
             trail: &e.trail,
             premises: &e.premises,
         };
-        Ok(fire(s.kb, s.terms, &plan, env, absent)?)
+        Ok(fire(s.kb, s.terms, s.ast, &plan, env, absent)?)
     }
 
     /// Record a redundant firing as an **alternative** justification (S1.21.7).

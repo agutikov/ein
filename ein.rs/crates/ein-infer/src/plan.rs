@@ -194,10 +194,12 @@ pub enum GuardArgKind {
     /// A `Var`: its bound value, or "unbound" — which guard resolution's
     /// lenient policy treats as a null, equal only to another unbound value.
     Reg(Reg),
-    /// An `Atom` (resolving to its **name**) or an `Int` (to its value).
+    /// An `Atom` or a `String` (resolving to the symbol it names, as the
+    /// loader holds it in a fact) or an `Int` (to its value). A string was a
+    /// [`Self::Node`] until M1e2 S1e2.2.18, so `(eq ?x "b")` never held.
     Const(Value),
-    /// Anything else — a `String`, a `Wildcard`, an `SForm` — which
-    /// guard resolution returns as-is, so it compares by IR-node equality.
+    /// Anything else — a `Wildcard`, an `SForm` — which guard resolution
+    /// returns as-is, so it compares by IR-node equality.
     Node,
 }
 

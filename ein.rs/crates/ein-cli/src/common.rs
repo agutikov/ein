@@ -227,8 +227,10 @@ pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
 
 /// A `SaturateError` as the line the run ends with.
 ///
-/// `KeyError` and `TypeError` are named bare and the other classes qualified,
-/// and `KeyError`'s message is quoted the way
+/// `KeyError` is named bare and the other classes qualified, and a conclusion
+/// no fact can hold names no class: it is the rule and the slot as the program
+/// writes them, the line `ein solve` prints too (it was `TypeError: …` until
+/// M1e2 S1e2.2.18). `KeyError`'s message is quoted the way
 /// [`repr_str`](ein_core::repr::repr_str) quotes a string — so an unbound
 /// `:assert` variable ends the run as
 /// `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, quotes and all
@@ -245,7 +247,9 @@ pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
         SaturateError::Fire(FireError::UnboundVar(m)) => {
             format!("KeyError: {}", ein_core::repr::repr_str(m))
         }
-        SaturateError::Fire(FireError::NotAFact(m)) => format!("TypeError: {m}"),
+        // Ein's spelling since M1e2 S1e2.2.18: the rule and the slot as the
+        // program writes them, the line `ein solve` prints too.
+        SaturateError::Fire(FireError::NotAFact(m)) => m.clone(),
         SaturateError::StepLimit(m) => {
             format!("ein.inference.saturator.SaturatorStepLimitError: {m}")
         }

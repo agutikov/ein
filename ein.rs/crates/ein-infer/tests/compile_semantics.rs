@@ -188,6 +188,99 @@ fn a_where_keyword_pair_in_a_match_is_dropped_and_the_rule_still_compiles() {
     );
 }
 
+// ── A string in a rule — M1e2 S1e2.2.18 ────────────────────────────
+
+impl Loaded {
+    /// Every fact under `head` **by value**: each fact's `repr`, which keeps a
+    /// string's symbol quoted and an int bare, where [`Loaded::facts_under`]
+    /// prints the two alike (P1e2.3's N5).
+    fn values_under(&self, head: &str) -> BTreeSet<String> {
+        self.kb
+            .facts()
+            .filter(|&f| self.terms.sym(self.terms.facts.get(f).0) == head)
+            .map(|f| ein_core::repr::repr(&self.terms.repr_fact(f)))
+            .collect()
+    }
+}
+
+/// **A string in a rule is the symbol it names, in both clauses and at any
+/// depth** — M1e2 S1e2.2.18, W18: what the loader holds a string written as a
+/// fact's argument as (`01_grammar.md`'s `STRING` row), the compiler lowers a
+/// string written in a rule to.
+///
+/// Until S1e2.2.18 it did not: in a `:match` a string was an opaque slot that
+/// matched nothing, so a premise naming one never matched and an `(absent …)`
+/// over one always held; a guard's was a raw node that equalled no value, so
+/// `eq` never held and `neq` always did; and in an `:assert` the firing
+/// stopped the run. Each rule below is one of those places, and each conclusion
+/// is compared to the one the same program with the string written as an atom
+/// derives, by value. `"1"` has no atom spelling, a bare `1` being the int, so
+/// the program states both and the claim is that the string matches the
+/// symbol's fact and not the int's.
+#[test]
+fn a_string_in_a_rule_is_the_symbol_it_names() {
+    let program = |q: &str| {
+        let s = |text: &str| format!("{q}{text}{q}");
+        format!(
+            r#"(relation holds Node) (relation wrap Node) (relation hit Node) (relation tag Node Node)
+(holds "1") (holds 1) (holds "b") (wrap (box "1"))
+(rule top    () :match (holds "1")              :assert (hit top))
+(rule nested () :match (wrap (box "1"))         :assert (hit nested))
+(rule guard  () :match (and (holds ?x) (eq ?x {b})) :assert (tag guard ?x))
+(rule other  () :match (and (holds ?x) (neq ?x {b})) :assert (tag other ?x))
+(rule naf    () :match (and (holds b) (absent (holds {b}))) :assert (hit naf))
+(rule out    () :match (holds b)
+  :assert (and (tag out {lbl}) (tag out (box {lbl})) (not (tag {lbl} {lbl}))))
+"#,
+            b = s("b"),
+            lbl = s("lbl"),
+        )
+    };
+    let mut strings = load_text(&program("\""));
+    strings.saturate();
+    let mut atoms = load_text(&program(""));
+    atoms.saturate();
+    for head in ["hit", "tag", "not"] {
+        assert_eq!(
+            strings.values_under(head),
+            atoms.values_under(head),
+            "{head}: a string in a rule concludes what the atom it names does"
+        );
+    }
+    assert_eq!(
+        strings.facts_under("hit"),
+        ["(hit nested)", "(hit top)"],
+        "the premises naming \"1\" match the symbol's facts, top-level and \
+         nested, and the absent over (holds \"b\") does not hold"
+    );
+    assert_eq!(
+        strings.facts_under("tag"),
+        [
+            "(tag guard b)",
+            "(tag other 1)",
+            "(tag other 1)",
+            "(tag out (box lbl))",
+            "(tag out lbl)"
+        ],
+        "eq holds for b alone, neq for both 1s, and the :assert stores the \
+         symbol, top-level and nested"
+    );
+    assert_eq!(strings.facts_under("not"), ["(not (tag lbl lbl))"]);
+    // The slots hold the symbol: `SCAN holds ['1']`, `ASSERT 0 (tag 'out'
+    // 'lbl')`. A guard's argument prints as its IR node whatever it lowers to
+    // (`shape::guard_arg_text`), so its lowering is held by `(tag guard b)`.
+    let shape = strings.shape(true).expect("compiles");
+    let slots: Vec<&str> = shape
+        .lines()
+        .filter(|l| !l.trim_start().starts_with("GUARD"))
+        .collect();
+    assert!(
+        slots.iter().all(|l| !l.contains("String(")),
+        "no slot holds a string as an opaque node:\n{shape}"
+    );
+    assert!(slots.contains(&"    SCAN holds ['1']"), "{shape}");
+}
+
 // ── S1.22.0's four refusals, and M1e's four ────────────────────────
 
 /// Each fixture under `examples/broken/compile/` is refused with exactly the

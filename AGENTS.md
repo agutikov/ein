@@ -189,7 +189,12 @@ constrained-reasoning research.
   rule's `:match` matched nothing, a guard's equalled no value, an `absent`
   over one always held, an hrule's template proposed nothing, and one in an
   `:assert` stopped the run, five witnesses, the register's schema `/7`
-  recording that stop: 55 fixed, 7 open and 1 not wrong.
+  recording that stop: 55 fixed, 7 open and 1 not wrong. It fixed all five
+  the same day: a string in a rule's `:match`, `:assert` or guard is the
+  symbol it names, as in a fact, and a name of the program, and the line a
+  conclusion no fact can hold still stops the run with is Ein's, the rule
+  and the slot as written: 60 fixed, 2 open (both deferred to a followup)
+  and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -949,3 +949,83 @@ fn an_int_and_a_string_with_one_text_are_two_activators() {
         assert_eq!(run.productive().len(), 4, "{order}: four applications");
     }
 }
+
+// ── a string in a rule — M1e2 S1e2.2.18 ────────────────────────────────────
+
+/// **A string in a rule means what it means in a fact: it matches the fact it
+/// names, and an `:assert` stores it** — M1e2 S1e2.2.18's regression for W18,
+/// in either build.
+///
+/// The loader holds a string written as a fact's argument as the symbol it
+/// names, so `(holds "b")` is `(holds b)`, and `"1"` is the symbol `1`, a value
+/// apart from the int. Until S1e2.2.18 the rule compiler did not lower a
+/// string: in a `:match` it was an opaque slot that matched nothing, so `s`
+/// never fired, and in an `:assert` it had no value to store, so the run
+/// stopped at `l`'s first firing. `t` (an atom matching the string's fact) and
+/// `u` (the int) are the controls. Compared by value (`derived_values`, a
+/// fact's `repr`), since the printer drops a string's quotes (P1e2.3's N5).
+/// The corpus witnesses are `examples/ein-bugs/wrong-answers/str-in-*.ein`.
+#[test]
+fn a_string_in_a_rule_means_what_it_means_in_a_fact() {
+    let program = |rules: &str| {
+        format!(
+            r#"
+            (relation holds Node) (relation hit Node) (relation tag Node Node)
+            (holds 1) (holds "1") (holds a) (holds "b")
+            {rules}
+            "#
+        )
+    };
+    let matched = saturate(&program(
+        r#"
+        (rule s () :match (holds "1") :assert (hit s))
+        (rule t () :match (holds b)   :assert (hit t))
+        (rule u () :match (holds 1)   :assert (hit u))
+        "#,
+    ));
+    assert_eq!(
+        matched.derived(),
+        BTreeSet::from(["(hit s)", "(hit t)", "(hit u)"].map(String::from)),
+        "`s` fires as `t` and `u` do"
+    );
+    let premises = |run: &Run, rule: &str| -> Vec<String> {
+        run.productive()
+            .iter()
+            .filter(|f| run.rule_of(f) == rule)
+            .flat_map(|f| {
+                f.premises
+                    .iter()
+                    .map(|&p| ein_core::repr::repr(&run.terms.repr_fact(p)))
+            })
+            .collect()
+    };
+    // By value: `s` matched the string's fact, `u` the int's.
+    let (s, u) = (premises(&matched, "s"), premises(&matched, "u"));
+    assert_eq!(s.len(), 1, "one application of `s`: {s:?}");
+    assert_eq!(u.len(), 1, "one application of `u`: {u:?}");
+    assert!(
+        s[0].contains("'1'") && !u[0].contains("'1'"),
+        "`s` matched the string's fact, the symbol `1`, and `u` the int's: {s:?} {u:?}"
+    );
+
+    // An `:assert` stores the symbol, at the top level and nested, where the
+    // run stopped before.
+    let asserted = try_saturate(&program(
+        r#"(rule l () :match (holds ?x) :assert (and (tag ?x "lbl") (tag ?x (hit "lbl"))))"#,
+    ))
+    .unwrap_or_else(|e| panic!("an `:assert` with a string saturates: {e}"));
+    let control = saturate(&program(
+        r#"(rule l () :match (holds ?x) :assert (and (tag ?x lbl) (tag ?x (hit lbl))))"#,
+    ));
+    assert_eq!(
+        asserted.derived_values(),
+        control.derived_values(),
+        "a string in an `:assert` is the symbol it names"
+    );
+    assert_eq!(
+        asserted.derived_values().len(),
+        8,
+        "two conclusions for each of the four values: {:?}",
+        asserted.derived_values()
+    );
+}

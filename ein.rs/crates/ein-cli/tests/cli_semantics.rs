@@ -795,6 +795,95 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
     }
 }
 
+/// **A conclusion no fact can hold stops the run with one line in Ein's
+/// spelling, the same from every command** — M1e2 S1e2.2.18.
+///
+/// The line was `TypeError: expected NestedPattern at :assert top-level, got
+/// Atom` or `TypeError: an unrecognised `:assert` slot has no value to store`
+/// under `ein saturate`, and the message alone under `ein solve`: a Python
+/// class, a Python IR class's name, and no word of which rule or what it
+/// wrote. A string reached it until S1e2.2.18 lowered one (W18); these shapes
+/// still do, each a program the loader accepts and the rule's first firing
+/// stops, exit 1 as before. The line names the rule and the slot as the
+/// program writes it.
+#[test]
+fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
+    const ARG: &str = "and no fact can hold it — an argument is a name, a string, an int, a \
+                       variable its :match binds, or a fact (relation argument …)";
+    const TOP: &str = "which is not a fact — a conclusion is a fact (relation argument …), or \
+                       an (and …) of facts";
+    const HEAD: &str = "its activator does not bind — a relation written as a variable is one \
+                        of the rule's parameters, which its activator binds to a name";
+    let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
+    let cases: [(&str, String); 8] = [
+        (
+            r#"(tag ?x b :source "x")"#,
+            format!(r#"its :assert writes :source "x" as an argument of tag, {ARG}"#),
+        ),
+        (
+            "(tag ?x 1..3)",
+            format!("its :assert writes 1..3 as an argument of tag, {ARG}"),
+        ),
+        (
+            "(tag ?x _)",
+            format!("its :assert writes _ as an argument of tag, {ARG}"),
+        ),
+        (
+            "(tag ?x (box a :k v))",
+            format!("its :assert writes :k v as an argument of box, {ARG}"),
+        ),
+        ("foo", format!("its :assert concludes foo, {TOP}")),
+        (
+            "(and (tag ?x b) ?x)",
+            format!("its :assert concludes ?x, {TOP}"),
+        ),
+        (
+            "(?x a b)",
+            format!("its :assert writes (?x a b), whose relation ?x {HEAD}"),
+        ),
+        (
+            "(tag a (?x b))",
+            format!("its :assert writes (?x b), whose relation ?x {HEAD}"),
+        ),
+    ];
+    for (i, (assert, line)) in cases.iter().enumerate() {
+        let file = scratch.path().join(format!("{i}.ein"));
+        std::fs::write(
+            &file,
+            format!(
+                "(relation holds Node) (relation tag Node Node)\n(holds a)\n\
+                 (rule s () :match (holds ?x) :assert {assert})\n"
+            ),
+        )
+        .expect("the program is written");
+        let file = file.to_string_lossy();
+        let want = format!("rule 's': {line}");
+        for cmd in ["saturate", "solve"] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, 1, "ein {cmd} on :assert {assert}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().rfind(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} on :assert {assert}"
+            );
+            for python in ["TypeError", "NestedPattern", "SForm", "unrecognised"] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
+    // A string reaches it no more: it is the symbol it names.
+    let file = scratch.path().join("string.ein");
+    std::fs::write(
+        &file,
+        "(relation holds Node) (relation tag Node Node)\n(holds a)\n\
+         (rule s () :match (holds ?x) :assert (tag ?x \"lbl\"))\n",
+    )
+    .expect("the program is written");
+    let r = ein(&["saturate", "--dump", &file.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.out.contains("  (tag a lbl :rule s)\n"), "{}", r.out);
+}
+
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.

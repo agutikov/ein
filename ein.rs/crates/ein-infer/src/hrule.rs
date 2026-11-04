@@ -137,7 +137,7 @@ impl Hrules {
                     trail,
                     premises: &[],
                 };
-                match build_fact(s.terms, plan, env, template) {
+                match build_fact(s.terms, s.ast, plan, env, template) {
                     Ok(fact) => f(s, fact)?,
                     // `UnboundVar` / `NotAFact` — a malformed template yields
                     // no candidate. An `Overflow` is not that, but it is

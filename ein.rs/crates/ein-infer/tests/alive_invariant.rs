@@ -103,10 +103,14 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`,
 ///   M1e2's W16 (S1e2.2.16): its one candidate is the hrule's `(checked
 ///   (box a))`, and the name is no candidate's.
+/// - `wrong-answers/str-in-assert.ein` and `str-in-hrule.ein` — `lbl`, a
+///   string in a rule's `:assert` (an hrule's in the second), M1e2's W18
+///   (S1e2.2.18): a string a rule writes is the symbol it names, so a name of
+///   the program, as the atom `lbl` would be.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
-const SEEDED: [(&str, &[&str]); 23] = [
+const SEEDED: [(&str, &[&str]); 25] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -166,6 +170,14 @@ const SEEDED: [(&str, &[&str]); 23] = [
     (
         "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein",
         &["`Z`, asserted by rule `special`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/str-in-assert.ein",
+        &["`lbl`, asserted by rule `s`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/str-in-hrule.ein",
+        &["`lbl`, asserted by hrule `h`"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",
