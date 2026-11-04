@@ -1,0 +1,36 @@
+;;; W16's twin — M1e2 S1e2.2.16, register row `W16/string-then-int`
+;;; (`corpus/wrong_answers.toml`). Promoted from
+;;; `corpus/fuzz_findings/activator-text-key-swapped.ein` by the fix.
+;;;
+;;; `activator-text-int-and-string.ein` with its two activator lines
+;;; swapped, and nothing else. Unlike W7's twin, this order answered wrong
+;;; too, the other way: the string's plan was compiled first and the int
+;;; activator's key was the same text, so root held the string's two
+;;; `noted` facts and not the int's (`ein saturate` at `6a775f3d`: `noted
+;;; 2`), and a debug build aborted on it as on the other order. Since
+;;; S1e2.2.16 the key is the activator's values, and both orders derive the
+;;; same four facts, in either build. The pair is the test: the same
+;;; `:expect`, word for word, holds on both, and as the other file's header
+;;; says, it is a count and `rule_semantics.rs` that tell the four apart.
+
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds "1")
+
+(note edge "1")
+(note edge 1)
+
+(solve
+  ;; `holds` and `noted` are named, so both are closed: each state lists
+  ;; their complete extent, root's facts included.
+  :expect (region
+            ;; state 1 of 1 — ∅, root itself · minimal · maximal
+            (model (holds 1) (holds "1")
+                   (noted 1 1) (noted 1 "1") (noted 2 1) (noted 2 "1"))))

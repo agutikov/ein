@@ -7,10 +7,11 @@
 ;;; collide with, and this file answers the same in either build and under
 ;;; either key: it is a control, as `activator-text-string-only.ein` is for
 ;;; the other activator. The pair that keeps both activators, in the two
-;;; orders, is `corpus/fuzz_findings/activator-text-key.ein` and its
-;;; `-swapped` twin until the commit that fixes W16 promotes it here: a
-;;; build with debug assertions aborts on both, and every in-process corpus
-;;; sweep is such a build.
+;;; orders, is `activator-text-int-and-string.ein` and
+;;; `activator-text-string-then-int.ein`, promoted here from
+;;; `corpus/fuzz_findings/` by the commit that fixed W16, the one after this
+;;; file was banked: a build with debug assertions aborted on both until
+;;; then, and every in-process corpus sweep is such a build.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;

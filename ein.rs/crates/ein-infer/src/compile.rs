@@ -88,10 +88,10 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 
 // ── The compile cache key ──────────────────────────────────────────
 
-/// `(rule_name, the activator's arguments as text)` — the compile cache's key.
+/// `(rule_name, the activator's arguments)` — the compile cache's key.
 ///
-/// It stringifies **all** the activator's arguments while
-/// [`Plan::activator_args`] keeps only the string ones. That asymmetry is
+/// It keeps **all** the activator's arguments, as values, while
+/// [`Plan::activator_args`] keeps only the symbol ones. That asymmetry is
 /// Q-M1a.8. Since M1e2 S1e2.2.7 it reaches no identity: the engine interns
 /// *this* list as [`crate::firing::BindingKey`]'s activator half, so the
 /// compile key and the binding key are one list, and `Plan::activator_args`
@@ -101,46 +101,41 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 /// and an `int` beside a nested `Fact` in one position lost a derivation
 /// (Q-M1e.16, M1e2's W7); see `BindingKey`.
 ///
-/// Interning each argument's text has one collision: the integer `7` and the
-/// atom `7` both stringify to `"7"` and therefore share a key.
+/// **A value, not its text**, since M1e2 S1e2.2.16. Until then a non-symbol
+/// argument was rendered and the text interned, so the int `1` and the string
+/// `"1"`, which the loader holds as two values (an `Int` and a `Sym` whose
+/// text is `1`), gave one key and one plan: with the activators
+/// `(note edge 1)` and `(note edge "1")` the second compiled nothing and its
+/// conclusions were lost in a release build, while a debug build aborted in
+/// `Engine::compile_all`'s shortcut check (M1e2's W16). This comment called it
+/// *the one collision* and accepted it. A string and an atom with the same
+/// text are one value, a `Sym`, so they are one key, as they are one fact.
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct PlanKey {
     pub rule: Symbol,
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
 }
 
-pub fn plan_key(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> PlanKey {
+impl PlanKey {
+    /// The key's arguments as text, each [`Terms::display`] of its value:
+    /// what the `compile` event and the plan shape print, the same text the
+    /// key interned until S1e2.2.16.
+    pub fn activator_text(&self, terms: &Terms) -> Vec<String> {
+        self.activator.iter().map(|&v| terms.display(v)).collect()
+    }
+}
+
+pub fn plan_key(terms: &Terms, rule: &Rule, activator: Option<FactId>) -> PlanKey {
     ein_core::counters::bump(|c| c.plan_key += 1);
-    let args: Vec<Symbol> = match activator {
-        None => Vec::new(),
-        // T1a.6.4.0 — a **symbol** argument round-trips to itself, and every
-        // activator argument in the corpus is one. `Terms::display` of a
-        // `Tag::Sym` value *is* that symbol's text and `intern_text` returns
-        // the symbol that text already has, so rendering it costs a `String`,
-        // a byte-wise hash and an allocation to arrive back where it started.
-        // An `int` or a nested fact still renders — which is what keeps the
-        // deliberate `7` / `'7'` collision above — so this is the same key,
-        // not a cheaper one: `plan_key_renders_only_what_needs_rendering`
-        // checks both shapes against the pre-shortcut path.
-        Some(f) => match terms.facts.args(f).iter().map(|a| a.as_sym()).collect() {
-            Some(syms) => syms,
-            None => {
-                let rendered: Vec<String> = terms
-                    .facts
-                    .args(f)
-                    .iter()
-                    .map(|&a| terms.display(a))
-                    .collect();
-                rendered
-                    .iter()
-                    .map(|s| terms.intern_text(s).expect("room for an activator arg"))
-                    .collect()
-            }
-        },
-    };
     PlanKey {
         rule: rule.name,
-        activator: args.into_boxed_slice(),
+        // The activator's arguments as the KB holds them. A fact's arguments
+        // are interned values, so equal values are equal arguments, and
+        // nothing here renders or interns.
+        activator: match activator {
+            None => Box::new([]),
+            Some(f) => terms.facts.args(f).into(),
+        },
     }
 }
 
@@ -208,9 +203,10 @@ impl PlanMemo {
     /// The same, for a caller that already has the key.
     ///
     /// [`Engine::compile_for`](crate::engine::Engine::compile_for) computes it
-    /// to probe its own cache first, and `plan_key` renders and re-interns
-    /// every activator argument — so recomputing it here would allocate a
-    /// `Vec<String>` per compile for an answer already in hand
+    /// to probe its own cache first, so recomputing it here would copy the
+    /// activator's arguments again for an answer already in hand. Until M1e2
+    /// S1e2.2.16 `plan_key` rendered and re-interned every non-symbol
+    /// argument, a `Vec<String>` per compile
     /// ([baseline.md §7](../../../../docs/history/m1a_rust/measurements/baseline.md)
     /// item 4 names `plan_key` among the top allocators).
     pub fn intern_keyed(
@@ -1380,74 +1376,47 @@ mod tests {
         (ast, terms, plan)
     }
 
-    /// T1a.6.4.0 — the key skips `display`/`intern_text` for a **symbol**
-    /// argument and still renders anything else, and the two paths agree on
-    /// every shape an activator can carry. The reference is the pre-shortcut
-    /// body, verbatim: what is being checked is that a cheaper route reaches
-    /// the same key, including the `7` / `'7'` collision the key keeps on
-    /// purpose.
+    /// M1e2 S1e2.2.16 — the key is the activator's values. The int `7` and
+    /// the string `"7"`, which the loader holds as two values and so as two
+    /// activator facts, are two keys: until then each non-symbol argument's
+    /// text was interned and they were one key and one plan, and the second
+    /// activator's conclusions were lost (W16). A string and an atom with the
+    /// same text are one value, one fact and one key. The key's text is each
+    /// value's `display`, the text it interned before.
     #[test]
-    fn plan_key_renders_only_what_needs_rendering() {
-        fn reference(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> PlanKey {
-            let args: Vec<Symbol> = match activator {
-                None => Vec::new(),
-                Some(f) => {
-                    let rendered: Vec<String> = terms
-                        .facts
-                        .args(f)
-                        .iter()
-                        .map(|&a| terms.display(a))
-                        .collect();
-                    rendered
-                        .iter()
-                        .map(|s| terms.intern_text(s).expect("room for an activator arg"))
-                        .collect()
-                }
-            };
-            PlanKey {
-                rule: rule.name,
-                activator: args.into_boxed_slice(),
-            }
-        }
-        let body = ":match (?R ?a ?b)\n  :assert (?R ?b ?a))\n";
-        // Coverage, asserted rather than hoped for: a differential test that
-        // never reaches one of its two branches passes for the wrong reason.
-        let (mut cheap, mut rendered) = (0, 0);
-        for src in [
-            // no activator at all, one symbol, an int, and a nested fact
-            format!("(relation edge A B)\n(rule walk ()\n  {body}"),
-            format!("(relation edge A B)\n(rule walk (?R)\n  {body}(walk edge)\n"),
-            // two symbols: the cheap path has an order, and this is what says so
-            format!(
-                "(relation edge A B)\n(relation link A B)\n(rule walk (?R ?S)\n  {body}(walk edge link)\n"
-            ),
-            format!("(relation edge A B)\n(rule walk (?R ?N)\n  {body}(walk edge 7)\n"),
-            format!("(relation edge A B)\n(rule walk (?R ?N)\n  {body}(walk edge (edge A B))\n"),
-        ] {
-            let mut ast = Ast::new();
-            let mut terms = Terms::new();
-            let forms = parse(&mut ast, &src, Some("<test>")).expect("parses");
-            let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
-            let rule = kb.program().rules.values().next().expect("a rule").clone();
-            for activator in activators_for(&kb, &terms, &rule) {
-                match activator.map(|f| terms.facts.args(f).to_vec()) {
-                    Some(args) if args.iter().all(|a| a.as_sym().is_some()) && args.len() > 1 => {
-                        cheap += 1
-                    }
-                    Some(args) if args.iter().any(|a| a.as_sym().is_none()) => rendered += 1,
-                    _ => {}
-                }
-                assert_eq!(
-                    plan_key(&mut terms, &rule, activator),
-                    reference(&mut terms, &rule, activator),
-                    "the key moved on {src:?}"
-                );
-            }
-        }
-        assert!(
-            cheap > 0 && rendered > 0,
-            "cheap {cheap}, rendered {rendered}"
+    fn plan_key_is_the_activators_values() {
+        let src = "(relation edge A B)\n(rule walk (?R ?N)\n  :match (?R ?a ?b)\n  :assert (?R ?b ?a))\n\
+                   (walk edge 7)\n(walk edge \"7\")\n(walk edge seven)\n(walk edge \"seven\")\n\
+                   (walk edge (edge A B))\n";
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+        let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let rule = kb.program().rules.values().next().expect("a rule").clone();
+        let acts = activators_for(&kb, &terms, &rule);
+        assert_eq!(acts.len(), 4, "`seven` and `\"seven\"` are one fact");
+        let keys: Vec<PlanKey> = acts.iter().map(|&a| plan_key(&terms, &rule, a)).collect();
+        let distinct: FxHashSet<&PlanKey> = keys.iter().collect();
+        assert_eq!(distinct.len(), 4, "one key per activator: {keys:?}");
+        let mut text: Vec<Vec<String>> = keys.iter().map(|k| k.activator_text(&terms)).collect();
+        text.sort();
+        assert_eq!(
+            text,
+            [
+                ["edge", "7"],
+                ["edge", "7"],
+                ["edge", "Fact(relation_name='edge', args=('A', 'B'))"],
+                ["edge", "seven"]
+            ]
         );
+        let no_params =
+            "(relation edge A B)\n(rule turn ()\n  :match (edge ?a ?b)\n  :assert (edge ?b ?a))\n";
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, no_params, Some("<test>")).expect("parses");
+        let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let rule = kb.program().rules.values().next().expect("a rule").clone();
+        assert!(plan_key(&terms, &rule, None).activator.is_empty());
     }
 
     fn reg_named(terms: &Terms, plan: &Plan, name: &str) -> Reg {

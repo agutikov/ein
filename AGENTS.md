@@ -171,7 +171,10 @@ constrained-reasoning research.
   keyed one plan and the second activator's conclusions were lost, in either
   order; and *forbid* read an activator whose every argument is an int or a
   nested fact as none, so a refutation it refuses on a symbol activator
-  loaded: 46 fixed, 6 open and 1 not wrong.
+  loaded: 46 fixed, 6 open and 1 not wrong. It fixed all four rows the same
+  day: the compile key is the activator's values, not their text, and
+  *forbid* asks whether a plan has an activator by its rule's parameters: 50
+  fixed, 2 open (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

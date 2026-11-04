@@ -222,6 +222,20 @@ pub fn check(
         .filter(|p| program.rules.contains(p.rule))
         .map(|p| &**p)
         .collect();
+    // A saturation plan has an activator exactly when its rule has
+    // parameters: `activators_for` hands a rule with parameters only facts
+    // of its arity, each binding every parameter's position. Not
+    // `!p.activator_args.is_empty()`, which until M1e2 S1e2.2.16 this was:
+    // that list keeps the activator's symbol arguments only, so an activator
+    // whose every argument is an int or a nested fact read as none, its plan's
+    // cause was never looked for, and a refutation resting on it through
+    // `absent` loaded (W16, `examples/ein-bugs/activator-all-int.ein`).
+    let has_activator = |p: &Plan| {
+        program
+            .rules
+            .get(p.rule)
+            .is_some_and(|r| !r.params.is_empty())
+    };
     let reads: Vec<Vec<(Rel, u32)>> = saturation
         .iter()
         .map(|p| monotone::reads_of(p, terms))
@@ -264,7 +278,7 @@ pub fn check(
                 .filter(|&&(_, d)| d % 2 == 0)
                 .find_map(|&(r, _)| n.get(r, terms))
                 .or_else(|| {
-                    (!p.activator_args.is_empty())
+                    has_activator(p)
                         .then(|| n.get(pos(p.rule), terms))
                         .flatten()
                 });
@@ -312,7 +326,7 @@ pub fn check(
             .find_map(|&(r, _)| n.get(r, terms).map(|o| (r, o)))
         {
             Cause::Via { premise, by, over }
-        } else if let Some((by, over)) = (!p.activator_args.is_empty())
+        } else if let Some((by, over)) = has_activator(p)
             .then(|| n.get(pos(p.rule), terms))
             .flatten()
         {

@@ -276,14 +276,18 @@ pub struct Disjunct {
 #[derive(Clone, Debug)]
 pub struct Plan {
     pub rule: Symbol,
-    /// `plan.activator_args` — the activator's **string** arguments only.
-    /// The cache key stringifies *all* of them, and that asymmetry is
+    /// `plan.activator_args` — the activator's **symbol** arguments only.
+    /// The cache key keeps *all* of them, as values, and that asymmetry is
     /// Q-M1a.8. Since M1e2 S1e2.2.7 it reaches no identity: the binding key's
     /// activator half is the cache key's list
     /// ([`crate::firing::BindingKey`]), and this one is what the `enqueue`,
-    /// `fire` and `owe` events print and the static checks read. Until then it
-    /// was the binding key's, and an `int` beside a nested `Fact` in one
-    /// position lost a derivation (Q-M1e.16, M1e2's W7).
+    /// `fire` and `owe` events print and the static checks print as a label.
+    /// Until then it was the binding key's, and an `int` beside a nested
+    /// `Fact` in one position lost a derivation (Q-M1e.16, M1e2's W7). It is
+    /// empty for an activator whose every argument is an int or a nested
+    /// fact, so it does not say whether a plan *has* an activator, which is
+    /// whether its rule has parameters: *forbid* read it so until M1e2
+    /// S1e2.2.16, and a refutation resting on such an activator loaded (W16).
     pub activator_args: Box<[Symbol]>,
     /// The activator binding, materialised: register `i` holds `seed[i].1`
     /// at match start, and the name is what provenance renders.

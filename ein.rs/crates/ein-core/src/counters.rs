@@ -286,8 +286,9 @@ pub struct Counters {
     pub intern_miss: u64,
 
     /// Compile-cache keys built — [`crate::terms::Terms`]-level bookkeeping,
-    /// like [`Self::extent_probe`]: a `PlanKey` has to intern the strings it
-    /// is made of. It counts the *engine walk*, not the compiler:
+    /// like [`Self::extent_probe`]: a `PlanKey` copies its activator's
+    /// arguments, and until M1e2 S1e2.2.16 it interned the text of every one
+    /// that was not a symbol. It counts the *engine walk*, not the compiler:
     /// `plan_compile` is what a key that missed the memo cost.
     pub plan_key: u64,
 }

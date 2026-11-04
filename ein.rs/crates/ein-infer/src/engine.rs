@@ -1,7 +1,7 @@
 //! The engine — the compile cache, its **order**, and the `fired` record.
 //!
-//! An [`Engine`] maps `(rule_name, activator_args)` to a compiled plan, plus a
-//! set of binding keys that have already fired. Two things about it are
+//! An [`Engine`] maps `(rule_name, the activator's arguments)` to a compiled
+//! plan, plus a set of binding keys that have already fired. Two things about it are
 //! load-bearing and neither is the caching:
 //!
 //! 1. **The cache's iteration order is observable.** The full enqueue pass
@@ -18,7 +18,7 @@
 //!    redundant, which is what it already meant.
 
 use ein_core::entities::Rule;
-use ein_core::{FactId, Kb, Symbol, Terms};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
@@ -48,9 +48,10 @@ pub struct Engine {
     keys: Vec<PlanKey>,
     by_key: FxHashMap<PlanKey, usize>,
     /// The interned compile key's argument list of each plan, `PlanKey::activator`
-    /// — every argument, since M1e2 S1e2.2.7 — parallel to `plans`.
+    /// — every argument, since M1e2 S1e2.2.7, and as values, not their text,
+    /// since S1e2.2.16 — parallel to `plans`.
     activators: Vec<ActivatorId>,
-    activator_ids: FxHashMap<Box<[Symbol]>, ActivatorId>,
+    activator_ids: FxHashMap<Box<[Value]>, ActivatorId>,
     /// Binding keys that have already been applied.
     pub fired: FxHashSet<BindingKey>,
     /// Shared with every other engine of this run — design/06 § Win A. What
@@ -189,11 +190,7 @@ impl Engine {
                 plan.disjuncts.len(),
                 plan.asserts.len(),
             );
-            let activator_args: Vec<String> = key
-                .activator
-                .iter()
-                .map(|&s| terms.sym(s).to_string())
-                .collect();
+            let activator_args = key.activator_text(terms);
             events.emit("compile", |l| {
                 l.str("rule", &rule_name);
                 l.owned_strs("activator", activator_args);
@@ -225,7 +222,7 @@ impl Engine {
         Ok(at)
     }
 
-    fn intern_activator(&mut self, args: &[Symbol]) -> ActivatorId {
+    fn intern_activator(&mut self, args: &[Value]) -> ActivatorId {
         if let Some(&id) = self.activator_ids.get(args) {
             return id;
         }

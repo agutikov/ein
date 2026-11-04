@@ -1,5 +1,16 @@
 # activator-text-key
 
+**Fixed 2026-11-04** by M1e2
+[S1e2.2.16](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.16_activator_text_key.md)
+(T1e2.2.16.2): the compile key is the activator's values, not their text, so
+the int and the string key two plans, and both files derive the four `noted`
+facts in a release build and a debug one. Promoted the same day to
+[`examples/ein-bugs/activator-text-int-and-string.ein`](../../examples/ein-bugs/activator-text-int-and-string.ein)
+and [`activator-text-string-then-int.ein`](../../examples/ein-bugs/activator-text-string-then-int.ein),
+beside the single-activator controls; the two files here stay as frontend
+fuzzer seeds, their text unchanged. The note below is the finding as it
+stood.
+
 - found: 2026-11-04, by hand — M1e2
   [S1e2.2.7](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)
   (T1e2.2.7.1), reading the compile key for W7, and parked in its § Notes;

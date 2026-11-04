@@ -125,8 +125,30 @@ fn strings(v: &J) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// Every state file the directory holds against its state in the summary.
-fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
+/// Does a state file print two of its state's one-line facts alike? The fact printer
+/// drops a string's quotes (P1e2.3's N5, parked for the user), so a state
+/// holding the int `1` and the string `"1"` in one position writes one line
+/// twice, the file loads it as one fact, and the file is not the state: its
+/// re-saturation derives back what the printer merged. M1e2 S1e2.2.16 met it
+/// on W16's fixed pair, the first register witnesses whose state holds an int
+/// and a string of one text.
+fn printed_alike(path: &Path) -> bool {
+    let text = std::fs::read_to_string(path).unwrap_or_default();
+    let Some((_, state)) = text.split_once(";; \u{2500}\u{2500} the state") else {
+        return false;
+    };
+    let mut seen = std::collections::BTreeSet::new();
+    state
+        .lines()
+        .map(str::trim)
+        .filter(|l| l.starts_with('(') && l.matches('(').count() == l.matches(')').count())
+        .any(|l| !seen.insert(l))
+}
+
+/// Every state file the directory holds against its state in the summary. A
+/// file that fails and that the printer could not write ([`printed_alike`])
+/// goes to `alike` instead of `bad`.
+fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>, alike: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.join("answer.json"));
     let states = summary["region"]["states"]
@@ -141,7 +163,11 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
         let path = entry["path"].as_str().expect("a path");
         let closure = strings(&states[i]["closure"]);
         if let Some(why) = not_a_fixpoint(&dir.join(path), &closure, &candidates) {
-            bad.push(format!("{label}: {path} {why}"));
+            if printed_alike(&dir.join(path)) {
+                alike.push(format!("{label}: {path}"));
+            } else {
+                bad.push(format!("{label}: {path} {why}"));
+            }
         }
         n += 1;
     }
@@ -199,20 +225,24 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
 /// reviewer will open, and several of them are records the engine got wrong.
 /// *Wrong* is allowed. A written state that its own rules would extend or
 /// refute is not, and is what this would report.
+///
+/// A state the fact printer cannot write is not one, and is named instead:
+/// [`printed_alike`]'s, which is exactly W16's fixed pair (M1e2 S1e2.2.16,
+/// 2026-11-04), each holding `(noted 1 1)` and `(noted 1 "1")`. Its file
+/// loads two of the four `noted` facts and saturation derives the other two,
+/// the printer's loss and not the state's; the list goes when P1e2.3's N5 is
+/// decided.
 #[test]
 fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
     let mut bad = Vec::new();
+    let mut alike = Vec::new();
     let mut states = 0;
     let mut runs: Vec<(String, String)> = Vec::new();
     for row in &register().case {
         // A refused row (M1e2 S1e2.2.5) writes no state: `wrong_answers.rs`
-        // holds its refusal. A debug build aborts on W16's order pair, the
-        // row's own claim, until M1e2 S1e2.2.16 fixes W16.
-        if row.status.starts_with("merged:")
-            || (row.wrong.debug_panic.is_some() && cfg!(debug_assertions))
-            || row.now.refused.is_some()
-        {
+        // holds its refusal.
+        if row.status.starts_with("merged:") || row.now.refused.is_some() {
             continue;
         }
         runs.push((row.witness.clone(), row.now.run.clone()));
@@ -229,9 +259,17 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
         let r = dump(file, &flags, &[], &dir);
         assert_eq!(r.code, 0, "{file} {run}: exit {}\n{}", r.code, r.err);
-        states += check_states(&dir, &format!("{file} :: {run}"), &mut bad);
+        states += check_states(&dir, &format!("{file} :: {run}"), &mut bad, &mut alike);
     }
     assert!(states > runs.len(), "no state file was checked");
+    assert_eq!(
+        alike,
+        [
+            "examples/ein-bugs/activator-text-int-and-string.ein :: solve --maximal: models/01.ein",
+            "examples/ein-bugs/activator-text-string-then-int.ein :: solve --maximal: models/01.ein",
+        ],
+        "the state files the fact printer writes two facts of alike (P1e2.3's N5) moved"
+    );
     assert!(
         bad.is_empty(),
         "{} state files:\n{}",

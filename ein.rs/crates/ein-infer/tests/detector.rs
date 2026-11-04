@@ -161,9 +161,9 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // fuzz finding `d3-unsat-core` into the corpus the same day, which the
     // static check flags and *forbid* refuses (a `via` program). 30 since
     // S1e2.2.16 banked W16's second shape the same day, three programs with an
-    // `absent` site and an `activator` site each: the symbol control, which
-    // *forbid* refuses, and the int and nested witnesses, which it reads as
-    // having no activator until W16's fix.
+    // `absent` site and an `activator` site each: the symbol control and the
+    // int and nested witnesses, all three refused by *forbid* since W16's
+    // fix, which keep their static half as the refused programs above do.
     assert_eq!(flagged, 30, "the flagged corpus programs");
     assert_eq!(
         found_cycles,

@@ -214,7 +214,10 @@ pub fn new_prov(
 ///
 /// `activator` is an id the engine interns for the plan's compile key,
 /// [`crate::compile::PlanKey::activator`] — **every** argument of the
-/// activator, stringified — which keeps a key two words plus one small vector.
+/// activator, as a value — which keeps a key two words plus one small vector.
+/// Until M1e2 S1e2.2.16 that list was each argument's text, so the int `1`
+/// and the string `"1"` were one id and one plan, and the second activator's
+/// conclusions were lost (W16).
 /// So within one engine an id names one plan, and the plans that share
 /// `(rule, activator)` are one plan with one register layout, the invariant a
 /// value vector needs to be comparable. `Engine::check_layout` asserts it in a
@@ -245,7 +248,8 @@ pub struct BindingKey {
 }
 
 /// An interned compile key's argument list, [`crate::compile::PlanKey::activator`]
-/// — every argument of the activator, since M1e2 S1e2.2.7.
+/// — every argument of the activator, since M1e2 S1e2.2.7, and as values, not
+/// their text, since S1e2.2.16.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct ActivatorId(pub u32);
 

@@ -11,7 +11,8 @@
 ;;; Refused since M1e2 S1e2.2.5 (*forbid*, F2's *per activator*): every
 ;;; question about a commitment exits 1 naming `alarm`, in either build
 ;;; (`ein solve FILE` at `6a775f3d`), and `ein saturate` still saturates.
-;;; The two witnesses must answer this.
+;;; The two witnesses answer this since S1e2.2.16 fixed W16, less the
+;;; `[activator a]` label.
 
 (relation item    T)
 (relation checked T)

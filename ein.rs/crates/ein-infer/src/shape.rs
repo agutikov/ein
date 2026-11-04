@@ -69,7 +69,7 @@ pub fn plan_shape_with(
         for activator in activators {
             let key = plan_key(terms, rule, activator);
             let plan = crate::compile::compile_rule(ast, terms, rule, activator)?;
-            render_plan(&mut out, ast, terms, &plan, &key.activator);
+            render_plan(&mut out, ast, terms, &plan, &key.activator_text(terms));
         }
     }
     // Lines are newline-joined, so there is no trailing one.
@@ -102,9 +102,9 @@ pub fn match_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Comp
             let key = plan_key(terms, rule, activator);
             let plan = crate::compile::compile_rule(ast, terms, rule, activator)?;
             let key_repr = repr(&ReprValue::Tuple(
-                key.activator
-                    .iter()
-                    .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
+                key.activator_text(terms)
+                    .into_iter()
+                    .map(ReprValue::Str)
                     .collect(),
             ));
             out.push_str(&format!("PLAN {} key={key_repr}\n", terms.sym(plan.rule)));
@@ -591,11 +591,9 @@ fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> St
     format!("b=[{}] p=[{}]", bindings.join(", "), premises.join(", "))
 }
 
-fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[Symbol]) {
+fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[String]) {
     let key_repr = repr(&ReprValue::Tuple(
-        key.iter()
-            .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
-            .collect(),
+        key.iter().map(|s| ReprValue::Str(s.clone())).collect(),
     ));
     let args_repr = repr(&ReprValue::Tuple(
         plan.activator_args

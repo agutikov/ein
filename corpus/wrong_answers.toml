@@ -270,6 +270,17 @@
 # control loads. A row's `wrong` is a region run's at `6a775f3d`. The register
 # reads **46 rows fixed, 6 open and 1 not-wrong**.
 #
+# **S1e2.2.16 fixed W16's four rows the same day** (T1e2.2.16.2): the compile
+# key is the activator's values, not their text, so the int and the string
+# key two plans and both orders derive the four `noted` facts, in either
+# build; and *forbid* asks whether a plan has an activator by its rule's
+# parameters, so the second shape is refused as its symbol control is. The
+# pair's witnesses were promoted to `examples/ein-bugs/`, and the in-process
+# sweeps skip no row since. Each flipped row's `[case.fixed]` carried the null
+# id in the flipping commit, and the stage's next commit wrote the hash. The
+# register reads **50 rows fixed, 2 open and 1 not-wrong**, both open rows
+# deferred to a followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -359,9 +370,8 @@
 #     open      the same, per open state;  owes: each recorded state's owed total
 #     debug_panic   in a build with debug assertions the run aborted (exit 101)
 #                   and stderr carried this text; the other fields are release's.
-#                   W7's is a record since M1e2 S1e2.2.7 fixed W7. W16's pair's
-#                   is read: in such a build the in-process sweeps skip a row
-#                   whose answer carries it, until S1e2.2.16 fixes W16
+#                   A record: W7's, which M1e2 S1e2.2.7 fixed, and W16's
+#                   pair's, which M1e2 S1e2.2.16 fixed; no test reads it since
 #     id_order  { op, seed } — the `id_order_invariance` op and seed under which
 #               the answer moves (W11)
 #
@@ -3709,12 +3719,15 @@ class    = "model set"
 settings = "default (release; a debug build aborts)"
 owner    = "S1e2.2.16"
 question = ["Q-M1a.8"]
-witness  = "corpus/fuzz_findings/activator-text-key.ein"
-not_in_corpus = "a build with debug assertions aborts on it (`Engine::compile_all`'s shortcut check, the debug-only proof that the plan list covers every activator), and every in-process corpus sweep is such a build; the commit that fixes W16 promotes it to examples/ein-bugs/, as S1e2.2.7 did W7's pair"
-status   = "open"
-open_because = "the compile key interns a non-symbol argument's text, so `(note edge 1)` and `(note edge \"1\")` give one key, and the string activator compiles no plan: root's fixpoint holds the int's two `noted` facts and not the string's"
+witness  = "examples/ein-bugs/activator-text-int-and-string.ein"
+status   = "fixed"
 look_at  = ["events compile", "root", "summary"]
-note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's parked note: the stage file's program, the int activator first. The noted facts [case.right] states are not in [case.now], whose states name the candidates' relations (none here), and no claim can state them: a claim compares facts as printed, and the printer drops a string's quotes (P1e2.3's N5), so (noted 1 1) and (noted 1 \"1\") are one line to it. What tells them apart is a count, the summary's root.facts_by_relation (noted 2 here, 4 right) and ein saturate's table, and rule_semantics.rs, which compares by value"
+note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's parked note: the stage file's program, the int activator first. Fixed by T1e2.2.16.2 and promoted from corpus/fuzz_findings/activator-text-key.ein, on which every record below was taken, the same program without the header and the :expect. The noted facts [case.right] states are not in [case.now], whose states name the candidates' relations (none here), and no claim can state them: a claim compares facts as printed, and the printer drops a string's quotes (P1e2.3's N5), so (noted 1 1) and (noted 1 \"1\") are one line to it. What tells them apart is a count, the summary's root.facts_by_relation (noted 2 here, 4 right) and ein saturate's table, and rule_semantics.rs, which compares by value"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.16 (T1e2.2.16.2): the compile key is the activator's values, not their text, so an int and a string with one text key two plans and both fire"
+date   = "2026-11-04"
 
 [case.wrong]
 run         = "solve"
@@ -3772,12 +3785,15 @@ class    = "model set"
 settings = "default (release; a debug build aborts)"
 owner    = "S1e2.2.16"
 question = ["Q-M1a.8"]
-witness  = "corpus/fuzz_findings/activator-text-key-swapped.ein"
-not_in_corpus = "a build with debug assertions aborts on it, as on W16/int-and-string's witness; the commit that fixes W16 promotes it to examples/ein-bugs/"
-status   = "open"
-open_because = "the activators in the other order: the string's plan is compiled first and the int activator's key is the same text, so root's fixpoint holds the string's two `noted` facts and not the int's"
+witness  = "examples/ein-bugs/activator-text-string-then-int.ein"
+status   = "fixed"
 look_at  = ["events compile", "root", "summary"]
-note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04): W16/int-and-string's witness with its two activator lines swapped. Unlike W7's twin, this order is wrong too, the other way: whichever activator is written first keeps its conclusions. The noted facts are held as W16/int-and-string's note says"
+note     = "Filed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04): W16/int-and-string's witness with its two activator lines swapped. Unlike W7's twin, this order is wrong too, the other way: whichever activator is written first keeps its conclusions. The noted facts are held as W16/int-and-string's note says. Fixed by T1e2.2.16.2 and promoted from corpus/fuzz_findings/activator-text-key-swapped.ein, on which the records below were taken"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.16 (T1e2.2.16.2): the compile key is the activator's values, not their text"
+date   = "2026-11-04"
 
 [case.wrong]
 run         = "solve"
@@ -3836,10 +3852,14 @@ settings = "default"
 owner    = "S1e2.2.16"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/activator-all-int.ein"
-status   = "open"
-open_because = "*forbid* tests a saturation plan for an activator as `!activator_args.is_empty()`, and `Plan::activator_args` keeps the activator's symbol arguments only, so root's plan of `alarm`, compiled from `(alarm 1)`, reads as having no activator: its cause is never looked for and the program loads"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "W16's second shape, probed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's second parked note: the same symbol-only list, read as *does the plan have an activator*. The control, activator-all-symbol.ein, the same program with (item a), is refused at every question, in either build: `rule 'alarm' [activator a]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked`. The chain takes three rules: with two, `alarm`'s activator relation is one a commitment can change, *forbid* reads the rule from its pattern, and an int activator is refused too (build/s1e2.2.16/extra/two-int.ein)"
+note     = "W16's second shape, probed by S1e2.2.16 (T1e2.2.16.1, 2026-11-04) from S1e2.2.7's second parked note: the same symbol-only list, read as *does the plan have an activator*. The control, activator-all-symbol.ein, the same program with (item a), is refused at every question, in either build: `rule 'alarm' [activator a]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked`. The chain takes three rules: with two, `alarm`'s activator relation is one a commitment can change, *forbid* reads the rule from its pattern, and an int activator is refused too (build/s1e2.2.16/extra/two-int.ein). Fixed by T1e2.2.16.2: the witness is refused as the control is, its line naming no activator, since the label prints the symbols"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.16 (T1e2.2.16.2): *forbid* asks whether a plan has an activator by its rule's parameters, not by the symbol arguments"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"
@@ -3850,29 +3870,15 @@ k         = 0
 exhausted = true
 core      = ["(item 1)"]
 
-[case.region]
-route    = "route 1"
-monotone = false
-k_s      = 0
-k_c      = 0
-empty    = "no-alive"
-minimal  = []
-maximal  = []
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal, as the symbol control's: `alarm` concludes (false) from its activator (alarm 1), which `watch` derives from its own activator (watch 1), which `flag` derives resting on (absent (checked ?x)), and `checked` is in D, the relations a commitment can change. An int argument binds `alarm`'s parameter as a symbol does, so what the plan rests on is the same; every question about a commitment exits 1, and ein saturate still saturates"
 
 [case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 0
-empty     = "dead"
-relations = ["checked"]
-outside   = ["alarm", "watch"]
-models    = []
+run     = "solve"
+line    = "all"
+refused = "rule 'alarm': concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W16/activator-all-nested"
@@ -3883,10 +3889,14 @@ settings = "default"
 owner    = "S1e2.2.16"
 question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/activator-all-nested.ein"
-status   = "open"
-open_because = "as W16/activator-all-int's, with an activator whose every argument is a nested fact, which `Plan::activator_args` drops as it drops an int"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "W16's second shape with (item (box a)): a nested fact binds no parameter, so each plan in the chain matches over every item, here the one. The control is activator-all-symbol.ein, refused"
+note     = "W16's second shape with (item (box a)): a nested fact binds no parameter, so each plan in the chain matches over every item, here the one. The control is activator-all-symbol.ein, refused. Fixed by T1e2.2.16.2, as W16/activator-all-int"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.16 (T1e2.2.16.2): *forbid* asks whether a plan has an activator by its rule's parameters"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve"
@@ -3897,29 +3907,15 @@ k         = 0
 exhausted = true
 core      = ["(item (box a))"]
 
-[case.region]
-route    = "route 1"
-monotone = false
-k_s      = 0
-k_c      = 0
-empty    = "no-alive"
-minimal  = []
-maximal  = []
-
 [case.right]
 reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02, with F2's *via, per activator* of 2026-11-04"
 refused   = true
 derived   = "a refusal, as W16/activator-all-int's and the symbol control's: `alarm`'s (false) rests through two activators on (absent (checked ?x)), over a relation in D"
 
 [case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 0
-empty     = "dead"
-relations = ["checked"]
-outside   = ["alarm", "watch"]
-models    = []
+run     = "solve"
+line    = "all"
+refused = "rule 'alarm': concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

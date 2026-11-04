@@ -1,0 +1,66 @@
+;;; An int and a string with the same text are two activators — M1e2
+;;; **W16**, register row `W16/int-and-string` (`corpus/wrong_answers.toml`),
+;;; fixed by S1e2.2.16 (2026-11-04). Promoted from
+;;; `corpus/fuzz_findings/activator-text-key.ein` by the fix.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The stage file's program: one rule with two parameters, the relation
+;;; `?R` to walk and the value `?f` to note, and two activators that differ
+;;; only in their second argument, the int `1` and the string `"1"`. The
+;;; loader holds those as two values, an int and a symbol whose text is
+;;; `1`, so the KB has two `holds` facts. `activator-text-string-then-int.ein`
+;;; is this file with the two activator lines swapped;
+;;; `activator-text-int-only.ein` and `activator-text-string-only.ein` keep
+;;; one activator each.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Each activator alone derives its own two `noted` facts: the int's
+;;; `(noted 1 1)` and `(noted 2 1)`, the string's `(noted 1 "1")` and
+;;; `(noted 2 "1")`. A rule set with one more activator cannot conclude
+;;; less, so this file derives all four, in either order. H is empty, so R
+;;; is `{∅}`: root, with the four.
+;;;
+;;; ── What the engine answered, and why it does not any more ─────────────
+;;;
+;;; Until S1e2.2.16 the compile key rendered a non-symbol argument as text
+;;; and interned the text, so both activators keyed one plan, the first
+;;; one's, and the string activator compiled nothing: root held the int's
+;;; two `noted` facts and not the string's (`ein solve` and `ein saturate`
+;;; at `6a775f3d`: `noted 2`, one plan), and a debug build aborted in
+;;; `Engine::compile_all`'s check that its shortcut skipped no activator.
+;;; The key is the activator's values since, so the two are two plans, and
+;;; both orders derive the four in either build.
+;;;
+;;; ── What the claim can see ─────────────────────────────────────────────
+;;;
+;;; A claim compares facts as printed, and the fact printer drops a
+;;; string's quotes (P1e2.3's N5), so `(noted 1 1)` and `(noted 1 "1")` are
+;;; one line to it: the claim below held before the fix too. What held the
+;;; four is a count (`ein saturate`'s table, `noted 4`, the summary's
+;;; `root.facts_by_relation`) and `rule_semantics.rs`'
+;;; `an_int_and_a_string_with_one_text_are_two_activators`, which compares
+;;; by value in both builds.
+
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds "1")
+
+(note edge 1)
+(note edge "1")
+
+(solve
+  ;; `holds` and `noted` are named, so both are closed: each state lists
+  ;; their complete extent, root's facts included.
+  :expect (region
+            ;; state 1 of 1 — ∅, root itself · minimal · maximal
+            (model (holds 1) (holds "1")
+                   (noted 1 1) (noted 1 "1") (noted 2 1) (noted 2 "1"))))

@@ -77,6 +77,22 @@ impl Run {
             .collect()
     }
 
+    /// The same conclusions **by value**: each fact's `repr`, which keeps a
+    /// string quoted and an int bare. `derived` prints a fact as the trace
+    /// does, and that printer drops a string's quotes (P1e2.3's N5), so the
+    /// int `1` and the string `"1"` would be one line there.
+    fn derived_values(&self) -> BTreeSet<String> {
+        self.firings
+            .iter()
+            .filter(|f| !f.redundant)
+            .flat_map(|f| {
+                f.derived
+                    .iter()
+                    .map(|&d| ein_core::repr::repr(&self.terms.repr_fact(d)))
+            })
+            .collect()
+    }
+
     /// Every fact the KB holds at the fixpoint, including the file's own and
     /// the `(relation …)` declarations.
     fn facts(&self) -> BTreeSet<String> {
@@ -860,5 +876,76 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
             "{order}: the two plans' bindings are compared within their own \
              spaces, so neither suppresses the other and nothing is lost"
         );
+    }
+}
+
+/// **An int and a string with the same text are two activators, in either
+/// order and in either build** — M1e2 S1e2.2.16's regression for W16.
+///
+/// The loader holds `1` and `"1"` as two values, an `Int` and a `Sym` whose
+/// text is `1`, so the program has two `holds` facts and each activator alone
+/// derives its own two `noted` facts. Until S1e2.2.16 the compile key rendered
+/// a non-symbol argument and interned its text, so the two activators keyed
+/// one plan, the first one's: in a release build the second compiled nothing
+/// and its two conclusions were lost, whichever came second, and in a debug
+/// build `Engine::compile_all`'s check that its shortcut skipped no activator
+/// aborted. The key is the activator's values since, so the two are two plans.
+/// Compared by value: as printed, `(noted 1 1)` and `(noted 1 "1")` are one
+/// line (P1e2.3's N5), which is why the controls' printed sets are equal. The
+/// corpus family is `examples/ein-bugs/activator-text-*.ein`.
+#[test]
+fn an_int_and_a_string_with_one_text_are_two_activators() {
+    let program = |activators: &str| {
+        format!(
+            r#"
+            (relation edge  Node Node)
+            (relation holds Node)
+            (relation noted Node Node)
+            (rule note (?R ?f)
+              :match  (and (?R ?a ?b) (holds ?f))
+              :assert (noted ?a ?f)
+              :why    "note")
+            (edge 1 2) (edge 2 3)
+            (holds 1)  (holds "1")
+            {activators}
+            "#
+        )
+    };
+    // The controls: one activator, one plan, two conclusions each, over two
+    // values the printer cannot tell apart.
+    let int = saturate(&program("(note edge 1)"));
+    let string = saturate(&program(r#"(note edge "1")"#));
+    assert_eq!(
+        int.derived(),
+        string.derived(),
+        "printed, the int's and the string's conclusions are one set"
+    );
+    let (int, string) = (int.derived_values(), string.derived_values());
+    assert_eq!(int.len(), 2, "the int activator derives two: {int:?}");
+    assert_eq!(
+        string.len(),
+        2,
+        "the string activator derives two: {string:?}"
+    );
+    assert!(
+        int.is_disjoint(&string),
+        "by value they are four facts: {int:?} {string:?}"
+    );
+    let union: BTreeSet<String> = int.union(&string).cloned().collect();
+
+    // Both, in both orders: one more activator cannot conclude less, and the
+    // order two facts are written in changes nothing.
+    for order in [
+        r#"(note edge 1) (note edge "1")"#,
+        r#"(note edge "1") (note edge 1)"#,
+    ] {
+        let run = saturate(&program(order));
+        assert_eq!(
+            run.derived_values(),
+            union,
+            "{order}: the two activators key two plans, so neither one's \
+             conclusions are lost"
+        );
+        assert_eq!(run.productive().len(), 4, "{order}: four applications");
     }
 }

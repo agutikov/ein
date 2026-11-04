@@ -122,7 +122,12 @@ second activator's two facts in either order; the second shape probed and
 reading as none to *forbid*, so a refutation it refuses on the symbol control
 loads. W16 filed as four `open` rows (46 fixed, 6 open, 1 not-wrong), and
 every move of the default fix listed before any edit, on W16's four
-witnesses alone. Nothing built.
+witnesses alone. Nothing built. **W16 is fixed the same day**
+(T1e2.2.16.2): the compile key is the activator's values, so both orders
+derive the four `noted` facts in release and debug, and *forbid* asks a
+plan's rule for its parameters, so the second shape is refused as its
+symbol control is; the pair is promoted to `examples/ein-bugs/`, and the
+register reads 50 fixed, 2 open (both deferred) and 1 not-wrong.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
