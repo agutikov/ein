@@ -177,9 +177,9 @@
 # blind enumerator builds H. Each witness answers its control's R, which the
 # decline moves too on two of them (the controls' guards read the same
 # relation): 1, 12, 1 and 16 states. The two contested rows keep (b)'s answer
-# as the record. Each flipped row's `[case.fixed]` carries the null id in the
-# flipping commit, and the stage's next commit writes the hash. The register
-# reads **41 rows fixed, 5 open and 1 not-wrong**.
+# as the record. Each flipped row's `[case.fixed]` carried the null id in the
+# flipping commit, `bde8f53b`, and the stage's next commit wrote the hash. The
+# register reads **41 rows fixed, 5 open and 1 not-wrong**.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -2773,7 +2773,7 @@ status   = "fixed"
 look_at  = ["root", "events rung", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "bde8f53b"
 by     = "S1e2.2.15 (T1e2.2.15.2), the decline: the obligations rung declines when an obligation's guard scans a relation in D, and the blind enumerator builds H (Q-M1e2.10 (a), ruled 2026-11-04)"
 date   = "2026-11-04"
 
@@ -2839,7 +2839,7 @@ status   = "fixed"
 look_at  = ["root", "events rung", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "bde8f53b"
 by     = "S1e2.2.15 (T1e2.2.15.2), the decline: the obligations rung declines when an obligation's guard scans a relation in D, and the blind enumerator builds H (Q-M1e2.10 (a), ruled 2026-11-04)"
 date   = "2026-11-04"
 
@@ -2918,7 +2918,7 @@ status   = "fixed"
 look_at  = ["root", "events rung", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "bde8f53b"
 by     = "S1e2.2.15 (T1e2.2.15.2), the decline: the obligations rung declines when an obligation's guard scans a relation in D, and the blind enumerator builds H (Q-M1e2.10 (a), ruled 2026-11-04)"
 date   = "2026-11-04"
 
@@ -2985,7 +2985,7 @@ look_at  = ["root", "events rung", "answer", "summary"]
 note     = "flagged non-monotone, an obligation-trigger site on is-a, so R is the cube's (route 2); not refused, since forbid refuses a refutation that rests on an absent and `no-soup` reads none"
 
 [case.fixed]
-commit = "0000000"
+commit = "bde8f53b"
 by     = "S1e2.2.15 (T1e2.2.15.2), the decline: the obligations rung declines when an obligation's guard scans a relation in D, and the blind enumerator builds H (Q-M1e2.10 (a), ruled 2026-11-04)"
 date   = "2026-11-04"
 

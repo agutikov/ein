@@ -86,6 +86,24 @@ known per activator (S1d.2.3's projection), and hypothesis-eligibility is the
 query's `:hypothesis-relations` / `:no-hypothesis` scoping plus `__closed__`,
 all of which the engine already consults before proposing anything.
 
+> **Note, 2026-11-04 (M1e2
+> [S1e2.2.15](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md),
+> W14).** The rule above misses a case: a guard's relation can grow by
+> **derivation** as well as by guessing. A rule that derives a membership from
+> a committed fact makes a domain value appear at a node that root's scan, the
+> rung's candidate set, never held, so a model that needs it was in no
+> candidate and R was empty where one existed
+> (`examples/ein-bugs/wrong-answers/oblig-*.ein`). §2's *no corpus rule
+> asserts an `is-a` fact* was true of the corpus and is not a property of the
+> language. Since S1e2.2.15 the rung also declines when an obligation's
+> trigger, or a guard beside its witness, reads a relation in D, the relations
+> a commitment can change ([`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs)),
+> at relation grain, and the call falls through to the blind generator as
+> above. The user ruled that fall-through the answer the same day
+> ([Q-M1e2.10](../../../plans/m1e2_correctness/open_questions.md#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over)
+> (a)), over widening the rung to what each domain can reach. This page is
+> the record of 2026-08-25 and is not otherwise rewritten.
+
 ## 2. The open-extent inventory — measured
 
 Every corpus entry under `solve -m 1 -e --events`, layer-1 enterings counted

@@ -105,7 +105,13 @@ Which facts can be proposed at all is decided by:
 - the **generation ladder**: the program's own `(hrule …)` if it declares
   one, else the facts that would discharge what root owes
   ([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)), else the
-  blind combinatorial enumerator;
+  blind combinatorial enumerator. The middle rung reads each obligation's
+  domain at root, so it **declines**, and the blind enumerator builds H, when
+  a domain could grow under it: a guard over a relation the rung proposes,
+  and since M1e2 S1e2.2.15 a trigger or guard over a relation in D, one a
+  commitment can change, at relation grain (the user's ruling of 2026-11-04,
+  [Q-M1e2.10](../../../plans/m1e2_correctness/open_questions.md#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over)
+  (a));
 - the scoping `(solve …)` states (on `(query …)` until M1e2 S1e2.1a.4):
   `:hypothesis-relations`, `:no-hypothesis`, and the `(__closed__ R)` fact. A
   fact of an excluded relation is not a candidate at all.
@@ -120,8 +126,10 @@ cascade (§ 6.3).
 **H must contain every fact a model needs** (ruling (h), 2026-10-16). If it
 does not, either the program is wrong (a name it never mentions) or the engine
 is (a candidate it never proposes, as a rule's constant was until M1e2
-S1e2.2.4, [W4](../../../corpus/wrong_answers.toml), and a name only a
-`:match` or a nested fact writes until S1e2.2.14, W15).
+S1e2.2.4, [W4](../../../corpus/wrong_answers.toml), a name only a
+`:match` or a nested fact writes until S1e2.2.14, W15, and a domain value
+only a commitment derives, which the obligations rung never proposed until
+S1e2.2.15, W14).
 The universe is defined by the generator today. A declarative definition,
 every type-correct ground atom of every hypothesisable relation, is what a
 check of the generator would be held to, and is not written yet.

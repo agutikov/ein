@@ -23,7 +23,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
-| [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1 |
+| [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -703,7 +703,7 @@ and the W11 sentence in
 | **(e)** | asks for a way to expose saturation equivalence alongside commitments | **ruled**: k_s and k_c (second answer); `(region …)` with `(merged (to from) …)` (third answer) | S1e2.1a.1's record; S1e2.1a.4, S1e2.1a.5 |
 | **(f)** | asked: *is the obligations-only maximal line the whole candidate set?* | **ruled for P1e2.1a's scope** (second answer): yes, for a monotone program, and it is trivial. The non-monotone counterexample below is S1e2.1b.6's | S1e2.1a.3's page |
 | **(g)** | `exhausted` means complete information about R; a limited run gives partial information; *"region is a certificate of the lattice, right?"* | **ruled for P1e2.1a's scope** (second answer): exhausted = the full region; a limit makes it partial | S1e2.1a.5, S1e2.1a.9 |
-| **(h)** | no new names, so the lattice is finite; asks what *too small* means; asks what forced positives are | **ruled for P1e2.1a's scope** (second answer): the universe is the candidate list, and a list too small for a model is a program error or an engine bug. ∅ is a solution exactly when root is alive and discharged, whatever the generator proposes | S1e2.1a.3; W4, W6 |
+| **(h)** | no new names, so the lattice is finite; asks what *too small* means; asks what forced positives are | **ruled for P1e2.1a's scope** (second answer): the universe is the candidate list, and a list too small for a model is a program error or an engine bug. ∅ is a solution exactly when root is alive and discharged, whatever the generator proposes | S1e2.1a.3; W4, W6; W15 (S1e2.2.14) and W14 (S1e2.2.15, the obligations rung's universe, [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) (a)), both fixed 2026-11-04 |
 | **(i)** | a component is a set of models, never a model. `Ambiguity` judges an expectation of exactly one solution and `Contradiction` an expectation of some. Without an expectation the read-out explores | **ruled**, and the user's grouping is named **projection classes** (second answer) | S1e2.1a.5; [`definitions.md`](p1e2.1a_the_solution_region/definitions.md) |
 
 #### Measured for these answers
@@ -1270,3 +1270,13 @@ to the blind enumerator, whose objects carry every name of the program since
 S1e2.2.14: R is that enumerator's region. `W14/oblig-fresh-name-two` and
 `W14/oblig-stdlib-total-owed` keep (a) as `right` and (b) as the record, and
 the two controls' claims move to 12 and 16 states with the fix.
+
+**Built 2026-11-04** by [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md)
+(`bde8f53b`): `oblgen::generate` declines, after C4's own check, when an
+obligation's trigger or a guard beside its witness reads a relation in D,
+which `monotone::dynamic` computes, seeded with the relations the rung would
+propose, for the rung and for the static check alike; the `rung` line says
+*an obligation scans `food`, a relation a commitment can change*. W14's four
+rows are fixed, each witness answering its control's R under the decline (1,
+12, 1 and 16 states) and the oracle's. No program already in the corpus
+moved (3 366 sweep runs).
