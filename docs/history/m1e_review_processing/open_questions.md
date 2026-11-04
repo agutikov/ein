@@ -27,7 +27,7 @@ records which question became which id.
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** B **shipped 2026-08-30** in [S1e.2.3](README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent): a `RefutationUnderAbsentWarning` from the same walk `warn-derived-naf` already made, the probe banked as `examples/ein-bugs/naf-upward-closure.ein`, and the corpus measured — **9 rules over 7 entries**, which **corrects D4's prediction**: `connex` is activated twice and exposed neither time (both fixtures write `:no-hypothesis`), and what is exposed is `std.elim`'s membership scans. Gated, because the corpus is not silent. The real fix is [F18](../../../plans/followups/f18_world_aware_negatives.md); the **language** half — *may a refutation rest on an `absent` at all?* — is [S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s, and it starts from the banked set. **The fix owned 2026-10-14** by [M1e2 S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3). **Refused since 2026-11-04**: the user ruled *forbid* (M1e2 S1e2.4.1, 2026-11-02) and its F2, *via*; S1e2.2.5 built the refusal, and F18 closed without being done |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](README.md#s1e51--the-configuration-reference); owner unassigned. **Open, unowned on purpose** at the close: the next change to `ein-core/src/config.rs` decides |
 | [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned**. **Worked around 2026-10-14** by [M1e2's case register](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.1_the_case_register.md); the language gap stays open, unowned |
-| [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | **ruled 2026-11-03: (a)**, the fixture is under-specified (the user, at M1e2 S1e2.1.7) — raised by [D8](search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded. **Owned 2026-10-14** by [M1e2 S1e2.2.10](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md) (C1) |
+| [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | **ruled 2026-11-03: (a)**, the fixture is under-specified (the user, at M1e2 S1e2.1.7); **built 2026-11-04** by M1e2 S1e2.2.10, the fixtures typed and a `types` row on every read-out — raised by [D8](search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded. **Owned 2026-10-14** by [M1e2 S1e2.2.10](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md) (C1) |
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)** 2026-08-28 by the user. The guard **shipped** 2026-08-29 in [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 — the mode is re-read at every node the tree expands — and its regression test is owed to that stage, because no corpus program can flip the mode |
 | [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden. **Open, unowned on purpose** at the close: the next change to the parallel fan-out owns it |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](README.md#s1e13--what-the-core-promises-q2), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it. **Owned 2026-10-14** by [M1e2 S1e2.2.11](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) |
@@ -963,6 +963,22 @@ co-located with a type, and the engine does what it says. The register's
 [S1e2.2.10](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md)
 retypes `branching/06` and `/07` and warns when an untyped rung binds a type as
 an object.
+
+**Built 2026-11-04** by M1e2
+[S1e2.2.10](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md).
+`branching/06` and `/07` declare `(relation co-located Color House)`: a name a
+signature declares is no candidate object, so H holds no candidate naming
+`Color` or `House`, and R is two states, ∅ and `{(co-located Blue H5)}`,
+`?h = H5`. The warning is a read-out row and not an event: where the blind
+enumerator built H and a candidate names the second argument of an `is-a`
+fact, every question prints a `types` row under `universe` (*Pet — on the
+right of an is-a, and 9 candidates of co-located, is-a name it as an object:
+the blind enumerator is untyped, and no signature names it*), and the summary
+carries `root.hypgen.types_as_objects`. It reads `is-a` by name, after H is
+built and outside it, and decides nothing; it names 13 of the 234 programs of
+that day's sweep that reach H, and 11 once the two fixtures were typed. The
+count above is D8's: the inventory's, 2026-10-14, is that all 22 models
+contained a fact over a type and 10 had a goal row binding `?h` to one.
 
 ---
 

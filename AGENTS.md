@@ -145,7 +145,11 @@ constrained-reasoning research.
   2026-11-03 (Q-M1e2.3 (a), *scoped, and the read-out says so*): R is over H,
   and every question names what H leaves out, an `outside` row under
   `universe` and `root.hypgen.outside` in the summary, with no answer moved:
-  44 fixed, 2 open and 1 not wrong.
+  44 fixed, 2 open and 1 not wrong. S1e2.2.10 typed C1's witnesses,
+  `branching/06` and `/07`, the same day (Q-M1e.12 (a), *the fixture, with
+  the warning*): their R is two states, Blue in H5, and where the blind
+  enumerator binds a type as an object every read-out says so, a `types` row
+  under `universe` and `root.hypgen.types_as_objects`: still 44, 2 and 1.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -732,11 +736,13 @@ combinations that occur — instead of as *k* blocks: on
 `examples/zebra2-minus-15.ein -e -m 3` that is **49 lines against 516**, the
 same 4 columns and 32 rows `utils/model_set_census.py --form key` prints. It is
 read by the `Ambiguity` arm alone and reaches nothing recorded, and where a key
-is unaffordable — `examples/branching/06_lookahead_on.ein` needs 8 of 42 slots,
-`C(42, 8) = 118 030 185` — it says so and **prints the models**, which is the
-form the phase priced as (e). `list` stays the default because it is what
-`ein solve` has always printed, not because the key is expensive — 42 ms to
-decline on `branching/06`, under 1 % of the solve on the zebra family.
+is unaffordable — `examples/branching/06_lookahead_on.ein` needed 8 of 42
+slots, `C(42, 8) = 118 030 185`, untyped as it was until M1e2 S1e2.2.10
+(`model_set_report.rs` keeps that program) — it says so and **prints the
+models**, which is the form the phase priced as (e). `list` stays the default
+because it is what `ein solve` has always printed, not because the key is
+expensive — 42 ms to decline on that program, under 1 % of the solve on the
+zebra family.
 
 Beside it, and not a flag: **an `Ambiguity` now qualifies its own count.**
 `exhausted = true` prints `solutions (k) 9`; `exhausted = false` prints

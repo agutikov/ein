@@ -71,6 +71,15 @@ built the list proposes no fact
 `region.md` says it under its candidate count, as the read-out's `outside`
 row does, and `region.json` lists it as `outside`.
 
+**What it binds as an object** is named since M1e2 S1e2.2.10 (2026-11-04, the
+user's ruling of 2026-11-03 on Q-M1e.12, (a)): where the blind enumerator
+built the list, the names on the right of an `is-a` that a candidate names,
+the candidates' relations and how many there are
+([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+`region.md` says it as `**Types as objects**`, under its candidate count, as
+the read-out's `types` row does, and `region.json` carries it as
+`types_as_objects`.
+
 **A node** is root's fixpoint with the commitment's facts written in and the
 saturation resumed to quiescence. It is never stopped at the first
 contradiction, so a dead node's debts are its fixpoint's. None of the search's
@@ -107,7 +116,10 @@ They are what a node *is* that its coordinates do not say.
 
 `schema`, `source`, `n`, `limit`, `candidates`, `outside` (since M1e2
 S1e2.2.8: one `{relation, arity, why}` per relation outside the universe,
-`--json-summary`'s `root.hypgen.outside`, `[]` when none), `monotonicity`
+`--json-summary`'s `root.hypgen.outside`, `[]` when none), `types_as_objects`
+(since S1e2.2.10: `{objects, relations, candidates}`, `--json-summary`'s
+`root.hypgen.types_as_objects`, the lists empty and the count 0 when none),
+`monotonicity`
 (below), then
 either `region` with `refused: null`, or `region: null` with `refused`
 (`n`, `limit`, `note`). `region` holds:

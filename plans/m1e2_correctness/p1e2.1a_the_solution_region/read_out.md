@@ -141,6 +141,20 @@ then holds of it, as S1d.3.3's *a lower bound* says what a count licenses.
 the warning is (§ 8.5), and `ein oracle --dump`'s `region.md` and
 `region.json` too.
 
+**Amended 2026-11-04, M1e2
+[S1e2.2.10](../p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md)**, on the
+user's ruling of 2026-11-03 on Q-M1e.12, (a) *the fixture, with the
+warning*: under `universe`, after `outside`, the same questions print a
+**`types`** row when the blind enumerator built H and a candidate names an
+object on the right of an `is-a`: X13's `Color — on the right of an is-a, and
+6 candidates of co-located, is-a name it as an object: the blind enumerator is
+untyped, and no signature names it`. It names the objects, the fact about the
+KB that makes them types, how many candidates of which relations name them,
+and why, and moves nothing else. `--json-summary` carries it on every run as
+`root.hypgen.types_as_objects` (`{objects, relations, candidates}`,
+`ein-summary/2` kept), `ein test` beside each claim it prints, and `ein
+oracle --dump`'s `region.md` and `region.json` too.
+
 **Then the region itself**, in the form S1e2.1a.4 reads back:
 
 ```lisp

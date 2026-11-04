@@ -119,7 +119,8 @@ node whose obligations are all discharged is a solution under rung 2 and is
 *not* complete under rung 3 while the blind enumerator still proposes anything
 — and `branching/06` is the standing proof that it proposes junk long after any
 real debt is settled
-([D8](../../../docs/history/m1e_review_processing/search_soundness_probes/d8_branching06_untyped_models.md)).
+([D8](../../../docs/history/m1e_review_processing/search_soundness_probes/d8_branching06_untyped_models.md);
+no longer since 2026-11-04, § Notes).
 
 So the assertion is two things, not one:
 
@@ -248,6 +249,19 @@ therefore exactly one thing: a program that reaches that line with a mode other
 than `Obligations`. If T1f.10.6.1 cannot build one, that is C's case above and
 the sentence to write is that the guard's trigger is not constructible — which
 is a finding, not a licence to remove it.
+
+**`branching/06` is no longer the standing proof (2026-11-04).** M1e2
+[S1e2.2.10](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md)
+typed its `co-located`, `(relation co-located Color House)`, on the user's
+ruling on
+[Q-M1e.12](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)
+(a). The junk § Context cites was its candidates naming `Color` and `House`,
+and they are gone: its H is 132 candidates, 130 of them dead alone, and R two
+states. This stage needs a typed standing proof of the loss mechanism, or the
+argument above is hypothetical, which D8 said it would be without the fixture.
+The untyped program is `86df5456`'s file, and `model_set_report.rs` writes it
+into a scratch for its own purpose. Recorded, not re-scoped: M1f re-scopes
+itself.
 
 **Why this left S1e.1.1.** The stage that held it is *three soundness probes*,
 and two of them — Q4 and Q5 — are about a search path that exists. This one is

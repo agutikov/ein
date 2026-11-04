@@ -269,6 +269,13 @@ not.
 anchored; the blind enumerator, not an `(hrule …)`. Its sibling `07` is the
 same bytes with the lever off, so this is the corpus's own A/B. Best of 3:
 
+> **Since M1e2 S1e2.2.10 (2026-11-04) `06` and `07` type `co-located`**,
+> `(relation co-located Color House)`, on the user's ruling on
+> [Q-M1e.12](../../history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object),
+> (a). This section measured them untyped, `(relation co-located T T)`, and
+> its 22 models each bound a colour to `Color` or `House`; the retyped
+> program's R is two states, root and root with Blue in H5.
+
 | | verdict | enterings | ms | ×base |
 |---|---|---:|---:|---:|
 | **fast**, lookahead on | Solution k=1 | 67 | 3.6 | 1.0× |

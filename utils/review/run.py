@@ -56,8 +56,10 @@ EVENT_ROWS_PER_KIND = 10_000
 # pages otherwise.
 REGION_ROWS_PAGED = 1 << 16
 # The visited-node DAGs `ein render lattice` draws are laid out up to this many
-# nodes. Past it Graphviz takes minutes (`branching/07`'s describe visits
-# 19 192 nodes, `zebra2-hints`' 8 389) and the picture is not one a person
+# nodes. Past it Graphviz takes minutes (`branching/07`'s describe visited
+# 19 192 nodes and `zebra2-hints`' 8 389 at M1e2 S1e2.1a.7, by route 1; the
+# state route visits 133 and 78, the first since S1e2.2.10 typed the file,
+# 2026-11-04, `ein solve FILE --dump-lattice D`) and the picture is not one a person
 # reads: the page says how many nodes there are and links the DOT, and the
 # step pages list every node.
 DAG_NODES_DRAWN = 1_000

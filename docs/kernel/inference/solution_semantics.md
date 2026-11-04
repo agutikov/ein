@@ -155,6 +155,27 @@ of a covered relation the rung does not propose, the blind enumerator's
 self-edges and an obligation's typed candidates, are the declarative
 definition's above, not written yet.
 
+**What the universe binds as an object, the read-out names too**
+([Q-M1e.12](../../history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object),
+the user's ruling of 2026-11-03, (a) *the fixture, with the warning*). The
+blind enumerator is untyped (S1.7.23): every name of the program that no
+relation signature declares is a candidate object, so where a program writes
+`(is-a Red Color)` and declares `(relation co-located T T)`, `(co-located
+Blue Color)` is a candidate and a state of R may hold it. The engine does what
+the signature says, and R is right for the program as written; a signature
+that names the type keeps it out of H. **Built 2026-11-04 by M1e2 S1e2.2.10**
+([`ein_infer::types_as_objects`](../../../ein.rs/crates/ein-infer/src/types_as_objects.rs)):
+where the blind enumerator built H, and a candidate names the second argument
+of an `is-a` fact at root's fixpoint, every question prints a `types` row
+under `universe`, *Pet — on the right of an is-a, and 9 candidates of co-located, is-a name it as an object: the blind enumerator is untyped, and no signature names it*, the summary carries it as
+`root.hypgen.types_as_objects`, `ein test` beside each claim, and `ein oracle
+--dump` in `region.md` and `region.json`. It reads `is-a` by its name and
+decides nothing: H, R, every count and every exit code are what they were. It
+names objects on 13 of the 234 programs of that day's sweep that reach H, all
+under the blind enumerator, and on 11 once the stage typed C1's witnesses,
+`branching/06` and `/07` (T1e2.2.10.2, `build/s1e2.2.10/variants.py`,
+2026-11-04).
+
 ### 1.5 Commitment, node, state
 
 A **commitment** C is a subset of H. Seen as a point of the lattice, it is a
@@ -495,7 +516,8 @@ complete — and a run a budget stopped writes one `note:`. Every answer exits
 static check finds a site in says so on the `lattice` row and takes route 2,
 the cube. Every question prints `universe`, and under it, since M1e2
 S1e2.2.8, an `outside` row when H leaves out a relation the program can
-conclude or ask about (§ 1.4).
+conclude or ask about (§ 1.4), and since S1e2.2.10 a `types` row when the
+blind enumerator binds a type as an object (§ 1.4).
 
 ### 5.2 Ruled 2026-10-16, built by S1e2.1a.5
 
