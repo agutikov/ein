@@ -410,7 +410,16 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
             + (f", R empty ({now['empty']})" if now.get("empty") else "")
             + f", which is the register's `right`, *{right.get('verdict', '—')}, k = {right.get('k', '—')}* — "
             "`ein-corpus` holds `[case.now]` to it, and this build re-ran it (§ 3, § 4, § 5)."
-            + outside_clause(now, right), ""]
+            + outside_clause(now, right) + core_clause(now, right), ""]
+
+
+def core_clause(now: dict, right: dict) -> str:
+    """A fixed core row's core (W10, M1e2 S1e2.2.11): what the run reports,
+    `right`'s, and that the register's schema /6 holds it."""
+    if right.get("core") is None:
+        return ""
+    return (f" Its unsat core is {' '.join(now.get('core') or []) or '∅'}, as `right`'s is; "
+            "`wrong_answers.rs` holds `[case.now] core`, the summary's `region.core`, to it.")
 
 
 def outside_clause(now: dict, right: dict) -> str:

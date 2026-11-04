@@ -21,6 +21,11 @@
 ;;; possible again because the *store* in front of it is order-sensitive.
 ;;;
 ;;; Read this file with its twin; neither says anything on its own.
+;;;
+;;; **Since M1e2 S1e2.2.11 (2026-11-04) the twin reports this file's core
+;;; too**, `(w1 X) (w2 X)`: a full list keeps its smallest-closure arrival
+;;; beside it, `wide`'s, so the order no longer decides the core. This file
+;;; did not move.
 
 (relation p1 T :why "{?1} has p1")
 (relation p2 T :why "{?1} has p2")

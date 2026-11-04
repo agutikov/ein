@@ -50,6 +50,28 @@
 ;;; entry that *reaches* the cap can be changed by it. This file is the shape
 ;;; that makes the promise's limit visible, not a report that a shipped puzzle
 ;;; is wrong.
+;;;
+;;; ── Repaired, 2026-11-04 (M1e2 S1e2.2.11, `W10/alt-cap-core` fixed) ──────────
+;;;
+;;; Everything above is the record of the defect. Since S1e2.2.11 a full list
+;;; keeps, **beside** its 32, the arrival with the smallest closure (a
+;;; derivation's frontier estimate: 1 a given, the sum of its premises'
+;;; otherwise), Q-M1e.15's (3), on the user's ruling of 2026-11-04 on
+;;; Q-M1e2.11. `wide`'s closure is 2 against `narrow`'s 3, so its derivation
+;;; is kept beside the full list and the search is offered it:
+;;;
+;;;   alt-cap-core.ein             unsat core (2)   (w1 X) (w2 X)
+;;;   alt-cap-core-reordered.ein   unsat core (2)   (w1 X) (w2 X)
+;;;
+;;; the core an uncapped store reports, and no other corpus core moved
+;;; (`ein solve FILE`, 2026-11-04). `refuted by` still says `narrow` here and
+;;; `wide` in the twin: it names the rule that first derived `(false)`.
+;;; With `(config :record-alternative-justifications false)` this file
+;;; reports the 3-fact core again: the flag may change the core and nothing
+;;; else (`configuration.md` § 2.5). And a saving *between* two facts, behind
+;;; a full list, is still refused —
+;;; [`wrong-answers/alt-cap-shared.ein`](wrong-answers/alt-cap-shared.ein),
+;;; deferred to F22.
 
 (relation p1 T :why "{?1} has p1")
 (relation p2 T :why "{?1} has p2")

@@ -19,6 +19,17 @@ a cleanup.
 > § 2 is the other one: which derivations get **recorded at all**, not which of
 > the recorded ones survive the cap. A removal has to hold both, and only the
 > second has a fixture ([Q-M1e.15](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+>
+> **A dated note, 2026-11-04, nothing re-scoped** (M1e2
+> [S1e2.2.11](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md)):
+> a full list now keeps its smallest-closure arrival beside it, so the
+> `alt-cap-core` pair report one core, 2 facts, and are no longer consumer
+> 6b's fixture. 6b stands on
+> `examples/ein-bugs/wrong-answers/alt-cap-shared.ein`, `W10/alt-cap-shared`,
+> deferred to F22: 3 facts as written and 2 with `x-join` at `:priority 50`
+> (`ein solve`, 2026-11-04), a saving between two facts that the full list
+> refuses unless its rule fires first. Ten programs reach the cap under R's
+> routes, not one (`ein solve FILE --events`, 2026-11-04).
 **Blocks:** nothing. It writes the first content of
 [S1f.5.20](s1f.5.20_docs_refactor.md)'s
 `docs/ein/reasoning/rule-evolution/analysis-of-rules.md`, which is otherwise an

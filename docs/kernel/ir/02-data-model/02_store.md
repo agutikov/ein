@@ -195,7 +195,8 @@ So a fact is an OR-node and each justification an AND-node over its
 two walkers below take an `all_justifications` keyword saying which
 reading they want. Which records are keepable (rule-kind, at least one
 premise, onto a non-terminal primary), the `(rule, premises_raw)`
-dedup key and the `MAX_ALT_JUSTIFICATIONS` cap are in
+dedup key, the `MAX_ALT_JUSTIFICATIONS` cap and the smallest-closure
+arrival kept beside it (M1e2 S1e2.2.11) are in
 [`01_entities.md` §3.1](01_entities.md); the store-side contracts are:
 
 - **Where it is recorded.** `kb.add_and_index_fact` — the

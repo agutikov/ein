@@ -54,10 +54,12 @@ What to settle before building it:
 - **The search's own budget.** `ExplanationBudget` cuts a label past 64
   environments and reports it (`Explanation::exhausted`); a re-derived
   fact can bring more. The cut stays reported.
-- **Where it runs.** Ten corpus programs reach the cap, always on `(false)`
-  in a dead node (the `zebra2` family, `lattice/06_friends_tables`,
+- **Where it runs.** Of the corpus's 310 files before the witness was
+  banked, ten reached the cap, always on `(false)` in a dead node (the
+  `zebra2` family, `lattice/06_friends_tables`,
   `branching/12_typed_blind_solve`, `zebra2-bad` and the `alt-cap-core`
-  pair; S1e2.2.11 T1, 2026-11-04). An uncapped store costs `zebra2`'s
+  pair; S1e2.2.11 T1, `ein solve FILE --events`, 2026-11-04); the witness
+  reaches it on `(x K)`. An uncapped store costs `zebra2`'s
   describe ×2.15 (528 → 1 133 ms); re-deriving only on demand should cost
   less, and that is the number to take.
 - **`explain.rs` reads the KB, not the rules.** Re-deriving needs the

@@ -510,7 +510,8 @@ returns every recorded one, so a fact is an OR-node over AND-nodes — the proof
 structure is an AND/OR graph, a faithful ATMS justification network. A
 re-derivation is appended to a KB side table by `Kb::record_justification`
 (capped per fact at `MAX_ALT_JUSTIFICATIONS = 32`, kept sorted by premise count
-so the cap retains the *shortest*; terminals take none — a `source`/`hypothesis`
+so the cap retains the *shortest*, and beside the list, since M1e2 S1e2.2.11,
+the arrival with the smallest closure, `Kb::best`; terminals take none — a `source`/`hypothesis`
 primary is the frontier, and a rule-kind primary with empty `premises_raw` is a
 synthetic engine writeback whose contract is that provenance grounds out on it,
 [`reserved_engine_strings.md`](reserved_engine_strings.md)). Recording is gated
@@ -532,8 +533,8 @@ construction, and why `detect_provenance_cycles` stays a load-time check on
 user-authored provenance rather than something run over a saturated KB.
 `explain::smallest_contradiction_frontier` is that search over the detector's
 witnesses: **a minimum-cardinality AND/OR search over every derivation the
-store retained (provenance-based, NAF-safe, budgeted); not a subset-minimal
-MUS** — and, because it *chooses* a justification per fact by search instead of
+program records (provenance-based, NAF-safe, budgeted); not a subset-minimal
+MUS**, over what the store keeps of them (the Gap's (2)) — and, because it *chooses* a justification per fact by search instead of
 following whichever one fired first, **independent of rule-firing order over
 the derivations it is given** (which is not the same as independent of rule
 firing order: see the Gap's (2) below). It is what the
@@ -559,21 +560,31 @@ minimiser is **NAF-unsound here** (S1.9.E19; corollary C3 of
 `absent_premises` make a *sound* variant conceivable, since a candidate
 subset would have to preserve every negative query as well, but nothing
 implements that and until something does the caveat stands).
-(2) **Retained, not all, derivations** — the alternatives searched are the
-firings the saturator attempted, capped per fact, so minimality stays relative
-to the rule set and the saturation strategy. **And the cap is not neutral**
-(M1e S1e.1.3, the review's Q2): `MAX_ALT_JUSTIFICATIONS = 32` retains by
-*premise count* while this search minimises *frontier size*, two metrics that
-disagree whenever a short step's premise unfolds into a long chain — so a full
-list can refuse the derivation with the smaller frontier, and the reported core
-becomes firing-order dependent after all. `examples/ein-bugs/alt-cap-core.ein`
-reports a 3-fact core where a 2-fact one exists and its `-reordered` twin,
-one `:priority` apart, reports the 2-fact one; at a cap of 10⁶ both report 2.
-Corpus-wide **one** entry reaches the cap (`zebra2-bad`, 1 017 of 2 425
-arrivals refused, longest uncapped list 1 049) — and only an entry that reaches
-it can be changed by it: that one's core is a single fact at either cap. So
-this is a promise to state rather than a bug to chase —
-[Q-M1e.15](../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported). (3) **Budgeted** — the
+(2) **Every recorded derivation, as the store keeps it** — the derivations
+are the firings the saturator attempted, so minimality stays relative to the
+rule set and the saturation strategy, and the store keeps, of each fact's, the
+primary, up to `MAX_ALT_JUSTIFICATIONS = 32` with the fewest premises, and
+the one with the smallest closure. **The third is M1e2 S1e2.2.11's**
+([Q-M1e.15](../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)'s
+(3), the user's ruling of 2026-11-04 on
+[Q-M1e2.11](../../../plans/m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it)):
+the list ranks by *premise count* while this search minimises *frontier
+size*, two metrics that disagree whenever a short step's premise unfolds into
+a long chain, so a full list refused the derivation with the smaller frontier
+and the core was firing-order dependent: `examples/ein-bugs/alt-cap-core.ein`
+reported 3 facts and its `-reordered` twin, one `:priority` apart, 2; both
+report 2 since. **No list of fixed length is every derivation**: where the
+saving lies between two facts, the derivation a target needs is its own
+fact's worst, and a full list refuses it —
+`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`, `W10/alt-cap-shared`,
+deferred to [F22](../../../plans/followups/f22_exact_core_past_the_cap.md),
+which re-derives what a full list refused when the search reaches it. Of the
+corpus's 310 files before that witness was banked, ten reached the cap, always
+on `(false)` in a dead node, and an uncapped store moved no core of theirs but
+`alt-cap-core.ein`'s (`ein solve FILE --events`, 2026-11-04). And a
+program that turns `:record-alternative-justifications` off keeps no
+alternative at all: the config principle's one exemption, the core and
+nothing else ([`configuration.md` § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)). (3) **Budgeted** — the
 minimum-axiom-set / ATMS-label problem is worst-case exponential, so the search
 runs under an `ExplanationBudget` and `Explanation.exhausted` reports whether it
 completed; a truncated search is still sound. Provenance is also not yet a

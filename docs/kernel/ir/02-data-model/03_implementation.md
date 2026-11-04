@@ -78,6 +78,8 @@ Per layer:
 | `names` | insertion-ordered registry | O(1) by name | |
 | `primary` | `FactId → ProvId` | O(1) | the first-recorded justification |
 | `alts` | `FactId → Box<[ProvId]>` | topmost layer with the key | whole-list copy-on-write, because the list is *not* append-only: an arrival can land in the middle and `MAX_ALT_JUSTIFICATIONS` (32) evicts from the end, keeping the shortest |
+| `closure` | `FactId → u32` | topmost layer with the key | the smallest closure an arrival has given a fact, the frontier estimate a full list compares by (M1e2 S1e2.2.11); set when a derived fact is first derived, lowered by an arrival; no entry is a leaf, 1. The `.einb` keeps it (format 1.1, `CLOSURE`) |
+| `best` | `FactId → ProvId` | topmost layer with the key | the arrival that last lowered `closure`, kept beside `alts` whether or not the list took it; `Kb::justifications` offers it after the list |
 | `EqClasses` | union-find | ~O(α) | M1 placeholder; not wired to firings |
 
 **Reverse-index removal (S1.7.23):** `_types_by_parent` / `_instances_by_type`

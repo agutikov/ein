@@ -332,19 +332,26 @@ primary, so it is not part of that key — and an alternative recorded
 on the saturator's redundant path carries none at all. The per-fact
 list is capped at `MAX_ALT_JUSTIFICATIONS` (32) and kept sorted
 by premise count, so the cap retains the derivations with the fewest
-**premises**.
+**premises**; and beside the list each fact keeps the arrival with the
+smallest **closure** (`Kb::closure`, `Kb::best`, M1e2 S1e2.2.11).
 
-That is *not* the same as the ones a minimum-cardinality explanation
-can use, and the difference is measurable: premise count is local,
-frontier size is transitive, and a one-premise step whose premise
-unfolds into a long chain is retained ahead of a two-premise step over
-givens whose frontier is smaller. A full list can therefore refuse the
-derivation the explanation search would have chosen —
-`examples/ein-bugs/alt-cap-core.ein` reports a 3-fact unsat core where
+The fewest premises are *not* the ones a minimum-cardinality
+explanation can use: premise count is local, frontier size is
+transitive, and a one-premise step whose premise unfolds into a long
+chain is retained ahead of a two-premise step over givens whose
+frontier is smaller. A full list refused the derivation the
+explanation search would have chosen, and
+`examples/ein-bugs/alt-cap-core.ein` reported a 3-fact unsat core where
 a 2-fact one exists (M1e S1e.1.3, the review's Q2;
 [Q-M1e.15](../../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
-Corpus-wide exactly one entry reaches the cap and no answer moves
-without it.
+The smallest-closure arrival is what keeps it since: a closure is the
+estimate of a derivation's frontier, 1 for a leaf, 0 for a writeback,
+and for a derivation the sum of its premises'. It is still not every
+derivation: where the saving lies between two facts, the derivation a
+target needs is its own fact's worst
+(`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`,
+`W10/alt-cap-shared`, deferred to
+[F22](../../../../plans/followups/f22_exact_core_past_the_cap.md)).
 
 Recording is engine-side. The saturator's share of it — a redundant
 firing (the bulk: ~194k of them on an exhaustive `zebra2` solve,

@@ -124,30 +124,42 @@ answer see **Smallest contradiction frontier**. See
 ### Smallest contradiction frontier
 The smallest set of given facts from which **one** recorded
 contradiction follows — a minimum-cardinality AND/OR search over every
-derivation the store **retained** (provenance-based, NAF-safe,
+derivation the program **records** (provenance-based, NAF-safe,
 budgeted); **not** a subset-minimal MUS. It is what the `k = 0` verdict
 reports as its unsat core (unioned across dead commitments when no
 single dead one explains the unsat).
-Three caveats: no proper subset is checked for satisfiability; the
-alternatives searched are only the firings the saturator attempted,
-**capped at 32 per fact and retained shortest-premises-first**
-(`store.MAX_ALT_JUSTIFICATIONS`), so minimality is
-relative to the rule set and the saturation strategy; and the search
-is budgeted — `Explanation.exhausted` reports whether it completed,
-and a truncated search is still sound.
+Four caveats: no proper subset is checked for satisfiability; the
+derivations are the firings the saturator attempted, so minimality is
+relative to the rule set and the saturation strategy; the search is
+budgeted — `Explanation.exhausted` reports whether it completed, and a
+truncated search is still sound; and a program records its
+re-derivations only under `:record-alternative-justifications`, on by
+default — off, each fact's first derivation is all the search is
+offered, which may name another core and changes nothing else, the
+config principle's one exemption
+([`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row),
+the user's ruling of 2026-11-04).
 
-The **search** is independent of the order in which the rules fired;
-the **store in front of it is not**, and that is the second caveat read
-from the other end. Retention is by premise count and the search
-minimises frontier size, so a full list can refuse the derivation with
-the smaller frontier: `examples/ein-bugs/alt-cap-core.ein` reports a
-3-fact core where a 2-fact one exists, and its `-reordered` twin — one
-`:priority` apart — reports the 2-fact one (M1e S1e.1.3, the review's
-Q2; the fix is
-[Q-M1e.15](../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
-Corpus-wide exactly one entry reaches the cap, and only an entry that
-reaches it can be changed by it — that one's core is a single fact
-whether the cap is 32 or 10⁶. Computed by
+**What the store keeps of every derivation**: a fact's primary, up to 32
+alternatives with the fewest premises (`MAX_ALT_JUSTIFICATIONS`), and,
+beside them, the arrival with the smallest closure (M1e2 S1e2.2.11,
+[Q-M1e.15](../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)'s
+(3)). Until then a full list could refuse the derivation with the
+smaller frontier, and the reported core depended on which rule fired
+first: `examples/ein-bugs/alt-cap-core.ein` reported 3 facts where its
+`-reordered` twin, one `:priority` apart, reported 2 (M1e S1e.1.3); both
+report `(w1 X) (w2 X)` since. **One gap is known and deferred**: where the
+saving lies *between* two facts, the derivation a target needs is its
+own fact's worst, a full list refuses it, and no list of fixed length
+keeps every such one —
+`examples/ein-bugs/wrong-answers/alt-cap-shared.ein` reports 3 facts
+where every derivation gives 2, and 2 when the needed rule fires first.
+It is `W10/alt-cap-shared`, open and owned by
+[F22](../../plans/followups/f22_exact_core_past_the_cap.md). Of the
+corpus's 310 files before it was banked, ten reached the cap, always on
+`(false)` in a dead node, and an uncapped store moved no core of theirs
+but `alt-cap-core.ein`'s (M1e2 S1e2.2.11, `ein solve FILE --events`,
+2026-11-04). Computed by
 [`explain::smallest_contradiction_frontier`](../../ein.rs/crates/ein-infer/src/explain.rs)
 over the **ATMS label** search in
 [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs). See

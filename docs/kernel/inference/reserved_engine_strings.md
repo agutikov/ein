@@ -131,13 +131,12 @@ delegating to
 label propagation over the AND/OR justification graph
 (`kb.justifications(fact)` — a fact is an OR-node over AND-nodes of premises),
 so the *search* does not depend on which derivation fired first. Two caveats
-survive: minimality is relative to the derivations the store **retained**
-(only the firings the saturator attempted, capped per fact at
-`store.MAX_ALT_JUSTIFICATIONS` = 32 and retained shortest-premises-first — a
-different metric from the frontier size the search minimises, so a full list
-can refuse the smaller explanation and the reported core becomes firing-order
-dependent after all: M1e S1e.1.3 / Q-M1e.15,
-`examples/ein-bugs/alt-cap-core.ein`), and the search is **budgeted**
+survive: minimality is relative to the derivations the program **records**
+(only the firings the saturator attempted; of each fact's, the store keeps up
+to `store.MAX_ALT_JUSTIFICATIONS` = 32 with the fewest premises and, beside
+them since M1e2 S1e2.2.11, the one with the smallest closure, so the
+`alt-cap-core` pair report one core; a saving between two facts behind a full
+list is still refused, `W10/alt-cap-shared`, deferred to F22), and the search is **budgeted**
 (`ExplanationBudget`; `Explanation.exhausted` reports whether it ran to
 completion — a truncated search is still sound, just possibly not smallest).
 Across several dead commitments the verdict still unions their cores (with an
