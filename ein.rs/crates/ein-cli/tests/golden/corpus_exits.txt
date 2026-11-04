@@ -314,6 +314,14 @@
 0    examples/ein-bugs/alt-cap-core-reordered.ein :: test
 0    examples/ein-bugs/alt-cap-core.ein :: solve
 0    examples/ein-bugs/alt-cap-core.ein :: test
+0    examples/ein-bugs/binding-key-int-only.ein :: saturate
+0    examples/ein-bugs/binding-key-int-only.ein :: saturate --dump
+0    examples/ein-bugs/binding-key-int-only.ein :: solve
+0    examples/ein-bugs/binding-key-int-only.ein :: test
+0    examples/ein-bugs/binding-key-nested-only.ein :: saturate
+0    examples/ein-bugs/binding-key-nested-only.ein :: saturate --dump
+0    examples/ein-bugs/binding-key-nested-only.ein :: solve
+0    examples/ein-bugs/binding-key-nested-only.ein :: test
 0    examples/ein-bugs/complete-records-stale.ein :: solve
 0    examples/ein-bugs/d3-goal-row-order.ein :: saturate
 0    examples/ein-bugs/d3-goal-row-order.ein :: solve

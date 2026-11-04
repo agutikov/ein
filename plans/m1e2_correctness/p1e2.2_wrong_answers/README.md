@@ -40,8 +40,13 @@ register reads 41 fixed, 5 open and 1 not-wrong. **S1e2.2.6 is done**
 `cfcd8527`, `features/07` answering its `[case.now]` and `stale-naf-fork`
 refused at every command that takes the universe, the witnesses' headers
 corrected, nothing moved; `W8/features-07` stays `open`, `deferred` to F21's
-D2, and the register still reads 41 fixed, 5 open and 1 not-wrong. Next is
-**S1e2.2.7**, W7.
+D2, and the register still reads 41 fixed, 5 open and 1 not-wrong. **S1e2.2.7
+started the same day** (T1e2.2.7.1): W7's family re-taken in both profiles,
+the corpus measured (every plan's compile key is its symbol list outside
+W7's six files, so fix (1) moves nothing else by construction), the two
+single-activator controls banked, and every move of fix (1) listed before
+any edit, two of them the Fact/Fact collapse (1) undoes, which the stage
+file did not name.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

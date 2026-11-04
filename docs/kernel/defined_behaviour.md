@@ -444,9 +444,10 @@ until then a `warn` event, category `alive-set-invariant`, narrated each
 constant only a rule names, at root under `--events`; under the ruling none of
 them is new, so the line would say something false, and it left. The set is
 named by a test (`alive_invariant.rs::every_name_of_the_program_is_a_candidate_object`:
-40 names on 19 programs that the names index does not hold, 2026-11-04, three
-of them W14's witnesses, banked by S1e2.2.15; it was `Ann`, `G` and `Z` until
-S1e2.2.14), and `ein solve FILE -H` lists the
+41 names on 20 programs that the names index does not hold, 2026-11-04, three
+of them W14's witnesses, banked by S1e2.2.15, and one W7's
+`binding-key-nested-only.ein`, banked by S1e2.2.7; it was `Ann`, `G` and `Z`
+until S1e2.2.14), and `ein solve FILE -H` lists the
 candidates the seed makes.
 The F5 typed form is what would make a violation unrepresentable rather than
 detected.

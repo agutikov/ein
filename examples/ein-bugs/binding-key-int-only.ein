@@ -1,0 +1,42 @@
+;;; W7's family, the `int` activator alone — M1e2 S1e2.2.7, register row
+;;; `W7/binding-key-layout` (`corpus/wrong_answers.toml`), Q-M1e.16.
+;;;
+;;; `defined_behaviour.md` § 3.2's program with `(note edge (src Y))`
+;;; deleted. One activator compiles one plan, so the binding key has no
+;;; second register layout to compare against, and this file answers the
+;;; same in either build and under either key: it is a control, as
+;;; `binding-key-nested-only.ein` is for the other activator.
+;;; `binding-key-both.ein` and `binding-key-swapped.ein` keep both
+;;; activators, in the two orders, and that pair is the test. It is
+;;; `corpus/fuzz_findings/binding-key-layout.ein` and its `-swapped` twin,
+;;; promoted here by the commit that fixes W7, the one after this file was
+;;; banked: a build with debug assertions aborted on both until then, and
+;;; every in-process corpus sweep is such a build.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(note edge 1)` binds `?R` to `edge` and `?f` to 1, so the rule derives
+;;; `(noted ?a 1)` for each edge source `?a` once `(holds 1)` admits it:
+;;; `(noted 1 1)` and `(noted 2 1)`, and nothing about 3. H is empty (`ein
+;;; solve -H`, 2026-11-04), so R is `{∅}`: root, with those two, which the
+;;; `:expect` below states.
+
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds 3)
+
+(note edge 1)
+
+(solve
+  ;; `holds` and `noted` are named, so both are closed: each state lists
+  ;; their complete extent, root's facts included.
+  :expect (region
+            ;; state 1 of 1 — ∅, root itself · minimal · maximal
+            (model (holds 1) (holds 3) (noted 1 1) (noted 2 1))))

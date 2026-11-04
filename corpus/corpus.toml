@@ -662,6 +662,18 @@ group  = "regression"
 runs   = ["solve"]
 note   = "M1e2 S1e2.3.4 (P1e2.3's S8) — the only program known to put a nested fact in an unsat core: the given `(not (p A))`. The walk printed it as `(not Fact(relation_name='p', args=('A',)))`; the region read-out prints `unsat core        (not (p A))`, which `ein-cli/tests/read_out.rs` asserts. Was M1e2's `probes/nested-core.ein`; banked on the user's ruling (a) of 2026-11-03, *pin both*."
 
+[[entry]]
+path   = "examples/ein-bugs/binding-key-int-only.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump", "test"]
+note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): `defined_behaviour.md` § 3.2's program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare: `(noted 1 1)` and `(noted 2 1)` at root in either build and under either key, and R = {∅}, which `:expect` states."
+
+[[entry]]
+path   = "examples/ein-bugs/binding-key-nested-only.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump", "test"]
+note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key."
+
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
 # M1e2 S1e2.1.1 — witnesses of known wrong answers that existed only as
