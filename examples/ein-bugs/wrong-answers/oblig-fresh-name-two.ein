@@ -1,0 +1,68 @@
+;;; W14 seen from inside the lattice — M1e2 **W14**, register row
+;;; `W14/oblig-fresh-name-two` (`corpus/wrong_answers.toml`), S1e2.2.15.
+;;; Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `oblig-fresh-name.ein` plus `(person Bob)`, who may like Soup. The
+;;; obligations rung's H is `(likes Ann Soup)`, dead alone, and
+;;; `(likes Bob Soup)`. Committing `(likes Bob Soup)` derives `(food Z)`
+;;; through `special`, and at that node the rung itself would propose
+;;; `(likes Ann Z)` for Ann's debt, which root's H does not hold. So
+;;; `{(likes Bob Soup)}` is an owing state whose debt the region can never
+;;; pay, and `{(likes Bob Soup), (likes Ann Z)}` is a model outside the cube.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Ann needs `(likes Ann Z)`; Bob needs `(likes Bob Soup)` or
+;;; `(likes Bob Z)`, or both. Over the rung's candidates with `(food Z)`
+;;; declared at root (`oblig-fresh-name-two-declared.ein`) R is those three
+;;; states. With the rung declined, the blind enumerator proposes every
+;;; `likes` pair over Ann, Bob, Soup and Z, and the two no rule refutes or
+;;; requires, `(likes Ann Bob)` and `(likes Bob Ann)`, are free: R is twelve
+;;; states. Which of the two is this row's `right` is Q-M1e2.10
+;;; (`plans/m1e2_correctness/open_questions.md`), put to the user by
+;;; T1e2.2.15.1.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; H is 2 candidates and R is empty: the one alive node beyond root,
+;;; `{(likes Bob Soup)}`, owes Ann's debt, `(region (owing (model (likes Bob
+;;; Soup))))` (`ein solve FILE` at `338b5892`, 2026-11-04). The register row
+;;; holds that answer while it is open.
+
+(relation person T)
+(relation food   T)
+(relation likes  T T)
+
+(person Ann)
+(person Bob)
+(food Soup)
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food"
+  :priority 500)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (likes ?p ?f)
+  :assert (food Z)
+  :why    "once {?p} likes {?f}, Z is on the menu")
+
+(solve
+  :no-hypothesis (person food))
+
+(query
+  :goal   (likes ?p ?f))

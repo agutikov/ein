@@ -1,0 +1,63 @@
+;;; W14 on the shipped obligation rule — M1e2 **W14**, register row
+;;; `W14/oblig-stdlib-total-owed` (`corpus/wrong_answers.toml`), S1e2.2.15.
+;;; Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; std.algebra's `total-owed`, the rule `(bijective …)` fans out to: Ann
+;;; owes a Food she likes. Soup is the only Food at root and Ann may not like
+;;; it; `special` names `Z` in its `:assert` and makes it a Food once anyone
+;;; likes anything. The obligations rung reads root's `(is-a ?b Food)` scan,
+;;; Soup alone, so H is `(likes Ann Soup)`, dead alone.
+;;;
+;;; `total-owed`'s trigger and its domain both read `is-a`, and `special`
+;;; derives `is-a` from a commitment, so the static check flags the program:
+;;; an `obligation-trigger` site on `is-a` (no new debtor arises here, the
+;;; only derived `is-a` being `(is-a Z Food)`). It is not refused: *forbid*
+;;; (S1e2.2.5) refuses a refutation resting on an `absent`, and `no-soup`
+;;; reads none.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(likes Ann Z)}` saturates to `(is-a Z Food)`, which witnesses Ann's
+;;; debt. Over the rung's candidates with `(is-a Z Food)` declared at root
+;;; (`oblig-stdlib-total-owed-declared.ein`) R is that one state. With the
+;;; rung declined, the blind enumerator, which is untyped (C1, Q-M1e.12 (a)),
+;;; proposes `likes` over Ann, Soup and Z, and the four with a non-Person
+;;; subject, which no rule refutes, are free: R is sixteen states. Which of
+;;; the two is this row's `right` is Q-M1e2.10
+;;; (`plans/m1e2_correctness/open_questions.md`), put to the user by
+;;; T1e2.2.15.1.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; H is 1 candidate, dead alone, and R is empty, root owing Ann's Food,
+;;; `(region (owing (model)))` (`ein solve FILE` at `338b5892`, 2026-11-04,
+;;; route 2, the cube, since the program is flagged). The register row holds
+;;; that answer while it is open.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T)
+(relation likes Person Food)
+
+(is-a Ann Person)
+(is-a Soup Food)
+
+(total-owed likes is-a)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule special ()
+  :match  (likes ?p ?f)
+  :assert (is-a Z Food)
+  :why    "once {?p} likes {?f}, Z is on the menu")
+
+(solve
+  :no-hypothesis (is-a))
+
+(query
+  :goal   (likes ?p ?f))

@@ -131,7 +131,11 @@ constrained-reasoning research.
   `:match` or `:assert`, is a candidate; one only a query names is not), as
   eight open rows, and fixed all eight the same day with one list of the
   program's names, `invariant::program_names`, which the blind enumerator's
-  objects union: 37 fixed, 5 open and 1 not wrong.
+  objects union: 37 fixed, 5 open and 1 not wrong. S1e2.2.15 filed W14 the
+  same day (the obligations rung never proposes a domain value a commitment
+  derives) as four open rows, 37 fixed, 9 open and 1 not wrong, and paused on
+  Q-M1e2.10: whose candidates R is over when the rung cannot trust its
+  domain scan.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

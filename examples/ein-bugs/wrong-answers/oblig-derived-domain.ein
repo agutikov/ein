@@ -1,0 +1,64 @@
+;;; The obligations rung never proposes a domain value a commitment derives,
+;;; **with no rule constant at all** — M1e2 **W14**, register row
+;;; `W14/oblig-derived-domain` (`corpus/wrong_answers.toml`), S1e2.2.15.
+;;; Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `oblig-fresh-name.ein`'s defect where the value that joins the guard's
+;;; domain inside a fork is named by a **fact**, `(dish Pie)`, so it is a
+;;; name of the program and a candidate object, and nothing about names is
+;;; at stake. `special` derives `(food ?d)` for every dish once anyone likes
+;;; anything. The obligations rung reads root's `(food ?b)` scan, Soup alone,
+;;; and Ann may not like Soup: H is `(likes Ann Soup)`, dead alone.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(likes Ann Pie)}` saturates to `(food Pie)`, which witnesses Ann's debt:
+;;; R is that one state. With `(food Pie)` declared at root
+;;; (`oblig-derived-domain-declared.ein`) the rung finds it; with the rung
+;;; declined, the blind enumerator does (six `likes` candidates over Ann, Soup
+;;; and Pie, five dead alone).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; H is 1 candidate, dead alone, and R is empty, every alive node owing
+;;; (`ein solve FILE` at `338b5892`, 2026-11-04). The register row holds that
+;;; answer while it is open.
+
+(relation person T)
+(relation food   T)
+(relation dish   T)
+(relation likes  T T)
+
+(person Ann)
+(food Soup)
+(dish Pie)
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food"
+  :priority 500)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (and (likes ?p ?f) (dish ?d))
+  :assert (food ?d)
+  :why    "once {?p} likes {?f}, the dish {?d} is on the menu")
+
+(solve
+  :no-hypothesis (person food dish))
+
+(query
+  :goal   (likes ?p ?f))

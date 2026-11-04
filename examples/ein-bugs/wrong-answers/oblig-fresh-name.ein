@@ -1,0 +1,70 @@
+;;; The obligations rung never proposes a domain value a commitment derives —
+;;; M1e2 **W14**, register row `W14/oblig-fresh-name`
+;;; (`corpus/wrong_answers.toml`), S1e2.2.15. Banked from S1e2.2.4's residue
+;;; probe of 2026-11-04.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Ann owes a `likes` whose object is a `food` (`owes-food`, an obligation:
+;;; its `:assert` is `(open likes)`). At root the only food is Soup, and Ann
+;;; may not like Soup (`no-soup`). `special` names `Z` in its `:assert`: once
+;;; anyone likes anything, Z is on the menu. `liker-is-person` only types the
+;;; blind enumerator's candidates.
+;;;
+;;; The obligations rung builds H by running `owes-food`'s guard with its
+;;; witness step skipped, over root's KB: `(food ?b)` finds Soup alone, so H
+;;; is `(likes Ann Soup)`, dead alone. `food` grows by derivation from a
+;;; commitment (`special` reads `likes`), so it is in D, the relations a
+;;; commitment can change, and the rung's C4 check declined only on a
+;;; relation the rung itself proposes.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(likes Ann Z)}` saturates to `(food Z)`, which witnesses Ann's debt: an
+;;; alive, discharged state, and the maximal one. With `(food Z)` declared at
+;;; root (`oblig-fresh-name-declared.ein`) R is that one state, and so it is
+;;; when the rung declines and the blind enumerator, whose objects carry `Z`
+;;; since S1e2.2.4, builds H: six `likes` candidates over Ann, Soup and Z,
+;;; five dead alone. Monotone: `food` is in D but read only inside the
+;;; obligation's `absent`, where growth can only pay.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; H is 1 candidate, dead alone, and R is empty: every alive node owes,
+;;; `(region (owing (model)))` (`ein solve FILE` at `338b5892`, 2026-11-04).
+;;; The register row holds that answer while it is open.
+
+(relation person T)
+(relation food   T)
+(relation likes  T T)
+
+(person Ann)
+(food Soup)
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food"
+  :priority 500)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (likes ?p ?f)
+  :assert (food Z)
+  :why    "once {?p} likes {?f}, Z is on the menu")
+
+(solve
+  :no-hypothesis (person food))
+
+(query
+  :goal   (likes ?p ?f))

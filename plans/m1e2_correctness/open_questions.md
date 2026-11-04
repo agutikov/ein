@@ -23,6 +23,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
+| [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **put to the user 2026-11-04** by T1e2.2.15.1: (a) *decline*, the stage's default and the recommendation, R the blind enumerator's; (b) *widen*, R over the rung's candidates; two of W14's four rows differ |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1200,3 +1201,64 @@ are fixed, each witness answering its declared twin's R and the oracle's;
 both ways. W7's `right` is restated to R under the ruling. The stdlib writes
 no constant in a rule's argument position, so no import moved a program's
 names.
+
+## Q-M1e2.10 — When the obligations rung cannot trust its domain scan, whose candidates is R over?
+
+Put to the user on 2026-11-04 by
+[S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md)'s step 1
+([T1e2.2.15.1](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md#task-t1e22151--witnesses-banked-w14-filed-every-move-listed)).
+W14: the obligations rung builds H by running each obligation guard's domain
+scan over root's KB, so a domain value only a commitment derives is in no
+candidate, and R is empty or owing where a model exists. Q-M1e2.7's ruling (h)
+makes that an engine bug, and the stage's default fix is
+[`domain_contract.md`](../../docs/history/m1d_satisfiability/domain_contract.md)'s
+C4 as it is written, *where the guard's relation can grow, the rung declines
+and falls through to the blind generator*, with *can grow* read as D, the
+relations a commitment can change ([`monotone.rs`](../../ein.rs/crates/ein-infer/src/monotone.rs)).
+
+What step 1 found: D is at relation grain (the user's ruling of 2026-11-02,
+S1e2.1b.1 (a)), so the decline takes each witness's `-declared` control too.
+The control names the value at root, but its guard reads the same relation,
+and that relation is in D whether or not root already holds the value. On
+two of the four witnesses the blind enumerator's R is larger than the rung's
+on the control, because the blind enumerator proposes every pair of an
+untyped relation and the facts no rule refutes or requires are free:
+
+| witness (`examples/ein-bugs/wrong-answers/`) | today | the control over the rung's candidates | the blind enumerator, the rung declined |
+|---|---|---|---|
+| `oblig-fresh-name.ein` | H 1, R empty | H 2, 1 state, `{(likes Ann Z)}` | H 6, the same state |
+| `oblig-derived-domain.ein` | H 1, R empty | H 2, 1 state, `{(likes Ann Pie)}` | H 6, the same state |
+| `oblig-fresh-name-two.ein` | H 2, R empty, `{(likes Bob Soup)}` owing | H 4, 3 states | H 12, **12 states**: `(likes Ann Bob)` and `(likes Bob Ann)` free |
+| `oblig-stdlib-total-owed.ein` | H 1, R empty | H 2, 1 state | H 6, **16 states**: the four `likes` with a non-Person subject free (the blind enumerator is untyped, C1) |
+
+Each cell is `ein solve` and `ein oracle` at `338b5892`; the last column is
+the witness with a bare `(open)` rule added, which declines the rung today
+(`build/s1e2.2.15/blindprev/`), and a prototype of the decline answers the
+same on the witness and on its control (`build/s1e2.2.15/proto.diff`). No
+existing corpus program moves under the prototype: 72 of 3 366 sweep runs
+move, every one on the eight banked files.
+
+- **(a) *decline*** — the stage's default, and **the agent's
+  recommendation**. R is the blind enumerator's region whenever a guard
+  scans a relation in D: `W14/oblig-fresh-name-two`'s `right` is the twelve
+  states' maximal one and `W14/oblig-stdlib-total-owed`'s the sixteen's, and
+  the two controls' `:expect` claims move with them in the fixing commit (3 →
+  12 states, 1 → 16); every control's H moves. It is C4 as written, the
+  existing decline's own consequence (a guard over a relation the rung
+  proposes already falls through this way), consistent with Q-M1e2.3 (a), R
+  over the universe as scoped, and with C1's ruling (Q-M1e.12 (a)) that the
+  untyped blind rung's free facts are the fixture's under-specification. The
+  stage's 1.5 days.
+- **(b) *widen*** — the rung keeps H and proposes what each guard's domain
+  reaches under D (for instance its scan at the fixpoint of root with every
+  candidate committed, repeated until H stops growing). R is over the rung's
+  candidates: the two rows' `right` is the control's R as it is today (3
+  states, 1 state), and no control moves. A reach analysis the stage file
+  declined (*not this stage: it changes what the rung proposes on every
+  obligation program, and the probe found no program that needs it*), about a
+  day more, and on a flagged program such as the stdlib witness the top
+  node's fixpoint is not every node's.
+
+The register files `W14/oblig-fresh-name-two` and
+`W14/oblig-stdlib-total-owed` under (a), each with (b) as a
+`[[case.right.alternative]]`; the other two rows have one answer under both.

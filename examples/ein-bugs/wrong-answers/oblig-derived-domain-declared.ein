@@ -1,0 +1,49 @@
+;;; The **control** for [`oblig-derived-domain.ein`](oblig-derived-domain.ein)
+;;; — that file plus one fact, `(food Pie)` — M1e2 W14 (S1e2.2.15). Banked
+;;; from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; With `(food Pie)` at root the obligations rung's `(food ?b)` scan finds
+;;; Pie, so H holds `(likes Ann Pie)` beside `(likes Ann Soup)`, and R is one
+;;; state, `{(likes Ann Pie)}`, which the `:expect` below states.
+
+(relation person T)
+(relation food   T)
+(relation dish   T)
+(relation likes  T T)
+
+(person Ann)
+(food Soup)
+(dish Pie)
+(food Pie)   ; the one addition: Pie is a food at root
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food"
+  :priority 500)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (and (likes ?p ?f) (dish ?d))
+  :assert (food ?d)
+  :why    "once {?p} likes {?f}, the dish {?d} is on the menu")
+
+(solve
+  :no-hypothesis (person food dish)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
+  :expect (region
+            ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Pie)}
+            (model (likes Ann Pie))))
+
+(query
+  :goal   (likes ?p ?f))

@@ -1,0 +1,43 @@
+;;; The **control** for [`oblig-stdlib-total-owed.ein`](oblig-stdlib-total-owed.ein)
+;;; — that file plus one fact, `(is-a Z Food)` — M1e2 W14 (S1e2.2.15). Banked
+;;; from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; With `(is-a Z Food)` at root `total-owed`'s `(is-a ?b Food)` scan finds Z,
+;;; so H holds `(likes Ann Z)` beside `(likes Ann Soup)`, and R is one state,
+;;; `{(likes Ann Z)}`, which the `:expect` below states (`ein solve FILE` at
+;;; `338b5892`, 2026-11-04). Flagged as its witness is, an
+;;; `obligation-trigger` site on `is-a`, with no hole in its cube. `is-a` is
+;;; in D here too; whether the rung may build H over a guard that scans it is
+;;; Q-M1e2.10, and under the stage's default, the rung declined, this file
+;;; answers the blind enumerator's sixteen states.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T)
+(relation likes Person Food)
+
+(is-a Ann Person)
+(is-a Soup Food)
+(is-a Z Food)   ; the one addition: Z is a Food at root
+
+(total-owed likes is-a)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule special ()
+  :match  (likes ?p ?f)
+  :assert (is-a Z Food)
+  :why    "once {?p} likes {?f}, Z is on the menu")
+
+(solve
+  :no-hypothesis (is-a)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
+  :expect (region
+            ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Z)}
+            (model (likes Ann Z))))
+
+(query
+  :goal   (likes ?p ?f))

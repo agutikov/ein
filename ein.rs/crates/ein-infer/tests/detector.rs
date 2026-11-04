@@ -155,8 +155,10 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // 24 since M1e2 S1e2.2.5 (2026-11-04): `features/05` and `/12` close the
     // relation their `std.elim`-shaped refutations read, which *forbid* asked
     // of them, and are monotone; the programs it refuses keep their static
-    // half, which `checked` reads before the refusal.
-    assert_eq!(flagged, 24, "the flagged corpus programs");
+    // half, which `checked` reads before the refusal. 26 since S1e2.2.15
+    // banked W14's `oblig-stdlib-total-owed` pair the same day, each an
+    // `obligation-trigger` site on `is-a`.
+    assert_eq!(flagged, 26, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

@@ -160,6 +160,17 @@
 # a saturator that loses nothing derives there. The register reads **37 rows
 # fixed, 5 open and 1 not-wrong**.
 #
+# **W14 was filed on 2026-11-04 by S1e2.2.15** (T1e2.2.15.1): the
+# obligations rung builds H from each obligation guard's domain scan over
+# root's KB, so a domain value only a commitment derives is in no candidate,
+# and R is empty where a model exists (Q-M1e2.7's ruling (h)). Four rows, all
+# `open`, each a banked witness with its `-declared` control; a row's `wrong`
+# is the bare `solve` at `338b5892`, its `now` `solve --maximal`. Two rows'
+# `right` waits on Q-M1e2.10, whose candidates R is over once the rung
+# declines: each states reading (a), the blind enumerator's, the stage's
+# default, and reading (b), the rung's over its control, as an alternative.
+# The register reads **37 rows fixed, 9 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -2737,6 +2748,276 @@ relations = []
 models    = [
   [],
 ]
+
+# ══ W14 — the obligations rung never proposes a domain value a commitment derives
+[[case]]
+id       = "W14/oblig-fresh-name"
+case     = "W14"
+title    = "the obligations rung never proposes a domain value a commitment derives"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.15"
+question = ["Q-M1e2.7"]
+witness  = "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein"
+status   = "open"
+open_because = "the obligations rung builds H by running each obligation guard's domain scan over root's KB, and `food`, which `special` derives from any commitment, holds Soup alone there, so `(likes Ann Z)` is in no candidate; the rung's C4 check declines only on a relation the rung itself proposes, not on one in D. The fix is S1e2.2.15's"
+look_at  = ["root", "events rung", "answer", "summary"]
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 338b5892 (2026-11-04), before S1e2.2.15: R empty, root alive and owing Ann's food; `--maximal`, the run [case.now] holds while the row is open, lists no state"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["likes"]
+models    = []
+open      = [[]]
+owes      = [1]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "+ (food Z): Z a food at root, so the rung's `(food ?b)` scan finds it; taken at 338b5892, release, 2026-11-04, `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)"]]
+derived   = "Q-M1e2.7's ruling (h): a candidate list too small for a model is an engine bug. {(likes Ann Z)} saturates to (food Z), which witnesses Ann's debt: alive, discharged, and R's one state. The -declared control answers it over the rung's candidates, and so does the blind enumerator, the rung declined (six candidates over Ann, Soup and Z, five dead alone); `ein oracle` agrees on both (2026-11-04, at 338b5892). Q-M1e2.10's two readings give this row one answer"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 0
+empty     = "owing"
+relations = ["likes"]
+models    = []
+
+[[case]]
+id       = "W14/oblig-fresh-name-two"
+case     = "W14"
+title    = "the obligations rung never proposes a domain value a commitment derives"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.15"
+question = ["Q-M1e2.7", "Q-M1e2.10"]
+witness  = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein"
+status   = "open"
+open_because = "the obligations rung builds H over root's `(food ?b)` scan, Soup alone, so `(likes Ann Z)` is in no candidate, though committing `(likes Bob Soup)` derives `(food Z)` and the rung itself proposes it there; its C4 check declines only on a relation the rung proposes, not on one in D. The fix is S1e2.2.15's, and which R it answers is Q-M1e2.10"
+look_at  = ["root", "events rung", "answer", "summary"]
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 338b5892 (2026-11-04), before S1e2.2.15: R empty, {(likes Bob Soup)} alive and owing Ann's food; `--maximal`, the run [case.now] holds while the row is open, lists no state"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["likes"]
+models    = []
+open      = [["(likes Bob Soup)"]]
+owes      = [1]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "+ (food Z): Z a food at root, so the rung's scan finds it and H is `likes` from Ann and Bob to Soup and Z; R three states; taken at 338b5892, release, 2026-11-04, `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)", "(likes Bob Soup)", "(likes Bob Z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Bob)", "(likes Ann Z)", "(likes Bob Ann)", "(likes Bob Soup)", "(likes Bob Z)"]]
+reading   = "Q-M1e2.10 (a), *decline* — the stage's default and the agent's recommendation, not yet ruled: the rung declines on a guard that scans a relation in D, the blind enumerator builds H, and R is its region"
+derived   = "Q-M1e2.7's ruling (h): a candidate list too small for a model is an engine bug. With the rung declined, H is the twelve `likes` candidates over Ann, Bob, Soup and Z, seven dead alone, and R twelve states: Ann needs (likes Ann Z), Bob (likes Bob Soup) or (likes Bob Z) or both, and (likes Ann Bob) and (likes Bob Ann) are free, no rule refuting or requiring them. The maximal state holds all five. `ein oracle` on the witness with a bare `(open)` rule added, which declines the rung today, agrees (build/s1e2.2.15/blindprev/, 2026-11-04, at 338b5892), and so does the -declared control, which declines too under the fix"
+
+[[case.right.alternative]]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)", "(likes Bob Soup)", "(likes Bob Z)"]]
+reading   = "Q-M1e2.10 (b), *widen*: the rung keeps H and proposes what its guards' domains reach under D, and R is over its candidates"
+derived   = "the -declared control's R over the rung's candidates, `likes` from Ann and Bob to Soup and Z: three states, the maximal holding (likes Ann Z), (likes Bob Soup) and (likes Bob Z); `ein solve` and `ein oracle` at 338b5892 (2026-11-04). Under (b) the control does not move"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 0
+empty     = "owing"
+relations = ["likes"]
+models    = []
+
+[[case]]
+id       = "W14/oblig-derived-domain"
+case     = "W14"
+title    = "the obligations rung never proposes a domain value a commitment derives"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.15"
+question = ["Q-M1e2.7"]
+witness  = "examples/ein-bugs/wrong-answers/oblig-derived-domain.ein"
+status   = "open"
+open_because = "the obligations rung builds H over root's `(food ?b)` scan, Soup alone, and `special` derives `(food Pie)` only once a commitment is made, so `(likes Ann Pie)` is in no candidate though Pie is a name of the program; the rung's C4 check declines only on a relation the rung itself proposes, not on one in D. The fix is S1e2.2.15's"
+look_at  = ["root", "events rung", "answer", "summary"]
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 338b5892 (2026-11-04), before S1e2.2.15: R empty, root alive and owing Ann's food; `--maximal`, the run [case.now] holds while the row is open, lists no state"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["likes"]
+models    = []
+open      = [[]]
+owes      = [1]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "+ (food Pie): Pie a food at root, so the rung's scan finds it; taken at 338b5892, release, 2026-11-04, `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Pie)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Pie)"]]
+derived   = "Q-M1e2.7's ruling (h): a candidate list too small for a model is an engine bug. {(likes Ann Pie)} saturates to (food Pie), which witnesses Ann's debt: R's one state. The -declared control answers it over the rung's candidates, and so does the blind enumerator, the rung declined (six candidates over Ann, Soup and Pie, five dead alone); `ein oracle` agrees on both (2026-11-04, at 338b5892). Q-M1e2.10's two readings give this row one answer"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 0
+empty     = "owing"
+relations = ["likes"]
+models    = []
+
+[[case]]
+id       = "W14/oblig-stdlib-total-owed"
+case     = "W14"
+title    = "the obligations rung never proposes a domain value a commitment derives"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.15"
+question = ["Q-M1e2.7", "Q-M1e2.10"]
+witness  = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
+status   = "open"
+open_because = "std.algebra's `total-owed` builds H over root's `(is-a ?b Food)` scan, Soup alone, and `special` derives `(is-a Z Food)` only once a commitment is made, so `(likes Ann Z)` is in no candidate; the rung's C4 check declines only on a relation the rung itself proposes, not on one in D. The fix is S1e2.2.15's, and which R it answers is Q-M1e2.10"
+look_at  = ["root", "events rung", "answer", "summary"]
+note     = "flagged non-monotone, an obligation-trigger site on is-a, so R is the cube's (route 2); not refused, since forbid refuses a refutation that rests on an absent and `no-soup` reads none"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 338b5892 (2026-11-04), before S1e2.2.15: R empty, root alive and owing Ann's Food (route 2, the cube); `--maximal`, the run [case.now] holds while the row is open, lists no state"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["likes"]
+models    = []
+open      = [[]]
+owes      = [1]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "+ (is-a Z Food): Z a Food at root, so total-owed's scan finds it; taken at 338b5892, release, 2026-11-04, `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)", "(likes Soup Ann)", "(likes Soup Z)", "(likes Z Ann)", "(likes Z Soup)"]]
+reading   = "Q-M1e2.10 (a), *decline* — the stage's default and the agent's recommendation, not yet ruled: the rung declines on a guard that scans a relation in D, the blind enumerator builds H, and R is its region"
+derived   = "Q-M1e2.7's ruling (h): a candidate list too small for a model is an engine bug. With the rung declined, H is the six `likes` candidates over Ann, Soup and Z, the blind enumerator being untyped (C1, Q-M1e.12 (a)), one dead alone, and R sixteen states: (likes Ann Z) with any subset of the four whose subject is not a Person, which no rule refutes. The maximal state holds all five. `ein oracle` on the witness with a bare `(open)` rule added, which declines the rung today, agrees (build/s1e2.2.15/blindprev/, 2026-11-04, at 338b5892), and so does the -declared control, which declines too under the fix"
+
+[[case.right.alternative]]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["likes"]
+models    = [["(likes Ann Z)"]]
+reading   = "Q-M1e2.10 (b), *widen*: the rung keeps H and proposes what its guards' domains reach under D, and R is over its candidates"
+derived   = "the -declared control's R over the rung's candidates, (likes Ann Soup) and (likes Ann Z): one state, {(likes Ann Z)}; `ein solve` and `ein oracle` at 338b5892 (2026-11-04). Under (b) the control does not move"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 0
+empty     = "owing"
+relations = ["likes"]
+models    = []
 
 # ══ W15 — a name written outside a top-level fact or an `:assert` ═══════════
 [[case]]

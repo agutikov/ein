@@ -88,6 +88,10 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `wrong-answers/match-only.ein` and `negative-only.ein` — `Z`, M1e2's W15:
 ///   before S1e2.2.14 no candidate named it, and R was {∅} where the
 ///   `-declared` controls' four states are.
+/// - `wrong-answers/oblig-fresh-name.ein`, `-two.ein` and
+///   `oblig-stdlib-total-owed.ein` — `Z`, in `special`'s `:assert`, M1e2's
+///   W14 (S1e2.2.15): an object of the blind enumerator, which the obligations
+///   rung those programs take does not consult.
 /// - the three `*-disproved`, `syntax/equality` and `syntax/arg-kinds` — the
 ///   corpus programs whose H that moved (W15's rows; `arg-kinds` has none, its
 ///   R a lower bound both ways).
@@ -96,7 +100,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
-const SEEDED: [(&str, &[&str]); 16] = [
+const SEEDED: [(&str, &[&str]); 19] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -128,6 +132,18 @@ const SEEDED: [(&str, &[&str]); 16] = [
     (
         "examples/ein-bugs/wrong-answers/negative-only.ein",
         &["`Z`, in (not (q Z A))"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein",
+        &["`Z`, asserted by rule `special`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein",
+        &["`Z`, asserted by rule `special`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein",
+        &["`Z`, asserted by rule `special`"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",

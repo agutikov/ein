@@ -245,9 +245,9 @@ reads the program's names at load (the facts' arguments at any depth, the
 rules' `:match` and `:assert` constants), and `hypgen::candidate_objects`
 seeds the blind enumerator's objects with them;
 `ein-infer/tests/alive_invariant.rs` names the corpus programs with a name the
-KB's names index does not hold — 37 names on 16 programs (2026-11-04), among
-them `mixed-type-hypothesis.ein`'s `Ann`, `07_schroder.ein`'s `G`, W4's `Z`
-and W15's — holds each to the seed, and confirms that no run reaches a name
+KB's names index does not hold — 40 names on 19 programs (2026-11-04), among
+them `mixed-type-hypothesis.ein`'s `Ann`, `07_schroder.ein`'s `G`, W4's `Z`,
+W15's and W14's — holds each to the seed, and confirms that no run reaches a name
 outside the program's. The one shape that could name something else, a relation
 parameter bound to an integer, is refused at load or at compile
 ([`defined_behaviour.md` § 4.6](../defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).

@@ -1,0 +1,56 @@
+;;; The **control** for [`oblig-fresh-name-two.ein`](oblig-fresh-name-two.ein)
+;;; — that file plus one fact, `(food Z)` — M1e2 W14 (S1e2.2.15). Banked
+;;; from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; With `(food Z)` at root the obligations rung's `(food ?b)` scan finds Z,
+;;; so H is `likes` from Ann and from Bob to Soup and to Z, and R is three
+;;; states, which the `:expect` below states (`ein solve FILE` at
+;;; `338b5892`, 2026-11-04). `food` is in D here too, since `special` derives
+;;; it from a commitment; whether the rung may build H over a guard that
+;;; scans it is Q-M1e2.10, and under the stage's default, the rung declined,
+;;; this file answers the blind enumerator's twelve states.
+
+(relation person T)
+(relation food   T)
+(relation likes  T T)
+
+(person Ann)
+(person Bob)
+(food Soup)
+(food Z)   ; the one addition: Z is a food at root
+
+(rule owes-food ()
+  :match  (and (person ?a)
+               (absent (and (food ?b) (likes ?a ?b))))
+  :assert (open likes)
+  :why    "{?a} owes a liked food"
+  :priority 500)
+
+(rule no-soup ()
+  :match  (likes Ann Soup)
+  :assert (false)
+  :why    "Ann may not like Soup")
+
+(rule liker-is-person ()
+  :match  (and (likes ?p ?f) (absent (person ?p)))
+  :assert (false)
+  :why    "only a person likes")
+
+(rule special ()
+  :match  (likes ?p ?f)
+  :assert (food Z)
+  :why    "once {?p} likes {?f}, Z is on the menu")
+
+(solve
+  :no-hypothesis (person food)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts.
+  :expect (region
+            ;; state 1 of 3 — 2 candidates · minimal · from {(likes Ann Z), (likes Bob Soup)}
+            (model (likes Ann Z) (likes Bob Soup))
+            ;; state 2 of 3 — 2 candidates · minimal · from {(likes Ann Z), (likes Bob Z)}
+            (model (likes Ann Z) (likes Bob Z))
+            ;; state 3 of 3 — 3 candidates · maximal · from {(likes Ann Z), (likes Bob Soup), (likes Bob Z)}
+            (model (likes Ann Z) (likes Bob Soup) (likes Bob Z))))
+
+(query
+  :goal   (likes ?p ?f))
