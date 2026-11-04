@@ -27,6 +27,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
 | [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load |
+| [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **open**, put to the user 2026-11-05 by T1e2.2.20.1: the ruling's head `_` needs a second matching path; three ways measured, (c) recommended |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1565,3 +1566,78 @@ row corrected; (c) park to a followup, no row.
 [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md),
 which records the defaults the ruling leaves (`_` under an `absent`, in a
 guard, in an `:assert`; a head `_`'s cost).
+
+## Q-M1e2.14 — How does a head wildcard match every relation?
+
+Put to the user on 2026-11-05 by
+[S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md)'s
+step 1 ([T1e2.2.20.1](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md#task-t1e22201--the-witnesses-banked-w20-filed-every-move-listed)).
+Q-M1e2.13 (a) rules that `_` in a rule's pattern matches any value *in the
+head and in an argument*. The argument half is a slot that binds nothing,
+built as a prototype and measured: every argument-wildcard witness answers its
+twin's R on every surface, and no corpus run moves. The head half is not a
+slot. M1 compiles a plan per `(rule, activator)` pair and binds a relation
+head by the activator (Q29), so a `RelStep` names one relation, and
+[`wild-in-head.ein`](../../examples/ein-bugs/wrong-answers/wild-in-head.ein)'s
+`(rule w () :match (_ a) :assert (hit w))` stops compilation today, exit 1,
+with `unbound relation head ?Wildcard() …`, as `(?r a)` does with no
+parameter `?r`. The stage file stops here: matching a head `_` needs a
+second matching path, and which one, at what cost, is the user's.
+
+What every way must decide first: **every relation** includes the kernel's.
+A fact of one argument `a` can be a declaration's own `(relation a)`, a
+rule's activator `(total a)`, a stored negative's `not`, or `is-a*`, so `(_ a)`
+and `(_ ?x ?y)` match those too, and on `zebra2.ein` root holds facts of 40
+relations, 25 of them named as a rule is, the activators the stdlib's setup
+derives among them, `(functional color-loc)`, `(total color-loc)` (`ein
+saturate --dump`, `build/s1e2.2.20/head_census.py`, 2026-11-05, at
+`c73a0796`).
+
+What step 1 measured (`head_census.py` and `names_census.json`, the corpus's
+326 programs under `examples/`, `tests/` and `stdlib/`, 261 of which
+saturate, 2026-11-05, at `c73a0796`): root's fixpoint holds facts of a median
+4 relations and at most 41 (`ein-bugs/zebra2-bad`), a median 10 facts and at
+most 570, and its largest one extent is a median 6 facts and at most 372
+(`zebra.ein`); a program names a median 11 names and at most 93, a median 6
+relations and rules and at most 52 (`zebra2-hints`). On `zebra2.ein`: 82
+names, 18 relations and 26 rules; root holds 388 facts, its largest extent
+103 (`is-a*`).
+
+- **(a) A plan per relation.** The compiler expands a head `_` the way a
+  parameter its activator binds is expanded: one plan, or one disjunct, per
+  relation, with the head written in. The matcher and the saturator do not
+  change, and every reader of a compiled step sees an ordinary one. The
+  set it expands over must hold every relation a fact can ever have, which a
+  node can add to (a commitment, an activator a node derives, a parameter
+  bound to a name), so it is every name of the program: 82 plans for one
+  head `_` on `zebra2.ein`, 44 if objects are left out, and the product for
+  several in one conjunction (6 724 for two). Under `absent` it is one
+  guard per relation, since a nested `(or …)` is refused. The readers of a
+  rule's pattern rather than its plans (*forbid*'s D⁺, which reads a rule
+  root has no plan of from its pattern; the alive-set invariant; the
+  loader's pattern views) learn one case: a head `_` reads every relation.
+- **(b) A step over every relation.** One plan; a `RelStep` whose relation
+  is *any*, and a second matching path: the matcher scans the KB's every
+  fact of the arity (on `zebra2.ein`'s root 388 facts, where one extent is
+  at most 103), the saturator's index wakes the plan on every new fact, and
+  every reader of a step's relation learns *every relation*: 52 sites in 13
+  files of `ein-infer` read one (`r.rel`, `step.rel`, a nested slot's
+  `rel`: `match_.rs` 10, `compile.rs` 10, `monotone.rs` 8, `detector.rs` 6,
+  `oblgen.rs` 5, `saturator.rs` 4, `shape.rs` 3, six more one each),
+  among them the static check's D, *forbid*'s D⁺ and the obligations rung's
+  decline, the three readers whose misreadings were W14 and W17.
+- **(c) Refuse a head `_` at load** — **the agent's recommendation**. The
+  argument `_` matches any value, as built; a head `_` is refused with a
+  line in Ein's spelling, as a range is, and `01_grammar.md`'s token table
+  calls `_` an *argument wildcard in patterns*. A relation head stays what
+  Q29 made it, an atom or a parameter its activator binds. No corpus
+  program writes one (S1e2.2.20's scan, 733 rule and 7 macro forms,
+  2026-11-05), what it would match includes the kernel's own facts, which a
+  rule's author is unlikely to mean, and either way to match it adds a path
+  every static reader must know, the class of reader W14 and W17 were
+  defects of. The row `W20/wild-in-head` then has a refusal as its `right`,
+  as `W20/range-in-match` does.
+
+Whichever is ruled, the line the head `_` prints today goes: it is the
+Python IR's spelling of the pattern (`SForm(head=Wildcard(), …)`), under
+`ein saturate` with `ein.inference.compile.CompileError:` before it.

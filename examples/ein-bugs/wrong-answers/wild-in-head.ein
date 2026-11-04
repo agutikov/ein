@@ -1,0 +1,36 @@
+;;; A wildcard `_` as a pattern's relation head stops the run with a Python
+;;; spelling — M1e2 **W20**, register row `W20/wild-in-head`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.20 (2026-11-05) from the
+;;; user's ruling of 2026-11-04 (Q-M1e2.13 (a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(holds a)`, and one rule that concludes `(hit w)` from any
+;;; fact whose one argument is `a`, whatever its relation: the pattern's
+;;; head is the wildcard `_`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `_` in a rule's pattern matches any value, in the head and in an
+;;; argument, so `(_ a)` matches every fact of one argument `a`: `(holds a)`
+;;; at root, and the candidate `(hit a)` where it is committed. Root holds
+;;; `(hit w)`, and R is `{(hit w)}` and `{(hit a), (hit w)}`. It is the
+;;; answer of `wild-in-head-twin.ein`, whose `:match` is the disjunction over
+;;; the relations this program has that a one-argument fact can belong to,
+;;; `holds` and `hit` (the declarations' own one-argument `relation` facts
+;;; name `holds` and `hit`, never `a`). A head written as a fresh variable is
+;;; no twin: M1 binds a relation head by the activator (Q29), so `(?r a)`
+;;; with no parameter `?r` stops compilation as `_` does.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; Every command that compiles the rule exits 1: `ein saturate` with
+;;; `ein.inference.compile.CompileError: unbound relation head ?Wildcard() in
+;;; a premise of `SForm(head=Wildcard(), args=(Atom(name='a'),))` — M1
+;;; matches relations per activator (Q29), …`, and `ein solve` and `ein
+;;; oracle` with the message alone, the Python IR's spelling of the pattern
+;;; (`ein solve FILE` at `c73a0796`, release and debug).
+
+(relation holds Node) (relation hit Node)
+(holds a)
+(rule w () :match (_ a) :assert (hit w))

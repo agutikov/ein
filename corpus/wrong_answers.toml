@@ -354,6 +354,20 @@
 # **63 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
 # followup.
 #
+# **W20 was filed on 2026-11-05 by S1e2.2.20** (T1e2.2.20.1), from
+# S1e2.2.18's parked note and the user's ruling of 2026-11-04 on Q-M1e2.13,
+# (a): `_` in a rule's pattern matches any value, head and argument, and a
+# range in a rule is refused at load. The rule compiler lowers both as an
+# opaque slot that matches nothing. Five rows, all `open`: a premise with
+# `_`, which never matches; a head `_`, which stops compilation, a run that
+# ends in an error (schema /7); a range, which loads in silence; and two
+# shapes the stage's probes found by the same mechanism, an `absent` over a
+# `_`, which always holds, and an hrule's `_`, which proposes nothing. Each
+# wildcard witness's `right` is its twin's, banked beside it, and the range's
+# a refusal. How a head `_` matches every relation is Q-M1e2.14, put to the
+# user by the same task. A row's `wrong` is a region run's at `c73a0796`. The
+# register reads **63 rows fixed, 7 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -4624,6 +4638,238 @@ models    = [
   ["(p2 a)"],
 ]
 nogoods   = [{ set = ["(p a)"], core = ["(p a)"] }]
+
+# ══ W20 — a wildcard or a range in a rule's pattern matches nothing ══
+[[case]]
+id       = "W20/wild-in-match"
+case     = "W20"
+title    = "a wildcard or a range in a rule's pattern matches nothing"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.20"
+question = ["Q-M1e2.13"]
+witness  = "examples/ein-bugs/wrong-answers/wild-in-match.ein"
+status   = "open"
+look_at  = ["root", "events fire", "summary"]
+note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from S1e2.2.18 § Notes' first note, where the witness was build/s1e2.2.18/probes/wild-in-match.ein, on the user's ruling of 2026-11-04 (Q-M1e2.13 (a)). The twin, wild-in-match-twin.ein, writes `_` as `?any`, a variable the rule reads nowhere else, and is the right answer. By value: root.facts_by_relation.hit is 0 at c73a0796, and 1 right"
+open_because = "The rule compiler lowers `_` as an opaque slot (compile.rs' `slot`), which unifies with nothing, so `w` never fires; S1e2.2.20's fix lowers it as a slot that matches any value and binds nothing"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at c73a0796 (2026-11-05): R ∅ and {(hit a)}, no state holding (hit w) (root.facts_by_relation.hit = 0); `--minimal`, the run [case.now] holds while the row is open, lists root's state; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(hit a)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit w)"]]
+derived   = "`_` in a rule's pattern matches any value (01_grammar.md's token table, *head / arg wildcard in patterns*; the user's ruling of 2026-11-04, Q-M1e2.13 (a)), so `w` fires on (holds a): root holds (hit w), and R is {(hit w)} and {(hit a), (hit w)}, whose minimal line is root's. It is the twin's answer, wild-in-match-twin.ein (`ein solve` at c73a0796, release and debug)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W20/wild-in-head"
+case     = "W20"
+title    = "a wildcard or a range in a rule's pattern matches nothing"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.20"
+question = ["Q-M1e2.13", "Q-M1e2.14"]
+witness  = "examples/ein-bugs/wrong-answers/wild-in-head.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `_` matches any value in the head too. A run that ends in an error (schema /7): every command that compiles the rule exits 1, `ein saturate` with the line prefixed `ein.inference.compile.CompileError:`. A fresh variable is no twin for a head (M1 binds a relation head by the activator, Q29); the twin, wild-in-head-twin.ein, writes the head out as `(or (holds a) (hit a))`, the program's relations a one-argument fact can belong to"
+open_because = "The compiler binds a relation head only by the activator (Q29), and a head `_` is no parameter, so compilation stops; matching it needs a second path, a step over every relation or a plan per relation, and which one is Q-M1e2.14, put to the user by S1e2.2.20"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at c73a0796 (2026-11-05): exit 1 when the rule compiles, before any answer; every mode, `ein oracle` and `ein saturate` the same, `ein saturate`'s line prefixed `ein.inference.compile.CompileError:`"
+exit      = 1
+error     = "unbound relation head ?Wildcard() in a premise of `SForm(head=Wildcard(), args=(Atom(name='a'),))` — M1 matches relations per activator (Q29), so the head var must be bound by the rule's activator. Check that the activator fact's arity matches the rule's parameter list."
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit w)"]]
+derived   = "`_` in a rule's pattern matches any value, in the head too (Q-M1e2.13 (a)), so `(_ a)` matches every fact of one argument `a`: (holds a) at root, and the candidate (hit a) where it is committed. Root holds (hit w), and R is {(hit w)} and {(hit a), (hit w)}, whose minimal line is root's. It is the twin's answer, wild-in-head-twin.ein (`ein solve` at c73a0796, release and debug)"
+
+[case.now]
+run   = "solve --minimal"
+line  = "all"
+error = "unbound relation head ?Wildcard() in a premise of `SForm(head=Wildcard(), args=(Atom(name='a'),))` — M1 matches relations per activator (Q29), so the head var must be bound by the rule's activator. Check that the activator fact's arity matches the rule's parameter list."
+
+[[case]]
+id       = "W20/range-in-match"
+case     = "W20"
+title    = "a wildcard or a range in a rule's pattern matches nothing"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.20"
+question = ["Q-M1e2.13"]
+witness  = "examples/ein-bugs/wrong-answers/range-in-match.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from S1e2.2.18 § Notes' first note, where the witness was build/s1e2.2.18/probes/range-in-match.ein, on the user's ruling of 2026-11-04 (Q-M1e2.13 (a)). Its twin is the refusal, so no file"
+open_because = "The rule compiler lowers a range as an opaque slot (compile.rs' `slot`), which unifies with nothing, and nothing refuses it, so the program loads and `r` never fires in silence; S1e2.2.20's fix refuses a range in a rule at load"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at c73a0796 (2026-11-05): the program loads, H is empty, R is {∅}, exit 0, and nothing names the range; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1e2.13 (a), the user's ruling of 2026-11-04: a range in a rule is refused at load"
+refused   = true
+derived   = "A range is cardinality metadata (01_grammar.md's RANGE row), and no fact can hold one, so a rule's pattern cannot match one: every command that loads the program exits 1 (`ein test`: 2) with a line in Ein's spelling naming the rule and the slot"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W20/wild-in-absent"
+case     = "W20"
+title    = "a wildcard or a range in a rule's pattern matches nothing"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.20"
+question = ["Q-M1e2.13"]
+witness  = "examples/ein-bugs/wrong-answers/wild-in-absent.ein"
+status   = "open"
+look_at  = ["root", "events fire", "summary"]
+note     = "Found by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) probing the case's mechanism: the same opaque slot under an `absent`, which then always holds, so a conclusion the program refutes is in every state. `holds` is closed, so the program is monotone. The twin, wild-in-absent-twin.ein, writes `_` as `?any`, and is the right answer"
+open_because = "The rule compiler lowers `_` as an opaque slot, so the pattern under `absent` finds no fact and the `absent` always holds; S1e2.2.20's fix lowers it as a slot that matches any value"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at c73a0796 (2026-11-05): root holds (hit z), and R is {(hit z)} and {(hit a), (hit z)}; `--minimal`, the run [case.now] holds while the row is open, lists root's state; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(hit a)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [[]]
+derived   = "`_` matches any value, so (absent (holds _)) asks whether there is no `holds` fact of one argument, and (holds a) is one: `z` never fires, and R is ∅ and {(hit a)}, whose minimal line is root's, holding no `hit`. It is the twin's answer, wild-in-absent-twin.ein (`ein solve` at c73a0796, release and debug)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  ["(hit z)"],
+]
+
+[[case]]
+id       = "W20/wild-in-hrule"
+case     = "W20"
+title    = "a wildcard or a range in a rule's pattern matches nothing"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.20"
+question = ["Q-M1e2.13"]
+witness  = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Found by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) probing the case's mechanism: an hrule is compiled as a rule is, so its `_` matches nothing and it proposes no candidate. The twin, wild-in-hrule-twin.ein, writes `_` as `?any`, and is the right answer"
+open_because = "The rule compiler lowers `_` as an opaque slot, so the hrule matches no fact and H is empty; S1e2.2.20's fix lowers it as a slot that matches any value"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at c73a0796 (2026-11-05): H empty, *no candidate: R is {∅} or empty, decided by root alone*, R {∅}; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["tag"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["tag"]
+models    = [["(tag a)"]]
+derived   = "An hrule's `:match` is a rule's pattern, so `_` matches any value: the hrule proposes (tag a), H is that one candidate, nothing refutes, and R is ∅ and {(tag a)}, whose maximal line holds it. It is the twin's answer, wild-in-hrule-twin.ein (`ein solve` at c73a0796, release and debug)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

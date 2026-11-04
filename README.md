@@ -295,13 +295,13 @@ The milestones in [§ Scheduled](#scheduled--the-roadmap) exist because these
 were measured, not assumed:
 
 - **The walk gave wrong answers on well-formed programs, at default
-  settings, and two of the register's rows are still open.** Twelve cases and
+  settings, and seven of the register's rows are still open.** Twelve cases and
   one contested reading were re-run on 2026-10-14
   ([`inventory.md`](plans/m1e2_correctness/inventory.md)); the smallest was
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **63 of 66
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **63 of 71
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
   positive's unsound exclusions among them, which no route reads, W12 and W13,
   W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
@@ -338,9 +338,15 @@ were measured, not assumed:
   holds, or nothing, until M1e2 S1e2.2.19 recorded each firing's activator
   and followed one a node derives or commits, on the user's ruling
   (Q-M1e2.12 (c)), the same day — one
-  ruled not wrong (C1), and **2 open**, both deferred to a followup by the
-  user, each saying why: W8's other row (F21) and W10's second, a saving
-  between two facts behind a full list, which no bounded list keeps (F22).
+  ruled not wrong (C1), and **7 open**: two deferred to a followup by the
+  user, each saying why, W8's other row (F21) and W10's second, a saving
+  between two facts behind a full list, which no bounded list keeps (F22);
+  and W20's five, filed by M1e2 S1e2.2.20 on 2026-11-05 and owned by it: a
+  wildcard `_` or a range in a rule's pattern, which the rule compiler
+  lowers as a slot that matches nothing, so a rule that should fire never
+  does, an `absent` always holds, an hrule proposes nothing, and a head `_`
+  stops compilation; how a head `_` matches every relation is the user's
+  question, Q-M1e2.14.
   P1e2.2 works one stage per case
   ([P1e2.2](plans/m1e2_correctness/p1e2.2_wrong_answers/README.md)).
 - **An under-determined puzzle still does not finish.**

@@ -1,0 +1,11 @@
+;;; The twin of `wild-in-absent.ein` — M1e2 **W20**, banked by S1e2.2.20
+;;; (2026-11-05): the same program with the wildcard `_` written as `?any`, a
+;;; variable the rule reads nowhere else, which under `absent` asks after any
+;;; `holds` fact at all. Its answer is the witness's right one: `z` never
+;;; fires, and R is `∅` and `{(hit a)}` (`ein solve FILE` at `c73a0796`,
+;;; release and debug).
+
+(relation holds Node) (relation hit Node)
+(holds a)
+(rule z () :match (absent (holds ?any)) :assert (hit z))
+(solve :no-hypothesis (holds))

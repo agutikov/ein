@@ -1,0 +1,29 @@
+;;; A wildcard `_` in a rule's `:match` matches nothing — M1e2 **W20**,
+;;; register row `W20/wild-in-match` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.20 (2026-11-05) from S1e2.2.18's parked note, ruled by the user on
+;;; 2026-11-04 (Q-M1e2.13 (a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(holds a)`, and one rule that concludes `(hit w)` from any
+;;; `holds` fact: its pattern's one argument is the wildcard `_`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `_` in a rule's pattern matches any value (`01_grammar.md`'s token table,
+;;; *head / arg wildcard in patterns*, and the user's ruling), so `w` fires on
+;;; `(holds a)` and root holds `(hit w)`. The blind enumerator proposes
+;;; `(hit a)`, so R is two states, `{(hit w)}` and `{(hit a), (hit w)}`. It
+;;; is the answer of `wild-in-match-twin.ein`, this file with `_` written as
+;;; a variable the rule reads nowhere else.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `w` never fires: the rule compiler lowers `_` as an opaque slot, which
+;;; unifies with nothing (`compile.rs`' `slot`). Root holds no `hit`, and R
+;;; is `∅` and `{(hit a)}`, no state holding `(hit w)` (`ein solve FILE` at
+;;; `c73a0796`, release and debug; every mode and `ein oracle` the same).
+
+(relation holds Node) (relation hit Node)
+(holds a)
+(rule w () :match (holds _) :assert (hit w))

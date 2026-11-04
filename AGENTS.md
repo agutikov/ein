@@ -208,6 +208,15 @@ constrained-reasoning research.
   compiled from, and a dead node's core follows one a node derived or
   committed, never root's: 63 fixed, 2 open (both deferred to a followup)
   and 1 not wrong.
+  S1e2.2.20 filed W20 on 2026-11-05, on the user's ruling of 2026-11-04
+  (Q-M1e2.13 (a): `_` in a rule's pattern matches any value, head and
+  argument; a range in a rule is refused at load): the rule compiler lowers
+  both as a slot that matches nothing, five witnesses, a premise, a head
+  `_` that stops compilation, a range that loads in silence, an `absent`
+  and an hrule: 63 fixed, 7 open and 1 not wrong. How a head `_` matches
+  every relation is Q-M1e2.14, put to the user: it needs a second path, a
+  plan per relation or a step over every relation, and the agent recommends
+  refusing it at load (S1e2.2.20's census, 2026-11-05).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

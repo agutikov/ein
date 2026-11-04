@@ -1,0 +1,30 @@
+;;; An `(absent …)` over a pattern with a wildcard `_` always holds — M1e2
+;;; **W20**, register row `W20/wild-in-absent` (`corpus/wrong_answers.toml`),
+;;; found by S1e2.2.20 (2026-11-05) probing the case's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(holds a)`, and one rule that concludes `(hit z)` while there
+;;; is no `holds` fact at all. `holds` is closed (`:no-hypothesis`), so no
+;;; commitment extends it and the `absent` keeps the program monotone.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `_` in a rule's pattern matches any value, so `(absent (holds _))` asks
+;;; whether there is no `holds` fact of one argument, and `(holds a)` is one:
+;;; `z` never fires. The blind enumerator proposes `(hit a)`, so R is `∅` and
+;;; `{(hit a)}`, no state holding `(hit z)`. It is the answer of
+;;; `wild-in-absent-twin.ein`, this file with `_` written as `?any`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `z` fires: `_` is an opaque slot that matches nothing, so the pattern
+;;; under `absent` finds no fact and the `absent` always holds. A conclusion
+;;; the program refutes is in every state: root holds `(hit z)`, and R is
+;;; `{(hit z)}` and `{(hit a), (hit z)}` (`ein solve FILE` at `c73a0796`,
+;;; release and debug; every mode and `ein oracle` the same).
+
+(relation holds Node) (relation hit Node)
+(holds a)
+(rule z () :match (absent (holds _)) :assert (hit z))
+(solve :no-hypothesis (holds))

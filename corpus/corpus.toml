@@ -1048,6 +1048,60 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W19's boundary, an activator root derives: `mk0` derives `(r2 a)` from the given `(start a)`, root compiles `r2`'s plan, and it concludes (false) from the commitment `(p a)`. R two states, ∅ and {(p2 a)}; N {(p a)}, core `(p a)`. Under Q-M1e2.12's *every activator* and *a derived one* the core also names `(start a)`; under *one only a node derives*, which the user ruled, it does not move, and S1e2.2.19's fix left it."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-match.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20 (`W20/wild-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `w`'s `:match` is `(holds _)`, and the rule compiler lowers `_` as an opaque slot that matches nothing, so `w` never fires on `(holds a)`: root holds no `hit`, R ∅ and {(hit a)}. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `_` matches any value, root holds `(hit w)`, R the twin's."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-match-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20's twin of `wild-in-match.ein`, banked by S1e2.2.20: `_` written as `?any`, a variable the rule reads nowhere else. `w` fires, root holds `(hit w)`, R {(hit w)} and {(hit a), (hit w)}: the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20 (`W20/wild-in-head`), banked by S1e2.2.20 from the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `w`'s `:match` is `(_ a)`, a head wildcard, and every command that compiles it exits 1 with `unbound relation head ?Wildcard() …` (`ein saturate`: prefixed `ein.inference.compile.CompileError:`), a Python spelling. Right: `(_ a)` matches every fact of one argument `a`, root holds `(hit w)`, R the twin's."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-head-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20's twin of `wild-in-head.ein`, banked by S1e2.2.20: the head wildcard written out as `(or (holds a) (hit a))`, the program's relations a one-argument fact can belong to; a fresh variable is no twin for a head (Q29). Root holds `(hit w)`, R {(hit w)} and {(hit a), (hit w)}: the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/range-in-match.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20 (`W20/range-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `r`'s `:match` is `(n 1..3)`, and the rule compiler lowers the range as an opaque slot that matches nothing, so `r` never fires, in silence: R {∅}, exit 0. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): a range in a rule is refused at load, since no fact can hold one."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20 (`W20/wild-in-absent`), found by S1e2.2.20 probing the case's mechanism: `(absent (holds _))` beside the fact `(holds a)`. `_` is an opaque slot, so the pattern under `absent` finds nothing and `z` fires: root holds `(hit z)`, a conclusion the program refutes. Right: `_` matches any value, `z` never fires, R the twin's, ∅ and {(hit a)}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20's twin of `wild-in-absent.ein`, banked by S1e2.2.20: `_` written as `?any`. `z` never fires, R ∅ and {(hit a)}: the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20 (`W20/wild-in-hrule`), found by S1e2.2.20 probing the case's mechanism: `(hrule h () :match (holds ?x _) …)`, whose `_` matches nothing, so the hrule proposes no candidate: H empty, R {∅}. Right: `_` matches any value, H {(tag a)}, R the twin's, ∅ and {(tag a)}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W20's twin of `wild-in-hrule.ein`, banked by S1e2.2.20: `_` written as `?any`. H {(tag a)}, R ∅ and {(tag a)}: the witness's right answer."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and

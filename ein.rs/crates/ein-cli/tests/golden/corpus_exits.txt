@@ -442,6 +442,8 @@
 0    examples/ein-bugs/wrong-answers/owed-seats-renamed.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-seats.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-two-step.ein :: solve
+0    examples/ein-bugs/wrong-answers/range-in-match.ein :: saturate
+0    examples/ein-bugs/wrong-answers/range-in-match.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
 0    examples/ein-bugs/wrong-answers/str-in-absent.ein :: saturate
@@ -457,6 +459,22 @@
 0    examples/ein-bugs/wrong-answers/tree-dead.ein :: solve
 0    examples/ein-bugs/wrong-answers/uncovered-knows.ein :: solve
 0    examples/ein-bugs/wrong-answers/uncovered.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-head-twin.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-head-twin.ein :: solve
+1    examples/ein-bugs/wrong-answers/wild-in-head.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wild-in-head.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-hrule.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-hrule.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-match-twin.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-match-twin.ein :: solve
+0    examples/ein-bugs/wrong-answers/wild-in-match.ein :: saturate
+0    examples/ein-bugs/wrong-answers/wild-in-match.ein :: solve
 0    examples/ein-bugs/zebra2-bad.ein :: render constraints
 0    examples/ein-bugs/zebra2-bad.ein :: render lattice
 0    examples/ein-bugs/zebra2-bad.ein :: render rules

@@ -1,0 +1,26 @@
+;;; A wildcard `_` in an hrule's `:match` proposes nothing — M1e2 **W20**,
+;;; register row `W20/wild-in-hrule` (`corpus/wrong_answers.toml`), found by
+;;; S1e2.2.20 (2026-11-05) probing the case's mechanism.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(holds a b)`, and one hrule that proposes `(tag ?x)` for each
+;;; `holds` fact, whatever its second argument: the pattern writes `_` there.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An hrule's `:match` is a rule's pattern, so `_` matches any value: the
+;;; hrule proposes `(tag a)`, H is that one candidate, nothing refutes, and R
+;;; is `∅` and `{(tag a)}`. It is the answer of `wild-in-hrule-twin.ein`,
+;;; this file with `_` written as `?any`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; H is empty: `_` is an opaque slot that matches nothing, so the hrule
+;;; matches no fact and proposes no candidate. `ein solve FILE` at
+;;; `c73a0796` prints *no candidate: R is {∅} or empty, decided by root
+;;; alone*, and R is `{∅}`, in a release build and a debug one.
+
+(relation holds Node Node) (relation tag Node)
+(holds a b)
+(hrule h () :match (holds ?x _) :assert (tag ?x))

@@ -1,0 +1,9 @@
+;;; The twin of `wild-in-hrule.ein` — M1e2 **W20**, banked by S1e2.2.20
+;;; (2026-11-05): the same program with the wildcard `_` written as `?any`, a
+;;; variable the hrule reads nowhere else. Its answer is the witness's right
+;;; one: the hrule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein
+;;; solve FILE` at `c73a0796`, release and debug).
+
+(relation holds Node Node) (relation tag Node)
+(holds a b)
+(hrule h () :match (holds ?x ?any) :assert (tag ?x))
