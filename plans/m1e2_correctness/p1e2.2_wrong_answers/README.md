@@ -72,6 +72,10 @@ programs that reach H, all under the blind enumerator, 11 after the retype),
 and every move of the retype and the warning listed before any edit: R moves
 on the two fixtures alone, 74 states to 2, and no exit code. The warning is a
 `types` row under `universe` and `root.hypgen.types_as_objects`, not an event.
+**Applied the same day** (T1e2.2.10.3): the two fixtures typed, the warning
+built on every surface that reports R, C1's and `W1/branching-07`'s rows moved
+to the retyped program's R; the register still reads 44 fixed, 2 open and 1
+not-wrong.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

@@ -58,15 +58,15 @@ levers = ["-y"]
 path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 143
-note   = "the lookahead A/B's on side. `solve -e` is 214 ms against its sibling 07's 315 ms, for the same bytes — it was 245 against 916 until M1a T1a.7.2.0 took 07's layer stack apart, which is what stopped 07 being the corpus's slow entry and left this one the most expensive cell that is not slow. Was slow = true until S1a.9.0 measured it. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 143 ms together, the slowest `solve` at 64 ms."
+cost_ms = 40
+note   = "the lookahead A/B's on side. `solve -e` is 214 ms against its sibling 07's 315 ms, for the same bytes — it was 245 against 916 until M1a T1a.7.2.0 took 07's layer stack apart, which is what stopped 07 being the corpus's slow entry and left this one the most expensive cell that is not slow. Was slow = true until S1a.9.0 measured it. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 143 ms together, the slowest `solve` at 64 ms. Re-taken 2026-11-04 when M1e2 S1e2.2.10 typed `co-located` (Q-M1e.12 (a)), which takes H from 204 candidates to 132 and R from 74 states to 2 (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py -k lookahead_o`): 40 ms together, the slowest `solve` at 11 ms."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 143
-note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.32 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does. Was slow = true at 2.12 s until M1a T1a.7.2.0 coalesced root's layer stack at the layer barrier: its 162 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, which was 2.8x of this entry. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 143 ms together, the slowest `solve` at 64 ms."
+cost_ms = 30
+note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.32 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does. Was slow = true at 2.12 s until M1a T1a.7.2.0 coalesced root's layer stack at the layer barrier: its 162 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, which was 2.8x of this entry. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 143 ms together, the slowest `solve` at 64 ms. Re-taken 2026-11-04 when M1e2 S1e2.2.10 typed `co-located` (Q-M1e.12 (a)), which takes H from 204 candidates to 132 and R from 74 states to 2 (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py -k lookahead_o`): 30 ms together, the slowest `solve` at 8.0 ms."
 
 [[entry]]
 path   = "examples/branching/08_hypothesis_relation_whitelist.ein"

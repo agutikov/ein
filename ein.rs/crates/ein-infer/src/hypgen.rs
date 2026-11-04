@@ -21,7 +21,10 @@
 //!   type-blind and the puzzle's own rules do the pruning; Rust code that
 //!   reaches for `is-a` here is reintroducing what that stage removed. The
 //!   *signature* atoms are excluded, which is a different thing: a name a
-//!   puzzle declared as a type role, derived without naming `is-a`.
+//!   puzzle declared as a type role, derived without naming `is-a`. Since M1e2
+//!   S1e2.2.10 [`crate::types_as_objects`] reads `is-a` by name, after this
+//!   pass and outside it, to say where the enumerator bound a type as an
+//!   object (Q-M1e.12 (a)): it decides nothing, and no candidate moves.
 //!
 //! ### What is free
 //!
@@ -439,8 +442,9 @@ fn generate_with(
     // Eight corpus files write the kill cache **while the blind enumerator is
     // running**, so the equivalence is exercised rather than argued:
     // `branching/{01,02,03,04,06,08,12}` and `features/05`, of which
-    // `06_lookahead_on.ein` writes 162 `(not h)` facts mid-call. All are
-    // byte-identical through the `hyp` stream.
+    // `06_lookahead_on.ein` writes 130 `(not h)` facts mid-call (162 until
+    // M1e2 S1e2.2.10 typed its `co-located`). All are byte-identical through
+    // the `hyp` stream.
     let objects = candidate_objects(s.kb, s.terms, s.ast);
     let by_count = by_participation(s.kb, s.terms, &objects);
     let relations = relation_plan(s, &allowed, &excluded);

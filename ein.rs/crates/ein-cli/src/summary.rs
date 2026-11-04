@@ -108,6 +108,12 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
                     "outside",
                     ein_render::dump::region::outside_json(&stats.outside),
                 ),
+                // What the untyped rung bound as an object (M1e2 S1e2.2.10,
+                // Q-M1e.12 (a)): on every run, empty when nothing.
+                (
+                    "types_as_objects",
+                    ein_render::dump::region::types_json(&stats.types_as_objects),
+                ),
             ]),
         ),
     ])

@@ -29,6 +29,7 @@ use ein_infer::monotone::Monotonicity;
 use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
 use ein_infer::region::Class;
 use ein_infer::scope::{Outside, Why};
+use ein_infer::types_as_objects::TypesAsObjects;
 use ein_ir::expect::Over;
 
 /// The rule under the header.
@@ -424,6 +425,38 @@ fn outside_row(out: &mut Out, outside: &[Outside]) {
     }
 }
 
+/// What the untyped rung bound as an object, as one sentence — M1e2
+/// S1e2.2.10 (C1), the user's ruling of 2026-11-03 on Q-M1e.12, (a) *the
+/// fixture, with the warning*: the names on the right of an `is-a` that a
+/// candidate of the blind enumerator's H names, how many candidates and of
+/// which relations, and why. `None` when it bound none. The read-out prints it
+/// as the `types` row under `universe`, `ein test` beside each claim it
+/// prints, and `ein oracle --dump`'s `region.md` under its candidate count.
+pub fn types_text(t: &TypesAsObjects) -> Option<String> {
+    if t.is_empty() {
+        return None;
+    }
+    let one = t.objects.len() == 1;
+    let (it, one_of) = if one { ("it", "it") } else { ("them", "one") };
+    let name = if t.candidates == 1 { "names" } else { "name" };
+    Some(format!(
+        "{} — on the right of an is-a, and {} of {} {name} {one_of} as an object: the blind \
+         enumerator is untyped, and no signature names {it}",
+        t.objects.join(", "),
+        plural(t.candidates as u64, "candidate", "candidates"),
+        t.relations.join(", "),
+    ))
+}
+
+/// The `types` row under `universe`, when the untyped rung bound a type as
+/// an object: every question prints it, since every question is over the
+/// same H.
+fn types_row(out: &mut Out, t: &TypesAsObjects) {
+    if let Some(text) = types_text(t) {
+        out.line(sub_row("types", text));
+    }
+}
+
 /// The warning's static half, as rows under its first: `assumes`, a `site`
 /// per site (at most [`WARNING_ROWS`] unless `uncut`), each `cycle`, each
 /// `order` — what `ein solve --monotone` prints, and every flagged read-out's
@@ -715,6 +748,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     }
     out.row("universe", plural(c.n as u64, "candidate", "candidates"));
     outside_row(&mut out, &c.root.outside);
+    types_row(&mut out, &c.root.types_as_objects);
     out.row(
         "route",
         "none — a question about the program: root's fixpoint, then the static check",
@@ -1170,6 +1204,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         );
     }
     outside_row(out, &a.root.outside);
+    types_row(out, &a.root.types_as_objects);
     let route = match (d.route, o.command) {
         (Route::DownSet, _) => format!("1, the alive down-set — {}", licences(&a.licences)),
         (Route::States, _) => format!(
@@ -1347,6 +1382,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     );
     out.row("universe", plural(a.n() as u64, "candidate", "candidates"));
     outside_row(out, &a.root.outside);
+    types_row(out, &a.root.types_as_objects);
     out.row(
         "route",
         format!(

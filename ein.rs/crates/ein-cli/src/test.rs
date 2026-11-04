@@ -809,6 +809,10 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     // is over H.
     let outside = ein_render::read_out::outside_text(&r.answer.root.outside)
         .map(|t| format!("    outside the universe: {t}"));
+    // What the untyped rung bound as an object (M1e2 S1e2.2.10, Q-M1e.12
+    // (a)), beside each claim printed as the scope is.
+    let types = ein_render::read_out::types_text(&r.answer.root.types_as_objects)
+        .map(|t| format!("    a type as an object: {t}"));
     if let (Some(i), Some(claim)) = (solve_row, solve_claim.as_ref()) {
         let report = r.claim.clone().unwrap_or_else(|| Report {
             outcome: Outcome::NotChecked,
@@ -857,6 +861,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
             lines.extend(warning.clone());
             lines.extend(outside.clone());
+            lines.extend(types.clone());
         }
     }
     // The read-out answers the queries that have a :goal, in order.
@@ -918,6 +923,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
             lines.extend(warning.clone());
             lines.extend(outside.clone());
+            lines.extend(types.clone());
         }
     }
 

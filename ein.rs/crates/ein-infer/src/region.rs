@@ -223,6 +223,10 @@ pub struct RootStats {
     /// relations the program can conclude or ask about, which it does not
     /// scope out itself, and of which the rung that built H proposes no fact.
     pub outside: Vec<crate::scope::Outside>,
+    /// What the untyped rung bound as an object ([`crate::types_as_objects`],
+    /// M1e2 S1e2.2.10): the names on the right of an `is-a` that a candidate
+    /// of the blind enumerator's H names.
+    pub types_as_objects: crate::types_as_objects::TypesAsObjects,
 }
 
 impl Region {
@@ -266,6 +270,9 @@ pub enum Outcome {
         monotonicity: Monotonicity,
         /// What the universe leaves out, as [`RootStats::outside`].
         outside: Vec<crate::scope::Outside>,
+        /// What the untyped rung bound as an object, as
+        /// [`RootStats::types_as_objects`].
+        types_as_objects: crate::types_as_objects::TypesAsObjects,
     },
 }
 
@@ -342,6 +349,7 @@ pub(crate) fn compute_prepared(
             candidates,
             monotonicity,
             outside: root_stats.outside,
+            types_as_objects: root_stats.types_as_objects,
         });
     }
     let cost_root = t_root.elapsed();
@@ -684,6 +692,12 @@ pub(crate) fn prepare_with(
             memo: memo.clone(),
         };
         crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans)?
+    };
+    // What the untyped rung bound as an object (M1e2 S1e2.2.10): read off H
+    // and root's fixpoint, no event, and nothing it decides.
+    root_stats.types_as_objects = {
+        let facts: Vec<FactId> = candidates.iter().map(|c| c.fact).collect();
+        crate::types_as_objects::of(root, terms, root_stats.hypgen.rung.mode, &facts)
     };
     // *Forbid* (M1e2 S1e2.2.5): a refutation resting on an `absent` over a
     // relation a commitment can still extend refuses the program, here, after

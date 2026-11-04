@@ -812,6 +812,8 @@ fn the_monotone_question_is_about_the_program() {
 /// clears what a describe's dump left; the levers, `-t`, `--events` and
 /// `--dump-lattice` are taken. What its counts are is held to describe's and
 /// the oracle's elsewhere (`read_out.rs`, `explore.rs`, `lever_invariance.rs`).
+/// Since M1e2 S1e2.2.10 the block carries `universe`'s `types` row: `pets.ein`'s
+/// blind enumerator binds `Pet`, a type, as an object.
 #[test]
 fn the_count_question_is_describes_counts() {
     let pets = "examples/saturation/type-exclusivity/pets.ein";
@@ -829,6 +831,9 @@ fn the_count_question_is_describes_counts() {
              \x20 ∅                 in R — root is alive and owes nothing\n\
              \x20 lattice           monotone (the static check) — R is convex: no hole\n\
              \x20 universe          15 candidates, 0 dead alone\n\
+             \x20   types           Pet — on the right of an is-a, and 9 candidates of \
+             co-located, is-a name it as an object: the blind enumerator is untyped, and no \
+             signature names it\n\
              \x20 route             the state route, every alive state once — L1 dead is \
              upward-closed · L3 a commitment's state is its closure's · L4 the lines are local\n\
              \x20 work              11 351 saturations · 76 743 facts beyond root · 14 layers\n"

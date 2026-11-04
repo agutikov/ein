@@ -73,14 +73,14 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     assert_eq!(closed_default["leftover"]["taken"], J::Bool(false));
     assert!(counts(&closed_default, "states").is_empty());
 
-    let before = summary("examples/branching/06_lookahead_on.ein");
+    let before = summary("examples/branching/04_two_levels.ein");
 
     // SAFETY: this binary holds exactly one test, so nothing else in the
     // process reads the environment while it is written. `EIN_LEFTOVER` is
     // read once per summary, so the write has to land before `build_region`
     // and not during it.
     unsafe { std::env::set_var("EIN_LEFTOVER", "1") };
-    let after = summary("examples/branching/06_lookahead_on.ein");
+    let after = summary("examples/branching/04_two_levels.ein");
     let closed = summary("examples/saturation/square-fwd/houses.ein");
     let typed = summary("examples/branching/12_typed_blind_solve.ein");
     let open = summary("examples/branching/05_mini_zebra.ein");
@@ -93,7 +93,9 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     // scope: the pass writes into its fork, and if the fork were the state the
     // writes would move what the read-out lists. Everything outside
     // `leftover` — R, every state, the work, the root block — is compared
-    // whole, so a probe that leaks is caught wherever it leaks.
+    // whole, so a probe that leaks is caught wherever it leaks. The entry is
+    // `branching/04`, whose maximal line is two states; it was `branching/06`
+    // until M1e2 S1e2.2.10 typed that fixture, which left it one.
     assert_eq!(after["leftover"]["taken"], J::Bool(true), "the lever took");
     let mut a = before.clone();
     let mut b = after.clone();

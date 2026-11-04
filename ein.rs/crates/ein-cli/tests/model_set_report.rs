@@ -216,25 +216,43 @@ fn the_key_table_names_its_size_its_alternatives_and_one_row_per_state() {
 /// answer rather than an error.
 ///
 /// A minimum determining set is a minimum hitting set, which is NP-hard, and
-/// `branching/06_lookahead_on.ein` is the corpus entry that shows it: 42
-/// varying slots over its maximal line's 22 states, minimum key **8**, and
-/// `C(42, 8) = 118 030 185` candidate keys — so the count that answers *"why
-/// these"* cannot be taken and the form declines rather than printing an
-/// arbitrary basis. The states are listed above it either way, so the exit
-/// code is 0 and nothing is withheld.
+/// `branching/06_lookahead_on.ein` as it was until M1e2 S1e2.2.10 shows it:
+/// with `(relation co-located T T)`, 42 varying slots over its maximal line's
+/// 22 states, minimum key **8**, and `C(42, 8) = 118 030 185` candidate keys —
+/// so the count that answers *"why these"* cannot be taken and the form
+/// declines rather than printing an arbitrary basis. The states are listed
+/// above it either way, so the exit code is 0 and nothing is withheld.
 ///
 /// Since M1e2 S1e2.3.3 (the user's ruling (a) of 2026-11-03) the form on
 /// stdout is drawn from the states stdout showed, 9 of the 22, and their key
 /// declines too, at `C(38, 7)`; the 22 states' key, and its decline, is
 /// `--dump-answer`'s `forms/key.txt`.
+///
+/// Since S1e2.2.10 the fixture declares `(relation co-located Color House)`
+/// (Q-M1e.12 (a)), its maximal line is one state, and no corpus entry reaches
+/// the budget; so the program this test runs is the fixture with its old
+/// signature put back, written into the scratch: the untyped program, byte for
+/// byte the rules and facts it was.
 #[test]
 fn an_unaffordable_key_says_why() {
     let tmp = Scratch::new("ein-key-declines");
+    let fixture =
+        std::fs::read_to_string(repo_root().join("examples/branching/06_lookahead_on.ein"))
+            .expect("the fixture");
+    let typed = "\n(relation co-located Color House)\n";
+    assert_eq!(fixture.matches(typed).count(), 1, "the fixture's signature");
+    let untyped = tmp.join("06-untyped.ein");
+    std::fs::write(
+        &untyped,
+        fixture.replace(typed, "\n(relation co-located T T)\n"),
+    )
+    .expect("the untyped program");
+    let untyped = untyped.to_string_lossy().to_string();
     let dir = tmp.join("d");
     let d = dir.to_string_lossy().to_string();
     let run = ein(&[
         "solve",
-        "examples/branching/06_lookahead_on.ein",
+        &untyped,
         "--maximal",
         "--models",
         "key",

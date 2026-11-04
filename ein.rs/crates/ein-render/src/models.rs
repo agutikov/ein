@@ -73,16 +73,20 @@ pub enum ModelsForm {
 /// between `--models key` and a hang.
 ///
 /// Finding a *minimum* determining set is a minimum hitting set over the model
-/// pairs, which is NP-hard, and the corpus already holds the entry that shows
-/// it: `examples/branching/06_lookahead_on.ein` has 42 varying slots and 22
-/// models, its minimum key is **8**, and proving that no 7-set works costs
-/// 12 s in `utils/model_set_census.py` — forty times its own solve. A representation
-/// may not cost more than the answer it describes, so the search is bounded
-/// and the over-budget outcome is *the enumeration*.
+/// pairs, which is NP-hard, and the corpus held the program that shows it:
+/// `examples/branching/06_lookahead_on.ein`, untyped as it was until M1e2
+/// S1e2.2.10, has 42 varying slots and 22 models, its minimum key is **8**,
+/// and proving that no 7-set works costs 12 s in `utils/model_set_census.py`
+/// — forty times its own solve. A representation may not cost more than the
+/// answer it describes, so the search is bounded and the over-budget outcome
+/// is *the enumeration*.
 ///
-/// Calibrated on the two corpus cases it has to separate: `zebra2-minus-15`
-/// (23 slots, 32 models, key size 4) finds its key well inside the budget, and
-/// `branching/06` exceeds it.
+/// Calibrated on the two cases it has to separate: `zebra2-minus-15` (23
+/// slots, 32 models, key size 4) finds its key well inside the budget, and
+/// that untyped `branching/06` exceeds it. S1e2.2.10 typed the fixture, which
+/// leaves one state on its maximal line, and `model_set_report.rs` keeps the
+/// untyped program, written from the fixture with its old signature, as the
+/// case that exceeds the budget: no corpus entry reaches it since.
 const KEY_NODE_BUDGET: u64 = 2_000_000;
 
 /// Beyond this many `C(varying, size)` candidate sets the *count* of minimum

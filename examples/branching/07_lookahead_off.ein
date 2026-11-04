@@ -57,6 +57,27 @@
 ;; their answer is R: 22 maximal states of k_s = 74, which `ein solve
 ;; --maximal` reports. That every one of them places a colour in a *type*
 ;; (`Color`, `House`) is C1's question, Q-M1e.12.
+;;
+;; **Retyped 2026-11-04 by M1e2 S1e2.2.10**, on the user's ruling of
+;; 2026-11-03 on Q-M1e.12, (a) (register row C1/branching-06): the program
+;; was under-specified. `co-located` relates a Color to a House, `(relation
+;; co-located Color House)`, as 04_two_levels.ein's signature does, where it
+;; was `(relation co-located T T)`. A name a relation signature declares is no candidate object, so the
+;; blind enumerator guesses over the ten leaves alone: H is 132 candidates
+;; (42 of co-located, 90 of is-a), 130 of them dead alone, and R is two
+;; states over four commitments, ∅ and the state three commitments reach,
+;; {(co-located Blue H5)} with its mirror: Blue in the one free house, ?h =
+;; H5, as derived above. `ein solve --maximal` lists that one state, and
+;; `--single` says Ambiguity because ∅ is in R too. No `types` row: nothing H
+;; proposes names a type.
+;;
+;; Every count above this section is the untyped program's, the file at
+;; 86df5456 and before: H was 204 candidates, 72 of them naming Color or
+;; House, R 74 states, and its maximal line 22, each binding a colour to a
+;; type. On that shape every read-out now prints a `types` row under
+;; `universe` (`ein solve examples/branching/02_one_dead_one_alive.ein` is
+;; one): the names on the right of an is-a that the blind enumerator, which
+;; is untyped, binds as objects because no signature names them.
 
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
@@ -83,7 +104,7 @@
   :priority 250)
 
 (relation is-a       T T)
-(relation co-located T T)
+(relation co-located Color House)
 
 (symmetric         co-located)
 (transitive        co-located)

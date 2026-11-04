@@ -393,6 +393,35 @@ pub fn outside_json(outside: &[ein_infer::scope::Outside]) -> Json {
     )
 }
 
+/// What the untyped rung bound as an object, as data — M1e2 S1e2.2.10: the
+/// objects and relations [`ein_infer::types_as_objects`] names and the
+/// candidates' count, both lists `[]` and the count 0 when nothing.
+/// `--json-summary`'s `root.hypgen.types_as_objects` and `region.json`'s
+/// `types_as_objects`.
+pub fn types_json(t: &ein_infer::types_as_objects::TypesAsObjects) -> Json {
+    Json::obj(vec![
+        (
+            "objects",
+            Json::Array(t.objects.iter().map(Json::str).collect()),
+        ),
+        (
+            "relations",
+            Json::Array(t.relations.iter().map(Json::str).collect()),
+        ),
+        ("candidates", Json::int(t.candidates as i64)),
+    ])
+}
+
+/// What the untyped rung bound as an object, whichever arm the cube took.
+fn types_of(oracle: &Outcome) -> &ein_infer::types_as_objects::TypesAsObjects {
+    match oracle {
+        Outcome::Region(r) => &r.root.types_as_objects,
+        Outcome::Refused {
+            types_as_objects, ..
+        } => types_as_objects,
+    }
+}
+
 /// The universe's scope, whichever arm the cube took.
 fn outside_of(oracle: &Outcome) -> &[ein_infer::scope::Outside] {
     match oracle {
@@ -436,6 +465,7 @@ fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
             Json::Array(candidates.iter().map(|c| Json::str(&c.text)).collect()),
         ),
         ("outside", outside_json(outside_of(oracle))),
+        ("types_as_objects", types_json(types_of(oracle))),
         ("monotonicity", m),
     ];
     let mut pairs = head;
@@ -662,6 +692,9 @@ fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> String 
     ));
     if let Some(t) = crate::read_out::outside_text(outside_of(oracle)) {
         out.push_str(&format!("**Outside it**: {t}.\n\n"));
+    }
+    if let Some(t) = crate::read_out::types_text(types_of(oracle)) {
+        out.push_str(&format!("**Types as objects**: {t}.\n\n"));
     }
     if m.is_monotone() {
         out.push_str(&format!(

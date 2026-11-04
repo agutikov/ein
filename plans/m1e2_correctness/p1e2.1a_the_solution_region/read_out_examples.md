@@ -1609,7 +1609,7 @@ region comes first and takes them: stdout lists states 1–37 outside a
 what it left out and that `--dump-answer DIR` writes the whole `(region …)` to
 `DIR/answer.txt`. The query still gets its `over` row, its one class and its
 one-line `as :expect`. The summary rows are never cut. Stdout is
-125 lines, and `answer.txt` is 561. The state numbers are
+126 lines, and `answer.txt` is 562. The state numbers are
 the same in both, so *state 37* on the screen is *state 37* in the
 file.
 
@@ -1631,6 +1631,7 @@ solve · examples/saturation/type-exclusivity/colors.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          8 candidates, 0 dead alone
+    types           Color — on the right of an is-a, and 6 candidates of co-located, is-a name it as an object: the blind enumerator is untyped, and no signature names it
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              173 saturations · 644 facts beyond root · 8 layers
 

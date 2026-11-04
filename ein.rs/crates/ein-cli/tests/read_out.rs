@@ -617,3 +617,147 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
         "{out}"
     );
 }
+
+/// **A type the untyped rung binds as an object is one sentence, on every
+/// surface that reports R** — M1e2 S1e2.2.10 (C1), the user's ruling of
+/// 2026-11-03 on Q-M1e.12, (a) *the fixture, with the warning*. Where the
+/// blind enumerator built H, a candidate that names an object on the right of
+/// an `is-a` is a type bound as an object, and the read-out names those
+/// objects (`ein_infer::types_as_objects`). Every question prints the same
+/// `types` row under `universe`, `ein oracle` and its dump say it, `ein test`
+/// says it beside a claim, and the summary carries it in
+/// `root.hypgen.types_as_objects`, on `--monotone` too. `pets.ein` binds
+/// `Pet`; `branching/06`, retyped by the same stage, prints no row and an
+/// empty object, and so does `tests/region/01_states.ein`, whose `Item` is
+/// on the right of an `is-a` but whose candidates its hrules type.
+#[test]
+fn a_type_bound_as_an_object_is_one_sentence_on_every_surface() {
+    const PETS: &str = "Pet — on the right of an is-a, and 9 candidates of co-located, is-a name \
+                        it as an object: the blind enumerator is untyped, and no signature names it";
+    let cases: [(&str, &[&str], String, bool); 3] = [
+        (
+            "examples/saturation/type-exclusivity/pets.ein",
+            &["Pet"],
+            PETS.to_string(),
+            true,
+        ),
+        (
+            "examples/branching/06_lookahead_on.ein",
+            &[],
+            String::new(),
+            false,
+        ),
+        ("tests/region/01_states.ein", &[], String::new(), true),
+    ];
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs");
+        let stdout = String::from_utf8_lossy(&out.stdout).into_owned();
+        (out.status.code(), stdout)
+    };
+    let rows = |text: &str| -> Vec<String> {
+        text.lines()
+            .filter_map(|l| l.strip_prefix("    types           "))
+            .map(str::to_string)
+            .collect()
+    };
+    let objects = |json: &serde_json::Value| -> Vec<String> {
+        json["objects"]
+            .as_array()
+            .expect("an object on every run")
+            .iter()
+            .map(|o| o.as_str().expect("a name").to_string())
+            .collect()
+    };
+    for (file, named, sentence, cube) in &cases {
+        let want: Vec<String> = if sentence.is_empty() {
+            Vec::new()
+        } else {
+            vec![sentence.clone()]
+        };
+        let tmp = Scratch::new("ein-types");
+        let questions: [&[&str]; 7] = [
+            &[],
+            &["--maximal"],
+            &["--minimal"],
+            &["--single"],
+            &["-n", "1"],
+            &["--count"],
+            &["--monotone"],
+        ];
+        for (i, flags) in questions.iter().enumerate() {
+            let json = tmp.join(format!("summary-{i}.json"));
+            let json = json.to_str().expect("a UTF-8 path");
+            let mut args = vec!["solve", file];
+            args.extend_from_slice(flags);
+            args.extend_from_slice(&["--json-summary", json]);
+            let (code, out) = run(&args);
+            assert_eq!(code, Some(0), "ein {args:?}:\n{out}");
+            assert_eq!(rows(&out), want, "ein solve {file} {flags:?}:\n{out}");
+            let summary: serde_json::Value =
+                serde_json::from_str(&std::fs::read_to_string(json).expect("a summary"))
+                    .expect("it parses");
+            let t = &summary["root"]["hypgen"]["types_as_objects"];
+            assert_eq!(objects(t), *named, "{file} {flags:?}: objects");
+            assert_eq!(
+                t["candidates"].as_u64() == Some(0),
+                named.is_empty(),
+                "{file} {flags:?}: candidates"
+            );
+        }
+        if !cube {
+            continue;
+        }
+        let dump = tmp.join("cube");
+        let dump = dump.to_str().expect("a UTF-8 path");
+        let (code, out) = run(&["oracle", file, "--dump", dump]);
+        assert_eq!(code, Some(0), "ein oracle {file}:\n{out}");
+        assert_eq!(rows(&out), want, "ein oracle {file}:\n{out}");
+        let md = std::fs::read_to_string(tmp.join("cube/region.md")).expect("region.md");
+        assert_eq!(
+            md.contains("**Types as objects**: "),
+            !sentence.is_empty(),
+            "{file}: region.md"
+        );
+        if !sentence.is_empty() {
+            assert!(
+                md.contains(&format!("**Types as objects**: {sentence}.")),
+                "{md}"
+            );
+        }
+        let region: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(tmp.join("cube/region.json")).expect("region.json"),
+        )
+        .expect("it parses");
+        assert_eq!(
+            objects(&region["types_as_objects"]),
+            *named,
+            "{file}: region.json"
+        );
+    }
+    // `ein test`, beside the claim it prints: no corpus program the warning
+    // names states one, so this one is written here: on the maximal line Ann
+    // likes her own type, and the claim says so.
+    let tmp = Scratch::new("ein-types-test");
+    let file = tmp.join("likes.ein");
+    std::fs::write(
+        &file,
+        "(relation is-a T T)\n(relation likes T T)\n(__closed__ is-a)\n(is-a Ann Person)\n\
+         (query :goal (likes Ann ?x) :over maximal\n\
+         \x20 :expect (model (likes Ann Person)))\n",
+    )
+    .expect("the program");
+    let (code, out) = run(&["test", "-v", file.to_str().expect("a UTF-8 path")]);
+    assert_eq!(code, Some(0), "{out}");
+    assert!(
+        out.contains(
+            "    a type as an object: Person — on the right of an is-a, and 2 candidates of \
+             likes name it as an object: the blind enumerator is untyped, and no signature \
+             names it\n"
+        ),
+        "{out}"
+    );
+}
