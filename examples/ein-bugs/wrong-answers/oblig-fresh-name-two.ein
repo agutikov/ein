@@ -1,16 +1,17 @@
 ;;; W14 seen from inside the lattice — M1e2 **W14**, register row
-;;; `W14/oblig-fresh-name-two` (`corpus/wrong_answers.toml`), S1e2.2.15.
-;;; Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;; `W14/oblig-fresh-name-two` (`corpus/wrong_answers.toml`), fixed by
+;;; S1e2.2.15 (2026-11-04). Banked from S1e2.2.4's residue probe of the same
+;;; day.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `oblig-fresh-name.ein` plus `(person Bob)`, who may like Soup. The
-;;; obligations rung's H is `(likes Ann Soup)`, dead alone, and
+;;; `oblig-fresh-name.ein` plus `(person Bob)`, who may like Soup. Until
+;;; S1e2.2.15 the obligations rung's H was `(likes Ann Soup)`, dead alone, and
 ;;; `(likes Bob Soup)`. Committing `(likes Bob Soup)` derives `(food Z)`
 ;;; through `special`, and at that node the rung itself would propose
-;;; `(likes Ann Z)` for Ann's debt, which root's H does not hold. So
-;;; `{(likes Bob Soup)}` is an owing state whose debt the region can never
-;;; pay, and `{(likes Bob Soup), (likes Ann Z)}` is a model outside the cube.
+;;; `(likes Ann Z)` for Ann's debt, which root's H did not hold. So
+;;; `{(likes Bob Soup)}` was an owing state whose debt the region could never
+;;; pay, and `{(likes Bob Soup), (likes Ann Z)}` a model outside the cube.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -20,16 +21,19 @@
 ;;; states. With the rung declined, the blind enumerator proposes every
 ;;; `likes` pair over Ann, Bob, Soup and Z, and the two no rule refutes or
 ;;; requires, `(likes Ann Bob)` and `(likes Bob Ann)`, are free: R is twelve
-;;; states. Which of the two is this row's `right` is Q-M1e2.10
-;;; (`plans/m1e2_correctness/open_questions.md`), put to the user by
-;;; T1e2.2.15.1.
+;;; states. The user ruled the second on 2026-11-04 (Q-M1e2.10 (a),
+;;; `plans/m1e2_correctness/open_questions.md`): a guard over a relation in D
+;;; declines the rung, and the control, whose guard reads the same `food`,
+;;; declines with it and answers the same twelve.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; H is 2 candidates and R is empty: the one alive node beyond root,
-;;; `{(likes Bob Soup)}`, owes Ann's debt, `(region (owing (model (likes Bob
-;;; Soup))))` (`ein solve FILE` at `338b5892`, 2026-11-04). The register row
-;;; holds that answer while it is open.
+;;; Until S1e2.2.15 H was 2 candidates and R was empty: the one alive node
+;;; beyond root, `{(likes Bob Soup)}`, owed Ann's debt, `(region (owing (model
+;;; (likes Bob Soup))))` (`ein solve FILE` at `338b5892`, 2026-11-04). Since
+;;; then the rung declines and the blind enumerator builds H, twelve
+;;; candidates, and R is the twelve states the `:expect` below states. The
+;;; register row `W14/oblig-fresh-name-two` is fixed.
 
 (relation person T)
 (relation food   T)
@@ -62,7 +66,36 @@
   :why    "once {?p} likes {?f}, Z is on the menu")
 
 (solve
-  :no-hypothesis (person food))
+  :no-hypothesis (person food)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts —
+  ;; the blind enumerator's R, the rung declined (Q-M1e2.10 (a)), which the
+  ;; -declared control answers too.
+  :expect (region
+            ;; state 1 of 12 — 2 candidates · minimal · from {(likes Ann Z), (likes Bob Soup)}
+            (model (likes Ann Z) (likes Bob Soup))
+            ;; state 2 of 12 — 2 candidates · minimal · from {(likes Ann Z), (likes Bob Z)}
+            (model (likes Ann Z) (likes Bob Z))
+            ;; state 3 of 12 — 3 candidates · from {(likes Ann Bob), (likes Ann Z), (likes Bob Soup)}
+            (model (likes Ann Bob) (likes Ann Z) (likes Bob Soup))
+            ;; state 4 of 12 — 3 candidates · from {(likes Ann Bob), (likes Ann Z), (likes Bob Z)}
+            (model (likes Ann Bob) (likes Ann Z) (likes Bob Z))
+            ;; state 5 of 12 — 3 candidates · from {(likes Ann Z), (likes Bob Ann), (likes Bob Soup)}
+            (model (likes Ann Z) (likes Bob Ann) (likes Bob Soup))
+            ;; state 6 of 12 — 3 candidates · from {(likes Ann Z), (likes Bob Ann), (likes Bob Z)}
+            (model (likes Ann Z) (likes Bob Ann) (likes Bob Z))
+            ;; state 7 of 12 — 3 candidates · from {(likes Ann Z), (likes Bob Soup), (likes Bob Z)}
+            (model (likes Ann Z) (likes Bob Soup) (likes Bob Z))
+            ;; state 8 of 12 — 4 candidates · from {(likes Ann Bob), (likes Ann Z), (likes Bob Ann), (likes Bob Soup)}
+            (model (likes Ann Bob) (likes Ann Z) (likes Bob Ann) (likes Bob Soup))
+            ;; state 9 of 12 — 4 candidates · from {(likes Ann Bob), (likes Ann Z), (likes Bob Ann), (likes Bob Z)}
+            (model (likes Ann Bob) (likes Ann Z) (likes Bob Ann) (likes Bob Z))
+            ;; state 10 of 12 — 4 candidates · from {(likes Ann Bob), (likes Ann Z), (likes Bob Soup), (likes Bob Z)}
+            (model (likes Ann Bob) (likes Ann Z) (likes Bob Soup) (likes Bob Z))
+            ;; state 11 of 12 — 4 candidates · from {(likes Ann Z), (likes Bob Ann), (likes Bob Soup), (likes Bob Z)}
+            (model (likes Ann Z) (likes Bob Ann) (likes Bob Soup) (likes Bob Z))
+            ;; state 12 of 12 — 5 candidates · maximal · from {(likes Ann Bob), (likes Ann Z), (likes Bob Ann), (likes Bob Soup), (likes Bob Z)}
+            (model (likes Ann Bob) (likes Ann Z) (likes Bob Ann) (likes Bob Soup)
+                   (likes Bob Z))))
 
 (query
   :goal   (likes ?p ?f))

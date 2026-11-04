@@ -812,49 +812,49 @@ note   = "M1e2 W15's control for negative-only.ein: the same program plus `(seen
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W14 (`W14/oblig-fresh-name`): Ann owes a liked food, the only food at root is Soup, which she may not like, and `special` makes Z a food once anyone likes anything. The obligations rung builds H from root's `(food ?b)` scan, so `(likes Ann Z)` is in no candidate: H 1, dead, and R empty, every node owing, where the `-declared` control (`(food Z)` at root) answers one state, `{(likes Ann Z)}`. `food` is in D, and the rung's C4 declined only on a relation it proposes itself. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
+note   = "M1e2 W14 (`W14/oblig-fresh-name`): Ann owes a liked food, the only food at root is Soup, which she may not like, and `special` makes Z a food once anyone likes anything. The obligations rung builds H from root's `(food ?b)` scan, so `(likes Ann Z)` is in no candidate: H 1, dead, and R empty, every node owing, where the `-declared` control (`(food Z)` at root) answers one state, `{(likes Ann Z)}`. `food` is in D, and the rung's C4 declined only on a relation it proposed itself. Fixed by S1e2.2.15 the same day: the rung declines on a guard over a relation in D (Q-M1e2.10 (a), ruled 2026-11-04), the blind enumerator builds H, and R is that one state, which `:expect` states. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e2 W14's control for oblig-fresh-name.ein: the same program plus `(food Z)` at root, so the rung's scan finds Z. H 2 and R one state, `{(likes Ann Z)}`, which its `:expect` states."
+note   = "M1e2 W14's control for oblig-fresh-name.ein: the same program plus `(food Z)` at root. Its guard reads `food`, in D here too, so since S1e2.2.15 the rung declines and the blind enumerator builds H (6; it was the rung's 2), and R is one state, `{(likes Ann Z)}`, which its `:expect` states and its witness answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W14 (`W14/oblig-fresh-name-two`): oblig-fresh-name.ein plus Bob, who may like Soup. Committing `(likes Bob Soup)` derives `(food Z)`, and there the rung itself would propose `(likes Ann Z)`, which H lacks: H 2 and R empty, `{(likes Bob Soup)}` owing Ann's debt. The `-declared` control answers three states over the rung's candidates; with the rung declined the blind enumerator's R is twelve, and which is this row's `right` is Q-M1e2.10. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
+note   = "M1e2 W14 (`W14/oblig-fresh-name-two`): oblig-fresh-name.ein plus Bob, who may like Soup. Committing `(likes Bob Soup)` derives `(food Z)`, and there the rung itself would propose `(likes Ann Z)`, which H lacks: H 2 and R empty, `{(likes Bob Soup)}` owing Ann's debt. The `-declared` control answered three states over the rung's candidates. Fixed by S1e2.2.15 the same day under the user's ruling on Q-M1e2.10, (a): the rung declines on a guard over a relation in D, and R is the blind enumerator's twelve states, `(likes Ann Bob)` and `(likes Bob Ann)` free, which `:expect` states and the control answers too. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e2 W14's control for oblig-fresh-name-two.ein: the same program plus `(food Z)` at root. H 4 and R three states, `{(likes Ann Z), (likes Bob Soup), (likes Bob Z)}` the maximal, which its `:expect` states as of S1e2.2.15's T1; Q-M1e2.10 decides whether it stays."
+note   = "M1e2 W14's control for oblig-fresh-name-two.ein: the same program plus `(food Z)` at root. Until S1e2.2.15 the rung built H (4) and R was three states; its guard reads `food`, in D here too, so since then the rung declines (Q-M1e2.10 (a)), H is 12 and R twelve states, which its `:expect` states and its witness answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W14 (`W14/oblig-derived-domain`): oblig-fresh-name.ein's defect with no rule constant at all — the value that joins the guard's domain at a node is named by a fact, `(dish Pie)`, and `special` derives `(food ?d)` for every dish once anyone likes anything. H 1, dead, and R empty, where the `-declared` control (`(food Pie)` at root) answers `{(likes Ann Pie)}`. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
+note   = "M1e2 W14 (`W14/oblig-derived-domain`): oblig-fresh-name.ein's defect with no rule constant at all — the value that joins the guard's domain at a node is named by a fact, `(dish Pie)`, and `special` derives `(food ?d)` for every dish once anyone likes anything. H 1, dead, and R empty, where the `-declared` control (`(food Pie)` at root) answers `{(likes Ann Pie)}`. Fixed by S1e2.2.15 the same day: the rung declines on a guard over a relation in D, and R is that one state, which `:expect` states. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e2 W14's control for oblig-derived-domain.ein: the same program plus `(food Pie)` at root. H 2 and R one state, `{(likes Ann Pie)}`, which its `:expect` states."
+note   = "M1e2 W14's control for oblig-derived-domain.ein: the same program plus `(food Pie)` at root. Its guard reads `food`, in D here too, so since S1e2.2.15 the rung declines and the blind enumerator builds H (6; it was the rung's 2), and R is one state, `{(likes Ann Pie)}`, which its `:expect` states and its witness answers."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W14 (`W14/oblig-stdlib-total-owed`) on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. The rung reads root's `(is-a ?b Food)` scan: H 1, dead, and R empty. Flagged non-monotone (an obligation-trigger site on `is-a`) and not refused by *forbid*, whose refusal is about a refutation, so it takes route 2, the cube. The `-declared` control answers `{(likes Ann Z)}` over the rung's candidates; with the rung declined the untyped blind enumerator's R is sixteen, and which is this row's `right` is Q-M1e2.10. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
+note   = "M1e2 W14 (`W14/oblig-stdlib-total-owed`) on the shipped `total-owed`: Ann owes a Food, Soup the only one at root, and `special` makes Z a Food once anyone likes anything. The rung reads root's `(is-a ?b Food)` scan: H 1, dead, and R empty. Flagged non-monotone (an obligation-trigger site on `is-a`) and not refused by *forbid*, whose refusal is about a refutation, so it takes route 2, the cube. The `-declared` control answered `{(likes Ann Z)}` over the rung's candidates. Fixed by S1e2.2.15 the same day under the user's ruling on Q-M1e2.10, (a): the rung declines on a guard over a relation in D, and R is the untyped blind enumerator's sixteen states, which `:expect` states and the control answers too. Banked by S1e2.2.15 from S1e2.2.4's residue probe."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e2 W14's control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. H 2 and R one state, `{(likes Ann Z)}`, which its `:expect` states as of S1e2.2.15's T1; Q-M1e2.10 decides whether it stays. Flagged as its witness is."
+note   = "M1e2 W14's control for oblig-stdlib-total-owed.ein: the same program plus `(is-a Z Food)` at root. Until S1e2.2.15 the rung built H (2) and R was one state; `total-owed` scans `is-a`, in D here too, so since then the rung declines (Q-M1e2.10 (a)), H is 6 and R sixteen states, which its `:expect` states and its witness answers. Flagged as its witness is."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

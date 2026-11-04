@@ -2,9 +2,12 @@
 ;;; — that file plus one fact, `(food Pie)` — M1e2 W14 (S1e2.2.15). Banked
 ;;; from S1e2.2.4's residue probe of 2026-11-04.
 ;;;
-;;; With `(food Pie)` at root the obligations rung's `(food ?b)` scan finds
-;;; Pie, so H holds `(likes Ann Pie)` beside `(likes Ann Soup)`, and R is one
-;;; state, `{(likes Ann Pie)}`, which the `:expect` below states.
+;;; Until S1e2.2.15 the obligations rung built H here, and with `(food Pie)` at
+;;; root its `(food ?b)` scan found Pie: H was `(likes Ann Soup)` and `(likes
+;;; Ann Pie)`, and R one state, `{(likes Ann Pie)}`. Since then the rung
+;;; declines on a guard over a relation in D, `food` among them here too, so
+;;; the blind enumerator builds H, six candidates, five dead alone; R is the
+;;; same one state, which the `:expect` below states.
 
 (relation person T)
 (relation food   T)

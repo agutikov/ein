@@ -1,7 +1,8 @@
-;;; The obligations rung never proposes a domain value a commitment derives,
+;;; The obligations rung never proposed a domain value a commitment derives,
 ;;; **with no rule constant at all** — M1e2 **W14**, register row
-;;; `W14/oblig-derived-domain` (`corpus/wrong_answers.toml`), S1e2.2.15.
-;;; Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;; `W14/oblig-derived-domain` (`corpus/wrong_answers.toml`), fixed by
+;;; S1e2.2.15 (2026-11-04). Banked from S1e2.2.4's residue probe of the same
+;;; day.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -9,8 +10,9 @@
 ;;; domain inside a fork is named by a **fact**, `(dish Pie)`, so it is a
 ;;; name of the program and a candidate object, and nothing about names is
 ;;; at stake. `special` derives `(food ?d)` for every dish once anyone likes
-;;; anything. The obligations rung reads root's `(food ?b)` scan, Soup alone,
-;;; and Ann may not like Soup: H is `(likes Ann Soup)`, dead alone.
+;;; anything. Until S1e2.2.15 the obligations rung read root's `(food ?b)`
+;;; scan, Soup alone, and Ann may not like Soup: H was `(likes Ann Soup)`,
+;;; dead alone.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -20,11 +22,13 @@
 ;;; declined, the blind enumerator does (six `likes` candidates over Ann, Soup
 ;;; and Pie, five dead alone).
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; H is 1 candidate, dead alone, and R is empty, every alive node owing
-;;; (`ein solve FILE` at `338b5892`, 2026-11-04). The register row holds that
-;;; answer while it is open.
+;;; Until S1e2.2.15 H was 1 candidate, dead alone, and R was empty, every
+;;; alive node owing (`ein solve FILE` at `338b5892`, 2026-11-04). Since then
+;;; the rung declines on a guard that scans a relation in D (`food`), and
+;;; this file answers its control's R, which the `:expect` below states. The
+;;; register row `W14/oblig-derived-domain` is fixed.
 
 (relation person T)
 (relation food   T)
@@ -58,7 +62,12 @@
   :why    "once {?p} likes {?f}, the dish {?d} is on the menu")
 
 (solve
-  :no-hypothesis (person food dish))
+  :no-hypothesis (person food dish)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts —
+  ;; the -declared control's R, which this file answers since S1e2.2.15.
+  :expect (region
+            ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Pie)}
+            (model (likes Ann Pie))))
 
 (query
   :goal   (likes ?p ?f))

@@ -205,8 +205,9 @@ S1e2.2.14 is done (2026-11-04): W15's eight rows are fixed. **S1e2.2.15
 started the same day and is paused on
 [Q-M1e2.10](open_questions.md#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over)**:
 W14 filed as four open rows, every move of the default fix listed, and the
-user asked whose candidates R is over when the rung declines (the
-recommendation: the blind enumerator's). Then S1e2.2.6.
+user asked whose candidates R is over when the rung declines; ruled (a) the
+same day, the blind enumerator's, and the decline built (T1e2.2.15.2). Then
+S1e2.2.6.
 
 ### P1e2.3 — Surfaces that misreport the answer
 

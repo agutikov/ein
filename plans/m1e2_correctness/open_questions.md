@@ -23,7 +23,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 | [Q-M1e2.9](#q-m1e29--which-constants-are-names-of-the-program) | Which constants are names of the program? | [S1e2.2.14](p1e2.2_wrong_answers/s1e2.2.14_unread_names.md) (W15), and S1e2.2.7 (W7) after it | **ruled 2026-11-04: (a)**, *§ 1.2 literally*: a constant in a fact at any depth or anywhere in a rule; not one only a query names. **Built 2026-11-04** by S1e2.2.14: W15's eight rows fixed |
-| [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **put to the user 2026-11-04** by T1e2.2.15.1: (a) *decline*, the stage's default and the recommendation, R the blind enumerator's; (b) *widen*, R over the rung's candidates; two of W14's four rows differ |
+| [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1 |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1262,3 +1262,11 @@ move, every one on the eight banked files.
 The register files `W14/oblig-fresh-name-two` and
 `W14/oblig-stdlib-total-owed` under (a), each with (b) as a
 `[[case.right.alternative]]`; the other two rows have one answer under both.
+
+**Ruled 2026-11-04: (a)**, *decline* (the user: *"(a) Decline
+(Recommended)"*). The obligations rung declines when an obligation's trigger
+or guard, its witness step aside, reads a relation in D, and the ladder falls
+to the blind enumerator, whose objects carry every name of the program since
+S1e2.2.14: R is that enumerator's region. `W14/oblig-fresh-name-two` and
+`W14/oblig-stdlib-total-owed` keep (a) as `right` and (b) as the record, and
+the two controls' claims move to 12 and 16 states with the fix.

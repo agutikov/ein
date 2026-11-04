@@ -1,7 +1,7 @@
-;;; The obligations rung never proposes a domain value a commitment derives —
+;;; The obligations rung never proposed a domain value a commitment derives —
 ;;; M1e2 **W14**, register row `W14/oblig-fresh-name`
-;;; (`corpus/wrong_answers.toml`), S1e2.2.15. Banked from S1e2.2.4's residue
-;;; probe of 2026-11-04.
+;;; (`corpus/wrong_answers.toml`), fixed by S1e2.2.15 (2026-11-04). Banked
+;;; from S1e2.2.4's residue probe of the same day.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -11,12 +11,12 @@
 ;;; anyone likes anything, Z is on the menu. `liker-is-person` only types the
 ;;; blind enumerator's candidates.
 ;;;
-;;; The obligations rung builds H by running `owes-food`'s guard with its
-;;; witness step skipped, over root's KB: `(food ?b)` finds Soup alone, so H
-;;; is `(likes Ann Soup)`, dead alone. `food` grows by derivation from a
+;;; Until S1e2.2.15 the obligations rung built H by running `owes-food`'s
+;;; guard with its witness step skipped, over root's KB: `(food ?b)` found
+;;; Soup alone, so H was `(likes Ann Soup)`, dead alone. `food` grows by derivation from a
 ;;; commitment (`special` reads `likes`), so it is in D, the relations a
 ;;; commitment can change, and the rung's C4 check declined only on a
-;;; relation the rung itself proposes.
+;;; relation the rung itself proposed.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -28,11 +28,14 @@
 ;;; five dead alone. Monotone: `food` is in D but read only inside the
 ;;; obligation's `absent`, where growth can only pay.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; H is 1 candidate, dead alone, and R is empty: every alive node owes,
-;;; `(region (owing (model)))` (`ein solve FILE` at `338b5892`, 2026-11-04).
-;;; The register row holds that answer while it is open.
+;;; Until S1e2.2.15 H was 1 candidate, dead alone, and R was empty: every
+;;; alive node owed, `(region (owing (model)))` (`ein solve FILE` at
+;;; `338b5892`, 2026-11-04). Since then the rung declines when an
+;;; obligation's guard scans a relation in D (here `food`), the blind
+;;; enumerator builds H, and this file answers its control's R, which the
+;;; `:expect` below states. The register row `W14/oblig-fresh-name` is fixed.
 
 (relation person T)
 (relation food   T)
@@ -64,7 +67,12 @@
   :why    "once {?p} likes {?f}, Z is on the menu")
 
 (solve
-  :no-hypothesis (person food))
+  :no-hypothesis (person food)
+  ;; `likes` is named, so this closes `likes`: exactly these positive facts —
+  ;; the -declared control's R, which this file answers since S1e2.2.15.
+  :expect (region
+            ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Z)}
+            (model (likes Ann Z))))
 
 (query
   :goal   (likes ?p ?f))

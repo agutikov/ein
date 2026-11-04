@@ -2,14 +2,16 @@
 ;;; — that file plus one fact, `(is-a Z Food)` — M1e2 W14 (S1e2.2.15). Banked
 ;;; from S1e2.2.4's residue probe of 2026-11-04.
 ;;;
-;;; With `(is-a Z Food)` at root `total-owed`'s `(is-a ?b Food)` scan finds Z,
-;;; so H holds `(likes Ann Z)` beside `(likes Ann Soup)`, and R is one state,
-;;; `{(likes Ann Z)}`, which the `:expect` below states (`ein solve FILE` at
-;;; `338b5892`, 2026-11-04). Flagged as its witness is, an
-;;; `obligation-trigger` site on `is-a`, with no hole in its cube. `is-a` is
-;;; in D here too; whether the rung may build H over a guard that scans it is
-;;; Q-M1e2.10, and under the stage's default, the rung declined, this file
-;;; answers the blind enumerator's sixteen states.
+;;; Until S1e2.2.15 the obligations rung built H here, and with `(is-a Z
+;;; Food)` at root `total-owed`'s `(is-a ?b Food)` scan found Z: H was
+;;; `(likes Ann Soup)` and `(likes Ann Z)`, and R one state, `{(likes Ann Z)}`
+;;; (`ein solve FILE` at `338b5892`, 2026-11-04). Flagged as its witness is,
+;;; an `obligation-trigger` site on `is-a`, with no hole in its cube. `is-a`
+;;; is in D here too, and the user ruled on 2026-11-04 that a guard over a
+;;; relation in D declines the rung (Q-M1e2.10 (a)): the untyped blind
+;;; enumerator builds H, six candidates, and R is sixteen states, `(likes Ann
+;;; Z)` with any subset of the four whose subject is not a Person, which the
+;;; `:expect` below states and its witness answers.
 
 (import std.algebra :symbols (total-owed))
 
@@ -36,8 +38,39 @@
   :no-hypothesis (is-a)
   ;; `likes` is named, so this closes `likes`: exactly these positive facts.
   :expect (region
-            ;; state 1 of 1 — 1 candidate · minimal and maximal · from {(likes Ann Z)}
-            (model (likes Ann Z))))
+            ;; state 1 of 16 — 1 candidate · minimal · from {(likes Ann Z)}
+            (model (likes Ann Z))
+            ;; state 2 of 16 — 2 candidates · from {(likes Ann Z), (likes Soup Ann)}
+            (model (likes Ann Z) (likes Soup Ann))
+            ;; state 3 of 16 — 2 candidates · from {(likes Ann Z), (likes Soup Z)}
+            (model (likes Ann Z) (likes Soup Z))
+            ;; state 4 of 16 — 2 candidates · from {(likes Ann Z), (likes Z Ann)}
+            (model (likes Ann Z) (likes Z Ann))
+            ;; state 5 of 16 — 2 candidates · from {(likes Ann Z), (likes Z Soup)}
+            (model (likes Ann Z) (likes Z Soup))
+            ;; state 6 of 16 — 3 candidates · from {(likes Ann Z), (likes Soup Ann), (likes Soup Z)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Soup Z))
+            ;; state 7 of 16 — 3 candidates · from {(likes Ann Z), (likes Soup Ann), (likes Z Ann)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Z Ann))
+            ;; state 8 of 16 — 3 candidates · from {(likes Ann Z), (likes Soup Ann), (likes Z Soup)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Z Soup))
+            ;; state 9 of 16 — 3 candidates · from {(likes Ann Z), (likes Soup Z), (likes Z Ann)}
+            (model (likes Ann Z) (likes Soup Z) (likes Z Ann))
+            ;; state 10 of 16 — 3 candidates · from {(likes Ann Z), (likes Soup Z), (likes Z Soup)}
+            (model (likes Ann Z) (likes Soup Z) (likes Z Soup))
+            ;; state 11 of 16 — 3 candidates · from {(likes Ann Z), (likes Z Ann), (likes Z Soup)}
+            (model (likes Ann Z) (likes Z Ann) (likes Z Soup))
+            ;; state 12 of 16 — 4 candidates · from {(likes Ann Z), (likes Soup Ann), (likes Soup Z), (likes Z Ann)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Soup Z) (likes Z Ann))
+            ;; state 13 of 16 — 4 candidates · from {(likes Ann Z), (likes Soup Ann), (likes Soup Z), (likes Z Soup)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Soup Z) (likes Z Soup))
+            ;; state 14 of 16 — 4 candidates · from {(likes Ann Z), (likes Soup Ann), (likes Z Ann), (likes Z Soup)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Z Ann) (likes Z Soup))
+            ;; state 15 of 16 — 4 candidates · from {(likes Ann Z), (likes Soup Z), (likes Z Ann), (likes Z Soup)}
+            (model (likes Ann Z) (likes Soup Z) (likes Z Ann) (likes Z Soup))
+            ;; state 16 of 16 — 5 candidates · maximal · from {(likes Ann Z), (likes Soup Ann), (likes Soup Z), (likes Z Ann), (likes Z Soup)}
+            (model (likes Ann Z) (likes Soup Ann) (likes Soup Z) (likes Z Ann)
+                   (likes Z Soup))))
 
 (query
   :goal   (likes ?p ?f))

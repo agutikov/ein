@@ -133,9 +133,10 @@ constrained-reasoning research.
   program's names, `invariant::program_names`, which the blind enumerator's
   objects union: 37 fixed, 5 open and 1 not wrong. S1e2.2.15 filed W14 the
   same day (the obligations rung never proposes a domain value a commitment
-  derives) as four open rows, 37 fixed, 9 open and 1 not wrong, and paused on
-  Q-M1e2.10: whose candidates R is over when the rung cannot trust its
-  domain scan.
+  derives) as four open rows, and the user ruled Q-M1e2.10 (a) the same day:
+  when an obligation's guard scans a relation a commitment can change (D),
+  the rung declines and the blind enumerator builds H. All four are fixed by
+  that decline: 41 fixed, 5 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

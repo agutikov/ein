@@ -2,11 +2,15 @@
 ;;; file plus one fact, `(food Z)` — M1e2 W14 (S1e2.2.15). Banked from
 ;;; S1e2.2.4's residue probe of 2026-11-04.
 ;;;
-;;; With `(food Z)` at root the obligations rung's `(food ?b)` scan finds Z,
-;;; so H holds `(likes Ann Z)` beside `(likes Ann Soup)`, and R is one state,
-;;; `{(likes Ann Z)}`, which the `:expect` below states. Every state holding a
-;;; `likes` fact holds `(food Z)` in both files (`special`), so the two agree
-;;; fact for fact on every state but root, which owes in both.
+;;; Until S1e2.2.15 the obligations rung built H here, and with `(food Z)` at
+;;; root its `(food ?b)` scan found Z: H was `(likes Ann Soup)` and `(likes Ann
+;;; Z)`, and R one state, `{(likes Ann Z)}`. Since then the rung declines on a
+;;; guard over a relation in D, and `food` is in D here too (`special` derives
+;;; it from a commitment, whatever root holds), so the blind enumerator builds
+;;; H, six candidates over Ann, Soup and Z, five dead alone; R is the same one
+;;; state, which the `:expect` below states. Every state holding a `likes` fact
+;;; holds `(food Z)` in both files (`special`), so the two agree fact for fact
+;;; on every state but root, which owes in both.
 
 (relation person T)
 (relation food   T)

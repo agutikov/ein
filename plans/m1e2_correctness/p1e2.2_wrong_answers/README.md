@@ -31,8 +31,10 @@ and 1 not-wrong. **S1e2.2.15 started the same day and is paused on
 `open` rows (37 fixed, 9 open, 1 not-wrong) and every move of the default fix
 listed before any edit, no existing corpus program among them; but the
 decline takes the controls too, and on two witnesses the blind enumerator's R
-is larger than the control's, so which is `right` goes to the user, the
-recommendation the decline. Then S1e2.2.6, W8's one row.
+is larger than the control's, so which is `right` went to the user, the
+recommendation the decline. **The user ruled (a), the decline, the same
+day**, and T1e2.2.15.2 built it: W14's four rows are fixed, 41 fixed, 5 open
+and 1 not-wrong. Then S1e2.2.6, W8's one row.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

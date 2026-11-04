@@ -404,24 +404,15 @@ pub fn classify(
     let reads: Vec<Vec<(Rel, u32)>> = kinded.iter().map(|(_, p)| reads_of(p, terms)).collect();
 
     // D — `H`, closed under "a saturation plan that reads D asserts into D".
-    // determinism-ok: a set built from a set; nothing reads its order.
-    let mut dynamic: FxHashSet<Rel> = hypothesised.iter().map(|&r| Rel::pos(r)).collect();
-    loop {
-        let mut grew = false;
-        for ((kind, plan), reads) in kinded.iter().zip(&reads) {
-            if *kind != PlanKind::Saturation
-                || !reads.iter().any(|&(r, _)| in_set(&dynamic, r, terms))
-            {
-                continue;
-            }
-            for w in writes_of(plan, terms) {
-                grew |= dynamic.insert(w);
-            }
-        }
-        if !grew {
-            break;
-        }
-    }
+    let saturation: Vec<(&Plan, &[(Rel, u32)])> = kinded
+        .iter()
+        .zip(&reads)
+        .filter(|((kind, _), _)| *kind == PlanKind::Saturation)
+        .map(|((_, plan), reads)| (*plan, reads.as_slice()))
+        .collect();
+    // determinism-ok: the seed of a set, closed to a fixpoint; nothing reads
+    // its order.
+    let dynamic = close(hypothesised.iter().copied(), &saturation, terms);
 
     let mut out = Monotonicity {
         plans: (
@@ -514,8 +505,60 @@ pub fn classify(
     out
 }
 
-/// Is `r` in `set`, the wildcard negative read both ways?
-fn in_set(set: &FxHashSet<Rel>, r: Rel, terms: &Terms) -> bool {
+/// `D` over `plans` from the seed `hypothesised`: the relations a commitment
+/// to facts of those relations can change — the seed, closed under *a
+/// saturation plan that reads a relation in `D` asserts into `D`*.
+///
+/// The one computation of `D`. [`classify`] seeds it with `H`'s relations;
+/// the obligations rung seeds it with the relations it would propose, and
+/// declines on a guard that scans one (`crate::oblgen::generate`, M1e2
+/// S1e2.2.15), before `H` exists to seed [`classify`] with.
+pub(crate) fn dynamic(
+    kb: &Kb,
+    terms: &Terms,
+    plans: &[Arc<Plan>],
+    hypothesised: impl IntoIterator<Item = Symbol>,
+) -> FxHashSet<Rel> {
+    let program = kb.program();
+    let saturation: Vec<(&Plan, Vec<(Rel, u32)>)> = plans
+        .iter()
+        .filter(|p| program.rules.contains(p.rule))
+        .map(|p| (&**p, reads_of(p, terms)))
+        .collect();
+    let saturation: Vec<(&Plan, &[(Rel, u32)])> =
+        saturation.iter().map(|(p, r)| (*p, r.as_slice())).collect();
+    close(hypothesised, &saturation, terms)
+}
+
+/// The closure [`dynamic`] and [`classify`] share, over the saturation plans
+/// and their reads.
+fn close(
+    hypothesised: impl IntoIterator<Item = Symbol>,
+    saturation: &[(&Plan, &[(Rel, u32)])],
+    terms: &Terms,
+) -> FxHashSet<Rel> {
+    // determinism-ok: a set built from a set; nothing reads its order.
+    let mut dynamic: FxHashSet<Rel> = hypothesised.into_iter().map(Rel::pos).collect();
+    loop {
+        let mut grew = false;
+        for (plan, reads) in saturation {
+            if !reads.iter().any(|&(r, _)| in_set(&dynamic, r, terms)) {
+                continue;
+            }
+            for w in writes_of(plan, terms) {
+                grew |= dynamic.insert(w);
+            }
+        }
+        if !grew {
+            break;
+        }
+    }
+    dynamic
+}
+
+/// Is `r` in `set`, the wildcard negative read both ways? `set` is a `D`
+/// [`dynamic`] returned.
+pub(crate) fn in_set(set: &FxHashSet<Rel>, r: Rel, terms: &Terms) -> bool {
     if r.is_any_negative(terms) {
         // determinism-ok: `any` — the answer is the same in every order.
         return set.iter().any(|x| x.negated);

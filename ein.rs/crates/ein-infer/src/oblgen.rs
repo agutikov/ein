@@ -58,6 +58,19 @@
 //! a relation the rung itself proposes is **declined** — and a declined
 //! obligation takes the whole call back to the blind generator, which is what
 //! keeps completeness a property of the ladder rather than of the puzzle.
+//!
+//! **A relation grows by derivation too** (M1e2
+//! [S1e2.2.15](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md),
+//! W14). The candidates are the guard's scan over *root's* KB, so a domain
+//! value only a commitment derives is in no candidate, and R missed the model
+//! it licenses. Since then the rung also declines when an obligation's trigger,
+//! or a guard beside its witness step, reads a relation in `D`: the relations
+//! a commitment can change, seeded with what this rung proposes and closed
+//! under the saturation plans, which [`crate::monotone`] computes once for
+//! this and for its static check. The user ruled the fall-through on
+//! 2026-11-04 (Q-M1e2.10 (a)): R is then the blind enumerator's region, which
+//! on an untyped relation holds facts no rule refutes or requires. `D` is at
+//! relation grain, so a program that names the value at root declines too.
 //! Scoping is the other half: `:no-hypothesis`, `:hypothesis-relations` and
 //! `(__closed__ R)` bind here exactly as they bind the blind enumerator, and
 //! a state owing only relations they exclude is **stuck** — reported, never
@@ -88,8 +101,9 @@ pub enum Mode {
     Obligations,
     /// Owed, and nothing may be branched on — the ladder's dead end.
     Stuck,
-    /// An obligation was declined (C4, or a projection that will not resolve),
-    /// so the call fell through to the blind enumerator.
+    /// An obligation was declined (C4, over what the rung proposes or since
+    /// M1e2 S1e2.2.15 over `D`, or a projection that will not resolve), so
+    /// the call fell through to the blind enumerator.
     Declined,
 }
 
@@ -253,6 +267,31 @@ pub(crate) fn generate(
         if let Some(rel) = scanned_relation_in(p, &owed_rels) {
             let rel = s.terms.sym(rel).to_string();
             let reason = format!("an obligation scans `{rel}`, which the rung itself proposes");
+            return Ok(declined(s, &reason));
+        }
+    }
+    // C4 over `D` (M1e2 S1e2.2.15, W14): nor may it grow by derivation. A
+    // relation a commitment can change — `D`, seeded with what this rung
+    // proposes and closed under the saturation plans, `crate::monotone`'s one
+    // computation of it — can gain at a node a domain value root's scan never
+    // saw, and the candidate that value licenses is then in no `H`. The plans
+    // are the memo's, as the static check's are: root's saturation compiled
+    // them into it, the activators' included, before any generation call.
+    let proposed = projs
+        .iter()
+        .filter(|p| p.skip.is_none())
+        .map(|p| p.relation);
+    let dynamic =
+        crate::monotone::dynamic(s.kb, s.terms, &crate::monotone::plans_of(&memo), proposed);
+    for p in &projs {
+        if let Some(rel) = premise_reads(p, s.terms)
+            .into_iter()
+            .find(|&r| crate::monotone::in_set(&dynamic, r, s.terms))
+        {
+            let reason = format!(
+                "an obligation scans `{}`, a relation a commitment can change",
+                rel.label(s.terms)
+            );
             return Ok(declined(s, &reason));
         }
     }
@@ -795,21 +834,38 @@ fn static_premises(
     monotonicity: &crate::monotone::Monotonicity,
     terms: &ein_core::Terms,
 ) -> Result<(), String> {
+    if let Some(rel) = premise_reads(p, terms)
+        .into_iter()
+        .find(|&r| monotonicity.changes(r, terms))
+    {
+        return Err(format!(
+            "it reads `{}` beside its witness, a relation a commitment can change",
+            rel.label(terms)
+        ));
+    }
+    Ok(())
+}
+
+/// Every relation an obligation reads beside its witness step, disjunct by
+/// disjunct: its trigger, which says who owes, and its guards, which scan the
+/// witness's domain. L5's premise ([`static_premises`]) and the rung's C4
+/// over `D` ([`generate`]) read the same list.
+fn premise_reads(p: &Proj, terms: &ein_core::Terms) -> Vec<crate::monotone::Rel> {
+    let mut reads = Vec::new();
     for (d, &(gi, at)) in p.witness.iter().enumerate() {
         let disjunct = &p.plan.disjuncts[d];
-        let mut reads = crate::monotone::reads_in(&p.plan, disjunct.steps, None, terms);
+        reads.extend(crate::monotone::reads_in(
+            &p.plan,
+            disjunct.steps,
+            None,
+            terms,
+        ));
         for (j, g) in p.plan.guards(disjunct.guards).iter().enumerate() {
             let skip = (j == gi).then_some(at);
             reads.extend(crate::monotone::reads_in(&p.plan, g.sub, skip, terms));
         }
-        if let Some(rel) = reads.into_iter().find(|&r| monotonicity.changes(r, terms)) {
-            return Err(format!(
-                "it reads `{}` beside its witness, a relation a commitment can change",
-                rel.label(terms)
-            ));
-        }
     }
-    Ok(())
+    reads
 }
 
 /// One instance's witnesses at root: its alternatives (candidate bits,
@@ -993,5 +1049,88 @@ mod tests {
              (owed likes is-a)\n(owed is-a sort)\n"
         ));
         assert_eq!(r.mode, Mode::Declined);
+    }
+
+    /// Root saturated with the memo the rung then reads, as
+    /// `region::prepare` leaves it, and the rung's report with the `rung`
+    /// line it narrated.
+    fn rung_at_root(src: &str) -> (RungReport, String) {
+        let (ast, mut terms, mut kb) = kb_of(src);
+        let memo = crate::compile::SharedMemo::default();
+        let mut off = Events::off();
+        {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut off,
+                memo: memo.clone(),
+            };
+            let mut sat = crate::saturator::Saturator::new(&mut s).expect("compiles");
+            sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        }
+        let buffer = crate::events::Buffer::new();
+        let mut events = Events::to(Box::new(buffer.clone()), crate::events::Level::Normal);
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut events,
+            memo,
+        };
+        let mut stats = HypGenStats::new();
+        let r = generate(
+            &mut s,
+            &None,
+            &FxHashSet::default(),
+            &FxHashSet::default(),
+            Choice::RuleOrder,
+            &mut stats,
+            &mut |_, stats, _| {
+                stats.raw += 1;
+                stats.emitted += 1;
+                ControlFlow::Continue(())
+            },
+            false,
+        )
+        .expect("the rung runs");
+        let rung = buffer
+            .to_string_lossy()
+            .lines()
+            .find(|l| l.contains("\"rung\""))
+            .expect("the rung narrates")
+            .to_string();
+        (r, rung)
+    }
+
+    /// W14's shape (`examples/ein-bugs/wrong-answers/oblig-fresh-name.ein`):
+    /// Ann owes a liked food, and `special` makes Z a food once anyone likes
+    /// anything.
+    const OWES_FOOD: &str = "(relation person T)\n(relation food T)\n\
+                             (relation likes T T)\n(person Ann)\n(food Soup)\n\
+                             (rule owes-food ()\n\
+                             \x20 :match  (and (person ?a)\n\
+                             \x20               (absent (and (food ?b) (likes ?a ?b))))\n\
+                             \x20 :assert (open likes)\n  :priority 500)\n";
+
+    /// **C4 over `D`** (M1e2 S1e2.2.15, W14; Q-M1e2.10 (a), ruled
+    /// 2026-11-04): a guard that scans a relation a commitment can change
+    /// declines the rung, and its `rung` line says so. Without `special`,
+    /// `food` is static and the same obligation branches.
+    #[test]
+    fn an_obligation_that_scans_a_relation_a_commitment_derives_declines() {
+        let (r, rung) = rung_at_root(&format!(
+            "{OWES_FOOD}(rule special ()\n  :match  (likes ?p ?f)\n  :assert (food Z))\n"
+        ));
+        assert_eq!(r.mode, Mode::Declined);
+        assert!(
+            rung.contains(
+                "\"reason\": \"an obligation scans `food`, a relation a commitment can change\""
+            ),
+            "{rung}"
+        );
+        let (r, rung) = rung_at_root(OWES_FOOD);
+        assert_eq!(r.mode, Mode::Obligations, "{rung}");
+        assert!(rung.contains("\"reason\": \"rule-order\""), "{rung}");
     }
 }
