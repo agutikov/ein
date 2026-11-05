@@ -1,0 +1,22 @@
+;;; The control of `closure-shared-given.ein` — M1e2 **W10**, register row
+;;; `W10/closure-shared-given`'s control, banked by S1e2.2.25 (2026-11-05).
+;;;
+;;; The same program with 31 `x-cd` derivations instead of 33: `(x K)`'s
+;;; list holds its primary and 30 alternatives when `x-uv` arrives, so it
+;;; takes `x-uv` too, and root's core is `(g K)`, the witness's right answer
+;;; (`ein solve FILE`, release and debug, at `94c75204`).
+
+(relation c T) (relation d T) (relation g T) (relation u T) (relation v T) (relation x T)
+(c C01) (d C01) (c C02) (d C02) (c C03) (d C03) (c C04) (d C04) (c C05) (d C05) (c C06) (d C06)
+(c C07) (d C07) (c C08) (d C08) (c C09) (d C09) (c C10) (d C10) (c C11) (d C11) (c C12) (d C12)
+(c C13) (d C13) (c C14) (d C14) (c C15) (d C15) (c C16) (d C16) (c C17) (d C17) (c C18) (d C18)
+(c C19) (d C19) (c C20) (d C20) (c C21) (d C21) (c C22) (d C22) (c C23) (d C23) (c C24) (d C24)
+(c C25) (d C25) (c C26) (d C26) (c C27) (d C27) (c C28) (d C28) (c C29) (d C29) (c C30) (d C30)
+(c C31) (d C31)
+(g K)
+(rule mk-u () :match (g ?k) :assert (u ?k) :priority 10)
+(rule mk-v () :match (g ?k) :assert (v ?k) :priority 10)
+(rule x-cd () :match (and (c ?y) (d ?y)) :assert (x K) :priority 100)
+(rule x-uv () :match (and (u ?k) (v ?k)) :assert (x ?k) :priority 200)
+(rule clash () :match (x ?k) :assert (false) :priority 400)
+(solve :no-hypothesis (c d g u v x))

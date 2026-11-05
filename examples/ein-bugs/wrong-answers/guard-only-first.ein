@@ -1,0 +1,19 @@
+;;; The control of `guard-only-second.ein` — M1e2 **W25**, register row
+;;; `W25/guard-only-second`'s control, banked by S1e2.2.25 (2026-11-05) from
+;;; the inventory of 2026-11-05's probe `guard_only_first.ein`, the program
+;;; unchanged.
+;;;
+;;; The same program with the two refuting rules' priorities swapped: `w`, the
+;;; premise-less derivation from the activator `(w a)`, now fires first, so it
+;;; is `(false)`'s primary and the search sees it. N `{(p a)}`'s core is
+;;; `(p a)`, the activator's own support, which is the witness's right answer
+;;; (`ein solve FILE --dump-answer DIR` and `ein oracle FILE --dump DIR` at
+;;; `94c75204`, release and debug alike).
+
+(relation seed T) (relation p T) (relation p2 T) (relation w T) (relation b T)
+(seed a) (b a)
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false) :priority 300)
+(rule mk () :match (p ?x) :assert (w ?x) :priority 5)
+(rule w (?n) :match (eq ?n a) :assert (false) :priority 10)

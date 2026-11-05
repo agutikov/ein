@@ -54,8 +54,16 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// whose `right` states a core's status records the status its run reports
 /// beside root's core ([`Now::core_status`], the summary's
 /// `region.core_status`), W23's: whether the core search was cut at its
-/// budget.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/9";
+/// budget. `/10` since M1e2 S1e2.2.25 (2026-11-05): a `now` can record how
+/// many members of R hold a stale fact ([`Now::stale`], the summary's
+/// `monotonicity.state`) where `right` states it ([`Right::stale`]), W8's rows
+/// past the oracle's limit; a region can be a **stopped** description
+/// ([`Region::stopped`]), its counts lower bounds and its maximal line not
+/// known; `now` can compare `N` on the members it lists alone
+/// ([`Now::nogoods_listed`], a program whose `N` is hundreds of sets); and a
+/// `deferred` row can be owned by another milestone's stage (S1f.10.6) as
+/// well as by a followup.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/10";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -66,6 +74,10 @@ pub const SUMMARY_EMPTY: [&str; 2] = ["dead", "owing"];
 
 /// The routes that compute a [`Region`], as `ein solve` names them.
 pub const ROUTES: [&str; 3] = ["route 1", "route 2", "state route"];
+
+/// Why a stopped [`Region`] stopped (schema /10): past `--region-limit` on a
+/// program the static check flags, or at `--region-budget`.
+pub const STOPS: [&str; 2] = ["limit", "budget"];
 
 /// The two kinds of an empty `R`.
 pub const EMPTY_KINDS: [&str; 2] = ["no-alive", "all-owe"];
@@ -243,6 +255,21 @@ fn is_followup(o: &str) -> bool {
         .is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()))
 }
 
+/// Another milestone's stage, `S1f.10.6` (schema /10, M1e2 S1e2.2.25): a
+/// stage id whose milestone is not M1e2's, which a `deferred` row may wait on
+/// as it waits on a followup (W26's, Q-M1e2.16 (5)).
+fn is_other_milestone_stage(o: &str) -> bool {
+    let parts: Vec<&str> = o.split('.').collect();
+    parts.len() == 3
+        && parts[0].len() > 1
+        && parts[0].starts_with('S')
+        && parts[0][1..].bytes().all(|b| b.is_ascii_alphanumeric())
+        && parts[0] != "S1e2"
+        && parts[1..]
+            .iter()
+            .all(|p| !p.is_empty() && p.bytes().all(|b| b.is_ascii_digit()))
+}
+
 /// One review verdict, as the user gave it.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -339,6 +366,29 @@ pub struct Now {
     /// field). Recorded exactly where [`Right::core_status`] is stated.
     #[serde(default)]
     pub core_status: Option<String>,
+    /// How many members of R the run met hold a stale fact, and of how many
+    /// nodes — the summary's `monotonicity.state` (schema /10, M1e2
+    /// S1e2.2.25): its `stale` entries of class `R`, and its `nodes`.
+    /// Recorded exactly where [`Right::stale`] is stated (W8's rows past the
+    /// oracle's limit, whose states are not listed).
+    #[serde(default)]
+    pub stale: Option<Stale>,
+    /// [`Self::nogoods`] lists some members of `N`, and the run's `N` is
+    /// compared on those sets alone, each of which it must report (schema
+    /// /10, M1e2 S1e2.2.25): `zebra2.ein`'s `N` is 366 sets.
+    #[serde(default)]
+    pub nogoods_listed: bool,
+}
+
+/// Members of R holding a stale fact, of the nodes a run computed — schema
+/// `/10` (M1e2 S1e2.2.25).
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Stale {
+    /// Members of R whose own fixpoint falsifies a fact's `absent` guard.
+    pub in_r: u64,
+    /// The nodes the run computed.
+    pub nodes: u64,
 }
 
 /// A minimal dead set and the core its run reports for it — schema `/8`
@@ -450,6 +500,15 @@ impl Now {
             out.push(format!(
                 "core status: right {s:?}, now {:?}",
                 self.core_status
+            ));
+        }
+        // Stale members of R (schema /10, M1e2 S1e2.2.25).
+        if let Some(w) = right.stale
+            && Some(w) != self.stale.as_ref().map(|s| s.in_r)
+        {
+            out.push(format!(
+                "stale members of R: right {w}, now {:?}",
+                self.stale.as_ref().map(|s| s.in_r)
             ));
         }
         // N's cores (schema /8, M1e2 S1e2.2.19, W19).
@@ -594,6 +653,12 @@ pub struct Region {
     pub empty: Option<String>,
     pub minimal: Vec<Vec<String>>,
     pub maximal: Vec<Vec<String>>,
+    /// One of [`STOPS`] where the description stopped before R was exhausted
+    /// (schema /10, M1e2 S1e2.2.25): `k_s` and `k_c` are then the lower
+    /// bounds it reached, `minimal` the line members it certified, and
+    /// `maximal` is empty, not known (W8's rows past the oracle's limit).
+    #[serde(default)]
+    pub stopped: Option<String>,
 }
 
 /// An `id_order_invariance` op and the seed under which its output moves.
@@ -636,6 +701,10 @@ pub struct Right {
     /// where the user ruled that a cut core says so (Q-M1e2.16).
     #[serde(default)]
     pub core_status: Option<String>,
+    /// How many members of R hold a stale fact under the reading — schema
+    /// `/10` (M1e2 S1e2.2.25): compared with [`Now::stale`]'s `in_r`.
+    #[serde(default)]
+    pub stale: Option<u64>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -789,6 +858,18 @@ impl Register {
                     )));
                 }
             }
+            // Stale members of R (schema /10, M1e2 S1e2.2.25).
+            if r.now.stale.is_some() != r.right.stale.is_some() {
+                out.push(at(
+                    "[now] records stale members of R exactly when [right] states them".to_string(),
+                ));
+            }
+            if r.now.nogoods_listed && r.now.nogoods.as_ref().is_none_or(Vec::is_empty) {
+                out.push(at(
+                    "[now] nogoods_listed compares N on the sets it lists, and lists none"
+                        .to_string(),
+                ));
+            }
             // N's cores (schema /8, M1e2 S1e2.2.19).
             if r.now.nogoods.is_some() != r.right.nogoods.is_some() {
                 out.push(at(
@@ -867,11 +948,13 @@ impl Register {
                 ));
             }
             if r.review.as_ref().is_some_and(|v| v.verdict == "deferred")
-                && (r.status != "open" || !is_followup(&r.owner))
+                && (r.status != "open"
+                    || !(is_followup(&r.owner) || is_other_milestone_stage(&r.owner)))
             {
                 out.push(at(format!(
                     "a `deferred` review is an open row owned by the followup it waits on \
-                     (F<n>); this one is {:?}, owned by {:?}",
+                     (F<n>) or by another milestone's stage (S1f.10.6); this one is {:?}, \
+                     owned by {:?}",
                     r.status, r.owner
                 )));
             }
@@ -985,6 +1068,20 @@ impl Register {
                             "{} [region]: empty {e:?} is not one of {EMPTY_KINDS:?}",
                             r.id
                         ));
+                    }
+                    if let Some(w) = &g.stopped {
+                        if !STOPS.contains(&w.as_str()) {
+                            out.push(format!(
+                                "{} [region]: stopped {w:?} is not one of {STOPS:?}",
+                                r.id
+                            ));
+                        }
+                        if !g.maximal.is_empty() {
+                            out.push(format!(
+                                "{} [region]: a stopped region's maximal line is not known",
+                                r.id
+                            ));
+                        }
                     }
                     if empty != (g.minimal.is_empty() && g.maximal.is_empty()) || g.k_c < g.k_s {
                         out.push(format!(
@@ -1241,6 +1338,12 @@ mod tests {
         row.status = "not-wrong".to_string();
         assert!(defects(&row).iter().any(|d| d.contains("`deferred`")));
         assert!(is_followup("F21") && !is_followup("F") && !is_followup("S1e2.2.6"));
+        // Another milestone's stage may own a deferred row (schema /10, M1e2
+        // S1e2.2.25: W26's, S1f.10.6); a stage of M1e2's may not.
+        assert!(is_other_milestone_stage("S1f.10.6"));
+        for bad in ["S1e2.2.6", "S1f.10", "F21", "S1f.10.x", "S.1.2"] {
+            assert!(!is_other_milestone_stage(bad), "{bad}");
+        }
     }
 
     /// **A run that ends in an error**, schema /7 (M1e2 S1e2.2.18):
@@ -1288,6 +1391,8 @@ mod tests {
             core: None,
             nogoods: None,
             core_status: None,
+            stale: None,
+            nogoods_listed: false,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
@@ -1366,6 +1471,70 @@ mod tests {
                 .iter()
                 .any(|d| d.starts_with("nogoods: "))
         );
+    }
+
+    /// **Schema /10** (M1e2 S1e2.2.25): a stale count is compared where
+    /// `right` states one, a stopped region states no maximal line, and a
+    /// `now` that compares N on the sets it lists lists some.
+    #[test]
+    fn a_stale_count_a_stopped_region_and_a_listed_n() {
+        let reg = register();
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.now.stale.is_some())
+            .expect("W8's rows past the limit record a stale count")
+            .clone();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        // The count is compared with right's.
+        let mut r = row.clone();
+        r.right.stale = r.now.stale.as_ref().map(|s| s.in_r);
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .all(|d| !d.starts_with("stale"))
+        );
+        r.right.stale = Some(0);
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .any(|d| d.starts_with("stale"))
+        );
+        // Stated on one side only is a defect.
+        let mut r = row.clone();
+        r.right.stale = None;
+        assert!(defects(&r).iter().any(|d| d.contains("stale members of R")));
+        // A stopped region's maximal line is not known, and its word is one
+        // of STOPS.
+        let mut r = row.clone();
+        let g = r.region.as_mut().expect("a stopped region");
+        assert_eq!(g.stopped.as_deref(), Some("limit"));
+        g.maximal = vec![Vec::new()];
+        assert!(defects(&r).iter().any(|d| d.contains("not known")));
+        let g = r.region.as_mut().expect("a stopped region");
+        g.maximal = Vec::new();
+        g.stopped = Some("tired".to_string());
+        assert!(defects(&r).iter().any(|d| d.contains("is not one of")));
+        // A listed N lists some members.
+        let listed = reg
+            .case
+            .iter()
+            .find(|r| r.now.nogoods_listed)
+            .expect("W10/second-preparation compares N on one member")
+            .clone();
+        assert!(defects(&listed).is_empty(), "{:?}", defects(&listed));
+        let mut r = listed;
+        r.now.nogoods = Some(Vec::new());
+        assert!(defects(&r).iter().any(|d| d.contains("nogoods_listed")));
     }
 
     #[test]

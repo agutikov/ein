@@ -1,0 +1,18 @@
+;;; The control of `oblig-derived-activator.ein` — M1e2 **W26**, register row
+;;; `W26/oblig-derived-activator`'s control, banked by S1e2.2.25 (2026-11-05).
+;;;
+;;; The same program with the derived activator also stated,
+;;; `(total-owed drinks is-a)`: root owes both debts, the obligations rung
+;;; proposes `(likes Ann Soup)` and `(drinks Ann Tea)`, and R is the one state
+;;; that holds both, the witness's right answer (`ein solve FILE` and
+;;; `ein oracle FILE` at `94c75204`, release and debug alike).
+
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T)
+(relation likes  Person Food)
+(relation drinks Person Drink)
+(is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
+(total-owed likes is-a)
+(total-owed drinks is-a)
+(rule arm () :match (likes ?p ?f) :assert (total-owed drinks is-a))
+(solve :no-hypothesis (is-a))

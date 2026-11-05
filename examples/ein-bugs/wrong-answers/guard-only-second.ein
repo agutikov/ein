@@ -1,0 +1,42 @@
+;;; A premise-less derivation is never recorded as an alternative — M1e2
+;;; **W25**, register row `W25/guard-only-second` (`corpus/wrong_answers.toml`),
+;;; banked by S1e2.2.25 (2026-11-05) from the inventory of 2026-11-05's W-8
+;;; (its probe `guard_only_second.ein`, the program unchanged), filed `open`
+;;; and deferred to F22 on the user's ruling of that day (Q-M1e2.16 (2), (5)).
+;;; Its control is `guard-only-first.ein`, the same program with the two
+;;; refuting rules' priorities swapped.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two candidates, `(p a)` and `(p2 a)`. Committing `(p a)` derives `(false)`
+;;; twice: by `early`, from `(p a) (b a) (seed a)`, and by `w`, a rule with a
+;;; parameter and no premise, whose activator `(w a)` `mk` derives from
+;;; `(p a)`. `early` fires first (priority 10 against 200).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `{(p a)}` is dead, and its core is the smallest frontier over its
+;;; derivations (`glossary.md` § Smallest contradiction frontier): `w`'s rests
+;;; on its activator `(w a)`, which a node derived from `(p a)` and which a
+;;; core follows since M1e2 S1e2.2.19 (Q-M1e2.12 (c)), so the core is `(p a)`
+;;; alone, as the control reports.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `Saturator::record_alternative` returns before recording a firing with no
+;;; premise, and `Kb::record_justification` refuses one (the rule for an
+;;; engine writeback), so `w`'s derivation, arriving second, is never an
+;;; alternative and the core is `early`'s three facts: N `{(p a)}`, core
+;;; `(b a) (p a) (seed a)` (`ein solve FILE --dump-answer DIR`'s
+;;; `nogoods.json` and `ein oracle FILE --dump DIR` at `94c75204`, release and
+;;; debug alike; a store with no alternatives cap gives the same). Rule
+;;; priority decides which core is reported. No corpus program writes the
+;;; shape. Owned by F22, whose search would re-derive what the store keeps.
+
+(relation seed T) (relation p T) (relation p2 T) (relation w T) (relation b T)
+(seed a) (b a)
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false) :priority 10)
+(rule mk () :match (p ?x) :assert (w ?x) :priority 5)
+(rule w (?n) :match (eq ?n a) :assert (false) :priority 200)

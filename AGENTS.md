@@ -290,6 +290,18 @@ constrained-reasoning research.
   variable; the ruling's four are rows filed and fixed in the same commit,
   and the two compile-negative fixtures moved to `examples/broken/load/`:
   96 fixed, 2 open (both deferred to a followup) and 1 not wrong.
+  S1e2.2.25 filed eight rows the same day, on Q-M1e2.16 (5): every live
+  wrong answer the inventory found with an owner and no row, `open` and
+  deferred to that owner, so the close names it — three W8 rows, F21's
+  (`features/07` with its two rules swapped, `lattice/10`'s FIFO gap, and
+  stale members of R past the oracle's limit on `corner-house`), three W10
+  rows, F22's (`fork-delta-order`'s smallest but not canonical core, the
+  closure estimate counting a shared given twice, and a `zebra2.ein` core
+  taken after a second preparation of root), W25, F22's (a premise-less
+  derivation never recorded as an alternative), and W26, M1f S1f.10.6's (an
+  obligation whose activator a node derives, Q-M1e.11), W-10 and W-15 shown
+  by the stage's probes; schema `/10`: 96 fixed, 10 open (every one
+  deferred) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -494,6 +494,31 @@
 # and the stage's next commit wrote the hash. The register reads **96 rows
 # fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
 #
+# **S1e2.2.25 filed eight rows on 2026-11-05** (T1e2.2.25.1), on the user's
+# ruling of that day on Q-M1e2.16 (5): every live wrong answer the inventory
+# of 2026-11-05 found with an owner and no row is filed `open`, reviewed
+# `deferred`, with its owner, so the milestone closes naming it. W8 gains
+# three, F21's: `f07-rules-swapped` (W-2, R moves with which of two
+# priority-200 rules is written first), `fifo-gap` (W-5, `lattice/10`'s
+# maximal state holds a fact its own fixpoint's guard refutes) and
+# `corner-house` (W-6, members of R past the oracle's limit that do, the
+# cheapest of its five programs). W10 gains three, F22's: `fork-delta-order`
+# (W-9, a smallest core that is not the canonical one), `closure-shared-given`
+# (W-10, the closure estimate counting a shared given twice) and
+# `second-preparation` (`zebra2.ein`, a member of N whose core the dump takes
+# after a second preparation of root, S1e2.2.23's parked note). W25,
+# `guard-only-second`, is F22's (W-8, a premise-less derivation never recorded
+# as an alternative), and W26, `oblig-derived-activator`, M1f S1f.10.6's
+# (W-15, Q-M1e.11, an obligation whose activator a node derives). W-10 and
+# W-15 had no witness until the stage's probes. **Schema /10**: a `now`
+# records how many members of R hold a stale fact (`stale`, the summary's
+# `monotonicity.state`) where `right` states it, a region can be a stopped
+# description (`stopped`), a `now` can compare N on the sets it lists
+# (`nogoods_listed`), and a `deferred` row can wait on another milestone's
+# stage. A row's `wrong` is a region run's at `94c75204`. The register reads
+# **96 rows fixed, 10 open and 1 not-wrong**, every open row deferred to a
+# followup or to M1f.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -510,10 +535,12 @@
 #              the candidates' relations, which is what a state's `(model …)`
 #              names), the open states of an owing empty R, the relations
 #              the read-out names outside the universe (schema /5), the
-#              core (schema /6), N's cores (schema /8) and the core's status
-#              (schema /9).
+#              core (schema /6), N's cores (schema /8), the core's status
+#              (schema /9) and how many members of R hold a stale fact
+#              (schema /10).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
-#   An open row whose review is `deferred` waits on a followup, its `owner`.
+#   An open row whose review is `deferred` waits on a followup, its `owner`,
+#   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
 #
 # Rows whose walk answer was visible only under a permuted interner (W11) keep
 # `wrong.id_order` as the record of it; `ein-render/tests/id_order_invariance.rs`
@@ -530,7 +557,8 @@
 #             S1e2.1c.5 dropped its P1e2.2 stage (S1e2.1a.5; S1e2.1a.6 for W13),
 #             or where the revisit did (S1e2.1.7: W12's, S1e2.1a.5); for a row
 #             whose reading the user deferred, the followup (W8/features-07's:
-#             F21; W10/alt-cap-shared's: F22). A case's rows of one status share an owner, and fixed rows
+#             F21; W10/alt-cap-shared's: F22), or another milestone's stage
+#             (W26's: S1f.10.6, schema /10). A case's rows of one status share an owner, and fixed rows
 #             one per commit that fixed them;
 #             question: the ids that carried it
 #   witness   a `corpus/corpus.toml` entry, or a file under `corpus/fuzz_findings/`
@@ -580,6 +608,15 @@
 #               (`cut-environments`, `cut-rounds`, `cut-facts`, joined), or
 #               `none` where the summary states none; stated exactly when
 #               `[case.right]` states one (W23's row)
+#     stale     (schema /10, M1e2 S1e2.2.25) `{ in_r, nodes }`: how many of the
+#               nodes the run computed are members of R holding a fact whose
+#               `absent` guard their own fixpoint falsifies, and how many it
+#               computed — the summary's `monotonicity.state`, its `stale`
+#               entries of class `R` and its `nodes`; stated exactly when
+#               `[case.right]` states `stale` (W8's row past the limit)
+#     nogoods_listed  (schema /10) `true`: the run's N is compared on the sets
+#               `nogoods` lists alone, each of which it must report
+#               (`W10/second-preparation`'s, whose N is 366 sets)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -626,7 +663,8 @@
 #     `core_status` (schema /9, M1e2 S1e2.2.23) is the status the right
 #     read-out reports beside root's core; with it, the `qualifier` is that
 #     read-out's `core search` row, which `wrong_answers.rs` holds the run's
-#     stdout to print.
+#     stdout to print. `stale` (schema /10, M1e2 S1e2.2.25) is how many
+#     members of R the right read-out finds holding a stale fact.
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -642,6 +680,10 @@
 #     empty     `no-alive` | `all-owe`, exactly when k_s = 0
 #     minimal, maximal   the lines, as commitments: each the candidates it
 #               holds, sorted. This is R's vocabulary. `models` above is the walk's
+#     stopped   (schema /10, M1e2 S1e2.2.25) `limit` | `budget`: the description
+#               stopped before R was exhausted, so k_s and k_c are the lower
+#               bounds it reached, `minimal` the line members it certified, and
+#               `maximal` is empty, not known (W8/corner-house's)
 #
 #   [case.fixed] — what made a fixed row's `now` answer `right` (M1e2
 #     S1e2.1a.7), stated exactly when the row is fixed; its case page says it:
@@ -655,7 +697,8 @@
 #               deferred (`not-wrong` here and `status = "not-wrong"` go
 #               together; `deferred`, since 2026-11-03: the user deferred the
 #               row's reading to a followup, and the row is `open` with that
-#               followup, `F<n>`, as `owner`)
+#               followup, `F<n>`, as `owner`, or since schema /10 another
+#               milestone's stage, `S1f.10.6`)
 #     date      YYYY-MM-DD;  bundle: the commit the pages read were built at
 #     note      the reviewer's sentence, quoted where it was the user's words
 #
@@ -669,7 +712,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/9"
+schema = "ein-wrong-answers/10"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -2587,6 +2630,245 @@ run     = "solve --maximal"
 line    = "maximal"
 refused = "rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent …) over q, a relation a commitment can still extend — so it calls a state that has not yet decided q a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (q)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
+[[case]]
+id       = "W8/f07-rules-swapped"
+case     = "W8"
+title    = "a positive derived under absent survives the commitment that falsifies its guard"
+class    = "model set, contested"
+settings = "default"
+owner    = "F21"
+question = ["Q-M1e2.2", "Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein"
+status   = "open"
+open_because = "deferred to F21's D2 (Q-M1e2.16 (5), the user, 2026-11-05): the boundary admits equal-priority candidates in the order their rules are written, so root derives (q one) here and (p one) in features/07, the universe is {(p one)} here and {(q one)} there, and R is {∅, {(p one)}} here and {∅, {(q one)}} there. R is not a function of the program, the config principle's stable; of D2's readings only (D), refusing a cycle through an absent, settles the order"
+look_at  = ["root", "model 1"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from the inventory of 2026-11-05's W-2; the witness is its probe f07_rules_swapped.ein, features/07 with derive-q written before derive-p and nothing else, and the twin features/07 as written, W8/features-07's witness. node_census.md § 7.1 found the two programs the only ones of 167 reordered cubes whose answer moves with rule order, and § 7.2 and § 9 give each reading's answer"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release and debug, at 94c75204 (2026-11-05): R {∅, {(p one)}}, its maximal state {(p one)} holding (q one), which root derived first; `ein oracle` gives the same R"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+
+[[case.twin]]
+witness   = "examples/features/07_unstratifiable.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "the rules as written, derive-p first (W8/features-07's witness), at 94c75204: root derives (p one), the universe is {(q one)}, and the maximal state is {(q one)}, holding (p one)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p one)"]]
+
+[case.right]
+reading   = "F21 D2 (D): refuse a cycle through an absent — p ← ¬q, q ← ¬p is a load error"
+refused   = true
+derived   = "node_census.md § 7.2: of D2's readings only (D) gives the program one answer whichever rule is written first, a refusal at load (exit 1), as it refuses features/07 and f07-fpoff"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (A) fork, today's node"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+derived   = "today's answer, R {∅, {(p one)}}: the mirror of features/07's {∅, {(q one)}}, so (A) is not stable under rule order on this program (node_census.md § 7.1)"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (B) scratch"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)"]]
+derived   = "R {∅, {(p one)}}, ∅'s state (q one) and {(p one)}'s (p one): the program's two stable models, one per node, under the universe {(p one)}, where features/07's is {(q one)} (node_census.md § 7.2, § 9)"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (C) guards are premises, over (A)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q one)"]]
+derived   = "{(p one)} holds the stale (q one) and leaves R, so R is {∅}, whose state is (q one) here and (p one) in features/07 (node_census.md § 7.2)"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (F) the stable endpoints of every path"
+derived   = "from root, as features/07's mirror: no stale-free endpoint at {(p one)}, so R is (C) over (A)'s, ∅ with (q one) here and (p one) there (node_census.md § 11)"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (5), on the inventory of 2026-11-05 taken at cdcc3994: each live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner, so the milestone closes naming it. W-2's owner is F21's D2, what a node's state is, whose readings depend on rule order on this program and its twin alone."
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p"]
+models    = [
+  ["(p one)"],
+]
+
+[[case]]
+id       = "W8/fifo-gap"
+case     = "W8"
+title    = "a positive derived under absent survives the commitment that falsifies its guard"
+class    = "model set, contested"
+settings = "default"
+owner    = "F21"
+question = ["Q-M1e2.2", "Q-M1e2.16"]
+witness  = "examples/lattice/10_fifo_gap.ein"
+status   = "open"
+open_because = "deferred to F21's D2, its stratum-order sub-question (Q-M1e2.16 (5), the user, 2026-11-05): the program is stratified, but the boundary admits r2 and r1, both at priority 200, in the order they are written, so at {(a one), (b one)} r2 derives (p one) under (absent (q one)) before r1 derives (q one), and the maximal state holds a fact its own fixpoint's guard refutes; its perfect model there is (a one) (b one) (q one)"
+look_at  = ["model 1", "events writeback"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from the inventory of 2026-11-05's W-5, the FIFO gap; a corpus program, its own witness. Every read-out names the stale fact and the path dependence. p and q are outside the universe (no hrule proposes them), so the run's states list a and b, and the right state's p and q are in its closure. node_census.md § 12 banked the gap and emulated stratum-order admission, which removes it"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the program, release and debug, at 94c75204 (2026-11-05): R four states, its maximal state {(a one), (b one)} holding (p one) ← r2 (absent (q one)) beside (q one) ← r1; the read-out says so (stale facts, 1 of the cube's 4 nodes) and `ein oracle` gives the same R"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["a", "b", "p", "q"]
+models    = [["(a one)", "(b one)", "(p one)", "(q one)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(a one)", "(b one)"]]
+
+[case.right]
+reading   = "F21 D2, admission in stratum order (its sub-question; node_census.md § 12.4)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["a", "b", "p", "q"]
+models    = [["(a one)", "(b one)", "(q one)"]]
+derived   = "the program is stratified: r2 reads q under an absent and r1 concludes it, and nothing reads p, so r1's stratum comes first. At {(a one), (b one)} r1 derives (q one), and r2's guard then fails: the perfect model is (a one) (b one) (q one)"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (A) fork, today's node, or (B) scratch, each admitting in FIFO order"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["a", "b", "p", "q"]
+models    = [["(a one)", "(b one)", "(p one)", "(q one)"]]
+derived   = "today's answer: the node is built at once by either, and r2 is written before r1 (the inventory of 2026-11-05, W-5)"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (C) guards are premises, over (A)"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["a", "b", "p", "q"]
+models    = [["(a one)", "(q one)"], ["(b one)"]]
+derived   = "{(a one), (b one)} holds the stale (p one) and leaves R, so R is {∅, {(a one)}, {(b one)}} and its maximal line those two"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (D) refuse a cycle through an absent"
+derived   = "not refused: the program has no cycle; (D) composes with (A), (B) or (C), as above"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (5), on the inventory of 2026-11-05 taken at cdcc3994: each live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner, so the milestone closes naming it. W-5's owner is F21's D2, its stratum-order sub-question."
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["a", "b"]
+outside   = ["p", "q"]
+models    = [
+  ["(a one)", "(b one)"],
+]
+
+[[case]]
+id       = "W8/corner-house"
+case     = "W8"
+title    = "a positive derived under absent survives the commitment that falsifies its guard"
+class    = "model set, contested"
+settings = "default"
+owner    = "F21"
+question = ["Q-M1e2.2", "Q-M1e2.16"]
+witness  = "examples/saturation/square-unique/corner-house.ein"
+status   = "open"
+open_because = "deferred to F21's D2 and D7 (Q-M1e2.16 (5), the user, 2026-11-05): past the oracle's limit (118 candidates, --region-limit 16) the run describes the first 65 389 nodes of the cube in layer order, and 5 595 of them, all members of R, hold (co-located Blue House-2), which square-unique derived at root under (absent (next-to House-1 _)) and which their own commitment refutes. What a node's state is decides whether they stay in R (D2), and how a non-monotone search goes past the limit is D7"
+look_at  = ["summary"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from the inventory of 2026-11-05's W-6, whose five programs are features/01, features/04_open and the three square-unique programs: the cheapest of them for the gate, `ein solve FILE` 1.4 s in release and 1.8 s in debug (2026-11-05); the others hold 24 754 of 64 655 nodes (features/01), 21 042 of 64 761 (features/04_open), 5 835 of 64 923 (cul-de-sac) and 4 876 of 65 029 (terminus), release and debug alike. Schema /10: the run's states are not listed past the limit, so the row records the summary's monotonicity.state, and its region is a stopped description. `ein oracle` refuses the program (2^118 nodes)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the program, release and debug, at 94c75204 (2026-11-05): stopped past --region-limit 16 with k_s at least 65 214, root listed as the certified minimal line, and the read-out's state row: stale facts, 5 595 of the 65 389 nodes the run computed, each in R, (co-located Blue House-2) ← square-unique (absent (next-to House-1 _))"
+verdict   = "Ambiguity"
+k         = 1
+exhausted = false
+closes    = ["co-located", "is-a", "next-to"]
+models    = [["(co-located Blue House-2)", "(co-located Norwegian House-1)", "(is-a Blue Color)", "(is-a House-1 House)", "(is-a House-2 House)", "(is-a Norwegian Nationality)", "(next-to House-1 House-2)", "(next-to Norwegian Blue)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 65214
+k_c      = 65389
+stopped  = "limit"
+minimal  = [[]]
+maximal  = []
+
+[case.right]
+reading   = "F21 D2 (C) guards are premises: a state holding a stale fact is not a solution"
+stale     = 0
+derived   = "the inventory of 2026-11-05, W-6: under every reading but the fork such a node leaves R or holds no stale fact, so no member of R holds one; (C) states it as the definition. What R is past the limit is not known under any reading"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (B) scratch"
+derived   = "each node built from the program with its commitment, so square-unique's guard is judged with the commitment present and the fact it guards is not derived through it; whether FIFO admission leaves another stale fact past the limit is not measured"
+
+[[case.right.alternative]]
+reading   = "F21 D2 (A) fork, today's node"
+stale     = 5595
+derived   = "today's answer, not wrong under (A): every node is a fork of root, and root's (co-located Blue House-2) survives"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (5), on the inventory of 2026-11-05 taken at cdcc3994: each live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner, so the milestone closes naming it. W-6's owners are F21's D2 and D7; the row takes the cheapest of its five programs (S1e2.2.25's stage file)."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = false
+k         = 1
+relations = ["co-located", "is-a", "next-to"]
+models    = [
+  ["(co-located Blue House-2)", "(co-located Norwegian House-1)", "(is-a Blue Color)", "(is-a House-1 House)", "(is-a House-2 House)", "(is-a Norwegian Nationality)", "(next-to House-1 House-2)", "(next-to Norwegian Blue)"],
+]
+stale     = { in_r = 5595, nodes = 65389 }
+
 # ══ W9 — with the kill cache off, an unnoticed entailment makes a model ═══════
 [[case]]
 id       = "W9/complete-records-stale-K"
@@ -2873,6 +3155,262 @@ empty     = "dead"
 relations = ["a", "b", "c", "x", "z"]
 models    = []
 core      = ["(a K)", "(b K)", "(c C01)"]
+
+[[case]]
+id       = "W10/fork-delta-order"
+case     = "W10"
+title    = "the alternatives cap decides which core is reported"
+class    = "core, contested"
+settings = "default"
+owner    = "F22"
+question = ["Q-M1e.15", "Q-M1e2.11", "Q-M1e2.16"]
+witness  = "examples/ein-bugs/fork-delta-order.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1e2.16 (5), the user, 2026-11-05): (false) has 1 600 derivations of two premises and one closure size, so every core is four facts and a full alternatives list keeps the first 33 to arrive; the core it leaves, (g G08) (h H40) (on A) (on B), is of the smallest size and stable under the interner, but it is not the canonical core over every derivation, (g G01) (h H01) (on A) (on B), which S1e2.2.12 left to F22 (its default 2)"
+look_at  = ["answer", "events enter"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from the inventory of 2026-11-05's W-9; the witness is W11/fork-delta-order's, which S1e2.2.12 wrote for the interner and fixed for it. Contested: a correct smallest core, but not the canonical one"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve --dump-answer DIR` on the witness, release and debug, at 94c75204 (2026-11-05): R {∅, {(on A)}, {(on B)}}, and N {(on A), (on B)} whose core is (g G08) (h H40) (on A) (on B) in nogoods.json, as in `ein oracle --dump`'s region.json"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [{ set = ["(on A)", "(on B)"], core = ["(g G08)", "(h H40)", "(on A)", "(on B)"] }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [
+  ["(on A)"],
+  ["(on B)"],
+]
+
+[case.right]
+reading   = "the canonical core: the smallest size, then the sorted repr ranks of its facts (S1e2.2.12's rule, its default 2)"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [{ set = ["(on A)", "(on B)"], core = ["(g G01)", "(h H01)", "(on A)", "(on B)"] }]
+derived   = "every core is four facts, so the canonical one over every derivation is the one whose facts rank first, (g G01) (h H01) (on A) (on B); a store with no alternatives cap reports it (MAX_ALT_JUSTIFICATIONS = 1 000 000, a scratch build at 94c75204, 2026-11-05; its search cut at the environments cap, every core it could reach being four facts)"
+
+[[case.right.alternative]]
+reading   = "the smallest size alone: any core of four facts is right"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [{ set = ["(on A)", "(on B)"], core = ["(g G08)", "(h H40)", "(on A)", "(on B)"] }]
+derived   = "today's answer, not wrong under this reading: it is of the smallest size, names the commitment and derives (false) with root"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (5), on the inventory of 2026-11-05 taken at cdcc3994: each live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner, so the milestone closes naming it. W-9's owner is F22, by S1e2.2.12's default 2."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 3
+relations = ["on"]
+outside   = ["p", "q"]
+models    = [
+  [],
+  ["(on A)"],
+  ["(on B)"],
+]
+nogoods   = [{ set = ["(on A)", "(on B)"], core = ["(g G08)", "(h H40)", "(on A)", "(on B)"] }]
+
+[[case]]
+id       = "W10/closure-shared-given"
+case     = "W10"
+title    = "the alternatives cap decides which core is reported"
+class    = "core"
+settings = "default"
+owner    = "F22"
+question = ["Q-M1e.15", "Q-M1e2.11", "Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/closure-shared-given.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1e2.11 (i)(b) and Q-M1e2.16 (2), (5), the user): beside a full alternatives list the store keeps the arrival with the smallest closure estimate, and the estimate is a sum over the premises, so x-uv's (u K) (v K), which rest on the one given (g K), estimate 2, which does not lower x-cd's 2, and x-uv is dropped. No per-fact estimate is exact; F22 re-derives what a full list refused"
+look_at  = ["summary", "events alt"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) for the inventory of 2026-11-05's W-10, the closure estimate counting a shared given twice, which had no witness: the stage's nine-line probe shows it. The control has two x-cd derivations fewer, so x-uv joins (x K)'s list"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 94c75204 (2026-11-05): R empty, root dead, and root's core (c C01) (d C01), x-cd's first; `ein oracle` the same"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(c C01)", "(d C01)"]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/closure-shared-given-control.ein"
+run       = "solve"
+by        = "region"
+why       = "31 x-cd derivations instead of 33, at 94c75204: (x K)'s list is not full when x-uv arrives, so it is kept, and root's core is (g K)"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(g K)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(g K)"]
+derived   = "the smallest frontier over every derivation the program records (Q-M1e2.11 (i)(b)): x-uv's rests on (g K) alone, through (u K) and (v K). The control reports it, and so does a store with no alternatives cap (MAX_ALT_JUSTIFICATIONS = 1 000 000, a scratch build at 94c75204, 2026-11-05)"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (2) and (5), on the inventory of 2026-11-05 taken at cdcc3994: W-10, the closure estimate, is F22's, and a live wrong answer with an owner is filed open, reviewed deferred, with its owner, where a probe shows it; this one does."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
+core      = ["(c C01)", "(d C01)"]
+
+[[case]]
+id       = "W10/second-preparation"
+case     = "W10"
+title    = "the alternatives cap decides which core is reported"
+class    = "core"
+settings = "default"
+owner    = "F22"
+question = ["Q-M1e.15", "Q-M1e2.11", "Q-M1e2.16"]
+witness  = "examples/zebra2.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1e2.16 (2), (5), the user, 2026-11-05): --dump-answer and --trace take a member of N's core through region::Nodes::refutation after the run, and Nodes::new prepares the already-saturated root a second time. Root keeps the same derivations (388 facts, none moved, a scratch diagnostic at 94c75204), but the second pass leaves its nodes another snapshot to resume from, so a node's derivations arrive in another order and the alternatives cap, 32 kept in arrival order, keeps others: N {(nation-loc Ukrainian House-2), (smoke-loc Old_Gold House-4)}'s core is 18 facts, where the run's own preparation and a store with no cap give 17. The second preparation is what decides which derivations the cap keeps there"
+look_at  = ["answer", "trace"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from S1e2.2.23 § Notes' first note, found by that stage's corpus test: 9 of N's 366 cores differ between the run's own preparation and the second, on zebra2.ein and zebra2-obligations.ein. Every surface that prints this member's core prints the same 18 facts (nogoods.json and --trace; no route visits it), so no two commands disagree. No smaller witness was found (the stage's notes); this run, `ein solve zebra2.ein --dump-answer DIR`, costs 9.0 s in release and 10.5 s in debug (2026-11-05). Schema /10: N is 366 sets, so the row compares the one it lists"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve --dump-answer DIR` on the program, release and debug, at 94c75204 (2026-11-05): R one state; the listed member of N's core in nogoods.json and --trace's N, 18 facts, (bijective color-loc) among them"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [{ set = ["(nation-loc Ukrainian House-2)", "(smoke-loc Old_Gold House-4)"], core = ["(bijective color-loc)", "(bijective nation-loc)", "(is-a Dog Pet)", "(is-a Englishman Nationality)", "(is-a Horse Pet)", "(is-a House-4 House)", "(is-a House-5 House)", "(is-a Ivory Color)", "(is-a Parliament Cigarette)", "(nation-loc Norwegian House-1)", "(nation-loc Ukrainian House-2)", "(relation color-loc Color House)", "(relation drink-loc Drink House)", "(relation nation-loc Nationality House)", "(relation pet-loc Pet House)", "(relation smoke-loc Cigarette House)", "(right-of House-5 House-4)", "(smoke-loc Old_Gold House-4)"] }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 261982
+minimal  = [
+  ["(color-loc Green House-5)", "(drink-loc Tea House-2)"],
+  ["(color-loc Green House-5)", "(nation-loc Spaniard House-4)"],
+  ["(color-loc Green House-5)", "(nation-loc Ukrainian House-2)"],
+  ["(color-loc Green House-5)", "(pet-loc Dog House-4)"],
+  ["(color-loc Green House-5)", "(pet-loc Fox House-1)"],
+  ["(color-loc Green House-5)", "(pet-loc Zebra House-5)"],
+  ["(color-loc Green House-5)", "(smoke-loc Chesterfields House-2)"],
+  ["(color-loc Ivory House-4)", "(drink-loc Tea House-2)"],
+  ["(color-loc Ivory House-4)", "(nation-loc Spaniard House-4)"],
+  ["(color-loc Ivory House-4)", "(nation-loc Ukrainian House-2)"],
+  ["(color-loc Ivory House-4)", "(pet-loc Dog House-4)"],
+  ["(color-loc Ivory House-4)", "(pet-loc Fox House-1)"],
+  ["(color-loc Ivory House-4)", "(pet-loc Zebra House-5)"],
+  ["(color-loc Ivory House-4)", "(smoke-loc Chesterfields House-2)"],
+  ["(color-loc Red House-3)", "(drink-loc Tea House-2)"],
+  ["(color-loc Red House-3)", "(nation-loc Spaniard House-4)"],
+  ["(color-loc Red House-3)", "(nation-loc Ukrainian House-2)"],
+  ["(color-loc Red House-3)", "(pet-loc Dog House-4)"],
+  ["(color-loc Red House-3)", "(pet-loc Fox House-1)"],
+  ["(color-loc Red House-3)", "(pet-loc Zebra House-5)"],
+  ["(color-loc Red House-3)", "(smoke-loc Chesterfields House-2)"],
+  ["(drink-loc Coffee House-5)", "(drink-loc Tea House-2)"],
+  ["(drink-loc Coffee House-5)", "(nation-loc Spaniard House-4)"],
+  ["(drink-loc Coffee House-5)", "(nation-loc Ukrainian House-2)"],
+  ["(drink-loc Coffee House-5)", "(pet-loc Dog House-4)"],
+  ["(drink-loc Coffee House-5)", "(pet-loc Fox House-1)"],
+  ["(drink-loc Coffee House-5)", "(pet-loc Zebra House-5)"],
+  ["(drink-loc Coffee House-5)", "(smoke-loc Chesterfields House-2)"],
+  ["(drink-loc Juice House-4)"],
+  ["(drink-loc Tea House-2)", "(nation-loc Englishman House-3)"],
+  ["(drink-loc Tea House-2)", "(nation-loc Spaniard House-4)"],
+  ["(drink-loc Tea House-2)", "(pet-loc Dog House-4)"],
+  ["(drink-loc Tea House-2)", "(pet-loc Snail House-3)"],
+  ["(drink-loc Tea House-2)", "(smoke-loc Old_Gold House-3)"],
+  ["(nation-loc Englishman House-3)", "(nation-loc Spaniard House-4)"],
+  ["(nation-loc Englishman House-3)", "(nation-loc Ukrainian House-2)"],
+  ["(nation-loc Englishman House-3)", "(pet-loc Dog House-4)"],
+  ["(nation-loc Englishman House-3)", "(pet-loc Fox House-1)"],
+  ["(nation-loc Englishman House-3)", "(pet-loc Zebra House-5)"],
+  ["(nation-loc Englishman House-3)", "(smoke-loc Chesterfields House-2)"],
+  ["(nation-loc Japanese House-5)"],
+  ["(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)"],
+  ["(nation-loc Spaniard House-4)", "(pet-loc Fox House-1)"],
+  ["(nation-loc Spaniard House-4)", "(pet-loc Snail House-3)"],
+  ["(nation-loc Spaniard House-4)", "(pet-loc Zebra House-5)"],
+  ["(nation-loc Spaniard House-4)", "(smoke-loc Chesterfields House-2)"],
+  ["(nation-loc Spaniard House-4)", "(smoke-loc Old_Gold House-3)"],
+  ["(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)"],
+  ["(nation-loc Ukrainian House-2)", "(pet-loc Snail House-3)"],
+  ["(nation-loc Ukrainian House-2)", "(smoke-loc Old_Gold House-3)"],
+  ["(pet-loc Dog House-4)", "(pet-loc Fox House-1)"],
+  ["(pet-loc Dog House-4)", "(pet-loc Snail House-3)"],
+  ["(pet-loc Dog House-4)", "(pet-loc Zebra House-5)"],
+  ["(pet-loc Dog House-4)", "(smoke-loc Chesterfields House-2)"],
+  ["(pet-loc Dog House-4)", "(smoke-loc Old_Gold House-3)"],
+  ["(pet-loc Fox House-1)", "(pet-loc Snail House-3)"],
+  ["(pet-loc Fox House-1)", "(smoke-loc Old_Gold House-3)"],
+  ["(pet-loc Snail House-3)", "(pet-loc Zebra House-5)"],
+  ["(pet-loc Snail House-3)", "(smoke-loc Chesterfields House-2)"],
+  ["(pet-loc Zebra House-5)", "(smoke-loc Old_Gold House-3)"],
+  ["(smoke-loc Chesterfields House-2)", "(smoke-loc Old_Gold House-3)"],
+  ["(smoke-loc Lucky_Strike House-4)"],
+  ["(smoke-loc Parliament House-5)"],
+]
+maximal  = [["(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Tea House-2)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+nogoods   = [{ set = ["(nation-loc Ukrainian House-2)", "(smoke-loc Old_Gold House-4)"], core = ["(bijective nation-loc)", "(is-a Dog Pet)", "(is-a Englishman Nationality)", "(is-a Horse Pet)", "(is-a House-4 House)", "(is-a House-5 House)", "(is-a Ivory Color)", "(is-a Parliament Cigarette)", "(nation-loc Norwegian House-1)", "(nation-loc Ukrainian House-2)", "(relation color-loc Color House)", "(relation drink-loc Drink House)", "(relation nation-loc Nationality House)", "(relation pet-loc Pet House)", "(relation smoke-loc Cigarette House)", "(right-of House-5 House-4)", "(smoke-loc Old_Gold House-4)"] }]
+derived   = "the smallest frontier over every derivation the program records (Q-M1e2.11 (i)(b)): 17 facts, without (bijective color-loc), which the run's own preparation of root gives (S1e2.2.23's corpus test, 2026-11-05) and a store with no alternatives cap gives (MAX_ALT_JUSTIFICATIONS = 1 000 000, a scratch build at 94c75204, 2026-11-05)"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (2) and (5): a core the cap leaves larger than the smallest is F22's, and a live wrong answer with an owner is filed open, reviewed deferred, with its owner. S1e2.2.23 parked it as the cap's class, W10's, and the coordinator put it in S1e2.2.25's table."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = ["color-loc", "drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
+outside   = ["is-a*", "next-to"]
+models    = [
+  ["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"],
+]
+nogoods   = [{ set = ["(nation-loc Ukrainian House-2)", "(smoke-loc Old_Gold House-4)"], core = ["(bijective color-loc)", "(bijective nation-loc)", "(is-a Dog Pet)", "(is-a Englishman Nationality)", "(is-a Horse Pet)", "(is-a House-4 House)", "(is-a House-5 House)", "(is-a Ivory Color)", "(is-a Parliament Cigarette)", "(nation-loc Norwegian House-1)", "(nation-loc Ukrainian House-2)", "(relation color-loc Color House)", "(relation drink-loc Drink House)", "(relation nation-loc Nationality House)", "(relation pet-loc Pet House)", "(relation smoke-loc Cigarette House)", "(right-of House-5 House-4)", "(smoke-loc Old_Gold House-4)"] }]
+nogoods_listed = true
 
 # ══ W11 — which core is reported depends on interner id order ═════════════════
 [[case]]
@@ -6610,6 +7148,165 @@ derived   = "A relation is named by a symbol, and a nested fact binds no paramet
 run     = "solve --minimal"
 line    = "all"
 refused = "kb load error: rule 'r': its parameter ?R names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact"
+
+# ══ W25 — a premise-less derivation is never recorded as an alternative ═══════
+
+[[case]]
+id       = "W25/guard-only-second"
+case     = "W25"
+title    = "a premise-less derivation is never recorded as an alternative"
+class    = "core"
+settings = "default"
+owner    = "F22"
+question = ["Q-M1e2.12", "Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/guard-only-second.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1e2.16 (2), (5), the user, 2026-11-05): Saturator::record_alternative returns before recording a firing with no premise, and Kb::record_justification refuses one (the rule for an engine writeback), so w's derivation of (false), from the activator (w a) a node derived, is never an alternative when it arrives second, and rule priority picks early's three-fact core over the one-fact one"
+look_at  = ["answer", "events alt"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from the inventory of 2026-11-05's W-8, which S1e2.2.19 § Notes parked; the witness is its probe guard_only_second.ein, and the control, guard-only-first.ein, the same program with the refuting rules' priorities swapped. No corpus program writes the shape, which needs an activator a node derives (an activator site, so the program is flagged). A store with no alternatives cap gives the same three facts"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve --dump-answer DIR` on the witness, release and debug, at 94c75204 (2026-11-05): R {∅, {(p2 a)}}, and N {(p a)} whose core is (b a) (p a) (seed a), early's, in nogoods.json and `ein oracle --dump`'s region.json"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = ["(b a)", "(p a)", "(seed a)"] }]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/guard-only-first.ein"
+run       = "solve"
+by        = "region"
+why       = "early at priority 300 and w at 10, nothing else, at 94c75204: w's derivation is (false)'s primary, and N {(p a)}'s core is (p a)"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = ["(p a)"] }]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p2 a)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(p a)"], core = ["(p a)"] }]
+derived   = "the smallest frontier over every derivation of (false) at {(p a)}: w's rests on its activator (w a), which mk derives from (p a) and which a dead node's core follows (Q-M1e2.12 (c)), so (p a) alone; the control reports it"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (2) and (5), on the inventory of 2026-11-05 taken at cdcc3994: W-8, a premise-less alternative never recorded, is F22's, and a live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["p", "p2"]
+outside   = ["w"]
+models    = [
+  [],
+  ["(p2 a)"],
+]
+nogoods   = [{ set = ["(p a)"], core = ["(b a)", "(p a)", "(seed a)"] }]
+
+# ══ W26 — an obligation whose activator a node derives is never offered its discharge
+
+[[case]]
+id       = "W26/oblig-derived-activator"
+case     = "W26"
+title    = "an obligation whose activator a node derives is owed, and what discharges it is never a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.6"
+question = ["Q-M1e.11", "Q-M1e2.10", "Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"
+status   = "open"
+open_because = "deferred to M1f's S1f.10.6, Q-M1e.11 (Q-M1e2.16 (5), the user, 2026-11-05): the obligations rung builds H from the debts root owes, so the drinks fact that would discharge the debt a node is told about, through an activator it derives, is never a candidate, and R is empty where a model exists. Q-M1e2.10's decline reads an obligation's guard over D, and root has no plan of this one"
+look_at  = ["root", "answer"]
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) for the inventory of 2026-11-05's W-15, which had no witness: the stage's nine-line probe shows it. The control, oblig-derived-activator-declared.ein, states the activator too. The program is flagged (total-owed's activator relation is one a commitment can change). Schema /10: a deferred row may wait on another milestone's stage"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 94c75204 (2026-11-05): H {(likes Ann Soup)}, and R empty, every alive node owing: {(likes Ann Soup)} owes drinks; `ein oracle` the same"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["drinks", "likes"]
+open      = [["(likes Ann Soup)"]]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"
+run       = "solve"
+by        = "region"
+why       = "+ (total-owed drinks is-a), the derived activator stated, at 94c75204: root owes both debts, H is {(drinks Ann Tea), (likes Ann Soup)}, and R the one state that holds both"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["drinks", "likes"]
+models    = [["(drinks Ann Tea)", "(likes Ann Soup)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e.11 (A): re-derive the branch at the node where the set grew (S1f.10.6's recommendation where the flip is constructible)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["drinks", "likes"]
+models    = [["(drinks Ann Tea)", "(likes Ann Soup)"]]
+derived   = "Ann owes a Food and, once she likes one, a Drink; {(likes Ann Soup), (drinks Ann Tea)} pays both, and the node that is told of the second debt proposes what pays it: the control's R"
+
+[[case.right.alternative]]
+reading   = "Q-M1e.11 (B): decline, and the blind enumerator builds H, as Q-M1e2.10 (a) took for W14"
+derived   = "R over the blind enumerator's likes and drinks candidates, which holds the control's state and more; not computed here"
+
+[[case.right.alternative]]
+reading   = "Q-M1e.11 (C): refuse at load, every obligation activator root-derivable"
+refused   = true
+derived   = "a refusal: arm derives (total-owed drinks is-a) from likes, a relation a commitment extends"
+
+[[case.right.alternative]]
+reading   = "Q-M1e.11 (D): accept the loss and state it"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["drinks", "likes"]
+open      = [["(likes Ann Soup)"]]
+derived   = "today's answer, with a read-out that says the debt's discharge is outside H"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-05"
+bundle  = "cdcc3994"
+note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (5), on the inventory of 2026-11-05 taken at cdcc3994: W-15's owner is M1f's S1f.10.6 (Q-M1e.11), and a live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner, where a probe shows it; this one does."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "owing"
+relations = ["likes"]
+models    = [
+  ["(likes Ann Soup)"],
+]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

@@ -16,6 +16,12 @@
 //! EIN_BLESS=1 cargo test -p ein-infer --test register_region   # re-bank the blocks
 //! ```
 //!
+//! **Since M1e2 S1e2.2.25 a region can be a stopped description** (schema
+//! /10): a row whose witness is past the oracle's limit (W8's rows on
+//! `square-unique/corner-house.ein`) states the lower bounds the description
+//! reached, the minimal line members it certified, no maximal line, and why
+//! it stopped, and this test holds those.
+//!
 //! Both builds hold every row. A debug build skipped W7's witnesses, which
 //! it aborted on, until M1e2 S1e2.2.7 fixed W7, and W16's order pair until
 //! M1e2 S1e2.2.16 fixed W16.
@@ -25,7 +31,7 @@ use std::path::Path;
 use ein_core::{Kb, Terms};
 use ein_corpus::register::{REGISTER, Region};
 use ein_corpus::repo_root;
-use ein_infer::explore::{self, Answer, Ask, Mode, Route, Verdict, Which};
+use ein_infer::explore::{self, Answer, Ask, Mode, Route, Stopped, Verdict, Which};
 use ein_ir::{Ast, load, parse};
 
 fn loaded(path: &Path) -> (Kb, Terms, Ast) {
@@ -74,7 +80,7 @@ fn computed(path: &Path) -> Result<Region, String> {
         },
     );
     if !a.exhausted {
-        return Err(format!("the description stopped: {:?}", a.stopped));
+        return stopped(&a);
     }
     let (Some(shape), Some(counts)) = (&a.shape, &a.counts) else {
         return Err("an exhausted description with no shape".to_string());
@@ -108,19 +114,68 @@ fn computed(path: &Path) -> Result<Region, String> {
         }
     });
     Ok(Region {
-        route: match a.route {
-            Route::DownSet => "route 1",
-            Route::Cube => "route 2",
-            Route::States => "state route",
-            Route::Tree => "obligation tree",
-        }
-        .to_string(),
+        route: route_word(a.route),
         monotone: a.monotonicity.is_monotone(),
         k_s: counts.k_s,
         k_c: counts.k_c,
         empty,
         minimal: line(&shape.minimal),
         maximal: line(&shape.maximal),
+        stopped: None,
+    })
+}
+
+fn route_word(r: Route) -> String {
+    match r {
+        Route::DownSet => "route 1",
+        Route::Cube => "route 2",
+        Route::States => "state route",
+        Route::Tree => "obligation tree",
+    }
+    .to_string()
+}
+
+/// A description that stopped before R was exhausted (schema /10, M1e2
+/// S1e2.2.25: W8's rows past the oracle's limit): the lower bounds it reached,
+/// the minimal line members it certified, and no maximal line, which needs
+/// the whole cube.
+fn stopped(a: &Answer) -> Result<Region, String> {
+    let (Some(d), Some(counts)) = (&a.described, &a.counts) else {
+        return Err(format!(
+            "a stopped description with no counts: {:?}",
+            a.stopped
+        ));
+    };
+    let mut minimal: Vec<Vec<String>> = d
+        .minimal_commitments
+        .iter()
+        .map(|s| {
+            let mut v: Vec<String> = s
+                .iter()
+                .map(|&b| d.candidates[b as usize].text.clone())
+                .collect();
+            v.sort();
+            v
+        })
+        .collect();
+    minimal.sort();
+    Ok(Region {
+        route: route_word(a.route),
+        monotone: a.monotonicity.is_monotone(),
+        k_s: counts.k_s,
+        k_c: counts.k_c,
+        empty: None,
+        minimal,
+        maximal: Vec::new(),
+        stopped: Some(
+            match a.stopped {
+                Some(Stopped::Limit { .. }) => "limit",
+                Some(Stopped::Budget { .. }) => "budget",
+                Some(Stopped::Deadline) => "deadline",
+                None => "?",
+            }
+            .to_string(),
+        ),
     })
 }
 
@@ -167,6 +222,11 @@ fn differences(want: &Region, got: &Region) -> Vec<String> {
         format!("{:?}", sorted(&want.maximal)),
         format!("{:?}", got.maximal),
     );
+    field(
+        "stopped",
+        format!("{:?}", want.stopped),
+        format!("{:?}", got.stopped),
+    );
     out
 }
 
@@ -201,6 +261,9 @@ fn block(g: &Region) -> String {
     ];
     if let Some(e) = &g.empty {
         out.push(format!("empty    = {}", quote(e)));
+    }
+    if let Some(w) = &g.stopped {
+        out.push(format!("stopped  = {}", quote(w)));
     }
     out.push(line_toml("minimal", &g.minimal));
     out.push(line_toml("maximal", &g.maximal));

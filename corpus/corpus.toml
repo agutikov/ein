@@ -1366,6 +1366,48 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W24 (`W24/nested-fact-activator`), banked by S1e2.2.24 from its step 1's probe `n-var-param-nested-activator.ein`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact, which binds no parameter, so the inner pattern matched nothing and `r` never fired, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (iv)(a)): refused at load where the activator is written, as an integer is, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W8 (`W8/f07-rules-swapped`), banked by S1e2.2.25 from the inventory of 2026-11-05's W-2: `features/07` with `derive-q` written before `derive-p`. The boundary admits the two priority-200 rules in the order they are written, so root derives `(q one)` and R is `{∅, {(p one)}}`, the mirror of `features/07`'s `{∅, {(q one)}}`: R is not a function of the program. Open, deferred to F21's D2 (Q-M1e2.16 (5)), whose (D) refuses both."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/guard-only-second.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W25 (`W25/guard-only-second`), banked by S1e2.2.25 from the inventory of 2026-11-05's W-8: a premise-less derivation of `(false)` from an activator a node derived is never recorded as an alternative, so where it arrives second N `{(p a)}`'s core is `early`'s `(b a) (p a) (seed a)`, not `(p a)`. Open, deferred to F22 (Q-M1e2.16 (2), (5))."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/guard-only-first.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W25's control, banked by S1e2.2.25: `guard-only-second.ein` with the two refuting rules' priorities swapped, so the premise-less derivation is `(false)`'s primary and N `{(p a)}`'s core is `(p a)`, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/closure-shared-given.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W10 (`W10/closure-shared-given`), banked by S1e2.2.25 for the inventory of 2026-11-05's W-10: the closure estimate a full alternatives list keeps an arrival by is a sum, so `x-uv`'s two premises, which rest on the one given `(g K)`, estimate 2 and do not lower the list's 2; root's core is `(c C01) (d C01)` where `(g K)` suffices. Open, deferred to F22 (Q-M1e2.16 (2), (5))."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/closure-shared-given-control.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W10's control for `closure-shared-given.ein`, banked by S1e2.2.25: two `x-cd` derivations fewer, so `(x K)`'s list is not full when `x-uv` arrives, and root's core is `(g K)`, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W26 (`W26/oblig-derived-activator`), banked by S1e2.2.25 for the inventory of 2026-11-05's W-15 (Q-M1e.11): a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`, and the obligations rung, which builds H from the debts root owes, never proposes the `drinks` fact that pays it, so R is empty, every alive node owing, where the control's R is one state. Open, deferred to M1f's S1f.10.6 (Q-M1e2.16 (5))."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W26's control, banked by S1e2.2.25: `oblig-derived-activator.ein` with the activator also stated, so root owes both debts and R is `{(drinks Ann Tea), (likes Ann Soup)}`, the witness's right answer."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

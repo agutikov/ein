@@ -1,0 +1,50 @@
+;;; `features/07` with its two rules in the other order — M1e2 **W8**,
+;;; register row `W8/f07-rules-swapped` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.25 (2026-11-05) from the inventory of 2026-11-05's W-2 (its
+;;; probe `f07_rules_swapped.ein`, the program unchanged), filed `open` and
+;;; deferred to F21's D2 on the user's ruling of that day (Q-M1e2.16 (5)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `examples/features/07_unstratifiable.ein` with `derive-q` written before
+;;; `derive-p`, and nothing else: `p ← ¬q`, `q ← ¬p`, both at priority 200.
+;;;
+;;; ── What the engine answers, and why it is wrong ───────────────────────
+;;;
+;;; The boundary admits equal-priority candidates in the order their rules
+;;; are written, so root derives `(q one)` here where `features/07` derives
+;;; `(p one)`, the universe is `{(p one)}` where it is `{(q one)}`, and R is
+;;; `{∅, {(p one)}}` where it is `{∅, {(q one)}}` (`ein solve FILE` and
+;;; `ein oracle FILE` at `94c75204`, release and debug alike). The answer is
+;;; not a function of the program: the config principle's *stable*
+;;; (`monotonicity.md` § 6.1, *it does not depend … on rule order*), which
+;;; today's node, a fork of root, breaks on this program and its twin alone of
+;;; the 167 cubes `node_census -- --invariance` reorders (`node_census.md`
+;;; § 7.1).
+;;;
+;;; ── The right answer, by reading ───────────────────────────────────────
+;;;
+;;; Which is right is what a node's state is, F21's D2, deferred by the user.
+;;; Only (D), refusing a cycle through an `absent`, settles the order: this
+;;; program is refused at load. Under (A), today's fork, R is the mirror of
+;;; `features/07`'s; under (B), scratch, both orders keep both stable models
+;;; under different universes; under (C) over (A) R is `{∅}`, whose state is
+;;; `(q one)` here and `(p one)` there (`node_census.md` § 7.2, § 9).
+
+(relation thing Thing)
+(relation p Thing)
+(relation q Thing)
+
+(rule derive-q ()
+  :match  (and (thing ?x) (absent (p ?x)))
+  :assert (q ?x)
+  :priority 200
+  :why    "no p for {?x}, so q")
+
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200
+  :why    "no q for {?x}, so p")
+
+(thing one :source "the only object")

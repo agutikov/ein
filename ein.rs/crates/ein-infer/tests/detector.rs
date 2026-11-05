@@ -175,12 +175,19 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // commitment can extend, is an `absent` site. 42 since the stage's fix the
     // same day: its witness's `(neqw ?x)`, which the parser read as the guard
     // `(neq w ?x)` until then, is an `absent` over `neqw`, as the twin's is.
-    assert_eq!(flagged, 42, "the flagged corpus programs");
+    // 47 since S1e2.2.25 banked the inventory's owned wrong answers the same
+    // day: `f07-rules-swapped` (W8, `features/07`'s rules in the other order,
+    // its cycle and its two races below), `guard-only-second` and
+    // `-first` (W25, an `activator` site each), and
+    // `oblig-derived-activator` and `-declared` (W26, `total-owed`'s
+    // activator relation one a commitment can change).
+    assert_eq!(flagged, 47, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [
             "examples/ein-bugs/d3-unsat-core.ein odd: fire-1: (not r1) →¬ r1",
             "examples/ein-bugs/wrong-answers/f07-fpoff.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
+            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
             "examples/features/07_unstratifiable.ein even: derive-p: q →¬ p · derive-q: p →¬ q",
         ]
     );
@@ -189,6 +196,8 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
         [
             "examples/ein-bugs/wrong-answers/f07-fpoff.ein derive-p ← derive-q @ 200/200: q",
             "examples/ein-bugs/wrong-answers/f07-fpoff.ein derive-q ← derive-p @ 200/200: p",
+            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein derive-p ← derive-q @ 200/200: q",
+            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein derive-q ← derive-p @ 200/200: p",
             "examples/features/07_unstratifiable.ein derive-p ← derive-q @ 200/200: q",
             "examples/features/07_unstratifiable.ein derive-q ← derive-p @ 200/200: p",
             "examples/lattice/10_fifo_gap.ein r2 ← r1 @ 200/200: q",

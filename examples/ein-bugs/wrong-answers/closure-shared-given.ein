@@ -1,0 +1,47 @@
+;;; The closure estimate counts a shared given twice — M1e2 **W10**,
+;;; register row `W10/closure-shared-given` (`corpus/wrong_answers.toml`),
+;;; banked by S1e2.2.25 (2026-11-05) for the inventory of 2026-11-05's W-10,
+;;; which had no witness, and filed `open`, deferred to F22 on the user's
+;;; ruling of that day (Q-M1e2.16 (2), (5)). Its control is
+;;; `closure-shared-given-control.ein`, the same program with two `x-cd`
+;;; derivations fewer.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `(false)` needs `(x K)`. `(x K)` has 33 derivations by `x-cd`, each from
+;;; two givens `(c Ci) (d Ci)`, and a 34th by `x-uv`, from `(u K) (v K)`, both
+;;; of which rest on the one given `(g K)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Root is dead. Its core is the smallest frontier over every derivation
+;;; (`glossary.md` § Smallest contradiction frontier): `x-uv`'s rests on
+;;; `(g K)` alone, so the core is `(g K)`, as the control reports and as a
+;;; store with no alternatives cap does (`MAX_ALT_JUSTIFICATIONS = 1 000 000`,
+;;; a scratch build at `94c75204`).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `(x K)`'s primary and its 32 alternatives are `x-cd`'s first 33, so its
+;;; list is full when `x-uv` arrives, with as many premises as the list's
+;;; longest, and refused. Beside a full list the store keeps the arrival with
+;;; the smallest closure estimate (M1e2 S1e2.2.11, Q-M1e.15's (3)), and the
+;;; estimate is a sum over the premises: `(u K)` 1 and `(v K)` 1, so 2, the
+;;; given `(g K)` counted twice, which does not lower `x-cd`'s 2. So `x-uv` is
+;;; dropped, and the core is `(c C01) (d C01)` (`ein solve FILE`, release and
+;;; debug, at `94c75204`). Owned by F22: no per-fact estimate is exact.
+
+(relation c T) (relation d T) (relation g T) (relation u T) (relation v T) (relation x T)
+(c C01) (d C01) (c C02) (d C02) (c C03) (d C03) (c C04) (d C04) (c C05) (d C05) (c C06) (d C06)
+(c C07) (d C07) (c C08) (d C08) (c C09) (d C09) (c C10) (d C10) (c C11) (d C11) (c C12) (d C12)
+(c C13) (d C13) (c C14) (d C14) (c C15) (d C15) (c C16) (d C16) (c C17) (d C17) (c C18) (d C18)
+(c C19) (d C19) (c C20) (d C20) (c C21) (d C21) (c C22) (d C22) (c C23) (d C23) (c C24) (d C24)
+(c C25) (d C25) (c C26) (d C26) (c C27) (d C27) (c C28) (d C28) (c C29) (d C29) (c C30) (d C30)
+(c C31) (d C31) (c C32) (d C32) (c C33) (d C33)
+(g K)
+(rule mk-u () :match (g ?k) :assert (u ?k) :priority 10)
+(rule mk-v () :match (g ?k) :assert (v ?k) :priority 10)
+(rule x-cd () :match (and (c ?y) (d ?y)) :assert (x K) :priority 100)
+(rule x-uv () :match (and (u ?k) (v ?k)) :assert (x ?k) :priority 200)
+(rule clash () :match (x ?k) :assert (false) :priority 400)
+(solve :no-hypothesis (c d g u v x))

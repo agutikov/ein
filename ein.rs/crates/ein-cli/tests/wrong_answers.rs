@@ -28,6 +28,12 @@
 //! (schema /9, W23): the summary's `region.core_status`, and where `right`
 //! states it with a `qualifier`, the read-out's `core search` row.
 //!
+//! **Since M1e2 S1e2.2.25 a `now` can record how many members of R hold a
+//! stale fact** (schema /10, W8's rows past the oracle's limit): the
+//! summary's `monotonicity.state`. It can also compare `N` on the sets it
+//! lists alone (`nogoods_listed`, `W10/second-preparation`'s `zebra2.ein`,
+//! whose `N` is 366 sets).
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -42,7 +48,7 @@
 use std::path::Path;
 use std::process::Command;
 
-use ein_corpus::register::{Nogood, Now, Row, sorted_nogoods};
+use ein_corpus::register::{Nogood, Now, Row, Stale, sorted_nogoods};
 use ein_corpus::{Scratch, plan, register, repo_root};
 use serde_json::Value as J;
 
@@ -202,12 +208,37 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             .unwrap_or("none")
             .to_string()
     });
-    // N's cores, where the row records them (M1e2 S1e2.2.19, W19).
+    // N's cores, where the row records them (M1e2 S1e2.2.19, W19); on the
+    // sets the row lists alone where it says so (schema /10, M1e2
+    // S1e2.2.25), each of which the run must report.
     let nogoods = match (&row.now.nogoods, &got.nogoods) {
         (None, _) => None,
+        (Some(want), Some(j)) if row.now.nogoods_listed => {
+            let all = nogoods_of(j);
+            let mut kept = Vec::new();
+            for w in sorted_nogoods(want) {
+                match all.iter().find(|g| g.set == w.set) {
+                    Some(g) => kept.push(g.clone()),
+                    None => return Err(format!("N has no member {:?}", w.set)),
+                }
+            }
+            Some(sorted_nogoods(&kept))
+        }
         (Some(_), Some(j)) => Some(nogoods_of(j)),
         (Some(_), None) => return Err("no nogoods.json was written".to_string()),
     };
+    // Stale members of R, where the row records them (schema /10, M1e2
+    // S1e2.2.25): the summary's `monotonicity.state`, its `stale` entries of
+    // class `R` and its `nodes`.
+    let stale = row.now.stale.as_ref().map(|_| {
+        let st = &s["monotonicity"]["state"];
+        Stale {
+            in_r: st["stale"]
+                .as_array()
+                .map_or(0, |v| v.iter().filter(|x| x["class"] == "R").count() as u64),
+            nodes: st["nodes"].as_u64().unwrap_or(0),
+        }
+    });
     Ok(Now {
         run: row.now.run.clone(),
         line,
@@ -222,6 +253,8 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         core,
         nogoods,
         core_status,
+        stale,
+        nogoods_listed: row.now.nogoods_listed,
     })
 }
 
@@ -273,6 +306,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "core_status",
         format!("{:?}", want.core_status),
         format!("{:?}", got.core_status),
+    );
+    field(
+        "stale",
+        format!("{:?}", want.stale),
+        format!("{:?}", got.stale),
     );
     out
 }

@@ -1,0 +1,39 @@
+;;; An obligation a node is told about that root was not — M1e2 **W26**,
+;;; register row `W26/oblig-derived-activator` (`corpus/wrong_answers.toml`),
+;;; banked by S1e2.2.25 (2026-11-05) for the inventory of 2026-11-05's W-15
+;;; (Q-M1e.11), which had no witness, and filed `open`, deferred to M1f's
+;;; S1f.10.6 on the user's ruling of that day (Q-M1e2.16 (5)). Its control is
+;;; `oblig-derived-activator-declared.ein`, which states the activator.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.algebra`'s `total-owed` over `likes`, stated, and over `drinks`,
+;;; whose activator `(total-owed drinks is-a)` the rule `arm` derives from any
+;;; `likes` fact: an obligation's activator that only a commitment derives.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Ann owes a Food and, once she likes one, a Drink. `{(likes Ann Soup),
+;;; (drinks Ann Tea)}` pays both debts, so R holds it, as the control's R is
+;;; that one state.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The obligations rung builds H from the debts root owes, so H is
+;;; `{(likes Ann Soup)}`: the facts that would discharge the debt a node is
+;;; told about are never candidates. The one node, `{(likes Ann Soup)}`, owes
+;;; `drinks`, and R is empty, every alive node owing (`ein solve FILE` and
+;;; `ein oracle FILE` at `94c75204`, release and debug alike). The static
+;;; check flags the program (`total-owed`'s activator relation is one a
+;;; commitment can change), and Q-M1e2.10's decline, which reads an
+;;; obligation's guard over D, does not see a plan root does not have. What
+;;; the search should do here is Q-M1e.11, M1f S1f.10.6's.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T)
+(relation likes  Person Food)
+(relation drinks Person Drink)
+(is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
+(total-owed likes is-a)
+(rule arm () :match (likes ?p ?f) :assert (total-owed drinks is-a))
+(solve :no-hypothesis (is-a))
