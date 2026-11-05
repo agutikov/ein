@@ -701,11 +701,11 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
 /// ein-lang's lexical grammar never produces a token stream: at every
 /// position every terminal that matches is on offer, and the parse decides.
 /// `parse.rs` does that with backtracking, and this table makes the
-/// consequence visible — `(rulex (?a) :match X :assert Y)` is a rule named `x`
-/// because the split reading is the only one that parses, while `(rulex A)` is
-/// a fact named `rulex` because it is not. Eight more literals behave the same
-/// way, and the boundary cases either side (`(rule-x A)`, `(rule_x …)`,
-/// `(std.rule X)`) say where the effect stops.
+/// consequence visible. A reserved word is a keyword only as a whole word, so
+/// `(rulex (?a) :match X :assert Y)` and `(rulex A)` are both facts named
+/// `rulex`, and the boundary cases (`(rule-x A)`, `(rule_x …)`,
+/// `(std.rule X)`) say where a keyword ends. Until M1e2 S1e2.2.22 the first
+/// was a rule named `x`, the split reading winning wherever it parsed (W22).
 ///
 /// Asserting the **compact dump** rather than mere acceptance is what makes
 /// this a test of the *reading*: a parser that accepted `(notx)` as a fact
@@ -714,47 +714,43 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
 fn the_documented_ambiguities_resolve_as_recorded() {
     // `None` = a parse error. `Some(s)` = accepted, dumping to `s`.
     let cases: [(&str, Option<&str>); 78] = [
-        // A reserved word is a legal *prefix* of a SYMBOL, and the split
-        // reading wins wherever it parses.
+        // A reserved word a word character follows is no keyword: the whole
+        // name is the SYMBOL it spells (M1e2 S1e2.2.22, W22, the user's
+        // ruling of 2026-11-05 on Q-M1e2.17). Until then the split reading
+        // won wherever it parsed: `(rulex (?a) …)` was the rule `x`,
+        // `(notx)` was `(not x)`, `(relationx R A B)` declared `x`, and each
+        // trace row was the event `x`; a trace holds only events, so those
+        // five are a parse error now.
         (
             "(rulex (?a) :match X :assert Y)",
-            Some("(rule x (?a) :match X :assert Y)"),
+            Some("(rulex (?a) :match X :assert Y)"),
         ),
         ("(rulex A)", Some("(rulex A)")),
         (
             "(hrulex (?a) :match X :assert Y)",
-            Some("(hrule x (?a) :match X :assert Y)"),
+            Some("(hrulex (?a) :match X :assert Y)"),
         ),
-        ("(macrox (?a) B)", Some("(macro x (?a) B)")),
-        ("(importx :as m)", Some("(import x :as m)")),
-        ("(importfoo.bar :as m)", Some("(import foo.bar :as m)")),
-        ("(notx)", Some("(not x)")),
+        ("(macrox (?a) B)", Some("(macrox (?a) B)")),
+        ("(importx :as m)", Some("(importx :as m)")),
+        ("(importfoo.bar :as m)", Some("(importfoo.bar :as m)")),
+        ("(notx)", Some("(notx)")),
         ("(notx A)", Some("(notx A)")),
-        ("(a (notx))", Some("(a (not x))")),
-        ("(a (andx A B))", Some("(a (and x A B))")),
-        ("(a (orx A B))", Some("(a (or x A B))")),
+        ("(a (notx))", Some("(a (notx))")),
+        ("(a (andx A B))", Some("(a (andx A B))")),
+        ("(a (orx A B))", Some("(a (orx A B))")),
         ("(a (neqx A B))", Some("(a (neqx A B))")),
-        ("(relationx R A B)", Some("(relation x R A B)")),
+        ("(relationx R A B)", Some("(relationx R A B)")),
         ("(relationx R (T1 T2))", Some("(relationx R (T1 T2))")),
         ("(queryx :goal Y)", Some("(queryx :goal Y)")),
         ("(configx)", Some("(configx)")),
         ("(tracex)", Some("(tracex)")),
-        ("(trace (stepx :a b))", Some("(trace (step x :a b))")),
-        (
-            "(trace (branch-openx :a b))",
-            Some("(trace (branch-open x :a b))"),
-        ),
-        ("(trace (branch-refx))", Some("(trace (branch-ref x))")),
-        (
-            "(trace (contradictionx :a b))",
-            Some("(trace (contradiction x :a b))"),
-        ),
-        (
-            "(trace (symmetry-classx :a b))",
-            Some("(trace (symmetry-class x :a b))"),
-        ),
+        ("(trace (stepx :a b))", None),
+        ("(trace (branch-openx :a b))", None),
+        ("(trace (branch-refx))", None),
+        ("(trace (contradictionx :a b))", None),
+        ("(trace (symmetry-classx :a b))", None),
         ("(a (stepx :a b))", Some("(a (stepx :a b))")),
-        // …but only at a word boundary.
+        // At a word boundary the keyword is read, and `SYMBOL` refuses it.
         ("(rule-x A)", None),
         ("(rule.x A)", None),
         (

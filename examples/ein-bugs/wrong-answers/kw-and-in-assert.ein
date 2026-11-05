@@ -16,13 +16,17 @@
 ;;; concludes `(andz a)`: root holds `(andz a)` and `(p a)`, H is empty and R
 ;;; is {∅}, the answer of `kw-and-in-assert-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads `(andz ?x)` as the conjunction `(and z ?x)`, whose first
-;;; conjunct `z` is no fact, so the run stops at `r`'s first firing: every
-;;; command that saturates exits 1 with *rule 'r': its :assert concludes z,
-;;; which is not a fact — …*. (`ein solve FILE` at `35186bc0`, release and
-;;; debug; every mode and `ein oracle` the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read `(andz ?x)` as the
+;;; conjunction `(and z ?x)`, whose first conjunct `z` is no fact, so the run
+;;; stopped at `r`'s first firing: every command that saturated exited 1 with
+;;; *rule 'r': its :assert concludes z, which is not a fact — …*. (`ein solve
+;;; FILE` at `35186bc0`, release and debug; every mode and `ein oracle` the
+;;; same.) Since then a keyword is a whole word, at the boundary `00_ebnf.md`
+;;; § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
+;;; answers its twin's R.
 
 (relation p Node) (relation andz Node)
 (p a)

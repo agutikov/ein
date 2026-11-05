@@ -16,13 +16,17 @@
 ;;; one class is `?y = a`, so the claim holds: `ein test` exits 0, and R is
 ;;; {∅}. It is the answer of `kw-and-in-expect-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads the goal and the claim's `(andz …)` as conjunctions, and
-;;; the loader refuses the program: every command exits 1 (`ein test`: 2) with
-;;; *kb load error: :expect names and, which no declaration or fact makes a
-;;; relation*. (`ein solve FILE` at `35186bc0`, release and debug; every mode
-;;; and `ein oracle` the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the goal and the claim's
+;;; `(andz …)` as conjunctions, and the loader refused the program: every
+;;; command exited 1 (`ein test`: 2) with *kb load error: :expect names and,
+;;; which no declaration or fact makes a relation*. (`ein solve FILE` at
+;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+;;; Since then a keyword is a whole word, at the boundary `00_ebnf.md` § 1
+;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
+;;; answers its twin's R.
 
 (relation p Node) (relation andz Node)
 (p a) (andz a)

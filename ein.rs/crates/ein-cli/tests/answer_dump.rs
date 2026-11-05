@@ -145,34 +145,10 @@ fn printed_alike(path: &Path) -> bool {
         .any(|l| !seen.insert(l))
 }
 
-/// Does a state file hold a fact of the reserved `or` or `neq`, which no
-/// program can state? The parser reads `(or …)` and `(neq …)` only as
-/// values, so a file holding one does not load. W22's open rows store one
-/// (M1e2 S1e2.2.22): the parser splits `(orz ?x)` into `(or z ?x)` and
-/// `(neqw ?x)` into `(neq w ?x)`, a rule's or an hrule's conclusion. The
-/// state is the wrong answer itself, and the list goes with W22's fix.
-fn holds_reserved_fact(path: &Path) -> bool {
-    let text = std::fs::read_to_string(path).unwrap_or_default();
-    let Some((_, state)) = text.split_once(";; \u{2500}\u{2500} the state") else {
-        return false;
-    };
-    state.lines().any(|l| {
-        let l = l.trim_start();
-        l.starts_with("(or ") || l.starts_with("(neq ")
-    })
-}
-
 /// Every state file the directory holds against its state in the summary. A
 /// file that fails and that the printer could not write ([`printed_alike`])
-/// goes to `alike` instead of `bad`, and one that holds a fact of the
-/// reserved `or` or `neq` ([`holds_reserved_fact`]) to `reserved`.
-fn check_states(
-    dir: &Path,
-    label: &str,
-    bad: &mut Vec<String>,
-    alike: &mut Vec<String>,
-    reserved: &mut Vec<String>,
-) -> usize {
+/// goes to `alike` instead of `bad`.
+fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>, alike: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.join("answer.json"));
     let states = summary["region"]["states"]
@@ -189,8 +165,6 @@ fn check_states(
         if let Some(why) = not_a_fixpoint(&dir.join(path), &closure, &candidates) {
             if printed_alike(&dir.join(path)) {
                 alike.push(format!("{label}: {path}"));
-            } else if holds_reserved_fact(&dir.join(path)) {
-                reserved.push(format!("{label}: {path}"));
             } else {
                 bad.push(format!("{label}: {path} {why}"));
             }
@@ -263,7 +237,6 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
     let mut bad = Vec::new();
     let mut alike = Vec::new();
-    let mut reserved = Vec::new();
     let mut states = 0;
     let mut runs: Vec<(String, String)> = Vec::new();
     for row in &register().case {
@@ -287,13 +260,7 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
         let r = dump(file, &flags, &[], &dir);
         assert_eq!(r.code, 0, "{file} {run}: exit {}\n{}", r.code, r.err);
-        states += check_states(
-            &dir,
-            &format!("{file} :: {run}"),
-            &mut bad,
-            &mut alike,
-            &mut reserved,
-        );
+        states += check_states(&dir, &format!("{file} :: {run}"), &mut bad, &mut alike);
     }
     assert!(states > runs.len(), "no state file was checked");
     assert_eq!(
@@ -303,25 +270,6 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
             "examples/ein-bugs/activator-text-string-then-int.ein :: solve --maximal: models/01.ein",
         ],
         "the state files the fact printer writes two facts of alike (P1e2.3's N5) moved"
-    );
-    // W22's three open rows that store `(neq w a)` or `(or z a)` (M1e2
-    // S1e2.2.22): every one of `kw-neq-in-assert`'s and `kw-or-in-assert`'s
-    // eight states, and `kw-or-in-hrule`'s maximal one.
-    let want: Vec<String> = ["kw-neq-in-assert", "kw-or-in-assert"]
-        .into_iter()
-        .flat_map(|w| {
-            (1..=8).map(move |n| {
-                format!("examples/ein-bugs/wrong-answers/{w}.ein :: solve: models/{n:02}.ein")
-            })
-        })
-        .chain(std::iter::once(
-            "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein :: solve --maximal: models/01.ein"
-                .to_string(),
-        ))
-        .collect();
-    assert_eq!(
-        reserved, want,
-        "the state files that hold a fact of the reserved `or` or `neq` (W22's open rows) moved"
     );
     assert!(
         bad.is_empty(),

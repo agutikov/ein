@@ -19,14 +19,18 @@
 ;;; empty and R is {∅}. The query's one class is `?y = a`. It is the answer of
 ;;; `kw-neq-in-assert-twin.ein`, this file with `neqw` renamed `nneqw`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads `(neqw ?x)` as the keyword `neq` followed by `w`, so `r`
-;;; concludes `(neq w a)`, a fact of the reserved `neq`. `w` becomes a name of
-;;; the program, H is `(neqw a)`, `(neqw w)` and `(p w)`, and R is their eight
-;;; subsets. The query prints as `(neq w ?y)`, *the goal holds: it has no
-;;; variable*. (`ein solve FILE` at `35186bc0`, release and debug; every mode
-;;; and `ein oracle` the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read `(neqw ?x)` as the keyword
+;;; `neq` followed by `w`, so `r` concluded `(neq w a)`, a fact of the
+;;; reserved `neq`. `w` became a name of the program, H was `(neqw a)`, `(neqw
+;;; w)` and `(p w)`, and R was their eight subsets. The query printed as `(neq
+;;; w ?y)`, *the goal holds: it has no variable*. (`ein solve FILE` at
+;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+;;; Since then a keyword is a whole word, at the boundary `00_ebnf.md` § 1
+;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
+;;; answers its twin's R.
 
 (relation p Node) (relation neqw Node)
 (p a)

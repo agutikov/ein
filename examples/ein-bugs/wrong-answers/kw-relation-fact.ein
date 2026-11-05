@@ -15,13 +15,17 @@
 ;;; blind enumerator proposes `(relationship bob alice)`, and R is two states:
 ;;; the answer of `kw-relation-fact-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads `(relationship alice bob)` as `(relation ship alice
-;;; bob)`, a declaration of a relation `ship` whose signature is `alice bob`,
-;;; so the program states no `relationship` fact. `alice` and `bob` are types,
-;;; H is empty and R is {∅}. (`ein solve FILE` at `35186bc0`, release and
-;;; debug; every mode and `ein oracle` the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read `(relationship alice bob)` as
+;;; `(relation ship alice bob)`, a declaration of a relation `ship` whose
+;;; signature is `alice bob`, so the program stated no `relationship` fact.
+;;; `alice` and `bob` were types, H was empty and R was {∅}. (`ein solve FILE`
+;;; at `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+;;; Since then a keyword is a whole word, at the boundary `00_ebnf.md` § 1
+;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
+;;; answers its twin's R.
 
 (relation person Node) (relation relationship Node Node)
 (person alice) (person bob)

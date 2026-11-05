@@ -87,9 +87,11 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
 /// **The 78 cases that make the parser non-obvious**, each one a decision in
 /// `lex.rs` or `parse.rs`.
 ///
-/// A reserved word is a legal SYMBOL *prefix* and the split reading wins
-/// wherever it parses — but only across a word boundary; `relation` is the one
-/// declarator that is also a SYMBOL; `value* kw_pair*` interleaves the way
+/// A reserved word is a keyword only as a whole word, and a word character
+/// after it makes the whole name a SYMBOL (M1e2 S1e2.2.22: until then the split
+/// reading won wherever it parsed, W22), so a trace word a word character
+/// follows, which a trace holds no other reading of, is a parse error;
+/// `relation` is the one declarator that is also a SYMBOL; `value* kw_pair*` interleaves the way
 /// `list_item*` allows; `=` and `not` are arity-pinned; and a block comment
 /// that is never closed is a lexer decision rather than a parser one.
 ///
@@ -103,8 +105,11 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
 #[test]
 fn the_documented_ambiguities_keep_their_decisions() {
     let cases = [
-        // A reserved word is a legal *prefix* of a SYMBOL, and the split
-        // reading wins wherever it parses.
+        // A reserved word a word character follows is no keyword: the whole
+        // name is the SYMBOL it spells (M1e2 S1e2.2.22, the user's ruling on
+        // Q-M1e2.17). Until then the split reading won wherever it parsed,
+        // and the five trace rows parsed as the event `x`; now they are a
+        // parse error, a trace holding only events.
         "(rulex (?a) :match X :assert Y)",
         "(rulex A)",
         "(hrulex (?a) :match X :assert Y)",
@@ -128,7 +133,7 @@ fn the_documented_ambiguities_keep_their_decisions() {
         "(trace (contradictionx :a b))",
         "(trace (symmetry-classx :a b))",
         "(a (stepx :a b))",
-        // …but only at a word boundary.
+        // At a word boundary the keyword is read, and `SYMBOL` refuses it.
         "(rule-x A)",
         "(rule.x A)",
         "(rule_x (?a) :match X :assert Y)",
@@ -201,4 +206,156 @@ fn the_documented_ambiguities_keep_their_decisions() {
     if let Some(msg) = golden(&golden_path("ein-ir", "grammar_decisions.txt"), &out) {
         panic!("{msg}");
     }
+}
+
+/// **A keyword is a whole word, in every place the parser reads one** — M1e2
+/// S1e2.2.22 (W22), on the user's ruling of 2026-11-05 on Q-M1e2.17.
+///
+/// Every word the parser matches as a literal (`lex::LITERALS`), and as
+/// controls the kernel's eight other heads, each followed by a name
+/// character and an argument shape, written in each of the twenty places the
+/// parser reads a keyword: 53 460 parses. Until the stage 2 691 of them split
+/// the name into the keyword and the rest of it, `(neqw ?x)` read as `(neq w
+/// ?x)`. Now:
+///
+/// - a word followed by a word character (`_`, a letter, a digit) is never
+///   split: the whole name parses as the `SYMBOL` it spells, or, where no
+///   reading has it (a trace event, a non-ASCII letter `SYMBOL` does not
+///   take), the parse is an error;
+/// - a trace word followed by a word character, in a trace event, is a parse
+///   error, a `(trace …)` holding only events (Q-M1e2.17 (ii)(a));
+/// - `-`, `.` and `*` are no word characters, so the word before them is the
+///   keyword (Q-M1e2.17 (i)(a)): `(neq-1 ?x)` is `(neq -1 ?x)`, and nothing
+///   after `.` or `*` parses.
+#[test]
+fn a_keyword_is_a_whole_word_in_every_place() {
+    const CONTROLS: [&str; 8] = [
+        "absent", "forall", "eq", "false", "open", "unknown", "true", "exists",
+    ];
+    // A word character (the first seven), then `SYMBOL`'s three others.
+    const SUFFIXES: [&str; 11] = ["w", "Z", "1", "_", "_a", "__a", "é", "-a", "-1", ".a", "*"];
+    const ARGS: [&str; 9] = [
+        "",
+        " ?x",
+        " ?x ?y",
+        " a",
+        " Node",
+        " :k v",
+        " () :match (p ?x) :assert (q ?x)",
+        " (?a) (p ?a)",
+        " :a b",
+    ];
+    // `S` is the shape; the places the parser reads a keyword in.
+    const PLACES: [(&str, &str); 20] = [
+        ("fact-arg", "(relation f Node) (f (S))"),
+        ("fact-kw", "(f a :k (S))"),
+        ("toplevel", "(S)"),
+        ("match", "(rule r () :match (S) :assert (q a))"),
+        (
+            "match-and",
+            "(rule r () :match (and (p ?x) (S)) :assert (q ?x))",
+        ),
+        (
+            "absent",
+            "(rule r () :match (and (p ?x) (absent (S))) :assert (q ?x))",
+        ),
+        ("assert", "(rule r () :match (p ?x) :assert (S))"),
+        (
+            "assert-and",
+            "(rule r () :match (p ?x) :assert (and (q ?x) (S)))",
+        ),
+        ("assert-not", "(rule r () :match (p ?x) :assert (not (S)))"),
+        ("nested", "(rule r () :match (p ?x) :assert (q (S)))"),
+        (
+            "hrule-match",
+            "(hrule h () :match (and (p ?x) (S)) :assert (q ?x))",
+        ),
+        ("hrule-assert", "(hrule h () :match (p ?x) :assert (S))"),
+        (
+            "obligation",
+            "(rule o (?R) :match (and (relation ?R ?A) (?A ?a) (absent (S))) :assert (open ?R))",
+        ),
+        ("query-goal", "(query :goal (S))"),
+        ("query-expect", "(query :goal (p ?y) :expect (model (S)))"),
+        (
+            "query-or",
+            "(query :goal (p ?y) :expect (or (model (S)) (model (p a))))",
+        ),
+        ("solve-expect", "(solve :expect (region (model (S))))"),
+        ("config", "(config :k (S))"),
+        ("macro-body", "(macro m (?a) (S))"),
+        ("trace-event", "(trace (S))"),
+    ];
+    const VALUE_WORDS: [&str; 4] = ["not", "and", "or", "neq"];
+    const TRACE_WORDS: [&str; 6] = [
+        "step",
+        "branch-open",
+        "branch-close",
+        "branch-ref",
+        "contradiction",
+        "symmetry-class",
+    ];
+    let name_char = |c: char| c.is_ascii_alphanumeric() || matches!(c, '_' | '*' | '.' | '-');
+    // The name intact as a token of the dump.
+    let whole = |dump: &str, name: &str| {
+        dump.match_indices(name).any(|(i, _)| {
+            !dump[..i].chars().next_back().is_some_and(name_char)
+                && !dump[i + name.len()..].chars().next().is_some_and(name_char)
+        })
+    };
+    let words: Vec<&str> = ein_ir::lex::LITERALS
+        .iter()
+        .copied()
+        .chain(CONTROLS)
+        .collect();
+    assert_eq!(words.len(), 27);
+    let (mut parses, mut split, mut keyword_dash) = (0usize, Vec::new(), 0usize);
+    for (place, template) in PLACES {
+        for word in &words {
+            for suffix in SUFFIXES {
+                for args in ARGS {
+                    let name = format!("{word}{suffix}");
+                    let src = template.replacen('S', &format!("{name}{args}"), 1);
+                    parses += 1;
+                    let mut ast = Ast::new();
+                    let dump = match parse(&mut ast, &src, None) {
+                        Ok(forms) => forms
+                            .iter()
+                            .map(|&f| ein_ir::dump_compact(&ast, f))
+                            .collect::<Vec<_>>()
+                            .join(" "),
+                        Err(_) => {
+                            continue;
+                        }
+                    };
+                    let word_char = suffix.starts_with(|c: char| c.is_alphanumeric() || c == '_');
+                    if word_char {
+                        // Never split; and a trace word in a trace event has
+                        // no reading at all.
+                        if !whole(&dump, &name) {
+                            split.push(format!("{place}: {src} -> {dump}"));
+                        }
+                        assert!(
+                            !(place == "trace-event" && TRACE_WORDS.contains(word)),
+                            "{src} parsed as {dump}: a trace word read whole is no event"
+                        );
+                    } else if suffix == "-1" && VALUE_WORDS.contains(word) && !whole(&dump, &name) {
+                        // The keyword, and the value -1.
+                        assert!(dump.contains(&format!("({word} -1")), "{src} -> {dump}");
+                        keyword_dash += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(parses, 53_460);
+    assert!(
+        split.is_empty(),
+        "{} parses split a name after a keyword:\n{}",
+        split.len(),
+        split.join("\n")
+    );
+    // Q-M1e2.17 (i)(a): a keyword followed by `-` and a digit is the
+    // keyword, at `35186bc0` and since.
+    assert_eq!(keyword_dash, 435);
 }

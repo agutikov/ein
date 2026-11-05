@@ -2,16 +2,21 @@
 //!
 //! ein-lang's lexical grammar does not define a token stream at all: at every
 //! position every terminal that matches there is on offer, and the parse
-//! decides which reading survives. A plain maximal-munch lexer is therefore
-//! *not* equivalent, and the difference is observable —
+//! decides which reading survives: `relation` is the declarator's literal at
+//! the head of `(relation R A B)` and a `SYMBOL` in a rule's
+//! `(relation ?R ?A ?B)`, a pattern the declarator's form does not fit.
+//!
+//! A reserved word is matched only as a **whole word** ([`match_literal`],
+//! since M1e2 S1e2.2.22). Until then the anonymous literal `"rule"` matched at
+//! the same position where `SYMBOL` matched `rulex`, and the split reading won
+//! wherever it parsed —
 //!
 //! ```text
 //! (rulex (?a) :match X :assert Y)   →   (rule x (?a) :match X :assert Y)
 //! ```
 //!
-//! — because the anonymous literal `"rule"` matches at the same position where
-//! `SYMBOL` matches `rulex`, and only the split reading parses. Six more
-//! literals behave the same way (`relation`, `step`, `branch-open`, …).
+//! — which W22 found reading `(neqw ?x)` as `(neq w ?x)`. Now `rulex` is the
+//! `SYMBOL` it spells.
 //!
 //! So this module exposes **positional matchers**, not a stream: the parser
 //! holds a [`Cursor`], asks for the terminal it wants at that cursor, and
@@ -94,9 +99,12 @@ impl Lexeme {
     }
 }
 
-/// The words the grammar spells as string literals. Each can be matched at a
-/// position where `SYMBOL` also matches a *longer* identifier, and the parser
-/// tries both readings — that is the whole reason this list is data.
+/// The words the grammar spells as string literals, each matched only as a
+/// whole word ([`match_literal`]): where a word character follows one, the
+/// literal does not match, and `SYMBOL` reads the longer name. A reserved word
+/// in `LEXER_KEYWORDS` is therefore read as exactly one of the two at any
+/// position. Until M1e2 S1e2.2.22 a literal matched as a prefix and the
+/// parser tried both readings, so `(neqw ?x)` was `(neq w ?x)` (W22).
 ///
 /// `relation` is here but is **not** excluded from `SYMBOL` (rules match
 /// `(relation ?R ?A ?B)` patterns), which is why `(relation R (T1 T2))`
@@ -288,13 +296,28 @@ fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
     }
 }
 
-/// Match one of [`LITERALS`] at `c` (after trivia). A plain string compare —
-/// a literal carries no word boundary, which is precisely why `rulex` can be
-/// read as `rule` + `x`.
+/// Match one of [`LITERALS`] at `c` (after trivia), **as a whole word**: the
+/// word, and then no word character (`is_word`: `_`, a letter, a digit),
+/// the boundary `SYMBOL`'s exclusion tests (`00_ebnf.md` § 1, fact 1). So
+/// `rulex` is the `SYMBOL` it spells and never `rule` + `x`, and `rule-x`,
+/// where the `-` is no word character, is the literal `rule` followed by
+/// `-x`, which nothing scans (a parse error), as `SYMBOL` refuses it.
+///
+/// Since M1e2 S1e2.2.22, on the user's ruling of 2026-11-05 (Q-M1e2.17 (i)(a)
+/// and (ii)(a)). Until then a literal carried no word boundary: the parser
+/// tried the keyword reading first and kept it wherever the rest of the form
+/// fitted, so `(neqw ?x)` in a rule was the guard `(neq w ?x)` and stored
+/// `(neq w a)`, and `(relationship a b)` declared a relation `ship` (W22).
+/// The boundary is `WordChar`, not `SYMBOL`'s characters, so a keyword
+/// followed by `-` and a digit is still the keyword and an `INT`:
+/// `(neq-1 ?x)` is `(neq -1 ?x)`, `neq-1` being no name anywhere. A trace
+/// word is a whole word too, and `(trace (stepx …))`, which has no other
+/// reading, is a parse error.
 pub fn match_literal(src: &str, c: Cursor, word: &str) -> Option<Lexeme> {
     ein_core::counters::bump(|k| k.lex_match += 1);
     let at = skip_trivia(src, c);
-    if !src[at.pos..].starts_with(word) {
+    let after = src[at.pos..].strip_prefix(word)?;
+    if after.chars().next().is_some_and(is_word) {
         return None;
     }
     let next = advance_to(src, at, at.pos + word.len());
@@ -578,14 +601,35 @@ mod tests {
     }
 
     #[test]
-    fn a_literal_matches_a_prefix_of_a_longer_symbol() {
-        // The whole reason literals are matched separately: both readings
-        // exist at this position and the parser tries both.
-        let src = "rulex";
-        assert_eq!(lex(src, Term::Symbol), Some("rulex"));
-        let l = match_literal(src, Cursor::START, "rule").expect("literal");
-        assert_eq!(l.text(src), "rule");
-        assert_eq!(&src[l.next.pos..], "x");
+    fn a_literal_is_a_whole_word() {
+        // M1e2 S1e2.2.22 (W22): a reserved word a word character follows is
+        // no literal, and `SYMBOL` reads the longer name. Until then this
+        // test held the opposite, `rulex` read as `rule` + `x`.
+        for (src, word) in [
+            ("rulex", "rule"),
+            ("neqw", "neq"),
+            ("orz", "or"),
+            ("and_", "and"),
+            ("not1", "not"),
+            ("stepx", "step"),
+            ("relationship", "relation"),
+        ] {
+            assert_eq!(lex(src, Term::Symbol), Some(src), "{src}");
+            assert!(match_literal(src, Cursor::START, word).is_none(), "{src}");
+        }
+        // At a boundary the literal matches, and `SYMBOL` refuses a lexer
+        // keyword there: the two readings of one never overlap.
+        for (src, word, rest) in [
+            ("rule x", "rule", " x"),
+            ("neq)", "neq", ")"),
+            ("neq-1", "neq", "-1"),
+            ("rule.x", "rule", ".x"),
+            ("not", "not", ""),
+        ] {
+            let l = match_literal(src, Cursor::START, word).expect("literal");
+            assert_eq!(&src[l.next.pos..], rest, "{src}");
+            assert_eq!(lex(src, Term::Symbol), None, "{src}");
+        }
     }
 
     /// **The lexer's twelve are twelve, and they are not `ein-core`'s nine.**

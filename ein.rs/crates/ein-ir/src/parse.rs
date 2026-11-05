@@ -2,15 +2,22 @@
 //! ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)), with
 //! its two ambiguities resolved explicitly.
 //!
-//! **Backtracking, not lookahead.** Every production begins `"(" LITERAL`, and
-//! the literal can also be the prefix of a longer `SYMBOL` (§[`crate::lex`]),
-//! so the head of a form does not determine its production: `(rulex …)` is a
-//! `rule_decl` named `x` when the rest of the form fits one, and an ordinary
-//! fact named `rulex` when it does not. The parser therefore tries the
-//! alternatives **in grammar order** and takes the first that consumes the
-//! whole `( … )` (`defined_behaviour.md` § 1.4), which is sound because every
-//! alternative ends at the same closing paren, so a choice never changes what
-//! the *rest* of the file sees.
+//! **Backtracking, not lookahead.** Every production begins `"(" LITERAL`,
+//! and a literal is matched only as a whole word (§[`crate::lex`]), so
+//! `(rulex …)` is an ordinary fact named `rulex`. The head of a form still
+//! does not always determine its production: `relation` and the trace words
+//! are `SYMBOL`s as well as literals, so `(relation R A B)` is a declaration
+//! and `(relation)` a fact. The parser therefore tries the alternatives **in
+//! grammar order** and takes the first that consumes the whole `( … )`
+//! (`defined_behaviour.md` § 1.4), which is sound because every alternative
+//! ends at the same closing paren, so a choice never changes what the *rest*
+//! of the file sees.
+//!
+//! Until M1e2 S1e2.2.22 a literal could also be the prefix of a longer
+//! `SYMBOL`, and the keyword reading won wherever it parsed: `(rulex …)` was a
+//! `rule_decl` named `x` when the rest of the form fitted one, and `(neqw ?x)`
+//! the guard `(neq w ?x)` (W22, the user's ruling of 2026-11-05 on
+//! Q-M1e2.17).
 //!
 //! **Error position.** The error is reported at the furthest point any
 //! alternative reached — so the parser tracks the furthest cursor at which an
@@ -394,9 +401,9 @@ impl<'a> Parser<'a> {
         }
         let open = self.eat(c, Term::LParen)?;
         let after = open.next;
-        // Grammar order: not | and | or | neq | generic_list. The reserved
-        // forms come first, and they win where both readings parse —
-        // `(a (notx))` is `(a (not x))`, not a list headed `notx`.
+        // Grammar order: not | and | or | neq | generic_list. A reserved word
+        // is a literal only as a whole word, so `(a (notx))` is a list headed
+        // `notx`; it was `(a (not x))` until M1e2 S1e2.2.22 (W22).
         for alt in [
             Parser::alt_not,
             Parser::alt_and,

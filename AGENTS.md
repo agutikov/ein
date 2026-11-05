@@ -236,7 +236,12 @@ constrained-reasoning research.
   the facts its universals read, each folded in at its own smallest
   frontier; the `forall` gap is two more rows of W21, filed and fixed in the
   same commit: 74 fixed, 2 open (both deferred to a followup) and 1 not
-  wrong.
+  wrong. With it the user ruled that a core is taken only where a surface
+  prints one (*minimum work per question*): a bare `ein solve` takes root's
+  and the minimal holes', and no run moved (S1e2.2.21's sweep, 10 752 runs,
+  2026-11-05); `ein-infer/tests/corpus_cores.rs` holds that every core the
+  corpus reports names its commitment and, with root, derives its
+  contradiction.
   S1e2.2.22 filed W22 the same day, from the inventory of 2026-11-05's F1 (on
   Q-M1e2.16): the parser read a reserved word as a prefix of a name, so a
   name that starts with one was the keyword and the rest of the name, and
@@ -244,14 +249,13 @@ constrained-reasoning research.
   per place the split changes an answer, each witness with its twin: 74
   fixed, 16 open and 1 not wrong. Where a keyword ends before `-` and a
   digit, and what a trace event reads as once a keyword is a whole word, is
-  Q-M1e2.17, put to the user: the agent recommends the word boundary
-  `00_ebnf.md` § 1 states, under which `(neq-1 ?x)` stays `neq` and `-1`,
-  and a parse error. With it the user ruled that a core is taken only where a surface
-  prints one (*minimum work per question*): a bare `ein solve` takes root's
-  and the minimal holes', and no run moved (S1e2.2.21's sweep, 10 752 runs,
-  2026-11-05); `ein-infer/tests/corpus_cores.rs` holds that every core the
-  corpus reports names its commitment and, with root, derives its
-  contradiction.
+  Q-M1e2.17, put to the user and ruled the same day as the agent
+  recommended: a keyword ends at the word boundary `00_ebnf.md` § 1 states,
+  so `(neq-1 ?x)` stays `neq` and `-1`, and a trace word read whole, which
+  has no other reading, is a parse error. S1e2.2.22 fixed all fourteen the same
+  day: the parser reads a reserved word only as a whole word, so a name that
+  starts with one is the `SYMBOL` it spells and each witness answers its
+  twin's R: 88 fixed, 2 open (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

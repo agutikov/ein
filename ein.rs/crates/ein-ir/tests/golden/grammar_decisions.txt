@@ -33,15 +33,25 @@
 === "(tracex)"
   ok (1 form(s))
 === "(trace (stepx :a b))"
-  ok (1 form(s))
+  <string>:1:9: unexpected input
+  (trace (stepx :a b))
+          ^
 === "(trace (branch-openx :a b))"
-  ok (1 form(s))
+  <string>:1:9: unexpected input
+  (trace (branch-openx :a b))
+          ^
 === "(trace (branch-refx))"
-  ok (1 form(s))
+  <string>:1:9: unexpected input
+  (trace (branch-refx))
+          ^
 === "(trace (contradictionx :a b))"
-  ok (1 form(s))
+  <string>:1:9: unexpected input
+  (trace (contradictionx :a b))
+          ^
 === "(trace (symmetry-classx :a b))"
-  ok (1 form(s))
+  <string>:1:9: unexpected input
+  (trace (symmetry-classx :a b))
+          ^
 === "(a (stepx :a b))"
   ok (1 form(s))
 === "(rule-x A)"

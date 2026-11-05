@@ -172,10 +172,10 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // root compiled no plan of; its two boundaries, whose activator root
     // holds, are monotone. 41 since S1e2.2.22 banked W22's family on
     // 2026-11-05: `kw-neq-in-absent-twin`, an `absent` over `nneqw`, which a
-    // commitment can extend, is an `absent` site; its witness, whose
-    // `(neqw ?x)` the parser reads as the guard `(neq w ?x)`, is monotone
-    // until the stage's fix reads the name whole.
-    assert_eq!(flagged, 41, "the flagged corpus programs");
+    // commitment can extend, is an `absent` site. 42 since the stage's fix the
+    // same day: its witness's `(neqw ?x)`, which the parser read as the guard
+    // `(neq w ?x)` until then, is an `absent` over `neqw`, as the twin's is.
+    assert_eq!(flagged, 42, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

@@ -86,7 +86,6 @@ fn every_printed_region_holds_as_its_own_claim() {
     let mut checked = 0usize;
     let mut kinds = [0usize; 3]; // (false), (region (owing …)), (region …)
     let mut bad = Vec::new();
-    let mut split = Vec::new();
     for path in corpus_files() {
         let rel = path
             .strip_prefix(repo_root())
@@ -120,7 +119,9 @@ fn every_printed_region_holds_as_its_own_claim() {
             None => format!("{src}\n(solve :expect {printed})\n"),
         };
         let Some((mut kb, mut terms, ast)) = loaded(&spliced, path.parent()) else {
-            split.push(rel);
+            bad.push(format!(
+                "{rel}: the printed claim does not load:\n  {printed}"
+            ));
             continue;
         };
         let node = kb
@@ -145,21 +146,6 @@ fn every_printed_region_holds_as_its_own_claim() {
             ));
         }
     }
-    // A printed claim that does not load: W22's open rows (M1e2 S1e2.2.22).
-    // The parser splits a name that starts with a keyword wherever it reads
-    // one, the claim's `(model (neqw a) …)` as well as the program's, so the
-    // claim names the reserved `neq` or `or`, which the loader refuses. The
-    // wrong answer itself; the list goes with the fix.
-    assert_eq!(
-        split,
-        [
-            "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein",
-            "examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein",
-            "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein",
-            "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein",
-        ],
-        "the printed claims that do not load moved"
-    );
     assert!(
         bad.is_empty(),
         "{} of {checked} printed regions do not read back:\n\n{}",

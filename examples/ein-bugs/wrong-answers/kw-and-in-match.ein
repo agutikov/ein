@@ -17,13 +17,17 @@
 ;;; a)`, `(hit a)` and `(p b)`, and R is six states, the answer of
 ;;; `kw-and-in-match-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads the premise `(andz ?x)` as the conjunction `(and z ?x)`,
-;;; of the atom `z` and the variable `?x`, which binds nothing: every command
-;;; that saturates stops at `r`, exit 1, with *unbound var ?x in :assert —
-;;; bindings: {}* (`ein saturate`: prefixed `KeyError:`). (`ein solve FILE` at
-;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the premise `(andz ?x)` as
+;;; the conjunction `(and z ?x)`, of the atom `z` and the variable `?x`, which
+;;; bound nothing: every command that saturated stopped at `r`, exit 1, with
+;;; *unbound var ?x in :assert — bindings: {}* (`ein saturate`: prefixed
+;;; `KeyError:`). (`ein solve FILE` at `35186bc0`, release and debug; every
+;;; mode and `ein oracle` the same.) Since then a keyword is a whole word, at
+;;; the boundary `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on
+;;; Q-M1e2.17), and the program answers its twin's R.
 
 (relation p Node) (relation andz Node) (relation hit Node)
 (p a) (andz b)

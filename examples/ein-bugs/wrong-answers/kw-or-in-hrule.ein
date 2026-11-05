@@ -15,12 +15,15 @@
 ;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. H is `(orz
 ;;; a)` and R is ∅ and {(orz a)}: the answer of `kw-or-in-hrule-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads the template `(orz ?x)` as `(or z ?x)`, so H is `(or z
-;;; a)`, a fact of the reserved `or`, and R is ∅ and {(or z a)}. (`ein solve
-;;; FILE` at `35186bc0`, release and debug; every mode and `ein oracle` the
-;;; same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the template `(orz ?x)` as
+;;; `(or z ?x)`, so H was `(or z a)`, a fact of the reserved `or`, and R was ∅
+;;; and {(or z a)}. (`ein solve FILE` at `35186bc0`, release and debug; every
+;;; mode and `ein oracle` the same.) Since then a keyword is a whole word, at
+;;; the boundary `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on
+;;; Q-M1e2.17), and the program answers its twin's R.
 
 (relation p Node) (relation orz Node)
 (p a)

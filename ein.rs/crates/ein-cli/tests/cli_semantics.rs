@@ -2132,3 +2132,135 @@ fn the_summary_escapes_non_ascii_where_the_event_stream_does_not() {
          `events::strings_escape_json_specials_and_keep_non_ascii` pins"
     );
 }
+
+// ── A keyword is a whole word ──────────────────────────────────────
+
+/// **A name that starts with a keyword answers as its twin does, on every
+/// command** — M1e2 S1e2.2.22 (W22), on the user's ruling of 2026-11-05 on
+/// Q-M1e2.17.
+///
+/// Each of W22's fourteen witnesses writes a name that starts with a reserved
+/// word (`neqw`, `orz`, `andz`, `notw`, `relationship`) in the place the
+/// parser read the keyword in; its twin is the same program with the name's
+/// first letter doubled (`nneqw`), a name that starts with no keyword and
+/// sorts where the witness's does. By value: every command's exit code, its
+/// stdout and the first line of its stderr, with the twin's path and name
+/// read back as the witness's, the read-out's column padding collapsed and
+/// `ein test`'s timing dropped, and `ein saturate --dump` from its dump on.
+/// Until the stage the parser split the name, `(neqw ?x)` into the guard
+/// `(neq w ?x)`, and every pair differed.
+#[test]
+fn a_name_that_starts_with_a_keyword_answers_as_its_twin_does() {
+    const WITNESSES: [(&str, &str); 14] = [
+        ("kw-neq-in-assert", "neqw"),
+        ("kw-or-in-assert", "orz"),
+        ("kw-and-in-assert", "andz"),
+        ("kw-and-in-match", "andz"),
+        ("kw-neq-in-match", "neqw"),
+        ("kw-neq-in-absent", "neqw"),
+        ("kw-neq-in-fact", "neqw"),
+        ("kw-not-fact", "notw"),
+        ("kw-relation-fact", "relationship"),
+        ("kw-neq-in-goal", "neqw"),
+        ("kw-or-in-hrule", "orz"),
+        ("kw-or-in-obligation", "orz"),
+        ("kw-and-in-expect", "andz"),
+        ("kw-or-in-solve", "orz"),
+    ];
+    const RUNS: [&[&str]; 10] = [
+        &["solve"],
+        &["solve", "--maximal"],
+        &["solve", "--minimal"],
+        &["solve", "--single"],
+        &["solve", "-n", "2"],
+        &["solve", "--count"],
+        &["solve", "-H"],
+        &["oracle"],
+        &["saturate", "--dump"],
+        &["test"],
+    ];
+    // `(0.00 s)`, the one timing these runs print (`ein test`'s tally).
+    let untimed = |s: &str| -> String {
+        let mut out = String::new();
+        let mut rest = s;
+        while let Some(i) = rest.find('(') {
+            out.push_str(&rest[..i]);
+            let tail = &rest[i..];
+            let close = tail.find(')').unwrap_or(0);
+            let inner = &tail[1..close.max(1)];
+            if close > 0
+                && inner.ends_with(" s")
+                && inner[..inner.len() - 2]
+                    .chars()
+                    .all(|c| c.is_ascii_digit() || c == '.')
+            {
+                rest = &tail[close + 1..];
+            } else {
+                out.push('(');
+                rest = &tail[1..];
+            }
+        }
+        out.push_str(rest);
+        out
+    };
+    let norm = |s: &str, from: (&str, &str), to: (&str, &str), dump: bool| -> String {
+        let s = s.replace(from.0, to.0).replace(from.1, to.1);
+        let s = if dump {
+            s.split_once("SATURATED KB DUMP")
+                .map_or(s.clone(), |(_, d)| d.to_string())
+        } else {
+            s
+        };
+        untimed(&s)
+            .lines()
+            .map(|l| l.split_whitespace().collect::<Vec<_>>().join(" "))
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    let mut bad = Vec::new();
+    for (witness, name) in WITNESSES {
+        let w = format!("examples/ein-bugs/wrong-answers/{witness}.ein");
+        let t = format!("examples/ein-bugs/wrong-answers/{witness}-twin.ein");
+        let doubled = format!("{}{name}", &name[..1]);
+        for run in RUNS {
+            let argv = |file: &str| -> Vec<String> {
+                let mut a = vec![run[0].to_string(), file.to_string()];
+                a.extend(run[1..].iter().map(|s| s.to_string()));
+                a
+            };
+            let aw = argv(&w);
+            let at = argv(&t);
+            let rw = ein(&aw.iter().map(String::as_str).collect::<Vec<_>>());
+            let rt = ein(&at.iter().map(String::as_str).collect::<Vec<_>>());
+            let dump = run.contains(&"--dump");
+            let first = |e: &str| e.lines().find(|l| !l.is_empty()).unwrap_or("").to_string();
+            let got = (
+                rw.code,
+                norm(&rw.out, ("", ""), ("", ""), dump),
+                first(&rw.err),
+            );
+            let want = (
+                rt.code,
+                norm(&rt.out, (&t, &doubled), (&w, name), dump),
+                first(&rt.err).replace(&t, &w).replace(&doubled, name),
+            );
+            if got != want {
+                bad.push(format!(
+                    "{witness} :: ein {}: exit {} (twin {}), stdout {}, stderr {:?} (twin {:?})",
+                    run.join(" "),
+                    got.0,
+                    want.0,
+                    if got.1 == want.1 { "alike" } else { "differs" },
+                    got.2,
+                    want.2
+                ));
+            }
+        }
+    }
+    assert!(
+        bad.is_empty(),
+        "{} runs differ from the twin's:\n{}",
+        bad.len(),
+        bad.join("\n")
+    );
+}

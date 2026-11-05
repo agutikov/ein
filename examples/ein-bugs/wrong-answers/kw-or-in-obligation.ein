@@ -16,14 +16,18 @@
 ;;; `tag` fact that no candidate pays, so every alive node owes and R is
 ;;; empty, owing: the answer of `kw-or-in-obligation-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads the guard `(orz ?a)` as the disjunction `(or z ?a)`,
-;;; nested in the `:match`, which the compiler refuses: `ein solve` and `ein
-;;; oracle` exit 1 with *ein.inference.compile.CompileError: nested `(or …)`
-;;; in a `:match` premise: …*, a Python spelling. `ein saturate`, which reads
-;;; no obligation, exits 0. (`ein solve FILE` at `35186bc0`, release and
-;;; debug; every mode the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the guard `(orz ?a)` as the
+;;; disjunction `(or z ?a)`, nested in the `:match`, which the compiler
+;;; refused: `ein solve` and `ein oracle` exited 1 with
+;;; *ein.inference.compile.CompileError: nested `(or …)` in a `:match`
+;;; premise: …*, a Python spelling. `ein saturate`, which reads no obligation,
+;;; exited 0. (`ein solve FILE` at `35186bc0`, release and debug; every mode
+;;; the same.) Since then a keyword is a whole word, at the boundary
+;;; `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17),
+;;; and the program answers its twin's R.
 
 (relation item Node) (relation orz Node) (relation tag Node Node)
 (item a) (item b) (orz a)

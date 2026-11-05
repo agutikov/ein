@@ -16,12 +16,16 @@
 ;;; `(box (neqw a))` and `(p a)`. The blind enumerator proposes `(box a)`, and
 ;;; R is two states: the answer of `kw-neq-in-fact-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads the nested `(neqw a)` as `(neq w a)`, so root holds `(box
-;;; (neq w a))`. `w` becomes a name of the program, H is `(box a)`, `(box w)`
-;;; and `(p w)`, and R is their eight subsets. (`ein solve FILE` at
-;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the nested `(neqw a)` as
+;;; `(neq w a)`, so root held `(box (neq w a))`. `w` became a name of the
+;;; program, H was `(box a)`, `(box w)` and `(p w)`, and R was their eight
+;;; subsets. (`ein solve FILE` at `35186bc0`, release and debug; every mode
+;;; and `ein oracle` the same.) Since then a keyword is a whole word, at the
+;;; boundary `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on
+;;; Q-M1e2.17), and the program answers its twin's R.
 
 (relation p Node) (relation box Node)
 (p a)

@@ -17,13 +17,16 @@
 ;;; read-out names it `outside` the universe, and the query's one class is `?y
 ;;; = a`. It is the answer of `kw-neq-in-goal-twin.ein`.
 ;;;
-;;; ── What the engine answers ───────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ────────────
 ;;;
-;;; The parser reads the goal `(neqw ?y)` as the guard `(neq w ?y)`. R is
-;;; right, but the query prints as `(neq w ?y)`, *the goal holds: it has no
-;;; variable*, and the read-out names nothing `outside` the universe. (`ein
-;;; solve FILE` at `35186bc0`, release and debug; every mode and `ein oracle`
-;;; the same.)
+;;; Until S1e2.2.22 the parser read a reserved word as a prefix of a name, and
+;;; this program answered wrong. The parser read the goal `(neqw ?y)` as the
+;;; guard `(neq w ?y)`. R was right, but the query printed as `(neq w ?y)`,
+;;; *the goal holds: it has no variable*, and the read-out named nothing
+;;; `outside` the universe. (`ein solve FILE` at `35186bc0`, release and
+;;; debug; every mode and `ein oracle` the same.) Since then a keyword is a
+;;; whole word, at the boundary `00_ebnf.md` § 1 states (the user's ruling of
+;;; 2026-11-05 on Q-M1e2.17), and the program answers its twin's R.
 
 (relation p Node) (relation neqw Node) (relation tag Node)
 (p a) (neqw a)
