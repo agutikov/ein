@@ -236,7 +236,12 @@ constrained-reasoning research.
   the facts its universals read, each folded in at its own smallest
   frontier; the `forall` gap is two more rows of W21, filed and fixed in the
   same commit: 74 fixed, 2 open (both deferred to a followup) and 1 not
-  wrong.
+  wrong. With it the user ruled that a core is taken only where a surface
+  prints one (*minimum work per question*): a bare `ein solve` takes root's
+  and the minimal holes', and no run moved (S1e2.2.21's sweep, 10 752 runs,
+  2026-11-05); `ein-infer/tests/corpus_cores.rs` holds that every core the
+  corpus reports names its commitment and, with root, derives its
+  contradiction.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -24,6 +24,7 @@ Everything is `cargo test`.
 |---|---|
 | [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
 | [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants — ten tests |
+| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **the class-4 claim** (M1e2 S1e2.2.21): every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the nightly (`EIN_CORPUS_SLOW=1`) |
 | [`ein-render/tests/corpus_shapes.rs`](../ein.rs/crates/ein-render/tests/corpus_shapes.rs) | digests every observable surface of every corpus *file* (7 462 renderings), which is a superset of what the runs reach |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | runs the same sweep twice under a permuted id space |
 | [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the same sweep again at `--jobs N` — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts |

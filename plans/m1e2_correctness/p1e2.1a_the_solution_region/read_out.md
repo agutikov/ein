@@ -509,7 +509,11 @@ complete.
   block as the summary, and per file its `lines`. That is the acceptance's
   *`models/` per line, named in `index.json`*.
 - **`owing/NN.ein`** holds the frontier on an empty R of the owing kind, and
-  **`nogoods.json`** holds N with each core.
+  **`nogoods.json`** holds N with each core. A core, wherever a surface
+  prints one, is the facts its contradiction rests on: since M1e2 S1e2.2.21
+  both sides of a pair and the facts a `forall` read (Q-M1e2.15 (b)), and a
+  run takes one only where a surface prints it, which moves no line of any
+  surface (`a_run_that_prints_no_core_takes_none_and_answers_alike`).
 - **`root_writes.json` and `alive_at_end.json` go.** Root is never written,
   and there is no walk to end.
 - `answer.json` stays the summary byte for byte, as `answer_dump.rs` checks

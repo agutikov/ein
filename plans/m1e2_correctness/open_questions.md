@@ -28,7 +28,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
 | [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load. The head half re-ruled by Q-M1e2.14 (c). **Built 2026-11-05** by S1e2.2.20 (`eddea251`): W20's five rows fixed |
 | [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns*. **Built 2026-11-05** by S1e2.2.20 (`eddea251`) |
-| [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. S1e2.2.21 builds both |
+| [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. **Built 2026-11-05** by S1e2.2.21 (`67d07fab`, `3fb9d712`): W21's six rows fixed, no answer moved by the lazy core |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1450,6 +1450,19 @@ user's ruling on
 [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow),
 (c); this ruling, the promise and the exemption are unchanged.
 
+**A dated note, 2026-11-05 (S1e2.2.21).** *Every derivation the program
+records* was over each contradiction's witness alone, a pair's positive
+side, and over a derivation's premises and activator, not the facts a
+`forall` it judged read. Since S1e2.2.21 (`67d07fab`) a contradiction's
+facts are explained together, a pair's two sides as one AND-node, and a
+derivation rests on the facts its universals read, each at its own
+smallest frontier, on the user's ruling on
+[Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on),
+(b); the promise's second residual, a core the exact search would give
+smaller through a universal (13 of `zebra2-hints`' 73 N cores), is F22's
+beside the cap's. This ruling and the exemption are unchanged: the
+`lever_invariance` exemption still names the core alone.
+
 ## Q-M1e2.12 — Which activators does a dead node's core follow?
 
 Put to the user on 2026-11-04 by
@@ -1773,3 +1786,16 @@ take the ones they print. It must move no answer: the stage's corpus-wide
 test and every surface give the cores an eager run gives, and what moves is
 listed before the edit, as step 1 listed the fix's. S1e2.2.21 builds it,
 inside the stage.
+
+**Built 2026-11-05** by
+[S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md):
+(b) by T1e2.2.21.2 (`67d07fab`), `Prov::universal` recorded at fire time and
+each fact folded in at its own smallest frontier, a contradiction's facts
+explained together, W21's four rows and the `forall` gap's two
+(`W21/forall-core-false`, `-elim`) fixed, the `.einb` at format 1.2; the
+lazy core by T1e2.2.21.3 (`3fb9d712`), `explore`, `region` and `downset`
+taking a core only where a surface prints one, 0 of the sweep's 10 752 runs
+moved, a bare `ein solve examples/zebra2.ein` 0.53 s against 0.58 s at
+HEAD and 3.65 s eager (2026-11-05). `ein-infer/tests/corpus_cores.rs`
+(T1e2.2.21.4, `af521c6e`) holds that every core the corpus reports names its
+commitment and, with root, derives its contradiction.

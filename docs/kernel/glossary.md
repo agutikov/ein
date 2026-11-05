@@ -114,8 +114,8 @@ The frontier of given facts across a set of conflicting facts, per
 the recorded derivations — the "given" premises that together derive
 the conflict. Output of the *contradictions* task class (idea 03).
 `kb.unsat_core(conflicting)` unions the frontier of each conflicting
-fact's primary derivation, each step's premises and the activator a node
-derived (below); `all_justifications=True` unions over every
+fact's primary derivation, each step's premises, the activator a node
+derived and the facts its universals read (below); `all_justifications=True` unions over every
 recorded derivation, which is monotonically *larger* — a soundness
 envelope ("no explanation names a fact outside this"), not a better
 explanation. Not a subset-minimal MUS; for a minimum-cardinality
@@ -128,7 +128,17 @@ contradiction follows — a minimum-cardinality AND/OR search over every
 derivation the program **records** (provenance-based, NAF-safe,
 budgeted); **not** a subset-minimal MUS. It is what the `k = 0` verdict
 reports as its unsat core (unioned across dead commitments when no
-single dead one explains the unsat).
+single dead one explains the unsat). **A contradiction is explained by
+its facts together** (`explain::contradiction_frontier`, M1e2 S1e2.2.21):
+a direct ⊥'s `(false …)` fact, and a pair's `X` and its `(not X)` as one
+AND-node, the smallest union over both sides' environments; a node's core
+is the smallest over its contradictions. Until S1e2.2.21 each was
+explained by its witness alone, a pair's positive side, and the core left
+out the derivation of `(not X)`, where a commitment typically is (W21):
+`examples/ein-bugs/wrong-answers/pair-core-root-given.ein`'s dead `{(q a)}`
+reported `(p a)`, a fact the program states, and `zebra2.ein`'s N 201 of
+366 such cores (`ein solve FILE --dump-answer DIR` at `cdcc3994`,
+2026-11-05).
 Four caveats: no proper subset is checked for satisfiability; the
 derivations are the firings the saturator attempted, so minimality is
 relative to the rule set and the saturation strategy; the search is
@@ -160,6 +170,35 @@ activator and such a commitment was in no core (W19):
 reported nothing (`ein solve FILE --dump-answer DIR` at `a41eb76e`); they
 report `(p a) (seed a)` and `(p a)`, and no corpus core moved (the stage's
 sweep, 2026-11-04).
+
+**And the facts its universals read** (`Prov::universal`, M1e2
+S1e2.2.21). A `forall` is `(absent (and G (absent B)))`, and one that
+held rests on facts: for each match of `G`, the fact `B` matched, such as
+the `(not (R a b))` that exclude every `b` under the stdlib's `total`, or
+the exclusions of every other value under an elimination. A firing
+records them, and the search folds each in at its **own smallest
+frontier**, beside the premises it searches over every derivation: the
+user's ruling of 2026-11-05 on
+[Q-M1e2.15](../../plans/m1e2_correctness/open_questions.md#q-m1e215--what-does-a-derivation-through-a-forall-rest-on),
+(b). Searching their combinations too is exact and cost ×2 500 a member
+of N on `zebra2-hints.ein` (3 ms → 7.5 s, cut by the search's budget), so
+a core can be larger than the smallest over every derivation a second way,
+13 of that program's 73 N cores (S1e2.2.21 T1, 2026-11-05): that residual
+is [F22](../../plans/followups/f22_exact_core_past_the_cap.md)'s beside the
+cap's. Until S1e2.2.21 no record named them, and a core resting on a
+universal left them out: `forall-core-false.ein`'s dead `{(tag s1), (tag
+s2)}` reported `(item a)`, root's, and reports `(item a) (tag s1) (tag
+s2)`. Since S1e2.2.21 every core the corpus reports for a dead node on an
+alive root names its commitment and, with root, derives its contradiction,
+which `ein-infer/tests/corpus_cores.rs` holds.
+
+**A core is taken only where a surface prints one** (M1e2 S1e2.2.21, the
+user's ruling of 2026-11-05, *minimum work per question*): a bare `ein
+solve` takes root's and, on the cube, the minimal holes', which the
+read-out and the summary print; `--dump-answer`, `--dump-lattice`,
+`--events`, `--trace`, `ein oracle --dump` and `ein render` take every
+dead node's they visit. Each core taken is the one an eager run takes
+(`explore.rs`' `a_run_that_prints_no_core_takes_none_and_answers_alike`).
 
 **What the store keeps of every derivation**: a fact's primary, up to 32
 alternatives with the fewest premises (`MAX_ALT_JUSTIFICATIONS`), and,

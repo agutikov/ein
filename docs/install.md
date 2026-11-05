@@ -107,7 +107,7 @@ baselines. The toolchain is pinned by
 $ ein --version
 ein 0.1.0
 protocol   ein-events/1
-container  einb/1.1
+container  einb/1.2
 features   einb, parallel, snmalloc
 stdlib     sha256:a498c7…1d79  embedded
 ```
