@@ -298,8 +298,8 @@ note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)`
 [[entry]]
 path   = "examples/lattice/10_fifo_gap.ein"
 group  = "positive"
-runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "the FIFO gap, monotonicity.md § 7.3's counter-example run: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, one priority, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative (M1e2 S1e2.1b.7, node_census.md § 12)."
+runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region", "solve --minimal --region-limit 1", "solve --maximal --region-limit 1"]
+note   = "the FIFO gap, monotonicity.md § 7.3's counter-example run: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, one priority, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative (M1e2 S1e2.1b.7, node_census.md § 12). The two line modes at `--region-limit 1` are M1e2 W27's smallest witness (`W27/fifo-gap-limit-1-minimal`, `-maximal`, S1e2.2.26): past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}; until S1e2.2.26 each line mode labelled both members with its line."
 
 [[entry]]
 path   = "examples/lattice/11_fifo_gap_static.ein"
@@ -1407,6 +1407,12 @@ path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W26's control, banked by S1e2.2.25: `oblig-derived-activator.ein` with the activator also stated, so root owes both debts and R is `{(drinks Ann Tea), (likes Ann Soup)}`, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/past-limit-lines.ein"
+group  = "regression"
+runs   = ["solve --region-limit 8", "saturate", "solve --minimal --region-limit 8", "solve --maximal --region-limit 8"]
+note   = "M1e2 W27 (`W27/past-limit-lines-minimal`, `-maximal`), banked by S1e2.2.26 on Q-M1e2.19: a flagged program of 17 candidates, past the default --region-limit, whose R is three states (`ein oracle --region-limit 17`): minimal line {∅}, maximal line {(meal Ann Soup), (seats Ann C1)}. Past the limit describe certifies {∅} minimal and says the maximal line is not known; until S1e2.2.26 `--minimal` and `--maximal` labelled every member met with their line. The runs go past the limit at `--region-limit 8`, where every member is met by layer 2 and a run costs 2^8 saturations; the register's rows ask the default limit, 0.7 s a run."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

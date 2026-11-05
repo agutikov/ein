@@ -542,6 +542,10 @@
 0    examples/ein-bugs/wrong-answers/pair-core-root-given.ein :: solve
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: saturate
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: solve
+0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: saturate
+0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --maximal --region-limit 8
+0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --minimal --region-limit 8
+0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --region-limit 8
 1    examples/ein-bugs/wrong-answers/range-in-match.ein :: saturate
 1    examples/ein-bugs/wrong-answers/range-in-match.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
@@ -743,6 +747,8 @@
 0    examples/lattice/10_fifo_gap.ein :: render rules
 0    examples/lattice/10_fifo_gap.ein :: saturate
 0    examples/lattice/10_fifo_gap.ein :: solve
+0    examples/lattice/10_fifo_gap.ein :: solve --maximal --region-limit 1
+0    examples/lattice/10_fifo_gap.ein :: solve --minimal --region-limit 1
 0    examples/lattice/11_fifo_gap_static.ein :: oracle --dump {out}/region
 0    examples/lattice/11_fifo_gap_static.ein :: render constraints
 0    examples/lattice/11_fifo_gap_static.ein :: render lattice

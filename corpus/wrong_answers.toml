@@ -519,6 +519,22 @@
 # **96 rows fixed, 10 open and 1 not-wrong**, every open row deferred to a
 # followup or to M1f.
 #
+# **W27 was filed on 2026-11-05 by S1e2.2.26** (T1e2.2.26.1), from
+# S1e2.2.25's re-take, on the user's ruling of that day (Q-M1e2.19): past
+# `--region-limit` on a program the static check flags, `--minimal` and
+# `--maximal` label every member of R the run met as on their line, where
+# describe certifies a member met with no member of R met below it as
+# minimal and says the maximal line is not known. Four rows, all `open`: the
+# smallest program flagged past the default limit, `past-limit-lines`, under
+# each line mode, and `lattice/10_fifo_gap` at `--region-limit 1`, the
+# smallest witness, whose `settings` name the bound. Each row's `right` is
+# describe's certified line at the same limit. **Schema /11**: a `now`
+# records the members of R it met and does not list (`others`, the summary's
+# states with `listed = false`) where `right` states them, and such a right
+# is a line past the limit, which states `k`, `exhausted = false` and no
+# verdict. A row's `wrong` is a region run's at `d05d7c83`. The register reads
+# **96 rows fixed, 14 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -536,8 +552,9 @@
 #              names), the open states of an owing empty R, the relations
 #              the read-out names outside the universe (schema /5), the
 #              core (schema /6), N's cores (schema /8), the core's status
-#              (schema /9) and how many members of R hold a stale fact
-#              (schema /10).
+#              (schema /9), how many members of R hold a stale fact
+#              (schema /10) and how many it met and does not list (schema
+#              /11).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
 #   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
@@ -617,6 +634,10 @@
 #     nogoods_listed  (schema /10) `true`: the run's N is compared on the sets
 #               `nogoods` lists alone, each of which it must report
 #               (`W10/second-preparation`'s, whose N is 366 sets)
+#     others    (schema /11, M1e2 S1e2.2.26) how many members of R the run met
+#               and counts without listing them, the summary's states with
+#               `listed = false`; stated exactly when `[case.right]` states
+#               `others` (W27's rows)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -664,7 +685,11 @@
 #     read-out reports beside root's core; with it, the `qualifier` is that
 #     read-out's `core search` row, which `wrong_answers.rs` holds the run's
 #     stdout to print. `stale` (schema /10, M1e2 S1e2.2.25) is how many
-#     members of R the right read-out finds holding a stale fact.
+#     members of R the right read-out finds holding a stale fact. `others`
+#     (schema /11, M1e2 S1e2.2.26) is how many members of R the right
+#     read-out meets and does not list: a line mode past `--region-limit`,
+#     whose `k` listed states are the line members it certifies and make no
+#     verdict, so such a right states `k`, `exhausted = false` and no verdict.
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -712,7 +737,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/10"
+schema = "ein-wrong-answers/11"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -7307,6 +7332,223 @@ relations = ["likes"]
 models    = [
   ["(likes Ann Soup)"],
 ]
+
+# ══ W27 — past the limit, a line mode labels every member met as on its line ═══
+[[case]]
+id       = "W27/past-limit-lines-minimal"
+case     = "W27"
+title    = "past --region-limit on a flagged program, a line mode labels every member met as on its line"
+class    = "model set + certification"
+settings = "default"
+owner    = "S1e2.2.26"
+question = ["Q-M1e2.19"]
+witness  = "examples/ein-bugs/wrong-answers/past-limit-lines.ein"
+status   = "open"
+open_because = "`explore::flagged` asks the cube for every member of R past the limit and labels each with the mode's line, where describe certifies a member met with no member of R met below it as minimal and the maximal line as not known; Q-M1e2.19 (2), the user's ruling of 2026-11-05, is that the line modes certify what describe certifies, which S1e2.2.26 builds"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05) from S1e2.2.25's re-take, on the user's ruling of that day (Q-M1e2.19). The witness is the smallest program the static check flags past the default limit of 16: 17 candidates, R three states, every one met in layer order by layer 2 of the 2^16 nodes the run visits. The corpus programs the case bites at default settings (features/01, features/04_open, the three square-unique programs and lattice/06) and every flagged program under a lowered --region-limit are held by the stage's corpus-wide test, ein-render/tests/line_modes_past_the_limit.rs"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve FILE --minimal`, release and debug, at d05d7c83 (2026-11-05): past --region-limit 16 the run meets the three members of R and labels each `· minimal` (*minimal line 3 states (a lower bound: the run stopped first)*), the summary's lines [\"minimal\"] on each, where describe (`ein solve FILE`) certifies {∅} and counts the other two, and `ein oracle --region-limit 17` gives the minimal line {∅}"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = false
+closes    = ["meal", "seats"]
+models    = [[], ["(meal Ann Soup)"], ["(meal Ann Soup)", "(seats Ann C1)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+stopped  = "limit"
+minimal  = [[]]
+maximal  = []
+
+[case.right]
+derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past --region-limit on a flagged program `--minimal` certifies what describe certifies, a member met with no member of R met below it, {∅} when ∅ is in R, and counts the other members met, which --dump-answer writes. ∅ is in R here, so the line is {∅}, the oracle's (`ein oracle FILE --region-limit 17`: R three states, minimal line {∅}), and the other two members met are counted, not listed"
+k         = 1
+exhausted = false
+others    = 2
+closes    = ["meal", "seats"]
+models    = [[]]
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = false
+k         = 3
+relations = ["meal", "seats"]
+outside   = ["is-a"]
+models    = [
+  [],
+  ["(meal Ann Soup)"],
+  ["(meal Ann Soup)", "(seats Ann C1)"],
+]
+others    = 0
+
+[[case]]
+id       = "W27/past-limit-lines-maximal"
+case     = "W27"
+title    = "past --region-limit on a flagged program, a line mode labels every member met as on its line"
+class    = "model set + certification"
+settings = "default"
+owner    = "S1e2.2.26"
+question = ["Q-M1e2.19"]
+witness  = "examples/ein-bugs/wrong-answers/past-limit-lines.ein"
+status   = "open"
+open_because = "`explore::flagged` asks the cube for every member of R past the limit and labels each with the mode's line, where describe certifies a member met with no member of R met below it as minimal and the maximal line as not known; Q-M1e2.19 (2), the user's ruling of 2026-11-05, is that the line modes certify what describe certifies, which S1e2.2.26 builds"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05), beside W27/past-limit-lines-minimal: the same run asking the maximal line. `-n N` and `--single` on the maximal line take the same path: `--maximal -n 1` listed all three members, and `--maximal --single` listed them under *not decided*"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve FILE --maximal`, release and debug, at d05d7c83 (2026-11-05): past --region-limit 16 the run labels the three members met `· maximal` (*maximal line 3 states (a lower bound: the run stopped first)*), ∅ and {(meal Ann Soup)} among them, where describe says the maximal line is not known and `ein oracle --region-limit 17` gives the maximal line {(meal Ann Soup), (seats Ann C1)}"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = false
+closes    = ["meal", "seats"]
+models    = [[], ["(meal Ann Soup)"], ["(meal Ann Soup)", "(seats Ann C1)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+stopped  = "limit"
+minimal  = [[]]
+maximal  = []
+
+[case.right]
+derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past --region-limit on a flagged program `--maximal` certifies no state and says the maximal line is not known, as describe does: it needs the whole cube. The three members met are counted, not listed, and --dump-answer writes each. The oracle's maximal line, {(meal Ann Soup), (seats Ann C1)} (`ein oracle FILE --region-limit 17`), is among them and not certified: a state is maximal only once every superset is known"
+k         = 0
+exhausted = false
+others    = 3
+closes    = ["meal", "seats"]
+models    = []
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = false
+k         = 3
+relations = ["meal", "seats"]
+outside   = ["is-a"]
+models    = [
+  [],
+  ["(meal Ann Soup)"],
+  ["(meal Ann Soup)", "(seats Ann C1)"],
+]
+others    = 0
+
+[[case]]
+id       = "W27/fifo-gap-limit-1-minimal"
+case     = "W27"
+title    = "past --region-limit on a flagged program, a line mode labels every member met as on its line"
+class    = "model set + certification"
+settings = "`--region-limit 1`: a bound the read-out qualifies, not a lever (Q-M1e2.19)"
+owner    = "S1e2.2.26"
+question = ["Q-M1e2.19"]
+witness  = "examples/lattice/10_fifo_gap.ein"
+status   = "open"
+open_because = "`explore::flagged` asks the cube for every member of R past the limit and labels each with the mode's line, where describe certifies a member met with no member of R met below it as minimal and the maximal line as not known; Q-M1e2.19 (2), the user's ruling of 2026-11-05, is that the line modes certify what describe certifies, which S1e2.2.26 builds"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05): the smallest witness, S1e2.2.25's (Q-M1e2.19), on a corpus program whose R the oracle gives at default settings (four states, minimal line {∅}, maximal line {(a one), (b one)}). At --region-limit 1 the run visits two nodes, ∅ and {(a one)}, both in R"
+
+[case.wrong]
+run       = "solve --minimal --region-limit 1"
+by        = "region"
+why       = "`ein solve FILE --minimal --region-limit 1`, release and debug, at d05d7c83 (2026-11-05; 94c75204 the same, S1e2.2.25): both members met labelled `· minimal`, {(a one)} among them, where describe certifies {∅} and `ein oracle FILE` gives the minimal line {∅}"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = false
+closes    = ["a", "b"]
+models    = [[], ["(a one)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(a one)", "(b one)"]]
+
+[case.right]
+derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past the limit `--minimal` certifies what describe certifies at the same limit, {∅}, ∅ being in R, and counts {(a one)} met, which `ein oracle FILE` puts on neither line"
+k         = 1
+exhausted = false
+others    = 1
+closes    = ["a", "b"]
+models    = [[]]
+
+[case.now]
+run       = "solve --minimal --region-limit 1"
+line      = "minimal"
+exhausted = false
+k         = 2
+relations = ["a", "b"]
+outside   = ["p", "q"]
+models    = [
+  [],
+  ["(a one)"],
+]
+others    = 0
+
+[[case]]
+id       = "W27/fifo-gap-limit-1-maximal"
+case     = "W27"
+title    = "past --region-limit on a flagged program, a line mode labels every member met as on its line"
+class    = "model set + certification"
+settings = "`--region-limit 1`: a bound the read-out qualifies, not a lever (Q-M1e2.19)"
+owner    = "S1e2.2.26"
+question = ["Q-M1e2.19"]
+witness  = "examples/lattice/10_fifo_gap.ein"
+status   = "open"
+open_because = "`explore::flagged` asks the cube for every member of R past the limit and labels each with the mode's line, where describe certifies a member met with no member of R met below it as minimal and the maximal line as not known; Q-M1e2.19 (2), the user's ruling of 2026-11-05, is that the line modes certify what describe certifies, which S1e2.2.26 builds"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05), beside W27/fifo-gap-limit-1-minimal: the same run asking the maximal line, which labelled two states the oracle's maximal line does not hold"
+
+[case.wrong]
+run       = "solve --maximal --region-limit 1"
+by        = "region"
+why       = "`ein solve FILE --maximal --region-limit 1`, release and debug, at d05d7c83 (2026-11-05; 94c75204 the same, S1e2.2.25): ∅ and {(a one)} labelled `· maximal`, where describe says the maximal line is not known and `ein oracle FILE` gives the maximal line {(a one), (b one)}"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = false
+closes    = ["a", "b"]
+models    = [[], ["(a one)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(a one)", "(b one)"]]
+
+[case.right]
+derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past the limit `--maximal` certifies no state and says the maximal line is not known, as describe does at the same limit; the two members met are counted, not listed"
+k         = 0
+exhausted = false
+others    = 2
+closes    = ["a", "b"]
+models    = []
+
+[case.now]
+run       = "solve --maximal --region-limit 1"
+line      = "maximal"
+exhausted = false
+k         = 2
+relations = ["a", "b"]
+outside   = ["p", "q"]
+models    = [
+  [],
+  ["(a one)"],
+]
+others    = 0
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

@@ -311,6 +311,16 @@ constrained-reasoning research.
   certify what describe certifies, before P1e2.3's S1e2.3.8–.10 and the
   close. F21, F22 and M1f's S1f.10.6 each list the rows they own, and the
   milestone's acceptance names all ten.
+  S1e2.2.26 filed W27 the same day, on Q-M1e2.19: four rows, the smallest
+  program the static check flags past the default limit,
+  `examples/ein-bugs/wrong-answers/past-limit-lines.ein` (17 candidates, R
+  three states), and `lattice/10_fifo_gap.ein --region-limit 1`, each under
+  `--minimal` and `--maximal`; schema `/11` (`others`, the members a run met
+  and does not list): 96 fixed, 14 open and 1 not wrong. Its re-take found
+  no monotone route that mislabels (227 programs under six budgets) and no
+  line member describe certifies that the oracle does not; under a lowered
+  limit the line modes label a state off the oracle's line on 20 of the 22
+  flagged programs the oracle reaches (2026-11-05).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

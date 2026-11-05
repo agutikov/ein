@@ -62,8 +62,13 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// known; `now` can compare `N` on the members it lists alone
 /// ([`Now::nogoods_listed`], a program whose `N` is hundreds of sets); and a
 /// `deferred` row can be owned by another milestone's stage (S1f.10.6) as
-/// well as by a followup.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/10";
+/// well as by a followup. `/11` since M1e2 S1e2.2.26 (2026-11-05): a `now`
+/// records how many members of R it met and counts without listing them
+/// ([`Now::others`], the summary's states with `listed = false`) where
+/// `right` states it ([`Right::others`]), W27's: a line mode past
+/// `--region-limit`, whose listed states are the line members it certifies
+/// and make no verdict.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/11";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -378,6 +383,13 @@ pub struct Now {
     /// /10, M1e2 S1e2.2.25): `zebra2.ein`'s `N` is 366 sets.
     #[serde(default)]
     pub nogoods_listed: bool,
+    /// How many members of R the run met and counts without listing them —
+    /// the summary's states with `listed = false` (schema /11, M1e2
+    /// S1e2.2.26): what a line mode past `--region-limit` leaves to
+    /// `--dump-answer`. Recorded exactly where [`Right::others`] is stated
+    /// (W27's rows).
+    #[serde(default)]
+    pub others: Option<u64>,
 }
 
 /// Members of R holding a stale fact, of the nodes a run computed — schema
@@ -500,6 +512,15 @@ impl Now {
             out.push(format!(
                 "core status: right {s:?}, now {:?}",
                 self.core_status
+            ));
+        }
+        // The members met and not listed (schema /11, M1e2 S1e2.2.26).
+        if let Some(o) = right.others
+            && Some(o) != self.others
+        {
+            out.push(format!(
+                "members met and not listed: right {o}, now {:?}",
+                self.others
             ));
         }
         // Stale members of R (schema /10, M1e2 S1e2.2.25).
@@ -705,6 +726,14 @@ pub struct Right {
     /// `/10` (M1e2 S1e2.2.25): compared with [`Now::stale`]'s `in_r`.
     #[serde(default)]
     pub stale: Option<u64>,
+    /// How many members of R the right read-out meets and counts without
+    /// listing them — schema `/11` (M1e2 S1e2.2.26, W27): a line mode past
+    /// `--region-limit` lists the line members it certifies, [`Self::k`] of
+    /// them, which make no verdict, so a right that states `others` states
+    /// `k` and `exhausted = false` and no verdict. Compared with
+    /// [`Now::others`].
+    #[serde(default)]
+    pub others: Option<u64>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -775,11 +804,29 @@ impl Register {
                     out.push(at(format!("look_at {p:?} is not one of {LOOK_AT:?}")));
                 }
             }
+            // A line past the limit makes no verdict (schema /11, W27): its
+            // right states `k` and the members it does not list instead.
             if r.status == "fixed"
                 && !r.right.refused
-                && (r.right.verdict.is_none() || r.right.k.is_none())
+                && (r.right.k.is_none() || (r.right.verdict.is_none() && r.right.others.is_none()))
             {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
+            }
+            if r.right.others.is_some()
+                && (r.right.verdict.is_some() || r.right.exhausted != Some(false))
+            {
+                out.push(at(
+                    "a right that states `others` is a line past the limit: no verdict, and \
+                     exhausted = false"
+                        .to_string(),
+                ));
+            }
+            // The members met and not listed (schema /11, M1e2 S1e2.2.26).
+            if r.now.others.is_some() != r.right.others.is_some() {
+                out.push(at(
+                    "[now] records the members it does not list exactly when [right] states them"
+                        .to_string(),
+                ));
             }
             if r.right.refused && (r.right.verdict.is_some() || r.right.k.is_some()) {
                 out.push(at("a refusal states no verdict and no k".to_string()));
@@ -1393,6 +1440,7 @@ mod tests {
             core_status: None,
             stale: None,
             nogoods_listed: false,
+            others: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
@@ -1535,6 +1583,55 @@ mod tests {
         let mut r = listed;
         r.now.nogoods = Some(Vec::new());
         assert!(defects(&r).iter().any(|d| d.contains("nogoods_listed")));
+    }
+
+    /// **Schema /11** (M1e2 S1e2.2.26, W27): the members a line mode past the
+    /// limit meets and does not list are compared where `right` states them,
+    /// and such a right states `k`, `exhausted = false` and no verdict.
+    #[test]
+    fn a_line_past_the_limit_counts_what_it_does_not_list() {
+        let reg = register();
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.right.others.is_some())
+            .expect("W27's rows state the members met and not listed")
+            .clone();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        // The count is compared with right's.
+        let mut r = row.clone();
+        r.now.others = r.right.others;
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .all(|d| !d.starts_with("members met"))
+        );
+        r.now.others = r.right.others.map(|o| o + 1);
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .any(|d| d.starts_with("members met"))
+        );
+        // Stated on one side only is a defect.
+        let mut r = row.clone();
+        r.now.others = None;
+        assert!(defects(&r).iter().any(|d| d.contains("does not list")));
+        // Such a right makes no verdict and is not exhausted.
+        let mut r = row.clone();
+        r.right.verdict = Some("Solution".to_string());
+        assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
+        let mut r = row;
+        r.right.exhausted = Some(true);
+        assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
     }
 
     #[test]

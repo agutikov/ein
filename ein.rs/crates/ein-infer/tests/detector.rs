@@ -180,8 +180,11 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // its cycle and its two races below), `guard-only-second` and
     // `-first` (W25, an `activator` site each), and
     // `oblig-derived-activator` and `-declared` (W26, `total-owed`'s
-    // activator relation one a commitment can change).
-    assert_eq!(flagged, 47, "the flagged corpus programs");
+    // activator relation one a commitment can change). 48 since S1e2.2.26
+    // banked W27's witness the same day, `past-limit-lines`, whose
+    // `total-owed` reads `is-a`, which `seated-dines` derives from a
+    // commitment: an `obligation-trigger` site.
+    assert_eq!(flagged, 48, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

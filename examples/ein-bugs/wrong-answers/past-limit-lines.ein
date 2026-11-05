@@ -1,0 +1,72 @@
+;;; The line modes past `--region-limit` — M1e2 **W27**, register rows
+;;; `W27/past-limit-lines-minimal` and `W27/past-limit-lines-maximal`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.26 (2026-11-05) on the
+;;; user's ruling of that day (Q-M1e2.19): the smallest program the static
+;;; check flags whose cube is past the default limit of 16, so a bare `ein
+;;; solve` and its two line modes stop there with every member of R met.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; tests/region/07_cube.ein's seating, with fifteen more chairs, each broken:
+;;; seating Ann makes her a diner, a diner owes a meal (`total-owed`), and a
+;;; seat on a broken chair is dead. 17 candidates, the 16 seats and the one
+;;; meal. The obligation's trigger reads `is-a`, which a commitment changes
+;;; (`seated-dines`), so the static check flags the program and R is the
+;;; cube's, every node a fork of root (F21's D2).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Every seat on C2–C16 is dead, alone and in any set. Of the rest: ∅ is in
+;;; R (Ann is no diner yet), {(meal Ann Soup)} is, {(seats Ann C1)} owes a
+;;; meal, and {(seats Ann C1), (meal Ann Soup)} is in R. So R is three states;
+;;; the minimal line is {∅} and the maximal line {(meal Ann Soup), (seats Ann
+;;; C1)}, which `ein oracle --region-limit 17` gives (2^17 nodes).
+;;;
+;;; Past the limit the run visits the cube in layer order, 2^16 of its 2^17
+;;; nodes: layers 0 to 8, every member of R among them. A member met with no
+;;; member of R met below it is certified minimal, since every subset was met
+;;; first, so the minimal line is certified {∅}; the maximal line needs the
+;;; whole cube. That is what describe (`ein solve FILE`) says.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `ein solve FILE --minimal` labels all three members met `· minimal`, and
+;;; `--maximal` all three `· maximal`, ∅ among them (`minimal line 3 states
+;;; (a lower bound: the run stopped first)`), release and debug, at
+;;; `d05d7c83`: past the limit `explore::flagged` asks the cube for every
+;;; member and labels each with the mode's line (Q-M1e2.19).
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T)
+(relation seats Guest Chair)
+(relation meal  Diner Food)
+
+(is-a Ann Guest) (is-a Soup Food)
+(is-a C1 Chair)  (is-a C2 Chair)  (is-a C3 Chair)  (is-a C4 Chair)
+(is-a C5 Chair)  (is-a C6 Chair)  (is-a C7 Chair)  (is-a C8 Chair)
+(is-a C9 Chair)  (is-a C10 Chair) (is-a C11 Chair) (is-a C12 Chair)
+(is-a C13 Chair) (is-a C14 Chair) (is-a C15 Chair) (is-a C16 Chair)
+(is-a C2 Broken)  (is-a C3 Broken)  (is-a C4 Broken)  (is-a C5 Broken)
+(is-a C6 Broken)  (is-a C7 Broken)  (is-a C8 Broken)  (is-a C9 Broken)
+(is-a C10 Broken) (is-a C11 Broken) (is-a C12 Broken) (is-a C13 Broken)
+(is-a C14 Broken) (is-a C15 Broken) (is-a C16 Broken)
+
+(rule seated-dines ()
+  :match  (seats ?g ?c)
+  :assert (is-a ?g Diner)
+  :why    "{?g} is seated, so {?g} dines"
+  :priority 200)
+
+(rule broken-chair ()
+  :match  (and (seats ?g ?c) (is-a ?c Broken))
+  :assert (false)
+  :why    "{?c} is broken"
+  :priority 200)
+
+(total-owed meal is-a)
+
+(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f))
+
+(query :goal (meal ?g ?f))

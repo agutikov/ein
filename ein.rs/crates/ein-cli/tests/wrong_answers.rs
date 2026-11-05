@@ -34,6 +34,10 @@
 //! lists alone (`nogoods_listed`, `W10/second-preparation`'s `zebra2.ein`,
 //! whose `N` is 366 sets).
 //!
+//! **Since M1e2 S1e2.2.26 a `now` can record the members it met and does not
+//! list** (schema /11, W27's rows): the summary's states with `listed =
+//! false`, what a line mode past `--region-limit` leaves to `--dump-answer`.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -239,6 +243,13 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             nodes: st["nodes"].as_u64().unwrap_or(0),
         }
     });
+    // The members met and not listed, where the row records them (schema
+    // /11, M1e2 S1e2.2.26, W27): the summary's states with `listed = false`.
+    let others = row.now.others.map(|_| {
+        region["states"].as_array().map_or(0, |v| {
+            v.iter().filter(|x| x["listed"] == false).count() as u64
+        })
+    });
     Ok(Now {
         run: row.now.run.clone(),
         line,
@@ -255,6 +266,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         core_status,
         stale,
         nogoods_listed: row.now.nogoods_listed,
+        others,
     })
 }
 
@@ -311,6 +323,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "stale",
         format!("{:?}", want.stale),
         format!("{:?}", got.stale),
+    );
+    field(
+        "others",
+        format!("{:?}", want.others),
+        format!("{:?}", got.others),
     );
     out
 }
