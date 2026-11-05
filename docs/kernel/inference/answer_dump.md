@@ -36,7 +36,10 @@ out/
   `(region …)` block, two or more digits, so the files list in that order.
   On a partial run it is every state the run reached, listed or not: a cut
   at 100 lines (`-n`, or the shared stdout limit) cuts stdout, not the
-  directory, and `index.json` says which files stdout listed.
+  directory, and `index.json` says which files stdout listed. A line mode
+  past `--region-limit` on a flagged program lists the states describe
+  certifies on its line and writes every other member it met unlisted, with
+  no line (M1e2 S1e2.2.26).
 - **`index.json`** carries `asked` and the same `region` block as the summary,
   and per state file its `path`, `state` number, `lines`
   (`minimal` / `maximal`) and `listed`.

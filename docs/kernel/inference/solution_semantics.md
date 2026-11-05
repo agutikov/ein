@@ -505,7 +505,7 @@ which `ein-cli/tests/read_out_examples.rs` holds to the binary:
 | question | flag | what it prints |
 |---|---|---|
 | all of R | none | k_s and k_c, `exhausted`, ∅, both lines, components, sub-cubes, merged states, N, the static check, H and what it leaves out (§ 1.4), the route and its licences, the work; then R as one `(region …)` and each query's projection classes |
-| a line | `--maximal`, `--minimal` | the line's states, exhausted or as far as the run went |
+| a line | `--maximal`, `--minimal` | the line's states, exhausted or as far as the run went. Past `--region-limit` on a program the static check flags, the states describe certifies on it: the members met with no member of R met below them on the minimal line ({∅} when ∅ ∈ R), none on the maximal line, which needs the whole cube; the other members met counted (M1e2 S1e2.2.26) |
 | a part | `-n N` | `N` states of the part asked, each certified, nothing said of the rest |
 | one state? | `--single` | the word: `Solution` (one state), `Ambiguity` (two shown), `Contradiction` (every node dead), `Open` (every alive node owes) |
 | how many? | `--count` (M1e2 T1e2.1c.4.6) | k_s and k_c by describe's route, with `exhausted`, ∅, the static check, H, the route and the work: describe's rows, and nothing listed. No state is read, so no query is answered and no claim checked, and a `claims` row says so |

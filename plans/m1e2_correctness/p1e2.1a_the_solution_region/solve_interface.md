@@ -393,7 +393,7 @@ over the cube.
 |---|---|---|
 | `-n N` | visits commitments in layer order and prints each node of R it meets | each printed state is a member of R, and is verified because it is the oracle's node. *There are only k < N* needs the cube |
 | `--single` | the same, and stops at the second state | `Ambiguity` is certified at once. `Solution` and `Contradiction` need the cube |
-| `--minimal`, `--maximal`, describe | the cube | within `--region-limit`. Past it: partial, with states printed as members of R and not as line members |
+| `--minimal`, `--maximal`, describe | the cube | within `--region-limit`. Past it: partial. A member met with no member of R met below it is minimal, every subset having been met first, so the minimal line describe and `--minimal` certify is those members, {∅} when ∅ ∈ R; the maximal line needs the whole cube, so `--maximal` certifies none (`-n N` none, `--single` *not decided*). The other members met are printed as members of R, counted and not listed, and `--dump-answer` writes each. Since M1e2 S1e2.2.26 (W27, Q-M1e2.19, 2026-11-05): until then `--minimal` and `--maximal` labelled every member met with their line |
 
 What P1e2.1b decides a non-monotone node *is* may license more, such as
 S1e2.1b.6's guard split. That is S1e2.1c.3's.

@@ -542,9 +542,9 @@
 # `--maximal` question lists none, the maximal line not known; each counts
 # the other members met, which `--dump-answer` writes, in either build. Each
 # flipped row's `[case.fixed]` carried the null id in the flipping commit,
-# and the stage's next commit wrote the hash. The register reads **100 rows
-# fixed, 10 open and 1 not-wrong**, every open row deferred to a followup or
-# to M1f.
+# `c21f93fc`, and the stage's next commit wrote the hash. The register reads
+# **100 rows fixed, 10 open and 1 not-wrong**, every open row deferred to a
+# followup or to M1f.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -7359,7 +7359,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05) from S1e2.2.25's re-take, on the user's ruling of that day (Q-M1e2.19). The witness is the smallest program the static check flags past the default limit of 16: 17 candidates, R three states, every one met in layer order by layer 2 of the 2^16 nodes the run visits. The corpus programs the case bites at default settings (features/01, features/04_open, the three square-unique programs and lattice/06) and every flagged program under a lowered --region-limit are held by the stage's corpus-wide test, ein-render/tests/line_modes_past_the_limit.rs. Fixed by T1e2.2.26.2: `--minimal` lists ∅, the minimal line describe certifies, with `minimal line 1 state — ∅` and the other two members met counted, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "c21f93fc"
 by     = "S1e2.2.26 (T1e2.2.26.2): past --region-limit a line mode answers from describe's partial description, the members it certifies on its line and the others counted (Q-M1e2.19 (2))"
 date   = "2026-11-05"
 
@@ -7416,7 +7416,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05), beside W27/past-limit-lines-minimal: the same run asking the maximal line. `-n N` and `--single` on the maximal line take the same path: `--maximal -n 1` listed all three members, and `--maximal --single` listed them under *not decided*. Fixed by T1e2.2.26.2: every `--maximal` question lists no state, `maximal line not known — without a licence it needs the whole cube` (`--single`: *not decided*), and counts the three members met, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "c21f93fc"
 by     = "S1e2.2.26 (T1e2.2.26.2): past --region-limit a line mode answers from describe's partial description, the members it certifies on its line and the others counted (Q-M1e2.19 (2))"
 date   = "2026-11-05"
 
@@ -7471,7 +7471,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05): the smallest witness, S1e2.2.25's (Q-M1e2.19), on a corpus program whose R the oracle gives at default settings (four states, minimal line {∅}, maximal line {(a one), (b one)}). At --region-limit 1 the run visits two nodes, ∅ and {(a one)}, both in R. Fixed by T1e2.2.26.2: `--minimal` lists ∅ and counts {(a one)}, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "c21f93fc"
 by     = "S1e2.2.26 (T1e2.2.26.2): past --region-limit a line mode answers from describe's partial description, the members it certifies on its line and the others counted (Q-M1e2.19 (2))"
 date   = "2026-11-05"
 
@@ -7527,7 +7527,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.2.26 (T1e2.2.26.1, 2026-11-05), beside W27/fifo-gap-limit-1-minimal: the same run asking the maximal line, which labelled two states the oracle's maximal line does not hold. Fixed by T1e2.2.26.2: `--maximal` lists no state, the maximal line not known, and counts the two members met, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "c21f93fc"
 by     = "S1e2.2.26 (T1e2.2.26.2): past --region-limit a line mode answers from describe's partial description, the members it certifies on its line and the others counted (Q-M1e2.19 (2))"
 date   = "2026-11-05"
 

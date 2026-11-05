@@ -259,6 +259,7 @@ runs one program under each.
 | `--minimal` | `the minimal line — every state on it` | `minimal line  1 state — all of them` | each state, with its minimal commitments |
 | `-n N` | `N states of R (-n N)` | `states of R  2 states, as asked — R may hold more` | the first N in the route's order |
 | `--maximal -n N`, `--minimal -n N` | the same, of the line | `maximal line  1 state, as asked — the maximal line may hold more` | the same |
+| `--minimal`, `--maximal`, past `--region-limit` on a flagged program (M1e2 S1e2.2.26) | as above | describe's line row: `minimal line  1 state — ∅`, `maximal line  not known — without a licence it needs the whole cube` | describe's certified members of the line, none on the maximal line, then `;; N other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/` (§ 6.2) |
 | `--single` | `is R one state? (--single)` | `verdict  Ambiguity — R holds two states or more; two of them below` and `decided  yes — two states settle it; …` | the one state, or the two |
 | `--count` (M1e2 T1e2.1c.4.6, ruled 2026-11-03) | `how many states and commitments R holds (--count)` | describe's `states (k_s)` and `commitments (k_c)`, each qualified as describe qualifies it, then `exhausted`, `∅` or `empty`, `lattice` with a flagged program's warning, `universe`, `route` and `work`: describe's text, row for row, but the warning's `paths`, which says the spot check was not run | none: no state is read, so no query is answered. Each claim the program states is not checked, and one `claims` row says how many, with a `note:` per claim. Over all of R only |
 | `--monotone` (M1e2 S1e2.1b.5, approved 2026-11-03) | `is the program monotone? — the static check, on root's fixpoint` | `monotone  yes — no site: …`, or `monotone  no — 1 site` with the warning's static rows (`assumes`, `site`, `cycle`, `order`) and a `bit` row, `not computed — …`, naming what computes the cube | none: it asks about the program, builds no node and lists no state; `route  none — a question about the program`, `work  1 saturation, root's · 0 facts beyond root` |
@@ -346,14 +347,33 @@ the whole cube, and the row says so. The `exhausted` row names the route that
 declined and why: `no — not monotone, and the question needs the whole cube:
 2^19, past --region-limit 16`. **It runs no walk.**
 
+**The line modes answer from the same description** (M1e2
+[S1e2.2.26](../p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md),
+W27, the user's ruling of 2026-11-05 on
+[Q-M1e2.19](../open_questions.md#q-m1e219--what-do---minimal-and---maximal-answer-past-the-limit)).
+Past the limit `--minimal` lists the members describe certifies on the
+minimal line, {∅} when ∅ is in R, and every `--maximal` question lists none:
+the maximal line is not known. Each line row is describe's, the other members
+met are counted on the listing's last line and not listed, `--dump-answer`
+writes each, the summary's `lines` mark the listed states alone, and
+`--maximal --single` is *not decided*. Until then each line mode labelled
+every member it met with its line: 65 214 states `· minimal` on
+`square-unique/corner-house.ein`, where describe certifies one, and on
+`lattice/10_fifo_gap.ein --region-limit 1` two states on each line the
+oracle puts on neither ([X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit)
+shows both modes).
+
 **Why a partial run lists only certified line members.** Measured with the
 preview over every corpus program that loads, 198 of them, at the default
 budget (2026-10-16): listing every member they met, the flagged programs past
 the limit printed up to 64 761 states and 648 435 lines
-(`square-unique/terminus.ein`). Listing only the certified line members does
-not help everywhere: all 64 761 members `features/04_open.ein` meets are
-minimal, which is 585 192 lines. The 100-line rule (§ 4.1) bounds both, and
-every member is in `--dump-answer`.
+(`square-unique/terminus.ein`). Listing only the certified line members
+lists one state on each of the six flagged corpus programs past the limit,
+∅ (`ein solve FILE`, 2026-11-05). Until M1e2 S1e2.2.26 this paragraph said
+that all 64 761 members `features/04_open.ein` meets are minimal, which is
+585 192 lines: that was `--minimal`'s label (W27), not the line, which is
+{∅}. The 100-line rule (§ 4.1) bounds every listing, and every member is in
+`--dump-answer`.
 
 ### 6.3 Holes, and the warning: never silent
 

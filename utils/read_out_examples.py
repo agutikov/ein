@@ -125,7 +125,7 @@ add("""---
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
-| [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
+| [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe, `--minimal` and `--maximal`; `--count` |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: exhausted at the default budget by the state route, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
@@ -314,6 +314,17 @@ for the same reason, and the warning is printed whole, since it qualifies them.
 Its `paths` row says the spot check was not run: `--count` reads no state.
 """)
 add(block(["--count", "examples/lattice/06_friends_tables.ein"]))
+add("""**`--minimal`** on the same program certifies what describe certifies,
+from the same description (M1e2 S1e2.2.26, W27): ∅, the minimal line, and
+the other 20 members met counted. Its line row is describe's.
+""")
+add(block(["--minimal", "examples/lattice/06_friends_tables.ein"]))
+add("""**`--maximal`** lists no state: the maximal line needs the whole cube,
+and the row says so, as describe's does. The 21 members met are counted and
+in `--dump-answer`. Until S1e2.2.26 each line mode labelled all 21 with its
+line.
+""")
+add(block(["--maximal", "examples/lattice/06_friends_tables.ein"]))
 
 add("""## X10 — `zebra2.ein`: the puzzle
 

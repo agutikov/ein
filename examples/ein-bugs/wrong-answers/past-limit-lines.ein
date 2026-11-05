@@ -28,13 +28,17 @@
 ;;; first, so the minimal line is certified {∅}; the maximal line needs the
 ;;; whole cube. That is what describe (`ein solve FILE`) says.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and answers ──────────────────────────────
 ;;;
-;;; `ein solve FILE --minimal` labels all three members met `· minimal`, and
-;;; `--maximal` all three `· maximal`, ∅ among them (`minimal line 3 states
-;;; (a lower bound: the run stopped first)`), release and debug, at
-;;; `d05d7c83`: past the limit `explore::flagged` asks the cube for every
-;;; member and labels each with the mode's line (Q-M1e2.19).
+;;; Until S1e2.2.26, `ein solve FILE --minimal` labelled all three members
+;;; met `· minimal`, and `--maximal` all three `· maximal`, ∅ among them
+;;; (`minimal line 3 states (a lower bound: the run stopped first)`), release
+;;; and debug, at `d05d7c83`: past the limit `explore::flagged` asked the
+;;; cube for every member and labelled each with the mode's line. Since its
+;;; fix (`c21f93fc`) a line mode answers from describe's description:
+;;; `--minimal` lists ∅ and counts the other two members met, and every
+;;; `--maximal` question lists none, the maximal line not known, and counts
+;;; all three (Q-M1e2.19).
 
 (import std.algebra :symbols (total-owed))
 

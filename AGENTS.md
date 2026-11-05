@@ -328,7 +328,9 @@ constrained-reasoning research.
   the other members met, which `--dump-answer` writes;
   `ein-render/tests/line_modes_past_the_limit.rs` holds every line mode past
   the limit to describe and to the oracle: 100 fixed, 10 open (every one
-  deferred to a followup or to M1f) and 1 not wrong.
+  deferred to a followup or to M1f) and 1 not wrong. With it P1e2.2 is
+  complete; next are P1e2.3's S1e2.3.8–.10, then the inventory re-taken and
+  shown to the user, and the close waits for the user's go-ahead.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
