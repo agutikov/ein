@@ -1,0 +1,298 @@
+//! **Every core names its commitment, and derives its contradiction** — M1e2
+//! [S1e2.2.21](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md)'s
+//! step 4, the class-4 claim no test held until then.
+//!
+//! A dead node's unsat core is the facts its refutation rests on, the
+//! smallest frontier over every derivation the program records (Q-M1e2.11
+//! (i)(b)). On a program whose root is alive, two things follow, and this test
+//! holds both for every core a run reports:
+//!
+//! 1. **it names a fact root does not hold**, a fact of the node's commitment:
+//!    root is alive, so the facts root holds refute nothing;
+//! 2. **root with those facts derives a contradiction**: the core's
+//!    commitment facts, written into root's fixpoint and saturated with
+//!    root's plans, are dead. Root's facts are there already, so this is the
+//!    claim *from the core, with root's plans, saturation derives `(false)`*
+//!    read against root, which is what holds under `absent`: a typecheck rule
+//!    over an `is-a` the core does not name would refute anything on an empty
+//!    KB.
+//!
+//! It would have caught W19 (a core leaving out the activator its refutation
+//! rests on, `(seed a)` alone) and W21 (a pair's core naming its positive side
+//! alone, `zebra2.ein`'s N 201 of 366; and a `(false)` through a `forall`
+//! naming the two facts its rule matched): each fails the first claim, and
+//! `saturation/type-exclusivity/*`'s fail the second.
+//!
+//! **Which cores.** Every surface prints a core one of two functions takes,
+//! the node function a route saturates a node with and
+//! `region::Nodes::refutation`, which `--dump-answer` and `--trace` call for a
+//! member of N the state route did not saturate; both explain the node's
+//! contradictions the same way. So the test reads both: the oracle's cube,
+//! every dead node, where the oracle enumerates it, and describe's N, each
+//! member's core through `refutation`. Every corpus file and register witness
+//! the loader accepts and *forbid* does not refuse; the slow entries under
+//! `EIN_CORPUS_SLOW=1`, the nightly's.
+//!
+//! **What it does not hold.** A run stopped past `--region-limit` dumps the
+//! members of N it met with an empty core it did not take
+//! (`lattice/06_friends_tables`, P1e2.3's N6, S1e2.3.9's): this test takes each
+//! member's core itself, so N6's is the dump's, not the core's.
+//!
+//! At S1e2.2.21's HEAD it fails, in either build, on 69 271 cores that name
+//! none of their commitment and 28 that derive no contradiction (the
+//! per-commit half; 2026-11-05). It reads the corpus's entries that are not
+//! slow in the per-commit tier, 18 s in the dev profile, and the zebra
+//! family's too in the nightly, 67 s in release (2026-11-05).
+//!
+//! ```text
+//! cargo test -p ein-infer --release --test corpus_cores
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --release --test corpus_cores
+//! ```
+
+use std::collections::{BTreeMap, BTreeSet};
+use std::path::{Path, PathBuf};
+
+use ein_core::{FactId, Kb, Terms};
+use ein_corpus::repo_root;
+use ein_infer::explore::{self, Ask, Mode, Which};
+use ein_infer::region::{self, Nodes, Outcome};
+use ein_ir::{Ast, load, parse};
+
+fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
+    let text = std::fs::read_to_string(path).ok()?;
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
+    let kb = load(&mut ast, &mut terms, &forms, path.parent()).ok()?;
+    Some((kb, terms, ast))
+}
+
+fn slow_too() -> bool {
+    std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
+}
+
+/// Every corpus file and register witness, once, but the slow entries unless
+/// `EIN_CORPUS_SLOW=1`.
+fn files() -> Vec<PathBuf> {
+    let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
+        .entry
+        .iter()
+        .filter(|e| e.slow)
+        .map(|e| repo_root().join(&e.path))
+        .collect();
+    let mut files = ein_corpus::corpus_files();
+    for row in ein_corpus::register().case {
+        for (_, a) in row.answers() {
+            files.push(repo_root().join(row.witness_of(a)));
+        }
+    }
+    files.sort();
+    files.dedup();
+    files.retain(|f| slow_too() || !slow.contains(f));
+    files
+}
+
+fn jobs() -> usize {
+    std::thread::available_parallelism().map_or(1, |n| n.get().min(8))
+}
+
+/// What [`check`] found on one program: the failures, how many cores were
+/// read, and how many of them the cube's.
+type Checked = (Vec<String>, usize, usize);
+
+/// One reported core: the commitment, as candidate facts, and the core.
+struct Reported {
+    set: Vec<FactId>,
+    core: Vec<String>,
+}
+
+/// Both claims for `reported`, each read in `nodes`' own terms: the
+/// failures. Each core's commitment part is saturated once.
+fn claims(rel: &str, nodes: &mut Nodes<'_>, reported: &[Reported]) -> Option<Vec<String>> {
+    let mut bad = Vec::new();
+    let mut parts: BTreeMap<Vec<FactId>, String> = BTreeMap::new();
+    nodes
+        .with_fixpoints(&[], |_, terms| {
+            for r in reported {
+                let set_text: BTreeMap<String, FactId> = r
+                    .set
+                    .iter()
+                    .map(|&f| (ein_infer::events::sexpr(terms, f), f))
+                    .collect();
+                let mut part: Vec<FactId> = r
+                    .core
+                    .iter()
+                    .filter_map(|c| set_text.get(c).copied())
+                    .collect();
+                part.sort_unstable();
+                if part.is_empty() {
+                    bad.push(format!(
+                        "{rel}: the dead {:?} reports the core {:?}, which names none of it",
+                        set_text.keys().collect::<Vec<_>>(),
+                        r.core
+                    ));
+                    continue;
+                }
+                parts.entry(part).or_insert_with(|| {
+                    format!("{:?} of {:?}", r.core, set_text.keys().collect::<Vec<_>>())
+                });
+            }
+        })
+        .ok()?;
+    let keys: Vec<Vec<FactId>> = parts.keys().cloned().collect();
+    let dead: Vec<bool> = nodes
+        .with_fixpoints(&keys, |kbs, terms| {
+            kbs.iter()
+                .map(|k| ein_infer::has_contradiction(k, terms))
+                .collect()
+        })
+        .ok()?;
+    for (key, dead) in keys.iter().zip(dead) {
+        if !dead {
+            bad.push(format!(
+                "{rel}: the core {}: root with its commitment facts derives no contradiction",
+                parts[key]
+            ));
+        }
+    }
+    Some(bad)
+}
+
+/// Both claims for every core `path`'s runs report: the cube's dead nodes
+/// where the oracle enumerates it, and N's members through `refutation`, as
+/// `--dump-answer` takes them. The failures and how many cores were read, the
+/// cube's among them; `None` where the program does not load, is refused, or
+/// its root is dead.
+fn check(path: &Path) -> Option<Checked> {
+    let rel = path
+        .strip_prefix(repo_root())
+        .unwrap_or(path)
+        .to_string_lossy()
+        .to_string();
+    let mut bad = Vec::new();
+    let mut read = 0usize;
+    // The cube.
+    let (mut kb, mut terms, ast) = loaded(path)?;
+    let mut cube: Vec<Reported> = Vec::new();
+    match region::compute(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &region::Options::default(),
+        &mut |_| {},
+    ) {
+        Err(_) => return None,
+        Ok(Outcome::Region(r)) => {
+            if r.root_dead {
+                return None;
+            }
+            for (mask, node) in r.nodes.iter().enumerate() {
+                if mask == 0 || r.status[mask] & region::DEAD == 0 {
+                    continue;
+                }
+                let set = (0..r.n())
+                    .filter(|b| mask >> b & 1 == 1)
+                    .map(|b| r.candidates[b].fact)
+                    .collect();
+                cube.push(Reported {
+                    set,
+                    core: node.core.clone(),
+                });
+            }
+        }
+        Ok(_) => {}
+    }
+    if !cube.is_empty() {
+        let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &[]).ok()?;
+        bad.extend(claims(&rel, &mut nodes, &cube)?);
+    }
+    read += cube.len();
+    // N.
+    let (mut kb, mut terms, ast) = loaded(path)?;
+    let opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    let a = explore::run(&mut kb, &mut terms, &ast, &opts).ok()?;
+    if a.root_dead {
+        return None;
+    }
+    let sets: Vec<Vec<FactId>> = a
+        .described
+        .as_ref()
+        .map(|d| {
+            d.dead
+                .iter()
+                .filter(|x| !x.set.is_empty())
+                .map(|x| {
+                    x.set
+                        .iter()
+                        .map(|&b| a.candidates[b as usize].fact)
+                        .collect()
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    if !sets.is_empty() {
+        let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).ok()?;
+        let mut n: Vec<Reported> = Vec::with_capacity(sets.len());
+        for set in sets {
+            let (core, _) = nodes.refutation(&set).ok()?;
+            n.push(Reported { set, core });
+        }
+        bad.extend(claims(&rel, &mut nodes, &n)?);
+        read += n.len();
+    }
+    Some((bad, read, cube.len()))
+}
+
+/// **Every core a run reports for a dead node on an alive root names its
+/// commitment, and with root derives the contradiction** — over the corpus
+/// and the register's witnesses, a file per thread.
+#[test]
+fn every_core_names_its_commitment_and_derives_its_contradiction() {
+    let files = files();
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let results: std::sync::Mutex<Vec<(usize, Option<Checked>)>> =
+        std::sync::Mutex::new(Vec::new());
+    std::thread::scope(|scope| {
+        for _ in 0..jobs() {
+            scope.spawn(|| {
+                loop {
+                    let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    let Some(path) = files.get(i) else { break };
+                    let got = check(path);
+                    results.lock().expect("no checker panicked").push((i, got));
+                }
+            });
+        }
+    });
+    let mut results = results.into_inner().expect("no checker panicked");
+    results.sort_by_key(|(i, _)| *i);
+    let mut failures: Vec<String> = Vec::new();
+    let (mut programs, mut cores, mut cube) = (0usize, 0usize, 0usize);
+    for (_, got) in results {
+        let Some((bad, n, c)) = got else { continue };
+        programs += 1;
+        cores += n;
+        cube += c;
+        failures.extend(bad);
+    }
+    assert!(
+        failures.is_empty(),
+        "{}",
+        failures.join(
+            "
+"
+        )
+    );
+    // Not vacuous: 203 programs, 163 477 cores read, 162 363 of them the
+    // cubes' (2026-11-05, at S1e2.2.21 T4; under `EIN_CORPUS_SLOW=1` 217,
+    // 233 212 and 227 786).
+    assert!(programs >= 100, "{programs} programs read");
+    assert!(
+        cores >= 100_000 && cube >= 100_000,
+        "{cores} cores, {cube} the cubes'"
+    );
+    eprintln!("{programs} programs, {cores} cores, {cube} of them the cubes'");
+}

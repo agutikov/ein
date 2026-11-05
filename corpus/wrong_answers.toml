@@ -408,7 +408,8 @@
 # (b) leaves, cores the exact search would give smaller (13 of
 # `zebra2-hints`' 73 N cores, S1e2.2.21 T1), is F22's and no row's. Each
 # flipped row's `[case.fixed]` carried the null id in the flipping commit,
-# and the stage's next commit wrote the hash. The register reads **74 rows
+# `67d07fab`, and the stage's T4 commit wrote the hash (its T3, which should
+# have, did not). The register reads **74 rows
 # fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
@@ -4935,7 +4936,7 @@ look_at  = ["answer", "trace", "events enter"]
 note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05) from S1e2.2.19 § Notes' first note, which found the defect measuring every core the corpus reports; the witness is its mechanism in four lines. Schema /8 (`nogoods`, --dump-answer's nogoods.json). Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides (jointly or each at its smallest). Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
 
 [case.fixed]
-commit = "0000000"
+commit = "67d07fab"
 by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
 date   = "2026-11-05"
 
@@ -4988,7 +4989,7 @@ look_at  = ["answer", "trace", "events enter"]
 note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): the witness one derivation deeper, the pair's positive side derived at root rather than stated. Its right is the same under each reading of Q-M1e2.15. Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
 
 [case.fixed]
-commit = "0000000"
+commit = "67d07fab"
 by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
 date   = "2026-11-05"
 
@@ -5042,7 +5043,7 @@ look_at  = ["answer", "trace", "events enter"]
 note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 10 of N's 25, each (color-of H1 Red), the program's own clue. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides. The other corpus programs W21 bites are held by the corpus-wide test instead (S1e2.2.21's step 4, the stage file says which). Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
 
 [case.fixed]
-commit = "0000000"
+commit = "67d07fab"
 by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
 date   = "2026-11-05"
 
@@ -5178,7 +5179,7 @@ look_at  = ["answer", "trace", "events enter"]
 note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 7 of N's 16, each (seats Ann C1), the program's stated fact; the oracle's cube reports 32 512 more. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides. Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
 
 [case.fixed]
-commit = "0000000"
+commit = "67d07fab"
 by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
 date   = "2026-11-05"
 
@@ -5282,7 +5283,7 @@ look_at  = ["answer", "trace", "events enter"]
 note     = "Filed and fixed by S1e2.2.21 (T1e2.2.21.2, 2026-11-05), found by T1e2.2.21.1 measuring W21's fix: a (false) concluded through a forall, whose core left out every fact its universal read, a contradiction other than a pair with W21's defect. Filed as a row of W21, not a case of its own: the same defect of the core (it leaves out facts its contradiction rests on), the same fix site and the same corpus-wide test, and the stage fixes both (the choice recorded in S1e2.2.21's stage file). The residual Q-M1e2.15 (b) leaves, a core the exact search would give smaller, is F22's and no row's"
 
 [case.fixed]
-commit = "0000000"
+commit = "67d07fab"
 by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
 date   = "2026-11-05"
 
@@ -5340,7 +5341,7 @@ look_at  = ["answer", "trace", "events enter"]
 note     = "Filed and fixed by S1e2.2.21 (T1e2.2.21.2, 2026-11-05): a pair one of whose sides elim concludes through a forall, the stdlib's elimination shape. It needs both halves of the fix: with a pair's sides explained together and nothing more its core is (item a) (not (in a s2)) (slot s2), still root's"
 
 [case.fixed]
-commit = "0000000"
+commit = "67d07fab"
 by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
 date   = "2026-11-05"
 

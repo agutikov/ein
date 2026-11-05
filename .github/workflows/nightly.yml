@@ -72,6 +72,11 @@ jobs:
       # zebra2 pair's) and the register's witnesses that are slow.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test lever_invariance
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1e2 S1e2.2.21 — every core a run reports names its commitment and,
+      # with root, derives its contradiction; the per-commit tier reads the
+      # entries that are not slow, and this the zebra family's too.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test corpus_cores
+        env: { EIN_CORPUS_SLOW: "1" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # M1e2 S1e2.3.6 — the four test steps left nothing in their `TMPDIR`,

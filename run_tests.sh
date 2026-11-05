@@ -185,6 +185,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: lever_invariance, the slow cells"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test lever_invariance
 
+    nightly_step "deep-corpus: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test corpus_cores
+
     nightly_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
