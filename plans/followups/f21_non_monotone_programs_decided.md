@@ -406,8 +406,11 @@ program**: [`monotonicity.md` § 8.1, D2](../../docs/kernel/inference/monotonici
 `via`, so *forbid* refuses `stale-naf-fork` (its `p-and-q-clash` reads the
 `p` that `derive-p` derives under `(absent (q ?x))`), `W8/stale-naf-fork` is
 fixed by the refusal and owned by S1e2.2.5, and `d3-unsat-core`'s two rows
-hold the refusal as `right`. D2's W8 question is `W8/features-07`'s alone,
-the one row this followup owns.
+hold the refusal as `right`. D2's W8 question was `W8/features-07`'s alone,
+the one row this followup owned, until M1e2 S1e2.2.25 filed three more
+(2026-11-05, [§ Handed over](#handed-over-by-m1e2s-inventory-2026-11-05)):
+`W8/f07-rules-swapped`, `W8/fifo-gap` and `W8/corner-house`, all four
+reviewed `deferred` with this page as `owner`.
 
 **At M1e2's wrong-answer revisit** ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03),
 2026-11-03) the user kept this deferral and amended the milestone's acceptance
@@ -552,14 +555,18 @@ their owner and no record here. The user ruled where each goes the same day
 
 **Three wrong answers, filed as rows.** Each answers by today's documented
 node, (A), and is wrong under at least one reading D2 lists.
-[S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) files each as an `open` register row, reviewed `deferred`,
-with this page as its `owner`, and lists the rows here:
+[S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) filed each as an `open` register row, reviewed `deferred`,
+with this page as its `owner` (2026-11-05), each re-taken at `94c75204` in
+release and debug, and each row's `right` giving the answer under each
+reading D2 lists:
 
-| inventory id | what is false | decision |
-|---|---|---|
-| W-2 | `features/07`'s R depends on which of its two priority-200 rules is written first: as written R = {∅, {(q one)}}, swapped R = {∅, {(p one)}} | D2 (rule order) |
-| W-5 | the FIFO gap: `lattice/10_fifo_gap`'s node `{a, b}` holds a stale `p`, where the stratified reading gives `{a, b, q}` | D2 (stratum order) |
-| W-6 | members of R past the oracle's limit hold a fact whose `absent` guard their own fixpoint falsifies: `features/01`, 24 754 of 64 655 nodes (`ein solve FILE --json-summary`, `monotonicity.state`, 2026-11-05), `features/04_open`, `square-unique/*` | D2, D7 |
+| inventory id | what is false | decision | row |
+|---|---|---|---|
+| W-2 | `features/07`'s R depends on which of its two priority-200 rules is written first: as written R = {∅, {(q one)}}, swapped R = {∅, {(p one)}} | D2 (rule order) | `W8/f07-rules-swapped`, witness [`f07-rules-swapped.ein`](../../examples/ein-bugs/wrong-answers/f07-rules-swapped.ein); primary `right` (D)'s refusal, the one reading that gives either order one answer |
+| W-5 | the FIFO gap: `lattice/10_fifo_gap`'s node `{a, b}` holds a stale `p`, where the stratified reading gives `{a, b, q}` | D2 (stratum order) | `W8/fifo-gap`, witness `examples/lattice/10_fifo_gap.ein`; primary `right` admission in stratum order |
+| W-6 | members of R past the oracle's limit hold a fact whose `absent` guard their own fixpoint falsifies: `features/01`, 24 754 of 64 655 nodes (`ein solve FILE --json-summary`, `monotonicity.state`, 2026-11-05), `features/04_open`, `square-unique/*` | D2, D7 | `W8/corner-house`, the cheapest of the five (`examples/saturation/square-unique/corner-house.ein`, 5 595 of 65 389, 1.4 s); primary `right` (C), no member of R holding a stale fact |
+
+With `W8/features-07`, this page owns four rows.
 
 **Five labels.** None moves an answer. Each is a label the detector or the
 static check prints or reads, and each is decided with the reading it labels.

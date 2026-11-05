@@ -263,6 +263,29 @@ The untyped program is `86df5456`'s file, and `model_set_report.rs` writes it
 into a scratch for its own purpose. Recorded, not re-scoped: M1f re-scopes
 itself.
 
+**A witness under R, and a register row (2026-11-05).** M1e2's
+[S1e2.2.25](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md)
+wrote the shape § Context sketches for the walk as a nine-line program over
+R, on the user's ruling of that day
+([Q-M1e2.16](../../m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)
+(5), the inventory of 2026-11-05's W-15):
+[`oblig-derived-activator.ein`](../../../examples/ein-bugs/wrong-answers/oblig-derived-activator.ein),
+`std.algebra`'s `total-owed` over `likes`, stated, and over `drinks`, whose
+activator a rule derives from any `likes` fact. The obligations rung builds H
+from the debts root owes, `{(likes Ann Soup)}`, so the node told it owes a
+`drinks` has no candidate that pays it, and R is empty, every alive node
+owing, where the control that states the activator,
+`oblig-derived-activator-declared.ein`, has R one state, `{(drinks Ann Tea),
+(likes Ann Soup)}` (`ein solve FILE` and `ein oracle FILE` at `94c75204`,
+release and debug alike). M1e2's Q-M1e2.10 decline reads an obligation's
+guard over D, and root has no plan of this one. It is a register row,
+**`W26/oblig-derived-activator`**, `open`, reviewed `deferred`, with this
+stage as its `owner`, which the milestone's close names; its `right` is (A),
+the control's state, with (B), (C) and (D) as alternatives. The walk's tree
+is gone (M1e2 S1e2.1c.5), so what this stage now owes is the same question
+asked of R: what H is, or what a node's search does, when a node is told of
+a debt root was not.
+
 **Why this left S1e.1.1.** The stage that held it is *three soundness probes*,
 and two of them — Q4 and Q5 — are about a search path that exists. This one is
 about what a hypothesis set *is* when the theory can extend it mid-search,

@@ -301,7 +301,16 @@ constrained-reasoning research.
   derivation never recorded as an alternative), and W26, M1f S1f.10.6's (an
   obligation whose activator a node derives, Q-M1e.11), W-10 and W-15 shown
   by the stage's probes; schema `/10`: 96 fixed, 10 open (every one
-  deferred) and 1 not wrong.
+  deferred) and 1 not wrong. Its re-take found two modes disagreeing, which
+  is a finding and not a deferred row: past `--region-limit` on a program
+  the static check flags, `--minimal` and `--maximal` label every member
+  met as on their line (65 214 states on `square-unique/corner-house`,
+  2026-11-05), where describe certifies one minimal state and says the
+  maximal line is not known. The user ruled it the same day as recommended
+  (Q-M1e2.19): S1e2.2.26 files it as W27 and fixes the line modes to
+  certify what describe certifies, before P1e2.3's S1e2.3.8–.10 and the
+  close. F21, F22 and M1f's S1f.10.6 each list the rows they own, and the
+  milestone's acceptance names all ten.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

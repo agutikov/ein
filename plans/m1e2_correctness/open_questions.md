@@ -32,6 +32,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.16](#q-m1e216--what-does-the-close-do-with-the-inventorys-items) | What does the close do with the inventory's items? | [the inventory of 2026-11-05](inventory_2026-11-05.md); S1e2.2.22–.25, S1e2.3.8, S1e2.3.10, F21, F22, F23 | **ruled 2026-11-05: as recommended**, put to the user the same day with the inventory the user asked for before the close: F1 and F2 are W22 and W23, fixed before the close; `_` in a guard, a premise that is not a form and a nested unbound relation or keyword pair refused at load (W24); W-8 and W-10 F22's; a reloaded dump's provenance S1e2.3.8's, `refuted by` and `--json-report`'s rows S1e2.3.10, the detector's labels F21's; the eleven diagnostics F23; the owned wrong answers with no row filed `open`, deferred (S1e2.2.25); the close's re-take the register's tests and the inventory's sweep |
 | [Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) | Where does a keyword end? | [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md) (W22) | **ruled 2026-11-05: (i)(a) and (ii)(a), as recommended**, put to the user the same day by T1e2.2.22.1: (i) a keyword ends at the word boundary `00_ebnf.md` § 1 states, so `(neq-1 ?x)` stays `neq` and `-1` (not (b), a parse error, nor (c), `neq-1` a name); (ii) a trace word read whole, which has no other reading, is a parse error (not (b), the six trace words left matching as a prefix). **Built 2026-11-05** by S1e2.2.22 (`ed45a470`): W22's fourteen rows fixed |
 | [Q-M1e2.18](#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) | What else in a rule reads nothing, in silence? | [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24) | **ruled 2026-11-05: (i)(a), (ii)(a), (iii)(a), (iv)(a), (v)(a), as recommended**, put to the user the same day by T1e2.2.24.1: a form, a variable no earlier premise binds and a keyword pair as a guard's argument are refused at load; a relation parameter its activator binds to a nested fact is refused at load where the activator is written and by the compiler where a rule derives it; each a W24 row, filed and fixed by S1e2.2.24's T2; `empty_absent.ein` and `unbound_head.ein` refused at load and moved to `examples/broken/load/`. **Built 2026-11-05** by S1e2.2.24 (`3ab9a231`): W24's seven rows fixed |
+| [Q-M1e2.19](#q-m1e219--what-do---minimal-and---maximal-answer-past-the-limit) | What do `--minimal` and `--maximal` answer past the limit? | [S1e2.2.26](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md) (W27) | **ruled 2026-11-05: (1) and (2), as recommended**, put to the user the same day by S1e2.2.25's re-take (T1e2.2.25.1): past `--region-limit` on a flagged program the line modes label every member met as on their line (65 214 on `square-unique/corner-house`), where describe certifies one minimal state; S1e2.2.26 files it as W27 and fixes it before the close, `--minimal` certifying exactly what describe certifies and `--maximal` none, the maximal line not known |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -2051,3 +2052,66 @@ two fixtures moved. What it moved beyond step 1's list was measured on a
 prototype before the edit: the 31 probes the four refuse and two extras, no
 corpus program; and one matcher unit test whose program (ii) refuses, kept
 with parameters (`defined_behaviour.md` § 4.9).
+
+## Q-M1e2.19 — What do `--minimal` and `--maximal` answer past the limit?
+
+Put to the user on 2026-11-05 by
+[S1e2.2.25](p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md)'s re-take
+([T1e2.2.25.1](p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md#the-finding-two-modes-disagree-past-the-limit)),
+which stopped on it: it is none of that stage's items, and two modes of one
+tool disagreeing is a finding, not a deferred row.
+
+**The finding.** Past `--region-limit`, on a program the static check flags,
+describe (`ein solve FILE`) certifies the members it met with no member of R
+met below them, which is `{∅}` when ∅ is in R, and says the maximal line is
+not known. `ein solve FILE --minimal` labels every member it met as on the
+minimal line, and `--maximal` every member as on the maximal line:
+
+- `examples/saturation/square-unique/corner-house.ein`, at the default limit
+  of 16 (118 candidates): describe lists one minimal state, ∅; `--minimal`
+  prints *minimal line 65 214 states (a lower bound: the run stopped first)*
+  and labels each state `· minimal`, 65 213 of them non-empty sets with ∅
+  below them; `--maximal` labels the same 65 214 `· maximal`, ∅ among them.
+  The summary agrees with each read-out (`lines: ["minimal"]` under
+  `--minimal`, `lines: []` under describe, for one state).
+- `features/01` (64 655 states), `features/04_open` (64 761),
+  `square-unique/cul-de-sac` (64 817) and `/terminus` (64 514) the same, and
+  `lattice/06_friends_tables` labels 21 minimal where describe certifies 1.
+- The smallest: `examples/lattice/10_fifo_gap.ein --region-limit 1`.
+  `--minimal` labels ∅ and `{(a one)}` minimal, `--maximal` the same two
+  maximal, and `ein oracle` gives minimal `{∅}` and maximal `{(a one), (b
+  one)}`.
+
+Release and debug alike (`ein solve FILE`, `--minimal`, `--maximal`,
+`--json-summary`, at `94c75204`, 2026-11-05). The approved interface says
+otherwise ([`solve_interface.md` § 3.3](p1e2.1a_the_solution_region/solve_interface.md#33-a-program-the-static-check-flags):
+past the limit, *states printed as members of R and not as line members*).
+The cause is `explore::flagged`: past the limit a line mode asking describe
+is not one of the questions answered in layer order, so it asks
+`cube_in_order` with `Which::All` and then labels the members it met with
+its own line. Nothing holds the line modes past the limit: `explore.rs`
+holds every mode to the oracle within its limit, and no corpus run asks a
+line mode of these programs.
+
+Put to the user the same day, in two parts, with the agent's
+recommendation:
+
+- **(1) Where it goes.** A new stage, S1e2.2.26, files it as a register row,
+  W27, and fixes it before the close: after S1e2.2.25 and before P1e2.3's
+  S1e2.3.8–.10 — **the agent's recommendation**. It is a mode disagreeing with
+  describe and, under a lowered limit, with the oracle (*one tool, consistent
+  answers*), and no followup owns it.
+- **(2) What the fix answers.** The line modes answer what describe
+  certifies: past `--region-limit` on a flagged program, `--minimal` lists
+  the members met with no member of R met below them (`{∅}` when ∅ is in R),
+  and `--maximal` lists none and says the maximal line is not known (it
+  needs the whole cube) — **the agent's recommendation**.
+
+**Ruled 2026-11-05: (1) and (2), as recommended** (the user, through the
+coordinator, the same day). S1e2.2.26 files it as W27 and fixes it before
+the close, after S1e2.2.25 and before P1e2.3's S1e2.3.8–.10. Past
+`--region-limit` on a program the static check flags, `--minimal` certifies
+exactly what describe certifies, a met member with no member of R met below
+it (`{∅}` when ∅ is in R), counts the other members met and leaves them to
+`--dump-answer`; `--maximal` certifies none and says the maximal line is not
+known, as describe does. Owner: [S1e2.2.26](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md) (W27).

@@ -23,13 +23,17 @@ That residual is this followup's too, held by no register row: the search
 it needs is the one the cap's needs, a target's derivations combined where
 a per-fact choice cannot see the saving.
 
-**What it owns.** One register row, `W10/alt-cap-shared`
-([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)), `open`,
-reviewed `deferred`, with F22 as its `owner`. The milestone's acceptance,
-amended by the user on 2026-11-03 for exactly this kind of row, names it at
-M1e2's close beside `W8/features-07` (F21's). Since 2026-11-05, the rows S1e2.2.25 files for
-W-8 and W-9 and the residual of W23 too
+**What it owns.** Five register rows
+([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)), each
+`open`, reviewed `deferred`, with F22 as its `owner`: `W10/alt-cap-shared`
+(S1e2.2.11, 2026-11-04), and since M1e2
+[S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md)
+(2026-11-05) `W10/fork-delta-order`, `W10/closure-shared-given`,
+`W10/second-preparation` and `W25/guard-only-second`
 ([§ Handed over by M1e2's inventory](#handed-over-by-m1e2s-inventory-2026-11-05)).
+The milestone's acceptance, amended by the user on 2026-11-03 for exactly
+this kind of row, names each at M1e2's close beside F21's. W23's residual,
+the exact core past the search's budget, is this followup's and no row's.
 
 ## The case
 
@@ -98,13 +102,18 @@ pre-close"*) that each is this followup's:
 
 | inventory id | what | witness | in M1e2 |
 |---|---|---|---|
-| W-8 | a derivation with no premises, from an activator a node derived, is never recorded as an alternative, so rule priority picks a three-fact core over a one-fact one | [`guard_only_second.ein`](../m1e2_correctness/inventory_2026-11-05/probes/guard_only_second.ein) against [`_first`](../m1e2_correctness/inventory_2026-11-05/probes/guard_only_first.ein) | a row, filed by [S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) |
-| W-9 | `fork-delta-order`'s core has the smallest size but is not the canonical core an uncapped store gives | `examples/ein-bugs/fork-delta-order.ein` | a row, filed by S1e2.2.25 (S1e2.2.12's default 2) |
-| W-10 | the closure estimate counts a given shared by two premises twice | none | S1e2.2.25 tries a nine-line probe; without one it is named here |
+| W-8 | a derivation with no premises, from an activator a node derived, is never recorded as an alternative, so rule priority picks a three-fact core over a one-fact one | [`guard-only-second.ein`](../../examples/ein-bugs/wrong-answers/guard-only-second.ein) against [`guard-only-first.ein`](../../examples/ein-bugs/wrong-answers/guard-only-first.ein), the inventory's probes | **`W25/guard-only-second`**, filed by [S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md): N `{(p a)}`'s core `(b a) (p a) (seed a)`, right `(p a)`. A store with no cap gives the three facts too: the derivation is never offered to the list |
+| W-9 | `fork-delta-order`'s core has the smallest size but is not the canonical core an uncapped store gives | `examples/ein-bugs/fork-delta-order.ein` | **`W10/fork-delta-order`**, filed by S1e2.2.25 (S1e2.2.12's default 2): core `(g G08) (h H40) (on A) (on B)`, right the canonical `(g G01) (h H01) (on A) (on B)`, contested (any four-fact core is the smallest) |
+| W-10 | the closure estimate counts a given shared by two premises twice | [`closure-shared-given.ein`](../../examples/ein-bugs/wrong-answers/closure-shared-given.ein), S1e2.2.25's probe, against its `-control` | **`W10/closure-shared-given`**, filed by S1e2.2.25: `x-uv`'s premises `(u K) (v K)` rest on the one given `(g K)` and estimate 2, which does not lower a full list's 2, so root's core is `(c C01) (d C01)`, right `(g K)` |
+| S1e2.2.23's note | a member of N whose core `--dump-answer` and `--trace` take after the run, through `region::Nodes::refutation`, is not the smallest | `examples/zebra2.ein` | **`W10/second-preparation`**, filed by S1e2.2.25: `{(nation-loc Ukrainian House-2), (smoke-loc Old_Gold House-4)}`'s core 18 facts, right 17. **The mechanism decides which derivations the cap keeps**: `Nodes::new` prepares the already-saturated root a second time, root's store unmoved (388 facts, a scratch diagnostic at `94c75204`), but the snapshot a node resumes from is written anew, so the node's derivations arrive in another order and the cap keeps others. No smaller witness was found; the row's run costs 9.0 s in release and 10.5 s in debug (2026-11-05) |
 | W23's residual | a core search cut at its budget (`ExplanationBudget`: 64 environments per fact, 64 rounds) prints a frontier that may not be the smallest | `examples/ein-bugs/wrong-answers/core-search-cut.ein`, the inventory's `F2_core_cut.ein` | [S1e2.2.23](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md) made every surface say a core was cut, and at which cap (`be7893d9`); the exact core past the budget is this followup's. The corpus cuts 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s six at the rounds and the `zebra2` family's at the environments, and a budget of 1 024 environments and 1 024 rounds gives each the same core and the witness its eight `y` facts, at no measurable cost (`ein solve FILE --dump-answer DIR`, 2026-11-05, S1e2.2.23 T1) |
 
 They share this page's proposal: the search they need combines a target's
 derivations where a per-fact choice or a bounded list cannot see the saving.
+W-8 needs one thing more, a premise-less derivation offered to the search at
+all; and the second-preparation row needs the search to read the
+derivations a node's own preparation recorded, which re-deriving on demand
+gives by construction.
 
 ## Trigger
 
