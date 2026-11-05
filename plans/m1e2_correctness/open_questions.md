@@ -31,6 +31,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. **Built 2026-11-05** by S1e2.2.21 (`67d07fab`, `3fb9d712`): W21's six rows fixed, no answer moved by the lazy core |
 | [Q-M1e2.16](#q-m1e216--what-does-the-close-do-with-the-inventorys-items) | What does the close do with the inventory's items? | [the inventory of 2026-11-05](inventory_2026-11-05.md); S1e2.2.22–.25, S1e2.3.8, S1e2.3.10, F21, F22, F23 | **ruled 2026-11-05: as recommended**, put to the user the same day with the inventory the user asked for before the close: F1 and F2 are W22 and W23, fixed before the close; `_` in a guard, a premise that is not a form and a nested unbound relation or keyword pair refused at load (W24); W-8 and W-10 F22's; a reloaded dump's provenance S1e2.3.8's, `refuted by` and `--json-report`'s rows S1e2.3.10, the detector's labels F21's; the eleven diagnostics F23; the owned wrong answers with no row filed `open`, deferred (S1e2.2.25); the close's re-take the register's tests and the inventory's sweep |
 | [Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) | Where does a keyword end? | [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md) (W22) | **ruled 2026-11-05: (i)(a) and (ii)(a), as recommended**, put to the user the same day by T1e2.2.22.1: (i) a keyword ends at the word boundary `00_ebnf.md` § 1 states, so `(neq-1 ?x)` stays `neq` and `-1` (not (b), a parse error, nor (c), `neq-1` a name); (ii) a trace word read whole, which has no other reading, is a parse error (not (b), the six trace words left matching as a prefix). **Built 2026-11-05** by S1e2.2.22 (`ed45a470`): W22's fourteen rows fixed |
+| [Q-M1e2.18](#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) | What else in a rule reads nothing, in silence? | [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24) | **open, put to the user 2026-11-05** by T1e2.2.24.1: (i) a form, (ii) a variable no earlier premise binds and (iii) a keyword pair as a guard's argument, and (iv) a relation parameter its activator binds to a nested fact, each reading nothing in silence and written by no program; recommended: each refused at load, a W24 row; (v) `examples/broken/compile/empty_absent.ein` writes the stage's second shape, refused either way: recommended, refused at load and moved to `broken/load/` with `unbound_head.ein` |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1922,3 +1923,106 @@ prototyped; W22's fourteen rows are fixed, each witness answering its twin's
 R on every surface in either build, and no answer outside W22's programs
 moved. `00_ebnf.md` § 1's fact 1 and § 3, and `defined_behaviour.md` § 1.4,
 say so since T1e2.2.22.3.
+
+## Q-M1e2.18 — What else in a rule reads nothing, in silence?
+
+Put to the user on 2026-11-05 by
+[S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md)'s step 1
+([T1e2.2.24.1](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md#task-t1e22241--the-witnesses-banked-every-shape-found-w24-filed-every-move-listed)).
+The user ruled the stage's three shapes on Q-M1e2.16 (1): `_` in a guard, a
+premise that is not a form, and a pattern inside a pattern whose relation is
+a variable no parameter binds or that holds a keyword pair, each refused at
+load. Step 1 probed every argument kind in a guard, every premise that is not
+a form and every place a nested pattern can take, in a rule, an hrule and an
+obligation (165 probes, `build/s1e2.2.24/shapes/`, at `32736ac8`, release and
+debug alike). It found **four more shapes that read nothing, in silence**,
+which the ruling does not name. No corpus, stdlib or `tests/` program writes
+any of them: a prototype that reports each, run with `ein saturate` over the
+sweep's 690 files (every `.ein` under `examples/`, `tests/`, `stdlib/` and
+`corpus/fuzz_findings/`, and the stages' probes), finds them only in this
+stage's probes and one S1e2.2.20 probe (`build/s1e2.2.24/scan.py`,
+2026-11-05).
+
+**(i) A form as a guard's argument.** A guard's arguments are raw IR nodes
+(`compile.rs`' `guard_arg`, `plan::GuardArgKind::Node`), and a form is one,
+so it is equal to no value: `(eq ?x (f a))` never holds, even where `?x` is
+bound to the fact `(f a)`, and `(neq ?x (f a))` always holds. Two forms
+compare as written: `(eq (f a) (f a))` holds, and `(eq (f ?y) (f ?z))` does
+not, whatever `?y` and `?z` are. It is `_`'s mechanism; a form, unlike `_`,
+names a value a fact can hold (a nested fact, Q40).
+
+- **(a) Refuse it at load, as `_` is** — **the agent's recommendation**.
+  No program writes one, and a guard's arguments become a variable, a name,
+  a string or an integer.
+- **(b) Lower a ground form to the nested fact it names**, so `(eq ?x (f a))`
+  holds where `?x` is that fact, and refuse a form that holds a variable or
+  `_`. It makes a guard able to compare nested facts, which nothing asks for,
+  and the compiler must intern a fact the store may not hold.
+
+**(ii) A guard on a variable no earlier premise binds.** A guard is judged
+where it is written, and a variable not yet bound compares as a null, equal
+only to another unbound one (`plan::GuardArgKind::Reg`). So a variable bound
+nowhere reads nothing, `(eq ?x ?u)` never holds, `(neq ?x ?u)` always does
+and `(eq ?u ?v)` holds; and so does one bound only by a later premise:
+`(and (eq ?x a) (p ?x))` never fires, and `(and (neq ?x a) (p ?x))` fires
+for every `?x`, `a` included. The second is the shape a user is likeliest to
+write. Under an `absent`, a variable the enclosing premises bound before it
+counts as bound, and one bound after it does not, as the compiler scopes it.
+
+- **(a) Refuse it at load**, naming the variable: a guard compares values
+  the premises before it bind — **the agent's recommendation**. No program
+  writes one.
+- **(b) Move a guard after the premises that bind its variables**, since a
+  conjunction does not order its members, and refuse one whose variable
+  nothing binds. It changes the compiled plan's step order, which the plan
+  shape prints, and gives a guard a meaning its position does not.
+
+**(iii) A keyword pair as a guard's argument.** `(eq ?x :k a)` parses (`eq`
+is a generic list; `(neq ?x :k a)` is a parse error, `NeqForm` being
+shape-pinned) and compares the pair as a raw IR node, so it never holds.
+
+- **(a) Refuse it at load** — **the agent's recommendation**.
+- **(b) Drop it, as Q32 drops a top-level pattern's keyword pair**, which
+  leaves `(eq ?x)`: the compiler refuses that at its arity, with a
+  `CompileError` in the Python spelling (F23's).
+
+**(iv) A relation parameter its activator binds to a nested fact.** `(rule r
+(?R) :match (box (?R b)) …)` with the activator `(r (a b))`: a nested fact
+binds no parameter (`compile.rs`' seed), so the inner pattern is an opaque
+slot and never matches, in silence; at the top level, `(?R b)`, compilation
+stops with the `CompileError` in the Python spelling. The rule's shape is
+fine; its activator binds nothing. The loader refuses an activator that
+binds such a parameter to an integer (S1e2.2.4's
+`validate_relation_parameters`).
+
+- **(a) Refuse it at load where the activator is written**, a fact or a
+  literal in a rule's `:assert`, as an integer is, and in the compiler where
+  a rule derives it through a variable — **the agent's recommendation**.
+- **(b) Leave it**: the top level keeps its `CompileError` (F23's), and the
+  nested pattern keeps matching nothing.
+
+**(v) A corpus fixture that writes the second shape.**
+`examples/broken/compile/empty_absent.ein`, `(and (p ?x) (absent ?x))`, is
+S1a.3.1's compile-negative fixture for a premise the compiler returns no
+steps for. It is refused today by a `CompileError` in the Python spelling,
+*`` `(absent …)` sub-plan compiled to no steps in SForm(head=Atom(name='absent'), args=(Var(name='x'),)) … ``*,
+exit 1, and the load pass refuses it, exit 1, with its line: its answer does
+not move, its line does, and it no longer fails at compile, which is what
+`examples/broken/compile/` holds (its README, and `ein-corpus`'s
+`negatives_are_grouped_by_where_they_fail`). `unbound_head.ein` beside it is
+the top-level `(?R ?x)`, which the stage file's default 1 already moves to
+the load line, with the same consequence.
+
+- **(a) Refuse it at load with the rest, and move both fixtures to
+  `examples/broken/load/`**, `load-negative`, each `.expected` its load line
+  — **the agent's recommendation**. No answer moves, and the Python spelling
+  goes from both.
+- **(b) Leave an `(absent X)` whose whole body is no form to the compiler**,
+  so `empty_absent.ein` keeps its `CompileError` (F23's to respell), and only
+  `unbound_head.ein` moves.
+
+Under every option no answer moves outside this stage's probes: no program
+writes any of (i)–(iv), and (v) moves a refused program's line, not its exit
+(step 1's sweep, 693 files, 18 018 runs, 2026-11-05). The recommendation
+refuses each of (i)–(iv) at load in S1e2.2.24, each a W24 row filed and fixed
+in T2 with its probe as the witness, as W21's `forall` rows were.

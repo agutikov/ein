@@ -107,6 +107,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 ///   string in a rule's `:assert` (an hrule's in the second), M1e2's W18
 ///   (S1e2.2.18): a string a rule writes is the symbol it names, so a name of
 ///   the program, as the atom `lbl` would be.
+/// - `wrong-answers/bare-premise.ein` and `nested-unbound-head.ein` — `z`, a
+///   rule's `:assert` constant, and `b`, inside `(box (a b))`, M1e2's W24
+///   witnesses (S1e2.2.24), which load until the stage's fix refuses them.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
@@ -116,7 +119,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// the rest of a name the parser split after a keyword, `(neqw ?x)` read as
 /// `(neq w ?x)`, which made `w` a name of the program. A keyword is a whole
 /// word since, and `neqw` the name it spells.
-const SEEDED: [(&str, &[&str]); 25] = [
+const SEEDED: [(&str, &[&str]); 27] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -154,6 +157,10 @@ const SEEDED: [(&str, &[&str]); 25] = [
         &["`Ann`, asserted by hrule `guess`"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/bare-premise.ein",
+        &["`z`, asserted by rule `a`"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
         &["`Z`, asserted by rule `spawn`"],
     ),
@@ -164,6 +171,10 @@ const SEEDED: [(&str, &[&str]); 25] = [
     (
         "examples/ein-bugs/wrong-answers/negative-only.ein",
         &["`Z`, in (not (q Z A))"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/nested-unbound-head.ein",
+        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein",

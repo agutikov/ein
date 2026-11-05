@@ -1,0 +1,33 @@
+;;; A pattern inside a pattern whose relation no parameter binds matches
+;;; nothing, in silence — M1e2 **W24**, register row
+;;; `W24/nested-unbound-head` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.24 (2026-11-05) from the inventory of 2026-11-05's W-14 (its probe
+;;; `nested_unbound_head.ein`, the program unchanged), ruled by the user on
+;;; 2026-11-05 (Q-M1e2.16 (1)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(box (a b))`, and one rule whose pattern `(box (?r b))` names
+;;; the relation of its inner pattern by `?r`, a variable the rule has no
+;;; parameter for.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A relation is named by a name or by a parameter its activator binds
+;;; (Q29), and `?r` is neither. The user ruled that such a pattern is
+;;; refused at load, as a range and a head `_` are, with a line in Ein's
+;;; spelling naming the rule and the clause. Every command that loads the
+;;; program exits 1 (`ein test`: 2). The same pattern at the top level,
+;;; `(?r b)`, stops compilation (`examples/ein-bugs/unbound-relation-head.ein`).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, and the rule compiler leaves `(?r b)` an opaque slot
+;;; (`compile.rs`' `slot`, `plan::Slot::Opaque`), which unifies with
+;;; nothing, so `r` never fires: root holds no `hit`, exit 0, with no word
+;;; of `?r` (`ein saturate --dump FILE` and `ein solve FILE` at `32736ac8`,
+;;; release and debug; every mode and `ein oracle` the same).
+
+(relation box Node) (relation hit Node) (relation a Node)
+(box (a b))
+(rule r () :match (box (?r b)) :assert (hit z))

@@ -1324,6 +1324,24 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W23's twin, banked by S1e2.2.23: the witness's shape with five pairs, 32 environments under the core search's 64, so root's core is the smallest, `(y1 k) … (y5 k)`, and no surface says it was cut."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/wild-in-guard`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-12: `_` as an argument of `eq` and `neq`. A guard compares `_` as a raw IR node, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds: root derives `(hit-neq a)` and `(hit-both a)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, both runs exit 1 with the loader's line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/bare-premise.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/bare-premise`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-13: `:match _`, `(and (hit ?y) _)` and `:match foo`. The rule compiler drops a premise that is not a form, so each rule fires as if it were not written: root derives `(r1 z)`, `(r2 w)` and `(r3 z)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, both runs exit 1 with the loader's line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-unbound-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/nested-unbound-head`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-14: `(box (?r b))`, a pattern inside a pattern whose relation `?r` no parameter binds. The rule compiler leaves it an opaque slot, which matches nothing, so `r` never fires: root holds no `hit`, exit 0, in silence, where the top-level `(?r b)` stops compilation. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, both runs exit 1 with the loader's line."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and

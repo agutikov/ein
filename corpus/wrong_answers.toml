@@ -466,6 +466,19 @@
 # rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
 # followup.
 #
+# **W24 was filed on 2026-11-05 by S1e2.2.24** (T1e2.2.24.1), from the
+# inventory of 2026-11-05's W-12, W-13 and W-14, on the user's ruling of that
+# day (Q-M1e2.16 (1): refuse each at load, as a range and a head `_` are): a
+# rule shape that reads nothing, in silence. Three rows, all `open`, one per
+# shape: `_` as a guard's argument, which a guard compares as a raw IR node,
+# so `(eq ?x _)` never holds and `(neq ?x _)` always does; a premise that is
+# not a form, which the rule compiler drops, so the rule fires as if it were
+# not written; and a pattern inside a pattern whose relation is a variable no
+# parameter binds, which matches nothing. Each row's `right` is the
+# loader's refusal, and its witness is the inventory's probe, the program
+# unchanged. A row's `wrong` is a region run's at `32736ac8`. The register
+# reads **89 rows fixed, 5 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -6313,6 +6326,149 @@ relations   = []
 models      = []
 core        = ["(x1 k)", "(x2 k)", "(y1 k)", "(y2 k)", "(y3 k)", "(y4 k)", "(y5 k)", "(y6 k)", "(y7 k)", "(y8 k)"]
 core_status = "cut-environments"
+
+# ══ W24 — a rule shape that reads nothing, in silence ═════════════════════════
+
+[[case]]
+id       = "W24/wild-in-guard"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-12, parked by S1e2.2.20 § Notes (its default 6), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/wild_in_guard.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq and hit-both are 1 and hit-eq 0 at 32736ac8, the candidates' relation `hit-eq` the one a state's model names"
+open_because = "A guard's arguments are raw IR nodes (compile.rs' `guard_arg`, plan::GuardArgKind::Node), and `_` is equal to no value and to another `_`, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds, and nothing refuses it; S1e2.2.24's fix refuses `_` as a guard's argument at load"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 32736ac8 (2026-11-05): the program loads, root derives (hit-neq a) and (hit-both a) and no hit-eq (`ein saturate --dump`), and the minimal line is root's state, exit 0, with no word of the wildcard; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit-eq"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(hit-eq a)"]]
+
+[case.right]
+reading   = "Q-M1e2.16 (1), the user's ruling of 2026-11-05: `_` in a guard is refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c))"
+refused   = true
+derived   = "A guard compares two values, and `_` names none: it stands for an argument of a pattern (01_grammar.md's WILDCARD row). So each of the three guards is refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit-eq"]
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W24/bare-premise"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/bare-premise.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-13, parked by S1e2.2.20 § Notes, on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/bare_premise.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root holds (r1 z), (r2 w) and (r3 z) at 32736ac8, each derived by a rule whose premise was dropped"
+open_because = "The rule compiler drops a premise that is not a form (compile.rs' `premise`, whose `_ => return Ok(())` arm takes it), so `a` and `c` fire with no premise and `b` on `(hit ?y)` alone, and nothing refuses it; S1e2.2.24's fix refuses such a premise at load"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 32736ac8 (2026-11-05): the program loads, root derives (r1 z), (r2 w) and (r3 z), and the minimal line is root's state, exit 0, with no word of the premises; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit", "r1", "r2", "r3"]
+models    = [["(hit w)", "(r1 z)", "(r2 w)", "(r3 z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 12
+k_c      = 16
+minimal  = [[]]
+maximal  = [["(hit z)", "(r1 w)", "(r2 z)", "(r3 w)"]]
+
+[case.right]
+reading   = "Q-M1e2.16 (1), the user's ruling of 2026-11-05: a premise that is not a form is refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c))"
+refused   = true
+derived   = "A premise is a pattern (relation argument …), a guard, an (absent …), or an (and …) or (or …) of premises, and `_` and `foo` are none. So the three rules are refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit", "r1", "r2", "r3"]
+models    = [
+  ["(hit w)", "(r1 z)", "(r2 w)", "(r3 z)"],
+]
+
+[[case]]
+id       = "W24/nested-unbound-head"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/nested-unbound-head.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-14 (S1e2.2.20 § What was built, `plan.rs`' Slot::Opaque), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/nested_unbound_head.ein`, the program unchanged. Its twin is the refusal, so no file. The row stands for the shape's other half too, a pattern inside a pattern that holds a keyword pair, which the same opaque slot reads, and S1e2.2.24's tests hold. By value: root.facts_by_relation.hit is 0 at 32736ac8"
+open_because = "The rule compiler leaves a pattern inside a pattern whose relation is a variable no parameter binds an opaque slot (compile.rs' `slot`, plan::Slot::Opaque), which unifies with nothing, so `r` never fires, and nothing refuses it, where the same pattern at the top level stops compilation; S1e2.2.24's fix refuses it at load"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 32736ac8 (2026-11-05): the program loads, `r` never fires, root holds no hit, and the minimal line is root's state, exit 0, with no word of ?r; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["a", "box", "hit"]
+models    = [["(box (a b))"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 64
+k_c      = 64
+minimal  = [[]]
+maximal  = [["(a b)", "(a z)", "(box b)", "(box z)", "(hit b)", "(hit z)"]]
+
+[case.right]
+reading   = "Q-M1e2.16 (1), the user's ruling of 2026-11-05: a pattern inside a pattern whose relation no parameter binds is refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c))"
+refused   = true
+derived   = "A relation is named by a name or by a parameter its activator binds (Q29), and `?r` is neither, so `(box (?r b))` is refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["a", "box", "hit"]
+models    = [
+  ["(box (a b))"],
+]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

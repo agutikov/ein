@@ -272,6 +272,18 @@ constrained-reasoning research.
   `null` where no core was taken) and a sentence in every text surface,
   which `ein-infer/tests/corpus_cores.rs` holds over the corpus: 89 fixed, 2
   open (both deferred to a followup) and 1 not wrong.
+  S1e2.2.24 filed W24 the same day, from the inventory's W-12, W-13 and W-14
+  (on Q-M1e2.16 (1): refuse each at load, as a range and a head `_` are):
+  `_` as a guard's argument, a premise that is not a form, and a pattern
+  inside a pattern whose relation no parameter binds, each reading nothing
+  in silence; three rows, each witness the inventory's probe: 89 fixed, 5
+  open and 1 not wrong. Its step 1 found four more shapes that read nothing,
+  a form, a keyword pair and a variable no earlier premise binds as a
+  guard's argument, and a relation parameter its activator binds to a nested
+  fact, none written by any program, and one corpus fixture that writes the
+  second shape, `examples/broken/compile/empty_absent.ein`, refused either
+  way; they are Q-M1e2.18, put to the user (step 1's sweep, 693 files and
+  18 018 runs, 2026-11-05).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

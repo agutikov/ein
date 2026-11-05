@@ -1,0 +1,33 @@
+;;; `_` in a guard reads nothing, in silence — M1e2 **W24**, register row
+;;; `W24/wild-in-guard` (`corpus/wrong_answers.toml`), banked by S1e2.2.24
+;;; (2026-11-05) from the inventory of 2026-11-05's W-12 (its probe
+;;; `wild_in_guard.ein`, the program unchanged), ruled by the user on
+;;; 2026-11-05 (Q-M1e2.16 (1)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(p a)`, and three rules whose guard writes the wildcard `_`
+;;; as an argument of `eq` or `neq`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A guard compares two values, and `_` names none: it stands for an
+;;; argument of a pattern (`01_grammar.md`'s `WILDCARD` row). The user ruled
+;;; that such a guard is refused at load, as a range and a head `_` are, with
+;;; a line in Ein's spelling naming the rule and the clause. Every command
+;;; that loads the program exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, and each guard compares `_` as a raw IR node, which
+;;; is equal to no value and to another `_`: `(eq ?x _)` never holds, `(neq
+;;; ?x _)` always does, and `(eq _ _)` holds. Root derives `(hit-neq a)` and
+;;; `(hit-both a)` and no `hit-eq`, exit 0, with no word of the wildcard
+;;; (`ein saturate --dump FILE` and `ein solve FILE` at `32736ac8`, release
+;;; and debug; every mode and `ein oracle` the same).
+
+(relation p Node) (relation hit-eq Node) (relation hit-neq Node) (relation hit-both Node)
+(p a)
+(rule e () :match (and (p ?x) (eq ?x _)) :assert (hit-eq ?x))
+(rule n () :match (and (p ?x) (neq ?x _)) :assert (hit-neq ?x))
+(rule b () :match (and (p ?x) (eq _ _)) :assert (hit-both ?x))
