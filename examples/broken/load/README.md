@@ -89,6 +89,22 @@ compiler, and has no fixture here because it loads
 (`ein-infer/tests/compile_semantics.rs`;
 [`defined_behaviour.md` § 4.6](../../../docs/kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
 
+A nested fact in that place is refused the same way since M1e2 S1e2.2.24
+(W24, Q-M1e2.18 (iv)): it binds no parameter, so the relation it would name
+is none (*… binds it to the fact (a b) — a relation is named by a symbol, not
+a fact*). Its witness is
+[`ein-bugs/wrong-answers/nested-fact-activator.ein`](../../ein-bugs/wrong-answers/nested-fact-activator.ein),
+and the derived one is the compiler's, beside the integer's.
+
+## Two from `../compile/` — M1e2 S1e2.2.24
+
+`empty_absent.ein`, `(absent ?x)`, and `unbound_head.ein`, `(?R ?x)` with `?R`
+no parameter, were compile-negative fixtures (S1a.3.1) until the loader began
+refusing a premise that is not a form and a relation variable no parameter
+binds (W24, the user's ruling on Q-M1e2.18 (v), 2026-11-05). Each `.expected`
+is its load line, where the compiler's `CompileError` in the Python IR's
+spelling stood; the run's exit, 1, did not move.
+
 ## Growth rule
 
 Any load error found outside this set becomes a fixture in the same commit that

@@ -479,6 +479,21 @@
 # unchanged. A row's `wrong` is a region run's at `32736ac8`. The register
 # reads **89 rows fixed, 5 open and 1 not-wrong**.
 #
+# **The user ruled Q-M1e2.18 the same day, every part as recommended, and
+# S1e2.2.24 fixed W24** (T1e2.2.24.2): the loader refuses each shape at load,
+# one line per slot in Ein's spelling, the rule and the clause named, in a
+# rule, an hrule and an obligation. The ruling added four shapes step 1
+# found, each a row filed and fixed in the same commit, its step-1 probe the
+# witness: a form, a keyword pair and a variable no premise before it binds,
+# as a guard's argument (`form-in-guard`, `kwpair-in-guard`,
+# `guard-before-binder`), and a relation parameter its activator binds to a
+# nested fact (`nested-fact-activator`), refused where the activator is
+# written and by the compiler where a rule derives it. Every row's `now` is
+# the loader's refusal, and a refused row states no `[case.region]`. Each
+# row's `[case.fixed]` carried the null id in the fixing commit. The register
+# reads **96 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to
+# a followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -537,7 +552,8 @@
 #     refused   (schema /4, M1e2 S1e2.2.5) the run refuses the program: exit 1,
 #               and this is its stderr's first line; nothing below is stated.
 #               *Forbid*'s refusal, or since M1e2 S1e2.2.20 the loader's
-#               (`kb load error: …`, W20's range and wildcard head)
+#               (`kb load error: …`, W20's range and wildcard head; W24's
+#               shapes since S1e2.2.24)
 #     error     (schema /7, M1e2 S1e2.2.18) the run ended in an error before it
 #               answered: exit 1, and this is its stderr's first line; nothing
 #               below is stated, and the row states no [case.region] (not the
@@ -6338,10 +6354,14 @@ settings = "default"
 owner    = "S1e2.2.24"
 question = ["Q-M1e2.16"]
 witness  = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-12, parked by S1e2.2.20 § Notes (its default 6), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/wild_in_guard.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq and hit-both are 1 and hit-eq 0 at 32736ac8, the candidates' relation `hit-eq` the one a state's model names"
-open_because = "A guard's arguments are raw IR nodes (compile.rs' `guard_arg`, plan::GuardArgKind::Node), and `_` is equal to no value and to another `_`, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds, and nothing refuses it; S1e2.2.24's fix refuses `_` as a guard's argument at load"
+note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-12, parked by S1e2.2.20 § Notes (its default 6), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/wild_in_guard.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq and hit-both are 1 and hit-eq 0 at 32736ac8, the candidates' relation `hit-eq` the one a state's model names. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, one per guard, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses `_` as a guard's argument, at any depth of a rule's `:match` (Q-M1e2.16 (1))"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -6353,28 +6373,15 @@ exhausted = true
 closes    = ["hit-eq"]
 models    = [[]]
 
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(hit-eq a)"]]
-
 [case.right]
 reading   = "Q-M1e2.16 (1), the user's ruling of 2026-11-05: `_` in a guard is refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c))"
 refused   = true
 derived   = "A guard compares two values, and `_` names none: it stands for an argument of a pattern (01_grammar.md's WILDCARD row). So each of the three guards is refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
 
 [case.now]
-run       = "solve --minimal"
-line      = "minimal"
-exhausted = true
-k         = 1
-relations = ["hit-eq"]
-models    = [
-  [],
-]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'e': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern; rule 'n': its :match writes (neq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern; rule 'b': its :match writes (eq _ _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern"
 
 [[case]]
 id       = "W24/bare-premise"
@@ -6385,10 +6392,14 @@ settings = "default"
 owner    = "S1e2.2.24"
 question = ["Q-M1e2.16"]
 witness  = "examples/ein-bugs/wrong-answers/bare-premise.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-13, parked by S1e2.2.20 § Notes, on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/bare_premise.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root holds (r1 z), (r2 w) and (r3 z) at 32736ac8, each derived by a rule whose premise was dropped"
-open_because = "The rule compiler drops a premise that is not a form (compile.rs' `premise`, whose `_ => return Ok(())` arm takes it), so `a` and `c` fire with no premise and `b` on `(hit ?y)` alone, and nothing refuses it; S1e2.2.24's fix refuses such a premise at load"
+note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-13, parked by S1e2.2.20 § Notes, on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/bare_premise.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root holds (r1 z), (r2 w) and (r3 z) at 32736ac8, each derived by a rule whose premise was dropped. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, one per premise, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a premise that is not a form, wherever a premise goes in a rule's `:match` (Q-M1e2.16 (1))"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -6400,28 +6411,15 @@ exhausted = true
 closes    = ["hit", "r1", "r2", "r3"]
 models    = [["(hit w)", "(r1 z)", "(r2 w)", "(r3 z)"]]
 
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 12
-k_c      = 16
-minimal  = [[]]
-maximal  = [["(hit z)", "(r1 w)", "(r2 z)", "(r3 w)"]]
-
 [case.right]
 reading   = "Q-M1e2.16 (1), the user's ruling of 2026-11-05: a premise that is not a form is refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c))"
 refused   = true
 derived   = "A premise is a pattern (relation argument …), a guard, an (absent …), or an (and …) or (or …) of premises, and `_` and `foo` are none. So the three rules are refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
 
 [case.now]
-run       = "solve --minimal"
-line      = "minimal"
-exhausted = true
-k         = 1
-relations = ["hit", "r1", "r2", "r3"]
-models    = [
-  ["(hit w)", "(r1 z)", "(r2 w)", "(r3 z)"],
-]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'a': its :match is _, and _ is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises; rule 'b': its :match writes _ as a premise of and, and _ is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises; rule 'c': its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises"
 
 [[case]]
 id       = "W24/nested-unbound-head"
@@ -6432,10 +6430,14 @@ settings = "default"
 owner    = "S1e2.2.24"
 question = ["Q-M1e2.16"]
 witness  = "examples/ein-bugs/wrong-answers/nested-unbound-head.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-14 (S1e2.2.20 § What was built, `plan.rs`' Slot::Opaque), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/nested_unbound_head.ein`, the program unchanged. Its twin is the refusal, so no file. The row stands for the shape's other half too, a pattern inside a pattern that holds a keyword pair, which the same opaque slot reads, and S1e2.2.24's tests hold. By value: root.facts_by_relation.hit is 0 at 32736ac8"
-open_because = "The rule compiler leaves a pattern inside a pattern whose relation is a variable no parameter binds an opaque slot (compile.rs' `slot`, plan::Slot::Opaque), which unifies with nothing, so `r` never fires, and nothing refuses it, where the same pattern at the top level stops compilation; S1e2.2.24's fix refuses it at load"
+note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-14 (S1e2.2.20 § What was built, `plan.rs`' Slot::Opaque), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/nested_unbound_head.ein`, the program unchanged. Its twin is the refusal, so no file. The row stands for the shape's other half too, a pattern inside a pattern that holds a keyword pair, which the same opaque slot reads, and S1e2.2.24's tests hold. By value: root.facts_by_relation.hit is 0 at 32736ac8. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a relation variable no parameter binds, and a keyword pair inside a pattern inside a pattern, at any depth of either clause (Q-M1e2.16 (1))"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -6447,28 +6449,167 @@ exhausted = true
 closes    = ["a", "box", "hit"]
 models    = [["(box (a b))"]]
 
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 64
-k_c      = 64
-minimal  = [[]]
-maximal  = [["(a b)", "(a z)", "(box b)", "(box z)", "(hit b)", "(hit z)"]]
-
 [case.right]
 reading   = "Q-M1e2.16 (1), the user's ruling of 2026-11-05: a pattern inside a pattern whose relation no parameter binds is refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c))"
 refused   = true
 derived   = "A relation is named by a name or by a parameter its activator binds (Q29), and `?r` is neither, so `(box (?r b))` is refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
 
 [case.now]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds"
+
+[[case]]
+id       = "W24/form-in-guard"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16", "Q-M1e2.18"]
+witness  = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a form as a guard's argument (Q-M1e2.18 (i)(a))"
+date   = "2026-11-05"
+
+[case.wrong]
 run       = "solve --minimal"
-line      = "minimal"
-exhausted = true
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at f8c10730 (2026-11-05; the engine 32736ac8's): the program loads, each guard compares the form as a raw IR node, equal to no value, so `e` never fires, even on (p (f a)), and `n` fires for every ?x: root derives four hit-neq facts and no hit-eq, exit 0, with no word of the form; every mode and `ein oracle` the same"
+verdict   = "Solution"
 k         = 1
-relations = ["a", "box", "hit"]
-models    = [
-  ["(box (a b))"],
-]
+exhausted = true
+closes    = ["f", "hit-eq", "q"]
+models    = [["(q a)"]]
+
+[case.right]
+reading   = "Q-M1e2.18 (i)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
+refused   = true
+derived   = "A guard compares two values, each a variable a premise before it binds, a name, a string or an integer, and a form is none of them. So both guards are refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer; rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer"
+
+[[case]]
+id       = "W24/guard-before-binder"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16", "Q-M1e2.18"]
+witness  = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a guard on a variable no premise before it binds, naming the variable (Q-M1e2.18 (ii)(a))"
+date   = "2026-11-05"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at f8c10730 (2026-11-05; the engine 32736ac8's): the program loads, each guard is judged where it is written and compares the unbound ?x as a null, so `e` never fires and `n` fires for every ?x, `a` included: root derives four hit-neq facts and no hit-eq, exit 0, with no word of the order; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["f", "hit-eq", "q"]
+models    = [["(q a)"]]
+
+[case.right]
+reading   = "Q-M1e2.18 (ii)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
+refused   = true
+derived   = "A guard is judged where it is written, and compares the values the premises before it bind; `?x` is bound by `(p ?x)`, after it. So both guards are refused at load, naming `?x`, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer; rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer"
+
+[[case]]
+id       = "W24/kwpair-in-guard"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16", "Q-M1e2.18"]
+witness  = "examples/ein-bugs/wrong-answers/kwpair-in-guard.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "A keyword pair as a guard's argument, `(eq ?x :k a)`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (iii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-kw-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-eq is 0 at f8c10730. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a keyword pair as a guard's argument (Q-M1e2.18 (iii)(a))"
+date   = "2026-11-05"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at f8c10730 (2026-11-05; the engine 32736ac8's): the program loads, the guard compares the pair as a raw IR node, equal to no value, so `e` never fires: root holds no hit-eq, exit 0, with no word of the pair; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["f", "hit-eq", "hit-neq", "q"]
+models    = [["(q a)"]]
+
+[case.right]
+reading   = "Q-M1e2.18 (iii)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
+refused   = true
+derived   = "A guard compares two values, and a keyword pair is none. So the guard is refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'e': its :match writes (eq ?x :k a), and the keyword pair :k a is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer"
+
+[[case]]
+id       = "W24/nested-fact-activator"
+case     = "W24"
+title    = "a rule shape that reads nothing, in silence"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.24"
+question = ["Q-M1e2.16", "Q-M1e2.18"]
+witness  = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "A relation parameter its activator binds to a nested fact: `(r (a b))` for `(rule r (?R) :match (box (?R b)) …)`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (iv)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/n-var-param-nested-activator.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit is 0 at f8c10730. The activator a rule derives through a variable is the compiler's, held by `ein-infer/tests/compile_semantics.rs`. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses an activator that binds a relation parameter to a nested fact where it is written, and the compiler one a rule derives (Q-M1e2.18 (iv)(a))"
+date   = "2026-11-05"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at f8c10730 (2026-11-05; the engine 32736ac8's): the program loads, a nested fact binds no parameter, so `(box (?R b))` is an opaque slot that matches nothing and `r` never fires: root holds no hit, exit 0, in silence (the same pattern at the top level stops compilation with the unbound-head CompileError in the Python spelling); every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["a", "box", "c", "hit", "item", "rel"]
+models    = [["(box (a b))", "(box (c (a b)))", "(item i)", "(rel a)"]]
+
+[case.right]
+reading   = "Q-M1e2.18 (iv)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
+refused   = true
+derived   = "A relation is named by a symbol, and a nested fact binds no parameter. So the activator `(r (a b))` is refused at load where it is written, as one that binds the parameter to an integer is (S1e2.2.4), with a line in Ein's spelling naming the rule, the parameter and the activator: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve --minimal"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact"
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

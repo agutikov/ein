@@ -5,6 +5,12 @@
 ; no steps here — dropping the premise. The plan's only premise gone, `steps`
 ; is empty, and the matcher reads an empty step list as one VACUOUS match, so
 ; the rule fired unconditionally and stored its conclusion.
+;
+; Compile-negative until M1e2 S1e2.2.24 (W24, the stage's default 1): the
+; compiler refused the head with a CompileError in the Python IR's spelling,
+; `unbound relation head ?R in a premise of SForm(…)`. Since then the loader
+; refuses a relation variable no parameter binds, at the top level as inside a
+; pattern, and this file moved here from `examples/broken/compile/`.
 (relation p Thing)
 
 (rule uses-free-head (?S)

@@ -1,0 +1,1 @@
+rule 'uses-free-head': its :match writes (?R ?x) with ?R as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds

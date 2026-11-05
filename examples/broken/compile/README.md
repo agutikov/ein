@@ -5,10 +5,20 @@ Files that **parse** and **load** and then fail to **compile**: the shapes
 raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 
-**Eight, in two batches.** S1.22.0's four are below; M1e
+**Six, in two batches.** S1.22.0's four are below, two of them here since
+M1e2 S1e2.2.24; M1e
 [S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)
 added four more — `eq` and `absent`, each below and above its arity — which is
 [§ The second batch](#the-second-batch-m1e-arity).
+
+**Two moved to `../load/` on 2026-11-05** (M1e2 S1e2.2.24, W24, the user's
+ruling on [Q-M1e2.18](../../../plans/m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence)
+(v)): `empty_absent.ein`, `(absent ?x)`, and `unbound_head.ein`, `(?R ?x)`
+with `?R` no parameter. The loader refuses a premise that is not a form and a
+relation variable no parameter binds since that stage, so neither reaches the
+compiler, and each `.expected` is its load line now. The compiler keeps both
+refusals for a direct caller of `compile_rule`, which this directory no longer
+pins.
 
 Sibling `../*.ein` fail at parse and `../load/*.ein` at load. The split is by
 **where** a file stops being usable, and it is what let M1a gate on one

@@ -1,0 +1,33 @@
+;;; A keyword pair as a guard's argument reads nothing, in silence — M1e2
+;;; **W24**, register row `W24/kwpair-in-guard` (`corpus/wrong_answers.toml`),
+;;; banked by S1e2.2.24 (2026-11-05) from its step 1's probe
+;;; `build/s1e2.2.24/shapes/g-kw-rule.ein` (the program unchanged), ruled by
+;;; the user on 2026-11-05 (Q-M1e2.18 (iii)(a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Four facts of `p`, and one rule whose `eq` guard writes the keyword pair
+;;; `:k a` as its second argument. (`neq` is shape-pinned, so `(neq ?x :k a)`
+;;; is a parse error; `eq` is a generic list, so this parses.)
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A guard compares two values, and a keyword pair is none. The user ruled
+;;; that a keyword pair written as a guard's argument is refused at load,
+;;; with a line in Ein's spelling naming the rule and the clause. Every
+;;; command that loads the program exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered, and why it does not any more ─────────────
+;;;
+;;; Until S1e2.2.24 the program loaded, and the guard compared the pair as a
+;;; raw IR node, equal to no value, so `e` never fired: root held no
+;;; `hit-eq`, exit 0, with no word of the pair (`ein saturate --dump FILE`
+;;; and `ein solve FILE` at `f8c10730`, release and debug). Since then the
+;;; loader refuses it: *kb load error: rule 'e': its :match writes (eq ?x :k
+;;; a), and the keyword pair :k a is no value — a guard compares two values,
+;;; each a variable a premise before it binds, a name, a string or an
+;;; integer*.
+
+(relation p Node) (relation q Node) (relation f Node) (relation hit-eq Node) (relation hit-neq Node)
+(p a) (p b) (p 1) (p (f a)) (q a)
+(rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit-eq ?x))

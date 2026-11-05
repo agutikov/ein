@@ -18,15 +18,19 @@
 ;;; head `_` are, with a line in Ein's spelling naming the rule and the
 ;;; clause. Every command that loads the program exits 1 (`ein test`: 2).
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; The program loads, and the rule compiler drops each such premise
-;;; (`compile.rs`' `premise`, whose `_ => return Ok(())` arm takes it), so
-;;; each rule fires as if it were not written: `a` and `c` with no premise
-;;; at all, and `b` on `(hit ?y)` alone. Root derives `(r1 z)`, `(r2 w)` and
-;;; `(r3 z)`, exit 0, with no word of the premises (`ein saturate --dump
+;;; Until S1e2.2.24 the program loaded, and the rule compiler dropped each
+;;; such premise (`compile.rs`' `premise`, whose `_ => return Ok(())` arm
+;;; took it), so each rule fired as if it were not written: `a` and `c` with
+;;; no premise at all, and `b` on `(hit ?y)` alone. Root derived `(r1 z)`,
+;;; `(r2 w)` and `(r3 z)`, exit 0, with no word of the premises (`ein saturate --dump
 ;;; FILE` and `ein solve FILE` at `32736ac8`, release and debug; every mode
-;;; and `ein oracle` the same).
+;;; and `ein oracle` the same). Since S1e2.2.24 the loader refuses it: *kb
+;;; load error: rule 'a': its :match is _, and _ is no premise — a premise is
+;;; a pattern (relation argument …), a guard (eq a b) or (neq a b), an
+;;; (absent …), or an (and …) or (or …) of premises*, and a line for `b` and
+;;; for `c`.
 
 (relation hit Node) (relation r1 Node) (relation r2 Node) (relation r3 Node)
 (hit w)

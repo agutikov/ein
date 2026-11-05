@@ -304,6 +304,10 @@ struct Compiler<'a> {
     // The plan's register space, seeds first.
     plan_space: Space,
     seed: Vec<(Symbol, Value)>,
+    // The parameters the activator bound to a nested `Fact`, which binds none:
+    // what a relation head written as one of them is refused with (M1e2
+    // S1e2.2.24, W24, Q-M1e2.18 (iv)).
+    fact_bound: Vec<(Symbol, Value)>,
     // The guard sub-plan currently being compiled, with the scope it projects.
     sub: Option<Space>,
     sub_scope: FxHashSet<Symbol>,
@@ -329,6 +333,7 @@ impl<'a> Compiler<'a> {
             guard_keys: Vec::new(),
             plan_space: Space::default(),
             seed: Vec::new(),
+            fact_bound: Vec::new(),
             sub: None,
             sub_scope: FxHashSet::default(),
             known: FxHashSet::default(),
@@ -439,7 +444,10 @@ impl<'a> Compiler<'a> {
         }
         for (&p, &a) in rule.params.iter().zip(args.iter()) {
             if a.as_fact().is_some() {
-                continue; // A nested Fact does not bind.
+                // A nested Fact does not bind; a relation head written as
+                // this parameter is refused (`head_not_a_name`).
+                self.fact_bound.push((p, a));
+                continue;
             }
             match self.plan_space.get(p) {
                 // A repeated parameter name keeps the first position and
@@ -541,6 +549,14 @@ impl<'a> Compiler<'a> {
             // path leaves authoring tools tolerant.
             Node::KwPair { .. } => return Ok(()),
             Node::SForm { .. } => {}
+            // A premise that is not a form — an atom, a variable, `_`, an
+            // integer, a string. The loader refuses each in a rule since
+            // M1e2 S1e2.2.24 (W24, Q-M1e2.16 (1)), so no program it accepts
+            // reaches this arm. Until then one did, and the premise was
+            // dropped in silence: `:match _` fired with no premise at all,
+            // `(and (hit ?y) _)` on `(hit ?y)` alone, and `(absent ?x)` was
+            // the empty sub-plan below, a `CompileError` in the Python IR's
+            // spelling.
             _ => return Ok(()),
         }
         let head = match self.ast.node(node) {
@@ -763,7 +779,25 @@ impl<'a> Compiler<'a> {
     /// names). The loader refuses the activators it can read, a fact or a
     /// literal in an `:assert`; this is the one a rule derives through a
     /// variable, which only a run binds.
+    ///
+    /// **A nested fact** since M1e2 S1e2.2.24 (W24, the user's ruling of
+    /// 2026-11-05 on Q-M1e2.18 (iv)): a nested `Fact` binds no parameter, so a
+    /// relation head written as one the activator bound to a fact named no
+    /// relation. Until then the top-level premise stopped compilation with the
+    /// unbound-head line in the Python IR's spelling, and a pattern inside a
+    /// pattern was an opaque slot that matched nothing, in silence. The loader
+    /// refuses the activators it can read, as it does an integer.
     fn head_not_a_name(&self, node: NodeId, head: NodeId, v: Value) -> CompileError {
+        if v.as_fact().is_some() {
+            return CompileError(format!(
+                "the relation head {} of {} at {} is bound to the fact {} — a \
+                 relation is named by a symbol, not a fact.",
+                ein_ir::dump_compact(self.ast, head),
+                ein_ir::dump_compact(self.ast, node),
+                ein_ir::loc_repr(self.ast, self.ast.loc(node)),
+                crate::events::sexpr_value(self.terms, v),
+            ));
+        }
         CompileError(format!(
             "the relation head {} of {} at {} is bound to the integer {} — a \
              relation is named by a symbol, not a number, and a rule cannot \
@@ -773,6 +807,14 @@ impl<'a> Compiler<'a> {
             ein_ir::loc_repr(self.ast, self.ast.loc(node)),
             self.terms.display(v),
         ))
+    }
+
+    /// The nested fact the activator bound a parameter to, if it did.
+    fn fact_value(&self, name: Symbol) -> Option<Value> {
+        self.fact_bound
+            .iter()
+            .find(|(n, _)| *n == name)
+            .map(|(_, v)| *v)
     }
 
     fn empty_sub_plan(&self, node: NodeId) -> CompileError {
@@ -819,6 +861,16 @@ impl<'a> Compiler<'a> {
                     // unconditionally. Reproduced — a rule with a ground
                     // `:assert` stored its conclusion off an arity-mismatched
                     // activator.
+                    //
+                    // Since M1e2 S1e2.2.24 (W24) the loader refuses a head
+                    // variable no parameter binds, and a parameter bound to a
+                    // nested fact is refused just below, so no program the
+                    // loader accepts reaches the last arm: a direct caller of
+                    // `compile_rule` with no activator does.
+                    None if self.fact_value(name).is_some() => {
+                        let v = self.fact_value(name).expect("checked");
+                        return Err(self.head_not_a_name(node, head, v));
+                    }
                     None => {
                         return Err(CompileError(format!(
                             "unbound relation head ?{} in a premise of `{}` — \
@@ -927,13 +979,17 @@ impl<'a> Compiler<'a> {
     /// in an `:assert` it is no value, and the firing stops
     /// ([`crate::firing::FireError::NotAFact`]).
     /// An `SForm` becomes a nested pattern, with its head substituted from the
-    /// binding when it is a bound `Var`. Everything else — a `KwPair`, an
-    /// `SForm` whose head is a variable the activator does not bind — is
-    /// returned as-is and compared by equality, which is the "unrecognised
-    /// shape" safety net and which never matches anything; in an `:assert` it
-    /// stops the firing. A range, and a wildcard written as a form's relation,
-    /// never reach here: the loader refuses both in a rule (`ein_ir::from_ir`,
-    /// M1e2 S1e2.2.20).
+    /// binding when it is a bound `Var`; one whose head is a parameter the
+    /// activator bound to a nested fact is refused (`head_not_a_name`).
+    /// Everything else — a `KwPair`, an `SForm` whose head is a variable the
+    /// activator does not bind — is returned as-is and compared by equality,
+    /// which is the "unrecognised shape" safety net and which never matches
+    /// anything; in an `:assert` it stops the firing. Since M1e2 S1e2.2.24
+    /// (W24) no program the loader accepts reaches it in a `:match`: the loader
+    /// refuses a keyword pair inside a pattern inside a pattern, and a relation
+    /// variable no parameter binds, in a rule, as it refuses a range and a
+    /// wildcard written as a form's relation (S1e2.2.20); a keyword pair at an
+    /// `:assert`'s top level still stops the firing.
     ///
     /// **A string was such a node until M1e2 S1e2.2.18** (W18, 2026-11-04):
     /// `(rule s () :match (holds "1") …)` never fired though `(holds "1")` is
@@ -942,7 +998,10 @@ impl<'a> Compiler<'a> {
     /// M1e2 S1e2.2.20** (W20, 2026-11-05, Q-M1e2.13 (a)): `(rule w () :match
     /// (holds _) …)` never fired on `(holds a)`, an `(absent …)` over a `_`
     /// always held, an hrule with one proposed nothing, and `(n 1..3)` matched
-    /// nothing, in silence.
+    /// nothing, in silence. **So were a keyword pair inside a pattern inside a
+    /// pattern and a relation variable no parameter binds until M1e2
+    /// S1e2.2.24** (W24, Q-M1e2.16 (1)): `(box (?r b))` never matched, and
+    /// an `(absent …)` over one always held, in silence.
     fn slot(&mut self, node: NodeId) -> Result<Slot, CompileError> {
         match self.ast.node(node) {
             Node::Var(s) => {
@@ -971,7 +1030,7 @@ impl<'a> Compiler<'a> {
                     }
                     Node::Var(s) => {
                         let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
-                        match self.seed_value(name) {
+                        match self.seed_value(name).or_else(|| self.fact_value(name)) {
                             Some(v) if v.as_sym().is_none() => {
                                 return Err(self.head_not_a_name(node, head, v));
                             }
@@ -1026,6 +1085,10 @@ impl<'a> Compiler<'a> {
                 let text = self.ast.sym(s).to_string();
                 GuardArgKind::Const(self.terms.value_int(&text).expect("room for an int"))
             }
+            // `_`, a form or a keyword pair, compared by IR-node equality.
+            // The loader refuses each as a guard's argument since M1e2
+            // S1e2.2.24 (W24, Q-M1e2.16 (1), Q-M1e2.18 (i), (iii)), so no
+            // program it accepts reaches this arm.
             _ => GuardArgKind::Node,
         };
         Ok(GuardArg { kind, node })

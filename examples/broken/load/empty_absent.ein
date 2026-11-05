@@ -5,6 +5,12 @@
 ; VACUOUSLY, so the matcher's `holds` is true and the guard fails against every
 ; possible KB. The guard is monotone (no nested absent), so the candidate is
 ; retired permanently on its first judgement: a guard that can never pass.
+;
+; Compile-negative until M1e2 S1e2.2.24 (W24, Q-M1e2.18 (v)): the compiler
+; refused the empty sub-plan with a CompileError in the Python IR's spelling,
+; `(absent …) sub-plan compiled to no steps in SForm(…)`. Since then the
+; loader refuses `?x` as a premise that is not a form, before the compiler,
+; and this file moved here from `examples/broken/compile/`.
 (relation p Thing)
 
 (rule vacuous-guard ()

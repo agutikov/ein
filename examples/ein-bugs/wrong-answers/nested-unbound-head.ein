@@ -18,15 +18,21 @@
 ;;; refused at load, as a range and a head `_` are, with a line in Ein's
 ;;; spelling naming the rule and the clause. Every command that loads the
 ;;; program exits 1 (`ein test`: 2). The same pattern at the top level,
-;;; `(?r b)`, stops compilation (`examples/ein-bugs/unbound-relation-head.ein`).
+;;; `(?r b)`, stopped compilation until then
+;;; (`examples/ein-bugs/unbound-relation-head.ein`), and is refused at load
+;;; with the same line since.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; The program loads, and the rule compiler leaves `(?r b)` an opaque slot
-;;; (`compile.rs`' `slot`, `plan::Slot::Opaque`), which unifies with
-;;; nothing, so `r` never fires: root holds no `hit`, exit 0, with no word
-;;; of `?r` (`ein saturate --dump FILE` and `ein solve FILE` at `32736ac8`,
-;;; release and debug; every mode and `ein oracle` the same).
+;;; Until S1e2.2.24 the program loaded, and the rule compiler left `(?r b)`
+;;; an opaque slot (`compile.rs`' `slot`, `plan::Slot::Opaque`), which
+;;; unifies with nothing, so `r` never fired: root held no `hit`, exit 0,
+;;; with no word of `?r` (`ein saturate --dump FILE` and `ein solve FILE` at
+;;; `32736ac8`, release and debug; every mode and `ein oracle` the same). Since S1e2.2.24
+;;; the loader refuses it: *kb load error: rule 'r': its :match writes (?r
+;;; b) with ?r as its relation, which no parameter binds — a relation is
+;;; named by a name or by a parameter its activator binds*; the top-level
+;;; `(?r b)` gets the same line.
 
 (relation box Node) (relation hit Node) (relation a Node)
 (box (a b))

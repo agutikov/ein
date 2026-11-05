@@ -95,7 +95,12 @@ pub enum Slot {
     /// does not bind. A `String` was one until M1e2 S1e2.2.18, and a
     /// `Wildcard` and a `Range` until S1e2.2.20, which lowered the first to
     /// [`Self::Any`] and refused the second, and a wildcard as a relation, at
-    /// load.
+    /// load. **Since S1e2.2.24** (W24, Q-M1e2.16 (1)) the loader refuses the
+    /// two that were left, a keyword pair inside a pattern inside a pattern
+    /// and a relation variable no parameter binds, and the compiler a
+    /// parameter its activator bound to a nested fact, so no program the
+    /// loader accepts reaches one in a `:match`; in an `:assert`, a keyword
+    /// pair at a conclusion's top level still stops the firing.
     ///
     /// The unifier compares it to the argument by equality, and no IR node is
     /// ever equal to a name, an integer or a `Fact`, so an opaque slot **never
@@ -201,13 +206,21 @@ pub struct GuardArg {
 pub enum GuardArgKind {
     /// A `Var`: its bound value, or "unbound" — which guard resolution's
     /// lenient policy treats as a null, equal only to another unbound value.
+    /// Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii)) the loader refuses a guard on
+    /// a variable no premise before it binds, so in a program it accepts a
+    /// guard's variable is bound where the guard is judged; until then
+    /// `(and (neq ?x a) (p ?x))` fired for `a` too.
     Reg(Reg),
     /// An `Atom` or a `String` (resolving to the symbol it names, as the
     /// loader holds it in a fact) or an `Int` (to its value). A string was a
     /// [`Self::Node`] until M1e2 S1e2.2.18, so `(eq ?x "b")` never held.
     Const(Value),
-    /// Anything else — a `Wildcard`, an `SForm` — which guard resolution
-    /// returns as-is, so it compares by IR-node equality.
+    /// Anything else — a `Wildcard`, an `SForm`, a `KwPair` — which guard
+    /// resolution returns as-is, so it compares by IR-node equality: equal to
+    /// no value. **Since M1e2 S1e2.2.24** (W24, Q-M1e2.16 (1), Q-M1e2.18) the
+    /// loader refuses each as a guard's argument, and a variable no premise
+    /// before the guard binds, so no program it accepts reaches this; until
+    /// then `(eq ?x _)` never held and `(neq ?x (f a))` always did.
     Node,
 }
 

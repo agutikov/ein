@@ -5,4 +5,4 @@
 === (rule absent () :match (x ?a) :assert (y ?a)) ⏎ (rule ok () :match (x ?a) :assert (y ?a)) ⏎ (rule ok () :match (x ?a) :assert (z ?a))
   <KBLoadError> rule 'absent' shadows a reserved kernel name at None; duplicate rule/hrule name 'ok' at None
 === (macro absent (?p) (rel ?p)) ⏎ (rule r () :match (absent ?a) :assert (y ?a))
-  <KBLoadError> macro 'absent' shadows a reserved kernel name at None
+  <KBLoadError> macro 'absent' shadows a reserved kernel name at None; rule 'r': its :match writes ?a as a premise of absent, and ?a is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises

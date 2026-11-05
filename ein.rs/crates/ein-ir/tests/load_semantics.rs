@@ -95,6 +95,7 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "config_bad_value",
         "config_unknown_flag",
         "derivation_cycle",
+        "empty_absent",
         "hrule_duplicate_name",
         "hrule_reserved_name",
         "macro_arity_mismatch",
@@ -114,6 +115,7 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "rule_missing_assert",
         "rule_missing_match",
         "rule_reserved_name",
+        "unbound_head",
         "unimported_std_macro",
     ] {
         let path = dir.join(format!("{name}.ein"));

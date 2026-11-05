@@ -1328,41 +1328,57 @@ note   = "M1e2 W23's twin, banked by S1e2.2.23: the witness's shape with five pa
 path   = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/wild-in-guard`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-12: `_` as an argument of `eq` and `neq`. A guard compares `_` as a raw IR node, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds: root derives `(hit-neq a)` and `(hit-both a)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/wild-in-guard`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-12: `_` as an argument of `eq` and `neq`. A guard compares `_` as a raw IR node, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds: root derives `(hit-neq a)` and `(hit-both a)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/bare-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/bare-premise`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-13: `:match _`, `(and (hit ?y) _)` and `:match foo`. The rule compiler drops a premise that is not a form, so each rule fires as if it were not written: root derives `(r1 z)`, `(r2 w)` and `(r3 z)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/bare-premise`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-13: `:match _`, `(and (hit ?y) _)` and `:match foo`. The rule compiler drops a premise that is not a form, so each rule fires as if it were not written: root derives `(r1 z)`, `(r2 w)` and `(r3 z)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-unbound-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/nested-unbound-head`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-14: `(box (?r b))`, a pattern inside a pattern whose relation `?r` no parameter binds. The rule compiler leaves it an opaque slot, which matches nothing, so `r` never fires: root holds no `hit`, exit 0, in silence, where the top-level `(?r b)` stops compilation. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/nested-unbound-head`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-14: `(box (?r b))`, a pattern inside a pattern whose relation `?r` no parameter binds. The rule compiler leaves it an opaque slot, which matches nothing, so `r` never fires: root holds no `hit`, exit 0, in silence, where the top-level `(?r b)` stopped compilation. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/form-in-guard`), banked by S1e2.2.24 from its step 1's probe `g-nested-rule.ein`: the form `(f a)` as a guard's argument. A guard compared it as a raw IR node, equal to no value, so `(eq ?x (f a))` never held, even where `?x` is the fact `(f a)`, and `(neq ?x (f a))` always did, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (i)(a)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/guard-before-binder`), banked by S1e2.2.24 from its step 1's probe `g-order-rule.ein`: `(and (eq ?x a) (p ?x))` and `(and (neq ?x a) (p ?x))`, a guard written before the premise that binds its variable. The guard compared the unbound `?x` as a null, so `e` never fired and `n` fired for every `?x`, `a` included, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (ii)(a)): refused at load, naming the variable, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kwpair-in-guard.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/kwpair-in-guard`), banked by S1e2.2.24 from its step 1's probe `g-kw-rule.ein`: `(eq ?x :k a)`, a keyword pair as a guard's argument, compared as a raw IR node, so `e` never fired, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (iii)(a)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W24 (`W24/nested-fact-activator`), banked by S1e2.2.24 from its step 1's probe `n-var-param-nested-activator.ein`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact, which binds no parameter, so the inner pattern matched nothing and `r` never fired, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (iv)(a)): refused at load where the activator is written, as an integer is, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
-# The three `CompileError` fixtures (S1a.3.1) — files that parse and load and
-# are then refused by the compiler. Their messages are not left unchecked: each
+# The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24
+# moved `empty_absent` and `unbound_head` to `broken/load/`, the loader
+# refusing both) — files that parse and load and are then refused by the
+# compiler. Their messages are not left unchecked: each
 # has a `.expected` beside it, held byte-for-byte by
 # `ein-infer/tests/compile_semantics.rs` (`examples/broken/compile/README.md`).
 # `render rules` is deliberately not among the runs: it never reaches the
 # compiler, so the cell would record an exit code and discard the output.
 
 [[entry]]
-path   = "examples/broken/compile/empty_absent.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-
-[[entry]]
 path   = "examples/broken/compile/nested_or.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-
-[[entry]]
-path   = "examples/broken/compile/unbound_head.ein"
 group  = "compile-negative"
 runs   = ["solve", "saturate"]
 
@@ -1679,6 +1695,18 @@ path   = "examples/broken/load/relation_parameter_int.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "M1e2 S1e2.2.4 — Q-M1e.21's residue: `(mirror 3)` binds a parameter that names a relation to an integer, whose decimal text the compiler would intern as a relation's name, a name the program does not have. Refused at load where the activator is written down; a derived one is the compiler's (`compile_semantics.rs`)."
+
+[[entry]]
+path   = "examples/broken/load/empty_absent.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`(absent ?x)`, a premise that is not a form, under an `absent`. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's empty-sub-plan CompileError in the Python spelling; since then the loader refuses it (W24, the user's ruling of 2026-11-05 on Q-M1e2.18 (v)), and it moved here from `examples/broken/compile/`, with `render rules` among its runs as every load-negative entry has."
+
+[[entry]]
+path   = "examples/broken/load/unbound_head.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`(?R ?x)`, a relation variable no parameter binds, at the top level. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's unbound-head CompileError in the Python spelling; since then the loader refuses it (W24, the stage's default 1), and it moved here from `examples/broken/compile/`, with `render rules` among its runs."
 
 [[entry]]
 path   = "examples/broken/load/relation_reserved_name.ein"

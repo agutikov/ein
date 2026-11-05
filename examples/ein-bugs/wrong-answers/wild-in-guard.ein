@@ -17,14 +17,18 @@
 ;;; a line in Ein's spelling naming the rule and the clause. Every command
 ;;; that loads the program exits 1 (`ein test`: 2).
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; The program loads, and each guard compares `_` as a raw IR node, which
-;;; is equal to no value and to another `_`: `(eq ?x _)` never holds, `(neq
-;;; ?x _)` always does, and `(eq _ _)` holds. Root derives `(hit-neq a)` and
-;;; `(hit-both a)` and no `hit-eq`, exit 0, with no word of the wildcard
+;;; Until S1e2.2.24 the program loaded, and each guard compared `_` as a raw
+;;; IR node, which is equal to no value and to another `_`: `(eq ?x _)` never
+;;; held, `(neq ?x _)` always did, and `(eq _ _)` held. Root derived `(hit-neq
+;;; a)` and `(hit-both a)` and no `hit-eq`, exit 0, with no word of the
+;;; wildcard
 ;;; (`ein saturate --dump FILE` and `ein solve FILE` at `32736ac8`, release
-;;; and debug; every mode and `ein oracle` the same).
+;;; and debug; every mode and `ein oracle` the same). Since S1e2.2.24 the
+;;; loader refuses it: *kb load error: rule 'e': its :match writes (eq ?x _),
+;;; and _ names no value — a guard compares two values, and _ stands for an
+;;; argument of a pattern*, and the same line for `n` and `b`.
 
 (relation p Node) (relation hit-eq Node) (relation hit-neq Node) (relation hit-both Node)
 (p a)

@@ -283,7 +283,13 @@ constrained-reasoning research.
   fact, none written by any program, and one corpus fixture that writes the
   second shape, `examples/broken/compile/empty_absent.ein`, refused either
   way; they are Q-M1e2.18, put to the user (step 1's sweep, 693 files and
-  18 018 runs, 2026-11-05).
+  18 018 runs, 2026-11-05). The user ruled every part as recommended the
+  same day, and S1e2.2.24 fixed W24: the loader refuses each shape at load,
+  one line per slot in Ein's spelling naming the rule and the clause, and the
+  compiler a relation parameter a rule binds to a nested fact through a
+  variable; the ruling's four are rows filed and fixed in the same commit,
+  and the two compile-negative fixtures moved to `examples/broken/load/`:
+  96 fixed, 2 open (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

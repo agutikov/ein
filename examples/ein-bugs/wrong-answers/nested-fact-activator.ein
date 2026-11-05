@@ -1,0 +1,38 @@
+;;; A relation parameter its activator binds to a nested fact reads nothing,
+;;; in silence — M1e2 **W24**, register row `W24/nested-fact-activator`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.24 (2026-11-05) from its
+;;; step 1's probe `build/s1e2.2.24/shapes/n-var-param-nested-activator.ein`
+;;; (the program unchanged), ruled by the user on 2026-11-05 (Q-M1e2.18
+;;; (iv)(a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule `r` whose parameter `?R` names the relation of its inner pattern,
+;;; `(box (?R b))`, and the activator `(r (a b))`, which binds `?R` to the
+;;; nested fact `(a b)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A relation is named by a symbol, and a nested fact binds no parameter.
+;;; The user ruled that an activator binding a relation parameter to a nested
+;;; fact is refused at load where it is written, as one binding it to an
+;;; integer is (S1e2.2.4), and by the compiler where a rule derives it
+;;; through a variable. Every command that loads this program exits 1 (`ein
+;;; test`: 2).
+;;;
+;;; ── What the engine answered, and why it does not any more ─────────────
+;;;
+;;; Until S1e2.2.24 the program loaded, and the inner pattern was an opaque
+;;; slot (the parameter unbound), which matched nothing, so `r` never fired:
+;;; root held no `hit`, exit 0, in silence; the same pattern at the top
+;;; level, `(?R b)`, stopped compilation with a `CompileError` in the Python
+;;; IR's spelling (`ein saturate --dump FILE` and `ein solve FILE` at
+;;; `f8c10730`, release and debug). Since then the loader refuses it: *kb
+;;; load error: rule 'r': its parameter ?R names a relation, and (r (a b))
+;;; binds it to the fact (a b) — a relation is named by a symbol, not a
+;;; fact*.
+
+(relation box Node) (relation c Node) (relation hit Node) (relation a Node) (relation rel Node) (relation item Node)
+(box (a b)) (box (c (a b))) (not (a b)) (rel a) (item i)
+(rule r (?R) :match (box (?R b)) :assert (hit z))
+(r (a b))

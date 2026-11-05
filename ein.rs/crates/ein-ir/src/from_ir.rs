@@ -803,8 +803,24 @@ fn ingest_rules(
         // A range, or a wildcard as a relation, in a rule — M1e2 S1e2.2.20
         // (W20, Q-M1e2.13 (a), Q-M1e2.14 (c)).
         let n_refused = errors.len();
-        refuse_no_fact_holds(ast, &head, &name, ":match", match_node, errors);
-        refuse_no_fact_holds(ast, &head, &name, ":assert", assert_node, errors);
+        let param_vars: Vec<&str> = ast
+            .form_args(params_form)
+            .iter()
+            .filter_map(|&a| match ast.node(a) {
+                Node::Var(s) => Some(ast.sym(s)),
+                _ => None,
+            })
+            .collect();
+        refuse_no_fact_holds(ast, &head, &name, &param_vars, ":match", match_node, errors);
+        refuse_no_fact_holds(
+            ast,
+            &head,
+            &name,
+            &param_vars,
+            ":assert",
+            assert_node,
+            errors,
+        );
         if errors.len() != n_refused {
             continue;
         }
@@ -877,32 +893,56 @@ fn ingest_rules(
     Ok(())
 }
 
-/// **A range, and a wildcard as a relation, in a rule are refused** — M1e2
-/// S1e2.2.20, W20, on the user's rulings of 2026-11-04 (Q-M1e2.13 (a)) and
-/// 2026-11-05 (Q-M1e2.14 (c)).
+/// **What no fact can hold, and what reads nothing, in a rule is refused** —
+/// M1e2 S1e2.2.20, W20, on the user's rulings of 2026-11-04 (Q-M1e2.13 (a))
+/// and 2026-11-05 (Q-M1e2.14 (c)); and S1e2.2.24, W24, on the user's rulings
+/// of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18).
 ///
-/// A range, `1..3` or `2..*`, is cardinality metadata (`01_grammar.md`'s
-/// `RANGE` row), and no fact can hold one: written where a pattern's
-/// argument goes, at any depth of a `:match` (an `absent`, a `not`, a nested
-/// fact, a guard's argument) or an `:assert`, or as a whole clause, it is
-/// refused here. A wildcard `_` matches any argument, and a relation is named
-/// by a name or by a parameter its activator binds (Q29), so `_` written as a
-/// form's relation, `(_ a)`, at any depth of either clause, is refused too.
-/// One line per range or wildcard head, naming the rule and the slot as
-/// written. A keyword pair's value is not a slot, which the compiler does not
-/// read, and is not refused.
+/// The pass reads a rule's clauses as the compiler does: a `:match` as
+/// premises, each pattern's arguments as slots, and an `:assert` as
+/// conclusions, given the rule's parameters. It refuses, one line per slot
+/// as written, naming the rule and the clause:
 ///
-/// Until then the compiler lowered a range as an opaque slot that matched
-/// nothing: `(rule r () :match (n 1..3) …)` never fired on `(n 2)`, in
-/// silence, an `absent` over one always held, and one in an `:assert`
-/// stopped the run at the rule's first firing. A wildcard head stopped
-/// compilation with the Python IR's spelling of the pattern (`unbound
-/// relation head ?Wildcard() in a premise of `SForm(…)``), and a nested
-/// one, `(box (_ a))`, matched nothing in silence.
+/// - a **range**, `1..3` or `2..*`, where a pattern's argument goes, at any
+///   depth of either clause, or as a whole clause: cardinality metadata, which
+///   no fact can hold (`01_grammar.md`'s `RANGE` row);
+/// - a **wildcard written as a relation**, `(_ a)`: `_` stands for an argument;
+/// - a **relation written as a variable no parameter binds**, `(?r b)`, at
+///   the top level or inside a pattern, in either clause: a relation is named
+///   by a name or by a parameter its activator binds (Q29);
+/// - a **keyword pair inside a pattern inside a pattern**, `(box (a :k v))`:
+///   a keyword pair is no value;
+/// - a **premise that is not a form**: an atom, a variable, `_`, an integer
+///   or a string written where a premise goes, the whole `:match`, a member
+///   of an `(and …)` or an `(or …)`, an `(absent …)`'s body;
+/// - a **guard's argument that is no value it can compare**: `_`, a form, a
+///   keyword pair, or a variable no premise before the guard binds.
+///
+/// Not refused: a keyword pair at a pattern's top level, `(n ?x :where 1..3)`,
+/// or as a premise of an `(and …)`, `:where (neq ?a ?b)`, which the compiler
+/// drops (Q32); `_` as a pattern's argument, which matches any value; and in
+/// an `:assert`'s conclusion, `_` or a keyword pair at its top level, which
+/// stop the firing with the line `ein_infer::firing::FireError::NotAFact`
+/// prints, as before.
+///
+/// **Until S1e2.2.20** the compiler lowered a range as an opaque slot that
+/// matched nothing, in silence, and a wildcard head stopped compilation with
+/// the Python IR's spelling of the pattern. **Until S1e2.2.24** each of the
+/// rest read nothing, in silence: a guard compared `_`, a form or a keyword
+/// pair as a raw IR node, equal to no value, and an unbound variable as a
+/// null, so `(eq ?x _)` never held and `(and (neq ?x a) (p ?x))` fired for
+/// `a`; the compiler dropped a premise that is not a form, so the rule fired
+/// as if it were not written; and a pattern inside a pattern whose relation
+/// no parameter binds, or that holds a keyword pair, was an opaque slot that
+/// matched nothing. The same variable head at the top level, and an
+/// `(absent …)` whose body is no form, stopped compilation with a
+/// `CompileError` in the Python IR's spelling, and in an `:assert` the firing
+/// stopped with `NotAFact`'s line.
 fn refuse_no_fact_holds(
     ast: &Ast,
     head: &str,
     name: &str,
+    params: &[&str],
     clause: &str,
     node: NodeId,
     errors: &mut Vec<String>,
@@ -912,36 +952,196 @@ fn refuse_no_fact_holds(
         Range(NodeId, Option<NodeId>),
         /// A form whose relation is the wildcard.
         WildHead(NodeId),
+        /// A form whose relation is a variable no parameter binds.
+        FreeHead(NodeId, NodeId),
+        /// A keyword pair inside a pattern inside a pattern, and that pattern.
+        NestedKw(NodeId, NodeId),
+        /// A premise that is not a form, and what it is a premise of.
+        NotAForm(NodeId, Option<NodeId>),
+        /// A guard with `_` as an argument.
+        WildGuard(NodeId),
+        /// A guard, and its argument that is a form or a keyword pair.
+        GuardNode(NodeId, NodeId),
+        /// A guard, and its variable no premise before it binds.
+        GuardFree(NodeId, NodeId),
     }
-    fn walk(ast: &Ast, node: NodeId, out: &mut Vec<Found>) {
-        match ast.node(node) {
-            Node::Range { .. } => out.push(Found::Range(node, None)),
-            Node::SForm { head, args } => {
-                if matches!(ast.node(head), Node::Wildcard) {
-                    out.push(Found::WildHead(node));
+    struct Walk<'a> {
+        ast: &'a Ast,
+        params: &'a [&'a str],
+        out: Vec<Found>,
+    }
+    impl Walk<'_> {
+        fn form_head(&mut self, node: NodeId, head: NodeId) {
+            match self.ast.node(head) {
+                Node::Wildcard => self.out.push(Found::WildHead(node)),
+                Node::Var(s) if !self.params.contains(&self.ast.sym(s)) => {
+                    self.out.push(Found::FreeHead(node, head))
                 }
-                for &a in ast.args(args) {
-                    match ast.node(a) {
-                        Node::Range { .. } => out.push(Found::Range(a, Some(node))),
-                        Node::SForm { .. } => walk(ast, a, out),
-                        _ => {}
+                _ => {}
+            }
+        }
+        /// A pattern's argument, at any depth below a pattern.
+        fn slot(&mut self, node: NodeId, within: NodeId) {
+            let ast = self.ast;
+            match ast.node(node) {
+                Node::Range { .. } => self.out.push(Found::Range(node, Some(within))),
+                Node::SForm { head, args } => {
+                    self.form_head(node, head);
+                    for &a in ast.args(args) {
+                        match ast.node(a) {
+                            Node::KwPair { .. } => self.out.push(Found::NestedKw(a, node)),
+                            _ => self.slot(a, node),
+                        }
                     }
+                }
+                _ => {}
+            }
+        }
+        /// A pattern written as a premise or a conclusion: its relation, and
+        /// its arguments as slots. Its own keyword pairs are the compiler's to
+        /// drop (Q32) or the firing's to refuse, as before.
+        fn pattern(&mut self, node: NodeId, bound: Option<&mut Vec<String>>) {
+            let ast = self.ast;
+            let Node::SForm { head, args } = ast.node(node) else {
+                return;
+            };
+            self.form_head(node, head);
+            let mut bound = bound;
+            for &a in ast.args(args) {
+                if matches!(ast.node(a), Node::KwPair { .. }) {
+                    continue;
+                }
+                self.slot(a, node);
+                if let Some(b) = bound.as_deref_mut() {
+                    vars_in(ast, a, b);
+                }
+            }
+        }
+        /// A guard, `(eq a b)` or `(neq a b)`, judged where it is written.
+        fn guard(&mut self, node: NodeId, bound: &[String]) {
+            let ast = self.ast;
+            // One line per argument as written: `(eq (f a) (f a))` and
+            // `(eq ?u ?u)` name theirs once.
+            let mut wild = false;
+            let mut seen: Vec<String> = Vec::new();
+            let mut once = |a: NodeId| {
+                let text = crate::dump::dump_compact(ast, a);
+                let new = !seen.contains(&text);
+                if new {
+                    seen.push(text);
+                }
+                new
+            };
+            let mut found: Vec<Found> = Vec::new();
+            for &a in ast.form_args(node) {
+                match ast.node(a) {
+                    Node::Wildcard => wild = true,
+                    Node::Range { .. } => found.push(Found::Range(a, Some(node))),
+                    Node::SForm { .. } | Node::KwPair { .. } if once(a) => {
+                        found.push(Found::GuardNode(node, a))
+                    }
+                    Node::Var(s) if !bound.iter().any(|b| b == ast.sym(s)) && once(a) => {
+                        found.push(Found::GuardFree(node, a))
+                    }
+                    _ => {}
+                }
+            }
+            if wild {
+                found.push(Found::WildGuard(node));
+            }
+            self.out.extend(found);
+        }
+        /// A premise, with the variables the premises before it bind: the
+        /// rule's parameters, a positive pattern's variables, and inside an
+        /// `(absent …)` the enclosing premises' before it, as the compiler
+        /// scopes a guard.
+        fn premise(&mut self, node: NodeId, within: Option<NodeId>, bound: &mut Vec<String>) {
+            let ast = self.ast;
+            match ast.node(node) {
+                Node::KwPair { .. } => {}
+                Node::Range { .. } => self.out.push(Found::Range(node, within)),
+                Node::SForm { args, .. } => match ast.head_name(node) {
+                    Some("absent") => {
+                        let mut inner = bound.clone();
+                        for &a in ast.args(args) {
+                            self.premise(a, Some(node), &mut inner);
+                        }
+                    }
+                    Some("and") => {
+                        for &a in ast.args(args) {
+                            self.premise(a, Some(node), bound);
+                        }
+                    }
+                    Some("or") => {
+                        for &a in ast.args(args) {
+                            self.premise(a, Some(node), &mut bound.clone());
+                        }
+                    }
+                    Some("eq") | Some("neq") => self.guard(node, bound),
+                    _ => self.pattern(node, Some(bound)),
+                },
+                _ => self.out.push(Found::NotAForm(node, within)),
+            }
+        }
+        /// A conclusion: a top-level `(and …)`'s members, each a pattern.
+        fn conclusion(&mut self, node: NodeId, within: Option<NodeId>) {
+            let ast = self.ast;
+            match ast.node(node) {
+                Node::Range { .. } => self.out.push(Found::Range(node, within)),
+                Node::SForm { args, .. }
+                    if within.is_none() && ast.head_name(node) == Some("and") =>
+                {
+                    for &a in ast.args(args) {
+                        if !matches!(ast.node(a), Node::KwPair { .. }) {
+                            self.conclusion(a, Some(node));
+                        }
+                    }
+                }
+                Node::SForm { .. } => self.pattern(node, None),
+                _ => {}
+            }
+        }
+    }
+    fn vars_in(ast: &Ast, node: NodeId, out: &mut Vec<String>) {
+        match ast.node(node) {
+            Node::Var(s) => {
+                let s = ast.sym(s);
+                if !out.iter().any(|o| o == s) {
+                    out.push(s.to_string());
+                }
+            }
+            Node::SForm { .. } => {
+                for &a in ast.form_args(node) {
+                    vars_in(ast, a, out);
                 }
             }
             _ => {}
         }
     }
-    let mut found = Vec::new();
-    walk(ast, node, &mut found);
-    for f in found {
+    let mut walk = Walk {
+        ast,
+        params,
+        out: Vec::new(),
+    };
+    if clause == ":match" {
+        let mut bound: Vec<String> = params.iter().map(|p| p.to_string()).collect();
+        walk.premise(node, None, &mut bound);
+    } else {
+        walk.conclusion(node, None);
+    }
+    let dc = |n: NodeId| crate::dump::dump_compact(ast, n);
+    const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
+                           (neq a b), an (absent …), or an (and …) or (or …) of premises";
+    const GUARD: &str = "a guard compares two values, each a variable a premise before it \
+                         binds, a name, a string or an integer";
+    for f in walk.out {
         errors.push(match f {
             Found::Range(range, within) => {
-                let written = crate::dump::dump_compact(ast, range);
+                let written = dc(range);
                 let place = match within.map(|form| ast.node(form)) {
-                    Some(Node::SForm { head: h, .. }) => format!(
-                        "writes {written} as an argument of {}",
-                        crate::dump::dump_compact(ast, h)
-                    ),
+                    Some(Node::SForm { head: h, .. }) => {
+                        format!("writes {written} as an argument of {}", dc(h))
+                    }
                     _ => format!("is {written}"),
                 };
                 format!(
@@ -953,7 +1153,60 @@ fn refuse_no_fact_holds(
                 "{head} '{name}': its {clause} writes {} with the wildcard _ as its relation — a \
                  relation is named by a name or by a parameter its activator binds, and _ \
                  stands for an argument",
-                crate::dump::dump_compact(ast, form)
+                dc(form)
+            ),
+            Found::FreeHead(form, h) => format!(
+                "{head} '{name}': its {clause} writes {} with {} as its relation, which no \
+                 parameter binds — a relation is named by a name or by a parameter its \
+                 activator binds",
+                dc(form),
+                dc(h)
+            ),
+            Found::NestedKw(kw, form) => {
+                let h = match ast.node(form) {
+                    Node::SForm { head: h, .. } => dc(h),
+                    _ => dc(form),
+                };
+                format!(
+                    "{head} '{name}': its {clause} writes {} as an argument of {h}, and no fact \
+                     can hold it — a keyword pair is no value, so a pattern inside a pattern \
+                     that holds one matches nothing",
+                    dc(kw)
+                )
+            }
+            Found::NotAForm(p, within) => {
+                let place = match within.map(|form| ast.node(form)) {
+                    Some(Node::SForm { head: h, .. }) => {
+                        format!("writes {} as a premise of {}", dc(p), dc(h))
+                    }
+                    _ => format!("is {}", dc(p)),
+                };
+                format!(
+                    "{head} '{name}': its {clause} {place}, and {} is no premise — {PREMISE}",
+                    dc(p)
+                )
+            }
+            Found::WildGuard(guard) => format!(
+                "{head} '{name}': its {clause} writes {}, and _ names no value — a guard compares \
+                 two values, and _ stands for an argument of a pattern",
+                dc(guard)
+            ),
+            Found::GuardNode(guard, arg) => {
+                let what = match ast.node(arg) {
+                    Node::KwPair { .. } => "the keyword pair",
+                    _ => "the form",
+                };
+                format!(
+                    "{head} '{name}': its {clause} writes {}, and {what} {} is no value — {GUARD}",
+                    dc(guard),
+                    dc(arg)
+                )
+            }
+            Found::GuardFree(guard, var) => format!(
+                "{head} '{name}': its {clause} writes {}, and no premise before it binds {} — \
+                 {GUARD}",
+                dc(guard),
+                dc(var)
             ),
         });
     }
@@ -1041,6 +1294,19 @@ fn validate_relation_parameters(
             return;
         }
         for &(i, param) in heads {
+            // A nested fact binds no parameter (`ein_infer::compile`), so
+            // the relation it would name is none — M1e2 S1e2.2.24, W24,
+            // Q-M1e2.18 (iv).
+            if let Node::SForm { .. } = ast.node(args[i]) {
+                errors.push(format!(
+                    "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
+                     fact {} — a relation is named by a symbol, not a fact",
+                    terms.sym(*rule),
+                    terms.sym(param),
+                    crate::dump::dump_compact(ast, form),
+                    crate::dump::dump_compact(ast, args[i]),
+                ));
+            }
             if let Node::Int(v) = ast.node(args[i]) {
                 // The integer's own position: a top-level form's is not kept
                 // through import resolution, and the integer is what is wrong.
@@ -1906,9 +2172,14 @@ mod tests {
                 "(rule w () :match (absent (not (_ b))) :assert (hit w))",
                 format!("rule 'w': its :match writes (_ b) {HEAD}"),
             ),
+            // A form as a guard's argument is refused as a form since M1e2
+            // S1e2.2.24 (Q-M1e2.18 (i)), and not read as a pattern inside.
             (
                 "(rule w () :match (and (n ?x) (eq ?x (_ 2))) :assert (hit w))",
-                format!("rule 'w': its :match writes (_ 2) {HEAD}"),
+                "rule 'w': its :match writes (eq ?x (_ 2)), and the form (_ 2) is no \
+                 value — a guard compares two values, each a variable a premise before \
+                 it binds, a name, a string or an integer"
+                    .to_string(),
             ),
             (
                 "(rule w () :match (n ?x) :assert (box (_ ?x)))",
@@ -1945,6 +2216,179 @@ mod tests {
         ok(&format!(
             "{pre}(rule owe () :match (and (n ?x) (absent (tag ?x _))) :assert (open tag))"
         ));
+    }
+
+    /// **A rule shape that reads nothing is refused at load** — M1e2
+    /// S1e2.2.24, W24, on the user's rulings of 2026-11-05 (Q-M1e2.16 (1),
+    /// Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
+    /// and an obligation, one line naming the rule and the clause; and what
+    /// stays: a guard on values, Q32's top-level keyword pair, a parameter
+    /// head, `_` as an argument.
+    #[test]
+    fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
+        const GUARD: &str = "a guard compares two values, each a variable a premise before it \
+                             binds, a name, a string or an integer";
+        const WILD: &str = "and _ names no value — a guard compares two values, and _ stands \
+                            for an argument of a pattern";
+        const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
+                               (neq a b), an (absent …), or an (and …) or (or …) of premises";
+        const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
+                            parameter its activator binds";
+        const KW: &str = "and no fact can hold it — a keyword pair is no value, so a pattern \
+                          inside a pattern that holds one matches nothing";
+        let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) (relation tag T T)\n\
+                   (relation item T) (relation lbl T)\n(p a) (q a) (box (p a))\n";
+        for (rule, want) in [
+            // `_`, a form, a keyword pair and an unbound variable in a guard.
+            (
+                "(rule e () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))".to_string(),
+                format!("rule 'e': its :match writes (eq ?x _), {WILD}"),
+            ),
+            (
+                "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y _)))) :assert (hit ?x))"
+                    .to_string(),
+                format!("rule 'e': its :match writes (neq ?y _), {WILD}"),
+            ),
+            (
+                "(rule e () :match (and (p ?x) (eq ?x (p a))) :assert (hit ?x))".to_string(),
+                format!(
+                    "rule 'e': its :match writes (eq ?x (p a)), and the form (p a) is no value — {GUARD}"
+                ),
+            ),
+            (
+                "(rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit ?x))".to_string(),
+                format!(
+                    "rule 'e': its :match writes (eq ?x :k a), and the keyword pair :k a is no \
+                     value — {GUARD}"
+                ),
+            ),
+            (
+                "(rule e () :match (and (neq ?x a) (p ?x)) :assert (hit ?x))".to_string(),
+                format!(
+                    "rule 'e': its :match writes (neq ?x a), and no premise before it binds ?x — {GUARD}"
+                ),
+            ),
+            (
+                "(rule e () :match (and (p ?x) (eq ?x ?u)) :assert (hit ?x))".to_string(),
+                format!(
+                    "rule 'e': its :match writes (eq ?x ?u), and no premise before it binds ?u — {GUARD}"
+                ),
+            ),
+            (
+                // A variable the absent's own premise binds after the guard.
+                "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x))"
+                    .to_string(),
+                format!(
+                    "rule 'e': its :match writes (neq ?y a), and no premise before it binds ?y — {GUARD}"
+                ),
+            ),
+            (
+                "(hrule h () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))".to_string(),
+                format!("hrule 'h': its :match writes (eq ?x _), {WILD}"),
+            ),
+            // A premise that is not a form.
+            (
+                "(rule r () :match _ :assert (hit a))".to_string(),
+                format!("rule 'r': its :match is _, and _ is no premise — {PREMISE}"),
+            ),
+            (
+                "(rule r () :match foo :assert (hit a))".to_string(),
+                format!("rule 'r': its :match is foo, and foo is no premise — {PREMISE}"),
+            ),
+            (
+                "(rule r () :match (and (p ?x) ?x) :assert (hit ?x))".to_string(),
+                format!(
+                    "rule 'r': its :match writes ?x as a premise of and, and ?x is no premise — {PREMISE}"
+                ),
+            ),
+            (
+                "(rule r () :match (or 3 (q ?y)) :assert (hit a))".to_string(),
+                format!(
+                    "rule 'r': its :match writes 3 as a premise of or, and 3 is no premise — {PREMISE}"
+                ),
+            ),
+            (
+                "(rule r () :match (and (p ?x) (absent \"s\")) :assert (hit ?x))".to_string(),
+                format!(
+                    "rule 'r': its :match writes \"s\" as a premise of absent, and \"s\" is no premise — {PREMISE}"
+                ),
+            ),
+            (
+                "(hrule h () :match (and (p ?x) _) :assert (hit ?x))".to_string(),
+                format!(
+                    "hrule 'h': its :match writes _ as a premise of and, and _ is no premise — {PREMISE}"
+                ),
+            ),
+            // A relation variable no parameter binds, inside a pattern and at
+            // the top level, in either clause.
+            (
+                "(rule r () :match (box (?r a)) :assert (hit a))".to_string(),
+                format!("rule 'r': its :match writes (?r a) with ?r as its relation, {FREE}"),
+            ),
+            (
+                "(rule r () :match (and (p ?x) (absent (not (?r ?x)))) :assert (hit ?x))"
+                    .to_string(),
+                format!("rule 'r': its :match writes (?r ?x) with ?r as its relation, {FREE}"),
+            ),
+            (
+                "(rule r () :match (and (p ?r) (?r a)) :assert (hit a))".to_string(),
+                format!("rule 'r': its :match writes (?r a) with ?r as its relation, {FREE}"),
+            ),
+            (
+                "(rule r () :match (p ?r) :assert (box (?r a)))".to_string(),
+                format!("rule 'r': its :assert writes (?r a) with ?r as its relation, {FREE}"),
+            ),
+            (
+                "(hrule h () :match (p ?r) :assert (?r a))".to_string(),
+                format!("hrule 'h': its :assert writes (?r a) with ?r as its relation, {FREE}"),
+            ),
+            // A keyword pair inside a pattern inside a pattern.
+            (
+                "(rule r () :match (box (p a :k v)) :assert (hit a))".to_string(),
+                format!("rule 'r': its :match writes :k v as an argument of p, {KW}"),
+            ),
+            (
+                "(rule r () :match (p ?x) :assert (box (p ?x :k v)))".to_string(),
+                format!("rule 'r': its :assert writes :k v as an argument of p, {KW}"),
+            ),
+            // An obligation's `:match`.
+            (
+                "(rule owe () :match (and (item ?x) (box (?r a)) (absent (tag ?x ?l))) \
+                 :assert (open tag))"
+                    .to_string(),
+                format!("rule 'owe': its :match writes (?r a) with ?r as its relation, {FREE}"),
+            ),
+        ] {
+            assert_eq!(err(&format!("{pre}{rule}")), want, "{rule}");
+        }
+        // A relation parameter its activator binds to a nested fact, where the
+        // activator is written: a fact, or a literal in an `:assert`.
+        let mirror = "(rule mirror (?R) :match (box (?R a)) :assert (hit a))";
+        for activator in [
+            "(mirror (p a))".to_string(),
+            "(rule mk () :match (q ?x) :assert (mirror (p a)))".to_string(),
+        ] {
+            assert_eq!(
+                err(&format!("{pre}{mirror}\n{activator}")),
+                "rule 'mirror': its parameter ?R names a relation, and (mirror (p a)) binds it \
+                 to the fact (p a) — a relation is named by a symbol, not a fact",
+                "{activator}"
+            );
+        }
+        // What stays: a guard on values the premises before it bind, Q32's
+        // keyword pairs, a parameter head, `_` as an argument, a guard under
+        // an `absent` on a variable the enclosing premises bound.
+        for rule in [
+            "(rule e () :match (and (p ?x) (q ?y) (neq ?x ?y) (eq ?x a) (neq ?x \"b\") (eq ?x 1)) \
+             :assert (hit ?x))",
+            "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y ?x)))) :assert (hit ?x))",
+            "(rule e () :match (and (p ?x) :where (eq ?x a)) :assert (hit ?x))",
+            "(rule e () :match (p ?x :where 1..3) :assert (hit ?x))",
+            "(rule e () :match (and (box (p _)) (p _)) :assert (hit a))",
+            "(rule e (?R) :match (box (?R a)) :assert (hit a))",
+        ] {
+            ok(&format!("{pre}{rule}"));
+        }
     }
 
     #[test]
@@ -2018,6 +2462,16 @@ mod tests {
             // A variable relation head comes from the activator, never a premise.
             (
                 "is not in the parameter list",
+                format!(
+                    "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A)) \
+                     :assert (open ?R))"
+                ),
+            ),
+            // Written as a premise's relation too, the rule pass refuses it
+            // first, as it refuses any relation variable no parameter binds
+            // (M1e2 S1e2.2.24, W24); until then this case reached the line above.
+            (
+                "with ?R as its relation, which no parameter binds",
                 format!(
                     "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
                      (absent (?R ?a ?b))) :assert (open ?R))"

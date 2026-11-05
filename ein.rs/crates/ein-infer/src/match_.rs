@@ -1237,11 +1237,19 @@ mod tests {
     /// A `neq` on two variables neither premise bound resolves both to the
     /// same null, and two nulls are equal, so the guard *fails*. Surprising,
     /// and kept.
+    ///
+    /// **No program the loader accepts reaches it since M1e2 S1e2.2.24** (W24,
+    /// Q-M1e2.18 (ii)): a guard on a variable no premise before it binds is
+    /// refused at load, so `(neq ?p ?q)` with `?p` and `?q` free, this test's
+    /// program until then, no longer loads. The policy is the matcher's still,
+    /// and a direct caller of `compile_rule` that binds no parameter reaches
+    /// it: here `?p` and `?q` are parameters, which the loader takes as bound,
+    /// and the plan is compiled with no activator.
     #[test]
     fn two_unbound_guard_arguments_compare_equal() {
         let (ast, terms, kb, plan) = setup(
             "(relation a Thing)\n\
-             (rule r ()\n  :match (and (a ?x) (neq ?p ?q))\n  :assert (a ?x))\n\
+             (rule r (?p ?q)\n  :match (and (a ?x) (neq ?p ?q))\n  :assert (a ?x))\n\
              (a one)\n",
         );
         let mut matcher = Matcher::new();

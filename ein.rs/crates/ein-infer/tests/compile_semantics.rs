@@ -368,6 +368,11 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
 ///
 /// [S1e.2.1]: ../../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal
 ///
+/// **Six since M1e2 S1e2.2.24**: `empty_absent` and `unbound_head` moved to
+/// `examples/broken/load/` when the loader began refusing a premise that is
+/// not a form and a relation variable no parameter binds (W24), each
+/// `.expected` its load line there.
+///
 /// The walk runs with the arity filter **off**, because `activator_arity`'s
 /// error is unreachable with it on — see the next test but one.
 #[test]
@@ -394,11 +399,9 @@ fn every_compile_error_says_what_its_expected_file_says() {
             "absent_arity_high",
             "absent_arity_zero",
             "activator_arity",
-            "empty_absent",
             "eq_arity_high",
             "eq_arity_low",
-            "nested_or",
-            "unbound_head"
+            "nested_or"
         ],
         "one fixture per CompileError branch, in {}",
         dir.display()
@@ -464,17 +467,19 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
 /// permanently. The failure is therefore silent and irreversible, which is why
 /// this is a compile error and not a warning.
 ///
-/// Both routes into the branch are checked. `(absent ?x)` reaches the empty
-/// sub-plan itself; `(absent (?R ?x))` is the shape an author is far likelier
-/// to write, and it stops *earlier*, at the unbound-head refusal. That
-/// ordering is what the two `.expected` files record, and a compiler that
-/// checked emptiness before heads would swap the messages while still
-/// refusing both.
+/// **The loader refuses the two shapes this test was written with since M1e2
+/// S1e2.2.24** (W24, Q-M1e2.16 (1), Q-M1e2.18 (v)): `(absent ?x)`, a premise
+/// that is not a form, and `(absent (?R ?x))`, a relation variable no
+/// parameter binds, each with its line, before the compiler sees either; the
+/// first's fixture, `empty_absent.ein`, moved to `examples/broken/load/`. One
+/// program the loader accepts still reaches the empty sub-plan: a keyword pair
+/// as an `absent`'s whole body, which the compiler drops (Q32), so the
+/// refusal is checked through it.
 #[test]
 fn an_absent_that_compiles_to_no_steps_is_refused() {
     let mut empty = load_text(
         "(relation p T) (relation out T)\n\
-         (rule vacuous ()\n  :match (and (p ?x) (absent ?x))\n  :assert (out ?x))\n",
+         (rule vacuous ()\n  :match (and (p ?x) (absent :k v))\n  :assert (out ?x))\n",
     );
     let err = empty.compile_error(true);
     assert!(
@@ -487,15 +492,26 @@ fn an_absent_that_compiles_to_no_steps_is_refused() {
          useless: {err}"
     );
 
-    let mut unbound = load_text(
+    let not_a_form = load_error(
+        "(relation p T) (relation out T)\n\
+         (rule vacuous ()\n  :match (and (p ?x) (absent ?x))\n  :assert (out ?x))\n",
+    );
+    assert!(
+        not_a_form.contains(
+            "rule 'vacuous': its :match writes ?x as a premise of absent, and ?x is no premise"
+        ),
+        "a premise that is not a form is the loader's since S1e2.2.24: {not_a_form}"
+    );
+    let unbound = load_error(
         "(relation a T) (relation out T)\n\
          (rule free-head ()\n  :match (and (a ?x) (absent (?R ?x)))\n  :assert (out ?x))\n",
     );
-    let err = unbound.compile_error(true);
     assert!(
-        err.starts_with("unbound relation head ?R"),
-        "an unbound head inside an `(absent …)` reaches the head refusal, not \
-         the empty-sub-plan one: {err}"
+        unbound.contains(
+            "rule 'free-head': its :match writes (?R ?x) with ?R as its relation, which no \
+             parameter binds"
+        ),
+        "a relation variable no parameter binds is the loader's since S1e2.2.24: {unbound}"
     );
 }
 
@@ -574,6 +590,38 @@ fn a_relation_parameter_a_rule_binds_to_a_number_is_refused() {
             && err.contains("is bound to the integer 3 — a relation is named by a symbol"),
         "the compiler names the head, the form and the integer: {err}"
     );
+
+    // A nested fact, derived the same way, binds no parameter, so it names no
+    // relation either — M1e2 S1e2.2.24 (W24, Q-M1e2.18 (iv)). Until then the
+    // top-level premise stopped compilation with the unbound-head line in the
+    // Python IR's spelling, and a pattern inside a pattern matched nothing.
+    for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
+        let rule = format!("(rule mirror (?R) :match {pattern} :assert (hit a))");
+        let mut l = load_text(&format!(
+            "(relation q T T) (relation hit T) (relation box T)\n(q A B) (src (q A B))\n\
+             (rule make () :match (src ?f) :assert (mirror ?f))\n{rule}"
+        ));
+        let mut events = Events::off();
+        let mut s = Session {
+            kb: &mut l.kb,
+            terms: &mut l.terms,
+            ast: &l.ast,
+            events: &mut events,
+            memo: SharedMemo::default(),
+        };
+        let mut sat = Saturator::new(&mut s).expect("nothing is refused before `make` fires");
+        let err = sat
+            .saturate(&mut s, None, &mut |_| {})
+            .expect_err("`mirror` is refused for the derived (mirror (q A B))")
+            .to_string();
+        assert!(
+            err.contains("the relation head ?R of (?R ?a ?b) at Loc(")
+                && err.contains(
+                    "is bound to the fact (q A B) — a relation is named by a symbol, not a fact."
+                ),
+            "{pattern}: the compiler names the head, the form and the fact: {err}"
+        );
+    }
 
     // Written down, in an `:assert` as in a fact, the loader sees it.
     let literal = format!(

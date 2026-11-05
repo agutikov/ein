@@ -802,10 +802,13 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
 /// Atom` or `TypeError: an unrecognised `:assert` slot has no value to store`
 /// under `ein saturate`, and the message alone under `ein solve`: a Python
 /// class, a Python IR class's name, and no word of which rule or what it
-/// wrote. A string reached it until S1e2.2.18 lowered one (W18), and a range
-/// until S1e2.2.20 refused one in a rule at load (W20, the next test); these
-/// shapes still do, each a program the loader accepts and the rule's first
-/// firing stops, exit 1 as before. The line names the rule and the slot as the
+/// wrote. A string reached it until S1e2.2.18 lowered one (W18), a range
+/// until S1e2.2.20 refused one in a rule at load (W20, the next test), and a
+/// keyword pair inside a nested conclusion and a relation written as a
+/// variable no parameter binds, `(?x a b)` and `(tag a (?x b))`, until
+/// S1e2.2.24 refused both at load (W24, the test after); these four shapes
+/// still do, each a program the loader accepts and the rule's first firing
+/// stops, exit 1 as before. The line names the rule and the slot as the
 /// program writes it.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
@@ -813,10 +816,8 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
                        variable its :match binds, or a fact (relation argument …)";
     const TOP: &str = "which is not a fact — a conclusion is a fact (relation argument …), or \
                        an (and …) of facts";
-    const HEAD: &str = "its activator does not bind — a relation written as a variable is one \
-                        of the rule's parameters, which its activator binds to a name";
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
-    let cases: [(&str, String); 7] = [
+    let cases: [(&str, String); 4] = [
         (
             r#"(tag ?x b :source "x")"#,
             format!(r#"its :assert writes :source "x" as an argument of tag, {ARG}"#),
@@ -825,22 +826,10 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
             "(tag ?x _)",
             format!("its :assert writes _ as an argument of tag, {ARG}"),
         ),
-        (
-            "(tag ?x (box a :k v))",
-            format!("its :assert writes :k v as an argument of box, {ARG}"),
-        ),
         ("foo", format!("its :assert concludes foo, {TOP}")),
         (
             "(and (tag ?x b) ?x)",
             format!("its :assert concludes ?x, {TOP}"),
-        ),
-        (
-            "(?x a b)",
-            format!("its :assert writes (?x a b), whose relation ?x {HEAD}"),
-        ),
-        (
-            "(tag a (?x b))",
-            format!("its :assert writes (?x b), whose relation ?x {HEAD}"),
         ),
     ];
     for (i, (assert, line)) in cases.iter().enumerate() {
@@ -944,6 +933,142 @@ fn a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load() {
             for python in ["CompileError", "Wildcard()", "SForm"] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
             }
+        }
+    }
+}
+
+/// **A rule shape that reads nothing is refused at load** — M1e2 S1e2.2.24
+/// (W24), on the user's rulings of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18).
+///
+/// Each of W24's seven witnesses, from every command that loads it: `ein
+/// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2, with the
+/// loader's line in Ein's spelling. Until then each loaded and read nothing,
+/// in silence: a guard on `_`, a form, a keyword pair or a variable no
+/// premise before it binds compared as a raw node or a null; a premise that is
+/// not a form was dropped; a pattern inside a pattern whose relation no
+/// parameter binds, or whose activator bound it to a nested fact, matched
+/// nothing. The three shapes an `:assert` writes, which stopped the firing
+/// with the line the test above holds, are refused at load too, and a
+/// top-level `(?r b)` whose `CompileError` printed the Python IR's spelling.
+/// A parameter a rule binds to a nested fact through a variable is the
+/// compiler's (`ein-infer/tests/compile_semantics.rs`).
+#[test]
+fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
+    const GUARD: &str = "a guard compares two values, each a variable a premise before it \
+                         binds, a name, a string or an integer";
+    const WILD: &str = "and _ names no value — a guard compares two values, and _ stands for \
+                        an argument of a pattern";
+    const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
+                           (neq a b), an (absent …), or an (and …) or (or …) of premises";
+    let witnesses: [(&str, String); 7] = [
+        (
+            "wild-in-guard",
+            format!(
+                "rule 'e': its :match writes (eq ?x _), {WILD}; \
+                 rule 'n': its :match writes (neq ?x _), {WILD}; \
+                 rule 'b': its :match writes (eq _ _), {WILD}"
+            ),
+        ),
+        (
+            "bare-premise",
+            format!(
+                "rule 'a': its :match is _, and _ is no premise — {PREMISE}; \
+                 rule 'b': its :match writes _ as a premise of and, and _ is no premise — {PREMISE}; \
+                 rule 'c': its :match is foo, and foo is no premise — {PREMISE}"
+            ),
+        ),
+        (
+            "nested-unbound-head",
+            "rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter \
+             binds — a relation is named by a name or by a parameter its activator binds"
+                .to_string(),
+        ),
+        (
+            "form-in-guard",
+            format!(
+                "rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — {GUARD}; \
+                 rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — {GUARD}"
+            ),
+        ),
+        (
+            "guard-before-binder",
+            format!(
+                "rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — {GUARD}; \
+                 rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — {GUARD}"
+            ),
+        ),
+        (
+            "kwpair-in-guard",
+            format!(
+                "rule 'e': its :match writes (eq ?x :k a), and the keyword pair :k a is no value — {GUARD}"
+            ),
+        ),
+        (
+            "nested-fact-activator",
+            "rule 'r': its parameter ?R names a relation, and (r (a b)) binds it to the fact \
+             (a b) — a relation is named by a symbol, not a fact"
+                .to_string(),
+        ),
+    ];
+    for (name, line) in &witnesses {
+        let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
+        let want = format!("kb load error: {line}");
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} {file}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().rfind(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} {file}"
+            );
+            for python in ["CompileError", "Wildcard()", "SForm", "Fact("] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
+    // The `:assert` shapes the test above held at the firing, and the
+    // top-level relation variable, in Ein's spelling at load.
+    let scratch = ein_corpus::Scratch::new("ein-reads-nothing");
+    for (i, (assert, line)) in [
+        (
+            "(tag ?x (box a :k v))",
+            "its :assert writes :k v as an argument of box, and no fact can hold it — a \
+             keyword pair is no value, so a pattern inside a pattern that holds one matches \
+             nothing",
+        ),
+        (
+            "(?x a b)",
+            "its :assert writes (?x a b) with ?x as its relation, which no parameter binds — \
+             a relation is named by a name or by a parameter its activator binds",
+        ),
+        (
+            "(tag a (?x b))",
+            "its :assert writes (?x b) with ?x as its relation, which no parameter binds — a \
+             relation is named by a name or by a parameter its activator binds",
+        ),
+    ]
+    .iter()
+    .enumerate()
+    {
+        let file = scratch.path().join(format!("{i}.ein"));
+        std::fs::write(
+            &file,
+            format!(
+                "(relation holds Node) (relation tag Node Node)\n(holds a)\n\
+                 (rule s () :match (holds ?x) :assert {assert})\n"
+            ),
+        )
+        .expect("the program is written");
+        let file = file.to_string_lossy();
+        let want = format!("kb load error: rule 's': {line}");
+        for cmd in ["saturate", "solve"] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, 1, "ein {cmd} on :assert {assert}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().rfind(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} on :assert {assert}"
+            );
         }
     }
 }

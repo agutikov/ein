@@ -1,0 +1,36 @@
+;;; A form as a guard's argument reads nothing, in silence — M1e2 **W24**,
+;;; register row `W24/form-in-guard` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.24 (2026-11-05) from its step 1's probe
+;;; `build/s1e2.2.24/shapes/g-nested-rule.ein` (the program unchanged), ruled
+;;; by the user on 2026-11-05 (Q-M1e2.18 (i)(a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Four facts of `p`, one of them the nested fact `(f a)`, and two rules
+;;; whose guard compares `?x` with the form `(f a)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A guard compares two values, each a variable a premise before it binds, a
+;;; name, a string or an integer. The user ruled that a form written as a
+;;; guard's argument is refused at load, with a line in Ein's spelling naming
+;;; the rule and the clause. Every command that loads the program exits 1
+;;; (`ein test`: 2).
+;;;
+;;; ── What the engine answered, and why it does not any more ─────────────
+;;;
+;;; Until S1e2.2.24 the program loaded, and each guard compared the form as a
+;;; raw IR node, equal to no value: `(eq ?x (f a))` never held, even where
+;;; `?x` is bound to the fact `(f a)`, and `(neq ?x (f a))` always did. Root
+;;; derived `(hit-neq a)`, `(hit-neq b)`, `(hit-neq 1)` and `(hit-neq (f a))`
+;;; and no `hit-eq`, exit 0, with no word of the form (`ein saturate --dump
+;;; FILE` and `ein solve FILE` at `f8c10730`, release and debug). Since then
+;;; the loader refuses it: *kb load error: rule 'e': its :match writes (eq ?x
+;;; (f a)), and the form (f a) is no value — a guard compares two values, each
+;;; a variable a premise before it binds, a name, a string or an integer*,
+;;; and the same line for `n`.
+
+(relation p Node) (relation q Node) (relation f Node) (relation hit-eq Node) (relation hit-neq Node)
+(p a) (p b) (p 1) (p (f a)) (q a)
+(rule e () :match (and (p ?x) (eq ?x (f a))) :assert (hit-eq ?x))
+(rule n () :match (and (p ?x) (neq ?x (f a))) :assert (hit-neq ?x))

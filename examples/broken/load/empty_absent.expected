@@ -1,0 +1,1 @@
+rule 'vacuous-guard': its :match writes ?x as a premise of absent, and ?x is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises
