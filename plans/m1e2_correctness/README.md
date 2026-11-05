@@ -1,8 +1,13 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~22 weeks: 7 estimated phases and 60 stages, five of them
-dropped, **109 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b
-21, P1e2.1c 16.5, P1e2.2 24.5, P1e2.3 10, P1e2.4 2). It was 104 until
+**Estimate:** ~23 weeks: 7 estimated phases and 65 stages, five of them
+dropped, **115 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b
+21, P1e2.1c 16.5, P1e2.2 29, P1e2.3 11.5, P1e2.4 2). It was 109 until the
+user's ruling on [the inventory of 2026-11-05](inventory_2026-11-05.md)
+([Q-M1e2.16](open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)) gave P1e2.2 four stages, S1e2.2.22 (W22, 1 day),
+S1e2.2.23 (W23, 1 day), S1e2.2.24 (W24, 1.5 days) and S1e2.2.25 (the
+deferred rows, 1 day), and P1e2.3 one, S1e2.3.10 (N7 and N8, 1 day), and
+widened S1e2.3.8 by a dumped state's provenance (1 day → 1.5). It was 104 until
 P1e2.2 gained S1e2.2.20 (W20, 1.5 days) and S1e2.2.21 (W21, 2 days) and
 P1e2.3 S1e2.3.8 (N5, 1 day) and S1e2.3.9 (N6, 0.5 day) on 2026-11-05, on
 the user's rulings of 2026-11-04. It was 102.5 until P1e2.2
@@ -182,8 +187,8 @@ where it is cheap and exact, and
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
 | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 16.5 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. **Done 2026-11-03**: no row closed by construction, four of P1e2.2's stages dropped, the walk deleted around S4 and `-L`, `-K` and four `enable-*` fields retired on the user's rulings, `-y` the spot check unbounded. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
-| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 21, 5 dropped | 24.5 d | every register row `fixed` or ruled `not-wrong`, or `deferred` to a followup by the user; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before) and by the review the same day (S1e2.2.13 dropped, S1e2.2.10 restated), eight stages live; no wrong answer at default settings; no lever that changes a certified answer. **Started 2026-11-04; S1e2.2.4 done** that day: W4's two rows fixed by seeding the candidates with a rule's constants, 23 fixed, 11 open, 1 not-wrong. **S1e2.2.5 done** the same day: *forbid*'s refusal built, with the user's F2, *via, per activator*; W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` fixed by it, `:warn-derived-naf` retired, 29 fixed, 5 open, 1 not-wrong. **S1e2.2.14 (W15) and S1e2.2.15 (W14) filed** the same day, ten stages live. **S1e2.2.14 done** the same day: the blind enumerator's objects are every name of the program (Q-M1e2.9 (a)), W15's eight rows fixed, W7's `right` restated to R, 37 fixed, 5 open, 1 not-wrong. **S1e2.2.15 done** the same day: Q-M1e2.10 ruled (a), the rung declines on a guard over D, W14's four rows fixed, 41 fixed, 5 open, 1 not-wrong. **S1e2.2.6 done** the same day, as far as the deferral allows: `W8/features-07` re-checked and still `deferred` to F21's D2, `stale-naf-fork` refused at every command that takes the universe, the witnesses' headers corrected, nothing moved. **S1e2.2.7 done** the same day: Q-M1e.16's fix (1), a rule application's identity interns its activator's every argument, W7's row fixed in both profiles, its pair promoted to `examples/ein-bugs/`, Q-M1e.16 closed, 42 fixed, 4 open, 1 not-wrong. **S1e2.2.8 done** the same day: Q-M1e2.3 (a) built, every question's read-out names what H leaves out (the `outside` row, `root.hypgen.outside`), W6's two rows fixed, no answer moved, 44 fixed, 2 open, 1 not-wrong. **S1e2.2.10 done** the same day: Q-M1e.12 (a) built, `branching/06` and `/07` typed (R two states), a `types` row on every read-out where the blind enumerator binds a type as an object, C1's and `W1/branching-07`'s rows moved to the retyped R, still 44, 2 and 1. **S1e2.2.11 done** the same day: paused on Q-M1e2.11 and ruled (i)(b), (ii)(b); Q-M1e.15's (3) built, `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to F22, the core exempt under `:record-alternative-justifications`, Q-M1e.15 closed, 45 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.12 done** the same day: the user's second visit to W11, both rows confirmed; the id-order sweep compares every core and asserts nothing moves; a resumed fork's `FactId`-ordered delta could move a dead node's core, so `W11/fork-delta-order` was filed and fixed by the delta in the order its commitment was written (`10858b96`), no tie-break needed; W11's witnesses promoted; 46 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.16 done** the same day, the phase's last live stage: a compile plan keyed by its activator's values, so an int and a string with one text no longer share one and lose a derivation, and *forbid* asks a plan's rule for its parameters, so an activator with no symbol argument is one; W16's four rows fixed (`3257488f`), 50 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.17 (W17) and S1e2.2.18 (W18) filed** the same day from S1e2.2.16's notes. **S1e2.2.17 done** the same day: *forbid* reads *extendable* as D followed through the rules root has no plan of, every such rule read and its own `absent` tainting what it derives; W17's five rows fixed (`f5a0dca9`), the status line names the site up an activator chain or says why none, 55 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.18 done** the same day: a string in a rule's `:match`, `:assert` or guard is the symbol it names, as in a fact, and a name of the program; W18's five rows fixed (`259c16e4`), and the line a conclusion no fact can hold still stops the run with names no Python class, 60 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.19 (W19) filed** the same day from S1e2.2.17's notes, and **started**: three rows filed under schema `/8`, every core measured under three readings; following every activator moves 40 corpus programs' cores and a derived one three's, so it is **paused on Q-M1e2.12**, 60 fixed, 5 open, 1 not-wrong. Q-M1e2.12 ruled (c) the same day, and **S1e2.2.19 done**: a firing records its activator, a dead node's core follows one a node derives or commits, W19's three rows fixed (`94c7bcfb`), no corpus core moved, 63 fixed, 2 open (both deferred), 1 not-wrong. The user's other questions ruled the same day. **S1e2.2.20 (W20) started** 2026-11-05: five rows filed (`_` in a premise, in the head, under an `absent`, in an hrule; a range), the argument `_` and the range prototyped with no corpus run moved; a head `_` needs a second matching path, so it is **paused on Q-M1e2.14**, 63 fixed, 7 open, 1 not-wrong. Q-M1e2.14 ruled (c) the same day, and **S1e2.2.20 done**: `_` in a rule's pattern matches any value and binds nothing, a range and a `_` written as a relation refused at load, W20's five rows fixed (`eddea251`), no answer moved outside W20's programs, 68 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.21 (W21) started** the same day: four rows filed, every core measured; the pair fix stops 2 172 cores naming their commitment, through a `(false)` concluded by a `forall`, so it is **paused on Q-M1e2.15**, 68 fixed, 6 open, 1 not-wrong. Q-M1e2.15 ruled (b) the same day, with a core taken only where a surface prints one; **W21 fixed**: a contradiction's facts together, a `forall`'s support recorded, six rows fixed, 74 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.21 done** the same day: a core taken only where a surface prints one, no run moved; the class-4 claim a corpus-wide test. Next, the stages the user added on 2026-11-05 (S1e2.2.22–.25 and S1e2.3.10, specified next), then P1e2.3's S1e2.3.8 (N5) and S1e2.3.9 (N6), then the milestone's close, which waits for the user's go-ahead |
-| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 9 | 10 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; **S1e2.3.5 done 2026-11-03**: the gate checks its own scratch; **S1e2.3.7 done 2026-11-03**: N1–N4 say what they print, each held by a test, no exit code moved; **S1e2.3.6 done 2026-11-03**: every nightly step green under `./run_tests.sh --nightly`, which `nightly_steps.rs` holds to the workflow, the mutation bank's eight kills explained (165 of 217). **Closed 2026-11-03**, its acceptance re-taken line by line |
+| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 25, 5 dropped | 29 d | every register row `fixed` or ruled `not-wrong`, or `deferred` to a followup by the user; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before) and by the review the same day (S1e2.2.13 dropped, S1e2.2.10 restated), eight stages live; no wrong answer at default settings; no lever that changes a certified answer. **Started 2026-11-04; S1e2.2.4 done** that day: W4's two rows fixed by seeding the candidates with a rule's constants, 23 fixed, 11 open, 1 not-wrong. **S1e2.2.5 done** the same day: *forbid*'s refusal built, with the user's F2, *via, per activator*; W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` fixed by it, `:warn-derived-naf` retired, 29 fixed, 5 open, 1 not-wrong. **S1e2.2.14 (W15) and S1e2.2.15 (W14) filed** the same day, ten stages live. **S1e2.2.14 done** the same day: the blind enumerator's objects are every name of the program (Q-M1e2.9 (a)), W15's eight rows fixed, W7's `right` restated to R, 37 fixed, 5 open, 1 not-wrong. **S1e2.2.15 done** the same day: Q-M1e2.10 ruled (a), the rung declines on a guard over D, W14's four rows fixed, 41 fixed, 5 open, 1 not-wrong. **S1e2.2.6 done** the same day, as far as the deferral allows: `W8/features-07` re-checked and still `deferred` to F21's D2, `stale-naf-fork` refused at every command that takes the universe, the witnesses' headers corrected, nothing moved. **S1e2.2.7 done** the same day: Q-M1e.16's fix (1), a rule application's identity interns its activator's every argument, W7's row fixed in both profiles, its pair promoted to `examples/ein-bugs/`, Q-M1e.16 closed, 42 fixed, 4 open, 1 not-wrong. **S1e2.2.8 done** the same day: Q-M1e2.3 (a) built, every question's read-out names what H leaves out (the `outside` row, `root.hypgen.outside`), W6's two rows fixed, no answer moved, 44 fixed, 2 open, 1 not-wrong. **S1e2.2.10 done** the same day: Q-M1e.12 (a) built, `branching/06` and `/07` typed (R two states), a `types` row on every read-out where the blind enumerator binds a type as an object, C1's and `W1/branching-07`'s rows moved to the retyped R, still 44, 2 and 1. **S1e2.2.11 done** the same day: paused on Q-M1e2.11 and ruled (i)(b), (ii)(b); Q-M1e.15's (3) built, `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to F22, the core exempt under `:record-alternative-justifications`, Q-M1e.15 closed, 45 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.12 done** the same day: the user's second visit to W11, both rows confirmed; the id-order sweep compares every core and asserts nothing moves; a resumed fork's `FactId`-ordered delta could move a dead node's core, so `W11/fork-delta-order` was filed and fixed by the delta in the order its commitment was written (`10858b96`), no tie-break needed; W11's witnesses promoted; 46 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.16 done** the same day, the phase's last live stage: a compile plan keyed by its activator's values, so an int and a string with one text no longer share one and lose a derivation, and *forbid* asks a plan's rule for its parameters, so an activator with no symbol argument is one; W16's four rows fixed (`3257488f`), 50 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.17 (W17) and S1e2.2.18 (W18) filed** the same day from S1e2.2.16's notes. **S1e2.2.17 done** the same day: *forbid* reads *extendable* as D followed through the rules root has no plan of, every such rule read and its own `absent` tainting what it derives; W17's five rows fixed (`f5a0dca9`), the status line names the site up an activator chain or says why none, 55 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.18 done** the same day: a string in a rule's `:match`, `:assert` or guard is the symbol it names, as in a fact, and a name of the program; W18's five rows fixed (`259c16e4`), and the line a conclusion no fact can hold still stops the run with names no Python class, 60 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.19 (W19) filed** the same day from S1e2.2.17's notes, and **started**: three rows filed under schema `/8`, every core measured under three readings; following every activator moves 40 corpus programs' cores and a derived one three's, so it is **paused on Q-M1e2.12**, 60 fixed, 5 open, 1 not-wrong. Q-M1e2.12 ruled (c) the same day, and **S1e2.2.19 done**: a firing records its activator, a dead node's core follows one a node derives or commits, W19's three rows fixed (`94c7bcfb`), no corpus core moved, 63 fixed, 2 open (both deferred), 1 not-wrong. The user's other questions ruled the same day. **S1e2.2.20 (W20) started** 2026-11-05: five rows filed (`_` in a premise, in the head, under an `absent`, in an hrule; a range), the argument `_` and the range prototyped with no corpus run moved; a head `_` needs a second matching path, so it is **paused on Q-M1e2.14**, 63 fixed, 7 open, 1 not-wrong. Q-M1e2.14 ruled (c) the same day, and **S1e2.2.20 done**: `_` in a rule's pattern matches any value and binds nothing, a range and a `_` written as a relation refused at load, W20's five rows fixed (`eddea251`), no answer moved outside W20's programs, 68 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.21 (W21) started** the same day: four rows filed, every core measured; the pair fix stops 2 172 cores naming their commitment, through a `(false)` concluded by a `forall`, so it is **paused on Q-M1e2.15**, 68 fixed, 6 open, 1 not-wrong. Q-M1e2.15 ruled (b) the same day, with a core taken only where a surface prints one; **W21 fixed**: a contradiction's facts together, a `forall`'s support recorded, six rows fixed, 74 fixed, 2 open (both deferred), 1 not-wrong. **S1e2.2.21 done** the same day: a core taken only where a surface prints one, no run moved; the class-4 claim a corpus-wide test. **Four stages added** the same day on the user's ruling on the inventory of 2026-11-05 (Q-M1e2.16), specified the same day: S1e2.2.22 (W22, a keyword prefix split in a rule), S1e2.2.23 (W23, a core search cut at its budget), S1e2.2.24 (W24, three rule shapes refused at load) and S1e2.2.25 (the owned wrong answers filed as deferred rows). Next, those four in order, then P1e2.3's S1e2.3.8 (N5 and a dumped state's provenance), S1e2.3.9 (N6) and S1e2.3.10 (N7, N8), then the inventory re-taken and shown to the user; the milestone's close waits for the user's go-ahead |
+| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 10 | 11.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; **S1e2.3.5 done 2026-11-03**: the gate checks its own scratch; **S1e2.3.7 done 2026-11-03**: N1–N4 say what they print, each held by a test, no exit code moved; **S1e2.3.6 done 2026-11-03**: every nightly step green under `./run_tests.sh --nightly`, which `nightly_steps.rs` holds to the workflow, the mutation bank's eight kills explained (165 of 217). **Closed 2026-11-03**, its acceptance re-taken line by line. **Re-opened 2026-11-05** for S1e2.3.8 (N5, the fact printer) and S1e2.3.9 (N6, a core the run did not take), on the user's ruling of 2026-11-04, and on the inventory's ruling the same day (Q-M1e2.16 (3)) widened: a dumped state's provenance joins S1e2.3.8, and S1e2.3.10 takes N7 (`refuted by`) and N8 (`--json-report`'s rows); the three run after P1e2.2's S1e2.2.25 |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
 **The order, ruled 2026-11-02.** P1e2.1a is done, and so is **P1e2.4**
@@ -355,9 +360,17 @@ gap filed as rows of W21, the register at 74 fixed, 2 open (both deferred)
 and 1 not-wrong; a core taken only where a surface prints one, no run moved,
 a bare `ein solve examples/zebra2.ein` 0.53 s (`3fb9d712`); and every core
 the corpus reports holding the class-4 claim, as a test (`af521c6e`).
-**Next: the stages the user added on 2026-11-05 (S1e2.2.22–.25 and
-S1e2.3.10, specified next), then P1e2.3's S1e2.3.8 and S1e2.3.9, then the
-milestone's close, which waits for the user's go-ahead.**
+**The inventory the user asked for before the close was taken the same
+day**, [`inventory_2026-11-05.md`](inventory_2026-11-05.md), at `cdcc3994`:
+every register row, every stage's notes, every open question and followup,
+and every corpus program solved and checked against the oracle, each item
+placed by whether a program it reaches is monotone or non-monotone and by
+what it does to R. The user ruled on its items the same day
+([Q-M1e2.16](open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)), and four stages were added here: S1e2.2.22 (W22),
+S1e2.2.23 (W23), S1e2.2.24 (W24) and S1e2.2.25 (the deferred rows).
+**Next: S1e2.2.22, .23, .24 and .25, then P1e2.3's S1e2.3.8, S1e2.3.9 and
+S1e2.3.10, then the inventory re-taken and shown to the user. The
+milestone's close waits for the user's go-ahead.**
 
 ### P1e2.3 — Surfaces that misreport the answer
 
@@ -385,6 +398,17 @@ green locally under `./run_tests.sh --nightly`, a new runner that
 ([§ Acceptance for the phase, as met](p1e2.3_surfaces_that_misreport_the_answer/README.md#acceptance-for-the-phase-as-met)).
 The nightly is green here, not yet on GitHub: the user pushes, and the first
 scheduled run after the next push is the confirmation.
+
+**Re-opened 2026-11-05** for two stages on the user's ruling of 2026-11-04:
+[S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md)
+(N5, the fact printer) and
+[S1e2.3.9](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md)
+(N6, a core the run did not take). On the inventory's ruling the same day
+([Q-M1e2.16](open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3)), a dumped state's provenance joins S1e2.3.8, and
+[S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md)
+takes N7 (`refuted by` names a rule the core does not use) and N8
+(`--json-report` drops `outside` and `types`). The three run after P1e2.2's
+S1e2.2.25.
 
 ## What it inherits from M1e
 
@@ -420,6 +444,11 @@ milestone cites them across the boundary, as M1f does.
   of that day on [Q-M1e2.11](open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it)
   (i)(b): a saving between two facts behind a full alternatives list, which
   no bounded list keeps; S1e2.2.11 fixed W10's first witness.
+  **More since 2026-11-05**, on the user's ruling on the inventory
+  ([Q-M1e2.16](open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (5)): the rows
+  [S1e2.2.25](p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) files for
+  the live wrong answers that already had an owner and no row, each `open`,
+  `deferred` to F21, F22 or M1f's S1f.10.6, and named at the close.
 - **No wrong answer at default settings.** No lever changes an answer the
   engine *certifies*. A lever may change cost, and may decline to certify
   (`exhausted = false`, said why), and that is all.
@@ -427,17 +456,25 @@ milestone cites them across the boundary, as M1f does.
   definition lives (`solution_semantics.md`, `absent_semantics.md`), not only in
   a stage file, or the user's deferral of it to a followup, written in the
   followup (W8: F21's D2, 2026-11-03).
-- **The inventory is re-taken at the close.** [`probes/capture.sh`](probes/capture.sh)
-  re-runs every witness, and every W-case answers its right answer. The
-  corpus sweeps of [inventory § 4](inventory.md#4-reach--corpus-sweeps-run-for-this-inventory)
-  are re-run. A new wrong answer found then becomes a register row and is not
-  waved through. **The script's W lines cannot run as written** (reported by
-  P1e2.3's S1e2.3.4, 2026-11-03): they spell the walk's options, and most are
-  refused since S1e2.1a.5's switch as retired (`-e`, `-m`, `-L`, `-K`), so
-  each W line has to be re-spelt as a region run before this re-take. Its S
-  and P lines were re-spelt by S1e2.3.4 and write P1e2.3's table; the W lines
-  are this acceptance's, and the register's runs (`corpus/wrong_answers.toml`,
-  held by `wrong_answers.rs`) are where today's spellings are.
+- **The inventory is re-taken at the close**, and shown to the user before
+  the close starts (the user, 2026-11-05: *"stop before close m1e2, I want to
+  see inventory of known yet incorrect results, known solution gaps and their
+  intersections with monotone/non-monotone lattices and region"*). **Since
+  the user's ruling of 2026-11-05** ([Q-M1e2.16](open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (6)) the re-take is
+  two things. **The register's tests**: `wrong_answers.rs` runs every row's
+  witness in today's spelling, holds an `open` row to its wrong answer and a
+  `fixed` one to its right one. **The inventory's sweep**: every corpus program
+  solved and checked against the oracle, by the scripts kept in
+  [`inventory_2026-11-05/`](inventory_2026-11-05/) (`sweep_describe.py`,
+  `utils/region_census.py --all`, `sweep_cores.py`, `classify.py`), with
+  [`inventory_2026-11-05.md`](inventory_2026-11-05.md) re-written from them.
+  A new wrong answer found then becomes a register row and is not waved
+  through. Until that ruling the re-take was
+  [`probes/capture.sh`](probes/capture.sh)'s W lines and the corpus sweeps of
+  [inventory § 4](inventory.md#4-reach--corpus-sweeps-run-for-this-inventory),
+  which cannot run as written: the W lines spell the walk's options, most
+  refused since S1e2.1a.5's switch (`-e`, `-m`, `-L`, `-K`), as P1e2.3's
+  S1e2.3.4 reported on 2026-11-03, and the sweeps read the walk.
 - **The review bundle builds in the nightly** and its smoke step is in the
   per-commit gate.
 - `./run_tests.sh` green at every stage boundary, and every golden a stage
@@ -485,6 +522,12 @@ milestone cites them across the boundary, as M1f does.
   names). The twenty that are witnesses were banked at S1e2.1.1, eighteen
   under [`examples/ein-bugs/wrong-answers/`](../../examples/ein-bugs/wrong-answers/)
   and two under `corpus/fuzz_findings/`.
+- [`inventory_2026-11-05.md`](inventory_2026-11-05.md): the inventory taken
+  before the close, at `cdcc3994`, with its probes, findings, scripts and
+  `corpus.csv` in [`inventory_2026-11-05/`](inventory_2026-11-05/); what the
+  close re-takes.
+- [F23](../followups/f23_diagnostics_in_eins_words.md): the diagnostics and
+  spellings this milestone found and did not fix.
 - [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml): the
   register — every case's witnesses, wrong runs and right answers as data,
   held by `ein-cli/tests/wrong_answers.rs`.

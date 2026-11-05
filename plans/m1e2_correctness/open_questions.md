@@ -29,6 +29,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load. The head half re-ruled by Q-M1e2.14 (c). **Built 2026-11-05** by S1e2.2.20 (`eddea251`): W20's five rows fixed |
 | [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns*. **Built 2026-11-05** by S1e2.2.20 (`eddea251`) |
 | [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. **Built 2026-11-05** by S1e2.2.21 (`67d07fab`, `3fb9d712`): W21's six rows fixed, no answer moved by the lazy core |
+| [Q-M1e2.16](#q-m1e216--what-does-the-close-do-with-the-inventorys-items) | What does the close do with the inventory's items? | [the inventory of 2026-11-05](inventory_2026-11-05.md); S1e2.2.22–.25, S1e2.3.8, S1e2.3.10, F21, F22, F23 | **ruled 2026-11-05: as recommended**, put to the user the same day with the inventory the user asked for before the close: F1 and F2 are W22 and W23, fixed before the close; `_` in a guard, a premise that is not a form and a nested unbound relation or keyword pair refused at load (W24); W-8 and W-10 F22's; a reloaded dump's provenance S1e2.3.8's, `refuted by` and `--json-report`'s rows S1e2.3.10, the detector's labels F21's; the eleven diagnostics F23; the owned wrong answers with no row filed `open`, deferred (S1e2.2.25); the close's re-take the register's tests and the inventory's sweep |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1799,3 +1800,35 @@ moved, a bare `ein solve examples/zebra2.ein` 0.53 s against 0.58 s at
 HEAD and 3.65 s eager (2026-11-05). `ein-infer/tests/corpus_cores.rs`
 (T1e2.2.21.4, `af521c6e`) holds that every core the corpus reports names its
 commitment and, with root, derives its contradiction.
+
+## Q-M1e2.16 — What does the close do with the inventory's items?
+
+**Asked 2026-11-05.** The user asked to see an inventory before the milestone's close, verbatim: *"stop before close m1e2, I want to see inventory of known yet incorrect results, known solution gaps and their intersections with monotone/non-monotone lattices and region"*. [The inventory of 2026-11-05](inventory_2026-11-05.md) was taken on a snapshot build at `cdcc3994`, from every register row, every stage's Notes, every open question and followup, and a sweep of the 326 corpus programs.
+
+It counts these live items:
+- 15 wrong answers (W), 7 with no owner;
+- 14 surfaces that misreport a right answer (S), 10 with no owner;
+- 11 diagnostics (D), none with an owner;
+- 19 gaps (G), each with its ruling.
+
+It also found two wrong answers nothing named:
+- **F1**, a keyword prefix split in a rule;
+- **F2**, a core search cut at its budget, printed as the smallest.
+
+On every one of the 204 corpus programs both finish, `ein solve` and `ein oracle` agree on k_s, k_c, |N|, the holes and the static verdict. Every live defect the corpus reaches on a monotone program is in a core; the ones that reach R itself on a monotone program are shapes no corpus program writes. Every corpus defect in R is on a non-monotone program, and F21's.
+
+Put to the user the same day, with the agent's recommendation in six parts.
+
+**Ruled 2026-11-05: as recommended** (*"File W22, W23; fix pre-close"* and *"Accept all"*):
+- **F1 and F2** are W22 and W23, fixed before the close: [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md) and [S1e2.2.23](p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md). W23's fix says a core was cut, as N6 says a core was not taken.
+- **(1)** `_` in a guard, a premise that is not a form, and a nested unbound relation or keyword pair are refused at load, in one stage: W24, [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md).
+- **(2)** The two cores that are not the smallest (W-8, a premise-less alternative never recorded, and W-10, the closure estimate) are [F22](../followups/f22_exact_core_past_the_cap.md)'s.
+- **(3)** The surfaces are split three ways:
+  - a reloaded dump's provenance joins [S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md);
+  - `refuted by` and `--json-report`'s missing rows are [S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md);
+  - the detector-internal labels (S-6 to S-9, S-11) are [F21](../followups/f21_non_monotone_programs_decided.md)'s.
+- **(4)** The eleven diagnostics are a followup, [F23](../followups/f23_diagnostics_in_eins_words.md).
+- **(5)** The live wrong answers with an owner and no row (W-2, W-5, W-6 to F21; W-8, W-9 to F22; W-15 to M1f) are filed as `open`, deferred rows: [S1e2.2.25](p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md).
+- **(6)** The close's re-take is the register's tests plus the inventory's solve-against-oracle sweep, not `probes/capture.sh`'s W lines and inventory § 4's sweeps, which read the walk. [The milestone's acceptance](README.md#acceptance-for-the-milestone) is amended.
+
+The close waits on the user's go-ahead after the inventory is re-taken.

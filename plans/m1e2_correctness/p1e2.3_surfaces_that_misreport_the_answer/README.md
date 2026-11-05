@@ -1,9 +1,12 @@
 # P1e2.3 — Surfaces that misreport the answer
 
 **Milestone:** [M1e2](../README.md) (Correctness)
-**Estimate:** 10 days, nine stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
-S1e2.3.4 1, S1e2.3.5 1, S1e2.3.7 1, S1e2.3.6 1.5, S1e2.3.8 1, S1e2.3.9 0.5.
-Each stage file gives its basis. It was 8.5 days and seven stages until the
+**Estimate:** 11.5 days, ten stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
+S1e2.3.4 1, S1e2.3.5 1, S1e2.3.7 1, S1e2.3.6 1.5, S1e2.3.8 1.5, S1e2.3.9 0.5,
+S1e2.3.10 1. Each stage file gives its basis. It was 10 days and nine stages
+until the user's ruling on the inventory of 2026-11-05
+([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3)) widened S1e2.3.8 by a dumped state's provenance (1 →
+1.5) and added S1e2.3.10 (N7 and N8). It was 8.5 days and seven stages until the
 phase re-opened on 2026-11-05 for N5 and N6. It was 7.5 days and six stages until the user put N1–N4 in S1e2.3.7 on
 2026-11-03, and 5 days and four stages until the user added S1e2.3.5 and
 S1e2.3.6 the same day.
@@ -12,7 +15,12 @@ S1e2.3.6 the same day.
 ([S1e2.3.8](s1e2.3.8_the_fact_printer.md)), with N6, a stopped run's empty
 cores, placed beside it by default ([S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md));
 both run after P1e2.2's S1e2.2.21, and the milestone's close re-runs the
-nightly after them. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+nightly after them. **Widened 2026-11-05** on the user's ruling on
+[the inventory of 2026-11-05](../inventory_2026-11-05.md)
+([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3)): a reloaded dump's provenance (its S-5) joins
+S1e2.3.8, and [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) takes N7
+and N8 (its S-3 and S-4). All three run after P1e2.2's S1e2.2.25, in the
+order S1e2.3.8, S1e2.3.9, S1e2.3.10. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
 every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
 re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
@@ -185,8 +193,9 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
 | [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each. **Done 2026-11-03**: N1–N4 fixed, each with a test; `-p` and `-P` named as the facts beyond the program as loaded, which is what they print | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
-| [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04 | 1 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart |
+| [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04; widened the same day by a reloaded dump's provenance (the inventory's S-5, Q-M1e2.16 (3)) | 1.5 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart; a state file's provenance a comment, a reloaded state's facts as given |
 | [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default | 0.5 d | no surface prints an empty core for a core the run did not take |
+| [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3) | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
 the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
@@ -195,7 +204,8 @@ after S1e2.3.5 and before S1e2.3.6, by the user's ruling of 2026-11-03. S1e2.3.6
 last stage of the phase, by the user's request of 2026-11-03, because the
 nightly re-runs what every other stage changes. **S1e2.3.8 and S1e2.3.9**,
 added 2026-11-05 after the phase closed, run after P1e2.2's S1e2.2.21, in
-that order; S1e2.3.6's reason holds for them, so the milestone's close
+that order, and **S1e2.3.10**, added the same day, after them; since the
+inventory's ruling all three run after S1e2.2.25; S1e2.3.6's reason holds for them, so the milestone's close
 re-runs `./run_tests.sh --nightly`. Every question below can be put
 to the user at once, at the phase's start. Each one's evidence is already in
 its stage file.
@@ -295,6 +305,19 @@ by a test, and no exit code moved.
   DIR` at `a41eb76e`). No answer moves. **Placed here by default** beside
   N5, [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md), filed 2026-11-05;
   the default fix says the core was not taken.
+- **N7. `refuted by` names a rule the core does not use.** Found by
+  S1e2.2.11 and S1e2.2.12, each parked in its Notes; re-taken by
+  [the inventory of 2026-11-05](../inventory_2026-11-05.md) (its S-3) at
+  `cdcc3994`. `examples/ein-bugs/alt-cap-core.ein` and its `-reordered` twin
+  both print the core `(w1 X) (w2 X)`, and one says `refuted by narrow`, the
+  other `wide`; only `wide` derives `(false)` from that core. **Placed by the
+  user 2026-11-05** ([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3)):
+  [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md).
+- **N8. `ein test --json-report` drops `outside` and `types`.** S1e2.2.8's
+  default, re-taken by the inventory (its S-4): `ein test
+  tests/region/07_cube.ein --json-report R -v` prints `outside the universe:
+  is-a …` on stdout, and the row's `region` carries neither field. **Placed
+  with N7**, S1e2.3.10.
 
 ## Acceptance for the phase
 

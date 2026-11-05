@@ -1,0 +1,7 @@
+;;; defined_behaviour.md § 4: "an hrule's template that builds no fact still proposes nothing, in silence".
+;;; Re-take: an hrule whose :assert is not a fact (a bare atom) loads, proposes nothing, says nothing.
+(relation p Node)
+(is-a A Node)
+(hrule guess () :match (is-a ?x Node) :assert foo)
+(hrule good () :match (is-a ?x Node) :assert (p ?x))
+(solve :hrules (guess))

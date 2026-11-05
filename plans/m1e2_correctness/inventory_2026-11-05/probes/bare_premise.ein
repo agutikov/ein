@@ -1,0 +1,7 @@
+;;; Parked S1e2.2.20 § Notes: a premise that is not a form is dropped in silence.
+;;; Re-take: `:match _`, `(and (hit w) _)`, `:match foo` and `:match ?x` each fire vacuously.
+(relation hit Node) (relation r1 Node) (relation r2 Node) (relation r3 Node)
+(hit w)
+(rule a () :match _ :assert (r1 z))
+(rule b () :match (and (hit ?y) _) :assert (r2 ?y))
+(rule c () :match foo :assert (r3 z))

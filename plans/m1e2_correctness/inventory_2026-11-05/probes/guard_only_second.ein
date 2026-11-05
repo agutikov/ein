@@ -1,0 +1,10 @@
+;;; Parked S1e2.2.19 § Notes (D2X-30): a premise-less derivation from an activator a node derived
+;;; is not recorded as an alternative. Here (false) is derived by 'early' (premises (p a) (b a) (seed a))
+;;; and by w's guard-only plan, whose activator (w a) rests on (p a). Right: N {(p a)}'s core is (p a).
+(relation seed T) (relation p T) (relation p2 T) (relation w T) (relation b T)
+(seed a) (b a)
+(hrule g  () :match (seed ?x) :assert (p ?x))
+(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false) :priority 10)
+(rule mk () :match (p ?x) :assert (w ?x) :priority 5)
+(rule w (?n) :match (eq ?n a) :assert (false) :priority 200)

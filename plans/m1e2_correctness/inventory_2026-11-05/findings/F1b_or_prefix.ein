@@ -1,0 +1,6 @@
+;;; F1, second shape: `(orz ?x)` in an :assert stores the fact (or z a); `(andz ?x)` refuses the rule
+;;; ("its :assert concludes z, which is not a fact"); `(andz ?x)` in a :match is a conjunction.
+(relation p Node) (relation orz Node)
+(p a)
+(rule r () :match (p ?x) :assert (orz ?x))
+(query :goal (orz ?y))

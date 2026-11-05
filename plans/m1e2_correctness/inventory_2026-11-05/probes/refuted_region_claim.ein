@@ -1,0 +1,4 @@
+;;; D2X-10 probe: a (solve … :expect (region …)) the run refutes, under `ein test` and `ein solve`.
+(relation p Node)
+(is-a A Node)
+(solve :expect (region (model)))

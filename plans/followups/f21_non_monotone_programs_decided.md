@@ -543,6 +543,36 @@ split presumes D2. Re-taken by S1e2.1b.7, 20 of 22 agree:
 [`monotonicity.md` § 8.1, D7](../../docs/kernel/inference/monotonicity.md#d7-the-search-past-the-oracles-limit).
 **Until decided:** (c), and (b) when asked.
 
+## Handed over by M1e2's inventory, 2026-11-05
+
+[The inventory of 2026-11-05](../m1e2_correctness/inventory_2026-11-05.md), taken before M1e2's close at the user's
+request, found items on flagged programs that had this followup's decisions as
+their owner and no record here. The user ruled where each goes the same day
+([Q-M1e2.16](../m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3) and (5)).
+
+**Three wrong answers, filed as rows.** Each answers by today's documented
+node, (A), and is wrong under at least one reading D2 lists.
+[S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) files each as an `open` register row, reviewed `deferred`,
+with this page as its `owner`, and lists the rows here:
+
+| inventory id | what is false | decision |
+|---|---|---|
+| W-2 | `features/07`'s R depends on which of its two priority-200 rules is written first: as written R = {∅, {(q one)}}, swapped R = {∅, {(p one)}} | D2 (rule order) |
+| W-5 | the FIFO gap: `lattice/10_fifo_gap`'s node `{a, b}` holds a stale `p`, where the stratified reading gives `{a, b, q}` | D2 (stratum order) |
+| W-6 | members of R past the oracle's limit hold a fact whose `absent` guard their own fixpoint falsifies: `features/01`, 24 754 of 64 655 nodes (`ein solve FILE --json-summary`, `monotonicity.state`, 2026-11-05), `features/04_open`, `square-unique/*` | D2, D7 |
+
+**Five labels.** None moves an answer. Each is a label the detector or the
+static check prints or reads, and each is decided with the reading it labels.
+M1e2's close hands them over here:
+
+| inventory id | what | source |
+|---|---|---|
+| S-6 | the detector's `RootPlans` keys root's plans by the activator's symbols, so an all-int obligation activator derived at a node would read as root's and its hole go unattributed. No witness | [S1e2.2.16 § Notes](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.16_activator_text_key.md#notes) |
+| S-7 | the detector's chain attribution reads every application of a rule as its activator, and seeds an owing node from symbol arguments only. No witness; S1e2.2.19's `Prov::activator` could feed it | [S1e2.2.17 § Notes](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.17_forbid_activator_chain.md#notes) |
+| S-8 | the static check's D does not follow activators, so its site list calls a read static that a plan compiled at a node makes dynamic; the verdict holds. `forbid-chain-node-writes.ein`, which *forbid* refuses | S1e2.2.17 § Notes (its default 2) |
+| S-9 | `absent_premises` (the dumps, `region.md`'s *rests on*, the detector's input) is read off the first contradiction's positive side, and follows neither the activator nor the negative side the core follows since S1e2.2.19 and S1e2.2.21. Library only | S1e2.2.19 § Notes; S1e2.2.21 § Notes |
+| S-11 | `features/01`'s activator site is a relation-grain name collision: the rule writes `unknown-feeling` at arity 2, its activator has arity 1. It cannot bite, and it keeps the program flagged | [`site_census.md` § 2](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md) |
+
 ## Why it is parked
 
 - The user's direction, above.

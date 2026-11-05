@@ -1,0 +1,4 @@
+;;; D2X-37 probe: a keyword pair in a rule's pattern; the compiler drops its value (Q32).
+(relation n Node) (relation hit Node)
+(n a)
+(rule r () :match (n ?x :where 1..3) :assert (hit ?x))

@@ -27,7 +27,9 @@ a per-fact choice cannot see the saving.
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)), `open`,
 reviewed `deferred`, with F22 as its `owner`. The milestone's acceptance,
 amended by the user on 2026-11-03 for exactly this kind of row, names it at
-M1e2's close beside `W8/features-07` (F21's).
+M1e2's close beside `W8/features-07` (F21's). Since 2026-11-05, the rows S1e2.2.25 files for
+W-8 and W-9 and the residual of W23 too
+([§ Handed over by M1e2's inventory](#handed-over-by-m1e2s-inventory-2026-11-05)).
 
 ## The case
 
@@ -83,6 +85,23 @@ What to settle before building it:
 The alternative the user did not take, *no cap*, is exact by construction
 and the reference this would be held to; it is here as the measurement, not
 as the fix.
+
+## Handed over by M1e2's inventory, 2026-11-05
+
+[The inventory of 2026-11-05](../m1e2_correctness/inventory_2026-11-05.md) found four more ways a printed core is
+not the smallest over every derivation the program records. The user ruled the
+same day ([Q-M1e2.16](../m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (2) and (5), and *"File W22, W23; fix
+pre-close"*) that each is this followup's:
+
+| inventory id | what | witness | in M1e2 |
+|---|---|---|---|
+| W-8 | a derivation with no premises, from an activator a node derived, is never recorded as an alternative, so rule priority picks a three-fact core over a one-fact one | [`guard_only_second.ein`](../m1e2_correctness/inventory_2026-11-05/probes/guard_only_second.ein) against [`_first`](../m1e2_correctness/inventory_2026-11-05/probes/guard_only_first.ein) | a row, filed by [S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) |
+| W-9 | `fork-delta-order`'s core has the smallest size but is not the canonical core an uncapped store gives | `examples/ein-bugs/fork-delta-order.ein` | a row, filed by S1e2.2.25 (S1e2.2.12's default 2) |
+| W-10 | the closure estimate counts a given shared by two premises twice | none | S1e2.2.25 tries a nine-line probe; without one it is named here |
+| W23's residual | a core search cut at its budget of 64 environments (`ExplanationBudget`) prints a frontier, not the smallest | the inventory's `F2_core_cut.ein` | [S1e2.2.23](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md) makes every surface say a core was cut; the exact core past the budget is this followup's |
+
+They share this page's proposal: the search they need combines a target's
+derivations where a per-fact choice or a bounded list cannot see the saving.
 
 ## Trigger
 

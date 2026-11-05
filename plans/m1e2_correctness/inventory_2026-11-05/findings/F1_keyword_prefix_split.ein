@@ -1,0 +1,9 @@
+;;; NEW FINDING F1 (M1e2 inventory, 2026-11-05, snapshot cdcc3994): inside a rule's pattern a
+;;; relation name that starts with `neq`, `or` or `and` is split: `(neqw ?x)` parses as `(neq w ?x)`.
+;;; 00_ebnf.md § 1 fact 1: "`neq` is not a SYMBOL; `neq_test` is" (word boundary) -> `neqw` is a name.
+;;; Right: root derives (neqw a); the query's one class has ?y = a; `w` is no name of the program.
+;;; Engine: root derives (neq w a), a fact of the reserved `neq`; `w` joins the names, H grows.
+(relation p Node) (relation neqw Node)
+(p a)
+(rule r () :match (p ?x) :assert (neqw ?x))
+(query :goal (neqw ?y))

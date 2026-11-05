@@ -1,0 +1,5 @@
+;;; D2X-38 probe: an opaque slot left after S1e2.2.20 — a nested pattern whose head is a variable
+;;; the activator does not bind never matches, in silence (top-level `(?r a)` is a CompileError).
+(relation box Node) (relation hit Node) (relation a Node)
+(box (a b))
+(rule r () :match (box (?r b)) :assert (hit z))

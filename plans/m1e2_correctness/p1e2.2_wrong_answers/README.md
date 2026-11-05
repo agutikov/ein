@@ -1,10 +1,14 @@
 # P1e2.2 — The wrong answers, one stage each
 
-**Estimate:** ~5 weeks: 21 stages, sixteen live and five dropped, **24.5
-days**, since S1e2.2.20 (W20, a wildcard or a range in a rule's pattern,
-1.5 days) and S1e2.2.21 (W21, a pair contradiction's core naming only its
-positive side, 2 days) were filed on 2026-11-05 on the user's rulings of
-2026-11-04. It was 21 days since S1e2.2.19 (W19, a dead node's core missing the activator its
+**Estimate:** ~6 weeks: 25 stages, twenty live and five dropped, **29
+days**, since the user's ruling on the inventory of 2026-11-05
+([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)) added S1e2.2.22 (W22, a keyword prefix split in a rule,
+1 day), S1e2.2.23 (W23, a core search cut at its budget, 1 day), S1e2.2.24
+(W24, three rule shapes that read nothing in silence, 1.5 days) and
+S1e2.2.25 (the deferred rows, 1 day). It was 24.5 days since S1e2.2.20 (W20,
+a wildcard or a range in a rule's pattern, 1.5 days) and S1e2.2.21 (W21, a
+pair contradiction's core naming only its positive side, 2 days) were filed
+on 2026-11-05 on the user's rulings of 2026-11-04. It was 21 days since S1e2.2.19 (W19, a dead node's core missing the activator its
 refutation rests on, 1.5 days) was filed on 2026-11-04 from
 [S1e2.2.17 § Notes](s1e2.2.17_forbid_activator_chain.md#notes). It was 19.5
 days since S1e2.2.17 (W17, *forbid* missing an activator chain, 1.5 days)
@@ -266,9 +270,15 @@ register reads 74 fixed, 2 open (both deferred) and 1 not-wrong. **S1e2.2.21
 is done** (2026-11-05): a core taken only where a surface prints one, no run
 moved (`3fb9d712`); every core the corpus reports names its commitment and,
 with root, derives its contradiction, as a test (`af521c6e`); the pages and
-the case pages. **Next: the stages the user added on 2026-11-05
-(S1e2.2.22–.25 and S1e2.3.10, specified next), then S1e2.3.8 and S1e2.3.9,
-then the milestone's close, which waits for the user's go-ahead.**
+the case pages. **Four stages added 2026-11-05** on the user's ruling on
+[the inventory of 2026-11-05](../inventory_2026-11-05.md)
+([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)), specified the same day: S1e2.2.22 (W22, the
+inventory's F1), S1e2.2.23 (W23, its F2), S1e2.2.24 (W24, three shapes
+S1e2.2.20's notes parked) and S1e2.2.25 (the owned wrong answers with no
+row, filed `open` and deferred). **Next: S1e2.2.22, .23, .24 and .25, in
+that order, then P1e2.3's S1e2.3.8, S1e2.3.9 and S1e2.3.10, then the
+inventory re-taken and shown to the user; the milestone's close waits for
+the user's go-ahead.**
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -289,7 +299,8 @@ also plans on, and the boundary is drawn per stage, in
 [§ Where this phase meets M1f](#where-this-phase-meets-m1f).
 **Source:** [`inventory.md`](../inventory.md), the survey of 2026-10-14. Every
 case was re-run on the release binary at `71dd237`, and the case ids (W1–W12,
-C1) are its own.
+C1) are its own. S1e2.2.22–.25's source is [the inventory of
+2026-11-05](../inventory_2026-11-05.md), taken at `cdcc3994` before the close.
 
 ---
 
@@ -341,6 +352,10 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.19](s1e2.2.19_core_misses_activator.md) | **W19** a dead node's core leaves out the activator its refutation rests on. Filed 2026-11-04. **Started 2026-11-04**: three rows filed (the witness, a committed activator, a guard-only plan), every core measured under three readings; paused on Q-M1e2.12, ruled (c) the same day. **Fixed 2026-11-04**: a firing records its activator, the core follows one a node derives or commits, three rows fixed. **Done 2026-11-04** (`94c7bcfb`) | 4 | **default** | S1e2.2.17's notes; Q-M1e2.12 | 1.5 d | — | — (filed after it) | each dead set's core is a set of facts from which, with the program's rules, saturation derives `(false)`, and it names the commitment; no other core moves without the user's ruling |
 | [S1e2.2.20](s1e2.2.20_wildcard_and_range_in_a_rule.md) | **W20** a wildcard or a range in a rule's pattern matches nothing. Filed 2026-11-05 on Q-M1e2.13 (a). **Started 2026-11-05**: five rows filed (a premise, a head, a range, an `absent`, an hrule), the moves listed; a head `_` needs a second matching path, paused on Q-M1e2.14, ruled (c) the same day. **Fixed 2026-11-05**: `_` a slot that matches any value, a range and a head `_` refused at load, five rows fixed. **Done 2026-11-05** (`eddea251`) | 2 | **default** | S1e2.2.18's notes | 1.5 d | — | — (filed after it) | `_` in a rule's pattern matches any value, head and argument; a range in a rule refused at load; no other answer moves |
 | [S1e2.2.21](s1e2.2.21_pair_core_one_side.md) | **W21** a pair contradiction's core names only its positive side. Filed 2026-11-05. **Started 2026-11-05**: four rows filed, every core measured; the pair fix stops 2 172 cores naming their commitment, through a `(false)` concluded by a `forall`, whose support no firing records; paused on Q-M1e2.15, ruled (b) the same day. **Fixed 2026-11-05**: a contradiction's facts together, a `forall`'s support recorded and folded at each fact's smallest frontier, six rows fixed. **Done 2026-11-05** (`67d07fab`): a core taken only where a surface prints one, the claim a corpus-wide test | 4 | **default** | S1e2.2.19's notes | 2 d | — | — (filed after it) | every dead set's core names its commitment, and the claim is a corpus-wide test; no core moves that step 1 did not list |
+| [S1e2.2.22](s1e2.2.22_keyword_prefix_split.md) | **W22** a rule splits a name that starts with `neq`, `or` or `and`: `(neqw ?x)` in an `:assert` stores `(neq w a)`, and R has 8 states where it has one. Filed 2026-11-05 from the inventory's F1, on Q-M1e2.16 | 2 | **default** | the inventory of 2026-11-05 | 1 d | — | — (filed after it) | a keyword is a whole word wherever the parser reads one; each witness answers its twin's R; no answer moves outside W22's programs |
+| [S1e2.2.23](s1e2.2.23_core_search_cut.md) | **W23** a core search cut at its budget prints its core as the smallest. Filed 2026-11-05 from the inventory's F2, on Q-M1e2.16 | 4 | **default** | the inventory of 2026-11-05 | 1 d | — | — (filed after it) | every core from a cut search says so, on every surface, held by a corpus test; the exact core past the budget F22's |
+| [S1e2.2.24](s1e2.2.24_silent_patterns_refused.md) | **W24** `_` in a guard, a premise that is not a form, and a nested relation variable no parameter binds or a nested keyword pair read nothing, in silence. Filed 2026-11-05 from S1e2.2.20's notes (the inventory's W-12–W-14), on Q-M1e2.16 (1) | 2 | **default** | S1e2.2.20's notes | 1.5 d | — | — (filed after it) | each refused at load with one line in Ein's spelling, as a range and a head `_` are; no answer moves outside W24's programs |
+| [S1e2.2.25](s1e2.2.25_the_deferred_rows.md) | The owned wrong answers with no row (the inventory's W-2, W-5, W-6 to F21; W-8, W-9 to F22; W-15 to M1f), filed `open`, reviewed `deferred`, on Q-M1e2.16 (5). Fixes nothing | — | — | the inventory of 2026-11-05 | 1 d | — | — (filed after it) | every owned W item a row deferred to its owner, or named on its owner's page with why it has no witness; no answer moves |
 | [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard. **Done 2026-11-04, as far as the deferral allows**: one row re-checked, `deferred` to F21, the headers corrected, nothing moved | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost. **Done 2026-11-04**: Q-M1e.16's fix (1), the row fixed, the pair promoted, Q-M1e.16 closed | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises. **Done 2026-11-04**: Q-M1e2.3 (a) built, the `outside` row and `root.hypgen.outside`, both rows fixed | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |
@@ -413,8 +428,15 @@ went with those stages.
 - **S1e2.2.20, then S1e2.2.21** (filed 2026-11-05 on the user's rulings of
   2026-11-04). S1e2.2.21 runs after S1e2.2.19, whose fix changed the frontier
   search it changes, and after S1e2.2.20 only because both land in the same
-  READMEs. P1e2.3's S1e2.3.8 and S1e2.3.9 run after both, then the
-  milestone's close.
+  READMEs. P1e2.3's S1e2.3.8 and S1e2.3.9 run after both, and since
+  2026-11-05 after S1e2.2.22–.25 too.
+- **S1e2.2.22, S1e2.2.23, S1e2.2.24, then S1e2.2.25** (filed 2026-11-05 on
+  Q-M1e2.16). S1e2.2.23 runs after S1e2.2.21, whose core search it
+  qualifies. S1e2.2.22 and S1e2.2.24 are independent of it and of each other,
+  and S1e2.2.25 files rows that change nothing; their order is only because
+  they land in the same READMEs and the register. Then P1e2.3's S1e2.3.8,
+  S1e2.3.9 and S1e2.3.10, then the inventory re-taken and shown to the user,
+  then the milestone's close, on the user's go-ahead.
 - **S1e2.2.8 and S1e2.2.11 are independent** (S1e2.2.13 dropped at the
   revisit) of everything above, and can run in parallel with any of it.
   S1e2.2.7 was too until 2026-11-04, and now waits for S1e2.2.14.
@@ -443,7 +465,10 @@ repeated in the stage files:
 user deferred to a followup: W8's, `deferred` to F21 on 2026-11-03 (the
 milestone's acceptance, amended that day), two rows then and one,
 `W8/features-07`, since S1e2.2.5's F2 refused `stale-naf-fork`
-(2026-11-04). No wrong answer at default settings remains. A lever may still change *cost*, and no lever changes an
+(2026-11-04); `W10/alt-cap-shared`, `deferred` to F22 by S1e2.2.11
+(2026-11-04); and the rows S1e2.2.25 files for the inventory's owned wrong
+answers, each `deferred` to its owner (Q-M1e2.16 (5), 2026-11-05). No wrong
+answer at default settings remains. A lever may still change *cost*, and no lever changes an
 answer the engine certifies.
 
 ## Where this phase meets M1f

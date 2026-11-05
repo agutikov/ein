@@ -1,0 +1,18 @@
+;;; B1-2 re-take: examples/features/07_unstratifiable.ein with derive-q written before derive-p, nothing else.
+(relation thing Thing)
+(relation p Thing)
+(relation q Thing)
+
+(rule derive-q ()
+  :match  (and (thing ?x) (absent (p ?x)))
+  :assert (q ?x)
+  :priority 200
+  :why    "no p for {?x}, so q")
+
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200
+  :why    "no q for {?x}, so p")
+
+(thing one :source "the only object")

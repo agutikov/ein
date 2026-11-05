@@ -1,0 +1,8 @@
+;;; F2 twin: the same shape with 5 pairs, 2^5 = 32 environments, under the budget of 64.
+(relation x1 T) (relation y1 T) (relation p1 T) (relation x2 T) (relation y2 T) (relation p2 T) (relation x3 T) (relation y3 T) (relation p3 T) (relation x4 T) (relation y4 T) (relation p4 T) (relation x5 T) (relation y5 T) (relation p5 T) (relation A T) (relation B T)
+(x1 k) (y1 k) (x2 k) (y2 k) (x3 k) (y3 k) (x4 k) (y4 k) (x5 k) (y5 k)
+(rule lift (?X ?P) :match (?X ?v) :assert (?P ?v))
+(lift x1 p1) (lift y1 p1) (lift x2 p2) (lift y2 p2) (lift x3 p3) (lift y3 p3) (lift x4 p4) (lift y4 p4) (lift x5 p5) (lift y5 p5)
+(rule mk-a () :match (and (p1 ?v) (p2 ?v) (p3 ?v) (p4 ?v) (p5 ?v)) :assert (A ?v))
+(rule mk-b () :match (and (y1 ?v) (y2 ?v) (y3 ?v) (y4 ?v) (y5 ?v)) :assert (B ?v))
+(rule clash () :match (and (A ?v) (B ?v)) :assert (false))

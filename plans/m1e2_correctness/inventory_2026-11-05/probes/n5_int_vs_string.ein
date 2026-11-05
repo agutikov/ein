@@ -1,0 +1,3 @@
+;;; N5 probe (M1e2 inventory, 2026-11-05): the int 1 and the symbol "1" in one KB.
+(relation holds Node)
+(holds 1) (holds "1") (holds "x y")

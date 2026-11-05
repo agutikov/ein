@@ -1,0 +1,8 @@
+;;; Parked S1e2.2.20 § Notes (default 6): `_` in a guard compares as a raw IR node.
+;;; Re-take: (eq ?x _) never holds, (neq ?x _) always holds, (eq _ _) holds, in silence.
+;;; (Relation names avoid a `neq`/`or`/`and` prefix, which F1 would split.)
+(relation p Node) (relation hit-eq Node) (relation hit-neq Node) (relation hit-both Node)
+(p a)
+(rule e () :match (and (p ?x) (eq ?x _)) :assert (hit-eq ?x))
+(rule n () :match (and (p ?x) (neq ?x _)) :assert (hit-neq ?x))
+(rule b () :match (and (p ?x) (eq _ _)) :assert (hit-both ?x))

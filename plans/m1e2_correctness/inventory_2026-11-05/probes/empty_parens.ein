@@ -1,0 +1,4 @@
+;;; Q28 probe: `()` parses as a no-op atom and is accepted in silence.
+(relation p Node)
+()
+(p a)

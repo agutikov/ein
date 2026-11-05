@@ -1,0 +1,7 @@
+;;; N5 probe (M1e2 inventory, 2026-11-05): a state holding a string with a space.
+;;; Expected under S1e2.3.8: --dump-answer's models/NN.ein reloads to the same facts.
+(relation p Node) (relation holds Node)
+(is-a A Node)
+(rule r () :match (p A) :assert (holds "x y"))
+(rule s () :match (p A) :assert (holds 1))
+(rule t () :match (p A) :assert (holds "1"))
