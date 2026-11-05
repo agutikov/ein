@@ -163,10 +163,19 @@ and
 [`nested-fact-hypothesis.ein`](../../examples/ein-bugs/nested-fact-hypothesis.ein)
 are two puzzles that reach it.
 
-### 2.2 Where a value is *printed* or sorted for display, it is printed as its `repr`
+### 2.2 Where a value is sorted for display, it is sorted by its `repr`
 
-State-dump node order, explanation tie-breaks and DOT labels all go through
-one `repr` for the four shapes a fact argument can take:
+State-dump node order and explanation tie-breaks go through one `repr` for the
+four shapes a fact argument can take, and so do the shape digests and the
+diagnostics that quote a value Python's way (`KeyError: '…'`). Where a value
+is **printed** on a surface, the read-out, a dump, the trace, the events or a
+DOT label, it is printed as Ein text since M1e2 S1e2.3.8 (`ein_core::text`): a
+name bare where it lexes as one `SYMBOL` and quoted in `"` elsewhere, `\\` `\"`
+`\n` `\t` `\r` escaped, an integer as its canonical decimal, a nested fact as
+`(rel …)`, so the text loads back to the same value
+(`lex::the_printers_symbol_is_the_lexers`, `answer_round_trip.rs`). Until then
+the DOT labels printed a nested fact as its `repr` and a name as its raw text.
+The `repr`:
 
 - a **string** is quoted in `'`, unless it contains a `'` and no `"`, in which
   case in `"`. The chosen quote and `\` are backslash-escaped; tab, newline and

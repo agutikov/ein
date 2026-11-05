@@ -573,7 +573,8 @@
 # in either build. The same commit re-banked `W18/str-in-match`'s
 # `[case.region]`, whose candidate over the name `1` prints `(hit "1")`, its
 # status and answer unmoved. Each flipped row's `[case.fixed]` carried the
-# null id in the flipping commit, and the stage's next commit wrote the hash.
+# null id in the flipping commit, `712f23fd`, and the stage's next commit wrote the
+# hash.
 # The register reads **103 rows fixed, 10 open and 1 not-wrong**, every open
 # row deferred to a followup or to M1f.
 #
@@ -7631,7 +7632,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06) from its step 1's finding, on the user's ruling of that day (Q-M1e2.20 (a)): the one printer's text is one-to-one with values, so a claim compared by it is compared by value, and the fix moves the claim to FAILED. The witness's claim is false and is not moved: it is the witness. Fixed by T1e2.3.8.3: the claim lists (model (holds 1)), which is no class, so it is FAILED and the run exits 1, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "712f23fd"
 by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
 date   = "2026-11-06"
 
@@ -7683,7 +7684,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28/claim-int-name: the same confusion through the solve form's (region …) claim, claim.rs' comparison, not read_out.rs'. The witness's claim is false and is not moved. Fixed by T1e2.3.8.3: R's state is no model the claim lists, so it is FAILED and the run exits 1, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "712f23fd"
 by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
 date   = "2026-11-06"
 
@@ -7735,7 +7736,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28's claims: the same text keys a query's projection classes (read_out::classes), so two classes that differ by the int and the name are one, and a state holding both answers one. The step-1 probe had 48 states and 8 classes for 16; this witness is the smallest. Fixed by T1e2.3.8.3: the read-out counts 8 states → 4 projection classes, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "712f23fd"
 by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
 date   = "2026-11-06"
 

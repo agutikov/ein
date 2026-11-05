@@ -347,6 +347,9 @@ constrained-reasoning research.
   comment, and reloads to its state by value
   (`ein-cli/tests/answer_round_trip.rs`, every corpus program): 103 fixed,
   10 open (every one deferred to a followup or to M1f) and 1 not wrong.
+  S1e2.3.8 is done (`712f23fd`); next are P1e2.3's S1e2.3.9 and S1e2.3.10, then
+  the inventory re-taken and shown to the user, and the close waits for the
+  user's go-ahead.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

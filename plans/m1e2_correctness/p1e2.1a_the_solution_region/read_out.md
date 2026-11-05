@@ -99,6 +99,19 @@ What is left to decide is how each surface says it.
    of `--single`'s four words are answers. Only an error is not: usage, a load
    error, `-T`, and a claim the program states that the run refutes (§ 9).
 
+**Where a surface shows a value, it shows it as Ein text the loader reads
+back to the same value** (M1e2 S1e2.3.8, P1e2.3's N5): the one printer,
+`ein_core::text` through `Terms::display`, on every surface below, the
+read-out, the summary, the dump, the trace, the events, the forms, the DOT
+views and the diagnostics. A name prints bare only where it lexes as one
+`SYMBOL`, and quoted everywhere else, so `(holds "x y")` is one argument,
+`(holds "1")` is the name and `(holds 1)` the int, and `(pick "?v")` and
+`(holds "not")` are names. A state's `(model …)` and the `as :expect` line
+load as written. Until S1e2.3.8 every surface printed a name as its raw text,
+and since a claim and a query's classes compare that text, a claim about the
+int `1` held of a state holding the name `"1"`, and two classes that differ
+by them were one (W28).
+
 ## 4. The default read-out, `ein solve FILE`
 
 [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once)
@@ -519,7 +532,10 @@ complete.
 - **`answer.txt`**, the read-out uncut: stdout with no listing cut (§ 4.1).
   Its `(region …)` reads back as the claim, `(merged …)`s included.
 - **`models/NN.ein`**, one loadable program per state the run reached, as
-  today: the program, then the state's facts. Its header comment gives the
+  today: the program, then the state's facts, one a line, each printed as
+  text the loader reads back to the same value and its provenance a comment
+  (since M1e2 S1e2.3.8: `answer_dump.md` § Every state file loads,
+  `answer_round_trip.rs` reloading every one by value). Its header comment gives the
   state's number, its lines, its commitment and its minimal generators. On a
   partial run that is every member found, listed or not, which is where
   X11's 10 075 go. Each is read again through the node function, and

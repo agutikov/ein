@@ -80,12 +80,11 @@ records are the summary's `region.states[]` now.
 ## Every state file loads, and is a fixpoint
 
 A state file is the program as loaded, imports inlined, followed by every fact
-of the state, sorted, each with the provenance keyword it carries (`:rule`,
-`:source`, `:hypothesis`). The program's own `(relation …)` declarations are
-not repeated, because the loader refuses a second one. So the file **loads as
-a program**, and saturating it **derives no fact and no `(false)`**. Each state
-is read again through the node function every route uses, so the file is the
-state the read-out names and not a copy of one.
+of the state, one a line, sorted by its text. The program's own `(relation …)`
+declarations are not repeated, because the loader refuses a second one. So the
+file **loads as a program**, and saturating it **derives no fact and no
+`(false)`**. Each state is read again through the node function every route
+uses, so the file is the state the read-out names and not a copy of one.
 
 That is the check for the class M1e's
 [`CO-M1`](../../history/m1e_review_processing/README.md#the-findings) fixed: a
@@ -95,15 +94,41 @@ every run `corpus/wrong_answers.toml` records and seven cases of its own, and
 it checks one thing more: the file holds every candidate of its state's
 closure and no other candidate.
 
-**Not where the printer merges two facts** (M1e2 S1e2.2.16, 2026-11-04). The
-state's facts are written through the fact printer, which drops a string's
-quotes (P1e2.3's N5), so a state holding `(noted 1 1)` and `(noted 1 "1")`
-writes one line twice: the file loads one of them, and saturating it derives
-the other, though the state is a fixpoint. W16's two witnesses,
-`activator-text-int-and-string.ein` and its swapped twin, are the register's
-only such states, and the test names them rather than checking them
-(`printed_alike`), the list held to exactly those two runs until N5 is
-decided.
+**With no exception since M1e2 S1e2.3.8.** From S1e2.2.16 (2026-11-04) the
+test named the state files the fact printer could not write rather than
+checking them (`printed_alike`): W16's two witnesses, each holding `(noted 1
+1)` and `(noted 1 "1")`, which the printer wrote as one line twice, and from
+S1e2.3.8's T1e2.3.8.2 W28's `classes-int-name`, whose name `"1"` was written
+as the int. The one printer writes every state, and the list is gone.
+
+**It loads to the state** (M1e2 S1e2.3.8, P1e2.3's N5). Each fact is written
+by the one printer (`ein_core::text`, `Terms::display`), which prints a value
+as text the loader reads back to the same value: a name bare only where it
+lexes as one `SYMBOL` (`House-1`, `neqw`), and quoted everywhere else (`"x
+y"`, `"1"`, `"not"`, `"?x"`, `"1..5"`, `"Åsa"`), an int bare, a nested fact
+`(rel …)`. So loading `models/NN.ein` gives that state's facts **by value**:
+`ein-cli/tests/answer_round_trip.rs` reloads every state file `ein solve
+--dump-answer` writes, on every corpus program it answers (272 programs and
+392 712 files per commit, 2026-11-06; the slow entries under
+`EIN_CORPUS_SLOW=1`), and holds each fact's `repr` to the state the library
+computes for that commitment, with no exception. Until S1e2.3.8 the printer
+wrote a name as its raw text, so `(holds "x y")` was written as the
+two-argument `(holds x y)`, the int `1` and the name `"1"` as one line, and a
+name `#|` opened a block comment: 112 800 files over five corpus programs did
+not reload to their state (`syntax/arg-kinds`' 112 793 among them).
+
+**What a reloaded state's facts rest on: nothing; each reads as given.** A
+fact's provenance is written as a **comment** after it, which the loader
+skips: `; source "…"` for a fact the program states with a source, `; rule r`
+for one a rule derived, `; hypothesis N` for the commitment. A state file is
+the state's facts, not a second kind of program that re-states where each
+came from, so a reloaded state is its facts as given, and the comment is for
+a reader. Until S1e2.3.8 the provenance was written as keywords, `:source
+"…"`, `:rule "r"` and `:hypothesis N`, of which the loader read the first,
+took `:rule` only as an atom (the writer wrote a string) and had no third, so
+a reloaded state read as given then too, while the file said otherwise (the
+inventory of 2026-11-05's S-5). `answer_round_trip.rs` holds every reloaded
+fact as given.
 
 **`--dump-states`' and `--dump-lattice`'s snapshots are a lesser thing.**
 They carry a state's facts and no rules. They load and reload to the same
