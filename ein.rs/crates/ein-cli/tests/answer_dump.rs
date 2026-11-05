@@ -145,9 +145,17 @@ fn printed_alike(path: &Path) -> bool {
         .any(|l| !seen.insert(l))
 }
 
+/// The run whose states hold the name `"1"` where a rule derives it, and
+/// which the fact printer writes as `1`, the int, so the file reloads to
+/// another state and the rule derives the name again: W28/classes-int-name's
+/// (M1e2 S1e2.3.8, T1e2.3.8.2, filed while P1e2.3's N5 is open). The list
+/// goes with N5's fix.
+const NAME_PRINTED_AS_AN_INT: &str =
+    "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve";
+
 /// Every state file the directory holds against its state in the summary. A
-/// file that fails and that the printer could not write ([`printed_alike`])
-/// goes to `alike` instead of `bad`.
+/// file that fails and that the printer could not write ([`printed_alike`],
+/// [`NAME_PRINTED_AS_AN_INT`]) goes to `alike` instead of `bad`.
 fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>, alike: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.join("answer.json"));
@@ -163,7 +171,7 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>, alike: &mut Vec<
         let path = entry["path"].as_str().expect("a path");
         let closure = strings(&states[i]["closure"]);
         if let Some(why) = not_a_fixpoint(&dir.join(path), &closure, &candidates) {
-            if printed_alike(&dir.join(path)) {
+            if printed_alike(&dir.join(path)) || label == NAME_PRINTED_AS_AN_INT {
                 alike.push(format!("{label}: {path}"));
             } else {
                 bad.push(format!("{label}: {path} {why}"));
@@ -231,7 +239,8 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
 /// 2026-11-04), each holding `(noted 1 1)` and `(noted 1 "1")`. Its file
 /// loads two of the four `noted` facts and saturation derives the other two,
 /// the printer's loss and not the state's; the list goes when P1e2.3's N5 is
-/// decided.
+/// decided. Since M1e2 S1e2.3.8's T1e2.3.8.2 it names W28/classes-int-name's
+/// four states holding the name `"1"` too ([`NAME_PRINTED_AS_AN_INT`]).
 #[test]
 fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
@@ -268,6 +277,10 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         [
             "examples/ein-bugs/activator-text-int-and-string.ein :: solve --maximal: models/01.ein",
             "examples/ein-bugs/activator-text-string-then-int.ein :: solve --maximal: models/01.ein",
+            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/04.ein",
+            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/06.ein",
+            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/07.ein",
+            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/08.ein",
         ],
         "the state files the fact printer writes two facts of alike (P1e2.3's N5) moved"
     );

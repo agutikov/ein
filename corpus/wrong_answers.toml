@@ -546,6 +546,24 @@
 # **100 rows fixed, 10 open and 1 not-wrong**, every open row deferred to a
 # followup or to M1f.
 #
+# **W28 was filed on 2026-11-06 by S1e2.3.8** (T1e2.3.8.2), P1e2.3's fact
+# printer, from its step 1's finding, on the user's ruling of that day
+# (Q-M1e2.20 (a)): a claim and a query's projection classes compare facts as
+# printed text (`ein_ir::expect::render` against `events::sexpr`, and
+# `read_out::classes`), and the printer printed a name as its raw text, so the
+# int `1` and the name `"1"` were one text. Three rows, all `open`: a query's
+# `:expect` naming the int over a state holding the name, which held
+# (`claim-int-name`), the same through the solve form's `(region …)`
+# (`claim-int-name-solve`), and a goal answered by the int in some states and
+# by the name in others, whose eight states the read-out put in two classes
+# for four (`classes-int-name`). Each witness's claim is false and stays as
+# written: it is the witness, and the fixed run exits 1. **Schema /12**: a
+# `now` records the solve form's claim outcome (`claim`) and each query's
+# class count and claim outcome (`queries`) where `right` states them, and a
+# row whose recorded claim is `failed` expects the run's exit 1. A row's
+# `wrong` is a region run's at `86227f9a`. The register reads **100 rows
+# fixed, 13 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -564,8 +582,9 @@
 #              the read-out names outside the universe (schema /5), the
 #              core (schema /6), N's cores (schema /8), the core's status
 #              (schema /9), how many members of R hold a stale fact
-#              (schema /10) and how many it met and does not list (schema
-#              /11).
+#              (schema /10), how many it met and does not list (schema
+#              /11), and a claim's outcome and each query's classes (schema
+#              /12).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
 #   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
@@ -649,6 +668,17 @@
 #               and counts without listing them, the summary's states with
 #               `listed = false`; stated exactly when `[case.right]` states
 #               `others` (W27's rows)
+#     claim     (schema /12, M1e2 S1e2.3.8) the outcome of the program's
+#               `(solve … :expect …)` claim, the summary's `claim.outcome`:
+#               `held`, `failed`, `not-checked`, or `none` where it states
+#               none; stated exactly when `[case.right]` states `claim`
+#     queries   (schema /12) each query's answer in program order,
+#               `[{ classes = n, expect = "…" }]`: the summary's
+#               `queries[i]`, its classes counted and its `expect.outcome`
+#               (`none` where the query states no claim); stated exactly
+#               when `[case.right]` states `queries` (W28's rows). A run whose
+#               `claim` or a query's `expect` is `failed` refutes the claim
+#               and exits 1, which `wrong_answers.rs` expects
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -681,6 +711,8 @@
 #                   pair's, which M1e2 S1e2.2.16 fixed; no test reads it since
 #     id_order  { op, seed } — the `id_order_invariance` op and seed under which
 #               the answer moves (W11)
+#     claim, queries   (schema /12) the claims' outcomes and the classes the
+#               run gave, as `[case.now]`'s; a record (W28's `wrong`)
 #
 #   [case.right] — the answer the definitions give; any field it omits is not
 #     claimed. `refused = true` (schema /4) says the answer is a refusal, which
@@ -701,6 +733,9 @@
 #     read-out meets and does not list: a line mode past `--region-limit`,
 #     whose `k` listed states are the line members it certifies and make no
 #     verdict, so such a right states `k`, `exhausted = false` and no verdict.
+#     `claim` and `queries` (schema /12, M1e2 S1e2.3.8) are the outcome the
+#     program's claims come to and each query's count of projection classes,
+#     compared by value (W28).
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -748,7 +783,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/11"
+schema = "ein-wrong-answers/12"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -7566,6 +7601,160 @@ relations = ["a", "b"]
 outside   = ["p", "q"]
 models    = []
 others    = 2
+
+# ══ W28 — a claim and a query's classes compare printed text ════════════════
+
+[[case]]
+id       = "W28/claim-int-name"
+case     = "W28"
+title    = "a claim and a query's projection classes compare printed text, which printed the int 1 and the name \"1\" alike"
+class    = "claim"
+settings = "default"
+owner    = "S1e2.3.8"
+question = ["Q-M1e2.20"]
+witness  = "examples/ein-bugs/wrong-answers/claim-int-name.ein"
+status   = "open"
+open_because = "S1e2.3.8's printer is not landed: a query's claim is compared with its classes as printed text (ein_ir::expect::render against events::sexpr), and the printer prints a name as its raw text, so the claim's (holds 1), the int, is the class's (holds 1), the name"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06) from its step 1's finding, on the user's ruling of that day (Q-M1e2.20 (a)): the one printer's text is one-to-one with values, so a claim compared by it is compared by value, and the fix moves the claim to FAILED. The witness's claim is false and is not moved: it is the witness"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve FILE` and `ein test -v FILE`, release and debug, at 86227f9a (2026-11-06): R one state, root's, which holds (holds \"1\"), the name; the query's one class printed (model (holds 1)), and the claim (model (holds 1)), the int, held: exit 0"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "held" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: a claim compares values. R is root's one state, the goal's one row there is ?v the name 1, so the query's one class is (model (holds \"1\")); the claim lists (model (holds 1)), a fact over the int no state holds, so it is FAILED, and a refuted claim exits 1"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "failed" }]
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "held" }]
+
+[[case]]
+id       = "W28/claim-int-name-solve"
+case     = "W28"
+title    = "a claim and a query's projection classes compare printed text, which printed the int 1 and the name \"1\" alike"
+class    = "claim"
+settings = "default"
+owner    = "S1e2.3.8"
+question = ["Q-M1e2.20"]
+witness  = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
+status   = "open"
+open_because = "S1e2.3.8's printer is not landed: the solve form's claim is compared with R's states as printed text, in which the int 1 and the name 1 are one, (holds 1)"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28/claim-int-name: the same confusion through the solve form's (region …) claim, claim.rs' comparison, not read_out.rs'. The witness's claim is false and is not moved"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve FILE` and `ein test -v FILE`, release and debug, at 86227f9a (2026-11-06): R one state, which holds (holds \"1\"), the name; the claim (region (model (holds 1))), the int, held: exit 0"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+claim     = "held"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: a claim compares values. R is one state, holding (holds \"1\") and no fact over the int 1; the claim's one model lists (holds 1), so no state of R is a model it lists: FAILED, and a refuted claim exits 1"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+claim     = "failed"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+models    = [
+  [],
+]
+claim     = "held"
+
+[[case]]
+id       = "W28/classes-int-name"
+case     = "W28"
+title    = "a claim and a query's projection classes compare printed text, which printed the int 1 and the name \"1\" alike"
+class    = "claim"
+settings = "default"
+owner    = "S1e2.3.8"
+question = ["Q-M1e2.20"]
+witness  = "examples/ein-bugs/wrong-answers/classes-int-name.ein"
+status   = "open"
+open_because = "S1e2.3.8's printer is not landed: a query's projection classes are keyed by the goal's answers as printed text, in which the int 1 and the name 1 are one, (got 1)"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28's claims: the same text keys a query's projection classes (read_out::classes), so two classes that differ by the int and the name are one, and a state holding both answers one. The step-1 probe had 48 states and 8 classes for 16; this witness is the smallest"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve FILE`, release and debug, at 86227f9a (2026-11-06): R the eight subsets of (pick 1), (pick A) and (pick B), the first over the name 1; the read-out printed 8 states → 2 projection classes, every state holding (got 1), (got \"1\") or both in one class"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+queries   = [{ classes = 2, expect = "none" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(pick 1)", "(pick A)", "(pick B)"]]
+
+[case.right]
+derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: classes are keyed by value. A state answers (got 1), the int, where it holds (pick A), and (got \"1\"), the name, where it holds (pick B), so R's eight states fall in four classes: none (∅ and {(pick \"1\")}), (got 1) alone, (got \"1\") alone, and both, two states each"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+queries   = [{ classes = 4, expect = "none" }]
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 8
+relations = ["pick"]
+models    = [
+  [],
+  ["(pick 1)"],
+  ["(pick 1)", "(pick A)"],
+  ["(pick 1)", "(pick A)", "(pick B)"],
+  ["(pick 1)", "(pick B)"],
+  ["(pick A)"],
+  ["(pick A)", "(pick B)"],
+  ["(pick B)"],
+]
+queries   = [{ classes = 2, expect = "none" }]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

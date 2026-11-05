@@ -38,6 +38,11 @@
 //! list** (schema /11, W27's rows): the summary's states with `listed =
 //! false`, what a line mode past `--region-limit` leaves to `--dump-answer`.
 //!
+//! **Since M1e2 S1e2.3.8 a `now` can record a claim's outcome and a query's
+//! classes** (schema /12, W28's rows): the summary's `claim.outcome`, and
+//! each query's class count and `expect.outcome`. A row whose recorded claim
+//! is `failed` expects the run's exit 1, as a refuted claim exits.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -52,7 +57,7 @@
 use std::path::Path;
 use std::process::Command;
 
-use ein_corpus::register::{Nogood, Now, Row, Stale, sorted_nogoods};
+use ein_corpus::register::{Nogood, Now, QueryAnswer, Row, Stale, sorted_nogoods};
 use ein_corpus::{Scratch, plan, register, repo_root};
 use serde_json::Value as J;
 
@@ -250,6 +255,23 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             v.iter().filter(|x| x["listed"] == false).count() as u64
         })
     });
+    // The solve form's claim and each query's classes and claim, where the
+    // row records them (schema /12, M1e2 S1e2.3.8, W28).
+    let outcome = |e: &J| e["outcome"].as_str().unwrap_or("none").to_string();
+    let claim = row.now.claim.as_ref().map(|_| outcome(&s["claim"]));
+    let queries = row.now.queries.as_ref().map(|_| {
+        s["queries"]
+            .as_array()
+            .map(|v| {
+                v.iter()
+                    .map(|q| QueryAnswer {
+                        classes: q["classes"].as_array().map_or(0, |c| c.len() as u64),
+                        expect: outcome(&q["expect"]),
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    });
     Ok(Now {
         run: row.now.run.clone(),
         line,
@@ -267,6 +289,8 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         stale,
         nogoods_listed: row.now.nogoods_listed,
         others,
+        claim,
+        queries,
     })
 }
 
@@ -329,6 +353,16 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         format!("{:?}", want.others),
         format!("{:?}", got.others),
     );
+    field(
+        "claim",
+        format!("{:?}", want.claim),
+        format!("{:?}", got.claim),
+    );
+    field(
+        "queries",
+        format!("{:?}", want.queries),
+        format!("{:?}", got.queries),
+    );
     out
 }
 
@@ -372,9 +406,11 @@ fn every_row_answers_what_the_register_records() {
                 d.push(format!("{what} wrote a summary"));
             }
             d
-        } else if got.code != 0 {
+        } else if got.code != i32::from(row.now.refutes()) {
+            // A refuted claim exits 1 (schema /12, W28); every other answer 0.
             vec![format!(
-                "exit: recorded 0, got {} — stderr: {first}",
+                "exit: recorded {}, got {} — stderr: {first}",
+                i32::from(row.now.refutes()),
                 got.code
             )]
         } else {

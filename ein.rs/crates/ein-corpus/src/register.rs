@@ -67,8 +67,18 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// ([`Now::others`], the summary's states with `listed = false`) where
 /// `right` states it ([`Right::others`]), W27's: a line mode past
 /// `--region-limit`, whose listed states are the line members it certifies
-/// and make no verdict.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/11";
+/// and make no verdict. `/12` since M1e2 S1e2.3.8 (2026-11-06): a `now`
+/// records the outcome of the program's solve-form claim ([`Now::claim`],
+/// the summary's `claim.outcome`) and each query's class count and claim
+/// outcome ([`Now::queries`], the summary's `queries`) where `right` states
+/// them, W28's: a claim and a query's classes compared printed text, in which
+/// the int `1` and the name `"1"` were one. A run whose recorded claim is
+/// `failed` exits 1, as a refuted claim does ([`Now::refutes`]).
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/12";
+
+/// What a claim's check came to, as the summary spells it (schema /12):
+/// `none` where the program states no such claim.
+pub const CLAIM_OUTCOMES: [&str; 4] = ["held", "failed", "not-checked", "none"];
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -390,6 +400,30 @@ pub struct Now {
     /// (W27's rows).
     #[serde(default)]
     pub others: Option<u64>,
+    /// The outcome of the program's `(solve … :expect …)` claim — the
+    /// summary's `claim.outcome`, one of [`CLAIM_OUTCOMES`], `none` where the
+    /// summary states none (schema /12, M1e2 S1e2.3.8, W28). Recorded exactly
+    /// where [`Right::claim`] is stated.
+    #[serde(default)]
+    pub claim: Option<String>,
+    /// Each query's projection classes and claim, in program order — the
+    /// summary's `queries` (schema /12, M1e2 S1e2.3.8, W28). Recorded
+    /// exactly where [`Right::queries`] is stated.
+    #[serde(default)]
+    pub queries: Option<Vec<QueryAnswer>>,
+}
+
+/// One query's answer — schema `/12` (M1e2 S1e2.3.8, W28): how many
+/// projection classes it has over the states it asks about, and what its
+/// `:expect` came to.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct QueryAnswer {
+    /// The summary's `queries[i].classes`, counted.
+    pub classes: u64,
+    /// The summary's `queries[i].expect.outcome`, one of [`CLAIM_OUTCOMES`],
+    /// `none` where the query states no claim.
+    pub expect: String,
 }
 
 /// Members of R holding a stale fact, of the nodes a run computed — schema
@@ -448,6 +482,13 @@ impl Now {
     /// relation `closes` names that no candidate is over must hold the same
     /// facts in every model `right` lists, or the comparison could not see
     /// it.
+    /// Does the run refute a claim the program states? Then it exits 1, as
+    /// `ein solve` does on a refuted claim (schema /12, W28's fixed rows).
+    pub fn refutes(&self) -> bool {
+        self.claim.as_deref() == Some("failed")
+            || self.queries.iter().flatten().any(|q| q.expect == "failed")
+    }
+
     pub fn against(&self, right: &Right) -> Vec<String> {
         let mut out = Vec::new();
         // An error is no answer at all, so it is never the right one (W18).
@@ -513,6 +554,17 @@ impl Now {
                 "core status: right {s:?}, now {:?}",
                 self.core_status
             ));
+        }
+        // The claims and the classes (schema /12, M1e2 S1e2.3.8, W28).
+        if let Some(c) = &right.claim
+            && Some(c) != self.claim.as_ref()
+        {
+            out.push(format!("claim: right {c:?}, now {:?}", self.claim));
+        }
+        if let Some(q) = &right.queries
+            && Some(q) != self.queries.as_ref()
+        {
+            out.push(format!("queries: right {q:?}, now {:?}", self.queries));
         }
         // The members met and not listed (schema /11, M1e2 S1e2.2.26).
         if let Some(o) = right.others
@@ -651,6 +703,14 @@ pub struct Answer {
     pub debug_panic: Option<String>,
     #[serde(default)]
     pub id_order: Option<IdOrder>,
+    /// The solve-form claim's outcome, as [`Now::claim`] — schema `/12`
+    /// (M1e2 S1e2.3.8, W28's `wrong`). A record.
+    #[serde(default)]
+    pub claim: Option<String>,
+    /// Each query's classes and claim outcome, as [`Now::queries`] — schema
+    /// `/12` (W28's `wrong`). A record.
+    #[serde(default)]
+    pub queries: Option<Vec<QueryAnswer>>,
 }
 
 /// The witness's `R` — M1e2 S1e2.1a.10. What `ein solve` describes, in its
@@ -734,6 +794,15 @@ pub struct Right {
     /// [`Now::others`].
     #[serde(default)]
     pub others: Option<u64>,
+    /// The outcome the program's solve-form claim should come to — schema
+    /// `/12` (M1e2 S1e2.3.8, W28). Compared with [`Now::claim`].
+    #[serde(default)]
+    pub claim: Option<String>,
+    /// Each query's classes and claim outcome, in program order, as the
+    /// definitions give them — schema `/12` (M1e2 S1e2.3.8, W28). Compared
+    /// with [`Now::queries`].
+    #[serde(default)]
+    pub queries: Option<Vec<QueryAnswer>>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -820,6 +889,29 @@ impl Register {
                      exhausted = false"
                         .to_string(),
                 ));
+            }
+            // The claims and the classes (schema /12, M1e2 S1e2.3.8).
+            if r.now.claim.is_some() != r.right.claim.is_some()
+                || r.now.queries.is_some() != r.right.queries.is_some()
+            {
+                out.push(at(
+                    "[now] records a claim and the queries exactly when [right] states them"
+                        .to_string(),
+                ));
+            }
+            let outcomes = r
+                .now
+                .claim
+                .iter()
+                .chain(r.right.claim.iter())
+                .chain(r.now.queries.iter().flatten().map(|q| &q.expect))
+                .chain(r.right.queries.iter().flatten().map(|q| &q.expect));
+            for o in outcomes {
+                if !CLAIM_OUTCOMES.contains(&o.as_str()) {
+                    out.push(at(format!(
+                        "claim outcome {o:?} is not one of {CLAIM_OUTCOMES:?}"
+                    )));
+                }
             }
             // The members met and not listed (schema /11, M1e2 S1e2.2.26).
             if r.now.others.is_some() != r.right.others.is_some() {
@@ -1441,6 +1533,8 @@ mod tests {
             stale: None,
             nogoods_listed: false,
             others: None,
+            claim: None,
+            queries: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
@@ -1632,6 +1726,86 @@ mod tests {
         let mut r = row;
         r.right.exhausted = Some(true);
         assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
+    }
+
+    /// **Schema /12** (M1e2 S1e2.3.8, W28): a claim's outcome and a query's
+    /// classes are compared where `right` states them, recorded on both sides
+    /// or neither, in the summary's words; and a run whose claim is `failed`
+    /// refutes it, which is an exit 1.
+    #[test]
+    fn a_claim_and_a_querys_classes_are_answers() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let solve = reg
+            .case
+            .iter()
+            .find(|r| r.right.claim.is_some())
+            .expect("W28's solve-form row states the claim's outcome")
+            .clone();
+        let query = reg
+            .case
+            .iter()
+            .find(|r| r.right.queries.is_some())
+            .expect("W28's query rows state the classes")
+            .clone();
+        for row in [&solve, &query] {
+            assert!(defects(row).is_empty(), "{:?}", defects(row));
+        }
+        // The outcome is compared with right's.
+        let mut r = solve.clone();
+        r.now.claim = r.right.claim.clone();
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .all(|d| !d.starts_with("claim"))
+        );
+        r.now.claim = Some("not-checked".to_string());
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .any(|d| d.starts_with("claim"))
+        );
+        // So is each query's count of classes.
+        let mut r = query.clone();
+        r.now.queries = r.right.queries.clone();
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .all(|d| !d.starts_with("queries"))
+        );
+        r.now.queries.as_mut().expect("stated")[0].classes += 1;
+        assert!(
+            r.now
+                .against(&r.right)
+                .iter()
+                .any(|d| d.starts_with("queries"))
+        );
+        // Stated on one side only, or in a word the summary has not, is a defect.
+        let mut r = query.clone();
+        r.now.queries = None;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("[now] records a claim"))
+        );
+        let mut r = solve.clone();
+        r.right.claim = Some("holds".to_string());
+        assert!(defects(&r).iter().any(|d| d.contains("claim outcome")));
+        // A failed claim is a refutation: the run exits 1.
+        let mut r = solve;
+        r.now.claim = Some("failed".to_string());
+        assert!(r.now.refutes());
+        r.now.claim = Some("held".to_string());
+        assert!(!r.now.refutes());
     }
 
     #[test]

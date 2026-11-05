@@ -33,7 +33,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) | Where does a keyword end? | [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md) (W22) | **ruled 2026-11-05: (i)(a) and (ii)(a), as recommended**, put to the user the same day by T1e2.2.22.1: (i) a keyword ends at the word boundary `00_ebnf.md` § 1 states, so `(neq-1 ?x)` stays `neq` and `-1` (not (b), a parse error, nor (c), `neq-1` a name); (ii) a trace word read whole, which has no other reading, is a parse error (not (b), the six trace words left matching as a prefix). **Built 2026-11-05** by S1e2.2.22 (`ed45a470`): W22's fourteen rows fixed |
 | [Q-M1e2.18](#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) | What else in a rule reads nothing, in silence? | [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24) | **ruled 2026-11-05: (i)(a), (ii)(a), (iii)(a), (iv)(a), (v)(a), as recommended**, put to the user the same day by T1e2.2.24.1: a form, a variable no earlier premise binds and a keyword pair as a guard's argument are refused at load; a relation parameter its activator binds to a nested fact is refused at load where the activator is written and by the compiler where a rule derives it; each a W24 row, filed and fixed by S1e2.2.24's T2; `empty_absent.ein` and `unbound_head.ein` refused at load and moved to `examples/broken/load/`. **Built 2026-11-05** by S1e2.2.24 (`3ab9a231`): W24's seven rows fixed |
 | [Q-M1e2.19](#q-m1e219--what-do---minimal-and---maximal-answer-past-the-limit) | What do `--minimal` and `--maximal` answer past the limit? | [S1e2.2.26](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md) (W27) | **ruled 2026-11-05: (1) and (2), as recommended**, put to the user the same day by S1e2.2.25's re-take (T1e2.2.25.1): past `--region-limit` on a flagged program the line modes label every member met as on their line (65 214 on `square-unique/corner-house`), where describe certifies one minimal state; S1e2.2.26 files it as W27 and fixes it before the close, `--minimal` certifying exactly what describe certifies and `--maximal` none, the maximal line not known. **Built 2026-11-05** by S1e2.2.26 (`c21f93fc`): W27's four rows fixed |
-| [Q-M1e2.20](#q-m1e220--does-a-claim-compare-values-or-their-printed-text) | Does a claim compare values, or their printed text? | [S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md) (N5) | **put to the user 2026-11-06** by S1e2.3.8's step 1 (T1e2.3.8.1), which stopped on it: a claim and a query's projection classes compare printed text, which printed the int `1` and the name `"1"` alike, so a false claim held and two classes were one on three probes (no corpus program); the one printer moves them. Recommended (a): the fix moves them, filed and fixed as W28 |
+| [Q-M1e2.20](#q-m1e220--does-a-claim-compare-values-or-their-printed-text) | Does a claim compare values, or their printed text? | [S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md) (N5) | **ruled 2026-11-06: (a), as recommended**, put to the user the same day by S1e2.3.8's step 1 (T1e2.3.8.1): a claim and a query's projection classes compare printed text, which printed the int `1` and the name `"1"` alike, so a false claim held and two classes were one on three probes (no corpus program); the one printer moves them, and the case is W28, filed `open` (T1e2.3.8.2) and fixed with the printer |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -2187,6 +2187,18 @@ Put to the user the same day, with the agent's recommendation:
   read the facts' `repr`, as the round-trip test does: the same answers as
   (a), and a second comparison in `claim.rs` and `read_out.rs` that the
   printer would no longer need.
+
+**Ruled 2026-11-06: (a), as recommended** (the user, through the
+coordinator, the same day). The one printer's text is one-to-one with
+values, so a claim and a query's classes compare by value with no comparison
+of their own, and the three probes' answers move to right in the printer's
+fixing commit. The case is W28, the three probes banked as its witnesses
+(`examples/ein-bugs/wrong-answers/claim-int-name.ein`, `-solve`,
+`classes-int-name.ein`, the last made smaller: eight states, two classes for
+four), filed `open` by T1e2.3.8.2 under the register's schema `/12` (a
+`now`'s `claim` and `queries`, and a refuted claim's exit 1), and fixed in
+the commit that lands the printer. Owner:
+[S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md) (W28).
 
 One more move is the printer's alone, and is listed rather than asked: a
 register row's recorded region is text, so `W18/str-in-match`'s

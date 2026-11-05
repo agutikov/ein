@@ -489,7 +489,9 @@ started 2026-11-05 and paused 2026-11-06** after its step 1: a claim and a
 query's projection classes compare printed text, so the one printer moves
 an answer on three probes and on no corpus program, which the stage's brief
 does not allow; put to the user as
-[Q-M1e2.20](open_questions.md#q-m1e220--does-a-claim-compare-values-or-their-printed-text).
+[Q-M1e2.20](open_questions.md#q-m1e220--does-a-claim-compare-values-or-their-printed-text),
+ruled (a) the same day. **W28 filed** (2026-11-06): three rows, schema
+`/12`, 100 fixed, 13 open and 1 not-wrong.
 
 ## What it inherits from M1e
 

@@ -121,7 +121,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// fix the same day (2026-11-05): `wrong-answers/bare-premise.ein`'s `z`, a
 /// rule's `:assert` constant, and `nested-unbound-head.ein`'s `b` and `z`. The
 /// loader refuses both programs since, so neither loads here.
-const SEEDED: [(&str, &[&str]); 25] = [
+///
+/// M1e2's W28 witness `wrong-answers/classes-int-name.ein` (S1e2.3.8,
+/// T1e2.3.8.2) stands here: the name `1`, which only rule `b`'s string
+/// `"1"` writes.
+const SEEDED: [(&str, &[&str]); 26] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -157,6 +161,10 @@ const SEEDED: [(&str, &[&str]); 25] = [
     (
         "examples/ein-bugs/mixed-type-hypothesis.ein",
         &["`Ann`, asserted by hrule `guess`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/classes-int-name.ein",
+        &["`1`, asserted by rule `b`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",

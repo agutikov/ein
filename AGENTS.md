@@ -331,6 +331,14 @@ constrained-reasoning research.
   deferred to a followup or to M1f) and 1 not wrong. With it P1e2.2 is
   complete; next are P1e2.3's S1e2.3.8–.10, then the inventory re-taken and
   shown to the user, and the close waits for the user's go-ahead.
+  S1e2.3.8 (N5, the fact printer) paused on its step 1's finding: a claim
+  and a query's projection classes compare printed text, which printed the
+  int `1` and the name `"1"` alike, so a claim about the int held of a state
+  holding the name. The user ruled Q-M1e2.20 (a) on 2026-11-06, and the
+  stage filed W28: three rows, `claim-int-name`, `-solve` and
+  `classes-int-name` under `examples/ein-bugs/wrong-answers/`; schema `/12`
+  (`claim` and `queries`, a claim's outcome and a query's classes, a refuted
+  claim's exit 1): 100 fixed, 13 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

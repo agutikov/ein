@@ -1,0 +1,33 @@
+;;; A query's claim about the int `1` held of a state holding the name `"1"`
+;;; — M1e2 **W28**, register row `W28/claim-int-name`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.3.8 (2026-11-06) from its
+;;; step 1's probe (`plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_probes/`),
+;;; on the user's ruling of that day (Q-M1e2.20 (a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact, `(holds "1")`: the loader holds a string written as a fact's
+;;; argument as the name it spells, so this is the name `1`, a value apart
+;;; from the int `1` (`01_grammar.md`'s `STRING` row). The query's `:expect`
+;;; claims the one class `(model (holds 1))`, written with the int. The claim
+;;; is the witness: it is false, and it stays written as it is.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `holds` is the one relation with a signature and `1` the one name, so H
+;;; proposes nothing root does not hold, and R is one state, root's. The goal
+;;; `(holds ?v)` has one row there, `?v` the name `1`, so the query has one
+;;; class, `(model (holds "1"))`. The claim lists `(model (holds 1))`, a fact
+;;; over the int, which no state holds: the claim is FAILED, and `ein solve`
+;;; and `ein test` exit 1, as a refuted claim does.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `86227f9a` a claim was compared with the state as printed text, and the
+;;; printer printed a name as its raw text, so the int `1` and the name `"1"`
+;;; were one text, `(holds 1)`: `ein test -v FILE` said `holds` and exited 0,
+;;; in a release build and a debug one.
+
+(relation holds T)
+(holds "1")
+(query :goal (holds ?v) :expect (model (holds 1)))

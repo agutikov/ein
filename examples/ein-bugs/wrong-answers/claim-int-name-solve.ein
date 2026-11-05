@@ -1,0 +1,29 @@
+;;; The solve form's claim about the int `1` held of a state holding the name
+;;; `"1"` — M1e2 **W28**, register row `W28/claim-int-name-solve`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.3.8 (2026-11-06) beside
+;;; `claim-int-name.ein`, on the user's ruling of that day (Q-M1e2.20 (a)).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `claim-int-name.ein`'s fact, `(holds "1")`, the name `1`, and a claim
+;;; about the whole of R in the solve form, `(region (model (holds 1)))`,
+;;; written with the int. The claim is the witness: it is false, and it stays
+;;; written as it is.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is one state, root's, which holds `(holds "1")` and no fact over the int
+;;; `1`. The claim's one model lists `(holds 1)`, so no state of R is the
+;;; model it lists: the claim is FAILED, and `ein solve` and `ein test` exit
+;;; 1, as a refuted claim does.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `86227f9a` the solve form's claim was compared with each state as
+;;; printed text, in which the int `1` and the name `"1"` were one text,
+;;; `(holds 1)`: `ein test -v FILE` said `holds` and exited 0, in a release
+;;; build and a debug one.
+
+(relation holds T)
+(holds "1")
+(solve :expect (region (model (holds 1))))

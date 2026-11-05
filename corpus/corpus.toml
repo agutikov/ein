@@ -1414,6 +1414,24 @@ group  = "regression"
 runs   = ["solve --region-limit 8", "saturate", "solve --minimal --region-limit 8", "solve --maximal --region-limit 8"]
 note   = "M1e2 W27 (`W27/past-limit-lines-minimal`, `-maximal`), banked by S1e2.2.26 on Q-M1e2.19: a flagged program of 17 candidates, past the default --region-limit, whose R is three states (`ein oracle --region-limit 17`): minimal line {∅}, maximal line {(meal Ann Soup), (seats Ann C1)}. Past the limit describe certifies {∅} minimal and says the maximal line is not known; until S1e2.2.26 `--minimal` and `--maximal` labelled every member met with their line. The runs go past the limit at `--region-limit 8`, where every member is met by layer 2 and a run costs 2^8 saturations; the register's rows ask the default limit, 0.7 s a run."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/claim-int-name.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "test"]
+note   = "M1e2 W28 (`W28/claim-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a query's `:expect` claims `(model (holds 1))`, the int, over the one state, which holds the name `1` (`(holds \"1\")`). The claim is false and is the witness. Until S1e2.3.8 a claim was compared with the state as printed text, which printed the int and the name alike, so it held and `solve` and `test` exited 0."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "test"]
+note   = "M1e2 W28 (`W28/claim-int-name-solve`), banked by S1e2.3.8 on Q-M1e2.20 (a): the solve form's `(region (model (holds 1)))`, the int, over the one state, which holds the name `1`. The claim is false and is the witness. Until S1e2.3.8 it held, compared as printed text, and `solve` and `test` exited 0."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/classes-int-name.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W28 (`W28/classes-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a goal `(got ?v)` answered by the int `1` in some states and by the name `1` in others. R is eight states in four projection classes; until S1e2.3.8 the classes were keyed by printed text, in which the int and the name were one, and the read-out counted two."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24
