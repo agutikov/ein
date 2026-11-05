@@ -1,0 +1,27 @@
+;;; An hrule's `:assert` splits a name that starts with `or` — M1e2 **W22**,
+;;; register row `W22/kw-or-in-hrule` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; One fact, `(p a)`, a relation `orz`, and an hrule, `h`, proposing `(orz
+;;; ?x)` for each `(p ?x)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. H is `(orz
+;;; a)` and R is ∅ and {(orz a)}: the answer of `kw-or-in-hrule-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the template `(orz ?x)` as `(or z ?x)`, so H is `(or z
+;;; a)`, a fact of the reserved `or`, and R is ∅ and {(or z a)}. (`ein solve
+;;; FILE` at `35186bc0`, release and debug; every mode and `ein oracle` the
+;;; same.)
+
+(relation p Node) (relation orz Node)
+(p a)
+(hrule h () :match (p ?x) :assert (orz ?x))

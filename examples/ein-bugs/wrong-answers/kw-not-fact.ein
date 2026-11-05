@@ -1,0 +1,26 @@
+;;; A top-level fact splits a name that starts with `not` — M1e2 **W22**,
+;;; register row `W22/kw-not-fact` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; A relation of no argument, `notw`, and two facts, `(p a)` and `(notw)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `notw` is a name like any other. Root holds
+;;; `(notw)` and `(p a)`, H is empty and R is {∅}: the answer of
+;;; `kw-not-fact-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the fact `(notw)` as `(not w)`, so root holds the
+;;; negative `(not w)` and no `notw` fact. `w` becomes a name of the program,
+;;; H is `(p w)`, and R is two states. (`ein solve FILE` at `35186bc0`,
+;;; release and debug; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation notw)
+(p a) (notw)

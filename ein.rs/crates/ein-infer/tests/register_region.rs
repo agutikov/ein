@@ -280,14 +280,17 @@ fn every_row_states_its_witness_s_region() {
         }
         // A row whose run ends in an error (M1e2 S1e2.2.18, W18) states no
         // region either: the program loads, and the library stops where the
-        // binary does, at a firing, with a saturation error.
+        // binary does, at a firing, with a saturation error, or, where a rule
+        // the run compiles before it saturates does not compile, with a
+        // compile error (M1e2 S1e2.2.22, `W22/kw-or-in-obligation`: an
+        // obligation's guard read as a nested `(or …)`).
         if row.now.error.is_some() {
             let describe = Mode {
                 which: Which::All,
                 ask: Ask::Describe,
             };
             match try_ask(&repo_root().join(&row.witness), describe) {
-                Err(ein_infer::SolveError::Saturate(_)) => {}
+                Err(ein_infer::SolveError::Saturate(_) | ein_infer::SolveError::Compile(_)) => {}
                 other => bad.push(format!(
                     "{} ({}): [now] is an error and the library answers {:?}",
                     row.id,

@@ -1,0 +1,34 @@
+;;; A rule's `:assert` splits a name that starts with `neq` — M1e2 **W22**,
+;;; register row `W22/kw-neq-in-assert` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; The inventory of 2026-11-05's F1 witness, its program unchanged: one fact,
+;;; `(p a)`; a relation `neqw`; one rule, `r`, concluding `(neqw ?x)` from `(p
+;;; ?x)`; and a query, `(neqw ?y)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other. `r`
+;;; concludes `(neqw a)`, so root holds `(neqw a)` and `(p a)`, and the blind
+;;; enumerator has nothing left to propose over the program's names: H is
+;;; empty and R is {∅}. The query's one class is `?y = a`. It is the answer of
+;;; `kw-neq-in-assert-twin.ein`, this file with `neqw` renamed `nneqw`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads `(neqw ?x)` as the keyword `neq` followed by `w`, so `r`
+;;; concludes `(neq w a)`, a fact of the reserved `neq`. `w` becomes a name of
+;;; the program, H is `(neqw a)`, `(neqw w)` and `(p w)`, and R is their eight
+;;; subsets. The query prints as `(neq w ?y)`, *the goal holds: it has no
+;;; variable*. (`ein solve FILE` at `35186bc0`, release and debug; every mode
+;;; and `ein oracle` the same.)
+
+(relation p Node) (relation neqw Node)
+(p a)
+(rule r () :match (p ?x) :assert (neqw ?x))
+(query :goal (neqw ?y))

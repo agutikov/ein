@@ -1,0 +1,10 @@
+;;; The twin of `kw-relation-fact.ein` — M1e2 **W22**, banked by S1e2.2.22
+;;; (2026-11-05): the same program with `relationship` renamed
+;;; `rrelationship`, its first letter doubled: a name that starts with no
+;;; keyword and sorts where `relationship` does. Its answer is the witness's
+;;; right one, the name read back (`ein solve FILE` at `35186bc0`, release and
+;;; debug).
+
+(relation person Node) (relation rrelationship Node Node)
+(person alice) (person bob)
+(rrelationship alice bob)

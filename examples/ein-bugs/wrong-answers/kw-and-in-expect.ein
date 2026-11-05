@@ -1,0 +1,29 @@
+;;; A query's `:expect` splits a name that starts with `and` — M1e2 **W22**,
+;;; register row `W22/kw-and-in-expect` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two facts, `(p a)` and `(andz a)`, and a query, `(andz ?y)`, which claims
+;;; its one class: `:expect (model (andz a))`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `andz` is a name like any other. The query's
+;;; one class is `?y = a`, so the claim holds: `ein test` exits 0, and R is
+;;; {∅}. It is the answer of `kw-and-in-expect-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the goal and the claim's `(andz …)` as conjunctions, and
+;;; the loader refuses the program: every command exits 1 (`ein test`: 2) with
+;;; *kb load error: :expect names and, which no declaration or fact makes a
+;;; relation*. (`ein solve FILE` at `35186bc0`, release and debug; every mode
+;;; and `ein oracle` the same.)
+
+(relation p Node) (relation andz Node)
+(p a) (andz a)
+(query :goal (andz ?y) :expect (model (andz a)))

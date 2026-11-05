@@ -1,0 +1,28 @@
+;;; A fact's nested argument splits a name that starts with `neq` — M1e2
+;;; **W22**, register row `W22/kw-neq-in-fact` (`corpus/wrong_answers.toml`),
+;;; banked by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on
+;;; the user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two facts, `(p a)` and `(box (neqw a))`, whose argument is the nested fact
+;;; `(neqw a)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other. Root holds
+;;; `(box (neqw a))` and `(p a)`. The blind enumerator proposes `(box a)`, and
+;;; R is two states: the answer of `kw-neq-in-fact-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the nested `(neqw a)` as `(neq w a)`, so root holds `(box
+;;; (neq w a))`. `w` becomes a name of the program, H is `(box a)`, `(box w)`
+;;; and `(p w)`, and R is their eight subsets. (`ein solve FILE` at
+;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation box Node)
+(p a)
+(box (neqw a))

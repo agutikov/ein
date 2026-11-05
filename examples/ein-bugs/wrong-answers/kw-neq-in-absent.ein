@@ -1,0 +1,30 @@
+;;; An `absent` splits a name that starts with `neq` — M1e2 **W22**, register
+;;; row `W22/kw-neq-in-absent` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two facts, `(p a)` and `(neqw b)`, and one rule, `r`, concluding `(hit
+;;; ?x)` from `(p ?x)` where `(neqw ?x)` is absent.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other. No `(neqw
+;;; a)` holds, so `r` fires and root holds `(hit a)`. The blind enumerator
+;;; proposes `(hit b)`, `(neqw a)` and `(p b)`, and R is eight states, each
+;;; holding `(hit a)`: the answer of `kw-neq-in-absent-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads `(absent (neqw ?x))` as an `absent` over the guard `(neq
+;;; w ?x)`, which holds of `a`, so the `absent` fails and `r` never fires:
+;;; root holds no `hit`. `w` becomes a name of the program, H is seven
+;;; candidates and R is 96 states. (`ein solve FILE` at `35186bc0`, release
+;;; and debug; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation neqw Node) (relation hit Node)
+(p a) (neqw b)
+(rule r () :match (and (p ?x) (absent (neqw ?x))) :assert (hit ?x))

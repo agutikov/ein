@@ -1,0 +1,31 @@
+;;; A query's `:goal` splits a name that starts with `neq` — M1e2 **W22**,
+;;; register row `W22/kw-neq-in-goal` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two facts, `(p a)` and `(neqw a)`; an hrule, `h`, proposing `(tag ?x)` for
+;;; each `(p ?x)`; and a query, `(neqw ?y)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other. R is ∅ and
+;;; {(tag a)}, and the query asks about `neqw`, which no hrule proposes: the
+;;; read-out names it `outside` the universe, and the query's one class is `?y
+;;; = a`. It is the answer of `kw-neq-in-goal-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the goal `(neqw ?y)` as the guard `(neq w ?y)`. R is
+;;; right, but the query prints as `(neq w ?y)`, *the goal holds: it has no
+;;; variable*, and the read-out names nothing `outside` the universe. (`ein
+;;; solve FILE` at `35186bc0`, release and debug; every mode and `ein oracle`
+;;; the same.)
+
+(relation p Node) (relation neqw Node) (relation tag Node)
+(p a) (neqw a)
+(hrule h () :match (p ?x) :assert (tag ?x))
+(query :goal (neqw ?y))

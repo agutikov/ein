@@ -1,0 +1,12 @@
+;;; The twin of `kw-or-in-obligation.ein` — M1e2 **W22**, banked by S1e2.2.22
+;;; (2026-11-05): the same program with `orz` renamed `oorz`, its first letter
+;;; doubled: a name that starts with no keyword and sorts where `orz` does.
+;;; Its answer is the witness's right one, the name read back (`ein solve
+;;; FILE` at `35186bc0`, release and debug).
+
+(relation item Node) (relation oorz Node) (relation tag Node Node)
+(item a) (item b) (oorz a)
+(rule owed (?R)
+  :match  (and (relation ?R ?A ?B) (oorz ?a) (absent (?R ?a ?b)))
+  :assert (open ?R))
+(owed tag)

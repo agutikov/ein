@@ -308,8 +308,11 @@ fn every_row_answers_what_the_register_records() {
                 Ok(now) => {
                     let mut d = differences(&row.now, &now);
                     // A right that names what the universe leaves out states
-                    // the sentence too (M1e2 S1e2.2.8, W6): the `outside` row.
-                    if row.right.outside.is_some()
+                    // the sentence too (M1e2 S1e2.2.8, W6): the `outside` row,
+                    // wherever `now` records that `outside` — an open row
+                    // whose read-out names nothing yet (M1e2 S1e2.2.22,
+                    // `W22/kw-neq-in-goal`) is open on that field.
+                    if row.right.outside.as_ref() == Some(&row.now.outside)
                         && let Some(q) = &row.right.qualifier
                         && !got.stdout.contains(&format!("    outside         {q}\n"))
                     {

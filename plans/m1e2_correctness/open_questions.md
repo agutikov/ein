@@ -30,6 +30,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns*. **Built 2026-11-05** by S1e2.2.20 (`eddea251`) |
 | [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. **Built 2026-11-05** by S1e2.2.21 (`67d07fab`, `3fb9d712`): W21's six rows fixed, no answer moved by the lazy core |
 | [Q-M1e2.16](#q-m1e216--what-does-the-close-do-with-the-inventorys-items) | What does the close do with the inventory's items? | [the inventory of 2026-11-05](inventory_2026-11-05.md); S1e2.2.22–.25, S1e2.3.8, S1e2.3.10, F21, F22, F23 | **ruled 2026-11-05: as recommended**, put to the user the same day with the inventory the user asked for before the close: F1 and F2 are W22 and W23, fixed before the close; `_` in a guard, a premise that is not a form and a nested unbound relation or keyword pair refused at load (W24); W-8 and W-10 F22's; a reloaded dump's provenance S1e2.3.8's, `refuted by` and `--json-report`'s rows S1e2.3.10, the detector's labels F21's; the eleven diagnostics F23; the owned wrong answers with no row filed `open`, deferred (S1e2.2.25); the close's re-take the register's tests and the inventory's sweep |
+| [Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) | Where does a keyword end? | [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md) (W22) | **open**, put to the user on 2026-11-05 by T1e2.2.22.1: (i) a reserved word followed by `-` and a digit, `(neq-1 ?x)`, which reads as the keyword and `-1` under the word boundary `00_ebnf.md` § 1 states; (ii) a trace event, which has no reading but the keyword. The agent recommends (i)(a), the word boundary, which moves nothing, and (ii)(a), a parse error |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1832,3 +1833,76 @@ Put to the user the same day, with the agent's recommendation in six parts.
 - **(6)** The close's re-take is the register's tests plus the inventory's solve-against-oracle sweep, not `probes/capture.sh`'s W lines and inventory § 4's sweeps, which read the walk. [The milestone's acceptance](README.md#acceptance-for-the-milestone) is amended.
 
 The close waits on the user's go-ahead after the inventory is re-taken.
+
+## Q-M1e2.17 — Where does a keyword end?
+
+Put to the user on 2026-11-05 by
+[S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md)'s step 1
+([T1e2.2.22.1](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md#task-t1e22221--the-witnesses-banked-w22-filed-every-move-listed)).
+The stage makes a keyword a whole word wherever the parser reads one, as
+[`00_ebnf.md`](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) § 1, fact 1,
+says. Step 1 parsed every reserved word in `lex.rs`'s `LITERALS`, the 19 the
+parser matches as a literal, followed by each of eleven name characters, in
+every place the parser reads one, under nine argument shapes, with the
+kernel's eight other heads as controls (53 460 parses,
+`build/s1e2.2.22/cases.py`, at `35186bc0`). At `35186bc0` 2 691 of them
+split. The prototype refuses a literal that a word character follows
+(`match_literal`), and it moves 2 256: 2 208 to the whole name, and 48 trace
+events to a parse error. **435 still split**, every one a reserved word
+followed by `-` and a digit: `(neq-1 ?x)` reads as `(neq -1 ?x)`, at
+`35186bc0` and under the prototype.
+
+The grammar has two sets of name characters:
+
+- **`SYMBOL`'s body**, `[A-Za-z0-9_*.-]`: `-`, `.` and `*` continue a name,
+  as in `foo-1` and `std.rule`.
+- **The word boundary after a reserved word**, `WordChar` (`_`, a letter, a
+  digit). Fact 1 excludes a reserved word from `SYMBOL` where none of these
+  follows it: *"`rule-x` is not [a `SYMBOL`] (the `-` is not a word
+  character, so the boundary holds and the exclusion fires)"*.
+
+So `neq-1` is no name anywhere in the language: `(p neq-1)` is a parse error
+at `35186bc0` and under the prototype. After `not`, `and`, `or` and `neq` a
+value follows, and `-` is the one character that both continues a name and
+starts a value, an `INT`'s sign. So `(neq-1 ?x)` is read as the keyword and
+the value `-1`. A guard `(neq-1 ?x)` holds of every `?x` but `-1`, and an
+`:assert (neq-1 ?x)` stores `(neq -1 a)`. `.` and `*` start no value, so
+`(neq.x a)` and `(neq* a b)` are parse errors either way. No file under
+`examples/`, `tests/`, `stdlib/`, `corpus/`, `docs/` or `plans/` writes the
+shape (`grep -rnE '\((not|and|or|neq)-[0-9]'`, 2026-11-05).
+
+**(i) Where does a keyword end?**
+
+- **(a) At the word boundary fact 1 states** — **the agent's
+  recommendation**. A keyword ends at the first character that is not a word
+  character, for the literal as for `SYMBOL`'s exclusion, so the two
+  readings of a reserved word never overlap: where the literal matches,
+  `SYMBOL` does not. `(neq-1 ?x)` stays `(neq -1 ?x)` and `(rule-x A)` stays
+  a parse error. It moves nothing beyond the prototype's 2 256 cases, and no
+  answer outside W22's programs (step 1's sweep).
+- **(b) Where a name could not continue**, `SYMBOL`'s characters. `(neq-1
+  ?x)`, `(and-1 …)`, `(or-1 …)` and `(not-1)` become parse errors, since
+  `neq-1` is no `SYMBOL` either: the 435 cases move to an error. No corpus
+  program moves.
+- **(c) (b), and `neq-1` a name.** The exclusion's boundary moves to
+  `SYMBOL`'s characters too, so `rule-x`, `rule.x`, `not-a` and `neq-1`
+  become names: fact 1's own examples move, and so do the decision table's
+  `(rule-x A)` and `(rule.x A)`, from a parse error to a fact. This changes
+  the language beyond what the stage was asked to do.
+
+**(ii) A trace event.** A `(trace …)` holds only trace events, so a trace
+word read as a whole word has no other reading. `(trace (stepx :a b))` is the
+step `x` at `35186bc0`, and under the fix it is a parse error, as `(trace
+(foo :a b))` is. This covers 48 of the probe's cases and the decision table's
+five trace rows, `ok` → an error. The stage file's default is *no new
+error*, and its acceptance is *no reserved word followed by a name character
+is split anywhere the parser reads one*. The two disagree here.
+
+- **(a) The acceptance: a parse error** — **the agent's recommendation**.
+  The loader ignores a `(trace …)`, no corpus file writes such an event, and
+  the engine writes `(step <name> …)`.
+- **(b) The default: the six trace words keep matching as a prefix**, so
+  `(trace (stepx …))` stays the step `x`.
+
+Neither part moves an answer outside W22's programs, or any corpus program,
+under any of its options.

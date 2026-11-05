@@ -412,6 +412,22 @@
 # have, did not). The register reads **74 rows
 # fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
 #
+# **W22 was filed on 2026-11-05 by S1e2.2.22** (T1e2.2.22.1), from the
+# inventory of 2026-11-05's F1, on the user's ruling of that day
+# (Q-M1e2.16): the parser matches a reserved word as a prefix of a name, so a
+# name that starts with one is read as the keyword and the rest of the name,
+# and `(neqw ?x)` in a rule's `:assert` stores `(neq w a)`. Fourteen rows, all
+# `open`, one per place the parser reads a keyword where the split changes
+# the answer: a rule's `:assert` (`neq` and `or` store a fact of the reserved
+# relation, `and` stops the run), its `:match` (a conjunction and a guard,
+# each stopping the run), an `absent`, a fact's nested argument, a top-level
+# fact (`not`, and `relation`, a fact read as a declaration), a query's goal,
+# an hrule, an obligation's guard, a query's `:expect` and a `(solve …)`
+# claim. Each witness is banked with its twin, the name's first letter
+# doubled so that it starts with no keyword and sorts where it did, whose
+# answer is the right one. A row's `wrong` is a region run's at `35186bc0`.
+# The register reads **74 rows fixed, 16 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -5381,6 +5397,678 @@ models    = [
   ["(tag s2)"],
 ]
 nogoods   = [{ set = ["(tag s1)"], core = ["(item a)", "(not (in a s2))", "(slot s1)", "(tag s1)"] }]
+
+# ══ W22 — the parser splits a name that starts with a keyword ═════════════════
+[[case]]
+id       = "W22/kw-neq-in-assert"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is the inventory's `F1_keyword_prefix_split.ein`, its program unchanged. The twin, kw-neq-in-assert-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `neqw` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): root derives `(neq w a)`, a fact of the reserved `neq`, not `(neqw a)`; `w` is a name, H `(neqw a) (neqw w) (p w)`, R their eight subsets; the query prints `(neq w ?y)`; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+closes    = ["neqw", "p"]
+models    = [
+  ["(neqw a)", "(neqw w)", "(p a)"],
+  ["(neqw a)", "(neqw w)", "(p a)", "(p w)"],
+  ["(neqw a)", "(p a)"],
+  ["(neqw a)", "(p a)", "(p w)"],
+  ["(neqw w)", "(p a)"],
+  ["(neqw w)", "(p a)", "(p w)"],
+  ["(p a)"],
+  ["(p a)", "(p w)"],
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(neqw a)", "(neqw w)", "(p w)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["neqw", "p"]
+models    = [["(neqw a)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `neqw` is a name: root holds `(neqw a)`, H is empty and R is {∅}; the query's one class is `?y = a`. It is the twin's answer, kw-neq-in-assert-twin.ein, `nneqw` read as `neqw` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 8
+relations = ["neqw", "p"]
+models    = [
+  ["(neqw a)", "(neqw w)", "(p a)"],
+  ["(neqw a)", "(neqw w)", "(p a)", "(p w)"],
+  ["(neqw a)", "(p a)"],
+  ["(neqw a)", "(p a)", "(p w)"],
+  ["(neqw w)", "(p a)"],
+  ["(neqw w)", "(p a)", "(p w)"],
+  ["(p a)"],
+  ["(p a)", "(p w)"],
+]
+
+[[case]]
+id       = "W22/kw-or-in-assert"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is the inventory's `F1b_or_prefix.ein`, its program unchanged. The twin, kw-or-in-assert-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `orz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): root stores `(or z a)`, a fact of the reserved `or`, not `(orz a)`; `z` is a name, H `(orz a) (orz z) (p z)`, R their eight subsets; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+closes    = ["orz", "p"]
+models    = [
+  ["(orz a)", "(orz z)", "(p a)"],
+  ["(orz a)", "(orz z)", "(p a)", "(p z)"],
+  ["(orz a)", "(p a)"],
+  ["(orz a)", "(p a)", "(p z)"],
+  ["(orz z)", "(p a)"],
+  ["(orz z)", "(p a)", "(p z)"],
+  ["(p a)"],
+  ["(p a)", "(p z)"],
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(orz a)", "(orz z)", "(p z)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["orz", "p"]
+models    = [["(orz a)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `orz` is a name: root holds `(orz a)`, H is empty and R is {∅}. It is the twin's answer, kw-or-in-assert-twin.ein, `oorz` read as `orz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 8
+relations = ["orz", "p"]
+models    = [
+  ["(orz a)", "(orz z)", "(p a)"],
+  ["(orz a)", "(orz z)", "(p a)", "(p z)"],
+  ["(orz a)", "(p a)"],
+  ["(orz a)", "(p a)", "(p z)"],
+  ["(orz z)", "(p a)"],
+  ["(orz z)", "(p a)", "(p z)"],
+  ["(p a)"],
+  ["(p a)", "(p z)"],
+]
+
+[[case]]
+id       = "W22/kw-and-in-assert"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-and-in-assert.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/and-in-assert.ein`. The twin, kw-and-in-assert-twin.ein, renames `andz` `aandz`, a name that starts with no keyword and sorts where `andz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `andz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): `(andz ?x)` is the conjunction `(and z ?x)`, and the run stops at `r`'s first firing, exit 1; every mode and `ein oracle` the same"
+exit      = 1
+error     = "rule 'r': its :assert concludes z, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["andz", "p"]
+models    = [["(andz a)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `andz` is a name: root holds `(andz a)`, H is empty and R is {∅}. It is the twin's answer, kw-and-in-assert-twin.ein, `aandz` read as `andz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+error     = "rule 'r': its :assert concludes z, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
+
+[[case]]
+id       = "W22/kw-and-in-match"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-and-in-match.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/and-in-match.ein`. The twin, kw-and-in-match-twin.ein, renames `andz` `aandz`, a name that starts with no keyword and sorts where `andz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `andz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the premise `(andz ?x)` is the conjunction `(and z ?x)`, which binds nothing, and the run stops at `r`, exit 1; every mode and `ein oracle` the same"
+exit      = 1
+error     = "unbound var ?x in :assert — bindings: {}"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["andz", "hit", "p"]
+models    = [["(andz b)", "(hit b)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `andz` is a name: `r` fires on `(andz b)`: root holds `(hit b)`, and R is six states, root's the minimal one. It is the twin's answer, kw-and-in-match-twin.ein, `aandz` read as `andz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "all"
+error     = "unbound var ?x in :assert — bindings: {}"
+
+[[case]]
+id       = "W22/kw-neq-in-match"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-neq-in-match.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-match.ein`. The twin, kw-neq-in-match-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `neqw` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the premise `(neqw ?x)` is the guard `(neq w ?x)`, which binds nothing, and the run stops at `r`, exit 1; every mode and `ein oracle` the same"
+exit      = 1
+error     = "unbound var ?x in :assert — bindings: {}"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit", "neqw", "p"]
+models    = [["(hit b)", "(neqw b)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `neqw` is a name: `r` fires on `(neqw b)`: root holds `(hit b)`, and R is six states, root's the minimal one. It is the twin's answer, kw-neq-in-match-twin.ein, `nneqw` read as `neqw` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "all"
+error     = "unbound var ?x in :assert — bindings: {}"
+
+[[case]]
+id       = "W22/kw-neq-in-absent"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-absent.ein`. The twin, kw-neq-in-absent-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `neqw` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): `(absent (neqw ?x))` is an `absent` over the guard `(neq w ?x)`, which holds of `a`, so `r` never fires: root holds no `hit`; `w` is a name, H seven candidates, R 96 states; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit", "neqw", "p"]
+models    = [["(neqw b)", "(p a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 96
+k_c      = 128
+minimal  = [[]]
+maximal  = [["(hit a)", "(hit b)", "(hit w)", "(neqw a)", "(neqw w)", "(p b)", "(p w)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit", "neqw", "p"]
+models    = [["(hit a)", "(neqw b)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `neqw` is a name: no `(neqw a)` holds, so `r` fires: root holds `(hit a)`, H is three candidates and R eight states. It is the twin's answer, kw-neq-in-absent-twin.ein, `nneqw` read as `neqw` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit", "neqw", "p"]
+models    = [
+  ["(neqw b)", "(p a)"],
+]
+
+[[case]]
+id       = "W22/kw-neq-in-fact"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-fact.ein`. The twin, kw-neq-in-fact-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `neqw` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the fact `(box (neqw a))` is stored as `(box (neq w a))`; `w` is a name, H `(box a) (box w) (p w)`, R their eight subsets; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+closes    = ["box", "p"]
+models    = [
+  ["(box (neq w a))", "(box a)", "(box w)", "(p a)"],
+  ["(box (neq w a))", "(box a)", "(box w)", "(p a)", "(p w)"],
+  ["(box (neq w a))", "(box a)", "(p a)"],
+  ["(box (neq w a))", "(box a)", "(p a)", "(p w)"],
+  ["(box (neq w a))", "(box w)", "(p a)"],
+  ["(box (neq w a))", "(box w)", "(p a)", "(p w)"],
+  ["(box (neq w a))", "(p a)"],
+  ["(box (neq w a))", "(p a)", "(p w)"],
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(box a)", "(box w)", "(p w)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["box", "p"]
+models    = [
+  ["(box (neqw a))", "(p a)"],
+  ["(box (neqw a))", "(box a)", "(p a)"],
+]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `neqw` is a name: root holds `(box (neqw a))`, H is `(box a)` and R is two states. It is the twin's answer, kw-neq-in-fact-twin.ein, `nneqw` read as `neqw` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 8
+relations = ["box", "p"]
+models    = [
+  ["(box (neq w a))", "(box a)", "(box w)", "(p a)"],
+  ["(box (neq w a))", "(box a)", "(box w)", "(p a)", "(p w)"],
+  ["(box (neq w a))", "(box a)", "(p a)"],
+  ["(box (neq w a))", "(box a)", "(p a)", "(p w)"],
+  ["(box (neq w a))", "(box w)", "(p a)"],
+  ["(box (neq w a))", "(box w)", "(p a)", "(p w)"],
+  ["(box (neq w a))", "(p a)"],
+  ["(box (neq w a))", "(p a)", "(p w)"],
+]
+
+[[case]]
+id       = "W22/kw-not-fact"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-not-fact.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/not-fact.ein`. The twin, kw-not-fact-twin.ein, renames `notw` `nnotw`, a name that starts with no keyword and sorts where `notw` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `notw` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the fact `(notw)` is stored as the negative `(not w)`, and no `notw` fact; `w` is a name, H `(p w)`, R two states; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["notw", "p"]
+models    = [
+  ["(p a)"],
+  ["(p a)", "(p w)"],
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p w)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["notw", "p"]
+models    = [["(notw)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `notw` is a name: root holds `(notw)`, H is empty and R is {∅}. It is the twin's answer, kw-not-fact-twin.ein, `nnotw` read as `notw` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["p"]
+models    = [
+  ["(p a)"],
+  ["(p a)", "(p w)"],
+]
+
+[[case]]
+id       = "W22/kw-relation-fact"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-relation-fact.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/relation-fact.ein`. The twin, kw-relation-fact-twin.ein, renames `relationship` `rrelationship`, a name that starts with no keyword and sorts where `relationship` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `relationship` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the fact `(relationship alice bob)` is the declaration `(relation ship alice bob)`, so no `relationship` fact holds; `alice` and `bob` are types, H is empty and R is {∅}; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["relationship"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["relationship"]
+models    = [
+  ["(relationship alice bob)"],
+  ["(relationship alice bob)", "(relationship bob alice)"],
+]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `relationship` is a name: root holds `(relationship alice bob)`, H is `(relationship bob alice)` and R is two states. It is the twin's answer, kw-relation-fact-twin.ein, `rrelationship` read as `relationship` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W22/kw-neq-in-goal"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-neq-in-goal.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-goal.ein`. The twin, kw-neq-in-goal-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `neqw` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the goal `(neqw ?y)` is the guard `(neq w ?y)`: R is right, but the query prints `(neq w ?y)`, *the goal holds: it has no variable*, and the read-out names nothing outside the universe; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["tag"]
+models    = [
+  [],
+  ["(tag a)"],
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(tag a)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["tag"]
+models    = [
+  [],
+  ["(tag a)"],
+]
+qualifier = "neqw — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives"
+outside   = ["neqw"]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `neqw` is a name: R is ∅ and {(tag a)}, the read-out names `neqw` outside the universe, as the query asks about it and no hrule proposes it, and the query's one class is `?y = a`. It is the twin's answer, kw-neq-in-goal-twin.ein, `nneqw` read as `neqw` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["tag"]
+models    = [
+  [],
+  ["(tag a)"],
+]
+
+[[case]]
+id       = "W22/kw-or-in-hrule"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/or-in-hrule.ein`. The twin, kw-or-in-hrule-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `orz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the hrule's template `(orz ?x)` is `(or z ?x)`, so H is `(or z a)`, a fact of the reserved `or`; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["or", "orz"]
+models    = [["(or z a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(or z a)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["or", "orz"]
+models    = [["(orz a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `orz` is a name: H is `(orz a)`, and R is ∅ and {(orz a)}, the maximal line {(orz a)}. It is the twin's answer, kw-or-in-hrule-twin.ein, `oorz` read as `orz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["or"]
+models    = [
+  ["(or z a)"],
+]
+
+[[case]]
+id       = "W22/kw-or-in-obligation"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/or-in-obligation.ein`. The twin, kw-or-in-obligation-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `orz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the obligation's guard `(orz ?a)` is the disjunction `(or z ?a)`, nested in the `:match`, which the compiler refuses: exit 1, in a Python spelling; every mode the same, `ein oracle` with the message alone, and `ein saturate`, which reads no obligation, exit 0"
+exit      = 1
+error     = "ein.inference.compile.CompileError: nested `(or …)` in a `:match` premise: SForm(head=Atom(name='or'), args=(Atom(name='z'), Var(name='a'))). Only a TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one plan per disjunct); a nested one needs DNF expansion, which the M1 compiler does not do. Lift the disjunction to the top of the `:match`, or split the rule."
+
+[case.right]
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["tag"]
+open      = [[]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `orz` is a name: `a` owes a `tag` fact no candidate pays: R is empty, owing, its frontier root's state. It is the twin's answer, kw-or-in-obligation-twin.ein, `oorz` read as `orz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+error     = "ein.inference.compile.CompileError: nested `(or …)` in a `:match` premise: SForm(head=Atom(name='or'), args=(Atom(name='z'), Var(name='a'))). Only a TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one plan per disjunct); a nested one needs DNF expansion, which the M1 compiler does not do. Lift the disjunction to the top of the `:match`, or split the rule."
+
+[[case]]
+id       = "W22/kw-and-in-expect"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-and-in-expect.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/and-in-expect.ein`. The twin, kw-and-in-expect-twin.ein, renames `andz` `aandz`, a name that starts with no keyword and sorts where `andz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `andz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the goal and the claim read `(andz …)` as conjunctions, and the loader refuses the program, exit 1 (`ein test`: 2); every mode and `ein oracle` the same"
+exit      = 1
+error     = "kb load error: :expect names and, which no declaration or fact makes a relation"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["andz", "p"]
+models    = [["(andz a)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `andz` is a name: the program loads, R is {∅}, the query's one class is `?y = a` and its claim holds (`ein test`: exit 0). It is the twin's answer, kw-and-in-expect-twin.ein, `aandz` read as `andz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+refused   = "kb load error: :expect names and, which no declaration or fact makes a relation"
+
+[[case]]
+id       = "W22/kw-or-in-solve"
+case     = "W22"
+title    = "the parser splits a name that starts with a keyword"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.22"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/kw-or-in-solve.ein"
+status   = "open"
+look_at  = ["root", "summary"]
+note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/or-in-solve.ein`. The twin, kw-or-in-solve-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer"
+open_because = "the parser matches a reserved word as a prefix: `ein-ir`'s `match_literal` compares the word with no word boundary after it, and the parser tries a keyword alternative before the SYMBOL reading, so `orz` is read as a keyword and the rest of the name; S1e2.2.22 makes a keyword a whole word"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 35186bc0 (2026-11-05): the claim's `(orz a)` is the disjunction `(or z a)`, and the loader refuses the program, exit 1 (`ein test`: 2); every mode and `ein oracle` the same"
+exit      = 1
+error     = "kb load error: (solve … :expect …) names or, which no declaration or fact makes a relation"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["orz", "p"]
+models    = [["(orz a)", "(p a)"]]
+derived   = "A keyword is a whole word (`00_ebnf.md` § 1, fact 1: a reserved word is excluded from `SYMBOL` only where a word boundary follows it, and `neq_test` is a `SYMBOL`), so `orz` is a name: the program loads, R is {∅} and the `(solve …)` claim holds. It is the twin's answer, kw-or-in-solve-twin.ein, `oorz` read as `orz` (`ein solve` at 35186bc0, release and debug)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+refused   = "kb load error: (solve … :expect …) names or, which no declaration or fact makes a relation"
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

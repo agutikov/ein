@@ -1132,6 +1132,180 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W21's boundary, banked by S1e2.2.21: the pair's negative side is the program's, `(not (p a))`, and the commitment derives `(p a)`. R {∅}; N {(q a)}, whose core `(q a)` named the commitment, the positive side's frontier, and left out the stated `(not (p a))`; since S1e2.2.21's fix the same day it is `(not (p a)) (q a)`. No row: it names its commitment either way."
 
+# ── W22: a keyword prefix split (M1e2 S1e2.2.22) ─────────────
+#
+# Each witness with its twin, the same program with the keyword-prefixed
+# name's first letter doubled (`neqw` -> `nneqw`), so that it starts with no
+# keyword and sorts where it did; its answer is the witness's right one.
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-neq-in-assert`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: `r`'s `:assert` is `(neqw ?x)`, which the parser reads as the keyword `neq` followed by `w`: root derives `(neq w a)`, a fact of the reserved `neq`, `w` is a name and R is 8 states over H `(neqw a) (neqw w) (p w)`, and the query prints `(neq w ?y)`. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `neqw` is a name: root `(neqw a)`, R {∅}, the query's class `?y = a`, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-assert-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-neq-in-assert.ein`, banked by S1e2.2.22: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(neqw a)`, R {∅}, the query's class `?y = a`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-or-in-assert`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: `(orz ?x)` in `r`'s `:assert` stores `(or z a)`: R 8 states over H `(orz a) (orz z) (p z)`. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `orz` is a name: root `(orz a)`, R {∅}, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-assert-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-or-in-assert.ein`, banked by S1e2.2.22: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: root `(orz a)`, R {∅}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-and-in-assert`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: `(andz ?x)` in `r`'s `:assert` is the conjunction `(and z ?x)`, and every command that saturates stops at `r`, exit 1: *rule 'r': its :assert concludes z, which is not a fact — …*. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `andz` is a name: root `(andz a)`, R {∅}, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-and-in-assert.ein`, banked by S1e2.2.22: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: root `(andz a)`, R {∅}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-and-in-match.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-and-in-match`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the premise `(andz ?x)` is the conjunction `(and z ?x)`, which binds nothing, and every command that saturates stops at `r`, exit 1: *unbound var ?x in :assert — bindings: {}*. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `andz` is a name: root `(hit b)`, R six states, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-and-in-match-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-and-in-match.ein`, banked by S1e2.2.22: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: root `(hit b)`, R six states."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-neq-in-match`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the premise `(neqw ?x)` is the guard `(neq w ?x)`, which binds nothing, and every command that saturates stops at `r`, exit 1: *unbound var ?x in :assert — bindings: {}*. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `neqw` is a name: root `(hit b)`, R six states, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-match-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-neq-in-match.ein`, banked by S1e2.2.22: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit b)`, R six states."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-neq-in-absent`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: `(absent (neqw ?x))` is an `absent` over the guard `(neq w ?x)`, which holds of `a`, so `r` never fires: root holds no `hit`, `w` is a name, R 96 states over seven candidates. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `neqw` is a name: root `(hit a)`, R eight states over three, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-absent-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-neq-in-absent.ein`, banked by S1e2.2.22: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(hit a)`, R eight states over three."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-neq-in-fact`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the fact `(box (neqw a))` is stored as `(box (neq w a))`: `w` is a name, R 8 states over H `(box a) (box w) (p w)`. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `neqw` is a name: root `(box (neqw a))`, R two states over `(box a)`, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-fact-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-neq-in-fact.ein`, banked by S1e2.2.22: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: root `(box (neqw a))`, R two states over `(box a)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-not-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-not-fact`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the fact `(notw)` is stored as the negative `(not w)`: `w` is a name, R two states over H `(p w)`. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `notw` is a name: root `(notw)`, R {∅}, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-not-fact-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-not-fact.ein`, banked by S1e2.2.22: `notw` renamed `nnotw`, a name that starts with no keyword and sorts where `notw` does. Its answer, `nnotw` read as `notw`, is the witness's right one: root `(notw)`, R {∅}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-relation-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-relation-fact`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the fact `(relationship alice bob)` is read as `(relation ship alice bob)`, a declaration of `ship` with signature `alice bob`: no `relationship` fact, R {∅}. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `relationship` is a name: root `(relationship alice bob)`, R two states over `(relationship bob alice)`, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-relation-fact-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-relation-fact.ein`, banked by S1e2.2.22: `relationship` renamed `rrelationship`, a name that starts with no keyword and sorts where `relationship` does. Its answer, `rrelationship` read as `relationship`, is the witness's right one: root `(relationship alice bob)`, R two states over `(relationship bob alice)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-neq-in-goal`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the query's goal `(neqw ?y)` is the guard `(neq w ?y)`: R is right, but the query prints `(neq w ?y)`, *the goal holds: it has no variable*, and the read-out names nothing outside the universe. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `neqw` is a name: the read-out's `outside` names `neqw`, the query's class `?y = a`, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-neq-in-goal-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-neq-in-goal.ein`, banked by S1e2.2.22: `neqw` renamed `nneqw`, a name that starts with no keyword and sorts where `neqw` does. Its answer, `nneqw` read as `neqw`, is the witness's right one: the read-out's `outside` names `neqw`, the query's class `?y = a`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-or-in-hrule`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the hrule's template `(orz ?x)` is `(or z ?x)`: H `(or z a)`, a fact of the reserved `or`. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `orz` is a name: H `(orz a)`, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-hrule-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-or-in-hrule.ein`, banked by S1e2.2.22: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: H `(orz a)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-or-in-obligation`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the obligation's guard `(orz ?a)` is the disjunction `(or z ?a)`, nested in the `:match`, which the compiler refuses: `solve` exits 1, *ein.inference.compile.CompileError: nested `(or …)` …*; `saturate`, which reads no obligation, exits 0. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `orz` is a name: R empty, owing, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-obligation-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-or-in-obligation.ein`, banked by S1e2.2.22: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R empty, owing."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-and-in-expect`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the query's goal and `:expect` read `(andz …)` as conjunctions, and the loader refuses the program, exit 1: *kb load error: :expect names and, which no declaration or fact makes a relation*. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `andz` is a name: R {∅}, the claim holds, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-and-in-expect-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-and-in-expect.ein`, banked by S1e2.2.22: `andz` renamed `aandz`, a name that starts with no keyword and sorts where `andz` does. Its answer, `aandz` read as `andz`, is the witness's right one: R {∅}, the claim holds."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22 (`W22/kw-or-in-solve`), banked by S1e2.2.22 from the inventory of 2026-11-05's F1: the `(solve …)` claim's `(orz a)` is the disjunction `(or z a)`, and the loader refuses the program, exit 1: *kb load error: (solve … :expect …) names or, which no declaration or fact makes a relation*. Right: a keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `orz` is a name: R {∅}, the claim holds, the twin's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kw-or-in-solve-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W22's twin of `kw-or-in-solve.ein`, banked by S1e2.2.22: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R {∅}, the claim holds."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and

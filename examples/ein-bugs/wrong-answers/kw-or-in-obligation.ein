@@ -1,0 +1,33 @@
+;;; An obligation's guard splits a name that starts with `or` — M1e2 **W22**,
+;;; register row `W22/kw-or-in-obligation` (`corpus/wrong_answers.toml`),
+;;; banked by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on
+;;; the user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two items, `a` and `b`, one fact `(orz a)`, and an obligation, `owed`,
+;;; activated on `tag`: each `orz` value owes a `tag` fact.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. `a` owes a
+;;; `tag` fact that no candidate pays, so every alive node owes and R is
+;;; empty, owing: the answer of `kw-or-in-obligation-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the guard `(orz ?a)` as the disjunction `(or z ?a)`,
+;;; nested in the `:match`, which the compiler refuses: `ein solve` and `ein
+;;; oracle` exit 1 with *ein.inference.compile.CompileError: nested `(or …)`
+;;; in a `:match` premise: …*, a Python spelling. `ein saturate`, which reads
+;;; no obligation, exits 0. (`ein solve FILE` at `35186bc0`, release and
+;;; debug; every mode the same.)
+
+(relation item Node) (relation orz Node) (relation tag Node Node)
+(item a) (item b) (orz a)
+(rule owed (?R)
+  :match  (and (relation ?R ?A ?B) (orz ?a) (absent (?R ?a ?b)))
+  :assert (open ?R))
+(owed tag)

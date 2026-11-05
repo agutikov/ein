@@ -110,7 +110,12 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
-const SEEDED: [(&str, &[&str]); 25] = [
+/// - `wrong-answers/kw-*.ein` — `w` and `z`, M1e2's W22 (S1e2.2.22): the
+///   rest of a name the parser splits after a keyword, `(neqw ?x)` read as
+///   `(neq w ?x)`, which makes `w` a name of the program. The wrong answer
+///   itself, in nine of W22's fourteen witnesses, and the entries go with
+///   the fix: a keyword is a whole word, and `neqw` the name it is.
+const SEEDED: [(&str, &[&str]); 34] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -150,6 +155,42 @@ const SEEDED: [(&str, &[&str]); 25] = [
     (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
         &["`Z`, asserted by rule `spawn`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-and-in-assert.ein",
+        &["`z`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-and-in-match.ein",
+        &["`z`, matched by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-neq-in-absent.ein",
+        &["`w`, matched by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-neq-in-assert.ein",
+        &["`w`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-neq-in-fact.ein",
+        &["`w`, in (box (neq w a))"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-neq-in-match.ein",
+        &["`w`, matched by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-or-in-assert.ein",
+        &["`z`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-or-in-hrule.ein",
+        &["`z`, asserted by hrule `h`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kw-or-in-obligation.ein",
+        &["`z`, matched by obligation `owed`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/match-only.ein",

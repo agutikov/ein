@@ -1,0 +1,29 @@
+;;; A `(solve …)` claim splits a name that starts with `or` — M1e2 **W22**,
+;;; register row `W22/kw-or-in-solve` (`corpus/wrong_answers.toml`), banked by
+;;; S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two facts, `(p a)` and `(orz a)`, and a `(solve …)` form claiming the
+;;; state: `:expect (region (model (orz a) (p a)))`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. R is {∅},
+;;; root holds both facts, and the claim holds: the answer of
+;;; `kw-or-in-solve-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the claim's `(orz a)` as the disjunction `(or z a)`, and
+;;; the loader refuses the program: every command exits 1 (`ein test`: 2) with
+;;; *kb load error: (solve … :expect …) names or, which no declaration or fact
+;;; makes a relation*. (`ein solve FILE` at `35186bc0`, release and debug;
+;;; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation orz Node)
+(p a) (orz a)
+(solve :expect (region (model (orz a) (p a))))

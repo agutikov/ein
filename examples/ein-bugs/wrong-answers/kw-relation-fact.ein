@@ -1,0 +1,28 @@
+;;; A top-level fact splits a name that starts with `relation` — M1e2 **W22**,
+;;; register row `W22/kw-relation-fact` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two people, `alice` and `bob`, a relation `relationship` between two
+;;; `Node`s, and one fact, `(relationship alice bob)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `relationship` is
+;;; a name, and the fact is a fact. Root holds `(relationship alice bob)`; the
+;;; blind enumerator proposes `(relationship bob alice)`, and R is two states:
+;;; the answer of `kw-relation-fact-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads `(relationship alice bob)` as `(relation ship alice
+;;; bob)`, a declaration of a relation `ship` whose signature is `alice bob`,
+;;; so the program states no `relationship` fact. `alice` and `bob` are types,
+;;; H is empty and R is {∅}. (`ein solve FILE` at `35186bc0`, release and
+;;; debug; every mode and `ein oracle` the same.)
+
+(relation person Node) (relation relationship Node Node)
+(person alice) (person bob)
+(relationship alice bob)

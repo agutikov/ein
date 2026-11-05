@@ -1,0 +1,30 @@
+;;; A rule's `:match` splits a name that starts with `and` — M1e2 **W22**,
+;;; register row `W22/kw-and-in-match` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; Two facts, `(p a)` and `(andz b)`, and one rule, `r`, concluding `(hit
+;;; ?x)` from the premise `(andz ?x)`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `andz` is a name like any other. `r` fires on
+;;; `(andz b)`, so root holds `(hit b)`. The blind enumerator proposes `(andz
+;;; a)`, `(hit a)` and `(p b)`, and R is six states, the answer of
+;;; `kw-and-in-match-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads the premise `(andz ?x)` as the conjunction `(and z ?x)`,
+;;; of the atom `z` and the variable `?x`, which binds nothing: every command
+;;; that saturates stops at `r`, exit 1, with *unbound var ?x in :assert —
+;;; bindings: {}* (`ein saturate`: prefixed `KeyError:`). (`ein solve FILE` at
+;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation andz Node) (relation hit Node)
+(p a) (andz b)
+(rule r () :match (andz ?x) :assert (hit ?x))

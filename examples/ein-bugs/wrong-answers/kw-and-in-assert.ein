@@ -1,0 +1,30 @@
+;;; A rule's `:assert` splits a name that starts with `and` — M1e2 **W22**,
+;;; register row `W22/kw-and-in-assert` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; `kw-neq-in-assert.ein` with the relation `andz` in place of `neqw`, the
+;;; third word of the inventory of 2026-11-05's F1.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `andz` is a name like any other. `r`
+;;; concludes `(andz a)`: root holds `(andz a)` and `(p a)`, H is empty and R
+;;; is {∅}, the answer of `kw-and-in-assert-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads `(andz ?x)` as the conjunction `(and z ?x)`, whose first
+;;; conjunct `z` is no fact, so the run stops at `r`'s first firing: every
+;;; command that saturates exits 1 with *rule 'r': its :assert concludes z,
+;;; which is not a fact — …*. (`ein solve FILE` at `35186bc0`, release and
+;;; debug; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation andz Node)
+(p a)
+(rule r () :match (p ?x) :assert (andz ?x))
+(query :goal (andz ?y))

@@ -1,0 +1,30 @@
+;;; A rule's `:assert` splits a name that starts with `or` — M1e2 **W22**,
+;;; register row `W22/kw-or-in-assert` (`corpus/wrong_answers.toml`), banked
+;;; by S1e2.2.22 (2026-11-05) from the inventory of 2026-11-05's F1, on the
+;;; user's ruling of that day (Q-M1e2.16).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────
+;;;
+;;; The inventory of 2026-11-05's F1b witness, its program unchanged:
+;;; `kw-neq-in-assert.ein` with the relation `orz` in place of `neqw`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────
+;;;
+;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
+;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. `r` concludes
+;;; `(orz a)`: root holds `(orz a)` and `(p a)`, H is empty and R is {∅}. The
+;;; query's one class is `?y = a`, the answer of `kw-or-in-assert-twin.ein`.
+;;;
+;;; ── What the engine answers ───────────────────────────────────────────
+;;;
+;;; The parser reads `(orz ?x)` as the keyword `or` followed by `z`, so `r`
+;;; stores `(or z a)`, a fact of the reserved `or`. `z` becomes a name of the
+;;; program, H is `(orz a)`, `(orz z)` and `(p z)`, and R is their eight
+;;; subsets. The query prints as `(or z ?y)`. (`ein solve FILE` at `35186bc0`,
+;;; release and debug; every mode and `ein oracle` the same.)
+
+(relation p Node) (relation orz Node)
+(p a)
+(rule r () :match (p ?x) :assert (orz ?x))
+(query :goal (orz ?y))
