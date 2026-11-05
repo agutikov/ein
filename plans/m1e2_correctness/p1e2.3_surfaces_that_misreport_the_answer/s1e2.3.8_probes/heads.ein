@@ -1,0 +1,5 @@
+;;; S1e2.3.8 probe: what a nested form whose head is no atom loads as
+;;; (<nested>, printed (_ …)), the empty form (@empty, printed ()), the
+;;; kernel heads in argument position, and a keyword pair inside a fact.
+(h (?x a)) (h (_ b)) (h (= c d)) (h (not (p e))) (h (and (p f) (p g))) (h (or (p i))) (h (neq j k))
+(h (k :kw 1)) (h ()) (h (m)) (= e1 e2)

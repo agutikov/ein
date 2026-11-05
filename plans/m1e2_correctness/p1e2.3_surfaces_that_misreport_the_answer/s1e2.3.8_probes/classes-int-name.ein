@@ -1,0 +1,8 @@
+;;; S1e2.3.8 probe: a query's projection classes over states that hold the
+;;; int 1 and the name "1" — one class per text until S1e2.3.8.
+(relation pick Node)
+(relation got T)
+(is-a A Node) (is-a B Node)
+(rule a () :match (pick A) :assert (got 1))
+(rule b () :match (pick B) :assert (got "1"))
+(query :goal (got ?v))

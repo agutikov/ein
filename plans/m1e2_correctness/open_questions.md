@@ -33,6 +33,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.17](#q-m1e217--where-does-a-keyword-end) | Where does a keyword end? | [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md) (W22) | **ruled 2026-11-05: (i)(a) and (ii)(a), as recommended**, put to the user the same day by T1e2.2.22.1: (i) a keyword ends at the word boundary `00_ebnf.md` § 1 states, so `(neq-1 ?x)` stays `neq` and `-1` (not (b), a parse error, nor (c), `neq-1` a name); (ii) a trace word read whole, which has no other reading, is a parse error (not (b), the six trace words left matching as a prefix). **Built 2026-11-05** by S1e2.2.22 (`ed45a470`): W22's fourteen rows fixed |
 | [Q-M1e2.18](#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) | What else in a rule reads nothing, in silence? | [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24) | **ruled 2026-11-05: (i)(a), (ii)(a), (iii)(a), (iv)(a), (v)(a), as recommended**, put to the user the same day by T1e2.2.24.1: a form, a variable no earlier premise binds and a keyword pair as a guard's argument are refused at load; a relation parameter its activator binds to a nested fact is refused at load where the activator is written and by the compiler where a rule derives it; each a W24 row, filed and fixed by S1e2.2.24's T2; `empty_absent.ein` and `unbound_head.ein` refused at load and moved to `examples/broken/load/`. **Built 2026-11-05** by S1e2.2.24 (`3ab9a231`): W24's seven rows fixed |
 | [Q-M1e2.19](#q-m1e219--what-do---minimal-and---maximal-answer-past-the-limit) | What do `--minimal` and `--maximal` answer past the limit? | [S1e2.2.26](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md) (W27) | **ruled 2026-11-05: (1) and (2), as recommended**, put to the user the same day by S1e2.2.25's re-take (T1e2.2.25.1): past `--region-limit` on a flagged program the line modes label every member met as on their line (65 214 on `square-unique/corner-house`), where describe certifies one minimal state; S1e2.2.26 files it as W27 and fixes it before the close, `--minimal` certifying exactly what describe certifies and `--maximal` none, the maximal line not known. **Built 2026-11-05** by S1e2.2.26 (`c21f93fc`): W27's four rows fixed |
+| [Q-M1e2.20](#q-m1e220--does-a-claim-compare-values-or-their-printed-text) | Does a claim compare values, or their printed text? | [S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md) (N5) | **put to the user 2026-11-06** by S1e2.3.8's step 1 (T1e2.3.8.1), which stopped on it: a claim and a query's projection classes compare printed text, which printed the int `1` and the name `"1"` alike, so a false claim held and two classes were one on three probes (no corpus program); the one printer moves them. Recommended (a): the fix moves them, filed and fixed as W28 |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -2128,3 +2129,67 @@ each. W27's four rows are fixed, and
 the limit to describe and, where it is known, to the oracle. Step 1 found no
 monotone route that mislabels and no line member describe certifies that
 the oracle does not, so the ruling's scope was the whole defect.
+
+## Q-M1e2.20 — Does a claim compare values, or their printed text?
+
+Put to the user on 2026-11-06 by
+[S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md)'s
+step 1
+([T1e2.3.8.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md#the-finding-a-claim-compares-printed-text)),
+which stopped on it: the stage moves no answer by its brief, and the one
+printer moves two.
+
+**The finding.** A claim, a query's `:expect` and the solve form's
+`(region …)`, and a query's projection classes compare facts by their
+printed text, never by value: `ein_ir::expect::render` (the claim's facts,
+from the program's text) against `ein_infer::events::sexpr` (the state's,
+from the KB), which *"must agree byte for byte"*, and
+`read_out::classes`, keyed by the goal's atoms as text. Until the one printer
+a name printed as its raw text, so the int `1` and the name `"1"` were one
+text, and so were `(p "x y")` and the two-argument `(p x y)`:
+
+- [`claim-int-name.ein`](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_probes/claim-int-name.ein),
+  `(holds "1")` with `(query :goal (holds ?v) :expect (model (holds 1)))`:
+  `ein test -v` says `holds` and exits 0. The claim names the int, the only
+  state holds the name.
+- [`claim-int-name-solve.ein`](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_probes/claim-int-name-solve.ein),
+  the solve form's `(region (model (holds 1)))` over the same state: `holds`,
+  exit 0.
+- [`classes-int-name.ein`](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_probes/classes-int-name.ein),
+  a goal `(got ?v)` that the int `1` answers in some states and the name
+  `"1"` in others: `ein solve` counts *48 states → 8 projection classes*,
+  merging each class with the int and the name; by value they are 16.
+
+Release and debug alike, at `51b9fa7e` (2026-11-05). S1e2.3.8's prototype of
+the one printer moves all three: each claim `FAILED`, exit 1, its lines
+naming `(holds "1")` against `(holds 1)`, and 16 classes. **No corpus program
+and no register witness moves**: over the stage's sweep (35 328 runs on 736
+files, every corpus program, the register's witnesses and every earlier
+stage's probes, 2026-11-05) no exit code moves but the two claim probes', and
+no claim's outcome and no count moves on any corpus program.
+
+Put to the user the same day, with the agent's recommendation:
+
+- **(a) The fix moves them, and the register says so.** The one printer's
+  text is injective (a name and an int, a name with a space and two names,
+  print apart), so the comparison by text becomes a comparison by value with
+  no code of its own: the claims and the classes above move to right in
+  S1e2.3.8's fixing commit. The case is filed as a register row, W28, `open`
+  with the three probes banked as witnesses, and fixed by the same commit as
+  the printer, as every wrong answer has been — **the agent's
+  recommendation**. The register's schema needs a claim's outcome and a
+  query's class count in `now` and `right` (a `/12`), which is T2's.
+- **(b) The stage keeps the old comparison.** Claims and classes compare
+  the raw text, as H's order does, so the stage moves no answer and the
+  printed claim lines disagree with what they compare; W28 is filed `open`
+  and deferred to a stage that compares by value.
+- **(c) Compare by value now, apart from the printer.** Claims and classes
+  read the facts' `repr`, as the round-trip test does: the same answers as
+  (a), and a second comparison in `claim.rs` and `read_out.rs` that the
+  printer would no longer need.
+
+One more move is the printer's alone, and is listed rather than asked: a
+register row's recorded region is text, so `W18/str-in-match`'s
+`[case.region]` reads `maximal = [["(hit 1)", …]]` where the library now
+prints `(hit "1")`, the same candidate over the name `1` (the row's note says
+so). T2 re-banks the text; no status, verdict or count moves.

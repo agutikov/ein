@@ -484,7 +484,12 @@ scheduled run after the next push is the confirmation.
 [S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md)
 takes N7 (`refuted by` names a rule the core does not use) and N8
 (`--json-report` drops `outside` and `types`). The three run after P1e2.2's
-S1e2.2.25, and since 2026-11-05 after S1e2.2.26 (Q-M1e2.19).
+S1e2.2.25, and since 2026-11-05 after S1e2.2.26 (Q-M1e2.19). **S1e2.3.8
+started 2026-11-05 and paused 2026-11-06** after its step 1: a claim and a
+query's projection classes compare printed text, so the one printer moves
+an answer on three probes and on no corpus program, which the stage's brief
+does not allow; put to the user as
+[Q-M1e2.20](open_questions.md#q-m1e220--does-a-claim-compare-values-or-their-printed-text).
 
 ## What it inherits from M1e
 

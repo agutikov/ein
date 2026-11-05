@@ -20,7 +20,11 @@ nightly after them. **Widened 2026-11-05** on the user's ruling on
 ([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3)): a reloaded dump's provenance (its S-5) joins
 S1e2.3.8, and [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) takes N7
 and N8 (its S-3 and S-4). All three run after P1e2.2's S1e2.2.25, in the
-order S1e2.3.8, S1e2.3.9, S1e2.3.10. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+order S1e2.3.8, S1e2.3.9, S1e2.3.10. **S1e2.3.8 started 2026-11-05**: its
+step 1 is done (2026-11-06, nothing built), and it **paused** on its finding,
+a claim and a query's classes compare printed text, so the one printer moves
+an answer on three probes; put to the user as
+[Q-M1e2.20](../open_questions.md#q-m1e220--does-a-claim-compare-values-or-their-printed-text). Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
 every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
 re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
@@ -193,7 +197,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
 | [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each. **Done 2026-11-03**: N1–N4 fixed, each with a test; `-p` and `-P` named as the facts beyond the program as loaded, which is what they print | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
-| [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04; widened the same day by a reloaded dump's provenance (the inventory's S-5, Q-M1e2.16 (3)) | 1.5 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart; a state file's provenance a comment, a reloaded state's facts as given |
+| [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04; widened the same day by a reloaded dump's provenance (the inventory's S-5, Q-M1e2.16 (3)). **Step 1 done 2026-11-06; paused on Q-M1e2.20** | 1.5 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart; a state file's provenance a comment, a reloaded state's facts as given |
 | [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default | 0.5 d | no surface prints an empty core for a core the run did not take |
 | [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3) | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
 
@@ -295,7 +299,12 @@ by a test, and no exit code moved.
   held two (`build/s1e2.2.7/textkey/str-space.ein`). The int `1` and the
   string `"1"` print alike, so the read-out cannot tell two facts apart that
   the KB holds apart. **Placed by the user 2026-11-04**: a new stage here,
-  [S1e2.3.8](s1e2.3.8_the_fact_printer.md), filed 2026-11-05.
+  [S1e2.3.8](s1e2.3.8_the_fact_printer.md), filed 2026-11-05. **Re-taken
+  2026-11-06** by its step 1 at `51b9fa7e`: live on every surface that prints
+  a value, a state file reloads to another state on five corpus programs
+  (112 800 files, `arg-kinds`' 112 793 among them), and a claim and a query's
+  classes, which compare the printed text, hold of the name `"1"` what was
+  claimed of the int `1` (Q-M1e2.20).
 - **N6. A stopped run's dump writes a core it did not take.** Found
   2026-11-04 by S1e2.2.19's step 1 measuring every core
   ([its § Notes](../p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md#notes)).

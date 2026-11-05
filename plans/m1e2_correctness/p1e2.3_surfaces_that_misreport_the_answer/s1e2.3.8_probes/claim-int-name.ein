@@ -1,0 +1,5 @@
+;;; S1e2.3.8 probe: a claim that names the int 1 where every state holds the
+;;; name "1".
+(relation holds T)
+(holds "1")
+(query :goal (holds ?v) :expect (model (holds 1)))

@@ -1,0 +1,4 @@
+;;; S1e2.3.8 probe: the solve form's claim, the same confusion.
+(relation holds T)
+(holds "1")
+(solve :expect (region (model (holds 1))))
