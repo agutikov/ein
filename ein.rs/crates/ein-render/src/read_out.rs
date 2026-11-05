@@ -825,6 +825,110 @@ fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
     out.stderr.extend(notes);
 }
 
+/// The `minimal line` row's value, read off a description: describe's, and
+/// since M1e2 S1e2.2.26 (W27) a line mode's past `--region-limit` on a
+/// flagged program, read off the same description, so the two say the same.
+fn minimal_line(d: &Described) -> String {
+    let root = &d.root;
+    let sp = d.states_partial;
+    let n_min = d.states.iter().filter(|s| s.minimal).count() as u64;
+    let min_note = if root.in_r() {
+        if d.owing_met {
+            " — ∅".to_string()
+        } else {
+            " — ∅, the trivial line: no obligation is stated".to_string()
+        }
+    } else if d.exhausted {
+        let smallest = d
+            .minimal_commitments
+            .iter()
+            .map(|s| s.len())
+            .min()
+            .unwrap_or(0);
+        format!(
+            ", from {} — the least guess is {}",
+            plural(
+                d.minimal_commitments.len() as u64,
+                "commitment",
+                "commitments"
+            ),
+            plural(smallest as u64, "candidate", "candidates")
+        )
+    } else {
+        String::new()
+    };
+    if d.exhausted || root.in_r() {
+        format!("{}{min_note}", plural(n_min, "state", "states"))
+    } else if let Some(p) = sp {
+        match p.up_to {
+            Some(k) => format!(
+                "≥ {} — complete up to states of {}",
+                plural(n_min, "state", "states"),
+                plural(k as u64, "candidate", "candidates")
+            ),
+            None => format!("≥ {}", plural(n_min, "state", "states")),
+        }
+    } else if let Some(l) = d.complete_up_to {
+        format!(
+            "≥ {} — complete up to commitments of {}",
+            plural(n_min, "state", "states"),
+            plural(l as u64, "candidate", "candidates")
+        )
+    } else {
+        format!(
+            "≥ {} — every member met in layer order with nothing in R below it",
+            plural(n_min, "state", "states")
+        )
+    }
+}
+
+/// The `maximal line` row's value, read off a description: describe's, and
+/// a line mode's past the limit ([`minimal_line`]).
+fn maximal_line(d: &Described) -> String {
+    let n = d.n() as u64;
+    let sp = d.states_partial;
+    let cube = d.route == Route::Cube;
+    let n_max = d.states.iter().filter(|s| s.maximal).count() as u64;
+    let top = d
+        .states
+        .iter()
+        .any(|s| s.maximal && s.closure.len() as u64 == n && n > 0);
+    if d.exhausted {
+        let note = if !d.dead_met && top {
+            " — ⊤, the trivial line: no restriction bites"
+        } else {
+            ""
+        };
+        format!("{}{note}", plural(n_max, "state", "states"))
+    } else if cube {
+        "not known — without a licence it needs the whole cube".to_string()
+    } else if top {
+        "1 state — ⊤, every candidate: no node is dead, the trivial line, certified by one \
+         saturation"
+            .to_string()
+    } else if let Some(p) = sp
+        && n_max > 0
+    {
+        format!(
+            "≥ {} — all those of up to {}",
+            plural(n_max, "state", "states"),
+            plural(p.up_to.unwrap_or(0) as u64, "candidate", "candidates")
+        )
+    } else if n_max > 0 {
+        format!(
+            "≥ {} — all those a commitment of up to {} reaches",
+            plural(n_max, "state", "states"),
+            plural(
+                d.complete_up_to.unwrap_or(1).saturating_sub(1) as u64,
+                "candidate",
+                "candidates"
+            )
+        )
+    } else {
+        "not reached".to_string()
+    }
+}
+
 /// The rows of a description, exhausted or partial. Under `--count` (M1e2
 /// T1e2.1c.4.6) the rows that qualify R's two counts and no others: the
 /// counts, `exhausted`, `∅` or `empty`, `lattice` with its warning,
@@ -836,7 +940,6 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     let count = a.mode.ask == Ask::Count;
     let n = d.n() as u64;
     let k_s = d.k_s();
-    let cube = d.route == Route::Cube;
     let sp = d.states_partial;
     let lb = if d.exhausted {
         String::new()
@@ -969,120 +1072,8 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     }
 
     if !count && (k_s > 0 || !d.exhausted) {
-        let n_min = d.states.iter().filter(|s| s.minimal).count() as u64;
-        let n_max = d.states.iter().filter(|s| s.maximal).count() as u64;
-        let min_note = if root.in_r() {
-            if d.owing_met {
-                " — ∅".to_string()
-            } else {
-                " — ∅, the trivial line: no obligation is stated".to_string()
-            }
-        } else if d.exhausted {
-            let smallest = d
-                .minimal_commitments
-                .iter()
-                .map(|s| s.len())
-                .min()
-                .unwrap_or(0);
-            format!(
-                ", from {} — the least guess is {}",
-                plural(
-                    d.minimal_commitments.len() as u64,
-                    "commitment",
-                    "commitments"
-                ),
-                plural(smallest as u64, "candidate", "candidates")
-            )
-        } else {
-            String::new()
-        };
-        if d.exhausted || root.in_r() {
-            out.row(
-                "minimal line",
-                format!("{}{min_note}", plural(n_min, "state", "states")),
-            );
-        } else if let Some(p) = sp {
-            out.row(
-                "minimal line",
-                match p.up_to {
-                    Some(k) => format!(
-                        "≥ {} — complete up to states of {}",
-                        plural(n_min, "state", "states"),
-                        plural(k as u64, "candidate", "candidates")
-                    ),
-                    None => format!("≥ {}", plural(n_min, "state", "states")),
-                },
-            );
-        } else if let Some(l) = d.complete_up_to {
-            out.row(
-                "minimal line",
-                format!(
-                    "≥ {} — complete up to commitments of {}",
-                    plural(n_min, "state", "states"),
-                    plural(l as u64, "candidate", "candidates")
-                ),
-            );
-        } else {
-            out.row(
-                "minimal line",
-                format!(
-                    "≥ {} — every member met in layer order with nothing in R below it",
-                    plural(n_min, "state", "states")
-                ),
-            );
-        }
-        let top = d
-            .states
-            .iter()
-            .any(|s| s.maximal && s.closure.len() as u64 == n && n > 0);
-        if d.exhausted {
-            let note = if !d.dead_met && top {
-                " — ⊤, the trivial line: no restriction bites"
-            } else {
-                ""
-            };
-            out.row(
-                "maximal line",
-                format!("{}{note}", plural(n_max, "state", "states")),
-            );
-        } else if cube {
-            out.row(
-                "maximal line",
-                "not known — without a licence it needs the whole cube",
-            );
-        } else if top {
-            out.row(
-                "maximal line",
-                "1 state — ⊤, every candidate: no node is dead, the trivial line, certified by \
-                 one saturation",
-            );
-        } else if let Some(p) = sp
-            && n_max > 0
-        {
-            out.row(
-                "maximal line",
-                format!(
-                    "≥ {} — all those of up to {}",
-                    plural(n_max, "state", "states"),
-                    plural(p.up_to.unwrap_or(0) as u64, "candidate", "candidates")
-                ),
-            );
-        } else if n_max > 0 {
-            out.row(
-                "maximal line",
-                format!(
-                    "≥ {} — all those a commitment of up to {} reaches",
-                    plural(n_max, "state", "states"),
-                    plural(
-                        d.complete_up_to.unwrap_or(1).saturating_sub(1) as u64,
-                        "candidate",
-                        "candidates"
-                    )
-                ),
-            );
-        } else {
-            out.row("maximal line", "not reached");
-        }
+        out.row("minimal line", minimal_line(d));
+        out.row("maximal line", maximal_line(d));
         match &d.shape {
             Some(shape) => {
                 let c = &shape.components;
@@ -1278,7 +1269,9 @@ fn subcube_text(dims: &[usize]) -> String {
 /// The rows of a mode: a line, an `-n` cut, `--single`.
 fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     let a = &r.answer;
-    let k = r.states.len() as u64;
+    // The states listed: past the limit a line mode meets members it does
+    // not list (M1e2 S1e2.2.26).
+    let k = r.listed().count() as u64;
     let label = match a.mode.which {
         Which::All => "states of R",
         Which::Minimal => "minimal line",
@@ -1303,6 +1296,16 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
             }
             None => out.row("verdict", "not decided — the run stopped first"),
         }
+    } else if let Some(d) = a.partial.as_deref() {
+        // A line mode past `--region-limit` on a flagged program says what
+        // describe says of its line, from the same description (W27).
+        out.row(
+            label,
+            match a.mode.which {
+                Which::Maximal => maximal_line(d),
+                _ => minimal_line(d),
+            },
+        );
     } else {
         let q = if a.exhausted {
             if k == 0 {
@@ -1503,11 +1506,16 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
         }
         Listing::Certified { others } => {
             out.blank();
-            out.line(
-                "  ;; the line members this run certified. Not a (region …): read back, it \
-                 would claim these are all of R.",
-            );
             let listed: Vec<(usize, &Listed)> = r.listed().collect();
+            // A line mode that certifies no member met (`--maximal` past the
+            // limit, M1e2 S1e2.2.26) has no line member to introduce; a
+            // description always certifies one when it met one.
+            if !listed.is_empty() || *others == 0 {
+                out.line(
+                    "  ;; the line members this run certified. Not a (region …): read back, it \
+                     would claim these are all of R.",
+                );
+            }
             members(out, &listed, cands, None);
             if *others > 0 {
                 out.line(format!(
@@ -1735,7 +1743,12 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
     let a = &r.answer;
     let k = r.states.len() as u64;
     let over = match (r.described(), q.over) {
-        _ if !q.as_asked => format!("the {} listed", plural(k, "state", "states")),
+        // The states listed: a line mode past the limit meets members it
+        // does not list (M1e2 S1e2.2.26).
+        _ if !q.as_asked => format!(
+            "the {} listed",
+            plural(r.listed().count() as u64, "state", "states")
+        ),
         (Some(_), Over::All) if a.route == Route::Cube && !a.exhausted => {
             format!("the {} met", plural(k, "member", "members"))
         }

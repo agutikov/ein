@@ -386,12 +386,18 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                     } else {
                         "minimal"
                     };
+                    // Its listed states, and only those: past `--region-limit`
+                    // on a flagged program a line mode lists the line members
+                    // describe certifies and reports the other members met
+                    // unlisted, on no line (M1e2 S1e2.2.26, W27). Until then
+                    // this held every state on the line, which was the defect.
                     check(
-                        "a line mode's states are on its line",
+                        "a line mode's listed states are on its line, and the others on none",
                         states.iter().all(|x| {
                             x["lines"]
                                 .as_array()
                                 .is_some_and(|l| l.iter().any(|w| w == line))
+                                == (x["listed"] == true)
                         }),
                     );
                 }

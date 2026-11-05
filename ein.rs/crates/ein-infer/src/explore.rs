@@ -43,8 +43,13 @@
 //! route 1 ([`crate::downset`]) with a cut per mode. A flagged program takes
 //! **route 2**, the cube: in layer order where the question can be decided
 //! early (`-n`, `--single`, over all of `R` or the minimal line), and whole
-//! ([`crate::region`]) where it cannot. A program whose root is dead is
-//! decided by route 1 in one saturation (L0, L1).
+//! ([`crate::region`]) where it cannot. Past `--region-limit` a question that
+//! needs the whole cube meets the members of `R` in layer order up to the
+//! limit; describe certifies what it can of them (`Space::partial_cube`),
+//! and since M1e2 S1e2.2.26 (W27) a line mode answers from the same
+//! description, so it certifies what describe certifies and no more. A
+//! program whose root is dead is decided by route 1 in one saturation (L0,
+//! L1).
 //!
 //! ### Describe's route — a decision taken without a ruling
 //!
@@ -320,6 +325,16 @@ pub struct Answer {
     /// Describe, over all of `R`: what the run established about it, exhausted
     /// or partial — what the read-out prints.
     pub described: Option<Box<Described>>,
+    /// Past `--region-limit` on a program the static check flags, under
+    /// `--minimal` or `--maximal`: describe's partial description of the
+    /// members the run met (`Space::partial_cube`), whose line members are
+    /// [`Self::states`]. So a line mode certifies what describe certifies, by
+    /// the one rule: a member met with no member of `R` met below it is
+    /// minimal, and the maximal line, which needs the whole cube, is not
+    /// known. The read-out counts the other members met and does not list
+    /// them, and `--dump-answer` writes each (M1e2 S1e2.2.26, W27, the user's
+    /// ruling of 2026-11-05 on Q-M1e2.19). `None` on every other run.
+    pub partial: Option<Box<Described>>,
     /// The chosen part of `R` was exhausted: [`Self::states`] is all of it.
     pub exhausted: bool,
     /// [`Ask::Single`]'s verdict, when the run reached one.
@@ -606,6 +621,7 @@ impl<'a> Space<'a> {
             shape: None,
             counts: None,
             described: None,
+            partial: None,
             exhausted: found.exhausted,
             verdict: found.verdict,
             stopped: found.stopped,
@@ -920,7 +936,9 @@ impl<'a> Space<'a> {
     /// [`Self::cube_in_order`] met. Each is in `R`. Every proper subset of a
     /// member was met in an earlier layer, so a member with no member of `R`
     /// below it is certified minimal, monotone or not. The maximal line needs
-    /// the whole cube, and is not certified.
+    /// the whole cube, and is not certified. Describe's, and since M1e2
+    /// S1e2.2.26 (W27) every line mode's past the limit too
+    /// (`certified_line`): the one rule, so the two cannot disagree.
     fn partial_cube(&self) -> Described {
         // determinism-ok: sorted by size and candidates on the next line.
         let mut met: Vec<(&Box<[u32]>, &Seen)> = self.seen.iter().collect();
@@ -1183,6 +1201,7 @@ fn describe_route_1(
         shape,
         counts: Some(Counts { k_c, k_s }),
         described: Some(Box::new(described)),
+        partial: None,
         states,
         minimal: Vec::new(),
         verdict: None,
@@ -1320,6 +1339,7 @@ fn describe_states(
             k_s: described.k_s(),
         }),
         described: Some(Box::new(described)),
+        partial: None,
         states,
         minimal: Vec::new(),
         verdict: None,
@@ -1362,8 +1382,9 @@ fn flagged(
         };
         let mut found = sp.cube_in_order(which, ask, opts.limit.min(63))?;
         if !early {
-            // Members of `R` found, printed as members and not as line
-            // members: the lines are the whole cube's.
+            // Members of `R` found, the members met in layer order up to the
+            // limit: the lines are the whole cube's, and only what describe
+            // certifies of them is a line member (below).
             found.exhausted = false;
             if found.stopped.is_none() {
                 found.stopped = Some(Stopped::Limit {
@@ -1381,7 +1402,17 @@ fn flagged(
             k_c: found.members,
             k_s: found.states.len() as u64,
         });
-        let partial = describe_all.then(|| Box::new(sp.partial_cube()));
+        // A line mode past the limit (`!early` here is past it) answers from
+        // describe's partial description, by its rule, so the two certify the
+        // same line members (M1e2 S1e2.2.26, W27; Q-M1e2.19). Until then it
+        // labelled every member met with its line.
+        let line_past_limit = !early && opts.mode.which != Which::All;
+        let partial = (describe_all || line_past_limit).then(|| Box::new(sp.partial_cube()));
+        if line_past_limit && let Some(d) = partial.as_deref() {
+            let (states, minimal) = certified_line(d, opts.mode);
+            found.states = states;
+            found.minimal = minimal;
+        }
         // The cube's half: past the limit it is not known; within it, a run
         // that read every node says what the cube says.
         let status = if !within {
@@ -1402,7 +1433,11 @@ fn flagged(
             w.state.cube = whole;
         }
         answer.counts = counts;
-        answer.described = partial;
+        if describe_all {
+            answer.described = partial;
+        } else {
+            answer.partial = partial;
+        }
         return Ok(answer);
     }
     let outcome = region::compute_prepared(
@@ -1425,6 +1460,66 @@ fn flagged(
         unreachable!("within the limit");
     };
     Ok(of_cube(opts.mode, *r))
+}
+
+/// A minimal commitment and the index of its state in a mode's states, as
+/// [`Answer::minimal`] holds them.
+type MinimalAt = (Box<[u32]>, usize);
+
+/// A line mode's states past `--region-limit` on a flagged program, read off
+/// describe's partial description `d` ([`Space::partial_cube`]), so that the
+/// mode certifies what describe certifies and nothing more (M1e2 S1e2.2.26,
+/// W27). On the minimal line, the states `d` marks minimal, each with the
+/// minimal commitments that reach it, in layer order: the order the minimal
+/// line has within the limit ([`of_cube`]). The maximal line needs the whole
+/// cube, so `d` certifies no state on it, and none is listed. `-n N` keeps the
+/// first `N`; `--single` reaches here on the maximal line alone, which it
+/// cannot decide.
+fn certified_line(d: &Described, mode: Mode) -> (Vec<State>, Vec<MinimalAt>) {
+    let mut states: Vec<State> = Vec::new();
+    let mut minimal: Vec<MinimalAt> = Vec::new();
+    match mode.which {
+        Which::Minimal => {
+            // Each minimal commitment is a generator of its own state, and of
+            // no other: nothing in `R` is below it, so no earlier generator.
+            let mut of: FxHashMap<&[u32], usize> = FxHashMap::default();
+            for (i, s) in d.states.iter().enumerate().filter(|(_, s)| s.minimal) {
+                for g in &s.generators {
+                    of.insert(g, i);
+                }
+            }
+            let mut at: FxHashMap<usize, usize> = FxHashMap::default();
+            // `minimal_commitments` is in layer order, then by candidates.
+            for m in &d.minimal_commitments {
+                let Some(&i) = of.get(&m[..]) else {
+                    continue;
+                };
+                let next = states.len();
+                let k = *at.entry(i).or_insert(next);
+                if k == next {
+                    states.push(State {
+                        set: m.clone(),
+                        closure: d.states[i].closure.clone(),
+                    });
+                }
+                minimal.push((m.clone(), k));
+            }
+        }
+        Which::Maximal => {
+            for s in d.states.iter().filter(|s| s.maximal) {
+                states.push(State {
+                    set: s.rep.clone(),
+                    closure: s.closure.clone(),
+                });
+            }
+        }
+        Which::All => {}
+    }
+    if let Ask::Find(want) = mode.ask {
+        states.truncate(usize::try_from(want).unwrap_or(usize::MAX));
+        minimal.retain(|(_, k)| (*k as u64) < want);
+    }
+    (states, minimal)
 }
 
 /// The answer to `mode`, read off the whole cube — also how `ein oracle`
@@ -1540,6 +1635,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         }),
         shape,
         described,
+        partial: None,
         exhausted,
         verdict,
         stopped: None,

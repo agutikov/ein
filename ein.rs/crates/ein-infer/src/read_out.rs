@@ -72,7 +72,9 @@ pub enum Listing {
     /// R is empty and every alive node owes: `(region (owing …))`.
     Owing(Vec<OwingState>),
     /// A partial description: its certified line members, as states. `others`
-    /// members met are not listed.
+    /// members met are not listed. Since M1e2 S1e2.2.26 (W27) a line mode's
+    /// past `--region-limit` on a flagged program too: the members it
+    /// certifies on its line, which are describe's, and the others met.
     Certified { others: u64 },
     /// A mode's answer: a line, an `-n` cut, `--single`'s one or two states.
     Members,
@@ -240,7 +242,36 @@ pub fn of_answer(
                     model: Vec::new(),
                 });
             }
-            Listing::Members
+            match answer.partial.as_deref() {
+                // A line mode past `--region-limit` on a flagged program: its
+                // states are the line members describe's partial description
+                // certifies, and the other members met are counted, not
+                // listed, and written by `--dump-answer`, as describe's are
+                // (M1e2 S1e2.2.26, W27).
+                Some(d) => {
+                    let on_line = |s: &crate::described::State| match answer.mode.which {
+                        Which::Minimal => s.minimal,
+                        Which::Maximal => s.maximal,
+                        Which::All => false,
+                    };
+                    let mut others = 0u64;
+                    for s in d.states.iter().filter(|s| !on_line(s)) {
+                        others += 1;
+                        states.push(Listed {
+                            closure: s.closure.clone(),
+                            rep: s.rep.clone(),
+                            commitments: None,
+                            generators: s.generators.clone(),
+                            minimal: false,
+                            maximal: false,
+                            listed: false,
+                            model: Vec::new(),
+                        });
+                    }
+                    Listing::Certified { others }
+                }
+                None => Listing::Members,
+            }
         }
     };
 
@@ -429,7 +460,11 @@ pub fn of_answer(
                     // An `-n` run that exhausted its part found fewer than it
                     // asked for, so it listed the whole part.
                     let exact = asked && (whole || answer.exhausted);
-                    ((0..states.len()).collect(), asked, exact)
+                    // Over the states listed: a line mode past the limit
+                    // meets members it does not list (M1e2 S1e2.2.26).
+                    let listed: Vec<usize> =
+                        (0..states.len()).filter(|&i| states[i].listed).collect();
+                    (listed, asked, exact)
                 }
             };
             let picked: Vec<(usize, Vec<Row>)> = per_state

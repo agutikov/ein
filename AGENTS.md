@@ -320,7 +320,15 @@ constrained-reasoning research.
   no monotone route that mislabels (227 programs under six budgets) and no
   line member describe certifies that the oracle does not; under a lowered
   limit the line modes label a state off the oracle's line on 20 of the 22
-  flagged programs the oracle reaches (2026-11-05).
+  flagged programs the oracle reaches (2026-11-05). It fixed all four the
+  same day: past the limit a line mode answers from describe's partial
+  description (`explore::flagged`, `Space::partial_cube`), so `--minimal`
+  lists the members describe certifies on the minimal line and every
+  `--maximal` question lists none, the maximal line not known, each counting
+  the other members met, which `--dump-answer` writes;
+  `ein-render/tests/line_modes_past_the_limit.rs` holds every line mode past
+  the limit to describe and to the oracle: 100 fixed, 10 open (every one
+  deferred to a followup or to M1f) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
