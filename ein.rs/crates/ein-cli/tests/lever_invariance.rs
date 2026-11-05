@@ -42,7 +42,9 @@
 //! Q-M1e2.11 (ii)): `:record-alternative-justifications false` makes the proof
 //! a tree, and may change which core a dead node's refutation names, the
 //! read-out's `unsat core` and `source` rows and the summary's `region.core`,
-//! and nothing else ([`CORE_FLAG`], [`without_core`]).
+//! and since M1e2 S1e2.2.23 whether its search was cut, the `core search` row
+//! and `region.core_status`, and nothing else ([`CORE_FLAG`],
+//! [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
 //! **Byte for byte, cost counters included**, because no route reads a lever
@@ -501,13 +503,19 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 const CORE_FLAG: &str = "record-alternative-justifications";
 
 /// The rows that name a dead node's core: the read-out's `unsat core` and
-/// `source`.
+/// `source`, and since M1e2 S1e2.2.23 its `core search` row, which says the
+/// core's search was cut: off, each fact's first derivation is all the search
+/// is offered, so the search can be cut where it was not, or not where it was
+/// (`core-search-cut.ein`'s `(A k)` has one environment off and 256 on).
 fn is_core_row(line: &str) -> bool {
-    line.starts_with("  unsat core ") || line.starts_with("  source ")
+    line.starts_with("  unsat core ")
+        || line.starts_with("  source ")
+        || line.starts_with("  core search ")
 }
 
 /// [`printed`] less the core: its rows ([`is_core_row`]) and the summary's
-/// `region.core`. Everything else, `refuted by` among it, must not move.
+/// `region.core` and `region.core_status`. Everything else, `refuted by`
+/// among it, must not move.
 fn without_core(text: &str) -> String {
     let (head, summary) = text.split_once("--- summary\n").unwrap_or((text, ""));
     let head: String = head
@@ -519,6 +527,7 @@ fn without_core(text: &str) -> String {
         Ok(mut j) => {
             if let Some(r) = j.get_mut("region").and_then(J::as_object_mut) {
                 r.remove("core");
+                r.remove("core_status");
             }
             serde_json::to_string_pretty(&j).expect("serialises")
         }
@@ -741,8 +750,13 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
             "  source            (color-loc Green House-1) :source \"x\"",
             true,
         ),
+        (
+            "  core search       cut at its budget of 64 environments per fact: a smaller core may exist",
+            true,
+        ),
         ("  refuted by        narrow", false),
         ("  unsat corel", false),
+        ("    core search", false),
         ("    source", false),
         ("  universe          70 candidates, 70 dead alone", false),
     ] {

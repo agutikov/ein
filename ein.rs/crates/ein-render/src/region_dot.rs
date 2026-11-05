@@ -390,6 +390,9 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
     let mut tip: Vec<String> = vec![format!("{} — {}", doc.name(m), status_word(node.status))];
     if !node.core.is_empty() {
         tip.push(format!("core: {}", node.core.join(" ")));
+        if let Some(q) = node.core_status.and_then(|c| c.qualifier()) {
+            tip.push(format!("core search: {q}"));
+        }
         tip.push(format!("refuted by: {}", node.refuted_by.join(", ")));
     }
     if !node.absent_premises.is_empty() {
@@ -1315,6 +1318,9 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
                     node.core.join(" "),
                     node.refuted_by.join(", ")
                 ));
+                if let Some(at) = node.core_status.and_then(|c| c.cut_at()) {
+                    why.push(format!("core search cut at its budget of {at}"));
+                }
             }
             if !node.absent_premises.is_empty() {
                 why.push(format!("rests on {}", node.absent_premises.join(", ")));

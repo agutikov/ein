@@ -86,6 +86,8 @@ pub struct Visited<'a> {
     pub owes: u32,
     pub owed: &'a [String],
     pub core: &'a [String],
+    /// What the core's search established; `None` where none was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: &'a [String],
     pub closure: &'a [String],
     /// Its fixpoint's facts beyond root's.

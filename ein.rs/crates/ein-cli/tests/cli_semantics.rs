@@ -2264,3 +2264,135 @@ fn a_name_that_starts_with_a_keyword_answers_as_its_twin_does() {
         bad.join("\n")
     );
 }
+
+// ── A core search cut at its budget says so — M1e2 S1e2.2.23 (W23) ────────
+
+/// **A core whose search was cut says so on every surface that prints it, and
+/// one whose search was not prints nothing new** — M1e2 S1e2.2.23, W23, on
+/// the user's ruling of 2026-11-05 (Q-M1e2.16): the core search keeps its
+/// budget, `explain::ExplanationBudget`, and a core it cut is qualified as
+/// cut, at the cap it stopped at.
+///
+/// `core-search-cut.ein`'s `(A k)` has 256 environments, past the 64 per
+/// fact the search keeps, and its root core is ten facts where eight
+/// suffice; `core-search-cut-5.ein`, the same shape with five pairs, is under
+/// the budget. Until S1e2.2.23 every surface printed the ten facts with
+/// nothing to say the search was cut: `region.rs` kept the search's frontier
+/// and dropped `Explanation::exhausted`.
+#[test]
+fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
+    const ROW: &str = "  core search       cut at its budget of 64 environments per fact: a smaller core may exist\n";
+    const CELL: &str = "core search cut at its budget of 64 environments per fact";
+    const TRACE: &str =
+        "Core search: cut at its budget of 64 environments per fact: a smaller core may exist.";
+    const TIP: &str =
+        "core search: cut at its budget of 64 environments per fact: a smaller core may exist";
+    let scratch = ein_corpus::Scratch::new("ein-core-cut");
+    let checked = std::cell::Cell::new(0usize);
+    for (file, word) in [
+        (
+            "examples/ein-bugs/wrong-answers/core-search-cut.ein",
+            "cut-environments",
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/core-search-cut-5.ein",
+            "within-budget",
+        ),
+    ] {
+        let cut = word != "within-budget";
+        let dir = scratch.join(if cut { "cut" } else { "under" });
+        std::fs::create_dir_all(&dir).expect("a scratch dir");
+        let at = |name: &str| dir.join(name).to_string_lossy().to_string();
+        let says = |surface: &str, text: &str, needle: &str| {
+            checked.set(checked.get() + 1);
+            assert_eq!(
+                text.contains(needle),
+                cut,
+                "{file}: {surface} {} {needle:?}",
+                if cut { "does not print" } else { "prints" }
+            );
+            if !cut {
+                assert!(
+                    !text.contains("cut at its budget"),
+                    "{file}: {surface} says a search under its budget was cut"
+                );
+            }
+        };
+        // The read-out, under each command that prints root's core.
+        for args in [
+            vec!["solve", file],
+            vec!["solve", file, "-H"],
+            vec!["oracle", file],
+        ] {
+            let r = ein(&args);
+            r.ok();
+            says(&args.join(" "), &r.out, ROW);
+        }
+        let status = |surface: &str, v: &J| {
+            checked.set(checked.get() + 1);
+            assert_eq!(v.as_str(), Some(word), "{file}: {surface}'s core_status");
+        };
+        // `--json-summary`: root's core.
+        let summary = at("summary.json");
+        ein(&["solve", file, "--json-summary", &summary]).ok();
+        status(
+            "--json-summary",
+            &json_at(&summary)["region"]["core_status"],
+        );
+        // `--dump-answer`: N, the read-out uncut and the summary.
+        let answer = at("answer");
+        ein(&["solve", file, "--dump-answer", &answer]).ok();
+        let nogoods = json_at(&format!("{answer}/nogoods.json"));
+        status("nogoods.json", &nogoods[0]["core_status"]);
+        says("answer.txt", &read(&format!("{answer}/answer.txt")), ROW);
+        status(
+            "answer.json",
+            &json_at(&format!("{answer}/answer.json"))["region"]["core_status"],
+        );
+        // `--dump-lattice`, under each mode: every node the run visits.
+        for mode in [None, Some("--maximal"), Some("--single")] {
+            let lattice = at(&format!("lattice{}", mode.unwrap_or("")));
+            let mut args = vec!["solve", file, "--dump-lattice", &lattice];
+            args.extend(mode);
+            ein(&args).ok();
+            let nodes = json_at(&format!("{lattice}/nodes.json"));
+            status("nodes.json", &nodes["nodes"][0]["core_status"]);
+            says("nodes.md", &read(&format!("{lattice}/nodes.md")), CELL);
+        }
+        // `--events`: the `enter` line.
+        let events = at("events.jsonl");
+        ein(&["solve", file, "--events", &events]).ok();
+        let enter: Vec<J> = events_of(&events)
+            .into_iter()
+            .filter(|e| e["e"] == "enter")
+            .collect();
+        assert_eq!(enter.len(), 1, "{file}: one node, root");
+        status("--events' enter", &enter[0]["core_status"]);
+        // `--trace`: N.
+        let trace = at("trace.md");
+        ein(&["solve", file, "--trace", &trace]).ok();
+        says("--trace", &read(&trace), TRACE);
+        // `ein oracle --dump`, and `ein render region` drawing it.
+        let cube = at("cube");
+        ein(&["oracle", file, "--dump", &cube]).ok();
+        status(
+            "region.json",
+            &json_at(&format!("{cube}/region.json"))["region"]["nodes"][0]["core_status"],
+        );
+        says("region.md", &read(&format!("{cube}/region.md")), CELL);
+        says(
+            "ein render region",
+            &ein(&["render", "region", &cube]).ok().out,
+            TIP,
+        );
+        says(
+            "ein render region --view table",
+            &ein(&["render", "region", &cube, "--view", "table"])
+                .ok()
+                .out,
+            CELL,
+        );
+    }
+    // Not vacuous: nineteen surfaces a file.
+    assert_eq!(checked.get(), 38, "the surfaces checked");
+}

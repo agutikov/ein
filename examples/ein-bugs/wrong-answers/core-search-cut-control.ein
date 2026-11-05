@@ -22,11 +22,14 @@
 ;;; reports a core of nine or ten facts where `(y1 k) … (y8 k)` is still the
 ;;; smallest: 9 of the cube's 256 nodes, which `ein oracle --dump` writes.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what holds since ─────────────────────
 ;;;
 ;;; At `e2a3263e`, release and debug: R empty, exit 0, root's core the eight
-;;; `y` facts. `ein oracle --dump`'s `region.json` gives the nine cut nodes
-;;; cores of nine and ten facts with nothing to say they were cut.
+;;; `y` facts. Until S1e2.2.23, `ein oracle --dump`'s `region.json` gave the
+;;; nine cut nodes cores of nine and ten facts with nothing to say they were
+;;; cut; since its fix each says `core_status: "cut-environments"`, and the
+;;; drawn table *core search cut at its budget of 64 environments per fact*,
+;;; and root's says `within-budget`, in either build.
 
 (relation x1 T) (relation y1 T) (relation p1 T) (relation x2 T) (relation y2 T) (relation p2 T) (relation x3 T) (relation y3 T) (relation p3 T) (relation x4 T) (relation y4 T) (relation p4 T) (relation x5 T) (relation y5 T) (relation p5 T) (relation x6 T) (relation y6 T) (relation p6 T) (relation x7 T) (relation y7 T) (relation p7 T) (relation x8 T) (relation y8 T) (relation p8 T) (relation A T) (relation B T)
 (y1 k) (y2 k) (y3 k) (y4 k) (y5 k) (y6 k) (y7 k) (y8 k)

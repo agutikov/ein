@@ -19,6 +19,8 @@
 ;;;
 ;;; At `e2a3263e`, release and debug: R empty, exit 0, and root's core
 ;;; `(y1 k) … (y5 k)`, refuted by `clash`, on every surface that prints it.
+;;; Since S1e2.2.23 every JSON says `core_status: "within-budget"` beside it,
+;;; and no text surface prints anything new, in either build.
 
 (relation x1 T) (relation y1 T) (relation p1 T) (relation x2 T) (relation y2 T) (relation p2 T) (relation x3 T) (relation y3 T) (relation p3 T) (relation x4 T) (relation y4 T) (relation p4 T) (relation x5 T) (relation y5 T) (relation p5 T) (relation A T) (relation B T)
 (x1 k) (y1 k) (x2 k) (y2 k) (x3 k) (y3 k) (x4 k) (y4 k) (x5 k) (y5 k)

@@ -20,7 +20,7 @@ use ein_infer::described::Described;
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Route, Stopped, Verdict, Which};
 use ein_infer::read_out::{Listed, Listing, ReadOut};
-use ein_infer::region::Nodes;
+use ein_infer::region::{Nodes, Refutation};
 use ein_ir::Ast;
 
 use super::json::{Json, dumps_indent};
@@ -131,7 +131,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ])
         })
         .collect();
-    let (frontier, core, refuted_by) = match &r.listing {
+    let (frontier, core, status, refuted_by) = match &r.listing {
         Listing::Owing(f) => (
             Json::Array(
                 f.iter()
@@ -147,16 +147,18 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ),
             Json::Null,
             Json::Null,
+            Json::Null,
         ),
         Listing::False => {
             let root = d.map(|d| &d.root);
             (
                 Json::Null,
                 root.map_or(Json::Null, |x| strs(&x.core)),
+                root.map_or(Json::Null, |x| core_status(x.core_status)),
                 root.map_or(Json::Null, |x| strs(&x.refuted_by)),
             )
         }
-        _ => (Json::Null, Json::Null, Json::Null),
+        _ => (Json::Null, Json::Null, Json::Null, Json::Null),
     };
     let Some(d) = d else {
         // A mode: R was not described, so R's numbers are `null` — except
@@ -199,6 +201,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ("states", states_json(states)),
             ("frontier", frontier),
             ("core", core),
+            ("core_status", status),
             ("refuted_by", refuted_by),
         ]);
     };
@@ -313,6 +316,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
                                             ("set", set_json(cands, &h.set)),
                                             ("dead", Json::Bool(h.dead)),
                                             ("core", strs(&h.core)),
+                                            ("core_status", core_status(h.core_status)),
                                             ("owes", Json::int(i64::from(h.owes))),
                                         ])
                                     })
@@ -341,8 +345,17 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         ("states", states_json(states)),
         ("frontier", frontier),
         ("core", core),
+        ("core_status", status),
         ("refuted_by", refuted_by),
     ])
+}
+
+/// A core's status, as every JSON surface writes it beside the core:
+/// `within-budget`, `cut-` and the caps its search stopped at
+/// ([`ein_infer::explain::CoreStatus::word`]), or `null` where no core was
+/// taken (M1e2 S1e2.2.23, W23).
+pub fn core_status(c: Option<ein_infer::explain::CoreStatus>) -> Json {
+    c.map_or(Json::Null, |c| Json::str(c.word()))
 }
 
 fn route(r: Route) -> &'static str {
@@ -612,23 +625,27 @@ pub fn nogoods(r: &ReadOut, root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Resu
     if let Some(d) = r.described() {
         let mut nodes = None;
         for x in &d.dead {
-            let (core, refuted_by) =
-                if d.route == Route::States && x.core.is_empty() && !x.set.is_empty() {
-                    if nodes.is_none() {
-                        nodes = Some(Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?);
-                    }
-                    nodes
-                        .as_mut()
-                        .expect("made above")
-                        .refutation(&facts(&x.set))
-                        .map_err(solve)?
-                } else {
-                    (x.core.clone(), x.refuted_by.clone())
-                };
+            let why = if d.route == Route::States && x.core.is_empty() && !x.set.is_empty() {
+                if nodes.is_none() {
+                    nodes = Some(Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?);
+                }
+                nodes
+                    .as_mut()
+                    .expect("made above")
+                    .refutation(&facts(&x.set))
+                    .map_err(solve)?
+            } else {
+                Refutation {
+                    core: x.core.clone(),
+                    core_status: x.core_status,
+                    refuted_by: x.refuted_by.clone(),
+                }
+            };
             dead.push(Json::obj(vec![
                 ("set", set_json(&cands, &x.set)),
-                ("core", strs(&core)),
-                ("refuted_by", strs(&refuted_by)),
+                ("core", strs(&why.core)),
+                ("core_status", core_status(why.core_status)),
+                ("refuted_by", strs(&why.refuted_by)),
             ]));
         }
     }

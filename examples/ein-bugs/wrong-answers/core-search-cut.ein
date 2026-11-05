@@ -26,17 +26,22 @@
 ;;; keeps its budget and **says the core was cut**; the exact core past the
 ;;; budget is F22's. So the right answer is that core, qualified as cut.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what holds since ─────────────────────
 ;;;
-;;; At `e2a3263e` (S1e2.2.21's search, S1e2.2.22's parser), release and debug:
-;;; R empty, exit 0, and root's core `(x1 k) (x2 k) (y1 k) … (y8 k)`, ten
-;;; facts, refuted by `clash`, with nothing to say the search was cut, on
-;;; every surface that prints it: the read-out's `unsat core` rows,
-;;; `--json-summary`'s `region.core`, `--dump-answer`'s `nogoods.json`,
-;;; `--dump-lattice`'s `nodes.json` and `nodes.md`, `--events`' `enter` line,
-;;; `--trace`'s N, and `ein oracle --dump`'s `region.json` and `region.md`
-;;; and `ein render region` drawing it. The search knows it was cut
-;;; (`explain::Explanation::exhausted` is false), and `region.rs` dropped it.
+;;; Until S1e2.2.23, at `e2a3263e` (S1e2.2.21's search, S1e2.2.22's parser),
+;;; release and debug: R empty, exit 0, and root's core `(x1 k) (x2 k)
+;;; (y1 k) … (y8 k)`, ten facts, refuted by `clash`, with nothing to say the
+;;; search was cut, on every surface that prints it: the read-out's `unsat
+;;; core` rows, `--json-summary`'s `region.core`, `--dump-answer`'s
+;;; `nogoods.json`, `--dump-lattice`'s `nodes.json` and `nodes.md`,
+;;; `--events`' `enter` line, `--trace`'s N, and `ein oracle --dump`'s
+;;; `region.json` and `region.md` and `ein render region` drawing it. The
+;;; search knew it was cut (`explain::Explanation::exhausted` was false), and
+;;; `region.rs` dropped it. Since S1e2.2.23's fix the same ten facts are
+;;; printed, and every surface says the search was cut at its 64 environments
+;;; per fact: the read-out's `core search` row, *cut at its budget of 64
+;;; environments per fact: a smaller core may exist*, and `core_status:
+;;; "cut-environments"` beside the core in every JSON, in either build.
 
 (relation x1 T) (relation y1 T) (relation p1 T) (relation x2 T) (relation y2 T) (relation p2 T) (relation x3 T) (relation y3 T) (relation p3 T) (relation x4 T) (relation y4 T) (relation p4 T) (relation x5 T) (relation y5 T) (relation p5 T) (relation x6 T) (relation y6 T) (relation p6 T) (relation x7 T) (relation y7 T) (relation p7 T) (relation x8 T) (relation y8 T) (relation p8 T) (relation A T) (relation B T)
 (x1 k) (y1 k) (x2 k) (y2 k) (x3 k) (y3 k) (x4 k) (y4 k) (x5 k) (y5 k) (x6 k) (y6 k) (x7 k) (y7 k) (x8 k) (y8 k)

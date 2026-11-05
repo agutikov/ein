@@ -1173,7 +1173,13 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         let cands: Vec<String> = d.candidates.iter().map(|c| c.text.clone()).collect();
         for h in minimal.iter().take(4) {
             let what = if h.dead {
-                format!("dead: {}", h.core.join(" "))
+                match h.core_status.and_then(|c| c.cut_at()) {
+                    Some(at) => format!(
+                        "dead: {} (core search cut at its budget of {at})",
+                        h.core.join(" ")
+                    ),
+                    None => format!("dead: {}", h.core.join(" ")),
+                }
             } else {
                 format!("owes {}", h.owes)
             };
@@ -1452,6 +1458,9 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             if let Some(d) = r.described() {
                 for c in &d.root.core {
                     out.row("unsat core", c);
+                }
+                if let Some(q) = d.root.core_status.and_then(|c| c.qualifier()) {
+                    out.row("core search", q);
                 }
                 for c in &d.root.sources {
                     out.row("source", c);

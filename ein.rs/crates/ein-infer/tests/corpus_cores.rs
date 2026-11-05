@@ -44,6 +44,12 @@
 //! slow in the per-commit tier, 18 s in the dev profile, and the zebra
 //! family's too in the nightly, 67 s in release (2026-11-05).
 //!
+//! **And no core is printed unqualified from a cut search** (M1e2
+//! S1e2.2.23, W23): [`no_core_is_printed_unqualified_from_a_cut_search`]
+//! reads every core a surface prints with the status printed beside it, root's
+//! on a dead root and every dead node a route visits included, and holds each
+//! status to its search's.
+//!
 //! ```text
 //! cargo test -p ein-infer --release --test corpus_cores
 //! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --release --test corpus_cores
@@ -51,9 +57,11 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
 use ein_core::{FactId, Kb, Terms};
 use ein_corpus::repo_root;
+use ein_infer::explain::{CoreStatus, ExplanationBudget, contradiction_frontier};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::region::{self, Nodes, Outcome};
 use ein_ir::{Ast, load, parse};
@@ -96,8 +104,8 @@ fn jobs() -> usize {
     std::thread::available_parallelism().map_or(1, |n| n.get().min(8))
 }
 
-/// What [`check`] found on one program: the failures, how many cores were
-/// read, and how many of them the cube's.
+/// What a check found on one program: the failures, how many cores were
+/// read, and how many of them the cube's ([`check`]) or cut ([`statuses`]).
 type Checked = (Vec<String>, usize, usize);
 
 /// One reported core: the commitment, as candidate facts, and the core.
@@ -237,7 +245,7 @@ fn check(path: &Path) -> Option<Checked> {
         let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).ok()?;
         let mut n: Vec<Reported> = Vec::with_capacity(sets.len());
         for set in sets {
-            let (core, _) = nodes.refutation(&set).ok()?;
+            let core = nodes.refutation(&set).ok()?.core;
             n.push(Reported { set, core });
         }
         bad.extend(claims(&rel, &mut nodes, &n)?);
@@ -295,4 +303,302 @@ fn every_core_names_its_commitment_and_derives_its_contradiction() {
         "{cores} cores, {cube} the cubes'"
     );
     eprintln!("{programs} programs, {cores} cores, {cube} of them the cubes'");
+}
+
+// ── No core is printed unqualified from a cut search — M1e2 S1e2.2.23 ─────
+
+/// A budget sixteen times the default's on every cap: where the default's
+/// search is inside its budget, this one does the same work and names the
+/// same core.
+const LARGER: ExplanationBudget = ExplanationBudget {
+    max_environments: 1_024,
+    max_rounds: 1_024,
+    max_env_size: None,
+    max_facts: 320_000,
+};
+
+/// One core a surface prints, with the status printed beside it.
+struct Stated {
+    /// Where it was read: `cube`, `root`, `N`, or the mode whose visit took it.
+    at: &'static str,
+    set: Vec<FactId>,
+    core: Vec<String>,
+    status: Option<CoreStatus>,
+}
+
+/// A dead node a route visited: its commitment, its core and the core's
+/// status, as the `enter` line and `--dump-lattice` print them.
+type Visit = (Vec<String>, Vec<String>, Option<CoreStatus>);
+
+/// What a route visits, as `--dump-lattice`'s watch collects it.
+struct Collect(Arc<Mutex<Vec<Visit>>>);
+
+impl ein_infer::events::Watch for Collect {
+    fn node(&mut self, v: &ein_infer::events::Visited<'_>) {
+        if v.kind == "dead" {
+            self.0.lock().expect("one watcher").push((
+                v.commitment.to_vec(),
+                v.core.to_vec(),
+                v.core_status,
+            ));
+        }
+    }
+}
+
+/// The three claims for one printed core, read against `nodes`, the
+/// preparation of root that took it: the failures go to `bad`, and a core
+/// already read is not read again.
+struct Claims {
+    rel: String,
+    bad: Vec<String>,
+    seen: BTreeSet<(Vec<FactId>, Vec<String>, Option<CoreStatus>)>,
+    cut: usize,
+}
+
+impl Claims {
+    fn hold(&mut self, nodes: &mut Nodes<'_>, s: Stated) -> Option<()> {
+        if !self.seen.insert((s.set.clone(), s.core.clone(), s.status)) {
+            return Some(());
+        }
+        let rel = &self.rel;
+        let Some(status) = s.status else {
+            self.bad.push(format!(
+                "{rel}: {} {:?} prints the core {:?} with no status",
+                s.at, s.set, s.core
+            ));
+            return Some(());
+        };
+        self.cut += usize::from(status != CoreStatus::WithinBudget);
+        let (core, searched, larger) = nodes
+            .with_fixpoint(&s.set, |kb, terms| {
+                let contradictions = ein_infer::contradiction::detect(kb, terms);
+                let text = |e: &ein_infer::explain::Explanation| -> Vec<String> {
+                    let mut v: Vec<String> = e
+                        .frontier
+                        .iter()
+                        .map(|&f| ein_infer::events::sexpr(terms, f))
+                        .collect();
+                    v.sort();
+                    v
+                };
+                let e = contradiction_frontier(
+                    kb,
+                    terms,
+                    &contradictions,
+                    &ExplanationBudget::default(),
+                );
+                let l = contradiction_frontier(kb, terms, &contradictions, &LARGER);
+                (text(&e), CoreStatus::of(&e), text(&l))
+            })
+            .ok()?;
+        if core != s.core || searched != status {
+            self.bad.push(format!(
+                "{rel}: {} {:?} prints {:?} as {status:?}, and its search gives {core:?} as {searched:?}",
+                s.at, s.set, s.core
+            ));
+        } else if status == CoreStatus::WithinBudget && larger != core {
+            self.bad.push(format!(
+                "{rel}: {} {:?} prints {:?} as within its budget, and a budget sixteen times larger gives {larger:?}",
+                s.at, s.set, s.core
+            ));
+        }
+        Some(())
+    }
+}
+
+/// The claims for every core `path`'s surfaces print, each read against the
+/// preparation of root that took it: the cube's dead nodes, root's included,
+/// where the oracle enumerates it, and the dead nodes describe and
+/// `--maximal` visit, against a fresh one, as each run prepares its own; and
+/// describe's dead root and N, a member the route kept against a fresh one,
+/// and a member the state route did not saturate against the one
+/// `--dump-answer` and `--trace` take its core through, `refutation` after
+/// the run. The failures, how many distinct cores were read, and how many of
+/// them were cut; `None` where the program does not load or is refused.
+fn statuses(path: &Path) -> Option<Checked> {
+    let mut claims = Claims {
+        rel: path
+            .strip_prefix(repo_root())
+            .unwrap_or(path)
+            .to_string_lossy()
+            .to_string(),
+        bad: Vec::new(),
+        seen: BTreeSet::new(),
+        cut: 0,
+    };
+    let (mut kb0, mut terms0, ast0) = loaded(path)?;
+    let mut fresh = Nodes::new(&mut kb0, &mut terms0, &ast0, &[]).ok()?;
+    // The cube.
+    let (mut kb, mut terms, ast) = loaded(path)?;
+    if let Ok(Outcome::Region(r)) = region::compute(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &region::Options::default(),
+        &mut |_| {},
+    ) {
+        for (mask, node) in r.nodes.iter().enumerate() {
+            if r.status[mask] & region::DEAD == 0 {
+                continue;
+            }
+            let set = (0..r.n())
+                .filter(|b| mask >> b & 1 == 1)
+                .map(|b| r.candidates[b].fact)
+                .collect();
+            claims.hold(
+                &mut fresh,
+                Stated {
+                    at: "cube",
+                    set,
+                    core: node.core.clone(),
+                    status: node.core_status,
+                },
+            )?;
+        }
+    }
+    // `--maximal`, then describe, each with what it visits.
+    for which in [Which::Maximal, Which::All] {
+        let (mut kb, mut terms, ast) = loaded(path)?;
+        let opts = explore::Options::new(Mode {
+            which,
+            ask: Ask::Describe,
+        });
+        let visits = Arc::new(Mutex::new(Vec::new()));
+        let mut events =
+            ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
+        let a = explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events).ok()?;
+        let by_text: BTreeMap<&str, FactId> = a
+            .candidates
+            .iter()
+            .map(|c| (c.text.as_str(), c.fact))
+            .collect();
+        let at = if which == Which::All {
+            "describe"
+        } else {
+            "maximal"
+        };
+        let visited: Vec<Visit> = visits.lock().expect("done").drain(..).collect();
+        for (commitment, core, status) in visited {
+            let set = commitment.iter().map(|c| by_text[c.as_str()]).collect();
+            claims.hold(
+                &mut fresh,
+                Stated {
+                    at,
+                    set,
+                    core,
+                    status,
+                },
+            )?;
+        }
+        if which != Which::All {
+            continue;
+        }
+        let Some(d) = a.described.as_ref() else {
+            continue;
+        };
+        if !d.root.alive {
+            claims.hold(
+                &mut fresh,
+                Stated {
+                    at: "root",
+                    set: Vec::new(),
+                    core: d.root.core.clone(),
+                    status: d.root.core_status,
+                },
+            )?;
+        }
+        let mut after = Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).ok()?;
+        for x in &d.dead {
+            let set: Vec<FactId> = x
+                .set
+                .iter()
+                .map(|&b| a.candidates[b as usize].fact)
+                .collect();
+            if x.core.is_empty() && !x.set.is_empty() {
+                // What `--dump-answer` and `--trace` print for it.
+                let why = after.refutation(&set).ok()?;
+                claims.hold(
+                    &mut after,
+                    Stated {
+                        at: "N",
+                        set,
+                        core: why.core,
+                        status: why.core_status,
+                    },
+                )?;
+            } else {
+                claims.hold(
+                    &mut fresh,
+                    Stated {
+                        at: "N",
+                        set,
+                        core: x.core.clone(),
+                        status: x.core_status,
+                    },
+                )?;
+            }
+        }
+    }
+    Some((claims.bad, claims.seen.len(), claims.cut))
+}
+
+/// **No core is printed unqualified from a cut search** — M1e2
+/// [S1e2.2.23](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md)'s
+/// claim, W23's, over the corpus and the register's witnesses.
+///
+/// Every core a surface prints, with the status printed beside it
+/// ([`stated`]): the cube's dead nodes, root's among them, `ein oracle
+/// --dump`'s; describe's dead root and N, the summary's, the read-out's and
+/// `--dump-answer`'s, a member the state route did not saturate taken
+/// through `refutation` as `--dump-answer` and `--trace` take it; and every
+/// dead node describe and `--maximal` visit, `--dump-lattice`'s and
+/// `--events`'. For each distinct one, three things:
+///
+/// 1. **it has a status**: a surface that prints a core prints whether its
+///    search was cut;
+/// 2. **the status is its search's**: root plus the commitment, saturated
+///    again and searched at the default budget, gives the same core and the
+///    same status, the cap it stopped at included;
+/// 3. **a core printed as within its budget is no cut core**: a budget
+///    sixteen times larger on every cap gives the same core.
+///
+/// The cut cores the per-commit half reads are the witness's and its
+/// control's; the slow entries' (`zebra.ein` at the rounds, the `zebra2`
+/// family at the environments) are the nightly's. At S1e2.2.23's T1 no
+/// surface printed a status (2026-11-05).
+#[test]
+fn no_core_is_printed_unqualified_from_a_cut_search() {
+    let files = files();
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let results: Mutex<Vec<(usize, Option<Checked>)>> = Mutex::new(Vec::new());
+    std::thread::scope(|scope| {
+        for _ in 0..jobs() {
+            scope.spawn(|| {
+                loop {
+                    let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    let Some(path) = files.get(i) else { break };
+                    let got = statuses(path);
+                    results.lock().expect("no checker panicked").push((i, got));
+                }
+            });
+        }
+    });
+    let mut results = results.into_inner().expect("no checker panicked");
+    results.sort_by_key(|(i, _)| *i);
+    let mut failures: Vec<String> = Vec::new();
+    let (mut programs, mut cores, mut cut) = (0usize, 0usize, 0usize);
+    for (_, got) in results {
+        let Some((bad, n, c)) = got else { continue };
+        programs += 1;
+        cores += n;
+        cut += c;
+        failures.extend(bad);
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    assert!(programs >= 100, "{programs} programs read");
+    assert!(
+        cores >= 100_000 && cut >= 10,
+        "{cores} cores, {cut} of them cut"
+    );
+    eprintln!("{programs} programs, {cores} distinct cores, {cut} of them cut");
 }

@@ -804,7 +804,8 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
 /// with it on, field for field, but the dead nodes' cores it was not asked
 /// for: root's core and, on the cube, each minimal hole's, which the read-out
 /// and the summary print, are the eager run's, and every other core the lazy
-/// run reports is empty. Over every corpus file and register witness but the
+/// run reports is empty. A core's status goes with it (M1e2 S1e2.2.23): a
+/// core not taken has none. Over every corpus file and register witness but the
 /// slow entries, describe on each part of `R`, `-n 2` and `--single`.
 #[test]
 fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
@@ -887,6 +888,8 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                 if let Some(d) = a.described.as_mut() {
                     for x in d.dead.iter_mut() {
                         x.core.clear();
+                        // A core's status goes with it (M1e2 S1e2.2.23).
+                        x.core_status = None;
                         x.refuted_by.clear();
                     }
                 }
@@ -896,7 +899,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                 failures.push(format!("{rel} {mode:?}: the answer differs without cores"));
             }
             if let (Some(x), Some(y)) = (a.described.as_ref(), b.described.as_ref()) {
-                if x.root.core != y.root.core {
+                if (&x.root.core, x.root.core_status) != (&y.root.core, y.root.core_status) {
                     failures.push(format!("{rel} {mode:?}: root's core differs"));
                 }
                 if let (Some(hx), Some(hy)) = (
@@ -905,15 +908,19 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                 ) {
                     holes += hx.1.len();
                     dead_holes += hx.1.iter().filter(|h| h.dead).count();
-                    let cores = |h: &(u64, Vec<ein_infer::described::Hole>)| -> Vec<Vec<String>> {
-                        h.1.iter().map(|h| h.core.clone()).collect()
+                    let cores = |h: &(u64, Vec<ein_infer::described::Hole>)| {
+                        h.1.iter()
+                            .map(|h| (h.core.clone(), h.core_status))
+                            .collect::<Vec<_>>()
                     };
                     if cores(hx) != cores(hy) {
                         failures.push(format!("{rel} {mode:?}: a minimal hole's core differs"));
                     }
                 }
                 for (dx, dy) in x.dead.iter().zip(&y.dead) {
-                    if !dy.core.is_empty() && dy.core != dx.core {
+                    if !dy.core.is_empty()
+                        && (&dy.core, dy.core_status) != (&dx.core, dx.core_status)
+                    {
                         failures.push(format!(
                             "{rel} {mode:?}: {} reports another core taken lazily",
                             b.name(&dy.set)

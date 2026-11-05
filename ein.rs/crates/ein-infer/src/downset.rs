@@ -133,6 +133,8 @@ pub struct Point {
     pub owed: Vec<String>,
     /// A dead point's unsat core — the reason it is in `N`.
     pub core: Vec<String>,
+    /// What the core's search established; `None` where none was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     /// The `:source` of each core fact that carries one.
     pub sources: Vec<String>,
@@ -459,6 +461,7 @@ pub(crate) fn compute_prepared(
                     owes: o.owes,
                     owed: o.node.owed,
                     core: o.node.core,
+                    core_status: o.node.core_status,
                     refuted_by: o.node.refuted_by,
                     sources: o.node.sources,
                     class,
@@ -533,6 +536,7 @@ pub(crate) fn compute_prepared(
             owes: o.owes,
             owed: o.node.owed,
             core: o.node.core,
+            core_status: o.node.core_status,
             refuted_by: o.node.refuted_by,
             sources: o.node.sources,
             class: classes.get(&o.state).copied().unwrap_or(u32::MAX),

@@ -60,6 +60,9 @@ pub struct NodeDoc {
     pub owes: u32,
     pub owed: Vec<String>,
     pub core: Vec<String>,
+    /// `region.json`'s `core_status`, read back; `None` where no core was
+    /// taken (M1e2 S1e2.2.23).
+    pub core_status: Option<ein_infer::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub absent_premises: Vec<String>,
 }
@@ -239,6 +242,10 @@ impl RegionDoc {
                 owes: int(x.get("owes")) as u32,
                 owed: strings(x.get("owed")),
                 core: strings(x.get("core")),
+                core_status: x
+                    .get("core_status")
+                    .and_then(Json::as_str)
+                    .and_then(ein_infer::explain::CoreStatus::from_word),
                 refuted_by: strings(x.get("refuted_by")),
                 absent_premises: strings(x.get("absent_premises")),
             };

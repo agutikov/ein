@@ -37,6 +37,8 @@ pub struct StateTrace {
 pub struct DeadTrace {
     pub set: String,
     pub core: Vec<String>,
+    /// What the core's search established (M1e2 S1e2.2.23).
+    pub core_status: Option<ein_infer::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
 }
 
@@ -197,6 +199,10 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             } else {
                 let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();
                 lines.push(format!("Core: {}", core.join(", ")));
+                if let Some(q) = d.core_status.and_then(|c| c.qualifier()) {
+                    lines.push(String::new());
+                    lines.push(format!("Core search: {q}."));
+                }
             }
             if !d.refuted_by.is_empty() {
                 lines.push(String::new());
@@ -302,7 +308,7 @@ pub fn of_read_out(
         // off the maximal alive states) is saturated here for its core.
         let mut nodes = None;
         for x in &d.dead {
-            let (core, refuted_by) = if d.route == ein_infer::explore::Route::States
+            let why = if d.route == ein_infer::explore::Route::States
                 && x.core.is_empty()
                 && !x.set.is_empty()
             {
@@ -323,12 +329,17 @@ pub fn of_read_out(
                     .refutation(&facts)
                     .map_err(|e| e.to_string())?
             } else {
-                (x.core.clone(), x.refuted_by.clone())
+                ein_infer::region::Refutation {
+                    core: x.core.clone(),
+                    core_status: x.core_status,
+                    refuted_by: x.refuted_by.clone(),
+                }
             };
             dead.push(DeadTrace {
                 set: set_name(&x.set),
-                core,
-                refuted_by,
+                core: why.core,
+                core_status: why.core_status,
+                refuted_by: why.refuted_by,
             });
         }
     }

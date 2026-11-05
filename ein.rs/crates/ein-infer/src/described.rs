@@ -36,6 +36,9 @@ pub struct Root {
     pub owed: Vec<String>,
     /// A dead root's unsat core.
     pub core: Vec<String>,
+    /// What the core's search established (M1e2 S1e2.2.23); `None` where no
+    /// core was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing produced root's contradiction.
     pub refuted_by: Vec<String>,
     /// The `:source` of each core fact that carries one.
@@ -83,6 +86,8 @@ pub struct Dead {
     pub set: Box<[u32]>,
     /// Its unsat core, where the route kept it.
     pub core: Vec<String>,
+    /// What the core's search established; `None` where the route kept none.
+    pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing produced its contradiction.
     pub refuted_by: Vec<String>,
 }
@@ -93,6 +98,8 @@ pub struct Hole {
     pub set: Box<[u32]>,
     pub dead: bool,
     pub core: Vec<String>,
+    /// What the core's search established; `None` where none was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     pub owes: u32,
 }
 
@@ -207,6 +214,7 @@ fn root_of(p: Option<&Point>, root_dead: bool) -> Root {
             owes: p.owes,
             owed: p.owed.clone(),
             core: p.core.clone(),
+            core_status: p.core_status,
             refuted_by: p.refuted_by.clone(),
             sources: p.sources.clone(),
         },
@@ -424,6 +432,7 @@ pub fn of_downset(d: &DownSet) -> Described {
             .map(|p| Dead {
                 set: p.set.clone(),
                 core: p.core.clone(),
+                core_status: p.core_status,
                 refuted_by: p.refuted_by.clone(),
             })
             .collect(),
@@ -576,6 +585,7 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
             Dead {
                 set: set.clone(),
                 core: saturated.map(|x| x.core.clone()).unwrap_or_default(),
+                core_status: saturated.and_then(|x| x.core_status),
                 refuted_by: saturated.map(|x| x.refuted_by.clone()).unwrap_or_default(),
             }
         })
@@ -632,6 +642,7 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
             owes: s.root.owes,
             owed: s.root.owed.clone(),
             core: s.root.core.clone(),
+            core_status: s.root.core_status,
             refuted_by: s.root.refuted_by.clone(),
             sources: s.root.sources.clone(),
         },
@@ -752,6 +763,7 @@ pub fn of_cube(r: &Region) -> Described {
                 set: set_of(h),
                 dead: r.status[h as usize] & DEAD != 0,
                 core: node.core.clone(),
+                core_status: node.core_status,
                 owes: node.owes,
             }
         })
@@ -772,6 +784,7 @@ pub fn of_cube(r: &Region) -> Described {
             owes: root.owes,
             owed: root.owed.clone(),
             core: root.core.clone(),
+            core_status: root.core_status,
             refuted_by: root.refuted_by.clone(),
             sources: root.sources.clone(),
         },
@@ -786,6 +799,7 @@ pub fn of_cube(r: &Region) -> Described {
                 .map(|m| Dead {
                     set: set_of(m),
                     core: r.nodes[m as usize].core.clone(),
+                    core_status: r.nodes[m as usize].core_status,
                     refuted_by: r.nodes[m as usize].refuted_by.clone(),
                 })
                 .collect()

@@ -305,6 +305,7 @@ impl ein_infer::events::Watch for Keep {
                 owes: v.owes,
                 owed: v.owed.to_vec(),
                 core: v.core.to_vec(),
+                core_status: v.core_status,
                 refuted_by: v.refuted_by.to_vec(),
                 closure: v.closure.to_vec(),
                 facts: v.facts,

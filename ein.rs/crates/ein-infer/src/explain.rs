@@ -48,6 +48,23 @@
 //! It is not a soundness question either way: a larger frontier is still a
 //! real explanation.
 //!
+//! ### A search its budget cut says so
+//!
+//! **On every surface that prints its core** ([`CoreStatus`], M1e2
+//! S1e2.2.23). The search keeps 64 environments per fact and runs 64 rounds
+//! ([`ExplanationBudget`]); past either it stops with a real frontier that
+//! may not be the smallest, and [`Explanation::cut`] names the cap. Until
+//! S1e2.2.23 the two callers that take a core a surface prints,
+//! `region::node_in_region` and `region::Nodes::refutation`, kept the
+//! frontier and dropped the rest, so a cut core was printed as the core
+//! (W23): `examples/ein-bugs/wrong-answers/core-search-cut.ein`'s `(A k)` has
+//! 256 environments, and its root core was ten facts where eight suffice. The
+//! user ruled on 2026-11-05 (Q-M1e2.16) that the search keeps its budget and a
+//! cut core says so; the exact core past the budget is F22's. The corpus cuts
+//! 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s at the
+//! rounds and the `zebra2` family's at the environments, and a budget sixteen
+//! times larger gives each the same core (S1e2.2.23 T1, 2026-11-05).
+//!
 //! ### What a derivation rests on
 //!
 //! **Its premises, and the activator its plan was compiled from where a node
@@ -139,7 +156,10 @@ use rustc_hash::{FxHashMap, FxHashSet};
 /// search can explode is capped. Every cap is *sound*: truncation only ever
 /// discards environments, and each survivor is still a real set of derivation
 /// leaves. A truncated search may miss a smaller one, which is what
-/// [`Explanation::exhausted`] reports.
+/// [`Explanation::exhausted`] reports and [`Explanation::cut`] names, and
+/// since M1e2 S1e2.2.23 every surface that prints a core says
+/// ([`CoreStatus`]). Every caller that takes a core a surface prints uses the
+/// default, and no option changes it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct ExplanationBudget {
     /// Environments kept per label, smallest first — the dominant knob.
@@ -165,6 +185,138 @@ impl Default for ExplanationBudget {
     }
 }
 
+/// Which of [`ExplanationBudget`]'s caps a search stopped at: none when it
+/// reached its fixpoint inside every one (M1e2 S1e2.2.23, W23).
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Default)]
+pub struct Cut {
+    /// A label, or a justification's fold, had more than
+    /// [`ExplanationBudget::max_environments`] subset-minimal environments,
+    /// and the larger ones were dropped.
+    pub environments: bool,
+    /// The fixpoint was still moving after [`ExplanationBudget::max_rounds`].
+    pub rounds: bool,
+    /// The premise closure passed [`ExplanationBudget::max_facts`].
+    pub facts: bool,
+}
+
+impl Cut {
+    /// Some cap was hit.
+    pub fn any(&self) -> bool {
+        self.environments || self.rounds || self.facts
+    }
+}
+
+/// What a core's search established, carried beside every core a surface
+/// prints (M1e2 S1e2.2.23, W23). It says whether the search was cut, and at
+/// which cap, and no more: [`CoreStatus::WithinBudget`] does not say the core
+/// is the smallest over every derivation the program records, which F22's
+/// residuals keep it from being (the module note).
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+pub enum CoreStatus {
+    /// The search reached its fixpoint inside every cap of its budget.
+    WithinBudget,
+    /// The search stopped at a cap: the core is a real frontier, and a
+    /// smaller one may exist.
+    Cut(Cut),
+}
+
+impl CoreStatus {
+    /// The status of the core `e` names.
+    pub fn of(e: &Explanation) -> CoreStatus {
+        if e.cut.any() {
+            CoreStatus::Cut(e.cut)
+        } else {
+            CoreStatus::WithinBudget
+        }
+    }
+
+    /// The word a JSON surface writes: `within-budget`, or `cut-` and the
+    /// caps the search stopped at, in [`Cut`]'s order, `cut-environments`,
+    /// `cut-rounds`, `cut-facts` or two or three of them joined by `-`
+    /// (`cut-environments-rounds`). A reader that asks only whether a core
+    /// was cut reads the prefix; the caps' sizes are the default budget's,
+    /// which no option changes.
+    pub fn word(&self) -> String {
+        match self {
+            CoreStatus::WithinBudget => "within-budget".to_string(),
+            CoreStatus::Cut(c) => {
+                let mut w = String::from("cut");
+                for (hit, name) in [
+                    (c.environments, "-environments"),
+                    (c.rounds, "-rounds"),
+                    (c.facts, "-facts"),
+                ] {
+                    if hit {
+                        w.push_str(name);
+                    }
+                }
+                w
+            }
+        }
+    }
+
+    /// [`Self::word`] read back, as `ein render region` reads a dump; `None`
+    /// for any word it does not write.
+    pub fn from_word(word: &str) -> Option<CoreStatus> {
+        if word == "within-budget" {
+            return Some(CoreStatus::WithinBudget);
+        }
+        let mut cut = Cut::default();
+        for name in word.strip_prefix("cut-")?.split('-') {
+            match name {
+                "environments" => cut.environments = true,
+                "rounds" => cut.rounds = true,
+                "facts" => cut.facts = true,
+                _ => return None,
+            }
+        }
+        let status = CoreStatus::Cut(cut);
+        (status.word() == word).then_some(status)
+    }
+
+    /// The caps a cut search stopped at, under the default budget, as a
+    /// text surface names them: `64 environments per fact`; `None` inside
+    /// its budget.
+    pub fn cut_at(&self) -> Option<String> {
+        let CoreStatus::Cut(c) = self else {
+            return None;
+        };
+        let b = ExplanationBudget::default();
+        let mut at: Vec<String> = Vec::new();
+        if c.environments {
+            at.push(format!("{} environments per fact", b.max_environments));
+        }
+        if c.rounds {
+            at.push(format!("{} rounds", b.max_rounds));
+        }
+        if c.facts {
+            at.push(format!("{} facts", grouped(b.max_facts)));
+        }
+        Some(at.join(" and "))
+    }
+
+    /// What a text surface prints beside a cut core, `cut at its budget of
+    /// 64 environments per fact: a smaller core may exist`; `None` inside its
+    /// budget, where a surface prints nothing it did not print before.
+    pub fn qualifier(&self) -> Option<String> {
+        self.cut_at()
+            .map(|at| format!("cut at its budget of {at}: a smaller core may exist"))
+    }
+}
+
+/// `20 000`: digit groups of three, the read-out's spelling.
+fn grouped(n: usize) -> String {
+    let s = n.to_string();
+    let mut out = String::new();
+    for (i, c) in s.chars().enumerate() {
+        if i > 0 && (s.len() - i).is_multiple_of(3) {
+            out.push(' ');
+        }
+        out.push(c);
+    }
+    out
+}
+
 /// A minimal-cardinality set of given facts that forces the target.
 #[derive(Clone, PartialEq, Eq, Debug, Default)]
 pub struct Explanation {
@@ -176,7 +328,9 @@ pub struct Explanation {
     pub target: Option<FactId>,
     /// True iff no budget was hit anywhere: `frontier` is a true minimum
     /// **over the justifications the store holds** ([`ein_core::Kb::justifications`]).
-    /// False means "sound, but possibly not smallest".
+    /// False means "sound, but possibly not smallest", and [`Self::cut`]
+    /// says which cap; a core's [`CoreStatus`] carries both to every surface
+    /// that prints it (M1e2 S1e2.2.23).
     ///
     /// It reports [`ExplanationBudget`] and nothing else. Which derivations
     /// the store holds is decided upstream, by the alternatives cap and the
@@ -186,6 +340,8 @@ pub struct Explanation {
     /// over every derivation (`W10/alt-cap-shared`, F22's; see the module
     /// note).
     pub exhausted: bool,
+    /// Which caps the search stopped at; `exhausted == !cut.any()`.
+    pub cut: Cut,
     pub rounds: usize,
     pub facts_considered: usize,
 }
@@ -479,10 +635,10 @@ fn fold(
     (envs, truncated)
 }
 
-/// Least-fixpoint label propagation — `(labels, rounds, exhausted)`.
-fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<Env>>, usize, bool) {
+/// Least-fixpoint label propagation — `(labels, rounds, cut)`.
+fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<Env>>, usize, Cut) {
     let mut labels: FxHashMap<FactId, Vec<Env>> = g.seed.clone();
-    let mut truncated = g.truncated;
+    let mut truncated = false;
     let mut dirty: FxHashSet<FactId> = FxHashSet::default();
     // A fact with no derivable premise simply never acquires a label, so the
     // worklist starts at the terminals' consumers.
@@ -523,8 +679,12 @@ fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<En
             }
         }
     }
-    let exhausted = !(truncated || !dirty.is_empty());
-    (labels, rounds, exhausted)
+    let cut = Cut {
+        environments: truncated,
+        rounds: !dirty.is_empty(),
+        facts: g.truncated,
+    };
+    (labels, rounds, cut)
 }
 
 /// The smallest recorded-derivation frontier that forces *some* target.
@@ -589,7 +749,7 @@ fn explain_groups(
     let mut roots: Vec<FactId> = groups.iter().flat_map(|g| g[1..].iter().copied()).collect();
     roots.extend(groups.iter().map(|g| g[0]));
     let g = build_graph(kb, terms, &roots, budget);
-    let (labels, rounds, mut exhausted) = propagate(&g, budget);
+    let (labels, rounds, mut cut) = propagate(&g, budget);
 
     let mut best: Option<((usize, Env, u32), FactId, Env)> = None;
     for group in groups {
@@ -600,8 +760,8 @@ fn explain_groups(
             };
             label[0].clone() // smallest, already sorted
         } else {
-            let (envs, cut) = fold(group, group.len(), &labels, budget);
-            exhausted &= !cut;
+            let (envs, folded) = fold(group, group.len(), &labels, budget);
+            cut.environments |= folded;
             let Some(env) = envs.into_iter().next() else {
                 continue;
             };
@@ -625,7 +785,8 @@ fn explain_groups(
             return fallback_groups(kb, terms, groups, rounds, considered);
         }
         return Explanation {
-            exhausted,
+            exhausted: !cut.any(),
+            cut,
             rounds,
             facts_considered: considered,
             ..Explanation::default()
@@ -639,7 +800,8 @@ fn explain_groups(
     Explanation {
         frontier,
         target: Some(target),
-        exhausted,
+        exhausted: !cut.any(),
+        cut,
         rounds,
         facts_considered: considered,
     }
@@ -706,9 +868,15 @@ fn fallback_groups(
             best = Some((key, t, core));
         }
     }
+    // Reached past `max_facts` alone.
+    let cut = Cut {
+        facts: true,
+        ..Cut::default()
+    };
     match best {
         None => Explanation {
             exhausted: false,
+            cut,
             rounds,
             facts_considered: considered,
             ..Explanation::default()
@@ -717,6 +885,7 @@ fn fallback_groups(
             frontier,
             target: Some(target),
             exhausted: false,
+            cut,
             rounds,
             facts_considered: considered,
         },

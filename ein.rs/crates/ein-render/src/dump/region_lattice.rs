@@ -30,6 +30,9 @@ pub struct VisitedNode {
     pub owes: u32,
     pub owed: Vec<String>,
     pub core: Vec<String>,
+    /// What the core's search established (M1e2 S1e2.2.23); `None` where
+    /// none was taken.
+    pub core_status: Option<ein_infer::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub closure: Vec<String>,
     pub facts: u64,
@@ -86,6 +89,10 @@ pub fn json(v: &Visits, inputs: &Inputs<'_>) -> Json {
                 ("owes", Json::int(i64::from(n.owes))),
                 ("owed", strs(&n.owed)),
                 ("core", strs(&n.core)),
+                (
+                    "core_status",
+                    super::region_answer::core_status(n.core_status),
+                ),
                 ("refuted_by", strs(&n.refuted_by)),
                 ("closure", strs(&n.closure)),
                 ("facts", Json::int(n.facts as i64)),
@@ -142,7 +149,13 @@ pub fn markdown(v: &Visits, inputs: &Inputs<'_>) -> String {
     ];
     let row = |i: usize, n: &VisitedNode| -> String {
         let why = match n.kind {
-            "dead" if !n.core.is_empty() => format!("core {}", n.core.join(", ")),
+            "dead" if !n.core.is_empty() => match n.core_status.and_then(|c| c.cut_at()) {
+                Some(at) => format!(
+                    "core {} (core search cut at its budget of {at})",
+                    n.core.join(", ")
+                ),
+                None => format!("core {}", n.core.join(", ")),
+            },
             "owing" => format!("owes {}", n.owed.join("; ")),
             _ => String::new(),
         };

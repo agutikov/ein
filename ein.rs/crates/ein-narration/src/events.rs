@@ -143,6 +143,7 @@ fn comparable_relaxed(e: &Value) -> Value {
         obj.remove("n_firings");
         if dead {
             obj.remove("core");
+            obj.remove("core_status");
         }
     }
     e

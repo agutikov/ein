@@ -990,6 +990,7 @@ impl<'a> Space<'a> {
                 owes: root.map_or(0, |r| r.owes),
                 owed: node.owed,
                 core: node.core,
+                core_status: node.core_status,
                 refuted_by: node.refuted_by,
                 sources: node.sources,
             },
@@ -1002,6 +1003,7 @@ impl<'a> Space<'a> {
                 .map(|d| described::Dead {
                     set: Box::from(*d),
                     core: Vec::new(),
+                    core_status: None,
                     refuted_by: Vec::new(),
                 })
                 .collect(),

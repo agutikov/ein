@@ -549,6 +549,10 @@ fn region_block(r: &Region) -> Json {
                 ("owes", Json::int(node.owes as i64)),
                 ("owed", strs(&node.owed)),
                 ("core", strs(&node.core)),
+                (
+                    "core_status",
+                    super::region_answer::core_status(node.core_status),
+                ),
                 ("refuted_by", strs(&node.refuted_by)),
                 ("absent_premises", strs(&node.absent_premises)),
             ];
@@ -925,6 +929,9 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
                     node.core.join(" "),
                     node.refuted_by.join(", ")
                 ));
+                if let Some(at) = node.core_status.and_then(|c| c.cut_at()) {
+                    why.push(format!("core search cut at its budget of {at}"));
+                }
             }
             if !node.owed.is_empty() {
                 why.push(format!("owes {}", node.owed.join("; ")));

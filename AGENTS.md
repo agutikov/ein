@@ -265,7 +265,13 @@ constrained-reasoning research.
   `--dump-answer` reports for N, `zebra.ein`'s six at the 64 rounds and the
   `zebra2` family's at the environments, and a budget sixteen times larger
   gives each the same core at no measurable cost (`ein solve FILE
-  --dump-answer DIR`, 2026-11-05).
+  --dump-answer DIR`, 2026-11-05). It fixed the row the same day: the
+  search names the cap it stopped at (`explain::Cut`), and a core's status
+  (`explain::CoreStatus`) is carried beside every core a surface prints, a
+  word in every JSON (`core_status`: `within-budget`, `cut-` and the caps,
+  `null` where no core was taken) and a sentence in every text surface,
+  which `ein-infer/tests/corpus_cores.rs` holds over the corpus: 89 fixed, 2
+  open (both deferred to a followup) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

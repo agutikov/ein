@@ -93,6 +93,16 @@ pub struct Candidate {
     pub text: String,
 }
 
+/// Why a set is dead, as [`Nodes::refutation`] reads it: its unsat core,
+/// what the core's search established, and the rules whose firing refuted
+/// it, each sorted — empty where the fixpoint is alive.
+#[derive(Clone, Default, Debug, PartialEq, Eq)]
+pub struct Refutation {
+    pub core: Vec<String>,
+    pub core_status: Option<crate::explain::CoreStatus>,
+    pub refuted_by: Vec<String>,
+}
+
 /// What one node is, beyond its two bits.
 #[derive(Clone, Default, Debug)]
 pub struct Node {
@@ -101,8 +111,11 @@ pub struct Node {
     /// Those instances, rendered through their `:why`.
     pub owed: Vec<String>,
     /// The unsat core of a dead node — the search's own reading,
-    /// [`crate::explain::smallest_contradiction_frontier`].
+    /// [`crate::explain::contradiction_frontier`].
     pub core: Vec<String>,
+    /// What [`Self::core`]'s search established — whether its budget cut it
+    /// (M1e2 S1e2.2.23, W23); `None` where no core was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing produced the contradiction the core explains.
     pub refuted_by: Vec<String>,
     /// The `:source` of each core fact that carries one, as `(fact) :source
@@ -507,6 +520,7 @@ pub(crate) fn compute_prepared(
             }
             let out = node(root, &snapshot, terms, ast, &memo, &facts_of(m), &taking)?;
             nodes[m as usize].core = out.node.core;
+            nodes[m as usize].core_status = out.node.core_status;
             nodes[m as usize].sources = out.node.sources;
         }
     }
@@ -1163,10 +1177,7 @@ impl<'a> Nodes<'a> {
     /// member of `N` its route did not saturate: the state route reads `N` off
     /// the maximal alive states (M1e2 S1e2.1c.2), and the trace and the answer
     /// dump print each member's core.
-    pub fn refutation(
-        &mut self,
-        facts: &[FactId],
-    ) -> Result<(Vec<String>, Vec<String>), SolveError> {
+    pub fn refutation(&mut self, facts: &[FactId]) -> Result<Refutation, SolveError> {
         self.terms.provs.open_fork();
         let out = fixpoint(
             self.root,
@@ -1179,15 +1190,14 @@ impl<'a> Nodes<'a> {
         .map(|fork| {
             let contradictions = crate::contradiction::detect(&fork, self.terms);
             let Some(first) = contradictions.first() else {
-                return (Vec::new(), Vec::new());
+                return Refutation::default();
             };
-            let core = crate::explain::contradiction_frontier(
+            let e = crate::explain::contradiction_frontier(
                 &fork,
                 self.terms,
                 &contradictions,
                 &crate::explain::ExplanationBudget::default(),
-            )
-            .frontier;
+            );
             let mut rules: Vec<String> = [first.positive, Some(first.negative)]
                 .into_iter()
                 .flatten()
@@ -1199,7 +1209,11 @@ impl<'a> Nodes<'a> {
                 .collect();
             rules.sort();
             rules.dedup();
-            (sorted_text(self.terms, &core), rules)
+            Refutation {
+                core: sorted_text(self.terms, &e.frontier),
+                core_status: Some(crate::explain::CoreStatus::of(&e)),
+                refuted_by: rules,
+            }
         });
         self.terms.provs.discard_fork();
         out
@@ -1329,15 +1343,15 @@ fn node_in_region(
     let mut node = Node::default();
     if let Some(first) = contradictions.first() {
         if axes.cores || facts.is_empty() {
-            let core = crate::explain::contradiction_frontier(
+            let e = crate::explain::contradiction_frontier(
                 &fork,
                 terms,
                 &contradictions,
                 &crate::explain::ExplanationBudget::default(),
-            )
-            .frontier;
-            node.core = sorted_text(terms, &core);
-            node.sources = sources_of(&fork, terms, &core);
+            );
+            node.core = sorted_text(terms, &e.frontier);
+            node.core_status = Some(crate::explain::CoreStatus::of(&e));
+            node.sources = sources_of(&fork, terms, &e.frontier);
         }
         let mut rules: Vec<String> = [first.positive, Some(first.negative)]
             .into_iter()
@@ -1453,6 +1467,7 @@ pub(crate) fn narrate_node(
             owes: out.owes,
             owed: &out.node.owed,
             core: &out.node.core,
+            core_status: out.node.core_status,
             refuted_by: &out.node.refuted_by,
             closure: &closure,
             facts: out.state.len() as u64,
@@ -1467,6 +1482,10 @@ pub(crate) fn narrate_node(
         l.str("kind", kind);
         l.num("owes", i64::from(out.owes));
         l.strs("core", out.node.core.iter().map(String::as_str));
+        match out.node.core_status {
+            Some(c) => l.str("core_status", &c.word()),
+            None => l.json("core_status", "null"),
+        }
     });
 }
 

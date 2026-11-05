@@ -136,6 +136,8 @@ pub struct Dead {
     pub set: Box<[u32]>,
     pub owes: u32,
     pub core: Vec<String>,
+    /// What the core's search established; `None` where none was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub sources: Vec<String>,
 }
@@ -147,6 +149,8 @@ pub struct Root {
     pub owes: u32,
     pub owed: Vec<String>,
     pub core: Vec<String>,
+    /// What the core's search established; `None` where none was taken.
+    pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub sources: Vec<String>,
 }
@@ -356,6 +360,7 @@ pub(crate) fn compute_prepared(
             owes: o.owes,
             owed: o.node.owed.clone(),
             core: o.node.core.clone(),
+            core_status: o.node.core_status,
             refuted_by: o.node.refuted_by.clone(),
             sources: o.node.sources.clone(),
         };
@@ -365,6 +370,7 @@ pub(crate) fn compute_prepared(
                 set: Box::default(),
                 owes: o.owes,
                 core: o.node.core,
+                core_status: o.node.core_status,
                 refuted_by: o.node.refuted_by,
                 sources: o.node.sources,
             });
@@ -517,6 +523,7 @@ pub(crate) fn compute_prepared(
                         set: set.clone(),
                         owes: o.owes,
                         core: o.node.core,
+                        core_status: o.node.core_status,
                         refuted_by: o.node.refuted_by,
                         sources: o.node.sources,
                     });

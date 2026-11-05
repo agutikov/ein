@@ -1310,13 +1310,13 @@ note   = "M1e2 W22's twin of `kw-or-in-solve.ein`, banked by S1e2.2.22: `orz` re
 path   = "examples/ein-bugs/wrong-answers/core-search-cut.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W23 (`W23/core-search-cut`), banked by S1e2.2.23 from the inventory of 2026-11-05's F2: `(A k)` has 256 environments of eight facts, past the core search's 64 per fact, and the smallest core, the eight `y` facts, is not among those it keeps. R empty; root's core `(x1 k) (x2 k) (y1 k) … (y8 k)`, ten facts, printed with nothing to say the search was cut."
+note   = "M1e2 W23 (`W23/core-search-cut`), banked by S1e2.2.23 from the inventory of 2026-11-05's F2: `(A k)` has 256 environments of eight facts, past the core search's 64 per fact, and the smallest core, the eight `y` facts, is not among those it keeps. R empty; root's core `(x1 k) (x2 k) (y1 k) … (y8 k)`, ten facts, printed with nothing to say the search was cut. Since S1e2.2.23's fix the same day: the same core, and every surface says the search was cut at its 64 environments per fact."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-search-cut-control.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W23's control, banked by S1e2.2.23: `core-search-cut.ein` with its `x` facts deleted, so the eight `y` facts alone derive `(false)` and root's core is them, inside the budget. Its cube's nodes that commit seven or eight `x` facts are cut, 9 of 256."
+note   = "M1e2 W23's control, banked by S1e2.2.23: `core-search-cut.ein` with its `x` facts deleted, so the eight `y` facts alone derive `(false)` and root's core is them, inside the budget. Its cube's nodes that commit seven or eight `x` facts are cut, 9 of 256, and say so since S1e2.2.23's fix."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-search-cut-5.ein"

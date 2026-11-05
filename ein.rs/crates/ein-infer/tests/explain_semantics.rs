@@ -27,7 +27,9 @@ use std::path::PathBuf;
 use ein_core::walks::{self, Justifications};
 use ein_core::{FactId, Kb, Prov, ProvKind, Symbol, Terms, Value};
 use ein_infer::events::{Buffer, Events, Level};
-use ein_infer::explain::{Explanation, ExplanationBudget, explain, minimal_contradiction_frontier};
+use ein_infer::explain::{
+    CoreStatus, Cut, Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
+};
 use ein_infer::hypgen::{HypGenStats, Skip};
 use ein_infer::saturator::{Saturator, Session};
 use ein_infer::{CLOSED, SharedMemo};
@@ -596,6 +598,129 @@ fn every_budget_cap_stays_sound_and_reports_itself() {
     assert!(
         truncated_at_least_once,
         "no cap actually truncated — the soundness claim would be vacuous"
+    );
+}
+
+/// **Each cap a search stops at is named** — M1e2 S1e2.2.23 (W23).
+///
+/// `Explanation::exhausted` said only *some* cap was hit, and no surface
+/// printed it. Since S1e2.2.23 `Explanation::cut` says which, and a core's
+/// status ([`CoreStatus`]) carries it to every surface: the corpus hits two
+/// of them, `zebra.ein` the rounds and the `zebra2` family the environments
+/// (S1e2.2.23 T1, 2026-11-05). Each budget below hits its own cap and no
+/// other, `exhausted` is `!cut.any()`, and the default budget hits the
+/// environments on `core-search-cut.ein`, whose `(A k)` has 256, and none on
+/// its five-pair twin, whose `(A k)` has 32.
+#[test]
+fn each_cap_a_search_stops_at_is_named() {
+    let mut f = load_text(SHARED_OPTIMUM);
+    f.saturate();
+    for (budget, want) in [
+        (
+            ExplanationBudget {
+                max_rounds: 1,
+                ..ExplanationBudget::default()
+            },
+            Cut {
+                rounds: true,
+                ..Cut::default()
+            },
+        ),
+        (
+            ExplanationBudget {
+                max_environments: 1,
+                ..ExplanationBudget::default()
+            },
+            Cut {
+                environments: true,
+                ..Cut::default()
+            },
+        ),
+        (
+            ExplanationBudget {
+                max_facts: 2,
+                ..ExplanationBudget::default()
+            },
+            Cut {
+                facts: true,
+                ..Cut::default()
+            },
+        ),
+        (ExplanationBudget::default(), Cut::default()),
+    ] {
+        let e = f.explain_contradiction(&budget);
+        assert_eq!(e.cut, want, "{budget:?}");
+        assert_eq!(e.exhausted, !e.cut.any(), "{budget:?}");
+    }
+    for (rel, want) in [
+        (
+            "examples/ein-bugs/wrong-answers/core-search-cut.ein",
+            CoreStatus::Cut(Cut {
+                environments: true,
+                ..Cut::default()
+            }),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/core-search-cut-5.ein",
+            CoreStatus::WithinBudget,
+        ),
+    ] {
+        let mut f = load_path(rel);
+        f.saturate();
+        let e = f.explain_contradiction(&ExplanationBudget::default());
+        assert_eq!(CoreStatus::of(&e), want, "{rel}");
+    }
+}
+
+/// **A core's status is one word, read back as written** — M1e2 S1e2.2.23:
+/// `within-budget`, or `cut-` and the caps in [`Cut`]'s order, which every
+/// JSON surface writes beside a core and `ein render region` reads back; and
+/// the sentence a text surface prints names the caps with the default
+/// budget's sizes, and is printed for a cut core alone.
+#[test]
+fn a_core_status_is_one_word_read_back_as_written() {
+    let mut words = Vec::new();
+    for bits in 0u8..8 {
+        let cut = Cut {
+            environments: bits & 1 != 0,
+            rounds: bits & 2 != 0,
+            facts: bits & 4 != 0,
+        };
+        let status = if cut.any() {
+            CoreStatus::Cut(cut)
+        } else {
+            CoreStatus::WithinBudget
+        };
+        let word = status.word();
+        assert_eq!(CoreStatus::from_word(&word), Some(status), "{word}");
+        assert_eq!(status.qualifier().is_some(), cut.any(), "{word}");
+        words.push(word);
+    }
+    assert_eq!(
+        words,
+        [
+            "within-budget",
+            "cut-environments",
+            "cut-rounds",
+            "cut-environments-rounds",
+            "cut-facts",
+            "cut-environments-facts",
+            "cut-rounds-facts",
+            "cut-environments-rounds-facts",
+        ]
+    );
+    for bad in ["cut", "cut-", "cut-rounds-environments", "smallest", ""] {
+        assert_eq!(CoreStatus::from_word(bad), None, "{bad}");
+    }
+    assert_eq!(
+        CoreStatus::Cut(Cut {
+            rounds: true,
+            facts: true,
+            ..Cut::default()
+        })
+        .qualifier()
+        .as_deref(),
+        Some("cut at its budget of 64 rounds and 20 000 facts: a smaller core may exist")
     );
 }
 
