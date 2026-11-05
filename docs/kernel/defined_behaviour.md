@@ -95,19 +95,30 @@ the true failure point.
 ### 1.4 Ambiguity resolves to the earlier alternative
 
 Where the grammar admits two parses, the one written first in the grammar
-wins — and `rule` is written before the generic-fact alternative. So the same
-six letters split two ways depending on what follows them:
+wins — and `relation` is written before the generic-fact alternative, and is
+a `SYMBOL` too. So the same word reads two ways depending on what follows it:
 
 ```lisp
-(rulex (?a) :match (q ?a) :assert (q ?a))   ; a RULE named x
-(rulex A)                                   ; a FACT named rulex
+(relation R A B)   ; a DECLARATION of R
+(relation)         ; a FACT of relation
 ```
 
 The second is not the ambiguity resolving the other way; it is the only parse,
-because a rule needs `:match` / `:assert`. `SYMBOL`'s reserved-word exclusion
-is a negative lookahead with a **word boundary**, which is why `rulex` is a
-legal symbol at all where `rule-x` is a parse error
-([`00_ebnf.md` §1](ir/03-ein-lang/00_ebnf.md)).
+because a declaration needs a name.
+
+**A reserved word is a keyword only as a whole word** (M1e2 S1e2.2.22,
+2026-11-05, the user's ruling on
+[Q-M1e2.17](../../plans/m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end)).
+`SYMBOL`'s reserved-word exclusion is a negative lookahead with a **word
+boundary**, which is why `rulex` is a legal symbol at all where `rule-x` is a
+parse error ([`00_ebnf.md` §1](ir/03-ein-lang/00_ebnf.md)), and a literal ends
+at the same boundary, so `(rulex (?a) :match (q ?a) :assert (q ?a))` is a
+fact named `rulex`, as `(rulex A)` is. Until that stage a literal matched as a
+prefix, and the first was a rule named `x`: the earlier alternative won the
+same six letters, and a name that starts with a keyword was read as the
+keyword and the rest of the name wherever the rest fitted, `(neqw ?x)` in a
+rule the guard `(neq w ?x)` (W22). A trace word a word character follows,
+`(trace (stepx …))`, is a parse error since, a trace holding only events.
 
 ### 1.5 Loader messages about a top-level form end in `at None`
 

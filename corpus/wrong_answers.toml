@@ -435,9 +435,10 @@
 # answers its twin's R, in either build; `(neq-1 ?x)` stays `neq` and `-1`,
 # and a trace word a word character follows is a parse error. The six rows
 # whose `now` stopped or was refused answer, and gain a `[case.region]`. Each
-# flipped row's `[case.fixed]` carried the null id in the flipping commit, and
-# the stage's next commit wrote the hash. The register reads **88 rows fixed,
-# 2 open and 1 not-wrong**, both open rows deferred to a followup.
+# flipped row's `[case.fixed]` carried the null id in the flipping commit,
+# `ed45a470`, and the stage's next commit wrote the hash. The register reads
+# **88 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
+# followup.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -5424,7 +5425,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is the inventory's `F1_keyword_prefix_split.ein`, its program unchanged. The twin, kw-neq-in-assert-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer. Fixed by T1e2.2.22.2: `r` concludes `(neqw a)`: root holds `(neqw a)` and `(p a)`, H is empty and R is {∅}, the query `(neqw ?y)`'s one class `?y = a`, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5487,7 +5488,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is the inventory's `F1b_or_prefix.ein`, its program unchanged. The twin, kw-or-in-assert-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer. Fixed by T1e2.2.22.2: `r` concludes `(orz a)`, H is empty and R is {∅}, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5550,7 +5551,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/and-in-assert.ein`. The twin, kw-and-in-assert-twin.ein, renames `andz` `aandz`, a name that starts with no keyword and sorts where `andz` does, and is the right answer. Fixed by T1e2.2.22.2: `r` concludes `(andz a)` and the run answers, exit 0: H is empty and R is {∅}, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5601,7 +5602,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/and-in-match.ein`. The twin, kw-and-in-match-twin.ein, renames `andz` `aandz`, a name that starts with no keyword and sorts where `andz` does, and is the right answer. Fixed by T1e2.2.22.2: the premise `(andz ?x)` matches `(andz b)`: root holds `(hit b)`, exit 0, R six states, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5652,7 +5653,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-match.ein`. The twin, kw-neq-in-match-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer. Fixed by T1e2.2.22.2: the premise `(neqw ?x)` matches `(neqw b)`: root holds `(hit b)`, exit 0, R six states, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5703,7 +5704,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-absent.ein`. The twin, kw-neq-in-absent-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer. Fixed by T1e2.2.22.2: the `absent` is over `(neqw ?x)`, which no fact matches for `a`: root holds `(hit a)`, R eight states, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5757,7 +5758,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-fact.ein`. The twin, kw-neq-in-fact-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer. Fixed by T1e2.2.22.2: root holds `(box (neqw a))`, H is `(box a)` and R two states, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5824,7 +5825,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/not-fact.ein`. The twin, kw-not-fact-twin.ein, renames `notw` `nnotw`, a name that starts with no keyword and sorts where `notw` does, and is the right answer. Fixed by T1e2.2.22.2: root holds `(notw)`, H is empty and R is {∅}, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5881,7 +5882,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/relation-fact.ein`. The twin, kw-relation-fact-twin.ein, renames `relationship` `rrelationship`, a name that starts with no keyword and sorts where `relationship` does, and is the right answer. Fixed by T1e2.2.22.2: root holds `(relationship alice bob)`, H is `(relationship bob alice)` and R two states, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -5939,7 +5940,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/neq-in-goal.ein`. The twin, kw-neq-in-goal-twin.ein, renames `neqw` `nneqw`, a name that starts with no keyword and sorts where `neqw` does, and is the right answer. Fixed by T1e2.2.22.2: the query is `(neqw ?y)`, its one class `?y = a`, and the read-out names `neqw` outside the universe, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -6003,7 +6004,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/or-in-hrule.ein`. The twin, kw-or-in-hrule-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer. Fixed by T1e2.2.22.2: H is `(orz a)`, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -6057,7 +6058,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/or-in-obligation.ein`. The twin, kw-or-in-obligation-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer. Fixed by T1e2.2.22.2: the guard `(orz ?a)` is a premise, the obligation compiles, exit 0: R is empty, owing, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -6110,7 +6111,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/and-in-expect.ein`. The twin, kw-and-in-expect-twin.ein, renames `andz` `aandz`, a name that starts with no keyword and sorts where `andz` does, and is the right answer. Fixed by T1e2.2.22.2: the program loads, exit 0 (`ein test`: 0): R is {∅} and the claim holds, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 
@@ -6161,7 +6162,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.22 (T1e2.2.22.1, 2026-11-05) from the inventory of 2026-11-05's F1, on the user's ruling of that day (Q-M1e2.16); the witness is a probe of the stage's step 1, `build/s1e2.2.22/probes/or-in-solve.ein`. The twin, kw-or-in-solve-twin.ein, renames `orz` `oorz`, a name that starts with no keyword and sorts where `orz` does, and is the right answer. Fixed by T1e2.2.22.2: the program loads, exit 0 (`ein test`: 0): R is {∅} and the claim holds, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "ed45a470"
 by     = "S1e2.2.22 (T1e2.2.22.2): ein-ir's match_literal reads a reserved word only as a whole word, at the word boundary `00_ebnf.md` § 1 states (Q-M1e2.17 (i)(a), (ii)(a)), so the name is the SYMBOL it spells"
 date   = "2026-11-05"
 

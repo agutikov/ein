@@ -17,7 +17,7 @@
 | | |
 |---|---|
 | `A ::= B` | production |
-| `'x'` | literal, matched over the *character* stream |
+| `'x'` | literal, matched over the *character* stream; a reserved word's literal only as a whole word, no `WordChar` after it (§1, fact 1) |
 | `A B` | concatenation · `A \| B` alternation · `( … )` grouping |
 | `A?` `A*` `A+` | zero-or-one, zero-or-more, one-or-more |
 | `[a-z]` `[^"\\]` | character class, and its complement |
@@ -91,7 +91,22 @@ Four terminal facts that are load-bearing and easy to lose:
 1. **`SYMBOL`'s reserved-word exclusion is a negative lookahead with a word
    boundary**, not a set difference. `neq` is not a `SYMBOL`; `neq_test`
    is. `rule-x` is not (the `-` is not a word character, so the boundary
-   holds and the exclusion fires); `rulex` is.
+   holds and the exclusion fires); `rulex` is. **A reserved word's literal
+   ends at the same boundary**: `'neq'` in §2 matches only where no
+   `WordChar` follows, so a lexer keyword is, at any position, the literal or
+   no `SYMBOL`, never both, and `neqw` is a name wherever it is written.
+   `(neq-1 ?x)` is the keyword and `-1`, since `-` is no word character and
+   starts an `INT`, and `neq-1` is no name anywhere; a trace word a word
+   character follows, `(trace (stepx …))`, is a parse error, a trace holding
+   only events. *Since M1e2 S1e2.2.22 (2026-11-05), on the user's ruling on
+   [Q-M1e2.17](../../../../plans/m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end),
+   (i)(a) and (ii)(a).* Until then the parser matched a literal as a prefix
+   and tried the keyword reading first, so a name that starts with a
+   reserved word was read as the keyword and the rest of the name wherever
+   the rest fitted the keyword's form: `(neqw ?x)` in a rule was the guard
+   `(neq w ?x)` and stored `(neq w a)`, `(relationship a b)` declared a
+   relation `ship`, and `(trace (stepx …))` was the step `x` (W22,
+   [`corpus/wrong_answers.toml`](../../../../corpus/wrong_answers.toml)).
 2. **`__dunder__` atoms lex as `SYMBOL`.** `(?:__)?` still requires a letter
    after it, so a bare `_` stays `WILDCARD` and `_x` is neither. `WILDCARD`'s
    own lookahead is what stops `__closed__` from starting as two wildcards.
@@ -174,10 +189,17 @@ want start here?", and a word may lex differently depending on what is being
 parsed. `ein-ir` commits by recursive descent, and settles a word both
 readings could take by trying the **literal reading before the `SYMBOL`
 reading** at every head position where both could match — the reason
-`LITERALS` is a data table in `lex.rs` and not a `match` arm.
+`LITERALS` is a data table in `lex.rs` and not a `match` arm. Since M1e2
+S1e2.2.22 a literal matches only as a whole word (§1, fact 1), so both can
+match only where `SYMBOL` admits the reserved word itself: `relation` and the
+trace words, `(relation R A B)` a declaration and `(relation)` a fact. Until
+then a literal also matched as the prefix of a longer `SYMBOL`, and the
+keyword reading won wherever it parsed, `(rulex (?a) :match X :assert Y)` a
+rule named `x` (W22).
 
 The consequence to keep in mind when reading §2: a quoted literal like
-`'rule'` is a *character* match, not a token class, and the input `(rule.x A)`
+`'rule'` is a *character* match, not a token class (one a word character may
+not follow), and the input `(rule.x A)`
 is a **parse error** rather than a fact with head `rule.x` — `rule.x` is not a
 `SYMBOL` (start-anchored exclusion), and the literal `rule` matches instead,
 after which `.x` scans as nothing. Symmetrically, `(std.rule A)` is a fact:
@@ -229,11 +251,12 @@ different messages, and the corpus has a fixture directory for each
 
 ## §5 What keeps this document honest
 
-A specification with no test is a wish. Two checked-in artefacts pin §3:
+A specification with no test is a wish. Three checked-in artefacts pin §3:
 
 | | |
 |---|---|
 | [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files are the engine's defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
+| the same file's `a_keyword_is_a_whole_word_in_every_place` | **53 460 parses** (M1e2 S1e2.2.22): every literal of §2 and the kernel's eight other heads, each followed by a name character and an argument shape, in each of the twenty places the parser reads a keyword; no name split after a word character, every trace word followed by one a parse error, and the 435 readings of a keyword before `-` and a digit counted |
 | `corpus_shapes.md5`'s `ir[parse]` lines | every corpus file's parse, digested — the *structure* of an acceptance, not just the fact of one |
 
 **Corpus coverage of §2, counted** (files under `examples/` + `stdlib/`
