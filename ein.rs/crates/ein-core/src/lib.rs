@@ -30,6 +30,7 @@ pub mod prov;
 pub mod repr;
 pub mod shape;
 pub mod terms;
+pub mod text;
 pub mod value;
 pub mod walks;
 pub mod why;

@@ -721,15 +721,21 @@ pub(crate) fn prepare_with(
             std::ops::ControlFlow::Continue(())
         })?;
     }
-    let mut candidates: Vec<Candidate> = proposed
+    let mut candidates: Vec<(String, Candidate)> = proposed
         .into_iter()
-        .map(|fact| Candidate {
-            fact,
-            text: sexpr(terms, fact),
+        .map(|fact| {
+            (
+                order_key(terms, fact),
+                Candidate {
+                    fact,
+                    text: sexpr(terms, fact),
+                },
+            )
         })
         .collect();
-    candidates.sort_by(|a, b| a.text.cmp(&b.text));
-    candidates.dedup_by(|a, b| a.fact == b.fact);
+    candidates.sort_by(|a, b| a.0.cmp(&b.0));
+    candidates.dedup_by(|a, b| a.1.fact == b.1.fact);
+    let candidates: Vec<Candidate> = candidates.into_iter().map(|(_, c)| c).collect();
 
     // The static check, over root's plans. Root's tally is what compiles the
     // obligation plans; a node can only compile one root lacks through an
@@ -1497,14 +1503,37 @@ fn sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<String> {
         .filter_map(|&f| {
             let source = kb.primary(f).and_then(|p| terms.provs.get(p).source)?;
             Some(format!(
-                "{} :source {:?}",
+                "{} :source {}",
                 sexpr(terms, f),
-                terms.sym(source)
+                ein_core::text::quote(terms.sym(source))
             ))
         })
         .collect();
     v.sort();
     v
+}
+
+/// The order H's candidates are sorted in: a fact's s-expression with every
+/// name as its raw text, which is how `sexpr` printed it until M1e2 S1e2.3.8
+/// made the printer quote a name that does not lex as itself. The order is
+/// the route's, so it is kept, and it is never printed: two candidates that
+/// print apart can share it (the names `x y` and `"x y"` cannot, but `1` and
+/// `"1"` would), and the generator's order is the tie-break, as it was.
+fn order_key(terms: &Terms, id: FactId) -> String {
+    let (rel, args) = terms.facts.get(id);
+    let inner: Vec<String> = args
+        .iter()
+        .map(|&a| match a.tag() {
+            ein_core::Tag::Fact => order_key(terms, a.as_fact().expect("tagged Fact")),
+            ein_core::Tag::Sym => terms.sym(a.as_sym().expect("tagged Sym")).to_string(),
+            ein_core::Tag::Int => terms.int_text(a.as_int().expect("tagged Int")).to_string(),
+        })
+        .collect();
+    if inner.is_empty() {
+        format!("({})", terms.sym(rel))
+    } else {
+        format!("({} {})", terms.sym(rel), inner.join(" "))
+    }
 }
 
 fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {

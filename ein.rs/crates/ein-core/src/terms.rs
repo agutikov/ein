@@ -16,7 +16,8 @@
 use crate::facts::{FactId, FactStore};
 use crate::intern::{Interner, Overflow, Symbol};
 use crate::prov::ProvArena;
-use crate::repr::{self, ReprValue};
+use crate::repr::ReprValue;
+use crate::text;
 use crate::value::{IntId, IntPool, Tag, Value};
 use std::cmp::Ordering;
 use std::sync::Arc;
@@ -629,15 +630,27 @@ impl Terms {
         format!("({} {})", self.sym(rel), args.join(" "))
     }
 
-    /// The plain text of a value — what provenance bindings and the dumper's
-    /// compact form print. A name prints as itself, an int as its canonical
-    /// decimal text, and a `Fact` as its `repr`.
+    /// A value as Ein text the loader reads back to the same value — **the
+    /// one printer** ([`crate::text`]): a name bare where it lexes as itself
+    /// and quoted elsewhere, an int as its canonical decimal text, and a
+    /// `Fact` as [`Terms::fact_text`]. Every surface that prints a value
+    /// prints it through here (M1e2 S1e2.3.8). Until then a name printed as
+    /// its raw text, so the int `1` and the name `"1"` printed alike, and a
+    /// `Fact` as its `repr`.
     pub fn display(&self, v: Value) -> String {
         match v.tag() {
-            Tag::Sym => self.sym(v.as_sym().expect("tagged Sym")).to_string(),
+            Tag::Sym => text::symbol(self.sym(v.as_sym().expect("tagged Sym"))).into_owned(),
             Tag::Int => self.int_text(v.as_int().expect("tagged Int")).to_string(),
-            Tag::Fact => repr::repr(&self.repr_fact(v.as_fact().expect("tagged Fact"))),
+            Tag::Fact => self.fact_text(v.as_fact().expect("tagged Fact")),
         }
+    }
+
+    /// A fact as Ein text: `(rel arg …)`, `(rel)` with no arguments, each
+    /// argument as [`Terms::display`] prints it ([`text::form`]).
+    pub fn fact_text(&self, id: FactId) -> String {
+        let (rel, args) = self.facts.get(id);
+        let args: Vec<String> = args.iter().map(|a| self.display(*a)).collect();
+        text::form(self.sym(rel), &args)
     }
 }
 
@@ -771,9 +784,8 @@ mod tests {
         let nested = t.value_fact(rel, &[s, i]).expect("room");
         assert_eq!(t.display(s), "House-1");
         assert_eq!(t.display(i), "7");
-        assert_eq!(
-            t.display(nested),
-            "Fact(relation_name='co-located', args=('House-1', 7))"
-        );
+        assert_eq!(t.display(nested), "(co-located House-1 7)");
+        let one = t.value_text("1").expect("room");
+        assert_eq!(t.display(one), "\"1\"", "the name 1 is not the int 1");
     }
 }

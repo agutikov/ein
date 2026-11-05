@@ -466,29 +466,22 @@ impl Write for Buffer {
     }
 }
 
-/// A fact as its canonical s-expression.
+/// A fact as its canonical s-expression: [`Terms::fact_text`], the one
+/// printer (M1e2 S1e2.3.8), so a name prints bare only where it lexes back as
+/// itself and the text loads to the same fact.
 ///
 /// Note the nullary case: `(q)`, with no trailing space. `Terms::compact`
 /// spells the same fact `(q )`, because the loader's error messages build it
 /// with an unconditional separator; the two renderers are deliberately
 /// distinct rather than one approximating the other.
 pub fn sexpr(terms: &Terms, id: FactId) -> String {
-    let (rel, args) = terms.facts.get(id);
-    let inner: Vec<String> = args.iter().map(|a| sexpr_value(terms, *a)).collect();
-    if inner.is_empty() {
-        format!("({})", terms.sym(rel))
-    } else {
-        format!("({} {})", terms.sym(rel), inner.join(" "))
-    }
+    terms.fact_text(id)
 }
 
-/// One argument: the display text for a name or a number, the s-expression
-/// for a nested fact.
+/// One argument as the one printer prints it ([`Terms::display`]): a name,
+/// an int, or the s-expression of a nested fact.
 pub fn sexpr_value(terms: &Terms, v: Value) -> String {
-    match v.as_fact() {
-        Some(id) => sexpr(terms, id),
-        None => terms.display(v),
-    }
+    terms.display(v)
 }
 
 pub fn sexpr_facts(terms: &Terms, ids: &[FactId]) -> Vec<String> {

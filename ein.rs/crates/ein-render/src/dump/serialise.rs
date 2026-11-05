@@ -6,93 +6,58 @@
 
 use ein_core::{FactId, Kb, ProvKind, Tag, Terms, Value};
 use ein_infer::firing::Firing;
-use ein_ir::{Ast, Node, NodeId, dump_canonical};
 
 use super::json::Json;
 
-/// Lower a fact argument to an IR node.
-fn arg_to_node(scratch: &mut Ast, terms: &Terms, arg: Value) -> NodeId {
-    match arg.tag() {
-        Tag::Fact => fact_to_sform(scratch, terms, None, arg.as_fact().expect("tagged Fact")),
-        Tag::Int => {
-            let sym = scratch.intern(terms.int_text(arg.as_int().expect("tagged Int")));
-            scratch.push(Node::Int(sym), None)
-        }
-        // `Atom(name=str(arg))` — every non-fact, non-int argument.
-        Tag::Sym => {
-            let sym = scratch.intern(terms.sym(arg.as_sym().expect("tagged Sym")));
-            scratch.push(Node::Atom(sym), None)
-        }
+/// A fact's provenance as the comment a state file writes after it: `;
+/// source "…"`, `; rule r` or `; hypothesis N`, and nothing for a fact with
+/// none (M1e2 S1e2.3.8, the inventory's S-5). A comment, so the loader skips
+/// it and a reloaded fact reads as given (`answer_dump.md`). Until S1e2.3.8
+/// these were keywords, `:source "…"`, `:rule "r"` and `:hypothesis N`, of
+/// which the loader read the first, took `:rule` only as an atom, and had no
+/// third, so a reloaded state's facts read as given anyway.
+fn provenance_comment(kb: &Kb, terms: &Terms, f: FactId) -> Option<String> {
+    let prov = kb.primary(f).map(|p| terms.provs.get(p))?;
+    match prov.kind {
+        // Both skipped when empty, so an empty string or a missing name
+        // falls through to no comment at all.
+        ProvKind::Source => prov
+            .source
+            .map(|s| terms.sym(s))
+            .filter(|s| !s.is_empty())
+            .map(|s| format!("; source {}", ein_core::text::quote(s))),
+        ProvKind::Rule => prov
+            .rule
+            .map(|r| terms.sym(r))
+            .filter(|r| !r.is_empty())
+            .map(|r| format!("; rule {}", ein_core::text::symbol(r))),
+        ProvKind::Hypothesis => Some(format!("; hypothesis {}", prov.branch.unwrap_or(0))),
+        ProvKind::Rejected => None,
     }
 }
 
-/// A fact as `(rel arg0 arg1 … :source "…" / :rule "…" / :hypothesis N)`.
-///
-/// A nested fact argument is lowered recursively **without** its keywords, so
-/// it reads as a bare `(rel args…)` inside the outer form — which is why `kb`
-/// is an `Option` rather than a plain reference: `None` means "no keywords".
-fn fact_to_sform(scratch: &mut Ast, terms: &Terms, kb: Option<&Kb>, f: FactId) -> NodeId {
-    let (rel, args) = terms.fact(f);
-    let args = args.to_vec();
-    let mut children: Vec<NodeId> = args
-        .into_iter()
-        .map(|a| arg_to_node(scratch, terms, a))
-        .collect();
-    if let Some(kb) = kb
-        && let Some(prov) = kb.primary(f).map(|p| terms.provs.get(p))
-    {
-        let kw = |scratch: &mut Ast, key: &str, value: NodeId| {
-            let name = scratch.intern(key);
-            let key = scratch.push(Node::Keyword(name), None);
-            scratch.push(Node::KwPair { key, value }, None)
-        };
-        match prov.kind {
-            // Both skipped when empty, so an empty string or a missing name
-            // falls through to no keyword at all.
-            ProvKind::Source => {
-                if let Some(s) = prov.source.map(|s| terms.sym(s)).filter(|s| !s.is_empty()) {
-                    let sym = scratch.intern(s);
-                    let value = scratch.push(Node::Str(sym), None);
-                    let pair = kw(scratch, "source", value);
-                    children.push(pair);
-                }
-            }
-            ProvKind::Rule => {
-                if let Some(r) = prov.rule.map(|r| terms.sym(r)).filter(|r| !r.is_empty()) {
-                    let sym = scratch.intern(r);
-                    let value = scratch.push(Node::Str(sym), None);
-                    let pair = kw(scratch, "rule", value);
-                    children.push(pair);
-                }
-            }
-            ProvKind::Hypothesis => {
-                let sym = scratch.intern(&prov.branch.unwrap_or(0).to_string());
-                let value = scratch.push(Node::Int(sym), None);
-                let pair = kw(scratch, "hypothesis", value);
-                children.push(pair);
-            }
-            ProvKind::Rejected => {}
-        }
+/// One fact as one line: the one printer's text ([`Terms::fact_text`]), which
+/// loads back to the same fact, and its provenance as a comment.
+fn fact_line(kb: &Kb, terms: &Terms, f: FactId) -> String {
+    let text = terms.fact_text(f);
+    match provenance_comment(kb, terms, f) {
+        Some(c) => format!("{text} {c}"),
+        None => text,
     }
-    // The keyword records the origin for a reader. A reload keeps the fact and
-    // not always the origin: the loader reads `:source "…"`, takes `:rule` only
-    // as an atom, and has no `:hypothesis` (`dump_states_load.rs`).
-    let name = scratch.intern(terms.sym(rel));
-    let head = scratch.push(Node::Atom(name), None);
-    scratch.sform(head, &children, None)
 }
 
-/// A KB as a **flat** sequence of ein forms, which loads as a program.
+/// A KB as a **flat** sequence of ein forms, one fact per line, which loads
+/// as a program.
 ///
 /// The block wrappers are gone: each fact is a top-level form and where it
-/// came from rides on its provenance. Un-annotated facts are emitted first
-/// purely for readability; the round trip is order-independent.
+/// came from rides on its provenance comment. Un-annotated facts are emitted
+/// first purely for readability; the round trip is order-independent.
 ///
 /// A typed declaration `(relation R T…)` is stored with an arity-1 companion
 /// `(relation R)`, which the loader adds itself on reading the declaration
 /// and refuses as a second one if the file states it. So the companion is left
 /// out wherever its declaration is written, and the file loads back to the
-/// same facts (`dump_states_load.rs`).
+/// same facts.
 pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
     let relation = terms.kernel.relation;
     let typed: rustc_hash::FxHashSet<Value> = kb
@@ -106,10 +71,8 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
         let (rel, args) = terms.fact(f);
         rel == relation && args.len() == 1 && typed.contains(&args[0])
     };
-    let mut scratch = Ast::new();
-    let (mut ont, mut rest): (Vec<NodeId>, Vec<NodeId>) = (Vec::new(), Vec::new());
+    let (mut ont, mut rest): (Vec<String>, Vec<String>) = (Vec::new(), Vec::new());
     for f in kb.facts().filter(|&f| !companion(f)) {
-        let node = fact_to_sform(&mut scratch, terms, Some(kb), f);
         // Given is a `:source`-kind with a source; derived is any non-source
         // kind. Everything else is ontology and goes first.
         let prov = kb.primary(f).map(|p| terms.provs.get(p));
@@ -120,27 +83,29 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
         } else {
             &mut ont
         }
-        .push(node);
+        .push(fact_line(kb, terms, f));
     }
     ont.extend(rest);
-    dump_canonical(&scratch, &ont)
+    let mut text = ont.join("\n");
+    text.push('\n');
+    text
 }
 
-/// Some of a KB's facts as top-level ein forms, in the order given, each with
-/// the provenance keyword [`kb_to_ein_text`] gives it — so `:rule`, `:source`
-/// and `:hypothesis` read back as the origin they record.
+/// Some of a KB's facts as top-level ein forms, in the order given, one per
+/// line, each with the provenance comment [`kb_to_ein_text`] gives it: the
+/// text loads back to the same facts, and every fact reloads as given.
 ///
 /// M1e2 S1e2.1.2's: a `--dump-answer` state file chooses its facts (the
 /// program's schema is not repeated, so the file loads) and their order
 /// (sorted, so two model files diff line by line), which the whole-KB writer
 /// above does not let a caller do.
 pub fn facts_to_ein_text(kb: &Kb, terms: &Terms, facts: &[FactId]) -> String {
-    let mut scratch = Ast::new();
-    let nodes: Vec<NodeId> = facts
-        .iter()
-        .map(|&f| fact_to_sform(&mut scratch, terms, Some(kb), f))
-        .collect();
-    dump_canonical(&scratch, &nodes)
+    let mut text = String::new();
+    for &f in facts {
+        text.push_str(&fact_line(kb, terms, f));
+        text.push('\n');
+    }
+    text
 }
 
 /// A firing for JSONL output — rule, activator, bindings, the primary derived
@@ -198,7 +163,7 @@ pub fn firing_to_json(terms: &Terms, firing: &Firing) -> Json {
                 firing
                     .activator
                     .iter()
-                    .map(|s| Json::str(terms.sym(*s)))
+                    .map(|s| Json::str(ein_core::text::symbol(terms.sym(*s))))
                     .collect(),
             ),
         ),

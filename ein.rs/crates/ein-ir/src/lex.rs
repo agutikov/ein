@@ -153,10 +153,11 @@ pub const LITERALS: &[&str] = &[
 /// unbuildable that it should not, because
 /// `imports_semantics::every_ein_core_reserved_name_is_unbindable_through_a_qualified_import`
 /// asserts the intersection is exactly those four.
-const LEXER_KEYWORDS: &[&str] = &[
-    "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
-    "import",
-];
+///
+/// The list is `ein-core`'s since M1e2 S1e2.3.8, because the one printer
+/// ([`ein_core::text`]) asks the same question of a name: does it lex back as
+/// itself?
+use ein_core::text::LEXER_KEYWORDS;
 
 /// Whitespace: Unicode `White_Space` **plus** U+001C–U+001F, which the
 /// standard property does not include (`00_ebnf.md` §1, `Space`).
@@ -168,7 +169,7 @@ fn is_space(ch: char) -> bool {
 /// `_`, Unicode `Alphabetic`, or a numeric general category (`Nd` `Nl` `No`)
 /// — `00_ebnf.md` §1, `WordChar`.
 fn is_word(ch: char) -> bool {
-    ch.is_alphanumeric() || ch == '_'
+    ein_core::text::is_word(ch)
 }
 
 /// The ASCII half of [`is_space`], as a byte test: `\t\n\v\f\r`, space,
@@ -673,5 +674,48 @@ mod tests {
         assert_eq!(lex("relation", Term::Symbol), Some("relation"));
         // A word that *is* here does not lex as a SYMBOL at all.
         assert_eq!(lex("rule", Term::Symbol), None);
+    }
+
+    /// M1e2 S1e2.3.8: the one printer prints a name bare exactly where this
+    /// lexer reads the bare text back as one `SYMBOL` spelling it
+    /// ([`ein_core::text::is_symbol`]), over every literal and reserved word,
+    /// each followed by every character class the boundary tests, and every
+    /// ASCII character in every position of a short name.
+    #[test]
+    fn the_printers_symbol_is_the_lexers() {
+        let mut names: Vec<String> = Vec::new();
+        let tails = [
+            "", "x", "X", "1", "_", "-", ".", "*", "-1", "?", ":", " ", "é", "١", "(", "\"",
+        ];
+        for w in LITERALS
+            .iter()
+            .chain(LEXER_KEYWORDS)
+            .chain(&["open", "relation", "false"])
+        {
+            for t in tails {
+                names.push(format!("{w}{t}"));
+                names.push(format!("__{w}{t}"));
+                names.push(format!("{t}{w}"));
+            }
+        }
+        for a in (0u8..128).map(char::from) {
+            for b in ["", "a", "1", "-", "_"] {
+                names.push(format!("{a}{b}"));
+                names.push(format!("a{a}{b}"));
+                names.push(format!("__{a}{b}"));
+            }
+        }
+        names.extend(["", "Åsa", "aÅ", "1..5", "1..*", "?x", "_", "__", "___x"].map(String::from));
+        let mut bare = 0;
+        for n in &names {
+            let lexed = lex(n, Term::Symbol) == Some(n.as_str());
+            assert_eq!(ein_core::text::is_symbol(n), lexed, "{n:?}");
+            bare += usize::from(lexed);
+        }
+        assert!(
+            bare > 100 && bare < names.len() - 100,
+            "{bare} of {}",
+            names.len()
+        );
     }
 }

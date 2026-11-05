@@ -1071,7 +1071,7 @@ impl Saturator {
                 terms.sym(plan.rule).to_string(),
                 plan.activator_args
                     .iter()
-                    .map(|&x| terms.sym(x).to_string())
+                    .map(|&x| ein_core::text::symbol(terms.sym(x)).into_owned())
                     .collect::<Vec<_>>(),
                 m.bindings()
                     .map(|(k, v)| (terms.sym(k).to_string(), events::sexpr_value(terms, v)))
@@ -1629,7 +1629,7 @@ fn emit_fire(s: &mut Session<'_>, firing: &Firing) {
     let activator: Vec<String> = firing
         .activator
         .iter()
-        .map(|&x| s.terms.sym(x).to_string())
+        .map(|&x| ein_core::text::symbol(s.terms.sym(x)).into_owned())
         .collect();
     let bindings = events::binding_pairs(s.terms, &firing.bindings);
     let premises = events::sexpr_facts(s.terms, &firing.premises);

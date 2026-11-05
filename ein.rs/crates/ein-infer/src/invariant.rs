@@ -132,7 +132,7 @@ impl Breach {
         format!(
             "{}: `{}` in {}",
             self.kind.as_str(),
-            terms.sym(self.name),
+            ein_core::text::symbol(terms.sym(self.name)),
             crate::events::sexpr(terms, self.fact)
         )
     }
@@ -180,7 +180,7 @@ impl RuleConstant {
         };
         format!(
             "`{}`, {verb} by {} `{}`",
-            terms.sym(self.name),
+            ein_core::text::symbol(terms.sym(self.name)),
             self.which,
             terms.sym(self.rule)
         )
@@ -264,7 +264,7 @@ impl ProgramName {
         match self.written {
             Written::Fact(f) => format!(
                 "`{}`, in {}",
-                terms.sym(self.name),
+                ein_core::text::symbol(terms.sym(self.name)),
                 crate::events::sexpr(terms, f)
             ),
             Written::Rule(c) => c.render(terms),

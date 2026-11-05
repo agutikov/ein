@@ -124,7 +124,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 ///
 /// M1e2's W28 witness `wrong-answers/classes-int-name.ein` (S1e2.3.8,
 /// T1e2.3.8.2) stands here: the name `1`, which only rule `b`'s string
-/// `"1"` writes.
+/// `"1"` writes, printed `"1"` since the stage's one printer.
 const SEEDED: [(&str, &[&str]); 26] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
@@ -164,7 +164,7 @@ const SEEDED: [(&str, &[&str]); 26] = [
     ),
     (
         "examples/ein-bugs/wrong-answers/classes-int-name.ein",
-        &["`1`, asserted by rule `b`"],
+        &["`\"1\"`, asserted by rule `b`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",

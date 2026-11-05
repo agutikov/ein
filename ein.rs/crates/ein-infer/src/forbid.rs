@@ -164,7 +164,11 @@ impl Refusal {
         let act = if self.activator.is_empty() {
             String::new()
         } else {
-            let a: Vec<&str> = self.activator.iter().map(|&s| terms.sym(s)).collect();
+            let a: Vec<std::borrow::Cow<'_, str>> = self
+                .activator
+                .iter()
+                .map(|&s| ein_core::text::symbol(terms.sym(s)))
+                .collect();
             format!(" [activator {}]", a.join(" "))
         };
         let concl = self.concludes.as_str();

@@ -1087,7 +1087,9 @@ fn one_verdict_on_every_corpus_program() {
                         "--json-summary",
                         b.to_str().unwrap(),
                     ]);
-                    if described.code != 0 {
+                    // A refuted claim exits 1 and prints its read-out
+                    // whole (W28's witnesses, M1e2 S1e2.3.8), so it is read.
+                    if described.code != 0 && !described.out.contains("\n  lattice ") {
                         // A read-out that errs prints none: a goal the
                         // compiler rejects ends the run where a state is
                         // answered from it (`read_out.rs`), and `--monotone`

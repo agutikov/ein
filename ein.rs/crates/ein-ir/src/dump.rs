@@ -46,14 +46,11 @@ fn atom_text(ast: &Ast, node: NodeId) -> String {
 /// `\\n` rather than collapsing into a newline escape.
 ///
 /// The parser's unescape is the inverse, so `parse(escape(s))` recovers `s`.
+///
+/// The one printer's [`ein_core::text::quote`] since M1e2 S1e2.3.8, which is
+/// the same escape set.
 pub fn escape_string_literal(s: &str) -> String {
-    let body = s
-        .replace('\\', "\\\\")
-        .replace('"', "\\\"")
-        .replace('\n', "\\n")
-        .replace('\t', "\\t")
-        .replace('\r', "\\r");
-    format!("\"{body}\"")
+    ein_core::text::quote(s)
 }
 
 /// Single-line rendering of any node.

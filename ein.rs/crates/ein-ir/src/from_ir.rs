@@ -2601,9 +2601,16 @@ mod tests {
             .collect();
         assert_eq!(nested, vec![vec![Tag::Fact], vec![Tag::Fact]]);
         // A nested head that is not a bare atom collapses to `<nested>` — a
-        // lossy rename.
+        // lossy rename — which the one printer prints as the `_` head that
+        // loads it (M1e2 S1e2.3.8).
         let compacts = facts(&terms, &kb);
-        assert!(compacts[1].contains("<nested>"), "{compacts:?}");
+        assert_eq!(compacts[1], "(p (_ a))", "{compacts:?}");
+        let (rel, _) = terms.fact(
+            terms.facts.args(kb.facts().nth(1).expect("two"))[0]
+                .as_fact()
+                .expect("nested"),
+        );
+        assert_eq!(terms.sym(rel), ein_core::text::NESTED_HEAD);
         // The inner proposition is interned but not believed: it is not in
         // the fact list, and that is what makes the negated index meaningful.
         assert_eq!(kb.n_facts(), 2);

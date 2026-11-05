@@ -53,13 +53,15 @@ impl FactRef {
     }
 
     /// The readable `rel(a, b, …)` label — `dot_util.fact_label` over this
-    /// shape, recursing into nested references.
+    /// shape, recursing into nested references. A name prints as the one
+    /// printer prints it (M1e2 S1e2.3.8): bare where it lexes as itself, else
+    /// quoted, so `holds("x y")` is one argument and `holds("1")` no int.
     pub fn label(&self) -> String {
         let parts: Vec<String> = self
             .args
             .iter()
             .map(|a| match a {
-                RefArg::Str(s) => s.clone(),
+                RefArg::Str(s) => ein_core::text::symbol(s).into_owned(),
                 RefArg::Int(i) => i.clone(),
                 RefArg::Fact(f) => f.label(),
             })
@@ -138,35 +140,13 @@ impl TraceStep {
 
 // ── IR round-trip: out ─────────────────────────────────────────────
 
-/// Whether a string can be written as a bare atom rather than a literal.
-///
-/// Non-empty, every character alphanumeric or one of `-_*?.`, and the first
-/// not numeric — `char::is_alphanumeric` / `is_numeric`, the *Unicode*
-/// predicates, not the ASCII ones.
-fn atom_safe(s: &str) -> bool {
-    if s.is_empty() {
-        return false;
-    }
-    if !s
-        .chars()
-        .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '*' | '?' | '.'))
-    {
-        return false;
-    }
-    !s.chars().next().expect("non-empty").is_numeric()
-}
-
 fn arg_to_sexpr(a: &RefArg) -> String {
     match a {
         RefArg::Fact(f) => fact_to_sexpr(f),
         RefArg::Int(i) => i.clone(),
-        RefArg::Str(s) => {
-            if atom_safe(s) {
-                s.clone()
-            } else {
-                escape_string_literal(s)
-            }
-        }
+        // The one printer's name (M1e2 S1e2.3.8), where this file had its own
+        // `atom_safe`, which wrote `?x`, `1a` and `Åsa` bare.
+        RefArg::Str(s) => ein_core::text::symbol(s).into_owned(),
     }
 }
 
@@ -196,7 +176,8 @@ pub fn step_to_ir(step: &TraceStep) -> String {
         let binds: Vec<String> = step
             .bindings
             .iter()
-            .map(|(k, v)| format!("?{k} {}", arg_to_sexpr(&RefArg::Str(v.clone()))))
+            // A binding is the one printer's text already (`Terms::display`).
+            .map(|(k, v)| format!("?{k} {v}"))
             .collect();
         parts.push(format!(":bind ({})", binds.join(" ")));
     }

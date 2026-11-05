@@ -125,38 +125,12 @@ fn strings(v: &J) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// Does a state file print two of its state's one-line facts alike? The fact printer
-/// drops a string's quotes (P1e2.3's N5, parked for the user), so a state
-/// holding the int `1` and the string `"1"` in one position writes one line
-/// twice, the file loads it as one fact, and the file is not the state: its
-/// re-saturation derives back what the printer merged. M1e2 S1e2.2.16 met it
-/// on W16's fixed pair, the first register witnesses whose state holds an int
-/// and a string of one text.
-fn printed_alike(path: &Path) -> bool {
-    let text = std::fs::read_to_string(path).unwrap_or_default();
-    let Some((_, state)) = text.split_once(";; \u{2500}\u{2500} the state") else {
-        return false;
-    };
-    let mut seen = std::collections::BTreeSet::new();
-    state
-        .lines()
-        .map(str::trim)
-        .filter(|l| l.starts_with('(') && l.matches('(').count() == l.matches(')').count())
-        .any(|l| !seen.insert(l))
-}
-
-/// The run whose states hold the name `"1"` where a rule derives it, and
-/// which the fact printer writes as `1`, the int, so the file reloads to
-/// another state and the rule derives the name again: W28/classes-int-name's
-/// (M1e2 S1e2.3.8, T1e2.3.8.2, filed while P1e2.3's N5 is open). The list
-/// goes with N5's fix.
-const NAME_PRINTED_AS_AN_INT: &str =
-    "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve";
-
-/// Every state file the directory holds against its state in the summary. A
-/// file that fails and that the printer could not write ([`printed_alike`],
-/// [`NAME_PRINTED_AS_AN_INT`]) goes to `alike` instead of `bad`.
-fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>, alike: &mut Vec<String>) -> usize {
+/// Every state file the directory holds against its state in the summary.
+/// Until M1e2 S1e2.3.8 a file the fact printer could not write went to a list
+/// of its own (`printed_alike`: W16's pair, and W28's `classes-int-name`);
+/// the one printer writes every state, and `answer_round_trip.rs` holds each
+/// to its facts by value.
+fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.join("answer.json"));
     let states = summary["region"]["states"]
@@ -171,11 +145,7 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>, alike: &mut Vec<
         let path = entry["path"].as_str().expect("a path");
         let closure = strings(&states[i]["closure"]);
         if let Some(why) = not_a_fixpoint(&dir.join(path), &closure, &candidates) {
-            if printed_alike(&dir.join(path)) || label == NAME_PRINTED_AS_AN_INT {
-                alike.push(format!("{label}: {path}"));
-            } else {
-                bad.push(format!("{label}: {path} {why}"));
-            }
+            bad.push(format!("{label}: {path} {why}"));
         }
         n += 1;
     }
@@ -234,20 +204,19 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
 /// *Wrong* is allowed. A written state that its own rules would extend or
 /// refute is not, and is what this would report.
 ///
-/// A state the fact printer cannot write is not one, and is named instead:
-/// [`printed_alike`]'s, which is exactly W16's fixed pair (M1e2 S1e2.2.16,
-/// 2026-11-04), each holding `(noted 1 1)` and `(noted 1 "1")`. Its file
-/// loads two of the four `noted` facts and saturation derives the other two,
-/// the printer's loss and not the state's; the list goes when P1e2.3's N5 is
-/// decided. Since M1e2 S1e2.3.8's T1e2.3.8.2 it names W28/classes-int-name's
-/// four states holding the name `"1"` too ([`NAME_PRINTED_AS_AN_INT`]).
+/// With no exception since M1e2 S1e2.3.8. Until then the state files the
+/// fact printer could not write were named rather than checked
+/// (`printed_alike`): W16's fixed pair (M1e2 S1e2.2.16, 2026-11-04), each
+/// holding `(noted 1 1)` and `(noted 1 "1")`, which the printer wrote as one
+/// line twice, and W28's `classes-int-name` (T1e2.3.8.2), whose name `"1"`
+/// was written as the int. A run whose recorded claim is refuted (W28's)
+/// exits 1 and writes its states as any answer does.
 #[test]
 fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
     let mut bad = Vec::new();
-    let mut alike = Vec::new();
     let mut states = 0;
-    let mut runs: Vec<(String, String)> = Vec::new();
+    let mut runs: Vec<(String, String, i32)> = Vec::new();
     for row in &register().case {
         // A refused row (M1e2 S1e2.2.5) writes no state, nor one whose run
         // ends in an error (S1e2.2.18): `wrong_answers.rs` holds both.
@@ -255,35 +224,25 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         {
             continue;
         }
-        runs.push((row.witness.clone(), row.now.run.clone()));
+        // A refuted claim exits 1 (schema /12, W28).
+        let code = i32::from(row.now.refutes());
+        runs.push((row.witness.clone(), row.now.run.clone(), code));
     }
     for (file, flags) in CASES {
         let mut run = vec!["solve"];
         run.extend_from_slice(flags);
-        runs.push((file.to_string(), run.join(" ")));
+        runs.push((file.to_string(), run.join(" "), 0));
     }
     runs.sort();
     runs.dedup();
-    for (i, (file, run)) in runs.iter().enumerate() {
+    for (i, (file, run, code)) in runs.iter().enumerate() {
         let dir = root.join(format!("r{i}"));
         let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
         let r = dump(file, &flags, &[], &dir);
-        assert_eq!(r.code, 0, "{file} {run}: exit {}\n{}", r.code, r.err);
-        states += check_states(&dir, &format!("{file} :: {run}"), &mut bad, &mut alike);
+        assert_eq!(r.code, *code, "{file} {run}: exit {}\n{}", r.code, r.err);
+        states += check_states(&dir, &format!("{file} :: {run}"), &mut bad);
     }
     assert!(states > runs.len(), "no state file was checked");
-    assert_eq!(
-        alike,
-        [
-            "examples/ein-bugs/activator-text-int-and-string.ein :: solve --maximal: models/01.ein",
-            "examples/ein-bugs/activator-text-string-then-int.ein :: solve --maximal: models/01.ein",
-            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/04.ein",
-            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/06.ein",
-            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/07.ein",
-            "examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve: models/08.ein",
-        ],
-        "the state files the fact printer writes two facts of alike (P1e2.3's N5) moved"
-    );
     assert!(
         bad.is_empty(),
         "{} state files:\n{}",

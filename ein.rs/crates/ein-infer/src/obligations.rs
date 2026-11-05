@@ -266,7 +266,7 @@ fn narrate(instances: &[Owed], terms: &Terms, events: &mut Events) {
         let activator: Vec<String> = i
             .activator
             .iter()
-            .map(|&x| terms.sym(x).to_string())
+            .map(|&x| ein_core::text::symbol(terms.sym(x)).into_owned())
             .collect();
         let relation = i.relation.map(|r| terms.sym(r).to_string());
         let bindings = events::binding_pairs(terms, &i.bindings);

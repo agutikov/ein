@@ -37,9 +37,10 @@ pub fn hashed_id(prefix: &str, seed: &str, quoted: bool) -> String {
 
 /// The flat content key behind a fact's node id: `rel|arg,arg`.
 ///
-/// Not recursive — a nested fact argument is its `repr`, which is what
+/// Not recursive — a nested fact argument is its s-expression, which is what
 /// `ein-core`'s `Terms::display` renders, so callers pass the already-rendered
-/// arguments.
+/// arguments (the one printer's text since M1e2 S1e2.3.8, where a nested fact
+/// was its `repr`).
 pub fn fact_key(relation_name: &str, args: &[String]) -> String {
     format!("{relation_name}|{}", args.join(","))
 }
@@ -133,7 +134,9 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
-        Node::Str(s) => ast.sym(s).to_string(),
+        // The name a string is, as the one printer prints it (M1e2
+        // S1e2.3.8): `"1"` and `"x y"` quoted, `"Red"` bare as `Red`.
+        Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::Int(s) => ast.sym(s).to_string(),
         Node::Range { low, high } => {
             let high = high.map_or_else(|| "*".to_string(), |h| ast.sym(h).to_string());

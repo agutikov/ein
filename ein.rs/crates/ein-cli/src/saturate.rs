@@ -418,11 +418,11 @@ fn fact_text_with_provenance(terms: &Terms, kb: &Kb, id: ein_core::FactId) -> St
     let p = terms.provs.get(pid);
     match p.kind {
         ProvKind::Source => match p.source {
-            Some(s) => format!("({base} :source \"{}\")", terms.sym(s)),
+            Some(s) => format!("({base} :source {})", ein_core::text::quote(terms.sym(s))),
             None => format!("({base})"),
         },
         ProvKind::Rule => match p.rule {
-            Some(r) => format!("({base} :rule {})", terms.sym(r)),
+            Some(r) => format!("({base} :rule {})", ein_core::text::symbol(terms.sym(r))),
             None => format!("({base})"),
         },
         ProvKind::Hypothesis => format!("({base} :hypothesis {})", branch(p)),
@@ -604,7 +604,11 @@ fn step_limit_message(max_steps: i64, done: usize, terms: &Terms, last: Option<&
 /// already held.
 fn firing_text(terms: &Terms, f: &Firing) -> String {
     let mut activation = vec![terms.sym(f.rule).to_string()];
-    activation.extend(f.activator.iter().map(|&a| terms.sym(a).to_string()));
+    activation.extend(
+        f.activator
+            .iter()
+            .map(|&a| ein_core::text::symbol(terms.sym(a)).into_owned()),
+    );
     let bindings: Vec<String> = f
         .bindings
         .iter()

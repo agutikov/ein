@@ -226,18 +226,17 @@ fn canonical(literal: &str) -> String {
 }
 
 /// **`Terms::display` renders each of the six value shapes that reach a
-/// trace.**
+/// trace** — as the one printer prints them (M1e2 S1e2.3.8): Ein text the
+/// loader reads back to the same value.
 ///
-/// `display` of a nested fact is its `repr`: the string that lands in
-/// provenance bindings and in a `:why` template. There is no short
-/// specification of that — `Fact(relation_name=…, args=(…))` with `repr` on
-/// each argument, recursively — so the six answers are checked in rather than
-/// re-derived.
+/// Until S1e2.3.8 `display` of a nested fact was its `repr`,
+/// `Fact(relation_name=…, args=(…))`, and a name its raw text, so `it's`
+/// printed bare and could not be read back.
 ///
-/// What each shape is for: an atom (no quotes, unlike `repr`), an atom with an
-/// apostrophe (which flips a nested `repr`'s quote to `"`), a leading-zero int,
-/// a negative int wider than an `i64`, a nested fact, and a fact nested inside
-/// a fact — the last being the only place the recursion is visible.
+/// What each shape is for: an atom (bare), an atom with an apostrophe (no
+/// `SYMBOL`, so quoted), a leading-zero int, a negative int wider than an
+/// `i64`, a nested fact, and a fact nested inside a fact — the last being the
+/// only place the recursion is visible.
 #[test]
 fn display_renders_every_value_shape() {
     let mut t = Terms::new();
@@ -257,17 +256,13 @@ fn display_renders_every_value_shape() {
     let mut bad = Vec::new();
     for (v, want) in [
         (norwegian, "Norwegian"),
-        (quote, "it's"),
+        (quote, "\"it's\""),
         (seven, "7"),
         (big, "-123456789012345678901234567890"),
-        (
-            inner,
-            "Fact(relation_name='co-located', args=('Norwegian', 7))",
-        ),
+        (inner, "(co-located Norwegian 7)"),
         (
             outer,
-            "Fact(relation_name='hypothesis', args=(Fact(relation_name='co-located', \
-             args=('Norwegian', 7)), \"it's\", -123456789012345678901234567890))",
+            "(hypothesis (co-located Norwegian 7) \"it's\" -123456789012345678901234567890)",
         ),
     ] {
         let got = t.display(v);

@@ -245,7 +245,11 @@ impl Site {
         let act = if self.activator.is_empty() {
             String::new()
         } else {
-            let names: Vec<&str> = self.activator.iter().map(|&a| terms.sym(a)).collect();
+            let names: Vec<std::borrow::Cow<'_, str>> = self
+                .activator
+                .iter()
+                .map(|&a| ein_core::text::symbol(terms.sym(a)))
+                .collect();
             format!(" [activator {}]", names.join(" "))
         };
         match self.kind {

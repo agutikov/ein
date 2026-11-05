@@ -257,13 +257,14 @@ fn a_string_in_a_rule_is_the_symbol_it_names() {
         strings.facts_under("tag"),
         [
             "(tag guard b)",
-            "(tag other 1)",
+            "(tag other \"1\")",
             "(tag other 1)",
             "(tag out (box lbl))",
             "(tag out lbl)"
         ],
-        "eq holds for b alone, neq for both 1s, and the :assert stores the \
-         symbol, top-level and nested"
+        "eq holds for b alone, neq for both 1s (the name and the int, which \
+         print apart since M1e2 S1e2.3.8), and the :assert stores the symbol, \
+         top-level and nested"
     );
     assert_eq!(strings.facts_under("not"), ["(not (tag lbl lbl))"]);
     // The slots hold the symbol: `SCAN holds ['1']`, `ASSERT 0 (tag 'out'

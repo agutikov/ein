@@ -329,26 +329,30 @@ fn ground(ast: &Ast, node: NodeId) -> Result<(), String> {
 /// is what keeps the two honest.
 pub fn render(ast: &Ast, node: NodeId) -> String {
     match ast.node(node) {
-        // `Node::Int` and `Node::Str` both hold their text already: an int as
-        // its canonical decimal, a string unescaped — which is exactly what
-        // `Terms::display` prints for the interned value.
-        Node::Atom(s) | Node::Int(s) | Node::Str(s) => ast.sym(s).to_string(),
+        // `Node::Int` holds its canonical decimal and `Node::Str` its text
+        // unescaped. An atom, a string and a range are each the name they
+        // spell once loaded, so each prints as the one printer prints that
+        // name (M1e2 S1e2.3.8): bare where it lexes as itself, else quoted,
+        // which is what `Terms::display` prints for the interned value.
+        Node::Int(s) => ast.sym(s).to_string(),
+        Node::Atom(s) | Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
-        Node::Range { low, high } => match high {
+        Node::Range { low, high } => ein_core::text::symbol(&match high {
             Some(h) => format!("{}..{}", ast.sym(low), ast.sym(h)),
             None => format!("{}..*", ast.sym(low)),
-        },
+        })
+        .into_owned(),
         Node::KwPair { key, value } => format!("{} {}", render(ast, key), render(ast, value)),
         Node::SForm { head, args } => {
-            let items = ast.args(args);
-            if items.is_empty() {
-                // `(q)`, no trailing space — `events::sexpr`'s nullary case.
-                format!("({})", render(ast, head))
-            } else {
-                let inner: Vec<String> = items.iter().map(|&a| render(ast, a)).collect();
-                format!("({} {})", render(ast, head), inner.join(" "))
+            // `(q)`, no trailing space — `events::sexpr`'s nullary case, and
+            // a head as the one printer prints a fact's ([`ein_core::text::form`]).
+            let inner: Vec<String> = ast.args(args).iter().map(|&a| render(ast, a)).collect();
+            match ast.node(head) {
+                Node::Atom(s) => ein_core::text::form(ast.sym(s), &inner),
+                _ if inner.is_empty() => format!("({})", render(ast, head)),
+                _ => format!("({} {})", render(ast, head), inner.join(" ")),
             }
         }
     }

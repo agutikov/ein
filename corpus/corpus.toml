@@ -1417,14 +1417,14 @@ note   = "M1e2 W27 (`W27/past-limit-lines-minimal`, `-maximal`), banked by S1e2.
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-int-name.ein"
 group  = "regression"
-runs   = ["solve", "saturate", "test"]
-note   = "M1e2 W28 (`W28/claim-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a query's `:expect` claims `(model (holds 1))`, the int, over the one state, which holds the name `1` (`(holds \"1\")`). The claim is false and is the witness. Until S1e2.3.8 a claim was compared with the state as printed text, which printed the int and the name alike, so it held and `solve` and `test` exited 0."
+runs   = ["solve", "saturate"]
+note   = "M1e2 W28 (`W28/claim-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a query's `:expect` claims `(model (holds 1))`, the int, over the one state, which holds the name `1` (`(holds \"1\")`). The claim is false and is the witness. Until S1e2.3.8 a claim was compared with the state as printed text, which printed the int and the name alike, so it held and `solve` exited 0. `ein test` is not declared: it reports the failed claim on stdout alone, an exit 1 with nothing on stderr (S1e2.3.8's Notes)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
 group  = "regression"
-runs   = ["solve", "saturate", "test"]
-note   = "M1e2 W28 (`W28/claim-int-name-solve`), banked by S1e2.3.8 on Q-M1e2.20 (a): the solve form's `(region (model (holds 1)))`, the int, over the one state, which holds the name `1`. The claim is false and is the witness. Until S1e2.3.8 it held, compared as printed text, and `solve` and `test` exited 0."
+runs   = ["solve", "saturate"]
+note   = "M1e2 W28 (`W28/claim-int-name-solve`), banked by S1e2.3.8 on Q-M1e2.20 (a): the solve form's `(region (model (holds 1)))`, the int, over the one state, which holds the name `1`. The claim is false and is the witness. Until S1e2.3.8 it held, compared as printed text, and `solve` exited 0. `ein test` is not declared, as for `claim-int-name`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/classes-int-name.ein"

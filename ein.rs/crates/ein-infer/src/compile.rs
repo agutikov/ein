@@ -850,7 +850,9 @@ impl<'a> Compiler<'a> {
                         return Err(self.head_not_a_name(node, head, v));
                     }
                     Some(v) => {
-                        let text = self.terms.display(v);
+                        // The relation's own name, its raw text: what it
+                        // interns as, and not how it prints.
+                        let text = self.terms.sym(v.as_sym().expect("a name")).to_string();
                         self.intern(&text)
                     }
                     // S1.22.0 — this used to `return []`, dropping the premise.
@@ -1035,7 +1037,8 @@ impl<'a> Compiler<'a> {
                                 return Err(self.head_not_a_name(node, head, v));
                             }
                             v => v.map(|v| {
-                                let text = self.terms.display(v);
+                                // The relation's own name, as above.
+                                let text = self.terms.sym(v.as_sym().expect("a name")).to_string();
                                 self.intern(&text)
                             }),
                         }
@@ -1474,7 +1477,8 @@ mod tests {
     /// text was interned and they were one key and one plan, and the second
     /// activator's conclusions were lost (W16). A string and an atom with the
     /// same text are one value, one fact and one key. The key's text is each
-    /// value's `display`, the text it interned before.
+    /// value's `display`, the text it interned before; since M1e2 S1e2.3.8
+    /// the one printer's, so the two keys print apart too.
     #[test]
     fn plan_key_is_the_activators_values() {
         let src = "(relation edge A B)\n(rule walk (?R ?N)\n  :match (?R ?a ?b)\n  :assert (?R ?b ?a))\n\
@@ -1495,9 +1499,9 @@ mod tests {
         assert_eq!(
             text,
             [
+                ["edge", "\"7\""],
+                ["edge", "(edge A B)"],
                 ["edge", "7"],
-                ["edge", "7"],
-                ["edge", "Fact(relation_name='edge', args=('A', 'B'))"],
                 ["edge", "seven"]
             ]
         );

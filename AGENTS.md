@@ -338,7 +338,15 @@ constrained-reasoning research.
   stage filed W28: three rows, `claim-int-name`, `-solve` and
   `classes-int-name` under `examples/ein-bugs/wrong-answers/`; schema `/12`
   (`claim` and `queries`, a claim's outcome and a query's classes, a refuted
-  claim's exit 1): 100 fixed, 13 open and 1 not wrong.
+  claim's exit 1): 100 fixed, 13 open and 1 not wrong. It fixed all three the
+  same day with the one printer (`ein_core::text`, `Terms::display`): a value
+  prints as Ein text the loader reads back to the same value, a name bare
+  only where it lexes as one `SYMBOL`, so the int `1` and the name `"1"`
+  print apart on every surface, the claims are FAILED and the classes four;
+  a `--dump-answer` state file writes one fact a line, its provenance a
+  comment, and reloads to its state by value
+  (`ein-cli/tests/answer_round_trip.rs`, every corpus program): 103 fixed,
+  10 open (every one deferred to a followup or to M1f) and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

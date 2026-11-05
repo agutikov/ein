@@ -19,8 +19,8 @@ use ein_ir::{Ast, Node, NodeId};
 
 use crate::builder::Builder;
 use crate::dot_util::{
-    EQUALITY_SHAPE, GROUND_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, WILDCARD_ATTRS, quote,
-    value_label,
+    EQUALITY_SHAPE, GROUND_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, WILDCARD_ATTRS, multiline,
+    quote, value_label,
 };
 use crate::palette::hash_color;
 use crate::rules::{RuleMode, render_rule_form, render_rules_forms};
@@ -94,7 +94,10 @@ fn atom_arg_attrs(ast: &Ast, id: NodeId) -> String {
 fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(_) | Node::Var(_) | Node::Wildcard => atom_id(ast, id),
-        Node::Str(s) => quote(ast.sym(s)),
+        // A string's node is its name as the one printer prints it (M1e2
+        // S1e2.3.8), so `"1"` is not the int `1`'s node and `"x y"` reads as
+        // one value.
+        Node::Str(s) => quote(&ein_core::text::symbol(ast.sym(s))),
         Node::Int(s) => quote(ast.sym(s)),
         Node::Range { .. } | Node::SForm { .. } => quote(&value_label(ast, id)),
         Node::Keyword(_) | Node::KwPair { .. } => {
@@ -344,15 +347,16 @@ fn render_note(ast: &Ast, form: NodeId, head: &str) -> String {
             parts.push(format!(":{} {}", ast.sym(s), value_label(ast, value)));
         }
     }
+    // Each line escaped for DOT: since M1e2 S1e2.3.8 a string value prints
+    // quoted, as the one printer prints it, and a quote inside a label must
+    // be escaped (it always had to; no program wrote one).
     let label = if parts.is_empty() {
-        head.to_string()
+        quote(head)
     } else {
-        parts.join("\\n")
+        let parts: Vec<&str> = parts.iter().map(String::as_str).collect();
+        multiline(&parts)
     };
-    b.node(
-        &quote(head),
-        Some(&format!("shape=note, label=\"{label}\"")),
-    );
+    b.node(&quote(head), Some(&format!("shape=note, label={label}")));
     b.build()
 }
 

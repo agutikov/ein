@@ -890,9 +890,10 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
 /// and its two conclusions were lost, whichever came second, and in a debug
 /// build `Engine::compile_all`'s check that its shortcut skipped no activator
 /// aborted. The key is the activator's values since, so the two are two plans.
-/// Compared by value: as printed, `(noted 1 1)` and `(noted 1 "1")` are one
-/// line (P1e2.3's N5), which is why the controls' printed sets are equal. The
-/// corpus family is `examples/ein-bugs/activator-text-*.ein`.
+/// Compared by value, and since M1e2 S1e2.3.8 as printed too: until then
+/// `(noted 1 1)` and `(noted 1 "1")` printed as one line (P1e2.3's N5), and
+/// the controls' printed sets were equal. The corpus family is
+/// `examples/ein-bugs/activator-text-*.ein`.
 #[test]
 fn an_int_and_a_string_with_one_text_are_two_activators() {
     let program = |activators: &str| {
@@ -912,13 +913,12 @@ fn an_int_and_a_string_with_one_text_are_two_activators() {
         )
     };
     // The controls: one activator, one plan, two conclusions each, over two
-    // values the printer cannot tell apart.
+    // values the one printer prints apart.
     let int = saturate(&program("(note edge 1)"));
     let string = saturate(&program(r#"(note edge "1")"#));
-    assert_eq!(
-        int.derived(),
-        string.derived(),
-        "printed, the int's and the string's conclusions are one set"
+    assert!(
+        int.derived().is_disjoint(&string.derived()),
+        "printed, the int's and the string's conclusions are two sets"
     );
     let (int, string) = (int.derived_values(), string.derived_values());
     assert_eq!(int.len(), 2, "the int activator derives two: {int:?}");

@@ -93,7 +93,7 @@ pub fn of(kb: &Kb, terms: &Terms, mode: Mode, candidates: &[FactId]) -> TypesAsO
             if let Some(s) = a.as_sym()
                 && types.contains(&s)
             {
-                objects.push(terms.sym(s).to_string());
+                objects.push(ein_core::text::symbol(terms.sym(s)).into_owned());
                 hit = true;
             }
         }
