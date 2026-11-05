@@ -16,11 +16,13 @@
 ;;; `(q a) (seed a)`, which names the commitment. `(seed a)` alone is
 ;;; root's, and root is alive.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what holds since ─────────────────────
 ;;;
-;;; R as above, exit 0; and N's core `(seed a)` alone, refuted by `mk` and
-;;; `neg`, on every surface that reports it (`ein solve FILE --dump-answer
-;;; DIR` at `cdcc3994`, release and debug): the positive side's frontier.
+;;; Until S1e2.2.21, R as above, exit 0; and N's core `(seed a)` alone,
+;;; refuted by `mk` and `neg`, on every surface that reports it (`ein solve
+;;; FILE --dump-answer DIR` at `cdcc3994`, release and debug): the positive
+;;; side's frontier. Since S1e2.2.21's fix, `(q a) (seed a)`, in either
+;;; build.
 
 (relation seed T) (relation p T) (relation q T)
 

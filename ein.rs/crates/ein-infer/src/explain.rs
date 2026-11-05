@@ -67,13 +67,41 @@
 //! `core-activator-guard-only.ein`'s, whose refuting plan matches no fact,
 //! reported nothing; they report `(p a) (seed a)` and `(p a)`.
 //!
+//! **And the facts its universals read** ([`ein_core::Prov::universal`], M1e2
+//! S1e2.2.21). A `forall` is `(absent (and G (absent B)))`, and one that held
+//! rests on facts: for each match of `G`, the fact `B` matched. `total`'s
+//! `(false)` rests on the `(not (R a b))` that exclude every `b`, and an
+//! elimination's conclusion on the exclusions of every other value. Each is
+//! folded in at its **own smallest environment**, beside the premises the
+//! search folds over their whole labels: the user's ruling of 2026-11-05 on
+//! Q-M1e2.15, (b). Folding those over their whole labels too is the exact
+//! search, and it cost ×2 500 a member of N on `zebra2-hints` (3 ms → 7.5 s,
+//! cut by its budget); a core it would give smaller (13 of that program's 73
+//! N cores, S1e2.2.21 T1) is the promise's second residual, F22's beside the
+//! cap's. Until S1e2.2.21 no record named them:
+//! `examples/ein-bugs/wrong-answers/forall-core-false.ein`'s dead `{(tag s1),
+//! (tag s2)}` reported `(item a)`, root's, and reports `(item a) (tag s1)
+//! (tag s2)`.
+//!
+//! ### What a contradiction rests on
+//!
+//! **Its facts, together** ([`contradiction_frontier`], M1e2 S1e2.2.21): a
+//! direct ⊥'s `(false …)` fact, and a pair's `X` and `(not X)` as one
+//! AND-node, the smallest union over both sides' environments. A node's core
+//! is the smallest over its contradictions. Until S1e2.2.21 each contradiction
+//! was explained by its witness alone, a pair's positive side, and the core
+//! left out the derivation of `(not X)`, where a commitment typically is
+//! (W21): `pair-core-root-given.ein`'s dead `{(q a)}` reported `(p a)`, a
+//! fact the program states, and `zebra2.ein`'s N 201 of 366 such cores.
+//!
 //! ### The algorithm
 //!
 //! A least fixpoint from the frontier upward. A `source` / `hypothesis` /
 //! un-provenanced fact is a leaf, labelled `{{itself}}`; a rule provenance
 //! with **no** premises is a synthetic engine writeback whose contract is that
 //! provenance walks ground out on it, labelled `{∅}`. An interior node folds
-//! each justification's premises' labels by union and keeps the
+//! each justification's premises' labels by union, then unions in each fact
+//! its universals read at that fact's smallest environment, and keeps the
 //! subset-minimal result.
 //!
 //! Labels start empty and only improve, which is what makes a **cyclic**
@@ -186,10 +214,20 @@ impl Explanation {
 /// because ranks are unique per fact, loses nothing a set would keep.
 type Env = Vec<u32>;
 
+/// One justification: what a derivation rests on, as the search folds it.
+struct AndNode {
+    /// Its premises and the activator a node derived or committed, then the
+    /// facts its universals read: `facts[..searched]` and `facts[searched..]`.
+    facts: Vec<FactId>,
+    /// How many of `facts` are folded over their whole labels; each one after
+    /// is folded at its smallest environment (M1e2 S1e2.2.21, Q-M1e2.15 (b)).
+    searched: usize,
+}
+
 /// The AND/OR premise closure of a set of targets.
 struct Graph {
-    /// `fid → justifications`, each an AND-node over premise ids.
-    just: FxHashMap<FactId, Vec<Vec<FactId>>>,
+    /// `fid → justifications`, each an AND-node.
+    just: FxHashMap<FactId, Vec<AndNode>>,
     /// `fid → the facts whose justifications name it` — the propagation edges.
     consumers: FxHashMap<FactId, FxHashSet<FactId>>,
     /// Terminals with a fixed label.
@@ -255,7 +293,7 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
             g.just.remove(&fid);
             continue;
         }
-        let mut ands: Vec<Vec<FactId>> = Vec::new();
+        let mut ands: Vec<AndNode> = Vec::new();
         for p in kb.justifications(fid) {
             let prov = terms.provs.get(p);
             if prov.kind != ein_core::ProvKind::Rule {
@@ -263,17 +301,24 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
             }
             // Its premises, and the activator its plan was compiled from
             // where a node derived or committed it (M1e2 S1e2.2.19).
-            let mut and_node = prov.premises.to_vec();
+            let mut facts = prov.premises.to_vec();
             if let Some(a) = ein_core::walks::node_activator(kb, prov)
-                && !and_node.contains(&a)
+                && !facts.contains(&a)
             {
-                and_node.push(a);
+                facts.push(a);
             }
-            if and_node.is_empty() {
+            let searched = facts.len();
+            // Then what its universals read (M1e2 S1e2.2.21).
+            for &u in prov.universal.iter() {
+                if !facts.contains(&u) {
+                    facts.push(u);
+                }
+            }
+            if facts.is_empty() {
                 ands.clear(); // a synthetic ground-out wins
                 break;
             }
-            ands.push(and_node);
+            ands.push(AndNode { facts, searched });
         }
         if ands.is_empty() {
             g.seed.insert(fid, vec![Vec::new()]);
@@ -281,7 +326,7 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
             continue;
         }
         for and_node in &ands {
-            for &pid in and_node {
+            for &pid in &and_node.facts {
                 g.consumers.entry(pid).or_default().insert(fid);
                 if !g.just.contains_key(&pid) && !g.seed.contains_key(&pid) {
                     g.just.insert(pid, Vec::new());
@@ -386,14 +431,29 @@ fn union(a: &[u32], b: &[u32]) -> Env {
 /// A **beam** fold — the working set is re-minimised and capped after each
 /// premise — so the cost is bounded by `max_environments` per premise instead
 /// of by the full cross-product over all of them.
+///
+/// `facts[..searched]` are folded so; each fact after them, what the
+/// derivation's universals read, contributes its **smallest** environment,
+/// one union at the end (M1e2 S1e2.2.21, the user's ruling of 2026-11-05 on
+/// Q-M1e2.15, (b)). Folding those over their whole labels too is the exact
+/// search, and it cost ×2 500 a member of N on `zebra2-hints` (3 ms → 7.5 s,
+/// cut by its budget; S1e2.2.21 T1); the saving it would find is F22's.
 fn fold(
     and_node: &[FactId],
+    searched: usize,
     labels: &FxHashMap<FactId, Vec<Env>>,
     budget: &ExplanationBudget,
 ) -> (Vec<Env>, bool) {
     let mut envs: Vec<Env> = vec![Vec::new()];
     let mut truncated = false;
-    for pid in and_node {
+    let mut read: Env = Vec::new();
+    for pid in &and_node[searched..] {
+        let Some(plabel) = labels.get(pid).filter(|l| !l.is_empty()) else {
+            return (Vec::new(), false); // not derivable yet
+        };
+        read = union(&read, &plabel[0]);
+    }
+    for pid in &and_node[..searched] {
         let Some(plabel) = labels.get(pid).filter(|l| !l.is_empty()) else {
             return (Vec::new(), false); // premise not derivable yet
         };
@@ -409,6 +469,12 @@ fn fold(
         if envs.is_empty() {
             return (Vec::new(), truncated);
         }
+    }
+    if !read.is_empty() {
+        let merged: Vec<Env> = envs.iter().map(|e| union(e, &read)).collect();
+        let (next, cut) = minimise(merged, budget);
+        truncated |= cut;
+        envs = next;
     }
     (envs, truncated)
 }
@@ -440,7 +506,7 @@ fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<En
             };
             let mut candidates: Vec<Env> = Vec::new();
             for and_node in ands {
-                let (envs, cut) = fold(and_node, &labels, budget);
+                let (envs, cut) = fold(&and_node.facts, and_node.searched, &labels, budget);
                 truncated |= cut;
                 candidates.extend(envs);
             }
@@ -475,18 +541,72 @@ pub fn explain(
     targets: &[FactId],
     budget: &ExplanationBudget,
 ) -> Explanation {
-    if targets.is_empty() {
+    let groups: Vec<Vec<FactId>> = targets.iter().map(|&t| vec![t]).collect();
+    explain_groups(kb, terms, &groups, budget)
+}
+
+/// The smallest explanation of any of `contradictions` — **a contradiction's
+/// facts explained together**: a pair's `X` and its `(not X)` as one
+/// AND-node, the smallest union over both sides' environments, and a direct
+/// ⊥'s `(false …)` fact alone ([`crate::contradiction::Contradiction::sides`]).
+/// The smallest across contradictions wins, as in [`explain`], each one's
+/// [`crate::contradiction::Contradiction::witness`] its tie-break and the
+/// [`Explanation::target`].
+///
+/// M1e2 S1e2.2.21 (W21). Until then each contradiction was explained by its
+/// witness alone, a pair's positive side, and the core left out the
+/// derivation of `(not X)`, where a commitment typically is:
+/// `examples/ein-bugs/wrong-answers/pair-core-root-given.ein`'s dead
+/// `{(q a)}` reported `(p a)`, a fact root states, and `zebra2.ein`'s N 201
+/// of 366 such cores. *Jointly* is the stage's default 2: the stage file's
+/// *each side at its smallest* differs on four corpus programs and is never
+/// smaller.
+pub fn contradiction_frontier(
+    kb: &Kb,
+    terms: &Terms,
+    contradictions: &[crate::contradiction::Contradiction],
+    budget: &ExplanationBudget,
+) -> Explanation {
+    let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
+    explain_groups(kb, terms, &groups, budget)
+}
+
+/// [`explain`] over **groups**, each a conjunction of facts explained
+/// together, the first fact of each its target and its tie-break.
+fn explain_groups(
+    kb: &Kb,
+    terms: &Terms,
+    groups: &[Vec<FactId>],
+    budget: &ExplanationBudget,
+) -> Explanation {
+    if groups.is_empty() {
         return Explanation::empty();
     }
-    let g = build_graph(kb, terms, targets, budget);
-    let (labels, rounds, exhausted) = propagate(&g, budget);
+    // Every group's other facts, then the targets, in group order: the
+    // closure is walked from the end, so the targets are expanded first, as
+    // they were when each group was its target alone. Only `max_facts`
+    // truncation can see the order.
+    let mut roots: Vec<FactId> = groups.iter().flat_map(|g| g[1..].iter().copied()).collect();
+    roots.extend(groups.iter().map(|g| g[0]));
+    let g = build_graph(kb, terms, &roots, budget);
+    let (labels, rounds, mut exhausted) = propagate(&g, budget);
 
     let mut best: Option<((usize, Env, u32), FactId, Env)> = None;
-    for &t in targets {
-        let Some(label) = labels.get(&t).filter(|l| !l.is_empty()) else {
-            continue;
+    for group in groups {
+        let t = group[0];
+        let env = if let [one] = group.as_slice() {
+            let Some(label) = labels.get(one).filter(|l| !l.is_empty()) else {
+                continue;
+            };
+            label[0].clone() // smallest, already sorted
+        } else {
+            let (envs, cut) = fold(group, group.len(), &labels, budget);
+            exhausted &= !cut;
+            let Some(env) = envs.into_iter().next() else {
+                continue;
+            };
+            env
         };
-        let env = label[0].clone(); // smallest, already sorted
         let key = (
             env.len(),
             env.clone(),
@@ -502,7 +622,7 @@ pub fn explain(
             // The closure blew the `max_facts` valve before any target got a
             // label. Degrade to the pre-S1.21.7 answer rather than returning
             // nothing or, worse, passing derived facts off as givens.
-            return recorded_fallback(kb, terms, targets, rounds, considered);
+            return fallback_groups(kb, terms, groups, rounds, considered);
         }
         return Explanation {
             exhausted,
@@ -543,10 +663,35 @@ pub fn recorded_fallback(
     rounds: usize,
     considered: usize,
 ) -> Explanation {
+    let groups: Vec<Vec<FactId>> = targets.iter().map(|&t| vec![t]).collect();
+    fallback_groups(kb, terms, &groups, rounds, considered)
+}
+
+/// [`recorded_fallback`] for `contradictions`, each one's facts walked
+/// together, a pair's two sides (M1e2 S1e2.2.21): what [`contradiction_frontier`]
+/// degrades to past `max_facts`. `pub` for `shape::explain_shape`, as
+/// [`recorded_fallback`] is.
+pub fn recorded_contradiction_fallback(
+    kb: &Kb,
+    terms: &Terms,
+    contradictions: &[crate::contradiction::Contradiction],
+) -> Explanation {
+    let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
+    fallback_groups(kb, terms, &groups, 0, 0)
+}
+
+fn fallback_groups(
+    kb: &Kb,
+    terms: &Terms,
+    groups: &[Vec<FactId>],
+    rounds: usize,
+    considered: usize,
+) -> Explanation {
     let mut best: Option<((usize, String), FactId, Vec<FactId>)> = None;
-    for &t in targets {
+    for group in groups {
+        let t = group[0];
         let mut core =
-            ein_core::walks::unsat_core(kb, terms, &[t], ein_core::walks::Justifications::Primary);
+            ein_core::walks::unsat_core(kb, terms, group, ein_core::walks::Justifications::Primary);
         core.sort_unstable();
         core.dedup();
         if core.is_empty() {
@@ -580,8 +725,10 @@ pub fn recorded_fallback(
 
 /// The smallest explanation of any contradiction in `kb`.
 ///
-/// `witnesses` defaults to the witness fact of every contradiction the
-/// detector finds; a consistent KB yields an empty [`Explanation`].
+/// `None` explains every contradiction the detector finds, each one's facts
+/// together ([`contradiction_frontier`]; until M1e2 S1e2.2.21 each by its
+/// witness alone). `Some(facts)` explains each of `facts` alone, as
+/// [`explain`] does; a consistent KB yields an empty [`Explanation`].
 pub fn minimal_contradiction_frontier(
     kb: &Kb,
     terms: &Terms,
@@ -590,13 +737,7 @@ pub fn minimal_contradiction_frontier(
 ) -> Explanation {
     match witnesses {
         Some(w) => explain(kb, terms, w, budget),
-        None => {
-            let w: Vec<FactId> = crate::contradiction::detect(kb, terms)
-                .iter()
-                .map(|c| c.witness())
-                .collect();
-            explain(kb, terms, &w, budget)
-        }
+        None => contradiction_frontier(kb, terms, &crate::contradiction::detect(kb, terms), budget),
     }
 }
 

@@ -2041,3 +2041,55 @@ fn a_dead_nodes_core_follows_an_activator_only_a_node_derives() {
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
+
+/// **A contradiction's core covers what it rests on: both sides of a pair, and
+/// the facts a `forall` read** — M1e2 S1e2.2.21, W21, on the user's ruling of
+/// 2026-11-05 on Q-M1e2.15, (b).
+///
+/// Until S1e2.2.21 the core search explained a contradiction by its witness
+/// alone, a pair's positive `X`, and a firing recorded none of the facts its
+/// universal read: `pair-core-root-given`'s dead `{(q a)}` reported `(p a)`,
+/// which the program states, `pair-core-root-derived`'s `(seed a)`,
+/// `forall-core-false`'s `{(tag s1), (tag s2)}` `(item a)` and
+/// `forall-core-elim`'s `{(tag s1)}` `(item a) (slot s1)`, each a set of facts
+/// root holds while root is alive; and `pair-core-root-negative`'s `(q a)`,
+/// which named the commitment and left out the stated `(not (p a))`. Every
+/// dead node of each cube reports the core below, which names its commitment
+/// and, with root, derives the contradiction.
+#[test]
+fn a_contradictions_core_covers_both_sides_and_what_a_forall_read() {
+    let dir = "examples/ein-bugs/wrong-answers";
+    let cases: [(&str, &[&str]); 5] = [
+        ("pair-core-root-given", &["(p a)", "(q a)"]),
+        ("pair-core-root-derived", &["(q a)", "(seed a)"]),
+        ("pair-core-root-negative", &["(not (p a))", "(q a)"]),
+        ("forall-core-false", &["(item a)", "(tag s1)", "(tag s2)"]),
+        (
+            "forall-core-elim",
+            &["(item a)", "(not (in a s2))", "(slot s1)", "(tag s1)"],
+        ),
+    ];
+    let mut bad = Vec::new();
+    for (name, want) in cases {
+        let rel = format!("{dir}/{name}.ein");
+        let (r, _) = region_of(&rel);
+        let mut dead = 0;
+        for (mask, node) in r.nodes.iter().enumerate() {
+            if r.status[mask] & region::DEAD == 0 {
+                continue;
+            }
+            dead += 1;
+            if node.core != want {
+                bad.push(format!(
+                    "{name}: dead {} reports core {:?}, where it rests on {want:?}",
+                    r.name(mask as u64),
+                    node.core
+                ));
+            }
+        }
+        if dead == 0 {
+            bad.push(format!("{name}: no dead node"));
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}

@@ -350,13 +350,36 @@ pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
 /// already re-interned those names into the reconstructed `Ast`, so the
 /// position still says where the fact came from rather than pointing into the
 /// canonical text the reader is about to parse.
-pub fn read_prov(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<ProvTables> {
+///
+/// `universal` is the `UNIVERSAL` section's body (format 1.2), whose rows are
+/// written into their records before the records are pushed: the arena is
+/// append-only.
+pub fn read_prov(
+    body: &[u8],
+    universal: Option<&[u8]>,
+    terms: &mut Terms,
+    maps: &mut Maps,
+) -> Result<ProvTables> {
+    let mut rows: Vec<(u32, Box<[FactId]>)> = match universal {
+        Some(u) => read_universal(u, maps)?,
+        None => Vec::new(),
+    };
+    rows.reverse();
     let mut r = Reader::new(body);
     let n = r.count(9)?;
     maps.prov = Vec::with_capacity(n);
-    for _ in 0..n {
-        let record = read_record(&mut r, maps)?;
+    for i in 0..n {
+        let mut record = read_record(&mut r, maps)?;
+        if rows.last().is_some_and(|(at, _)| *at as usize == i) {
+            record.universal = rows.pop().expect("just seen").1;
+        }
         maps.prov.push(terms.provs.push(record));
+    }
+    if let Some((at, _)) = rows.last() {
+        return Err(EinbError::BadId {
+            what: "prov",
+            id: *at,
+        });
     }
     let mut out = ProvTables {
         primary: vec![None; terms.facts.len()],
@@ -478,6 +501,8 @@ fn read_record(r: &mut Reader<'_>, maps: &Maps) -> Result<Prov> {
         // core follows only an activator a node derived or committed
         // (`ein_core::walks::node_activator`), never root's.
         activator: None,
+        // Restored from `UNIVERSAL` (format 1.2) by `read_prov`.
+        universal: Box::new([]),
     })
 }
 
@@ -704,6 +729,58 @@ pub fn read_nogoods(body: &[u8], kb: &Kb, maps: &Maps) -> Result<()> {
         store.insert(clause.into_boxed_slice());
     }
     Ok(())
+}
+
+// ── UNIVERSAL ──────────────────────────────────────────────────────
+
+/// The facts each derivation record's universals read
+/// ([`ein_core::Prov::universal`], M1e2 S1e2.2.21): a row per record that
+/// has some, by its position in the arena as `PROV` writes it, ascending.
+/// Root's derivations carry them as a node's do, and a node's core follows
+/// root's facts down to their frontiers, so a `.einb` that dropped them would
+/// report other cores than its `.ein`. Empty when no record has any, and
+/// then not written.
+pub fn write_universal(terms: &Terms) -> Vec<u8> {
+    let rows: Vec<(u32, &[FactId])> = terms
+        .provs
+        .scan()
+        .enumerate()
+        .filter(|(_, p)| !p.universal.is_empty())
+        .map(|(i, p)| (i as u32, &p.universal[..]))
+        .collect();
+    if rows.is_empty() {
+        return Vec::new();
+    }
+    let mut w = Writer::new();
+    w.u32(rows.len() as u32);
+    for (at, facts) in rows {
+        w.u32(at);
+        w.u32(facts.len() as u32);
+        for f in facts {
+            w.u32(f.0);
+        }
+    }
+    w.align(crate::header::ALIGN);
+    w.into_vec()
+}
+
+fn read_universal(body: &[u8], maps: &Maps) -> Result<Vec<(u32, Box<[FactId]>)>> {
+    let mut r = Reader::new(body);
+    let n = r.count(8)?;
+    let mut out: Vec<(u32, Box<[FactId]>)> = Vec::with_capacity(n);
+    for _ in 0..n {
+        let at = r.u32()?;
+        if out.last().is_some_and(|(prev, _)| *prev >= at) {
+            return Err(EinbError::Malformed("UNIVERSAL rows are not ascending"));
+        }
+        let len = r.count(4)?;
+        let mut facts = Vec::with_capacity(len);
+        for _ in 0..len {
+            facts.push(maps.fact(r.u32()?)?);
+        }
+        out.push((at, facts.into_boxed_slice()));
+    }
+    Ok(out)
 }
 
 // ── CLOSURE ────────────────────────────────────────────────────────

@@ -169,6 +169,24 @@ pub struct Prov {
     /// 2026-11-04). A `.einb` does not store it: it holds root's KB, whose
     /// activators no reader follows.
     pub activator: Option<FactId>,
+    /// The facts the firing's **universals** read: for each `(absent (and G
+    /// (absent B)))` among its guards that held, a `forall`'s shape, the
+    /// facts `B` matched for each match of `G`, in the order the guard's walk
+    /// found them. Empty for a firing with no universal, and for every record
+    /// that is not a firing.
+    ///
+    /// M1e2 S1e2.2.21, on the user's ruling of 2026-11-05 on Q-M1e2.15, (b).
+    /// A universal that holds rests on facts: `total`'s `(false)` rests on
+    /// the `(not (R a b))` that exclude every `b`, and records the two facts
+    /// its plan matched. Until S1e2.2.21 no record named them, and a core
+    /// left them out (`examples/ein-bugs/wrong-answers/forall-core-false.ein`
+    /// reported `(item a)`, root's). The core search folds each in at its own
+    /// smallest frontier ([`crate::walks::walk_premises`] follows them too),
+    /// and a `.einb` stores them, since root's derivations carry them as a
+    /// node's do. Not part of [`Prov::same_justification`]: a firing's
+    /// bindings fix its universals' domains, and the engine fires a binding
+    /// once.
+    pub universal: Box<[FactId]>,
 }
 
 impl Prov {
@@ -220,6 +238,7 @@ impl Prov {
             branch: None,
             loc: None,
             activator: None,
+            universal: Box::new([]),
         }
     }
 

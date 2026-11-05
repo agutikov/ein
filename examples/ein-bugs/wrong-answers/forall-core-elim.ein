@@ -1,0 +1,50 @@
+;;; A pair one of whose sides is concluded through a `forall`: the core leaves
+;;; out the facts the universal read, and names none of the commitment —
+;;; M1e2 **W21**, register row `W21/forall-core-elim`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.21 (2026-11-05), found
+;;; measuring W21's fix (Q-M1e2.15).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The program states `(not (in a s2))`. `elim` concludes `(in ?x ?t)` when
+;;; every other slot excludes `?x`, through `(forall ?s (and (slot ?s) (neq
+;;; ?s ?t)) (not (in ?x ?s)))`, the stdlib's elimination shape: root derives
+;;; `(in a s1)` from the stated exclusion. Two candidates, `(tag s1)` and
+;;; `(tag s2)`; `(tag s1)` excludes `a` from `s1`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is ∅ and {(tag s2)}, and N is {(tag s1)}: committed, `(tag s1)` derives
+;;; `(not (in a s1))` against root's `(in a s1)`, a pair, and `elim` derives
+;;; `(in a s2)` from it against the stated `(not (in a s2))`, a second. Each
+;;; pair rests on both its sides, and `elim`'s side on the exclusion its
+;;; universal read: the first rests on `(item a) (slot s1) (not (in a s2))`
+;;; and `(tag s1)`, the second on `(item a) (slot s2) (not (in a s2))` and
+;;; `(tag s1)`. The core is the smaller in the engine's order, `(item a) (not
+;;; (in a s2)) (slot s1) (tag s1)`, which names the commitment.
+;;;
+;;; ── What the engine answered, and what holds since ─────────────────────
+;;;
+;;; Until S1e2.2.21, N's core `(item a) (slot s1)`, by `(given)` and `elim`,
+;;; the first pair's positive side without what its universal read
+;;; (`ein solve FILE --dump-answer DIR` at `a98a94e3`, release and debug).
+;;; With a pair's two sides explained together and nothing more, `(item a)
+;;; (not (in a s2)) (slot s2)`: the second pair, its `elim` side again
+;;; without what it read, and still no commitment. Since S1e2.2.21's fix, on
+;;; the user's ruling of 2026-11-05 on Q-M1e2.15 (b), `(item a) (not (in a
+;;; s2)) (slot s1) (tag s1)`, in either build.
+
+(import std.macro :symbols (forall))
+
+(relation item T) (relation slot T) (relation in T T) (relation tag T)
+
+(item a) (slot s1) (slot s2)
+(not (in a s2))
+
+(hrule g () :match (slot ?s) :assert (tag ?s))
+
+(rule ex () :match (and (item ?x) (tag ?s)) :assert (not (in ?x ?s)))
+
+(rule elim () :match (and (item ?x) (slot ?t)
+                         (forall ?s (and (slot ?s) (neq ?s ?t)) (not (in ?x ?s))))
+  :assert (in ?x ?t))

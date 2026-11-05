@@ -453,10 +453,11 @@ pub fn explain_shape(
         )
     };
 
-    let witnesses: Vec<FactId> = crate::contradiction::detect(kb, terms)
-        .iter()
-        .map(|c| c.witness())
-        .collect();
+    // Each contradiction's witness, which the walk's `CORE` line unions as it
+    // always has; the search's lines explain each contradiction's sides
+    // together (M1e2 S1e2.2.21).
+    let contradictions = crate::contradiction::detect(kb, terms);
+    let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
     let mut core = ein_core::walks::unsat_core(
         kb,
         terms,
@@ -465,7 +466,7 @@ pub fn explain_shape(
     );
     core.sort_unstable();
     core.dedup();
-    let scf = crate::explain::smallest_contradiction_frontier(kb, terms, Some(&witnesses));
+    let scf = crate::explain::smallest_contradiction_frontier(kb, terms, None);
     let budget = ExplanationBudget::default();
     let tight = ExplanationBudget {
         max_environments: 1,
@@ -481,13 +482,19 @@ pub fn explain_shape(
         ),
         format!("CORE {} {}", core.len(), show(&core)),
         format!("SCF {} {}", scf.len(), show(&scf)),
-        line("CONTRA", &explain(kb, terms, &witnesses, &budget)),
+        line(
+            "CONTRA",
+            &crate::explain::contradiction_frontier(kb, terms, &contradictions, &budget),
+        ),
         // The **multi-target** budget cut, which is the only way to reach
         // `recorded_fallback`'s tie-break: with one target its key never has
         // to break a tie, and `zebra2-bad` offers many
         // (`explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`
         // is the count's owner — M1e `MA-M4`).
-        line("CONTRA-TIGHT", &explain(kb, terms, &witnesses, &tight)),
+        line(
+            "CONTRA-TIGHT",
+            &crate::explain::contradiction_frontier(kb, terms, &contradictions, &tight),
+        ),
         // The fallback's tie-break, reached on purpose. It only decides when
         // two targets tie on core *size*, and on this corpus the smallest tie
         // is won by the same witness whichever way it is broken —
@@ -496,9 +503,9 @@ pub fn explain_shape(
         // two, so dropping the sorted-`repr` half of the key
         // becomes visible instead of being a comment nobody can check.
         line("FALLBACK-REV", &{
-            let mut rev = witnesses.clone();
+            let mut rev = contradictions.clone();
             rev.reverse();
-            crate::explain::recorded_fallback(kb, terms, &rev, 0, 0)
+            crate::explain::recorded_contradiction_fallback(kb, terms, &rev)
         }),
     ];
 

@@ -397,6 +397,20 @@
 # paused on that question. A row's `wrong` is a region run's at `cdcc3994`.
 # The register reads **68 rows fixed, 6 open and 1 not-wrong**.
 #
+# **The user ruled Q-M1e2.15 (b) the same day, and S1e2.2.21 fixed W21**
+# (T1e2.2.21.2): a contradiction's facts are explained together, a pair's two
+# sides as one AND-node, and a derivation through a `forall` rests on each
+# fact its universal read, each at its own smallest frontier. The `forall`
+# gap, a contradiction other than a pair with W21's defect, is two more rows
+# of W21, `forall-core-false` and `forall-core-elim`, filed and fixed in the
+# same commit, and the case's title became what both halves share: the same
+# defect of the core, one fix site and one corpus-wide test. The residual
+# (b) leaves, cores the exact search would give smaller (13 of
+# `zebra2-hints`' 73 N cores, S1e2.2.21 T1), is F22's and no row's. Each
+# flipped row's `[case.fixed]` carried the null id in the flipping commit,
+# and the stage's next commit wrote the hash. The register reads **74 rows
+# fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -4906,20 +4920,24 @@ models    = [
   ["(tag a)"],
 ]
 
-# ══ W21 — a pair contradiction's core names only its positive side ═══════════
+# ══ W21 — a contradiction's core leaves out what it rests on ══════════════════
 [[case]]
 id       = "W21/pair-core-root-given"
 case     = "W21"
-title    = "a pair contradiction's core names only its positive side"
+title    = "a contradiction's core leaves out what it rests on: a pair's other side, or the facts a forall read"
 class    = "core"
 settings = "default"
 owner    = "S1e2.2.21"
 question = ["Q-M1e2.11", "Q-M1e2.15"]
 witness  = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
-status   = "open"
-open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05) from S1e2.2.19 § Notes' first note, which found the defect measuring every core the corpus reports; the witness is its mechanism in four lines. Schema /8 (`nogoods`, --dump-answer's nogoods.json). Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides (jointly or each at its smallest)"
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05) from S1e2.2.19 § Notes' first note, which found the defect measuring every core the corpus reports; the witness is its mechanism in four lines. Schema /8 (`nogoods`, --dump-answer's nogoods.json). Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides (jointly or each at its smallest). Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve"
@@ -4954,21 +4972,25 @@ relations = ["q"]
 models    = [
   [],
 ]
-nogoods   = [{ set = ["(q a)"], core = ["(p a)"] }]
+nogoods   = [{ set = ["(q a)"], core = ["(p a)", "(q a)"] }]
 
 [[case]]
 id       = "W21/pair-core-root-derived"
 case     = "W21"
-title    = "a pair contradiction's core names only its positive side"
+title    = "a contradiction's core leaves out what it rests on: a pair's other side, or the facts a forall read"
 class    = "core"
 settings = "default"
 owner    = "S1e2.2.21"
 question = ["Q-M1e2.11", "Q-M1e2.15"]
 witness  = "examples/ein-bugs/wrong-answers/pair-core-root-derived.ein"
-status   = "open"
-open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): the witness one derivation deeper, the pair's positive side derived at root rather than stated. Its right is the same under each reading of Q-M1e2.15"
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): the witness one derivation deeper, the pair's positive side derived at root rather than stated. Its right is the same under each reading of Q-M1e2.15. Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve"
@@ -5004,21 +5026,25 @@ outside   = ["p"]
 models    = [
   [],
 ]
-nogoods   = [{ set = ["(q a)"], core = ["(seed a)"] }]
+nogoods   = [{ set = ["(q a)"], core = ["(q a)", "(seed a)"] }]
 
 [[case]]
 id       = "W21/typed-blind-solve"
 case     = "W21"
-title    = "a pair contradiction's core names only its positive side"
+title    = "a contradiction's core leaves out what it rests on: a pair's other side, or the facts a forall read"
 class    = "core"
 settings = "default"
 owner    = "S1e2.2.21"
 question = ["Q-M1e2.11", "Q-M1e2.15"]
 witness  = "examples/branching/12_typed_blind_solve.ein"
-status   = "open"
-open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 10 of N's 25, each (color-of H1 Red), the program's own clue. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides. The other corpus programs W21 bites are held by the corpus-wide test instead (S1e2.2.21's step 4, the stage file says which)"
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 10 of N's 25, each (color-of H1 Red), the program's own clue. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides. The other corpus programs W21 bites are held by the corpus-wide test instead (S1e2.2.21's step 4, the stage file says which). Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve"
@@ -5123,16 +5149,16 @@ nogoods   = [
   { set = ["(color-of Green Red)"], core = ["(color-of Green Red)"] },
   { set = ["(color-of H1 H2)"], core = ["(color-of H1 H2)"] },
   { set = ["(color-of H1 H3)"], core = ["(color-of H1 H3)"] },
-  { set = ["(color-of H2 Blue)", "(color-of H2 Green)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H2 Blue)", "(color-of H3 Blue)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H2 Green)", "(color-of H3 Green)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H2 H1)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H2 H3)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H3 Blue)", "(color-of H3 Green)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H3 H1)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of H3 H2)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of Red Blue)"], core = ["(color-of H1 Red)"] },
-  { set = ["(color-of Red Green)"], core = ["(color-of H1 Red)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H2 Green)"], core = ["(color-of H2 Blue)", "(color-of H2 Green)"] },
+  { set = ["(color-of H2 Blue)", "(color-of H3 Blue)"], core = ["(color-of H2 Blue)", "(color-of H3 Blue)"] },
+  { set = ["(color-of H2 Green)", "(color-of H3 Green)"], core = ["(color-of H2 Green)", "(color-of H3 Green)"] },
+  { set = ["(color-of H2 H1)"], core = ["(color-of H2 H1)"] },
+  { set = ["(color-of H2 H3)"], core = ["(color-of H2 H3)"] },
+  { set = ["(color-of H3 Blue)", "(color-of H3 Green)"], core = ["(color-of H3 Blue)", "(color-of H3 Green)"] },
+  { set = ["(color-of H3 H1)"], core = ["(color-of H3 H1)"] },
+  { set = ["(color-of H3 H2)"], core = ["(color-of H3 H2)"] },
+  { set = ["(color-of Red Blue)"], core = ["(color-of Red Blue)"] },
+  { set = ["(color-of Red Green)"], core = ["(color-of Red Green)"] },
   { set = ["(color-of Red H1)"], core = ["(color-of Red H1)"] },
   { set = ["(color-of Red H2)"], core = ["(color-of Red H2)"] },
   { set = ["(color-of Red H3)"], core = ["(color-of Red H3)"] },
@@ -5141,16 +5167,20 @@ nogoods   = [
 [[case]]
 id       = "W21/blind-enumeration"
 case     = "W21"
-title    = "a pair contradiction's core names only its positive side"
+title    = "a contradiction's core leaves out what it rests on: a pair's other side, or the facts a forall read"
 class    = "core"
 settings = "default"
 owner    = "S1e2.2.21"
 question = ["Q-M1e2.11", "Q-M1e2.15"]
 witness  = "tests/stdlib/bijection/06_blind_enumeration.ein"
-status   = "open"
-open_because = "N's cores name the positive side of a pair contradiction alone: explain.rs explains each contradiction by its witness, and a pair's witness is its positive X (contradiction::Contradiction::witness), so a core leaves out the derivation of (not X), where the commitment is. The fix explains a pair's two sides together (S1e2.2.21); the stage is paused on Q-M1e2.15, put to the user by T1e2.2.21.1 (2026-11-05), which this row's right does not depend on"
+status   = "fixed"
 look_at  = ["answer", "trace", "events enter"]
-note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 7 of N's 16, each (seats Ann C1), the program's stated fact; the oracle's cube reports 32 512 more. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides"
+note     = "Filed by S1e2.2.21 (T1e2.2.21.1, 2026-11-05): a corpus program on which S1e2.2.19's measurement found cores naming none of their commitment, 7 of N's 16, each (seats Ann C1), the program's stated fact; the oracle's cube reports 32 512 more. Its right is the same under each reading of Q-M1e2.15 and under either reading of a pair's two sides. Fixed by T1e2.2.21.2: N's cores are right's, in either build, on every surface that reports them, and `ein oracle` agrees"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
+date   = "2026-11-05"
 
 [case.wrong]
 run       = "solve"
@@ -5221,22 +5251,135 @@ models    = [
 ]
 nogoods   = [
   { set = ["(seats Ann Bob)"], core = ["(seats Ann Bob)"] },
-  { set = ["(seats Ann Sortal)"], core = ["(seats Ann C1)"] },
-  { set = ["(seats Bob Ann)"], core = ["(seats Ann C1)"] },
-  { set = ["(seats Bob Sortal)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Ann Sortal)"], core = ["(seats Ann Sortal)"] },
+  { set = ["(seats Bob Ann)"], core = ["(seats Bob Ann)"] },
+  { set = ["(seats Bob Sortal)"], core = ["(seats Bob Sortal)"] },
   { set = ["(seats C1 Ann)"], core = ["(seats C1 Ann)"] },
   { set = ["(seats C1 Bob)"], core = ["(seats C1 Bob)"] },
-  { set = ["(seats C1 C2)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C1 C2)"], core = ["(seats C1 C2)"] },
   { set = ["(seats C1 Sortal)"], core = ["(seats C1 Sortal)"] },
   { set = ["(seats C2 Ann)"], core = ["(seats C2 Ann)"] },
   { set = ["(seats C2 Bob)"], core = ["(seats C2 Bob)"] },
-  { set = ["(seats C2 C1)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats C2 C1)"], core = ["(seats C2 C1)"] },
   { set = ["(seats C2 Sortal)"], core = ["(seats C2 Sortal)"] },
   { set = ["(seats Sortal Ann)"], core = ["(seats Sortal Ann)"] },
   { set = ["(seats Sortal Bob)"], core = ["(seats Sortal Bob)"] },
-  { set = ["(seats Sortal C1)"], core = ["(seats Ann C1)"] },
-  { set = ["(seats Sortal C2)"], core = ["(seats Ann C1)"] },
+  { set = ["(seats Sortal C1)"], core = ["(seats Sortal C1)"] },
+  { set = ["(seats Sortal C2)"], core = ["(seats Sortal C2)"] },
 ]
+
+[[case]]
+id       = "W21/forall-core-false"
+case     = "W21"
+title    = "a contradiction's core leaves out what it rests on: a pair's other side, or the facts a forall read"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.21"
+question = ["Q-M1e2.11", "Q-M1e2.15"]
+witness  = "examples/ein-bugs/wrong-answers/forall-core-false.ein"
+status   = "fixed"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed and fixed by S1e2.2.21 (T1e2.2.21.2, 2026-11-05), found by T1e2.2.21.1 measuring W21's fix: a (false) concluded through a forall, whose core left out every fact its universal read, a contradiction other than a pair with W21's defect. Filed as a row of W21, not a case of its own: the same defect of the core (it leaves out facts its contradiction rests on), the same fix site and the same corpus-wide test, and the stage fixes both (the choice recorded in S1e2.2.21's stage file). The residual Q-M1e2.15 (b) leaves, a core the exact search would give smaller, is F22's and no row's"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
+date   = "2026-11-05"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at a98a94e3 (2026-11-05): R ∅, {(tag s1)}, {(tag s2)}; N {(tag s1), (tag s2)}, whose core is (item a) by full in --dump-answer's nogoods.json, and the same in --dump-lattice's nodes.json, --events' enter line, --trace and `ein oracle --dump`'s region.json; a pair's sides explained together moves nothing here, since there is no pair"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [{ set = ["(tag s1)", "(tag s2)"], core = ["(item a)"] }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [
+  ["(tag s1)"],
+  ["(tag s2)"],
+]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+nogoods   = [{ set = ["(tag s1)", "(tag s2)"], core = ["(item a)", "(tag s1)", "(tag s2)"] }]
+derived   = "The (false) rests on (item a), which full matched, and on the facts its universal read, (not (in a s1)) and (not (in a s2)), which ex derives from (tag s1) and (tag s2): the core is (item a) (tag s1) (tag s2), which names the commitment and derives (false) with the program's rules (Q-M1e2.15 (b), each fact the universal read at its own smallest frontier)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 3
+relations = ["tag"]
+models    = [
+  [],
+  ["(tag s1)"],
+  ["(tag s2)"],
+]
+nogoods   = [{ set = ["(tag s1)", "(tag s2)"], core = ["(item a)", "(tag s1)", "(tag s2)"] }]
+
+[[case]]
+id       = "W21/forall-core-elim"
+case     = "W21"
+title    = "a contradiction's core leaves out what it rests on: a pair's other side, or the facts a forall read"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.21"
+question = ["Q-M1e2.11", "Q-M1e2.15"]
+witness  = "examples/ein-bugs/wrong-answers/forall-core-elim.ein"
+status   = "fixed"
+look_at  = ["answer", "trace", "events enter"]
+note     = "Filed and fixed by S1e2.2.21 (T1e2.2.21.2, 2026-11-05): a pair one of whose sides elim concludes through a forall, the stdlib's elimination shape. It needs both halves of the fix: with a pair's sides explained together and nothing more its core is (item a) (not (in a s2)) (slot s2), still root's"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.21 (T1e2.2.21.2): a contradiction's facts explained together, a pair's two sides as one AND-node, and a derivation through a forall resting on each fact its universal read, each at its own smallest frontier (Q-M1e2.15 (b), ruled 2026-11-05)"
+date   = "2026-11-05"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at a98a94e3 (2026-11-05): R ∅ and {(tag s2)}; N {(tag s1)}, whose core is (item a) (slot s1) by (given) and elim, root's, on every surface that reports it; under T1e2.2.21.1's prototype of the pair fix alone, (item a) (not (in a s2)) (slot s2)"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(tag s1)"], core = ["(item a)", "(slot s1)"] }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(tag s2)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+nogoods   = [{ set = ["(tag s1)"], core = ["(item a)", "(not (in a s2))", "(slot s1)", "(tag s1)"] }]
+derived   = "Each of the node's two pairs rests on both its sides, and elim's side on the exclusion its universal read: (in a s1), root's through (not (in a s2)), against (not (in a s1)) from (tag s1); and (in a s2), through (not (in a s1)) from (tag s1), against the stated (not (in a s2)). Both cores are four facts, (item a) (not (in a s2)) (slot s1) (tag s1) and (item a) (not (in a s2)) (slot s2) (tag s1), and the engine's order takes the first; either names the commitment"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["tag"]
+outside   = ["in"]
+models    = [
+  [],
+  ["(tag s2)"],
+]
+nogoods   = [{ set = ["(tag s1)"], core = ["(item a)", "(not (in a s2))", "(slot s1)", "(tag s1)"] }]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

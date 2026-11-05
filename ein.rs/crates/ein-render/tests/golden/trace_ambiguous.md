@@ -415,7 +415,7 @@ Refuted by `functional`.
 <details>
 <summary>{(color-of H2 H1)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H2 H1)`
 
 Refuted by `no-room-left`.
 
@@ -424,7 +424,7 @@ Refuted by `no-room-left`.
 <details>
 <summary>{(color-of H2 H3)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H2 H3)`
 
 Refuted by `no-room-left`.
 
@@ -433,7 +433,7 @@ Refuted by `no-room-left`.
 <details>
 <summary>{(color-of H3 H1)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H3 H1)`
 
 Refuted by `no-room-left`.
 
@@ -442,7 +442,7 @@ Refuted by `no-room-left`.
 <details>
 <summary>{(color-of H3 H2)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H3 H2)`
 
 Refuted by `no-room-left`.
 
@@ -451,7 +451,7 @@ Refuted by `no-room-left`.
 <details>
 <summary>{(color-of Red Blue)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of Red Blue)`
 
 Refuted by `typecheck-arg-0`.
 
@@ -460,7 +460,7 @@ Refuted by `typecheck-arg-0`.
 <details>
 <summary>{(color-of Red Green)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of Red Green)`
 
 Refuted by `typecheck-arg-0`.
 
@@ -496,7 +496,7 @@ Refuted by `typecheck-arg-0`.
 <details>
 <summary>{(color-of H2 Blue), (color-of H2 Green)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H2 Blue)`, `(color-of H2 Green)`
 
 Refuted by `functional`.
 
@@ -505,7 +505,7 @@ Refuted by `functional`.
 <details>
 <summary>{(color-of H2 Blue), (color-of H3 Blue)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H2 Blue)`, `(color-of H3 Blue)`
 
 Refuted by `injective`.
 
@@ -514,7 +514,7 @@ Refuted by `injective`.
 <details>
 <summary>{(color-of H2 Green), (color-of H3 Green)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H2 Green)`, `(color-of H3 Green)`
 
 Refuted by `injective`.
 
@@ -523,7 +523,7 @@ Refuted by `injective`.
 <details>
 <summary>{(color-of H3 Blue), (color-of H3 Green)} — dead</summary>
 
-Core: `(color-of H1 Red)`
+Core: `(color-of H3 Blue)`, `(color-of H3 Green)`
 
 Refuted by `functional`.
 

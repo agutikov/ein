@@ -1106,19 +1106,31 @@ note   = "M1e2 W20's twin of `wild-in-hrule.ein`, banked by S1e2.2.20: `_` writt
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-given.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W21 (`W21/pair-core-root-given`), banked by S1e2.2.21 from S1e2.2.19 § Notes: the commitment `(q a)` derives `(not (p a))`, and the program states `(p a)`, a pair contradiction. R {∅}; N {(q a)}, whose core is `(p a)` alone, root's, where the pair rests on both sides: the core search explains a pair by its positive side alone. Right: `(p a) (q a)`."
+note   = "M1e2 W21 (`W21/pair-core-root-given`), banked by S1e2.2.21 from S1e2.2.19 § Notes: the commitment `(q a)` derives `(not (p a))`, and the program states `(p a)`, a pair contradiction. R {∅}; N {(q a)}, whose core was `(p a)` alone, root's, where the pair rests on both sides: the core search explained a pair by its positive side alone. Since S1e2.2.21's fix the same day: `(p a) (q a)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-derived.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W21 (`W21/pair-core-root-derived`), banked by S1e2.2.21: the witness one derivation deeper, `(p a)` derived at root from `(seed a)`. R {∅}; N {(q a)}, whose core is `(seed a)` alone, the positive side's frontier. Right: `(q a) (seed a)`."
+note   = "M1e2 W21 (`W21/pair-core-root-derived`), banked by S1e2.2.21: the witness one derivation deeper, `(p a)` derived at root from `(seed a)`. R {∅}; N {(q a)}, whose core was `(seed a)` alone, the positive side's frontier. Since S1e2.2.21's fix the same day: `(q a) (seed a)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forall-core-false.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W21 (`W21/forall-core-false`), banked by S1e2.2.21, found measuring W21's fix: a `(false)` concluded through a `forall`, every slot excluding `a`. R ∅, {(tag s1)}, {(tag s2)}; N {(tag s1), (tag s2)}, whose core was `(item a)` alone, root's: a firing recorded none of the facts its universal read. Since S1e2.2.21's fix (Q-M1e2.15 (b)): `(item a) (tag s1) (tag s2)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forall-core-elim.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W21 (`W21/forall-core-elim`), banked by S1e2.2.21: a pair one of whose sides `elim` concludes through a `forall`, the stdlib's elimination shape. R ∅ and {(tag s2)}; N {(tag s1)}, whose core was `(item a) (slot s1)`, root's, and with a pair's sides explained together and nothing more `(item a) (not (in a s2)) (slot s2)`, still root's. Since S1e2.2.21's fix (Q-M1e2.15 (b)): `(item a) (not (in a s2)) (slot s1) (tag s1)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/pair-core-root-negative.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W21's boundary, banked by S1e2.2.21: the pair's negative side is the program's, `(not (p a))`, and the commitment derives `(p a)`. R {∅}; N {(q a)}, whose core `(q a)` names the commitment, the positive side's frontier, and leaves out the stated `(not (p a))`; the fix grows it to `(not (p a)) (q a)`. No row: it names its commitment either way."
+note   = "M1e2 W21's boundary, banked by S1e2.2.21: the pair's negative side is the program's, `(not (p a))`, and the commitment derives `(p a)`. R {∅}; N {(q a)}, whose core `(q a)` named the commitment, the positive side's frontier, and left out the stated `(not (p a))`; since S1e2.2.21's fix the same day it is `(not (p a)) (q a)`. No row: it names its commitment either way."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

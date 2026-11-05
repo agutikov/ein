@@ -206,7 +206,8 @@ fn resolve(
 /// closure/world boundary for this firing to be admitted (S1.21.8). They ride
 /// on the **same** provenance as the positive premises, so a conclusion
 /// records the whole of what it depends on — positive and negative — rather
-/// than only the facts it consumed.
+/// than only the facts it consumed. `universal` are the facts its
+/// universals read ([`ein_core::Prov::universal`], M1e2 S1e2.2.21).
 pub fn fire(
     kb: &mut Kb,
     terms: &mut Terms,
@@ -214,12 +215,13 @@ pub fn fire(
     plan: &Plan,
     env: Env<'_>,
     absent: Box<[NafRef]>,
+    universal: Box<[FactId]>,
 ) -> Result<Option<Firing>, FireError> {
     if plan.asserts.is_empty() {
         return Ok(None);
     }
     let bindings: Box<[(Symbol, Value)]> = env.bindings(plan).collect();
-    let prov = new_prov(terms, plan, env, bindings.clone(), absent);
+    let prov = new_prov(terms, plan, env, bindings.clone(), absent, universal);
     let mut derived: Vec<FactId> = Vec::with_capacity(plan.asserts.len());
     for i in 0..plan.asserts.len() {
         let id = build_fact(terms, ast, plan, env, plan.asserts[i])?;
@@ -248,11 +250,13 @@ pub fn new_prov(
     env: Env<'_>,
     bindings: Box<[(Symbol, Value)]>,
     absent: Box<[NafRef]>,
+    universal: Box<[FactId]>,
 ) -> ProvId {
     let mut prov = Prov::from_rule(plan.rule, env.premises.into(), None);
     prov.bindings = bindings;
     prov.absent = absent;
     prov.activator = plan.activator;
+    prov.universal = universal;
     terms.provs.push(prov)
 }
 
@@ -380,9 +384,17 @@ mod tests {
             trail: &trail,
             premises: prems,
         };
-        let firing = fire(&mut kb, &mut terms, &ast, &plan, env, Box::new([]))
-            .expect("fires")
-            .expect("has an assert");
+        let firing = fire(
+            &mut kb,
+            &mut terms,
+            &ast,
+            &plan,
+            env,
+            Box::new([]),
+            Box::new([]),
+        )
+        .expect("fires")
+        .expect("has an assert");
         assert_eq!(firing.derived.len(), 2);
         let provs: Vec<_> = firing
             .derived

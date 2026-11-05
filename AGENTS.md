@@ -231,7 +231,12 @@ constrained-reasoning research.
   that rest on a `forall`, whose support a firing does not record. What a
   `forall` rests on is Q-M1e2.15, put to the user, and the agent recommends
   following its support at each fact's smallest frontier (S1e2.2.21's
-  sweep, 2026-11-05).
+  sweep, 2026-11-05). The user ruled (b) the same day, and S1e2.2.21 fixed
+  W21: a contradiction's facts are explained together, and a firing records
+  the facts its universals read, each folded in at its own smallest
+  frontier; the `forall` gap is two more rows of W21, filed and fixed in the
+  same commit: 74 fixed, 2 open (both deferred to a followup) and 1 not
+  wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

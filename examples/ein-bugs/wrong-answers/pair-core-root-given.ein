@@ -18,15 +18,17 @@
 ;;; commitment, and from it, with the program's rules, saturation derives
 ;;; the pair. `(p a)` alone is root's, and root is alive: no refutation.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what holds since ─────────────────────
 ;;;
-;;; R as above, exit 0; and N's core `(p a)` alone, refuted by `(given)` and
-;;; `neg`, in `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s
-;;; `nodes.json`, `--events`' `enter` line, `--trace` and `ein oracle --dump`
-;;; (`ein solve FILE --dump-answer DIR` at `cdcc3994`, release and debug).
-;;; The core search explains each contradiction by its witness alone, and a
-;;; pair's witness is its positive side
-;;; (`contradiction::Contradiction::witness`).
+;;; Until S1e2.2.21, R as above, exit 0; and N's core `(p a)` alone, refuted
+;;; by `(given)` and `neg`, in `--dump-answer`'s `nogoods.json`,
+;;; `--dump-lattice`'s `nodes.json`, `--events`' `enter` line, `--trace` and
+;;; `ein oracle --dump` (`ein solve FILE --dump-answer DIR` at `cdcc3994`,
+;;; release and debug). The core search explained each contradiction by its
+;;; witness alone, and a pair's witness is its positive side
+;;; (`contradiction::Contradiction::witness`). Since S1e2.2.21's fix it
+;;; explains a contradiction's sides together, and N's core is `(p a) (q a)`,
+;;; in either build.
 
 (relation p T) (relation q T)
 

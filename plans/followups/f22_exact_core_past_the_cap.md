@@ -9,6 +9,20 @@ over every derivation the program records*; S1e2.2.11 built Q-M1e.15's (3),
 which keeps each fact's smallest-closure arrival beside its capped list and
 fixes `W10/alt-cap-core`; and what (3) cannot reach is this followup's.
 
+**Widened 2026-11-05**, on the user's ruling of that day on
+[Q-M1e2.15](../m1e2_correctness/open_questions.md#q-m1e215--what-does-a-derivation-through-a-forall-rest-on),
+(b): a derivation through a `forall` rests on each fact its universal read,
+and [S1e2.2.21](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md)
+folds each at its own smallest frontier rather than searching the
+combinations, which costs ×2 500 a member of N as the search stands
+(`zebra2-hints`, 3 ms → 7.5 s, cut by its budget). So a core can be larger
+than the smallest over every derivation the program records a second way:
+on `examples/zebra2-hints.ein`, 13 of N's 73 cores are larger under the
+fold than under the search (S1e2.2.21 T1, 2026-11-05, `build/s1e2.2.21/`).
+That residual is this followup's too, held by no register row: the search
+it needs is the one the cap's needs, a target's derivations combined where
+a per-fact choice cannot see the saving.
+
 **What it owns.** One register row, `W10/alt-cap-shared`
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)), `open`,
 reviewed `deferred`, with F22 as its `owner`. The milestone's acceptance,

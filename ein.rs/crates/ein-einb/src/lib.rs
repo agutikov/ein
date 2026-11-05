@@ -17,9 +17,11 @@
 //! tables, in id order), `PRESENT` (which of those facts this KB believes, in
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
-//! and optionally `NOGOODS`, `SOLUTIONS` and, since format 1.1 (M1e2
-//! S1e2.2.11), `CLOSURE` (each derived fact's closure and smallest-closure
-//! arrival, which a full alternatives list keeps beside it).
+//! and optionally `NOGOODS`, `SOLUTIONS`, since format 1.1 (M1e2
+//! S1e2.2.11) `CLOSURE` (each derived fact's closure and smallest-closure
+//! arrival, which a full alternatives list keeps beside it), and since format
+//! 1.2 (M1e2 S1e2.2.21) `UNIVERSAL` (the facts each derivation's universals
+//! read, which a core follows).
 //!
 //! ## What is not a section
 //!
@@ -225,6 +227,10 @@ pub fn save_to_vec(
     if let Some(s) = &opts.solutions {
         bodies.push((Kind::Solutions, solutions::write(s)));
     }
+    let universal = sections::write_universal(terms);
+    if !universal.is_empty() {
+        bodies.push((Kind::Universal, universal));
+    }
     let closure = sections::write_closure(kb);
     if !closure.is_empty() {
         bodies.push((Kind::Closure, closure));
@@ -360,7 +366,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         entries.push(Entry::read(&mut r)?);
     }
 
-    let mut found: [Option<&[u8]>; 12] = [None; 12];
+    let mut found: [Option<&[u8]>; 13] = [None; 13];
     for e in &entries {
         if e.flags != 0 || e.len != e.raw_len {
             return Err(EinbError::Compressed);
@@ -393,10 +399,20 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     let mut ast = Ast::new();
     let program =
         sections::read_program_names(want(Kind::Program, "PROGRAM")?, &mut ast, &mut maps)?;
-    let provs = sections::read_prov(want(Kind::Prov, "PROV")?, terms, &mut maps)?;
+    let provs = sections::read_prov(
+        want(Kind::Prov, "PROV")?,
+        found[Kind::Universal as usize],
+        terms,
+        &mut maps,
+    )?;
     let loaded = sections::load_program(&program, &mut ast, terms, opts.query)?;
 
-    if meta.state.is_derived() && !freshness.keeps_derived() {
+    // A file written before format 1.2 carries no record's universals (M1e2
+    // S1e2.2.21), which a core follows on root's derivations as on a node's:
+    // its derived state would report other cores than its `.ein`, so it is
+    // dropped as a stale engine's is, and the program re-saturates.
+    let lacks_universals = head.minor < 2;
+    if meta.state.is_derived() && (!freshness.keeps_derived() || lacks_universals) {
         return Ok(Opened {
             kb: loaded,
             ast,

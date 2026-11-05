@@ -126,6 +126,12 @@ pub fn walk_premises(
             if let Some(a) = node_activator(kb, prov).and_then(|a| resolve(kb, a)) {
                 stack.push(a);
             }
+            // The facts its universals read (M1e2 S1e2.2.21).
+            for &u in prov.universal.iter() {
+                if let Some(u) = resolve(kb, u) {
+                    stack.push(u);
+                }
+            }
         }
     }
     out

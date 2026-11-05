@@ -256,8 +256,9 @@ pub fn run(m: &ArgMatches) -> i32 {
     if m.get_flag("dump-config") {
         crate::printers::print_resolved_config(&cfg);
     }
-    // `--trace` tells root's derivation first, so root is saturated here, with
-    // its firings kept; the run's own preparation then finds it saturated.
+    // `--trace` tells root's derivation first, taken on a copy of root, so
+    // the run's own preparation is root's one saturation, as without it (M1e2
+    // S1e2.2.21: a root saturated twice moved cores).
     // `--events FILE`: the walk's `run` and `load` lines, then root and every
     // node the route visits, then one `region` line (`read_out.md` § 8.6).
     let mut events = crate::solve::events_start(m, &file, &cfg);
@@ -278,7 +279,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     crate::solve::events_load(&mut events, &terms, &kb);
     let trace = m.get_one::<String>("trace").cloned();
     let root_firings = match trace {
-        Some(_) => match ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut events) {
+        Some(_) => match ein_infer::region::root_derivation(&mut kb, &mut terms, &ast) {
             Ok(f) => Some(f),
             Err(e) => {
                 eprintln!("{e}");

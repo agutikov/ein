@@ -165,6 +165,16 @@ pub struct Matcher {
     /// the whole-run totals, so "does the boundary reach the index" is a
     /// measured question rather than an argued one.
     in_guard: bool,
+    /// What [`Matcher::universal_support`] collects while it walks: the facts
+    /// each holding nested `(absent …)` of the guard matched, `None` on every
+    /// other walk (M1e2 S1e2.2.21).
+    support: Option<Vec<FactId>>,
+    /// How many nested `(absent …)` the walk is inside, so a universal's own
+    /// body is read and not what a deeper one matched.
+    absent_depth: u32,
+    /// The premise ordinal the last completed walk reached: where a nested
+    /// query's matched facts end in [`Matcher::prems`].
+    last_ordinal: usize,
     /// Test-only: take every candidate from the relation's whole extent, as
     /// if no probe existed. The narrowing's whole claim is that this changes
     /// nothing observable, and `narrowing_never_changes_the_match_sequence`
@@ -419,6 +429,57 @@ impl Matcher {
         found
     }
 
+    /// What a top-level guard that **holds** rests on, where its sub-plan
+    /// reads a nested `(absent …)`: `(absent (and G (absent B)))`, a
+    /// `forall`'s shape. For each match of the steps around the nested query,
+    /// the facts its body `B` matched, which exist because the guard holds:
+    /// in the order the walk found them, each once. Empty for a guard with no
+    /// nested query, which rests on an absence and on no fact.
+    ///
+    /// M1e2 S1e2.2.21 (Q-M1e2.15 (b)): the saturator records these on the
+    /// firing ([`ein_core::Prov::universal`]), and the core search folds each
+    /// in. The walk is [`Matcher::holds`]', run to the end instead of to the
+    /// first match, with the nested query's matched facts read off the
+    /// premise slots it wrote.
+    #[allow(clippy::too_many_arguments)]
+    pub fn universal_support(
+        &mut self,
+        kb: &Kb,
+        terms: &Terms,
+        ast: &Ast,
+        plan: &Plan,
+        guard: &NafGuard,
+        parent: &[Value],
+    ) -> Vec<FactId> {
+        self.reset(guard.n_regs, guard.n_slots as usize, 0, 0);
+        // The scope projection, as `holds` does it.
+        for (r, from) in guard.scope_of.iter().enumerate() {
+            if let Some(p) = from {
+                self.regs[r] = parent[*p as usize];
+            }
+        }
+        let c = Ctx {
+            kb,
+            terms,
+            ast,
+            plan,
+        };
+        let w = Walk {
+            steps: guard.sub,
+            i: 0,
+            ordinal: 0,
+            skip: None,
+        };
+        self.in_guard = true;
+        self.support = Some(Vec::new());
+        self.absent_depth = 0;
+        let _ = self.walk(c, w, &mut |_| ControlFlow::Continue(()));
+        self.in_guard = false;
+        let found = self.support.take().unwrap_or_default();
+        let mut seen: rustc_hash::FxHashSet<FactId> = rustc_hash::FxHashSet::default();
+        found.into_iter().filter(|f| seen.insert(*f)).collect()
+    }
+
     /// A guard's sub-plan with one step **removed** — the obligation rung's
     /// candidate scan (M1d [S1d.2.5]).
     ///
@@ -536,6 +597,7 @@ impl Matcher {
         let (terms, ast, plan) = (c.terms, c.ast, c.plan);
         let (steps, i, ordinal, skip) = (w.steps, w.i, w.ordinal, w.skip);
         if i == steps.len() {
+            self.last_ordinal = ordinal;
             let m = Match {
                 plan,
                 disjunct: self.disjunct,
@@ -564,10 +626,20 @@ impl Matcher {
                 // trail mark enforces.
                 let mark = self.trail.len();
                 let mut any = false;
+                self.absent_depth += 1;
                 let _ = self.walk(c, w.nested(sub), &mut |_| {
                     any = true;
                     ControlFlow::Break(())
                 });
+                self.absent_depth -= 1;
+                // [`Matcher::universal_support`]: the body matched, so the
+                // facts it matched are what this domain value rests on.
+                if any && self.absent_depth == 0 {
+                    let (from, to) = (w.ordinal, self.last_ordinal);
+                    if let Some(support) = self.support.as_mut() {
+                        support.extend_from_slice(&self.prems[from..to]);
+                    }
+                }
                 self.unwind(mark);
                 if any {
                     ControlFlow::Continue(())

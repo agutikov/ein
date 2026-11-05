@@ -13,14 +13,15 @@
 ;;; R is {∅}, and N is {(q a)}. The pair rests on `(p a)`, which rests on
 ;;; `(q a)`, and on `(not (p a))`, stated: the core is `(not (p a)) (q a)`.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered, and what holds since ─────────────────────
 ;;;
-;;; R as above, exit 0; and N's core `(q a)`, refuted by `(given)` and `pos`
-;;; (`ein solve FILE --dump-answer DIR` at `cdcc3994`, release and debug):
-;;; the positive side's frontier, which here is the commitment's, so the core
-;;; names it, and it leaves out the stated `(not (p a))` the pair rests on
-;;; too. W21's fix grows it to `(not (p a)) (q a)`; it names the commitment
-;;; either way, which is why this file is a boundary and not a row.
+;;; Until S1e2.2.21, R as above, exit 0; and N's core `(q a)`, refuted by
+;;; `(given)` and `pos` (`ein solve FILE --dump-answer DIR` at `cdcc3994`,
+;;; release and debug): the positive side's frontier, which here is the
+;;; commitment's, so the core named it, and left out the stated `(not (p a))`
+;;; the pair rests on too. Since S1e2.2.21's fix it is `(not (p a)) (q a)`, in
+;;; either build; it names the commitment either way, which is why this file
+;;; is a boundary and not a row.
 
 (relation p T) (relation q T) (relation seed T)
 

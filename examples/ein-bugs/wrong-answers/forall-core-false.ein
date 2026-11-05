@@ -1,0 +1,44 @@
+;;; A `(false)` concluded through a `forall`: its core leaves out every fact
+;;; the universal read — M1e2 **W21**, register row `W21/forall-core-false`
+;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.21 (2026-11-05), found
+;;; measuring W21's fix (Q-M1e2.15).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two candidates, `(tag s1)` and `(tag s2)`. Each excludes `a` from its
+;;; slot, `(not (in a sN))` by `ex`. `full` concludes `(false)` for an item
+;;; every slot excludes: `(forall ?s (slot ?s) (not (in ?x ?s)))`, which is
+;;; `(absent (and (slot ?s) (absent (not (in ?x ?s)))))` (std.macro).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is ∅, {(tag s1)} and {(tag s2)}; N is {(tag s1), (tag s2)}. The
+;;; `(false)` rests on `(item a)`, which `full` matched, and on what its
+;;; universal read: `(not (in a s1))` and `(not (in a s2))`, which rest on
+;;; `(tag s1)` and `(tag s2)`. So the core is `(item a) (tag s1) (tag s2)`,
+;;; which names the commitment. `(item a)` alone is root's, and root is
+;;; alive.
+;;;
+;;; ── What the engine answered, and what holds since ─────────────────────
+;;;
+;;; Until S1e2.2.21, R as above, exit 0; and N's core `(item a)` alone, by
+;;; `full`, on every surface that reports it (`ein solve FILE --dump-answer
+;;; DIR` at `a98a94e3`, release and debug). A firing recorded the facts its
+;;; plan matched, and an `absent` it judged as a pattern, and none of the
+;;; facts a universal that held had read. The user ruled Q-M1e2.15 (b) on
+;;; 2026-11-05: a derivation through a `forall` rests on each fact the
+;;; universal read, each at its own smallest frontier. Since S1e2.2.21's fix
+;;; N's core is `(item a) (tag s1) (tag s2)`, in either build.
+
+(import std.macro :symbols (forall))
+
+(relation item T) (relation slot T) (relation in T T) (relation tag T)
+
+(item a) (slot s1) (slot s2)
+
+(hrule g () :match (slot ?s) :assert (tag ?s))
+
+(rule ex () :match (and (item ?x) (tag ?s)) :assert (not (in ?x ?s)))
+
+(rule full () :match (and (item ?x) (forall ?s (slot ?s) (not (in ?x ?s))))
+  :assert (false))

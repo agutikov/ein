@@ -599,6 +599,30 @@ pub fn root_firings(
     Ok(firings)
 }
 
+/// Root's derivation, as [`root_firings`] tells it, taken on a **copy** of
+/// root, so root is saturated by the run's own preparation alone — what
+/// `ein solve --trace` tells before any commitment (M1e2 S1e2.2.21).
+///
+/// A root saturated twice gives its nodes another snapshot to resume from (the
+/// second pass over a fixpoint re-judges every guard and parks and admits
+/// otherwise), so a node's derivations arrive in another order; under a
+/// `forall`'s support folded at each fact's smallest frontier that moved which
+/// of two equally small cores a node reports. Until S1e2.2.21 `--trace`
+/// saturated root itself first, and on `zebra2.ein` 2 of N's 366 cores and 13
+/// of the lattice dump's 190 dead cores differed from a run without it (the
+/// stage's T2, 2026-11-05; none at HEAD, whose cores did not move with it).
+pub fn root_derivation(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+) -> Result<Vec<crate::firing::Firing>, SolveError> {
+    let mut copy = root.fork();
+    terms.provs.open_fork();
+    let out = root_firings(&mut copy, terms, ast, &mut Events::off());
+    terms.provs.discard_fork();
+    out
+}
+
 /// Saturate root, take the universe at its fixpoint, and classify the plans.
 /// Root is written by its own saturation and by nothing else.
 pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Prepared, SolveError> {
@@ -1118,12 +1142,13 @@ impl<'a> Nodes<'a> {
             let Some(first) = contradictions.first() else {
                 return (Vec::new(), Vec::new());
             };
-            let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
-            let core = crate::explain::smallest_contradiction_frontier(
+            let core = crate::explain::contradiction_frontier(
                 &fork,
                 self.terms,
-                Some(&witnesses),
-            );
+                &contradictions,
+                &crate::explain::ExplanationBudget::default(),
+            )
+            .frontier;
             let mut rules: Vec<String> = [first.positive, Some(first.negative)]
                 .into_iter()
                 .flatten()
@@ -1264,8 +1289,13 @@ fn node_in_region(
     let contradictions = crate::contradiction::detect(&fork, terms);
     let mut node = Node::default();
     if let Some(first) = contradictions.first() {
-        let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
-        let core = crate::explain::smallest_contradiction_frontier(&fork, terms, Some(&witnesses));
+        let core = crate::explain::contradiction_frontier(
+            &fork,
+            terms,
+            &contradictions,
+            &crate::explain::ExplanationBudget::default(),
+        )
+        .frontier;
         node.core = sorted_text(terms, &core);
         node.sources = sources_of(&fork, terms, &core);
         let mut rules: Vec<String> = [first.positive, Some(first.negative)]

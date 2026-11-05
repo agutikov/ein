@@ -28,7 +28,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
 | [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load. The head half re-ruled by Q-M1e2.14 (c). **Built 2026-11-05** by S1e2.2.20 (`eddea251`): W20's five rows fixed |
 | [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns*. **Built 2026-11-05** by S1e2.2.20 (`eddea251`) |
-| [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **put to the user 2026-11-05** by T1e2.2.21.1, with the agent's recommendation, (b): a universal's support, each fact at its smallest frontier |
+| [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. S1e2.2.21 builds both |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -1754,3 +1754,22 @@ union over both sides' environments (the stage's default 2): under (b) the
 stage file's literal *each side at its smallest* differs on `zebra2` and
 its twin (36 cores each) and `zebra2-minus-15` and its twin (121 each), a
 larger core on 99 of each 157 and the same size on the rest, never smaller.
+
+**Ruled 2026-11-05: (b)** (the user, on T1e2.2.21.1's hand-back,
+`a98a94e3`): a derivation through a `forall` rests on each fact the
+universal read, each taken at its own smallest frontier, beside the premises
+the search folds as it does; a pair's two sides are folded jointly, as the
+stage's default 2 has it. The residual, the cores (c) would give smaller (13
+of `zebra2-hints`' 73 N cores, the stage's measurement), joins
+`W10/alt-cap-shared`'s in [F22](../followups/f22_exact_core_past_the_cap.md),
+and F22 and the register's notes say so. S1e2.2.21 builds it, and files the
+`forall` gap as rows of W21.
+
+**Ruled with it, the same day: a core is taken only where a surface prints
+one**, applying the user's standing *minimum work per question*. A bare
+`ein solve` takes none; the read-out, `--dump-answer`, `--json-summary`,
+`--trace`, `ein oracle --dump` and every other surface that prints a core
+take the ones they print. It must move no answer: the stage's corpus-wide
+test and every surface give the cores an eager run gives, and what moves is
+listed before the edit, as step 1 listed the fix's. S1e2.2.21 builds it,
+inside the stage.

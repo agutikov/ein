@@ -49,14 +49,29 @@ pub struct Contradiction {
 }
 
 impl Contradiction {
-    /// The fact whose derivation DAG seeds the unsat-core walk.
+    /// The fact that names the contradiction: for a pair the positive `X`,
+    /// for a direct ⊥ the `(false …)` fact. It is the core search's tie-break
+    /// and [`crate::explain::Explanation::target`], and the fact
+    /// `region::absent_premises` reads.
     ///
-    /// For a pair, the positive `X`: its DAG walks back to the premises that
-    /// derived it, where the negative is typically a structural rule firing
-    /// with a shallow one. For a direct ⊥, the `(false …)` fact, whose DAG
-    /// *is* the firing chain of the rule that emitted it.
+    /// It is **not** what the core is the frontier of, since M1e2 S1e2.2.21:
+    /// that is [`Contradiction::sides`]. Until then the core search explained
+    /// this fact alone, on the reading that a pair's negative is typically a
+    /// structural rule's shallow firing, and a pair's core left out the
+    /// derivation of `(not X)`, where a commitment typically is (W21).
     pub fn witness(&self) -> FactId {
         self.positive.unwrap_or(self.negative)
+    }
+
+    /// The facts the contradiction rests on, which the core search explains
+    /// together ([`crate::explain::contradiction_frontier`]): a pair's `X`
+    /// and its `(not X)`, the witness first, or a direct ⊥'s `(false …)`
+    /// fact. M1e2 S1e2.2.21 (W21).
+    pub fn sides(&self) -> Vec<FactId> {
+        self.positive
+            .into_iter()
+            .chain(std::iter::once(self.negative))
+            .collect()
     }
 }
 
@@ -158,6 +173,21 @@ mod tests {
         // `(not (p three))` has no positive to pair with, and `(p two)` has no
         // negation — neither is a contradiction on its own.
         assert!(has_contradiction(&kb, &terms));
+    }
+
+    #[test]
+    fn a_pairs_sides_are_both_its_facts_and_a_directs_its_one() {
+        let (terms, kb) = kb_of("(relation p Thing)\n(p one)\n(not (p one))\n(false)\n");
+        let found = detect(&kb, &terms);
+        let direct = found[0];
+        let pair = found[1];
+        assert_eq!(direct.sides(), vec![direct.negative]);
+        assert_eq!(
+            pair.sides(),
+            vec![pair.positive.expect("a pair has one"), pair.negative],
+            "the witness first, then the negative"
+        );
+        assert_eq!(pair.sides()[0], pair.witness());
     }
 
     #[test]

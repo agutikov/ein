@@ -814,13 +814,55 @@ impl Saturator {
             }));
         }
         let absent = self.negative_premises(s, &plan, entry, guards);
+        let universal = self.universal_support(s, &plan, entry, guards);
         let e = self.entries.get(entry);
         let env = Env {
             regs: &e.regs,
             trail: &e.trail,
             premises: &e.premises,
         };
-        Ok(fire(s.kb, s.terms, s.ast, &plan, env, absent)?)
+        Ok(fire(s.kb, s.terms, s.ast, &plan, env, absent, universal)?)
+    }
+
+    /// What a firing admitted here rests on through its **universals**: for
+    /// each guard whose sub-plan reads a nested `(absent …)`, a `forall`'s
+    /// shape, the facts the nested body matched for each match of the rest
+    /// ([`crate::match_::Matcher::universal_support`]), in the guards' order
+    /// and each once. A guard with no nested query rests on an absence, which
+    /// [`Saturator::negative_premises`] records, and on no fact.
+    ///
+    /// M1e2 S1e2.2.21 (Q-M1e2.15 (b)): until then a firing recorded none of
+    /// them, and a core that rested on a universal left out what it read.
+    fn universal_support(
+        &mut self,
+        s: &Session<'_>,
+        plan: &Plan,
+        entry: u32,
+        guards: Span,
+    ) -> Box<[FactId]> {
+        if guards.is_empty() {
+            return Box::new([]);
+        }
+        let mut out: Vec<FactId> = Vec::new();
+        for g in plan.guards(guards) {
+            let universal = plan
+                .steps(g.sub)
+                .iter()
+                .any(|step| matches!(step, crate::plan::Step::Absent { .. }));
+            if !universal {
+                continue;
+            }
+            let regs = &self.entries.get(entry).regs;
+            for f in self
+                .matcher
+                .universal_support(s.kb, s.terms, s.ast, plan, g, regs)
+            {
+                if !out.contains(&f) {
+                    out.push(f);
+                }
+            }
+        }
+        out.into_boxed_slice()
     }
 
     /// Record a redundant firing as an **alternative** justification (S1.21.7).
@@ -859,10 +901,12 @@ impl Saturator {
         // derivation, so a re-derivation admitted through the boundary depends
         // on what *its* guards found missing.
         let absent = self.negative_premises(s, plan, entry, guards);
+        let universal = self.universal_support(s, plan, entry, guards);
         let premises = self.entries.get(entry).premises.clone();
         let mut prov = Prov::from_rule(plan.rule, premises, None);
         prov.absent = absent;
         prov.activator = plan.activator;
+        prov.universal = universal;
         let id = s.terms.provs.push(prov);
         for fact in targets {
             let recorded = s.kb.record_justification(s.terms, fact, id);

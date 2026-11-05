@@ -1262,6 +1262,12 @@ fn counts_by_relation(kb: &Kb, terms: &Terms) -> BTreeMap<String, usize> {
 /// is worth a test rather than a date: the claim is that the union is an order
 /// of magnitude larger than the smallest single witness, and it stops being an
 /// argument if the two ever converge.
+///
+/// **M1e2 S1e2.2.21 moved the numbers, by design**: a derivation through a
+/// `forall` rests on the facts its universal read (Q-M1e2.15 (b)), and
+/// `zebra2-bad`'s witnesses are concluded through the stdlib's eliminations,
+/// so a single witness's frontier takes them in. Until then the union was 36
+/// and the largest single frontier 4; the smallest is still 1.
 #[test]
 fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
     let mut f = load_path("examples/ein-bugs/zebra2-bad.ein");
@@ -1286,7 +1292,7 @@ fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
         .expect("a witness");
     assert_eq!(
         (witnesses.len(), union.len(), smallest, largest),
-        (126, 36, 1, 4),
+        (126, 39, 1, 22),
         "witnesses / union / smallest / largest single frontier"
     );
 }
