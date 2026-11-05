@@ -440,6 +440,21 @@
 # **88 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
 # followup.
 #
+# **W23 was filed on 2026-11-05 by S1e2.2.23** (T1e2.2.23.1), from the
+# inventory of 2026-11-05's F2, on the user's ruling of that day
+# (Q-M1e2.16): a core search cut at its budget (`explain::ExplanationBudget`,
+# 64 environments per fact and 64 rounds) prints its core with nothing to say
+# it was cut, because `region.rs` keeps the search's frontier and drops
+# `Explanation::exhausted`. One row, `open`: the inventory's witness, whose
+# root core is ten facts where the eight its control states suffice, with the
+# control and the five-pair twin, which the search does not cut, as its
+# records. Its `right` is the same core, qualified as cut: the exact core past
+# the budget is F22's. **Schema /9**: a `now` whose `right` states a core's
+# status records the status its run reports beside root's core, the
+# summary's `region.core_status`, `none` where the summary states none. A
+# row's `wrong` is a region run's at `e2a3263e`. The register reads **88
+# rows fixed, 3 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -455,8 +470,9 @@
 #              its states make, k, exhausted, the models over `closes` (and over
 #              the candidates' relations, which is what a state's `(model …)`
 #              names), the open states of an owing empty R, the relations
-#              the read-out names outside the universe (schema /5), and the
-#              core (schema /6).
+#              the read-out names outside the universe (schema /5), the
+#              core (schema /6), N's cores (schema /8) and the core's status
+#              (schema /9).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`.
 #
@@ -518,6 +534,12 @@
 #               and the list by set: `--dump-answer`'s `nogoods.json`, which
 #               `wrong_answers.rs` asks for; stated exactly when
 #               `[case.right]` states N's cores (W19's rows)
+#     core_status (schema /9, M1e2 S1e2.2.23) the status the run reports
+#               beside root's core, the summary's `region.core_status`:
+#               `within-budget`, `cut-` and the caps the search stopped at
+#               (`cut-environments`, `cut-rounds`, `cut-facts`, joined), or
+#               `none` where the summary states none; stated exactly when
+#               `[case.right]` states one (W23's row)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -561,6 +583,10 @@
 #     `qualifier` is that read-out's `outside` row, and `wrong_answers.rs`
 #     holds the run's stdout to print it. `nogoods` (schema /8, M1e2
 #     S1e2.2.19) is N's members and the core each should report.
+#     `core_status` (schema /9, M1e2 S1e2.2.23) is the status the right
+#     read-out reports beside root's core; with it, the `qualifier` is that
+#     read-out's `core search` row, which `wrong_answers.rs` holds the run's
+#     stdout to print.
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -603,7 +629,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/8"
+schema = "ein-wrong-answers/9"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -6198,6 +6224,80 @@ relations = []
 models    = [
   [],
 ]
+
+# ══ W23 — a core search cut at its budget prints its core as the smallest ═════
+
+[[case]]
+id       = "W23/core-search-cut"
+case     = "W23"
+title    = "a core search cut at its budget prints its core as the smallest"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.23"
+question = ["Q-M1e2.16"]
+witness  = "examples/ein-bugs/wrong-answers/core-search-cut.ein"
+status   = "open"
+look_at  = ["summary", "answer", "trace"]
+note     = "Filed by S1e2.2.23 (T1e2.2.23.1, 2026-11-05) from the inventory of 2026-11-05's F2, on the user's ruling of that day (Q-M1e2.16: *File W22, W23; fix pre-close*, the default fix to say the core was cut, the exact core past the budget F22's); the witness is the inventory's `findings/F2_core_cut.ein`. Schema /9 (`core_status`, the summary's `region.core_status`). The control, core-search-cut-control.ein, is the witness with its `x` facts deleted, whose root core is the eight `y` facts; the twin, core-search-cut-5.ein, is the shape with five pairs, under the budget, whose core is the smallest and says nothing"
+open_because = "every surface prints root's core and nothing to say its search was cut: the search knows (`explain::Explanation::exhausted` is false), and region.rs drops it. S1e2.2.23 T1e2.2.23.2 makes a cut core say so"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at e2a3263e (2026-11-05): R empty, root's core ten facts by clash, with nothing to say the search was cut, in the read-out's unsat core rows, --json-summary's region.core, --dump-answer's nogoods.json, --dump-lattice's nodes.json and nodes.md, --events' enter line, --trace's N, `ein oracle --dump`'s region.json and `ein render region`'s table"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(x1 k)", "(x2 k)", "(y1 k)", "(y2 k)", "(y3 k)", "(y4 k)", "(y5 k)", "(y6 k)", "(y7 k)", "(y8 k)"]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/core-search-cut-control.ein"
+run       = "solve"
+by        = "region"
+why       = "the witness with its eight `x` facts deleted, at e2a3263e (2026-11-05): the `y` facts alone derive (false), so root's core is them, inside the budget"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(y1 k)", "(y2 k)", "(y3 k)", "(y4 k)", "(y5 k)", "(y6 k)", "(y7 k)", "(y8 k)"]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/core-search-cut-5.ein"
+run       = "solve"
+by        = "region"
+why       = "five pairs instead of eight, at e2a3263e (2026-11-05): (A k) has 32 environments, under the budget of 64, and the search finds the smallest core"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(y1 k)", "(y2 k)", "(y3 k)", "(y4 k)", "(y5 k)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict     = "Contradiction"
+k           = 0
+exhausted   = true
+core        = ["(x1 k)", "(x2 k)", "(y1 k)", "(y2 k)", "(y3 k)", "(y4 k)", "(y5 k)", "(y6 k)", "(y7 k)", "(y8 k)"]
+core_status = "cut-environments"
+qualifier   = "cut at its budget of 64 environments per fact: a smaller core may exist"
+derived     = "The user's ruling of 2026-11-05 (Q-M1e2.16): the core search keeps its budget, and a core it cut says so; the exact core past the budget, the eight y facts (the control's), is F22's. (A k) has 256 environments of eight facts, past the 64 per fact the search keeps, so its search is cut at the environments cap and reports the ten facts it reached; every surface that prints the core says it was cut, and at which cap"
+
+[case.now]
+run         = "solve"
+line        = "all"
+exhausted   = true
+k           = 0
+empty       = "dead"
+relations   = []
+models      = []
+core        = ["(x1 k)", "(x2 k)", "(y1 k)", "(y2 k)", "(y3 k)", "(y4 k)", "(y5 k)", "(y6 k)", "(y7 k)", "(y8 k)"]
+core_status = "none"
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

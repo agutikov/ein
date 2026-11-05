@@ -24,6 +24,10 @@
 //! a dead node's core is not in the summary, whose `region.core` is root's,
 //! so the run also writes `--dump-answer`, and its `nogoods.json` is read.
 //!
+//! **Since M1e2 S1e2.2.23 a `now` can record the status beside root's core**
+//! (schema /9, W23): the summary's `region.core_status`, and where `right`
+//! states it with a `qualifier`, the read-out's `core search` row.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -189,6 +193,15 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         c.sort();
         c
     });
+    // The core's status, where the row records one (M1e2 S1e2.2.23, W23):
+    // `none` where the summary states none.
+    let core_status = row.now.core_status.as_ref().map(|_| {
+        region
+            .get("core_status")
+            .and_then(J::as_str)
+            .unwrap_or("none")
+            .to_string()
+    });
     // N's cores, where the row records them (M1e2 S1e2.2.19, W19).
     let nogoods = match (&row.now.nogoods, &got.nogoods) {
         (None, _) => None,
@@ -208,6 +221,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         outside,
         core,
         nogoods,
+        core_status,
     })
 }
 
@@ -254,6 +268,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "nogoods",
         format!("{:?}", want.nogoods.as_deref().map(sorted_nogoods)),
         format!("{:?}", got.nogoods),
+    );
+    field(
+        "core_status",
+        format!("{:?}", want.core_status),
+        format!("{:?}", got.core_status),
     );
     out
 }
@@ -315,6 +334,16 @@ fn every_row_answers_what_the_register_records() {
                     if row.right.outside.as_ref() == Some(&row.now.outside)
                         && let Some(q) = &row.right.qualifier
                         && !got.stdout.contains(&format!("    outside         {q}\n"))
+                    {
+                        d.push(format!("the read-out does not print {q:?}"));
+                    }
+                    // A right that states a core's status states the read-out's
+                    // `core search` row too (M1e2 S1e2.2.23, W23), wherever
+                    // `now` records that status.
+                    if row.right.core_status.is_some()
+                        && row.right.core_status == row.now.core_status
+                        && let Some(q) = &row.right.qualifier
+                        && !got.stdout.contains(&format!("  core search       {q}\n"))
                     {
                         d.push(format!("the read-out does not print {q:?}"));
                     }

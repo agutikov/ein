@@ -50,8 +50,12 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// S1e2.2.19 (2026-11-04): a `now` whose `right` states the cores of `N`'s
 /// members records the cores its run reports ([`Now::nogoods`],
 /// `--dump-answer`'s `nogoods.json`), W19's: a dead node's core, where
-/// [`Now::core`] is root's.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/8";
+/// [`Now::core`] is root's. `/9` since M1e2 S1e2.2.23 (2026-11-05): a `now`
+/// whose `right` states a core's status records the status its run reports
+/// beside root's core ([`Now::core_status`], the summary's
+/// `region.core_status`), W23's: whether the core search was cut at its
+/// budget.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/9";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -212,6 +216,27 @@ fn is_commit(c: &str) -> bool {
     c.len() >= 7 && c.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
+/// A core's status as the register spells it (schema /9): `none`,
+/// `within-budget`, or `cut-` and one or more of the caps, in order —
+/// `ein_infer::explain::CoreStatus::word`'s words, and `none`.
+fn is_core_status(s: &str) -> bool {
+    if s == "none" || s == "within-budget" {
+        return true;
+    }
+    let Some(caps) = s.strip_prefix("cut-") else {
+        return false;
+    };
+    let order = ["environments", "rounds", "facts"];
+    let mut at = 0;
+    for c in caps.split('-') {
+        match order[at..].iter().position(|o| *o == c) {
+            Some(i) => at += i + 1,
+            None => return false,
+        }
+    }
+    true
+}
+
 /// A followup's id, `F<n>`, as `plans/followups/` names them.
 fn is_followup(o: &str) -> bool {
     o.strip_prefix('F')
@@ -307,6 +332,13 @@ pub struct Now {
     /// stated: [`Self::core`] is root's, and a dead node's core is not.
     #[serde(default)]
     pub nogoods: Option<Vec<Nogood>>,
+    /// The status the run reports beside root's core — the summary's
+    /// `region.core_status` (M1e2 S1e2.2.23, W23): `within-budget`, `cut-`
+    /// and the caps its search stopped at, or `none` where the summary
+    /// states none (a `null`, or a run before S1e2.2.23, which wrote no such
+    /// field). Recorded exactly where [`Right::core_status`] is stated.
+    #[serde(default)]
+    pub core_status: Option<String>,
 }
 
 /// A minimal dead set and the core its run reports for it — schema `/8`
@@ -410,6 +442,15 @@ impl Now {
             if Some(&want) != self.core.as_ref() {
                 out.push(format!("core: right {want:?}, now {:?}", self.core));
             }
+        }
+        // The core's status (schema /9, M1e2 S1e2.2.23, W23).
+        if let Some(s) = &right.core_status
+            && Some(s) != self.core_status.as_ref()
+        {
+            out.push(format!(
+                "core status: right {s:?}, now {:?}",
+                self.core_status
+            ));
         }
         // N's cores (schema /8, M1e2 S1e2.2.19, W19).
         if let Some(n) = &right.nogoods {
@@ -590,6 +631,11 @@ pub struct Right {
     /// the commitment.
     #[serde(default)]
     pub nogoods: Option<Vec<Nogood>>,
+    /// The status the right read-out reports beside root's core — schema
+    /// `/9` (M1e2 S1e2.2.23, W23): `cut-` and the caps a search stopped at,
+    /// where the user ruled that a cut core says so (Q-M1e2.16).
+    #[serde(default)]
+    pub core_status: Option<String>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -600,7 +646,8 @@ pub struct Right {
     pub owes: Option<Vec<u64>>,
     /// A sentence the right read-out would add. On a fixed row that states
     /// [`Self::outside`], the read-out's `outside` row, which
-    /// `wrong_answers.rs` holds the run's stdout to.
+    /// `wrong_answers.rs` holds the run's stdout to; on one that states
+    /// [`Self::core_status`], its `core search` row (W23).
     #[serde(default)]
     pub qualifier: Option<String>,
     /// The relations the right read-out names outside the universe, sorted —
@@ -720,6 +767,27 @@ impl Register {
                 && c.windows(2).any(|w| w[0] > w[1])
             {
                 out.push(at("[now] core is sorted".to_string()));
+            }
+            // The core's status (schema /9, M1e2 S1e2.2.23).
+            if r.now.core_status.is_some() != r.right.core_status.is_some() {
+                out.push(at(
+                    "[now] records a core's status exactly when [right] states one".to_string(),
+                ));
+            }
+            if r.right.core_status.is_some() && r.right.core.is_none() {
+                out.push(at(
+                    "[right] states a core's status beside its core".to_string()
+                ));
+            }
+            for s in [&r.now.core_status, &r.right.core_status]
+                .into_iter()
+                .flatten()
+            {
+                if !is_core_status(s) {
+                    out.push(at(format!(
+                        "core status {s:?} is not none, within-budget or cut-<caps>"
+                    )));
+                }
             }
             // N's cores (schema /8, M1e2 S1e2.2.19).
             if r.now.nogoods.is_some() != r.right.nogoods.is_some() {
@@ -1004,6 +1072,34 @@ mod tests {
         );
     }
 
+    /// **A core's status is a word the engine writes** (schema /9, M1e2
+    /// S1e2.2.23): `none`, `within-budget`, or `cut-` and the caps in
+    /// `explain::Cut`'s order.
+    #[test]
+    fn a_core_status_is_a_word_the_engine_writes() {
+        for ok in [
+            "none",
+            "within-budget",
+            "cut-environments",
+            "cut-rounds",
+            "cut-facts",
+            "cut-environments-rounds",
+            "cut-environments-rounds-facts",
+        ] {
+            assert!(is_core_status(ok), "{ok}");
+        }
+        for bad in [
+            "cut",
+            "cut-",
+            "cut-rounds-environments",
+            "cut-environments-environments",
+            "within",
+            "",
+        ] {
+            assert!(!is_core_status(bad), "{bad}");
+        }
+    }
+
     /// A row's witness — and every control's and twin's — is a file the
     /// corpus knows. The register adds no new kind of file: it adds the answer
     /// a corpus program should have.
@@ -1191,6 +1287,7 @@ mod tests {
             outside: Vec::new(),
             core: None,
             nogoods: None,
+            core_status: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);

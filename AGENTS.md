@@ -256,6 +256,16 @@ constrained-reasoning research.
   day: the parser reads a reserved word only as a whole word, so a name that
   starts with one is the `SYMBOL` it spells and each witness answers its
   twin's R: 88 fixed, 2 open (both deferred to a followup) and 1 not wrong.
+  S1e2.2.23 filed W23 the same day, from the inventory's F2 (on Q-M1e2.16):
+  a core search cut at its budget (`explain::ExplanationBudget`, 64
+  environments per fact and 64 rounds) printed its core with nothing to say
+  so, since `region.rs` dropped `Explanation::exhausted`; one row, schema
+  `/9` (`core_status`), the witness's ten-fact core where eight suffice: 88
+  fixed, 3 open and 1 not wrong. The corpus cuts 19 of the 5 442 cores
+  `--dump-answer` reports for N, `zebra.ein`'s six at the 64 rounds and the
+  `zebra2` family's at the environments, and a budget sixteen times larger
+  gives each the same core at no measurable cost (`ein solve FILE
+  --dump-answer DIR`, 2026-11-05).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

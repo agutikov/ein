@@ -1306,6 +1306,24 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W22's twin of `kw-or-in-solve.ein`, banked by S1e2.2.22: `orz` renamed `oorz`, a name that starts with no keyword and sorts where `orz` does. Its answer, `oorz` read as `orz`, is the witness's right one: R {∅}, the claim holds."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/core-search-cut.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W23 (`W23/core-search-cut`), banked by S1e2.2.23 from the inventory of 2026-11-05's F2: `(A k)` has 256 environments of eight facts, past the core search's 64 per fact, and the smallest core, the eight `y` facts, is not among those it keeps. R empty; root's core `(x1 k) (x2 k) (y1 k) … (y8 k)`, ten facts, printed with nothing to say the search was cut."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/core-search-cut-control.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W23's control, banked by S1e2.2.23: `core-search-cut.ein` with its `x` facts deleted, so the eight `y` facts alone derive `(false)` and root's core is them, inside the budget. Its cube's nodes that commit seven or eight `x` facts are cut, 9 of 256."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/core-search-cut-5.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 W23's twin, banked by S1e2.2.23: the witness's shape with five pairs, 32 environments under the core search's 64, so root's core is the smallest, `(y1 k) … (y5 k)`, and no surface says it was cut."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and
