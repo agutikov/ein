@@ -490,9 +490,9 @@
 # nested fact (`nested-fact-activator`), refused where the activator is
 # written and by the compiler where a rule derives it. Every row's `now` is
 # the loader's refusal, and a refused row states no `[case.region]`. Each
-# row's `[case.fixed]` carried the null id in the fixing commit. The register
-# reads **96 rows fixed, 2 open and 1 not-wrong**, both open rows deferred to
-# a followup.
+# row's `[case.fixed]` carried the null id in the fixing commit, `3ab9a231`,
+# and the stage's next commit wrote the hash. The register reads **96 rows
+# fixed, 2 open and 1 not-wrong**, both open rows deferred to a followup.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -6359,7 +6359,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-12, parked by S1e2.2.20 § Notes (its default 6), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/wild_in_guard.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq and hit-both are 1 and hit-eq 0 at 32736ac8, the candidates' relation `hit-eq` the one a state's model names. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, one per guard, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses `_` as a guard's argument, at any depth of a rule's `:match` (Q-M1e2.16 (1))"
 date   = "2026-11-05"
 
@@ -6397,7 +6397,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-13, parked by S1e2.2.20 § Notes, on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/bare_premise.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root holds (r1 z), (r2 w) and (r3 z) at 32736ac8, each derived by a rule whose premise was dropped. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, one per premise, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a premise that is not a form, wherever a premise goes in a rule's `:match` (Q-M1e2.16 (1))"
 date   = "2026-11-05"
 
@@ -6435,7 +6435,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1e2.2.24 (T1e2.2.24.1, 2026-11-05) from the inventory of 2026-11-05's W-14 (S1e2.2.20 § What was built, `plan.rs`' Slot::Opaque), on the user's ruling of that day (Q-M1e2.16 (1)); the witness is the inventory's `probes/nested_unbound_head.ein`, the program unchanged. Its twin is the refusal, so no file. The row stands for the shape's other half too, a pattern inside a pattern that holds a keyword pair, which the same opaque slot reads, and S1e2.2.24's tests hold. By value: root.facts_by_relation.hit is 0 at 32736ac8. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a relation variable no parameter binds, and a keyword pair inside a pattern inside a pattern, at any depth of either clause (Q-M1e2.16 (1))"
 date   = "2026-11-05"
 
@@ -6473,7 +6473,7 @@ look_at  = ["root", "summary"]
 note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a form as a guard's argument (Q-M1e2.18 (i)(a))"
 date   = "2026-11-05"
 
@@ -6511,7 +6511,7 @@ look_at  = ["root", "summary"]
 note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a guard on a variable no premise before it binds, naming the variable (Q-M1e2.18 (ii)(a))"
 date   = "2026-11-05"
 
@@ -6549,7 +6549,7 @@ look_at  = ["root", "summary"]
 note     = "A keyword pair as a guard's argument, `(eq ?x :k a)`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (iii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-kw-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-eq is 0 at f8c10730. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a keyword pair as a guard's argument (Q-M1e2.18 (iii)(a))"
 date   = "2026-11-05"
 
@@ -6587,7 +6587,7 @@ look_at  = ["root", "summary"]
 note     = "A relation parameter its activator binds to a nested fact: `(r (a b))` for `(rule r (?R) :match (box (?R b)) …)`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (iv)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/n-var-param-nested-activator.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit is 0 at f8c10730. The activator a rule derives through a variable is the compiler's, held by `ein-infer/tests/compile_semantics.rs`. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "3ab9a231"
 by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses an activator that binds a relation parameter to a nested fact where it is written, and the compiler one a rule derives (Q-M1e2.18 (iv)(a))"
 date   = "2026-11-05"
 

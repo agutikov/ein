@@ -39,9 +39,9 @@ compiler enforce well-formedness against the rules below.
 |--------------------------|----------------------------------------|-----------|-------------------------------------------------|
 | variables                | `?a`, `?house`                          | —         | bound by the match; reused across sub-clauses   |
 | ground atoms             | `Red`, `House-1`                        | —         | match literally                                 |
-| relation pattern         | `(?r ?a ?b [?c …])`                     | —         | VAR head binds the relation name; args bind positions |
+| relation pattern         | `(?R ?a ?b [?c …])`                     | —         | the VAR head is one of the rule's parameters, which its activator binds to a relation's name; args bind positions. A head variable no parameter binds, at the top level or inside a pattern, in either clause, is **refused at load** since M1e2 S1e2.2.24 (W24): this row read *VAR head binds the relation name*, and a premise binding it, `(and (rel ?r) (box (?r b)))`, bound nothing — the pattern inside matched nothing, in silence, and one at the top level stopped compilation. A parameter its activator binds to a nested fact is refused too, at load where the activator is written and by the compiler where a rule derives it |
 | named relation pattern   | `(co-located ?a ?b)`                    | —         | match a specific relation's instances                  |
-| argument wildcard        | `(holds _)`, `(pair ?a _)`              | —         | match any value, binding nothing; two are independent (M1e2 S1e2.2.20) |
+| argument wildcard        | `(holds _)`, `(pair ?a _)`              | —         | match any value, binding nothing; two are independent (M1e2 S1e2.2.20). Not a guard's argument: `(eq ?x _)` is refused at load since S1e2.2.24 |
 | ~~head wildcard~~        | `(_ ?a ?b)`                             | —         | **refused at load** since M1e2 S1e2.2.20 (Q-M1e2.14 (c)): a relation is a name or a parameter its activator binds. This row read *match any binary list head*, which no engine did: the compiler stopped on it (W20) |
 | **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
@@ -51,6 +51,16 @@ compiler enforce well-formedness against the rules below.
 | **membership check**     | `(is-a ?a ?T)`                          | ✓ RELATION | ordinary relation pattern                      |
 | `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | NEQ inside | type / inequality / structural-predicate filters |
 | relation-property tag    | `:where (transitive ?r)`                | —         | an ordinary premise matching a stored property fact |
+
+**A premise is a form** — a pattern, a guard, an `(absent …)`, or an
+`(and …)` or `(or …)` of premises. An atom, a variable, `_`, an integer or a
+string written where a premise goes is **refused at load** since M1e2
+S1e2.2.24 (W24, [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
+until then the compiler dropped it in silence, so `:match _` fired with no
+premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. A keyword pair
+as a premise of an `(and …)` is Q32's `:where`, dropped, as is one at a
+pattern's top level; one **inside a pattern inside a pattern**, `(box (a b :k
+v))`, matched nothing and is refused at load since the same stage.
 
 The ✓-marked heads have dedicated grammar rules with fixed arities, so
 `(neq ?a)` is a parse error. **A misspelled relation is not**: `instance` has
@@ -120,6 +130,17 @@ registry — `eq` and `neq`, and nothing else."*
 |-----------------|:-----:|----------------------------------------|-------------|
 | `(eq ?a ?b)`    | 2     | the bindings resolve to the same value | matcher `Guard` opcode |
 | `(neq ?a ?b)`   | 2     | the bindings resolve to distinct values | matcher `Guard` opcode |
+
+**A guard's argument is a value**: a variable a premise before the guard
+binds (or a rule's parameter), a name, a string or an integer. A guard is
+judged where it is written. `_`, a form, a keyword pair, a range, or a
+variable no premise before it binds is **refused at load** (a range since M1e2
+S1e2.2.20, the rest since S1e2.2.24, W24;
+[`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+Until then each read nothing: a raw node was equal to no value and an
+unbound variable compared as a null, so `(eq ?x (f a))` never held, even
+where `?x` was the fact `(f a)`, and `(and (neq ?x a) (p ?x))` fired for
+`a`.
 
 Q33 caps it there for a stated reason: *a predicate's truth is **computed**
 from the bindings, where a relation's truth is **data***. Numeric, set,

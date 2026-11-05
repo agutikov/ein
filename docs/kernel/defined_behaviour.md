@@ -497,7 +497,7 @@ names the failure's class, and exiting non-zero:
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
-| a conclusion no fact can hold: an `:assert` that is not a fact, or an argument that is a keyword pair, a wildcard, or a relation written as a variable the activator does not bind | `rule '<r>': its :assert …`, naming no class (below) | 1 |
+| a conclusion no fact can hold: an `:assert` that is not a fact, or an argument that is a keyword pair or a wildcard at the conclusion's top level | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
@@ -515,21 +515,26 @@ them, in three forms:
 - `rule 's': its :assert writes _ as an argument of tag, and no fact can
   hold it — an argument is a name, a string, an int, a variable its :match
   binds, or a fact (relation argument …)` (a wildcard `_`, a keyword pair such
-  as `:source "x"`, at any depth; a range until M1e2 S1e2.2.20, which refuses
-  one in a rule at load, § 4.8);
+  as `:source "x"`, at the conclusion's top level; a range until M1e2
+  S1e2.2.20, which refuses one in a rule at load, § 4.8; a keyword pair inside
+  a nested conclusion until S1e2.2.24, § 4.9);
 - `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
   a fact (relation argument …), or an (and …) of facts` (an atom, a
   variable, a string where a fact belongs);
 - `rule 's': its :assert writes (?x a b), whose relation ?x its activator
   does not bind — a relation written as a variable is one of the rule's
-  parameters, which its activator binds to a name`.
+  parameters, which its activator binds to a name`, which no program the
+  loader accepts reaches since M1e2 S1e2.2.24: a relation variable no
+  parameter binds is refused at load, and a parameter bound to a nested fact
+  at load or by the compiler (§ 4.9).
 
 The run still stops at the rule's first firing, exit 1, so a rule that never
 fires is never checked; an hrule's template that builds no fact still
 proposes nothing, in silence. `ein-cli/tests/cli_semantics.rs`'s
-`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the seven
+`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the four
 shapes under `ein saturate` and `ein solve` (eight until M1e2 S1e2.2.20, the
-range among them). A **string** reached this line
+range among them, and seven until S1e2.2.24, a nested keyword pair and the
+two relation variables among them). A **string** reached this line
 until the same stage, which lowered a string in a rule as the loader lowers
 one in a fact, the symbol it names (M1e2's W18;
 [`01_grammar.md`'s `STRING` row](ir/03-ein-lang/01_grammar.md)).
@@ -781,7 +786,10 @@ The first is pinned by
 the second by `ein-infer/tests/compile_semantics.rs`'s
 `a_relation_parameter_a_rule_binds_to_a_number_is_refused`. An activator of
 the wrong arity activates nothing and is not checked; a string or a range
-binds a name, and a nested fact binds nothing.
+binds a name, and a nested fact binds no parameter: since M1e2 S1e2.2.24 one
+where a parameter names a relation is refused in both places too, as
+*binds it to the fact (a b)* (§ 4.9). Until then it was read as no binding,
+and the relation it would name matched nothing, in silence.
 
 ### 4.7 A refutation resting on an `absent` a commitment can fill — M1e2 S1e2.2.5
 
@@ -876,7 +884,53 @@ and one in an `:assert` stopped the run at the rule's first firing with
 § 4's second row, `ein.inference.compile.CompileError: unbound relation head
 ?Wildcard() in a premise of `SForm(head=Wildcard(), …)` …`, the Python IR's
 spelling, which no `_` reaches since. A variable head no parameter binds,
-`(?r a)`, still does.
+`(?r a)`, still did until S1e2.2.24, which refuses it at load (§ 4.9).
+
+### 4.9 A rule shape that reads nothing — M1e2 S1e2.2.24
+
+Each shape below loaded until 2026-11-05 and read nothing, in silence: no
+fact could make it hold, or it held whatever the facts. On the user's rulings
+of that day
+([Q-M1e2.16](../../plans/m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)
+(1) and [Q-M1e2.18](../../plans/m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence)),
+the loader refuses each in a rule, an hrule and an obligation, in the same
+pass as § 4.8's, one line per slot, `; `-joined with every other loader
+error, in ein's own words; exit 1 (`ein test`: 2):
+
+| input | message |
+|---|---|
+| `_` as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
+| a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer` (`the keyword pair :k a` for one) |
+| a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer` |
+| a premise that is not a form: an atom, a variable, `_`, an integer, a string | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
+| a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
+| a keyword pair inside a pattern inside a pattern, in either clause | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
+| an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
+| the same activator, derived by a rule through a variable | `the relation head ?<p> of <form> at <loc> is bound to the fact (a b) — a relation is named by a symbol, not a fact.` (a `CompileError`, § 4's second row, as § 4.6's integer) |
+
+A guard's variable counts as bound by the rule's parameters and by the
+variables of the positive patterns written before it; under an `(absent …)`,
+by those the enclosing premises bound before it and the `absent`'s own
+earlier premises. What stays: a keyword pair at a pattern's top level or as a
+premise of an `(and …)`, which the compiler drops (Q32); `_` as a pattern's
+argument; `_` and a keyword pair at a conclusion's top level, which stop the
+firing with § 4's line. **Until S1e2.2.24** (W24): a guard compared `_`, a
+form or a keyword pair as a raw IR node, equal to no value, and a variable
+not yet bound as a null, so `(eq ?x _)` never held and `(and (neq ?x a) (p
+?x))` fired for `a`; a premise that is not a form was dropped, so the rule
+fired as if it were not written; a pattern inside a pattern whose relation
+no parameter binds, holds a keyword pair, or names a parameter an activator
+bound to a nested fact, matched nothing. The same relation variable at the
+top level, and an `(absent ?x)`, stopped compilation with § 4's second row in
+the Python IR's spelling (`unbound relation head ?r in a premise of
+`SForm(…)``, `` `(absent …)` sub-plan compiled to no steps in SForm(…) ``),
+which no program the loader accepts reaches since. Pinned by `ein-ir`'s
+`from_ir.rs` `a_rule_shape_that_reads_nothing_is_refused_at_load`,
+`ein-cli/tests/cli_semantics.rs`'s test of the same name,
+`ein-infer/tests/compile_semantics.rs`'s
+`a_relation_parameter_a_rule_binds_to_a_number_is_refused`,
+`examples/broken/load/empty_absent.ein` and `unbound_head.ein` (until then
+compile-negative fixtures), and `corpus/wrong_answers.toml`'s seven W24 rows.
 
 ## 5. The CLI surface
 

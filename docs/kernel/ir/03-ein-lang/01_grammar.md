@@ -20,7 +20,7 @@ documentation split.
 | `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House-1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:cardinality`        | argument markers; **always** followed by a value  |
-| `WILDCARD` | `_`                            | `_`                                      | argument wildcard in patterns: in a rule's `:match`, at any depth (a premise, a nested fact, a `not`, an `(absent …)`, an hrule's or an obligation's pattern), `_` matches any value and binds nothing, so two of them are independent and neither can be read in an `:assert` or a guard; in an `:assert` it is no value, and the run stops at the rule's first firing ([`defined_behaviour.md` § 4](../../defined_behaviour.md#4-errors-and-exit-codes)). Written as a form's **relation**, `(_ a)`, it is refused at load, at any depth of either clause: a relation is named by a name or by a parameter its activator binds (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, on the user's rulings Q-M1e2.13 (a) and Q-M1e2.14 (c)). Until then this row read *head / arg wildcard in patterns*, and the rule compiler lowered `_` as a slot that matched nothing: a premise with one never fired, an `(absent …)` over one always held, an hrule with one proposed nothing, and a head `_` stopped compilation with the Python IR's spelling (W20). In a guard, `(eq ?x _)`, it is no pattern and compares as written |
+| `WILDCARD` | `_`                            | `_`                                      | argument wildcard in patterns: in a rule's `:match`, at any depth (a premise, a nested fact, a `not`, an `(absent …)`, an hrule's or an obligation's pattern), `_` matches any value and binds nothing, so two of them are independent and neither can be read in an `:assert` or a guard; in an `:assert` it is no value, and the run stops at the rule's first firing ([`defined_behaviour.md` § 4](../../defined_behaviour.md#4-errors-and-exit-codes)). Written as a form's **relation**, `(_ a)`, it is refused at load, at any depth of either clause: a relation is named by a name or by a parameter its activator binds (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, on the user's rulings Q-M1e2.13 (a) and Q-M1e2.14 (c)). Until then this row read *head / arg wildcard in patterns*, and the rule compiler lowered `_` as a slot that matched nothing: a premise with one never fired, an `(absent …)` over one always held, an hrule with one proposed nothing, and a head `_` stopped compilation with the Python IR's spelling (W20). In a guard, `(eq ?x _)`, it names no value and is refused at load since M1e2 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24, Q-M1e2.16 (1)); until then it compared as a raw IR node, equal to no value, so `(eq ?x _)` never held and `(neq ?x _)` always did, in silence. As a whole premise, `:match _`, it is refused at load too, where the compiler dropped it |
 | `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms (e.g. `:priority 10`)               |
 | `RANGE`    | `[0-9]+\.\.([0-9]+|\*)`        | `0..1`, `1..1`, `1..*`                  | UML-style cardinality. No fact can hold one, so in a rule a range written where a pattern's argument goes, at any depth of a `:match` or an `:assert`, or as a whole clause, is refused at load with a line naming the rule and the slot (M1e2 S1e2.2.20, 2026-11-05, Q-M1e2.13 (a)); a keyword's value inside a clause is not a slot and is not refused. Until then the rule compiler lowered it as a slot that matched nothing, in silence, and one in an `:assert` stopped the run at the rule's first firing (W20) |
 | `STRING`   | `"…"` with `\\` escape          | `"condition (10)"`, `"{?r} is transitive"` | `:source` provenance, `:why` templates and other keyword values; and a **fact's argument**, top-level or nested, which the loader holds as a symbol whose text is the string's body: `"foo"` and `foo` are one value, and `"1"` is not the int `1` (`examples/syntax/arg-kinds.ein`; M1e2 S1e2.2.16, 2026-11-04). In a **rule**, a string means what it means in a fact, the symbol it names, at any depth of a `:match`, a guard, an `(absent …)` or an `:assert`, and it is a name of the program as that atom is: `(holds "b")` in a rule matches the fact `(holds b)`, and `(tag ?x "lbl")` stores `lbl` (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04). Until then the rule compiler did not lower one: it matched nothing in a `:match`, equalled no value in a guard, held under every `absent`, proposed nothing from an hrule, and in an `:assert` stopped saturation with a `TypeError` (W18). A string that is a keyword's value inside a rule's clause keeps its meaning, text |
@@ -387,6 +387,25 @@ S1.5.9 — import them; see
 the compiler itself sees only `absent` + nested patterns, and lifts
 each *top-level* one out of the match plan (below).
 
+**What a premise may be.** A premise is a form: a fact pattern, a guard
+(`eq`, `neq`), an `(absent …)`, or an `(and …)` or `(or …)` of premises. A
+pattern's relation is a name, or one of the rule's parameters, which its
+activator binds to a name; its arguments are values, variables, `_`, or
+patterns. Since M1e2
+[S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md)
+(W24, the user's rulings of 2026-11-05) the loader refuses, with one line
+naming the rule and the clause
+([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
+an atom, a variable, `_`, an integer or a string written where a premise
+goes; a relation written as a variable no parameter binds, at the top level
+or inside a pattern, in a `:match` or an `:assert`; a keyword pair inside a
+pattern inside a pattern; and an activator that binds a relation parameter
+to a nested fact. Until then each read nothing, in silence: a premise that is
+not a form was dropped, so the rule fired as if it were not written, and the
+rest matched nothing, where the same relation variable at the top level
+stopped compilation in the Python IR's spelling. A keyword pair at a
+pattern's top level, or as a premise of an `(and …)`, is Q32's, dropped.
+
 #### Conclusion forms in `:assert`
 
 A conclusion is ordinarily a fact pattern, with `(and …)` concluding several
@@ -485,6 +504,16 @@ and the boundary projects the completed bindings back down to that set
 — so a lifted guard is exactly as strong as it was in place, no more
 and no less. Write the binding premise **before** the guard when you
 mean "for this `?x`".
+
+A **guard**, `(eq a b)` or `(neq a b)`, is judged where it is written, on
+values: a variable a premise before it binds (the rule's parameters count),
+a name, a string or an integer. Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii))
+`(and (neq ?x a) (p ?x))`, a guard on a variable no premise before it binds,
+is refused at load, naming the variable, as is `_`, a form or a keyword pair
+as a guard's argument; until then the unbound `?x` compared as a null, so
+that rule fired for every `?x`, `a` included, in silence. Under an
+`(absent …)`, the enclosing premises before it bind, as they scope the
+`absent` itself.
 
 ### Solve
 
