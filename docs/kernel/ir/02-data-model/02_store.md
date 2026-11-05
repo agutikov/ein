@@ -318,9 +318,12 @@ across the dead commitments, since no single one explains the unsat).
 Two further caveats: the alternatives searched are only the firings
 the saturator attempted, capped per fact, so "minimal" stays relative
 to the rule set and the saturation strategy; and the search is
-budgeted — call `explain::minimal_contradiction_frontier`
-directly to read `Explanation::exhausted`, which reports whether a cap
-was hit (a truncated search is still sound).
+budgeted — `Explanation::exhausted` reports whether a cap was hit
+and `Explanation::cut` which (a truncated search is still sound), and
+since M1e2 S1e2.2.23 every surface that prints a core prints its status
+beside it (`explain::CoreStatus`: `core_status` in every JSON, the
+read-out's `core search` row). Until then only a caller of
+`explain::minimal_contradiction_frontier` could read it (W23).
 
 ## 8. Equality classes — placeholder
 

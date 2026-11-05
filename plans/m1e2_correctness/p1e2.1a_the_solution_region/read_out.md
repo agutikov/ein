@@ -289,7 +289,7 @@ prints no word (§ 11, question 1):
 
 | kind | row | why, printed under it | the form |
 |---|---|---|---|
-| no alive node | `empty  every node is dead — root's own fixpoint derives (false)` | `unsat core` and `refuted by`, root's | `(false)` |
+| no alive node | `empty  every node is dead — root's own fixpoint derives (false)` | `unsat core` and `refuted by`, root's, and `core search` where the core's search was cut (M1e2 S1e2.2.23) | `(false)` |
 | alive nodes, all owing | `empty  every alive node owes — no commitment pays every debt` | `owing`: each node of the frontier (alive, owing, nothing alive one fact up), with every instance it owes through the rule's `:why` | `(region (owing (model …) …))` |
 
 [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe)
@@ -468,12 +468,12 @@ region    {k_s, k_c, exhausted, stopped: null | {why: asked|budget|limit|deadlin
            complete_up_to, root: in-r|owing|dead, root_owes, empty: null|dead|owing,
            minimal: {states, commitments, least, trivial}, maximal: {states, trivial},
            components: [sizes], subcubes: [dimensions], merged: {states, minimal},
-           nogoods, discharging, holes: {count, minimal: [{set, dead, core, owes}]},
+           nogoods, discharging, holes: {count, minimal: [{set, dead, core, core_status, owes}]},
            universe: {candidates, dead_alone}, route: "1"|"2", licences,
            states:   [{facts, closure, from, minimal_generators, commitments,
                        lines: [minimal, maximal], listed}],
            frontier: [{facts, set, owes, owed}],               (empty R, owing kind)
-           core:     [facts], refuted_by: [rules]}             (empty R, dead kind)
+           core:     [facts], core_status, refuted_by: [rules]}  (empty R, dead kind)
 verdict   null | {word, which}                                (--single only)
 queries   [{goal, over: all|listed, exact, classes: [{facts, rows, states}], expect: null}]
 claim     null | {outcome: held|failed|not-checked, lines}   (the solve claim)
@@ -514,6 +514,14 @@ complete.
   both sides of a pair and the facts a `forall` read (Q-M1e2.15 (b)), and a
   run takes one only where a surface prints it, which moves no line of any
   surface (`a_run_that_prints_no_core_takes_none_and_answers_alike`).
+  **Since M1e2 S1e2.2.23 a core carries its status wherever it is printed**
+  (W23): `core_status` beside it in every JSON, `within-budget`, `cut-` and
+  the caps its search stopped at, or `null` where no core was taken; and on
+  every text surface, for a cut core alone, the cap: the read-out's `core
+  search` row, *cut at its budget of 64 environments per fact: a smaller
+  core may exist*, a minimal hole's *(core search cut at its budget of …)*,
+  the trace's *Core search: …*. A core inside its budget prints nothing
+  new.
 - **`root_writes.json` and `alive_at_end.json` go.** Root is never written,
   and there is no walk to end.
 - `answer.json` stays the summary byte for byte, as `answer_dump.rs` checks

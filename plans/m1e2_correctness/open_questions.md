@@ -1369,7 +1369,8 @@ K), (b K), (c C01)}`. Today 3, under (3) 3, uncapped 2. Any list of fixed
 length must drop one of more incomparable derivations, and a program can need
 the dropped one. The search's own budget (64 environments a label) has the
 same shape, but its cut is reported, `Explanation::exhausted`; the cap's is
-not.
+not. *(Dated note, 2026-11-05, M1e2 S1e2.2.23: to a library caller only,
+until that stage made every surface that prints a core say it was cut, W23.)*
 
 - **(a) *kept*** — (3), and the promise says what it is over: the smallest
   frontier over the derivations the store keeps, every derivation of a fact

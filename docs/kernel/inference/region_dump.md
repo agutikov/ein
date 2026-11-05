@@ -88,7 +88,7 @@ no learned clause. Each node carries two **independent** bits:
 
 | bit | set when | its reason, in `region.json` |
 |---|---|---|
-| dead | the fixpoint holds a contradiction | `core` (the search's own smallest frontier), `refuted_by` (the rules), `absent_premises` (the `absent`s its derivation rests on) |
+| dead | the fixpoint holds a contradiction | `core` (the search's own smallest frontier), `core_status` (`within-budget`, or `cut-` and the caps the search stopped at: M1e2 S1e2.2.23), `refuted_by` (the rules), `absent_premises` (the `absent`s its derivation rests on) |
 | owing | an obligation the program states is undischarged — read on a **dead** node too | `owes`, `owed` (each instance through its `:why`) |
 
 `status` is `R` (neither), `owing`, `dead`, or `dead+owing`. `class` is the
@@ -136,7 +136,7 @@ either `region` with `refused: null`, or `region: null` with `refused`
 | `violations` | `dead_not_upward_closed` (a dead node with an alive superset) and `discharged_not_upward_closed` (a discharged node with an owing superset), each with a count and the smallest pair |
 | `edges` | every upward edge, counted by the statuses at its two ends |
 | `root_dead`, `assumes_monotone` | root's own fixpoint is contradictory; the static check flags the program, and the lines and components are computed over nodes built by fork from root (`region.md`'s *(nodes by fork)*). The name is kept from before M1e2 S1e2.1b.5; it means what this row says |
-| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core`, `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--states` |
+| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core`, `core_status` (`null` where no core was taken), `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--states` |
 
 ## `walk.json` — until the switch
 

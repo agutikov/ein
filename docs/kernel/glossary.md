@@ -142,8 +142,9 @@ reported `(p a)`, a fact the program states, and `zebra2.ein`'s N 201 of
 Four caveats: no proper subset is checked for satisfiability; the
 derivations are the firings the saturator attempted, so minimality is
 relative to the rule set and the saturation strategy; the search is
-budgeted — `Explanation.exhausted` reports whether it completed, and a
-truncated search is still sound; and a program records its
+budgeted — 64 environments per fact, 64 rounds and a closure of 20 000
+facts (`ExplanationBudget`), and a truncated search is still sound, a real
+frontier that may not be the smallest; and a program records its
 re-derivations only under `:record-alternative-justifications`, on by
 default — off, each fact's first derivation is all the search is
 offered, which may name another core and changes nothing else, the
@@ -191,6 +192,30 @@ s2)}` reported `(item a)`, root's, and reports `(item a) (tag s1) (tag
 s2)`. Since S1e2.2.21 every core the corpus reports for a dead node on an
 alive root names its commitment and, with root, derives its contradiction,
 which `ein-infer/tests/corpus_cores.rs` holds.
+
+**A core cut at its budget says so** (M1e2 S1e2.2.23, W23, the user's
+ruling of 2026-11-05 on
+[Q-M1e2.16](../../plans/m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)):
+the search keeps its budget, and every surface that prints a core prints its
+status beside it. Every JSON writes `core_status`: `within-budget`, `cut-`
+and the caps the search stopped at (`cut-environments`, `cut-rounds`,
+`cut-facts`, joined), or `null` where no core was taken; every text surface
+says a cut core was cut and at which cap, the read-out's `core search` row
+*cut at its budget of 64 environments per fact: a smaller core may exist*,
+and prints nothing new beside an uncut one. `within-budget` says the search
+was not cut and no more: it is not *the smallest over every derivation*,
+which F22's residuals above keep a core from being. Until S1e2.2.23 only a
+library caller saw the cut (`Explanation::exhausted`, and since then
+`Explanation::cut`): `region.rs` kept the search's frontier and dropped the
+rest, so a cut core was printed as the core, and
+`examples/ein-bugs/wrong-answers/core-search-cut.ein`'s root core, ten facts
+where eight suffice, said nothing. The corpus cuts 19 of the 5 442 cores
+`--dump-answer` reports for N, `zebra.ein`'s six at the rounds and the
+`zebra2` family's at the environments, and a budget sixteen times larger
+gives each the same core (`ein solve FILE --dump-answer DIR`, 2026-11-05); the exact core past the budget is
+[F22](../../plans/followups/f22_exact_core_past_the_cap.md)'s.
+`ein-infer/tests/corpus_cores.rs` holds that no core is printed unqualified
+from a cut search.
 
 **A core is taken only where a surface prints one** (M1e2 S1e2.2.21, the
 user's ruling of 2026-11-05, *minimum work per question*): a bare `ein

@@ -28,7 +28,7 @@ out/
   answer.json     byte-identical to --json-summary on the same run
   models/NN.ein   program + one state's facts, one per state the run reached
   owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
-  nogoods.json    N: each minimal dead set, its core and the rules that refuted it
+  nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it
   forms/F.txt     each form asked for, uncut: -H, --models key|grid, -p, -P, -f, --diff-models
 ```
 
@@ -47,7 +47,11 @@ out/
   ([`01_grammar.md` § Solve](../ir/03-ein-lang/01_grammar.md#solve)).
 - **`owing/`** holds the frontier of an empty R whose nodes all owe, each with
   what it owes. **`nogoods.json`** is `[]` where N is empty or was not
-  computed (a line mode does not compute it).
+  computed (a line mode does not compute it). Each member is `{set, core,
+  core_status, refuted_by}`; `core_status` (M1e2 S1e2.2.23, W23) says
+  whether the core's search was cut at its budget: `within-budget`, `cut-`
+  and the caps it stopped at (`cut-environments`, `cut-rounds`,
+  `cut-facts`, joined), or `null` where the run took no core.
 - **`forms/`** (M1e2
   [S1e2.3.3](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
   the user's ruling (a) of 2026-11-03) holds each form the run was asked

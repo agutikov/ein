@@ -25,7 +25,9 @@ writes two files:
 - **`nodes.json`**, schema `ein-lattice/2`: the run's header (`asked`), the
   route, the candidates, and every node the route visited, **in visit order**,
   each with its commitment, its kind (`dead`, `owing`, `in-r`), what it owes,
-  its core and refuting rules when dead, its closure, and its facts beyond
+  its core, the core's status (`core_status`, M1e2 S1e2.2.23: `cut-` and
+  the caps where its search was cut) and refuting rules when dead, its
+  closure, and its facts beyond
   root's; then `steps`, each a route-1 layer or a mode's batch, with the index
   of the first node it covers;
 - **`nodes.md`**, the same as one table per step.

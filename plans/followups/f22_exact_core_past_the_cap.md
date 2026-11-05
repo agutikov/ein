@@ -68,7 +68,10 @@ What to settle before building it:
   `MAX_ALT_JUSTIFICATIONS = 1 000 000`'s on the corpus, which S1e2.2.11
   measured equal to (3)'s on all of it but this witness.
 - **The search's own budget.** `ExplanationBudget` cuts a label past 64
-  environments and reports it (`Explanation::exhausted`); a re-derived
+  environments and reports it (`Explanation::exhausted`; *dated note,
+  2026-11-05: to a library caller only until M1e2 S1e2.2.23, W23, which
+  made every surface that prints a core say it was cut and at which cap,
+  `core_status` and the read-out's `core search` row*); a re-derived
   fact can bring more. The cut stays reported.
 - **Where it runs.** Of the corpus's 310 files before the witness was
   banked, ten reached the cap, always on `(false)` in a dead node (the
@@ -98,7 +101,7 @@ pre-close"*) that each is this followup's:
 | W-8 | a derivation with no premises, from an activator a node derived, is never recorded as an alternative, so rule priority picks a three-fact core over a one-fact one | [`guard_only_second.ein`](../m1e2_correctness/inventory_2026-11-05/probes/guard_only_second.ein) against [`_first`](../m1e2_correctness/inventory_2026-11-05/probes/guard_only_first.ein) | a row, filed by [S1e2.2.25](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.25_the_deferred_rows.md) |
 | W-9 | `fork-delta-order`'s core has the smallest size but is not the canonical core an uncapped store gives | `examples/ein-bugs/fork-delta-order.ein` | a row, filed by S1e2.2.25 (S1e2.2.12's default 2) |
 | W-10 | the closure estimate counts a given shared by two premises twice | none | S1e2.2.25 tries a nine-line probe; without one it is named here |
-| W23's residual | a core search cut at its budget of 64 environments (`ExplanationBudget`) prints a frontier, not the smallest | the inventory's `F2_core_cut.ein` | [S1e2.2.23](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md) makes every surface say a core was cut; the exact core past the budget is this followup's |
+| W23's residual | a core search cut at its budget (`ExplanationBudget`: 64 environments per fact, 64 rounds) prints a frontier that may not be the smallest | `examples/ein-bugs/wrong-answers/core-search-cut.ein`, the inventory's `F2_core_cut.ein` | [S1e2.2.23](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.23_core_search_cut.md) made every surface say a core was cut, and at which cap (`be7893d9`); the exact core past the budget is this followup's. The corpus cuts 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s six at the rounds and the `zebra2` family's at the environments, and a budget of 1 024 environments and 1 024 rounds gives each the same core and the witness its eight `y` facts, at no measurable cost (`ein solve FILE --dump-answer DIR`, 2026-11-05, S1e2.2.23 T1) |
 
 They share this page's proposal: the search they need combines a target's
 derivations where a per-fact choice or a bounded list cannot see the saving.

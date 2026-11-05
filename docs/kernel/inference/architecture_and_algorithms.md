@@ -597,7 +597,9 @@ alternative at all: the config principle's one exemption, the core and
 nothing else ([`configuration.md` § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)). (3) **Budgeted** — the
 minimum-axiom-set / ATMS-label problem is worst-case exponential, so the search
 runs under an `ExplanationBudget` and `Explanation.exhausted` reports whether it
-completed; a truncated search is still sound. Provenance is also not yet a
+completed, `Explanation.cut` at which cap; a truncated search is still sound,
+and since M1e2 S1e2.2.23 every surface that prints its core says it was cut
+(`core_status`, the read-out's `core search` row; W23). Provenance is also not yet a
 semiring (no multiplicity/why-vs-how distinction, which M2-scale work might
 want) — though the AND/OR structure such an algebra would be interpreted over
 now exists. The plan record for the multi-justification machinery is

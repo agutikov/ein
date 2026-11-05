@@ -138,7 +138,9 @@ them since M1e2 S1e2.2.11, the one with the smallest closure, so the
 `alt-cap-core` pair report one core; a saving between two facts behind a full
 list is still refused, `W10/alt-cap-shared`, deferred to F22), and the search is **budgeted**
 (`ExplanationBudget`; `Explanation.exhausted` reports whether it ran to
-completion — a truncated search is still sound, just possibly not smallest).
+completion — a truncated search is still sound, just possibly not smallest —
+and since M1e2 S1e2.2.23 every surface that prints a core prints its status
+beside it, `core_status` and the read-out's `core search` row).
 Across several dead commitments the verdict still unions their cores (with an
 exhausted lattice no single dead explains unsat), but each dead's core is
 itself the smallest explanation of that dead.

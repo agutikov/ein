@@ -462,7 +462,7 @@
 # core was taken) and a sentence in every text surface, so the witness's ten
 # facts are printed as cut at the search's 64 environments per fact, in either
 # build. The flipped row's `[case.fixed]` carried the null id in the flipping
-# commit, and the stage's next commit wrote the hash. The register reads **89
+# commit, `be7893d9`, and the stage's next commit wrote the hash. The register reads **89
 # rows fixed, 2 open and 1 not-wrong**, both open rows deferred to a
 # followup.
 #
@@ -6252,7 +6252,7 @@ look_at  = ["summary", "answer", "trace"]
 note     = "Filed by S1e2.2.23 (T1e2.2.23.1, 2026-11-05) from the inventory of 2026-11-05's F2, on the user's ruling of that day (Q-M1e2.16: *File W22, W23; fix pre-close*, the default fix to say the core was cut, the exact core past the budget F22's); the witness is the inventory's `findings/F2_core_cut.ein`. Schema /9 (`core_status`, the summary's `region.core_status`). The control, core-search-cut-control.ein, is the witness with its `x` facts deleted, whose root core is the eight `y` facts; the twin, core-search-cut-5.ein, is the shape with five pairs, under the budget, whose core is the smallest and says nothing. Fixed by T1e2.2.23.2: the same ten facts, and every surface that prints them says the search was cut at its 64 environments per fact, in either build; the twin's says nothing new, and `ein oracle` agrees"
 
 [case.fixed]
-commit = "0000000"
+commit = "be7893d9"
 by     = "S1e2.2.23 (T1e2.2.23.2): explain::Cut names the cap a core search stopped at, and explain::CoreStatus is carried beside every core a surface prints, a word in every JSON and a sentence in every text surface (Q-M1e2.16, ruled 2026-11-05)"
 date   = "2026-11-05"
 
