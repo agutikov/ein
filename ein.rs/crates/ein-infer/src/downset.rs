@@ -83,6 +83,9 @@ pub struct Options {
     /// `-T`: checked before each layer, as the budget is. Reaching it is
     /// [`SolveError::Deadline`], never a smaller down-set.
     pub deadline: Option<Instant>,
+    /// Take every dead node's unsat core, as
+    /// [`crate::region::Options::cores`]: `false` takes root's alone.
+    pub cores: bool,
 }
 
 impl Default for Options {
@@ -92,6 +95,7 @@ impl Default for Options {
             max_visits: u64::MAX,
             jobs: 1,
             deadline: None,
+            cores: true,
         }
     }
 }
@@ -104,6 +108,7 @@ impl Options {
             max_visits: u64::MAX,
             jobs,
             deadline: None,
+            cores: true,
         }
     }
 }
@@ -344,8 +349,9 @@ pub(crate) fn compute_prepared(
         out.cost.root = t_root.elapsed();
         return Ok(out);
     }
-    let mut axes =
-        Axes::new(root, &out.candidates, hypothesised, false).narrating(events.narration());
+    let mut axes = Axes::new(root, &out.candidates, hypothesised, false)
+        .narrating(events.narration())
+        .taking_cores(opts.cores);
     // A flagged program reaches here only with a dead root (L0): the detector
     // reads the nodes it visits, as on every route.
     if !out.monotonicity.is_monotone() {

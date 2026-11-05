@@ -138,6 +138,14 @@ pub struct Options {
     /// no `work` count depends on it. The program's own `(config
     /// :lattice-sanity-check true)` turns it on as well (M1e2 S1e2.1c.5).
     pub sanity: bool,
+    /// Take every dead node's unsat core the run visits. `false` takes root's
+    /// and, on the cube, the minimal holes', which the read-out and the
+    /// summary print, and no other: what a run asks whose surfaces print no
+    /// other core (`--dump-answer`, `--dump-lattice`, `--events` and `--trace`
+    /// print them). M1e2 S1e2.2.21, the user's ruling of 2026-11-05,
+    /// *minimum work per question*: every core taken is the one `true` takes,
+    /// and no answer depends on it.
+    pub cores: bool,
 }
 
 impl Options {
@@ -149,6 +157,7 @@ impl Options {
             jobs: 1,
             deadline: None,
             sanity: false,
+            cores: true,
         }
     }
 }
@@ -532,8 +541,9 @@ impl<'a> Space<'a> {
             root: root_stats,
         } = prepared;
         let flagged = !monotonicity.is_monotone();
-        let mut axes =
-            Axes::new(root, &candidates, hypothesised, false).narrating(events.narration());
+        let mut axes = Axes::new(root, &candidates, hypothesised, false)
+            .narrating(events.narration())
+            .taking_cores(opts.cores);
         if flagged {
             axes = axes.checking_stale(std::sync::Arc::new(StaleCheck::of(&plans)));
         }
@@ -1093,6 +1103,7 @@ fn describe_route_1(
             max_visits: u64::MAX,
             jobs: opts.jobs,
             deadline: opts.deadline,
+            cores: opts.cores,
         },
         events,
     )?;
@@ -1237,6 +1248,7 @@ fn describe_states(
             max_visits: u64::MAX,
             jobs: opts.jobs,
             deadline: opts.deadline,
+            cores: opts.cores,
         },
         events,
     )?;
@@ -1402,6 +1414,7 @@ fn flagged(
             keep_states: false,
             jobs: opts.jobs,
             deadline: opts.deadline,
+            cores: opts.cores,
         },
         &mut |_| {},
         events,

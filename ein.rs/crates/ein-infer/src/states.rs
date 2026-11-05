@@ -292,7 +292,9 @@ pub(crate) fn compute_prepared(
         out.cost.root = t_root.elapsed();
         return Ok(out);
     }
-    let axes = Axes::new(root, &out.candidates, hypothesised, false).narrating(events.narration());
+    let axes = Axes::new(root, &out.candidates, hypothesised, false)
+        .narrating(events.narration())
+        .taking_cores(opts.cores);
     let facts: Vec<FactId> = out.candidates.iter().map(|c| c.fact).collect();
     let root = root.sealed();
     out.cost.root = t_root.elapsed();

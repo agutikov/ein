@@ -33,6 +33,10 @@ pub fn run(m: &ArgMatches) -> i32 {
         keep_states: m.get_flag("states"),
         jobs,
         deadline: max_time.map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0))),
+        // Every dead node's core where `--dump` writes them; else root's and
+        // the minimal holes', which the read-out and the summary print (M1e2
+        // S1e2.2.21, the user's ruling of 2026-11-05).
+        cores: dir.is_some(),
     };
     let summary_path = m.get_one::<String>("json-summary").cloned();
     // `--dump DIR` is made before the cube, as `solve`'s directories are: a

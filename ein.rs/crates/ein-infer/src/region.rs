@@ -163,6 +163,12 @@ pub struct Options {
     /// `ein oracle -T`: checked before each batch of nodes. Reaching it is
     /// [`SolveError::Deadline`], never a smaller cube.
     pub deadline: Option<Instant>,
+    /// Take every dead node's unsat core. `false` takes root's and the
+    /// minimal holes', the cores a read-out and a summary print, and no other
+    /// (`Axes::taking_cores`): what a run that prints no other asks (M1e2
+    /// S1e2.2.21, the user's ruling of 2026-11-05, *minimum work per
+    /// question*). Every core taken is the one `true` takes.
+    pub cores: bool,
 }
 
 impl Default for Options {
@@ -172,6 +178,7 @@ impl Default for Options {
             keep_states: false,
             jobs: 1,
             deadline: None,
+            cores: true,
         }
     }
 }
@@ -354,7 +361,8 @@ pub(crate) fn compute_prepared(
     }
     let cost_root = t_root.elapsed();
 
-    let mut axes = Axes::new(root, &candidates, hypothesised, opts.keep_states);
+    let mut axes =
+        Axes::new(root, &candidates, hypothesised, opts.keep_states).taking_cores(opts.cores);
     // The detector reads every node on a flagged program, and none on a
     // monotone one (`crate::detector`'s zero-work argument).
     let flagged = !monotonicity.is_monotone();
@@ -487,6 +495,21 @@ pub(crate) fn compute_prepared(
     let t_topo = Instant::now();
     let topology = Topology::of(n, &status);
     let cost_topology = t_topo.elapsed();
+
+    // The minimal holes' cores, which a read-out and a summary print, where
+    // the run took none: each through the node function, against the same
+    // snapshot, so each is the core an eager run takes.
+    if !opts.cores {
+        let taking = probe_axes.clone().taking_cores(true);
+        for &m in &topology.minimal_holes {
+            if status[m as usize] & DEAD == 0 {
+                continue;
+            }
+            let out = node(root, &snapshot, terms, ast, &memo, &facts_of(m), &taking)?;
+            nodes[m as usize].core = out.node.core;
+            nodes[m as usize].sources = out.node.sources;
+        }
+    }
 
     // The detector's reading of the cube: the status, its violations
     // attributed to the sites that made them, and the stale facts each node
@@ -786,6 +809,9 @@ pub(crate) struct Axes {
     /// Report which of root's owed instances each node still owes — L5's
     /// table, on the modes' obligation tree only (M1e2 S1e2.1c.4).
     instances: Option<Arc<crate::oblgen::Alternatives>>,
+    /// Take a dead node's unsat core ([`Axes::taking_cores`]); root's is
+    /// taken either way.
+    cores: bool,
 }
 
 impl Axes {
@@ -804,7 +830,20 @@ impl Axes {
             narration: None,
             stale: None,
             instances: None,
+            cores: true,
         }
+    }
+
+    /// The same axes, taking a dead node's unsat core only when `cores`, and
+    /// root's either way: a core is the one computation a node's record needs
+    /// that the classification does not, an explanation search over the
+    /// node's derivations, and a run takes one only where a surface prints it
+    /// (M1e2 S1e2.2.21, the user's ruling of 2026-11-05). A node not taken
+    /// reports an empty core and no sources; its `refuted_by` and `absent`
+    /// premises are read either way.
+    pub(crate) fn taking_cores(mut self, cores: bool) -> Axes {
+        self.cores = cores;
+        self
     }
 
     /// The same axes, reading each node's stale facts against `check` — the
@@ -1289,15 +1328,17 @@ fn node_in_region(
     let contradictions = crate::contradiction::detect(&fork, terms);
     let mut node = Node::default();
     if let Some(first) = contradictions.first() {
-        let core = crate::explain::contradiction_frontier(
-            &fork,
-            terms,
-            &contradictions,
-            &crate::explain::ExplanationBudget::default(),
-        )
-        .frontier;
-        node.core = sorted_text(terms, &core);
-        node.sources = sources_of(&fork, terms, &core);
+        if axes.cores || facts.is_empty() {
+            let core = crate::explain::contradiction_frontier(
+                &fork,
+                terms,
+                &contradictions,
+                &crate::explain::ExplanationBudget::default(),
+            )
+            .frontier;
+            node.core = sorted_text(terms, &core);
+            node.sources = sources_of(&fork, terms, &core);
+        }
         let mut rules: Vec<String> = [first.positive, Some(first.negative)]
             .into_iter()
             .flatten()

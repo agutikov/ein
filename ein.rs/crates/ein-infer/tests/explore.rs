@@ -795,3 +795,140 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
         assert_eq!(answer(wild), answer(&fresh), "{wild}");
     }
 }
+
+/// **A run that prints no core takes none, and answers alike** — M1e2
+/// S1e2.2.21, the user's ruling of 2026-11-05: a core is taken only where a
+/// surface prints one, and it moves no answer.
+///
+/// Every mode's answer with [`explore::Options::cores`] off is the answer
+/// with it on, field for field, but the dead nodes' cores it was not asked
+/// for: root's core and, on the cube, each minimal hole's, which the read-out
+/// and the summary print, are the eager run's, and every other core the lazy
+/// run reports is empty. Over every corpus file and register witness but the
+/// slow entries, describe on each part of `R`, `-n 2` and `--single`.
+#[test]
+fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
+    let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
+        .entry
+        .iter()
+        .filter(|e| e.slow)
+        .map(|e| repo_root().join(&e.path))
+        .collect();
+    let mut failures = Vec::new();
+    let mut runs = 0usize;
+    let mut holes = 0usize;
+    let mut dead_holes = 0usize;
+    // *Forbid* refuses every corpus program with a dead hole; these are
+    // studied past the refusal, as `every_mode_at_four_jobs_is_every_mode_at_one`
+    // studies one, so the holes the read-out prints a core for are read too.
+    let studied: Vec<PathBuf> = [
+        "examples/ein-bugs/naf-upward-closure.ein",
+        "examples/ein-bugs/wrong-answers/forbid-chain-0.ein",
+        "examples/ein-bugs/wrong-answers/forbid-chain-1.ein",
+        "examples/ein-bugs/wrong-answers/forbid-chain-2.ein",
+        "examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein",
+        "examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein",
+    ]
+    .iter()
+    .map(|r| repo_root().join(r))
+    .collect();
+    let all: Vec<(PathBuf, bool)> = corpus_and_register()
+        .into_iter()
+        .map(|p| (p, false))
+        .chain(studied.into_iter().map(|p| (p, true)))
+        .collect();
+    for (path, studying) in all {
+        if slow.contains(&path) || loaded(&path).is_none() {
+            continue;
+        }
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        let modes = [
+            (Which::All, Ask::Describe),
+            (Which::Minimal, Ask::Describe),
+            (Which::Maximal, Ask::Describe),
+            (Which::All, Ask::Find(2)),
+            (Which::All, Ask::Single),
+        ];
+        for (which, ask) in modes {
+            let mode = Mode { which, ask };
+            let mut eager = explore::Options::new(mode);
+            eager.jobs = jobs();
+            let mut lazy = eager;
+            lazy.cores = false;
+            let run = |o: &explore::Options| {
+                let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
+                let mut go =
+                    || explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string());
+                if studying {
+                    ein_infer::forbid::studying(go)
+                } else {
+                    go()
+                }
+            };
+            let (a, b) = match (run(&eager), run(&lazy)) {
+                (Ok(a), Ok(b)) => (a, b),
+                (Err(x), Err(y)) if x == y => continue,
+                (x, y) => {
+                    failures.push(format!(
+                        "{rel} {mode:?}: {:?} against {:?}",
+                        x.err(),
+                        y.err()
+                    ));
+                    continue;
+                }
+            };
+            runs += 1;
+            let strip = |a: &Answer| -> Answer {
+                let mut a = a.clone();
+                if let Some(d) = a.described.as_mut() {
+                    for x in d.dead.iter_mut() {
+                        x.core.clear();
+                        x.refuted_by.clear();
+                    }
+                }
+                a
+            };
+            if said(&strip(&a)) != said(&strip(&b)) {
+                failures.push(format!("{rel} {mode:?}: the answer differs without cores"));
+            }
+            if let (Some(x), Some(y)) = (a.described.as_ref(), b.described.as_ref()) {
+                if x.root.core != y.root.core {
+                    failures.push(format!("{rel} {mode:?}: root's core differs"));
+                }
+                if let (Some(hx), Some(hy)) = (
+                    x.shape.as_ref().and_then(|s| s.holes.as_ref()),
+                    y.shape.as_ref().and_then(|s| s.holes.as_ref()),
+                ) {
+                    holes += hx.1.len();
+                    dead_holes += hx.1.iter().filter(|h| h.dead).count();
+                    let cores = |h: &(u64, Vec<ein_infer::described::Hole>)| -> Vec<Vec<String>> {
+                        h.1.iter().map(|h| h.core.clone()).collect()
+                    };
+                    if cores(hx) != cores(hy) {
+                        failures.push(format!("{rel} {mode:?}: a minimal hole's core differs"));
+                    }
+                }
+                for (dx, dy) in x.dead.iter().zip(&y.dead) {
+                    if !dy.core.is_empty() && dy.core != dx.core {
+                        failures.push(format!(
+                            "{rel} {mode:?}: {} reports another core taken lazily",
+                            b.name(&dy.set)
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // Not vacuous: the cube's dead holes are read, the ones whose core the
+    // lazy run takes after the cube.
+    assert!(
+        runs >= 1000 && dead_holes > 0,
+        "{runs} runs, {holes} holes, {dead_holes} dead"
+    );
+    eprintln!("{runs} runs, {holes} minimal holes, {dead_holes} dead");
+}

@@ -223,6 +223,16 @@ pub fn run(m: &ArgMatches) -> i32 {
         return 1;
     }
     let summary_path = m.get_one::<String>("json-summary").cloned();
+    // A dead node's core only where a surface prints one (M1e2 S1e2.2.21, the
+    // user's ruling of 2026-11-05, *minimum work per question*):
+    // `--dump-answer`'s `nogoods.json`, `--dump-lattice`'s `nodes.json`,
+    // `--events`' `enter` lines and `--trace`'s dead members print the cores
+    // the run visits. Root's, and on the cube the minimal holes', which the
+    // read-out and the summary print, are taken either way.
+    opts.cores = dump.is_some()
+        || lattice_dir.is_some()
+        || m.get_one::<String>("events").is_some()
+        || m.get_one::<String>("trace").is_some();
     // `--diff-models FILE` is read before the run, as the walk's is: a file
     // it cannot read is a usage error, and nothing runs.
     let want = match m.get_one::<String>("diff-models") {

@@ -150,11 +150,14 @@ fn lattice(
     // Describe's route, as `ein solve` takes it (`explore`'s § Describe's
     // route): the state route on a monotone program, route 1 on a flagged one
     // whose root is dead (`explore::Licence::ForkOnlyAdds`), the cube else.
+    // A claim states no core, so the run takes none but root's (M1e2
+    // S1e2.2.21, *minimum work per question*).
     let route_opts = downset::Options {
         budget: opts.budget,
         max_visits: u64::MAX,
         jobs: opts.jobs,
         deadline: None,
+        cores: false,
     };
     if monotone {
         let s = crate::states::compute_prepared(
@@ -221,6 +224,7 @@ fn lattice(
             keep_states: false,
             jobs: opts.jobs,
             deadline: None,
+            cores: false,
         },
         &mut |_| {},
         &mut crate::events::Events::off(),
@@ -444,7 +448,7 @@ fn fixpoints(
         return Ok(Vec::new());
     }
     let prepared = prepare(root, terms, ast)?;
-    let axes = Axes::new(root, candidates, prepared.hypothesised.clone(), true);
+    let axes = Axes::new(root, candidates, prepared.hypothesised.clone(), true).taking_cores(false);
     let facts: Vec<Vec<FactId>> = sets
         .iter()
         .map(|s| s.iter().map(|&b| candidates[b as usize].fact).collect())

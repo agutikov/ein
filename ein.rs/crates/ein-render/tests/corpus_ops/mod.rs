@@ -441,6 +441,7 @@ fn region_op(
                 keep_states: false,
                 jobs,
                 deadline: None,
+                cores: true,
             };
             let outcome = ein_infer::region::compute(kb, terms, ast, &o, &mut |_| {})
                 .map_err(|e| e.to_string())?;

@@ -103,6 +103,7 @@ fn main() {
         max_visits: budget,
         jobs,
         deadline: None,
+        cores: true,
     };
     for path in files {
         let rel = path
