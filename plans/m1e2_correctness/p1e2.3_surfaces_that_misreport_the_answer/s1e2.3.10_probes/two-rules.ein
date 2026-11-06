@@ -1,0 +1,13 @@
+;;; S1e2.3.10 probe: one core, (p A), from which two rules derive (false).
+;;; `wide-a` fires first (priority 100), `narrow-b` second.
+(relation p T :why "{?1} has p")
+(p A)
+(rule wide-a ()
+  :match (p ?x)
+  :assert (false)
+  :priority 100)
+(rule narrow-b ()
+  :match (p ?x)
+  :assert (false)
+  :priority 200)
+(solve :expect (false))

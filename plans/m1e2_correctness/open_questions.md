@@ -34,6 +34,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.18](#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) | What else in a rule reads nothing, in silence? | [S1e2.2.24](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24) | **ruled 2026-11-05: (i)(a), (ii)(a), (iii)(a), (iv)(a), (v)(a), as recommended**, put to the user the same day by T1e2.2.24.1: a form, a variable no earlier premise binds and a keyword pair as a guard's argument are refused at load; a relation parameter its activator binds to a nested fact is refused at load where the activator is written and by the compiler where a rule derives it; each a W24 row, filed and fixed by S1e2.2.24's T2; `empty_absent.ein` and `unbound_head.ein` refused at load and moved to `examples/broken/load/`. **Built 2026-11-05** by S1e2.2.24 (`3ab9a231`): W24's seven rows fixed |
 | [Q-M1e2.19](#q-m1e219--what-do---minimal-and---maximal-answer-past-the-limit) | What do `--minimal` and `--maximal` answer past the limit? | [S1e2.2.26](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md) (W27) | **ruled 2026-11-05: (1) and (2), as recommended**, put to the user the same day by S1e2.2.25's re-take (T1e2.2.25.1): past `--region-limit` on a flagged program the line modes label every member met as on their line (65 214 on `square-unique/corner-house`), where describe certifies one minimal state; S1e2.2.26 files it as W27 and fixes it before the close, `--minimal` certifying exactly what describe certifies and `--maximal` none, the maximal line not known. **Built 2026-11-05** by S1e2.2.26 (`c21f93fc`): W27's four rows fixed |
 | [Q-M1e2.20](#q-m1e220--does-a-claim-compare-values-or-their-printed-text) | Does a claim compare values, or their printed text? | [S1e2.3.8](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md) (N5) | **ruled 2026-11-06: (a), as recommended**, put to the user the same day by S1e2.3.8's step 1 (T1e2.3.8.1): a claim and a query's projection classes compare printed text, which printed the int `1` and the name `"1"` alike, so a false claim held and two classes were one on three probes (no corpus program); the one printer moves them, and the case is W28, filed `open` (T1e2.3.8.2) and fixed with the printer. **Built 2026-11-06** (`712f23fd`) |
+| [Q-M1e2.21](#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two) | Which rule does `refuted by` name where the core derives its contradiction through two? | [S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md) (N7) | **open**, put to the user on 2026-11-06 by S1e2.3.10's step 1, which paused on it: 5 041 distinct printed cores per commit (6 917 nightly) derive a fact of their contradiction through two rules; recommended (a), the first recorded derivation the core supports |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed. The user ruled it (a) on 2026-11-03 ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)).
@@ -2213,3 +2214,78 @@ register row's recorded region is text, so `W18/str-in-match`'s
 `[case.region]` reads `maximal = [["(hit 1)", …]]` where the library now
 prints `(hit "1")`, the same candidate over the name `1` (the row's note says
 so). T2 re-banks the text; no status, verdict or count moves.
+
+## Q-M1e2.21 — Which rule does `refuted by` name where the core derives its contradiction through two?
+
+Put to the user on 2026-11-06 by
+[S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md)'s
+step 1
+([T1e2.3.10.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md#the-finding-a-core-derives-its-contradiction-through-two-rules)),
+which paused on it: its brief stops where a printed core has two derivations
+of its contradiction through different rules and the stage's method does
+not pick one.
+
+**What N7's fix does.** A dead node's `refuted by` named the rules of the
+first contradiction `contradiction::detect` returns, each fact's primary,
+which need not be a rule the printed core's derivation uses: at `50a33188`
+65 559 distinct printed cores per commit name such a rule (67 928 nightly,
+2026-11-06), `alt-cap-core.ein`'s `narrow` beside the core `(w1 X) (w2 X)`
+that only `wide` refutes among them. The fix names, for each fact of the
+contradiction the core was taken over (the search's own tie-break picks it),
+the last step of a derivation from the core: a recorded justification whose
+premises, activator and universal reads the core derives, or `(given)` for a
+fact the core holds itself. One rule for a `(false …)`, up to two for a
+pair, as before. The method says *"where two derivations give cores of the
+same size, it names the one the core is"*: that picks the contradiction.
+
+**The finding.** Within the contradiction, the core often derives one of its
+facts through **two rules**: both are derivations of it from the printed
+core, so *"the one the core is"* picks neither. **5 041 of the 230 154
+distinct printed cores per commit, over 16 programs; 6 917 of 370 924 over
+20 in the nightly's corpus** (`corpus_cores.rs` under the prototype,
+release, 2026-11-06). `tests/stdlib/bijection/06_blind_enumeration.ein`'s
+`(seats C1 Ann)`, both arguments ill-typed, refuted through
+`typecheck-arg-0` and through `typecheck-arg-1`; `branching/02`'s
+`(co-located Blue H1) (co-located Red H1) (is-a Blue Color) (is-a Red
+Color)`, whose `(co-located Blue Red)` it derives through `symmetric` and
+through `transitive`. The smallest witnesses are banked beside the stage
+file:
+[`two-rules.ein`](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_probes/two-rules.ein),
+`(p A)` and two rules `:match (p ?x) :assert (false)`, `wide-a` firing
+first, and `-reordered`, `narrow-b` first.
+
+No answer moves under any option: no R, count, class, core's facts, exit
+code or register row (the stage's sweep, 41 944 runs over 749 files, and
+`cargo test` under the prototype). Each option prints one of the rules the
+core's derivations end in, which the new claim holds on every corpus core.
+
+- **(a) The first recorded derivation the core supports.** The fact's
+  primary where the core derives it, else the first alternative the store
+  keeps that it derives (fewest premises first), else the smallest-closure
+  arrival. `two-rules` names `wide-a` and `-reordered` `narrow-b`, as at
+  HEAD; `branching/02`'s core `sibling-exclusive, transitive`. It moves
+  70 239 dead sets' rules over 26 corpus programs (the sweep, by distinct
+  dead set), each from a rule its core does not use or from another
+  contradiction than the core's. It keeps
+  `:record-alternative-justifications false`'s exemption to the core: off,
+  the store keeps each fact's primary, and where the core is the same the
+  primaries are a derivation from it, so `refuted by` moves only where the
+  core does. It depends on the store's order, the program's priorities and
+  arrival in commitment order (no interner since S1e2.2.12): two programs one
+  `:priority` apart can name two rules beside one core, as the probe pair
+  does — **the agent's recommendation**.
+- **(b) The least rule name among the rules whose step the core supports.**
+  A function of the printed core and the program's rules alone, never of the
+  firing order: `two-rules` and `-reordered` both `narrow-b`;
+  `branching/02`'s core `sibling-exclusive, symmetric`. 1 663 dead sets over
+  16 corpus programs print otherwise than under (a). The alternatives flag
+  can then move `refuted by` beside an unmoved core (`two-rules.ein`:
+  `narrow-b` with the alternatives, `wide-a` without), so the config
+  principle's exemption grows from *the core* to *the core and its rules,
+  apart*; on no corpus program whose R is known (`lever_invariance.rs` green
+  under both).
+- **(c) Every rule whose step the core supports**, sorted:
+  `two-rules`' `narrow-b, wide-a`, `bijection/06`'s
+  `typecheck-arg-0, typecheck-arg-1`. Nothing chosen and order-free, but not
+  one rule per printed core, the method's default, and a list that grows with
+  the program's redundancy; the alternatives flag moves it as (b)'s does.

@@ -34,8 +34,14 @@ rows are fixed (103 fixed, 10 open, 1 not-wrong). **S1e2.3.9 is done**
 (2026-11-06, `b6139e62`): a member of N a run past `--region-limit` met is
 written with a `null` core and rules and `core_status: "not-kept"`, and
 `--trace` says why, where both wrote an empty core; no run that did not stop
-prints an empty core on any surface, and no answer moved. Next S1e2.3.10.
-Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+prints an empty core on any surface, and no answer moved. **S1e2.3.10
+started 2026-11-06**: its step 1 is done the same day, and N8 with it (every
+row of `ein test --json-report` carries `outside` and `types_as_objects`,
+`ein-test-report/4`); N7 **paused** on its finding, a printed core that
+derives its contradiction through two rules (5 041 distinct cores per
+commit), which the stage's method does not pick between: put to the user as
+[Q-M1e2.21](../open_questions.md#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two),
+recommended (a). No answer moved. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
 every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
 re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
@@ -211,7 +217,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 | [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04; widened the same day by a reloaded dump's provenance (the inventory's S-5, Q-M1e2.16 (3)). **Done 2026-11-06** (`712f23fd`): one printer on every surface, the provenance a comment, the round trip a test over every corpus program; Q-M1e2.20 ruled (a), W28 filed and fixed | 1.5 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart; a state file's provenance a comment, a reloaded state's facts as given |
 | [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default. **Done 2026-11-06** (`b6139e62`): past the limit a member of N is written `not-kept`, its core and rules `null`, and `--trace` says why; no empty core on any surface, held by a test over every corpus dump | 0.5 d | no surface prints an empty core for a core the run did not take |
-| [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3) | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
+| [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3). **Started 2026-11-06**: step 1 and N8 done (`ein-test-report/4`); N7 paused on Q-M1e2.21 | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
 the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
@@ -348,12 +354,24 @@ by a test, and no exit code moved.
   both print the core `(w1 X) (w2 X)`, and one says `refuted by narrow`, the
   other `wide`; only `wide` derives `(false)` from that core. **Placed by the
   user 2026-11-05** ([Q-M1e2.16](../open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items) (3)):
-  [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md).
+  [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md). **Re-taken
+  2026-11-06** by its step 1 at `50a33188`: live on every surface that prints
+  a dead node's rules, and wider than the pair, 65 559 distinct printed cores
+  per commit naming a rule no derivation from the core ends in (67 928
+  nightly), `bijection/06`'s cube most of them. The prototype names the last
+  step of a derivation from the core, and **paused** on
+  [Q-M1e2.21](../open_questions.md#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two):
+  5 041 printed cores per commit derive a fact of their contradiction
+  through two rules.
 - **N8. `ein test --json-report` drops `outside` and `types`.** S1e2.2.8's
   default, re-taken by the inventory (its S-4): `ein test
   tests/region/07_cube.ein --json-report R -v` prints `outside the universe:
   is-a …` on stdout, and the row's `region` carries neither field. **Placed
-  with N7**, S1e2.3.10.
+  with N7**, S1e2.3.10. **Fixed 2026-11-06** by its T1e2.3.10.1: every row
+  carries `outside` and `types_as_objects` as the summary's `root.hypgen`
+  writes them, `null` where no run checked the row's claim, schema
+  `ein-test-report/4`. Held by `test_cli.rs`' two tests, `tests/region/07`'s
+  row and every corpus claim's scope lines against its row.
 
 ## Acceptance for the phase
 

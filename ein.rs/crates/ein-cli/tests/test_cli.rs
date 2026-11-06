@@ -703,7 +703,7 @@ fn report(args: &[&str], out: &std::path::Path) -> serde_json::Value {
 fn every_file_of_the_selection_has_a_row() {
     let d = Dir::new("report-rows");
     let r = report(&["examples/features"], &d.0.join("r.json"));
-    assert_eq!(r["schema"], "ein-test-report/3");
+    assert_eq!(r["schema"], "ein-test-report/4");
     let rows = r["rows"].as_array().expect("rows");
     let files: std::collections::BTreeSet<&str> =
         rows.iter().map(|x| x["path"].as_str().unwrap()).collect();
@@ -1092,5 +1092,203 @@ fn the_two_surfaces_agree_on_a_failure_and_on_an_unchecked_claim() {
     assert!(
         expected[1].starts_with("  query 2 of 2 · :goal "),
         "{expected:?}"
+    );
+}
+
+// ── What H leaves out, on both surfaces — M1e2 S1e2.3.10 ───────────
+
+/// Each claim header of a `-v` run with the lines printed under it: two
+/// leading spaces for the header, four for its lines.
+fn claim_blocks(out: &str) -> Vec<(String, Vec<String>)> {
+    let mut blocks: Vec<(String, Vec<String>)> = Vec::new();
+    for l in out.lines() {
+        if l.starts_with("    ") {
+            if let Some(b) = blocks.last_mut() {
+                b.1.push(l.trim_start().to_string());
+            }
+        } else if l.starts_with("  ") {
+            blocks.push((l.to_string(), Vec::new()));
+        }
+    }
+    blocks
+}
+
+/// Every claim's scope lines against its row: `outside the universe: …`
+/// where the row's `outside` names a relation, each of them named in the
+/// line, and `a type as an object: …` where its `types_as_objects` names an
+/// object, each named in the line; neither line where the row's list is
+/// empty. Rows in walk order, which is print order. The failures.
+fn scope_disagreements(out: &str, doc: &serde_json::Value) -> Vec<String> {
+    let rows: Vec<&serde_json::Value> = doc["rows"]
+        .as_array()
+        .expect("rows")
+        .iter()
+        .filter(|x| !x["expect"].is_null() && x["outcome"] != "error")
+        .collect();
+    let blocks = claim_blocks(out);
+    let mut bad = Vec::new();
+    if rows.len() != blocks.len() {
+        bad.push(format!(
+            "{} claim headers printed, {} claims in the report",
+            blocks.len(),
+            rows.len()
+        ));
+        return bad;
+    }
+    for (row, (header, lines)) in rows.iter().zip(&blocks) {
+        let line =
+            |prefix: &str| -> Option<&String> { lines.iter().find(|l| l.starts_with(prefix)) };
+        let names = |v: &serde_json::Value, key: Option<&str>| -> Vec<String> {
+            v.as_array()
+                .unwrap_or_else(|| panic!("a list where {row} has a run"))
+                .iter()
+                .map(|x| match key {
+                    Some(k) => x[k].as_str().expect("a name").to_string(),
+                    None => x.as_str().expect("a name").to_string(),
+                })
+                .collect()
+        };
+        let outside = names(&row["outside"], Some("relation"));
+        let objects = names(&row["types_as_objects"]["objects"], None);
+        for (what, prefix, named) in [
+            ("outside", "outside the universe: ", &outside),
+            ("types_as_objects", "a type as an object: ", &objects),
+        ] {
+            match (line(prefix), named.is_empty()) {
+                (None, true) => {}
+                (Some(l), false) if named.iter().all(|n| l.contains(n.as_str())) => {}
+                (l, _) => bad.push(format!(
+                    "{header} ({}): the text prints {l:?}, the row's {what} is {named:?}",
+                    row["path"]
+                )),
+            }
+        }
+    }
+    bad
+}
+
+/// **The report's row carries what H leaves out, wherever `ein test`
+/// prints it beside a claim** — M1e2 S1e2.3.10, P1e2.3's N8.
+///
+/// Beside each claim it prints, `ein test` says what the universe leaves
+/// out (`outside the universe: …`, M1e2 S1e2.2.8) and what the untyped rung
+/// bound as an object (`a type as an object: …`, S1e2.2.10). Until
+/// S1e2.3.10 the report's rows carried neither: `tests/region/07_cube.ein`
+/// printed `outside the universe: is-a …` and its row's `region` was `{route,
+/// monotone, k_s, k_c, ms, status, stale_nodes, paths_differ}`. Since
+/// `ein-test-report/4` every row carries `outside` and `types_as_objects`,
+/// the summary's `root.hypgen` fields under its names and in its shapes,
+/// `null` where no run checked the row's claim. The corpus prints the first
+/// beside one claim and the second beside none (2026-11-06), so the second
+/// is held here on `branching/02`'s program with two claims added: a solve
+/// claim and a query's, each false, whose lines print without `-v` too.
+#[test]
+fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
+    let d = Dir::new("report-scope");
+    let program =
+        std::fs::read_to_string(repo_root().join("examples/branching/02_one_dead_one_alive.ein"))
+            .expect("branching/02 reads");
+    let typed = d.file(
+        "typed.ein",
+        &format!("{program}\n(solve :expect (false))\n(query :goal (co-located Red ?h) :expect (false))\n"),
+    );
+    let out = d.0.join("r.json");
+    let r = ein(&[
+        "test",
+        "tests/region/07_cube.ein",
+        &typed,
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    assert_eq!(
+        r.code, 1,
+        "the typed program's claims are false: {}{}",
+        r.out, r.err
+    );
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    assert_eq!(doc["schema"], "ein-test-report/4");
+    let bad = scope_disagreements(&r.out, &doc);
+    assert!(bad.is_empty(), "{}\n{}", bad.join("\n"), r.out);
+
+    let rows = doc["rows"].as_array().expect("rows");
+    let row = |path: &str, place: &str, query: u64| -> &serde_json::Value {
+        rows.iter()
+            .find(|x| {
+                x["path"].as_str().unwrap().ends_with(path)
+                    && x["place"] == place
+                    && x["query"] == query
+            })
+            .unwrap_or_else(|| panic!("no {place} row {query} for {path}"))
+    };
+    // `tests/region/07`: the inventory's S-4 witness.
+    let cube = row("07_cube.ein", "solve", 0);
+    assert_eq!(
+        cube["outside"],
+        serde_json::json!([{"relation": "is-a", "arity": 2, "why": "no-hrule"}]),
+        "{cube}"
+    );
+    assert_eq!(
+        cube["types_as_objects"],
+        serde_json::json!({"objects": [], "relations": [], "candidates": 0})
+    );
+    assert!(
+        r.out.contains("    outside the universe: is-a — "),
+        "{}",
+        r.out
+    );
+    // Its query states no claim and no run checked it: `null`.
+    let silent = row("07_cube.ein", "query", 1);
+    assert_eq!(silent["outcome"], "no-expect");
+    assert!(silent["outside"].is_null() && silent["types_as_objects"].is_null());
+    // The typed program, both claims: `Color, House` bound as objects.
+    for (place, query) in [("solve", 0), ("query", 2)] {
+        let t = row("typed.ein", place, query);
+        assert_eq!(t["outcome"], "failed", "{t}");
+        assert_eq!(
+            t["types_as_objects"]["objects"],
+            serde_json::json!(["Color", "House"]),
+            "{t}"
+        );
+        assert_eq!(t["outside"], serde_json::json!([]), "{t}");
+    }
+    assert_eq!(
+        r.out
+            .matches("    a type as an object: Color, House")
+            .count(),
+        2,
+        "{}",
+        r.out
+    );
+}
+
+/// **The same over the corpus**: every claim `ein test -v` prints, its scope
+/// lines against its row, both directions (M1e2 S1e2.3.10).
+#[test]
+fn every_corpus_claims_scope_lines_are_its_rows() {
+    let d = Dir::new("report-scope-corpus");
+    let out = d.0.join("r.json");
+    let r = ein(&[
+        "test",
+        "examples",
+        "tests",
+        "stdlib",
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    let bad = scope_disagreements(&r.out, &doc);
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    // Not vacuous: `tests/region/07` prints the one (2026-11-06).
+    assert!(
+        doc["rows"]
+            .as_array()
+            .expect("rows")
+            .iter()
+            .any(|x| x["outside"].as_array().is_some_and(|o| !o.is_empty())),
+        "no corpus claim's row names a relation outside the universe"
     );
 }

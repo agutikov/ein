@@ -358,6 +358,14 @@ constrained-reasoning research.
   (`ein-cli/tests/answer_round_trip.rs`), and the register is unmoved. Next
   is S1e2.3.10, then the inventory re-taken and shown to the user, and the
   close waits for the user's go-ahead.
+  S1e2.3.10 started the same day: N8 is fixed, every row of `ein test
+  --json-report` carrying `outside` and `types_as_objects` as the summary
+  writes them (`ein-test-report/4`). N7, a dead node's `refuted by` naming
+  the first contradiction's rules rather than its core's, paused on its
+  step 1's finding: 5 041 printed cores per commit derive their
+  contradiction through two rules, and which one to name is
+  [Q-M1e2.21](plans/m1e2_correctness/open_questions.md#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two),
+  put to the user. No answer moved.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -851,7 +859,8 @@ generator the summary's `root` block called until M1e2 S1e2.3.1 retired it;
 `EIN_TRAVERSAL` went with the walk. What
 carried over: `--models list|key|grid`, now over the states a run lists;
 `EIN_LEFTOVER`'s block in `ein-summary/2`; and `ein test --json-report`, now
-`ein-test-report/3`, a query row carrying its classes. The read-out's
+`ein-test-report/4`, a query row carrying its classes and, since M1e2
+S1e2.3.10, every row what the universe leaves out. The read-out's
 vocabulary is
 [`read_out.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md),
 and its golden page, written by the binary, is

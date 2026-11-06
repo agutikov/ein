@@ -49,7 +49,10 @@
 //! the whole selection**, whether or not it claims anything, and one per
 //! region claim. Since M1e2 S1e2.1a.5 it is `ein-test-report/3`: a query
 //! row's `ran` (the walk's counters) became `answer`, what its classes are
-//! over and how many. `--json-summary`
+//! over and how many. Since M1e2 S1e2.3.10 it is `ein-test-report/4`,
+//! additively: every row carries `outside` and `types_as_objects`, what the
+//! universe leaves out beside a claim the run checked, as the summary's
+//! `root.hypgen` writes them, `null` on a row no run checked. `--json-summary`
 //! is a *run*'s summary — verdict, counters, config — and is refused over a
 //! selection of more than one run for the reason every artefact flag is: it
 //! names one path. A report is the other shape. It has no run to be more than
@@ -94,7 +97,7 @@ const ONE_PATH_FLAGS: [&str; 2] = ["events", "json-summary"];
 /// `--json-report`'s version. **Not** `ein-summary/2`'s: a report is one row
 /// per query of a selection, a summary is one run, and a consumer that read
 /// the same version marker on both would be right to expect the same fields.
-const REPORT_SCHEMA: &str = "ein-test-report/3";
+const REPORT_SCHEMA: &str = "ein-test-report/4";
 
 /// What one query came to — [`Outcome`] plus the two ways a run can fail to
 /// produce one at all.
@@ -264,7 +267,19 @@ struct RegionRan {
     warning: Option<(&'static str, u64, u64)>,
 }
 
-/// What a query's claim was checked against — `ein-test-report/3`'s
+/// What H leaves out, beside every claim a run checked, as the text surface
+/// prints it there (`outside the universe: …`, `a type as an object: …`) and
+/// `--json-summary` writes it in `root.hypgen` (M1e2 S1e2.3.10, P1e2.3's N8):
+/// `outside` (M1e2 S1e2.2.8) and `types_as_objects` (S1e2.2.10), under the
+/// summary's field names and in its shapes, `[]` and empty lists when H
+/// leaves nothing out.
+#[derive(Clone)]
+struct Scope {
+    outside: Json,
+    types_as_objects: Json,
+}
+
+/// What a query's claim was checked against — `ein-test-report/4`'s
 /// `answer`: the set its classes are over, whether that set is complete, and
 /// how many classes and states it held.
 struct Answered {
@@ -299,6 +314,9 @@ struct Row {
     /// The solve claim's run: R as it described it. A query's is
     /// [`Self::answer`].
     region: Option<RegionRan>,
+    /// What H leaves out, where a run checked the row's claim (M1e2
+    /// S1e2.3.10): the lines `ein test` prints beside that claim, as data.
+    scope: Option<Scope>,
 }
 
 impl Row {
@@ -372,6 +390,12 @@ impl Row {
                 fields.push(("paths_differ".to_string(), Json::int(differ as i64)));
             }
         }
+        // On every row, `null` where no run checked the row's claim.
+        let (outside, types) = self.scope.as_ref().map_or((Json::Null, Json::Null), |s| {
+            (s.outside.clone(), s.types_as_objects.clone())
+        });
+        pairs.push(("outside", outside));
+        pairs.push(("types_as_objects", types));
         Json::obj(pairs)
     }
 }
@@ -661,6 +685,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         answer: None,
         place,
         region: None,
+        scope: None,
     };
     let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, path) else {
         println!("{}", status("ERROR", path));
@@ -816,6 +841,11 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     // (a)), beside each claim printed as the scope is.
     let types = ein_render::read_out::types_text(&r.answer.root.types_as_objects)
         .map(|t| format!("    a type as an object: {t}"));
+    // The same two, as data, on the row of every claim the run checked.
+    let scope = Scope {
+        outside: ein_render::dump::region::outside_json(&r.answer.root.outside),
+        types_as_objects: ein_render::dump::region::types_json(&r.answer.root.types_as_objects),
+    };
     if let (Some(i), Some(claim)) = (solve_row, solve_claim.as_ref()) {
         let report = r.claim.clone().unwrap_or_else(|| Report {
             outcome: Outcome::NotChecked,
@@ -846,6 +876,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 )
             }),
         });
+        rows[i].scope = Some(scope.clone());
         let shape = match claim {
             ein_ir::claim::Claim::False => "(false)",
             ein_ir::claim::Claim::Region(x) if x.models.is_empty() && x.owing.is_empty() => {
@@ -898,6 +929,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             classes: q.classes.len(),
             states: q.classes.iter().map(|c| c.states.len()).sum(),
         });
+        row.scope = Some(scope.clone());
         if volume == Volume::Verbose || came != Came::Held {
             let goal = row.goal.clone().unwrap_or_else(|| "?".to_string());
             let where_ = if n_queries == 1 {

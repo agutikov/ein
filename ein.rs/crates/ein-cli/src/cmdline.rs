@@ -835,7 +835,7 @@ fn test_command() -> Command {
                 "write one row per claim and per (query …) of the whole \
                  selection — the claim's shape, the relations its :goal \
                  closes, the outcome, and what the run found — to FILE as \
-                 ein-test-report/3. Additive. Unlike --json-summary it is the \
+                 ein-test-report/4. Additive. Unlike --json-summary it is the \
                  report of the selection rather than of one run, so it takes \
                  any selection.",
             ),

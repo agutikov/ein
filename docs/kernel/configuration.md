@@ -457,7 +457,7 @@ different question or stopping early.
   Since S1e2.3.3 stdout's key on `pets` is the 38 shown states', and the
   11 339 states' key is priced and declined only under `--dump-answer`.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
-  (`ein-summary/2`), `--json-report` (`ein-test-report/3`), `--trace` with its
+  (`ein-summary/2`), `--json-report` (`ein-test-report/4`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
   ([`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer`
   ([`answer_dump.md`](inference/answer_dump.md)), and `ein oracle`'s `--dump`

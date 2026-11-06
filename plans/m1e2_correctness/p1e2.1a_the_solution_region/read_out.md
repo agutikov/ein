@@ -606,6 +606,11 @@ which set that is:
 - **Text**: unchanged, `ok` / `FAILED` / `NOT CHECKED` per file.
 - **Report**: `ein-test-report/3`. A query row's `ran` (the walk's counters)
   becomes `answer {over, exact, classes, states}`. Solve rows are unchanged.
+  `ein-test-report/4` since M1e2 S1e2.3.10, additively: every row carries
+  `outside` and `types_as_objects`, what the universe leaves out, as
+  `--json-summary`'s `root.hypgen` writes them, `null` where no run checked
+  the row's claim; the lines `ein test` prints beside each claim it checked,
+  *outside the universe* and *a type as an object*, as data (P1e2.3's N8).
 - **Each claim runs the mode that decides it, and no more**, as the
   interface's § 2.3 says.
 
