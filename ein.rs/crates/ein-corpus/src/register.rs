@@ -245,7 +245,9 @@ fn is_commit(c: &str) -> bool {
 
 /// A core's status as the register spells it (schema /9): `none`,
 /// `within-budget`, or `cut-` and one or more of the caps, in order —
-/// `ein_infer::explain::CoreStatus::word`'s words, and `none`.
+/// `ein_infer::explain::CoreStatus::word`'s words for a core a search took,
+/// and `none`. Not `not-kept` (M1e2 S1e2.3.9): a row records the summary's
+/// `region.core_status`, root's, which a run always takes.
 fn is_core_status(s: &str) -> bool {
     if s == "none" || s == "within-budget" {
         return true;

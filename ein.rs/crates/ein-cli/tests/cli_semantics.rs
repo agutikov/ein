@@ -2521,3 +2521,100 @@ fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
     // Not vacuous: nineteen surfaces a file.
     assert_eq!(checked.get(), 38, "the surfaces checked");
 }
+
+// ── A core the run did not keep says so — M1e2 S1e2.3.9 (N6) ─────────────
+
+/// **A member of N a run past `--region-limit` met is printed with no core,
+/// and says why; a run that did not stop prints each member's core** — M1e2
+/// S1e2.3.9, P1e2.3's N6. Past the limit a describing run keeps each node it
+/// met as its two bits (`Space::partial_cube`), so it has no core to print
+/// for a member of N: `nogoods.json` writes the member with a `null` core,
+/// `null` rules and `core_status: "not-kept"`, and `--trace`'s N says *Core:
+/// not kept: the run stopped at `--region-limit`.* Until S1e2.3.9 both wrote
+/// an empty core with no rule and no status, which reads as *refuted by
+/// nothing*: `lattice/06_friends_tables.ein`, 68 of 68.
+///
+/// `past-limit-lines.ein` (W27's witness) is the control: past the default
+/// limit its run stops with the 15 members of N met, each not kept, and with
+/// `--region-limit 17` it exhausts and prints the same 15, each with a core.
+#[test]
+fn a_core_the_run_did_not_keep_says_so_and_no_member_of_n_has_an_empty_core() {
+    const TRACE: &str = "Core: not kept: the run stopped at `--region-limit`.";
+    let scratch = ein_corpus::Scratch::new("ein-core-not-kept");
+    let mut met: BTreeMap<bool, BTreeSet<String>> = BTreeMap::new();
+    for (i, (file, limit, stopped, members)) in [
+        ("examples/lattice/06_friends_tables.ein", None, true, 68),
+        (
+            "examples/ein-bugs/wrong-answers/past-limit-lines.ein",
+            None,
+            true,
+            15,
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/past-limit-lines.ein",
+            Some("17"),
+            false,
+            15,
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let run = format!(
+            "{file} {}",
+            limit.map_or(String::new(), |l| format!("--region-limit {l}"))
+        );
+        let answer = scratch
+            .join(format!("answer{i}"))
+            .to_string_lossy()
+            .to_string();
+        let trace = scratch
+            .join(format!("trace{i}.md"))
+            .to_string_lossy()
+            .to_string();
+        let mut args = vec!["solve", file, "--dump-answer", &answer, "--trace", &trace];
+        if let Some(l) = limit {
+            args.extend(["--region-limit", l]);
+        }
+        ein(&args).ok();
+        let region = &json_at(&format!("{answer}/answer.json"))["region"];
+        assert_eq!(region["exhausted"], !stopped, "{run}: exhausted");
+        let nogoods = json_at(&format!("{answer}/nogoods.json"));
+        let n = nogoods.as_array().expect("nogoods.json is an array");
+        assert_eq!(n.len(), members, "{run}: the members of N met");
+        for m in n {
+            let (core, status, rules) = (&m["core"], &m["core_status"], &m["refuted_by"]);
+            if stopped {
+                assert_eq!(
+                    (core, status.as_str(), rules),
+                    (&J::Null, Some("not-kept"), &J::Null),
+                    "{run}: {} is printed with a core it did not keep",
+                    m["set"]
+                );
+            } else {
+                assert!(
+                    core.as_array().is_some_and(|c| !c.is_empty())
+                        && status == "within-budget"
+                        && rules.as_array().is_some_and(|r| !r.is_empty()),
+                    "{run}: {} has the core {core} as {status} and the rules {rules}",
+                    m["set"]
+                );
+            }
+        }
+        let t = read(&trace);
+        assert_eq!(
+            (t.matches(TRACE).count(), t.matches("Core: `").count()),
+            if stopped { (members, 0) } else { (0, members) },
+            "{run}: --trace's N"
+        );
+        assert!(!t.contains("not kept by this route"), "{run}: --trace");
+        if file.contains("past-limit-lines") {
+            met.entry(stopped)
+                .or_default()
+                .extend(n.iter().map(|m| m["set"].to_string()));
+        }
+    }
+    // The control: the run that stops met every member the run that does not
+    // stop prints a core for.
+    assert_eq!(met[&true], met[&false], "past-limit-lines' N");
+}

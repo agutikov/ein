@@ -194,7 +194,9 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             lines.push("<details>".to_string());
             lines.push(format!("<summary>{} — dead</summary>", d.set));
             lines.push(String::new());
-            if d.core.is_empty() {
+            if let Some(why) = d.core_status.and_then(|c| c.not_kept()) {
+                lines.push(format!("Core: {why}."));
+            } else if d.core.is_empty() {
                 lines.push("Core: not kept by this route.".to_string());
             } else {
                 let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();

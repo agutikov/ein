@@ -937,11 +937,20 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                  f"**{len(nogoods)}**" + ("" if nogoods else " — N is empty, or this question does not compute it "
                                                              "(a line mode does not)"))
           + (table(["#", "set", "core", "refuted by"],
-                   [[i + 1, set_text(x.get("set")), " ".join(x.get("core") or []) or "—",
+                   [[i + 1, set_text(x.get("set")), nogood_core(x),
                      ", ".join(x.get("refuted_by") or []) or "—"] for i, x in enumerate(nogoods)])
              if nogoods else ["_none_"]))
     lines += [f"## N — {len(nogoods)} minimal dead set(s)", "", f"[Every minimal dead set]({rel(npage, page)})", ""]
     p.add("Answer", page, lines)
+
+
+def nogood_core(x: dict) -> str:
+    """A member of N's core as `nogoods.json` writes it: the facts, or why
+    there are none — `not-kept` where a run past `--region-limit` kept the
+    member as its two bits (M1e2 S1e2.3.9)."""
+    if x.get("core_status") == "not-kept":
+        return "not kept: the run stopped at `--region-limit`"
+    return " ".join(x.get("core") or []) or "—"
 
 
 # ── summary, events, consistency ──────────────────────────────────────────────

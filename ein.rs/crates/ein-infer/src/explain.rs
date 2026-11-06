@@ -210,7 +210,8 @@ impl Cut {
 /// prints (M1e2 S1e2.2.23, W23). It says whether the search was cut, and at
 /// which cap, and no more: [`CoreStatus::WithinBudget`] does not say the core
 /// is the smallest over every derivation the program records, which F22's
-/// residuals keep it from being (the module note).
+/// residuals keep it from being (the module note). Where a dead set is printed
+/// with no core, it says why ([`CoreStatus::NotKept`], M1e2 S1e2.3.9).
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum CoreStatus {
     /// The search reached its fixpoint inside every cap of its budget.
@@ -218,7 +219,17 @@ pub enum CoreStatus {
     /// The search stopped at a cap: the core is a real frontier, and a
     /// smaller one may exist.
     Cut(Cut),
+    /// The run kept no core for this dead set: a describing run past
+    /// `--region-limit` keeps each node it met as its two bits, so a member
+    /// of `N` it met is printed with no core, and with this status where the
+    /// core would be (M1e2 S1e2.3.9, P1e2.3's N6). Until then it was printed
+    /// with an empty core and no status, which reads as *refuted by nothing*.
+    NotKept,
 }
+
+/// What a text surface prints in place of a core the run did not keep
+/// ([`CoreStatus::NotKept`]).
+pub const NOT_KEPT: &str = "not kept: the run stopped at `--region-limit`";
 
 impl CoreStatus {
     /// The status of the core `e` names.
@@ -233,12 +244,14 @@ impl CoreStatus {
     /// The word a JSON surface writes: `within-budget`, or `cut-` and the
     /// caps the search stopped at, in [`Cut`]'s order, `cut-environments`,
     /// `cut-rounds`, `cut-facts` or two or three of them joined by `-`
-    /// (`cut-environments-rounds`). A reader that asks only whether a core
+    /// (`cut-environments-rounds`), or `not-kept` beside a `null` core
+    /// ([`CoreStatus::NotKept`]). A reader that asks only whether a core
     /// was cut reads the prefix; the caps' sizes are the default budget's,
     /// which no option changes.
     pub fn word(&self) -> String {
         match self {
             CoreStatus::WithinBudget => "within-budget".to_string(),
+            CoreStatus::NotKept => "not-kept".to_string(),
             CoreStatus::Cut(c) => {
                 let mut w = String::from("cut");
                 for (hit, name) in [
@@ -260,6 +273,9 @@ impl CoreStatus {
     pub fn from_word(word: &str) -> Option<CoreStatus> {
         if word == "within-budget" {
             return Some(CoreStatus::WithinBudget);
+        }
+        if word == "not-kept" {
+            return Some(CoreStatus::NotKept);
         }
         let mut cut = Cut::default();
         for name in word.strip_prefix("cut-")?.split('-') {
@@ -301,6 +317,12 @@ impl CoreStatus {
     pub fn qualifier(&self) -> Option<String> {
         self.cut_at()
             .map(|at| format!("cut at its budget of {at}: a smaller core may exist"))
+    }
+
+    /// What a text surface prints in place of a core the run did not keep,
+    /// [`NOT_KEPT`]; `None` for a core a search took.
+    pub fn not_kept(&self) -> Option<&'static str> {
+        matches!(self, CoreStatus::NotKept).then_some(NOT_KEPT)
     }
 }
 

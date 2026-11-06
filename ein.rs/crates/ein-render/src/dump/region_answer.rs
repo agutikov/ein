@@ -352,8 +352,9 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
 
 /// A core's status, as every JSON surface writes it beside the core:
 /// `within-budget`, `cut-` and the caps its search stopped at
-/// ([`ein_infer::explain::CoreStatus::word`]), or `null` where no core was
-/// taken (M1e2 S1e2.2.23, W23).
+/// ([`ein_infer::explain::CoreStatus::word`]), `not-kept` beside a `null`
+/// core a run past `--region-limit` did not keep (M1e2 S1e2.3.9), or `null`
+/// where no core was taken (M1e2 S1e2.2.23, W23).
 pub fn core_status(c: Option<ein_infer::explain::CoreStatus>) -> Json {
     c.map_or(Json::Null, |c| Json::str(c.word()))
 }
@@ -613,7 +614,9 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
 /// core and the rules that refuted it, `[]` when the run described nothing.
 /// A member the route did not saturate (the state route reads `N` off the
 /// maximal alive states) is saturated here for its core, through the node
-/// function every route uses.
+/// function every route uses. A member a run past `--region-limit` met, which
+/// it kept as its two bits, has a `null` core and `null` rules beside
+/// `core_status: "not-kept"`, never an empty list (M1e2 S1e2.3.9, N6).
 pub fn nogoods(r: &ReadOut, root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Json, String> {
     let solve = |e: SolveError| e.to_string();
     let a = &r.answer;
@@ -641,11 +644,15 @@ pub fn nogoods(r: &ReadOut, root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Resu
                     refuted_by: x.refuted_by.clone(),
                 }
             };
+            let kept = |v: &[String]| match why.core_status {
+                Some(ein_infer::explain::CoreStatus::NotKept) => Json::Null,
+                _ => strs(v),
+            };
             dead.push(Json::obj(vec![
                 ("set", set_json(&cands, &x.set)),
-                ("core", strs(&why.core)),
+                ("core", kept(&why.core)),
                 ("core_status", core_status(why.core_status)),
-                ("refuted_by", strs(&why.refuted_by)),
+                ("refuted_by", kept(&why.refuted_by)),
             ]));
         }
     }

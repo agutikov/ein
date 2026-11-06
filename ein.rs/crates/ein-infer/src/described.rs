@@ -86,9 +86,14 @@ pub struct Dead {
     pub set: Box<[u32]>,
     /// Its unsat core, where the route kept it.
     pub core: Vec<String>,
-    /// What the core's search established; `None` where the route kept none.
+    /// What the core's search established; `None` where the route took none
+    /// (the state route's members it did not saturate, whose core a reader
+    /// takes through `region::Nodes::refutation`), and
+    /// [`crate::explain::CoreStatus::NotKept`] where a run past
+    /// `--region-limit` kept none (M1e2 S1e2.3.9).
     pub core_status: Option<crate::explain::CoreStatus>,
-    /// The rules whose firing produced its contradiction.
+    /// The rules whose firing produced its contradiction; empty where no
+    /// core was kept.
     pub refuted_by: Vec<String>,
 }
 

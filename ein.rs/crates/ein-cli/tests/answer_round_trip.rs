@@ -17,6 +17,15 @@
 //! `answer_dump.rs` named the two state files it could not hold
 //! (`printed_alike`), and that list is gone.
 //!
+//! **And no member of N is written with an empty core** (M1e2 S1e2.3.9,
+//! P1e2.3's N6): the same run's `nogoods.json` gives each member of N it met
+//! a core, its search's status beside it (`within-budget`, `cut-…`), or, on a
+//! run stopped past `--region-limit`, which keeps each node it met as its two
+//! bits, no core, no rules and `core_status: "not-kept"`. An empty list would
+//! read as *refuted by nothing*, and until S1e2.3.9 it was what such a run
+//! wrote: `lattice/06_friends_tables`, 68 of 68, and every program past the
+//! limit the per-commit tier dumps.
+//!
 //! ```text
 //! cargo test -p ein-cli --test answer_round_trip
 //! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test answer_round_trip  # + the slow entries
@@ -117,6 +126,7 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
             files.push((format!("owing/{:0w$}.ein", i + 1), o.node.set.to_vec()));
         }
     }
+    members_of_n(file, dir, bad);
     let candidates = r.answer.candidates.clone();
     let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &candidates).expect("prepares");
     for (path, set) in &files {
@@ -139,6 +149,42 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
         }
     }
     Some(files.len())
+}
+
+/// `nogoods.json`'s members, each with a core and its search's status, or,
+/// where the run stopped at `--region-limit`, with no core, no rules and
+/// `not-kept`: never an empty core (M1e2 S1e2.3.9). Each failure goes to
+/// `bad`.
+fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
+    let read = |name: &str| -> Option<serde_json::Value> {
+        serde_json::from_str(&std::fs::read_to_string(dir.join(name)).ok()?).ok()
+    };
+    let (Some(nogoods), Some(summary)) = (read("nogoods.json"), read("answer.json")) else {
+        bad.push(format!("{file}: no nogoods.json or answer.json"));
+        return;
+    };
+    let region = &summary["region"];
+    let stopped_at_limit = region["exhausted"] == false && region["stopped"]["why"] == "limit";
+    for m in nogoods.as_array().into_iter().flatten() {
+        let (core, status, rules) = (&m["core"], m["core_status"].as_str(), &m["refuted_by"]);
+        let searched = status.is_some_and(|w| w == "within-budget" || w.starts_with("cut-"));
+        let ok = match (core.as_array(), status) {
+            (Some(c), _) => !c.is_empty() && searched && rules.is_array(),
+            (None, Some("not-kept")) => core.is_null() && rules.is_null() && stopped_at_limit,
+            (None, _) => false,
+        };
+        if !ok {
+            bad.push(format!(
+                "{file}: nogoods.json's {} has the core {core} as {status:?} and the rules {rules}{}",
+                m["set"],
+                if stopped_at_limit {
+                    ", on a run stopped at --region-limit"
+                } else {
+                    ""
+                }
+            ));
+        }
+    }
 }
 
 /// The shards [`shard`] splits the corpus into, one test each, so the four

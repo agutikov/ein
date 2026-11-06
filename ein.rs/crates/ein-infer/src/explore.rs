@@ -1016,12 +1016,14 @@ impl<'a> Space<'a> {
             k_c: members.len() as u64,
             minimal_commitments,
             nogoods: minimal_dead.len() as u64,
+            // Each member met is its two bits here, so it carries no core,
+            // and says so (M1e2 S1e2.3.9, N6).
             dead: minimal_dead
                 .iter()
                 .map(|d| described::Dead {
                     set: Box::from(*d),
                     core: Vec::new(),
-                    core_status: None,
+                    core_status: Some(crate::explain::CoreStatus::NotKept),
                     refuted_by: Vec::new(),
                 })
                 .collect(),

@@ -33,10 +33,12 @@
 //! the loader accepts and *forbid* does not refuse; the slow entries under
 //! `EIN_CORPUS_SLOW=1`, the nightly's.
 //!
-//! **What it does not hold.** A run stopped past `--region-limit` dumps the
-//! members of N it met with an empty core it did not take
-//! (`lattice/06_friends_tables`, P1e2.3's N6, S1e2.3.9's): this test takes each
-//! member's core itself, so N6's is the dump's, not the core's.
+//! **What it does not hold.** A run stopped past `--region-limit` keeps the
+//! members of N it met as their two bits, and prints each with no core and
+//! the status `not-kept` (M1e2 S1e2.3.9, P1e2.3's N6; until then with an
+//! empty core and no status): this test takes each member's core itself.
+//! [`no_core_is_printed_unqualified_from_a_cut_search`] holds that such a
+//! member carries no core and appears on a run that stopped alone.
 //!
 //! At S1e2.2.21's HEAD it fails, in either build, on 69 271 cores that name
 //! none of their commitment and 28 that derive no contradiction (the
@@ -107,6 +109,9 @@ fn jobs() -> usize {
 /// What a check found on one program: the failures, how many cores were
 /// read, and how many of them the cube's ([`check`]) or cut ([`statuses`]).
 type Checked = (Vec<String>, usize, usize);
+
+/// [`statuses`]' failures and counts: cores read, cut, and not kept.
+type Statuses = (Vec<String>, usize, usize, usize);
 
 /// One reported core: the commitment, as candidate facts, and the core.
 struct Reported {
@@ -353,6 +358,8 @@ struct Claims {
     bad: Vec<String>,
     seen: BTreeSet<(Vec<FactId>, Vec<String>, Option<CoreStatus>)>,
     cut: usize,
+    /// Members of N printed with no core, `not-kept` (M1e2 S1e2.3.9).
+    not_kept: usize,
 }
 
 impl Claims {
@@ -413,9 +420,12 @@ impl Claims {
 /// describe's dead root and N, a member the route kept against a fresh one,
 /// and a member the state route did not saturate against the one
 /// `--dump-answer` and `--trace` take its core through, `refutation` after
-/// the run. The failures, how many distinct cores were read, and how many of
-/// them were cut; `None` where the program does not load or is refused.
-fn statuses(path: &Path) -> Option<Checked> {
+/// the run. A member a run past `--region-limit` kept as its two bits is
+/// held to carry no core, on a run that stopped there (M1e2 S1e2.3.9). The
+/// failures, how many distinct cores were read, how many of them were cut,
+/// and how many members were not kept; `None` where the program does not load
+/// or is refused.
+fn statuses(path: &Path) -> Option<Statuses> {
     let mut claims = Claims {
         rel: path
             .strip_prefix(repo_root())
@@ -425,6 +435,7 @@ fn statuses(path: &Path) -> Option<Checked> {
         bad: Vec::new(),
         seen: BTreeSet::new(),
         cut: 0,
+        not_kept: 0,
     };
     let (mut kb0, mut terms0, ast0) = loaded(path)?;
     let mut fresh = Nodes::new(&mut kb0, &mut terms0, &ast0, &[]).ok()?;
@@ -514,6 +525,29 @@ fn statuses(path: &Path) -> Option<Checked> {
                 .iter()
                 .map(|&b| a.candidates[b as usize].fact)
                 .collect();
+            if x.core_status == Some(CoreStatus::NotKept) {
+                // Kept as its two bits by a run past `--region-limit`, and
+                // printed with no core (M1e2 S1e2.3.9): it carries none, and
+                // only a run that stopped there has one.
+                let stopped = matches!(a.stopped, Some(explore::Stopped::Limit { .. }));
+                if d.exhausted || !stopped || !x.core.is_empty() || !x.refuted_by.is_empty() {
+                    claims.bad.push(format!(
+                        "{}: N {:?} is not kept, with the core {:?} and the rules {:?}, on a run \
+                         {} --region-limit",
+                        claims.rel,
+                        set,
+                        x.core,
+                        x.refuted_by,
+                        if stopped {
+                            "stopped at"
+                        } else {
+                            "not stopped at"
+                        }
+                    ));
+                }
+                claims.not_kept += 1;
+                continue;
+            }
             if x.core.is_empty() && !x.set.is_empty() {
                 // What `--dump-answer` and `--trace` print for it.
                 let why = after.refutation(&set).ok()?;
@@ -539,7 +573,7 @@ fn statuses(path: &Path) -> Option<Checked> {
             }
         }
     }
-    Some((claims.bad, claims.seen.len(), claims.cut))
+    Some((claims.bad, claims.seen.len(), claims.cut, claims.not_kept))
 }
 
 /// **No core is printed unqualified from a cut search** — M1e2
@@ -566,11 +600,17 @@ fn statuses(path: &Path) -> Option<Checked> {
 /// control's; the slow entries' (`zebra.ein` at the rounds, the `zebra2`
 /// family at the environments) are the nightly's. At S1e2.2.23's T1 no
 /// surface printed a status (2026-11-05).
+///
+/// **And a member of N printed with no core says why** (M1e2 S1e2.3.9, N6):
+/// its status is `not-kept`, it carries no core and no rule, and the run that
+/// printed it stopped at `--region-limit`. Until S1e2.3.9 such a member had
+/// an empty core and no status, which this test read as a core the dump
+/// took through `refutation`, as the state route's are.
 #[test]
 fn no_core_is_printed_unqualified_from_a_cut_search() {
     let files = files();
     let next = std::sync::atomic::AtomicUsize::new(0);
-    let results: Mutex<Vec<(usize, Option<Checked>)>> = Mutex::new(Vec::new());
+    let results: Mutex<Vec<(usize, Option<Statuses>)>> = Mutex::new(Vec::new());
     std::thread::scope(|scope| {
         for _ in 0..jobs() {
             scope.spawn(|| {
@@ -586,19 +626,23 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
     let mut results = results.into_inner().expect("no checker panicked");
     results.sort_by_key(|(i, _)| *i);
     let mut failures: Vec<String> = Vec::new();
-    let (mut programs, mut cores, mut cut) = (0usize, 0usize, 0usize);
+    let (mut programs, mut cores, mut cut, mut not_kept) = (0usize, 0usize, 0usize, 0usize);
     for (_, got) in results {
-        let Some((bad, n, c)) = got else { continue };
+        let Some((bad, n, c, k)) = got else { continue };
         programs += 1;
         cores += n;
         cut += c;
+        not_kept += k;
         failures.extend(bad);
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     assert!(programs >= 100, "{programs} programs read");
     assert!(
-        cores >= 100_000 && cut >= 10,
-        "{cores} cores, {cut} of them cut"
+        cores >= 100_000 && cut >= 10 && not_kept >= 1,
+        "{cores} cores, {cut} of them cut, {not_kept} members not kept"
     );
-    eprintln!("{programs} programs, {cores} distinct cores, {cut} of them cut");
+    eprintln!(
+        "{programs} programs, {cores} distinct cores, {cut} of them cut, {not_kept} members of N \
+         not kept"
+    );
 }

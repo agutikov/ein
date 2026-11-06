@@ -6975,9 +6975,9 @@ e0c12e148cc9226e       80L  examples/ein-bugs/wrong-answers/past-limit-lines.ein
 76475912bafe1a7e       28L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::read-out[minimal]
 8b38284e3a181a6d       30L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::read-out[single]
 5485b5eebb7f8a59       30L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::read-out[n2]
-a3c29ad692ff2f6a      139L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::region-trace
+ca70839f31f3df05      139L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::region-trace
 c57c1fe711e8fcef      137L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::region-lattice
-07cd4691b831629f    25556L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[describe]
+f9d47334676175be    25556L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[describe]
 65950291b250114d    25425L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[maximal]
 0b3c5d450797a388    25427L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[minimal]
 a3e5dd615d7dca6a      125L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[single]
@@ -8593,9 +8593,9 @@ f7024eaf8ba8a2bf       85L  examples/lattice/06_friends_tables.ein::dot[kb-none]
 c3b26aa87e279a9d       27L  examples/lattice/06_friends_tables.ein::read-out[minimal]
 4d657df5349adefe       30L  examples/lattice/06_friends_tables.ein::read-out[single]
 6aa39e8fba1d9c03       30L  examples/lattice/06_friends_tables.ein::read-out[n2]
-0fe7f1e2f9e28a3e      509L  examples/lattice/06_friends_tables.ein::region-trace
+6e10f12be36e2280      509L  examples/lattice/06_friends_tables.ein::region-trace
 dd40ab0fe374b0c0      312L  examples/lattice/06_friends_tables.ein::region-lattice
-a00fb031004972c4    19750L  examples/lattice/06_friends_tables.ein::cores[describe]
+5a609fa05e2de2f9    19750L  examples/lattice/06_friends_tables.ein::cores[describe]
 da5a16dffaf59fe2    19128L  examples/lattice/06_friends_tables.ein::cores[maximal]
 1578dc276c0f765d    19130L  examples/lattice/06_friends_tables.ein::cores[minimal]
 9eeee6c403652be4      635L  examples/lattice/06_friends_tables.ein::cores[single]
