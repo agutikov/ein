@@ -519,6 +519,7 @@ corpus programs, and no answer, exit code or register row. **With it P1e2.3
 is complete** (2026-11-06), its acceptance re-taken for the three
 re-opened stages. **Next: the inventory re-taken and shown to the user. The
 milestone's close waits for the user's go-ahead.**
+**The inventory was re-taken on 2026-11-06** at `c523f3ab`, [`inventory_2026-11-06.md`](inventory_2026-11-06.md), and waits on the user's reading before the close starts.
 
 ## What it inherits from M1e
 

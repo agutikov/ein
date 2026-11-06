@@ -1,0 +1,6 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.2.22 § Notes, 2nd item; build/s1e2.2.22/notes/goal-guard.ein):
+;;; a query whose goal is a guard with a variable: does the read-out say "the goal holds: it has no variable"
+;;; and suggest an :expect the loader refuses?
+(relation p Node)
+(p a)
+(query :goal (neq w ?y))

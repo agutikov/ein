@@ -1,0 +1,5 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.2.22 § Notes, 1st item; build/s1e2.2.22/notes/assert-neq.ein):
+;;; may a rule conclude a fact of the reserved, computed `neq`? Engine at c523f3ab: it stores (neq w a), silently.
+(relation p Node)
+(p a)
+(rule r () :match (p ?x) :assert (neq w ?x))

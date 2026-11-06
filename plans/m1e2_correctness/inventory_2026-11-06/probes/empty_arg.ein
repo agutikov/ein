@@ -1,0 +1,4 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.2.22 § Notes, 4th item; build/s1e2.2.22/notes/empty-arg.ein):
+;;; is an empty list argument printed as the parser's synthetic head `(@empty)`, after S1e2.3.8's one printer?
+(relation f Node)
+(f ())

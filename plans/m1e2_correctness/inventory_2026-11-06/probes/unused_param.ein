@@ -1,0 +1,6 @@
+;;; M1e2 inventory D-9 (S1e2.2.12 § Notes, D1X-46), re-taken 2026-11-06: is a rule parameter that no
+;;; clause reads accepted in silence? `?R` is bound by the activator `(r foo)` and read nowhere.
+(relation p Node) (relation q Node)
+(p a)
+(rule r (?R) :match (p ?x) :assert (q ?x))
+(r foo)

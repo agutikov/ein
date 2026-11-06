@@ -1,0 +1,8 @@
+;;; M1e2 inventory G-14 (S1e2.2.18 default 4, D2X-23), re-taken 2026-11-06: a bad :assert is checked
+;;; only when its rule fires. Three rules whose :match never matches (no `p` fact) write `_`, an atom
+;;; and a variable the :match does not bind in their :assert. Does the program load? (At c523f3ab: yes,
+;;; exit 0, with no line; the same rules over a `(p a)` fact stop the run at their first firing.)
+(relation p Node) (relation q Node)
+(rule r1 () :match (p ?x) :assert (q _))
+(rule r2 () :match (p ?x) :assert foo)
+(rule r3 () :match (p ?x) :assert (q ?v))

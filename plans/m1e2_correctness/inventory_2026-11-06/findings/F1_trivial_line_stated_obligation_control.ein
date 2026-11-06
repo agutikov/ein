@@ -1,0 +1,8 @@
+;;; F1's control (M1e2 inventory re-take, 2026-11-06): F1_trivial_line_stated_obligation.ein with the
+;;; `(total-owed likes is-a)` declaration (and its import) deleted. No obligation is stated, so the row's
+;;; "the trivial line: no obligation is stated" is true here, and the two files print the same row.
+(relation is-a  T T)
+(relation likes Person Food)
+(is-a Ann Person) (is-a Soup Food)
+(likes Ann Soup)
+(solve :no-hypothesis (is-a likes))

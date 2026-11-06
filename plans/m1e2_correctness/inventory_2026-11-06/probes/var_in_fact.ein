@@ -1,0 +1,4 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.2.22 § Notes, 3rd item; build/s1e2.2.22/notes/var-in-fact.ein; G-6):
+;;; a top-level fact holding a variable loads, and the variable is a name of the program (a candidate object).
+(relation f Node)
+(f (p ?a))

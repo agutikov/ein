@@ -1,0 +1,4 @@
+closes p q
+model
+(p "a")
+(q "x y")

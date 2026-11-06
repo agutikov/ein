@@ -1,0 +1,5 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.2.22 § Notes, 2nd item, the suggested claim written):
+;;; does the loader refuse the `:expect` the read-out of goal_guard.ein suggests?
+(relation p Node)
+(p a)
+(query :goal (neq w ?y) :expect (model (neq w ?y)))

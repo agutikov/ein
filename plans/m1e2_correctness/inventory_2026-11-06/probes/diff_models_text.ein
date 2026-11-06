@@ -1,0 +1,8 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.3.8 § Notes, 3rd item): does `--diff-models FILE` compare
+;;; facts by value or by their text? The one state holds (p a) and (q "x y"). The models file
+;;; diff_models_text.models writes them as (p "a") and (q "x y"): (p "a") is the same value as (p a)
+;;; (a string in a fact is the name it spells), so by value both match. By text (p "a") is spurious
+;;; and (p a) missing. Run: ein solve FILE --diff-models diff_models_text.models
+(relation p T) (relation q T)
+(p a)
+(q "x y")

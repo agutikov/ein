@@ -1,0 +1,7 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.3.8 § Notes, 2nd item): is a `_` written as a fact's
+;;; argument read, or dropped in silence? `(r _ ?x)` against the declared `(relation r T T)`.
+;;; Right: refused at load (as S1e2.2.24 refuses `_` in a rule's guard), or kept as written.
+;;; Engine at c523f3ab: dropped, so the fact loads as the one-argument `(r "?x")`, with no line.
+(relation r T T)
+(r _ ?x)
+(r a b)

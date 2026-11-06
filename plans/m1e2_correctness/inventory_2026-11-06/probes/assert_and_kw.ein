@@ -1,0 +1,5 @@
+;;; M1e2 inventory re-take, 2026-11-06 (S1e2.2.24 § Notes, 2nd item; build/s1e2.2.24/extra/assert-and-kw.ein):
+;;; a keyword pair beside an :assert's conjuncts, (and (p ?y) :k v), is dropped in silence?
+(relation hit Node) (relation p Node) (relation tag Node Node)
+(hit w)
+(rule r () :match (hit ?y) :assert (and (p ?y) :k v))
