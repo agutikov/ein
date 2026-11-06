@@ -28,7 +28,7 @@ out/
   answer.json     byte-identical to --json-summary on the same run
   models/NN.ein   program + one state's facts, one per state the run reached
   owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
-  nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it
+  nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it, or why there is no core
   forms/F.txt     each form asked for, uncut: -H, --models key|grid, -p, -P, -f, --diff-models
 ```
 
@@ -54,7 +54,15 @@ out/
   core_status, refuted_by}`; `core_status` (M1e2 S1e2.2.23, W23) says
   whether the core's search was cut at its budget: `within-budget`, `cut-`
   and the caps it stopped at (`cut-environments`, `cut-rounds`,
-  `cut-facts`, joined), or `null` where the run took no core.
+  `cut-facts`, joined). **A member a run past `--region-limit` met** has no
+  core to write, since past the limit the run keeps each node it met as its
+  two bits: its `core` and `refuted_by` are `null` and its `core_status` is
+  `not-kept` (M1e2 S1e2.3.9, `b6139e62`). Until S1e2.3.9 such a member was
+  written with an empty core, no rule and a `null` status, which reads as
+  *refuted by nothing*: `lattice/06_friends_tables.ein`'s 68 of 68 (`ein
+  solve FILE --dump-answer DIR`, 2026-11-06). No member is written with an
+  empty core, which `ein-cli/tests/answer_round_trip.rs` holds over every
+  corpus program it dumps.
 - **`forms/`** (M1e2
   [S1e2.3.3](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
   the user's ruling (a) of 2026-11-03) holds each form the run was asked

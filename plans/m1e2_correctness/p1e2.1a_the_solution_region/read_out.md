@@ -358,7 +358,13 @@ below it is minimal, since every subset was met first, and when ∅ is in R the
 minimal line is exactly {∅}. Those are what it lists. The maximal line needs
 the whole cube, and the row says so. The `exhausted` row names the route that
 declined and why: `no — not monotone, and the question needs the whole cube:
-2^19, past --region-limit 16`. **It runs no walk.**
+2^19, past --region-limit 16`. **It runs no walk.** It keeps each node it
+met as its two bits, so a member of N it met has no core: `nogoods.json`
+writes it with a `null` core and `null` rules beside `core_status:
+"not-kept"`, and `--trace` says *Core: not kept: the run stopped at
+`--region-limit`.* (M1e2
+[S1e2.3.9](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md),
+`b6139e62`; until then an empty core with no rule, 68 of 68 on X9's program).
 
 **The line modes answer from the same description** (M1e2
 [S1e2.2.26](../p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md),
@@ -552,7 +558,9 @@ complete.
   surface (`a_run_that_prints_no_core_takes_none_and_answers_alike`).
   **Since M1e2 S1e2.2.23 a core carries its status wherever it is printed**
   (W23): `core_status` beside it in every JSON, `within-budget`, `cut-` and
-  the caps its search stopped at, or `null` where no core was taken; and on
+  the caps its search stopped at, `not-kept` beside a `null` core for a
+  member of N a run past `--region-limit` met (S1e2.3.9, § 6.2), or `null`
+  where no core was taken; and on
   every text surface, for a cut core alone, the cap: the read-out's `core
   search` row, *cut at its budget of 64 environments per fact: a smaller
   core may exist*, a minimal hole's *(core search cut at its budget of …)*,
@@ -587,8 +595,9 @@ which set that is:
   over a run with models (S2).
 - **Sections**: root's derivation; then each listed state's derivation from
   its first minimal commitment; then **N**, each minimal dead set with its
-  core and refuting rule, in place of *Refuted hypotheses*; then **owing**
-  when R is empty of that kind.
+  core and refuting rule, or, past `--region-limit`, *not kept: the run
+  stopped at `--region-limit`* (§ 6.2), in place of *Refuted hypotheses*;
+  then **owing** when R is empty of that kind.
 - **Cost**: one saturation per listed state, recorded. A description is
   traced as far as it lists.
 

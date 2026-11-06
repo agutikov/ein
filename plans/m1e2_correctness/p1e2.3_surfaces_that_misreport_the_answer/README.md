@@ -30,8 +30,12 @@ fixed, 13 open, 1 not-wrong). **S1e2.3.8 is done** (2026-11-06): the one
 printer (`712f23fd`) prints a value as Ein text the loader reads back to the same
 value on every surface, a state file's provenance is a comment, every state
 file reloads to its state by value (`answer_round_trip.rs`), and W28's three
-rows are fixed (103 fixed, 10 open, 1 not-wrong). Next S1e2.3.9 and
-S1e2.3.10. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+rows are fixed (103 fixed, 10 open, 1 not-wrong). **S1e2.3.9 is done**
+(2026-11-06, `b6139e62`): a member of N a run past `--region-limit` met is
+written with a `null` core and rules and `core_status: "not-kept"`, and
+`--trace` says why, where both wrote an empty core; no run that did not stop
+prints an empty core on any surface, and no answer moved. Next S1e2.3.10.
+Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
 every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
 re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
@@ -206,7 +210,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each. **Done 2026-11-03**: N1–N4 fixed, each with a test; `-p` and `-P` named as the facts beyond the program as loaded, which is what they print | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 | [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04; widened the same day by a reloaded dump's provenance (the inventory's S-5, Q-M1e2.16 (3)). **Done 2026-11-06** (`712f23fd`): one printer on every surface, the provenance a comment, the round trip a test over every corpus program; Q-M1e2.20 ruled (a), W28 filed and fixed | 1.5 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart; a state file's provenance a comment, a reloaded state's facts as given |
-| [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default | 0.5 d | no surface prints an empty core for a core the run did not take |
+| [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default. **Done 2026-11-06** (`b6139e62`): past the limit a member of N is written `not-kept`, its core and rules `null`, and `--trace` says why; no empty core on any surface, held by a test over every corpus dump | 0.5 d | no surface prints an empty core for a core the run did not take |
 | [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3) | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
@@ -326,7 +330,17 @@ by a test, and no exit code moved.
   `lattice/06_friends_tables.ein`, 68 of 68 (`ein solve FILE --dump-answer
   DIR` at `a41eb76e`). No answer moves. **Placed here by default** beside
   N5, [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md), filed 2026-11-05;
-  the default fix says the core was not taken.
+  the default fix says the core was not taken. **Re-taken 2026-11-06** by
+  its step 1 at `5a5d47c2`: 68 of 68 in `nogoods.json`, and `--trace`'s N
+  *not kept by this route* 68 times, while `--dump-lattice`'s `nodes.json`
+  printed each member's core: past the limit the run takes a core at every
+  dead node it visits for `--dump-answer` and keeps each node as its two
+  bits. Every empty core in the sweep (41 776 runs) is a member of N on a
+  run stopped past the limit; none on a run that did not stop. **Fixed
+  2026-11-06** at `b6139e62` (T1e2.3.9.1): such a member is written with a
+  `null` core and `null` rules beside `core_status: "not-kept"`, `--trace`
+  says *Core: not kept: the run stopped at `--region-limit`.*, and
+  `answer_round_trip.rs` holds every corpus dump to no empty core.
 - **N7. `refuted by` names a rule the core does not use.** Found by
   S1e2.2.11 and S1e2.2.12, each parked in its Notes; re-taken by
   [the inventory of 2026-11-05](../inventory_2026-11-05.md) (its S-3) at

@@ -199,7 +199,9 @@ ruling of 2026-11-05 on
 the search keeps its budget, and every surface that prints a core prints its
 status beside it. Every JSON writes `core_status`: `within-budget`, `cut-`
 and the caps the search stopped at (`cut-environments`, `cut-rounds`,
-`cut-facts`, joined), or `null` where no core was taken; every text surface
+`cut-facts`, joined), `not-kept` beside a `null` core where a run past
+`--region-limit` kept the node as its two bits (`nogoods.json`, M1e2
+S1e2.3.9), or `null` where no core was taken; every text surface
 says a cut core was cut and at which cap, the read-out's `core search` row
 *cut at its budget of 64 environments per fact: a smaller core may exist*,
 and prints nothing new beside an uncut one. `within-budget` says the search

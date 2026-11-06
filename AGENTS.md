@@ -350,6 +350,14 @@ constrained-reasoning research.
   S1e2.3.8 is done (`712f23fd`); next are P1e2.3's S1e2.3.9 and S1e2.3.10, then
   the inventory re-taken and shown to the user, and the close waits for the
   user's go-ahead.
+  S1e2.3.9 (N6) is done (`b6139e62`): past `--region-limit` a run keeps each node
+  it met as its two bits, and `nogoods.json` wrote each member of N it met
+  with an empty core, which reads as *refuted by nothing*; it writes a
+  `null` core and rules beside `core_status: "not-kept"`, and `--trace`
+  says why. No run that did not stop prints an empty core
+  (`ein-cli/tests/answer_round_trip.rs`), and the register is unmoved. Next
+  is S1e2.3.10, then the inventory re-taken and shown to the user, and the
+  close waits for the user's go-ahead.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
