@@ -366,6 +366,17 @@ constrained-reasoning research.
   contradiction through two rules, and which one to name is
   [Q-M1e2.21](plans/m1e2_correctness/open_questions.md#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two),
   put to the user. No answer moved.
+  The user ruled it (a) the same day, and S1e2.3.10 is done (`a3bb9e70`):
+  `refuted by` names, for each fact of the contradiction the core was taken
+  over, the first justification the store records whose premises the core
+  derives, `(given)` for a fact the core holds, so `alt-cap-core.ein` and
+  its twin both say `wide`; `:record-alternative-justifications false`
+  moves it only where it moves the core, and two programs one `:priority`
+  apart naming two rules beside one core is the accepted cost.
+  `ein-infer/tests/corpus_cores.rs` holds every printed core's rules over
+  the corpus; no answer or register row moved. With it P1e2.3 is complete;
+  next is the inventory re-taken and shown to the user, and the close waits
+  for the user's go-ahead.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

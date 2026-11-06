@@ -41,7 +41,16 @@ row of `ein test --json-report` carries `outside` and `types_as_objects`,
 derives its contradiction through two rules (5 041 distinct cores per
 commit), which the stage's method does not pick between: put to the user as
 [Q-M1e2.21](../open_questions.md#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two),
-recommended (a). No answer moved. Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+recommended (a), and ruled (a) the same day. **S1e2.3.10 is done**
+(2026-11-06, `c239754c` and `a3bb9e70`): `refuted by` names the rules of
+the last step of the core's derivation, the first the store records where
+the core supports two, on every surface and every corpus program, and the
+test report's rows carry what the universe leaves out. No answer moved.
+**P1e2.3 is complete again** (2026-11-06), every re-opened stage done, its
+acceptance re-taken for them ([§ The re-opened stages, as
+met](#the-re-opened-stages-as-met)). **Next: the inventory re-taken and
+shown to the user; the milestone's close waits for the user's go-ahead.**
+Before that: specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
 every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
 re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
@@ -217,7 +226,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 | [S1e2.3.8](s1e2.3.8_the_fact_printer.md) | The fact printer does not print the fact (N5). Added 2026-11-05 on the user's ruling of 2026-11-04; widened the same day by a reloaded dump's provenance (the inventory's S-5, Q-M1e2.16 (3)). **Done 2026-11-06** (`712f23fd`): one printer on every surface, the provenance a comment, the round trip a test over every corpus program; Q-M1e2.20 ruled (a), W28 filed and fixed | 1.5 d | every state `--dump-answer` writes reloads to its own facts, by value, on every corpus program, held by a test with no exceptions; the int `1` and the symbol `1` print apart; a state file's provenance a comment, a reloaded state's facts as given |
 | [S1e2.3.9](s1e2.3.9_a_core_the_run_did_not_take.md) | A stopped run's dump writes a core it did not take (N6). Added 2026-11-05, placed by default. **Done 2026-11-06** (`b6139e62`): past the limit a member of N is written `not-kept`, its core and rules `null`, and `--trace` says why; no empty core on any surface, held by a test over every corpus dump | 0.5 d | no surface prints an empty core for a core the run did not take |
-| [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3). **Started 2026-11-06**: step 1 and N8 done (`ein-test-report/4`); N7 paused on Q-M1e2.21 | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
+| [S1e2.3.10](s1e2.3.10_refuted_by_and_report_rows.md) | `refuted by` names a rule the core does not use (N7), and `--json-report` drops `outside` and `types` (N8). Added 2026-11-05 on Q-M1e2.16 (3). **Done 2026-11-06** (`c239754c`, `a3bb9e70`): N8 `ein-test-report/4`; N7 paused on Q-M1e2.21, ruled (a), and fixed: the core's derivation's first recorded last step, held over every corpus core | 1 d | `refuted by` names a rule the printed core's derivation uses, on every surface and every corpus program, held by a test; the report's rows carry `outside` and `types` (`ein-test-report/4`); no answer moves |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
 the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
@@ -362,7 +371,12 @@ by a test, and no exit code moved.
   step of a derivation from the core, and **paused** on
   [Q-M1e2.21](../open_questions.md#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two):
   5 041 printed cores per commit derive a fact of their contradiction
-  through two rules.
+  through two rules. **Ruled (a) the same day**, and **fixed 2026-11-06** at
+  `a3bb9e70` (T1e2.3.10.2): `refuted by` names, for each fact of the core's
+  contradiction, the first justification the store records whose premises
+  the core derives; `alt-cap-core` and its twin both `wide`. 70 239 dead
+  sets' rules moved over 26 corpus programs, no answer. Held by
+  `corpus_cores.rs` over every corpus core, per commit and nightly.
 - **N8. `ein test --json-report` drops `outside` and `types`.** S1e2.2.8's
   default, re-taken by the inventory (its S-4): `ein test
   tests/region/07_cube.ein --json-report R -v` prints `outside the universe:
@@ -454,6 +468,34 @@ this commit changes no code).
   0d40f3a3 HEAD -- ein.rs/crates/*/src` is empty). S1e2.3.1–.3, .5 and .7
   each say in their record that no answer moved, and name the lines they
   moved; S1e2.3.4 names the goldens it moved before it moved them.
+
+### The re-opened stages, as met
+
+Re-taken 2026-11-06 at S1e2.3.10's last commit, for the three stages added
+after the close (S1e2.3.8, S1e2.3.9, S1e2.3.10), each against this page's
+acceptance and its own:
+
+- **No live row: holds.** N5–N8 are each fixed and held by a test in the
+  per-commit gate: N5 by `answer_round_trip.rs` and W28's rows; N6 by
+  `cli_semantics.rs`' not-kept test and `answer_round_trip.rs`; N7 by
+  `corpus_cores.rs`' rules claim; N8 by `test_cli.rs`' two scope tests. The
+  table's N5 row reads *gone*; N6–N8 are candidates (§ Candidates found on
+  the way), each with its fix and test.
+- **Every golden a stage moved was named in its file before it moved:
+  holds.** S1e2.3.8's 306 `corpus_shapes.md5` lines (its step 1's 256 and
+  the 50 of W28's witnesses, banked after it), its `register_region.rs`
+  blocks and two `corpus_exits.txt` cells; S1e2.3.9's 4 lines; S1e2.3.10's
+  134 with `trace_ambiguous.md`'s 8 and `help_shape.txt`'s 1. Each is named
+  in its stage's file, and none moved unlisted.
+- **No answer moved: holds**, but where a ruling moved one: W28's three rows
+  (Q-M1e2.20 (a)) moved to right with the one printer, filed and fixed in
+  the register. S1e2.3.9 and S1e2.3.10 moved no answer, exit code or
+  register row. The register reads 103 fixed, 10 open (every one deferred)
+  and 1 not-wrong.
+- **`./run_tests.sh` green at every stage boundary: holds**, each commit's
+  log under `build/gate-s1e2.3.*`. The nightly was not re-run for the three:
+  the milestone's close re-runs `./run_tests.sh --nightly` after them, as
+  § Order says.
 
 **What is not claimed.** The nightly is green **locally**. The user pushes,
 and the first scheduled nightly after the next push is the confirmation; this

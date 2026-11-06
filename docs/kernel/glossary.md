@@ -139,6 +139,12 @@ out the derivation of `(not X)`, where a commitment typically is (W21):
 reported `(p a)`, a fact the program states, and `zebra2.ein`'s N 201 of
 366 such cores (`ein solve FILE --dump-answer DIR` at `cdcc3994`,
 2026-11-05).
+**The rules beside it** (`refuted by`, M1e2 S1e2.3.10) are the last step of
+its derivation: for each fact of the contradiction it was taken over, the
+first justification the store records whose premises it derives, `(given)`
+for a fact it holds itself (the user's ruling of 2026-11-06, Q-M1e2.21
+(a)). Until S1e2.3.10 they were the first contradiction's primaries, which
+need not be a step the core's derivation takes.
 Four caveats: no proper subset is checked for satisfiability; the
 derivations are the firings the saturator attempted, so minimality is
 relative to the rule set and the saturation strategy; the search is
@@ -147,8 +153,8 @@ facts (`ExplanationBudget`), and a truncated search is still sound, a real
 frontier that may not be the smallest; and a program records its
 re-derivations only under `:record-alternative-justifications`, on by
 default — off, each fact's first derivation is all the search is
-offered, which may name another core and changes nothing else, the
-config principle's one exemption
+offered, which may name another core, and with it the rules `refuted by`
+names, and changes nothing else, the config principle's one exemption
 ([`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row),
 the user's ruling of 2026-11-04).
 

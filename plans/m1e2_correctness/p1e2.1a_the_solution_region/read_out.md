@@ -303,7 +303,7 @@ prints no word (§ 11, question 1):
 
 | kind | row | why, printed under it | the form |
 |---|---|---|---|
-| no alive node | `empty  every node is dead — root's own fixpoint derives (false)` | `unsat core` and `refuted by`, root's, and `core search` where the core's search was cut (M1e2 S1e2.2.23) | `(false)` |
+| no alive node | `empty  every node is dead — root's own fixpoint derives (false)` | `unsat core` and `refuted by`, root's, and `core search` where the core's search was cut (M1e2 S1e2.2.23). `refuted by` names the rules of the last step of the core's derivation: for each fact of the contradiction the core was taken over, the first justification the store records (the primary, the alternatives, the smallest-closure arrival) whose premises the core derives, `(given)` for a fact the core holds itself (M1e2 S1e2.3.10, Q-M1e2.21 (a)); until S1e2.3.10 the first contradiction's primaries, which need not be a step the core's derivation takes (`alt-cap-core.ein`: `narrow` beside `(w1 X) (w2 X)`, which only `wide` refutes) | `(false)` |
 | alive nodes, all owing | `empty  every alive node owes — no commitment pays every debt` | `owing`: each node of the frontier (alive, owing, nothing alive one fact up), with every instance it owes through the rule's `:why` | `(region (owing (model …) …))` |
 
 [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe)

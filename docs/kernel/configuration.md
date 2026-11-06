@@ -121,7 +121,7 @@ config (resolved)
 | flag | type | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|---|
 | `lattice-sanity-check` | `bool` | `false` | `-y`'s: the detector's parent-path spot check, **unbounded and on every program** — every one-step parent of every printed state of two commitments or more, built and saturated again (the user's ruling of 2026-11-03, M1e2 S1e2.1c.5; the walk's re-saturation of every parent path until then). On a program the static check flags it fills the warning's `paths` row and never fails the run; on a monotone one a path that reaches another state contradicts the § 5.1 theorem, and the run is an engine error, exit 2. A clean check prints its `paths` row; its saturations are that row's, outside `work`. `-y` sets it `true` | no | no | check |
-| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It may change which core a dead node's refutation names — the read-out's `unsat core` and `source` rows, the summary's `region.core`, the trace's `N` and `nogoods.json` — and with it whether that core's search was cut (`core_status`, the `core search` row; M1e2 S1e2.2.23), **and nothing else**: R, every state, the verdict words and `refuted by` stay (the user's ruling of 2026-11-04, Q-M1e2.11 (ii); § 2.5). Off, the core is the smallest over each fact's first derivation; on, over every derivation the program records. `examples/zebra.ein` turns it off for speed, 0.95 s against 188 s, with the same core on each of N's 458 members (`ein solve`, 2026-11-04) | explanation only | no | contract |
+| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It may change which core a dead node's refutation names — the read-out's `unsat core` and `source` rows, the summary's `region.core`, the trace's `N` and `nogoods.json` — and with it whether that core's search was cut (`core_status`, the `core search` row; M1e2 S1e2.2.23) and, where the core moves, the rules its derivation ends in (`refuted by`, `region.refuted_by`; M1e2 S1e2.3.10), **and nothing else**: R, every state and the verdict words stay (the user's ruling of 2026-11-04, Q-M1e2.11 (ii); § 2.5). Off, the core is the smallest over each fact's first derivation; on, over every derivation the program records. `examples/zebra.ein` turns it off for speed, 0.95 s against 188 s, with the same core on each of N's 458 members (`ein solve`, 2026-11-04) | explanation only | no | contract |
 
 ### 2.3 Reading the judgement columns
 
@@ -266,20 +266,26 @@ facts of every state in R
   search was cut with it (M1e2 S1e2.2.23: off,
   `examples/ein-bugs/wrong-answers/core-search-cut.ein`'s `(A k)` has one
   environment and its search is not cut; on, 256, and it is). That is all it
-  may change: R, every state and class, the verdict words and `refuted by`
-  (the first derivation's rule either way) do not move. It moved nothing printed
+  may change: R, every state and class and the verdict words do not move,
+  and `refuted by` moves only where the core does (M1e2 S1e2.3.10, the
+  user's ruling of 2026-11-06 on Q-M1e2.21 (a): it names the first
+  derivation the core supports, and off, where the core is the same, the
+  primaries are that derivation). It moved nothing printed
   on any corpus program until W10's fix, after which
   [`alt-cap-core.ein`](../../examples/ein-bugs/alt-cap-core.ein) reports
-  `(w1 X) (w2 X)` with it on and `(p1 Y01) (p2 Y01) (p3 Y01)` with it off;
+  `(w1 X) (w2 X)` refuted by `wide` with it on and `(p1 Y01) (p2 Y01) (p3
+  Y01)` refuted by `narrow` with it off;
   `examples/zebra.ein` sets it off for speed (0.95 s against 188.1 s on
   2026-11-04, the same core on each of N's 458 members), and the core
   promise is over the derivations the program records
   ([`glossary.md` § Smallest contradiction frontier](glossary.md#smallest-contradiction-frontier)).
   `lever_invariance.rs` compares the flag's cells less the core rows and
-  `region.core`, and `the_core_exemption_is_one_flag_and_the_core_rows`
+  `region.core`, and, where those moved, the `refuted by` row and
+  `region.refuted_by`; `the_core_exemption_is_one_flag_and_the_core_rows`
   holds the exemption that narrow: one flag, the `unsat core`, `source`
   and, since S1e2.2.23, `core search` rows and the summary's core and its
-  status and nothing else, on the one program that shows it, which it fails
+  status, and since S1e2.3.10 the rules beside a core that moved, and
+  nothing else, on the one program that shows it, which it fails
   without.
 - **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
