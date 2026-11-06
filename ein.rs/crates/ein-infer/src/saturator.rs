@@ -400,7 +400,8 @@ impl Snapshot {
     /// `FactId` is the order names were interned in, not a function of the
     /// program. A fork is FIFO within a priority band, so the delta's order
     /// is the order a dead node's derivations arrive in, and what reads the
-    /// first of them, a fact's primary (the rules `refuted_by` names, the
+    /// first of them, a fact's primary (the rules `refuted_by` named until
+    /// M1e2 S1e2.3.10 and the store's order it names them in since, the
     /// `absent`s a refutation rests on) and a full alternatives list (the
     /// core), moved with the interner (`W11/fork-delta-order`).
     pub fn new_facts_of(&self, kb: &Kb) -> Vec<FactId> {

@@ -52,6 +52,16 @@
 //! on a dead root and every dead node a route visits included, and holds each
 //! status to its search's.
 //!
+//! **And every core's `refuted by` names its derivation's last step** (M1e2
+//! S1e2.3.10, P1e2.3's N7): the same test reads the rules printed beside each
+//! core, and holds them to one last step per fact of the contradiction the
+//! core was taken over, the first the store records where the core supports
+//! several (the user's ruling on Q-M1e2.21, (a)), read without the search by
+//! a closure from the core ([`last_steps`]). At S1e2.3.10's HEAD it failed
+//! on 65 559 distinct printed cores over 9 programs, release, per commit
+//! (67 928 over 15 nightly; 2026-11-06): the first contradiction's
+//! primaries, `bijection/06`'s cube most of them.
+//!
 //! ```text
 //! cargo test -p ein-infer --release --test corpus_cores
 //! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --release --test corpus_cores
@@ -111,7 +121,7 @@ fn jobs() -> usize {
 type Checked = (Vec<String>, usize, usize);
 
 /// [`statuses`]' failures and counts: cores read, cut, and not kept.
-type Statuses = (Vec<String>, usize, usize, usize);
+type Statuses = (Vec<String>, usize, usize, usize, usize);
 
 /// One reported core: the commitment, as candidate facts, and the core.
 struct Reported {
@@ -322,18 +332,25 @@ const LARGER: ExplanationBudget = ExplanationBudget {
     max_facts: 320_000,
 };
 
-/// One core a surface prints, with the status printed beside it.
+/// A printed core as [`Claims`] keys it: the commitment, the core, its
+/// status and its rules.
+type Seen = (Vec<FactId>, Vec<String>, Option<CoreStatus>, Vec<String>);
+
+/// One core a surface prints, with the status and the rules printed beside
+/// it.
 struct Stated {
     /// Where it was read: `cube`, `root`, `N`, or the mode whose visit took it.
     at: &'static str,
     set: Vec<FactId>,
     core: Vec<String>,
     status: Option<CoreStatus>,
+    /// Its `refuted by` (M1e2 S1e2.3.10).
+    refuted_by: Vec<String>,
 }
 
 /// A dead node a route visited: its commitment, its core and the core's
 /// status, as the `enter` line and `--dump-lattice` print them.
-type Visit = (Vec<String>, Vec<String>, Option<CoreStatus>);
+type Visit = (Vec<String>, Vec<String>, Option<CoreStatus>, Vec<String>);
 
 /// What a route visits, as `--dump-lattice`'s watch collects it.
 struct Collect(Arc<Mutex<Vec<Visit>>>);
@@ -345,26 +362,160 @@ impl ein_infer::events::Watch for Collect {
                 v.commitment.to_vec(),
                 v.core.to_vec(),
                 v.core_status,
+                v.refuted_by.to_vec(),
             ));
         }
     }
 }
 
-/// The three claims for one printed core, read against `nodes`, the
+/// A recorded justification's parts, as the core search folds them: its
+/// premises, the activator a node derived or committed, and the facts its
+/// universals read.
+fn parts(kb: &Kb, p: &ein_core::Prov) -> Vec<FactId> {
+    let mut v = p.premises.to_vec();
+    v.extend(ein_core::walks::node_activator(kb, p));
+    v.extend(p.universal.iter().copied());
+    v.sort_unstable();
+    v.dedup();
+    v
+}
+
+/// For each contradiction of `kb` whose facts `core` derives through the
+/// derivations `kb` records, whether it is `target`'s (the one the core was
+/// taken over), and the rules each of its facts' **last step** from the core
+/// can be, in the store's order ([`Kb::justifications`], the primary first),
+/// each once: `(given)` for a fact the core holds, else the rule of every
+/// justification whose parts ([`parts`]) the core derives. A closure from
+/// the core upward, where the search keeps labels: what a derivation *from
+/// the printed core* uses, read without the search.
+fn last_steps(
+    kb: &Kb,
+    terms: &Terms,
+    contradictions: &[ein_infer::contradiction::Contradiction],
+    core: &[FactId],
+    target: Option<FactId>,
+) -> Vec<(bool, Vec<Vec<String>>)> {
+    use ein_core::ProvKind;
+    let frontier = |f: FactId| ein_core::walks::is_frontier(kb, terms, f);
+    let rules = |f: FactId| -> Vec<(Option<ein_core::Symbol>, Vec<FactId>)> {
+        kb.justifications(f)
+            .into_iter()
+            .map(|p| terms.provs.get(p))
+            .filter(|p| p.kind == ProvKind::Rule)
+            .map(|p| (p.rule, parts(kb, p)))
+            .collect()
+    };
+    // Every fact below the contradictions, and who reads it.
+    let mut below: BTreeSet<FactId> = BTreeSet::new();
+    let mut readers: BTreeMap<FactId, BTreeSet<FactId>> = BTreeMap::new();
+    let mut stack: Vec<FactId> = contradictions.iter().flat_map(|c| c.sides()).collect();
+    while let Some(f) = stack.pop() {
+        if !below.insert(f) || !kb.contains(f) || frontier(f) {
+            continue;
+        }
+        for (_, ps) in rules(f) {
+            for q in ps {
+                readers.entry(q).or_default().insert(f);
+                stack.push(q);
+            }
+        }
+    }
+    // What the core derives: itself, every fact no recorded rule step
+    // grounds (a dangling id, a fact with no rule justification, a step with
+    // no parts), then upward.
+    let core_set: BTreeSet<FactId> = core.iter().copied().collect();
+    let mut d: BTreeSet<FactId> = BTreeSet::new();
+    for &f in &below {
+        let free = !kb.contains(f)
+            || (!frontier(f) && {
+                let r = rules(f);
+                r.is_empty() || r.iter().any(|(_, ps)| ps.is_empty())
+            });
+        if free || core_set.contains(&f) {
+            d.insert(f);
+        }
+    }
+    let mut work: Vec<FactId> = d.iter().copied().collect();
+    while let Some(x) = work.pop() {
+        for &c in readers.get(&x).into_iter().flatten() {
+            if d.contains(&c) || frontier(c) {
+                continue;
+            }
+            if rules(c)
+                .iter()
+                .any(|(_, ps)| ps.iter().all(|q| d.contains(q)))
+            {
+                d.insert(c);
+                work.push(c);
+            }
+        }
+    }
+    let name = |r: Option<ein_core::Symbol>| {
+        r.map_or_else(|| "(given)".to_string(), |r| terms.sym(r).to_string())
+    };
+    contradictions
+        .iter()
+        .filter(|c| c.sides().iter().all(|f| d.contains(f)))
+        .map(|c| {
+            (
+                Some(c.witness()) == target,
+                c.sides()
+                    .into_iter()
+                    .map(|f| {
+                        if frontier(f) || !kb.contains(f) {
+                            return [kb
+                                .primary(f)
+                                .map_or("(given)".to_string(), |p| name(terms.provs.get(p).rule))]
+                            .into_iter()
+                            .collect();
+                        }
+                        let r = rules(f);
+                        if r.is_empty() {
+                            return kb
+                                .primary(f)
+                                .map(|p| name(terms.provs.get(p).rule))
+                                .into_iter()
+                                .collect();
+                        }
+                        let mut v: Vec<String> = Vec::new();
+                        for (r, _) in r.iter().filter(|(_, ps)| ps.iter().all(|q| d.contains(q))) {
+                            let n = name(*r);
+                            if !v.contains(&n) {
+                                v.push(n);
+                            }
+                        }
+                        v
+                    })
+                    .collect(),
+            )
+        })
+        .collect()
+}
+
+/// The four claims for one printed core, read against `nodes`, the
 /// preparation of root that took it: the failures go to `bad`, and a core
 /// already read is not read again.
 struct Claims {
     rel: String,
     bad: Vec<String>,
-    seen: BTreeSet<(Vec<FactId>, Vec<String>, Option<CoreStatus>)>,
+    seen: BTreeSet<Seen>,
     cut: usize,
     /// Members of N printed with no core, `not-kept` (M1e2 S1e2.3.9).
     not_kept: usize,
+    /// Cores whose contradiction has a fact the core derives through two
+    /// rules, where `refuted by` names the first the store records (M1e2
+    /// S1e2.3.10, Q-M1e2.21 (a)).
+    two_rules: usize,
 }
 
 impl Claims {
     fn hold(&mut self, nodes: &mut Nodes<'_>, s: Stated) -> Option<()> {
-        if !self.seen.insert((s.set.clone(), s.core.clone(), s.status)) {
+        if !self.seen.insert((
+            s.set.clone(),
+            s.core.clone(),
+            s.status,
+            s.refuted_by.clone(),
+        )) {
             return Some(());
         }
         let rel = &self.rel;
@@ -376,7 +527,7 @@ impl Claims {
             return Some(());
         };
         self.cut += usize::from(status != CoreStatus::WithinBudget);
-        let (core, searched, larger) = nodes
+        let (core, searched, larger, steps) = nodes
             .with_fixpoint(&s.set, |kb, terms| {
                 let contradictions = ein_infer::contradiction::detect(kb, terms);
                 let text = |e: &ein_infer::explain::Explanation| -> Vec<String> {
@@ -395,9 +546,51 @@ impl Claims {
                     &ExplanationBudget::default(),
                 );
                 let l = contradiction_frontier(kb, terms, &contradictions, &LARGER);
-                (text(&e), CoreStatus::of(&e), text(&l))
+                let steps = last_steps(kb, terms, &contradictions, &e.frontier, e.target);
+                (text(&e), CoreStatus::of(&e), text(&l), steps)
             })
             .ok()?;
+        // `refuted by` names one last step per fact of a contradiction the
+        // printed core derives (M1e2 S1e2.3.10, P1e2.3's N7): the core's, and
+        // of each fact's steps the first the store records (Q-M1e2.21 (a)).
+        if !s.core.is_empty() {
+            let named = steps.iter().any(|(_, sides)| {
+                sides
+                    .iter()
+                    .all(|opts| opts.iter().any(|r| s.refuted_by.contains(r)))
+                    && s.refuted_by
+                        .iter()
+                        .all(|r| sides.iter().any(|o| o.contains(r)))
+                    && s.refuted_by.len() <= sides.len()
+            });
+            let first: Option<Vec<String>> =
+                steps.iter().find(|(won, _)| *won).map(|(_, sides)| {
+                    let mut v: Vec<String> =
+                        sides.iter().filter_map(|o| o.first().cloned()).collect();
+                    v.sort();
+                    v.dedup();
+                    v
+                });
+            if !named {
+                self.bad.push(format!(
+                    "{rel}: {} {:?} prints the core {:?} refuted by {:?}, and the last steps its \
+                     derivations end in are {steps:?}",
+                    s.at, s.set, s.core, s.refuted_by
+                ));
+            } else if first.as_ref() != Some(&s.refuted_by) {
+                self.bad.push(format!(
+                    "{rel}: {} {:?} prints the core {:?} refuted by {:?}, and the first recorded \
+                     steps of its contradiction are {first:?} ({steps:?})",
+                    s.at, s.set, s.core, s.refuted_by
+                ));
+            }
+            if steps
+                .iter()
+                .any(|(won, sides)| *won && sides.iter().any(|opts| opts.len() > 1))
+            {
+                self.two_rules += 1;
+            }
+        }
         if core != s.core || searched != status {
             self.bad.push(format!(
                 "{rel}: {} {:?} prints {:?} as {status:?}, and its search gives {core:?} as {searched:?}",
@@ -436,6 +629,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
         seen: BTreeSet::new(),
         cut: 0,
         not_kept: 0,
+        two_rules: 0,
     };
     let (mut kb0, mut terms0, ast0) = loaded(path)?;
     let mut fresh = Nodes::new(&mut kb0, &mut terms0, &ast0, &[]).ok()?;
@@ -463,6 +657,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
                     set,
                     core: node.core.clone(),
                     status: node.core_status,
+                    refuted_by: node.refuted_by.clone(),
                 },
             )?;
         }
@@ -489,7 +684,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
             "maximal"
         };
         let visited: Vec<Visit> = visits.lock().expect("done").drain(..).collect();
-        for (commitment, core, status) in visited {
+        for (commitment, core, status, refuted_by) in visited {
             let set = commitment.iter().map(|c| by_text[c.as_str()]).collect();
             claims.hold(
                 &mut fresh,
@@ -498,6 +693,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
                     set,
                     core,
                     status,
+                    refuted_by,
                 },
             )?;
         }
@@ -515,6 +711,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
                     set: Vec::new(),
                     core: d.root.core.clone(),
                     status: d.root.core_status,
+                    refuted_by: d.root.refuted_by.clone(),
                 },
             )?;
         }
@@ -558,6 +755,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
                         set,
                         core: why.core,
                         status: why.core_status,
+                        refuted_by: why.refuted_by,
                     },
                 )?;
             } else {
@@ -568,12 +766,19 @@ fn statuses(path: &Path) -> Option<Statuses> {
                         set,
                         core: x.core.clone(),
                         status: x.core_status,
+                        refuted_by: x.refuted_by.clone(),
                     },
                 )?;
             }
         }
     }
-    Some((claims.bad, claims.seen.len(), claims.cut, claims.not_kept))
+    Some((
+        claims.bad,
+        claims.seen.len(),
+        claims.cut,
+        claims.not_kept,
+        claims.two_rules,
+    ))
 }
 
 /// **No core is printed unqualified from a cut search** — M1e2
@@ -601,6 +806,15 @@ fn statuses(path: &Path) -> Option<Statuses> {
 /// family at the environments) are the nightly's. At S1e2.2.23's T1 no
 /// surface printed a status (2026-11-05).
 ///
+/// **And `refuted by` is the core's derivation's last step** (M1e2
+/// S1e2.3.10, N7): beside each such core, the rules printed are, for each
+/// fact of the contradiction the core was taken over, the first step the
+/// store records that the core derives ([`last_steps`], Q-M1e2.21 (a)); and
+/// at least they name one step per fact of some contradiction the core
+/// derives, the acceptance's claim, reported apart. The cores whose
+/// contradiction the core derives through two rules are counted, 5 041 of
+/// 230 154 per commit (2026-11-06).
+///
 /// **And a member of N printed with no core says why** (M1e2 S1e2.3.9, N6):
 /// its status is `not-kept`, it carries no core and no rule, and the run that
 /// printed it stopped at `--region-limit`. Until S1e2.3.9 such a member had
@@ -626,23 +840,29 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
     let mut results = results.into_inner().expect("no checker panicked");
     results.sort_by_key(|(i, _)| *i);
     let mut failures: Vec<String> = Vec::new();
-    let (mut programs, mut cores, mut cut, mut not_kept) = (0usize, 0usize, 0usize, 0usize);
+    let (mut programs, mut cores, mut cut, mut not_kept, mut two_rules) =
+        (0usize, 0usize, 0usize, 0usize, 0usize);
     for (_, got) in results {
-        let Some((bad, n, c, k)) = got else { continue };
+        let Some((bad, n, c, k, t)) = got else {
+            continue;
+        };
         programs += 1;
         cores += n;
         cut += c;
         not_kept += k;
+        two_rules += t;
         failures.extend(bad);
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     assert!(programs >= 100, "{programs} programs read");
+    // The ruling has witnesses: 5 041 per commit (2026-11-06, S1e2.3.10).
     assert!(
-        cores >= 100_000 && cut >= 10 && not_kept >= 1,
-        "{cores} cores, {cut} of them cut, {not_kept} members not kept"
+        cores >= 100_000 && cut >= 10 && not_kept >= 1 && two_rules >= 100,
+        "{cores} cores, {cut} of them cut, {not_kept} members not kept, {two_rules} cores \
+         through two rules"
     );
     eprintln!(
         "{programs} programs, {cores} distinct cores, {cut} of them cut, {not_kept} members of N \
-         not kept"
+         not kept, {two_rules} whose contradiction the core derives through two rules"
     );
 }

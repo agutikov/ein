@@ -43,8 +43,9 @@
 //! a tree, and may change which core a dead node's refutation names, the
 //! read-out's `unsat core` and `source` rows and the summary's `region.core`,
 //! and since M1e2 S1e2.2.23 whether its search was cut, the `core search` row
-//! and `region.core_status`, and nothing else ([`CORE_FLAG`],
-//! [`without_core`]).
+//! and `region.core_status`; and since M1e2 S1e2.3.10, where the core moved,
+//! the rule its derivation ends in, the `refuted by` row and
+//! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
 //! **Byte for byte, cost counters included**, because no route reads a lever
@@ -513,14 +514,43 @@ fn is_core_row(line: &str) -> bool {
         || line.starts_with("  core search ")
 }
 
+/// The row that names the rules a dead node's core's derivation ends in
+/// (M1e2 S1e2.3.10): it follows the core, so it may move where the core does.
+fn is_refuted_row(line: &str) -> bool {
+    line.starts_with("  refuted by ")
+}
+
+/// Whether the core moved between two [`printed`] texts: a core row
+/// ([`is_core_row`]), or the summary's `region.core` or `region.core_status`.
+fn core_moved(want: &str, got: &str) -> bool {
+    let rows = |t: &str| -> Vec<String> {
+        t.lines()
+            .filter(|l| is_core_row(l))
+            .map(str::to_string)
+            .collect()
+    };
+    let summary = |t: &str| -> (J, J) {
+        let s = t.split_once("--- summary\n").map_or("", |(_, s)| s);
+        serde_json::from_str::<J>(s.trim_end()).map_or((J::Null, J::Null), |j| {
+            (
+                j["region"]["core"].clone(),
+                j["region"]["core_status"].clone(),
+            )
+        })
+    };
+    rows(want) != rows(got) || summary(want) != summary(got)
+}
+
 /// [`printed`] less the core: its rows ([`is_core_row`]) and the summary's
-/// `region.core` and `region.core_status`. Everything else, `refuted by`
-/// among it, must not move.
-fn without_core(text: &str) -> String {
+/// `region.core` and `region.core_status`, and, where `refuted` (the core
+/// moved, [`core_moved`]), the `refuted by` row and `region.refuted_by`.
+/// Everything else, and `refuted by` beside a core that did not move, must
+/// not move.
+fn without_core(text: &str, refuted: bool) -> String {
     let (head, summary) = text.split_once("--- summary\n").unwrap_or((text, ""));
     let head: String = head
         .lines()
-        .filter(|l| !is_core_row(l))
+        .filter(|l| !is_core_row(l) && !(refuted && is_refuted_row(l)))
         .map(|l| format!("{l}\n"))
         .collect();
     let summary = match serde_json::from_str::<J>(summary.trim_end()) {
@@ -528,6 +558,9 @@ fn without_core(text: &str) -> String {
             if let Some(r) = j.get_mut("region").and_then(J::as_object_mut) {
                 r.remove("core");
                 r.remove("core_status");
+                if refuted {
+                    r.remove("refuted_by");
+                }
             }
             serde_json::to_string_pretty(&j).expect("serialises")
         }
@@ -696,7 +729,8 @@ fn no_config_flag_moves_a_line_of_any_mode() {
                 if want != got {
                     exempt.insert(rel.clone());
                 }
-                (without_core(want), without_core(got))
+                let moved = core_moved(want, got);
+                (without_core(want, moved), without_core(got, moved))
             } else {
                 (want.clone(), got.clone())
             };
@@ -755,6 +789,7 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
             true,
         ),
         ("  refuted by        narrow", false),
+        ("  refuted by", false),
         ("  unsat corel", false),
         ("    core search", false),
         ("    source", false),
@@ -762,6 +797,7 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
     ] {
         assert_eq!(is_core_row(row), core, "{row:?}");
     }
+    assert!(is_refuted_row("  refuted by        narrow") && !is_refuted_row("    refuted by"));
 
     let path = repo_root().join("examples/ein-bugs/alt-cap-core.ein");
     let Reach::Known(k) = reach(&path) else {
@@ -773,10 +809,11 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
         let want = printed(&k.path, &k.text, flags, *mode);
         let got = printed(&k.path, &flipped_text, flags, *mode);
         let at = flags.join(" ");
+        let core = core_moved(&want, &got);
         assert_eq!(
-            without_core(&want),
-            without_core(&got),
-            "alt-cap-core.ein {at}: :{CORE_FLAG} moved more than the core"
+            without_core(&want, core),
+            without_core(&got, core),
+            "alt-cap-core.ein {at}: :{CORE_FLAG} moved more than the core and its rules"
         );
         let rows = |t: &str| -> Vec<String> {
             t.lines()
@@ -804,6 +841,22 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
                     serde_json::json!(["(p1 Y01)", "(p2 Y01)", "(p3 Y01)"])
                 ),
                 "{at}: the summary's core, alternatives on and off"
+            );
+            // The rule each core's derivation ends in (M1e2 S1e2.3.10):
+            // `wide` from `(w1 X) (w2 X)`, `narrow` from the chain.
+            let refuted = |t: &str| -> Vec<String> {
+                t.lines()
+                    .filter(|l| is_refuted_row(l))
+                    .map(str::to_string)
+                    .collect()
+            };
+            assert_eq!(
+                (refuted(&want), refuted(&got)),
+                (
+                    vec!["  refuted by        wide".to_string()],
+                    vec!["  refuted by        narrow".to_string()]
+                ),
+                "{at}: refuted by, alternatives on and off"
             );
         }
     }

@@ -345,7 +345,7 @@ Refuted by `typecheck-arg-0`.
 
 Core: `(color-of Blue Red)`
 
-Refuted by `injective`.
+Refuted by `typecheck-arg-0`.
 
 </details>
 
@@ -390,7 +390,7 @@ Refuted by `typecheck-arg-0`.
 
 Core: `(color-of Green Red)`
 
-Refuted by `injective`.
+Refuted by `typecheck-arg-0`.
 
 </details>
 
@@ -399,7 +399,7 @@ Refuted by `injective`.
 
 Core: `(color-of H1 H2)`
 
-Refuted by `functional`.
+Refuted by `typecheck-arg-1`.
 
 </details>
 
@@ -408,7 +408,7 @@ Refuted by `functional`.
 
 Core: `(color-of H1 H3)`
 
-Refuted by `functional`.
+Refuted by `typecheck-arg-1`.
 
 </details>
 
@@ -417,7 +417,7 @@ Refuted by `functional`.
 
 Core: `(color-of H2 H1)`
 
-Refuted by `no-room-left`.
+Refuted by `typecheck-arg-1`.
 
 </details>
 
@@ -426,7 +426,7 @@ Refuted by `no-room-left`.
 
 Core: `(color-of H2 H3)`
 
-Refuted by `no-room-left`.
+Refuted by `typecheck-arg-1`.
 
 </details>
 
@@ -435,7 +435,7 @@ Refuted by `no-room-left`.
 
 Core: `(color-of H3 H1)`
 
-Refuted by `no-room-left`.
+Refuted by `typecheck-arg-1`.
 
 </details>
 
@@ -444,7 +444,7 @@ Refuted by `no-room-left`.
 
 Core: `(color-of H3 H2)`
 
-Refuted by `no-room-left`.
+Refuted by `typecheck-arg-1`.
 
 </details>
 

@@ -111,6 +111,19 @@
 //! (W21): `pair-core-root-given.ein`'s dead `{(q a)}` reported `(p a)`, a
 //! fact the program states, and `zebra2.ein`'s N 201 of 366 such cores.
 //!
+//! ### Which rules a core's derivation ends in
+//!
+//! **The last step of a derivation from the core** ([`Explanation::steps`],
+//! M1e2 S1e2.3.10, P1e2.3's N7): for each fact of the contradiction the core
+//! was taken over, a recorded justification whose premises, activator and
+//! universal reads the core derives, the first in the store's order where
+//! there are several (the user's ruling of 2026-11-06 on Q-M1e2.21, (a)).
+//! A dead node's `refuted by` is those steps' rules. Until S1e2.3.10 it was
+//! the first contradiction's primaries, which need not be a step the core's
+//! derivation takes: `examples/ein-bugs/alt-cap-core.ein` printed `refuted by
+//! narrow` beside the core `(w1 X) (w2 X)`, which only `wide` refutes, and
+//! 65 559 of the corpus's printed cores per commit named such a rule.
+//!
 //! ### The algorithm
 //!
 //! A least fixpoint from the frontier upward. A `source` / `hypothesis` /
@@ -146,7 +159,7 @@
 //!   observable.
 
 use ein_core::repr::{ReprValue, repr};
-use ein_core::{FactId, Kb, Terms};
+use ein_core::{FactId, Kb, ProvId, Terms};
 use rustc_hash::{FxHashMap, FxHashSet};
 
 /// Anytime budget for the label search.
@@ -366,6 +379,16 @@ pub struct Explanation {
     pub cut: Cut,
     pub rounds: usize,
     pub facts_considered: usize,
+    /// The last step of the derivation [`Self::frontier`] was taken over:
+    /// for each fact of the winning group (a direct ⊥'s `(false …)` fact, a
+    /// pair's `X` then its `(not X)`, or [`explain`]'s target), the
+    /// justification through which the frontier derives it, the first the
+    /// store records where it derives it through several (`steps_of`), or
+    /// the primary of a fact the frontier holds itself (a given's or a
+    /// hypothesis's). Past `max_facts`, each fact's primary, the walk's
+    /// derivation. What a dead node's `refuted by` names (M1e2 S1e2.3.10,
+    /// P1e2.3's N7); empty where no target got a label.
+    pub steps: Vec<ProvId>,
 }
 
 impl Explanation {
@@ -400,6 +423,8 @@ struct AndNode {
     /// How many of `facts` are folded over their whole labels; each one after
     /// is folded at its smallest environment (M1e2 S1e2.2.21, Q-M1e2.15 (b)).
     searched: usize,
+    /// The justification it is ([`Explanation::steps`]).
+    prov: ProvId,
 }
 
 /// The AND/OR premise closure of a set of targets.
@@ -496,7 +521,11 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
                 ands.clear(); // a synthetic ground-out wins
                 break;
             }
-            ands.push(AndNode { facts, searched });
+            ands.push(AndNode {
+                facts,
+                searched,
+                prov: p,
+            });
         }
         if ands.is_empty() {
             g.seed.insert(fid, vec![Vec::new()]);
@@ -773,8 +802,8 @@ fn explain_groups(
     let g = build_graph(kb, terms, &roots, budget);
     let (labels, rounds, mut cut) = propagate(&g, budget);
 
-    let mut best: Option<((usize, Env, u32), FactId, Env)> = None;
-    for group in groups {
+    let mut best: Option<((usize, Env, u32), usize, Env)> = None;
+    for (gi, group) in groups.iter().enumerate() {
         let t = group[0];
         let env = if let [one] = group.as_slice() {
             let Some(label) = labels.get(one).filter(|l| !l.is_empty()) else {
@@ -795,11 +824,11 @@ fn explain_groups(
             g.rank.get(&t).copied().unwrap_or(u32::MAX),
         );
         if best.as_ref().is_none_or(|(b, _, _)| key < *b) {
-            best = Some((key, t, env));
+            best = Some((key, gi, env));
         }
     }
     let considered = g.just.len() + g.seed.len();
-    let Some((_, target, env)) = best else {
+    let Some((_, gi, env)) = best else {
         if g.truncated {
             // The closure blew the `max_facts` valve before any target got a
             // label. Degrade to the pre-S1.21.7 answer rather than returning
@@ -819,14 +848,94 @@ fn explain_groups(
         .map(|&r| g.by_rank[r as usize])
         .filter(|&f| kb.contains(f))
         .collect();
+    let steps = steps_of(kb, &g, &groups[gi], &env);
     Explanation {
         frontier,
-        target: Some(target),
+        target: Some(groups[gi][0]),
         exhausted: !cut.any(),
         cut,
         rounds,
         facts_considered: considered,
+        steps,
     }
+}
+
+/// The facts the environment `env` derives through the graph's recorded
+/// justifications: its own, every fact whose label is `{∅}` (a synthetic
+/// ground-out), and, to a least fixpoint, every fact one of whose
+/// justifications rests on facts already in the set — premises, a node's
+/// activator and what its universals read alike.
+fn derived_from(g: &Graph, env: &Env) -> FxHashSet<FactId> {
+    let mut d: FxHashSet<FactId> = env.iter().map(|&r| g.by_rank[r as usize]).collect();
+    // determinism-ok: builds a set; the fixpoint does not depend on the order.
+    for (f, envs) in &g.seed {
+        if envs.iter().any(|e| e.is_empty()) {
+            d.insert(*f);
+        }
+    }
+    // determinism-ok: a worklist; the set it closes is the same in any order.
+    let mut work: Vec<FactId> = d.iter().copied().collect();
+    while let Some(x) = work.pop() {
+        let Some(cs) = g.consumers.get(&x) else {
+            continue;
+        };
+        // determinism-ok: membership only; the fixpoint is order-free.
+        for &c in cs {
+            if d.contains(&c) {
+                continue;
+            }
+            let derivable = g
+                .just
+                .get(&c)
+                .is_some_and(|ands| ands.iter().any(|a| a.facts.iter().all(|f| d.contains(f))));
+            if derivable {
+                d.insert(c);
+                work.push(c);
+            }
+        }
+    }
+    d
+}
+
+/// [`Explanation::steps`]: for each fact of `group`, the justification
+/// through which `env` derives it, **one per fact**: the **first recorded
+/// derivation the core supports**, in the store's order
+/// ([`ein_core::Kb::justifications`]): the fact's primary where `env`
+/// derives it, else the first alternative the store keeps that it derives
+/// (fewest premises first), else the smallest-closure arrival. A fact the
+/// frontier holds itself, or a ground-out, is its own primary.
+///
+/// The user's ruling of 2026-11-06 on Q-M1e2.21, (a). A core often derives a
+/// fact of its contradiction through two rules (5 041 of the corpus's 230 154
+/// printed cores per commit, M1e2 S1e2.3.10's step 1), and the store's order
+/// picks one: the program's priorities, then arrival in commitment order,
+/// never the interner. So `:record-alternative-justifications false`, which
+/// keeps each fact's primary alone, moves the rule only where it moves the
+/// core: where the core is the same, the primaries are a derivation from it.
+/// The accepted cost: two programs one `:priority` apart can name two rules
+/// beside one core (`s1e2.3.10_probes/two-rules.ein` and its `-reordered`
+/// twin, `wide-a` and `narrow-b` beside `(p A)`).
+fn steps_of(kb: &Kb, g: &Graph, group: &[FactId], env: &Env) -> Vec<ProvId> {
+    let d = derived_from(g, env);
+    let mut out = Vec::with_capacity(group.len());
+    for &f in group {
+        let Some(ands) = g.just.get(&f).filter(|a| !a.is_empty()) else {
+            // A fact the frontier holds, or a ground-out: its own primary.
+            out.extend(kb.primary(f));
+            continue;
+        };
+        // `ands` is the store's order: `build_graph` reads
+        // `Kb::justifications`, the primary first.
+        let first = ands
+            .iter()
+            .find(|a| a.facts.iter().all(|x| d.contains(x)))
+            .map(|a| a.prov);
+        // `env` derives every fact of its group (each label environment was
+        // made from recorded steps), so `first` is `Some`; the primary is the
+        // floor regardless.
+        out.extend(first.or_else(|| kb.primary(f)));
+    }
+    out
 }
 
 /// The pre-S1.21.7 answer: the smallest single-target recorded-**primary**
@@ -871,9 +980,8 @@ fn fallback_groups(
     rounds: usize,
     considered: usize,
 ) -> Explanation {
-    let mut best: Option<((usize, String), FactId, Vec<FactId>)> = None;
-    for group in groups {
-        let t = group[0];
+    let mut best: Option<((usize, String), usize, Vec<FactId>)> = None;
+    for (gi, group) in groups.iter().enumerate() {
         let mut core =
             ein_core::walks::unsat_core(kb, terms, group, ein_core::walks::Justifications::Primary);
         core.sort_unstable();
@@ -887,7 +995,7 @@ fn fallback_groups(
         reprs.sort();
         let key = (core.len(), reprs.join(" "));
         if best.as_ref().is_none_or(|(b, _, _)| key < *b) {
-            best = Some((key, t, core));
+            best = Some((key, gi, core));
         }
     }
     // Reached past `max_facts` alone.
@@ -903,13 +1011,15 @@ fn fallback_groups(
             facts_considered: considered,
             ..Explanation::default()
         },
-        Some((_, target, frontier)) => Explanation {
+        Some((_, gi, frontier)) => Explanation {
             frontier,
-            target: Some(target),
+            target: Some(groups[gi][0]),
             exhausted: false,
             cut,
             rounds,
             facts_considered: considered,
+            // The walk's derivation is each fact's primary.
+            steps: groups[gi].iter().filter_map(|&f| kb.primary(f)).collect(),
         },
     }
 }

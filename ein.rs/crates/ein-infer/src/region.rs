@@ -116,8 +116,18 @@ pub struct Node {
     /// What [`Self::core`]'s search established — whether its budget cut it
     /// (M1e2 S1e2.2.23, W23); `None` where no core was taken.
     pub core_status: Option<crate::explain::CoreStatus>,
-    /// The rules whose firing produced the contradiction the core explains.
+    /// The rules whose firing ends the derivation of the contradiction
+    /// [`Self::core`] was taken over ([`crate::explain::Explanation::steps`]),
+    /// `(given)` for a fact of the contradiction the core holds itself, sorted;
+    /// empty where no core was taken (M1e2 S1e2.3.10, P1e2.3's N7: until then
+    /// the first contradiction's primaries, which need not be a rule the
+    /// core's derivation uses).
     pub refuted_by: Vec<String>,
+    /// The rules of the first contradiction's primaries, which
+    /// [`Self::refuted_by`] named until M1e2 S1e2.3.10: what the detector
+    /// attributes a dead node to (`detector::dead_sites`), read on every
+    /// node whether or not its core is taken, and printed nowhere.
+    pub first_rules: Vec<String>,
     /// The `:source` of each core fact that carries one, as `(fact) :source
     /// "…"`, in the core's order: the sentence a reader looks for in the
     /// program's text.
@@ -859,8 +869,9 @@ impl Axes {
     /// that the classification does not, an explanation search over the
     /// node's derivations, and a run takes one only where a surface prints it
     /// (M1e2 S1e2.2.21, the user's ruling of 2026-11-05). A node not taken
-    /// reports an empty core and no sources; its `refuted_by` and `absent`
-    /// premises are read either way.
+    /// reports an empty core, no sources and no `refuted_by`, which names the
+    /// core's derivation's rules (M1e2 S1e2.3.10); its `absent` premises and
+    /// the detector's `first_rules` are read either way.
     pub(crate) fn taking_cores(mut self, cores: bool) -> Axes {
         self.cores = cores;
         self
@@ -1195,30 +1206,19 @@ impl<'a> Nodes<'a> {
         )
         .map(|fork| {
             let contradictions = crate::contradiction::detect(&fork, self.terms);
-            let Some(first) = contradictions.first() else {
+            if contradictions.is_empty() {
                 return Refutation::default();
-            };
+            }
             let e = crate::explain::contradiction_frontier(
                 &fork,
                 self.terms,
                 &contradictions,
                 &crate::explain::ExplanationBudget::default(),
             );
-            let mut rules: Vec<String> = [first.positive, Some(first.negative)]
-                .into_iter()
-                .flatten()
-                .filter_map(|f| fork.primary(f))
-                .map(|p| match self.terms.provs.get(p).rule {
-                    Some(r) => self.terms.sym(r).to_string(),
-                    None => "(given)".to_string(),
-                })
-                .collect();
-            rules.sort();
-            rules.dedup();
             Refutation {
                 core: sorted_text(self.terms, &e.frontier),
                 core_status: Some(crate::explain::CoreStatus::of(&e)),
-                refuted_by: rules,
+                refuted_by: rules_of(self.terms, &e.steps),
             }
         });
         self.terms.provs.discard_fork();
@@ -1244,6 +1244,22 @@ impl<'a> Nodes<'a> {
         self.terms.provs.discard_fork();
         out
     }
+}
+
+/// The rules of `steps`, `(given)` for a step that is no rule's (a given's
+/// or a hypothesis's primary), sorted and deduplicated: a dead node's
+/// `refuted by`.
+fn rules_of(terms: &Terms, steps: &[ein_core::ProvId]) -> Vec<String> {
+    let mut rules: Vec<String> = steps
+        .iter()
+        .map(|&p| match terms.provs.get(p).rule {
+            Some(r) => terms.sym(r).to_string(),
+            None => "(given)".to_string(),
+        })
+        .collect();
+    rules.sort();
+    rules.dedup();
+    rules
 }
 
 /// Root's fork with `facts` written, saturated to quiescence — the half of
@@ -1358,19 +1374,14 @@ fn node_in_region(
             node.core = sorted_text(terms, &e.frontier);
             node.core_status = Some(crate::explain::CoreStatus::of(&e));
             node.sources = sources_of(&fork, terms, &e.frontier);
+            node.refuted_by = rules_of(terms, &e.steps);
         }
-        let mut rules: Vec<String> = [first.positive, Some(first.negative)]
+        let first_steps: Vec<ein_core::ProvId> = [first.positive, Some(first.negative)]
             .into_iter()
             .flatten()
             .filter_map(|f| fork.primary(f))
-            .map(|p| match terms.provs.get(p).rule {
-                Some(r) => terms.sym(r).to_string(),
-                None => "(given)".to_string(),
-            })
             .collect();
-        rules.sort();
-        rules.dedup();
-        node.refuted_by = rules;
+        node.first_rules = rules_of(terms, &first_steps);
         node.absent_premises = absent_premises(&fork, terms, first.witness());
     }
     let owes = crate::obligations::tally(&fork, terms, ast, memo, &mut ev)?;

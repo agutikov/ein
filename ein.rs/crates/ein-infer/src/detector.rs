@@ -1104,11 +1104,14 @@ fn absent_label(premise: &str) -> String {
 /// never compiled; else the `absent` sites over a premise's relation, those
 /// whose rule refuted it where there are any (S1e2.1b.3's rule, the
 /// `attribution` example's `dead`). Where it names none, [`status_of`] asks
-/// [`dead_chain_sites`] (M1e2 S1e2.2.17).
+/// [`dead_chain_sites`] (M1e2 S1e2.2.17). *Refuting* reads the first
+/// contradiction's rules (`Node::first_rules`), which the node keeps whether
+/// or not its core is taken; a dead node's printed `refuted by` follows its
+/// core since M1e2 S1e2.3.10, and the detector's labels are F21's.
 fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTreeSet<String>) {
     let mut found = false;
     for s in sites.iter().filter(|s| s.kind == SiteKind::Activator) {
-        if node.refuted_by.contains(&s.rule_text) && !root.rules.contains(&s.rule) {
+        if node.first_rules.contains(&s.rule_text) && !root.rules.contains(&s.rule) {
             named.insert(s.name.clone());
             found = true;
         }
@@ -1131,7 +1134,7 @@ fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTr
         .collect();
     let refuting: Vec<&&SiteText> = over
         .iter()
-        .filter(|s| node.refuted_by.contains(&s.rule_text))
+        .filter(|s| node.first_rules.contains(&s.rule_text))
         .collect();
     if !refuting.is_empty() {
         named.extend(refuting.iter().map(|s| s.name.clone()));
