@@ -1,0 +1,13 @@
+;;; The name rule (Q-M1e2.24): what is no name. One line each.
+(relation p T)
+(p a?x)
+(p ?x?y)
+(p a:b)
+(p a,b)
+(p a#b)
+(p a|b)
+(p a\b)
+(p Жук)
+(p "a"b)
+(p ?_)
+(p _)

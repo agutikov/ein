@@ -1,0 +1,14 @@
+[package]
+name="c_ein"
+version.workspace=true
+edition.workspace=true
+build="build.rs"
+[dependencies]
+ein-ir={path="../../../../../ein.rs/crates/ein-ir"}
+cfgrammar="0.15"
+lrlex="0.15"
+lrpar="0.15"
+[build-dependencies]
+cfgrammar="0.15"
+lrlex="0.15"
+lrpar="0.15"

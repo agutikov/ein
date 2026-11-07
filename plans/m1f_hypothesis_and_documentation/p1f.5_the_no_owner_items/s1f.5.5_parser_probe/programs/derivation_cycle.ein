@@ -1,0 +1,8 @@
+;;; examples/broken/load/derivation_cycle.ein, written against S1f.5.5's final
+;;; grammar. Still a load refusal: two derived facts, each the other's premise.
+;;; `:using` lists the premises as facts, where the fixture wrote `(p (r c d))`
+;;; and the loader dropped the head `p`.
+
+(relation r T T)
+(r a b :rule x :using ((r c d)))
+(r c d :rule x :using ((r a b)))

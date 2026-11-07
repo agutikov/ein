@@ -6,7 +6,8 @@ in `ein.rs/` depends on it. `harness` links `ein-ir`, read-only, for today's par
 
 The grammar is a by-position draft under the user's name rule of 2026-11-07
 ([Q-M1e2.24](../../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)), written once per notation. It
-is a working draft for choosing a generator. T1f.5.5.2 writes the real one.
+is a working draft for choosing a generator. T1f.5.5.2 writes the real one, and it is here since
+2026-11-08: [§ Steps 1 and 2](#steps-1-and-2-the-census-and-the-final-grammar).
 
 | grammar | file |
 |---|---|
@@ -144,3 +145,25 @@ Two builds of `c_grm` generate the same `ein.y.rs`, apart from a build-time stam
 combinators, so the grammar would be Rust code and no generator reads it. tree-sitter needs a C runtime.
 None of this was run on a loaded program past the parse: macros, the loader and the solver were not wired
 to any candidate.
+
+## Steps 1 and 2: the census and the final grammar
+
+Added 2026-11-08 on a snapshot of `ec004a48`, for [`s1f.5.5_census.md`](../s1f.5.5_census.md) (T1f.5.5.1)
+and [`s1f.5.5_paper_grammar.md`](../s1f.5.5_paper_grammar.md) (T1f.5.5.2), which say what each found and
+how to re-take it. The draft above is unchanged, so its numbers still re-take.
+
+| | what |
+|---|---|
+| [`grammar/ein.l`](grammar/ein.l), [`grammar/ein.y`](grammar/ein.y) | the final grammar, by position, in grmtools' notation |
+| [`grammar/build_ast.rs`](grammar/build_ast.rs) | the builder its actions call, making today's `ein_ir::Ast`, `Loc` for `Loc` |
+| [`c_ein/`](c_ein/) | the final grammar compiled against `ein-ir`, read-only: `corpus` compares it with today's parser on every corpus file, `mutate` on seeded mutants, `check` and `dump` report one file |
+| [`census/`](census/) | the position census, the probe matrix, the corpus sweep and their outputs |
+| [`programs/`](programs/) | the syntax fixtures rewritten against the final grammar, the refused shapes, and G-14's programs |
+
+`c_ein` builds against the patched `lrpar`, as F11's build above does:
+
+```sh
+export CARGO_TARGET_DIR=$PWD/../../../../build/pg-probe/target-ein
+cargo build --release -p c_ein --config "patch.crates-io.lrpar.path=\"$PWD/../../../../build/pg-probe/lrpar-det\""
+$CARGO_TARGET_DIR/release/c_ein corpus ../../../..          # 312 same tree, 19 digits read as names, 55 refused
+```

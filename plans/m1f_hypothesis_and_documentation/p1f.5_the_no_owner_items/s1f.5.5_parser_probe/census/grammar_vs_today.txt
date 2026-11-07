@@ -1,0 +1,134 @@
+390 files under examples, tests, stdlib, corpus
+    19  both accept, digits read as names
+   312  both accept, same tree
+     4  both refuse
+    55  today accepts, the grammar refuses
+REFUSED corpus/fuzz_findings/activator-text-key-swapped.ein:14:19: (holds 1)  (holds "1")
+      Parsing error at line 14 column 19. Repair sequences found: (+1 more)
+REFUSED corpus/fuzz_findings/activator-text-key.ein:16:19: (holds 1)  (holds "1")
+      Parsing error at line 16 column 19. Repair sequences found: (+1 more)
+TREE corpus/fuzz_findings/binding-key-layout-swapped.ein: digits are a name: 1 vs 1
+TREE corpus/fuzz_findings/binding-key-layout.ein: digits are a name: 1 vs 1
+REFUSED corpus/fuzz_findings/kwpair-below-the-filter.ein:1:18: (tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))
+      Parsing error at line 1 column 18. Repair sequences found: (+9 more)
+TREE examples/branching/12_typed_blind_solve.ein: digits are a name: 0 vs 0
+REFUSED examples/broken/compile/absent_arity_high.ein:15:38: :match  (and (p ?x) (absent (q ?x) (p ?x)))
+      Parsing error at line 15 column 38. Repair sequences found: (+1 more)
+REFUSED examples/broken/compile/absent_arity_zero.ein:17:30: :match  (and (p ?x) (absent))
+      Parsing error at line 17 column 30. Repair sequences found: (+1 more)
+REFUSED examples/broken/compile/eq_arity_high.ein:16:32: :match  (and (p ?x) (eq ?x A B))
+      Parsing error at line 16 column 32. Repair sequences found:
+REFUSED examples/broken/compile/eq_arity_low.ein:19:29: :match  (and (p ?x) (eq ?x))
+      Parsing error at line 19 column 29. Repair sequences found:
+REFUSED examples/broken/load/config_bad_value.ein:5:31: (config :lattice-sanity-check maybe)
+      Parsing error at line 5 column 31. Repair sequences found:
+REFUSED examples/broken/load/config_retired_flag.ein:6:9: (config :lattice-order lex)
+      Parsing error at line 6 column 9. Repair sequences found:
+REFUSED examples/broken/load/config_unknown_flag.ein:6:9: (config :nope true)
+      Parsing error at line 6 column 9. Repair sequences found:
+REFUSED examples/broken/load/derivation_cycle.ein:6:24: (r a b :rule x :using (p (r c d)))
+      Parsing error at line 6 column 24. Repair sequences found: (+1 more)
+REFUSED examples/broken/load/empty_absent.ein:17:31: :match  (and (p ?x) (absent ?x))
+      Parsing error at line 17 column 31. Repair sequences found: (+2 more)
+REFUSED examples/broken/load/expect_is_a_pattern.ein:6:43: (query :goal (p A ?h) :expect (model (p A ?h)))
+      Parsing error at line 6 column 43. Repair sequences found:
+REFUSED examples/broken/load/expect_unknown_keyword.ein:8:23: (query :goal (p A ?h) :expct (model (p A H1)))
+      Parsing error at line 8 column 23. Repair sequences found:
+REFUSED examples/broken/load/hrule_reserved_name.ein:3:8: (hrule absent () :match (x ?a) :assert (y ?a) :why "w")
+      Parsing error at line 3 column 8. Repair sequences found:
+REFUSED examples/broken/load/import_alias_not_a_name.ein:3:23: (import std.macro :as "m")
+      Parsing error at line 3 column 23. Repair sequences found:
+REFUSED examples/broken/load/import_symbols_empty.ein:3:29: (import std.macro :symbols ())
+      Parsing error at line 3 column 29. Repair sequences found:
+REFUSED examples/broken/load/import_symbols_not_a_list.ein:3:28: (import std.macro :symbols forall)
+      Parsing error at line 3 column 28. Repair sequences found:
+REFUSED examples/broken/load/macro_reserved_name.ein:3:8: (macro absent (?p) (rel ?p))
+      Parsing error at line 3 column 8. Repair sequences found:
+REFUSED examples/broken/load/open_arity.ein:9:20: :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))
+      Parsing error at line 9 column 20. Repair sequences found: (+2 more)
+REFUSED examples/broken/load/open_in_match.ein:6:49: (rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))
+      Parsing error at line 6 column 49. Repair sequences found:
+REFUSED examples/broken/load/open_mixed_assert.ein:9:17: :assert (and (open ?R) (r ?a b)))
+      Parsing error at line 9 column 17. Repair sequences found:
+REFUSED examples/broken/load/query_lattice_keyword.ein:13:23: (query :goal (p A ?h) :no-hypothesis (p))
+      Parsing error at line 13 column 23. Repair sequences found:
+REFUSED examples/broken/load/region_top_level.ein:11:2: (region (model (p A)))
+      Parsing error at line 11 column 2. Repair sequences found:
+REFUSED examples/broken/load/relation_malformed.ein:5:20: (relation lives-in (Person House))
+      Parsing error at line 5 column 20. Repair sequences found: (+1 more)
+REFUSED examples/broken/load/relation_needs_a_name.ein:4:10: (relation)
+      Parsing error at line 4 column 10. Repair sequences found:
+TREE examples/broken/load/relation_parameter_int.ein: digits are a name: 3 vs 3
+REFUSED examples/broken/load/relation_reserved_name.ein:4:11: (relation eq)
+      Parsing error at line 4 column 11. Repair sequences found:
+REFUSED examples/broken/load/reserved_open_direct.ein:16:8: (macro open (?x) (p ?x))
+      Parsing error at line 16 column 8. Repair sequences found:
+REFUSED examples/broken/load/rule_reserved_name.ein:4:7: (rule absent () :match (x ?a) :assert (y ?a) :why "w")
+      Parsing error at line 4 column 7. Repair sequences found:
+REFUSED examples/broken/load/solve_unknown_keyword.ein:11:8: (solve :no-hypothesys (p))
+      Parsing error at line 11 column 8. Repair sequences found:
+TREE examples/ein-bugs/activator-all-int.ein: digits are a name: 1 vs 1
+REFUSED examples/ein-bugs/activator-text-int-and-string.ein:55:19: (holds 1)  (holds "1")
+      Parsing error at line 55 column 19. Repair sequences found: (+4 more)
+REFUSED examples/ein-bugs/activator-text-int-only.ein:44:19: (holds 1)  (holds "1")
+      Parsing error at line 44 column 19. Repair sequences found: (+1 more)
+REFUSED examples/ein-bugs/activator-text-string-only.ein:35:19: (holds 1)  (holds "1")
+      Parsing error at line 35 column 19. Repair sequences found: (+4 more)
+REFUSED examples/ein-bugs/activator-text-string-then-int.ein:25:19: (holds 1)  (holds "1")
+      Parsing error at line 25 column 19. Repair sequences found: (+4 more)
+TREE examples/ein-bugs/binding-key-both.ein: digits are a name: 1 vs 1
+TREE examples/ein-bugs/binding-key-int-only.ein: digits are a name: 1 vs 1
+TREE examples/ein-bugs/binding-key-nested-only.ein: digits are a name: 1 vs 1
+TREE examples/ein-bugs/binding-key-swapped.ein: digits are a name: 1 vs 1
+TREE examples/ein-bugs/int-goal-binding.ein: digits are a name: 8 vs 8
+REFUSED examples/ein-bugs/kwpair-below-the-filter.ein:22:18: (tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))
+      Parsing error at line 22 column 18. Repair sequences found: (+9 more)
+TREE examples/ein-bugs/mixed-type-hypothesis.ein: digits are a name: 1 vs 1
+REFUSED examples/ein-bugs/wrong-answers/bare-premise.ein:37:19: (rule a () :match _ :assert (r1 z))
+      Parsing error at line 37 column 19. Repair sequences found: (+2 more)
+REFUSED examples/ein-bugs/wrong-answers/claim-int-name-solve.ein:28:8: (holds "1")
+      Parsing error at line 28 column 8. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/claim-int-name.ein:32:8: (holds "1")
+      Parsing error at line 32 column 8. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/classes-int-name.ein:33:41: (rule b () :match (pick B) :assert (got "1"))
+      Parsing error at line 33 column 41. Repair sequences found:
+TREE examples/ein-bugs/wrong-answers/form-in-guard.ein: digits are a name: 1 vs 1
+TREE examples/ein-bugs/wrong-answers/guard-before-binder.ein: digits are a name: 1 vs 1
+REFUSED examples/ein-bugs/wrong-answers/kwpair-in-guard.ein:33:38: (rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit-eq ?x))
+      Parsing error at line 33 column 38. Repair sequences found:
+TREE examples/ein-bugs/wrong-answers/range-in-match.ein: digits are a name: 2 vs 2
+REFUSED examples/ein-bugs/wrong-answers/str-in-absent.ein:29:18: (holds a) (holds "b")
+      Parsing error at line 29 column 18. Repair sequences found: (+1 more)
+REFUSED examples/ein-bugs/wrong-answers/str-in-assert.ein:33:46: (rule s () :match (holds ?x) :assert (tag ?x "lbl"))
+      Parsing error at line 33 column 46. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/str-in-guard.ein:32:18: (holds a) (holds "b")
+      Parsing error at line 32 column 18. Repair sequences found: (+2 more)
+REFUSED examples/ein-bugs/wrong-answers/str-in-hrule.ein:29:47: (hrule h () :match (holds ?x) :assert (tag ?x "lbl"))
+      Parsing error at line 29 column 47. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/str-in-match.ein:36:18: (holds 1) (holds "1") (holds a) (holds "b")
+      Parsing error at line 36 column 18. Repair sequences found: (+2 more)
+REFUSED examples/ein-bugs/wrong-answers/wild-in-absent.ein:31:34: (rule z () :match (absent (holds _)) :assert (hit z))
+      Parsing error at line 31 column 34. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/wild-in-guard.ein:35:38: (rule e () :match (and (p ?x) (eq ?x _)) :assert (hit-eq ?x))
+      Parsing error at line 35 column 38. Repair sequences found: (+2 more)
+REFUSED examples/ein-bugs/wrong-answers/wild-in-head.ein:38:20: (rule w () :match (_ a) :assert (hit w))
+      Parsing error at line 38 column 20. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/wild-in-hrule.ein:28:30: (hrule h () :match (holds ?x _) :assert (tag ?x))
+      Parsing error at line 28 column 30. Repair sequences found:
+REFUSED examples/ein-bugs/wrong-answers/wild-in-match.ein:31:26: (rule w () :match (holds _) :assert (hit w))
+      Parsing error at line 31 column 26. Repair sequences found:
+TREE examples/features/05_stdlib_domain_elim.ein: digits are a name: 0 vs 0
+REFUSED examples/syntax/arg-kinds.ein:13:6: (r 7 "a string")
+      Parsing error at line 13 column 6. Repair sequences found: (+1 more)
+REFUSED examples/syntax/is-a-shapes.ein:14:7: (is-a ?x T)
+      Parsing error at line 14 column 7. Repair sequences found: (+1 more)
+REFUSED examples/syntax/negation.ein:14:6: (not plain)
+      Parsing error at line 14 column 6. Repair sequences found:
+TREE examples/syntax/relation-decls.ein: digits are a name: 7 vs 7
+REFUSED examples/syntax/unary-and-nary.ein:16:32: (quad a b c d :rule mk :using (x))
+      Parsing error at line 16 column 32. Repair sequences found: (+1 more)
+REFUSED examples/syntax/wrappers.ein:13:15: (facts (r a b :source "(1)"))
+      Parsing error at line 13 column 15. Repair sequences found: (+3 more)
+TREE stdlib/elim.ein: digits are a name: 0 vs 0
+TREE tests/stdlib/elim/01_domain_elimination.ein: digits are a name: 0 vs 0
+TREE tests/stdlib/elim/02_no_room_left.ein: digits are a name: 0 vs 0

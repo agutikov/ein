@@ -1,0 +1,9 @@
+;;; G-14: conclusions no fact can hold, in rules that never fire. `never` is
+;;; declared with no signature, so no fact of it exists and the blind
+;;; enumerator proposes none: no run reaches the three :asserts.
+(relation p Node) (relation q Node) (relation never)
+(p a)
+(rule r () :match (never ?x) :assert (q ?x :k v))
+(rule s () :match (never ?x) :assert (q _))
+(rule t () :match (never ?x) :assert ?x)
+(query :goal (p ?y))

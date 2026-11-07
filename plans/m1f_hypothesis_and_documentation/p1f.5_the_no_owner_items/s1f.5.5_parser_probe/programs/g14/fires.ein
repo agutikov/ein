@@ -1,0 +1,7 @@
+;;; G-14: never-fires.ein with one fact more, `(never a)`, so the rules fire.
+(relation p Node) (relation q Node) (relation never)
+(p a) (never a)
+(rule r () :match (never ?x) :assert (q ?x :k v))
+(rule s () :match (never ?x) :assert (q _))
+(rule t () :match (never ?x) :assert ?x)
+(query :goal (p ?y))

@@ -1,0 +1,10 @@
+;;; examples/syntax/wrappers.ein, written against S1f.5.5's final grammar.
+;;;
+;;; The three S1.7c.4 wrapper heads as ordinary fact heads with nested facts
+;;; as arguments. A nested fact takes no keyword (Q-M1e2.28), so the
+;;; `:source`, `:rule` and `:using` the inner facts carried, which the loader
+;;; dropped, are gone (S1f.5.11's default).
+
+(ontology (relation r T T) (is-a a T))
+(facts (r a b))
+(reasoning (r b c))

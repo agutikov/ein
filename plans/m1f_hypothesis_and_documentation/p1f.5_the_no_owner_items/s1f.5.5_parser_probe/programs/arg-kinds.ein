@@ -1,0 +1,14 @@
+;;; examples/syntax/arg-kinds.ein, written against S1f.5.5's final grammar.
+;;;
+;;; Every argument kind a fact can carry: a name, digits (a name, so `7` and
+;;; `07` are two), a name with connectors and decorators, what were the two
+;;; range literals (now plain names), a nested fact, and a stored negation as
+;;; a value. The string, the wildcard and the variable the fixture carried are
+;;; refused at the parse: `refused/fact-args.ein` holds them.
+
+(relation r T T)
+(r 7 07)
+(r 1..5 1..*)
+(r $x a-b_c.d)
+(r (nested a b) c)
+(r (not (nested a b)) c)

@@ -1,0 +1,474 @@
+# 390 files under examples,tests,stdlib,corpus
+<file does not read as balanced lists>  [1]
+    unbalanced                        1   examples/broken/unclosed_paren.ein
+config.keyword  [5]
+    :record-alternative-justifications      2   examples/syntax/config.ein, examples/zebra.ein
+    :lattice-sanity-check             1   examples/broken/load/config_bad_value.ein
+    :lattice-order                    1   examples/broken/load/config_retired_flag.ein
+    :nope                             1   examples/broken/load/config_unknown_flag.ein
+config.value  [5]
+    name                              5   examples/broken/load/config_bad_value.ein, examples/broken/load/config_retired_flag.ein, examples/broken/load/config_unknown_flag.ein
+fact.:rule  [3]
+    name                              3   examples/broken/load/derivation_cycle.ein, examples/syntax/unary-and-nary.ein
+fact.:source  [243]
+    string                          243   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+fact.:using  [3]
+    (name …)                          3   examples/broken/load/derivation_cycle.ein, examples/syntax/unary-and-nary.ein
+fact.:using/item  [5]
+    name                              3   examples/broken/load/derivation_cycle.ein, examples/syntax/unary-and-nary.ein
+    (name …)                          2   examples/broken/load/derivation_cycle.ein
+fact.arg  [4714]
+    name                           4543   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    digits                          105   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    (name …)                         35   corpus/fuzz_findings/binding-key-layout-swapped.ein, corpus/fuzz_findings/binding-key-layout.ein, corpus/fuzz_findings/kwpair-below-the-filter.ein
+    string                           18   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, examples/ein-bugs/activator-text-int-and-string.ein
+    (relation …)                      5   examples/syntax/relation-decls.ein, examples/syntax/wrappers.ein
+    range                             2   examples/syntax/arg-kinds.ein
+    _                                 2   examples/syntax/arg-kinds.ein, examples/syntax/is-a-shapes.ein
+    ?var                              2   examples/syntax/arg-kinds.ein, examples/syntax/is-a-shapes.ein
+    (model …)                         1   examples/broken/load/region_top_level.ein
+    -digits                           1   examples/ein-bugs/int-goal-binding.ein
+fact.arg/nested.arg  [59]
+    name                             56   corpus/fuzz_findings/binding-key-layout-swapped.ein, corpus/fuzz_findings/binding-key-layout.ein, corpus/fuzz_findings/kwpair-below-the-filter.ein
+    (name …)                          2   examples/broken/load/region_top_level.ein, examples/ein-bugs/wrong-answers/nested-fact-activator.ein
+    digits                            1   examples/syntax/relation-decls.ein
+fact.arg/nested.arg/nested.arg  [2]
+    name                              2   examples/broken/load/region_top_level.ein, examples/ein-bugs/wrong-answers/nested-fact-activator.ein
+fact.arg/nested.arg/nested.head  [2]
+    name                              2   examples/broken/load/region_top_level.ein, examples/ein-bugs/wrong-answers/nested-fact-activator.ein
+fact.arg/nested.head  [41]
+    name                             41   corpus/fuzz_findings/binding-key-layout-swapped.ein, corpus/fuzz_findings/binding-key-layout.ein, corpus/fuzz_findings/kwpair-below-the-filter.ein
+fact.arg/nested.kwpair  [19]
+    :derives (name …)                 6   corpus/fuzz_findings/kwpair-below-the-filter.ein, examples/ein-bugs/kwpair-below-the-filter.ein
+    :rule name                        5   corpus/fuzz_findings/kwpair-below-the-filter.ein, examples/ein-bugs/kwpair-below-the-filter.ein, examples/syntax/wrappers.ein
+    :using (name …)                   5   corpus/fuzz_findings/kwpair-below-the-filter.ein, examples/ein-bugs/kwpair-below-the-filter.ein, examples/syntax/wrappers.ein
+    :using (and …)                    2   corpus/fuzz_findings/kwpair-below-the-filter.ein, examples/ein-bugs/kwpair-below-the-filter.ein
+    :source string                    1   examples/syntax/wrappers.ein
+fact.head  [2720]
+    name                           2720   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+fact.keyword  [249]
+    :source                         243   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    :rule                             3   examples/broken/load/derivation_cycle.ein, examples/syntax/unary-and-nary.ein
+    :using                            3   examples/broken/load/derivation_cycle.ein, examples/syntax/unary-and-nary.ein
+form  [5161]
+    fact                           2720   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    relation                       1027   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    rule                            682   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    query                           216   corpus/fuzz_findings/d3-goal-row-order.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+    import                          162   examples/branching/12_typed_blind_solve.ein, examples/broken/load/import_alias_not_a_name.ein, examples/broken/load/import_as_and_symbols.ein
+    solve                           144   examples/branching/05_mini_zebra.ein, examples/branching/08_hypothesis_relation_whitelist.ein, examples/branching/09_hrule.ein
+    hrule                           104   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+    not                              46   examples/ein-bugs/nested-core.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/negative-only-declared.ein
+    not (stored negation)            46   examples/ein-bugs/nested-core.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/negative-only-declared.ein
+    macro                             7   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+    config                            5   examples/broken/load/config_bad_value.ein, examples/broken/load/config_retired_flag.ein, examples/broken/load/config_unknown_flag.ein
+    trace                             2   examples/syntax/trace-empty.ein, examples/syntax/trace-steps.ein
+hrule.:assert  [104]
+    (name …)                         87   corpus/fuzz_findings/fork-delta-order.ein, examples/branching/05_mini_zebra.ein, examples/branching/10_kill_cache_on.ein
+    (?var …)                         15   examples/branching/09_hrule.ein, examples/domain_elim/ab.ein, examples/domain_elim/b_branch.ein
+    (not …)                           2   corpus/fuzz_findings/hrule-reads-not.ein, examples/ein-bugs/nested-fact-hypothesis.ein
+hrule.:assert/not.arg  [2]
+    (name …)                          2   corpus/fuzz_findings/hrule-reads-not.ein, examples/ein-bugs/nested-fact-hypothesis.ein
+hrule.:assert/not.pattern.arg  [4]
+    ?var                              3   corpus/fuzz_findings/hrule-reads-not.ein, examples/ein-bugs/nested-fact-hypothesis.ein
+    name                              1   examples/ein-bugs/nested-fact-hypothesis.ein
+hrule.:assert/not.pattern.head  [2]
+    name                              2   corpus/fuzz_findings/hrule-reads-not.ein, examples/ein-bugs/nested-fact-hypothesis.ein
+hrule.:assert/pattern.arg  [135]
+    ?var                            129   corpus/fuzz_findings/fork-delta-order.ein, examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein
+    name                              5   examples/broken/load/rule_half_declarators.ein, examples/ein-bugs/complete-records-stale.ein, examples/ein-bugs/mixed-type-hypothesis.ein
+    string                            1   examples/ein-bugs/wrong-answers/str-in-hrule.ein
+hrule.:assert/pattern.head  [102]
+    name                             87   corpus/fuzz_findings/fork-delta-order.ein, examples/branching/05_mini_zebra.ein, examples/branching/10_kill_cache_on.ein
+    ?var                             15   examples/branching/09_hrule.ein, examples/domain_elim/ab.ein, examples/domain_elim/b_branch.ein
+hrule.:match  [157]
+    (name …)                        130   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+    (and …)                          26   corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein
+    (absent …)                        1   corpus/fuzz_findings/hrule-reads-not.ein
+hrule.:match/absent  [1]
+    (not …)                           1   corpus/fuzz_findings/hrule-reads-not.ein
+hrule.:match/absent.arity  [1]
+    1                                 1   corpus/fuzz_findings/hrule-reads-not.ein
+hrule.:match/absent/not.arg  [1]
+    (name …)                          1   corpus/fuzz_findings/hrule-reads-not.ein
+hrule.:match/absent/not.pattern.arg  [2]
+    ?var                              2   corpus/fuzz_findings/hrule-reads-not.ein
+hrule.:match/absent/not.pattern.head  [1]
+    name                              1   corpus/fuzz_findings/hrule-reads-not.ein
+hrule.:match/pattern.arg  [203]
+    ?var                            169   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+    name                             33   examples/broken/load/hrule_duplicate_name.ein, examples/ein-bugs/alive-empty-interlayer.ein, examples/ein-bugs/alive-empty-phase1.ein
+    _                                 1   examples/ein-bugs/wrong-answers/wild-in-hrule.ein
+hrule.:match/pattern.head  [130]
+    name                            130   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+hrule.:why  [36]
+    string                           36   corpus/fuzz_findings/fork-delta-order.ein, examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein
+hrule.keyword  [243]
+    :assert                         104   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+    :match                          103   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+    :why                             36   corpus/fuzz_findings/fork-delta-order.ein, examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein
+hrule.name  [104]
+    name                            104   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/05_mini_zebra.ein
+hrule.params  [104]
+    ()                               84   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/hrule-reads-not.ein, examples/branching/15_lookahead_two_step_on.ein
+    (?var …)                         20   examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein, examples/branching/10_kill_cache_on.ein
+hrule.params/item  [50]
+    ?var                             50   examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein, examples/branching/10_kill_cache_on.ein
+import.:as  [3]
+    name                              2   examples/broken/load/import_as_and_symbols.ein, examples/broken/load/reserved_open_aliased.ein
+    string                            1   examples/broken/load/import_alias_not_a_name.ein
+import.:symbols  [154]
+    (name …)                        118   examples/broken/load/import_conflicting_definitions.ein, examples/broken/load/import_symbols_not_provided.ein, examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein
+    (forall …)                       26   examples/branching/12_typed_blind_solve.ein, examples/broken/load/import_as_and_symbols.ein, examples/domain_elim/ab.ein
+    (unknown …)                       7   tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/22_symmetric_negative.ein, tests/stdlib/macro/02_unknown.ein
+    ()                                1   examples/broken/load/import_symbols_empty.ein
+    name                              1   examples/broken/load/import_symbols_not_a_list.ein
+    (open …)                          1   examples/broken/load/reserved_open_symbols.ein
+import.:symbols/item  [307]
+    name                            307   examples/branching/12_typed_blind_solve.ein, examples/broken/load/import_as_and_symbols.ein, examples/broken/load/import_conflicting_definitions.ein
+import.keyword  [157]
+    :symbols                        154   examples/branching/12_typed_blind_solve.ein, examples/broken/load/import_as_and_symbols.ein, examples/broken/load/import_conflicting_definitions.ein
+    :as                               3   examples/broken/load/import_alias_not_a_name.ein, examples/broken/load/import_as_and_symbols.ein, examples/broken/load/reserved_open_aliased.ein
+import.module  [162]
+    name                            162   examples/branching/12_typed_blind_solve.ein, examples/broken/load/import_alias_not_a_name.ein, examples/broken/load/import_as_and_symbols.ein
+macro.body  [9]
+    (name …)                          5   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+    (absent …)                        3   stdlib/macro.ein
+    (and …)                           1   stdlib/macro.ein
+macro.body/absent  [5]
+    ?var                              2   stdlib/macro.ein
+    (and …)                           1   stdlib/macro.ein
+    (absent …)                        1   stdlib/macro.ein
+    (not …)                           1   stdlib/macro.ein
+macro.body/absent.arity  [3]
+    1                                 3   stdlib/macro.ein
+macro.body/absent/absent  [1]
+    ?var                              1   stdlib/macro.ein
+macro.body/absent/absent.arity  [1]
+    1                                 1   stdlib/macro.ein
+macro.body/absent/not.arg  [1]
+    ?var                              1   stdlib/macro.ein
+macro.body/pattern.arg  [6]
+    ?var                              6   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+macro.body/pattern.head  [5]
+    name                              5   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+macro.name  [7]
+    name                              7   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+macro.params  [7]
+    (?var …)                          7   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+macro.params/item  [10]
+    ?var                             10   examples/broken/load/macro_arity_mismatch.ein, examples/broken/load/macro_duplicate.ein, examples/broken/load/macro_reserved_name.ein
+notfact.:source  [1]
+    string                            1   examples/syntax/negation.ein
+notfact.arg  [46]
+    (name …)                         45   examples/ein-bugs/nested-core.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/negative-only-declared.ein
+    name                              1   examples/syntax/negation.ein
+notfact.arg/nested.arg  [86]
+    name                             86   examples/ein-bugs/nested-core.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/negative-only-declared.ein
+notfact.arg/nested.head  [45]
+    name                             45   examples/ein-bugs/nested-core.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/negative-only-declared.ein
+notfact.keyword  [1]
+    :source                           1   examples/syntax/negation.ein
+query.:expct  [1]
+    (model …)                         1   examples/broken/load/expect_unknown_keyword.ein
+query.:expect  [11]
+    (model …)                         7   examples/broken/load/expect_is_a_pattern.ein, examples/broken/load/expect_omits_the_goal.ein, examples/broken/load/expect_unknown_relation.ein
+    (or …)                            4   examples/broken/load/query_class_twice.ein, examples/features/11_expect_ambiguity.ein, tests/region/08_query_classes.ein
+query.:expect/model.fact.arg  [12]
+    name                             10   examples/broken/load/expect_is_a_pattern.ein, examples/broken/load/expect_omits_the_goal.ein, examples/broken/load/expect_unknown_relation.ein
+    ?var                              1   examples/broken/load/expect_is_a_pattern.ein
+    digits                            1   examples/ein-bugs/wrong-answers/claim-int-name.ein
+query.:expect/model.fact.head  [8]
+    name                              8   examples/broken/load/expect_is_a_pattern.ein, examples/broken/load/expect_omits_the_goal.ein, examples/broken/load/expect_unknown_relation.ein
+query.:expect/model.item  [8]
+    (name …)                          8   examples/broken/load/expect_is_a_pattern.ein, examples/broken/load/expect_omits_the_goal.ein, examples/broken/load/expect_unknown_relation.ein
+query.:expect/or.item  [8]
+    (model …)                         8   examples/broken/load/query_class_twice.ein, examples/features/11_expect_ambiguity.ein, tests/region/08_query_classes.ein
+query.:expect/or/model.fact.arg  [21]
+    name                             21   examples/broken/load/query_class_twice.ein, examples/features/11_expect_ambiguity.ein, tests/region/08_query_classes.ein
+query.:expect/or/model.fact.head  [11]
+    name                             11   examples/broken/load/query_class_twice.ein, examples/features/11_expect_ambiguity.ein, tests/region/08_query_classes.ein
+query.:expect/or/model.item  [11]
+    (name …)                         11   examples/broken/load/query_class_twice.ein, examples/features/11_expect_ambiguity.ein, tests/region/08_query_classes.ein
+query.:goal  [257]
+    (name …)                        236   corpus/fuzz_findings/d3-goal-row-order.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+    (and …)                          11   examples/branching/05_mini_zebra.ein, examples/branching/10_kill_cache_on.ein, examples/branching/11_kill_cache_off.ein
+    (not …)                           6   examples/saturation/hypothesis-contradiction/coloc-disproved.ein, examples/saturation/hypothesis-contradiction/next-to-disproved.ein, examples/saturation/hypothesis-contradiction/right-of-disproved.ein
+    (?var …)                          3   examples/ein-bugs/query-goal-free-head-unsat.ein, examples/ein-bugs/query-goal-free-head.ein, examples/features/02_star_in_identifiers.ein
+    :kw                               1   examples/broken/keyword_as_value.ein
+query.:goal-text  [7]
+    string                            7   examples/ein-bugs/zebra2-bad.ein, examples/syntax/query-full.ein, examples/zebra.ein
+query.:goal/not.arg  [6]
+    (name …)                          6   examples/saturation/hypothesis-contradiction/coloc-disproved.ein, examples/saturation/hypothesis-contradiction/next-to-disproved.ein, examples/saturation/hypothesis-contradiction/right-of-disproved.ein
+query.:goal/not.pattern.arg  [12]
+    name                             12   examples/saturation/hypothesis-contradiction/coloc-disproved.ein, examples/saturation/hypothesis-contradiction/next-to-disproved.ein, examples/saturation/hypothesis-contradiction/right-of-disproved.ein
+query.:goal/not.pattern.head  [6]
+    name                              6   examples/saturation/hypothesis-contradiction/coloc-disproved.ein, examples/saturation/hypothesis-contradiction/next-to-disproved.ein, examples/saturation/hypothesis-contradiction/right-of-disproved.ein
+query.:goal/pattern.arg  [427]
+    ?var                            329   corpus/fuzz_findings/d3-goal-row-order.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+    name                             98   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+query.:goal/pattern.head  [239]
+    name                            236   corpus/fuzz_findings/d3-goal-row-order.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+    ?var                              3   examples/ein-bugs/query-goal-free-head-unsat.ein, examples/ein-bugs/query-goal-free-head.ein, examples/features/02_star_in_identifiers.ein
+query.:no-hypothesis  [1]
+    (name …)                          1   examples/broken/load/query_lattice_keyword.ein
+query.:over  [3]
+    name                              3   examples/broken/load/query_over_unknown.ein, examples/features/11_expect_ambiguity.ein, tests/region/09_query_over_maximal.ein
+query.keyword  [239]
+    :goal                           216   corpus/fuzz_findings/d3-goal-row-order.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+    :expect                          11   examples/broken/load/expect_is_a_pattern.ein, examples/broken/load/expect_omits_the_goal.ein, examples/broken/load/expect_unknown_relation.ein
+    :goal-text                        7   examples/ein-bugs/zebra2-bad.ein, examples/syntax/query-full.ein, examples/zebra.ein
+    :over                             3   examples/broken/load/query_over_unknown.ein, examples/features/11_expect_ambiguity.ein, tests/region/09_query_over_maximal.ein
+    :expct                            1   examples/broken/load/expect_unknown_keyword.ein
+    :no-hypothesis                    1   examples/broken/load/query_lattice_keyword.ein
+relation.:why  [201]
+    string                          201   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/ein-bugs/alt-cap-core-reordered.ein
+relation.keyword  [201]
+    :why                            201   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/ein-bugs/alt-cap-core-reordered.ein
+relation.name  [1026]
+    name                           1026   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+relation.signature  [1542]
+    name                           1541   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    (name …)                          1   examples/broken/load/relation_malformed.ein
+rule.:assert  [796]
+    (name …)                        362   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    (false …)                       178   corpus/fuzz_findings/fork-delta-order.ein, corpus/fuzz_findings/unsat-core-id-space.ein, examples/branching/01_saturate_only.ein
+    (?var …)                         96   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    (not …)                          95   corpus/fuzz_findings/d3-unsat-core.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+    (and …)                          37   examples/broken/load/open_mixed_assert.ein, examples/domain_elim/ab.ein, examples/domain_elim/b_branch.ein
+    (open …)                         28   examples/broken/load/open_arity.ein, examples/broken/load/open_compound_witness.ein, examples/broken/load/open_mixed_assert.ein
+rule.:assert/not.arg  [95]
+    (?var …)                         84   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    (name …)                          8   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein, examples/ein-bugs/unbound-assert-var.ein
+    ?var                              3   examples/saturation/hypothesis-contradiction/coloc-disproved.ein, examples/saturation/hypothesis-contradiction/next-to-disproved.ein, examples/saturation/hypothesis-contradiction/right-of-disproved.ein
+rule.:assert/not.pattern.arg  [182]
+    ?var                            182   corpus/fuzz_findings/d3-unsat-core.ein, examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein
+rule.:assert/not.pattern.head  [92]
+    ?var                             84   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    name                              8   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein, examples/ein-bugs/unbound-assert-var.ein
+rule.:assert/pattern.arg  [993]
+    ?var                            895   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    name                             93   examples/broken/load/open_in_match.ein, examples/broken/load/open_mixed_assert.ein, examples/ein-bugs/alive-empty-interlayer.ein
+    (?var …)                          2   examples/broken/load/open_arity.ein
+    string                            2   examples/ein-bugs/wrong-answers/classes-int-name.ein, examples/ein-bugs/wrong-answers/str-in-assert.ein
+    digits                            1   examples/ein-bugs/wrong-answers/classes-int-name.ein
+rule.:assert/pattern.head  [666]
+    name                            568   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    ?var                             98   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+rule.:assert/pattern.nested.arg  [4]
+    ?var                              4   examples/broken/load/open_arity.ein
+rule.:match  [1880]
+    (name …)                        671   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    (and …)                         407   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    (?var …)                        369   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    (absent …)                      164   corpus/fuzz_findings/d3-unsat-core.ein, examples/branching/12_typed_blind_solve.ein, examples/branching/13_lookahead_naf_world.ein
+    (neq …)                          98   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    (relation …)                     69   examples/branching/12_typed_blind_solve.ein, examples/broken/load/open_arity.ein, examples/broken/load/open_compound_witness.ein
+    (not …)                          36   corpus/fuzz_findings/unsat-core-id-space.ein, examples/ein-bugs/alive-empty-interlayer.ein, examples/ein-bugs/alive-empty-phase1.ein
+    (forall …)                       30   examples/branching/12_typed_blind_solve.ein, examples/broken/load/unimported_std_macro.ein, examples/domain_elim/ab.ein
+    (eq …)                           12   examples/broken/compile/eq_arity_high.ein, examples/broken/compile/eq_arity_low.ein, examples/ein-bugs/wrong-answers/core-activator-guard-only.ein
+    (unknown …)                      12   examples/features/04_open.ein, tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein
+    (or …)                            7   corpus/fuzz_findings/unsat-core-id-space.ein, examples/broken/compile/nested_or.ein, examples/ein-bugs/unbound-assert-var.ein
+    _                                 2   examples/ein-bugs/wrong-answers/bare-premise.ein
+    (open …)                          1   examples/broken/load/open_in_match.ein
+    name                              1   examples/ein-bugs/wrong-answers/bare-premise.ein
+    (_ …)                             1   examples/ein-bugs/wrong-answers/wild-in-head.ein
+rule.:match.kwpair-in-connective  [1]
+    :k                                1   examples/ein-bugs/wrong-answers/kwpair-in-guard.ein
+rule.:match/absent  [320]
+    (name …)                        108   examples/branching/12_typed_blind_solve.ein, examples/branching/13_lookahead_naf_world.ein, examples/branching/14_lookahead_unjudgeable.ein
+    (?var …)                         97   examples/broken/load/open_arity.ein, examples/broken/load/open_compound_witness.ein, examples/broken/load/open_mixed_assert.ein
+    (and …)                          76   examples/branching/14_lookahead_unjudgeable.ein, examples/broken/load/open_arity.ein, examples/broken/load/open_compound_witness.ein
+    (neq …)                          33   examples/ein-bugs/zebra2-bad.ein, examples/ein-bugs/zebra2-hints.ein, examples/saturation/square-unique/corner-house.ein
+    (not …)                           3   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein, examples/features/01_not_and_absent.ein
+    (absent …)                        2   examples/branching/14_lookahead_unjudgeable.ein, tests/stdlib/macro/01_forall.ein
+    ?var                              1   examples/broken/load/empty_absent.ein
+rule.:match/absent.arity  [164]
+    1                               162   corpus/fuzz_findings/d3-unsat-core.ein, examples/branching/12_typed_blind_solve.ein, examples/branching/13_lookahead_naf_world.ein
+    2                                 1   examples/broken/compile/absent_arity_high.ein
+    0                                 1   examples/broken/compile/absent_arity_zero.ein
+rule.:match/absent/absent  [4]
+    (name …)                          2   examples/branching/14_lookahead_unjudgeable.ein, tests/stdlib/macro/01_forall.ein
+    (and …)                           1   examples/branching/14_lookahead_unjudgeable.ein
+    (absent …)                        1   examples/branching/14_lookahead_unjudgeable.ein
+rule.:match/absent/absent.arity  [2]
+    1                                 2   examples/branching/14_lookahead_unjudgeable.ein, tests/stdlib/macro/01_forall.ein
+rule.:match/absent/absent/absent  [1]
+    (name …)                          1   examples/branching/14_lookahead_unjudgeable.ein
+rule.:match/absent/absent/absent.arity  [1]
+    1                                 1   examples/branching/14_lookahead_unjudgeable.ein
+rule.:match/absent/absent/absent/pattern.arg  [1]
+    ?var                              1   examples/branching/14_lookahead_unjudgeable.ein
+rule.:match/absent/absent/absent/pattern.head  [1]
+    name                              1   examples/branching/14_lookahead_unjudgeable.ein
+rule.:match/absent/absent/pattern.arg  [2]
+    ?var                              2   examples/branching/14_lookahead_unjudgeable.ein, tests/stdlib/macro/01_forall.ein
+rule.:match/absent/absent/pattern.head  [2]
+    name                              2   examples/branching/14_lookahead_unjudgeable.ein, tests/stdlib/macro/01_forall.ein
+rule.:match/absent/guard.arg  [66]
+    ?var                             66   examples/ein-bugs/zebra2-bad.ein, examples/ein-bugs/zebra2-hints.ein, examples/saturation/square-unique/corner-house.ein
+rule.:match/absent/guard.arity  [33]
+    2                                33   examples/ein-bugs/zebra2-bad.ein, examples/ein-bugs/zebra2-hints.ein, examples/saturation/square-unique/corner-house.ein
+rule.:match/absent/not.arg  [3]
+    (name …)                          3   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein, examples/features/01_not_and_absent.ein
+rule.:match/absent/not.pattern.arg  [6]
+    ?var                              4   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein, examples/features/01_not_and_absent.ein
+    name                              2   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein
+rule.:match/absent/not.pattern.head  [3]
+    name                              3   corpus/fuzz_findings/d3-unsat-core.ein, examples/ein-bugs/d3-unsat-core.ein, examples/features/01_not_and_absent.ein
+rule.:match/absent/pattern.arg  [347]
+    ?var                            324   examples/branching/12_typed_blind_solve.ein, examples/branching/13_lookahead_naf_world.ein, examples/branching/14_lookahead_unjudgeable.ein
+    name                             21   examples/ein-bugs/alive-empty-interlayer.ein, examples/features/08_disjunct_guard_sets.ein, examples/lattice/06_friends_tables.ein
+    string                            1   examples/ein-bugs/wrong-answers/str-in-absent.ein
+    _                                 1   examples/ein-bugs/wrong-answers/wild-in-absent.ein
+rule.:match/absent/pattern.head  [205]
+    name                            108   examples/branching/12_typed_blind_solve.ein, examples/branching/13_lookahead_naf_world.ein, examples/branching/14_lookahead_unjudgeable.ein
+    ?var                             97   examples/broken/load/open_arity.ein, examples/broken/load/open_compound_witness.ein, examples/broken/load/open_mixed_assert.ein
+rule.:match/forall  [90]
+    (not …)                          26   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein
+    (name …)                         22   examples/branching/12_typed_blind_solve.ein, examples/broken/load/unimported_std_macro.ein, examples/domain_elim/ab.ein
+    (and …)                          15   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein
+    (neq …)                          15   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein
+    (?var …)                         12   examples/features/12_expect_false.ein, stdlib/algebra.ein, stdlib/bijection.ein
+rule.:match/forall.arity  [30]
+    3                                30   examples/branching/12_typed_blind_solve.ein, examples/broken/load/unimported_std_macro.ein, examples/domain_elim/ab.ein
+rule.:match/forall/guard.arg  [30]
+    ?var                             30   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein
+rule.:match/forall/guard.arity  [15]
+    2                                15   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein
+rule.:match/forall/not.arg  [26]
+    (?var …)                         24   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/zebra2-hints.ein
+    (name …)                          2   examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/forall-core-false.ein
+rule.:match/forall/not.pattern.arg  [52]
+    ?var                             52   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/wrong-answers/forall-core-elim.ein
+rule.:match/forall/not.pattern.head  [26]
+    ?var                             24   examples/branching/12_typed_blind_solve.ein, examples/domain_elim/ab.ein, examples/ein-bugs/zebra2-hints.ein
+    name                              2   examples/ein-bugs/wrong-answers/forall-core-elim.ein, examples/ein-bugs/wrong-answers/forall-core-false.ein
+rule.:match/forall/pattern.arg  [63]
+    ?var                             61   examples/branching/12_typed_blind_solve.ein, examples/broken/load/unimported_std_macro.ein, examples/domain_elim/ab.ein
+    name                              2   examples/features/12_expect_false.ein
+rule.:match/forall/pattern.head  [34]
+    name                             22   examples/branching/12_typed_blind_solve.ein, examples/broken/load/unimported_std_macro.ein, examples/domain_elim/ab.ein
+    ?var                             12   examples/features/12_expect_false.ein, stdlib/algebra.ein, stdlib/bijection.ein
+rule.:match/guard.arg  [219]
+    ?var                            204   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    name                              7   examples/broken/compile/eq_arity_high.ein, examples/ein-bugs/wrong-answers/core-activator-guard-only.ein, examples/ein-bugs/wrong-answers/guard-before-binder.ein
+    _                                 4   examples/ein-bugs/wrong-answers/wild-in-guard.ein
+    (name …)                          2   examples/ein-bugs/wrong-answers/form-in-guard.ein
+    string                            2   examples/ein-bugs/wrong-answers/str-in-guard.ein
+rule.:match/guard.arity  [110]
+    2                               107   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    1                                 2   examples/broken/compile/eq_arity_low.ein, examples/ein-bugs/wrong-answers/kwpair-in-guard.ein
+    3                                 1   examples/broken/compile/eq_arity_high.ein
+rule.:match/not.arg  [36]
+    (?var …)                         24   examples/ein-bugs/zebra2-bad.ein, examples/zebra2-hints.ein, examples/zebra2-minus-15-obligations.ein
+    (name …)                         12   corpus/fuzz_findings/unsat-core-id-space.ein, examples/ein-bugs/alive-empty-interlayer.ein, examples/ein-bugs/alive-empty-phase1.ein
+rule.:match/not.pattern.arg  [65]
+    ?var                             57   corpus/fuzz_findings/unsat-core-id-space.ein, examples/ein-bugs/nested-core.ein, examples/ein-bugs/unsat-core-id-space.ein
+    name                              8   examples/ein-bugs/alive-empty-interlayer.ein, examples/ein-bugs/alive-empty-phase1.ein, examples/ein-bugs/complete-records-stale.ein
+rule.:match/not.pattern.head  [36]
+    ?var                             24   examples/ein-bugs/zebra2-bad.ein, examples/zebra2-hints.ein, examples/zebra2-minus-15-obligations.ein
+    name                             12   corpus/fuzz_findings/unsat-core-id-space.ein, examples/ein-bugs/alive-empty-interlayer.ein, examples/ein-bugs/alive-empty-phase1.ein
+rule.:match/pattern.arg  [1976]
+    ?var                           1830   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    name                            128   corpus/fuzz_findings/d3-unsat-core.ein, corpus/fuzz_findings/fork-delta-order.ein, examples/branching/15_lookahead_two_step_on.ein
+    digits                           13   examples/branching/12_typed_blind_solve.ein, examples/ein-bugs/wrong-answers/str-in-match.ein, stdlib/elim.ein
+    (?var …)                          2   examples/ein-bugs/wrong-answers/nested-fact-activator.ein, examples/ein-bugs/wrong-answers/nested-unbound-head.ein
+    range                             1   examples/ein-bugs/wrong-answers/range-in-match.ein
+    string                            1   examples/ein-bugs/wrong-answers/str-in-match.ein
+    _                                 1   examples/ein-bugs/wrong-answers/wild-in-match.ein
+rule.:match/pattern.head  [1113]
+    name                            741   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    ?var                            371   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    _                                 1   examples/ein-bugs/wrong-answers/wild-in-head.ein
+rule.:match/pattern.nested.arg  [2]
+    name                              2   examples/ein-bugs/wrong-answers/nested-fact-activator.ein, examples/ein-bugs/wrong-answers/nested-unbound-head.ein
+rule.:match/unknown  [12]
+    (name …)                         12   examples/features/04_open.ein, tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein
+rule.:match/unknown/pattern.arg  [24]
+    name                             20   tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein, tests/stdlib/algebra/22_symmetric_negative.ein
+    ?var                              4   examples/features/04_open.ein, tests/stdlib/macro/02_unknown.ein
+rule.:match/unknown/pattern.head  [12]
+    name                             12   examples/features/04_open.ein, tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein
+rule.:priority  [475]
+    digits                          475   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+rule.:why  [484]
+    string                          484   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+rule.keyword  [2320]
+    :match                          681   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    :assert                         680   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+    :why                            484   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+    :priority                       475   examples/branching/01_saturate_only.ein, examples/branching/02_one_dead_one_alive.ein, examples/branching/03_five_hyps_one_alive.ein
+rule.name  [682]
+    name                            682   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+rule.params  [681]
+    ()                              379   corpus/fuzz_findings/d3-goal-row-order.ein, corpus/fuzz_findings/d3-unsat-core.ein, corpus/fuzz_findings/fork-delta-order.ein
+    (?var …)                        302   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+rule.params/item  [718]
+    ?var                            718   corpus/fuzz_findings/activator-text-key-swapped.ein, corpus/fuzz_findings/activator-text-key.ein, corpus/fuzz_findings/binding-key-layout-swapped.ein
+solve.:expect  [102]
+    (region …)                       78   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/broken/load/region_merged_unlisted.ein
+    (false …)                        24   examples/ein-bugs/alt-cap-core-reordered.ein, examples/ein-bugs/alt-cap-core.ein, examples/ein-bugs/wrong-answers/alt-cap-shared.ein
+solve.:expect/merged.item  [20]
+    (model …)                        19   examples/broken/load/region_merged_unlisted.ein, tests/region/02_merged_single.ein, tests/region/03_merged_or.ein
+    (or …)                            1   tests/region/03_merged_or.ein
+solve.:expect/owing.item  [15]
+    (model …)                        15   examples/broken/load/region_owing_with_states.ein, tests/region/04_owing.ein, tests/stdlib/algebra/23_total_owed.ein
+solve.:expect/region.item  [191]
+    (model …)                       166   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/broken/load/region_merged_unlisted.ein
+    (owing …)                        15   examples/broken/load/region_owing_with_states.ein, tests/region/04_owing.ein, tests/stdlib/algebra/23_total_owed.ein
+    (merged …)                       10   examples/broken/load/region_merged_unlisted.ein, tests/region/02_merged_single.ein, tests/region/03_merged_or.ein
+solve.:expect/region/model.fact.arg  [898]
+    name                            778   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/broken/load/region_merged_unlisted.ein
+    digits                           95   examples/ein-bugs/activator-text-int-and-string.ein, examples/ein-bugs/activator-text-int-only.ein, examples/ein-bugs/activator-text-string-only.ein
+    (name …)                         15   examples/features/10_expect.ein, tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein
+    string                           10   examples/ein-bugs/activator-text-int-and-string.ein, examples/ein-bugs/activator-text-int-only.ein, examples/ein-bugs/activator-text-string-only.ein
+solve.:expect/region/model.fact.head  [513]
+    name                            513   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/broken/load/region_merged_unlisted.ein
+solve.:expect/region/model.fact.nested.arg  [30]
+    name                             30   examples/features/10_expect.ein, tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein
+solve.:expect/region/model.item  [498]
+    (name …)                        483   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/broken/load/region_merged_unlisted.ein
+    (not …)                          15   examples/features/10_expect.ein, tests/stdlib/algebra/07_schroder.ein, tests/stdlib/algebra/18_totality_open_world.ein
+solve.:hrules  [22]
+    (name …)                         22   examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein, examples/branching/10_kill_cache_on.ein
+solve.:hrules/item  [113]
+    (name …)                         70   examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein, examples/branching/10_kill_cache_on.ein
+    name                             43   examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein, examples/branching/10_kill_cache_on.ein
+solve.:hypothesis-relations  [2]
+    (name …)                          2   examples/branching/08_hypothesis_relation_whitelist.ein, examples/features/09_adjacent_via_same_house.ein
+solve.:hypothesis-relations/item  [3]
+    name                              3   examples/branching/08_hypothesis_relation_whitelist.ein, examples/features/09_adjacent_via_same_house.ein
+solve.:no-hypothesis  [95]
+    (name …)                         95   examples/broken/load/solve_twice.ein, examples/ein-bugs/alive-set-fresh-name-declared.ein, examples/ein-bugs/alive-set-fresh-name.ein
+solve.:no-hypothesis/item  [239]
+    name                            239   examples/broken/load/solve_twice.ein, examples/ein-bugs/alive-set-fresh-name-declared.ein, examples/ein-bugs/alive-set-fresh-name.ein
+solve.:no-hypothesys  [1]
+    (name …)                          1   examples/broken/load/solve_unknown_keyword.ein
+solve.:no-hypothesys/item  [1]
+    name                              1   examples/broken/load/solve_unknown_keyword.ein
+solve.keyword  [222]
+    :expect                         102   examples/branching/15_lookahead_two_step_on.ein, examples/branching/16_lookahead_two_step_off.ein, examples/broken/load/region_merged_unlisted.ein
+    :no-hypothesis                   95   examples/broken/load/solve_twice.ein, examples/ein-bugs/alive-set-fresh-name-declared.ein, examples/ein-bugs/alive-set-fresh-name.ein
+    :hrules                          22   examples/branching/05_mini_zebra.ein, examples/branching/09_hrule.ein, examples/branching/10_kill_cache_on.ein
+    :hypothesis-relations             2   examples/branching/08_hypothesis_relation_whitelist.ein, examples/features/09_adjacent_via_same_house.ein
+    :no-hypothesys                    1   examples/broken/load/solve_unknown_keyword.ein
+top-level  [1]
+    name                              1   examples/broken/bare_top_level_atom.ein
+trace.event  [4]
+    (name …)                          4   examples/syntax/trace-steps.ein
+trace.event.word  [4]
+    step                              4   examples/syntax/trace-steps.ein
+trace.step.:derives  [3]
+    (name …)                          3   examples/syntax/trace-steps.ein
+trace.step.:rule  [2]
+    name                              2   examples/syntax/trace-steps.ein
+trace.step.:using  [3]
+    (name …)                          2   examples/syntax/trace-steps.ein
+    (and …)                           1   examples/syntax/trace-steps.ein
+trace.step.keyword  [8]
+    :using                            3   examples/syntax/trace-steps.ein
+    :derives                          3   examples/syntax/trace-steps.ein
+    :rule                             2   examples/syntax/trace-steps.ein
+trace.step.positional  [4]
+    name                              4   examples/syntax/trace-steps.ein

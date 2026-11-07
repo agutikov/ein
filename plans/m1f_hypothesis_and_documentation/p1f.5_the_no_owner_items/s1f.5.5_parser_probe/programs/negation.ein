@@ -1,0 +1,11 @@
+;;; examples/syntax/negation.ein, written against S1f.5.5's final grammar.
+;;;
+;;; Stored negation: over a binary fact, a unary one, a nullary one, and one
+;;; carrying a `:source`. `(not plain)`, a negation of a bare name, is refused
+;;; at the parse: what `not` negates is a fact, and the nullary fact is
+;;; `(plain)`.
+
+(not (r a b))
+(not (u a))
+(not (plain))
+(not (r a b) :source "(9)")

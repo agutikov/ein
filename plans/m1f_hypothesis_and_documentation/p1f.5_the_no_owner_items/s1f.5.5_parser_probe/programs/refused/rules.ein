@@ -1,0 +1,11 @@
+;;; Rule shapes the final grammar refuses, one line each.
+(relation p T) (relation q T) (relation hit T)
+(rule r1 () :match (and) :assert (hit a))
+(rule r2 () :match (and (p ?x) (absent)) :assert (hit ?x))
+(rule r3 () :match (and (p ?x) (eq ?x)) :assert (hit ?x))
+(rule r4 () :match (p ?x :where (neq ?x a)) :assert (hit ?x))
+(rule r5 () :match (p ?x) :assert (and (open ?R) (hit ?x)))
+(rule r6 () :match (p ?x) :assert (hit ?x) :priority high)
+(rule absent () :match (p ?x) :assert (hit ?x))
+(config :enable-path-nogoods true)
+(query :goal (p ?x) :no-hypothesis (p))

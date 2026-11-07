@@ -1,0 +1,10 @@
+;;; What the five syntax fixtures wrote that the final grammar refuses, one
+;;; line each, so that one run reports every error recovery reaches.
+(relation r T T)
+(r 7 "a string")
+(r _ ?x)
+(is-a ?x T)
+(is-a _ T)
+(not plain)
+(quad a b c d :rule mk :using (x))
+(facts (r a b :source "(1)"))

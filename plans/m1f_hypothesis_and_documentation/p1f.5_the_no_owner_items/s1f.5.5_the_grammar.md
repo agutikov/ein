@@ -2,21 +2,24 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.5**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 8.5 days, to be re-taken after step 1.
-- One day for the census.
-- One day for the grammar on paper and the real programs.
+**Estimate:** 10 days, re-taken at step 1 on 2026-11-08 ([the census § The
+estimate](s1f.5.5_census.md#the-estimate-re-taken)); it was 8.5.
+- One day for the census. Done.
+- One day for the grammar on paper and the real programs. Done, with the builder that makes today's AST.
 - Two days for the generated parser, beside the old one, and the swap.
-- One day for recovery: the patched `lrpar`, its budget and its tests (F11).
-- One day for the grammar-pages test, the loader's refusals and the error text.
+- A day and a quarter for recovery: the patched `lrpar`, its budget and its tests (F11).
+- Two days for the grammar-pages test, the loader's refusals and the error text: 67 refusal sites move.
 - One day for the nesting limit and the tests that move.
 - Half a day for `--diff-models`, which reads its file through the parser (S-15).
-- One day for the pages.
+- A day and a quarter for the pages.
 
 **Status:** specified 2026-11-06 on the user's instruction of that day; extended 2026-11-07 with the
 user's name rule and instruction to generate the parser
 ([Q-M1e2.25](../../m1e2_correctness/open_questions.md#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it)).
-**Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
-moved. **The generator is grmtools, ruled by the user on 2026-11-07** for its features
+**Steps 1 and 2 done on 2026-11-08, on the user's go-ahead of that day; stopped there, to show the user
+before any edit**: the census is [`s1f.5.5_census.md`](s1f.5.5_census.md), and the final grammar, the
+real programs with their answers and the two questions are [`s1f.5.5_paper_grammar.md`](s1f.5.5_paper_grammar.md).
+No engine code, test, golden or fixture has moved. **The generator is grmtools, ruled by the user on 2026-11-07** for its features
 ([§ The generator](#the-generator-grmtools-ruled)), **with its error recovery on, ruled the same day**: this
 stage makes recovery deterministic first, with a patch to `lrpar` ([F11](#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
 **Depends on:** the user's choice of generator and rulings on what each position holds. Its steps 1 and 2
@@ -430,7 +433,10 @@ Each goes to the user with real programs, not in this stage's prose:
   unbound-variable part is ruled: refused at load, by
   [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) (F13).
 - **The 34 files** the draft refuses that today's parser accepts: which stay as refusal fixtures, and which
-  are rewritten.
+  are rewritten. Re-taken at step 1: the final grammar refuses 55, the draft's 34 and 20 refusal fixtures
+  whose refusal it takes over from the loader, and one syntax fixture
+  ([Q2](s1f.5.5_paper_grammar.md#q2--the-55-files-the-grammar-refuses-that-todays-parser-accepts)).
+  G-14 is [Q1](s1f.5.5_paper_grammar.md#q1--g-14-with-assert-checked-by-the-grammar-is-a-bad-conclusion-that-never-fires-refused).
 
 ## The method
 

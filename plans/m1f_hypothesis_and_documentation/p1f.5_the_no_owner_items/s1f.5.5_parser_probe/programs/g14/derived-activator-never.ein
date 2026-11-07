@@ -1,0 +1,7 @@
+;;; derived-activator.ein without `(item (a b))`: no node derives the
+;;; activator, so no run meets the parameter bound to a fact.
+(relation box Node) (relation hit Node) (relation item Node)
+(box (a b))
+(rule r (?R) :match (box (?R b)) :assert (hit z))
+(rule mk () :match (item ?f) :assert (r ?f))
+(query :goal (hit ?x))

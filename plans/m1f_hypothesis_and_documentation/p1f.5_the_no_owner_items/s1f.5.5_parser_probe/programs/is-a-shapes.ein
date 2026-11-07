@@ -1,0 +1,8 @@
+;;; examples/syntax/is-a-shapes.ein, written against S1f.5.5's final grammar.
+;;;
+;;; The kernel `is-a` head with each argument kind it can still hold in the
+;;; subject position: a name, and digits, which are a name. The variable and
+;;; the wildcard it carried are refused at the parse (`refused/fact-args.ein`).
+
+(is-a a T)
+(is-a 7 T)

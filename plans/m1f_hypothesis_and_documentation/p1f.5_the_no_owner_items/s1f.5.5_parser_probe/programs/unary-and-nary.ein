@@ -1,0 +1,12 @@
+;;; examples/syntax/unary-and-nary.ein, written against S1f.5.5's final grammar.
+;;;
+;;; Arity 1 and arity 4, each with and without provenance. A derived fact's
+;;; `:using` lists its premises, each a fact: `:using ((u a))`. The fixture
+;;; wrote `:using (x)`, a list whose head the loader dropped, so it named no
+;;; premise.
+
+(relation u T)
+(u a)
+(u a :source "(1)")
+(quad a b c d)
+(quad a b c d :rule mk :using ((u a)))

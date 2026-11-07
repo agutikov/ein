@@ -1,0 +1,8 @@
+;;; G-14's residue: a relation parameter that an activator a rule DERIVES
+;;; binds to a fact. No grammar sees it: `(r ?f)` is a well-formed conclusion.
+(relation box Node) (relation hit Node) (relation item Node)
+(box (a b))
+(rule r (?R) :match (box (?R b)) :assert (hit z))
+(rule mk () :match (item ?f) :assert (r ?f))
+(item (a b))
+(query :goal (hit ?x))

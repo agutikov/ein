@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["common","c_pest","c_peg","c_lalrpop","c_logos","c_grm","c_grm_rt","c_parol","harness"]
+members = ["common","c_ein","c_pest","c_peg","c_lalrpop","c_logos","c_grm","c_grm_rt","c_parol","harness"]
 [workspace.package]
 version="0.0.0"
 edition="2024"
