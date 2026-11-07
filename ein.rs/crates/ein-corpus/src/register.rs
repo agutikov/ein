@@ -73,8 +73,13 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// outcome ([`Now::queries`], the summary's `queries`) where `right` states
 /// them, W28's: a claim and a query's classes compared printed text, in which
 /// the int `1` and the name `"1"` were one. A run whose recorded claim is
-/// `failed` exits 1, as a refuted claim does ([`Now::refutes`]).
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/12";
+/// `failed` exits 1, as a refuted claim does ([`Now::refutes`]). `/13` since
+/// M1f S1f.5.0 (2026-11-08): where `right` is a **refusal**, a `now` may record
+/// the core and the claims its run reports ([`Now::core`], [`Now::claim`],
+/// [`Now::queries`]), what the refusal replaces, W29's
+/// (`W29/core-two-ways`'s core, a bare `_` in a rule; `W29/goal-arg`'s and
+/// `W32/kwpair-in-goal`'s query); a refused `now` records none of them.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/13";
 
 /// What a claim's check came to, as the summary spells it (schema /12):
 /// `none` where the program states no such claim.
@@ -892,12 +897,18 @@ impl Register {
                         .to_string(),
                 ));
             }
+            // What `now` records beside `right` (schema /13, M1f S1f.5.0):
+            // a field `right` states, or, where `right` is a refusal, the core
+            // and the claims today's answer reports, which the refusal
+            // replaces (W29's).
+            let recorded = |now: bool, right: bool| now == right || (r.right.refused && !right);
             // The claims and the classes (schema /12, M1e2 S1e2.3.8).
-            if r.now.claim.is_some() != r.right.claim.is_some()
-                || r.now.queries.is_some() != r.right.queries.is_some()
+            if !recorded(r.now.claim.is_some(), r.right.claim.is_some())
+                || !recorded(r.now.queries.is_some(), r.right.queries.is_some())
             {
                 out.push(at(
-                    "[now] records a claim and the queries exactly when [right] states them"
+                    "[now] records a claim and the queries exactly when [right] states them, \
+                     or beside a refusal"
                         .to_string(),
                 ));
             }
@@ -930,7 +941,10 @@ impl Register {
                     || r.now.exhausted
                     || r.now.empty.is_some()
                     || !r.now.models.is_empty()
-                    || !r.now.relations.is_empty())
+                    || !r.now.relations.is_empty()
+                    || r.now.core.is_some()
+                    || r.now.claim.is_some()
+                    || r.now.queries.is_some())
             {
                 out.push(at("a refused [now] lists nothing".to_string()));
             }
@@ -968,9 +982,10 @@ impl Register {
                     r.now.run
                 )));
             }
-            if r.now.core.is_some() != r.right.core.is_some() {
+            if !recorded(r.now.core.is_some(), r.right.core.is_some()) {
                 out.push(at(
-                    "[now] records a core exactly when [right] states one".to_string()
+                    "[now] records a core exactly when [right] states one, or beside a refusal"
+                        .to_string(),
                 ));
             }
             if let Some(c) = &r.now.core
@@ -1808,6 +1823,71 @@ mod tests {
         assert!(r.now.refutes());
         r.now.claim = Some("held".to_string());
         assert!(!r.now.refutes());
+    }
+
+    /// **Schema /13** (M1f S1f.5.0, W29 and W32): beside a `right` that is a
+    /// refusal, `now` may record the core and the claims today's answer
+    /// reports, which the refusal replaces; anywhere else a core or a claim is
+    /// recorded exactly where `right` states one, and a refused `now` records
+    /// none.
+    #[test]
+    fn beside_a_refusal_now_records_what_today_reports() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let core = reg
+            .case
+            .iter()
+            .find(|r| r.right.refused && r.now.core.is_some())
+            .expect("W29/core-two-ways records today's core beside a refusal")
+            .clone();
+        let query = reg
+            .case
+            .iter()
+            .find(|r| r.right.refused && r.now.queries.is_some())
+            .expect("W29/goal-arg records today's query beside a refusal")
+            .clone();
+        for row in [&core, &query] {
+            assert!(defects(row).is_empty(), "{:?}", defects(row));
+            // An answer, where `right` is a refusal: open, by the method.
+            assert!(!row.now.against(&row.right).is_empty());
+        }
+        // Beside a right that is an answer, the same `now` is a defect.
+        let mut r = core.clone();
+        r.right.refused = false;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("[now] records a core"))
+        );
+        let mut r = query.clone();
+        r.right.refused = false;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("[now] records a claim"))
+        );
+        // A refused `now` records neither.
+        let mut r = core;
+        r.now.refused = Some("kb load error: …".to_string());
+        r.now.k = 0;
+        r.now.exhausted = false;
+        r.now.empty = None;
+        r.now.models.clear();
+        r.now.relations.clear();
+        r.region = None;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("a refused [now] lists nothing"))
+        );
+        r.now.core = None;
+        assert!(defects(&r).is_empty(), "{:?}", defects(&r));
     }
 
     #[test]

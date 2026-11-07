@@ -159,6 +159,18 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
     n
 }
 
+/// **The witnesses whose state files do not load today** (M1f S1f.5.0,
+/// 2026-11-08): W30's two `neq` rows, a rule's concluded `neq` stored as a
+/// fact, which a state file writes as a fact line `(neq …)` that the parser
+/// refuses. It is the row's own wrong answer, which the register holds, so
+/// each is named rather than checked, and each must still fail to load, every
+/// state file of its run and for that reason alone: S1f.5.7 empties the list
+/// in the commit that fixes W30, with `answer_round_trip.rs`' copy.
+const DO_NOT_LOAD: [&str; 2] = [
+    "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
+    "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein",
+];
+
 /// The programs the per-commit checks run on, with a question each: all of R
 /// on a program with a dead set and on an owing root, a line, a part, the
 /// word, an empty R, and the puzzle's model.
@@ -204,7 +216,9 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
 /// *Wrong* is allowed. A written state that its own rules would extend or
 /// refute is not, and is what this would report.
 ///
-/// With no exception since M1e2 S1e2.3.8. Until then the state files the
+/// With no exception from M1e2 S1e2.3.8 until M1f S1f.5.0 named W30's two
+/// `neq` witnesses ([`DO_NOT_LOAD`]), whose state files the wrong answer the
+/// register holds makes unloadable. Until S1e2.3.8 the state files the
 /// fact printer could not write were named rather than checked
 /// (`printed_alike`): W16's fixed pair (M1e2 S1e2.2.16, 2026-11-04), each
 /// holding `(noted 1 1)` and `(noted 1 "1")`, which the printer wrote as one
@@ -240,7 +254,23 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
         let r = dump(file, &flags, &[], &dir);
         assert_eq!(r.code, *code, "{file} {run}: exit {}\n{}", r.code, r.err);
-        states += check_states(&dir, &format!("{file} :: {run}"), &mut bad);
+        let mut found = Vec::new();
+        let n = check_states(&dir, &format!("{file} :: {run}"), &mut found);
+        states += n;
+        if DO_NOT_LOAD.contains(&file.as_str()) {
+            let unloaded = found
+                .iter()
+                .filter(|b| b.contains(" does not load: "))
+                .count();
+            if n == 0 || unloaded != n || found.len() != n {
+                bad.push(format!(
+                    "{file} :: {run}: DO_NOT_LOAD names it, and {unloaded} of its {n} state files \
+                     do not load (W30 fixed? drop it from the list in the same commit): {found:?}"
+                ));
+            }
+        } else {
+            bad.extend(found);
+        }
     }
     assert!(states > runs.len(), "no state file was checked");
     assert!(

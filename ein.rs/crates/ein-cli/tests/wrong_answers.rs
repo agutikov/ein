@@ -43,6 +43,11 @@
 //! each query's class count and `expect.outcome`. A row whose recorded claim
 //! is `failed` expects the run's exit 1, as a refuted claim exits.
 //!
+//! **Since M1f S1f.5.0 a `now` beside a refusal can record what the refusal
+//! replaces** (schema /13, W29's and W32's rows): the core and the claims
+//! today's answer reports, read from the summary as above, where `right`
+//! states none of them.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
