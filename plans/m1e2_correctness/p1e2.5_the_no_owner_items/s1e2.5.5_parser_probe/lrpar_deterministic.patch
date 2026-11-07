@@ -1,0 +1,188 @@
+diff -ru lrpar-orig/src/lib/cpctplus.rs lrpar-det/src/lib/cpctplus.rs
+--- src/lib/cpctplus.rs	2026-11-07 17:28:19.834115502 +0400
++++ src/lib/cpctplus.rs	2026-11-07 17:23:57.961441767 +0400
+@@ -5,11 +5,6 @@
+     hash::{Hash, Hasher},
+ };
+ 
+-// web_time can be used on non-wasm32 but to avoid the dependency.
+-#[cfg(not(target_arch = "wasm32"))]
+-use std::time::Instant;
+-#[cfg(target_arch = "wasm32")]
+-use web_time::Instant;
+ 
+ use cactus::Cactus;
+ use cfgrammar::{Span, TIdx};
+@@ -19,7 +14,7 @@
+ use super::{
+     Lexeme, LexerTypes,
+     dijkstra::dijkstra,
+-    parser::{AStackType, ParseRepair, Parser, Recoverer},
++    parser::{AStackType, Budget, ParseRepair, Parser, Recoverer},
+ };
+ 
+ const PARSE_AT_LEAST: usize = 3; // N in Corchuelo et al.
+@@ -148,7 +143,7 @@
+ {
+     fn recover(
+         &self,
+-        finish_by: Instant,
++        finish_by: &Budget,
+         parser: &Parser<StorageT, LexerTypesT, ActionT, ParamT>,
+         in_laidx: usize,
+         in_pstack: &mut Vec<StIdx<StorageT>>,
+@@ -187,7 +182,7 @@
+             |explore_all, n, nbrs| {
+                 // Calculate n's neighbours.
+ 
+-                if Instant::now() >= finish_by {
++                if finish_by.spent() {
+                     return false;
+                 }
+ 
+@@ -383,15 +378,15 @@
+     /// out while doing so.
+     fn collect_repairs(
+         &self,
+-        finish_by: Instant,
++        finish_by: &Budget,
+         in_laidx: usize,
+         cnds: Vec<PathFNode<StorageT>>,
+     ) -> Option<Vec<Vec<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>>>> {
+         fn traverse<StorageT: PrimInt>(
+-            finish_by: Instant,
++            finish_by: &Budget,
+             rm: &Cactus<RepairMerge<StorageT>>,
+         ) -> Option<Vec<Vec<Repair<StorageT>>>> {
+-            if Instant::now() >= finish_by {
++            if finish_by.spent() {
+                 return None;
+             }
+             let mut out = Vec::new();
+@@ -530,9 +525,10 @@
+     // Use a HashSet as a quick way of deduplicating repair sequences: occasionally we can end up
+     // with hundreds of thousands (!), and we don't have a sensible ordering on ParseRepair to make
+     // it plausible to do a sort and dedup.
+-    let mut hs: HashSet<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>> =
+-        all_rprs.drain(..).collect();
+-    all_rprs.extend(hs.drain());
++    // Ein's patch (F11): drop duplicates keeping the first of each, in the order found, and sort
++    // stably below, so repairs of equal rank keep the search's own order.
++    let mut seen: HashSet<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>> = HashSet::new();
++    all_rprs.retain(|r| seen.insert(r.clone()));
+ 
+     // Sort repair sequences:
+     //   1) by whether they contain Inserts that are %insert_avoid
+@@ -547,7 +543,7 @@
+         }
+         false
+     };
+-    all_rprs.sort_unstable_by(|x, y| {
++    all_rprs.sort_by(|x, y| {
+         let x_cai = contains_avoid_insert(x);
+         let y_cai = contains_avoid_insert(y);
+         if x_cai && !y_cai {
+@@ -573,7 +569,7 @@
+     ParamT: Clone,
+ >(
+     parser: &Parser<StorageT, LexerTypesT, ActionT, ParamT>,
+-    finish_by: Instant,
++    finish_by: &Budget,
+     in_laidx: usize,
+     in_pstack: &[StIdx<StorageT>],
+     in_cnds: Vec<Vec<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>>>,
+@@ -584,7 +580,7 @@
+     let mut cnds = Vec::new();
+     let mut furthest = 0;
+     for rpr_seqs in in_cnds {
+-        if Instant::now() >= finish_by {
++        if finish_by.spent() {
+             return vec![];
+         }
+         let mut pstack = in_pstack.to_owned();
+diff -ru lrpar-orig/src/lib/parser.rs lrpar-det/src/lib/parser.rs
+--- src/lib/parser.rs	2026-11-07 17:28:19.834300391 +0400
++++ src/lib/parser.rs	2026-11-07 17:24:37.167547785 +0400
+@@ -7,11 +7,6 @@
+     vec,
+ };
+ 
+-// Can be used on non-wasm32 but to avoid the dependency.
+-#[cfg(not(target_arch = "wasm32"))]
+-use std::time::{Duration, Instant};
+-#[cfg(target_arch = "wasm32")]
+-use web_time::{Duration, Instant};
+ 
+ use cactus::Cactus;
+ use cfgrammar::{RIdx, Span, TIdx, header::Value, span::Location, yacc::YaccGrammar};
+@@ -24,10 +19,29 @@
+ 
+ use crate::{LexError, Lexeme, LexerTypes, NonStreamingLexer, cpctplus};
+ 
+-#[cfg(test)]
+-const RECOVERY_TIME_BUDGET: u64 = 60_000; // milliseconds
+-#[cfg(not(test))]
+-const RECOVERY_TIME_BUDGET: u64 = 500; // milliseconds
++/// Ein's patch (F11): recovery is bounded by a count of search steps over the whole parse, not by
++/// the wall clock, so the same input reports the same errors on every machine.
++pub const RECOVERY_STEP_BUDGET: u64 = 1_000_000;
++
++/// The steps recovery may still take in this parse.
++pub(super) struct Budget { left: std::cell::Cell<u64> }
++impl Budget {
++    /// Takes one step; true once none is left.
++    pub(super) fn spent(&self) -> bool {
++        let l = self.left.get();
++        if l == 0 { return true; }
++        self.left.set(l - 1);
++        false
++    }
++}
++// Probe only: report the steps one parse's recovery took.
++impl Drop for Budget {
++    fn drop(&mut self) {
++        if std::env::var_os("EIN_PROBE_STEPS").is_some() && self.left.get() < RECOVERY_STEP_BUDGET {
++            eprintln!("recovery steps {}", RECOVERY_STEP_BUDGET - self.left.get());
++        }
++    }
++}
+ 
+ #[deprecated(
+     since = "0.14.0",
+@@ -311,7 +325,7 @@
+         spans: &mut Vec<Span>,
+     ) -> Option<ActionT> {
+         let mut recoverer = None;
+-        let mut recovery_budget = Duration::from_millis(RECOVERY_TIME_BUDGET);
++        let recovery_budget = Budget { left: std::cell::Cell::new(RECOVERY_STEP_BUDGET) };
+         loop {
+             debug_assert_eq!(astack.len(), spans.len());
+             let stidx = *pstack.last().unwrap();
+@@ -380,17 +394,11 @@
+                         });
+                     }
+ 
+-                    let before = Instant::now();
+-                    let finish_by = before + recovery_budget;
+                     let (new_laidx, repairs) = recoverer
+                         .as_ref()
+                         .unwrap()
+                         .as_ref()
+-                        .recover(finish_by, self, laidx, pstack, astack, spans);
+-                    let after = Instant::now();
+-                    recovery_budget = recovery_budget
+-                        .checked_sub(after - before)
+-                        .unwrap_or_else(|| Duration::new(0, 0));
++                        .recover(&recovery_budget, self, laidx, pstack, astack, spans);
+                     let keep_going = !repairs.is_empty();
+                     let la_lexeme = self.next_lexeme(laidx);
+                     errors.push(
+@@ -614,7 +622,7 @@
+ {
+     fn recover(
+         &self,
+-        finish_by: Instant,
++        finish_by: &Budget,
+         parser: &Parser<StorageT, LexerTypesT, ActionT, ParamT>,
+         in_laidx: usize,
+         in_pstack: &mut PStack<StorageT>,

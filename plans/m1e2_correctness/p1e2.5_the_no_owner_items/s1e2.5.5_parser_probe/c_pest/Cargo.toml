@@ -1,0 +1,8 @@
+[package]
+name="c_pest"
+version.workspace=true
+edition.workspace=true
+[dependencies]
+common={path="../common"}
+pest="2.8"
+pest_derive="2.8"

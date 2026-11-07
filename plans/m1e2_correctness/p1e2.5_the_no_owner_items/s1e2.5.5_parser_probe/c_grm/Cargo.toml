@@ -1,0 +1,14 @@
+[package]
+name="c_grm"
+version.workspace=true
+edition.workspace=true
+build="build.rs"
+[dependencies]
+common={path="../common"}
+cfgrammar="0.15"
+lrlex="0.15"
+lrpar="0.15"
+[build-dependencies]
+cfgrammar="0.15"
+lrlex="0.15"
+lrpar="0.15"

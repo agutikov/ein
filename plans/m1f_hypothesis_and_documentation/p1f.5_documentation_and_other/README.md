@@ -1,15 +1,16 @@
 # P1f.5 — Documentation, and other
 
-**Estimate:** ~7 weeks — 3 stages, **33 days**
+**Estimate:** ~2 weeks — 2 stages, **10 days**
 ([S1f.5.5](s1f.5.5_nl_required.md) 4 d,
-[S1f.5.6](s1f.5.6_rule_priority.md) 6 d,
-[S1f.5.20](s1f.5.20_docs_refactor.md) 23 d). The phase stays open-ended by
+[S1f.5.6](s1f.5.6_rule_priority.md) 6 d). It was 33 until 2026-11-08, when
+S1f.5.20's 23 became a phase of its own,
+[P1f.20](../p1f.20_docs_refactor/README.md). The phase stays open-ended by
 design (see [§ Scope](#scope)).
 **Depends on:** nothing to start. S1f.5.6 depends **hard** on
 [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2), which
-is **done** (2026-08-29); S1f.5.20 depended **hard** on M1e's P1e.2 S1e.2.2 and
-P1e.3 S1e.3.7 / S1e.3.8, and all three ran by 2026-08-31, so nothing in this
-phase waits.
+is **done** (2026-08-29), so nothing in this phase waits. (S1f.5.20, now
+P1f.20, depended **hard** on M1e's P1e.2 S1e.2.2 and P1e.3 S1e.3.7 / S1e.3.8,
+and all three ran by 2026-08-31.)
 **Blocks:** nothing.
 **Was P1e.5**, in [M1e](../../../docs/history/m1e_review_processing/README.md), until 2026-08-29. Two of its six stages
 had already shipped and **stayed there** with the ids they shipped under; what
@@ -17,7 +18,8 @@ moved is the four that had not.
 **Source:** the user's instruction of 2026-08-28 — *"we need a comprehensive
 config options reference document in `docs/kernel/` — make it a first stage in
 the new phase p1e.5 for ein documentation only."* Three further notes of the
-same day added S1f.5.5, S1f.5.6 and S1f.5.20, and the directory was renamed
+same day added S1f.5.5, S1f.5.6 and S1f.5.20 (a phase of its own,
+[P1f.20](../p1f.20_docs_refactor/README.md), since 2026-11-08), and the directory was renamed
 `…_documentation_and_other` because **S1f.5.6 is engine work**: it removes a
 language keyword and replaces it with a static analysis. The phase name is now
 literal. The instruction says *"the new phase p1e.5"* because that is what it
@@ -48,10 +50,13 @@ prose counts nobody generates.
 | *S1f.5.3* | *The read-out reference* | *proposed* | one page for every number `ein solve` prints — `k`, `solution_nodes`, `exhausted`, `owes`, `layers_explored` — and which of them is a count of *models* and which of *what the search did*. [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are findings about exactly this confusion |
 | [S1f.5.5](s1f.5.5_nl_required.md) | Every statement convertible to NL | 4 d | the register census — `zebra2`'s unique model is **444 facts and 25 of them (5 %) have a template**; fact-level rendering from **provenance** rather than from the relation; one page on the four registers; two mechanical checks in `cargo test` |
 | [S1f.5.6](s1f.5.6_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | the control experiment banked (**137 of 139 corpus entries identical** with every `:priority` stripped from the stdlib and the corpus); the rule dependency graph and its strata; the static non-stratifiability diagnostic `01_grammar.md` has called future work since S1.7.4; 353 occurrences gone or a written refusal |
-| [S1f.5.20](s1f.5.20_docs_refactor.md) | `docs/ein/`: the tree a released system would have | 23 d | `docs/history/` dissolved rather than deleted; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; **≈1 989 history-referencing lines** across ~330 files resolved; and the two checks — a link checker and a release-voice check — that make it finishable and keep it finished |
 
 *Proposed* means the stage is named and not specified. Say which you want and
 it gets a file.
+
+**S1f.5.20 is [P1f.20](../p1f.20_docs_refactor/README.md) since 2026-11-08**, on
+the user's instruction: *`docs/ein/`, the tree a released system would have*,
+as the seven stages its § How to cut it had proposed.
 
 **Two stages are missing from that table on purpose: they shipped, and they
 stayed in M1e.** `S1e.5.1` (the configuration reference) and `S1e.5.2` (what a
@@ -66,11 +71,11 @@ phase starts at the first stage that had not run.
 **S1f.5.5, S1f.5.6 and S1f.5.20 came from the user's notes of 2026-08-28** and
 were written up on the 28th. Two of them are not *"documentation ein does not
 have"*: S1f.5.6 is engine work, and S1f.5.20 rewrites documentation ein
-already has. S1f.5.20 alone is **23 of this phase's 33 days**, and it was a
+already has. S1f.5.20 alone was **23 of this phase's 33 days**, and it was a
 fifth of M1e's whole estimate for work that closed none of its findings — which
-is a large part of why it is no longer in M1e. Its § How to cut it carries the
-seven-stage split it should probably become; taking the split is the user's
-call.
+is a large part of why it is no longer in M1e. Its § How to cut it carried the
+seven-stage split it should probably become, and the user took it on
+2026-11-08: it is [P1f.20](../p1f.20_docs_refactor/README.md).
 
 **What those two shipped, and why it still matters here.** S1e.5.1 corrected
 five of this file's own reconnaissance numbers — see its
@@ -87,7 +92,7 @@ correction needs the thing it corrected beside it.
 S1e.5.2 cites `defined_behaviour.md` and `architecture_and_algorithms.md` by
 **anchor text rather than by section number**, per this phase's third risk, so
 M1e's P1e.2 triage can renumber them without breaking it — which is a
-constraint this phase inherits and S1f.5.20 has to keep.
+constraint this phase inherits and P1f.20 has to keep.
 
 ## Acceptance
 

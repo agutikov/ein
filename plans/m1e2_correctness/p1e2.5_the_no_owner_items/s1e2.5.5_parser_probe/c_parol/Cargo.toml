@@ -1,0 +1,14 @@
+[package]
+name="c_parol"
+version.workspace=true
+edition.workspace=true
+build="build.rs"
+[dependencies]
+common={path="../common"}
+parol_runtime="5"
+thiserror="2"
+anyhow="1"
+scnr2="*"
+[build-dependencies]
+parol="5"
+parol_runtime="5"

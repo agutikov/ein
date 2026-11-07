@@ -1,0 +1,10 @@
+[package]
+name="c_grm_rt"
+version.workspace=true
+edition.workspace=true
+[dependencies]
+c_grm={path="../c_grm"}
+cfgrammar="0.15"
+lrlex="0.15"
+lrpar="0.15"
+lrtable="0.15"

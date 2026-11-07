@@ -1,0 +1,9 @@
+(relation color-of House Color)
+(color-of h1 red
+(color-of h2 a?x)
+(rule distinct ()
+  :match  (color-of ?h ?c)
+  :assert (seen ?h ?c)
+  :bogus 3)
+(color-of _ blue)
+(color-of h3 green)

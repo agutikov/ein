@@ -31,7 +31,7 @@ a cleanup.
 > refuses unless its rule fires first. Ten programs reach the cap under R's
 > routes, not one (`ein solve FILE --events`, 2026-11-04).
 **Blocks:** nothing. It writes the first content of
-[S1f.5.20](s1f.5.20_docs_refactor.md)'s
+[P1f.20](../p1f.20_docs_refactor/README.md)'s
 `docs/ein/reasoning/rule-evolution/analysis-of-rules.md`, which is otherwise an
 empty page.
 **Source:** the user's note of 2026-08-28 — *"remove `:priority` completely /
@@ -219,7 +219,7 @@ that, and three things become derivable that a typed integer never was:
   re-bless that was not predicted in the stage file is a stop, not a step*.
 - **`docs/ein/reasoning/rule-evolution/analysis-of-rules.md`** — or its
   pre-refactor equivalent — states the graph, the strata, the derived bands and
-  the diagnostic. That page is [S1f.5.20](s1f.5.20_docs_refactor.md)'s only
+  the diagnostic. That page is [S1f.20.4](../p1f.20_docs_refactor/s1f.20.4_reasoning.md)'s only
   otherwise-empty file.
 - ~~[`MA-L1`](../../../docs/history/m1e_review_processing/README.md#the-findings) — is
   dispositioned **fixed by removal**, and
@@ -397,5 +397,5 @@ has promised since S1.7.4.
   the blocking question, now with a witness.
 - [S1e.4.8](../../../docs/history/m1e_review_processing/README.md#s1e48--maintainability-low) — [MA-L1](../../../docs/history/m1e_review_processing/README.md#the-findings),
   which this stage closes by deleting the constant.
-- [S1f.5.20](s1f.5.20_docs_refactor.md) T4 — `rule-evolution/analysis-of-rules.md`,
+- [S1f.20.4](../p1f.20_docs_refactor/s1f.20.4_reasoning.md) (was S1f.5.20's T4) — `rule-evolution/analysis-of-rules.md`,
   the page this stage writes the content of.

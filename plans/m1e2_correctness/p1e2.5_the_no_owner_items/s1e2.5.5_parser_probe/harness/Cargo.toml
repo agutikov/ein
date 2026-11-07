@@ -1,0 +1,13 @@
+[package]
+name="harness"
+version.workspace=true
+edition.workspace=true
+[dependencies]
+common={path="../common"}
+c_pest={path="../c_pest"}
+c_peg={path="../c_peg"}
+c_lalrpop={path="../c_lalrpop"}
+c_logos={path="../c_logos"}
+c_grm={path="../c_grm"}
+c_parol={path="../c_parol"}
+ein-ir={path="../../../../../ein.rs/crates/ein-ir"}

@@ -1,0 +1,61 @@
+%start Program
+%title "Ein by position"
+%line_comment ";"
+%block_comment "#\|" "\|#"
+%%
+Program: { Form };
+Form: Lp FormBody Rp;
+FormBody: Relation | Rule | Hrule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact | Refused;
+Refused: Underscore | Bad | BadText;
+
+Lp: '(';
+Rp: ')';
+WRelation: 'relation'; WRule: 'rule'; WHrule: 'hrule'; WQuery: 'query'; WSolve: 'solve'; WConfig: 'config';
+WTrace: 'trace'; WMacro: 'macro'; WImport: 'import'; WNot: 'not'; WAnd: 'and'; WOr: 'or'; WNeq: 'neq'; WStep: 'step';
+KWhy: ':why'; KSource: ':source'; KGoalText: ':goal-text'; KMatch: ':match'; KAssert: ':assert'; KPriority: ':priority';
+KGoal: ':goal'; KExpect: ':expect'; KOver: ':over'; KNoHyp: ':no-hypothesis'; KHrules: ':hrules'; KHypRels: ':hypothesis-relations';
+KSymbols: ':symbols'; KAs: ':as'; KRule: ':rule'; KUsing: ':using'; KDerives: ':derives';
+Underscore: '_';
+Digits: /[0-9]+/;
+Word: /[!$%&'*+,\-.\/0-9<=>@A-Z\[\\\]^_`a-z{}~]+/;
+Var: /\?[!$%&'*+,\-.\/0-9<=>@A-Z\[\\\]^_`a-z{}~]+/;
+Keyword: /:[!$%&'*+,\-.\/0-9<=>@A-Z\[\\\]^_`a-z{}~]+/;
+Text: /"(\\[^\n]|[^"\\])*"/;
+Bad: /[^\s();\x{1c}-\x{1f}]+/;
+BadText: /"(\\[^\n]|[^"\\])*"[^\s();\x{1c}-\x{1f}]+/;
+
+Name: Word | Digits | WRelation | WStep;
+Head: Word | Digits | WStep;
+Names: Lp { Name } Rp;
+Params: Lp { Var } Rp;
+Params1: Lp Var { Var } Rp;
+HruleItem: Name | Names;
+Hrules: Lp { HruleItem } Rp;
+Using: Lp UsingBody Rp;
+UsingBody: { Name } | WAnd Name { Name };
+TArg: Var | Term;
+
+Relation: WRelation Name { Name } { KWhy Text };
+RuleClause: KMatch Term | KAssert Term | KWhy Text | KPriority Digits;
+Rule: WRule Name Params { RuleClause };
+Hrule: WHrule Name Params { RuleClause };
+QueryClause: KGoal Term | KGoalText Text | KExpect Term | KOver Name | KNoHyp Names;
+Query: WQuery QueryClause { QueryClause };
+SolveClause: KExpect Term | KNoHyp Names | KHrules Hrules | KHypRels Names;
+Solve: WSolve { SolveClause };
+Config: WConfig { Keyword Name };
+StepClause: KRule Name | KUsing Using | KDerives FactTerm;
+Step: Lp WStep Name { StepClause } Rp;
+Trace: WTrace { Step };
+Macro: WMacro Name Params1 Term;
+ImportClause: KSymbols Names | KAs Name;
+Import: WImport Name { ImportClause };
+FactClause: KSource Text | KRule Name | KUsing Using;
+NotFact: WNot FactTerm { FactClause };
+Fact: Head { FactArg } { FactClause };
+FactArg: Name | FactTerm;
+FactTerm: Lp Name { FactArg } Rp;
+Term: Lp TermBody Rp;
+TermBody: WAnd TArg { TArg } | WOr TArg { TArg } | WNot TArg | WNeq Item Item | PHead { Item };
+PHead: Name | Var;
+Item: Name | Var | Term;

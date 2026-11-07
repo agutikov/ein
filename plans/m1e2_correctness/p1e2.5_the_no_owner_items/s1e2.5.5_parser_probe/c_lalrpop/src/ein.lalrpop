@@ -1,0 +1,80 @@
+use common::Node;
+grammar(src:&'input str);
+match {
+  r"[\s\u{1c}-\u{1f}]+" => {},
+  r";[^\n]*" => {},
+  r"#\|([^|]|\|+[^|#])*\|+#" => {},
+  "(", ")", "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import", "relation", "step", "_", ":why", ":source", ":goal-text", ":match", ":assert", ":priority", ":goal", ":expect", ":over", ":no-hypothesis", ":hrules", ":hypothesis-relations", ":symbols", ":as", ":rule", ":using", ":derives",
+} else {
+  r"[0-9]+" => DIGITS,
+} else {
+  r"[!$%&'*+,\-./0-9<=>@A-Z\[\\\]^_`a-z{}~]+" => WORD,
+  r"\?[!$%&'*+,\-./0-9<=>@A-Z\[\\\]^_`a-z{}~]+" => VAR,
+  r":[!$%&'*+,\-./0-9<=>@A-Z\[\\\]^_`a-z{}~]+" => KEYWORD,
+  r#""(\\[^\n]|[^"\\])*""# => TEXT,
+} else {
+  r#""(\\[^\n]|[^"\\])*"[^\s();\u{1c}-\u{1f}]+"# => BADTEXT,
+} else {
+  r#"[^\s();\u{1c}-\u{1f}]+"# => BAD,
+}
+
+pub Program: Vec<Node<'input>> = Form*;
+Form: Node<'input> = { Relation, Rule, Hrule, Query, Solve, Config, Trace, Macro, Import, NotFact, Fact };
+
+Name: Node<'input> = {
+  <l:@L> <s:WORD>   => Node::Name(s,l as u32),
+  <l:@L> <s:DIGITS> => Node::Name(s,l as u32),
+  <l:@L> "relation" => Node::Name("relation",l as u32),
+  <l:@L> "step"     => Node::Name("step",l as u32),
+};
+Head: Node<'input> = {
+  <l:@L> <s:WORD>   => Node::Name(s,l as u32),
+  <l:@L> <s:DIGITS> => Node::Name(s,l as u32),
+  <l:@L> "step"     => Node::Name("step",l as u32),
+};
+Var: Node<'input>  = <l:@L> <s:VAR>    => Node::Var(s,l as u32);
+Text: Node<'input> = <l:@L> <s:TEXT>   => Node::Str(s,l as u32);
+Count: Node<'input>= <l:@L> <s:DIGITS> => Node::Name(s,l as u32);
+W<K,T>: Node<'input> = <l:@L> K <r:@R> => Node::Name(&src[l..r],l as u32);
+Cl<K,V>: Vec<Node<'input>> = <l:@L> K <r:@R> <v:V> => vec![Node::Kw(&src[l..r],l as u32),v];
+
+Names: Node<'input> = "(" <Name*> ")" => Node::List(<>);
+HruleItem: Node<'input> = { Name, Names };
+Hrules: Node<'input> = "(" <HruleItem*> ")" => Node::List(<>);
+Using: Node<'input> = { Names, "(" <a:W<"and",()>> <v:Name+> ")" => { let mut r=vec![a]; r.extend(v); Node::List(r) } };
+TArg: Node<'input> = { Var, Term };
+Params: Node<'input> = "(" <Var*> ")" => Node::List(<>);
+Params1: Node<'input> = "(" <Var+> ")" => Node::List(<>);
+
+Relation: Node<'input> = "(" <a:W<"relation",()>> <n:Name> <v:Name*> <c:Cl<":why",Text>*> ")" => { let mut r=vec![a,n]; r.extend(v); r.extend(c.into_iter().flatten()); Node::List(r) };
+RuleClause: Vec<Node<'input>> = { Cl<":match",Term>, Cl<":assert",Term>, Cl<":why",Text>, Cl<":priority",Count> };
+Rule: Node<'input> = "(" <a:W<"rule",()>> <n:Name> <p:Params> <c:RuleClause*> ")" => { let mut r=vec![a,n,p]; r.extend(c.into_iter().flatten()); Node::List(r) };
+Hrule: Node<'input> = "(" <a:W<"hrule",()>> <n:Name> <p:Params> <c:RuleClause*> ")" => { let mut r=vec![a,n,p]; r.extend(c.into_iter().flatten()); Node::List(r) };
+QueryClause: Vec<Node<'input>> = { Cl<":goal",Term>, Cl<":goal-text",Text>, Cl<":expect",Term>, Cl<":over",Name>, Cl<":no-hypothesis",Names> };
+Query: Node<'input> = "(" <a:W<"query",()>> <c:QueryClause+> ")" => { let mut r=vec![a]; r.extend(c.into_iter().flatten()); Node::List(r) };
+SolveClause: Vec<Node<'input>> = { Cl<":expect",Term>, Cl<":no-hypothesis",Names>, Cl<":hrules",Hrules>, Cl<":hypothesis-relations",Names> };
+Solve: Node<'input> = "(" <a:W<"solve",()>> <c:SolveClause*> ")" => { let mut r=vec![a]; r.extend(c.into_iter().flatten()); Node::List(r) };
+ConfigPair: Vec<Node<'input>> = <l:@L> <k:KEYWORD> <n:Name> => vec![Node::Kw(k,l as u32),n];
+Config: Node<'input> = "(" <a:W<"config",()>> <c:ConfigPair*> ")" => { let mut r=vec![a]; r.extend(c.into_iter().flatten()); Node::List(r) };
+StepClause: Vec<Node<'input>> = { Cl<":rule",Name>, Cl<":using",Using>, Cl<":derives",FactTerm> };
+Step: Node<'input> = "(" <a:W<"step",()>> <n:Name> <c:StepClause*> ")" => { let mut r=vec![a,n]; r.extend(c.into_iter().flatten()); Node::List(r) };
+Trace: Node<'input> = "(" <a:W<"trace",()>> <s:Step*> ")" => { let mut r=vec![a]; r.extend(s); Node::List(r) };
+Macro: Node<'input> = "(" <a:W<"macro",()>> <n:Name> <p:Params1> <t:Term> ")" => Node::List(vec![a,n,p,t]);
+ImportClause: Vec<Node<'input>> = { Cl<":symbols",Names>, Cl<":as",Name> };
+Import: Node<'input> = "(" <a:W<"import",()>> <n:Name> <c:ImportClause*> ")" => { let mut r=vec![a,n]; r.extend(c.into_iter().flatten()); Node::List(r) };
+
+FactClause: Vec<Node<'input>> = { Cl<":source",Text>, Cl<":rule",Name>, Cl<":using",Using> };
+NotFact: Node<'input> = "(" <a:W<"not",()>> <t:FactTerm> <c:FactClause*> ")" => { let mut r=vec![a,t]; r.extend(c.into_iter().flatten()); Node::List(r) };
+Fact: Node<'input> = "(" <a:Head> <v:FactArg*> <c:FactClause*> ")" => { let mut r=vec![a]; r.extend(v); r.extend(c.into_iter().flatten()); Node::List(r) };
+FactArg: Node<'input> = { Name, FactTerm };
+FactTerm: Node<'input> = "(" <a:Name> <v:FactArg*> ")" => { let mut r=vec![a]; r.extend(v); Node::List(r) };
+
+Term: Node<'input> = {
+  "(" <a:W<"and",()>> <v:TArg+> ")" => { let mut r=vec![a]; r.extend(v); Node::List(r) },
+  "(" <a:W<"or",()>>  <v:TArg+> ")" => { let mut r=vec![a]; r.extend(v); Node::List(r) },
+  "(" <a:W<"not",()>> <t:TArg> ")"  => Node::List(vec![a,t]),
+  "(" <a:W<"neq",()>> <x:Item> <y:Item> ")" => Node::List(vec![a,x,y]),
+  "(" <a:PHead> <v:Item*> ")" => { let mut r=vec![a]; r.extend(v); Node::List(r) },
+};
+PHead: Node<'input> = { Name, Var };
+Item: Node<'input> = { Name, Var, Term };

@@ -1,0 +1,11 @@
+[package]
+name="c_logos"
+version.workspace=true
+edition.workspace=true
+build="build.rs"
+[dependencies]
+common={path="../common"}
+lalrpop-util={version="0.23",default-features=false,features=["std"]}
+logos={version="0.16",features=["forbid_unsafe"]}
+[build-dependencies]
+lalrpop={version="0.23",default-features=false}

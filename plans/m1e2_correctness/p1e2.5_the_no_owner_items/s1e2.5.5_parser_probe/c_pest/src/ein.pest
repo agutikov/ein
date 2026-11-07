@@ -1,0 +1,65 @@
+// Ein by position. One token rule per terminal, one production per position.
+WHITESPACE = _{ WHITE_SPACE | '\u{1c}'..'\u{1f}' }
+COMMENT    = _{ ";" ~ (!"\n" ~ ANY)* | "#|" ~ (!"|#" ~ ANY)* ~ "|#" }
+
+namech   = _{ ASCII_ALPHANUMERIC | "_" | "-" | "." | "*" | "$" | "%" | "^" | "+" | "/" | "<" | ">" | "=" | "!" | "@" | "&" | "~" | "," | "'" | "`" | "\\" | "[" | "]" | "{" | "}" }
+sep      = _{ WHITE_SPACE | '\u{1c}'..'\u{1f}' | "(" | ")" | ";" | "#|" | EOI }
+reserved = _{ ("not"|"and"|"or"|"neq"|"rule"|"hrule"|"query"|"solve"|"config"|"trace"|"macro"|"import"|"_") ~ &sep }
+
+name  = @{ !reserved ~ namech+ ~ &sep }
+word  = @{ !reserved ~ !("relation" ~ &sep) ~ namech+ ~ &sep }
+var   = @{ "?" ~ namech+ ~ &sep }
+text  = @{ "\"" ~ ("\\" ~ !"\n" ~ ANY | !("\"" | "\\") ~ ANY)* ~ "\"" ~ &sep }
+count = @{ ASCII_DIGIT+ ~ &sep }
+keyword = @{ ":" ~ namech+ ~ &sep }
+
+w_relation = @{"relation"~&sep} w_rule = @{"rule"~&sep} w_hrule = @{"hrule"~&sep} w_query = @{"query"~&sep}
+w_solve = @{"solve"~&sep} w_config = @{"config"~&sep} w_trace = @{"trace"~&sep} w_macro = @{"macro"~&sep}
+w_import = @{"import"~&sep} w_not = @{"not"~&sep} w_and = @{"and"~&sep} w_or = @{"or"~&sep} w_neq = @{"neq"~&sep} w_step = @{"step"~&sep}
+
+k_why = @{":why"~&sep} k_source = @{":source"~&sep} k_goal_text = @{":goal-text"~&sep}
+k_match = @{":match"~&sep} k_assert = @{":assert"~&sep} k_priority = @{":priority"~&sep}
+k_goal = @{":goal"~&sep} k_expect = @{":expect"~&sep} k_over = @{":over"~&sep}
+k_no_hyp = @{":no-hypothesis"~&sep} k_hrules = @{":hrules"~&sep} k_hyp_rels = @{":hypothesis-relations"~&sep}
+k_symbols = @{":symbols"~&sep} k_as = @{":as"~&sep} k_rule = @{":rule"~&sep} k_using = @{":using"~&sep} k_derives = @{":derives"~&sep}
+
+program = { SOI ~ form* ~ EOI }
+form = _{ relation | rule | hrule | query | solve | config | trace | macro_ | import | not_fact | fact }
+
+relation = { "(" ~ w_relation ~ name ~ name* ~ (k_why ~ text)* ~ ")" }
+rule     = { "(" ~ w_rule  ~ name ~ params ~ rule_clause* ~ ")" }
+hrule    = { "(" ~ w_hrule ~ name ~ params ~ rule_clause* ~ ")" }
+params   = { "(" ~ var* ~ ")" }
+rule_clause = _{ k_match ~ term | k_assert ~ term | k_why ~ text | k_priority ~ count }
+query    = { "(" ~ w_query ~ query_clause+ ~ ")" }
+query_clause = _{ k_goal ~ term | k_goal_text ~ text | k_expect ~ term | k_over ~ name | k_no_hyp ~ names }
+solve    = { "(" ~ w_solve ~ solve_clause* ~ ")" }
+solve_clause = _{ k_expect ~ term | k_no_hyp ~ names | k_hrules ~ hrules | k_hyp_rels ~ names }
+names    = { "(" ~ name* ~ ")" }
+hrules   = { "(" ~ (name | names)* ~ ")" }
+using    = _{ names | using_and }
+using_and = { "(" ~ w_and ~ name+ ~ ")" }
+config   = { "(" ~ w_config ~ (keyword ~ name)* ~ ")" }
+trace    = { "(" ~ w_trace ~ step* ~ ")" }
+step     = { "(" ~ w_step ~ name ~ step_clause* ~ ")" }
+step_clause = _{ k_rule ~ name | k_using ~ using | k_derives ~ fact_term }
+macro_   = { "(" ~ w_macro ~ name ~ macro_params ~ term ~ ")" }
+macro_params = { "(" ~ var+ ~ ")" }
+import   = { "(" ~ w_import ~ name ~ import_clause* ~ ")" }
+import_clause = _{ k_symbols ~ names | k_as ~ name }
+
+not_fact = { "(" ~ w_not ~ fact_term ~ fact_clause* ~ ")" }
+fact     = { "(" ~ fact_head ~ fact_arg* ~ fact_clause* ~ ")" }
+fact_head = _{ word }
+fact_clause = _{ k_source ~ text | k_rule ~ name | k_using ~ using }
+fact_arg = _{ name | fact_term }
+fact_term = { "(" ~ name ~ fact_arg* ~ ")" }
+
+term = _{ and | or | not | neq | pattern }
+and  = { "(" ~ w_and ~ targ+ ~ ")" }
+or   = { "(" ~ w_or  ~ targ+ ~ ")" }
+not  = { "(" ~ w_not ~ targ ~ ")" }
+targ = _{ var | term }
+neq  = { "(" ~ w_neq ~ item ~ item ~ ")" }
+pattern = { "(" ~ (name | var) ~ item* ~ ")" }
+item = _{ name | var | term }

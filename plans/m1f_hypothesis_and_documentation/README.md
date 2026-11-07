@@ -1,9 +1,8 @@
 # M1f — The structure of the hypothesis set, and the documentation ein does not have
 
-**Estimate:** ~12 weeks — 2 phases, 11 stages, **55.5 days** of stage
-estimates. One stage,
-[S1f.5.20](p1f.5_documentation_and_other/s1f.5.20_docs_refactor.md), is 23 of
-them.
+**Estimate:** ~12 weeks — 3 phases, 17 stages, **57.5 days** of stage
+estimates. It was 55.5 until 2026-11-08, when the stage S1f.5.20 (23 days)
+became the phase [P1f.20](p1f.20_docs_refactor/README.md) (7 stages, 25 days).
 **Status:** created 2026-08-29, out of
 [M1e](../../docs/history/m1e_review_processing/README.md) — which had carried both phases since
 2026-08-28 and had said in its own phase table that they were **† not review
@@ -22,16 +21,18 @@ agrees ([Q-M1e2.5](../m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-r
 ## What this is
 
 Two phases that share nothing except having been written on the same day, at
-the same user's instruction, into a milestone that was about something else:
+the same user's instruction, into a milestone that was about something else,
+and a third split out of the first on 2026-11-08:
 
 | ID | title | stages | est. | ends with |
 |---|---|---:|---:|---|
-| [P1f.5](p1f.5_documentation_and_other/README.md) | Documentation, and other | 3 (+1 proposed) | 33 d | every statement convertible to NL, measured at the **5 %** `zebra2`'s model renders today; `:priority` removed and the schedule derived from the rule graph, on a control sweep where **137 of 139 entries are identical** without it; and `docs/ein/` — the tree a released system would have |
+| [P1f.5](p1f.5_documentation_and_other/README.md) | Documentation, and other | 2 (+1 proposed) | 10 d | every statement convertible to NL, measured at the **5 %** `zebra2`'s model renders today; and `:priority` removed and the schedule derived from the rule graph, on a control sweep where **137 of 139 entries are identical** without it |
 | [P1f.10](p1f.10_hypothesis_structure/README.md) | The structure of the hypothesis set | 8 | 22.5 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no*; the **domain** of that structure stated; the tree's **200 053×** attributed, with `--traversal` replacing `EIN_TRAVERSAL`; and a ruling on whether a refutation may rest on an `absent` |
+| [P1f.20](p1f.20_docs_refactor/README.md) | `docs/ein/`: the tree a released system would have | 7 | 25 d | `docs/history/` dissolved rather than deleted; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
 
-The numbering is deliberate and the gaps are real: **1–4 and 6–9 are
-unassigned**, and the two phases here keep the positions they were given rather
-than being packed. A phase number that moves is a phase number every citation
+The numbering is deliberate and the gaps are real: **1–4, 6–9 and 11–19 are
+unassigned**, and the phases here keep the positions they were given rather
+than being packed. P1f.20 took the number of the stage it was, S1f.5.20. A phase number that moves is a phase number every citation
 of it has to chase.
 
 ## Why they are one milestone
@@ -59,7 +60,7 @@ learned about deriving an order nobody wrote down.
 | | on | kind |
 |---|---|---|
 | `S1f.5.6` | [`S1e.1.3`](../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — the unsat core's retention rule | **satisfied** 2026-08-29 |
-| `S1f.5.20` | M1e's `S1e.2.2`, `S1e.3.7`, `S1e.3.8` — the `docs/kernel` triage and the drift repairs | **satisfied** 2026-08-31 (S1e.2.2 closed 2026-08-30, S1e.3.7 and S1e.3.8 on 2026-08-31). It was hard: a refactor that moves 38 pages before they are triaged moves the wrong ones |
+| `P1f.20` (was `S1f.5.20`) | M1e's `S1e.2.2`, `S1e.3.7`, `S1e.3.8` — the `docs/kernel` triage and the drift repairs | **satisfied** 2026-08-31 (S1e.2.2 closed 2026-08-30, S1e.3.7 and S1e.3.8 on 2026-08-31). It was hard: a refactor that moves 38 pages before they are triaged moves the wrong ones |
 | `P1f.10` | [`S1e.1.1`](../../docs/history/m1e_review_processing/search_soundness_probes/README.md), for [Q-M1e.6](../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s ruling | **satisfied** 2026-08-28 |
 
 **The question ids stay where they were raised.** `Q-M1e.6`, `Q-M1e.9`,
@@ -94,11 +95,10 @@ is now the one-stage record of what that phase delivered.
 
 ## Risks
 
-- **S1f.5.20 is 23 days.** It is the largest single stage in either
-  milestone, and it closes no finding. It was blocked on three M1e stages
-  until they ran on 2026-08-30/31, and nothing blocks it now. Its own § How to
-  cut it carries a seven-stage split; taking that split is the first decision
-  this milestone should make.
+- **P1f.20 is 25 days, and it closes no finding.** It was one 23-day stage,
+  S1f.5.20, the largest in either milestone, until the user took its
+  seven-stage split on 2026-11-08. It was blocked on three M1e stages until
+  they ran on 2026-08-30/31, and nothing blocks it now.
 - **P1f.10 is a CSP in disguise**, and the risk is not that the idea is wrong
   but that a stage writes a solver instead of a *structure* and the engine
   acquires a second search. The phase's own risk list is where this is argued;
@@ -110,8 +110,8 @@ is now the one-stage record of what that phase delivered.
 ## Connections
 
 - [M1e](../../docs/history/m1e_review_processing/README.md) — where both phases were written,
-  and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gated `S1f.5.20`
-  until 2026-08-31.
+  and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gated `S1f.5.20`,
+  now P1f.20, until 2026-08-31.
 - [`docs/history/m1d_satisfiability/layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
   — the `Σₖ C(alive, k)` finding, P1f.10's motivating number.
 - [`c/README.md`](../../c/README.md) — the **3 668 465×** between three C
