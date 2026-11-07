@@ -3,7 +3,7 @@
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.1**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 2 days.
-- Half a day to re-take W29's rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) files, prototype, list every move, and show real programs.
+- Half a day to re-take W29's rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed on 2026-11-08, prototype, list every move, and show real programs.
 - Half a day for the lexer, the refusal and the printer.
 - Half a day to retire what only `_` used.
 - Half a day for the pages.
@@ -184,9 +184,26 @@ Each holds unless the user says otherwise, and step 1 shows it working.
 ### Task T1f.5.1.1 — W29 re-taken, every move listed, real programs shown
 
 1. Re-take the case on a fresh build, release and debug.
-2. Start from W29's rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed `open` with their witnesses under
-   `examples/ein-bugs/wrong-answers/`: a fact's argument, an `is-a`'s, a nested one, an
-   activator's, a goal's, and F3's pair.
+2. Start from W29's six rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed `open` on
+   2026-11-08, each witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, each `now`
+   taken at `ec004a48` (the engine `916d97ac`'s), release and debug alike, every one the case's answer
+   above:
+
+   | row | witness | `now`, today |
+   |---|---|---|
+   | `W29/fact-arg` | `underscore-fact-arg.ein`, `(r _ a)` | `solve --minimal`: root's state `(model (r a b) (r a))` |
+   | `W29/is-a-arg` | `underscore-is-a-arg.ein`, `(is-a _ T)` | `solve --minimal`: R {∅}, no candidate; root holds `(is-a T)` |
+   | `W29/nested-fact-arg` | `underscore-nested-fact-arg.ein`, `(r (f _ a) c)` | `solve --minimal`: `(model (r (f a) c))` |
+   | `W29/activator-arg` | `underscore-activator-arg.ein`, `(q _)` | `solve --minimal`: root holds `(q)` and no `hit` |
+   | `W29/goal-arg` | `underscore-goal-arg.ein`, `(query :goal (holds _))` | `solve`: one class, no claim |
+   | `W29/core-two-ways` | `underscore-core-two-ways.ein`, F3 verbatim, and its `-twin`, `?w0` | `solve`: R empty, root's core four facts; the twin's two |
+
+   Each row's `right` is the refusal. Two rows record what the refusal replaces beside it, the
+   register's schema `/13`: `core-two-ways` its core, and `goal-arg` its query's class. The fix moves
+   each `now` to `refused = "kb load error: …"` and drops those two fields, which a refused `now`
+   may not record. `ein-infer/tests/alive_invariant.rs`' `SEEDED` names `underscore-nested-fact-arg`'s
+   `a`, which the refusal takes out of the corpus's loaded programs, so its line goes in the same
+   commit. Every move the fix makes must be one of these rows or step 4's list.
 3. Trace F3's cause in the matcher, and say whether it reaches anything `_` does
    not (a rule with no variable in that slot cannot, by construction).
 4. Prototype the grammar, the refusal and the printer on a `git archive` snapshot

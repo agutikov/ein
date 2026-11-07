@@ -385,6 +385,15 @@ constrained-reasoning research.
   or M1f's S1f.10.6. Twenty known wrong answers have no row yet, and
   [P1f.5](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md)'s
   first stage, S1f.5.0, files them. **M1f is next**, P1f.5 first.
+  S1f.5.0 filed them on 2026-11-08 as W29 to W32, twenty `open` rows each
+  owned by the P1f.5 stage that fixes it (S1f.5.1, .7, .9 and .11), each
+  `now` today's answer on a witness under `examples/ein-bugs/wrong-answers/`,
+  under the register's schema `/13` (beside a refusal, a `now` may record
+  the core and the claims the refusal replaces), so the register reads 103
+  fixed, 30 open and 1 not wrong
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08),
+  and one right, `W30/assert-neq-w-x`'s, R {∅} where S1f.5.7 says two
+  states, waits on the user.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

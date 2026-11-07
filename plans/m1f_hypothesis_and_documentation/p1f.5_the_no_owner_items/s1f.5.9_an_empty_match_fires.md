@@ -3,7 +3,7 @@
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.9**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1 day.
-- A quarter of a day to file the rows, list every move and show the programs.
+- A quarter of a day to re-take the rows [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed, list every move and show the programs.
 - Half a day for rules and hrules.
 - A quarter of a day for the refusal's line and the pages.
 
@@ -43,9 +43,9 @@ over `examples/`, `tests/`, `stdlib/` and `corpus/`).
 | `(hrule h () :match () :assert (q b))` with `(solve :hrules (h))` | proposes nothing: *no candidate* | proposes `(q b)`, as `:match (p ?x)` does: one candidate |
 | `(rule r () :match (and) :assert (false))` | refused at parse: *unexpected input* | refused, with a line that says `and` takes a conjunct and the empty conjunction is `()` |
 
-The first four are wrong answers, a shape that reads nothing in silence, as W24's were. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) files them
-as W31, `open` and owned by this stage, each witness under `examples/ein-bugs/wrong-answers/`, and step 2
-fixes them.
+The first four are wrong answers, a shape that reads nothing in silence, as W24's were. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed them
+on 2026-11-08 as W31, `open` and owned by this stage, each witness under `examples/ein-bugs/wrong-answers/`
+and a corpus entry, and step 2 fixes them.
 
 ## What it changes
 
@@ -63,7 +63,19 @@ fixes them.
 
 ### Task T1f.5.9.1 — the rows, every move listed
 
-W31's four rows re-taken, with the `(and)` refusal's probe. The corpus swept, and
+It starts from W31's four rows, which S1f.5.0 filed `open` on 2026-11-08, each `now` taken at `ec004a48`
+(the engine `916d97ac`'s), release and debug alike, every one the case's answer above:
+
+| row | witness | `now`, today |
+|---|---|---|
+| `W31/empty-match-false` | `empty-match-false.ein` | `solve --minimal`: root's state, ∅ in R |
+| `W31/empty-match-fact` | `empty-match-fact.ein` | `solve --minimal`: `(model (q a))`, no `(q b)` |
+| `W31/empty-match-activator` | `empty-match-activator.ein` | `solve --minimal`: no `(hit a)` |
+| `W31/empty-match-hrule` | `empty-match-hrule.ein` | `solve`: no candidate, R {∅} |
+
+Each re-taken, with the `(and)` refusal's probe. `ein-infer/tests/alive_invariant.rs`' `SEEDED` names `b` on
+`empty-match-fact` and `empty-match-hrule`, a name only the conclusion writes; step 2 says whether the fix
+moves either line. The corpus swept, and
 `cargo test --workspace` run on a prototype. Every move must be one of the case's rows. **Stop and show the
 user the programs**, answers computed.
 

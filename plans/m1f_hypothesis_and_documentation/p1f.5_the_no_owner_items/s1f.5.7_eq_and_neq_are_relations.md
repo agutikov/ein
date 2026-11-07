@@ -191,9 +191,30 @@ kept it: *"yes, keep that default"*. The row's `right` is restated, and this sta
 
 ### Task T1f.5.7.1 — every move listed, real programs shown
 
-A prototype on a `git archive` snapshot under `build/`: the five goals above, `(eq ?x ?y)`, `(neq ?x ?y)`,
-and a claim over each, each answer computed; the corpus swept, and `cargo test --workspace` run. **Stop and
-show the user real programs before any edit** (the standing rule on syntax).
+It starts from W30's three rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed `open`
+on 2026-11-08, each witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, each `now` a
+`solve` taken at `ec004a48` (the engine `916d97ac`'s), release and debug alike:
+
+| row | witness | `now`, today | `right` |
+|---|---|---|---|
+| `W30/assert-neq-w-x` | `assert-neq-w-x.ein`, the inventory's `assert_neq.ein` | R 2 states; `(neq w a)` stored at root, and the false `(neq w w)` at `{(p w)}` | R {∅}: `{(p w)}` dead |
+| `W30/assert-neq-x-x` | `assert-neq-x-x.ein` | R {∅}; `(neq a a)` stored | root dead, R empty |
+| `W30/assert-eq-x-w` | `assert-eq-x-w.ein` | R 2 states; `(eq a w)` stored | root dead, R empty |
+
+**The first row's `right` is not [§ Conclusions](#conclusions-g-21)' table's**, which reads *R 2 states*:
+`w` is a name of the program, so `(p w)` is a candidate, and at `{(p w)}` the rule concludes `(neq w w)`,
+which the ruling makes a contradiction. S1f.5.0 filed R {∅} and put the difference to the user; the table
+stands until the user rules. Two more things move with the fix. `neq` stored as a fact makes a
+`--dump-answer` state file that does not load, a fact line `(neq …)` being a parse error, so
+`ein-cli/tests/answer_round_trip.rs` and `answer_dump.rs` name the two `neq` witnesses (`DO_NOT_LOAD`), and
+each list fails once its files load: T1f.5.7.4 empties both. And `ein-infer/tests/alive_invariant.rs`'
+`SEEDED` names `w` on `assert-neq-w-x` and `assert-eq-x-w`, which stays a name of the program unless the fix
+changes what `invariant::program_names` reads.
+
+Then a prototype on a `git archive` snapshot under `build/`: the five goals above, `(eq ?x ?y)`,
+`(neq ?x ?y)`, and a claim over each, each answer computed; the corpus swept, and `cargo test --workspace`
+run. Every move must be one of the rows, W24's two restated rows, or the case's goals. **Stop and show the
+user real programs before any edit** (the standing rule on syntax).
 
 ### Task T1f.5.7.2 — the relations
 
@@ -211,7 +232,7 @@ hold every mode on the witnesses, and a fixture shows a premise guard with a fre
 ### Task T1f.5.7.4 — conclusions (G-21)
 
 `compile.rs`' `:assert` side: a concluded `eq` or `neq` is checked, never stored. The three rows of
-[§ Conclusions](#conclusions-g-21) are W30's rows, filed `open` by [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) and fixed here, with the oracle
+[§ Conclusions](#conclusions-g-21) are W30's rows, filed `open` by [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) on 2026-11-08 and fixed here, `DO_NOT_LOAD` emptied in the same commit, with the oracle
 agreeing on each.
 
 ### Task T1f.5.7.5 — the pages

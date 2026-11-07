@@ -3,7 +3,7 @@
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.11**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1.5 days.
-- A quarter of a day to file the rows, sweep the corpus and list every move.
+- A quarter of a day to re-take the rows [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed, sweep the corpus and list every move.
 - Half a day for the loader's lists and the check inside terms.
 - A quarter of a day for the drops that go, in the compiler and the macro expander, and the tests.
 - Half a day for the pages: six current kernel pages describe `:where`.
@@ -107,11 +107,14 @@ Each program is `(relation p Node) (relation q Node) (relation hit Node) (p a) (
 | `:expect (model (p a) (p b) :zz 1)` | refused: *`:zz 1` is not a fact* | the same |
 
 The first seven are wrong answers of W24's kind: a written condition or conclusion read as nothing, in
-silence. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) files them as W32, `open` and owned by this stage. Each witness goes under
-`examples/ein-bugs/wrong-answers/`, and each row's `right` is the refusal. Three of them are the inventory's
-probes: `inventory_2026-11-05/probes/kwpair_in_pattern.ein` (G-15),
-`inventory_2026-11-06/probes/where_t3_example.ein` (D-15) and `inventory_2026-11-06/probes/assert_and_kw.ein`
-(G-22). The rest are refusals with no answer to move, so they get no row.
+silence. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed them on 2026-11-08 as W32, `open` and owned by this stage, each
+witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, and each row's `right` is the refusal.
+Each witness is the case's own program, above. Three rows come from the inventory's probes, which were not
+copied as written: `inventory_2026-11-06/probes/where_t3_example.ein` (D-15) is refused today for its
+relation variable `?r` (W24's refusal), so it cannot show the drop;
+`inventory_2026-11-05/probes/kwpair_in_pattern.ein` (G-15) writes the range `1..3`, which S1f.5.3 retires;
+and `inventory_2026-11-06/probes/assert_and_kw.ein` (G-22) is the same shape over other relations. The rest
+are refusals with no answer to move, so they get no row.
 
 ## What moves in the corpus
 
@@ -193,7 +196,26 @@ Each page says what the form takes, that any other keyword is refused, and that 
 
 ### Task T1f.5.11.1 — the rows, every move listed
 
-W32's seven rows re-taken. The lists prototyped, and the corpus and
+It starts from W32's seven rows, which S1f.5.0 filed `open` on 2026-11-08, each `now` taken at
+`ec004a48` (the engine `916d97ac`'s), release and debug alike, every one the case's answer above:
+
+| row | witness | `now`, today |
+|---|---|---|
+| `W32/where-in-and` | `where-in-and.ein` | `solve --minimal`: loads; root holds `(q a)` and `(q b)` |
+| `W32/where-in-pattern` | `where-in-pattern.ein` | the same |
+| `W32/where-on-rule` | `where-on-rule.ein` | the same |
+| `W32/kwpair-in-pattern` | `kwpair-in-pattern.ein` | `solve --minimal`: `(model (p a) (p b) (q a) (q b))`, `v` a name |
+| `W32/kwpair-in-assert` | `kwpair-in-assert.ein` | the same |
+| `W32/kwpair-in-goal` | `kwpair-in-goal.ein` | `solve`: one class, the claim `held` |
+| `W32/kwpair-in-macro` | `kwpair-in-macro.ein` | `solve --minimal`: loads, flagged; root holds `(hit a)` and `(hit b)` |
+
+`kwpair-in-goal`'s `now` records its query's class and claim beside the refusal, the register's schema
+`/13`, and the fix drops both, which a refused `now` may not record. Three lines outside the register move
+with the fix: `ein-infer/tests/alive_invariant.rs`' `SEEDED` names `v` on `kwpair-in-pattern` and
+`kwpair-in-assert`, and `detector.rs` counts `kwpair-in-macro` among the flagged corpus programs (49 since
+S1f.5.0); a refused program loads in neither.
+
+Each re-taken. The lists prototyped, and the corpus and
 `corpus/fuzz_findings/` swept with every command that loads. `cargo test --workspace` is run on the
 prototype. Every move must be one of the case's rows, the three files above, or a fixture whose line's text
 changes. **Stop and show the user** the refusal lines and `wrappers.ein` as rewritten, computed on the

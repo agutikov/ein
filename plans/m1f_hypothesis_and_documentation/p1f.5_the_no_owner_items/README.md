@@ -248,7 +248,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 
 | ID | title | est. | item | state |
 |---|---|---:|---|---|
-| [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) | The known wrong answers filed: W29 to W32, before any stage moves them | 1 d | the twenty rows of S1f.5.1, .7, .9 and .11 | specified, not started; **runs first** (the user, 2026-11-08: *"plan adding rows in p1f.5"*) |
+| [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) | The known wrong answers filed: W29 to W32, before any stage moves them | 1 d | the twenty rows of S1f.5.1, .7, .9 and .11 | **the twenty rows filed 2026-11-08** (`0525444e`, `da58dda6`), each `open` and owned by its stage: the register at 103 fixed, **30 open** and 1 not-wrong (`grep '^status' corpus/wrong_answers.toml \| sort \| uniq -c`, 2026-11-08); one right, `W30/assert-neq-w-x`'s, put to the user; T1f.5.0.4, W33 to W35 from S1f.5.5's census, next (the user, 2026-11-08: *"plan adding rows in p1f.5"*) |
 | [S1f.5.1](s1f.5.1_bare_underscore_refused.md) | A bare `_` is reserved and refused, and `_` is valid anywhere in a name | 2 d | W-22, F3 | specified, not started |
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | A string is natural language: only in `:why`, `:source` and `:goal-text` | 2.5 d | F4, F5, G-6 | specified, not started; runs after S1f.5.1 |
 | [S1f.5.3](s1f.5.3_range_retired.md) | No ranges: the `RANGE` token retired | 1 d | F6, G-6's range half | specified, not started |
