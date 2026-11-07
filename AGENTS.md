@@ -778,11 +778,13 @@ constrained-reasoning research.
   spliced into a copy the run points `$EIN_STDLIB` at, killed when `ein test
   tests/` exits non-zero. `tests/README.md` had carried a **hand-taken** 50 of
   51 since M1c with one named survivor; the script is exhaustive where that was
-  one-per-family — **157 of 217** on 2026-08-31, and **165** on 2026-11-03,
-  when M1e2's region claim had killed eight obligation-rule mutants — and banks
+  one-per-family — **157 of 217** on 2026-08-31, **165** on 2026-11-03,
+  when M1e2's region claim had killed eight obligation-rule mutants, and
+  **167** on 2026-11-08, when M1f S1f.5.17 found two more that *forbid*'s
+  refusal had killed at `597b2b7e` — and banks
   the survivors as a *set* in `tests/mutation_survivors.txt`, because a score
-  decays while the thing it guards grows. **42 of the 52 are in `slots.ein`**
-  (2026-11-03). The recorded survivor is
+  decays while the thing it guards grows. **42 of the 50 are in `slots.ein`**
+  (2026-11-08). The recorded survivor is
   dead: `tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein`.
   The twenty-fourth, **`doc_audit.py`**, is M1e S1e.2.2's and the only one
   whose subject is **the documentation** rather than the engine: does a page in

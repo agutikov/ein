@@ -60,6 +60,23 @@ pub const EQUALITY_SHAPE: &str = "doublecircle";
 pub const VAR_SHAPE: &str = "diamond";
 pub const WILDCARD_ATTRS: &str = "shape=diamond, style=dashed";
 
+/// The rank separation of a digraph whose diamonds and octagons stand outside
+/// any cluster: a rule's overlay, and a [`Builder`](crate::builder::Builder)
+/// digraph that holds a hyperedge node. M1f S1f.5.17.
+///
+/// An edge label makes `dot` halve the rank separation (`rank.c`,
+/// `edgelabel_ranks`), and the default 0.5 in becomes 18 pt, the half-height
+/// of a default node. On Ubuntu 26.04's x86-64-v3 build of Graphviz, whose
+/// `libpathplan` orientation test is contracted into a fused multiply-add,
+/// that puts the slanted side of a diamond or an octagon through exactly
+/// collinear corners, and the spline router writes `triangulation failed`.
+/// 0.55 in halves to 20 pt. Every other `ranksep` tried gave no such warning
+/// on any corpus view. The default gave one on 3 to 22 views at every
+/// `nodesep` from 0.20 to 0.40. The side-by-side rules draw theirs inside
+/// clusters and were never refused, nor were the KB and constraint views
+/// (the stage file's § Step 1). `dot_wellformed.rs` keeps that true.
+pub const POLYGON_RANKSEP: &str = "ranksep=0.55";
+
 /// A quoted DOT label whose non-empty parts are joined by the two-character
 /// `\n` line break, each escaped.
 ///

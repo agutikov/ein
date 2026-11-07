@@ -151,6 +151,15 @@ digraph rule_triangle_overlay {
 }
 ```
 
+**The overlay writes `ranksep=0.55`**, and so does an IR digraph that holds a
+Levi octagon (M1f S1f.5.17): their diamonds and octagons stand outside any
+cluster. `dot` halves the rank separation of a graph whose edges carry labels,
+and the default 0.5 in then comes to 18 pt, a default node's half-height. On
+Ubuntu 26.04's x86-64-v3 build of Graphviz, the CI runner's, that geometry
+makes the spline router fail on a diamond's or an octagon's slanted side
+([`dot_util::POLYGON_RANKSEP`](../../../../ein.rs/crates/ein-render/src/dot_util.rs),
+[S1f.5.17 § Step 1](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.17_ci_green_again.md#step-1--reproduced-and-the-causes-2026-11-08)).
+
 ## Trace rendering — three views, configurable
 
 Default: **(a)** — matches

@@ -243,10 +243,34 @@ HEAD -- stdlib/` is empty), so the kills are the suite's and the engine's.
 **The bank's diff is those eight lines, removed, and nothing added**: 60 → 52,
 re-banked by `--bless` once each line was explained here.
 
-**Where the remaining 52 are.** Forty-two in `slots.ein`, which has the most
+**167 of 217 on 2026-11-08: *forbid* killed two**
+(`python3 utils/stdlib_mutants.py`, M1f
+[S1f.5.17](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.17_ci_green_again.md)).
+The nightly's `--check` failed on them on 2026-11-06 and 11-07, its first two
+runs after they died, and on this machine too, so the platform is not what
+killed them:
+
+| survivor until 2026-11-04 | killed by | what the run says | since |
+|---|---|---|---|
+| `bijection.ein::bijective-setup::swap-assert::(total ?R ?isa)` | `stdlib/bijection/06_blind_enumeration` | refused at load, exit 2: *rule 'total' [activator is-a seats]: concludes (false) from (absent …) over seats, a relation a commitment can still extend* | `597b2b7e`, T1e2.2.5.2: *forbid*'s refusal |
+| `bijection.ein::bijective-setup::swap-assert::(surjective ?R ?isa)` | the same | the same, of *rule 'surjective'* | `597b2b7e` |
+
+The swap turns the activator `(total ?R ?isa)` into `(total is-a seats)`, so
+`std.algebra`'s `total` reads `seats` under `absent`. `06_blind_enumeration` is
+the one program in `stdlib/bijection/` that leaves the blind enumerator on, so
+`seats` is a relation a commitment can extend, and *forbid* refuses the
+program. A refusal is a kill: the script counts any non-zero exit of `ein test
+tests/`. The *since* column is measured as the table above measures it: `git
+bisect run` over `3ee7796a..916d97ac` names `597b2b7e`. At its parent
+`c887a35b` both mutants pass (66 held, exit 0), and at `597b2b7e` both are
+refused. `stdlib/` and `tests/` are unchanged since `3ee7796a`, the last green
+nightly's commit (S1f.5.17, 2026-11-08). **The bank's diff is those two lines,
+removed, and nothing added**: 52 → 50.
+
+**Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the
-rest split between `algebra` (4), `bijection` (4) and `elim` (2)
-(`grep -c '^slots' tests/mutation_survivors.txt`). That distribution is the
+rest split between `algebra` (4), `bijection` (2) and `elim` (2)
+(`grep -c '^slots' tests/mutation_survivors.txt`, 2026-11-08). That distribution is the
 useful part of the number, and it is what a score alone never said.
 
 ### What holds this directory up

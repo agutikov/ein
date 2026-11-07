@@ -17,7 +17,9 @@
 use ein_core::is_predicate;
 use ein_ir::{Ast, Node, NodeId};
 
-use crate::dot_util::{GROUND_SHAPE, HYPER_SHAPE, VAR_SHAPE, WILDCARD_ATTRS, quote, value_label};
+use crate::dot_util::{
+    GROUND_SHAPE, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, WILDCARD_ATTRS, quote, value_label,
+};
 use crate::palette::hash_color;
 
 const NEG_COLOUR: &str = "#d62728"; // red — negated premises / conclusions
@@ -515,9 +517,12 @@ fn render_overlay(
     for (k, v) in a_decls {
         decls_setdefault(&mut merged, k, v);
     }
+    // No cluster holds the diamonds and octagons here, unlike the side-by-side
+    // view's, so the overlay sets the rank separation (M1f S1f.5.17).
     let mut out = vec![
         format!("digraph rule_{safe}_overlay {{"),
         format!("  label={}; labelloc=t;", quote(name)),
+        format!("  {POLYGON_RANKSEP};"),
     ];
     out.extend(decl_lines(&merged).iter().map(|ln| format!("  {ln}")));
     out.extend(m_body.iter().map(|ln| format!("  {ln}")));

@@ -6,10 +6,13 @@
 //! the ontology later calls it a type. The override keeps the node's original
 //! **position**, and nodes are emitted in first-declaration order, so a
 //! `HashMap` here would scramble the file.
+//!
+//! A digraph that holds a hyperedge node sets
+//! [`POLYGON_RANKSEP`] (M1f S1f.5.17).
 
 use std::collections::HashMap;
 
-use crate::dot_util::{HYPER_SHAPE, quote};
+use crate::dot_util::{HYPER_SHAPE, POLYGON_RANKSEP, quote};
 
 #[derive(Default)]
 pub struct Builder {
@@ -71,17 +74,18 @@ impl Builder {
     }
 
     pub fn build(self) -> String {
-        let mut lines: Vec<String> = self
-            .nodes
-            .iter()
-            .map(|(id, attrs)| {
-                if attrs.is_empty() {
-                    format!("  {id};")
-                } else {
-                    format!("  {id} [{attrs}];")
-                }
-            })
-            .collect();
+        // A hyperedge is an octagon, and `fresh_h` is the only door to one.
+        let mut lines: Vec<String> = Vec::new();
+        if self.hcount > 0 {
+            lines.push(format!("  {POLYGON_RANKSEP};"));
+        }
+        lines.extend(self.nodes.iter().map(|(id, attrs)| {
+            if attrs.is_empty() {
+                format!("  {id};")
+            } else {
+                format!("  {id} [{attrs}];")
+            }
+        }));
         lines.extend(self.edges);
         format!("digraph {} {{\n{}\n}}", self.name, lines.join("\n"))
     }

@@ -13,9 +13,10 @@ negative case lowers it and nothing says so.
 **This is exhaustive where the hand sweep was one-per-family**, so the two
 numbers are not the same measurement: 217 mutants against 51, and 157 killed
 on 2026-08-31, 165 on 2026-11-03 (eight obligation-rule mutants killed by
-M1e2's region claim; `tests/README.md` says which program kills each). The
+M1e2's region claim) and 167 on 2026-11-08 (two `bijective-setup` mutants
+refused by *forbid*); `tests/README.md` says which program kills each. The
 survivors are banked as a *set* in `tests/mutation_survivors.txt`, and 42 of
-the 52 are in `slots.ein` — the module with the most parameterised,
+the 50 are in `slots.ein` — the module with the most parameterised,
 direction-sensitive rules and the fewest programs per rule.
 
     utils/stdlib_mutants.py                  # the table, to stdout
