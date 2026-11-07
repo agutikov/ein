@@ -19,7 +19,11 @@ user's name rule and instruction to generate the parser
 **Steps 1 and 2 done on 2026-11-08, on the user's go-ahead of that day; stopped there, to show the user
 before any edit**: the census is [`s1f.5.5_census.md`](s1f.5.5_census.md), and the final grammar, the
 real programs with their answers and the two questions are [`s1f.5.5_paper_grammar.md`](s1f.5.5_paper_grammar.md).
-No engine code, test, golden or fixture has moved. **The generator is grmtools, ruled by the user on 2026-11-07** for its features
+No engine code, test, golden or fixture has moved. **The user read it the same day and ruled both questions**
+([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b),
+[Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) (a)),
+overruling none of its ten defaults, so the paper grammar stands. S1f.5.3, S1f.5.4, S1f.5.1 and S1f.5.2 run next
+on the hand-written parser, then this stage's T3. **The generator is grmtools, ruled by the user on 2026-11-07** for its features
 ([§ The generator](#the-generator-grmtools-ruled)), **with its error recovery on, ruled the same day**: this
 stage makes recovery deterministic first, with a patch to `lrpar` ([F11](#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
 **Depends on:** the user's choice of generator and rulings on what each position holds. Its steps 1 and 2
@@ -431,11 +435,23 @@ Each goes to the user with real programs, not in this stage's prose:
   [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21)'s.
 - **G-14:** with `:assert` checked by the grammar, does a bad conclusion that never fires get refused? Its
   unbound-variable part is ruled: refused at load, by
-  [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) (F13).
+  [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) (F13). **Ruled 2026-11-08, (b)**
+  ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused)): refused at the
+  parse whether or not the rule fires, and the one shape no grammar sees, an activator a rule derives binding a
+  relation parameter to a fact, refused at load by a static check, which is
+  [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)'s.
 - **The 34 files** the draft refuses that today's parser accepts: which stay as refusal fixtures, and which
   are rewritten. Re-taken at step 1: the final grammar refuses 55, the draft's 34 and 20 refusal fixtures
   whose refusal it takes over from the loader, and one syntax fixture
   ([Q2](s1f.5.5_paper_grammar.md#q2--the-55-files-the-grammar-refuses-that-todays-parser-accepts)).
+  **Ruled 2026-11-08, (a)**
+  ([Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts)): the
+  26 refusal fixtures stay and move to `examples/broken/`, except `reserved_open_direct`; `derivation_cycle`
+  and the five syntax fixtures are rewritten; the 23 others are the owning stages'.
+- **W35, `(absent ())` holds**, filed by [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) on
+  [Q-M1f.3](../open_questions.md#q-m1f3--three-wrong-answers-the-census-found-with-no-row): this stage owns it,
+  and the swap fixes it, since the grammar takes `()` only as a whole `:match` or `:assert` (default 7). Its
+  row turns `fixed` in T4's commit.
   G-14 is [Q1](s1f.5.5_paper_grammar.md#q1--g-14-with-assert-checked-by-the-grammar-is-a-bad-conclusion-that-never-fires-refused).
 
 ## The method

@@ -68,7 +68,10 @@ to a refusal at load, with the corpus entry's note and golden restated. No regis
 is a regression fixture, not a wrong answer.
 
 **What it closes.** F13, and the unbound-variable part of G-14, a bad conclusion that loads and is found
-only when it fires ([S1f.5.5](s1f.5.5_the_grammar.md#questions-it-has-to-settle)).
+only when it fires ([S1f.5.5](s1f.5.5_the_grammar.md#questions-it-has-to-settle)). G-14's other load-time
+part, ruled (b) on 2026-11-08 ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused)),
+a derived activator binding a relation parameter to a fact, is
+[S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)'s, which runs after this stage.
 
 ## The method
 
