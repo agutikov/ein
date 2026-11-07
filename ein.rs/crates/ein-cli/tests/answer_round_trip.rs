@@ -70,6 +70,18 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
     Ok((by_value(&kb, &terms), not_given))
 }
 
+/// **The state files that do not load today**, each the witness of an open
+/// register row (M1f S1f.5.0, 2026-11-08): W30, a rule's concluded `neq`
+/// stored as a fact, which a state file writes as a fact line `(neq …)`, and
+/// the parser refuses one. Not a printer's defect but the row's own wrong
+/// answer, so each is named rather than checked, and each must still fail:
+/// a state file here that loads is W30 fixed, and S1f.5.7 empties the list in
+/// the commit that fixes it, with `answer_dump.rs`'s copy.
+const DO_NOT_LOAD: [&str; 2] = [
+    "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
+    "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein",
+];
+
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
     let lost: Vec<&String> = want.difference(got).take(3).collect();
@@ -134,8 +146,14 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
         let want = nodes
             .with_fixpoint(&facts, |kb, terms| by_value(kb, terms))
             .expect("saturates");
+        let named = DO_NOT_LOAD.contains(&file);
         match reloaded(&dir.join(path)) {
+            Err(_) if named => {}
             Err(e) => bad.push(format!("{file}: {path} does not load: {e}")),
+            Ok(_) if named => bad.push(format!(
+                "{file}: {path} loads, and DO_NOT_LOAD names it: W30 is fixed, so drop it \
+                 from the list in the same commit"
+            )),
             Ok((got, not_given)) => {
                 if got != want {
                     bad.push(format!("{file}: {path}: {}", diff(&want, &got)));

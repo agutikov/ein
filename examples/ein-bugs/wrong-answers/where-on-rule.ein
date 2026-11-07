@@ -1,0 +1,29 @@
+;;; A `:where` keyword on a rule is ignored, so the rule fires without its
+;;; guard — M1f **W32**, register row `W32/where-on-rule`
+;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
+;;; S1f.5.11's case (D-15), filed `open` and owned by S1f.5.11, on the user's
+;;; ruling of 2026-11-07 (Q-M1e2.28).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a rule that writes `:where (neq ?x a)` as a keyword of
+;;; the rule form, after its `:assert`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A rule takes `:match`, `:assert`, `:why` and `:priority` and no other
+;;; keyword (Q-M1e2.28), so the program is refused at load, with a line naming
+;;; the rule and its list: every command that reads it exits 1 (`ein test`:
+;;; 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The keyword is ignored, so `r` fires for every `p`: root derives `(q a)`
+;;; and `(q b)`, with no line (`ein saturate FILE --dump`), and R is four
+;;; states over the candidates `(hit a)` and `(hit b)`, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike).
+
+(relation p Node) (relation q Node) (relation hit Node)
+(p a) (p b)
+(rule r () :match (p ?x) :assert (q ?x) :where (neq ?x a))

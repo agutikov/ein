@@ -1,0 +1,34 @@
+;;; A rule's concluded `neq` is stored as a fact — M1f **W30**, register row
+;;; `W30/assert-neq-w-x` (`corpus/wrong_answers.toml`), banked by S1f.5.0
+;;; (2026-11-08) from the inventory of 2026-11-06's G-21 (its probe
+;;; `assert_neq.ein`, the program unchanged), filed `open` and owned by
+;;; S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and a rule concluding `(neq w ?x)` from `(p ?x)`. `w` is
+;;; a name of the program (a rule's `:assert` names it), so `(p w)` is a
+;;; candidate.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `eq` and `neq` are relations whose facts are fixed by name identity,
+;;; computed and never stored, and a rule's conclusion of one is checked: a
+;;; true one adds nothing, a false one makes its state a contradiction
+;;; (G-21). At root `(neq w a)` holds and adds nothing. At `{(p w)}` the rule
+;;; concludes `(neq w w)`, which is false, so that state is dead. R is {∅},
+;;; one state, root's `(p a)` alone.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The conclusion is stored: root holds `(neq w a :rule r)` (`ein saturate
+;;; FILE --dump`), and `{(p w)}` holds `(neq w a)` and the false `(neq w w)`,
+;;; so R is two states, exit 0 (`ein solve FILE`, its `--dump-answer` state
+;;; files, and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike). Neither state file loads: a fact line
+;;; `(neq w a)` is a parse error, so `answer_round_trip.rs` and
+;;; `answer_dump.rs` name this file until S1f.5.7 fixes W30.
+
+(relation p Node)
+(p a)
+(rule r () :match (p ?x) :assert (neq w ?x))

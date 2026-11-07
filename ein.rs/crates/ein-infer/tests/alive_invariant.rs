@@ -125,7 +125,17 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// M1e2's W28 witness `wrong-answers/classes-int-name.ein` (S1e2.3.8,
 /// T1e2.3.8.2) stands here: the name `1`, which only rule `b`'s string
 /// `"1"` writes, printed `"1"` since the stage's one printer.
-const SEEDED: [(&str, &[&str]); 26] = [
+///
+/// Seven of the witnesses M1f S1f.5.0 banked on 2026-11-08 stand here, each a
+/// name only a rule or a nested fact writes: W30's `assert-neq-w-x.ein` and
+/// `assert-eq-x-w.ein`, `w` in a concluded `neq` or `eq`, which makes `(p w)`
+/// a candidate; W31's `empty-match-fact.ein` and `empty-match-hrule.ein`,
+/// `b` in a conclusion no firing reaches; W32's `kwpair-in-pattern.ein` and
+/// `kwpair-in-assert.ein`, `v`, the value of a keyword pair the compiler
+/// drops and the list of the program's names still reads; and W29's
+/// `underscore-nested-fact-arg.ein`, `a`, inside the nested fact a bare `_`
+/// was dropped from. Each owning stage says whether its fix moves its line.
+const SEEDED: [(&str, &[&str]); 33] = [
     (
         "examples/broken/compile/eq_arity_high.ein",
         &[
@@ -163,12 +173,36 @@ const SEEDED: [(&str, &[&str]); 26] = [
         &["`Ann`, asserted by hrule `guess`"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/assert-eq-x-w.ein",
+        &["`w`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
+        &["`w`, asserted by rule `r`"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/classes-int-name.ein",
         &["`\"1\"`, asserted by rule `b`"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/empty-match-fact.ein",
+        &["`b`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/empty-match-hrule.ein",
+        &["`b`, asserted by hrule `h`"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
         &["`Z`, asserted by rule `spawn`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kwpair-in-assert.ein",
+        &["`v`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein",
+        &["`v`, matched by rule `r`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/match-only.ein",
@@ -197,6 +231,10 @@ const SEEDED: [(&str, &[&str]); 26] = [
     (
         "examples/ein-bugs/wrong-answers/str-in-hrule.ein",
         &["`lbl`, asserted by hrule `h`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein",
+        &["`a`, in (r (f a) c)"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",

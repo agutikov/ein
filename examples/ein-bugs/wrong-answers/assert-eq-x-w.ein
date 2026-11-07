@@ -1,0 +1,27 @@
+;;; A rule's false `eq` conclusion is stored as a fact — M1f **W30**, register
+;;; row `W30/assert-eq-x-w` (`corpus/wrong_answers.toml`), banked by S1f.5.0
+;;; (2026-11-08) from S1f.5.7's § Conclusions (G-21), filed `open` and owned
+;;; by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and a rule concluding `(eq ?x w)` from `(p ?x)`. `w` is a
+;;; name of the program, so `(p w)` is a candidate.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A rule's conclusion of `eq` is checked, never stored, and two different
+;;; names are two values, so `(eq a w)` cannot make them one (G-21). At root
+;;; the rule concludes `(eq a w)`, which is false, so root is a contradiction:
+;;; its core is `(p a)` and `refuted by` names `r`. R is empty.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The conclusion is stored: root holds `(eq a w :rule r)` (`ein saturate
+;;; FILE --dump`), and R is two states, ∅ and `{(p w)}`, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike).
+
+(relation p Node)
+(p a)
+(rule r () :match (p ?x) :assert (eq ?x w))

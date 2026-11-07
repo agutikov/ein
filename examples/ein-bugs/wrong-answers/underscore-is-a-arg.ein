@@ -1,0 +1,25 @@
+;;; A bare `_` as an `is-a` subject is dropped at load, in silence — M1f
+;;; **W29**, register row `W29/is-a-arg` (`corpus/wrong_answers.toml`),
+;;; banked by S1f.5.0 (2026-11-08) from S1f.5.1's case (the corpus fixture
+;;; `syntax/is-a-shapes.ein` writes the same fact), filed `open` and owned by
+;;; S1f.5.1, on the user's ruling of 2026-11-06 (Q-M1e2.22).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two kernel `is-a` facts, the second writing the bare `_` as its subject.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A bare `_` is reserved and names nothing (Q-M1e2.22), so the program is
+;;; refused at load, with a line naming the place: every command that reads it
+;;; exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The loader drops the `_` and stores the one-argument `(is-a T)`, with no
+;;; line (`ein saturate FILE --dump`). H is empty and R is {∅}, exit 0 (`ein
+;;; solve FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike). `--dump-answer`'s state file lists `(is-a T)`.
+
+(is-a a T)
+(is-a _ T)

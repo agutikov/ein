@@ -1,0 +1,31 @@
+;;; A keyword pair in a macro call is dropped by the expander, in silence —
+;;; M1f **W32**, register row `W32/kwpair-in-macro`
+;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
+;;; S1f.5.11's case, filed `open` and owned by S1f.5.11, on the user's ruling
+;;; of 2026-11-07 (Q-M1e2.28).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a rule whose `:match` calls `std.macro`'s `forall` with
+;;; the pair `:k v` after its three arguments.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A macro call is a term, and a term takes no keyword (Q-M1e2.28), so the
+;;; program is refused at load, with a line naming the rule and the clause:
+;;; every command that reads it exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The macro expander's arity filter drops the pair, so the call is
+;;; `(forall ?y (q ?y) (p ?y))`, which holds where no `q` fact lacks its `p`:
+;;; root derives `(hit a)` and `(hit b)`, with no line (`ein saturate FILE
+;;; --dump`). The static check flags the program, the `forall`'s `absent` over
+;;; `q`, which a commitment can extend, and R is four states over the
+;;; candidates `(q a)` and `(q b)`, exit 0 (`ein solve FILE` and `ein oracle
+;;; FILE` at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+
+(import std.macro :symbols (forall))
+(relation p Node) (relation q Node) (relation hit Node)
+(p a) (p b)
+(rule r () :match (and (p ?x) (forall ?y (q ?y) (p ?y) :k v)) :assert (hit ?x))

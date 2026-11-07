@@ -1,0 +1,26 @@
+;;; A keyword pair in a query's goal is dropped, and the claim holds — M1f
+;;; **W32**, register row `W32/kwpair-in-goal` (`corpus/wrong_answers.toml`),
+;;; banked by S1f.5.0 (2026-11-08) from S1f.5.11's case, filed `open` and
+;;; owned by S1f.5.11, on the user's ruling of 2026-11-07 (Q-M1e2.28).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a query whose goal writes the pair `:zz 1` beside the
+;;; conjunct `(p ?x)`, with a claim over it.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A term takes no keyword (Q-M1e2.28), so the program is refused at load,
+;;; with a line naming the query and the clause: every command that reads it
+;;; exits 1 (`ein test`: 2), and no claim is checked.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The pair is dropped: the goal is `(p ?x)`, answered `?x = a` and `?x = b`
+;;; in one projection class over R's 16 states, and the claim holds (`ein solve
+;;; FILE`, and `ein test FILE`: *1 held*, exit 0, at `ec004a48`, the engine
+;;; `916d97ac`'s, release and debug alike).
+
+(relation p Node) (relation q Node) (relation hit Node)
+(p a) (p b)
+(query :goal (and (p ?x) :zz 1) :expect (model (p a) (p b)))

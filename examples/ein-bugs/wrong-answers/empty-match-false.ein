@@ -1,0 +1,25 @@
+;;; A rule whose `:match` is `()` never fires — M1f **W31**, register row
+;;; `W31/empty-match-false` (`corpus/wrong_answers.toml`), banked by S1f.5.0
+;;; (2026-11-08) from S1f.5.9's case (P1f.5's F12), filed `open` and owned by
+;;; S1f.5.9, on the user's ruling of 2026-11-07 on F12.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact and a rule with no premise that concludes `(false)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An empty conjunction is true, so the rule fires once (the user,
+;;; 2026-11-07: *"1 fire"*): root is dead and R is empty. Its core is `[]`,
+;;; the empty set (Q-M1e2.27), and `refuted by` names `r`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The rule loads and never fires (`ein saturate FILE --dump`): root is
+;;; alive, ∅ is in R and R is two states, ∅ and `{(p a)}`, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike).
+
+(relation q Node) (relation p Node)
+(q a)
+(rule r () :match () :assert (false))

@@ -1,0 +1,31 @@
+;;; A keyword pair inside a pattern is dropped in silence — M1f **W32**,
+;;; register row `W32/kwpair-in-pattern` (`corpus/wrong_answers.toml`), banked
+;;; by S1f.5.0 (2026-11-08) from S1f.5.11's case (the inventory of
+;;; 2026-11-05's G-15; its probe `kwpair_in_pattern.ein` wrote
+;;; `(n ?x :where 1..3)`, and the range, which S1f.5.3 retires, is not
+;;; written here), filed `open` and owned by S1f.5.11, on the user's ruling
+;;; of 2026-11-07 (Q-M1e2.28).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a rule whose premise writes the pair `:k v` inside the
+;;; pattern `(p ?x …)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A term takes no keyword (Q-M1e2.28), so the program is refused at load,
+;;; with a line naming the rule and the clause: every command that reads it
+;;; exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The compiler drops the pair, so `r` fires for every `p`: root derives
+;;; `(q a)` and `(q b)`, with no line (`ein saturate FILE --dump`). The pair's
+;;; value `v` is still a name of the program, so `(p v)`, `(q v)` and the
+;;; `hit` facts over `a`, `b` and `v` are candidates, and R is 24 states, 32
+;;; commitments, exit 0 (`ein solve FILE` and `ein oracle FILE` at
+;;; `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+
+(relation p Node) (relation q Node) (relation hit Node)
+(p a) (p b)
+(rule r () :match (p ?x :k v) :assert (q ?x))

@@ -1,0 +1,26 @@
+;;; An hrule whose `:match` is `()` proposes nothing — M1f **W31**, register
+;;; row `W31/empty-match-hrule` (`corpus/wrong_answers.toml`), banked by
+;;; S1f.5.0 (2026-11-08) from S1f.5.9's case (P1f.5's F12), filed `open` and
+;;; owned by S1f.5.9, on the user's ruling of 2026-11-07 on F12.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, an hrule with no premise proposing `(q b)`, and a solve
+;;; form naming it as the hypothesis rung.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An hrule's empty `:match` fires as a rule's does (the user, 2026-11-07:
+;;; *"2 same"*), so it proposes `(q b)`, as `:match (p ?x)` would: H is one
+;;; candidate, nothing refutes it, and R is ∅ and `{(q b)}`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The hrule proposes nothing: *no candidate: R is {∅} or empty, decided by
+;;; root alone*, and R is {∅}, exit 0 (`ein solve FILE` and `ein oracle FILE`
+;;; at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+
+(relation q Node) (relation p Node)
+(p a)
+(hrule h () :match () :assert (q b))
+(solve :hrules (h))

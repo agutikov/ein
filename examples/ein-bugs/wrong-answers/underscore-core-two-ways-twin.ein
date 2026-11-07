@@ -1,0 +1,27 @@
+;;; The twin of `underscore-core-two-ways.ein` — M1f **W29**, register row
+;;; `W29/core-two-ways` (`corpus/wrong_answers.toml`), banked by S1f.5.0
+;;; (2026-11-08) from P1f.5's F3: the same program with `w`'s slot written
+;;; `?w0`, a variable the rule reads nowhere else.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Root is dead. `(hit w)` has two derivations, through `(holds b0)` and
+;;; through `(holds s0)`, and the smallest frontier over them, with `(c x)`,
+;;; is `(c x) (small s0)`: two facts (`glossary.md` § Smallest contradiction
+;;; frontier).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R is empty, every node dead, and root's core is `(c x) (small s0)` (`ein
+;;; solve FILE` at `ec004a48`, the engine `916d97ac`'s, release and debug
+;;; alike): the record of what the witness's slot would report as a variable.
+;;; Once S1f.5.1 refuses the witness, this file is the program a bare `_` is
+;;; rewritten as.
+
+(relation holds T) (relation hit T) (relation big T) (relation big2 T) (relation big3 T) (relation small T) (relation c T)
+(big b0) (big2 b0) (big3 b0)
+(rule m1 () :match (and (big ?x) (big2 ?x) (big3 ?x)) :assert (holds ?x))
+(rule w () :match (holds ?w0) :assert (hit w))
+(rule k () :match (and (hit w) (c x)) :assert (false))
+(rule s () :match (small ?x) :assert (holds ?x))
+(c x) (small s0)

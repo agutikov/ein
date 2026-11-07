@@ -1,0 +1,31 @@
+;;; A keyword pair beside an `:assert`'s conjuncts is dropped in silence —
+;;; M1f **W32**, register row `W32/kwpair-in-assert`
+;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
+;;; S1f.5.11's case (the inventory of 2026-11-06's G-22, its probe
+;;; `assert_and_kw.ein`, written over the case's program), filed `open` and
+;;; owned by S1f.5.11, on the user's ruling of 2026-11-07 (Q-M1e2.28).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a rule whose conclusion writes the pair `:k v` beside
+;;; the conjunct `(q ?x)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A term takes no keyword (the user, 2026-11-07, on G-22: *"there are fixed
+;;; set of allowed kwargs"*), so the program is refused at load, with a line
+;;; naming the rule and the clause: every command that reads it exits 1 (`ein
+;;; test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The pair is dropped: root derives `(q a)` and `(q b)`, with no line (`ein
+;;; saturate FILE --dump`). The pair's value `v` is still a name of the
+;;; program, so `(p v)`, `(q v)` and the `hit` facts over `a`, `b` and `v` are
+;;; candidates, and R is 24 states, 32 commitments, exit 0 (`ein solve FILE`
+;;; and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s, release and
+;;; debug alike).
+
+(relation p Node) (relation q Node) (relation hit Node)
+(p a) (p b)
+(rule r () :match (p ?x) :assert (and (q ?x) :k v))

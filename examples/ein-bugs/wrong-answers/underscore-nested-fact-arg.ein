@@ -1,0 +1,26 @@
+;;; A bare `_` inside a nested fact is dropped at load, in silence — M1f
+;;; **W29**, register row `W29/nested-fact-arg` (`corpus/wrong_answers.toml`),
+;;; banked by S1f.5.0 (2026-11-08) from S1f.5.1's case (the inventory of
+;;; 2026-11-06's W-22), filed `open` and owned by S1f.5.1, on the user's
+;;; ruling of 2026-11-06 (Q-M1e2.22).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact whose first argument is the nested fact `(f _ a)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A bare `_` is reserved and names nothing, at any depth (Q-M1e2.22), so the
+;;; program is refused at load, with a line naming the place: every command
+;;; that reads it exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The loader drops the `_` and stores `(r (f a) c)`, with no line (`ein
+;;; saturate FILE --dump`). Root's state is `(model (r (f a) c))` and R is four
+;;; states, over the candidates `(r a c)` and `(r c a)`, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s, release
+;;; and debug alike).
+
+(relation r T T)
+(r (f _ a) c)

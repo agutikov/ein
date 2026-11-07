@@ -1432,6 +1432,132 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1e2 W28 (`W28/classes-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a goal `(got ?v)` answered by the int `1` in some states and by the name `1` in others. R is eight states in four projection classes; until S1e2.3.8 the classes were keyed by printed text, in which the int and the name were one, and the read-out counted two."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-fact-arg.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/fact-arg`), banked by S1f.5.0 from S1f.5.1's case (the inventory of 2026-11-06's W-22): `(r _ a)` loads as the one-argument `(r a)`, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/is-a-arg`), banked by S1f.5.0 from S1f.5.1's case (`syntax/is-a-shapes` writes it): `(is-a _ T)` loads as `(is-a T)`, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/nested-fact-arg`), banked by S1f.5.0 from S1f.5.1's case (W-22): `(r (f _ a) c)` loads as `(r (f a) c)`, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-activator-arg.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/activator-arg`), banked by S1f.5.0 from S1f.5.1's case (W-22): the activator `(q _)` loads as `(q)`, which binds no parameter, so `q` never fires, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-goal-arg.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/goal-arg`), banked by S1f.5.0 from S1f.5.1's case: a query's goal `(holds _)` loads and is answered, *the goal holds: it has no variable*, and the claim the read-out suggests is refused. Open, owned by S1f.5.1: refused at load (Q-M1e2.22). `ein test` is not declared: the query states no claim."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/core-two-ways`), banked by S1f.5.0 from P1f.5's F3: `_` in a rule's pattern reports root's core as four facts where its twin, `?w0`, reports two. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W29 (`W29/core-two-ways`'s twin), banked by S1f.5.0 from P1f.5's F3: the witness with the slot written `?w0`, whose root core is `(c x) (small s0)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W30 (`W30/assert-neq-w-x`), banked by S1f.5.0 from the inventory of 2026-11-06's G-21 (its probe `assert_neq.ein`): a rule's concluded `neq` is stored as a fact, `(neq w a)` at root and the false `(neq w w)` at `{(p w)}`, and R is two states. Open, owned by S1f.5.7: a concluded `neq` is checked, never stored, and `{(p w)}` is dead (Q-M1e2.26, G-21). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W30 (`W30/assert-neq-x-x`), banked by S1f.5.0 from S1f.5.7's § Conclusions: the false conclusion `(neq a a)` is stored, and R is {∅}. Open, owned by S1f.5.7: root is dead (Q-M1e2.26, G-21). Its state file does not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-eq-x-w.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W30 (`W30/assert-eq-x-w`), banked by S1f.5.0 from S1f.5.7's § Conclusions: the false conclusion `(eq a w)` is stored, and R is two states. Open, owned by S1f.5.7: root is dead (Q-M1e2.26, G-21)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W31 (`W31/empty-match-false`), banked by S1f.5.0 from S1f.5.9's case (P1f.5's F12): a rule whose `:match` is `()` never fires, so its `(false)` is never concluded and ∅ is in R. Open, owned by S1f.5.9: it fires, root is dead (F12's ruling)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/empty-match-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W31 (`W31/empty-match-fact`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule whose `:match` is `()` never fires, so root lacks `(q b)`. Open, owned by S1f.5.9: root holds it (F12's ruling)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/empty-match-activator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W31 (`W31/empty-match-activator`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule with a parameter whose `:match` is `()` never fires on its activator `(r a)`, so root lacks `(hit a)`. Open, owned by S1f.5.9: it fires once per activator (F12's ruling)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/empty-match-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W31 (`W31/empty-match-hrule`), banked by S1f.5.0 from S1f.5.9's case (F12): an hrule whose `:match` is `()` proposes nothing, so H is empty and R is {∅}. Open, owned by S1f.5.9: it proposes `(q b)` (F12's ruling)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/where-in-and.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/where-in-and`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-06's D-15): `:where (neq ?x a)` beside a `:match`'s conjuncts is dropped (Q32), so `r` derives `(q a)` and `(q b)`. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/where-in-pattern.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/where-in-pattern`), banked by S1f.5.0 from S1f.5.11's case (D-15): `:where (neq ?x a)` inside a pattern is dropped, so `r` derives `(q a)` and `(q b)`. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/where-on-rule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/where-on-rule`), banked by S1f.5.0 from S1f.5.11's case (D-15): `:where (neq ?x a)` as a keyword of the rule form is ignored, so `r` derives `(q a)` and `(q b)`. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/kwpair-in-pattern`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-05's G-15): the pair `:k v` inside a pattern is dropped, so `r` derives `(q a)` and `(q b)`, and `v` is still a name of the program. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kwpair-in-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/kwpair-in-assert`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-06's G-22): the pair `:k v` beside an `:assert`'s conjuncts is dropped, and `v` is still a name of the program. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kwpair-in-goal.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/kwpair-in-goal`), banked by S1f.5.0 from S1f.5.11's case: the pair `:zz 1` in a query's goal is dropped, and the claim `(model (p a) (p b))` holds. Open, owned by S1f.5.11: refused at load (Q-M1e2.28). `ein test` is not declared, as for W22's goal witnesses: once refused it would exit 2, a load error, which no cell may."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/kwpair-in-macro.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W32 (`W32/kwpair-in-macro`), banked by S1f.5.0 from S1f.5.11's case: the pair `:k v` in a `forall` call is dropped by the macro expander, so `r` derives `(hit a)` and `(hit b)`. The static check flags it (the `forall`'s `absent` over `q`). Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

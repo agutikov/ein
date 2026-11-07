@@ -1,0 +1,37 @@
+;;; A bare `_` in a rule's pattern reports a larger core than a variable used
+;;; once — M1f **W29**, register row `W29/core-two-ways`
+;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
+;;; P1f.5's F3 (S1f.5.1's case, the program verbatim), filed `open` and owned
+;;; by S1f.5.1, on the user's ruling of 2026-11-06 (Q-M1e2.22), which closes
+;;; F3 by refusing the `_`. Its twin, `underscore-core-two-ways-twin.ein`,
+;;; writes the slot `?w0`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two derivations of `holds`, `(holds b0)` by `m1` from three facts and
+;;; `(holds s0)` by `s` from one; `w` reads `(holds _)` and derives `(hit w)`,
+;;; and `k` concludes `(false)` from `(hit w)` and `(c x)`. Root is dead.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A bare `_` is reserved and names nothing (Q-M1e2.22), so the program is
+;;; refused at load, with a line naming the place: every command that reads it
+;;; exits 1 (`ein test`: 2). Written `?w0`, the twin's, root's smallest
+;;; contradiction frontier is `(c x) (small s0)`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R is empty, every node dead, and root's core is `(big b0) (big2 b0)
+;;; (big3 b0) (c x)`, four facts where the twin's two suffice (`ein solve
+;;; FILE` at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+;;; The likely cause, from these runs and not traced in the code (S1f.5.1's
+;;; step 1 traces it): `_` binds nothing, so `w`'s second match looks like its
+;;; first and its derivation is not recorded.
+
+(relation holds T) (relation hit T) (relation big T) (relation big2 T) (relation big3 T) (relation small T) (relation c T)
+(big b0) (big2 b0) (big3 b0)
+(rule m1 () :match (and (big ?x) (big2 ?x) (big3 ?x)) :assert (holds ?x))
+(rule w () :match (holds _) :assert (hit w))
+(rule k () :match (and (hit w) (c x)) :assert (false))
+(rule s () :match (small ?x) :assert (holds ?x))
+(c x) (small s0)

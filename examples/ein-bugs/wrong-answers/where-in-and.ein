@@ -1,0 +1,32 @@
+;;; A `:where` pair beside a `:match`'s conjuncts is dropped, so the rule
+;;; fires without its guard — M1f **W32**, register row `W32/where-in-and`
+;;; (`corpus/wrong_answers.toml`), banked by S1f.5.0 (2026-11-08) from
+;;; S1f.5.11's case (the inventory of 2026-11-06's D-15; its probe
+;;; `where_t3_example.ein` is refused today for its relation variable `?r`,
+;;; so the case's own program is the witness), filed `open` and owned by
+;;; S1f.5.11, on the user's ruling of 2026-11-07 (Q-M1e2.28).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a rule whose `:match` writes `:where (neq ?x a)` beside
+;;; its premise `(p ?x)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Each form takes a fixed set of keywords, and a term takes none (the user,
+;;; 2026-11-07: *"if parser sees :k or :G :notes or whatever else unknown kwarg
+;;; - it is an error"*), so `:where` is refused wherever it is written: the
+;;; program is refused at load, with a line naming the rule and the clause, and
+;;; every command that reads it exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The pair is dropped (Q32), so `r` fires for every `p`: root derives `(q a)`
+;;; and `(q b)`, with no line (`ein saturate FILE --dump`), and R is four
+;;; states over the candidates `(hit a)` and `(hit b)`, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike).
+
+(relation p Node) (relation q Node) (relation hit Node)
+(p a) (p b)
+(rule r () :match (and (p ?x) :where (neq ?x a)) :assert (q ?x))

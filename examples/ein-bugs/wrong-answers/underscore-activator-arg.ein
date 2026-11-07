@@ -1,0 +1,29 @@
+;;; A bare `_` as an activator's argument is dropped at load, in silence —
+;;; M1f **W29**, register row `W29/activator-arg` (`corpus/wrong_answers.toml`),
+;;; banked by S1f.5.0 (2026-11-08) from S1f.5.1's case (the inventory of
+;;; 2026-11-06's W-22), filed `open` and owned by S1f.5.1, on the user's
+;;; ruling of 2026-11-06 (Q-M1e2.22).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule `q` with one parameter, and its activator `(q _)`, which writes the
+;;; bare `_` as the parameter's value.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A bare `_` is reserved and names nothing (Q-M1e2.22), so the program is
+;;; refused at load, with a line naming the place: every command that reads it
+;;; exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The loader drops the `_` and stores the activator `(q)`, which binds no
+;;; parameter, so `q` never fires, with no line (`ein saturate FILE --dump`).
+;;; Root holds no `hit`, H is `{(hit a)}` and R is two states, exit 0 (`ein
+;;; solve FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
+;;; release and debug alike). With `(q a)` written, root holds `(hit a)`.
+
+(relation p T) (relation hit T)
+(p a)
+(rule q (?x) :match (p ?x) :assert (hit ?x))
+(q _)

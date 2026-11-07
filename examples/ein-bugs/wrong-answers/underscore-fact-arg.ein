@@ -1,0 +1,30 @@
+;;; A bare `_` as a fact's argument is dropped at load, in silence — M1f
+;;; **W29**, register row `W29/fact-arg` (`corpus/wrong_answers.toml`),
+;;; banked by S1f.5.0 (2026-11-08) from S1f.5.1's case (the inventory of
+;;; 2026-11-06's W-22; its probe `fact_wild_arg.ein` wrote `(r _ ?x)`, and the
+;;; variable, G-6's, is written `a` here), filed `open` and owned by S1f.5.1,
+;;; on the user's ruling of 2026-11-06 (Q-M1e2.22).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A relation of two arguments and two facts over it, the first writing the
+;;; bare `_` as its first argument.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A bare `_` is reserved and names nothing (the user, 2026-11-06: *"simple
+;;; `_` reserved and refused because of potential ambiguity"*), so the program
+;;; is refused at load, with a line naming the place: every command that reads
+;;; it exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The loader drops the `_` and stores the one-argument `(r a)` beside
+;;; `(r a b)`, against a two-argument declaration, with no line (`ein saturate
+;;; FILE --dump`). Root's state is `(model (r a b) (r a))` and R is two states,
+;;; exit 0 (`ein solve FILE` and `ein oracle FILE` at `ec004a48`, the engine
+;;; `916d97ac`'s, release and debug alike).
+
+(relation r T T)
+(r _ a)
+(r a b)

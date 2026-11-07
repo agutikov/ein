@@ -1,0 +1,28 @@
+;;; A rule's false `neq` conclusion is stored as a fact — M1f **W30**,
+;;; register row `W30/assert-neq-x-x` (`corpus/wrong_answers.toml`), banked by
+;;; S1f.5.0 (2026-11-08) from S1f.5.7's § Conclusions (G-21), filed `open` and
+;;; owned by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and a rule concluding `(neq ?x ?x)` from `(p ?x)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A rule's conclusion of `neq` is checked, never stored (G-21). At root the
+;;; rule concludes `(neq a a)`, which is false, so root is a contradiction,
+;;; explained as `(false)` is: its core is `(p a)`, the premise the firing
+;;; matched, and `refuted by` names `r`. R is empty.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The conclusion is stored: root holds `(neq a a :rule r)` (`ein saturate
+;;; FILE --dump`), H is empty and R is {∅}, exit 0 (`ein solve FILE` and `ein
+;;; oracle FILE` at `ec004a48`, the engine `916d97ac`'s, release and debug
+;;; alike). Root's state file does not load: a fact line `(neq a a)` is a
+;;; parse error, so `answer_round_trip.rs` and `answer_dump.rs` name this file
+;;; until S1f.5.7 fixes W30.
+
+(relation p Node)
+(p a)
+(rule r () :match (p ?x) :assert (neq ?x ?x))
