@@ -1,6 +1,7 @@
-# S1e2.5.12 — A run takes a core only for the nodes a surface prints: N's members, after the walk
+# S1f.5.12 — A run takes a core only for the nodes a surface prints: N's members, after the walk
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.12**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1 day.
 - A quarter of a day to list every surface that asks for cores, every writer of `not-kept`, and the cost
   before.
@@ -10,7 +11,7 @@
 **Status:** specified 2026-11-08 on the user's ruling of that day on P-15.
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
-**Depends on:** nothing. It is independent of the grammar stages. [S1e2.5.13](s1e2.5.13_large_dumps_to_the_slow_tier.md)'s
+**Depends on:** nothing. It is independent of the grammar stages. [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md)'s
 four dumps each get cheaper with it, but neither stage waits for the other.
 
 ## The ruling
@@ -29,7 +30,7 @@ question*): a core is taken only where a surface prints one. The user, 2026-11-0
 
 | program | the run | today |
 |---|---|---|
-| `lattice/06_friends_tables` | `ein solve FILE --dump-answer D` | 65 022 core searches, 0.58 s of 2.55 s, no surface prints them; `nogoods.json`: 68 of 68 `not-kept` ([S1e2.3.9 § Notes](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md#notes), 2026-11-06; not re-taken) |
+| `lattice/06_friends_tables` | `ein solve FILE --dump-answer D` | 65 022 core searches, 0.58 s of 2.55 s, no surface prints them; `nogoods.json`: 68 of 68 `not-kept` ([S1e2.3.9 § Notes](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md#notes), 2026-11-06; not re-taken) |
 | `ein-bugs/wrong-answers/past-limit-lines` | the same | stops at the limit (`n` 17, `limit` 16), 3 state files, 1.23 s; `nogoods.json`: 15 of 15 `not-kept` (2026-11-08, `916d97ac`, release) |
 
 **Where.**
@@ -76,12 +77,12 @@ walk, *each through the node function, against the same snapshot, so each is the
 
 ## The method
 
-### Task T1e2.5.12.1 — every ask and every writer listed
+### Task T1f.5.12.1 — every ask and every writer listed
 
 Each of the four options, and the nodes whose cores it prints. Every writer of `not-kept`, and every golden
 that holds one. The cost before, as above.
 
-### Task T1e2.5.12.2 — the split, and N's cores after the walk
+### Task T1f.5.12.2 — the split, and N's cores after the walk
 
 The two asks. N's cores are taken after the walk, and `not-kept` retires. A test in
 `ein-cli/tests/answer_round_trip.rs`, over every corpus program within the limit: `nogoods.json`'s core,
@@ -89,12 +90,12 @@ status and rules for each member of N equal what one run with `--dump-lattice` w
 `nodes.json`, the eager core. Its `members_of_n` then holds that every member has a core, past the limit
 too.
 
-### Task T1e2.5.12.3 — the cost after, and the pages
+### Task T1f.5.12.3 — the cost after, and the pages
 
 The cost after, beside step 1's. The pages:
 - [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s `nogoods.json` row: each member's core
   is taken after the walk, and is the core an eager run takes;
-- [`read_out.md`](../p1e2.1a_the_solution_region/read_out.md) § 6.2 and § 8.2's list of words;
+- [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 6.2 and § 8.2's list of words;
 - [`glossary.md`](../../../docs/kernel/glossary.md)'s list of the core statuses;
 - [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s note that the oracle never writes
   `not-kept`;

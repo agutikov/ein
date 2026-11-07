@@ -6,7 +6,7 @@ whole at ~23.
 **Status:** created 2026-11-08 on the user's instruction: *"convert
 plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.20_docs_refactor.md into new phase
 p1f.20"*. **Not started.**
-**Was S1f.5.20**, a stage of [P1f.5](../p1f.5_documentation_and_other/README.md), until 2026-11-08. Since it
+**Was S1f.5.20**, a stage of [P1f.5](../p1f.5_the_no_owner_items/README.md), until 2026-11-08. Since it
 was written on 2026-08-28, its § How to cut it had proposed splitting it into seven stages and left taking
 the split to the user. This phase takes it. No stage had run, so nothing shipped is renumbered:
 `T1f.5.20.1`–`.7` are `S1f.20.1`–`.7`, in the same order.
@@ -14,7 +14,8 @@ the split to the user. This phase takes it. No stage had run, so nothing shipped
 [S1e.3.7](../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium) and
 [S1e.3.8](../../../docs/history/m1e_review_processing/README.md#s1e38--documentation-medium). The dependency
 was hard: those three stages triaged and fixed 38 pages, and a page fixed and then moved is cheap, where a
-move followed by a re-triage of 38 renamed files is not. **Satisfied 2026-08-31**: all three ran. M1f follows
+move followed by a re-triage of 38 renamed files is not. **Satisfied 2026-08-31**: all three ran. It runs
+after [P1f.5](../p1f.5_the_no_owner_items/README.md), which edits kernel pages this phase moves. M1f follows
 [M1e2](../../m1e2_correctness/README.md), so this phase runs on the tree M1e2 leaves
 ([§ What moved since it was written](#what-moved-since-it-was-written)).
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on it.
@@ -187,7 +188,7 @@ docs/
         solution-semantics.md     ← inference/solution_semantics.md (linked, not duplicated)
       rule-evolution/
         rules-as-data.md          ← ir/03-ein-lang/08_self_describing.md
-        analysis-of-rules.md      ← new — and S1f.5.6's stratification is its first content
+        analysis-of-rules.md      ← new — and S1f.5.15's stratification is its first content
         transformations.md        ← TBD, a stub with the question in it
     ein.rs/
       api.md                      ← docs/api/rust.md (marker-guarded region intact)
@@ -241,7 +242,7 @@ meets that only by two rules, which the single stage did not need:
 
 **The order.** S1f.20.1, then S1f.20.2, before anything moves. Then S1f.20.3, S1f.20.4 and S1f.20.5, in any
 order, each moving its pages with their links. S1f.20.4's `analysis-of-rules.md` is sequenced with
-[S1f.5.6](../p1f.5_documentation_and_other/s1f.5.6_rule_priority.md), so the page is written once. S1f.20.6
+[S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md), so the page is written once. S1f.20.6
 runs after all three. S1f.20.7 can run any time after S1f.20.2, since it moves `05_inspirations.md`.
 
 The stage's own § Ordering said to run after M1e's S1e.2.2, S1e.3.7 and S1e.3.8. Those three triaged 38 kernel
@@ -273,10 +274,10 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
 ## Risks
 
 - **The tree is rebuilt while another milestone edits it.** This was M1e's three stages when the plan was
-  written. It is now M1e2's P1e2.5, which edits kernel pages: S1e2.5.5 generates `00_ebnf.md`'s blocks, and
-  S1e2.5.11 removes `:where` from six pages. M1f follows M1e2, so the order holds: fix first, then move. If
-  the user wants this phase first, those stage files must be re-aimed at the new paths *before* it starts,
-  not afterwards.
+  written. It is now [P1f.5](../p1f.5_the_no_owner_items/README.md), M1e2's P1e2.5 until 2026-11-08, which
+  edits kernel pages: S1f.5.5 generates `00_ebnf.md`'s blocks, and S1f.5.11 removes `:where` from six pages.
+  P1f.5 runs first, so the order holds: fix first, then move. If the user wants this phase first, those
+  stage files must be re-aimed at the new paths *before* it starts, not afterwards.
 - **A rewrite that loses a specification.** Half of `docs/history` is the only
   written intent for code that ships. The disposition table exists to make each
   such loss a decision with a name on it; the failure mode is a page rewritten
@@ -306,7 +307,7 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
   written into the *old* tree; both are `docs/ein/user/` pages by this
   phase's map, and both are cited by anchor text rather than section number so
   the move does not break them.
-- [S1f.5.6](../p1f.5_documentation_and_other/s1f.5.6_rule_priority.md) — writes the first content of
+- [S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) — writes the first content of
   `reasoning/rule-evolution/analysis-of-rules.md`.
 - [M5](../../m5_presentation/README.md) Track A and
   [`EinAf.md`](../../m2_nl_to_ir/EinAf.md) — the owners of items 3, 4 and 5 of

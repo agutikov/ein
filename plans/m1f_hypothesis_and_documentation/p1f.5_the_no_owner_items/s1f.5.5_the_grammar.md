@@ -1,6 +1,7 @@
-# S1e2.5.5 — The grammar revisited: each position says what it holds, and the parser is generated from it
+# S1f.5.5 — The grammar revisited: each position says what it holds, and the parser is generated from it
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.5**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 8.5 days, to be re-taken after step 1.
 - One day for the census.
 - One day for the grammar on paper and the real programs.
@@ -13,14 +14,14 @@
 
 **Status:** specified 2026-11-06 on the user's instruction of that day; extended 2026-11-07 with the
 user's name rule and instruction to generate the parser
-([Q-M1e2.25](../open_questions.md#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it)).
+([Q-M1e2.25](../../m1e2_correctness/open_questions.md#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it)).
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved. **The generator is grmtools, ruled by the user on 2026-11-07** for its features
 ([§ The generator](#the-generator-grmtools-ruled)), **with its error recovery on, ruled the same day**: this
 stage makes recovery deterministic first, with a patch to `lrpar` ([F11](#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
 **Depends on:** the user's choice of generator and rulings on what each position holds. Its steps 1 and 2
-run first. Its swap runs after [S1e2.5.3](s1e2.5.3_range_retired.md), [S1e2.5.4](s1e2.5.4_digits_are_names.md),
-[S1e2.5.1](s1e2.5.1_bare_underscore_refused.md) and [S1e2.5.2](s1e2.5.2_strings_are_natural_language.md).
+run first. Its swap runs after [S1f.5.3](s1f.5.3_range_retired.md), [S1f.5.4](s1f.5.4_digits_are_names.md),
+[S1f.5.1](s1f.5.1_bare_underscore_refused.md) and [S1f.5.2](s1f.5.2_strings_are_natural_language.md).
 
 ## The instruction
 
@@ -112,7 +113,7 @@ NameChar  ::= Letter | Digit | Connector | Decorator | Bracket
 NAME      ::= NameChar+, except a reserved word or a bare _
 VAR       ::= '?' NameChar+, except ?_
 KEYWORD   ::= ':' NameChar+, and only one the form takes
-STRING    ::= '"' … '"'     any Unicode, with escapes (S1e2.5.2)
+STRING    ::= '"' … '"'     any Unicode, with escapes (S1f.5.2)
 ```
 
 Every other character is out of a name:
@@ -125,7 +126,7 @@ Every other character is out of a name:
 | `(`, `)`, `"` | structure and strings |
 | `\` | ruled: the escape character |
 | space, tab, a control character | they separate tokens or are refused |
-| anything outside ASCII | ruled: **names are ASCII forever**. Any Unicode belongs in a string (S1e2.5.2) |
+| anything outside ASCII | ruled: **names are ASCII forever**. Any Unicode belongs in a string (S1f.5.2) |
 
 The list only widens what a name may hold today: today's `SYMBOL` is a letter followed by
 `[A-Za-z0-9_*.-]*` (`00_ebnf.md` § 1), and the corpus writes five characters besides letters and digits,
@@ -146,13 +147,13 @@ the tree is already a `SYMBOL`, `VAR`, `KEYWORD`, `INT`, `RANGE`, `STRING`, `_` 
 | `0`, `01`, `1st`, `1_a`, `1-2`, `1.5` | int, split or refused | a name | the ruling |
 | `$x`, `%`, `^`, `a^b`, `*`, `-`, `+1` | refused | a name | the ruling |
 | `-7` | an int | **a name**, and `(p -7)` and `(p 7)` differ | the ruling; `-` is a connector |
-| `1..5`, `1..*` | a range | **a name**, with no range reading | the ruling; `.` is a name character today (`std.elim`). S1e2.5.3's default 1 is withdrawn |
-| `neq-1`, `rule-x`, `rule.x`, `not-a` | a keyword and the rest, or refused | **a name** | a reserved word is a whole token. This overrides [Q-M1e2.17](../open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a) |
+| `1..5`, `1..*` | a range | **a name**, with no range reading | the ruling; `.` is a name character today (`std.elim`). S1f.5.3's default 1 is withdrawn |
+| `neq-1`, `rule-x`, `rule.x`, `not-a` | a keyword and the rest, or refused | **a name** | a reserved word is a whole token. This overrides [Q-M1e2.17](../../m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a) |
 | `=` | its own token | a name | `(= a b)` is then a fact of a relation named `=`; the loader's reading stays |
-| `__`, `___`, `_-`, `_*` | refused | a name | S1e2.5.1's default 1 is withdrawn |
+| `__`, `___`, `_-`, `_*` | refused | a name | S1f.5.1's default 1 is withdrawn |
 | `'name'`, `f'`, `{}`, `[a]` | refused | a name, quotes and brackets included | the ruling, *"for now"* |
 | `a\b` | refused | refused | `\` is the escape character |
-| `_` | the wildcard | refused | [Q-M1e2.22](../open_questions.md#q-m1e222--does-ein-need-a-wildcard) |
+| `_` | the wildcard | refused | [Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard) |
 
 **What the user ruled on the agent's readings**, 2026-11-07:
 
@@ -164,9 +165,9 @@ the tree is already a `SYMBOL`, `VAR`, `KEYWORD`, `INT`, `RANGE`, `STRING`, `_` 
    do this.
 3. **`;`, `#`, `|` and `,` are not name characters.**
 4. **Names are ASCII, forever.** `Жук` is a parse error as a name. Any text may go in a string, which
-   S1e2.5.2 confines to the natural-language keywords, such as `:why`. This replaces [S1e2.5.2](s1e2.5.2_strings_are_natural_language.md)'s default 3, which had
+   S1f.5.2 confines to the natural-language keywords, such as `:why`. This replaces [S1f.5.2](s1f.5.2_strings_are_natural_language.md)'s default 3, which had
    left widening names for later.
-5. **`:priority` is [S1f.5.6](../../m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md)'s
+5. **`:priority` is [S1f.5.15](s1f.5.15_rule_priority.md)'s
    to delete**, so this phase gives it nothing new. Until then its value is a run of digits, as every
    corpus use is (`grep -rhoE ':priority +-?[^ )]+'` over the four roots, 2026-11-07). The by-position
    grammar refuses any other value as a by-product. Today the loader drops a value that is not an int
@@ -188,15 +189,15 @@ RuleClause ::= ':match' Term | ':assert' Term | ':why' STRING | ':priority' DIGI
 ```
 
 The probe's draft holds the whole of it, in grmtools' notation
-([`ein.y`](s1e2.5.5_parser_probe/c_grm/src/ein.y)) and in five others, the shortest being LALRPOP's 80
+([`ein.y`](s1f.5.5_parser_probe/c_grm/src/ein.y)) and in five others, the shortest being LALRPOP's 80
 lines. It accepts every puzzle, stdlib module and `tests/` program as written. Three shapes real programs
 write corrected the first draft: `:hrules (guess (color-loc Color House) guess …)`, `(not ?h)` in an
 `:assert`, and `:using (and s1 c15)`.
 
 **Closed keywords.** Each form names the keywords it takes, with what each holds. An unknown keyword is
 refused at the parse, rather than dropped. **The lists are ruled** (2026-11-07,
-[Q-M1e2.28](../open_questions.md#q-m1e228--which-keywords-does-each-form-take)), and
-[S1e2.5.11](s1e2.5.11_closed_keywords.md#the-lists) lands them in the loader first, on the hand-written parser.
+[Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)), and
+[S1f.5.11](s1f.5.11_closed_keywords.md#the-lists) lands them in the loader first, on the hand-written parser.
 Here each keyword becomes a token of its form, and the loader's lines move into the grammar. A term and a
 nested fact take none. The draft's query takes `:no-hypothesis`, which the list does not, and step 2 drops
 it. Which keywords a form *requires*, and that each appears once, stays the loader's, since a grammar can
@@ -227,8 +228,8 @@ tables by Pager's method. The grammar is two files, `ein.rs/crates/ein-ir/src/ei
 notation with one Rust action per alternative. The shipping parser is generated from them at compile time,
 by `CTParserBuilder` in `ein-ir`'s `build.rs`, so a conflict in the grammar fails the build. The same two files
 load at run time through `RTParserBuilder`, which is F2's to use and nothing in this stage does. Step 2 starts
-from the probe's draft, [`ein.l`](s1e2.5.5_parser_probe/c_grm/src/ein.l) and
-[`ein.y`](s1e2.5.5_parser_probe/c_grm/src/ein.y).
+from the probe's draft, [`ein.l`](s1f.5.5_parser_probe/c_grm/src/ein.l) and
+[`ein.y`](s1f.5.5_parser_probe/c_grm/src/ein.y).
 
 **Why.** It supports the most of what Ein's plans ask of a parser
 ([§ Which supports the most](#which-supports-the-most)). An ambiguous grammar fails its build, `cfgrammar` and
@@ -241,7 +242,7 @@ reports every error recovery reaches, each with ranked repairs, the same on ever
 
 - **Speed.** 2.1 to 2.8 ms on `zebra2.ein`, 27 KB, against today's 0.165 ms. 1.9 ms of it is `lrlex`'s lexing.
   If speed ever matters, the user will add a super-optimized hand-written parser. That parser would be held
-  to the grammar as T1e2.5.5.3 holds the generated one to the old: both run over the corpus and the fuzzer,
+  to the grammar as T1f.5.5.3 holds the generated one to the old: both run over the corpus and the fuzzer,
   and the generated one is the reference. It need not recover: a file it refuses goes to the generated
   parser for the report, which costs nothing on a file that parses. Nothing here builds it.
 - **41 crates at run time, 51 with the build**, and about 24 s on a clean build alone at `-j 4`.
@@ -259,7 +260,7 @@ same file, for two reasons in `lrpar` 0.15:
 
 - **The ranking.** `cpctplus.rs` de-duplicates repair sequences through a `HashSet`, then sorts them by
   length alone with `sort_unstable_by`, so repairs of equal length come out in the set's random order. Over 20
-  runs on the probe's [`four_mistakes.ein`](s1e2.5.5_parser_probe/four_mistakes.ein), the output came out two
+  runs on the probe's [`four_mistakes.ein`](s1f.5.5_parser_probe/four_mistakes.ein), the output came out two
   ways, 14 and 6, with `Insert :priority, Delete :bogus` and `Delete :bogus, Delete 3` swapped (the probe's
   `recover` command, 2026-11-07). The parse goes on with the first repair, so later errors can move as well.
 - **The clock.** Recovery stops at a wall-clock budget of 500 ms per parse, `RECOVERY_TIME_BUDGET` in `lrpar`'s
@@ -291,7 +292,7 @@ deterministic before it ships, with a patch to `lrpar`:
   yet.
 
 **Tried on the probe** (2026-11-07). The patch,
-[`lrpar_deterministic.patch`](s1e2.5.5_parser_probe/lrpar_deterministic.patch), changes 73 lines of
+[`lrpar_deterministic.patch`](s1f.5.5_parser_probe/lrpar_deterministic.patch), changes 73 lines of
 `cpctplus.rs` and `parser.rs`, the probe's step printer included. Over 200 runs on `four_mistakes.ein`
 the unpatched crate printed two reports, 97 and 103 times, and the patched one printed one of the two every
 time. Over three runs of 5 000 seeded mutants of the corpus, 2 113 of them refused, the unpatched crate's
@@ -311,7 +312,7 @@ refused file, recovery's time, bounded by the budget.
 ### The measurements
 
 Measured on 2026-11-07 with one grammar written for six generators
-([`s1e2.5.5_parser_probe/`](s1e2.5.5_parser_probe/README.md), which has the commands and every number).
+([`s1e2.5.5_parser_probe/`](s1f.5.5_parser_probe/README.md), which has the commands and every number).
 All six accept the same 352 of the corpus's 390 files and agree on 40 000 mutants.
 
 | | hand-written today | LALRPOP | pest | parol | **grmtools** |
@@ -337,7 +338,7 @@ timings.
 
 The user, 2026-11-07: *"What parser will support more and richer features?"* Read from each crate's source
 at the version the probe locked, with grmtools' two distinctive features tried on Ein's draft the same day
-([the probe](s1e2.5.5_parser_probe/README.md#what-it-found)).
+([the probe](s1f.5.5_parser_probe/README.md#what-it-found)).
 
 | feature | LALRPOP | pest | parol | grmtools | peg |
 |---|---|---|---|---|---|
@@ -420,37 +421,37 @@ one error per round costs a round per mistake. That is M2's to use, and this sta
 
 Each goes to the user with real programs, not in this stage's prose:
 - **G-15 and G-22:** ruled 2026-11-07 with D-15
-  ([Q-M1e2.28](../open_questions.md#q-m1e228--which-keywords-does-each-form-take)): a keyword pair inside a
+  ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)): a keyword pair inside a
   pattern, or beside an `:assert`'s conjuncts, is refused, as the draft refuses it. A term takes no keyword.
-  [S1e2.5.11](s1e2.5.11_closed_keywords.md) refuses it in the loader first.
+  [S1f.5.11](s1f.5.11_closed_keywords.md) refuses it in the loader first.
 - **G-21:** ruled 2026-11-07: a rule may conclude `eq` or `neq`, as the draft allows; what it means is
-  [S1e2.5.7](s1e2.5.7_eq_and_neq_are_relations.md#conclusions-g-21)'s.
+  [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21)'s.
 - **G-14:** with `:assert` checked by the grammar, does a bad conclusion that never fires get refused? Its
   unbound-variable part is ruled: refused at load, by
-  [S1e2.5.10](s1e2.5.10_a_conclusion_variable_must_be_bound.md) (F13).
+  [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) (F13).
 - **The 34 files** the draft refuses that today's parser accepts: which stay as refusal fixtures, and which
   are rewritten.
 
 ## The method
 
-### Task T1e2.5.5.1 — what each position holds today
+### Task T1f.5.5.1 — what each position holds today
 
 A census: every position in the grammar, what the corpus writes there, what the parser accepts, what the
 loader then refuses and what it drops. Every refusal line in `from_ir.rs` and `compile.rs` is classified:
 *the grammar's*, or *the loader's*. **The estimate is re-taken here.**
 
-### Task T1e2.5.5.2 — the grammar on paper, and real programs
+### Task T1f.5.5.2 — the grammar on paper, and real programs
 
 The final `ein.l` and `ein.y`, from the probe's grmtools draft, with `zebra2.ein`, one stdlib module and every kind of
 `examples/syntax/` fixture written against it, each answer computed on a prototype. **Stop and show the
 user before any edit** (the standing rule on syntax), with the questions above.
 
-### Then S1e2.5.3, S1e2.5.4, S1e2.5.1 and S1e2.5.2
+### Then S1f.5.3, S1f.5.4, S1f.5.1 and S1f.5.2
 
 Each lands on the hand-written parser in its own commits, so that every move of an answer is attributed to
 its ruling and read before the parser is replaced.
 
-### Task T1e2.5.5.3 — the generated parser, beside the old one
+### Task T1f.5.5.3 — the generated parser, beside the old one
 
 The grammar builds `ein_ir::Ast` through its actions, with its `Loc`s. Both parsers then run over the
 corpus and the fuzzer, comparing accept, reject and the dumped AST, as `2168f430` did the last time. Every
@@ -464,17 +465,17 @@ printer, and the budget is set from a sweep of corpus mutants on the build. Thre
 - **The fuzzer.** `fuzz_properties` gains the same property, and that every recovery ends within the budget.
 - **The cut.** One fixture is cut at the budget and its report says so, in a golden.
 
-### Task T1e2.5.5.4 — the swap
+### Task T1f.5.5.4 — the swap
 
 One commit: `parse` is the generated parser, the old `lex.rs` and `parse.rs` go, and no answer moves. The
 parse errors take their new text, with the goldens listed before they move.
 
-### Task T1e2.5.5.5 — the grammar pages and the loader's refusals
+### Task T1f.5.5.5 — the grammar pages and the loader's refusals
 
 `ein-ir/tests/grammar_pages.rs`, in `cargo test`. Each loader line the grammar now covers goes, with its test moved
 to the grammar's table.
 
-### Task T1e2.5.5.6 — `--diff-models` compares by value (S-15)
+### Task T1f.5.5.6 — `--diff-models` compares by value (S-15)
 
 Ruled by the user on 2026-11-07, as recommended. `ein solve --diff-models FILE` compares each fact of the
 file with the states' facts as text, in `ein_render::models::parse_expected`: a line that starts with `(` is
@@ -489,20 +490,20 @@ on the inventory's probe, whose one state holds `(p a)` and `(q "x y")`:
 | `(p a) ; the fact` | `0 matched … 1 missing` | `1 matched` |
 | `(p a`, with no `)` | `0 matched … 1 missing`, with no error | refused before the run, exit 2, with the line and column |
 
-S1e2.5.2 and S1e2.5.4 take away the two value cases, `(p "a")` and `(p 01)`. These five rows are what is left.
+S1f.5.2 and S1f.5.4 take away the two value cases, `(p "a")` and `(p 01)`. These five rows are what is left.
 
 **The fix.** The file keeps its line format: `;` comments, an optional `closes` line, and `model` lines. The
 facts between two `model` lines are read by the generated parser as facts, so a fact may span lines and carry
 a comment. Each is printed by the one printer (`Terms::display`, W28's), which prints a value one way and
 reloads to it, and is compared with the states' facts, which the same printer writes. A fact the parser
 refuses is a usage error, exit 2, before the run, as an unreadable file is today, with every error its
-recovery reaches. It runs after the swap, T1e2.5.5.4. **No answer moves, and no register row:** `--diff-models`
+recovery reaches. It runs after the swap, T1f.5.5.4. **No answer moves, and no register row:** `--diff-models`
 exits 0 either way, so this is a report, as P1e2.3's surfaces were.
 
 **Its test** is the five rows, in `ein-cli/tests/region_modes.rs` beside the option's other tests, with each
 file written to the gate's scratch.
 
-### Task T1e2.5.5.7 — the pages
+### Task T1f.5.5.7 — the pages
 
 `00_ebnf.md` (generated blocks, § 1's facts and § 3 gone, the header), `01_grammar.md`, `02_patterns.md`,
 `defined_behaviour.md` § 1, § 4.8 and § 4.9, `docs/kernel/ir/02-data-model/03_implementation.md`, `CLAUDE.md`'s
@@ -528,5 +529,5 @@ file written to the gate's scratch.
 - `lex.rs` and `parse.rs` are gone, and the swap's commit moved no answer.
 - `--diff-models` matches a fact written with other spacing or a trailing comment, and refuses a file whose
   fact does not parse, with the line and column (S-15).
-- No corpus answer moved outside the lists of this stage and of S1e2.5.1 to S1e2.5.4.
+- No corpus answer moved outside the lists of this stage and of S1f.5.1 to S1f.5.4.
 - `./run_tests.sh` is green.

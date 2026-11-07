@@ -1,6 +1,7 @@
-# S1f.5.5 — Every statement convertible to NL
+# S1f.5.14 — Every statement convertible to NL
 
-**Phase:** [P1f.5](README.md) (Documentation ein does not have)
+**Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
+**Was S1f.5.5**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 4 days
 **Depends on:** nothing to start. Its *definition* leans on
 [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
@@ -186,7 +187,7 @@ re-derive the meaning of.
 
 ## Tasks
 
-### Task T1f.5.5.1 — The census, and the four registers
+### Task T1f.5.14.1 — The census, and the four registers
 
 Write `utils/nl_census.py`. Per corpus entry under its declared runs: the
 reported answer's fact set (`--json-summary`'s `verdict.solutions[i].facts`,
@@ -210,7 +211,7 @@ them"* is.
 nobody runs, so the gate is T5's cargo test and this is the measurement it is
 a yes/no of.
 
-### Task T1f.5.5.2 — Fact-level rendering from provenance
+### Task T1f.5.14.2 — Fact-level rendering from provenance
 
 The change: when rendering a fact for a human, consult its provenance before
 its relation.
@@ -237,7 +238,7 @@ Three things to establish before writing it:
   [Q2](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2)'s
   neighbourhood — a fact whose narration depends on recording order is a
   narration that moves when a rule's `:priority` moves
-  ([S1f.5.6](s1f.5.6_rule_priority.md) is the other end of that thread).
+  ([S1f.5.15](s1f.5.15_rule_priority.md) is the other end of that thread).
   Take *first recorded*, say so, and let S1e.1.3's answer refine it.
 - **Determinism.** The rendered text is output, so it is under the same
   invariance the `id_order_invariance` and `jobs_invariance` suites hold the
@@ -246,7 +247,7 @@ Three things to establish before writing it:
   8 facts and would render 444. Measure it on the zebra family before shipping;
   the answer table is on every `ein solve`.
 
-### Task T1f.5.5.3 — Where a template has nowhere to live
+### Task T1f.5.14.3 — Where a template has nowhere to live
 
 Three forms have no slot. Decide each, and write the decision down:
 
@@ -263,7 +264,7 @@ Three forms have no slot. Decide each, and write the decision down:
   *relations* instead. Whether a per-conjunct template is wanted is a language
   question; if the answer is yes it is a `Q-M1e.<n>`, not a quiet addition.
 
-### Task T1f.5.5.4 — The mandate, and where it binds
+### Task T1f.5.14.4 — The mandate, and where it binds
 
 Four rungs, and the stage picks one *and writes the argument*:
 
@@ -284,7 +285,7 @@ should be a ruling and not a side effect.
 If the user wants (d) anyway, it is a separate stage with a corpus-wide
 migration commit, and this stage's page is its specification.
 
-### Task T1f.5.5.5 — Bank both checks
+### Task T1f.5.14.5 — Bank both checks
 
 - `template_wellformedness` in `ein-ir`'s suite: parse each rule's `:why` for
   `{?x}` refs, assert each names a bound variable or a param; each relation's
@@ -342,5 +343,5 @@ the answer, which is backwards.
 - [`EinAf.md` § Stage F](../../m2_nl_to_ir/EinAf.md) — F6 dependency and F7
   provenance are the grades whose usefulness depends on whether a provenance
   can be read as English.
-- [S1f.5.6](s1f.5.6_rule_priority.md) — the other stage that turns on *which*
+- [S1f.5.15](s1f.5.15_rule_priority.md) — the other stage that turns on *which*
   of a fact's ≤ 32 justifications was recorded first.

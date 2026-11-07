@@ -1,6 +1,7 @@
-# S1e2.5.1 — W29: a bare `_` is reserved and refused, and `_` is valid anywhere in a name
+# S1f.5.1 — W29: a bare `_` is reserved and refused, and `_` is valid anywhere in a name
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.1**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 2 days.
 - Half a day to bank the witnesses, file W29, prototype, list every move, and show real programs.
 - Half a day for the lexer, the refusal and the printer.
@@ -8,8 +9,8 @@
 - Half a day for the pages.
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
-([Q-M1e2.22](../open_questions.md#q-m1e222--does-ein-need-a-wildcard)), and revised 2026-11-07 on the
-user's rule for a name ([S1e2.5.5](s1e2.5.5_the_grammar.md#the-name-rule)): a run of underscores is a
+([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)), and revised 2026-11-07 on the
+user's rule for a name ([S1f.5.5](s1f.5.5_the_grammar.md#the-name-rule)): a run of underscores is a
 name, and only a bare `_` and `?_` stay refused.
 **Not started, and not to start until the user says so** (*"do not apply
 modifications now"*). No engine code, test, golden or fixture has moved.
@@ -33,8 +34,8 @@ where it is dropped.
 
 | position | today | settled by |
 |---|---|---|
-| argument in a rule's or hrule's `:match`, at any depth, under `absent` too | matches any value, binds nothing | W20, on [Q-M1e2.13](../open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) (a) |
-| as a relation, `(_ a)`, in a rule | refused at load | [Q-M1e2.14](../open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation) (c) |
+| argument in a rule's or hrule's `:match`, at any depth, under `absent` too | matches any value, binds nothing | W20, on [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) (a) |
+| as a relation, `(_ a)`, in a rule | refused at load | [Q-M1e2.14](../../m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation) (c) |
 | in a guard, or as a whole premise | refused at load | W24 |
 | in `:expect` | refused at load | S1c.1.2's load error |
 | argument in a rule's `:assert` | stops the run at the first firing; a rule that never fires loads (G-14) | S1e2.2.18 |
@@ -84,9 +85,9 @@ The user, 2026-11-06, on Q-M1e2.22: *"I agree, simple `_` reserved and refused
 because of potential ambiguity, but remain valid in any place in atom and variable
 names `_a_in_b_` `_______01` `A________B`"*.
 
-This reverses [Q-M1e2.13](../open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
+This reverses [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
 (a) for `_` (its ruling on a range stands) and absorbs
-[Q-M1e2.14](../open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
+[Q-M1e2.14](../../m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
 (c), and W20's `_` rows move with them.
 
 ## What it changes
@@ -109,9 +110,9 @@ VAR  ::= '?' NameChar+, except ?_
 | **`_`, in every position above** | as in the table | **refused** |
 | `__`, `___`, `_-`, `_*`, `?__` | refused | a name, a variable (default 1, revised) |
 | `?_` | refused | refused, as `_` is (default 1, revised) |
-| `1_a`, `1..5_a` | refused | refused here (default 2); `1_a` is a name after S1e2.5.4 |
-| `1_`, `-1_`, `_-1` | `(r 1)`, `(r -1)`, `(r -1)`, in silence | the name each spells, once S1e2.5.4 has landed |
-| `"_"` | the name `_`, printed `"_"` | unchanged here (default 3), and refused by S1e2.5.2 |
+| `1_a`, `1..5_a` | refused | refused here (default 2); `1_a` is a name after S1f.5.4 |
+| `1_`, `-1_`, `_-1` | `(r 1)`, `(r -1)`, `(r -1)`, in silence | the name each spells, once S1f.5.4 has landed |
+| `"_"` | the name `_`, printed `"_"` | unchanged here (default 3), and refused by S1f.5.2 |
 | `:_k` | refused | unchanged (default 4) |
 
 **The refusal.** The parser refuses the token, so every command that reads a
@@ -170,17 +171,17 @@ Each holds unless the user says otherwise, and step 1 shows it working.
 2. **A number does not end where a name could begin.** Once `_a` is a name, `1_a`
    would otherwise split into `1` and `_a` where it is refused today
    ([F2](README.md#f2-a-token-needs-no-separator)). This stage keeps `1_a` refused until
-   [S1e2.5.4](s1e2.5.4_digits_are_names.md) makes digits names, and then `1_a` is one. The rest of
-   F2 is [S1e2.5.5](s1e2.5.5_the_grammar.md)'s.
+   [S1f.5.4](s1f.5.4_digits_are_names.md) makes digits names, and then `1_a` is one. The rest of
+   F2 is [S1f.5.5](s1f.5.5_the_grammar.md)'s.
 3. **A string still names what it spells, in this stage.** `(r "_")` is the name `_`,
    as S1e2.2.18 holds, and prints quoted because the bare spelling does not lex.
-   [S1e2.5.2](s1e2.5.2_strings_are_natural_language.md), which runs after this one,
+   [S1f.5.2](s1f.5.2_strings_are_natural_language.md), which runs after this one,
    refuses a string as a name altogether.
 4. **A keyword is unchanged.** The ruling names atoms and variables.
 
 ## The method
 
-### Task T1e2.5.1.1 — the witnesses banked, W29 filed, every move listed, real programs shown
+### Task T1f.5.1.1 — the witnesses banked, W29 filed, every move listed, real programs shown
 
 1. Re-take the case on a fresh build, release and debug.
 2. Bank the witnesses under `examples/ein-bugs/wrong-answers/`: a fact's argument,
@@ -199,25 +200,25 @@ Each holds unless the user says otherwise, and step 1 shows it working.
 **Stops if** any corpus program outside W20's, W24's and W29's witnesses and the two
 fixtures moves, or if a rename moves `zebra2`'s R.
 
-### Task T1e2.5.1.2 — refused, and valid in a name
+### Task T1f.5.1.2 — refused, and valid in a name
 
 The lexer, the parser's refusal, the printer, the fixtures and the register. W29,
 and W20's and W24's rows, as listed. `arg-kinds` and `is-a-shapes` answer without
 the dropped fact.
 
-### Task T1e2.5.1.3 — what only `_` used
+### Task T1f.5.1.3 — what only `_` used
 
 `Slot::Any` and `Node::Wildcard` retired, as a separate commit, so that no answer
 moves in it. Every golden unmoved by this task, byte for byte.
 
-### Task T1e2.5.1.4 — the pages
+### Task T1f.5.1.4 — the pages
 
 `00_ebnf.md` (the tokens and fact 2), `01_grammar.md` (the `WILDCARD` row and
 § Rules), `02_patterns.md` (the construct table's two rows, and its premise and
 guard sentences), `04_dot_rendering.md`, `06_reserved_names.md`,
 `defined_behaviour.md` (§ 4, § 4.8, § 4.9), `README.md`, `examples/README.md`. The
 two Q entries the ruling reverses say so. W-22 and F3 marked in
-[the no-owner inventory](../inventory_2026-11-06_no_owner.md).
+[the no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md).
 `docs/history/` is a record, and does not change.
 
 ## Acceptance
@@ -226,7 +227,7 @@ two Q entries the ruling reverses say so. W-22 and F3 marked in
   command that reads a program, and a test holds each position.
 - `_a_in_b_`, `_______01` and `A________B`, and the same as variables, load, match
   and print as written, and reload to the same value.
-- `1_a` is one name where S1e2.5.4 has landed and refused where it has not, and no input the stage touches
+- `1_a` is one name where S1f.5.4 has landed and refused where it has not, and no input the stage touches
   splits into two tokens.
 - W29's rows are `fixed`; W20's and W24's rows answer their new `right`.
 - No corpus program outside step 1's list moved, and `zebra2`'s R is unmoved under

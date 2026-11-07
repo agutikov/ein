@@ -1,6 +1,7 @@
-# S1e2.5.7 — `eq` and `neq` are relations: in a goal, a premise and a conclusion
+# S1f.5.7 — `eq` and `neq` are relations: in a goal, a premise and a conclusion
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.7**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 3 days.
 - Half a day to list every move and show the user real programs, answers computed.
 - Half a day for the goal's evaluation, the loader and the wording.
@@ -9,11 +10,11 @@
 - Half a day for the tests, the fixtures and the pages.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-18, its two questions and G-21
-([Q-M1e2.26](../open_questions.md#q-m1e226--are-eq-and-neq-relations)), and on what stays refused in a guard
+([Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations)), and on what stays refused in a guard
 ([§ Questions](#questions-it-has-to-settle)). Nothing is open.
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
-**Depends on:** nothing. It lands on the parser of the day. [S1e2.5.5](s1e2.5.5_the_grammar.md) frames the
+**Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
 ## The ruling
@@ -48,7 +49,7 @@ the place the language did not yet admit it.
 ## The case
 
 Taken on 2026-11-07 at `916d97ac`, on the release binary, a program of `(relation p Node)` and `(p a)` with
-one query (the inventory's [probe](../inventory_2026-11-06/probes/goal_guard.ein) and variations):
+one query (the inventory's [probe](../../m1e2_correctness/inventory_2026-11-06/probes/goal_guard.ein) and variations):
 
 | `:goal` | `ein solve` today | its suggested `:expect` | after |
 |---|---|---|---|
@@ -169,11 +170,11 @@ as answerable: *"Seems we already decided not to use `_`? So (eq _ _), (neq ?x _
 (eq ?x :k a) is wrong for 2 reasons - there is no defined `:k` kvarg and `eq` is 2-ary relation"*.
 
 - **`_` in a guard stays refused.** A bare `_` is reserved and refused wherever it is written
-  ([Q-M1e2.22](../open_questions.md#q-m1e222--does-ein-need-a-wildcard),
-  [S1e2.5.1](s1e2.5.1_bare_underscore_refused.md)), and `W24/wild-in-guard` keeps its `right`.
+  ([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard),
+  [S1f.5.1](s1f.5.1_bare_underscore_refused.md)), and `W24/wild-in-guard` keeps its `right`.
 - **A keyword pair as a guard's argument stays refused** (Q-M1e2.18 (iii)(a)): `(eq ?x :k a)` names a keyword
   `eq` does not take, and gives a relation of two places three arguments. Its line becomes
-  [S1e2.5.11](s1e2.5.11_closed_keywords.md)'s, since a term takes no keyword.
+  [S1f.5.11](s1f.5.11_closed_keywords.md)'s, since a term takes no keyword.
 
 **A nested fact as a guard's argument: answered, ruled the same day.** `W24/form-in-guard` (Q-M1e2.18 (i)(a)) is a
 fixed row whose `right` is a refusal:
@@ -188,32 +189,32 @@ kept it: *"yes, keep that default"*. The row's `right` is restated, and this sta
 
 ## The method
 
-### Task T1e2.5.7.1 — every move listed, real programs shown
+### Task T1f.5.7.1 — every move listed, real programs shown
 
 A prototype on a `git archive` snapshot under `build/`: the five goals above, `(eq ?x ?y)`, `(neq ?x ?y)`,
 and a claim over each, each answer computed; the corpus swept, and `cargo test --workspace` run. **Stop and
 show the user real programs before any edit** (the standing rule on syntax).
 
-### Task T1e2.5.7.2 — the relations
+### Task T1f.5.7.2 — the relations
 
 `goal_bindings`, the loader's check in `expect.rs`, the classes, and the wording. A fixture,
 `examples/features/NN_eq_neq_goal.ein`, carries a query per row of the case, each with an `:expect`, so
 `ein test` holds them. A unit test in `ein-infer` holds `eq` and `neq` to their definition over a program's
 names, each argument free and bound.
 
-### Task T1e2.5.7.3 — premises
+### Task T1f.5.7.3 — premises
 
 The matcher, as above, in the same commit as the register: `W24/guard-before-binder` fixed to its restated
 `right`, and `W24/form-in-guard` fixed to its restated `right`. `ein-infer/tests/explore.rs` and the oracle
 hold every mode on the witnesses, and a fixture shows a premise guard with a free variable.
 
-### Task T1e2.5.7.4 — conclusions (G-21)
+### Task T1f.5.7.4 — conclusions (G-21)
 
 `compile.rs`' `:assert` side: a concluded `eq` or `neq` is checked, never stored. The three rows of
 [§ Conclusions](#conclusions-g-21) are register rows, filed `open` in step 1 and fixed here, with the oracle
 agreeing on each.
 
-### Task T1e2.5.7.5 — the pages
+### Task T1f.5.7.5 — the pages
 
 `01_grammar.md` § Query (a goal may name `eq` and `neq`, and what their facts are) and its rule section (a
 premise in any order, a conclusion checked), the glossary's `eq` and `neq` (relations of equality and

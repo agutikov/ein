@@ -42,7 +42,7 @@ Each option's measured consequences per program are P1e2.1b's
 - the wrong-answer revisit ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md))
   cannot settle W8 under today's documented node
   ([S1e2.2.6 § The deferral](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance));
-- M1f's [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md),
+- M1f's [S1f.5.15](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md),
   which plans the stratification diagnostic, starts (D2's (D) and stratum
   order);
 - the detector (P1e2.1b's S1e2.1b.5) flags a program added to the corpus that

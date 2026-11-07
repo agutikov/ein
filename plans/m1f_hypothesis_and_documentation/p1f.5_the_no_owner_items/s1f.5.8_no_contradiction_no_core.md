@@ -1,13 +1,14 @@
-# S1e2.5.8 — A node with no contradiction has no core: `null`, not `[]`
+# S1f.5.8 — A node with no contradiction has no core: `null`, not `[]`
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.8**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** half a day.
 - An hour to list every surface and golden that writes a core.
 - Two hours for the two writers and the test.
 - An hour for the pages.
 
 **Status:** specified 2026-11-07 on the user's ruling of that day on D-14
-([Q-M1e2.27](../open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)).
+([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)).
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
 **Depends on:** nothing.
@@ -69,19 +70,19 @@ no premise, and `:match ()` never fires. That is
 
 ## The method
 
-### Task T1e2.5.8.1 — every surface listed
+### Task T1f.5.8.1 — every surface listed
 
 Every writer of `core` and `refuted_by` in `ein-render` and `ein-cli`, the files each reaches, and the goldens
 that hold them. `utils/region.py` and `region_census.py` read the dump, and step 1 checks that neither reads a
 non-dead node's `core`.
 
-### Task T1e2.5.8.2 — `null`
+### Task T1f.5.8.2 — `null`
 
 The two writers, and a test in `ein-cli/tests/answer_round_trip.rs`, which already reads every corpus dump:
 over every corpus program, every node and hole that is not dead has `core` and `refuted_by` `null`, and every
 dead one has a list.
 
-### Task T1e2.5.8.3 — the pages
+### Task T1f.5.8.3 — the pages
 
 `region_dump.md`'s `nodes` row, `answer_dump.md`'s summary fields, and `read_out.md`'s summary block, each
 with the rule: `null`, the core does not exist; `[]`, the empty set. The inventory's D-14 says what fixed it.

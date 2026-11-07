@@ -1,6 +1,7 @@
-# S1e2.5.2 — A string is natural language: only in `:why`, `:source` and `:goal-text`
+# S1f.5.2 — A string is natural language: only in `:why`, `:source` and `:goal-text`
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.2**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 2.5 days.
 - Half a day to re-take the positions, list every move, and show real programs.
 - Half a day for the refusal and the printer.
@@ -9,13 +10,13 @@
 - Half a day for the pages.
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
-([Q-M1e2.23](../open_questions.md#q-m1e223--what-is-a-string-for)).
+([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
 **Not started, and not to start until the user says so.** No engine code, test,
 golden or fixture has moved.
-**Depends on:** [S1e2.5.1](s1e2.5.1_bare_underscore_refused.md) and
-[S1e2.5.4](s1e2.5.4_digits_are_names.md), for the spellings that replace a string (`_rule`,
+**Depends on:** [S1f.5.1](s1f.5.1_bare_underscore_refused.md) and
+[S1f.5.4](s1f.5.4_digits_are_names.md), for the spellings that replace a string (`_rule`,
 `1`). It is the only order that never leaves a name unwritable.
-[S1e2.5.5](s1e2.5.5_the_grammar.md) frames it.
+[S1f.5.5](s1f.5.5_the_grammar.md) frames it.
 
 ## The case
 
@@ -51,8 +52,8 @@ stdlib writes none. M2's contract writes strings only as `:why` and `:goal-text`
 | a name that | written today | written after |
 |---|---|---|
 | holds a space | `"x y"` | `x_y` |
-| is digits, or starts with one | `"1"`, `"1st"` | `1`, `1st` (S1e2.5.4) |
-| is a reserved word | `"not"`, `"rule"` | `not_`, `_rule` (S1e2.5.1) |
+| is digits, or starts with one | `"1"`, `"1st"` | `1`, `1st` (S1f.5.4) |
+| is a reserved word | `"not"`, `"rule"` | `not_`, `_rule` (S1f.5.1) |
 | looks like a variable or the wildcard | `"?x"`, `"_"` | nothing: such a name carries no meaning |
 | holds a non-ASCII letter | `"Жук"` | **nothing, ever**: names are ASCII (default 3, ruled 2026-11-07). The text belongs in a natural-language keyword |
 
@@ -153,12 +154,12 @@ retiring where the case no longer exists. Step 1 lists which.
 
 **What it does to other items.**
 - **S-15 shrinks but stays.** `(p "a")` can no longer be written, and `(p 01)` against a
-  stored `(p 1)` becomes a true difference (S1e2.5.4). A models file writing `(p  a)` or
+  stored `(p 1)` becomes a true difference (S1f.5.4). A models file writing `(p  a)` or
   `( p a )` still gets *0 matched* against a stored `(p a)` (2026-11-06), so reading the
-  file's facts through the parser is still its fix, which [S1e2.5.5](s1e2.5.5_the_grammar.md#task-t1e2556----diff-models-compares-by-value-s-15)
+  file's facts through the parser is still its fix, which [S1f.5.5](s1f.5.5_the_grammar.md#task-t1f556----diff-models-compares-by-value-s-15)
   makes (ruled 2026-11-07).
 - **F2's `"a"b`** closes for a value. A number or a variable still splits.
-- **S1e2.5.1's default 3** (`"_"`) is overridden: the string is refused.
+- **S1f.5.1's default 3** (`"_"`) is overridden: the string is refused.
 
 ## Defaults
 
@@ -166,7 +167,7 @@ retiring where the case no longer exists. Step 1 lists which.
    reloadable, since `(r ?x)` stores a name printed `"?x"`. Only `syntax/arg-kinds` and
    `syntax/is-a-shapes` write one. A macro's body is read after expansion, and a rule's
    pattern and a query's goal keep their variables. The range half goes with `RANGE`
-   ([S1e2.5.3](s1e2.5.3_range_retired.md)).
+   ([S1f.5.3](s1f.5.3_range_retired.md)).
 2. **The list is closed.** A new natural-language keyword joins by adding it to the
    list and the grammar. `:as "m"` stays refused.
 3. **Names are ASCII, forever.** Ruled 2026-11-07, replacing this default's *parked for
@@ -175,18 +176,18 @@ retiring where the case no longer exists. Step 1 lists which.
    natural-language strings, anything, but not in code*). `00_ebnf.md` already says a
    non-ASCII character appears only inside a `STRING` or a comment, and that stays true
    for good. Which characters a name may hold is
-   [S1e2.5.5's list](s1e2.5.5_the_grammar.md#the-name-rule).
+   [S1f.5.5's list](s1f.5.5_the_grammar.md#the-name-rule).
 4. **`\u{…}` is the one Unicode escape**, since it reaches every code point. No `\xNN`,
    `\uNNNN` or octal.
 
 ## The method
 
-### Task T1e2.5.2.1 — every position re-taken, every move listed, real programs shown
+### Task T1f.5.2.1 — every position re-taken, every move listed, real programs shown
 
 1. Re-take the table on a fresh build, release and debug, and settle the two rows it
    leaves open: what `:priority "high"` does today, and any other keyword's string.
 2. Read `(trace …)`'s strings, and say whether they are natural language.
-3. Prototype on a `git archive` snapshot under `build/`, on top of S1e2.5.1. Sweep every
+3. Prototype on a `git archive` snapshot under `build/`, on top of S1f.5.1. Sweep every
    `.ein` under `examples/`, `tests/`, `stdlib/`, `corpus/` and `plans/`, and run
    `cargo test --workspace` on the snapshot. List every move, and any `.ein` that writes an
    escape the new set refuses.
@@ -197,16 +198,16 @@ retiring where the case no longer exists. Step 1 lists which.
 
 **Stops if** any program outside `arg-kinds`, `is-a-shapes` and the 12 witnesses moves.
 
-### Task T1e2.5.2.2 — refused
+### Task T1f.5.2.2 — refused
 
 The refusal, the escapes, the printer, the fixtures and the register rows, as listed, then
 the Unicode test and the two examples.
 
-### Task T1e2.5.2.3 — what only a string used
+### Task T1f.5.2.3 — what only a string used
 
 Retired as a separate commit, so that no answer moves in it.
 
-### Task T1e2.5.2.4 — the pages
+### Task T1f.5.2.4 — the pages
 
 `00_ebnf.md` (fact 4 and the line that says where a non-ASCII character may appear),
 `01_grammar.md` (the `STRING` row), `02_patterns.md`,

@@ -1,6 +1,7 @@
-# S1f.5.6 — Remove `:priority`; derive the order from the rules
+# S1f.5.15 — Remove `:priority`; derive the order from the rules
 
-**Phase:** [P1f.5](README.md) (Documentation ein does not have)
+**Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
+**Was S1f.5.6**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 6 days — 3 to measure and decide, 3 to remove.
 **Depends on:** [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
 [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — **hard.**
@@ -240,7 +241,7 @@ that, and three things become derivable that a typed integer never was:
 
 ## Tasks
 
-### Task T1f.5.6.1 — The census and the control experiment, properly
+### Task T1f.5.15.1 — The census and the control experiment, properly
 
 `utils/priority_census.py`. Both arms, over the corpus's **declared** runs, not
 a uniform `solve`. Compare, per entry: exit code, `--json-summary` field by
@@ -267,7 +268,7 @@ not a `(config …)` field — because `SolverConfig` is rendered into the KB-sh
 digest and a knob whose settings are being compared would re-bless every shape
 golden in the corpus.
 
-### Task T1f.5.6.2 — Disposition the six consumers
+### Task T1f.5.15.2 — Disposition the six consumers
 
 The two that matter:
 
@@ -283,7 +284,7 @@ The two that matter:
   input; it is a concrete instance of the question and the stage should not
   have had to find it.
 
-### Task T1f.5.6.3 — The rule dependency graph and its strata
+### Task T1f.5.15.3 — The rule dependency graph and its strata
 
 Build it in `ein-infer`, beside `naf_deps.rs`, which already has the edge
 extraction:
@@ -304,7 +305,7 @@ edges exist only once an activator fact binds `?rel`, so the graph is over the
 compile cache — the same scoping `naf_deps.rs` documents: *"pass the engine of
 a saturator that has run."*
 
-### Task T1f.5.6.4 — The static non-stratifiability diagnostic
+### Task T1f.5.15.4 — The static non-stratifiability diagnostic
 
 A negative cycle is reported by name, with the rules and the relation in it.
 Fixtures both ways: `features/07_unstratifiable.ein` trips it;
@@ -318,7 +319,7 @@ honest statement of what Ein computes — a fixpoint supported at the boundary"*
 The diagnostic says the answer is one of several; it does not withhold it. If
 anyone wants a refusal that is a `Q-M1e.<n>`.
 
-### Task T1f.5.6.5 — Remove it
+### Task T1f.5.15.5 — Remove it
 
 Three decisions, in order:
 
@@ -336,7 +337,7 @@ Three decisions, in order:
    (firing order); `events_*.jsonl`; `dump_*` (the band column). Anything
    *else* that moves is a finding, not a re-bless.
 
-### Task T1f.5.6.6 — The docs
+### Task T1f.5.15.6 — The docs
 
 `01_grammar.md` § Rules loses the `[:priority <INT>]` line and gains the
 sentence about the accepted-and-ignored keyword; its § Premise forms bullet

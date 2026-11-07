@@ -5,7 +5,7 @@
 **Status:** not started. It was `T1f.5.20.4` until 2026-11-08.
 **Depends on:** [S1f.20.2](s1f.20.2_the_disposition_table.md)'s table, reviewed. Its
 `rule-evolution/analysis-of-rules.md` is sequenced with
-[S1f.5.6](../p1f.5_documentation_and_other/s1f.5.6_rule_priority.md), whichever runs second.
+[S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md), whichever runs second.
 
 ## What it writes
 
@@ -24,7 +24,7 @@ Four known traps:
 - **The M1d pages** are the best implementation-agnostic writing in the repo (`the_boundary`, `completeness`,
   `the_verdict`, `obligation_forms`), and they are also milestone documents in voice. De-scaffolding them is
   most of the wordcount and none of the difficulty.
-- **`rule-evolution/analysis-of-rules.md`** is *empty until something fills it*. S1f.5.6 fills it: the rule
+- **`rule-evolution/analysis-of-rules.md`** is *empty until something fills it*. S1f.5.15 fills it: the rule
   dependency graph, the strata, and what a rule set's structure decides. Sequence the two so the page is
   written once.
 - **`kb-evolution/search.md`** was mapped from `inference/algorithm_layer_n.md`, a page about a walk that has
@@ -45,7 +45,7 @@ Each page of the table's rows, every paragraph asked the question above.
 
 ### Task T1f.20.4.2 — `rule-evolution/`
 
-`rules-as-data.md`, `analysis-of-rules.md` with S1f.5.6's content or after it, and `transformations.md` as a
+`rules-as-data.md`, `analysis-of-rules.md` with S1f.5.15's content or after it, and `transformations.md` as a
 stub with its question in it.
 
 ## Acceptance

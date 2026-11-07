@@ -567,7 +567,7 @@ by six.
 | `EIN_CMD` | a shell array in `utils/render_examples.sh`, assigned from `$EIN_BIN` |
 | `EIN_C_PROBLEM_H` | an include guard in `c/problem.h` |
 | `EIN_RENDER_LEVI` | **documented and never implemented.** `ir/03-ein-lang/04_dot_rendering.md` claims it; the only Levi switch is the library-level `DotOpts.levi`. It is one of [CD-H1](../history/m1e_review_processing/README.md#the-findings)'s items |
-| `EIN_PRIORITY` | *proposed* by [S1f.5.6](../../plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md); does not exist |
+| `EIN_PRIORITY` | *proposed* by [S1f.5.15](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md); does not exist |
 | `EIN_NOGOOD_INJECT` | *proposed* by [S1e.1.2](../history/m1e_review_processing/README.md#s1e12--determinism-under---jobs-q1); does not exist |
 
 ### What `EIN_TRAVERSAL=tree` reports

@@ -1,6 +1,7 @@
-# S1e2.5.6 — Where ∅ is in R, every minimal-line question stops at root, and says only ∅
+# S1f.5.6 — Where ∅ is in R, every minimal-line question stops at root, and says only ∅
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.6**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1.5 days.
 - A quarter of a day to re-take the moves on the build and list every golden.
 - Half a day for the rule in the flagged route, and its tests.
@@ -26,7 +27,7 @@ The minimal line is the members of R with no smaller member of R. ∅ is a subse
 **where ∅ is in R, the minimal line is {∅}**, and no other state can be on it. Whether ∅ is in R is root's
 fixpoint alone: root alive and owing nothing, one saturation. The rule holds on every program, monotone or
 not, within `--region-limit` or past it. It needs no assumption about what a node is
-([Q-M1e2.2](../open_questions.md), F21), since ∅ is root itself.
+([Q-M1e2.2](../../m1e2_correctness/open_questions.md), F21), since ∅ is root itself.
 
 ## The case
 
@@ -106,7 +107,7 @@ program states:
 | program | states an obligation | the row today |
 |---|---|---|
 | 8 `tests/stdlib/` programs, among them `algebra/24_total_owed_satisfied` | yes, and root discharges it | `1 state — ∅, the trivial line: no obligation is stated` |
-| the inventory's [F1 probe](../inventory_2026-11-06/findings/F1_trivial_line_stated_obligation.ein) | yes, `(total-owed likes is-a)` | the same |
+| the inventory's [F1 probe](../../m1e2_correctness/inventory_2026-11-06/findings/F1_trivial_line_stated_obligation.ein) | yes, `(total-owed likes is-a)` | the same |
 | its control, the same program without that line | no | the same |
 | `past-limit-lines` at `--region-limit 1` | yes | the same |
 | `past-limit-lines` at `--region-limit 2` | yes | `1 state — ∅` |
@@ -128,12 +129,12 @@ The `--json-summary` field `minimal.trivial` is read off the same bit
 
 ## The method
 
-### Task T1e2.5.6.1 — every move listed
+### Task T1f.5.6.1 — every move listed
 
 The sweep above re-taken on the build, with `--json-summary` and `--dump-answer`, and `cargo test
 --workspace` run on a prototype. Every move must be one of the 23's rows above.
 
-### Task T1e2.5.6.2 — the rule
+### Task T1f.5.6.2 — the rule
 
 The check in `flagged`, and three tests:
 - **`ein-render/tests/line_modes_past_the_limit.rs`:** where describe says ∅ is in R, `--minimal -n N`,
@@ -147,13 +148,13 @@ The check in `flagged`, and three tests:
 
 The register's two rows are restated in the same commit, and `ein-cli/tests/wrong_answers.rs` holds them.
 
-### Task T1e2.5.6.3 — the clause (S-17, F1)
+### Task T1f.5.6.3 — the clause (S-17, F1)
 
 `minimal_line` in the read-out and `minimal.trivial` in the summary, as above, in their own commit. A test
 in `ein-cli/tests/region_modes.rs` holds the five rows of the case to `1 state — ∅`, and the summary's field
 to *∅ is in R*, on the F1 probe moved into `examples/` beside its control.
 
-### Task T1e2.5.6.4 — the pages
+### Task T1f.5.6.4 — the pages
 
 `read_out.md`'s rows for `-n N` and `--single` past the limit, its `minimal line` row (no name for {∅}),
 its summary block, and its question table's *is a line trivial?* row; `solve_interface.md` § 3.3; and the

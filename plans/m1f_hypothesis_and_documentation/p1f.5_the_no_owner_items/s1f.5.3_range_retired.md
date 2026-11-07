@@ -1,6 +1,7 @@
-# S1e2.5.3 — No ranges: the `RANGE` token retired
+# S1f.5.3 — No ranges: the `RANGE` token retired
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.3**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1 day.
 - A quarter of a day to list every move and show the programs that change.
 - Half a day to retire the token and its arms.
@@ -8,13 +9,13 @@
 
 **Status:** specified 2026-11-06 on the user's ruling of that day, and revised 2026-11-07 on the
 user's rule for a name
-([Q-M1e2.24](../open_questions.md#q-m1e224--are-there-numbers-in-ein)): `1..5` stops being a range and
+([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)): `1..5` stops being a range and
 becomes a plain name, where this page had it refused.
 **Not started, and not to start until the user says so.** No engine code, test, golden or
 fixture has moved.
-**Depends on:** nothing. It touches what [S1e2.5.1](s1e2.5.1_bare_underscore_refused.md)
-and [S1e2.5.2](s1e2.5.2_strings_are_natural_language.md) touch, so the three land one at a
-time. [S1e2.5.4](s1e2.5.4_digits_are_names.md) follows it, and [S1e2.5.5](s1e2.5.5_the_grammar.md) frames it.
+**Depends on:** nothing. It touches what [S1f.5.1](s1f.5.1_bare_underscore_refused.md)
+and [S1f.5.2](s1f.5.2_strings_are_natural_language.md) touch, so the three land one at a
+time. [S1f.5.4](s1f.5.4_digits_are_names.md) follows it, and [S1f.5.5](s1f.5.5_the_grammar.md) frames it.
 
 ## The case
 
@@ -34,7 +35,7 @@ advertises it (lines 22 and 91).
 | `(n 1..3)` in a rule's `:match` | refused at load since W20, on Q-M1e2.13 (a) |
 
 Outside comments, four programs write one: the fixture `syntax/arg-kinds` (`(r 1..5 1..*)`,
-2026-08-20), W20's witness `range-in-match`, and two probes under this milestone,
+2026-08-20), W20's witness `range-in-match`, and two probes under M1e2's plans,
 `inventory_2026-11-05/probes/kwpair_in_pattern.ein` and
 `p1e2.3_…/s1e2.3.8_probes/values.ein`.
 
@@ -48,9 +49,9 @@ This supersedes Q-M1e2.13's ruling on a range, which refused one in a rule only.
 
 ## What it changes
 
-**The token goes.** Until [S1e2.5.4](s1e2.5.4_digits_are_names.md), `1..5` is a parse error wherever
+**The token goes.** Until [S1f.5.4](s1f.5.4_digits_are_names.md), `1..5` is a parse error wherever
 it is written, since `1` is followed by `..5`, which is no token. From that stage on it is a plain name,
-under [the user's rule](s1e2.5.5_the_grammar.md#the-name-rule), and means nothing beyond its spelling:
+under [the user's rule](s1f.5.5_the_grammar.md#the-name-rule), and means nothing beyond its spelling:
 `(p 1..5)` is a fact about the name `1..5`, as `(p a..b)` is about `a..b` today. No operation reads it as
 a range, and none can.
 
@@ -59,13 +60,13 @@ a range, and none can.
 `expect.rs`, `dump.rs`, `ir_dot.rs` and `dot_util.rs`, with `Terms::value_range`.
 
 **The register.** `W20/range-in-match` is refused by this stage, with its `refused` line moved, and
-then loads under S1e2.5.4, a pattern over the name `1..3`; its `right` is restated there. No new case: no
+then loads under S1f.5.4, a pattern over the name `1..3`; its `right` is restated there. No new case: no
 program relies on a range. A dropped `:card 1..*` is not an answer, and closed keywords refuse it
-([S1e2.5.11](s1e2.5.11_closed_keywords.md), ruled 2026-11-07).
+([S1f.5.11](s1f.5.11_closed_keywords.md), ruled 2026-11-07).
 
-**The fixtures.** `syntax/arg-kinds` keeps `(r 1..5 1..*)` as a fact over two names once S1e2.5.4 lands,
+**The fixtures.** `syntax/arg-kinds` keeps `(r 1..5 1..*)` as a fact over two names once S1f.5.4 lands,
 and the node-kind probes lose that kind (`examples/README.md`). `range-in-match` stays as the refusal's witness. One
-parse-negative fixture holds `:card 1..*`. The two probes under the milestone are records and
+parse-negative fixture holds `:card 1..*`. The two probes under M1e2's plans are records and
 stay, each exiting as its new line says.
 
 **The goldens and tests, named before they move** (step 1 completes this list):
@@ -84,18 +85,18 @@ its test; `lex.rs`' unit tests (lines 560 to 562); `cli_semantics.rs`'s refusal 
 
 ## The method
 
-### Task T1e2.5.3.1 — every move listed
+### Task T1f.5.3.1 — every move listed
 
 Prototype on a `git archive` snapshot under `build/`. Sweep every `.ein` under `examples/`,
 `tests/`, `stdlib/`, `corpus/` and `plans/` through `solve` and `saturate`, against today's
 binary, run `cargo test --workspace` on the snapshot, and list every move. **Stops if** any
 program outside the four above moves. Show the user `arg-kinds` as written and after.
 
-### Task T1e2.5.3.2 — retired
+### Task T1f.5.3.2 — retired
 
 The token, its arms, the fixtures and the register row.
 
-### Task T1e2.5.3.3 — the pages
+### Task T1f.5.3.3 — the pages
 
 `00_ebnf.md` (`RANGE`, fact 3, the terminal census), `01_grammar.md` (the `RANGE` row, and
 `:cardinality` at lines 22 and 91), `02_patterns.md`, `04_dot_rendering.md`,
@@ -107,7 +108,7 @@ does not change.
 ## Acceptance
 
 - `1..5` and `1..*` have no reading as a range anywhere: refused by this stage, and plain names after
-  S1e2.5.4, and a test holds each.
+  S1f.5.4, and a test holds each.
 - `Node::Range` and `Terms::value_range` are gone, and no page describes a range or
   `:cardinality` as part of the language.
 - No corpus program outside step 1's list moved.

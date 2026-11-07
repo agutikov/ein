@@ -18,7 +18,7 @@ Two things are genuinely new, and they are the reason the perspective split is w
 - **`syntax-and-semantics/` states each concept in four representations**: ein-lang, graph, NL and math, as
   the user's outline asks. That is a *format* decision applied uniformly, and it is the thing no current page
   does. The grammar states the syntax, `01-ein-graph/` states the graph, nothing states the maths, and the NL
-  is [S1f.5.5](../p1f.5_documentation_and_other/s1f.5.5_nl_required.md)'s subject. Pick the format once, in
+  is [S1f.5.14](../p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s subject. Pick the format once, in
   `objects.md`, and hold it.
 - **`theory.md`**: a rule set as a *theory*, and how rules interact. Nothing in the tree says this today,
   and it is the concept [M2](../../m2_nl_to_ir/README.md)'s theory selection and theory synthesis are about.

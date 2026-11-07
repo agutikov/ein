@@ -1,6 +1,7 @@
-# S1e2.5.11 — Each form takes a fixed set of keywords, and `:where` is gone
+# S1f.5.11 — Each form takes a fixed set of keywords, and `:where` is gone
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.11**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1.5 days.
 - A quarter of a day to file the rows, sweep the corpus and list every move.
 - Half a day for the loader's lists and the check inside terms.
@@ -8,14 +9,14 @@
 - Half a day for the pages: six current kernel pages describe `:where`.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on D-15, G-15 and G-22
-([Q-M1e2.28](../open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
+([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
-**Depends on:** nothing. It lands on the hand-written parser before [S1e2.5.5](s1e2.5.5_the_grammar.md)'s
-swap, as S1e2.5.1 to S1e2.5.4 do, so each move is attributed to this ruling. S1e2.5.5's grammar then makes
+**Depends on:** nothing. It lands on the hand-written parser before [S1f.5.5](s1f.5.5_the_grammar.md)'s
+swap, as S1f.5.1 to S1f.5.4 do, so each move is attributed to this ruling. S1f.5.5's grammar then makes
 each keyword a token of its own form, and this stage's loader lines move into the grammar
-([S1e2.5.5 § What it changes](s1e2.5.5_the_grammar.md#what-it-changes), *Refusals move up*).
-[S1e2.5.3](s1e2.5.3_range_retired.md) and this stage each refuse `:cardinality 1..1`, for its value and for
+([S1f.5.5 § What it changes](s1f.5.5_the_grammar.md#what-it-changes), *Refusals move up*).
+[S1f.5.3](s1f.5.3_range_retired.md) and this stage each refuse `:cardinality 1..1`, for its value and for
 its keyword, so either can land first.
 
 ## The ruling
@@ -37,12 +38,12 @@ kwarg - it is an error"*.
    [Q32](../../open_questions.md#q32--where-semantics) (2026-05-20) that left a `:where` pair to be dropped.
    Q32 removed `:where` and kept dropping its pair in silence.
 3. **The four defaults stand:**
-   - `:cardinality` is retired: it was never read, and its value is a range ([Q-M1e2.24](../open_questions.md#q-m1e224--are-there-numbers-in-ein)).
+   - `:cardinality` is retired: it was never read, and its value is a range ([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
    - `:mode` on a query is retired: it is obsolete, accepted and ignored.
    - `:rule` and `:using` stay on a fact.
    - `:why` on a fact is refused.
 4. **"If parser sees".** Today a keyword is one token for every form, so the check is the loader's. It runs
-   before any run, and names the keyword's file, line and column, as a parse error does. S1e2.5.5 moves it
+   before any run, and names the keyword's file, line and column, as a parse error does. S1f.5.5 moves it
    into the grammar, where it is a parse error.
 
 ## The lists
@@ -53,7 +54,7 @@ kwarg - it is an error"*.
 | `rule`, `hrule` | `:match` | a term: the premises | yes |
 | | `:assert` | a term: the conclusion | yes |
 | | `:why` | a string: the template that explains a firing | no |
-| | `:priority` | digits: the rule's order, until [S1f.5.6](../../m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md) deletes it | no |
+| | `:priority` | digits: the rule's order, until [S1f.5.15](s1f.5.15_rule_priority.md) deletes it | no |
 | a fact, negated or not | `:source` | a string: the fact is given, and where it is stated | no |
 | | `:rule`, `:using` | a rule's name and its premises: the fact is derived | no |
 | `query` | `:goal` | a term: the pattern asked about | yes |
@@ -131,7 +132,7 @@ fact for a pair.
   - [`examples/ein-bugs/kwpair-below-the-filter.ein`](../../../examples/ein-bugs/kwpair-below-the-filter.ein)
     and its fuzz find, `corpus/fuzz_findings/kwpair-below-the-filter.ein`: `(tracex (step s1 :rule … :using …
     :derives …) …)`. It was banked for a render crash, *not a value node: KwPair*, which
-    [S1e2.3.2](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md) fixed
+    [S1e2.3.2](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md) fixed
     by labelling a pair `:key value`. Once no pair loads below a form, the crash's path is closed at load.
     **Default:** the fixture moves to `examples/broken/load/` as a refusal with its `.expected`, and the fuzz
     find's note says why. Step 1 says whether `value_label`'s `KwPair` arm is still reached, by a form's own
@@ -164,7 +165,7 @@ fact for a pair.
     positional guard or turned into refusal cases;
   - `from_ir.rs`' tests at lines 2209 and 2385–2386.
 - **What does not move.** No corpus answer outside the three files above, and no register row but the new
-  case. `:priority` stays until S1f.5.6. The shape of each keyword's value is S1e2.5.5's grammar by position.
+  case. `:priority` stays until S1f.5.15. The shape of each keyword's value is S1f.5.5's grammar by position.
   So is a finding of this census, that a fact's `:using` reads a list and ignores its first element:
   `:using (x)` is no premise, and `:using (p (r c d))` is the one premise `(r c d)` (`from_ir.rs`,
   `ingest_fact`).
@@ -190,7 +191,7 @@ Each page says what the form takes, that any other keyword is refused, and that 
 
 ## The method
 
-### Task T1e2.5.11.1 — the rows, every move listed
+### Task T1f.5.11.1 — the rows, every move listed
 
 The register case filed with its seven witnesses. The lists prototyped, and the corpus and
 `corpus/fuzz_findings/` swept with every command that loads. `cargo test --workspace` is run on the
@@ -198,14 +199,14 @@ prototype. Every move must be one of the case's rows, the three files above, or 
 changes. **Stop and show the user** the refusal lines and `wrappers.ein` as rewritten, computed on the
 prototype.
 
-### Task T1e2.5.11.2 — the lists and the refusals
+### Task T1f.5.11.2 — the lists and the refusals
 
 The loader's lists and the check inside terms. The drops go, and the tests move. A test in `ein-ir` holds one
 line for each form and for each place in a term: a `:match`'s `and`, a pattern, an `:assert`, a `:goal`, an
 `absent`, a guard, a macro call and a nested fact. `fuzz_properties` gains the property that no accepted
 program carries a keyword its form does not list. The case's rows are fixed.
 
-### Task T1e2.5.11.3 — the pages
+### Task T1f.5.11.3 — the pages
 
 The six pages, Q32's line, and the inventory's D-15 and G-22, each saying what fixed it.
 

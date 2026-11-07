@@ -1,6 +1,7 @@
-# S1e2.5.10 — A conclusion's variable must be bound, and is refused at load where it is not
+# S1f.5.10 — A conclusion's variable must be bound, and is refused at load where it is not
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.10**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** half a day.
 - An hour to sweep the corpus and list every move.
 - Two hours for the loader's check and its line.
@@ -10,9 +11,9 @@
 [F13](README.md#f13-a-conclusions-variable-that-nothing-binds).
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
-**Depends on:** [S1e2.5.7](s1e2.5.7_eq_and_neq_are_relations.md), whose `(eq ?y ?y)` is one of the two
+**Depends on:** [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md), whose `(eq ?y ?y)` is one of the two
 spellings the refusal names, and which makes a guard bind. It lands before
-[S1e2.5.9](s1e2.5.9_an_empty_match_fires.md), so that a rule with `:match ()` and an unbound conclusion
+[S1f.5.9](s1f.5.9_an_empty_match_fires.md), so that a rule with `:match ()` and an unbound conclusion
 variable is refused at load rather than stopping the run at root.
 
 ## The ruling
@@ -24,7 +25,7 @@ value for us? Can it be rewritten with forall more explicit?"*
 
 The agent's answer: its value is almost nil, since "every name" holds relation and type names, and what is
 meant is every object of a type, which a premise already says. Ein's `forall` is a test in a `:match` and
-cannot conclude a universal. The meaning stays writable explicitly, with a typed premise or, after S1e2.5.7,
+cannot conclude a universal. The meaning stays writable explicitly, with a typed premise or, after S1f.5.7,
 `(eq ?y ?y)`. So refusing the implicit form forbids nothing that can be meant and catches a likely typo. The
 user: *"yes, file F13 with the refusal"*.
 
@@ -48,7 +49,7 @@ never checks it, and the run finds it at whichever node first fires the rule.
 hold:
 - by a parameter the activator binds;
 - by a positive pattern;
-- or, after S1e2.5.7, by an `eq` or `neq` guard, whose free variable ranges over the program's names.
+- or, after S1f.5.7, by an `eq` or `neq` guard, whose free variable ranges over the program's names.
 
 A variable seen only inside an `(absent …)`, a `(not …)` matched as negated or a `forall` is not bound
 outside it. In an `(or …)`, the variable must be bound in every arm. An hrule's `:assert` is held to the same
@@ -67,23 +68,23 @@ to a refusal at load, with the corpus entry's note and golden restated. No regis
 is a regression fixture, not a wrong answer.
 
 **What it closes.** F13, and the unbound-variable part of G-14, a bad conclusion that loads and is found
-only when it fires ([S1e2.5.5](s1e2.5.5_the_grammar.md#questions-it-has-to-settle)).
+only when it fires ([S1f.5.5](s1f.5.5_the_grammar.md#questions-it-has-to-settle)).
 
 ## The method
 
-### Task T1e2.5.10.1 — every move listed
+### Task T1f.5.10.1 — every move listed
 
 The check prototyped, and the corpus swept with every command that loads. A program refused that loads today
 is listed with its rule. The fuzzer's corpus, `corpus/fuzz_findings/`, is swept too, since the fuzzer found
 the first such input.
 
-### Task T1e2.5.10.2 — the refusal
+### Task T1f.5.10.2 — the refusal
 
 The loader's check, the line, and `FireError::UnboundVar` retired. A test in `ein-ir` holds the line for each
 shape: a free variable, an `or` arm, a variable seen only under `absent`, and an hrule. `fuzz_properties` gains
 the property that no firing meets an unbound variable.
 
-### Task T1e2.5.10.3 — the pages
+### Task T1f.5.10.3 — the pages
 
 `defined_behaviour.md` § 4, `01_grammar.md`'s rule section (every conclusion variable is bound), and the
 inventory's F13.

@@ -14,21 +14,21 @@
 
 | id | kind | what is wrong | touches | programs it reaches | what it needs |
 |---|---|---|---|---|---|
-| **W-22** | wrong answer | `_` as a fact's argument is dropped at load, in silence | **R, H** | monotone: `syntax/arg-kinds` (stopped), `syntax/is-a-shapes` (complete), and a probe | **ruled 2026-11-06**: a bare `_` is refused, [S1e2.5.1](p1e2.5_the_no_owner_items/s1e2.5.1_bare_underscore_refused.md), not started |
-| **S-15** | surface | `--diff-models` compares facts as text, not as values | a surface | any: probes only | **ruled 2026-11-07**: [S1e2.5.5](p1e2.5_the_no_owner_items/s1e2.5.5_the_grammar.md#task-t1e2556----diff-models-compares-by-value-s-15) |
-| **S-16** | surface | past the limit, `--minimal --single` and `--minimal -n 1` say less than describe certifies | a surface | non-monotone: all 7 stopped at the limit | **ruled 2026-11-07, (b)**: [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md) |
-| **S-17** | surface | the minimal-line row says *no obligation is stated* where no node the run met owes | a surface | non-monotone: a probe, at a lowered limit | **ruled 2026-11-07, (a)**: [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes) |
-| **F1** | surface | the same sentence on complete runs of programs that state one | a surface | monotone: 8 under `tests/stdlib/` | **ruled 2026-11-07, (a)**: [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes) |
-| **S-18** | surface | a guard as a query's goal prints *the goal holds: it has no variable* | a surface | monotone: a probe | **ruled 2026-11-07**: [S1e2.5.7](p1e2.5_the_no_owner_items/s1e2.5.7_eq_and_neq_are_relations.md) |
-| **D-14** | spelling | an owing hole that is not dead is written `core: []`, where `null` means no core taken | a surface | non-monotone: 8 holes on 7 programs | **ruled 2026-11-07**: [S1e2.5.8](p1e2.5_the_no_owner_items/s1e2.5.8_no_contradiction_no_core.md) |
-| **D-15** | page | `02_patterns.md` describes `:where` as a filter, and its T3 example no longer loads | a page | refused at load: the page's own example | [S1e2.5.11](p1e2.5_the_no_owner_items/s1e2.5.11_closed_keywords.md), ruled 2026-11-07 |
-| **G-21** | gap | a rule may conclude a fact of the reserved `neq` | unruled | monotone: a probe, 0 corpus programs | **ruled 2026-11-07**: [S1e2.5.7](p1e2.5_the_no_owner_items/s1e2.5.7_eq_and_neq_are_relations.md#conclusions-g-21) |
-| **G-22** | gap | a keyword pair beside an `:assert`'s conjuncts is dropped in silence | unruled | monotone: a probe, 0 corpus programs | [S1e2.5.11](p1e2.5_the_no_owner_items/s1e2.5.11_closed_keywords.md), ruled 2026-11-07 |
-| **P-14** | cost | past the limit, `--minimal -n 2` and `--minimal --single` visit about 2^limit nodes where one saturation decides | cost | non-monotone: all 7 stopped at the limit | **closed by S-16's ruling, 2026-11-07**: [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md) |
-| **P-15** | cost | N's cores past the limit are computed, then written `not-kept` | cost | non-monotone: `lattice/06`, `past-limit-lines` | **ruled 2026-11-08, (c)**: [S1e2.5.12](p1e2.5_the_no_owner_items/s1e2.5.12_cores_for_n_only.md) |
-| **P-16** | cost | four dumps past the limit are most of one test's time | cost | that test | **ruled 2026-11-08, the slow tier**: [S1e2.5.13](p1e2.5_the_no_owner_items/s1e2.5.13_large_dumps_to_the_slow_tier.md) |
+| **W-22** | wrong answer | `_` as a fact's argument is dropped at load, in silence | **R, H** | monotone: `syntax/arg-kinds` (stopped), `syntax/is-a-shapes` (complete), and a probe | **ruled 2026-11-06**: a bare `_` is refused, [S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md), not started |
+| **S-15** | surface | `--diff-models` compares facts as text, not as values | a surface | any: probes only | **ruled 2026-11-07**: [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#task-t1f556----diff-models-compares-by-value-s-15) |
+| **S-16** | surface | past the limit, `--minimal --single` and `--minimal -n 1` say less than describe certifies | a surface | non-monotone: all 7 stopped at the limit | **ruled 2026-11-07, (b)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md) |
+| **S-17** | surface | the minimal-line row says *no obligation is stated* where no node the run met owes | a surface | non-monotone: a probe, at a lowered limit | **ruled 2026-11-07, (a)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes) |
+| **F1** | surface | the same sentence on complete runs of programs that state one | a surface | monotone: 8 under `tests/stdlib/` | **ruled 2026-11-07, (a)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes) |
+| **S-18** | surface | a guard as a query's goal prints *the goal holds: it has no variable* | a surface | monotone: a probe | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) |
+| **D-14** | spelling | an owing hole that is not dead is written `core: []`, where `null` means no core taken | a surface | non-monotone: 8 holes on 7 programs | **ruled 2026-11-07**: [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) |
+| **D-15** | page | `02_patterns.md` describes `:where` as a filter, and its T3 example no longer loads | a page | refused at load: the page's own example | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), ruled 2026-11-07 |
+| **G-21** | gap | a rule may conclude a fact of the reserved `neq` | unruled | monotone: a probe, 0 corpus programs | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21) |
+| **G-22** | gap | a keyword pair beside an `:assert`'s conjuncts is dropped in silence | unruled | monotone: a probe, 0 corpus programs | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), ruled 2026-11-07 |
+| **P-14** | cost | past the limit, `--minimal -n 2` and `--minimal --single` visit about 2^limit nodes where one saturation decides | cost | non-monotone: all 7 stopped at the limit | **closed by S-16's ruling, 2026-11-07**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md) |
+| **P-15** | cost | N's cores past the limit are computed, then written `not-kept` | cost | non-monotone: `lattice/06`, `past-limit-lines` | **ruled 2026-11-08, (c)**: [S1f.5.12](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md) |
+| **P-16** | cost | four dumps past the limit are most of one test's time | cost | that test | **ruled 2026-11-08, the slow tier**: [S1f.5.13](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md) |
 
-**The user's review is done (2026-11-08): every item is decided**, and each decision is a plan in [P1e2.5](p1e2.5_the_no_owner_items/README.md), whose table says where each item stands. P-14 was closed by S-16's ruling, and the rest each have a stage. Nothing is built: the stages wait for the user to say which run, and in what order.
+**The user's review is done (2026-11-08): every item is decided**, and each decision is a plan in [P1f.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md) (P1e2.5 until the user moved it to M1f on 2026-11-08, its stages renumbered `S1e2.5.<n>` → `S1f.5.<n>`), whose table says where each item stands. P-14 was closed by S-16's ruling, and the rest each have a stage. Nothing is built: the stages wait for the user to say which run, and in what order.
 
 ---
 
@@ -98,7 +98,7 @@ kb load error: rule 'e': its :match writes (eq ?x _), and _ names no value — a
 [exit 1]
 ```
 
-**Right.** The probe's header gave two answers: refused at load, or kept as written. [S1e2.3.8 § Notes](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md#notes) put it *beside W24's shapes*. **The user ruled 2026-11-06** ([Q-M1e2.22](open_questions.md#q-m1e222--does-ein-need-a-wildcard)): a bare `_` is reserved and refused, and `_` is valid anywhere in an atom's or a variable's name. The plan is [S1e2.5.1](p1e2.5_the_no_owner_items/s1e2.5.1_bare_underscore_refused.md), not started.
+**Right.** The probe's header gave two answers: refused at load, or kept as written. [S1e2.3.8 § Notes](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md#notes) put it *beside W24's shapes*. **The user ruled 2026-11-06** ([Q-M1e2.22](open_questions.md#q-m1e222--does-ein-need-a-wildcard)): a bare `_` is reserved and refused, and `_` is valid anywhere in an atom's or a variable's name. The plan is [S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md), not started.
 
 **Where.** [`from_ir::fact_args`](../../ein.rs/crates/ein-ir/src/from_ir.rs), line 589: `atomic_value` answers nothing for a wildcard, the form branch does not take it, and the argument is skipped.
 
@@ -128,7 +128,7 @@ $ ein solve plans/m1e2_correctness/inventory_2026-11-06/probes/diff_models_text.
 
 **Right.** [S1e2.3.8 § Notes](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md#notes): normalising the file's facts through the parser would make it compare by value. It is a report, and no answer moves.
 
-**Ruled 2026-11-07, as recommended:** the file's facts are read through the parser and compared by value, in [S1e2.5.5](p1e2.5_the_no_owner_items/s1e2.5.5_the_grammar.md#task-t1e2556----diff-models-compares-by-value-s-15). After S1e2.5.2 and S1e2.5.4 what is left is spacing (`(p  a)`, `( p a )`), a trailing comment, and a fact with no `)`, which loads in silence and never matches (re-taken 2026-11-07).
+**Ruled 2026-11-07, as recommended:** the file's facts are read through the parser and compared by value, in [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#task-t1f556----diff-models-compares-by-value-s-15). After S1f.5.2 and S1f.5.4 what is left is spacing (`(p  a)`, `( p a )`), a trailing comment, and a fact with no `)`, which loads in silence and never matches (re-taken 2026-11-07).
 
 **Where.** The option is in [`cmdline.rs`](../../ein.rs/crates/ein-cli/src/cmdline.rs), line 606, and the pairing in [`models.rs`](../../ein.rs/crates/ein-render/src/models.rs).
 
@@ -166,7 +166,7 @@ $ ein solve examples/lattice/10_fifo_gap.ein --minimal --single
 
 **What it needs: the user's ruling.** [S1e2.2.26 § Notes](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md#notes): *making either say what describe says would change an answer the ruling does not name*. So Q-M1e2.19 does not cover it. Either leave both words weaker than describe, or have them say what describe says.
 
-**Ruled 2026-11-07, (b):** *"b, use the ∅ rule in both"*. Where ∅ is in R the minimal line is {∅}, so every minimal question answers it after one saturation. The plan is [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md), which closes P-14 with it: of the 213 corpus programs with ∅ in R, the 23 the static check flags are the ones that do not stop at root (2026-11-07).
+**Ruled 2026-11-07, (b):** *"b, use the ∅ rule in both"*. Where ∅ is in R the minimal line is {∅}, so every minimal question answers it after one saturation. The plan is [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md), which closes P-14 with it: of the 213 corpus programs with ∅ in R, the 23 the static check flags are the ones that do not stop at root (2026-11-07).
 
 **Where.** [`read_out.rs`](../../ein.rs/crates/ein-render/src/read_out.rs), lines 1297 and 1323.
 
@@ -201,7 +201,7 @@ $ ein solve examples/lattice/10_fifo_gap.ein --minimal --single
 
 **Where.** [`read_out.rs`](../../ein.rs/crates/ein-render/src/read_out.rs)'s `minimal_line`, line 831.
 
-**Ruled 2026-11-07, (a):** *"a, drop the clause"*. Where ∅ is in R the row reads `1 state — ∅` on every program and at every limit, the `∅` row above it gives the reason, and `minimal.trivial` reads *∅ is in R*. The plan is [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes), beside S-16's rule.
+**Ruled 2026-11-07, (a):** *"a, drop the clause"*. Where ∅ is in R the row reads `1 state — ∅` on every program and at every limit, the `∅` row above it gives the reason, and `minimal.trivial` reads *∅ is in R*. The plan is [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes), beside S-16's rule.
 
 ### S-18: a guard as a query's goal
 
@@ -232,7 +232,7 @@ kb load error: :expect — `?y` is a variable; an expectation is an answer, not 
 
 **Where.** [`read_out.rs`](../../ein.rs/crates/ein-render/src/read_out.rs), line 1823: a row with no bound variable reads as a goal with none.
 
-**Ruled 2026-11-07** ([Q-M1e2.26](open_questions.md#q-m1e226--are-eq-and-neq-relations)): `eq` and `neq` are relations of equality and non-equality, and a query over them is answered. `(neq w ?y)` gives every name of the program but `w`, `(eq w ?y)` gives `?y = w`, and a claim may name them. The re-take found it wider than written: with a guard in its goal, even `(and (p ?y) (neq w ?y))` can carry no claim that holds, since the class lists `(neq w a)` and the loader refuses a claim naming `neq`. The plan is [S1e2.5.7](p1e2.5_the_no_owner_items/s1e2.5.7_eq_and_neq_are_relations.md).
+**Ruled 2026-11-07** ([Q-M1e2.26](open_questions.md#q-m1e226--are-eq-and-neq-relations)): `eq` and `neq` are relations of equality and non-equality, and a query over them is answered. `(neq w ?y)` gives every name of the program but `w`, `(eq w ?y)` gives `?y = w`, and a claim may name them. The re-take found it wider than written: with a guard in its goal, even `(and (p ?y) (neq w ?y))` can carry no claim that holds, since the class lists `(neq w a)` and the loader refuses a claim naming `neq`. The plan is [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md).
 
 ### D-14: an owing hole written `core: []`
 
@@ -253,7 +253,7 @@ kb load error: :expect — `?y` is a variable; an expectation is an answer, not 
 
 **Where.** [`region_answer.rs`](../../ein.rs/crates/ein-render/src/dump/region_answer.rs), line 304.
 
-**Ruled 2026-11-07** ([Q-M1e2.27](open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)): `[]` is the empty set and `null` an object that does not exist, so a node that is not dead has `core: null`. The re-take found it wider than written: `ein oracle --dump`'s `region.json` writes `core: []` and `refuted_by: []` on every node that is not dead, members of R included. The plan is [S1e2.5.8](p1e2.5_the_no_owner_items/s1e2.5.8_no_contradiction_no_core.md).
+**Ruled 2026-11-07** ([Q-M1e2.27](open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)): `[]` is the empty set and `null` an object that does not exist, so a node that is not dead has `core: null`. The re-take found it wider than written: `ein oracle --dump`'s `region.json` writes `core: []` and `refuted_by: []` on every node that is not dead, members of R included. The plan is [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md).
 
 ### D-15: `02_patterns.md` and `:where`
 
@@ -268,7 +268,7 @@ kb load error: rule 'triangle-composition': its :match writes (?r ?a ?b) with ?r
 
 **Right.** The page is what moves. [S1e2.2.24 § Notes](p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md#notes) parked it: the stage kept the drop.
 
-**Ruled 2026-11-07** ([Q-M1e2.28](open_questions.md#q-m1e228--which-keywords-does-each-form-take)): *"we must have only fixed defined kwargs"*. Each form takes a fixed set of keywords, any other is an error, and a term takes none, so `:where` is refused wherever it is written, not dropped. The sweep found six current kernel pages that describe `:where`, not one: `02_patterns.md`, `01-ein-graph/02_rules.md` and its README, `03_examples.md` (whose `transitive` rule loads today with its guard dropped), `01_grammar.md`, the glossary and `defined_behaviour.md`. The plan is [S1e2.5.11](p1e2.5_the_no_owner_items/s1e2.5.11_closed_keywords.md), which also settles G-15.
+**Ruled 2026-11-07** ([Q-M1e2.28](open_questions.md#q-m1e228--which-keywords-does-each-form-take)): *"we must have only fixed defined kwargs"*. Each form takes a fixed set of keywords, any other is an error, and a term takes none, so `:where` is refused wherever it is written, not dropped. The sweep found six current kernel pages that describe `:where`, not one: `02_patterns.md`, `01-ein-graph/02_rules.md` and its README, `03_examples.md` (whose `transitive` rule loads today with its guard dropped), `01_grammar.md`, the glossary and `defined_behaviour.md`. The plan is [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), which also settles G-15.
 
 ### G-21: a rule may conclude `neq`
 
@@ -291,7 +291,7 @@ $ ein saturate plans/m1e2_correctness/inventory_2026-11-06/probes/assert_neq.ein
 
 **Where.** [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), line 627, is where a built-in predicate is read in a `:match`. The `:assert` side has no such check.
 
-**Ruled 2026-11-07** ([Q-M1e2.26](open_questions.md#q-m1e226--are-eq-and-neq-relations)): a rule may conclude `eq` or `neq`, with no restriction. A true conclusion adds nothing, and a false one, such as `(neq a a)`, is a contradiction, as `(false)` is. Today the conclusion is stored as an ordinary fact, so `(neq a a)` sits in root's KB while a guard computes it false, and R keeps ∅ (2026-11-07). The plan is [S1e2.5.7](p1e2.5_the_no_owner_items/s1e2.5.7_eq_and_neq_are_relations.md#conclusions-g-21).
+**Ruled 2026-11-07** ([Q-M1e2.26](open_questions.md#q-m1e226--are-eq-and-neq-relations)): a rule may conclude `eq` or `neq`, with no restriction. A true conclusion adds nothing, and a false one, such as `(neq a a)`, is a contradiction, as `(false)` is. Today the conclusion is stored as an ordinary fact, so `(neq a a)` sits in root's KB while a guard computes it false, and R keeps ∅ (2026-11-07). The plan is [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21).
 
 ### G-22: a keyword pair beside an `:assert`'s conjuncts
 
@@ -314,7 +314,7 @@ $ ein saturate plans/m1e2_correctness/inventory_2026-11-06/probes/assert_and_kw.
 
 **Where.** [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), line 480: `assert_conjuncts` keeps the positional arguments.
 
-**Ruled 2026-11-07**, with D-15 ([Q-M1e2.28](open_questions.md#q-m1e228--which-keywords-does-each-form-take)): *"G-22 already answered also - there are fixed set of allowed kwargs, if parser sees :k or :G :notes or whatever else unknown kwarg - it is an error"*. A keyword pair beside an `:assert`'s conjuncts is refused at load. The plan is [S1e2.5.11](p1e2.5_the_no_owner_items/s1e2.5.11_closed_keywords.md), whose register case holds this probe as a witness.
+**Ruled 2026-11-07**, with D-15 ([Q-M1e2.28](open_questions.md#q-m1e228--which-keywords-does-each-form-take)): *"G-22 already answered also - there are fixed set of allowed kwargs, if parser sees :k or :G :notes or whatever else unknown kwarg - it is an error"*. A keyword pair beside an `:assert`'s conjuncts is refused at load. The plan is [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), whose register case holds this probe as a witness.
 
 ### P-14: past the limit, work the question does not need
 
@@ -332,7 +332,7 @@ $ ein saturate plans/m1e2_correctness/inventory_2026-11-06/probes/assert_and_kw.
 
 **Where.** [`explore.rs`](../../ein.rs/crates/ein-infer/src/explore.rs)'s `flagged`, line 1358.
 
-**Closed 2026-11-07 by S-16's ruling:** the same rule stops each minimal question at root, in [S1e2.5.6](p1e2.5_the_no_owner_items/s1e2.5.6_the_empty_state_decides_the_minimal_line.md). Within the limit the 16 other flagged programs with ∅ in R spend 2, 4 or 8 saturations on it.
+**Closed 2026-11-07 by S-16's ruling:** the same rule stops each minimal question at root, in [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md). Within the limit the 16 other flagged programs with ∅ in R spend 2, 4 or 8 saturations on it.
 
 ### P-15: N's cores past the limit
 
@@ -355,7 +355,7 @@ The inventory quotes [S1e2.3.9 § Notes](p1e2.3_surfaces_that_misreport_the_answ
 
 **Where.** [`region.rs`](../../ein.rs/crates/ein-infer/src/region.rs), line 1368.
 
-**Ruled 2026-11-08, (c)**: *"P-15 - c"*. No core during the walk, and after it a core for each member of N, which `nogoods.json` and `--trace` print, through the node function against the same snapshot, as the minimal holes' already are. The rule is the one of 2026-11-05, a core only where a surface prints one. `nogoods.json` gives each member past the limit its core (68 on `lattice/06`, 15 on `past-limit-lines`), and `not-kept` retires. The plan is [S1e2.5.12](p1e2.5_the_no_owner_items/s1e2.5.12_cores_for_n_only.md).
+**Ruled 2026-11-08, (c)**: *"P-15 - c"*. No core during the walk, and after it a core for each member of N, which `nogoods.json` and `--trace` print, through the node function against the same snapshot, as the minimal holes' already are. The rule is the one of 2026-11-05, a core only where a surface prints one. `nogoods.json` gives each member past the limit its core (68 on `lattice/06`, 15 on `past-limit-lines`), and `not-kept` retires. The plan is [S1f.5.12](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md).
 
 ### P-16: four dumps in one test
 
@@ -371,7 +371,7 @@ The inventory quotes [S1e2.3.9 § Notes](p1e2.3_surfaces_that_misreport_the_answ
 
 [S1e2.3.8 § Notes](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.8_the_fact_printer.md#notes) quotes about 400 MB each and 30 s (2026-11-05). Both measure lower here: 268 to 334 MB, and a test of about 20 s once compiled. The four are not `slow` entries, so the test's default run dumps them. The dump rows are the release binary on its own and the test is a debug build, so this table does not settle whether the dumps are *most of* the test's time.
 
-**Ruled 2026-11-08**: *"move to slow tier"*. `slow` cannot carry the four, since it is a claim about declared runs and theirs are cheap, so a manifest field by state-file count, held in both directions, selects them. The re-take found that the test's slow tier runs in no CI tier (`grep -n answer_round_trip .github/workflows/*.yml run_tests.sh`, empty), so the plan adds the nightly step too. `past-limit-lines` keeps a run past the limit per commit. The plan is [S1e2.5.13](p1e2.5_the_no_owner_items/s1e2.5.13_large_dumps_to_the_slow_tier.md).
+**Ruled 2026-11-08**: *"move to slow tier"*. `slow` cannot carry the four, since it is a claim about declared runs and theirs are cheap, so a manifest field by state-file count, held in both directions, selects them. The re-take found that the test's slow tier runs in no CI tier (`grep -n answer_round_trip .github/workflows/*.yml run_tests.sh`, empty), so the plan adds the nightly step too. `past-limit-lines` keeps a run past the limit per commit. The plan is [S1f.5.13](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md).
 
 ---
 
@@ -392,17 +392,17 @@ The inventory quotes [S1e2.3.9 § Notes](p1e2.3_surfaces_that_misreport_the_answ
 
 ## 4. Found during the review
 
-Not in the inventory of 2026-11-06. Both are in [P1e2.5's table](p1e2.5_the_no_owner_items/README.md#the-decisions).
+Not in the inventory of 2026-11-06. Both are in [P1f.5's table](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-decisions).
 
-- **F2: a token needs no separator.** `(r 1a)` stores `(r 1 a)`, `(r "a"b)` stores `(r a b)` and `(r ?x?y)` stores two variables, each with no line. It waits on a ruling. Its table is [in the phase](p1e2.5_the_no_owner_items/README.md#f2-a-token-needs-no-separator).
-- **F3: `_` can report a larger core than a variable used once.** Four facts against two, on a probe, at root and at a dead node. W-22's ruling closes it, and [S1e2.5.1](p1e2.5_the_no_owner_items/s1e2.5.1_bare_underscore_refused.md) holds the program.
-- **F4: strings as names were never ruled.** `(p "a")` is the fact `(p a)`. **The user ruled 2026-11-06** ([Q-M1e2.23](open_questions.md#q-m1e223--what-is-a-string-for)): a string is natural language, only in `:why`, `:source` and `:goal-text`. The plan is [S1e2.5.2](p1e2.5_the_no_owner_items/s1e2.5.2_strings_are_natural_language.md), not started. S-15 then shrinks to whitespace, such as `(p  a)`. G-6 is ruled with it: `?x` in a fact is refused.
-- **F5: an unknown escape is dropped in silence.** `"a\x41"` stores `ax41`, as `00_ebnf.md`'s fact 4 documents. **Ruled 2026-11-06**: strings are Unicode, with reasonable escapes, in [S1e2.5.2](p1e2.5_the_no_owner_items/s1e2.5.2_strings_are_natural_language.md).
-- **F6: a range has no user.** `1..5` is the first grammar's *UML-style cardinality*, for a `:cardinality` no program has ever written and no code reads. **Ruled 2026-11-06** ([Q-M1e2.24](open_questions.md#q-m1e224--are-there-numbers-in-ein)): no numbers and no ranges in Ein. The plan is [S1e2.5.3](p1e2.5_the_no_owner_items/s1e2.5.3_range_retired.md).
-- **F7: digits in a value.** Ein has no number operations, but it has an `INT` token and a value kind, and `(p 1) (p 01)` is one fact. **Ruled 2026-11-06**: digits are plain names, and those are two facts. The plan is [S1e2.5.4](p1e2.5_the_no_owner_items/s1e2.5.4_digits_are_names.md).
-- **F8: a digit label becomes a candidate.** `features/05`'s N goes 21 → 47 with R unmoved, on a simulation. **Ruled 2026-11-07, as recommended**: a label is a candidate like any other name, [in the phase](p1e2.5_the_no_owner_items/README.md#f8-a-digit-label-becomes-a-candidate).
-- **F9: the grammar is too permissive.** One `Value` serves every position, as it did in the generated parser's grammar, so what a position holds is decided by refusals in the loader. The user's instruction: revisit it, in [S1e2.5.5](p1e2.5_the_no_owner_items/s1e2.5.5_the_grammar.md). **The user ruled 2026-11-07 that the parser is generated, by grmtools**, for its features ([S1e2.5.5](p1e2.5_the_no_owner_items/s1e2.5.5_the_grammar.md#the-generator-grmtools-ruled)).
+- **F2: a token needs no separator.** `(r 1a)` stores `(r 1 a)`, `(r "a"b)` stores `(r a b)` and `(r ?x?y)` stores two variables, each with no line. It waits on a ruling. Its table is [in the phase](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#f2-a-token-needs-no-separator).
+- **F3: `_` can report a larger core than a variable used once.** Four facts against two, on a probe, at root and at a dead node. W-22's ruling closes it, and [S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md) holds the program.
+- **F4: strings as names were never ruled.** `(p "a")` is the fact `(p a)`. **The user ruled 2026-11-06** ([Q-M1e2.23](open_questions.md#q-m1e223--what-is-a-string-for)): a string is natural language, only in `:why`, `:source` and `:goal-text`. The plan is [S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md), not started. S-15 then shrinks to whitespace, such as `(p  a)`. G-6 is ruled with it: `?x` in a fact is refused.
+- **F5: an unknown escape is dropped in silence.** `"a\x41"` stores `ax41`, as `00_ebnf.md`'s fact 4 documents. **Ruled 2026-11-06**: strings are Unicode, with reasonable escapes, in [S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md).
+- **F6: a range has no user.** `1..5` is the first grammar's *UML-style cardinality*, for a `:cardinality` no program has ever written and no code reads. **Ruled 2026-11-06** ([Q-M1e2.24](open_questions.md#q-m1e224--are-there-numbers-in-ein)): no numbers and no ranges in Ein. The plan is [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md).
+- **F7: digits in a value.** Ein has no number operations, but it has an `INT` token and a value kind, and `(p 1) (p 01)` is one fact. **Ruled 2026-11-06**: digits are plain names, and those are two facts. The plan is [S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md).
+- **F8: a digit label becomes a candidate.** `features/05`'s N goes 21 → 47 with R unmoved, on a simulation. **Ruled 2026-11-07, as recommended**: a label is a candidate like any other name, [in the phase](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#f8-a-digit-label-becomes-a-candidate).
+- **F9: the grammar is too permissive.** One `Value` serves every position, as it did in the generated parser's grammar, so what a position holds is decided by refusals in the loader. The user's instruction: revisit it, in [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md). **The user ruled 2026-11-07 that the parser is generated, by grmtools**, for its features ([S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#the-generator-grmtools-ruled)).
 - **F10: deep nesting aborts.** `ein solve` on a fact nested 100 000 deep exits 134 with *has overflowed its stack*; 10 000 deep exits 0 (2026-11-07). The corpus's deepest program nests 8. It goes with the grammar: a stated limit.
-- **F11: grmtools' recovery is not deterministic.** CPCT+ ranks equal-length repairs in a `HashSet`'s order and stops at a 500 ms wall-clock budget, so two runs on one file can report differently: two outputs over 20 runs of the probe's `four_mistakes.ein` (2026-11-07). **Ruled 2026-11-07: recovery on**, made deterministic by a patch to `lrpar` the stage vendors ([S1e2.5.5](p1e2.5_the_no_owner_items/s1e2.5.5_the_grammar.md#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
-- **F12: an empty `:match` never fires.** `(rule r () :match () :assert (false))` loads and never fires, so ∅ stays in R where an empty conjunction, which is true, kills root; with an activator, no firing either; `:match (and)` is refused at parse (2026-11-07). 0 corpus programs write it. Filed on the user's instruction and **ruled the same day**: it fires, in rules and hrules, and `(and)` stays refused ([S1e2.5.9](p1e2.5_the_no_owner_items/s1e2.5.9_an_empty_match_fires.md)).
-- **F13: a conclusion's variable that nothing binds stops the run.** `(rule r () :match (p ?x) :assert (q ?y))` loads, and the run stops at its first firing, exit 1, with the Python implementation's `unbound var ?y in :assert — bindings: {'x': 'a'}` (2026-11-07). **Filed and ruled the same day**: refused at load, with a line naming the explicit spellings, a typed premise or `(eq ?y ?y)` ([S1e2.5.10](p1e2.5_the_no_owner_items/s1e2.5.10_a_conclusion_variable_must_be_bound.md)).
+- **F11: grmtools' recovery is not deterministic.** CPCT+ ranks equal-length repairs in a `HashSet`'s order and stops at a 500 ms wall-clock budget, so two runs on one file can report differently: two outputs over 20 runs of the probe's `four_mistakes.ein` (2026-11-07). **Ruled 2026-11-07: recovery on**, made deterministic by a patch to `lrpar` the stage vendors ([S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
+- **F12: an empty `:match` never fires.** `(rule r () :match () :assert (false))` loads and never fires, so ∅ stays in R where an empty conjunction, which is true, kills root; with an activator, no firing either; `:match (and)` is refused at parse (2026-11-07). 0 corpus programs write it. Filed on the user's instruction and **ruled the same day**: it fires, in rules and hrules, and `(and)` stays refused ([S1f.5.9](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)).
+- **F13: a conclusion's variable that nothing binds stops the run.** `(rule r () :match (p ?x) :assert (q ?y))` loads, and the run stops at its first firing, exit 1, with the Python implementation's `unbound var ?y in :assert — bindings: {'x': 'a'}` (2026-11-07). **Filed and ruled the same day**: refused at load, with a line naming the explicit spellings, a typed premise or `(eq ?y ?y)` ([S1f.5.10](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)).

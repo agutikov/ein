@@ -1,6 +1,7 @@
-# S1e2.5.9 — An empty `:match` fires
+# S1f.5.9 — An empty `:match` fires
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.9**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 1 day.
 - A quarter of a day to file the rows, list every move and show the programs.
 - Half a day for rules and hrules.
@@ -10,8 +11,8 @@
 [F12](README.md#f12-an-empty-match-never-fires).
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
-**Depends on:** nothing. [S1e2.5.5](s1e2.5.5_the_grammar.md)'s grammar carries the `(and)` refusal once it
-lands, and [S1e2.5.8](s1e2.5.8_no_contradiction_no_core.md)'s test meets the first empty core this stage
+**Depends on:** nothing. [S1f.5.5](s1f.5.5_the_grammar.md)'s grammar carries the `(and)` refusal once it
+lands, and [S1f.5.8](s1f.5.8_no_contradiction_no_core.md)'s test meets the first empty core this stage
 makes.
 
 ## The ruling
@@ -26,7 +27,7 @@ same as () and `and` should have arguments"*.
    conjunction is written `()` alone.
 
 A fourth question, a conclusion's variable that nothing binds, was filed as F13 and ruled the same day: refused
-at load, by [S1e2.5.10](s1e2.5.10_a_conclusion_variable_must_be_bound.md), which lands first.
+at load, by [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md), which lands first.
 
 ## The case
 
@@ -36,7 +37,7 @@ over `examples/`, `tests/`, `stdlib/` and `corpus/`).
 
 | the rule | today | right |
 |---|---|---|
-| `(rule r () :match () :assert (false))` | loads, never fires: ∅ in R | root is dead, so R is empty. Its core is `[]`, the empty set ([Q-M1e2.27](../open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)), and `refuted by r` |
+| `(rule r () :match () :assert (false))` | loads, never fires: ∅ in R | root is dead, so R is empty. Its core is `[]`, the empty set ([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)), and `refuted by r` |
 | `(rule r () :match () :assert (q b))` | loads, never fires: no `(q b)` | root holds `(q b :rule r)` |
 | `(rule r (?x) :match () :assert (hit ?x))` with `(r a)` | loads, never fires: no `(hit a)` | root holds `(hit a :rule r)`, one firing per activator |
 | `(hrule h () :match () :assert (q b))` with `(solve :hrules (h))` | proposes nothing: *no candidate* | proposes `(q b)`, as `:match (p ?x)` does: one candidate |
@@ -52,7 +53,7 @@ as a new register case, `open` and owned by this stage, each witness under
   per activator fact, with only its parameters bound.
 - **Hrules.** The same, so the hrule rung proposes the conclusion once, or once per activator.
 - **`(and)`.** Refused at load on today's parser, in Ein's spelling, naming the rule and the clause. On
-  S1e2.5.5's grammar, `and` takes one conjunct or more, and the parse error says so.
+  S1f.5.5's grammar, `and` takes one conjunct or more, and the parse error says so.
 - **What it reaches.** A contradiction derived this way has an empty core, the first `[]` core in Ein. A
   derivation with no premise is the shape of W25, which F22 owns: the store does not record one as an
   alternative justification. This stage makes it reachable on a rule written for it, and does not change it.
@@ -60,18 +61,18 @@ as a new register case, `open` and owned by this stage, each witness under
 
 ## The method
 
-### Task T1e2.5.9.1 — the rows, every move listed
+### Task T1f.5.9.1 — the rows, every move listed
 
 The register case filed with the four witnesses and the `(and)` refusal's probe. The corpus swept, and
 `cargo test --workspace` run on a prototype. Every move must be one of the case's rows. **Stop and show the
 user the programs**, answers computed.
 
-### Task T1e2.5.9.2 — the empty conjunction fires
+### Task T1f.5.9.2 — the empty conjunction fires
 
 The compiler and the hrule rung, and the case's rows fixed. `ein-infer/tests/explore.rs` and the oracle
 agree on each witness. `ein-infer/tests/corpus_cores.rs` holds the dead witness's core, `[]`, and its rule.
 
-### Task T1e2.5.9.3 — the refusal and the pages
+### Task T1f.5.9.3 — the refusal and the pages
 
 The `(and)` line. `01_grammar.md`'s rule section: an empty `:match` is the empty conjunction, true, written
 `()`, and `and` takes a conjunct. `02_patterns.md` likewise. The inventory's F12 says what fixed it.

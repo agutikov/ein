@@ -1,12 +1,12 @@
 # The parser probe: one grammar, six generators
 
-Evidence for [S1e2.5.5](../s1e2.5.5_the_grammar.md). Taken 2026-11-07 at `916d97ac`, on the release
+Evidence for [S1f.5.5](../s1f.5.5_the_grammar.md). Taken 2026-11-07 at `916d97ac`, on the release
 profile. **A throwaway, kept so the numbers can be re-taken.** It changes no engine code, and no crate
 in `ein.rs/` depends on it. `harness` links `ein-ir`, read-only, for today's parser.
 
 The grammar is a by-position draft under the user's name rule of 2026-11-07
-([Q-M1e2.24](../../open_questions.md#q-m1e224--are-there-numbers-in-ein)), written once per notation. It
-is a working draft for choosing a generator. T1e2.5.5.2 writes the real one.
+([Q-M1e2.24](../../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)), written once per notation. It
+is a working draft for choosing a generator. T1f.5.5.2 writes the real one.
 
 | grammar | file |
 |---|---|
@@ -118,7 +118,7 @@ generated parser passes `cargo clippy -D warnings`.
 14 and 6, which swap its two repairs for `:bogus` (2026-11-07). `lrpar` 0.15's `cpctplus.rs` de-duplicates
 repairs through a `HashSet` and sorts them by length alone with `sort_unstable_by`, so equal-length repairs
 keep the set's random order, and `parser.rs` stops recovery at a 500 ms wall-clock budget. The user chose
-grmtools the same day, and recovery on, so [S1e2.5.5](../s1e2.5.5_the_grammar.md#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)
+grmtools the same day, and recovery on, so [S1f.5.5](../s1f.5.5_the_grammar.md#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)
 patches `lrpar` (below).
 
 **F11's patch.** [`lrpar_deterministic.patch`](lrpar_deterministic.patch), 73 changed lines in `cpctplus.rs`

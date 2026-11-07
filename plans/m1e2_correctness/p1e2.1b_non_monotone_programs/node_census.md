@@ -315,7 +315,7 @@ five stdlib modules loaded as programs (`algebra`, `bijection`, `elim`, `slots`,
 can derive an activator there and no node compiles a plan root lacks. On the
 corpus the graph is complete. A program whose node can compile a refutation
 through an activator (`region.rs`'s `ACTIVATOR_REFUTES`) would need the check
-re-run on the node's plans. That is S1f.5.6's to design, or this phase's if
+re-run on the node's plans. That is S1f.5.15's to design, or this phase's if
 (D) is ruled.
 
 ## 6. The three known cases

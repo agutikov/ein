@@ -167,7 +167,7 @@ when they do.
 - [M20](../../m20_gui/README.md) is the other consumer Q-M1e.20 named. Nothing
   here pre-empts it: a GUI binds the crates, and these doors are thin CLI
   wrappers over the same calls.
-- [M1f S1f.5.5](../../m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.5_nl_required.md)
+- [M1f S1f.5.14](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)
   takes every statement to NL. A model rendered as a grid is the
   non-NL half of the same wish, and the two should not invent two
   registers for one model.

@@ -1,6 +1,7 @@
-# S1e2.5.13 — The round trip's four large dumps move to the slow tier, and the nightly runs it
+# S1f.5.13 — The round trip's four large dumps move to the slow tier, and the nightly runs it
 
-**Phase:** [P1e2.5](README.md) (The no-owner items)
+**Phase:** [P1f.5](README.md) (The no-owner items)
+**Was S1e2.5.13**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** half a day.
 - An hour for the distribution of state files per program, and the first run of the slow tier.
 - Two hours for the manifest field, its check and the test's selection.
@@ -9,7 +10,7 @@
 **Status:** specified 2026-11-08 on the user's ruling of that day on P-16.
 **Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
 moved.
-**Depends on:** nothing. [S1e2.5.12](s1e2.5.12_cores_for_n_only.md) makes each of the four dumps cheaper, and
+**Depends on:** nothing. [S1f.5.12](s1f.5.12_cores_for_n_only.md) makes each of the four dumps cheaper, and
 neither stage waits for the other.
 
 ## The ruling
@@ -70,17 +71,17 @@ past-the-limit check, after the four leave.
 
 ## The method
 
-### Task T1e2.5.13.1 — the distribution, and the slow tier's first run
+### Task T1f.5.13.1 — the distribution, and the slow tier's first run
 
 `EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release --test answer_round_trip`: the state
 files per program, T chosen in its gap, and every failure listed.
 
-### Task T1e2.5.13.2 — the field, its check and the selection
+### Task T1f.5.13.2 — the field, its check and the selection
 
 The field in `ein-corpus`'s manifest and on the four entries. The two checks, the test's selection, and its
 doc comment's `SHARDS` paragraph restated.
 
-### Task T1e2.5.13.3 — the nightly step and the pages
+### Task T1f.5.13.3 — the nightly step and the pages
 
 The nightly step and its `--nightly` mirror. [`corpus/README.md`](../../../corpus/README.md)'s fields and
 readers, `CLAUDE.md`'s gate block, and the inventory's P-16, which says what fixed it.
