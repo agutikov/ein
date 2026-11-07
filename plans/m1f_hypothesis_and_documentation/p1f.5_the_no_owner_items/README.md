@@ -221,7 +221,7 @@ activator, and concludes what it asserts. No corpus program writes one (`grep` o
 | `(rule r () :match () :assert (q b))` | loads, never fires: no `(q b)` | root holds `(q b)` |
 | `(rule r (?x) :match () :assert (hit ?x))` with `(r a)` | loads, never fires: no `(hit a)` | root holds `(hit a)`, one firing per activator |
 | `(rule r () :match (and) :assert (false))` | refused at parse: *unexpected input* | `(and)` is the empty conjunction, the same as `()` |
-| `(rule r () :match (q ?x) :assert ())` | loads, adds nothing | right: an empty conclusion asserts nothing |
+| `(rule r () :match (q ?x) :assert ())` | loads, and stores a fact named `@empty`, which joins H: R two states (S1f.5.5's [census](s1f.5.5_census.md#findings-outside-the-grammar), 2026-11-08; this row read *adds nothing* until then) | an empty conclusion asserts nothing: W34, filed by S1f.5.0 and owned by [S1f.5.9](s1f.5.9_an_empty_match_fires.md) |
 
 The first three are wrong answers of the kind W24 refused: a shape that reads nothing, in silence. **The
 user's instruction** (*"file new F12 into p1e2.5"*) files it here, and a ruling decides between answering
@@ -248,7 +248,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 
 | ID | title | est. | item | state |
 |---|---|---:|---|---|
-| [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) | The known wrong answers filed: W29 to W32, before any stage moves them | 1 d | the twenty rows of S1f.5.1, .7, .9 and .11 | **the twenty rows filed 2026-11-08** (`0525444e`, `da58dda6`), each `open` and owned by its stage: the register at 103 fixed, **30 open** and 1 not-wrong (`grep '^status' corpus/wrong_answers.toml \| sort \| uniq -c`, 2026-11-08); one right, `W30/assert-neq-w-x`'s, put to the user; T1f.5.0.4, W33 to W35 from S1f.5.5's census, next (the user, 2026-11-08: *"plan adding rows in p1f.5"*) |
+| [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) | The known wrong answers filed: W29 to W32, before any stage moves them | 1 d | the twenty rows of S1f.5.1, .7, .9 and .11, and W33 to W35 | **done 2026-11-08**: the twenty rows (`0525444e`, `da58dda6`, `3332246e`) and W33 to W35 from S1f.5.5's census (T1f.5.0.4), twenty-three rows each `open` and owned by its stage: the register at 103 fixed, **33 open** and 1 not-wrong (`grep '^status' corpus/wrong_answers.toml \| sort \| uniq -c`, 2026-11-08); one right, `W30/assert-neq-w-x`'s, put to the user (the user, 2026-11-08: *"plan adding rows in p1f.5"*) |
 | [S1f.5.1](s1f.5.1_bare_underscore_refused.md) | A bare `_` is reserved and refused, and `_` is valid anywhere in a name | 2 d | W-22, F3 | specified, not started |
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | A string is natural language: only in `:why`, `:source` and `:goal-text` | 2.5 d | F4, F5, G-6 | specified, not started; runs after S1f.5.1 |
 | [S1f.5.3](s1f.5.3_range_retired.md) | No ranges: the `RANGE` token retired | 1 d | F6, G-6's range half | specified, not started |

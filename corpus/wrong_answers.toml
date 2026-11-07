@@ -601,6 +601,17 @@
 # `W32/kwpair-in-goal`'s query), and a refused `now` records none. The
 # register reads **103 rows fixed, 30 open and 1 not-wrong**.
 #
+# **W33 to W35 were filed the same day by S1f.5.0** (T1f.5.0.4), on the
+# user's ruling on S1f.5.5's census (*"Q3 - as recommended"*): the three wrong
+# answers its § Findings outside the grammar found, each `open` with its
+# owner. W33, S1f.5.18's: an activator that binds a value parameter to a
+# nested fact leaves it unbound, so the rule fires on every value. W34,
+# S1f.5.9's (F12): `:assert ()` stores a fact named `@empty`, which joins H,
+# and its state files do not load, as W30's `neq` witnesses' do not. W35,
+# S1f.5.5's: `(absent ())` loads and holds. Each `wrong` and `now` was taken
+# at `ec004a48`, release and debug alike, and is the census's answer. The
+# register reads **103 rows fixed, 33 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -8804,6 +8815,159 @@ line      = "minimal"
 exhausted = true
 k         = 1
 relations = ["q"]
+models    = [
+  [],
+]
+
+# ══ W33 — an activator that binds a value parameter to a nested fact leaves the parameter unbound ══
+[[case]]
+id       = "W33/activator-nested-value"
+case     = "W33"
+title    = "an activator that binds a value parameter to a nested fact leaves the parameter unbound"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1e2.18", "S1f.5.5 census"]
+witness  = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
+status   = "open"
+open_because = "The compiler seeds a rule's parameters from its activator and skips a nested fact (*a nested Fact does not bind*), so `?y` stays free and `act` fires on every `p`, with no line; W24 (Q-M1e2.18 (iv)) refused the same activator only where the parameter names a relation. S1f.5.18 binds the parameter to the nested fact as to any other value (the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+look_at  = ["root", "events fire", "summary"]
+note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/activator_nested_value.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. `hit` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(hit a)`, `(hit b)` and `(hit (f a))` (`ein saturate --dump`), and the query's one class lists all three rows. The same holds of `()` and `(and …)` as the activator's argument, which the final grammar refuses (the census)"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein saturate --dump` and `ein solve` on the witness, release and debug, at ec004a48 (2026-11-08; the engine 916d97ac's, where S1f.5.5's census took it): root derives `(hit a)`, `(hit b)` and `(hit (f a))`, H is empty and R is {∅}, the query one class of three rows, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit (f a))", "(hit a)", "(hit b)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "an activator binds a rule's parameter to its argument, a nested fact a value as any other (the census's default, the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit (f a))"]]
+derived   = "`(act (f a))` binds `?y` to `(f a)`, so `act` matches `(p (f a))` alone and root holds `(hit (f a))` and no other `hit`: the minimal line is root's state"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+# ══ W34 — `:assert ()` stores a fact named `@empty`, which joins H ══
+[[case]]
+id       = "W34/assert-empty"
+case     = "W34"
+title    = "`:assert ()` stores a fact named `@empty`, which joins H"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.9"
+question = ["P1f.5 F12", "S1f.5.5 census"]
+witness  = "examples/ein-bugs/wrong-answers/assert-empty.ein"
+status   = "open"
+open_because = "The rule compiler lowers an empty conclusion as a fact whose head is the parser's synthetic `@empty`, stored at root as `( :rule r)`, and the list of the program's names then reads `@empty`, so `(q \"@empty\")` is a candidate and R gains a state; S1f.5.9 makes an empty conclusion assert nothing (F12's ruling, and the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/assert_empty.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. P1f.5's F12 table said `:assert ()` *loads, adds nothing*, which the census found false (S1f.5.0 corrected the row, and added it to S1f.5.9's case); the paper grammar's default 7 keeps `:assert ()` as the empty conclusion, so the fix is the engine's. The query's classes are two today and one right"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein saturate --dump` and `ein solve` on the witness, release and debug, at ec004a48 (2026-11-08; the engine 916d97ac's, where S1f.5.5's census took it): root stores `( :rule r)`, H is `{(q \"@empty\")}`, and R is two states, the second `(model (q \"@empty\") (q a))`, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["q"]
+models    = [["(q a)"], ["(q \"@empty\")", "(q a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(q \"@empty\")"]]
+
+[case.right]
+reading   = "P1f.5's F12, the user's ruling of 2026-11-07, its fifth row: an empty conclusion asserts nothing"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q a)"]]
+derived   = "`r` fires on `(q a)` and concludes nothing, so root holds `(q a)` alone, no name is added, nothing is a candidate, and R is {∅}, one state"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["q"]
+models    = [
+  ["(q \"@empty\")", "(q a)"],
+  ["(q a)"],
+]
+
+# ══ W35 — `(absent ())` loads, and holds ══
+[[case]]
+id       = "W35/absent-empty"
+case     = "W35"
+title    = "`(absent ())` loads, and holds"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 census"]
+witness  = "examples/ein-bugs/wrong-answers/absent-empty.ein"
+status   = "open"
+open_because = "The loader accepts `()` as an `absent`'s pattern and the matcher reads it as a pattern nothing matches, so `(absent ())` holds and `rr` fires for every `p`, with no line; S1f.5.5's generated parser refuses `()` anywhere but a whole `:match` or a whole `:assert` (the paper grammar's default 7, and the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+look_at  = ["root", "events fire", "summary"]
+note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, the program the coordinator wrote from it, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. Its twin is the refusal, so no file. `hit` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(hit a)` and `(hit b)` (`ein saturate --dump`). Read under F12, `()` is true and its absence would never hold"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein saturate --dump` and `ein solve` on the witness, release and debug, at ec004a48 (2026-11-08; the engine 916d97ac's, where S1f.5.5's census took it): root derives `(hit a)` and `(hit b)`, H is empty and R is {∅}, exit 0, with no word of the `()`; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit a)", "(hit b)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the paper grammar's default 7 (S1f.5.5): `()` is a whole `:match` or a whole `:assert`, nothing else"
+refused   = true
+derived   = "`(absent ())` writes `()` where neither a whole `:match` nor a whole `:assert` stands, so the program is refused at load, with a line naming the rule and the clause: every command that reads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = []
 models    = [
   [],
 ]

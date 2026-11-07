@@ -1,0 +1,35 @@
+;;; `:assert ()` stores a fact named `@empty`, which joins H — M1f **W34**,
+;;; register row `W34/assert-empty` (`corpus/wrong_answers.toml`), banked by
+;;; S1f.5.0 (2026-11-08) from S1f.5.5's census (§ Findings outside the
+;;; grammar; its probe `assert_empty.ein`, the program unchanged), filed
+;;; `open` and owned by S1f.5.9, on the user's ruling of 2026-11-08 on the
+;;; census (*"Q3 - as recommended"*) and of 2026-11-07 on P1f.5's F12.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(q a)`, a rule whose conclusion is `()`, and a query over `q`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An empty conclusion asserts nothing (F12's fifth row; the paper grammar's
+;;; default 7 keeps `:assert ()` as the empty conclusion), so root holds
+;;; `(q a)` alone, nothing is a candidate, and R is {∅}, one state.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The rule stores a fact with the parser's synthetic head for `()`, listed
+;;; as `( :rule r)` (`ein saturate FILE --dump`), whose name `@empty` becomes
+;;; one of the program's names: `(q "@empty")` is a candidate, and R is two
+;;; states, the second `(model (q "@empty") (q a))`, the query's classes two,
+;;; exit 0 (`ein solve FILE` and `ein oracle FILE` at `ec004a48`, the engine
+;;; `916d97ac`'s, release and debug alike). P1f.5's F12 table said it
+;;; *loads, adds nothing*. Neither state file `--dump-answer` writes loads:
+;;; the stored fact is written as a line `()`, a parse error, so
+;;; `answer_round_trip.rs` and `answer_dump.rs` name this file until S1f.5.9
+;;; fixes W34.
+
+;; An empty conclusion: F12's fifth row says it adds nothing.
+(relation q Node)
+(q a)
+(rule r () :match (q ?x) :assert ())
+(query :goal (q ?x))

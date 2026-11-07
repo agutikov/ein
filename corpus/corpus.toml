@@ -1558,6 +1558,24 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W32 (`W32/kwpair-in-macro`), banked by S1f.5.0 from S1f.5.11's case: the pair `:k v` in a `forall` call is dropped by the macro expander, so `r` derives `(hit a)` and `(hit b)`. The static check flags it (the `forall`'s `absent` over `q`). Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5's census (its probe `activator_nested_value.ein`): the activator `(act (f a))` binds the value parameter `?y` to nothing, so `act` derives `(hit a)`, `(hit b)` and `(hit (f a))`. Open, owned by S1f.5.18: `(hit (f a))` only (the user's ruling on the census, 2026-11-08)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-empty.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `@empty`, which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/absent-empty.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W35 (`W35/absent-empty`), banked by S1f.5.0 from S1f.5.5's census: `(absent ())` loads and holds, so `rr` derives `(hit a)` and `(hit b)`. Open, owned by S1f.5.5: refused at load (the paper grammar's default 7)."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

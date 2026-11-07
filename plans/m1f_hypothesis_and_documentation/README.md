@@ -53,8 +53,8 @@ idea, which is a different kind of work with a different acceptance.
 **Since 2026-11-08 that is no longer true of P1f.5.** Thirteen of its stages
 are M1e2's no-owner items, each a ruling of the user's on an inventory item,
 and four of them fix wrong answers that S1f.5.0 filed as register rows first, W29 to W32, twenty `open`
-rows on 2026-11-08 (the register then at 103 fixed, 30 open and 1 not-wrong, `grep '^status'
-corpus/wrong_answers.toml | sort | uniq -c`). They
+rows on 2026-11-08, with three more from S1f.5.5's census, W33 to W35 (the register then at 103 fixed,
+33 open and 1 not-wrong, `grep '^status' corpus/wrong_answers.toml | sort | uniq -c`). They
 keep M1e2's discipline: a wrong answer is a row in
 [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml) before it is
 fixed, and every move is listed before it is made.

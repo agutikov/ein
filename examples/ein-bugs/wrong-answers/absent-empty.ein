@@ -1,0 +1,30 @@
+;;; `(absent ())` loads, and holds — M1f **W35**, register row
+;;; `W35/absent-empty` (`corpus/wrong_answers.toml`), banked by S1f.5.0
+;;; (2026-11-08) from S1f.5.5's census (§ Findings outside the grammar),
+;;; filed `open` and owned by S1f.5.5, on the user's ruling of 2026-11-08 on
+;;; the census (*"Q3 - as recommended"*).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two `p` facts and a rule whose `:match` writes `(absent ())` beside its
+;;; premise `(p ?x)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `()` is a whole `:match` or a whole `:assert` and nothing else (the paper
+;;; grammar's default 7), so `(absent ())` is refused at load, with a line
+;;; naming the rule and the clause: every command that reads the program
+;;; exits 1 (`ein test`: 2). Read under F12, `()` is true, so its absence
+;;; would never hold.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads and `(absent ())` holds, so `rr` fires for every `p`:
+;;; root derives `(hit a)` and `(hit b)`, H is empty and R is {∅}, exit 0
+;;; (`ein saturate FILE --dump`, `ein solve FILE` and `ein oracle FILE` at
+;;; `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+
+(relation p T) (relation hit T)
+(p a) (p b)
+(rule rr () :match (and (p ?x) (absent ())) :assert (hit ?x))
+(query :goal (hit ?x))

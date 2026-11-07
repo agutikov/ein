@@ -371,13 +371,31 @@ fn every_name_of_the_program_is_a_candidate_object() {
     );
 }
 
+/// **The breach a register row holds today** (M1f S1f.5.0, 2026-11-08):
+/// W34, `:assert ()` stored as a fact whose head is the parser's synthetic
+/// `@empty`, a name no fact or rule writes, which then joins H as an object.
+/// It is the row's own wrong answer (`W34/assert-empty`), so it is named
+/// rather than failed, and held both ways: S1f.5.9 empties the list in the
+/// commit that fixes W34.
+const KNOWN_R1: [(&str, &str); 2] = [
+    (
+        "examples/ein-bugs/wrong-answers/assert-empty.ein",
+        "new-object: `\"@empty\"` in (q \"@empty\")",
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/assert-empty.ein",
+        "new-relation: `\"@empty\"` in ()",
+    ),
+];
+
 /// **R1 and R2 — no run reaches a name the program does not have.**
 ///
 /// The dynamic half exists to confirm what the static half assumes: a
 /// *variable* leaf can only carry a value the KB already holds, so nothing but
 /// a rule's constant can introduce a name — and a rule's constant is a name of
 /// the program. Measured over every state a bounded describe meets on the
-/// corpus, the scan finds **nothing**, against either baseline. Until M1e2
+/// corpus, the scan finds **nothing**, against either baseline, but for the
+/// one breach a register row holds ([`KNOWN_R1`], W34's). Until M1e2
 /// S1e2.2.4 the baselines left the rules' constants out, and R1 found `Ann`
 /// and `G`, R2 `Ann`.
 #[test]
@@ -440,11 +458,17 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
         solved >= 155,
         "only {solved} corpus files reached a solve — the sweep stopped looking"
     );
+    r1.sort();
+    let mut known: Vec<(String, String)> = KNOWN_R1
+        .iter()
+        .map(|(p, b)| (p.to_string(), b.to_string()))
+        .collect();
+    known.sort();
     assert_eq!(
-        r1,
-        Vec::<(String, String)>::new(),
+        r1, known,
         "R1 — a run derived a name that is neither a loaded fact's nor a rule's \
-         constant: a value no rule's text predicts, which the seed cannot hold"
+         constant: a value no rule's text predicts, which the seed cannot hold \
+         (KNOWN_R1 names W34's, open, which S1f.5.9 fixes)"
     );
     assert_eq!(
         r2,

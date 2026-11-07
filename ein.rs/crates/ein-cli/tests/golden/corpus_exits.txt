@@ -389,9 +389,15 @@
 0    examples/ein-bugs/unsat-core-id-space.ein :: oracle --dump {out}/region
 0    examples/ein-bugs/unsat-core-id-space.ein :: saturate
 0    examples/ein-bugs/unsat-core-id-space.ein :: solve
+0    examples/ein-bugs/wrong-answers/absent-empty.ein :: saturate
+0    examples/ein-bugs/wrong-answers/absent-empty.ein :: solve
+0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: test
 0    examples/ein-bugs/wrong-answers/arity3.ein :: solve
+0    examples/ein-bugs/wrong-answers/assert-empty.ein :: saturate
+0    examples/ein-bugs/wrong-answers/assert-empty.ein :: solve
 0    examples/ein-bugs/wrong-answers/assert-eq-x-w.ein :: saturate
 0    examples/ein-bugs/wrong-answers/assert-eq-x-w.ein :: solve
 0    examples/ein-bugs/wrong-answers/assert-neq-w-x.ein :: saturate

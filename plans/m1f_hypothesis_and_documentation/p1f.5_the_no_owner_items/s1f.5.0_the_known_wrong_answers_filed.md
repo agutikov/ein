@@ -8,9 +8,10 @@
 
 **Status:** specified 2026-11-08 on the user's instruction: *"plan adding rows in p1f.5"*, and run the same
 day on the user's go-ahead (*"run plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage
-in separate subagent"*). **The twenty rows are filed**: T1f.5.0.1 `0525444e` (the witnesses), T1f.5.0.2
-`da58dda6` (the rows), T1f.5.0.3 (this record). **T1f.5.0.4 is next**: three more rows, W33 to W35, which
-the user added the same day from S1f.5.5's census. No engine code moved
+in separate subagent"*). **Done 2026-11-08**: T1f.5.0.1 `0525444e` (the twenty witnesses), T1f.5.0.2
+`da58dda6` (their rows), T1f.5.0.3 `3332246e` (the record), and T1f.5.0.4, the commit after it (W33 to W35,
+which the user added the same day from S1f.5.5's census, and this record of them). Twenty-three rows, each
+`open` and owned by the stage that fixes it. No engine code moved
 ([§ What was filed](#what-was-filed-2026-11-08)).
 **Depends on:** nothing. **It runs first in the phase**, before any stage that moves one of these answers,
 so that each row holds today's wrong answer before its fix.
@@ -137,6 +138,23 @@ The register then read **103 rows fixed, 30 open and 1 not-wrong**
 (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08), and
 `ein-cli/tests/wrong_answers.rs` holds each open row to its `now`.
 
+**T1f.5.0.4 filed W33 to W35 the same day**, from S1f.5.5's census, each `today` from the same builds and
+each the census's answer, describe and `ein oracle` agreeing:
+
+| row | witness | `now`, today | `right` | owner |
+|---|---|---|---|---|
+| `W33/activator-nested-value` | `activator-nested-value.ein`, the census's `activator_nested_value.ein` | `--minimal`: R {∅}; root holds `(hit a)`, `(hit b)` and `(hit (f a))` | `(model (hit (f a)))` | S1f.5.18 |
+| `W34/assert-empty` | `assert-empty.ein`, the census's `assert_empty.ein` | R two states, the second `(model (q "@empty") (q a))` | R {∅} | [S1f.5.9](s1f.5.9_an_empty_match_fires.md) |
+| `W35/absent-empty` | `absent-empty.ein`, the program the coordinator wrote from the census | `--minimal`: R {∅}; root holds `(hit a)` and `(hit b)` | refused | [S1f.5.5](s1f.5.5_the_grammar.md) |
+
+W34's state files do not load either, the stored fact written as a line `()`, so it joins W30's two on both
+`DO_NOT_LOAD` lists; and its `@empty` is a name no fact or rule writes, which the M1 alive-set invariant's R1
+(`ein-infer/tests/alive_invariant.rs`) finds, so that test names it (`KNOWN_R1`), held both ways. Moved by
+banking: `corpus_exits.txt` 6 cells, every one exit 0, and `corpus_shapes.md5` 123 digests, none removed;
+`detector.rs` and `SEEDED` did not move. The register then read **103 rows fixed, 33 open and 1 not-wrong**
+(`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08). [F12's table](README.md#f12-an-empty-match-never-fires),
+whose fifth row said `:assert ()` *adds nothing*, and S1f.5.9's case table say what it does.
+
 **What the stage files did not say**, each recorded in its row and its owner's step 1:
 - **A right that differs from its stage file's, put to the user.** `W30/assert-neq-w-x`'s state `{(p w)}`
   also stores the false `(neq w w)`: `w` is a name of the program (a rule's `:assert` names it), so `(p w)` is
@@ -165,5 +183,7 @@ and the claims its run reports, what the refusal replaces (`W29/core-two-ways`' 
 `W32/kwpair-in-goal`'s query), and a refused `now` records none. `ein-corpus`'s
 `beside_a_refusal_now_records_what_today_reports` holds it.
 
-`./run_tests.sh` was green before each commit: 13 min 37 s for T1f.5.0.1
-(`build/gate-s1f.5.0-T1.log`) and 13 min 33 s for T1f.5.0.2 (`build/gate-s1f.5.0-T2.log`).
+`./run_tests.sh` was green before each commit that moved a file it reads: 13 min 37 s for T1f.5.0.1
+(`build/gate-s1f.5.0-T1.log`), 13 min 33 s for T1f.5.0.2 (`build/gate-s1f.5.0-T2.log`) and 13 min 12 s for
+T1f.5.0.4 (`build/gate-s1f.5.0-T4.log`); T1f.5.0.3 moved pages alone, and `utils/doc_audit.py --links
+--check` was clean on it.

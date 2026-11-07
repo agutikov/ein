@@ -42,16 +42,29 @@ over `examples/`, `tests/`, `stdlib/` and `corpus/`).
 | `(rule r (?x) :match () :assert (hit ?x))` with `(r a)` | loads, never fires: no `(hit a)` | root holds `(hit a :rule r)`, one firing per activator |
 | `(hrule h () :match () :assert (q b))` with `(solve :hrules (h))` | proposes nothing: *no candidate* | proposes `(q b)`, as `:match (p ?x)` does: one candidate |
 | `(rule r () :match (and) :assert (false))` | refused at parse: *unexpected input* | refused, with a line that says `and` takes a conjunct and the empty conjunction is `()` |
+| `(rule r () :match (q ?x) :assert ())` over `(q a)` | stores a fact named `@empty`, listed `( :rule r)`, which joins H: R two states, the second `(model (q "@empty") (q a))` | an empty conclusion asserts nothing: R {∅}, one state |
 
 The first four are wrong answers, a shape that reads nothing in silence, as W24's were. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed them
 on 2026-11-08 as W31, `open` and owned by this stage, each witness under `examples/ein-bugs/wrong-answers/`
 and a corpus entry, and step 2 fixes them.
+
+**The last row was F12's fifth**, which said *loads, adds nothing* and called it right. S1f.5.5's census
+found otherwise ([§ Findings outside the grammar](s1f.5.5_census.md#findings-outside-the-grammar)), the user
+ruled on 2026-11-08 that it be filed (*"Q3 - as recommended"*), and S1f.5.0 filed it the same day as **W34**,
+`W34/assert-empty`, `open` and owned by this stage: an empty conclusion is F12's to fix, and the paper
+grammar keeps `:assert ()` as the empty conclusion (its default 7). Its `--dump-answer` state files do not
+load, the stored fact written as a line `()`, so `ein-cli/tests/answer_round_trip.rs` and `answer_dump.rs`
+name the witness (`DO_NOT_LOAD`) until step 2 takes it off both lists. Its `@empty` is also a name no fact or
+rule writes, which the M1 alive-set invariant's R1 finds, so `ein-infer/tests/alive_invariant.rs` names it
+(`KNOWN_R1`) until the same commit empties that list.
 
 ## What it changes
 
 - **Rules.** A rule whose `:match` is `()` compiles to a plan with no premise. It fires once at root, or once
   per activator fact, with only its parameters bound.
 - **Hrules.** The same, so the hrule rung proposes the conclusion once, or once per activator.
+- **An empty conclusion** (W34, added 2026-11-08). `:assert ()` asserts nothing: no fact with the parser's
+  synthetic head is stored, and `@empty` is no name of the program.
 - **`(and)`.** Refused at load on today's parser, in Ein's spelling, naming the rule and the clause. On
   S1f.5.5's grammar, `and` takes one conjunct or more, and the parse error says so.
 - **What it reaches.** A contradiction derived this way has an empty core, the first `[]` core in Ein. A
@@ -63,7 +76,7 @@ and a corpus entry, and step 2 fixes them.
 
 ### Task T1f.5.9.1 — the rows, every move listed
 
-It starts from W31's four rows, which S1f.5.0 filed `open` on 2026-11-08, each `now` taken at `ec004a48`
+It starts from W31's four rows and W34's one, which S1f.5.0 filed `open` on 2026-11-08, each `now` taken at `ec004a48`
 (the engine `916d97ac`'s), release and debug alike, every one the case's answer above:
 
 | row | witness | `now`, today |
@@ -72,10 +85,12 @@ It starts from W31's four rows, which S1f.5.0 filed `open` on 2026-11-08, each `
 | `W31/empty-match-fact` | `empty-match-fact.ein` | `solve --minimal`: `(model (q a))`, no `(q b)` |
 | `W31/empty-match-activator` | `empty-match-activator.ein` | `solve --minimal`: no `(hit a)` |
 | `W31/empty-match-hrule` | `empty-match-hrule.ein` | `solve`: no candidate, R {∅} |
+| `W34/assert-empty` | `assert-empty.ein`, the census's `assert_empty.ein` | `solve`: R two states, `(q "@empty")` a candidate |
 
 Each re-taken, with the `(and)` refusal's probe. `ein-infer/tests/alive_invariant.rs`' `SEEDED` names `b` on
 `empty-match-fact` and `empty-match-hrule`, a name only the conclusion writes; step 2 says whether the fix
-moves either line. The corpus swept, and
+moves either line. W34's fix takes `assert-empty.ein` off `DO_NOT_LOAD` in both tests and empties
+`alive_invariant.rs`' `KNOWN_R1`. The corpus swept, and
 `cargo test --workspace` run on a prototype. Every move must be one of the case's rows. **Stop and show the
 user the programs**, answers computed.
 
@@ -95,5 +110,6 @@ The `(and)` line. `01_grammar.md`'s rule section: an empty `:match` is the empty
 - `(rule r () :match () :assert (false))` makes root dead, with the core `[]` and `refuted by r`.
 - `(and)` is refused at load with a line naming the rule, and `()` is the one spelling of the empty
   conjunction.
+- `:assert ()` asserts nothing: W34's witness answers R {∅}, and its state files load.
 - The case's rows are `fixed`, and no corpus answer moves.
 - `./run_tests.sh` is green.
