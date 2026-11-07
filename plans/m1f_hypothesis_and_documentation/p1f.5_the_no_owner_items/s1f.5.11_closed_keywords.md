@@ -107,7 +107,7 @@ Each program is `(relation p Node) (relation q Node) (relation hit Node) (p a) (
 | `:expect (model (p a) (p b) :zz 1)` | refused: *`:zz 1` is not a fact* | the same |
 
 The first seven are wrong answers of W24's kind: a written condition or conclusion read as nothing, in
-silence. Step 1 files them as a new register case, `open` and owned by this stage. Each witness goes under
+silence. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) files them as W32, `open` and owned by this stage. Each witness goes under
 `examples/ein-bugs/wrong-answers/`, and each row's `right` is the refusal. Three of them are the inventory's
 probes: `inventory_2026-11-05/probes/kwpair_in_pattern.ein` (G-15),
 `inventory_2026-11-06/probes/where_t3_example.ein` (D-15) and `inventory_2026-11-06/probes/assert_and_kw.ein`
@@ -193,7 +193,7 @@ Each page says what the form takes, that any other keyword is refused, and that 
 
 ### Task T1f.5.11.1 — the rows, every move listed
 
-The register case filed with its seven witnesses. The lists prototyped, and the corpus and
+W32's seven rows re-taken. The lists prototyped, and the corpus and
 `corpus/fuzz_findings/` swept with every command that loads. `cargo test --workspace` is run on the
 prototype. Every move must be one of the case's rows, the three files above, or a fixture whose line's text
 changes. **Stop and show the user** the refusal lines and `wrappers.ein` as rewritten, computed on the

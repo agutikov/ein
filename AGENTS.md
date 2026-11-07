@@ -374,9 +374,17 @@ constrained-reasoning research.
   moves it only where it moves the core, and two programs one `:priority`
   apart naming two rules beside one core is the accepted cost.
   `ein-infer/tests/corpus_cores.rs` holds every printed core's rules over
-  the corpus; no answer or register row moved. With it P1e2.3 is complete;
-  next is the inventory re-taken and shown to the user, and the close waits
-  for the user's go-ahead.
+  the corpus; no answer or register row moved. With it P1e2.3 is complete.
+  The inventory was re-taken on 2026-11-06 and shown to the user, whose review
+  of its no-owner items ruled every one by 2026-11-08 (Q-M1e2.22 to .28). The
+  user then moved those plans to M1f as P1f.5, and **M1e2 closed on
+  2026-11-08**, with no `docs/history/` record and `plans/m1e2_correctness/`
+  kept in place, on the user's instruction
+  ([§ The close](plans/m1e2_correctness/README.md#the-close-2026-11-08)). The
+  register reads 103 fixed, 1 not wrong and 10 open, each deferred to F21, F22
+  or M1f's S1f.10.6. Twenty known wrong answers have no row yet, and
+  [P1f.5](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md)'s
+  first stage, S1f.5.0, files them. **M1f is next**, P1f.5 first.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -43,9 +43,9 @@ over `examples/`, `tests/`, `stdlib/` and `corpus/`).
 | `(hrule h () :match () :assert (q b))` with `(solve :hrules (h))` | proposes nothing: *no candidate* | proposes `(q b)`, as `:match (p ?x)` does: one candidate |
 | `(rule r () :match (and) :assert (false))` | refused at parse: *unexpected input* | refused, with a line that says `and` takes a conjunct and the empty conjunction is `()` |
 
-The first four are wrong answers, a shape that reads nothing in silence, as W24's were. Step 1 files them
-as a new register case, `open` and owned by this stage, each witness under
-`examples/ein-bugs/wrong-answers/`, and step 2 fixes them.
+The first four are wrong answers, a shape that reads nothing in silence, as W24's were. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) files them
+as W31, `open` and owned by this stage, each witness under `examples/ein-bugs/wrong-answers/`, and step 2
+fixes them.
 
 ## What it changes
 
@@ -63,7 +63,7 @@ as a new register case, `open` and owned by this stage, each witness under
 
 ### Task T1f.5.9.1 — the rows, every move listed
 
-The register case filed with the four witnesses and the `(and)` refusal's probe. The corpus swept, and
+W31's four rows re-taken, with the `(and)` refusal's probe. The corpus swept, and
 `cargo test --workspace` run on a prototype. Every move must be one of the case's rows. **Stop and show the
 user the programs**, answers computed.
 

@@ -211,7 +211,7 @@ hold every mode on the witnesses, and a fixture shows a premise guard with a fre
 ### Task T1f.5.7.4 — conclusions (G-21)
 
 `compile.rs`' `:assert` side: a concluded `eq` or `neq` is checked, never stored. The three rows of
-[§ Conclusions](#conclusions-g-21) are register rows, filed `open` in step 1 and fixed here, with the oracle
+[§ Conclusions](#conclusions-g-21) are W30's rows, filed `open` by [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) and fixed here, with the oracle
 agreeing on each.
 
 ### Task T1f.5.7.5 — the pages

@@ -57,6 +57,11 @@ evidence. P1e2.4, added
 2026-11-02, was specified the same day at the user's *"write P1e2.3 plans
 also"*: four stages, 5 days, and seven since 2026-11-03; it **closed
 2026-11-03**, every stage done.
+**Closed 2026-11-08** on the user's go-ahead, with no `docs/history/` record and
+this directory kept in place, as the user asked
+([§ The close](#the-close-2026-11-08)). Ten register rows stay `open`, each
+deferred to its owner, and twenty known wrong answers with no row yet go to
+M1f's P1f.5, which files them first.
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -533,12 +538,66 @@ nothing is applied until the user says so (*"do not apply modifications now"*).
 **The review finished on 2026-11-08 with every item decided**, as thirteen
 stages, none built, and **the user moved them to M1f the same day**, as
 [P1f.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md).
-**The milestone's next step is its close**: the inventory re-taken (the
-register's tests and the sweep against the oracle) and shown to the user, then
-the record, shown before anything is deleted. At the close, the links P1f.5
-holds into this directory are re-aimed at the record: the no-owner inventory,
-Q-M1e2.22 to .28 in [`open_questions.md`](open_questions.md), and the probes
-under `inventory_2026-11-05/` and `inventory_2026-11-06/`.
+**The milestone closed on 2026-11-08** ([§ The close](#the-close-2026-11-08)).
+
+## The close (2026-11-08)
+
+The user: *"can close m1e2? if yes - do not produce history, do not delete m1e2
+plans, just close and commit"*. So the close writes no `docs/history/` record
+and deletes nothing. This directory stays as it is, and every link P1f.5 holds
+into it stays valid. That replaces the close this file planned earlier, a record
+and `plans/m1e2_correctness/` deleted.
+
+**The acceptance, line by line**, re-checked on 2026-11-08:
+
+- **No register row is `open` except a deferred one.** The register reads 103
+  `fixed`, 1 `not-wrong` and 10 `open` (`grep -E '^status *='
+  corpus/wrong_answers.toml | sort | uniq -c`). Each open row is reviewed
+  `deferred` and names its owner, and the milestone closes naming them:
+  - [F21](../followups/f21_non_monotone_programs_decided.md): `W8/features-07`,
+    `W8/f07-rules-swapped`, `W8/fifo-gap`, `W8/corner-house`;
+  - [F22](../followups/f22_exact_core_past_the_cap.md): `W10/alt-cap-shared`,
+    `W10/fork-delta-order`, `W10/closure-shared-given`,
+    `W10/second-preparation`, `W25/guard-only-second`;
+  - M1f's [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md):
+    `W26/oblig-derived-activator`.
+- **Every item of the no-owner inventory is settled.** Each has an owner the
+  user accepted, M1f's
+  [P1f.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md),
+  since the user moved P1e2.5 there on 2026-11-08.
+- **No wrong answer at default settings**, except the deferred rows above and
+  **twenty known wrong answers that are in no row yet**. Q-M1e2.16 (5) would
+  have filed them before the close. The user ruled instead, on 2026-11-08:
+  *"plan adding rows in p1f.5"*. So P1f.5's first stage,
+  [S1f.5.0](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.0_the_known_wrong_answers_filed.md),
+  files them before any stage moves them, and the milestone closes naming them:
+  - W29, 6 rows: a bare `_` in a fact dropped at load (the inventory's W-22),
+    the only ones that reach corpus programs, `syntax/arg-kinds` and
+    `syntax/is-a-shapes`; fixed by S1f.5.1;
+  - W30, 3 rows: a concluded `eq` or `neq` stored as a fact (G-21); S1f.5.7;
+  - W31, 4 rows: an empty `:match` never fires (F12); S1f.5.9;
+  - W32, 7 rows: a keyword pair in a term dropped, `:where` among them (D-15,
+    G-15, G-22); S1f.5.11.
+
+  No lever changes a certified answer: `ein-cli/tests/lever_invariance.rs`.
+- **Every contested case has a ruling**, or the user's deferral of it to a
+  followup, written in the followup: the review read every row (S1e2.1.7,
+  2026-11-03), and each row filed since carries its ruling.
+- **The inventory was re-taken and shown to the user before the close**:
+  [`inventory_2026-11-06.md`](inventory_2026-11-06.md), at `c523f3ab`, and the
+  user's review of its no-owner items, 2026-11-06 to 2026-11-08. No engine code
+  has changed since: `git diff --stat 916d97ac HEAD -- ':!plans'` is one link in
+  `docs/kernel/configuration.md`.
+- **The review bundle builds in the nightly**, and its smoke step is in the
+  per-commit gate (`nightly.yml`, `per-commit.yml`: `utils/review_bundle.py`).
+- **`./run_tests.sh` green.** It was last run whole at `916d97ac` on 2026-11-06,
+  green in 13 minutes. What changed since was re-checked on 2026-11-08:
+  `utils/doc_audit.py --links --check` over the gate's scope (0 findings), and
+  `cargo test -p ein-cli --test config_reference`, which reads
+  `configuration.md` (7 passed).
+
+**What it hands on:** F21 and F22 their rows; M1f's S1f.10.6 its row; and M1f's
+P1f.5 the no-owner items, with S1f.5.0 filing the twenty wrong answers first.
 
 ## What it inherits from M1e
 

@@ -3,7 +3,7 @@
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.1**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 **Estimate:** 2 days.
-- Half a day to bank the witnesses, file W29, prototype, list every move, and show real programs.
+- Half a day to re-take W29's rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) files, prototype, list every move, and show real programs.
 - Half a day for the lexer, the refusal and the printer.
 - Half a day to retire what only `_` used.
 - Half a day for the pages.
@@ -138,7 +138,7 @@ ein.rs/crates | grep -v /tests/ | wc -l`, 2026-11-06).
 **The register.** Schema `/13` if a field needs it.
 - **W29**, new, each row's `right` the refusal: `W29/fact-arg`, `W29/is-a-arg`,
   `W29/nested-fact-arg`, `W29/activator-arg`, `W29/goal-arg`, and `W29/core-two-ways`
-  for F3. Filed `open`, then `fixed` by the refusal.
+  for F3. Filed `open` by [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md), then `fixed` by the refusal.
 - **W20**: `wild-in-match`, `wild-in-absent` and `wild-in-hrule` matched any value,
   and their `right` moves to the refusal. Their `-twin`s, already written with
   `?any`, are what the refusal says to write, and keep their R.
@@ -181,11 +181,12 @@ Each holds unless the user says otherwise, and step 1 shows it working.
 
 ## The method
 
-### Task T1f.5.1.1 — the witnesses banked, W29 filed, every move listed, real programs shown
+### Task T1f.5.1.1 — W29 re-taken, every move listed, real programs shown
 
 1. Re-take the case on a fresh build, release and debug.
-2. Bank the witnesses under `examples/ein-bugs/wrong-answers/`: a fact's argument,
-   a nested one, an activator's, a goal's, and F3's pair. File W29 `open`.
+2. Start from W29's rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed `open` with their witnesses under
+   `examples/ein-bugs/wrong-answers/`: a fact's argument, an `is-a`'s, a nested one, an
+   activator's, a goal's, and F3's pair.
 3. Trace F3's cause in the matcher, and say whether it reaches anything `_` does
    not (a rule with no variable in that slot cannot, by construction).
 4. Prototype the grammar, the refusal and the printer on a `git archive` snapshot

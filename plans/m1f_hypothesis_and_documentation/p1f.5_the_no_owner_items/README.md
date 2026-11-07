@@ -1,8 +1,8 @@
 # P1f.5 — The no-owner items, one plan per decision; then NL and `:priority`
 
 **Milestone:** [M1f](../README.md)
-**Estimate:** ~7 weeks — 15 stages, **35 days**: the thirteen no-owner stages, 25 days, then the two
-stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
+**Estimate:** ~7 weeks — 16 stages, **36 days**: S1f.5.0, which files the known wrong answers as register
+rows first, 1 day; the thirteen no-owner stages, 25 days; then the two stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
 [S1f.5.15](s1f.5.15_rule_priority.md) 6 d). One more, S1f.5.16, is proposed and not specified.
 **Status:** created in M1e2 as P1e2.5 on 2026-11-06, on the user's instruction: *"do not apply
 modifications now, create new phase in m1e2 where put stages with plans to fix
@@ -247,6 +247,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 
 | ID | title | est. | item | state |
 |---|---|---:|---|---|
+| [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) | The known wrong answers filed: W29 to W32, before any stage moves them | 1 d | the twenty rows of S1f.5.1, .7, .9 and .11 | specified, not started; **runs first** (the user, 2026-11-08: *"plan adding rows in p1f.5"*) |
 | [S1f.5.1](s1f.5.1_bare_underscore_refused.md) | A bare `_` is reserved and refused, and `_` is valid anywhere in a name | 2 d | W-22, F3 | specified, not started |
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | A string is natural language: only in `:why`, `:source` and `:goal-text` | 2.5 d | F4, F5, G-6 | specified, not started; runs after S1f.5.1 |
 | [S1f.5.3](s1f.5.3_range_retired.md) | No ranges: the `RANGE` token retired | 1 d | F6, G-6's range half | specified, not started |
@@ -264,7 +265,8 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | specified, not started |
 | *S1f.5.16* | *The read-out reference* | *proposed* | was S1f.5.3 | *proposed*: one page for every number `ein solve` prints, and which of them counts *models* and which *what the search did*. [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are findings about exactly this confusion. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) has since written much of it, and [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 gives that page a home |
 
-**The order, if the user keeps it:** S1f.5.5's census and paper grammar first, since it frames the
+**The order, if the user keeps it:** S1f.5.0 first, so that every known wrong answer is a register row
+before a stage moves it; then S1f.5.5's census and paper grammar, since it frames the
 others; then S1f.5.3, S1f.5.4, S1f.5.1 and S1f.5.2, in that order, on the hand-written parser, so that
 each move of an answer is attributed to its ruling and no name is ever left unwritable, and S1f.5.11's
 closed keywords beside them; then S1f.5.5's generated parser, run beside the old one and swapped in a
@@ -291,6 +293,7 @@ deletes `:priority`, to which S1f.5.5's grammar gives nothing new until then.
 
 | until 2026-11-08 | since | stage |
 |---|---|---|
+| — | `S1f.5.0` | the known wrong answers filed, new on 2026-11-08 |
 | `S1e2.5.1` … `S1e2.5.13`, in M1e2 | `S1f.5.1` … `S1f.5.13` | the no-owner items, in the same order |
 | `S1f.5.5` | **`S1f.5.14`** | Every statement convertible to NL |
 | `S1f.5.6` | **`S1f.5.15`** | Remove `:priority`; derive the order from the rules |
