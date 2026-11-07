@@ -154,7 +154,7 @@ while a guard computes the opposite. One relation, two readings, in one state. T
 
 | `:assert` | today | right |
 |---|---|---|
-| `(neq w ?x)` | stores `(neq w a :rule r)`, R 2 states | holds: adds nothing, R 2 states |
+| `(neq w ?x)` | stores `(neq w a :rule r)`, R 2 states | at root it holds and adds nothing; `w` is a name of the program, so `(p w)` is a candidate, and at `{(p w)}` the conclusion `(neq w w)` is false: that node is dead, R {∅} |
 | `(neq ?x ?x)` | stores `(neq a a :rule r)`, R 1 state, ∅ in R | root is dead: R is empty |
 | `(eq ?x w)` | stores `(eq a w :rule r)`, R 2 states, ∅ in R | root is dead: R is empty |
 
@@ -203,8 +203,8 @@ on 2026-11-08, each witness under `examples/ein-bugs/wrong-answers/` and a corpu
 
 **The first row's `right` is not [§ Conclusions](#conclusions-g-21)' table's**, which reads *R 2 states*:
 `w` is a name of the program, so `(p w)` is a candidate, and at `{(p w)}` the rule concludes `(neq w w)`,
-which the ruling makes a contradiction. S1f.5.0 filed R {∅} and put the difference to the user; the table
-stands until the user rules. Two more things move with the fix. `neq` stored as a fact makes a
+which the ruling makes a contradiction. S1f.5.0 filed R {∅}, and the coordinator settled the difference on
+the ruling itself (2026-11-08): G-21 decides it, so the table above now reads R {∅} too. Two more things move with the fix. `neq` stored as a fact makes a
 `--dump-answer` state file that does not load, a fact line `(neq …)` being a parse error, so
 `ein-cli/tests/answer_round_trip.rs` and `answer_dump.rs` name the two `neq` witnesses (`DO_NOT_LOAD`), and
 each list fails once its files load: T1f.5.7.4 empties both. And `ein-infer/tests/alive_invariant.rs`'

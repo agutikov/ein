@@ -1,9 +1,11 @@
 # P1f.5 — The no-owner items, one plan per decision; then NL and `:priority`
 
 **Milestone:** [M1f](../README.md)
-**Estimate:** ~7 weeks — 17 stages, **37 days**: S1f.5.0, which files the known wrong answers as register
+**Estimate:** ~8 weeks — 18 stages, **40 days**: S1f.5.0, which files the known wrong answers as register
 rows first, 1 day; [S1f.5.17](s1f.5.17_ci_green_again.md), which makes the CI green again on Ubuntu 26.04's
-Graphviz and re-banks the mutant baseline, 1 day (added 2026-11-08); the thirteen no-owner stages, 25 days; then the two stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
+Graphviz and re-banks the mutant baseline, 1 day (added 2026-11-08); the thirteen no-owner stages, 26.5 days,
+S1f.5.5 re-taken at its step 1 from 8.5 days to 10; [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md),
+W33 and G-14's load-time check, 1.5 days (added 2026-11-08, on Q-M1f.1 and Q-M1f.3); then the two stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
 [S1f.5.15](s1f.5.15_rule_priority.md) 6 d). One more, S1f.5.16, is proposed and not specified.
 **Status:** created in M1e2 as P1e2.5 on 2026-11-06, on the user's instruction: *"do not apply
 modifications now, create new phase in m1e2 where put stages with plans to fix
@@ -253,7 +255,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | A string is natural language: only in `:why`, `:source` and `:goal-text` | 2.5 d | F4, F5, G-6 | specified, not started; runs after S1f.5.1 |
 | [S1f.5.3](s1f.5.3_range_retired.md) | No ranges: the `RANGE` token retired | 1 d | F6, G-6's range half | specified, not started |
 | [S1f.5.4](s1f.5.4_digits_are_names.md) | Digits are plain names, and a name is any run of name characters | 1.5 d | F7, F8, F2 | specified, not started |
-| [S1f.5.5](s1f.5.5_the_grammar.md) | The grammar revisited: each position says what it holds, and the parser is generated from it | 8.5 d, re-taken at its step 1 | F9, F10, F11, F2, S-15, a question on G-14, and S1f.5.11's keyword lists as grammar | specified, not started; grmtools and recovery on ruled |
+| [S1f.5.5](s1f.5.5_the_grammar.md) | The grammar revisited: each position says what it holds, and the parser is generated from it | 10 d, re-taken at its step 1 (was 8.5) | F9, F10, F11, F2, S-15, G-14, W35, and S1f.5.11's keyword lists as grammar | **steps 1 and 2 done** (`49e9fed6`); the paper grammar shown and stands, [Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b) and [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) (a) ruled 2026-11-08; T3 on waits for S1f.5.3, .4, .1 and .2 |
 | [S1f.5.6](s1f.5.6_the_empty_state_decides_the_minimal_line.md) | Where ∅ is in R, every minimal-line question stops at root, and says only ∅ | 1.5 d | S-16, P-14, S-17, F1 | specified, not started; independent of the grammar stages |
 | [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md) | `eq` and `neq` are relations: in a goal, a premise and a conclusion | 3 d | S-18, G-21; restates W24's guard rows | specified, not started; restates two W24 rows |
 | [S1f.5.8](s1f.5.8_no_contradiction_no_core.md) | A node with no contradiction has no core: `null`, not `[]` | 0.5 d | D-14 | specified, not started |
@@ -265,6 +267,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.14](s1f.5.14_nl_required.md) | Every statement convertible to NL | 4 d | was S1f.5.5 | specified, not started |
 | [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | specified, not started |
 | [S1f.5.17](s1f.5.17_ci_green_again.md) | CI green again: the per-commit job on Ubuntu 26.04's Graphviz, and the nightly's mutant baseline | 1 d | the red per-commit and nightly runs since `916d97ac` | specified, not started; **runs next after S1f.5.0** (the user, 2026-11-08: *"add new stage to this phase - fix failing CI jobs"*) |
+| [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md) | An activator's nested fact: a value parameter binds it, and a relation parameter is refused at load | 1.5 d | W33; G-14's derived activator ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b)) | specified, not started; after S1f.5.7 and S1f.5.10, before S1f.5.9 |
 | *S1f.5.16* | *The read-out reference* | *proposed* | was S1f.5.3 | *proposed*: one page for every number `ein solve` prints, and which of them counts *models* and which *what the search did*. [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are findings about exactly this confusion. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) has since written much of it, and [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 gives that page a home |
 
 **The order, if the user keeps it:** S1f.5.0 first, so that every known wrong answer is a register row
@@ -273,7 +276,9 @@ green gate; then S1f.5.5's census and paper grammar, since it frames the
 others; then S1f.5.3, S1f.5.4, S1f.5.1 and S1f.5.2, in that order, on the hand-written parser, so that
 each move of an answer is attributed to its ruling and no name is ever left unwritable, and S1f.5.11's
 closed keywords beside them; then S1f.5.5's generated parser, run beside the old one and swapped in a
-commit that moves no answer. **S1f.5.14 and S1f.5.15 come last**, as the user placed them. S1f.5.15
+commit that moves no answer. The stages the grammar does not frame run one at a time between: S1f.5.7,
+S1f.5.10 and S1f.5.18, then S1f.5.6, S1f.5.12, S1f.5.13, S1f.5.8 and S1f.5.9. **S1f.5.14 and S1f.5.15 come
+last**, as the user placed them. S1f.5.15
 deletes `:priority`, to which S1f.5.5's grammar gives nothing new until then.
 
 ## Acceptance for the phase
