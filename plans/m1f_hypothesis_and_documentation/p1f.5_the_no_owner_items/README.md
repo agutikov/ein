@@ -1,8 +1,9 @@
 # P1f.5 — The no-owner items, one plan per decision; then NL and `:priority`
 
 **Milestone:** [M1f](../README.md)
-**Estimate:** ~7 weeks — 16 stages, **36 days**: S1f.5.0, which files the known wrong answers as register
-rows first, 1 day; the thirteen no-owner stages, 25 days; then the two stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
+**Estimate:** ~7 weeks — 17 stages, **37 days**: S1f.5.0, which files the known wrong answers as register
+rows first, 1 day; [S1f.5.17](s1f.5.17_ci_green_again.md), which makes the CI green again on Ubuntu 26.04's
+Graphviz and re-banks the mutant baseline, 1 day (added 2026-11-08); the thirteen no-owner stages, 25 days; then the two stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
 [S1f.5.15](s1f.5.15_rule_priority.md) 6 d). One more, S1f.5.16, is proposed and not specified.
 **Status:** created in M1e2 as P1e2.5 on 2026-11-06, on the user's instruction: *"do not apply
 modifications now, create new phase in m1e2 where put stages with plans to fix
@@ -263,10 +264,12 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md) | The round trip's four large dumps move to the slow tier, and the nightly runs it | 0.5 d | P-16 | specified, not started; independent |
 | [S1f.5.14](s1f.5.14_nl_required.md) | Every statement convertible to NL | 4 d | was S1f.5.5 | specified, not started |
 | [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | specified, not started |
+| [S1f.5.17](s1f.5.17_ci_green_again.md) | CI green again: the per-commit job on Ubuntu 26.04's Graphviz, and the nightly's mutant baseline | 1 d | the red per-commit and nightly runs since `916d97ac` | specified, not started; **runs next after S1f.5.0** (the user, 2026-11-08: *"add new stage to this phase - fix failing CI jobs"*) |
 | *S1f.5.16* | *The read-out reference* | *proposed* | was S1f.5.3 | *proposed*: one page for every number `ein solve` prints, and which of them counts *models* and which *what the search did*. [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are findings about exactly this confusion. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) has since written much of it, and [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 gives that page a home |
 
 **The order, if the user keeps it:** S1f.5.0 first, so that every known wrong answer is a register row
-before a stage moves it; then S1f.5.5's census and paper grammar, since it frames the
+before a stage moves it; then S1f.5.17, so that every later stage boundary is held to a green CI as well as a
+green gate; then S1f.5.5's census and paper grammar, since it frames the
 others; then S1f.5.3, S1f.5.4, S1f.5.1 and S1f.5.2, in that order, on the hand-written parser, so that
 each move of an answer is attributed to its ruling and no name is ever left unwritable, and S1f.5.11's
 closed keywords beside them; then S1f.5.5's generated parser, run beside the old one and swapped in a
@@ -294,6 +297,7 @@ deletes `:priority`, to which S1f.5.5's grammar gives nothing new until then.
 | until 2026-11-08 | since | stage |
 |---|---|---|
 | — | `S1f.5.0` | the known wrong answers filed, new on 2026-11-08 |
+| — | `S1f.5.17` | CI green again, new on 2026-11-08; `S1f.5.16` stays the proposed read-out reference |
 | `S1e2.5.1` … `S1e2.5.13`, in M1e2 | `S1f.5.1` … `S1f.5.13` | the no-owner items, in the same order |
 | `S1f.5.5` | **`S1f.5.14`** | Every statement convertible to NL |
 | `S1f.5.6` | **`S1f.5.15`** | Remove `:priority`; derive the order from the rules |
