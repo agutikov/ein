@@ -9,11 +9,14 @@
 - A quarter of a day to run both tiers on the runner's image, and the record.
 
 **Status:** specified 2026-11-08 on the user's instruction: *"add new stage to this phase - fix failing CI
-jobs [agutikov/ein] Run failed: per-commit - master (ec004a4)"*. **Started 2026-11-08** on the user's
-go-ahead to run the phase stage by stage: T1f.5.17.1, both failures reproduced and their causes found
-([§ Step 1](#step-1--reproduced-and-the-causes-2026-11-08)). Neither needs the user: the per-commit cause
-has a view-side fix, the stage's first preference, and the mutants were killed by a commit and not by the
-platform.
+jobs [agutikov/ein] Run failed: per-commit - master (ec004a4)"*. **Done 2026-11-08** on the user's go-ahead
+to run the phase stage by stage: T1f.5.17.1 `3e6e40f8` (both failures reproduced and their causes found,
+[§ Step 1](#step-1--reproduced-and-the-causes-2026-11-08)), T1f.5.17.2 `76ede241` (the two fixes) and
+T1f.5.17.3, the commit after it (the record, and `utils/ci_container.sh`). Neither failure needed the user:
+the per-commit one had a view-side fix, the stage's first preference, and a commit killed the mutants, not
+the platform. Every step of both workflows is green in a container built like the runner
+([§ What changed](#what-changed-and-both-tiers-on-the-runners-image)). The CI itself is read when the user
+pushes.
 **Depends on:** nothing. **It runs next after [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md)**,
 before any other stage. Each later stage boundary can then be held to a green CI as well as a green
 `./run_tests.sh`.
@@ -284,3 +287,63 @@ and `rule 'surjective' [activator is-a seats]` for the other. The swapped assert
 under `absent`. `06_blind_enumeration.ein` is the one program in `tests/stdlib/bijection/` that leaves the
 blind enumerator on, so `seats` is a relation a commitment can extend, and *forbid* refuses the program at
 load. The suite noticed the defect: the kill is real, and T1f.5.17.2 re-banks it.
+
+## What changed, and both tiers on the runner's image
+
+**T1f.5.17.2, `76ede241`.** The view-side fix of § Step 1: `dot_util::POLYGON_RANKSEP`, `ranksep=0.55`,
+written by a rule's overlay digraph (`rules.rs`, `render_overlay`) and by a `Builder` digraph that holds an
+octagon hyperedge node (`builder.rs`, `build`), each with its reason in a doc comment, and in
+[`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md) under the overlay. Named
+before they moved, from `cargo test`'s own list before `EIN_BLESS`: `ein-render`'s `corpus_shapes.md5`,
+**1 198 lines over 384 corpus files**, `ir-levi` 351, `ir-overlay` 317, `rules-overlay` 278, and `ir`,
+`ir-forms` and `ir-trace-dag` 84 each, each digraph one line longer, the prototype's count. No DOT golden,
+answer, exit code or other golden moved. The mutant baseline: `tests/mutation_survivors.txt` re-banked by
+`stdlib_mutants.py --bless`, its diff the two lines removed and nothing added, **167 of 217** killed and 50
+surviving, 42 of them in `slots.ein`. [`tests/README.md`](../../../tests/README.md#what-a-mutation-sweep-says-about-them)'s
+table of kills names `597b2b7e` and the program that kills each, and the script's docstring,
+`utils/README.md` and `AGENTS.md` carry the count. `./run_tests.sh` green, 13 min 27 s
+(`build/gate-s1f.5.17-T2.log`).
+
+**Both tiers on the runner's image**, at `76ede241`, by `utils/ci_container.sh`: Ubuntu 26.04.1,
+Graphviz 14.1.2 with `libpathplan4 14.1.2-1ubuntu1` **amd64v3**, Python 3.14.4, rustc 1.97.1, run as the host's
+user on a clone under `build/ci-container/`.
+
+| tier | command | result |
+|---|---|---|
+| per-commit | `utils/ci_container.sh` | **green**, 13 min 19 s from a fresh build: the six static checks, `cargo test --workspace` (`dot_wellformed` among it), and the three steps the red runs skipped, `check_test_scratch.py`, `review_bundle.py --smoke` (12 SVGs, link check exit 0) and the bench smoke (`build/s1f.5.17/container-26.04-amd64v3-gate-76ede241.log`) |
+| nightly | `utils/ci_container.sh --nightly` | **green**, 26 min 27 s: `deep-corpus`'s five test steps at their slow depths, `check_test_scratch.py`, `stdlib_census.py --check`, the whole review bundle (137 cases, 0 failed) and its link check (6 752 pages, 0 findings), and `stdlib_mutants.py --check` at **167 of 217**; both fuzz seeds at 10⁶; the bench smoke (`build/s1f.5.17/container-26.04-amd64v3-nightly-76ede241.log`) |
+
+**And on the runner before it**: `utils/ci_container.sh --image ubuntu:24.04 --variant none --tests-only`,
+Ubuntu 24.04.5 with Graphviz 2.42.2-9ubuntu0.1 and Python 3.12.3, is green at `76ede241` in 15 min 13 s
+from a fresh build and image. That covers `cargo test --workspace` with `dot_wellformed` (`slots.ein`'s
+crashes re-split, as before), `check_test_scratch.py` and `review_bundle.py --smoke`
+(`build/s1f.5.17/container-24.04-tests-76ede241.log`). `--tests-only` because 24.04's Python is not the
+3.14 `setup-python` gave that runner. With the host's 16.0.0 (`./run_tests.sh` above), `dot_wellformed`
+holds on all three Graphviz versions the gate meets.
+
+**T1f.5.17.3.** [`utils/ci_container.sh`](../../../utils/ci_container.sh) keeps the container commands:
+the image built like the runner (`APT::Architecture-Variants "amd64v3"`, what the workflows install, the
+pinned toolchain), HEAD as committed cloned under `build/ci-container/`, and `./run_tests.sh` run there
+with any argument. It has a row in [`utils/README.md`](../../../utils/README.md), and `AGENTS.md`'s gate
+section says which Graphviz build `dot_wellformed` meets on the CI, and how to check one before a push.
+
+## Notes
+
+- **The cause is Graphviz's, or Ubuntu's build of it**, and this stage reported it nowhere: `ccw` in
+  `lib/pathplan/shortest.c` is not robust to FMA contraction, and Ubuntu builds the amd64v3 variant with
+  GNU C's default `-ffp-contract=fast`. Whether to report it upstream (Graphviz's issue tracker, or
+  Launchpad's `graphviz` package) is the user's. The evidence is § Step 1's tables, and
+  `build/s1f.5.17/tools/pathplan_fma.sh` rebuilds the library both ways.
+- **`dot_wellformed` still reads stderr as a refusal.** A router fallback on one build is Graphviz's
+  statement about itself, as the test already reads a signal. The stage reserved telling the two apart for
+  the user, and did not need to ask, since a view-side fix existed. If a later corpus program trips the
+  amd64v3 router on a view the fix does not cover, that question is where to start. `utils/ci_container.sh`
+  finds such a view before a push.
+- The script's first two runs failed for its own reasons, and it was fixed before it was committed. A
+  `target/` compiled with the checkout mounted elsewhere kept the old `CARGO_MANIFEST_DIR`, so `ein-corpus`
+  found no repo root (`build/s1f.5.17/container-26.04-amd64v3-gate-76ede241.stale-target.log`). With the
+  checkout mounted at `/w`, `corpus_shapes.rs`'s `portable` replaced every `/w` in the renderings' text with
+  `<repo>`, and 1 446 digests moved (`….mount-w.log`). It now mounts the checkout at its own path, as the
+  runner's is a real one.
+- `utils/ci_container.sh` needs an x86-64-v3 CPU for the amd64v3 image, and `docker`. A runner image that
+  moves again, or `ubuntu-latest` naming 28.04, is checked with `--image`.

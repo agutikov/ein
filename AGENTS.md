@@ -672,8 +672,8 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **thirty scripts** (`ls utils/*.py utils/*.sh | wc -l`,
-  2026-11-03), **all but one driving `ein.rs`**.
+- **`utils/`** — **thirty-one scripts** (`ls utils/*.py utils/*.sh | wc -l`,
+  2026-11-08), **all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
   wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,
@@ -1110,6 +1110,19 @@ invariants, and since M1c S1c.1.5 the **stdlib conformance** pair — and it
 needs **Graphviz** on `PATH`, because `dot_wellformed.rs` is the only authority
 the DOT views have on being well-formed and it fails rather than skips without
 it.
+
+**Which Graphviz build is part of what that test checks** (M1f S1f.5.17). The
+CI runs on whatever `ubuntu-latest` names, and since 2026-11-06 that is Ubuntu
+26.04, whose runner installs the **x86-64-v3 build** of every package. That
+build of Graphviz 14.1.2 compiles `libpathplan`'s orientation test into a
+fused multiply-add, and its spline router refused 20 corpus views that the
+same version's baseline build, 2.42.2 and 16.0.0 all draw, until the overlay
+and Levi digraphs set `ranksep=0.55` (`dot_util::POLYGON_RANKSEP`). A green
+gate here says nothing about that build. **`utils/ci_container.sh`** runs
+`./run_tests.sh`, or `--nightly`, in a container built like the runner, on
+HEAD as committed, so an image move can be checked before a push. Both tiers
+were green there at `76ede241`: the gate in 13 min 19 s and the nightly in
+26 min 27 s (2026-11-08).
 
 **The stdlib conformance gate** is `ein-infer/tests/stdlib_coverage.rs`, and
 what it costs is 0.04 s:
