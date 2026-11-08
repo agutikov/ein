@@ -392,9 +392,10 @@ constrained-reasoning research.
   `examples/ein-bugs/wrong-answers/`, under the register's schema `/13`
   (beside a refusal, a `now` may record the core and the claims the refusal
   replaces), so the register reads 103 fixed, 33 open and 1 not wrong
-  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08),
-  and one right, `W30/assert-neq-w-x`'s, R {∅} where S1f.5.7 says two
-  states, waits on the user.
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
+  `W30/assert-neq-w-x`'s right, R {∅}, is the G-21 ruling's reading:
+  `(neq w w)` at `{(p w)}` is a false conclusion, so S1f.5.7's table, which
+  said two states, was corrected to match (`cdbd0970`).
   S1f.5.3 retired the `RANGE` token the same day (Q-M1e2.24: Ein has no
   numbers and no ranges, and none is planned): `1..5` is a parse error until
   S1f.5.4 makes it one name, so the two corpus files that write one,
