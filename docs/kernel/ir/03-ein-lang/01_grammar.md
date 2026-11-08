@@ -501,8 +501,9 @@ For a rule author, three consequences:
   `absent` is told so, a `strata` row in `ein solve`'s read-out and a
   `;; Strata` line in `ein saturate --dump`, each negative cycle named
   by its relations and the rules on its edges. It is a diagnostic, not
-  a refusal: the answer stands, and is the one the boundary's order
-  reaches ([`inference/implementation.md`](../../inference/implementation.md)'s
+  a refusal, and it says what the graph licenses, never a fact about the
+  run: the answer stands, and may depend on the boundary's order and
+  need not be unique ([`inference/implementation.md`](../../inference/implementation.md)'s
   `strata.rs`).
 
 A **nested** `(absent …)` — what `forall` desugars to,

@@ -515,10 +515,11 @@ const CORE_FLAG: &str = "record-alternative-justifications";
 /// did not move, each under a register row `open` and owned by F22:
 /// `W36/alt-flag-refuted-by` (M1f S1f.5.15, Q-M1f.5 (a)), on its witness and,
 /// since S1f.5.15 took every `:priority` out, on `features/12`, the program
-/// the witness was written from, which no typed order hides any more. Each is
+/// the witness was written from, which no typed order hides any more; and
+/// `W36/alt-flag-two-derivations`, the witness no rule order hides. Each is
 /// compared less the `refuted by` row and `region.refuted_by` under that flag,
 /// and nothing else; an entry leaves with its row's fix.
-const REFUTED_BY_OPEN: [(&str, &str); 2] = [
+const REFUTED_BY_OPEN: [(&str, &str); 3] = [
     (
         "W36/alt-flag-refuted-by",
         "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein",
@@ -526,6 +527,10 @@ const REFUTED_BY_OPEN: [(&str, &str); 2] = [
     (
         "W36/alt-flag-refuted-by",
         "examples/features/12_expect_false.ein",
+    ),
+    (
+        "W36/alt-flag-two-derivations",
+        "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein",
     ),
 ];
 

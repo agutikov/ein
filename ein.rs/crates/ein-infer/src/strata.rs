@@ -56,17 +56,20 @@ pub struct Cycle {
 
 impl Cycle {
     /// The cycle as the stratification diagnostic says it (M1f S1f.5.15's
-    /// T4): its relations, its negative edges, and what the parity means for
-    /// root's fixpoint.
+    /// T4): its relations, its negative edges, and what the parity may mean
+    /// for root's fixpoint. A possibility the graph licenses, never a fact
+    /// about a run: a cycle whose rules never fire changes nothing.
     pub fn stratum_text(&self) -> String {
         format!(
             "{} — {} — {}",
             self.relations.join(", "),
             self.negative.join(" · "),
             if self.odd {
-                "odd: a fixpoint supported at the boundary need not exist, and the one reached is the boundary's"
+                "odd: a fixpoint supported at the boundary need not exist, and the one root reaches \
+                 may depend on the boundary's order"
             } else {
-                "even: several fixpoints, and the one reached is the one the boundary admits first"
+                "even: several fixpoints may exist, and which one root reaches may depend on the \
+                 order the boundary admits in"
             }
         )
     }

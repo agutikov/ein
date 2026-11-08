@@ -651,6 +651,14 @@
 # **103 rows fixed, 34 open and 1 not-wrong** (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
 #
+# **W36's second witness was filed the same day** (T1f.5.15.8), on the
+# coordinator's follow-up to the user's ruling on Q-M1f.5 (a), one row per
+# witness: `W36/alt-flag-two-derivations`, `open` and owned by F22, a program
+# no rule order hides, its `(u a)` derived first by the longer of two joins of
+# one kind in every order. The register reads **103 rows fixed, 35 open and
+# 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-08).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -9076,6 +9084,64 @@ relations  = []
 models     = []
 core       = ["(in P1 H1)", "(instance H2 Hole)", "(instance P2 Pigeon)", "(instance P3 Pigeon)", "(not (in P2 H1))"]
 refuted_by = ["forced", "occupied"]
+
+[[case]]
+id       = "W36/alt-flag-two-derivations"
+case     = "W36"
+title    = "the alternatives flag moves `refuted by` beside an unmoved core"
+class    = "core"
+settings = "lever: (config :record-alternative-justifications false) in the file"
+owner    = "F22"
+question = ["Q-M1f.5", "Q-M1e2.11", "Q-M1e2.21"]
+witness  = "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1f.5 (a), the user, 2026-11-08): (u a) has two derivations of one kind, u-long's from three givens written first and u-short's from two, so every order records u-long's first; with every derivation recorded the core search takes the core over (false), k1's, and with the flag off over the pair (q a) / (not (q a)), v's and w's, beside the same core (g1 a) (g2 a). F22 re-derives what the store does not keep when the search reaches it, so that `refuted by` is a function of the core"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.15 (T1f.5.15.8, 2026-11-08) on the coordinator's follow-up to the user's ruling on Q-M1f.5 (a): one row per witness. Written at the stage's T3 to find a program no rule order hides, which the first witness is not (an order derived from each rule's shape printed its right answer there); this one prints `refuted by v, w` under the flag in written order and in that derived order alike. `lever_invariance` compares it less its `refuted by` row under the flag until F22 fixes the row (REFUTED_BY_OPEN)"
+
+[case.wrong]
+run        = "solve"
+by         = "region"
+why        = "`ein solve` on the witness, release, at a3cb1753 (2026-11-08): R empty, root dead, the core (g1 a) (g2 a), and `refuted by v, w`; with the config line taken out, the same core and `refuted by k1`"
+verdict    = "Contradiction"
+k          = 0
+exhausted  = true
+core       = ["(g1 a)", "(g2 a)"]
+refuted_by = ["v", "w"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict    = "Contradiction"
+k          = 0
+exhausted  = true
+core       = ["(g1 a)", "(g2 a)"]
+refuted_by = ["k1"]
+derived    = "No config option may change the answer (the user's ruling of 2026-10-15, configuration.md § 2.5). The flag's one exemption is the core (Q-M1e2.11 (ii)), and `refuted by` may follow it only where the core moved (Q-M1e2.21 (a)). The core is (g1 a) (g2 a) with the flag and without it, so `refuted by` is the default's: the witness with its config line taken out prints `refuted by k1` beside that core (`ein solve`, 2026-11-08)"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-08"
+bundle  = "79eb9853"
+note    = "The user's ruling of 2026-11-08 on Q-M1f.5, '(a) Register row W36', and the coordinator's follow-up of the same day: a second witness is a second row of W36, open, owned by F22."
+
+[case.now]
+run        = "solve"
+line       = "all"
+exhausted  = true
+k          = 0
+empty      = "dead"
+relations  = []
+models     = []
+core       = ["(g1 a)", "(g2 a)"]
+refuted_by = ["v", "w"]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

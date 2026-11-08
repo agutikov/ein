@@ -445,9 +445,10 @@ constrained-reasoning research.
   still moves going back to the user; and Q-M1f.5 (a), *"Register row W36"*,
   filed by S1f.5.15 as `W36/alt-flag-refuted-by`, `open` and owned by F22,
   under the register's schema `/14` (a `now` records what root's `refuted by`
-  names), which `lever_invariance` exempts until F22 fixes it: 103 fixed, 34
-  open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort |
-  uniq -c`, 2026-11-08). Its T3 built the rule dependency graph over the
+  names), which `lever_invariance` exempts until F22 fixes it, and a second
+  W36 row the same day, `W36/alt-flag-two-derivations`, a witness no rule order
+  hides: 103 fixed, 35 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08). Its T3 built the rule dependency graph over the
   plans a run compiled and its strata (`ein_infer::strata`), and a band per
   rule from its shape (275 of 471 declared rules agreed); measured, a derived
   agenda held every zebra-family core and the FIFO boundary moved them

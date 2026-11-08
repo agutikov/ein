@@ -1582,6 +1582,12 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W36 (`W36/alt-flag-refuted-by`), banked by S1f.5.15 on the user's ruling of 2026-11-08 on Q-M1f.5 (a): `features/12_expect_false.ein` with its priorities taken out and `:record-alternative-justifications false` in the file prints `refuted by forced, occupied` beside the five-fact core whose default is `refuted by no-room`. Open, owned by F22; `lever_invariance` compares it less that row under the flag until then."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W36's second witness (`W36/alt-flag-two-derivations`), banked by S1f.5.15: `(u a)` derived first by the longer of two joins of one kind, in every order, so with `:record-alternative-justifications false` in the file the core search takes the core `(g1 a) (g2 a)` over a pair, `refuted by v, w`, where the default takes it over `(false)`, `refuted by k1`. Open, owned by F22; `lever_invariance` compares it less that row under the flag until then."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

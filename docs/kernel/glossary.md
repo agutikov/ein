@@ -490,8 +490,9 @@ rather than a declared-only one), behind the advisory
 On stratified inputs the boundary makes the answer independent of
 the firing order; on unstratified ones
 (`p ← absent q; q ← absent p`) the engine still reports **one** model,
-picked by boundary-admission order, and says so since S1f.5.15 (the
-`strata` row) without naming the other models. See
+picked by boundary-admission order; since S1f.5.15 the `strata` row
+says that the fixpoint may depend on that order and need not be unique,
+what the graph licenses, without naming any other model. See
 [`inference/absent_semantics.md` §Explicitly not provided](inference/absent_semantics.md#explicitly-not-provided).
 
 ---

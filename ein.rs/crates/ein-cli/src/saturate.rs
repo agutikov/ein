@@ -508,8 +508,8 @@ fn dump_kb(
             );
         } else {
             println!(
-                ";; Strata — not stratifiable: {} negative cycle{}; the fixpoint below is the one \
-                 the boundary's admission order reaches",
+                ";; Strata — not stratifiable: {} negative cycle{}; the fixpoint below may depend \
+                 on the boundary's admission order, and need not be unique",
                 graph.cycles.len(),
                 if graph.cycles.len() == 1 { "" } else { "s" }
             );

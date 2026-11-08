@@ -652,7 +652,7 @@ today, deliberately, and
 [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs)
 `an_unstratifiable_loop_converges_to_a_supported_model` pins the answer *"the
 honest statement of what Ein computes — a fixpoint supported at the boundary"*.
-The diagnostic says the answer is one of several; it does not withhold it. If
+The diagnostic says the answer may be one of several; it does not withhold it. If
 anyone wants a refusal that is a `Q-M1e.<n>`.
 
 ### T4 record, 2026-11-08
@@ -662,7 +662,8 @@ orders anything, so the diagnostic is the one thing the graph is for. `monotone:
 `negative_cycles`, the negative cycles of `strata::graph` over every relation the saturation plans name, read at
 root on **every** program, flagged or not: a cycle through an `absent` among relations no commitment changes leaves
 `D` alone, so the static check calls the program monotone and the detector never looks, and root's own fixpoint is
-still one of several. The read-out prints a `strata` row under `lattice` on such a program, and a `negative cycle` row each (not `cycle`, the detector's word for its cycles over `D`),
+still one of several. *(So this record said; since T1f.5.15.8 the diagnostic says what the graph licenses: root's
+fixpoint may depend on the boundary's order and need not be unique, see [§ T8 record](#t8-record-2026-11-08).)* The read-out prints a `strata` row under `lattice` on such a program, and a `negative cycle` row each (not `cycle`, the detector's word for its cycles over `D`),
 its relations, the rules on its negative edges and its parity; `ein saturate --dump` prints `;; Strata —
 stratified, k strata` or `;; Strata — not stratifiable: …` with the same cycles. A stratified program prints no
 `strata` row, as before. It is a diagnostic: the run answers and exits as it did.
@@ -829,6 +830,30 @@ diagnostic), `architecture.md`, `inference/README.md`, `absent_semantics.md`, `a
 load order), `02_rules.md`, `03_examples.md`, `configuration.md`'s `EIN_PRIORITY` row (never built), and the code
 blocks of the guide's chapters 2 and 3, `02_patterns.md`, `03_ein_model.md` and `04_jack_drinks_coffee.md`, which
 lose their clauses. `events.md` and `inference/implementation.md` changed with the code, at T5.
+
+### T8 record, 2026-11-08
+
+Two follow-ups from the coordinator's review of the stage, one commit (T1f.5.15.8).
+
+- **W36's second witness**, filed as its own row, one row per witness: `W36/alt-flag-two-derivations`, `open`,
+  owned by F22, reviewed `deferred`, the witness `examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein`
+  (`build/s1f.5.15/w36b/base.ein` with a header, `:why` on every form, and the flag set in the file) and a corpus
+  entry. `(u a)` is derived by two joins of one kind, the longer written first, so every order records it first:
+  under the flag the core `(g1 a) (g2 a)` is taken over a pair, `refuted by v, w`, where the default takes it over
+  `(false)`, `refuted by k1` (`ein solve`, `a3cb1753`, 2026-11-08; T3's derived order, never shipped, said the same).
+  `lever_invariance`'s `REFUTED_BY_OPEN` names it. The register reads **103 rows fixed, 35 open and 1 not-wrong**
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
+- **The diagnostic said more than the graph licenses.** `ein solve examples/syntax/rule-guards.ein` printed *root's
+  fixpoint is the one the boundary's admission order reaches, one of several*, of a program with no facts whose
+  cycle never fires and whose fixpoint is unique. A static check knows only what may be. The `strata` row now says
+  *root's fixpoint may depend on the boundary's admission order, and need not be unique*; the even cycle's parity
+  *several fixpoints may exist, and which one root reaches may depend on the order the boundary admits in*; the odd
+  one keeps *a fixpoint supported at the boundary need not exist* and adds *the one root reaches may depend on the
+  boundary's order*; `saturate --dump`'s `;; Strata` line says *the fixpoint below may depend on the boundary's
+  admission order, and need not be unique*. Every sentence it prints is a possibility the graph licenses or a fact
+  about the graph (its relations, its edges, *not stratifiable*), never a fact about the run.
+  `strata_diagnostic.rs` holds the wording on `features/07` and on `rule-guards`, where no line claims *one of
+  several*. The read-out vocabulary's `strata` row ([`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 4) says the same, and [`absent_semantics.md` § The stratification diagnostic](../../../docs/kernel/inference/absent_semantics.md#the-stratification-diagnostic) has every line the diagnostic prints, the row, the sub-row and the `rule-guards` example; `01_grammar.md` and `glossary.md` say the same.
 
 ## Risks
 

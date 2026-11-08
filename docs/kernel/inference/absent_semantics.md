@@ -184,11 +184,13 @@ Each is already enforced locally; this page is the shared reason.
 
 ## Explicitly not provided
 
-- **Stratification checking.**
-  [`naf_deps`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is
-  *advisory*, a library function (`derived_naf_warnings`) since M1e2
-  S1e2.2.5 retired the `warn-derived-naf` flag that narrated it; unstratifiable
-  programs are accepted (P3, P4).
+- **Stratification as a refusal.** Since M1f S1f.5.15 a static check names
+  every cycle through an `absent` ([§ The stratification
+  diagnostic](#the-stratification-diagnostic)), as a diagnostic: unstratifiable
+  programs are accepted and answered (P3, P4).
+  [`naf_deps`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the older,
+  *advisory* proxy, a library function (`derived_naf_warnings`) since M1e2
+  S1e2.2.5 retired the `warn-derived-naf` flag that narrated it.
 - **Stable / well-founded model computation.** The fixpoint is
   *supported at the boundary*, not stable: P3's program has **no** stable
   model yet converges; P4's has two and the engine picks one — by
@@ -276,7 +278,38 @@ flags, with the detector's warning naming the cycle and the order finding
 can cause it (the `warn_derived_naf` flag that narrated it retired at M1e2
 S1e2.2.5), and since M1f S1f.5.15's T4 a static stratification check names
 every cycle through an `absent`, the read-out's `strata` row, as a
-diagnostic and not a refusal.
+diagnostic and not a refusal (below).
+
+## The stratification diagnostic
+
+M1f [S1f.5.15](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s
+T4, worded at T8 (2026-11-08). The rules' dependency graph
+([`strata.rs`](../../../ein.rs/crates/ein-infer/src/strata.rs)) has an edge
+from each relation a compiled plan reads to each it writes, negative where
+the read is under an odd number of `absent`s; a strongly connected component
+with a negative edge inside is a **negative cycle**, and a program with one
+has no stratification. It is read at root on every program, flagged or not
+(`monotone::Monotonicity::negative_cycles`): a cycle among relations no
+commitment changes leaves `D` alone, so the static check calls the program
+monotone and the detector, which reads cycles over `D`, never sees it.
+
+What it prints is a **diagnostic, not a refusal**, and it says what the graph
+licenses, never a fact about the run: a cycle whose rules never fire changes
+nothing. `examples/syntax/rule-guards.ein` has no facts, so its cycle
+`g: s →¬ s` never fires and its fixpoint, ∅, is unique; the row still says
+only *may* and *need not*.
+
+| surface | what it prints | example (`features/07_unstratifiable.ein`) |
+|---|---|---|
+| `ein solve`'s read-out, the `strata` row, under `lattice`, only on a program with no stratification | how many negative cycles, and what they license | `not stratifiable: 1 cycle through an absent — root's fixpoint may depend on the boundary's admission order, and need not be unique` |
+| its `negative cycle` sub-row, one per cycle (not `cycle`, the detector's word for its cycles over `D`) | the cycle's relations, the rules on its negative edges, and what its parity may mean: even, *several fixpoints may exist, and which one root reaches may depend on the order the boundary admits in*; odd, *a fixpoint supported at the boundary need not exist, and the one root reaches may depend on the boundary's order* | `p, q — derive-p: q →¬ p · derive-q: p →¬ q — even: several fixpoints may exist, …` |
+| `ein saturate --dump`'s `;; Strata` line, after the rule listing, on every program, each rule's stratum beside it | `stratified, k strata`, or the same cycles, one `;;   negative cycle` line each | `;; Strata — not stratifiable: 1 negative cycle; the fixpoint below may depend on the boundary's admission order, and need not be unique` |
+
+A stratified program prints no `strata` row, and `ein-summary/2` carries
+none. `ein-cli/tests/strata_diagnostic.rs` holds the wording on
+`features/07` and `rule-guards`, and `features/01_not_and_absent.ein`, an
+`absent` over a relation no rule derives, as the program that does not trip
+it.
 
 ## Worked micro-examples
 

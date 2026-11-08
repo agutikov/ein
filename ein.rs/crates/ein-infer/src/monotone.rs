@@ -328,8 +328,8 @@ pub struct Monotonicity {
     /// stratified program. Read on every program, flagged or not: a cycle
     /// through an `absent` among relations no commitment changes leaves `D`
     /// alone, so the static check calls the program monotone, and root's own
-    /// fixpoint is still one of several, the one the boundary's admission order
-    /// reaches. A diagnostic and not a refusal: the answer stands.
+    /// fixpoint may still depend on the boundary's admission order and need not
+    /// be unique. A diagnostic and not a refusal: the answer stands.
     pub negative_cycles: Vec<crate::strata::Cycle>,
 }
 

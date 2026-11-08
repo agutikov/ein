@@ -380,8 +380,10 @@ fn lattice_block(
 /// S1f.5.15's T4, the static non-stratifiability diagnostic: each negative
 /// cycle of the rules' dependency graph over every relation, by its relations
 /// and the rules on its negative edges. A diagnostic, not a refusal: the
-/// answer above stands, and is the one the boundary's admission order reaches.
-/// A stratified program prints nothing, as it did.
+/// answer above stands. It says what the graph licenses and nothing about this
+/// run: root's fixpoint *may* depend on the boundary's admission order, and
+/// *need not* be unique (`syntax/rule-guards.ein`'s cycle never fires, and its
+/// fixpoint is unique). A stratified program prints nothing, as it did.
 fn strata_block(out: &mut Out, m: &Monotonicity) {
     if m.negative_cycles.is_empty() {
         return;
@@ -389,8 +391,8 @@ fn strata_block(out: &mut Out, m: &Monotonicity) {
     out.row(
         "strata",
         format!(
-            "not stratifiable: {} through an absent — root's fixpoint is the one the boundary's \
-             admission order reaches, one of several",
+            "not stratifiable: {} through an absent — root's fixpoint may depend on the \
+             boundary's admission order, and need not be unique",
             plural(m.negative_cycles.len() as u64, "cycle", "cycles")
         ),
     );

@@ -1,0 +1,78 @@
+;;; **W36's second witness (`W36/alt-flag-two-derivations`): the alternatives
+;;; flag moves `refuted by` beside an unmoved core, in every order.**
+;;;
+;;; M1f S1f.5.15, filed on the coordinator's follow-up of 2026-11-08 to the
+;;; user's ruling on Q-M1f.5 (a), *"Register row W36"*: one row per witness,
+;;; `open` and owned by F22. Written during the stage's T3 to find a program
+;;; that no rule order hides, which the first witness,
+;;; `alt-flag-refuted-by.ein`, is not: a derived order printed its right
+;;; answer there.
+;;;
+;;; ── The shape ──────────────────────────────────────────────────────────────
+;;;
+;;; `(u a)` is derived twice: by `u-long` from three givens, `(h1 a) (h2 a)
+;;; (h3 a)`, and by `u-short` from two, `(g1 a) (g2 a)`. `u-long` is written
+;;; first, and the two are one kind of rule, a join concluding a positive, so
+;;; every order puts it first: FIFO, the written and arrival order, and any
+;;; order derived from a rule's shape alike. `k1` concludes `(false)` from
+;;; `(u a)`, and `v` and `w` derive `(q a)` and `(not (q a))` from the same two
+;;; givens `u-short` reads, a pair contradiction.
+;;;
+;;; With every derivation recorded, `(false)`'s smallest frontier is
+;;; `(g1 a) (g2 a)` through `u-short`, the pair's is the same, and the core
+;;; search takes the core over `(false)`: `refuted by k1`. With the flag off a
+;;; fact keeps its first derivation alone, `(u a)`'s is `u-long`'s, `(false)`
+;;; rests on three facts, and the core is taken over the pair: `refuted by v,
+;;; w`. The core is `(g1 a) (g2 a)` either way.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   ein solve FILE, at a3cb1753 (2026-11-08), release:
+;;;     as written, the flag off      unsat core (g1 a) (g2 a) · refuted by v, w
+;;;     the config line taken out     unsat core (g1 a) (g2 a) · refuted by k1
+;;;
+;;; R is empty and exhausted either way, and `(solve :expect (false))` holds.
+;;; Under the order T3 derived from each rule's shape (never shipped) it said
+;;; the same (`build/s1f.5.15/w36b/`, 2026-11-08).
+;;;
+;;; ── Why it is wrong ────────────────────────────────────────────────────────
+;;;
+;;; As `alt-flag-refuted-by.ein`'s header says: the flag's exemption is the
+;;; core (Q-M1e2.11 (ii)), `refuted by` follows the core only where it moved
+;;; (Q-M1e2.21 (a)), and here it did not, so `refuted by` is the default's,
+;;; `k1`. F22 re-derives what the store does not keep when the search reaches
+;;; it, which makes `refuted by` a function of the core.
+
+(relation g1 T :why "{1} has g1")
+(relation g2 T :why "{1} has g2")
+(relation h1 T :why "{1} has h1")
+(relation h2 T :why "{1} has h2")
+(relation h3 T :why "{1} has h3")
+(relation u  T :why "{1} is used")
+(relation q  T :why "{1} is a q")
+(g1 a) (g2 a) (h1 a) (h2 a) (h3 a)
+(rule u-long ()
+  :match  (and (h1 ?x) (h2 ?x) (h3 ?x))
+  :assert (u ?x)
+  :why    "{?x} has all three h")
+(rule u-short ()
+  :match  (and (g1 ?x) (g2 ?x))
+  :assert (u ?x)
+  :why    "{?x} has both g")
+(rule k1 ()
+  :match  (u ?x)
+  :assert (false)
+  :why    "{?x} is used")
+(rule v ()
+  :match  (and (g1 ?x) (g2 ?x))
+  :assert (q ?x)
+  :why    "{?x} is a q")
+(rule w ()
+  :match  (and (g2 ?x) (g1 ?x))
+  :assert (not (q ?x))
+  :why    "{?x} is not a q")
+
+(solve :expect (false))
+
+;; The flag the row is about: off, a fact keeps its first derivation alone.
+(config :record-alternative-justifications false)
