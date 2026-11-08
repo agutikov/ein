@@ -477,6 +477,24 @@ The two that matter:
   input; it is a concrete instance of the question and the stage should not
   have had to find it.
 
+### T2 record, 2026-11-08
+
+**Eight consumers, not six**: T1 found the seventh, `detector::order`, and the eighth, the `enqueue` event's
+`priority` field, is narration only. Each disposition below is what the removal does if § T1f.5.15.3's sweep lets
+it go ahead; until then every consumer reads `:priority` as it did, and the derived order exists only in a build
+with the `derived-order` cargo feature (T3).
+
+| # | consumer | site | disposition |
+|---|---|---|---|
+| 1 | the closure's agenda, `(priority, tiebreaker)` | `saturator.rs` `priority_for`, `Ranked` | **replaced by the derived band**: `strata::band` of the plan's shape, its `rank()` the key, FIFO within a band (the user's ruling on Q-M1f.4 (b)); `DEFAULT_PRIORITY` goes, and `explain_semantics::the_default_priority_is_1000_and_fires_last` with it |
+| 2 | boundary admission, `parked` walked in `(priority, FIFO)` order | `saturator.rs` `admit_from_boundary` | **FIFO**, the written order: admitting by stratum is F21's D2, not this stage's (the same ruling). The replacement for the author's lever is T4's diagnostic, which tells a program whose answer the order can decide that it is one |
+| 3 | the obligation report order, `(:priority, load order, activator order)` | `obligations.rs` `priority_of` | **removed**: the report is in load order, then activator order, which is what every program that writes no `:priority` gets today |
+| 4 | the KB-shape digest, `RULE … priority={} why={}` | `shape.rs` | **removed** from the digest line: `corpus_shapes.md5` re-blesses, predicted (§ T5) |
+| 5 | `ein saturate --dump`'s rule listing, `:priority N (band)` | `saturate.rs` `band_label` | **replaced**: the listing prints the band the rule's shape derives and its stratum, from the plans the run compiled (T3), and `band_label` goes |
+| 6a, 6b | which derivations are recorded, and which ≤ 32 a full list keeps: the core | `saturator.rs` `record_alternative`, `kb.rs`, `explain.rs` | **measured, not decided here**: the derived order is the input they read after the removal, and the sweep (§ T3's record) says which cores move against the typed order. A core that moves goes back to the user (the ruling); making a core a function of the program and not of an order is F22's (W10, W25, W36) |
+| 7 | the detector's order check: a deferred reader dropped where its priority is later than the writer's, and the row worded by whether the two are at one priority | `detector.rs` `order`, `Race` | **every pair at one priority**, as the boundary is FIFO: no race is dropped as stratified by a number, each row says the written order decides, and `reader_priority` and `writer_priority` go from `Race` and from the summary's rows. On the 511, T1 found no finding added or lost, the rows printing `1000` for `200` |
+| 8 | the `enqueue` event's `priority` field | `saturator.rs` `enqueue_binding`, `events.md` | **kept, as the key the candidate is ordered by**: the derived band's rank in the agenda, one constant at the boundary. Narration, so the event protocol's field stays and `events.md` says what it carries |
+
 ### Task T1f.5.15.3 — The rule dependency graph and its strata
 
 Build it in `ein-infer`, beside `naf_deps.rs`, which already has the edge
