@@ -88,8 +88,7 @@ lot. `(bijective R)` gives the *property* side; zebra2 adds
 (rule co-located-negative (?R1 ?V1 ?R2 ?V2)
   :match  (not (?R1 ?V1 ?h))
   :assert (not (?R2 ?V2 ?h))
-  :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
-  :priority 200)
+  :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h})).")
 ```
 
 ```dot
@@ -112,8 +111,7 @@ two-attribute form ([`zebra2.ein`](../../examples/zebra2.ein)):
 (rule co-located (?R1 ?V1 ?R2 ?V2)
   :match  (?R1 ?V1 ?h)
   :assert (?R2 ?V2 ?h)
-  :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
-  :priority 200)
+  :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h}).")
 ```
 
 ```dot
@@ -139,8 +137,7 @@ neighbour is **unique**:
   :match  (and (?R1 ?V1 ?h1)
                (?S ?h2 ?h1)
                (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
-  :assert (?R2 ?V2 ?h2)
-  :priority 200)
+  :assert (?R2 ?V2 ?h2))
 ```
 
 ```dot
@@ -170,8 +167,7 @@ out:
   :match  (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B)
                (is-a ?h_other ?B)
                (absent (?S ?h_other ?h1)))
-  :assert (not (?R2 ?V2 ?h_other))
-  :priority 250)
+  :assert (not (?R2 ?V2 ?h_other)))
 ```
 
 ```dot

@@ -240,7 +240,8 @@ beside them, the arrival with the smallest closure (M1e2 S1e2.2.11,
 (3)). Until then a full list could refuse the derivation with the
 smaller frontier, and the reported core depended on which rule fired
 first: `examples/ein-bugs/alt-cap-core.ein` reported 3 facts where its
-`-reordered` twin, one `:priority` apart, reported 2 (M1e S1e.1.3); both
+`-reordered` twin, one `:priority` apart (one rule's written place apart
+since M1f S1f.5.15 removed the keyword), reported 2 (M1e S1e.1.3); both
 report `(w1 X) (w2 X)` since. **One gap is known and deferred**: where the
 saving lies *between* two facts, the derivation a target needs is its
 own fact's worst, a full list refuses it, and no list of fixed length
@@ -464,8 +465,9 @@ to the variables its preceding positive premises bound
 (`NafGuard.scope`). Never a ground atom: world-relative, never
 revisited after the firing commits. There is no fire-time re-check
 (deleted, not bypassed). Not closed-world, not stratified NAF — but
-on **stratified** rule sets the result no longer depends on priority
-or firing order; on non-stratified ones it is fixed by
+on **stratified** rule sets the result does not depend on the firing
+order (FIFO, the written and arrival order, since M1f S1f.5.15 removed
+`:priority`); on non-stratified ones it is fixed by
 boundary-admission order (see [Stratification](#stratification)).
 Normative page:
 [`inference/absent_semantics.md`](inference/absent_semantics.md);
@@ -475,17 +477,21 @@ operational how:
 ### Stratification
 The property of a rule set that no `(absent …)` guard watches a
 relation which (transitively) depends on the guarded rule's own
-conclusion — no recursion through negation. Ein does **not** check
-it: [`naf_deps`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the
+conclusion — no recursion through negation. **Ein checks it since M1f
+S1f.5.15's T4**, as a diagnostic and not a refusal: a cycle through an
+`absent` in the rules' dependency graph is named by `ein solve`'s
+`strata` row and `ein saturate --dump`'s `;; Strata` line
+([`strata.rs`](../../ein.rs/crates/ein-infer/src/strata.rs)). Before it,
+[`naf_deps`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) was the
 cheap static proxy (which guards watch a *rule-derived* relation
 rather than a declared-only one), behind the advisory
 `DerivedNafWarning`, `naf_deps::derived_naf_warnings` (the
 `warn-derived-naf` flag that narrated it retired at M1e2 S1e2.2.5).
 On stratified inputs the boundary makes the answer independent of
-rule priority and firing order; on unstratified ones
+the firing order; on unstratified ones
 (`p ← absent q; q ← absent p`) the engine still reports **one** model,
-picked by boundary-admission order, and does not say another exists.
-A real stratification checker is future work. See
+picked by boundary-admission order, and says so since S1f.5.15 (the
+`strata` row) without naming the other models. See
 [`inference/absent_semantics.md` §Explicitly not provided](inference/absent_semantics.md#explicitly-not-provided).
 
 ---

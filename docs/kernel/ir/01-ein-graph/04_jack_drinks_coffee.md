@@ -54,16 +54,14 @@ separate rule. See §2.
   :match  (and (?r ?t ?other)
                (is-a ?inst ?t))
   :assert (?r ?inst ?other)
-  :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s left slot from {?t}."
-  :priority 200)
+  :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s left slot from {?t}.")
 
 ;; T2 rule (RHS slot): same on arg #2.
 (rule inherit-rel-rhs (?r)
   :match  (and (?r ?other ?t)
                (is-a ?inst ?t))
   :assert (?r ?other ?inst)
-  :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s right slot from {?t}."
-  :priority 200)
+  :why    "{?inst} is-a {?t}, so {?inst} inherits {?r}'s right slot from {?t}.")
 
 ;; "Any × any" — e.g. "any human can drink any drink" — is NOT a
 ;; separate rule. It emerges from saturation chaining: lhs over (any

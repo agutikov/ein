@@ -164,9 +164,10 @@ The rules live in `Program::obligations`, which neither the saturator nor
 [`ein_infer::obligations::tally`](../../../../ein.rs/crates/ein-infer/src/obligations.rs):
 **one pass over the quiescent KB, once the fixpoint is reached** — not a
 priority band inside the loop, because a band orders *selection* within the
-walk and openness has to be read *after* it. `:priority` keeps one residual
-meaning: the report order among obligation rules, which is what makes the
-outstanding list deterministic.
+walk and openness has to be read *after* it. The report order among
+obligation rules is their load order, which is what makes the outstanding
+list deterministic; `:priority` ordered it first until M1f S1f.5.15 removed
+the keyword.
 
 **Firing *is* being undischarged.** The obligation is stated once, in the
 guard: the rule matches while the witness is missing and stops matching once

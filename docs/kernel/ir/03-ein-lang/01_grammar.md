@@ -21,7 +21,7 @@ documentation split.
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:source`             | argument markers; **always** followed by a value  |
 | `WILDCARD` | `_`                            | `_`                                      | argument wildcard in patterns: in a rule's `:match`, at any depth (a premise, a nested fact, a `not`, an `(absent …)`, an hrule's or an obligation's pattern), `_` matches any value and binds nothing, so two of them are independent and neither can be read in an `:assert` or a guard; in an `:assert` it is no value, and the run stops at the rule's first firing ([`defined_behaviour.md` § 4](../../defined_behaviour.md#4-errors-and-exit-codes)). Written as a form's **relation**, `(_ a)`, it is refused at load, at any depth of either clause: a relation is named by a name or by a parameter its activator binds (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, on the user's rulings Q-M1e2.13 (a) and Q-M1e2.14 (c)). Until then this row read *head / arg wildcard in patterns*, and the rule compiler lowered `_` as a slot that matched nothing: a premise with one never fired, an `(absent …)` over one always held, an hrule with one proposed nothing, and a head `_` stopped compilation with the Python IR's spelling (W20). In a guard, `(eq ?x _)`, it names no value and is refused at load since M1e2 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24, Q-M1e2.16 (1)); until then it compared as a raw IR node, equal to no value, so `(eq ?x _)` never held and `(neq ?x _)` always did, in silence. As a whole premise, `:match _`, it is refused at load too, where the compiler dropped it |
-| `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms (e.g. `:priority 10`)               |
+| `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms; `:priority 10`, the one keyword that took one, went with M1f S1f.5.15, and S1f.5.4 makes a run of digits a name |
 | `STRING`   | `"…"` with `\\` escape          | `"condition (10)"`, `"{?r} is transitive"` | `:source` provenance, `:why` templates and other keyword values; and a **fact's argument**, top-level or nested, which the loader holds as a symbol whose text is the string's body: `"foo"` and `foo` are one value, and `"1"` is not the int `1` (`examples/syntax/arg-kinds.ein`; M1e2 S1e2.2.16, 2026-11-04). In a **rule**, a string means what it means in a fact, the symbol it names, at any depth of a `:match`, a guard, an `(absent …)` or an `:assert`, and it is a name of the program as that atom is: `(holds "b")` in a rule matches the fact `(holds b)`, and `(tag ?x "lbl")` stores `lbl` (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04). Until then the rule compiler did not lower one: it matched nothing in a `:match`, equalled no value in a guard, held under every `absent`, proposed nothing from an hrule, and in an `:assert` stopped saturation with a `TypeError` (W18). A string that is a keyword's value inside a rule's clause keeps its meaning, text |
 
 **There is no `RANGE`**, and no number of any kind: Ein has no numbers and no
@@ -336,18 +336,25 @@ needed to reproduce it. Example derived facts:
 (rule <name> (<param-vars>*)      ; parameter list — mandatory, `()` for non-generic
   :match <pattern>                ; LHS — structural pattern (see 02_patterns.md)
   :assert <conclusion>            ; RHS — what to derive
-  :why <STRING>                   ; reason template for trace
-  [:priority <INT>])              ; rule ordering — lower = earlier
+  :why <STRING>)                  ; reason template for trace
 ```
 
 A rule is a top-level `(rule …)` form (a hypothesis-generation rule is the
 same shape headed `hrule`). There is no `(rules …)` block (P1.7c).
 
 Each rule has one `:match` and one `:assert`. The pattern sub-language
-is in [`02_patterns.md`](02_patterns.md). `:priority` resolves
-[Q15](../../../../plans/open_questions.md#q15--rule-ordering)
-(rule ordering): static per-rule, cheap-propagation rules at lower
-numbers.
+is in [`02_patterns.md`](02_patterns.md). **A rule has no priority**
+since M1f [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)
+(2026-11-08, the user's ruling on Q-M1f.6: *"plain FIFO, core is an
+explanation, F22 makes it canonical"*): the saturation agenda and the
+`absent` boundary are FIFO, the order rules are written in and facts
+arrive in. Until then `:priority <INT>` ordered the agenda, lower
+first, which resolved [Q15](../../../../plans/open_questions.md#q15--rule-ordering)
+(rule ordering) with static per-rule numbers. A `:priority` written
+anyway is a rule keyword the loader does not read and drops, as it
+drops any (D-15), until S1f.5.5's generated grammar refuses it as it
+refuses every keyword a rule does not take; no corpus program writes
+one (`ein-corpus`'s `no_corpus_program_writes_a_priority`).
 
 The **parameter list** is mandatory. Two cases (mapping onto the
 three rule types from
@@ -368,7 +375,7 @@ Concrete: the rule
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric." :priority 1)
+  :why    "{?rel} is symmetric.")
 ```
 
 is applied via the fact `(symmetric co-located)`, which substitutes
@@ -474,18 +481,29 @@ For a rule author, three consequences:
   derivation?", not "has `P` not been derived *yet*?"** A rule that
   used to fire because its watched fact simply had not been produced
   yet no longer does.
-- **`:priority` no longer decides what is derivable.** On a stratified
-  rule set the result is priority-independent; priority still orders
-  firings (hence the trace), but the priority-band discipline zebra2
-  needed for soundness — every producer of a watched relation at a
-  strictly lower number than every watcher — is now **advisory**.
+- **The order does not decide what is derivable.** On a stratified
+  rule set the result is order-independent; the order, FIFO since M1f
+  S1f.5.15 removed `:priority`, still orders firings (hence the trace)
+  and decides which derivation of a fact arrives first, which is what a
+  core is explained from (F22 makes a core canonical). The band
+  discipline zebra2 once needed for soundness — every producer of a
+  watched relation at a strictly lower number than every watcher —
+  went from load-bearing to advisory at S1.21.8 and with the keyword at
+  S1f.5.15.
 - **Non-stratified rule sets are still answered by operational order.**
   `p ← absent q` together with `q ← absent p` has two models; the
   engine picks one (by boundary-admission order) and does not report
   that the other exists. `naf_deps::derived_naf_warnings` names the shape
   that can cause it — NAF over a *rule-derived* relation — (`(config
   :warn-derived-naf true)` narrated it until M1e2 S1e2.2.5 retired the
-  flag), and a static stratification check remains future work.
+  flag). **The static stratification check exists since M1f S1f.5.15's
+  T4**: a program whose rules' dependency graph has a cycle through an
+  `absent` is told so, a `strata` row in `ein solve`'s read-out and a
+  `;; Strata` line in `ein saturate --dump`, each negative cycle named
+  by its relations and the rules on its edges. It is a diagnostic, not
+  a refusal: the answer stands, and is the one the boundary's order
+  reaches ([`inference/implementation.md`](../../inference/implementation.md)'s
+  `strata.rs`).
 
 A **nested** `(absent …)` — what `forall` desugars to,
 `(absent (and G (absent B)))` — is not lifted separately: the whole

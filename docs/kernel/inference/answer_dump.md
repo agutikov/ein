@@ -57,7 +57,8 @@ out/
   65 559 distinct printed cores per commit (2026-11-06, held since by
   `ein-infer/tests/corpus_cores.rs`). Where the core derives a fact
   through two rules, the store's order picks one, so two programs one
-  `:priority` apart can name two rules beside one core, the accepted cost
+  rule's written place apart (one `:priority` apart until M1f S1f.5.15) can
+  name two rules beside one core, the accepted cost
   of the user's ruling (Q-M1e2.21 (a)). `core_status` (M1e2 S1e2.2.23, W23) says
   whether the core's search was cut at its budget: `within-budget`, `cut-`
   and the caps it stopped at (`cut-environments`, `cut-rounds`,

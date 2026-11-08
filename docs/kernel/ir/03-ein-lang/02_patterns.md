@@ -188,8 +188,7 @@ they differ in which **rule type** they instantiate (per
               (?r ?b ?c)
               :where (transitive ?r))
   :assert (?r ?a ?c)
-  :why "From {0} and {1}, since {?r} is transitive, {?a} {?r} {?c}."
-  :priority 10)
+  :why "From {0} and {1}, since {?r} is transitive, {?a} {?r} {?c}.")
 ```
 
 Non-generic (`()` params), fires universally; the `:where` guard
@@ -205,8 +204,7 @@ restricts to transitive relations. The structural predicate
               (?rel ?b ?c)
               :where (neq ?a ?c))
   :assert (?rel ?a ?c)
-  :why "{?rel} is transitive."
-  :priority 5)
+  :why "{?rel} is transitive.")
 ```
 
 Applied via `(transitive co-located)` in ontology; fires only on

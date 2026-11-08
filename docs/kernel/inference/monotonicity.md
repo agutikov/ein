@@ -241,8 +241,9 @@ site: an `absent` puts the state at stake, and `dead` with it when it refutes;
 a trigger, the status; an activator, either, through the plan a node
 compiles); each **cycle through an `absent`** over D, with its parity; and each
 **order** finding, a rule that reads under an `absent` a relation in D another
-`absent` rule concludes, at one priority (the written order decides which the
-boundary admits first) or at an earlier one (the reader goes first in every
+`absent` rule concludes: the written order decides which the boundary
+admits first (since M1f S1f.5.15 removed `:priority` every pair is at one
+order; until then a reader at an earlier priority went first in every
 order). `ein-infer/tests/detector.rs` pins every finding on the corpus by
 name: the cycles of `features/07` and `f07-fpoff` (even) and of
 `d3-unsat-core` (odd), and the order findings of the same two and of
@@ -651,8 +652,9 @@ built from scratch is stale-free
 each fact a node's fixpoint derived before saturating and compares the
 fixpoint (§ 12.3 there).
 
-**The engine's boundary breaks cumulativity.** It admits equal-priority
-candidates one a round in (priority, FIFO) order, not in stratum order
+**The engine's boundary breaks cumulativity.** It admits candidates one a
+round in FIFO order ((priority, FIFO) until M1f S1f.5.15), not in stratum
+order
 (`node_census.md` § 4). Take r2 `a ∧ b ∧ absent(q) → p`, written before r1
 `a ∧ absent(z) → q`. Built at once, {a, b} gives {a, b, p, q}, with `p`
 stale; by way of {a} it gives {a, b, q}. The state function is monotone and
@@ -896,7 +898,7 @@ says which causes produce it.
 | c8 | an even cycle through an `absent` | `features/07`, [`f07-fpoff`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | **the state**, and stability: the written order of two rules at one priority moves the universe (`node_census.md` § 7.1) | two `SiteKind::Absent`; the cycle is no shipped check's (`node_census -- --strata`) | conservative | yes, as c1 |
 | c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a parent path keeps `(r1 o2 o2)`, derived under an `absent` the commitment falsifies | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 4 of 32 nodes, through alive parents. § 6.1's other four were `-y`'s fail-fast stop (§ 11.2 there) |
 | c10 | the FIFO gap, at one priority | [`lattice/10_fifo_gap`](../../../examples/lattice/10_fifo_gap.ein) (§ 7.3's example) | **the state**: cumulativity, on a stratified program | `SiteKind::Absent` on the reader | conservative | yes: 1 of 4 nodes, `{a, b}` at once against by way of `{a}`, through an alive parent (`node_census.md` § 12.1) |
-| c11 | the FIFO gap, the reader at an earlier priority | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10, measured on the same node (§ 12.1 there) |
+| c11 | the FIFO gap, the reader written at an earlier priority (one order since M1f S1f.5.15) | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10, measured on the same node (§ 12.1 there) |
 | c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 2 of 8 nodes, through alive parents, and a node of R is dead that way (§ 11.3 there) |
 | c13 | a FIFO race over a static read (§ 7.6) | [`lattice/11_fifo_gap_static`](../../../examples/lattice/11_fifo_gap_static.ein) | **the state built from scratch**, under a *Monotone* verdict; a fork never meets it | nothing: no site | no violation (monotone) | between fork and scratch only: 1 of 2 nodes (§ 12.2 there) |
 
@@ -911,8 +913,8 @@ says which causes produce it.
 | c7 | **yes** since 2026-11-04, at load: F3's read of a rule with parameters whose activator relation is in D, the drafted third placement ([taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3)) | only if the refusal reads the plans a node compiles | stays | `site watch: its activator relation … — at stake: the state, through a plan a node compiles`; `status exercised, by watch` (on `written.rs`'s text, written to a file) | D6, F3 |
 | c8 | no | refuses both rules | **refuses it** (over D) | two `site` rows, `cycle even through an absent — several states with no stale fact can exist`, `order … which the boundary admits first is the order they are written in`, `state stale facts` | D1, D2's (D) and (F) |
 | c9 | **yes** since 2026-11-04, through F2's `via`: `fire-0` reads `r1`, which `fire-1` derives under the `absent` | refuses `fire-1` | **refuses it** (over D) | `cycle odd through an absent — a state with no stale fact need not exist`; `paths path-dependent — 3 of 34` | D2's (D) and (F), D3 |
-| c10 | no | refuses the reader | stays: stratified. Admission in stratum order closes it | `order … both at priority 200: which the boundary admits first is the order they are written in`; `state stale facts`; `paths path-dependent` | D2 (B) and stratum order, D3 |
-| c11 | no | refuses the reader | stays. Stratum order closes it | `order r2 (priority 100) … r2 is admitted first, whatever the order` | as c10 |
+| c10 | no | refuses the reader | stays: stratified. Admission in stratum order closes it | `order … which the boundary admits first is the order they are written in` (`… both at priority 200: …` until M1f S1f.5.15); `state stale facts`; `paths path-dependent` | D2 (B) and stratum order, D3 |
+| c11 | no | refuses the reader | stays. Stratum order closes it | as c10 since M1f S1f.5.15 removed `:priority`, the reader's earlier priority dropped (until then `order r2 (priority 100) … r2 is admitted first, whatever the order`) | as c10 |
 | c12 | **yes** since 2026-11-04: F2's `via` follows a plan's activator | refuses `act` | stays | `site act` and `site watch`; `status exercised, by watch`; `state no stale fact`; `paths path-dependent — 1 of 6` | D1, D6's (b) with the activator walk |
 | c13 | no | no: no site | stays | nothing: the detector runs on a flagged program only ([`detector_proposal.md` § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#7-what-the-drafting-found), item 7) | D2 (B) |
 

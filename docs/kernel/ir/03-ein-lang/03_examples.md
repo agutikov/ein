@@ -183,7 +183,7 @@ non-generic setup rule reads the property fact and derives the operational
 activators, which light up the generic inference rules on the next
 saturation pass. So at load time those rules have no applications at all
 — see [`../../inference/README.md`](../../inference/README.md) for the
-rule list and its priority bands.
+rule list (and the priority bands it had until M1f S1f.5.15).
 
 ## Worked rule library
 
@@ -206,8 +206,7 @@ parameterised over the relation, activated by a property fact:
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
 ;; std.slots — the "all-different within a category" constraint, with the
 ;; membership relation lifted to a parameter so the body stays is-a-free.
@@ -219,8 +218,7 @@ parameterised over the relation, activated by a property fact:
                (?isa ?b ?T)
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
-  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}."
-  :priority 240)
+  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}.")
 ```
 
 `slot-exclusive` is the generic form of what `zebra.ein` used to spell

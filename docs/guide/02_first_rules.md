@@ -12,9 +12,11 @@ A rule has a `:match` (the pattern to find) and an `:assert` (what to add):
 (rule NAME (params…)
   :match  <pattern over existing facts>
   :assert <fact(s) to add>
-  :why    "human-readable reason"
-  :priority N)
+  :why    "human-readable reason")
 ```
+
+A rule has no priority: rules fire in the order they are written and their
+facts arrive in (M1f S1f.5.15 removed `:priority`).
 
 ## `symmetric` — if A relates to B, then B relates to A
 
@@ -27,8 +29,7 @@ House-2 is next to House-1."
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
 (relation next-to T T)
 (symmetric next-to)                       ; ← tag: "apply `symmetric` to next-to"
@@ -85,8 +86,7 @@ Cat is an Animal."
 (rule transitive (?rel)
   :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
   :assert (?rel ?a ?c)
-  :why    "{?rel} is transitive."
-  :priority 200)
+  :why    "{?rel} is transitive.")
 
 (transitive is-a)
 (is-a Cat Mammal)  (is-a Mammal Animal)
@@ -141,7 +141,7 @@ one places the other."
 (rule co-located (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)          ; co-located is symmetric…
-  :why "{?rel} sym" :priority 100)
+  :why "{?rel} sym")
 ;; …+ transitive, so co-located forms equivalence classes across attributes
 ```
 

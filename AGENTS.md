@@ -447,17 +447,24 @@ constrained-reasoning research.
   under the register's schema `/14` (a `now` records what root's `refuted by`
   names), which `lever_invariance` exempts until F22 fixes it: 103 fixed, 34
   open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort |
-  uniq -c`, 2026-11-08). Its T3 shipped the same day what *"analyze rules
-  structure"* asked for, `ein_infer::strata`: the rule dependency graph over the
-  plans a run compiled, its strata and negative cycles, and a band per rule from
-  its shape, beside the declared one in `ein saturate --dump` (275 of 471
-  declared rules agree, `cargo run --release -p ein-infer --example
-  rule_bands`); the band orders the agenda only in a build with the
-  `derived-order` cargo feature, `saturator::Order`, which `ein --version`
-  names. The re-taken sweep stopped the stage again before any removal: the
-  derived agenda holds every core of the zebra family, the FIFO boundary moves
-  them, and the choice is Q-M1f.6, put to the user
-  ([§ T3 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t3-record-2026-11-08)).
+  uniq -c`, 2026-11-08). Its T3 built the rule dependency graph over the
+  plans a run compiled and its strata (`ein_infer::strata`), and a band per
+  rule from its shape (275 of 471 declared rules agreed); measured, a derived
+  agenda held every zebra-family core and the FIFO boundary moved them
+  (Q-M1f.6). The user ruled *"plain FIFO, core is an explanation, F22 makes it
+  canonical"* (`f9148334`), so the band never shipped. **T4** added the static
+  non-stratifiability diagnostic, a diagnostic and not a refusal: a `strata`
+  row in `ein solve`'s read-out and a `;; Strata` line in `ein saturate
+  --dump`, each cycle through an `absent` named (`ccc4e8ca`). **T5 removed
+  `:priority`** (`a3cb1753`): the agenda and the boundary are FIFO, the written
+  and arrival order; 475 clauses left 136 corpus files, and a test holds that
+  none writes one; a `:priority` written anyway is dropped by the hand-written
+  loader (D-15) until S1f.5.5's swap refuses it. It moved no R, N, H, claim,
+  exit code or stored fact, and moved cores and `refuted by` exactly as T1's
+  FIFO arm did (`zebra.ein` 292 of 458, the zebra2 family's cap-decided cores),
+  each accepted as an explanation and F22's to make canonical; W36 stays open,
+  `features/12` showing it too
+  ([§ T5 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t5-record-2026-11-08)).
   S1f.5.14's loader flag landed early the same day (*"yes, land the :why flag
   early"*): `--require-why`, on the seven commands that load a program,
   refuses a relation, rule or hrule with no `:why`, one line each, and a macro

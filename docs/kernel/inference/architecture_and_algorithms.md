@@ -117,7 +117,7 @@ copy does.
   │   Saturator::saturate() ── two phases to fixpoint ──      │
   │    CLOSURE  (purely positive — no negation consulted)     │
   │     match (multi-way join)  → fire  → append fact         │
-  │     ▲ priority queue, delta-driven (semi-naive, S1.8.B2v) │
+  │     ▲ FIFO queue, delta-driven (semi-naive, S1.8.B2v)     │
   │     │ a NAF-guarded match is PARKED, never enqueued       │
   │    BOUNDARY  at quiescence: the KB judges the parked      │
   │     └ candidates, admits ONE → back into the closure      │
@@ -166,8 +166,9 @@ S1.21.8 that sequence is **purely positive**: the guard lift in `compile.rs`
 takes every top-level `(absent …)` premise out into a `NafGuard`, one guard
 span per `(or …)` disjunct, which `Plan::guards` pairs back with its steps. The
 `Saturator` then alternates two phases (`step()`). In the **closure** phase it
-runs a priority queue of enqueued `(plan, binding)` firings; each
-`closure_step()` pops the highest-priority unfired binding, applies it
+runs a FIFO queue of enqueued `(plan, binding)` firings (a priority
+queue until M1f S1f.5.15 removed `:priority`); each
+`closure_step()` pops the oldest unfired binding, applies it
 (`firing::fire` → append a derived fact with provenance), and
 re-enqueues the matches the new fact enables — consulting no negation
 anywhere. A match whose disjunct carries guards never enters that queue: it is
@@ -213,7 +214,7 @@ and the normative reading of a boundary query is
 |---|---|---|
 | `FactId` (`ein-core/facts.rs`) | an interned `(relation, args)` identity; `args` are `Value`s — `Sym \| Int \| Fact` (nested = a relational node); its derivations are `Prov` records | a ground atom / tuple / labelled hyperedge |
 | `Relation` (`ein-core/entities.rs`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
-| `Rule` (`ein-core/entities.rs`) | `params`, `match` pattern, `assert`, `priority`, activator | a Datalog/production rule (Horn-ish clause) |
+| `Rule` (`ein-core/entities.rs`) | `params`, `match` pattern, `assert`, `why`, activator (no `priority` since M1f S1f.5.15) | a Datalog/production rule (Horn-ish clause) |
 | `Plan` = per-`Disjunct` `Step`s (`Scan`/`Join`/`Guard`) + `NafGuard`s (`plan.rs`) | a rule's `:match` compiled to a join program over relations; its top-level `(absent …)` premises lifted off (`compile.rs`) into a per-disjunct guard span, paired back by `Plan::guards` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
 | the boundary's *world* — no type of its own (`saturator.rs`) | a saturated KB asked at a quiescence point (not a snapshot), plus the commitment it assumes; the only thing an `(absent …)` is ever asked of (`Matcher::holds`, `Saturator::{first_failing, negative_premises}`) | a possible world / an ATMS environment; the `W` of `W ⊭ ∃x̄.Pθ` |
 | 7 KB indexes (`ein-core/kb.rs`) | `by_rel`, **`by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `negated`, `rule_apps_*`, the per-name participation entries, … | database join indexes; RETE alpha-memories |
@@ -359,8 +360,9 @@ goal-directed bottom-up evaluation (sideways information passing). **DRed**
 incremental + iterative dataflows. Production engines (Soufflé) compile to
 semi-naive loops over specialised index structures (Brie, B-tree).
 
-**Ein today.** A **priority-banded** saturator (rules fire in priority
-order — a scheduling refinement over pure rounds). It was *naive* (re-match
+**Ein today.** A FIFO saturator (rules fire in the order their candidates
+were enqueued; until M1f S1f.5.15 a **priority-banded** one, rules firing in
+priority order — a scheduling refinement over pure rounds). It was *naive* (re-match
 everything each pass); **S1.8.B2v D2** made the within-run re-enqueue
 delta-driven (semi-naive at the *which-plans* granularity), and **D5** made
 the delta application semi-naive at the *where-in-the-plan* granularity (seed
@@ -429,7 +431,8 @@ one**: retraction = "this assumption led to ⊥, fork without it." That makes
 the *whole* system an ATMS/default reasoner rather than a stratified-Datalog
 one — but the deductive layer now *evaluates* negation the way stratified
 Datalog does, one closure at a time. **Gap:** no well-founded/stable-model
-machinery and **no stratification checker**. A genuinely non-stratified rule
+machinery, and a stratification check only as a diagnostic (the read-out's
+`strata` row, M1f S1f.5.15's T4). A genuinely non-stratified rule
 set (`p ← absent q; q ← absent p`) is still answered by operational order —
 now boundary-admission order rather than priority-then-FIFO — and the engine
 reports one model where several exist without saying so;
@@ -582,7 +585,8 @@ the list ranks by *premise count* while this search minimises *frontier
 size*, two metrics that disagree whenever a short step's premise unfolds into
 a long chain, so a full list refused the derivation with the smaller frontier
 and the core was firing-order dependent: `examples/ein-bugs/alt-cap-core.ein`
-reported 3 facts and its `-reordered` twin, one `:priority` apart, 2; both
+reported 3 facts and its `-reordered` twin, one `:priority` apart (one
+rule's written place apart since M1f S1f.5.15), 2; both
 report 2 since. **No list of fixed length is every derivation**: where the
 saving lies between two facts, the derivation a target needs is its own
 fact's worst, and a full list refuses it —

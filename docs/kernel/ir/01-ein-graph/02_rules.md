@@ -549,10 +549,11 @@ were judged in. A negative premise that has become false stays false
 again and so stays parked for the next quiescence. Saturation ends at
 a quiescence that admits nothing.
 
-The order in which rules are tried within the closure is governed by
-**priority** — a static integer per rule, with cheap-propagation
-rules earlier. Priority orders *firings* (and so the shape of the
-trace); on a **stratified** rule set it does not decide what is
+The order in which rules are tried within the closure is FIFO, the
+order rules are written in and facts arrive in, since M1f S1f.5.15; until
+then it was governed by **priority**, a static integer per rule with
+cheap-propagation rules earlier. The order orders *firings* (and so the
+shape of the trace); on a **stratified** rule set it does not decide what is
 derivable, because every negative premise is asked only after the
 positive closure is complete. The normative reading of `(absent …)` —
 including what a non-stratified rule set still owes to operational

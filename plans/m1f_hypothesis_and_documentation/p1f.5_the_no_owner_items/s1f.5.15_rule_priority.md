@@ -41,8 +41,8 @@ user.
 **The user ruled Q-M1f.6 (b) and then re-ruled it the same day** (`3cb67474`, `f9148334`): *"plain FIFO, core is
 an explanation, F22 makes it canonical"*. So no derived order shipped: **T4 is done** (`ccc4e8ca`, [§ T4
 record](#t4-record-2026-11-08)), **T5 removed `:priority`** with the agenda and the boundary FIFO, the band with it,
-every core and `refuted by` it moves named as F22's ([§ T5 record](#t5-record-2026-11-08)), and T6 writes the
-docs.
+every core and `refuted by` it moves named as F22's ([§ T5 record](#t5-record-2026-11-08)), and T6 wrote the
+docs ([§ T6 record](#t6-record-2026-11-08)). **The stage is done.**
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
 And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
@@ -817,6 +817,18 @@ about priority being advisory becomes the statement that the order is derived,
 and its *"a static stratification check remains future work"* becomes a link.
 `docs/kernel/glossary.md`, `architecture.md` and `inference/README.md` mention
 bands; each is checked, not assumed.
+
+### T6 record, 2026-11-08
+
+The pages that stated `:priority` as today's now state FIFO, and the record of what the numbers did stays where a
+page narrates history: `01_grammar.md` § Rules (no `:priority` line; a rule has no priority, a `:priority` written
+anyway dropped as D-15 until the swap refuses it) and § Premise forms (the order does not decide what is derivable;
+the stratification check exists, as T4's diagnostic), `glossary.md` (§ Stratification: Ein checks it, as a
+diagnostic), `architecture.md`, `inference/README.md`, `absent_semantics.md`, `architecture_and_algorithms.md`,
+`monotonicity.md` (the order rows it quotes), `answer_dump.md`, `06_reserved_names.md` (the obligation report is in
+load order), `02_rules.md`, `03_examples.md`, `configuration.md`'s `EIN_PRIORITY` row (never built), and the code
+blocks of the guide's chapters 2 and 3, `02_patterns.md`, `03_ein_model.md` and `04_jack_drinks_coffee.md`, which
+lose their clauses. `events.md` and `inference/implementation.md` changed with the code, at T5.
 
 ## Risks
 

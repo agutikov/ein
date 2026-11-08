@@ -127,8 +127,9 @@ Monotonicity within one run, and what each case costs:
 The two phases are
 [`Saturator::step`](../../../ein.rs/crates/ein-infer/src/saturator.rs), and it
 is one loop rather than two: `closure_step` fires purely positive matches from
-a priority-banded queue until it is empty, and only then does
-`admit_from_boundary` speak. `Engine` is the compile cache and has no `step`
+a queue until it is empty, and only then does
+`admit_from_boundary` speak. The queue is FIFO since M1f S1f.5.15 removed
+`:priority` (priority-banded until then). `Engine` is the compile cache and has no `step`
 (M1e `CD-M1`).
 
 ## Corollaries the engine relies on
@@ -273,14 +274,18 @@ Since M1e2 a describe reports R, by the cube on a program the static check
 flags, with the detector's warning naming the cycle and the order finding
 (`monotonicity.md` § 5); `naf_deps::derived_naf_warnings` names the shape that
 can cause it (the `warn_derived_naf` flag that narrated it retired at M1e2
-S1e2.2.5), and a real stratification checker remains future work.
+S1e2.2.5), and since M1f S1f.5.15's T4 a static stratification check names
+every cycle through an `absent`, the read-out's `strata` row, as a
+diagnostic and not a refusal.
 
 ## Worked micro-examples
 
 The investigation's probes P1–P8, each pinned 1:1 by a test in
 [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs).
 Programs are sketched `head ← body @priority`; all facts are given at
-load.
+load. The priorities are the probes' as written; since M1f S1f.5.15 removed
+`:priority`, P2's swap is the two rules' written order
+(`naf_semantics::the_order_does_not_decide_what_is_derivable`).
 
 | probe | program | result | establishes |
 |---|---|---|---|

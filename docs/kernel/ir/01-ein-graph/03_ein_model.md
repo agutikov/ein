@@ -331,8 +331,7 @@ binding, the state is contradictory":
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why    "{?R} not functional: {?a} has {?b} and {?c}."
-  :priority 250)
+  :why    "{?R} not functional: {?a} has {?b} and {?c}.")
 ```
 
 The `(false)` fact's `args` are empty by convention — multiple

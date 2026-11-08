@@ -216,8 +216,9 @@ committing thread. `ein --version` is what says which build you have.
   soundness requirement, not a throttle** — admitting a batch lets one
   admission invalidate another's guard after its verdict was taken, which on
   `p ← absent q; q ← absent p` derives both. Consequences: on a **stratified**
-  rule set the result no longer depends on rule priority (band discipline is
-  advisory, not load-bearing), and a non-stratified one is still answered by
+  rule set the result does not depend on the firing order (FIFO since M1f
+  S1f.5.15, which removed `:priority` and its bands), and a non-stratified one
+  is still answered by
   operational order — now boundary-admission order. Normative definition:
   [`absent_semantics.md`](absent_semantics.md); operational narrative:
   [`README.md` § NAF semantics](README.md).
