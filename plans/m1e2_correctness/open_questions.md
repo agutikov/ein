@@ -26,7 +26,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.10](#q-m1e210--when-the-obligations-rung-cannot-trust-its-domain-scan-whose-candidates-is-r-over) | When the obligations rung cannot trust its domain scan, whose candidates is R over? | [S1e2.2.15](p1e2.2_wrong_answers/s1e2.2.15_obligations_rung_universe.md) (W14) | **ruled 2026-11-04: (a)**, *decline*: a guard over a relation in D declines the rung, and R is the blind enumerator's region; put to the user the same day by T1e2.2.15.1; **built** the same day (`bde8f53b`), W14's four rows fixed |
 | [Q-M1e2.11](#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it) | Which derivations is the unsat core the smallest over, and may a config flag change it? | [S1e2.2.11](p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) | **ruled 2026-11-04: (i)(b) and (ii)(b)**, put to the user the same day by T1e2.2.11.1: the core promise is every derivation the program records, (3) built and `W10/alt-cap-core` fixed, `W10/alt-cap-shared` open and deferred to [F22](../followups/f22_exact_core_past_the_cap.md); the core, and nothing else, exempt from the config principle under `:record-alternative-justifications false`. **Built** the same day by S1e2.2.11 |
 | [Q-M1e2.12](#q-m1e212--which-activators-does-a-dead-nodes-core-follow) | Which activators does a dead node's core follow? | [S1e2.2.19](p1e2.2_wrong_answers/s1e2.2.19_core_misses_activator.md) (W19) | **ruled 2026-11-04: (c)**, put to the user the same day by T1e2.2.19.1: a dead node's core follows an activator only a node derives or commits, and root's, stated or derived, are the program's. **Built** the same day by S1e2.2.19 (`94c7bcfb`): W19's three rows fixed, no corpus core moved |
-| [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load. The head half re-ruled by Q-M1e2.14 (c). **Built 2026-11-05** by S1e2.2.20 (`eddea251`): W20's five rows fixed. The range half superseded by Q-M1e2.24 and built 2026-11-08 by S1f.5.3 (`65d1ad85`): no range token |
+| [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) | What does a wildcard or a range in a rule's pattern mean? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20) | **ruled 2026-11-04: (a)**, put to the user at P1e2.2's end: `_` in a rule's pattern matches any value, as the grammar says, head and argument; a range in a rule is refused at load. The head half re-ruled by Q-M1e2.14 (c). **Built 2026-11-05** by S1e2.2.20 (`eddea251`): W20's five rows fixed |
 | [Q-M1e2.14](#q-m1e214--how-does-a-head-wildcard-match-every-relation) | How does a head wildcard match every relation? | [S1e2.2.20](p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md) (W20's `wild-in-head`) | **ruled 2026-11-05: (c)**, put to the user the same day by T1e2.2.20.1: a head `_` is refused at load, as a range is; the argument `_` matches any value; `01_grammar.md`'s row an *argument wildcard in patterns*. **Built 2026-11-05** by S1e2.2.20 (`eddea251`) |
 | [Q-M1e2.15](#q-m1e215--what-does-a-derivation-through-a-forall-rest-on) | What does a derivation through a `forall` rest on? | [S1e2.2.21](p1e2.2_wrong_answers/s1e2.2.21_pair_core_one_side.md) (W21) | **ruled 2026-11-05: (b)**, put to the user the same day by T1e2.2.21.1: a derivation through a `forall` rests on each fact the universal read, each at its own smallest frontier, the residual (13 of `zebra2-hints`' N cores larger than (c)'s) joining F22's; and, ruled with it, a core is taken only where a surface prints one (*minimum work per question*), moving no answer. **Built 2026-11-05** by S1e2.2.21 (`67d07fab`, `3fb9d712`): W21's six rows fixed, no answer moved by the lazy core |
 | [Q-M1e2.16](#q-m1e216--what-does-the-close-do-with-the-inventorys-items) | What does the close do with the inventory's items? | [the inventory of 2026-11-05](inventory_2026-11-05.md); S1e2.2.22–.25, S1e2.3.8, S1e2.3.10, F21, F22, F23 | **ruled 2026-11-05: as recommended**, put to the user the same day with the inventory the user asked for before the close: F1 and F2 are W22 and W23, fixed before the close; `_` in a guard, a premise that is not a form and a nested unbound relation or keyword pair refused at load (W24); W-8 and W-10 F22's; a reloaded dump's provenance S1e2.3.8's, `refuted by` and `--json-report`'s rows S1e2.3.10, the detector's labels F21's; the eleven diagnostics F23; the owned wrong answers with no row filed `open`, deferred (S1e2.2.25); the close's re-take the register's tests and the inventory's sweep |
@@ -37,7 +37,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.21](#q-m1e221--which-rule-does-refuted-by-name-where-the-core-derives-its-contradiction-through-two) | Which rule does `refuted by` name where the core derives its contradiction through two? | [S1e2.3.10](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_refuted_by_and_report_rows.md) (N7) | **ruled 2026-11-06: (a), as recommended**, put to the user the same day by S1e2.3.10's step 1, which paused on it (5 041 distinct printed cores per commit, 6 917 nightly, derive a fact of their contradiction through two rules): `refuted by` names the first recorded derivation the core supports, the alternatives flag's exemption as it stands, the `two-rules` pair the accepted cost; **built** the same day (`a3bb9e70`) |
 | [Q-M1e2.22](#q-m1e222--does-ein-need-a-wildcard) | Does Ein need a wildcard? | [S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md) (W-22) | **ruled 2026-11-06**: a bare `_` is reserved and refused, and `_` is valid anywhere in a name; not built |
 | [Q-M1e2.23](#q-m1e223--what-is-a-string-for) | What is a string for? | [S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md) (F4) | **ruled 2026-11-06**: natural language, only in `:why`, `:source` and `:goal-text`; G-6 put to the user; not built |
-| [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein) | Are there numbers in Ein? | [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md) (F6), [S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) (F7) | **ruled 2026-11-06 and -07**: no numbers and no ranges, now or planned; any run of name characters is a name, digits included, and a digit label is a candidate; a name's characters are an ASCII allow-list, forever, `\` never and quotes and brackets for now; **the range token retired 2026-11-08** by S1f.5.3 (`65d1ad85`), the rest not built |
+| [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein) | Are there numbers in Ein? | [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md) (F6), [S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) (F7) | **ruled 2026-11-06 and -07**: no numbers and no ranges, now or planned; any run of name characters is a name, digits included, and a digit label is a candidate; a name's characters are an ASCII allow-list, forever, `\` never and quotes and brackets for now; not built |
 | [Q-M1e2.25](#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it) | How strict is the grammar, and what holds the parser to it? | [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md) (F9) | **the user's instructions, 2026-11-06 and -07**: revisit it, and generate the parser; **ruled 2026-11-07: grmtools, with recovery on**, made deterministic (F11); not built |
 | [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations) | Are `eq` and `neq` relations? | [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (S-18, G-21) | **ruled 2026-11-07**: yes, of equality and non-equality, their facts fixed by name identity and computed, in a goal, a premise and a conclusion, a free variable over the program's names; supersedes Q-M1e2.18 (ii)(a); a nested fact as a guard's argument answered; not built |
 | [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; not built |
@@ -1617,16 +1617,6 @@ rule and a `_` written as a relation, one line per slot; W20's five rows are
 fixed, and no answer moved outside W20's programs and probes (the stage's
 sweep, 438 files, 2026-11-05).
 
-**Superseded on the range 2026-11-06** by
-[Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein): Ein has no numbers and no
-ranges, so the token goes rather than a range in a rule being refused at load.
-**Built 2026-11-08** by
-[S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md)
-(T1f.5.3.2, `65d1ad85`): there is no `RANGE` token, the loader's range line is
-gone, and `1..3` is a parse error wherever it is written, until S1f.5.4 makes it
-one name; `W20/range-in-match` stays fixed, its `now` the parser's line. The
-wildcard half stands.
-
 ## Q-M1e2.14 — How does a head wildcard match every relation?
 
 Put to the user on 2026-11-05 by
@@ -2431,9 +2421,7 @@ reads ([F6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.
 number ranges either, and never had and don't have plant to have numbers or ranges"*.
 
 **Ranges.** The `RANGE` token goes, with
-[S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md). **Built 2026-11-08**
-(T1f.5.3.2, `65d1ad85`): no terminal reads a range, and `1..5` is a parse error until S1f.5.4 makes it one
-name. It supersedes
+[S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md). **Not built.** It supersedes
 [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) on a range.
 
 **Numbers.** No operation reads a value as a quantity: the built-in predicates are `eq` and
@@ -2526,9 +2514,7 @@ grmtools"*. **Not built.** S1f.5.5 vendors `lrpar` with a patch: equal repairs k
 found them in, and a count of search steps replaces the clock. On the probe the patched crate gave one report
 per file over three runs of 5 000 corpus mutants, where the unpatched one differed on 1 032 (2026-11-07). A
 refused file reports every error recovery reaches, each with up to three ranked repairs, and stays refused:
-no repaired program is loaded. Sending the patch upstream was the user's call, and **ruled 2026-11-08: not
-sent**. The user: *"don't send the lrpar patch upstream either"*, as on the Graphviz bug; it stays vendored,
-`ein.rs/vendor/lrpar/ein.patch` (S1f.5.5's T3, `54715b5f`).
+no repaired program is loaded. Sending the patch upstream is the user's call.
 **S-15, ruled the same day, as recommended:** `ein solve --diff-models FILE` reads the file's facts through
 the generated parser and compares them by value, so other spacing or a trailing comment still matches, and a
 fact that does not parse is refused before the run. A task of S1f.5.5,
@@ -2627,8 +2613,6 @@ other keyword is an error, refused before anything runs. A term and a nested fac
 [Q32](../open_questions.md#q32--where-semantics) (2026-05-20) that left a `:where` pair to be dropped in
 silence. Q32's move of a guard to a positional premise, `(neq ?a ?c)`, stands. A retired keyword gets no
 hint of its own: it is an unknown keyword like any other. **Not built**:
-[S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s generated parser makes them
-parse errors at its swap, credited to
-[S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), which keeps the pages and the
-compiler's drops. Until the user's re-plan of 2026-11-08 S1f.5.11 was to check the lists in the loader first,
-on the hand-written parser.
+[S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) checks the lists in the loader, on the
+hand-written parser, and [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s grammar makes them
+parse errors.

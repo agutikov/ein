@@ -861,6 +861,7 @@ and by `corpus/wrong_answers.toml`'s fifteen refused rows (`python3 -c
 "import tomllib; print(sum(1 for r in tomllib.load(open('corpus/wrong_answers.toml','rb'))['case'] if r['right'].get('refused')))"`,
 2026-11-04).
 
+<a id="48-a-range-or-a-wildcard-as-a-relation-in-a-rule--m1e2-s1e2220"></a>
 ### 4.8 A wildcard as a relation in a rule — M1e2 S1e2.2.20
 
 A wildcard `_` stands for an argument, and a relation is named by a name or
