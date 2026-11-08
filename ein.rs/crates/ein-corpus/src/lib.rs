@@ -17,6 +17,7 @@
 //! checked in, and a fixture that cannot be found is a failure.
 
 pub mod manifest;
+pub mod mutants;
 pub mod plan;
 pub mod register;
 

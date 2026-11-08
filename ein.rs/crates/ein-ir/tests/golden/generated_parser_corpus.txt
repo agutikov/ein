@@ -1,0 +1,248 @@
+# Every corpus file under examples/, stdlib/, tests/ and corpus/, through the
+# hand-written parser and the generated one (T1f.5.5.3), as written and with
+# its `:priority` clauses taken out, which the grammar does not have (the
+# user, 2026-11-08; S1f.5.15 deletes them). Re-bank with
+# EIN_BLESS=1 cargo test -p ein-ir --test generated_parser
+414 files
+
+as written:
+   15  both accept, digits read as names
+  189  both accept, same tree
+    5  both refuse
+  204  the hand-written parser accepts, the generated one refuses
+    1  the hand-written parser refuses, the generated one accepts
+without `:priority`:
+   18  both accept, digits read as names
+  322  both accept, same tree
+    5  both refuse
+   68  the hand-written parser accepts, the generated one refuses
+    1  the hand-written parser refuses, the generated one accepts
+
+133 files differ only by their `:priority` (S1f.5.15, pending):
+  examples/branching/01_saturate_only.ein
+  examples/branching/02_one_dead_one_alive.ein
+  examples/branching/03_five_hyps_one_alive.ein
+  examples/branching/04_two_levels.ein
+  examples/branching/05_mini_zebra.ein
+  examples/branching/06_lookahead_on.ein
+  examples/branching/07_lookahead_off.ein
+  examples/branching/08_hypothesis_relation_whitelist.ein
+  examples/branching/09_hrule.ein
+  examples/branching/10_kill_cache_on.ein
+  examples/branching/11_kill_cache_off.ein
+  examples/branching/13_lookahead_naf_world.ein
+  examples/branching/14_lookahead_unjudgeable.ein
+  examples/branching/15_lookahead_two_step_on.ein
+  examples/branching/16_lookahead_two_step_off.ein
+  examples/domain_elim/ab.ein
+  examples/domain_elim/b_branch.ein
+  examples/domain_elim/b_only.ein
+  examples/ein-bugs/alive-empty-interlayer.ein
+  examples/ein-bugs/alive-empty-phase1.ein
+  examples/ein-bugs/alt-cap-core-reordered.ein
+  examples/ein-bugs/alt-cap-core.ein
+  examples/ein-bugs/complete-records-stale.ein
+  examples/ein-bugs/naf-upward-closure.ein
+  examples/ein-bugs/wrong-answers/alt-cap-shared.ein
+  examples/ein-bugs/wrong-answers/closure-shared-given-control.ein
+  examples/ein-bugs/wrong-answers/closure-shared-given.ein
+  examples/ein-bugs/wrong-answers/f07-fpoff.ein
+  examples/ein-bugs/wrong-answers/f07-rules-swapped.ein
+  examples/ein-bugs/wrong-answers/forced-1-two.ein
+  examples/ein-bugs/wrong-answers/forced-1.ein
+  examples/ein-bugs/wrong-answers/forced-2-off.ein
+  examples/ein-bugs/wrong-answers/forced-2-two.ein
+  examples/ein-bugs/wrong-answers/forced-2.ein
+  examples/ein-bugs/wrong-answers/guard-only-first.ein
+  examples/ein-bugs/wrong-answers/guard-only-second.ein
+  examples/ein-bugs/wrong-answers/naf-nowb.ein
+  examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein
+  examples/ein-bugs/wrong-answers/oblig-derived-domain.ein
+  examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein
+  examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein
+  examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein
+  examples/ein-bugs/wrong-answers/oblig-fresh-name.ein
+  examples/ein-bugs/wrong-answers/owed-two-step.ein
+  examples/ein-bugs/wrong-answers/past-limit-lines.ein
+  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein
+  examples/ein-bugs/wrong-answers/stale-naf-fork.ein
+  examples/ein-bugs/wrong-answers/tree-dead.ein
+  examples/ein-bugs/wrong-answers/uncovered-knows.ein
+  examples/ein-bugs/wrong-answers/uncovered.ein
+  examples/ein-bugs/zebra2-bad.ein
+  examples/ein-bugs/zebra2-hints.ein
+  examples/features/01_not_and_absent.ein
+  examples/features/02_star_in_identifiers.ein
+  examples/features/03_forall.ein
+  examples/features/04_open.ein
+  examples/features/07_unstratifiable.ein
+  examples/features/08_disjunct_guard_sets.ein
+  examples/features/09_adjacent_via_same_house.ein
+  examples/features/11_expect_ambiguity.ein
+  examples/features/12_expect_false.ein
+  examples/features/13_mixed_solution_and_open.ein
+  examples/lattice/01_subset_pruned.ein
+  examples/lattice/02_genuine_3set_death.ein
+  examples/lattice/03_state_hash_collision.ein
+  examples/lattice/04_obligation_trigger_hole.ein
+  examples/lattice/08_absent_witness_hole.ein
+  examples/lattice/09_activator_hole.ein
+  examples/lattice/10_fifo_gap.ein
+  examples/lattice/11_fifo_gap_static.ein
+  examples/lattice/12_activator_chain_hole.ein
+  examples/lattice/synth/local_not_global.ein
+  examples/lattice/synth/maximal_not_top.ein
+  examples/lattice/synth/merged_states.ein
+  examples/lattice/synth/one_model_per_component.ein
+  examples/lattice/synth/three_components.ein
+  examples/lattice/synth/trigger_hole.ein
+  examples/lattice/synth/trivial_line.ein
+  examples/saturation/hypothesis-contradiction/coloc-disproved.ein
+  examples/saturation/hypothesis-contradiction/next-to-disproved.ein
+  examples/saturation/hypothesis-contradiction/right-of-disproved.ein
+  examples/saturation/implies/org-chart.ein
+  examples/saturation/implies/parent-to-ancestor.ein
+  examples/saturation/implies/right-then-next.ein
+  examples/saturation/square-bwd/floors.ein
+  examples/saturation/square-bwd/houses.ein
+  examples/saturation/square-bwd/meetings.ein
+  examples/saturation/square-fwd/floors.ein
+  examples/saturation/square-fwd/houses.ein
+  examples/saturation/square-fwd/meetings.ein
+  examples/saturation/square-unique/corner-house.ein
+  examples/saturation/square-unique/cul-de-sac.ein
+  examples/saturation/square-unique/terminus.ein
+  examples/saturation/symmetric/couple.ein
+  examples/saturation/symmetric/friends.ein
+  examples/saturation/symmetric/neighbours.ein
+  examples/saturation/transitive/colocation-chain.ein
+  examples/saturation/transitive/mealtimes.ein
+  examples/saturation/transitive/taxonomy.ein
+  examples/saturation/type-exclusivity/colors.ein
+  examples/saturation/type-exclusivity/nationalities.ein
+  examples/saturation/type-exclusivity/pets.ein
+  examples/zebra2-hints.ein
+  examples/zebra2-minus-15-obligations.ein
+  examples/zebra2-minus-15.ein
+  examples/zebra2-obligations.ein
+  examples/zebra2.ein
+  stdlib/algebra.ein
+  stdlib/bijection.ein
+  stdlib/closure.ein
+  stdlib/slots.ein
+  stdlib/typing.ein
+  tests/region/01_states.ein
+  tests/region/02_merged_single.ein
+  tests/region/03_merged_or.ein
+  tests/region/07_cube.ein
+  tests/region/08_query_classes.ein
+  tests/region/09_query_over_maximal.ein
+  tests/stdlib/algebra/07_schroder.ein
+  tests/stdlib/algebra/18_totality_open_world.ein
+  tests/stdlib/algebra/22_symmetric_negative.ein
+  tests/stdlib/bijection/02_domain_elimination.ein
+  tests/stdlib/bijection/03_range_elimination.ein
+  tests/stdlib/bijection/06_blind_enumeration.ein
+  tests/stdlib/closure/02_closed_and_satisfied.ein
+  tests/stdlib/closure/03_closed_and_owing.ein
+  tests/stdlib/macro/01_forall.ein
+  tests/stdlib/macro/02_unknown.ein
+  tests/stdlib/slots/01_partition.ein
+  tests/stdlib/slots/02_negative.ein
+  tests/stdlib/slots/03_fill.ein
+  tests/stdlib/slots/04_elimination.ein
+  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein
+
+every other file not the same tree, without `:priority`:
+the hand-written parser accepts, the generated one refuses: corpus/fuzz_findings/activator-text-key-swapped.ein: 14:19: unexpected `"1"`: a string (2 errors)
+the hand-written parser accepts, the generated one refuses: corpus/fuzz_findings/activator-text-key.ein: 16:19: unexpected `"1"`: a string (2 errors)
+both accept, digits read as names: corpus/fuzz_findings/binding-key-layout-swapped.ein
+both accept, digits read as names: corpus/fuzz_findings/binding-key-layout.ein
+the hand-written parser accepts, the generated one refuses: corpus/fuzz_findings/kwpair-below-the-filter.ein: 1:18: unexpected `:rule` (10 errors)
+both accept, digits read as names: examples/branching/12_typed_blind_solve.ein
+both refuse: examples/broken/bare_top_level_atom.ein
+the hand-written parser accepts, the generated one refuses: examples/broken/compile/absent_arity_high.ein: 15:38: unexpected `(` (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/broken/compile/absent_arity_zero.ein: 17:30: unexpected `)` (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/broken/compile/eq_arity_high.ein: 16:32: unexpected `B`: a name (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/compile/eq_arity_low.ein: 19:29: unexpected `)` (1 error)
+both refuse: examples/broken/keyword_as_value.ein
+the hand-written parser accepts, the generated one refuses: examples/broken/load/config_bad_value.ein: 5:31: unexpected `maybe`: a name (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/config_retired_flag.ein: 6:9: unexpected `:lattice-order`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/config_unknown_flag.ein: 6:9: unexpected `:nope`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/derivation_cycle.ein: 6:24: unexpected `p`: a name (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/empty_absent.ein: 17:31: unexpected `?x`: a variable (3 errors)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/expect_is_a_pattern.ein: 6:43: unexpected `?h`: a variable (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/expect_unknown_keyword.ein: 8:23: unexpected `:expct`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/hrule_reserved_name.ein: 3:8: unexpected `absent` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/import_alias_not_a_name.ein: 3:23: unexpected `"m"`: a string (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/import_symbols_empty.ein: 3:29: unexpected `)` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/import_symbols_not_a_list.ein: 3:28: unexpected `forall`: a name (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/macro_reserved_name.ein: 3:8: unexpected `absent` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/open_arity.ein: 9:20: unexpected `(` (3 errors)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/open_in_match.ein: 6:49: unexpected `open` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/open_mixed_assert.ein: 9:17: unexpected `open` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/query_lattice_keyword.ein: 13:23: unexpected `:no-hypothesis` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/region_top_level.ein: 11:2: unexpected `region` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/relation_malformed.ein: 5:20: unexpected `(` (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/relation_needs_a_name.ein: 4:10: unexpected `)` (1 error)
+both accept, digits read as names: examples/broken/load/relation_parameter_int.ein
+the hand-written parser accepts, the generated one refuses: examples/broken/load/relation_reserved_name.ein: 4:11: unexpected `eq` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/reserved_open_direct.ein: 16:8: unexpected `open` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/rule_reserved_name.ein: 4:7: unexpected `absent` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/broken/load/solve_unknown_keyword.ein: 11:8: unexpected `:no-hypothesys`: a keyword this form does not take (1 error)
+both refuse: examples/broken/rule_missing_params.ein
+both refuse: examples/broken/unclosed_paren.ein
+both accept, digits read as names: examples/ein-bugs/activator-all-int.ein
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/activator-text-int-and-string.ein: 55:19: unexpected `"1"`: a string (5 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/activator-text-int-only.ein: 44:19: unexpected `"1"`: a string (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/activator-text-string-only.ein: 35:19: unexpected `"1"`: a string (5 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/activator-text-string-then-int.ein: 25:19: unexpected `"1"`: a string (5 errors)
+both accept, digits read as names: examples/ein-bugs/binding-key-both.ein
+both accept, digits read as names: examples/ein-bugs/binding-key-int-only.ein
+both accept, digits read as names: examples/ein-bugs/binding-key-nested-only.ein
+both accept, digits read as names: examples/ein-bugs/binding-key-swapped.ein
+both accept, digits read as names: examples/ein-bugs/int-goal-binding.ein
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/kwpair-below-the-filter.ein: 22:18: unexpected `:rule` (10 errors)
+both accept, digits read as names: examples/ein-bugs/mixed-type-hypothesis.ein
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/absent-empty.ein: 29:41: unexpected `)` (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/bare-premise.ein: 37:19: unexpected `_`: _ (reserved) (3 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/claim-int-name-solve.ein: 28:8: unexpected `"1"`: a string (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/claim-int-name.ein: 32:8: unexpected `"1"`: a string (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/classes-int-name.ein: 33:41: unexpected `"1"`: a string (1 error)
+both accept, digits read as names: examples/ein-bugs/wrong-answers/form-in-guard.ein
+both accept, digits read as names: examples/ein-bugs/wrong-answers/guard-before-binder.ein
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/kwpair-in-assert.ein: 31:46: unexpected `:k`: a keyword this form does not take (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/kwpair-in-goal.ein: 26:26: unexpected `:zz`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/kwpair-in-guard.ein: 33:38: unexpected `:k`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/kwpair-in-macro.ein: 31:56: unexpected `:k`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein: 31:25: unexpected `:k`: a keyword this form does not take (1 error)
+the hand-written parser refuses, the generated one accepts: examples/ein-bugs/wrong-answers/range-in-match.ein: 32:23
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/str-in-absent.ein: 29:18: unexpected `"b"`: a string (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/str-in-assert.ein: 33:46: unexpected `"lbl"`: a string (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/str-in-guard.ein: 32:18: unexpected `"b"`: a string (3 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/str-in-hrule.ein: 29:47: unexpected `"lbl"`: a string (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/str-in-match.ein: 36:18: unexpected `"1"`: a string (3 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/underscore-activator-arg.ein: 29:4: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein: 34:26: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/underscore-fact-arg.ein: 29:4: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/underscore-goal-arg.ein: 26:21: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein: 25:7: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein: 26:7: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/where-in-and.ein: 32:31: unexpected `:where`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/where-in-pattern.ein: 28:25: unexpected `:where`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/where-on-rule.ein: 29:41: unexpected `:where`: a keyword this form does not take (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/wild-in-absent.ein: 31:34: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/wild-in-guard.ein: 35:38: unexpected `_`: _ (reserved) (3 errors)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/wild-in-head.ein: 38:20: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/wild-in-hrule.ein: 28:30: unexpected `_`: _ (reserved) (1 error)
+the hand-written parser accepts, the generated one refuses: examples/ein-bugs/wrong-answers/wild-in-match.ein: 31:26: unexpected `_`: _ (reserved) (1 error)
+both accept, digits read as names: examples/features/05_stdlib_domain_elim.ein
+both refuse: examples/syntax/arg-kinds.ein
+the hand-written parser accepts, the generated one refuses: examples/syntax/is-a-shapes.ein: 14:7: unexpected `?x`: a variable (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/syntax/negation.ein: 14:6: unexpected `plain`: a name (1 error)
+both accept, digits read as names: examples/syntax/relation-decls.ein
+the hand-written parser accepts, the generated one refuses: examples/syntax/unary-and-nary.ein: 16:32: unexpected `x`: a name (2 errors)
+the hand-written parser accepts, the generated one refuses: examples/syntax/wrappers.ein: 13:15: unexpected `:source` (4 errors)
+both accept, digits read as names: stdlib/elim.ein
+both accept, digits read as names: tests/stdlib/elim/01_domain_elimination.ein
+both accept, digits read as names: tests/stdlib/elim/02_no_room_left.ein

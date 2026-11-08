@@ -9,10 +9,10 @@ estimate](s1f.5.5_census.md#the-estimate-re-taken)), and 8.5 before that.
 - One day for the census (T1). Done.
 - One day for the grammar on paper and the real programs (T2). Done, with the builder that makes today's AST.
 - One day for the generated parser beside the old one (T3): the builder holds on 331 files, `Loc` for `Loc`.
-  Half of the old two days for *beside and the swap*.
-- A day and a quarter for recovery: the patched `lrpar`, its budget and its tests (F11, in T3). Unchanged.
+  Half of the old two days for *beside and the swap*. Done ([§ T3 record](#t3-record-2026-11-08)).
+- A day and a quarter for recovery: the patched `lrpar`, its budget and its tests (F11, in T3). Unchanged. Done.
 - Half a day for the nesting limit (F10, in T3). Half of the old day for *the nesting limit and the tests that
-  move*; the tests are the swap's.
+  move*; the tests are the swap's. Done.
 - A quarter of a day for the swap's prerequisite (T8): the loader's four internal names renamed out of the name
   space, and the test that holds it. New: S1f.5.4's Q1.
 - A day and a quarter for every difference attributed, with the review material and the stop (T9). New: it is
@@ -49,6 +49,13 @@ on the hand-written parser before T3. Since then T3 runs next, the grammar parts
 [S1f.5.2](s1f.5.2_strings_are_natural_language.md) and [S1f.5.11](s1f.5.11_closed_keywords.md) are this stage's
 T9 and T4, credited to each by name, and each of the four keeps its id and its non-grammar part, which runs after
 the swap.
+**T3 done on 2026-11-08** ([§ T3 record](#t3-record-2026-11-08)): the generated parser is in `ein-ir` beside the
+hand-written one, reached from its tests and from the `generated-parser` cargo feature, off in every shipped build;
+the builder holds on 340 of 414 corpus files with their `:priority` taken out and 204 as written, the trees
+differing on none, and 133 files differing only by their `:priority`, which the grammar does not have (the
+user's ruling of 2026-11-08: S1f.5.15 deletes it before the swap); a macro takes a `:why` (the same day);
+recovery is deterministic, with `lrpar` 0.15.0 vendored and patched and a budget of 30 000 steps; the nesting
+limit is 1 000. No answer, golden or exit code moved.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -549,6 +556,147 @@ printer, and the budget is set from a sweep of corpus mutants on the build. Thre
 - **The fuzzer.** `fuzz_properties` gains the same property, and that every recovery ends within the budget.
 - **The cut.** One fixture is cut at the budget and its report says so, in a golden.
 
+### T3 record, 2026-11-08
+
+**What was built.** The paper grammar as step 2 left it, with the two rulings below, in
+`ein.rs/crates/ein-ir/src/ein.l` and `ein.y`, and its builder, `src/grammar/build_ast.rs`, compiled by `ein-ir`'s
+new `build.rs` (`CTLexerBuilder` with CPCT+ recovery; a conflict fails the build). The builder is the probe's,
+with one difference: a `Loc` is taken from a line table built once per parse (`Lines`), counting as the
+hand-written lexer counts (`\n` alone ends a line, a column is a character), where the probe asked `lrlex`'s
+`line_col`, which walks the line from its start for every token. The module is `ein_ir::grammar`:
+`grammar::parse(ast, text, filename) -> Result<Vec<NodeId>, Refusal>`, `NESTING_LIMIT`, `RECOVERY_STEP_BUDGET`
+and the report types. The lexer is built once a process (a `OnceLock`).
+
+**Two rulings of 2026-11-08 came after step 2, and the grammar carries both.** The user's principle: *"collect
+all requirement for the parser in this phase and implement grammar that will already meet all of them instead of
+making wrong parser that meets our old wrong parser and then updating it step by step"*, so the generated
+grammar is the phase's final one.
+- **No `:priority`.** S1f.5.15, which deletes it and derives the order from the rule graph, runs after T3 and
+  before T8, T9 and the swap. So `RuleClause` has no `:priority` and a rule's `:priority` is refused as any
+  keyword the form does not take; with it went `DIGITS`, a token only so that `:priority` could take digits
+  alone, so a run of digits is a `NAME` like any other, and `b::count`, the action that kept `:priority`'s
+  value an `Int`: the generated parser builds no `Int`. The hand-written parser and the shipped path still
+  take `:priority` until S1f.5.15.
+- **A macro takes a `:why`**, as a relation and a rule do: `(macro NAME (params…) BODY :why "…")`, once, after
+  the body. The macro reader keeps it, `ein_ir::macros::Macro::why` (`generated_parser::a_macro_carries_its_why`);
+  the hand-written parser refuses it. The loader's flag that will require a `:why` is S1f.5.14's, not built here.
+
+**The hook: a cargo feature, `generated-parser` on `ein-ir`, off by default.** With it on, `ein_ir::parse` is
+the generated parser, so `cargo build --release -p ein-cli --features ein-ir/generated-parser` is T9's second
+binary; the hand-written parser is `ein_ir::parse::hand_written` by name in either build, so both can run in one
+process. The only edit to `parse.rs` is that split, which changes nothing it accepts. No shipped build turns the
+feature on, so no command's output, option or `EIN_*` name moves, and `ein --version`'s `features` line does not
+list it (it lists the binary's). Under the feature a refusal is `ParseError` with the first error's position and
+the whole report as its context, a stand-in until T4 writes the error text. Built with it (before the two
+rulings), `ein solve` printed the same bytes on `zebra.ein` and `zebra2.ein` as today's binary, timing lines
+apart, and `ein saturate`'s `parse:` line on `zebra2.ein` read 3.52 ms against 0.20 ms (best of five, one parse
+a process, so the lexer's construction is in it); both files write `:priority`, which the feature build now
+refuses until S1f.5.15.
+
+**The builder holds** on every corpus file both parsers accept, taken both ways: as written, and with each
+`:priority` clause taken out (`ein_corpus::mutants::without_priority`), which is what the corpus reads as once
+S1f.5.15 has run. Of the **414 files** under `examples/`, `stdlib/`, `tests/` and `corpus/`, 137 write
+`:priority` (482 clauses; `grep -l`, `grep -o`):
+
+| | the same tree | the same but for digits | trees differ | only the generated parser refuses | both refuse | only the hand-written refuses |
+|---|---:|---:|---:|---:|---:|---:|
+| as written | 189 | 15 | **0** | 204 | 5 | 1 |
+| without `:priority` | 322 | 18 | **0** | 68 | 5 | 1 |
+
+So **340 agree** without `:priority` (the census: 331 of 390 at `ec004a48`) and 204 as written; **133 files
+differ only by their `:priority`**, attributed to S1f.5.15, pending. Digits are a name by S1f.5.4's ruling;
+the one file the hand-written parser alone refuses is `range-in-match`, which S1f.5.3 moved out of the digits
+class since the census. `cargo test -p ein-ir --test generated_parser the_builder_holds_on_the_corpus` holds
+it both ways, the counts, the 133, and every other file not the same tree banked with how it differs
+(`ein-ir/tests/golden/generated_parser_corpus.txt`). Each of those is on the census's list
+([`grammar_vs_today.txt`](s1f.5.5_parser_probe/census/grammar_vs_today.txt), 74 files, each still banked) or is
+one of its four parse-negatives, but 14 register witnesses S1f.5.0 filed after `ec004a48`, each refused for the
+shape its row is about: W29's six `underscore-*` (S1f.5.1's `_`), W32's seven `kwpair-in-*` and `where-*`
+(S1f.5.11's keywords) and W35's `absent-empty` (default 7). T9 attributes them.
+
+**The vendored `lrpar`**, `ein.rs/vendor/lrpar/`: the crate as published (git `0fd68c80cb13`), grmtools'
+`COPYRIGHT`, `LICENSE-APACHE` and `LICENSE-MIT` at that commit, which the published crate does not carry, and
+`ein.patch`, the whole difference (104 changed lines in `cpctplus.rs` and `parser.rs`; `patch -p1 < ein.patch` on
+a fresh copy reproduces `src/`). The probe's patch, less its step printer, plus the cut: each `ParseError` says
+the steps recovery had taken (`recovery_steps`) and whether the budget stopped it there (`recovery_cut`).
+**It sits outside the workspace**: `[workspace] exclude = ["vendor"]`, used through `[patch.crates-io]`, so the
+generated parser and any grammar loaded at run time get it. None of the gate's checks reads it, by construction
+rather than by a skip list: `cargo fmt --all`, clippy, rustdoc and `cargo test` take members, and the published
+crate is not rustfmt-clean (`rustfmt --check --edition 2024 vendor/lrpar/src/lib/mod.rs` exits 1);
+`check_hashmap_iteration.py` reads `ein.rs/crates/`, and `doc_audit.py` the pages it names. **Dependencies**:
+`cfgrammar`, `lrlex` and `lrpar` pinned `=0.15.0`; `ein-ir`'s run-time crates go from 8 to 46, 56 with the build
+(`cargo tree -p ein-ir -e normal --prefix none --target x86_64-unknown-linux-gnu | sort -u | wc -l`, `-e
+normal,build`), and `Cargo.lock` gains 49 packages, every licence MIT, Apache-2.0 or both, within `deny.toml`'s
+list. A change to the grammar or to the vendored code generator reaches the generated parser only once
+`src/ein.y` is touched: `CTParserBuilder` keys its cache on the grammar and on `lrpar`'s build stamp.
+
+**The report.** A refused file reports every error recovery reaches, in file order: `file:line:col: unexpected
+X`, with the token's `%epp` description where it has one (`unexpected `a?x`: a token that is not a name`),
+then at most three ranked repairs, the first the one the parse went on with, each a sequence of `Insert`,
+`Delete` and `Shift`, then `and n more repairs`, and, where recovery was cut, a last line, *recovery stopped
+here, at its budget of 30000 steps: errors after this one are not reported*. The probe's `four_mistakes.ein`
+reports its three errors (`cargo run --release -p ein-ir --example generated_parser -- check FILE…`). **Not in
+it: the tokens expected at an error**, which § The error text asks for. Read off the state table they overstate:
+the table is Pager's merged LR(1), whose reductions on a lookahead are taken before the error is found, so at
+`four_mistakes.ein`'s `a?x`, a fact's argument, the state offered `:why`, `:goal` and nine more keywords no fact
+takes (tried on this build, then dropped). The parser's data is private to the generated module besides. The
+ranked repairs are exact, since CPCT+ checks each by parsing on; the expected set is T4's, with the error text
+(§ Notes).
+
+**The budget: 30 000 steps**, the stage's proposal, re-taken on the final grammar: the smallest round budget at
+which 99 % of refused corpus mutants finish recovery, its worst case inside the 500 ms clock it replaces, where
+50 000's is not. `cargo run --release -p ein-ir --example generated_parser -- mutants 40000 --without-priority`,
+40 000 mutants of the 398 corpus files under 6 000 bytes with their `:priority` taken out, as the corpus will be
+(`ein_corpus::mutants`, the census's generator, now shared), with the vendored constant set to each budget in
+turn, the six sweeps at once on six cores:
+
+| budget | refusals cut (of 17 118) | slowest | most one parse grew the peak RSS |
+|---:|---:|---:|---:|
+| 10 000 | 408 | 0.096 s | 68 MiB |
+| 20 000 | 232 | 0.196 s | 146 MiB |
+| **30 000** | **144** | **0.299 s** (0.205 s alone) | **217 MiB** |
+| 50 000 | 79 | 0.514 s | 382 MiB |
+| 300 000 | 13 | 2.57 s | 2.9 GiB |
+
+Steps per refusal, at 300 000: median 45, 90 % 1 067, **99 % 26 446**, 99.9 % 241 352. As written, `:priority`
+and all, the same 40 000 at 30 000 steps: 25 414 refused, 139 cut, 99 % 16 518, the slowest 0.207 s, 210 MiB.
+**Memory, not time, is what binds**: 7 to 10 KiB a step at the worst, so the million steps the probe's patch
+tried reached 10 to 14 GiB on the grammar of step 2 and three runs were killed for memory (2026-11-08); a budget
+in steps also bounds a parse's memory, which the clock did not. The hand-made worst cases, cut at 30 000:
+`zebra2.ein` with every `)` deleted reports 35 errors in 0.171 s (76, still cut, in 6.9 s at 300 000), and
+`zebra.ein` with every `)` deleted 31 in 0.294 s (`build/s1f.5.5/t3/hard/`). No mutant's report differed between
+two parses at any budget.
+
+**The three tests of F11.**
+- **Twice, the same** (`generated_parser::a_report_is_the_same_twice`, about 4 s on a debug build): every corpus
+  file the generated parser refuses and 1 000 seeded mutants, each parsed twice in one process and compared byte
+  for byte, 842 refusals. With the ranking unpatched (`lrpar`'s `HashSet` drain and `sort_unstable_by` put back)
+  **173 of the 842 differ** (183 of 494 on step 2's grammar, `:priority` and all); patched, none.
+- **The fuzzer** (`fuzz_properties::a_generated_refusal_is_the_same_twice_and_within_its_budget`): the same
+  property over the fuzzer's stream, and every recovery within the budget, all of it spent only where the
+  report says it was cut. It reads every fourth input, and at most 10 000 spread over the stream: three in four
+  are refused and a refusal costs milliseconds, most of them lexing, so the nightly's 1 000 000 would take an
+  hour a seed. 500 inputs a commit (the binary's four tests in 3.3 s, debug), 10 000 a seed in the nightly (40 s
+  at `EIN_FUZZ_SEED=1`, release). Unpatched, it fails at iteration 0.
+- **The cut** (`generated_parser::a_report_cut_at_the_budget_says_so`): `ein-ir/tests/golden/recovery_cut.ein`,
+  two mistakes recovery repairs and then a comment whose second line lost its semicolons, needs 68 400 steps
+  (the 300 000 build); at 30 000 it reports the two with their repairs, the third with none, and the cut line, in
+  `golden/recovery_cut.txt`.
+
+**The nesting limit: 1 000**, the stage's default. A `(` that opens level 1 001 is refused before the parse, one
+line on its position: *this `(` nests deeper than the limit of 1000 parentheses* (`generated_parser::
+the_nesting_limit`). At the limit, a program with a macro, a rule whose `:match` nests a call of it 1 000 deep
+and a fact nested 1 000 deep parses, dumps and loads, the loader expanding the call, on the test's own thread,
+a debug build's 2 MiB; 1 001 and 100 000 deep are refused with the line. Its headroom: the same program, read by
+the hand-written parser, dumps and loads on a 2 MiB debug thread at 3 000 deep and overflows at 3 250. Built
+with the feature, `ein saturate`, `ein solve`, `ein render program` and `ein solve --dump-answer` answer it,
+exit 0, on a debug and a release build, and refuse 1 001 and 100 000 deep with the line, exit 1. The shipped
+binary still aborts at 100 000 deep until the swap.
+
+**What did not move.** No answer, golden, exit code, CLI option or `EIN_*` name: every command still parses
+with the hand-written parser, which still takes `:priority` and refuses a macro's `:why`. `fuzz_seeds.txt` is
+unchanged, since no seed file was added. The gate's numbers are in the commit.
+
 ### Task T1f.5.5.8 — the swap's prerequisite: the loader's names out of the name space
 
 S1f.5.4's [Q1](s1f.5.4_digits_are_names.md#q1--the-synthetic-names), **decided 2026-11-08 by the coordinator on
@@ -839,3 +987,15 @@ T1f.5.2.4 and S1f.5.11's T1f.5.11.3. `docs/history/` is a record, and does not c
   fact does not parse, with the line and column (S-15).
 - No corpus answer moved outside T9's list.
 - `./run_tests.sh` is green.
+
+## Notes
+
+- **Parked for T4 by T3, 2026-11-08: the tokens expected at an error.** § The error text has each error report
+  *the tokens expected there*. Read off the state table, which is what `lrpar` exposes beside an error (its
+  state), the set overstates: Pager's merged tables reduce on a lookahead before the error is found, so at
+  `four_mistakes.ein`'s `a?x`, a fact's argument, it offered `:why`, `:goal` and nine more keywords no fact
+  takes. The exact set is what parses on from the error's stack, which is how CPCT+ checks a repair, and the
+  stack and the table are inside `lrpar` (the generated module keeps the table private). Two ways: a third
+  change to the vendored crate, recording that set on each `ParseError`; or the ranked repairs stand for it,
+  since each `Insert` in them is a token the parse goes on with. **Recommended: the repairs stand**, and the
+  error text says no more; T4 decides, with the error text, and T3's report leaves the line out.

@@ -1,0 +1,13 @@
+;; The cut fixture (M1f S1f.5.5, T1f.5.5.3): two mistakes recovery repairs,
+;; then a comment that lost its semicolons on its second line, so that its
+;; prose reads as tokens and the search for a repair runs out of steps there.
+(relation color-of House Color)
+(rule distinct ()
+  :match  (color-of ?h ?c)
+  :assert (seen ?h ?c)
+  :bogus 3)
+(color-of _ blue)
+;; Nothing after this comment's second line is reported, since recovery
+stopped there: its budget is a count of search steps, not of seconds, so the
+;; report is the same on every machine and under any load.
+(color-of h3 green

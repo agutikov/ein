@@ -59,7 +59,26 @@ impl std::error::Error for ParseError {}
 ///
 /// `filename` is recorded in every `Loc` and in the error message; `None`
 /// becomes `<string>`.
+///
+/// This is [`hand_written`], the parser every command reads a program with,
+/// unless `ein-ir` is built with its `generated-parser` feature, which is off
+/// in every shipped build: then it is [`crate::grammar::parse`], the parser
+/// generated from S1f.5.5's grammar, so that a whole `ein` can answer on it
+/// (T1f.5.5.3's hook, for T1f.5.5.9's sweep; it goes at the swap).
 pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<NodeId>, ParseError> {
+    if cfg!(feature = "generated-parser") {
+        return crate::grammar::parse_as_hand_written(ast, text, filename);
+    }
+    hand_written(ast, text, filename)
+}
+
+/// The hand-written parser, by name, whichever [`parse`] is: what the
+/// generated parser is compared with until the swap (T1f.5.5.4).
+pub fn hand_written(
+    ast: &mut Ast,
+    text: &str,
+    filename: Option<&str>,
+) -> Result<Vec<NodeId>, ParseError> {
     ein_core::counters::bump(|k| {
         k.parse_call += 1;
         k.parse_bytes += text.len() as u64;

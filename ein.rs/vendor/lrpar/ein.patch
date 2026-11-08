@@ -1,0 +1,273 @@
+Ein's patch to lrpar 0.15.0 (M1f S1f.5.5, F11; T1f.5.5.3, 2026-11-08).
+
+This directory is the crate as published on crates.io (git 0fd68c80cb13, its
+.cargo_vcs_info.json), with grmtools' COPYRIGHT, LICENSE-APACHE and LICENSE-MIT
+at that commit, which the published crate does not carry, and this diff. To
+re-apply it to a fresh copy: `patch -p1 < ein.patch` from the crate's root.
+
+- The ranking: duplicate repair sequences are dropped keeping the first of
+  each, in the order the search found them, and the sort is stable, so equal
+  repairs keep the search's order. Upstream de-duplicated through a HashSet
+  and sorted unstably, so one input could report its repairs in two orders.
+- The budget: recovery is bounded by RECOVERY_STEP_BUDGET search steps over the
+  whole parse, not by 500 ms of wall clock, so an input reports the same
+  errors on every machine and under any load.
+- The cut: each ParseError says how many steps recovery had taken
+  (recovery_steps) and whether the budget stopped it there (recovery_cut), so
+  that an error with no repairs because recovery ran out reads differently
+  from one with none at all.
+
+diff -ruN -x COPYRIGHT -x 'LICENSE-*' a/src/lib/cpctplus.rs b/src/lib/cpctplus.rs
+--- a/src/lib/cpctplus.rs
++++ b/src/lib/cpctplus.rs
+@@ -5,12 +5,6 @@
+     hash::{Hash, Hasher},
+ };
+ 
+-// web_time can be used on non-wasm32 but to avoid the dependency.
+-#[cfg(not(target_arch = "wasm32"))]
+-use std::time::Instant;
+-#[cfg(target_arch = "wasm32")]
+-use web_time::Instant;
+-
+ use cactus::Cactus;
+ use cfgrammar::{Span, TIdx};
+ use lrtable::{Action, StIdx};
+@@ -19,7 +13,7 @@
+ use super::{
+     Lexeme, LexerTypes,
+     dijkstra::dijkstra,
+-    parser::{AStackType, ParseRepair, Parser, Recoverer},
++    parser::{AStackType, Budget, ParseRepair, Parser, Recoverer},
+ };
+ 
+ const PARSE_AT_LEAST: usize = 3; // N in Corchuelo et al.
+@@ -148,7 +142,7 @@
+ {
+     fn recover(
+         &self,
+-        finish_by: Instant,
++        finish_by: &Budget,
+         parser: &Parser<StorageT, LexerTypesT, ActionT, ParamT>,
+         in_laidx: usize,
+         in_pstack: &mut Vec<StIdx<StorageT>>,
+@@ -187,7 +181,7 @@
+             |explore_all, n, nbrs| {
+                 // Calculate n's neighbours.
+ 
+-                if Instant::now() >= finish_by {
++                if finish_by.spent() {
+                     return false;
+                 }
+ 
+@@ -383,15 +377,15 @@
+     /// out while doing so.
+     fn collect_repairs(
+         &self,
+-        finish_by: Instant,
++        finish_by: &Budget,
+         in_laidx: usize,
+         cnds: Vec<PathFNode<StorageT>>,
+     ) -> Option<Vec<Vec<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>>>> {
+         fn traverse<StorageT: PrimInt>(
+-            finish_by: Instant,
++            finish_by: &Budget,
+             rm: &Cactus<RepairMerge<StorageT>>,
+         ) -> Option<Vec<Vec<Repair<StorageT>>>> {
+-            if Instant::now() >= finish_by {
++            if finish_by.spent() {
+                 return None;
+             }
+             let mut out = Vec::new();
+@@ -530,9 +524,10 @@
+     // Use a HashSet as a quick way of deduplicating repair sequences: occasionally we can end up
+     // with hundreds of thousands (!), and we don't have a sensible ordering on ParseRepair to make
+     // it plausible to do a sort and dedup.
+-    let mut hs: HashSet<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>> =
+-        all_rprs.drain(..).collect();
+-    all_rprs.extend(hs.drain());
++    // Ein's patch (F11): drop duplicates keeping the first of each, in the order found, and sort
++    // stably below, so repairs of equal rank keep the search's own order.
++    let mut seen: HashSet<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>> = HashSet::new();
++    all_rprs.retain(|r| seen.insert(r.clone()));
+ 
+     // Sort repair sequences:
+     //   1) by whether they contain Inserts that are %insert_avoid
+@@ -547,7 +542,7 @@
+         }
+         false
+     };
+-    all_rprs.sort_unstable_by(|x, y| {
++    all_rprs.sort_by(|x, y| {
+         let x_cai = contains_avoid_insert(x);
+         let y_cai = contains_avoid_insert(y);
+         if x_cai && !y_cai {
+@@ -573,7 +568,7 @@
+     ParamT: Clone,
+ >(
+     parser: &Parser<StorageT, LexerTypesT, ActionT, ParamT>,
+-    finish_by: Instant,
++    finish_by: &Budget,
+     in_laidx: usize,
+     in_pstack: &[StIdx<StorageT>],
+     in_cnds: Vec<Vec<Vec<ParseRepair<LexerTypesT::LexemeT, StorageT>>>>,
+@@ -584,7 +579,7 @@
+     let mut cnds = Vec::new();
+     let mut furthest = 0;
+     for rpr_seqs in in_cnds {
+-        if Instant::now() >= finish_by {
++        if finish_by.spent() {
+             return vec![];
+         }
+         let mut pstack = in_pstack.to_owned();
+diff -ruN -x COPYRIGHT -x 'LICENSE-*' a/src/lib/parser.rs b/src/lib/parser.rs
+--- a/src/lib/parser.rs
++++ b/src/lib/parser.rs
+@@ -7,12 +7,6 @@
+     vec,
+ };
+ 
+-// Can be used on non-wasm32 but to avoid the dependency.
+-#[cfg(not(target_arch = "wasm32"))]
+-use std::time::{Duration, Instant};
+-#[cfg(target_arch = "wasm32")]
+-use web_time::{Duration, Instant};
+-
+ use cactus::Cactus;
+ use cfgrammar::{RIdx, Span, TIdx, header::Value, span::Location, yacc::YaccGrammar};
+ use lrtable::{Action, StIdx, StateTable};
+@@ -24,10 +18,43 @@
+ 
+ use crate::{LexError, Lexeme, LexerTypes, NonStreamingLexer, cpctplus};
+ 
+-#[cfg(test)]
+-const RECOVERY_TIME_BUDGET: u64 = 60_000; // milliseconds
+-#[cfg(not(test))]
+-const RECOVERY_TIME_BUDGET: u64 = 500; // milliseconds
++/// Ein's patch (F11): recovery is bounded by a count of search steps over the whole parse, not by
++/// the wall clock, so the same input reports the same errors on every machine and under any load.
++/// A step is one check of the budget, at each node the search expands and each node the repair
++/// collection and ranking visit, which are the places the clock was read.
++pub const RECOVERY_STEP_BUDGET: u64 = 30_000;
++
++/// The steps recovery may still take in this parse (Ein's patch, F11).
++pub(super) struct Budget {
++    left: std::cell::Cell<u64>,
++    /// Set once a step was asked for and none was left.
++    denied: std::cell::Cell<bool>,
++}
++
++impl Budget {
++    fn new() -> Self {
++        Budget {
++            left: std::cell::Cell::new(RECOVERY_STEP_BUDGET),
++            denied: std::cell::Cell::new(false),
++        }
++    }
++
++    /// Takes one step; true once none is left.
++    pub(super) fn spent(&self) -> bool {
++        let l = self.left.get();
++        if l == 0 {
++            self.denied.set(true);
++            return true;
++        }
++        self.left.set(l - 1);
++        false
++    }
++
++    /// The steps taken so far in this parse.
++    fn taken(&self) -> u64 {
++        RECOVERY_STEP_BUDGET - self.left.get()
++    }
++}
+ 
+ #[deprecated(
+     since = "0.14.0",
+@@ -311,7 +338,7 @@
+         spans: &mut Vec<Span>,
+     ) -> Option<ActionT> {
+         let mut recoverer = None;
+-        let mut recovery_budget = Duration::from_millis(RECOVERY_TIME_BUDGET);
++        let recovery_budget = Budget::new();
+         loop {
+             debug_assert_eq!(astack.len(), spans.len());
+             let stidx = *pstack.last().unwrap();
+@@ -372,6 +399,8 @@
+                                         stidx,
+                                         lexeme: la_lexeme,
+                                         repairs: vec![],
++                                        recovery_steps: 0,
++                                        recovery_cut: false,
+                                     }
+                                     .into(),
+                                 );
+@@ -380,17 +409,11 @@
+                         });
+                     }
+ 
+-                    let before = Instant::now();
+-                    let finish_by = before + recovery_budget;
+                     let (new_laidx, repairs) = recoverer
+                         .as_ref()
+                         .unwrap()
+                         .as_ref()
+-                        .recover(finish_by, self, laidx, pstack, astack, spans);
+-                    let after = Instant::now();
+-                    recovery_budget = recovery_budget
+-                        .checked_sub(after - before)
+-                        .unwrap_or_else(|| Duration::new(0, 0));
++                        .recover(&recovery_budget, self, laidx, pstack, astack, spans);
+                     let keep_going = !repairs.is_empty();
+                     let la_lexeme = self.next_lexeme(laidx);
+                     errors.push(
+@@ -398,6 +421,8 @@
+                             stidx,
+                             lexeme: la_lexeme,
+                             repairs,
++                            recovery_steps: recovery_budget.taken(),
++                            recovery_cut: recovery_budget.denied.get(),
+                         }
+                         .into(),
+                     );
+@@ -614,7 +639,7 @@
+ {
+     fn recover(
+         &self,
+-        finish_by: Instant,
++        finish_by: &Budget,
+         parser: &Parser<StorageT, LexerTypesT, ActionT, ParamT>,
+         in_laidx: usize,
+         in_pstack: &mut PStack<StorageT>,
+@@ -1020,6 +1045,11 @@
+     stidx: StIdx<StorageT>,
+     lexeme: LexemeT,
+     repairs: Vec<Vec<ParseRepair<LexemeT, StorageT>>>,
++    /// Ein's patch (F11): the steps recovery had taken in this parse when this error was reported.
++    recovery_steps: u64,
++    /// Ein's patch (F11): whether recovery asked for a step the budget no longer had, so that the
++    /// repairs, and the errors after this one, are what it reached rather than all there are.
++    recovery_cut: bool,
+ }
+ 
+ impl<LexemeT: Lexeme<StorageT>, StorageT: Debug + Hash> Display for ParseError<LexemeT, StorageT> {
+@@ -1046,6 +1076,19 @@
+     pub fn repairs(&self) -> &Vec<Vec<ParseRepair<LexemeT, StorageT>>> {
+         &self.repairs
+     }
++
++    /// Ein's patch (F11): the steps recovery had taken in this parse, out of
++    /// [`RECOVERY_STEP_BUDGET`], when this error was reported. Zero without recovery.
++    pub fn recovery_steps(&self) -> u64 {
++        self.recovery_steps
++    }
++
++    /// Ein's patch (F11): true when recovery stopped at [`RECOVERY_STEP_BUDGET`] by this error, so
++    /// that an empty [`repairs`](Self::repairs) means *cut*, not *no repair exists*, and the parse
++    /// reports no error after it.
++    pub fn recovery_cut(&self) -> bool {
++        self.recovery_cut
++    }
+ }
+ 
+ #[cfg(test)]

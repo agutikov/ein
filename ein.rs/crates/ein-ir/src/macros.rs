@@ -33,13 +33,20 @@ impl std::fmt::Display for MacroError {
 
 impl std::error::Error for MacroError {}
 
-/// A `(macro NAME (params…) BODY)` declaration.
+/// A `(macro NAME (params…) BODY)` declaration, with its `:why` where it
+/// has one.
 #[derive(Debug, Clone)]
 pub struct Macro {
     pub name: String,
     /// The body's substitution variables, in declaration order.
     pub params: Vec<String>,
     pub body: NodeId,
+    /// `(macro NAME (params…) BODY :why "…")`'s template, which a macro may
+    /// carry as a relation and a rule do: the user's ruling of 2026-11-08,
+    /// that every form an NL template can go on takes one (M1f S1f.5.5, T3).
+    /// Only the generated parser writes it; the hand-written parser refuses a
+    /// macro with anything after its body.
+    pub why: Option<String>,
     /// The declaring form, for the `Loc` the loader stores on the program.
     pub form: NodeId,
 }
@@ -116,12 +123,24 @@ pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec
                 _ => None,
             })
             .collect();
+        // What follows the body: `:why "…"`, the one clause the grammar lets
+        // a macro take after it.
+        let why = args[3..].iter().find_map(|&a| match ast.node(a) {
+            Node::KwPair { key, value } => match (ast.node(key), ast.node(value)) {
+                (Node::Keyword(k), Node::Str(v)) if ast.sym(k) == "why" => {
+                    Some(ast.sym(v).to_string())
+                }
+                _ => None,
+            },
+            _ => None,
+        });
         out.insert(
             name.to_string(),
             Macro {
                 name: name.to_string(),
                 params,
                 body,
+                why,
                 form,
             },
         );

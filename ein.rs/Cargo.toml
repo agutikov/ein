@@ -37,6 +37,11 @@ members = [
     "crates/ein-render",
     "crates/ein-cli",
 ]
+# The vendored `lrpar` below is a patched dependency, not a member: none of
+# the gate's checks (fmt, clippy, rustdoc, the tests) is ours to run over a
+# crate we did not write, and a path dependency inside the workspace's
+# directory would otherwise join it.
+exclude = ["vendor"]
 
 [workspace.package]
 version    = "0.1.0"
@@ -97,6 +102,22 @@ snmalloc-rs = "0.7"
 # (`docs/kernel/defined_behaviour.md` § 5). `cli` only; the engine crates stay
 # dependency-light.
 clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
+
+# grmtools' parser runtime, patched (M1f S1f.5.5 F11): `lrpar` 0.15.0's
+# error recovery was not deterministic. It ranked equal repairs in a
+# `HashSet`'s random order and stopped at a 500 ms wall-clock budget, so one
+# refused file could report different errors on two runs. The copy under
+# `vendor/lrpar/` keeps the first of each duplicate in the order the search
+# found it, sorts stably, and bounds recovery by a count of search steps over
+# the whole parse (`RECOVERY_STEP_BUDGET`), with each error saying whether it
+# was cut there. `vendor/lrpar/ein.patch` is the whole difference from the
+# published crate, apart from the licence files the crate does not ship,
+# which are grmtools' at the commit it was published from. Through
+# `[patch.crates-io]`, so the parser `ein-ir`'s `build.rs` generates and any
+# grammar loaded at run time both get it. Sending the patch upstream is the
+# user's call; if a grmtools release carries it, this copy goes.
+[patch.crates-io]
+lrpar = { path = "vendor/lrpar" }
 
 # Optimised even in dev: `cargo test` spawns hundreds of engine processes —
 # `ein-cli/tests/corpus_cli.rs` alone is 542 of them — and a debug-speed engine

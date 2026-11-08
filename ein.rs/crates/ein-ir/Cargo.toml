@@ -15,6 +15,27 @@ ein-core    = { path = "../ein-core" }
 rustc-hash.workspace = true
 # The stdlib, embedded so the binary ships self-contained (design/11 §3).
 include_dir.workspace = true
+# grmtools (M1f S1f.5.5, the user's ruling of 2026-11-07): the grammar is
+# `src/ein.l` and `src/ein.y`, and `build.rs` generates the parser from them,
+# so a conflict in the grammar fails the build. `lrpar` is the vendored, patched
+# copy (`[patch.crates-io]` in the workspace manifest, F11). Exact versions: the
+# patch is against 0.15.0, and the generated code calls into all three.
+cfgrammar = "=0.15.0"
+lrlex     = "=0.15.0"
+lrpar     = "=0.15.0"
+
+[build-dependencies]
+lrlex = "=0.15.0"
+lrpar = "=0.15.0"
+
+[features]
+# T1f.5.5.3's hook, off by default: `ein_ir::parse` reads every program through
+# the generated parser instead of the hand-written one, so that a whole `ein`
+# built with `--features ein-ir/generated-parser` answers on the new grammar
+# (T1f.5.5.9's sweep). No shipped build turns it on, and no command's output,
+# option or environment name moves with it off. It goes at the swap
+# (T1f.5.5.4), when the generated parser is the only one.
+generated-parser = []
 
 [dev-dependencies]
 # Verifying the embedded copy against `stdlib/MANIFEST.sha256`, in a test —

@@ -18,6 +18,11 @@
 //! 3. **The recorded findings still parse the way they parsed.** Every seed
 //!    and every checked-in `corpus/fuzz_findings/*.ein` against a table —
 //!    which is what makes a find a regression test rather than a souvenir.
+//! 4. **The generated parser's refusal is the same twice, within its budget**
+//!    (M1f S1f.5.5 F11, T1f.5.5.3): generated input the generated parser
+//!    refuses is parsed again and reports the same, byte for byte, and its
+//!    recovery took at most `lrpar`'s step budget, all of it only where the
+//!    report says it was cut.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
@@ -406,4 +411,67 @@ fn every_seed_and_finding_parses_the_way_it_was_recorded() {
     if let Some(msg) = golden(&golden_path("ein-ir", "fuzz_seeds.txt"), &out) {
         panic!("{msg}");
     }
+}
+
+/// **The generated parser's refusal is the same twice, and within its budget**
+/// (M1f S1f.5.5 F11, T1f.5.5.3).
+///
+/// Every generated input, through the generated parser twice in this one
+/// process, whose `HashSet`s each draw their own hash keys: a refusal reports
+/// the same errors and repairs, byte for byte, both times, which the
+/// unpatched `lrpar` did not, since it ranked equal repairs in a set's order.
+/// Recovery is bounded by a count of search steps rather than the clock, so
+/// the property also holds under any load; and a refusal took at most
+/// `RECOVERY_STEP_BUDGET` steps, all of them only where the report says it
+/// was cut there. The hand-written parser's verdict is not compared: where
+/// the two languages differ is T1f.5.5.9's to attribute.
+///
+/// It reads every fourth input of the stream, and at most 10 000 of it,
+/// spread evenly: a refusal costs the generated parser milliseconds, most of
+/// them lexing, and three in four of these inputs are refused, so the
+/// nightly's 1 000 000 would take an hour a seed. 500 inputs per commit, in
+/// about three seconds of a debug build, and 10 000 a seed in the nightly.
+#[test]
+fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
+    use ein_ir::grammar::{self, RECOVERY_STEP_BUDGET};
+    let (iters, seed) = budget();
+    let mut rng = Rng(seed | 1);
+    let seeds = seeds();
+    let stride = (iters / 10_000).max(4);
+    let (mut read, mut refused) = (0usize, 0usize);
+    for i in 0..iters {
+        let text = generated(&seeds, &mut rng);
+        if i % stride != 0 {
+            continue;
+        }
+        read += 1;
+        let once = grammar::parse(&mut Ast::new(), &text, None);
+        let twice = grammar::parse(&mut Ast::new(), &text, None);
+        match (once, twice) {
+            (Ok(_), Ok(_)) => {}
+            (Err(a), Err(b)) => {
+                refused += 1;
+                assert_eq!(
+                    a.to_string(),
+                    b.to_string(),
+                    "iteration {i} (EIN_FUZZ_SEED={seed}) reported two ways:\n---\n{text}\n---"
+                );
+                assert!(
+                    a.recovery_steps <= RECOVERY_STEP_BUDGET
+                        && (!a.cut || a.recovery_steps == RECOVERY_STEP_BUDGET),
+                    "iteration {i} (EIN_FUZZ_SEED={seed}): {} steps, cut {}:\n---\n{text}\n---",
+                    a.recovery_steps,
+                    a.cut
+                );
+            }
+            _ => panic!(
+                "iteration {i} (EIN_FUZZ_SEED={seed}) was refused once and accepted once:\n---\n{text}\n---"
+            ),
+        }
+    }
+    eprintln!("fuzz: the generated parser refused {refused} of {read} read, each the same twice");
+    assert!(
+        refused >= read / 20,
+        "only {refused} of {read} inputs were refused, so the property is untested"
+    );
 }

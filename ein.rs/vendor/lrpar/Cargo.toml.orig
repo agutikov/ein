@@ -1,0 +1,48 @@
+[package]
+name = "lrpar"
+description = "Yacc-compatible parser generator"
+repository = "https://github.com/softdevteam/grmtools"
+version = "0.15.0"
+edition = "2024"
+readme = "README.md"
+license = "Apache-2.0/MIT"
+build = "build.rs"
+categories = ["parsing"]
+keywords = ["parser", "LR", "yacc", "grammar"]
+
+[lib]
+name = "lrpar"
+path = "src/lib/mod.rs"
+
+[features]
+serde = ["dep:serde", "cfgrammar/serde", "lrtable/serde"]
+_unstable_api = []
+_unsealed_unstable_traits = ["_unstable_api"]
+
+[build-dependencies]
+vergen = { version = "8", default-features = false, features = ["build"] }
+
+[dependencies]
+cfgrammar = { path="../cfgrammar", version = "0.15", features = ["wincode"] }
+lrtable = { path="../lrtable", version = "0.15", features = ["wincode"] }
+
+wincode = { workspace = true, features = ["derive"] }
+cactus.workspace = true
+filetime.workspace = true
+indexmap.workspace = true
+num-traits.workspace = true
+packedvec.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+regex.workspace = true
+serde = { workspace = true, features = ["derive"], optional = true }
+vob.workspace = true
+syn.workspace = true
+prettyplease.workspace = true
+unicode-width.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-time = "1.1.0"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+tempfile = "3.0"

@@ -20,6 +20,7 @@ pub mod claim;
 pub mod dump;
 pub mod expect;
 pub mod from_ir;
+pub mod grammar;
 pub mod imports;
 pub mod lex;
 pub mod macros;
