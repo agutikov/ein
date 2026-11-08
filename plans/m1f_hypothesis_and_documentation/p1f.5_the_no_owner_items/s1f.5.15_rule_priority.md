@@ -20,6 +20,13 @@ like any keyword a rule does not take. What the hand-written parser does with it
 this stage's to decide and record (§ T5). T1 re-takes § Context's count: T3 found 482 `:priority` clauses in 137 of
 the 414 files under `examples/`, `stdlib/`, `tests/` and `corpus/` (`grep -l`, `grep -o`, 2026-11-08), where
 § Context's 353 in 82 files are `9ba2349`'s.
+**T1 done 2026-11-08, and the stage stopped there, before any removal** ([§ T1 record](#t1-record-2026-11-08)):
+taking every `:priority` out of the corpus and the stdlib moves no R, N, H, claim, exit code or stored fact on any
+of the 511 programs or the corpus's 1 378 declared runs, and it moves **the facts of cores** on seven corpus
+programs, `zebra.ein`, the zebra2 family and W25's control, each through an order-dependency the store already
+has (the alternatives cap, `:record-alternative-justifications false`, W25). Whether to remove it anyway, derive
+the order first or keep it is [Q-M1f.4](../open_questions.md#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs),
+put to the user.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
 And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
@@ -222,7 +229,9 @@ that, and three things become derivable that a typed integer never was:
   runs, both arms, comparing summary · exit code · trace · event stream ·
   KB-shape digest. Its number is a document under `docs/`, dated and
   commit-stamped, and `utils/priority_census.py` re-takes it. A claim that
-  removal is free is worth exactly what re-takes it.
+  removal is free is worth exactly what re-takes it. **Taken 2026-11-08** ([§ T1 record](#t1-record-2026-11-08)),
+  on the coordinator's correction: the walk's counters are gone, and the scripts that re-take it stay under
+  `build/s1f.5.15/`, as S1f.5.4's did, since once no program writes the keyword there is no arm to take.
 - **Each of the six consumers has a written disposition** — removed, replaced
   by a derived order, or kept with the reason at the site.
 - **The rule dependency graph ships**, with strata, in `ein-infer`, and is
@@ -286,6 +295,137 @@ number is measured against, and it is deliberately an environment variable and
 not a `(config …)` field — because `SolverConfig` is rendered into the KB-shape
 digest and a knob whose settings are being compared would re-bless every shape
 golden in the corpus.
+
+### T1 record, 2026-11-08
+
+**Taken as the coordinator corrected it on 2026-11-08**, since the walk this task was written against is gone
+(M1e2 S1e2.1c.5): no `EIN_PRIORITY` lever, because the binary reads two `EIN_*` names and `config_reference.rs`
+pins them, and no verdict, `k`, enterings or `naf_rounds` to compare. The stripped arm is
+`ein_corpus::mutants::without_priority`, S1f.5.5's T3 function, applied to every `.ein` under the five roots and
+to the stdlib, which the run then reads through `EIN_STDLIB` with its manifest rewritten; the other arm is the
+tree as written. Both arms run one binary, `ein` at `76318fd6`, on the same relative path, so every output
+compares byte for byte but for the input's character count `saturate` prints and the absolute path three
+`examples/broken/load/` programs' import errors name. The scripts stay under
+`build/s1f.5.15/` (gitignored), as S1f.5.4's did: `run_sweep.sh` and `sweep.sh` (pass 1), `declared.py` (pass
+2), `analyze.py` (the classes below), `nocap_probe.sh` (the cause), and `strip/`, a crate whose one function
+calls `without_priority`.
+
+**What it takes out**: 576 clauses in 178 of the 511 files under `examples/`, `tests/`, `stdlib/`, `corpus/` and
+`plans/`; **475 in 136 of the 414 under the first four**, where T3's 482 in 137 (`grep -o`) also counted seven
+mentions of the keyword in comments (`alt-cap-core.ein` three times, `-reordered`, `where-on-rule`, `std.algebra`
+and `std.slots`); 101 in 42 records under `plans/`. All 77 stdlib rules carry one. The corpus writes seventeen
+values, 5 (2), 10 (6), 50 (1), 90 (7), 100 (92), 110 (21), 120 (3), 200 (127), 210 (2), 220 (6), 240 (46), 250
+(49), 300 (54), 350 (1), 400 (19), 500 (36) and 900 (3) (`grep -rhoE ':priority +-?[0-9]+' --include='*.ein'
+examples tests stdlib corpus`), where § Context counted twelve at `9ba2349`.
+
+**Pass 1, every file through three commands on both arms**: `ein solve FILE --json-summary J -H --dump-answer
+D`, `ein saturate FILE --dump` and `ein test FILE`, 511 files, 3 066 runs (`build/s1f.5.15/run_sweep.sh`, then
+`analyze.py`):
+
+| compared | moved |
+|---|---:|
+| the exit code of each run | **0** |
+| R: the summary's `region`, but for root's core and its two companions: k_s, k_c, `exhausted`, every state and its facts, the lines, the holes, the components, the universe rows | **0** |
+| the state files `--dump-answer` writes, as their forms | **0**; on 167 files they differ by the program's `:priority` clauses, its comments and the order facts are written in, and by nothing else |
+| N, the sets of `nogoods.json` | **0** |
+| H, `forms/hyp-stats.txt`, and `root.hypgen`'s `outside`, `types_as_objects` and count | **0** |
+| the claims: the summary's `claim`, each query's classes and `:expect`, and `ein test`'s report | **0** |
+| `saturate --dump`'s stored facts as a set, and its derived facts by relation | **0** |
+| the detector's block but `order`, and each `order` finding as its reader, writer and relations | **0** |
+| **the facts of a core**, root's or a member of N's | **9 programs**, below |
+| `refuted by` beside an unmoved core | 14, 12 of them corpus programs: `branching/01` to `/11` (`symmetric` → `transitive` beside `sibling-exclusive`, 2 to 62 dead sets each), `zebra2-bad` (`adjacent-via-endpoint-bwd` → `co-located-negative`, root's and N's one), and two records, S1e2.3.10's `two-rules-node` and `-reordered` |
+| the priority a detector `order` row prints | 9: `features/07`, `f07-fpoff`, `f07-rules-swapped` and `lattice/10`, `200` → `1000`, and five records; on `detector_proposal/fifo_gap_priority.ein`, a record, the wording, *r2 (priority 100) … is admitted first, whatever the order* becoming *both at priority 1000: … the order they are written in* |
+| narration: the rule a stored fact prints, its first justification | 23 |
+| cost: `saturate`'s per-rule firing breakdown | 21; and the one summary counter, `root.saturator.naf_rounds` on `zebra2-bad`, 486 → 487, as § 1 found |
+| presentation: `saturate --dump`'s rule listing, `:priority N (band)` | 205 |
+
+**Pass 2, the corpus's declared runs**: every run `corpus.toml` declares, the 404 entries' 1 378 cells, the
+slow ones included, through `ein_corpus::plan`'s argv (`build/s1f.5.15/declared.py`). No exit code moved, and 197
+cells differ: 181 `saturate` and `saturate --dump` (the listing, the narration, the character count); 4 `solve
+--trace` (`branching/04`, `/05`, `zebra2`, `zebra2-obligations`: the step order); 7 the detector's `order` rows on
+the four programs above (`solve`, `--minimal`, `--maximal`, `oracle --dump`); `zebra2-bad`'s `solve` (`refuted
+by` and `naf_rounds`); and 4 `solve --dump-lattice`: `refuted by` on 8 of `branching/04`'s nodes and 3 of `/05`'s,
+and on `zebra2` and `zebra2-obligations` **the cores of 24 of their 190 dead nodes**, 17 a fact or two larger and
+7 the same size, every node's state, status and debts the same.
+
+**No R, N, H, claim, exit code or stored fact moved, and a core's facts did: this is the stage's stop**
+(the coordinator's brief: *a core's facts moving is a stop*). `nogoods.json`, root's core with it
+(`build/s1f.5.15/core_moves.txt`):
+
+| program | N | cores whose facts move | facts over N | what decides the core |
+|---|---:|---|---|---|
+| `zebra.ein` | 458 | 292: 223 grow, 50 shrink, 19 the same size | 13 193 → 14 697 | the program sets `:record-alternative-justifications false`, so a fact keeps its first derivation and nothing else, and firing order is the core: the flag's exemption (M1e2 S1e2.2.11). Uncapped, the same 292 move |
+| `zebra2.ein`, `zebra2-obligations.ein` | 366 | 31: 18 grow, 13 the same size | 5 154 → 5 184 | **the alternatives cap**, `MAX_ALT_JUSTIFICATIONS = 32`: at 10⁶ the two arms agree on every core |
+| `zebra2-hints.ein` | 73 | 24: 20 grow, 4 the same size | 1 005 → 1 042 | the cap, as above |
+| `zebra2-minus-15.ein`, `-obligations` | 1 495 | 215: 118 grow, 9 shrink, 88 the same size | 31 151 → 31 284 | the cap, as above |
+| `ein-bugs/wrong-answers/guard-only-first.ein` | 1 | `(p a)` → `(b a) (p a) (seed a)` | 1 → 3 | **W25**: a derivation with no premise is never recorded as an alternative, so the rule that fires first is the core. This is W25's **control**, the one program that shows the row's right answer, and stripped it reports the witness's wrong one |
+| `plans/…/inventory_2026-11-05/probes/guard_only_first.ein`, a record | 1 | the same | 1 → 3 | W25 |
+| `plans/m1e2_correctness/probes/alt-cap-below-noalts.ein`, a record | 1, root | `(p1 Y01) (p2 Y01) (p3 Y01)` → `(w1 X) (w2 X)` | 3 → 2 | alternatives off, as `zebra.ein` |
+
+**The cause, measured** (`build/s1f.5.15/nocap_probe.sh`): a snapshot of `76318fd6` with
+`MAX_ALT_JUSTIFICATIONS` at 10⁶ and nothing else changed (`build/s1f.5.15/nocap/`, built
+`--no-default-features`). On it the zebra2 family's arms agree on every core (0 of 366, 73 and 1 495 move), and
+the capped cores as written differ from the uncapped ones on 113 of `zebra2`'s 366, 34 of `zebra2-hints`' 73 and
+455 of `zebra2-minus-15`'s 1 495: **the cap decides those cores today**, and the typed order only picks which 32
+derivations it keeps. On `zebra.ein` the cap decides nothing (uncapped, 0 of 458 cores differ from today's) and
+the same 292 move, since with the flag off no alternative is recorded at all (`ein saturate --events
+--events-level verbose`: no `alt` event on either arm). With the flag turned on in a copy of `zebra.ein`,
+neither arm's `ein solve -H --dump-answer` had ended after 20 minutes, two at once on an otherwise idle machine
+(stopped there), which is the cost the program's own comment gives for setting it off. On the lattice `solve
+--dump-lattice` visits, `zebra2`'s 24 moved cores are the cap's as well: uncapped, the arms agree on all 374
+nodes.
+
+**Every move is an order-dependency the store already has**, owned before this stage: the cap is Q-M1e.15's and
+F22's (W10), the flag's exemption is S1e2.2.11's ruling, and W25 is F22's. The typed number decides the order those
+three read today; removing it hands the order to the written order (FIFO within one priority) and the cores move
+with it.
+
+**A seventh consumer**, which § Where `:priority` is actually read predates: **the detector's order check**,
+`detector::order` (M1e2 S1e2.1b.5). It reads each deferred rule's priority, drops a race whose writer's priority
+is earlier as the stratified order, and words each `order` row by whether the two are at one priority. With the
+keyword gone every pair is at one priority. On the 511 no finding is added or lost; the rows print `1000` for
+`200`, and `fifo_gap_priority.ein`'s row its other wording. And an eighth that is narration only: the `enqueue`
+event's `priority` field (`events.md`).
+
+**What else the stripped corpus moves**, before any code is removed: `cargo test --workspace` on a snapshot of
+`76318fd6` with the 475 clauses taken out and the stdlib's manifest rewritten (`build/s1f.5.15/proto/`,
+`build/s1f.5.15/proto-test.log`, 2026-11-08): **918 passed and 11 failed, in 9 targets**. Seven are the
+removal's by construction and were to be named before it (re-banked on the snapshot with `EIN_BLESS=1`, four
+goldens move: `corpus_shapes.md5`, 1 340 of its 15 022 lines, `generated_parser_corpus.txt`, `zebra2.golden` and
+`trace_two-level.md`): `corpus_shapes` (`priority=` in every digest),
+`generated_parser::the_builder_holds_on_the_corpus` (its two readings become one: 322 the same tree and 18 the
+same but for digits, **340 of 414 agree as written**, and the 133 that differed only by their `:priority` are
+none), `dump_goldens` (`zebra2.golden`: the parsed program prints no `:priority`), `golden_trace`
+(`trace_two-level.md`, the step order), `region_modes::the_monotone_question_is_about_the_program` and
+`detector`'s two (the order rows' `200` pinned). **Four are not the stage file's prediction**:
+
+- **`lever_invariance::no_config_flag_moves_a_line_of_any_mode`: the config principle breaks.** On
+  `examples/features/12_expect_false.ein` with its `:priority` taken out, `:record-alternative-justifications
+  false` prints `refuted by forced, occupied` where the default prints `refuted by no-room`, beside the same
+  five-fact core. The flag's exemption is the core (S1e2.2.11), and S1e2.3.10's ruling holds `refuted by` to it:
+  *"moves it only where it moves the core"*, argued from *"where the core is the same the primaries are a
+  derivation from it"*. Here one core derives the contradiction two ways, and the flag picks which. It is a
+  wrong answer by the repo's own rule, and **it exists today**: today's binary prints the two lines on the
+  program written without `:priority` (`ein solve`, with and without the flag, 2026-11-08); the typed order is
+  what keeps the corpus from showing it.
+- **`lever_invariance::the_core_exemption_is_one_flag_and_the_core_rows`**, **`explain_semantics::
+  a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core`** and **`ein-einb`'s
+  `roundtrip::a_saturated_kb_round_trips_with_its_derivations`**: each reads `alt-cap-core.ein` and its
+  `-reordered` twin, which are **one `:priority` apart and nothing else**, so stripped they are one program; the
+  flag's exemption loses its witness and the store's smallest-closure arrival is no longer exercised there.
+  W10's `alt-cap-shared` stands as it was (3 facts, both arms).
+
+`wrong_answers.rs` passes: W25's control is a record the test does not run, so its move shows in no test.
+
+**So the stage stops here, before any removal, on two questions for the user**:
+[Q-M1f.4](../open_questions.md#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs),
+whether to remove `:priority` with the cores' moves, derive the order from the rules first (the agent's
+recommendation), or keep it until F22; and
+[Q-M1f.5](../open_questions.md#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core), whether
+`features/12`'s `refuted by` under the flag is a register row owned by F22 (the agent's recommendation) or the
+flag's exemption widened. Q-M1f.5's wrong answer exists with or without this stage; the removal would put it in
+the corpus, where `lever_invariance` fails on it, so Q-M1f.4 (a) and (b) wait on it too. Nothing in the tree
+moved: no engine code, test, golden, fixture or register row.
 
 ### Task T1f.5.15.2 — Disposition the six consumers
 
@@ -362,6 +502,12 @@ Three decisions, in order:
    agree and T9 has nothing to attribute here. The line is the loader's, not the parser's, so it keeps S1f.5.5's
    rule that nothing edits the hand-written parser for a language stage. It is also a line S1f.5.5's T5 deletes
    once the grammar refuses the keyword, which is the one cost: the re-plan wrote no such line for S1f.5.11's lists.
+
+   **Decided 2026-11-08 by the coordinator, the other way, on the user's ruling against double work**: no loader
+   line, since S1f.5.5's T5 would delete it. The removal takes out the consumers and `from_ir.rs`' `priority`
+   match; until the swap a `:priority` written anyway is a rule keyword the hand-written loader drops, as it drops
+   any (D-15, S1f.5.11's case), and from the swap the generated grammar refuses it at the parse. The corpus side
+   is held by a test that no program under `examples/`, `stdlib/`, `tests/` or `corpus/` writes `:priority`.
 2. **Strip the corpus** — 353 occurrences, 82 files, one commit, no other
    change.
 3. **Re-bless, predicted in advance.** The goldens this moves, named now:
@@ -421,7 +567,13 @@ chain a human types, and it is the only one that can be wrong.
 
 The measurement says the cost of removing it is one telemetry counter and a
 smaller unsat core. The value of replacing it is a diagnostic the grammar page
-has promised since S1.7.4.
+has promised since S1.7.4. **Re-taken on 2026-11-08 ([§ T1 record](#t1-record-2026-11-08)), it says more**: the
+cores of seven corpus programs move, and a config-principle breach shows.
+
+**Owed to this stage's first code commit**, from the coordinator's brief of 2026-11-08: `ein.rs/Cargo.toml`'s
+comment on the vendored `lrpar` still says sending the patch upstream is the user's call, and the user ruled that
+day *"don't send the lrpar patch upstream either"*. T1 changed no code, so the comment waits for T3's commit or
+T5's.
 
 ## Connections
 

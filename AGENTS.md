@@ -432,6 +432,14 @@ constrained-reasoning research.
   flag only decides loading"*, so it moves no answer); and the patch is not
   sent upstream (*"don't send the lrpar patch upstream either"*)
   ([P1f.5 § The order](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-order)).
+  S1f.5.15's T1 ran the same day and stopped before any removal: every
+  `:priority` taken out of the corpus moves no R, N, H, claim or exit code on
+  the 511 programs, but moves the facts of cores on seven, through the
+  alternatives cap, `zebra.ein`'s `:record-alternative-justifications false`
+  and W25, and shows a config-principle breach that exists today,
+  `features/12`'s `refuted by` moving under that flag beside one core; both are
+  put to the user, Q-M1f.4 and Q-M1f.5
+  ([§ T1 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t1-record-2026-11-08)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
