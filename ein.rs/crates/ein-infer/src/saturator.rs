@@ -79,6 +79,41 @@ use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 /// review nor this comment had.
 pub const DEFAULT_PRIORITY: i64 = 1000;
 
+/// What orders the closure's agenda and the boundary — M1f
+/// [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s
+/// T3, on the user's ruling of 2026-11-08 on Q-M1f.4, (b) *"Derive order
+/// first"*.
+///
+/// No order decides what is derivable on a stratified program
+/// (`naf_semantics::priority_does_not_decide_what_is_derivable`); it decides
+/// which derivation of a fact arrives first, which the alternatives cap, a
+/// program with `:record-alternative-justifications false` and W25 read
+/// (the stage's § T1 record). So the derived order is measured against the
+/// declared one before `:priority` goes, and it is not a lever: no `EIN_*`
+/// name and no `(config …)` field reaches it. Every shipped build is
+/// [`Order::Declared`]; the `derived-order` cargo feature, off by default,
+/// builds the other arm of the stage's sweep.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Order {
+    /// Each rule's `:priority`, [`DEFAULT_PRIORITY`] where it writes none:
+    /// the agenda and the boundary both in (priority, FIFO) order.
+    Declared,
+    /// The band each rule's shape derives ([`crate::strata::band`]) orders
+    /// the agenda, FIFO within a band, and the boundary is FIFO: admitting by
+    /// stratum is F21's D2, not this stage's.
+    Derived,
+}
+
+impl Order {
+    /// [`Order::Declared`], or [`Order::Derived`] in a build with the
+    /// `derived-order` feature.
+    pub const DEFAULT: Order = if cfg!(feature = "derived-order") {
+        Order::Derived
+    } else {
+        Order::Declared
+    };
+}
+
 /// The kernel-native symmetric mirror trigger. A relation marked
 /// `(__symmetric__ R)` has its extension closed under arg-swap directly by the
 /// saturator — no plan, no matcher.
@@ -306,6 +341,11 @@ pub struct Saturator {
     mirror_seeded: bool,
     record_alternatives: bool,
     last_firing: Option<Firing>,
+    /// What orders the agenda and the boundary ([`Order`]).
+    order: Order,
+    /// Under [`Order::Derived`], each plan's band rank, by its position in the
+    /// engine, filled as plans are first enqueued.
+    derived: Vec<Option<i64>>,
 
     // ── Observables ────────────────────────────────────────────────
     pub naf_rounds: u32,
@@ -387,6 +427,7 @@ pub struct Snapshot {
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     mirror_seeded: bool,
+    order: Order,
     facts: FxHashSet<FactId>,
 }
 
@@ -448,6 +489,8 @@ impl Saturator {
             // always closed.
             record_alternatives: cfg.record_alternative_justifications,
             last_firing: None,
+            order: Order::DEFAULT,
+            derived: Vec::new(),
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -488,6 +531,7 @@ impl Saturator {
             sym_rels: self.sym_rels.clone(),
             sym_n: self.sym_n,
             mirror_seeded: self.mirror_seeded,
+            order: self.order,
             facts: kb.facts().collect(),
         }
     }
@@ -559,6 +603,8 @@ impl Saturator {
             mirror_seeded: snapshot.mirror_seeded,
             record_alternatives: cfg.record_alternative_justifications,
             last_firing: None,
+            order: snapshot.order,
+            derived: Vec::new(),
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -575,6 +621,20 @@ impl Saturator {
     }
 
     // ── Public API ─────────────────────────────────────────────────
+
+    /// This saturation under `order` rather than [`Order::DEFAULT`], before
+    /// it has enqueued anything; a fork resumed from its snapshot keeps it.
+    /// What a test compares the two orders with: no surface reaches it.
+    pub fn with_order(mut self, order: Order) -> Saturator {
+        debug_assert_eq!(self.tiebreaker, 0, "set before the first enqueue");
+        self.order = order;
+        self
+    }
+
+    /// What orders this saturation's agenda and boundary.
+    pub fn order(&self) -> Order {
+        self.order
+    }
 
     /// The next firing, or `None` at the two-phase fixpoint.
     pub fn step(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
@@ -1008,7 +1068,7 @@ impl Saturator {
             c.enqueue_task_full += 1;
         });
         let plan = self.engine.plan_arc(at);
-        let priority = self.priority_for(s, &plan);
+        let priority = self.priority_for(s, at, &plan);
         // The matcher is moved out for the duration: `enqueue_binding` runs
         // *inside* its callback and needs the saturator, which the matcher is
         // part of. Moving it out is what keeps the enqueue on the match's own
@@ -1028,7 +1088,7 @@ impl Saturator {
     fn seed_match(&mut self, s: &mut Session<'_>, at: usize, fact: FactId) {
         ein_core::counters::bump(|c| c.enqueue_task += 1);
         let plan = self.engine.plan_arc(at);
-        let priority = self.priority_for(s, &plan);
+        let priority = self.priority_for(s, at, &plan);
         let mut m = std::mem::take(&mut self.matcher);
         let (kb, terms, ast, events) = (&*s.kb, &*s.terms, s.ast, &mut *s.events);
         m.run_seeded(kb, terms, ast, &plan, fact, &mut |mt| {
@@ -1051,7 +1111,7 @@ impl Saturator {
         at: usize,
         plan: &Plan,
         m: &crate::match_::Match<'_>,
-        priority: i64,
+        (queued, waiting): (i64, i64),
     ) {
         let disjunct = m.disjunct;
         let key = BindingKey::new(plan, self.engine.activator(at), m.regs());
@@ -1067,6 +1127,7 @@ impl Saturator {
         self.seen.insert(seen_key);
         self.tiebreaker += 1;
         let parked = !plan.disjuncts[disjunct].guards.is_empty();
+        let priority = if parked { waiting } else { queued };
         if events.on() {
             let (rule, activator, bindings) = (
                 terms.sym(plan.rule).to_string(),
@@ -1144,7 +1205,31 @@ impl Saturator {
         id
     }
 
-    fn priority_for(&self, s: &Session<'_>, plan: &Plan) -> i64 {
+    /// The keys a plan's candidates are ordered by: in the agenda, and parked
+    /// at the boundary ([`Order`]).
+    fn priority_for(&mut self, s: &Session<'_>, at: usize, plan: &Plan) -> (i64, i64) {
+        match self.order {
+            Order::Declared => {
+                let p = Self::declared(s, plan);
+                (p, p)
+            }
+            Order::Derived => {
+                if self.derived.len() <= at {
+                    self.derived.resize(at + 1, None);
+                }
+                let band = *self.derived[at].get_or_insert_with(|| {
+                    let program = s.kb.program();
+                    let obligation = program.obligations.contains(plan.rule);
+                    crate::strata::band(&crate::strata::shape(s.kb, s.terms, plan, obligation))
+                        .rank()
+                });
+                (band, DEFAULT_PRIORITY)
+            }
+        }
+    }
+
+    /// The rule's `:priority`, or [`DEFAULT_PRIORITY`].
+    fn declared(s: &Session<'_>, plan: &Plan) -> i64 {
         let Some(rule) = s.kb.program().rules.get(plan.rule) else {
             return DEFAULT_PRIORITY;
         };

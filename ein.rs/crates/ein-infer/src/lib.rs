@@ -56,6 +56,7 @@ pub mod saturator;
 pub mod scope;
 pub mod shape;
 pub mod states;
+pub mod strata;
 pub mod transversal;
 pub(crate) mod tree;
 pub mod types_as_objects;

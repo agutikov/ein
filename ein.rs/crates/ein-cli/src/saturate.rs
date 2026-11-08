@@ -17,6 +17,7 @@ use ein_infer::SharedMemo;
 use ein_infer::events::{Events, Level};
 use ein_infer::firing::Firing;
 use ein_infer::saturator::{Saturator, Session};
+use ein_infer::strata;
 use ein_infer::{Engine, events};
 use ein_ir::{Ast, Node, NodeId};
 
@@ -449,7 +450,24 @@ fn band_label(priority: Option<i64>) -> &'static str {
     }
 }
 
-fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb) {
+/// What the listing prints beside a rule's declared band (M1f S1f.5.15's T3):
+/// the band its shape derives and the stratum of what it writes, from the
+/// plans the run compiled, or that no plan of it was compiled.
+fn derived_column(rule: Option<&strata::RuleBand>) -> String {
+    match rule {
+        Some(strata::RuleBand {
+            derived: Some(band),
+            stratum,
+            ..
+        }) => match stratum {
+            Some(k) => format!("  derived {}  stratum {k}", band.label()),
+            None => format!("  derived {}", band.label()),
+        },
+        _ => "  derived -  (no plan compiled)".to_string(),
+    }
+}
+
+fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb, bands: &[strata::RuleBand]) {
     println!();
     println!("{}", "=".repeat(70));
     println!("=  SATURATED KB DUMP");
@@ -497,10 +515,11 @@ fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb) {
                 .map(|&s| format!("?{}", terms.sym(s)))
                 .collect();
             println!(
-                ";;   {}  :priority {shown} ({})  :params ({})",
+                ";;   {}  :priority {shown} ({})  :params ({}){}",
                 terms.sym(rule.name),
                 band_label(prio),
-                params.join(" ")
+                params.join(" "),
+                derived_column(bands.iter().find(|b| b.rule == rule.name))
             );
         }
     }
@@ -716,13 +735,15 @@ fn bench(
     // The saturator builds its own `Engine` rather than taking the one
     // compiled above, so the after-snapshot reads that one back out.
     let sat_engine: Option<Engine>;
+    // The run's plans, which the listing's derived band reads (M1f S1f.5.15).
+    let memo = SharedMemo::default();
     {
         let mut s = Session {
             kb: &mut kb,
             terms: &mut terms,
             ast: &ast,
             events,
-            memo: SharedMemo::default(),
+            memo: memo.clone(),
         };
         // `step` is driven directly rather than through `saturate`, because
         // the progress line reads the KB's fact count *at that step* and the
@@ -791,7 +812,10 @@ fn bench(
     }
 
     if dump {
-        dump_kb(&ast, &terms, &kb);
+        let plans = ein_infer::monotone::plans_of(&memo);
+        let graph = strata::graph(&kb, &terms, &plans);
+        let bands = strata::rule_bands(&kb, &terms, &plans, &graph);
+        dump_kb(&ast, &terms, &kb, &bands);
     }
     Ok(())
 }
