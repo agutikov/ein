@@ -1,19 +1,32 @@
 ;;; The control of `guard-only-second.ein` — M1e2 **W25**, register row
 ;;; `W25/guard-only-second`'s control, banked by S1e2.2.25 (2026-11-05) from
-;;; the inventory of 2026-11-05's probe `guard_only_first.ein`, the program
-;;; unchanged.
+;;; the inventory of 2026-11-05's probe `guard_only_first.ein`.
 ;;;
-;;; The same program with the two refuting rules' priorities swapped: `w`, the
-;;; premise-less derivation from the activator `(w a)`, now fires first, so it
-;;; is `(false)`'s primary and the search sees it. N `{(p a)}`'s core is
+;;; Until M1f S1f.5.15 it was the witness with the two refuting rules'
+;;; priorities swapped (`early` at 300, `w` at 10), so that `w`, the
+;;; premise-less derivation from the activator `(w a)`, fired first, was
+;;; `(false)`'s primary, and the search saw it. Since S1f.5.15 no rule has a
+;;; priority: the agenda is FIFO, the written and arrival order (the user's
+;;; ruling of 2026-11-08 on Q-M1f.6), and the witness with its priorities
+;;; taken out *is* the witness, reporting W25's wrong core. So the control
+;;; now gets its order from its rules: `early` reads `(pp ?x)`, which `mk-pp`
+;;; derives from `(p ?x)`, so when `(p a)` is committed `mk` and `mk-pp`
+;;; queue first, `mk` derives `w`'s activator `(w a)`, `w`'s candidate queues
+;;; before `(pp a)` exists, and `w` fires before `early`. `(pp a)`'s closure is
+;;; `(p a)`, so `early`'s derivation rests on what it did. N `{(p a)}`'s core is
 ;;; `(p a)`, the activator's own support, which is the witness's right answer
-;;; (`ein solve FILE --dump-answer DIR` and `ein oracle FILE --dump DIR` at
-;;; `94c75204`, release and debug alike).
+;;; (`ein solve FILE --dump-answer DIR`, 2026-11-08).
 
-(relation seed T) (relation p T) (relation p2 T) (relation w T) (relation b T)
+(relation seed T :why "{1} is a seed")
+(relation p    T :why "{1} is p")
+(relation p2   T :why "{1} is p2")
+(relation pp   T :why "{1} is p, read again")
+(relation w    T :why "{1} activates w")
+(relation b    T :why "{1} is b")
 (seed a) (b a)
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
-(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false) :priority 300)
-(rule mk () :match (p ?x) :assert (w ?x) :priority 5)
-(rule w (?n) :match (eq ?n a) :assert (false) :priority 10)
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess {?x} is p")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess {?x} is p2")
+(rule mk () :match (p ?x) :assert (w ?x) :why "{?x} is p, so w is activated")
+(rule mk-pp () :match (p ?x) :assert (pp ?x) :why "{?x} is p")
+(rule early () :match (and (pp ?x) (b ?x) (seed ?x)) :assert (false) :why "{?x} is p, b and a seed")
+(rule w (?n) :match (eq ?n a) :assert (false) :why "{?n} is a")

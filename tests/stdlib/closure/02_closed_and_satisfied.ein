@@ -72,7 +72,6 @@
 (rule closed-observed ()
   :match  (__closed__ ?R)
   :assert (closed-here ?R)
-  :priority 500
   :why    "{?R}'s extension is closed")
 
 ;; The witness. Delete this line and you have `03_closed_and_owing.ein`.

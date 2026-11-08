@@ -6,10 +6,10 @@
 415 files
 
 as written:
-   15  both accept, digits read as names
-  190  both accept, same tree
+   18  both accept, digits read as names
+  323  both accept, same tree
     5  both refuse
-  204  the hand-written parser accepts, the generated one refuses
+   68  the hand-written parser accepts, the generated one refuses
     1  the hand-written parser refuses, the generated one accepts
 without `:priority`:
    18  both accept, digits read as names
@@ -18,140 +18,7 @@ without `:priority`:
    68  the hand-written parser accepts, the generated one refuses
     1  the hand-written parser refuses, the generated one accepts
 
-133 files differ only by their `:priority` (S1f.5.15, pending):
-  examples/branching/01_saturate_only.ein
-  examples/branching/02_one_dead_one_alive.ein
-  examples/branching/03_five_hyps_one_alive.ein
-  examples/branching/04_two_levels.ein
-  examples/branching/05_mini_zebra.ein
-  examples/branching/06_lookahead_on.ein
-  examples/branching/07_lookahead_off.ein
-  examples/branching/08_hypothesis_relation_whitelist.ein
-  examples/branching/09_hrule.ein
-  examples/branching/10_kill_cache_on.ein
-  examples/branching/11_kill_cache_off.ein
-  examples/branching/13_lookahead_naf_world.ein
-  examples/branching/14_lookahead_unjudgeable.ein
-  examples/branching/15_lookahead_two_step_on.ein
-  examples/branching/16_lookahead_two_step_off.ein
-  examples/domain_elim/ab.ein
-  examples/domain_elim/b_branch.ein
-  examples/domain_elim/b_only.ein
-  examples/ein-bugs/alive-empty-interlayer.ein
-  examples/ein-bugs/alive-empty-phase1.ein
-  examples/ein-bugs/alt-cap-core-reordered.ein
-  examples/ein-bugs/alt-cap-core.ein
-  examples/ein-bugs/complete-records-stale.ein
-  examples/ein-bugs/naf-upward-closure.ein
-  examples/ein-bugs/wrong-answers/alt-cap-shared.ein
-  examples/ein-bugs/wrong-answers/closure-shared-given-control.ein
-  examples/ein-bugs/wrong-answers/closure-shared-given.ein
-  examples/ein-bugs/wrong-answers/f07-fpoff.ein
-  examples/ein-bugs/wrong-answers/f07-rules-swapped.ein
-  examples/ein-bugs/wrong-answers/forced-1-two.ein
-  examples/ein-bugs/wrong-answers/forced-1.ein
-  examples/ein-bugs/wrong-answers/forced-2-off.ein
-  examples/ein-bugs/wrong-answers/forced-2-two.ein
-  examples/ein-bugs/wrong-answers/forced-2.ein
-  examples/ein-bugs/wrong-answers/guard-only-first.ein
-  examples/ein-bugs/wrong-answers/guard-only-second.ein
-  examples/ein-bugs/wrong-answers/naf-nowb.ein
-  examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein
-  examples/ein-bugs/wrong-answers/oblig-derived-domain.ein
-  examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein
-  examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein
-  examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein
-  examples/ein-bugs/wrong-answers/oblig-fresh-name.ein
-  examples/ein-bugs/wrong-answers/owed-two-step.ein
-  examples/ein-bugs/wrong-answers/past-limit-lines.ein
-  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein
-  examples/ein-bugs/wrong-answers/stale-naf-fork.ein
-  examples/ein-bugs/wrong-answers/tree-dead.ein
-  examples/ein-bugs/wrong-answers/uncovered-knows.ein
-  examples/ein-bugs/wrong-answers/uncovered.ein
-  examples/ein-bugs/zebra2-bad.ein
-  examples/ein-bugs/zebra2-hints.ein
-  examples/features/01_not_and_absent.ein
-  examples/features/02_star_in_identifiers.ein
-  examples/features/03_forall.ein
-  examples/features/04_open.ein
-  examples/features/07_unstratifiable.ein
-  examples/features/08_disjunct_guard_sets.ein
-  examples/features/09_adjacent_via_same_house.ein
-  examples/features/11_expect_ambiguity.ein
-  examples/features/12_expect_false.ein
-  examples/features/13_mixed_solution_and_open.ein
-  examples/lattice/01_subset_pruned.ein
-  examples/lattice/02_genuine_3set_death.ein
-  examples/lattice/03_state_hash_collision.ein
-  examples/lattice/04_obligation_trigger_hole.ein
-  examples/lattice/08_absent_witness_hole.ein
-  examples/lattice/09_activator_hole.ein
-  examples/lattice/10_fifo_gap.ein
-  examples/lattice/11_fifo_gap_static.ein
-  examples/lattice/12_activator_chain_hole.ein
-  examples/lattice/synth/local_not_global.ein
-  examples/lattice/synth/maximal_not_top.ein
-  examples/lattice/synth/merged_states.ein
-  examples/lattice/synth/one_model_per_component.ein
-  examples/lattice/synth/three_components.ein
-  examples/lattice/synth/trigger_hole.ein
-  examples/lattice/synth/trivial_line.ein
-  examples/saturation/hypothesis-contradiction/coloc-disproved.ein
-  examples/saturation/hypothesis-contradiction/next-to-disproved.ein
-  examples/saturation/hypothesis-contradiction/right-of-disproved.ein
-  examples/saturation/implies/org-chart.ein
-  examples/saturation/implies/parent-to-ancestor.ein
-  examples/saturation/implies/right-then-next.ein
-  examples/saturation/square-bwd/floors.ein
-  examples/saturation/square-bwd/houses.ein
-  examples/saturation/square-bwd/meetings.ein
-  examples/saturation/square-fwd/floors.ein
-  examples/saturation/square-fwd/houses.ein
-  examples/saturation/square-fwd/meetings.ein
-  examples/saturation/square-unique/corner-house.ein
-  examples/saturation/square-unique/cul-de-sac.ein
-  examples/saturation/square-unique/terminus.ein
-  examples/saturation/symmetric/couple.ein
-  examples/saturation/symmetric/friends.ein
-  examples/saturation/symmetric/neighbours.ein
-  examples/saturation/transitive/colocation-chain.ein
-  examples/saturation/transitive/mealtimes.ein
-  examples/saturation/transitive/taxonomy.ein
-  examples/saturation/type-exclusivity/colors.ein
-  examples/saturation/type-exclusivity/nationalities.ein
-  examples/saturation/type-exclusivity/pets.ein
-  examples/zebra2-hints.ein
-  examples/zebra2-minus-15-obligations.ein
-  examples/zebra2-minus-15.ein
-  examples/zebra2-obligations.ein
-  examples/zebra2.ein
-  stdlib/algebra.ein
-  stdlib/bijection.ein
-  stdlib/closure.ein
-  stdlib/slots.ein
-  stdlib/typing.ein
-  tests/region/01_states.ein
-  tests/region/02_merged_single.ein
-  tests/region/03_merged_or.ein
-  tests/region/07_cube.ein
-  tests/region/08_query_classes.ein
-  tests/region/09_query_over_maximal.ein
-  tests/stdlib/algebra/07_schroder.ein
-  tests/stdlib/algebra/18_totality_open_world.ein
-  tests/stdlib/algebra/22_symmetric_negative.ein
-  tests/stdlib/bijection/02_domain_elimination.ein
-  tests/stdlib/bijection/03_range_elimination.ein
-  tests/stdlib/bijection/06_blind_enumeration.ein
-  tests/stdlib/closure/02_closed_and_satisfied.ein
-  tests/stdlib/closure/03_closed_and_owing.ein
-  tests/stdlib/macro/01_forall.ein
-  tests/stdlib/macro/02_unknown.ein
-  tests/stdlib/slots/01_partition.ein
-  tests/stdlib/slots/02_negative.ein
-  tests/stdlib/slots/03_fill.ein
-  tests/stdlib/slots/04_elimination.ein
-  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein
+0 files differ only by their `:priority` (S1f.5.15, pending):
 
 every other file not the same tree, without `:priority`:
 the hand-written parser accepts, the generated one refuses: corpus/fuzz_findings/activator-text-key-swapped.ein: 14:19: unexpected `"1"`: a string (2 errors)

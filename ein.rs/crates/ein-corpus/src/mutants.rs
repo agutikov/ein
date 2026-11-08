@@ -120,4 +120,57 @@ mod tests {
         );
         assert_eq!(without_priority(":priorityless 3"), ":priorityless 3");
     }
+
+    /// The code of a line: up to its first `;` outside a string.
+    fn code(line: &str) -> &str {
+        let (mut in_str, mut esc) = (false, false);
+        for (i, c) in line.char_indices() {
+            if in_str {
+                if esc {
+                    esc = false;
+                } else if c == '\\' {
+                    esc = true;
+                } else if c == '"' {
+                    in_str = false;
+                }
+            } else if c == '"' {
+                in_str = true;
+            } else if c == ';' {
+                return &line[..i];
+            }
+        }
+        line
+    }
+
+    /// **No corpus program writes `:priority`** (M1f S1f.5.15's T5, decision
+    /// 1, decided 2026-11-08): the keyword is gone from the language, every
+    /// program under `examples/`, `stdlib/`, `tests/` and `corpus/` was
+    /// stripped of it, and until S1f.5.5's swap the hand-written loader drops
+    /// one written anyway as it drops any rule keyword it does not read
+    /// (D-15), where the generated grammar refuses it. A comment may still
+    /// name it: that is history, not a clause.
+    #[test]
+    fn no_corpus_program_writes_a_priority() {
+        let root = crate::repo_root();
+        let mut files = Vec::new();
+        for dir in ["examples", "stdlib", "tests", "corpus"] {
+            files.extend(crate::ein_files_under(&root.join(dir)));
+        }
+        assert!(files.len() > 400, "{} files", files.len());
+        let mut bad = Vec::new();
+        for f in &files {
+            let text = std::fs::read_to_string(f).expect("reads");
+            for (n, line) in text.lines().enumerate() {
+                if code(line).contains(":priority") {
+                    bad.push(format!("{}:{}: {line}", f.display(), n + 1));
+                }
+            }
+        }
+        assert!(bad.is_empty(), "{}", bad.join("\n"));
+        assert_eq!(code("(p a) ; :priority 9"), "(p a) ");
+        assert_eq!(
+            code("(r :why \"a; b\" :priority 9)"),
+            "(r :why \"a; b\" :priority 9)"
+        );
+    }
 }

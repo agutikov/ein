@@ -26,8 +26,7 @@
 (rule see-stored-neg ()
   :match  (not (likes ?a ?b))
   :assert (explicitly-dislikes ?a ?b)
-  :why    "stored neg of (likes {?a} {?b}) → {?a} explicitly dislikes {?b}"
-  :priority 200)
+  :why    "stored neg of (likes {?a} {?b}) → {?a} explicitly dislikes {?b}")
 
 ;; NAF on both states → "open" / undecided slot.
 (rule unknown-feeling (?Person)
@@ -35,8 +34,7 @@
                (absent (likes ?a ?b))
                (absent (not (likes ?a ?b))))
   :assert (unknown-feeling ?a ?b)
-  :why    "neither (likes {?a} {?b}) nor its neg stored → undecided"
-  :priority 200)
+  :why    "neither (likes {?a} {?b}) nor its neg stored → undecided")
 
 (relation likes T T :why "{1} likes {2}")
 (relation is-a  T T :why "{1} is a {2}")

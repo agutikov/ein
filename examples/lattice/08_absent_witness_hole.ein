@@ -36,8 +36,7 @@
 (rule soup-unless-allergic ()
   :match  (and (seats ?g ?c) (absent (allergic ?g)))
   :assert (meal ?g Soup)
-  :why    "{?g} is seated and not allergic, so {?g} has the soup"
-  :priority 200)
+  :why    "{?g} is seated and not allergic, so {?g} has the soup")
 
 (total-owed meal is-a)
 

@@ -64,8 +64,7 @@
 (rule bad ()
   :match  (and (p ?x) (absent (q ?x)))
   :assert (false)
-  :why    "{?x} has p without q"
-  :priority 200)
+  :why    "{?x} has p without q")
 
 (query
   :goal   (is-a ?x T))

@@ -24,8 +24,7 @@
                (?R ?x ?y)
                (co-located ?a ?x))
   :assert (co-located ?b ?y)
-  :why    "square ({?R}, fwd)."
-  :priority 200)
+  :why    "square ({?R}, fwd).")
 
 (relation above-of T T)
 (relation co-located T T)

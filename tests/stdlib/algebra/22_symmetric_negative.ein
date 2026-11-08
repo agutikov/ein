@@ -52,7 +52,6 @@
 (rule probe-undecided ()
   :match  (unknown (sits-with B C))
   :assert (undecided B C)
-  :priority 500
   :why    "B and C were never related either way, and the mirror must not invent it")
 
 (solve

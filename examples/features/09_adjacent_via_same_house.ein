@@ -80,15 +80,13 @@
   :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
   :assert (and (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
                (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2))
-  :why    "adjacent-via ⟹ both directional activators."
-  :priority 100)
+  :why    "adjacent-via ⟹ both directional activators.")
 
 (rule derive-disjunctive-prune ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (and (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
                (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2))
-  :why    "adjacent-via-fwd ⟹ both pruners."
-  :priority 200)
+  :why    "adjacent-via-fwd ⟹ both pruners.")
 
 ;; The two pruners, WITHOUT the `(neq ?h_other ?h1)` premise the fix removed.
 ;; `(absent (?S ?h_other ?h1))` is what decides `h_other = h1`, and for an
@@ -99,8 +97,7 @@
                (is-a ?h_other ?B)
                (absent (?S ?h_other ?h1)))
   :assert (not (?R2 ?V2 ?h_other))
-  :why    "({?V1} at {?h1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded."
-  :priority 250)
+  :why    "({?V1} at {?h1}) restricts {?V2} to {?S}-neighbours; {?h_other} excluded.")
 
 (rule disjunctive-prune-bwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (?R2 ?V2 ?h1)
@@ -108,8 +105,7 @@
                (is-a ?h_other ?B)
                (absent (?S ?h1 ?h_other)))
   :assert (not (?R1 ?V1 ?h_other))
-  :why    "({?V2} at {?h1}) restricts {?V1} to {?S}-preimages; {?h_other} excluded."
-  :priority 250)
+  :why    "({?V2} at {?h1}) restricts {?V1} to {?S}-preimages; {?h_other} excluded.")
 
 ;; ──── The constraint, and the state that must break it ─────
 ;; "Red is next to the Fox" — different houses, adjacent.

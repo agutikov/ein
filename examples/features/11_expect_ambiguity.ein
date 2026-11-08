@@ -32,13 +32,11 @@
 (rule one-seat-each (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :priority 250
   :why    "{?a} cannot sit in both {?b} and {?c}")
 
 (rule one-person-each (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
   :assert (false)
-  :priority 250
   :why    "{?c} cannot seat both {?a} and {?b}")
 
 (one-seat-each   seat)

@@ -55,7 +55,6 @@
 
 use std::ops::ControlFlow;
 
-use ein_core::entities::Rule;
 use ein_core::{Kb, Symbol, Terms, Value, render_why};
 use ein_ir::Ast;
 use rustc_hash::FxHashSet;
@@ -65,7 +64,6 @@ use crate::events::{self, Events};
 use crate::firing::rendered_bindings;
 use crate::match_::Matcher;
 use crate::plan::{Plan, Slot};
-use crate::saturator::DEFAULT_PRIORITY;
 
 /// One undischarged obligation — a `(rule, bindings)` instance that still
 /// matches at the fixpoint.
@@ -233,19 +231,9 @@ pub(crate) fn plans_for(
     ast: &Ast,
     memo: &SharedMemo,
 ) -> Result<Vec<std::sync::Arc<Plan>>, CompileError> {
-    // Load order breaks a tie inside a priority, so the sort is stable and the
-    // enumeration order is the registry's.
-    let mut rules: Vec<(i64, usize, &Rule)> = kb
-        .program()
-        .obligations
-        .values()
-        .enumerate()
-        .map(|(i, r)| (priority_of(terms, r), i, r))
-        .collect();
-    rules.sort_by_key(|&(p, i, _)| (p, i));
-
+    // Load order, the registry's: no rule has a priority since M1f S1f.5.15.
     let mut out = Vec::new();
-    for (_, _, rule) in rules {
+    for rule in kb.program().obligations.values() {
         for act in activators_for(kb, terms, rule) {
             let key = plan_key(terms, rule, act);
             let mut memo: std::sync::MutexGuard<'_, PlanMemo> =
@@ -297,17 +285,4 @@ pub(crate) fn open_argument(plan: &Plan, terms: &Terms) -> Option<Symbol> {
         Some(Slot::Const(v)) => v.as_sym(),
         _ => None,
     }
-}
-
-fn priority_of(terms: &Terms, rule: &Rule) -> i64 {
-    let Some(p) = rule.priority else {
-        return DEFAULT_PRIORITY;
-    };
-    terms.ints.value(p).unwrap_or_else(|| {
-        if terms.int_text(p).starts_with('-') {
-            i64::MIN
-        } else {
-            i64::MAX
-        }
-    })
 }

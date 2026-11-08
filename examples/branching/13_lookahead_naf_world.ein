@@ -57,14 +57,12 @@
 (rule promote ()
   :match  (and (ok ?x) (blessed ?x))
   :assert (cand ?x)
-  :why    "{?x} is ok and blessed, so it is a candidate"
-  :priority 100)
+  :why    "{?x} is ok and blessed, so it is a candidate")
 
 (rule self-block ()
   :match  (and (cand ?x) (absent (cand ?x)))
   :assert (false)
-  :why    "unsatisfiable in any one world"
-  :priority 200)
+  :why    "unsatisfiable in any one world")
 
 (ok      A :source "(1)")
 (ok      B :source "(2)")

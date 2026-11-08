@@ -9,8 +9,7 @@
 
 (rule three-conflict ()
   :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
-  :assert (false)
-  :priority 200)
+  :assert (false))
 (hrule guess (?R ?T)
   :match  (is-a ?x ?T)
   :assert (?R ?x))

@@ -19,8 +19,7 @@
                (?rel ?b ?c)
                (neq ?a ?c))
   :assert (?rel ?a ?c)
-  :why    "{?rel} is transitive."
-  :priority 200)
+  :why    "{?rel} is transitive.")
 
 (relation is-a T T)
 (transitive is-a)

@@ -504,7 +504,7 @@ mod tests {
         let mut e = Events::to(Box::new(Vec::new()), Level::Verbose);
         e.emit("fire", |l| {
             l.str("rule", "symmetric");
-            l.num("priority", 100);
+            l.num("tiebreaker", 100);
             l.bool("redundant", false);
         });
         // The sink is opaque once boxed, so re-emit into a local buffer.

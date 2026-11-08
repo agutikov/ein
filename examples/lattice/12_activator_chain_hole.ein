@@ -40,14 +40,12 @@
 (rule kitchen-opens ()
   :match  (opens ?k)
   :assert (serves ?k)
-  :why    "{?k} is open, so it serves"
-  :priority 200)
+  :why    "{?k} is open, so it serves")
 
 (rule serves (?k)
   :match  (is-a ?k Kitchen)
   :assert (total-owed meal is-a)
-  :why    "{?k} serves, so every guest owes a meal"
-  :priority 200)
+  :why    "{?k} serves, so every guest owes a meal")
 
 (hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k))
 (hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f))

@@ -732,7 +732,7 @@ fn the_monotone_question_is_about_the_program() {
                  \x20   cycle           even through an absent — derive-p: q →¬ p · derive-q: p \
                  →¬ q — several states with no stale fact can exist\n\
                  \x20   order           derive-p and derive-q each read under an absent what the \
-                 other concludes, both at priority 200: which the boundary admits first is the \
+                 other concludes: which the boundary admits first is the \
                  order they are written in\n\
                  \x20   bit             not computed — the cube is 2^1 = 2 saturations: `ein \
                  oracle FILE` computes it, and so does a bare `ein solve FILE`\n{}",

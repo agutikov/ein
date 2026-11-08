@@ -42,14 +42,12 @@
   :match  (and (?R ?a ?b)
                (absent (?isa ?a ?Dom)))
   :assert (false)
-  :priority 110
   :why    "{?R} arg 0 expects {?Dom} (via {?isa}); {?a} is not a {?Dom}")
 
 (rule typecheck-arg-1 (?R ?isa ?Ran)
   :match  (and (?R ?a ?b)
                (absent (?isa ?b ?Ran)))
   :assert (false)
-  :priority 110
   :why    "{?R} arg 1 expects {?Ran} (via {?isa}); {?b} is not a {?Ran}")
 
 (rule domain-elimination (?R ?isa ?OT ?VT)
@@ -61,7 +59,6 @@
                  (and (?isa ?v_other ?VT) (neq ?v_other ?v))
                  (not (?R ?a ?v_other))))
   :assert (?R ?a ?v)
-  :priority 400
   :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
 
 (rule no-room-left (?R ?isa ?OT ?VT)
@@ -72,5 +69,4 @@
                  (?isa ?v ?VT)
                  (not (?R ?a ?v))))
   :assert (false)
-  :priority 110
   :why    "{?a} has every {?VT} excluded — no value left")

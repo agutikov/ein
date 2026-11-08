@@ -151,8 +151,7 @@
                (slot-no-fill     ?R ?isa ?sub ?super ?index)
                (slot-owed-room   ?R ?isa ?sub ?super ?index)
                (slot-owed-fill   ?R ?isa ?sub ?super ?index))
-  :why    "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators."
-  :priority 100)
+  :why    "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators.")
 
 ;; Fan `(slot-spatial R S isa PT)` out into the eight directional consumers:
 ;; positive propagation, its contrapositive, the disjunctive pruner and the
@@ -167,8 +166,7 @@
                (slot-prune-bwd        ?R ?S ?isa ?PT)
                (slot-endpoint-fwd     ?R ?S ?isa ?PT)
                (slot-endpoint-bwd     ?R ?S ?isa ?PT))
-  :why    "(slot-spatial {?R} {?S} …) ⟹ the eight directional propagation / pruning / endpoint activators."
-  :priority 100)
+  :why    "(slot-spatial {?R} {?S} …) ⟹ the eight directional propagation / pruning / endpoint activators.")
 
 
 ;; ══ the partition rules ═════════════════════════════════════════════════════
@@ -189,8 +187,7 @@
                (?isa ?i ?index)
                (neq ?a ?i))
   :assert (?R ?a ?i)
-  :why    "{?a} shares a slot with {?b}, and {?b} is at {?i} ⟹ {?a} is at {?i}."
-  :priority 200)
+  :why    "{?a} shares a slot with {?b}, and {?b} is at {?i} ⟹ {?a} is at {?i}.")
 
 ;; ── slot-exclusive ──────────────────────────────────────────────────────────
 ;; Two DISTINCT members of the same type can never share a slot — a slot holds
@@ -210,8 +207,7 @@
                (?isa ?b ?T)
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
-  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}."
-  :priority 240)
+  :why    "{?a} and {?b} are distinct {?T}s — they cannot share a slot under {?R}.")
 
 ;; ── slot-occupied ───────────────────────────────────────────────────────────
 ;; A slot has one seat per type, and a positive edge takes it: if ?a shares a
@@ -233,8 +229,7 @@
                (?isa ?c ?T)
                (neq ?c ?b))
   :assert (not (?R ?a ?c))
-  :why    "{?a}'s slot already holds the {?T} {?b} ⟹ it does not hold {?c}."
-  :priority 240)
+  :why    "{?a}'s slot already holds the {?T} {?b} ⟹ it does not hold {?c}.")
 
 ;; ── slot-negative ───────────────────────────────────────────────────────────
 ;; The contrapositive of transitivity, which is what makes the equivalence carry
@@ -250,8 +245,7 @@
                (not (?R ?b ?i))
                (?isa ?i ?index))
   :assert (not (?R ?a ?i))
-  :why    "{?a} shares a slot with {?b}, and {?b} cannot be at {?i} ⟹ neither can {?a}."
-  :priority 240)
+  :why    "{?a} shares a slot with {?b}, and {?b} cannot be at {?i} ⟹ neither can {?a}.")
 
 ;; ── slot-elimination / slot-fill ────────────────────────────────────────────
 ;; The positive half, in its two readings — std.bijection's
@@ -281,8 +275,7 @@
                  (and (?isa ?i_other ?index) (neq ?i_other ?i))
                  (not (?R ?a ?i_other))))
   :assert (?R ?a ?i)
-  :why    "every slot except {?i} is excluded for {?a} ⟹ {?a} is at {?i}."
-  :priority 400)
+  :why    "every slot except {?i} is excluded for {?a} ⟹ {?a} is at {?i}.")
 
 (rule slot-fill (?R ?isa ?sub ?super ?index)
   :match  (and (?isa ?i ?index)
@@ -293,8 +286,7 @@
                  (and (?isa ?v_other ?Tv) (neq ?v_other ?v))
                  (not (?R ?i ?v_other))))
   :assert (?R ?i ?v)
-  :why    "every {?Tv} except {?v} is excluded for slot {?i} ⟹ {?v} is at {?i}."
-  :priority 400)
+  :why    "every {?Tv} except {?v} is excluded for slot {?i} ⟹ {?v} is at {?i}.")
 
 ;; ── slot-no-room / slot-no-fill ─────────────────────────────────────────────
 ;; The violation duals, and the encoding's main branch killer: a value must have
@@ -307,8 +299,7 @@
                (neq ?Ta ?index)
                (forall ?i (?isa ?i ?index) (not (?R ?a ?i))))
   :assert (false)
-  :why    "{?a} has every slot excluded — there is nowhere left for it."
-  :priority 250)
+  :why    "{?a} has every slot excluded — there is nowhere left for it.")
 
 (rule slot-no-fill (?R ?isa ?sub ?super ?index)
   :match  (and (?isa ?i ?index)
@@ -316,8 +307,7 @@
                (neq ?Tv ?index)
                (forall ?v (?isa ?v ?Tv) (not (?R ?i ?v))))
   :assert (false)
-  :why    "slot {?i} has every {?Tv} excluded — it has no {?Tv} left."
-  :priority 250)
+  :why    "slot {?i} has every {?Tv} excluded — it has no {?Tv} left.")
 
 ;; ── the OBLIGATION duals of the two above (M1d P1d.2 S1d.2.4) ───────────────
 ;; Same pair of questions, one modality down. `slot-no-room` / `slot-no-fill`
@@ -335,8 +325,7 @@
                (neq ?Ta ?index)
                (absent (and (?isa ?i ?index) (?R ?a ?i))))
   :assert (open ?R)
-  :why    "{?a} is in no slot yet — some {?index} is still owed."
-  :priority 500)
+  :why    "{?a} is in no slot yet — some {?index} is still owed.")
 
 (rule slot-owed-fill (?R ?isa ?sub ?super ?index)
   :match  (and (?isa ?i ?index)
@@ -344,8 +333,7 @@
                (neq ?Tv ?index)
                (absent (and (?isa ?v ?Tv) (?R ?i ?v))))
   :assert (open ?R)
-  :why    "slot {?i} has no {?Tv} yet — one is still owed."
-  :priority 500)
+  :why    "slot {?i} has no {?Tv} yet — one is still owed.")
 
 
 ;; ══ the spatial rules ═══════════════════════════════════════════════════════
@@ -379,8 +367,7 @@
                (?S ?p2 ?p1) (?isa ?p2 ?PT)
                (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
   :assert (?R ?a ?p2)
-  :why    "{?b} is at {?p1}, whose only {?S}-source is {?p2}, and {?S}({?a},{?b}) ⟹ {?a} is at {?p2}."
-  :priority 200)
+  :why    "{?b} is at {?p1}, whose only {?S}-source is {?p2}, and {?S}({?a},{?b}) ⟹ {?a} is at {?p2}.")
 
 (rule slot-adjacent-bwd (?R ?S ?isa ?PT)
   :match  (and (?S ?a ?b)
@@ -388,8 +375,7 @@
                (?S ?p2 ?p1) (?isa ?p1 ?PT)
                (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
   :assert (?R ?b ?p1)
-  :why    "{?a} is at {?p2}, whose only {?S}-target is {?p1}, and {?S}({?a},{?b}) ⟹ {?b} is at {?p1}."
-  :priority 200)
+  :why    "{?a} is at {?p2}, whose only {?S}-target is {?p1}, and {?S}({?a},{?b}) ⟹ {?b} is at {?p1}.")
 
 ;; ── slot-adjacent-fwd-neg / -bwd-neg ────────────────────────────────────────
 ;; The contrapositives, under the same uniqueness witness: if ?a cannot be at
@@ -402,8 +388,7 @@
                (?S ?p2 ?p1) (?isa ?p1 ?PT)
                (absent (and (?S ?p_o ?p1) (?isa ?p_o ?PT) (neq ?p_o ?p2))))
   :assert (not (?R ?b ?p1))
-  :why    "{?a} cannot be at {?p2}, the only {?S}-source of {?p1} ⟹ {?b} cannot be at {?p1}."
-  :priority 240)
+  :why    "{?a} cannot be at {?p2}, the only {?S}-source of {?p1} ⟹ {?b} cannot be at {?p1}.")
 
 (rule slot-adjacent-bwd-neg (?R ?S ?isa ?PT)
   :match  (and (?S ?a ?b)
@@ -411,8 +396,7 @@
                (?S ?p2 ?p1) (?isa ?p2 ?PT)
                (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1))))
   :assert (not (?R ?a ?p2))
-  :why    "{?b} cannot be at {?p1}, the only {?S}-target of {?p2} ⟹ {?a} cannot be at {?p2}."
-  :priority 240)
+  :why    "{?b} cannot be at {?p1}, the only {?S}-target of {?p2} ⟹ {?a} cannot be at {?p2}.")
 
 ;; ── slot-prune-fwd / -bwd ───────────────────────────────────────────────────
 ;; Disjunctive pruning: unlike the positive rules these fire whether or not the
@@ -432,8 +416,7 @@
                (neq ?p_o ?p1)
                (absent (?S ?p_o ?p1)))
   :assert (not (?R ?a ?p_o))
-  :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one."
-  :priority 250)
+  :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one.")
 
 (rule slot-prune-bwd (?R ?S ?isa ?PT)
   :match  (and (?S ?a ?b)
@@ -442,8 +425,7 @@
                (neq ?p_o ?p2)
                (absent (?S ?p2 ?p_o)))
   :assert (not (?R ?b ?p_o))
-  :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one."
-  :priority 250)
+  :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one.")
 
 ;; ── slot-endpoint-fwd / -bwd ────────────────────────────────────────────────
 ;; Prophylactic exclusions from the position structure's gaps ALONE — no
@@ -457,13 +439,11 @@
                (?isa ?p1 ?PT)
                (absent (and (?isa ?p2 ?PT) (?S ?p2 ?p1))))
   :assert (not (?R ?b ?p1))
-  :why    "{?p1} has no {?S}-source, and {?b} needs one ({?S}({?a},{?b})) ⟹ {?b} is not at {?p1}."
-  :priority 240)
+  :why    "{?p1} has no {?S}-source, and {?b} needs one ({?S}({?a},{?b})) ⟹ {?b} is not at {?p1}.")
 
 (rule slot-endpoint-bwd (?R ?S ?isa ?PT)
   :match  (and (?S ?a ?b)
                (?isa ?p2 ?PT)
                (absent (and (?isa ?p1 ?PT) (?S ?p2 ?p1))))
   :assert (not (?R ?a ?p2))
-  :why    "{?p2} has no {?S}-target, and {?a} needs one ({?S}({?a},{?b})) ⟹ {?a} is not at {?p2}."
-  :priority 240)
+  :why    "{?p2} has no {?S}-target, and {?a} needs one ({?S}({?a},{?b})) ⟹ {?a} is not at {?p2}.")

@@ -28,8 +28,7 @@
                (?R ?x ?y)
                (co-located ?a ?x))
   :assert (co-located ?b ?y)
-  :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}."
-  :priority 200)
+  :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}.")
 
 (relation right-of T T)
 (relation co-located T T)

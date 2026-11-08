@@ -58,7 +58,6 @@
 (rule probe-undecided ()
   :match  (unknown (co-loc S1 Dog))
   :assert (undecided S1 Dog)
-  :priority 500
   :why    "S1 has one pet of three excluded — nothing may be filled into it")
 
 (solve

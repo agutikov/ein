@@ -992,7 +992,7 @@ mod tests {
              (rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open ?R)\n  :priority 500)\n\
+             \x20 :assert (open ?R)\n)\n\
              (owed likes is-a)\n"
         ));
         assert_eq!(r.mode, Mode::Obligations);
@@ -1010,7 +1010,7 @@ mod tests {
             "{OWING}(rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open)\n  :priority 500)\n\
+             \x20 :assert (open)\n)\n\
              (owed likes is-a)\n"
         ));
         assert_eq!(r.mode, Mode::Declined);
@@ -1029,7 +1029,7 @@ mod tests {
              (rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open ?R)\n  :priority 500)\n\
+             \x20 :assert (open ?R)\n)\n\
              (owed likes is-a)\n"
         );
         assert_eq!(rung_with(&src, false).mode, Mode::Stuck);
@@ -1048,7 +1048,7 @@ mod tests {
              (rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open ?R)\n  :priority 500)\n\
+             \x20 :assert (open ?R)\n)\n\
              (owed likes is-a)\n(owed is-a sort)\n"
         ));
         assert_eq!(r.mode, Mode::Declined);
@@ -1114,7 +1114,7 @@ mod tests {
                              (rule owes-food ()\n\
                              \x20 :match  (and (person ?a)\n\
                              \x20               (absent (and (food ?b) (likes ?a ?b))))\n\
-                             \x20 :assert (open likes)\n  :priority 500)\n";
+                             \x20 :assert (open likes)\n)\n";
 
     /// **C4 over `D`** (M1e2 S1e2.2.15, W14; Q-M1e2.10 (a), ruled
     /// 2026-11-04): a guard that scans a relation a commitment can change

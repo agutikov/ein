@@ -57,15 +57,13 @@
 ;; to (q A) the lookahead kills every p candidate and caches both negatives.
 (rule kill-p ()
   :match  (and (q A) (p ?x))
-  :assert (false)
-  :priority 300)
+  :assert (false))
 
 ;; Reads stored negatives only — no `absent`, so no NAF boundary is in the
 ;; argument. Dormant at root and in any fork holding a p fact.
 (rule totality ()
   :match  (and (not (p A)) (not (p B)))
-  :assert (false)
-  :priority 400)
+  :assert (false))
 
 (solve :expect (region
                  ;; state 1 of 5 — ∅, root itself · minimal

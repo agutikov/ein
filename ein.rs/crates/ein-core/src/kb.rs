@@ -2095,7 +2095,6 @@ mod tests {
             }),
             assert_: None,
             why: None,
-            priority: None,
             loc: None,
         });
         // The property tag is an open-world relation: its atom names a rule.

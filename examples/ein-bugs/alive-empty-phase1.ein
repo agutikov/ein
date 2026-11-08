@@ -53,15 +53,14 @@
 
 ;; One step from any (p ?x), so the pre-branch lookahead kills every candidate
 ;; and the cache writes (not (p A)) / (not (p B)) into root.
-(rule no-p () :match (p ?x) :assert (false) :priority 300)
+(rule no-p () :match (p ?x) :assert (false))
 
 ;; Totality, on stored negatives alone — no `absent`, so no NAF boundary is in
 ;; the argument. Dormant while root is saturated; refuting once the cache has
 ;; written. Root is not re-saturated, so it never fires.
 (rule totality ()
   :match  (and (not (p A)) (not (p B)))
-  :assert (false)
-  :priority 400)
+  :assert (false))
 
 (solve :expect (region
                  ;; state 1 of 1 — ∅, root itself · minimal and maximal

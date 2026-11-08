@@ -15,13 +15,6 @@ parallel = ["dep:rayon"]
 # Forwards to `ein-core/counters`, so `--features counters` on either crate
 # means the same build.
 counters = ["ein-core/counters"]
-# M1f S1f.5.15's T3: the closure's agenda ordered by the band each rule's
-# shape derives (`strata::band`), the boundary FIFO, where every shipped
-# build orders both by `:priority` (`saturator::Order`). It builds the arm
-# the stage's sweep measures against the declared order on the user's ruling
-# of 2026-11-08 (Q-M1f.4 (b)), and is not a lever: off in every shipped
-# build, and named on `ein --version` when on.
-derived-order = []
 # `fork-delta` (S1a.6.9, the resumed fork saturator's verification) and
 # `spec-audit` (S1a.7.0, the speculation audit) instrumented the walk's
 # fork and its parallel layers. They went with the walk at M1e2 S1e2.1c.5

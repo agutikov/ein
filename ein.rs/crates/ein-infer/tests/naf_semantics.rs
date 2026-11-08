@@ -184,19 +184,25 @@ fn naf_arg(terms: &Terms, a: &NafArg) -> String {
 
 // ── The guard is judged against the positive fixpoint ──────────────
 
-/// `p ← seed ∧ absent q` and `q ← t`, with the two bands as parameters.
-fn gate_program(gate: i64, derive: i64) -> String {
+/// `p ← seed ∧ absent q` and `q ← t`, the gate written first or second.
+fn gate_program(gate_first: bool) -> String {
+    let gate = "(rule gate ()\n  :match (and (seed ?x) (absent (q ?x)))\n  \
+                :assert (p ?x)\n  :why \"p unless q\")\n";
+    let derive = "(rule derive-q ()\n  :match (t ?x)\n  :assert (q ?x)\n  \
+                  :why \"derive q\")\n";
+    let (first, second) = if gate_first {
+        (gate, derive)
+    } else {
+        (derive, gate)
+    };
     format!(
-        "(rule gate ()\n  :match (and (seed ?x) (absent (q ?x)))\n  \
-         :assert (p ?x)\n  :why \"p unless q\" :priority {gate})\n\
-         (rule derive-q ()\n  :match (t ?x)\n  :assert (q ?x)\n  \
-         :why \"derive q\" :priority {derive})\n\
+        "{first}{second}\
          (relation seed T)\n(relation t T)\n(relation p T)\n(relation q T)\n\
          (seed A :source \"(1)\")\n(t A :source \"(2)\")\n"
     )
 }
 
-/// **Priority no longer decides what is derivable** — P1 and P2 of
+/// **The order no longer decides what is derivable** — P1 and P2 of
 /// `absent_semantics.md`, which is the same claim as "a guard is judged
 /// against the closure fixpoint".
 ///
@@ -217,9 +223,17 @@ fn gate_program(gate: i64, derive: i64) -> String {
 /// admitted**, and `naf_rounds >= 1` proves the boundary actually ran rather
 /// than the candidate quietly failing to match.
 #[test]
-fn priority_does_not_decide_what_is_derivable() {
-    for (gate, derive) in [(100, 200), (200, 100)] {
-        let run = saturate(&gate_program(gate, derive));
+fn the_order_does_not_decide_what_is_derivable() {
+    // Written gate-first and derive-first: the order the agenda and the
+    // boundary read since M1f S1f.5.15, which took `:priority` out (until then
+    // the two rules' priorities, 100/200 and 200/100).
+    for gate_first in [true, false] {
+        let (gate, derive) = if gate_first {
+            ("first", "second")
+        } else {
+            ("second", "first")
+        };
+        let run = saturate(&gate_program(gate_first));
         assert_eq!(
             run.extent("p"),
             Vec::<String>::new(),
@@ -245,9 +259,9 @@ fn priority_does_not_decide_what_is_derivable() {
 fn an_unstratifiable_loop_converges_to_a_supported_model() {
     let run = saturate(
         "(rule derive-p ()\n  :match (and (seed ?x) (absent (q ?x)))\n  \
-         :assert (p ?x)\n  :why \"p unless q\" :priority 100)\n\
+         :assert (p ?x)\n  :why \"p unless q\")\n\
          (rule derive-q ()\n  :match (p ?x)\n  :assert (q ?x)\n  \
-         :why \"q from p\" :priority 100)\n\
+         :why \"q from p\")\n\
          (relation seed T)\n(relation p T)\n(relation q T)\n\
          (seed A :source \"(1)\")\n",
     );
@@ -273,7 +287,7 @@ fn an_unstratifiable_loop_converges_to_a_supported_model() {
 fn a_guard_over_a_conjunction_is_a_negated_existential() {
     let run = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (and (g ?x ?y) (h ?y))))\n  \
-         :assert (ok ?x)\n  :why \"ok unless a g-h witness exists\" :priority 100)\n\
+         :assert (ok ?x)\n  :why \"ok unless a g-h witness exists\")\n\
          (relation seed T)\n(relation g T T)\n(relation h T)\n(relation ok T)\n\
          (seed A :source \"(1)\")\n(seed B :source \"(2)\")\n\
          (g A W :source \"(3)\")\n(h W :source \"(4)\")\n",
@@ -302,9 +316,9 @@ fn an_or_disjuncts_guard_is_judged_on_the_boundary() {
     let run = saturate(
         "(rule gate ()\n  :match (or (and (t1 ?x) (absent (r1 ?x)))\n             \
          (and (t2 ?x) (absent (r2 ?x))))\n  :assert (gated ?x)\n  \
-         :why \"gated via either NAF disjunct\" :priority 200)\n\
+         :why \"gated via either NAF disjunct\")\n\
          (rule derive-r2 ()\n  :match (raw ?x)\n  :assert (r2 ?x)\n  \
-         :why \"derive r2\" :priority 100)\n\
+         :why \"derive r2\")\n\
          (relation t1 T)\n(relation t2 T)\n(relation r1 T)\n(relation r2 T)\n\
          (relation raw T)\n(relation gated T)\n\
          (t2 A :source \"(1)\")\n(raw A :source \"(2)\")\n",
@@ -337,13 +351,13 @@ fn an_or_disjuncts_guard_is_judged_on_the_boundary() {
 fn a_guard_sees_the_closed_extent_of_its_watched_relation() {
     let run = saturate(
         "(rule symmetric (?rel)\n  :match (?rel ?a ?b)\n  :assert (?rel ?b ?a)\n  \
-         :why \"symmetric\" :priority 100)\n\
+         :why \"symmetric\")\n\
          (rule includes (?p ?q)\n  :match (?p ?a ?b)\n  :assert (?q ?a ?b)\n  \
-         :why \"includes\" :priority 100)\n\
+         :why \"includes\")\n\
          (rule gate-non-neighbour ()\n  \
          :match (and (anchor ?h1) (other ?h_o) (neq ?h_o ?h1)\n              \
          (absent (next-to ?h_o ?h1)))\n  :assert (non-neighbour ?h_o ?h1)\n  \
-         :why \"h_o is not next-to h1\" :priority 250)\n\
+         :why \"h_o is not next-to h1\")\n\
          (relation right-of T T)\n(relation next-to T T)\n(relation anchor T)\n\
          (relation other T)\n(relation non-neighbour T T)\n\
          (symmetric next-to)\n(includes right-of next-to)\n\
@@ -388,7 +402,7 @@ fn a_guard_sees_the_closed_extent_of_its_watched_relation() {
 fn a_boundary_admitted_firing_records_what_was_absent() {
     let guarded = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x)))\n  \
-         :assert (ok ?x)\n  :why \"g\" :priority 100)\n\
+         :assert (ok ?x)\n  :why \"g\")\n\
          (relation seed T)\n(relation r T)\n(relation ok T)\n\
          (seed A :source \"(1)\")\n",
     );
@@ -402,7 +416,7 @@ fn a_boundary_admitted_firing_records_what_was_absent() {
 
     let plain = saturate(
         "(rule chain ()\n  :match (seed ?x)\n  :assert (ok ?x)\n  \
-         :why \"c\" :priority 100)\n\
+         :why \"c\")\n\
          (relation seed T)\n(relation ok T)\n(seed A :source \"(1)\")\n",
     );
     assert!(
@@ -425,7 +439,7 @@ fn a_boundary_admitted_firing_records_what_was_absent() {
 fn a_free_position_in_a_negative_premise_is_recorded_as_free() {
     let run = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x ?y)))\n  \
-         :assert (ok ?x)\n  :why \"g\" :priority 100)\n\
+         :assert (ok ?x)\n  :why \"g\")\n\
          (relation seed T)\n(relation r T T)\n(relation ok T)\n\
          (seed A :source \"(1)\")\n",
     );
@@ -447,9 +461,9 @@ fn a_free_position_in_a_negative_premise_is_recorded_as_free() {
 fn an_alternative_justification_carries_its_own_negative_premises() {
     let run = saturate(
         "(rule r-pos ()\n  :match (other ?x)\n  :assert (target ?x)\n  \
-         :why \"p\" :priority 100)\n\
+         :why \"p\")\n\
          (rule r-naf ()\n  :match (and (seed ?x) (absent (block ?x)))\n  \
-         :assert (target ?x)\n  :why \"n\" :priority 500)\n\
+         :assert (target ?x)\n  :why \"n\")\n\
          (relation seed T)\n(relation other T)\n(relation block T)\n\
          (relation target T)\n\
          (seed A :source \"(1)\")\n(other A :source \"(2)\")\n",
@@ -499,7 +513,7 @@ fn a_nested_guard_records_both_levels() {
         "(import std.macro :symbols (forall))\n\
          (rule undefeated ()\n  :match (and (player ?p)\n              \
          (forall ?q (and (player ?q) (neq ?p ?q)) (beats ?p ?q)))\n  \
-         :assert (undefeated ?p)\n  :why \"u\" :priority 100)\n\
+         :assert (undefeated ?p)\n  :why \"u\")\n\
          (relation player T)\n(relation beats T T)\n(relation undefeated T)\n\
          (player Alice :source \"(1)\")\n(player Bob :source \"(2)\")\n\
          (beats Alice Bob :source \"(3)\")\n",
@@ -541,7 +555,7 @@ fn or_is_commutative_when_its_disjuncts_share_bindings() {
     let program = |d1: &str, d2: &str| {
         format!(
             "(rule gate ()\n  :match (or {d1} {d2})\n  :assert (gated ?x)\n  \
-             :why \"either\" :priority 100)\n\
+             :why \"either\")\n\
              (relation a T)\n(relation block T)\n(relation other T)\n\
              (relation gated T)\n\
              (a X :source \"(1)\")\n(block X :source \"(2)\")\n"
@@ -574,7 +588,7 @@ fn or_is_commutative_when_its_disjuncts_share_bindings() {
 fn the_boundary_decides_whether_a_saturator_is_stalled() {
     let (ast, mut terms, mut kb) = load_src(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x)))\n  \
-         :assert (ok ?x)\n  :why \"g\" :priority 100)\n\
+         :assert (ok ?x)\n  :why \"g\")\n\
          (relation seed T)\n(relation r T)\n(relation ok T)\n\
          (seed A :source \"(1)\")\n",
     );
@@ -618,9 +632,9 @@ fn matching_does_not_resolve_equality_classes() {
     let mut equivalent = false;
     let run = saturate_with(
         "(rule scan ()\n  :match (r C ?y)\n  :assert (found ?y)\n  \
-         :why \"s\" :priority 100)\n\
+         :why \"s\")\n\
          (rule gate ()\n  :match (and (seed ?x) (absent (r C ?y)))\n  \
-         :assert (ok ?x)\n  :why \"g\" :priority 200)\n\
+         :assert (ok ?x)\n  :why \"g\")\n\
          (relation r T T)\n(relation seed T)\n(relation found T)\n(relation ok T)\n\
          (r A B :source \"(1)\")\n(seed S :source \"(2)\")\n",
         |kb, terms| {
@@ -663,7 +677,7 @@ fn a_guard_over_a_nested_pattern_watches_the_outer_relation_only() {
     let program = |extra: &str| {
         format!(
             "(rule gate ()\n  :match (and (seed ?x) (absent (not (r ?x ?y))))\n  \
-             :assert (ok ?x)\n  :why \"g\" :priority 100)\n\
+             :assert (ok ?x)\n  :why \"g\")\n\
              (relation seed T)\n(relation r T T)\n(relation ok T)\n\
              (seed X :source \"(1)\")\n(seed Y :source \"(2)\")\n\
              (not (r X B) :source \"(3)\")\n{extra}"
@@ -705,7 +719,7 @@ fn a_rule_parameter_is_in_scope_for_its_guards() {
         format!(
             "(rule gate (?P)\n  \
              :match (and (trigger ?a) (absent (and (r ?a ?y) (eq ?y ?P))))\n  \
-             :assert (gated ?a)\n  :why \"g\" :priority 200)\n\
+             :assert (gated ?a)\n  :why \"g\")\n\
              (relation trigger T)\n(relation r T T)\n(relation gated T)\n\
              (relation gate T)\n\
              (gate BAD :source \"activator\")\n(trigger X :source \"(1)\")\n\
@@ -740,7 +754,7 @@ fn a_rule_parameter_is_in_scope_for_its_guards() {
 fn a_guard_free_rule_parks_nothing() {
     let plain = saturate(
         "(rule plain ()\n  :match (seed ?x)\n  :assert (ok ?x)\n  \
-         :why \"p\" :priority 100)\n\
+         :why \"p\")\n\
          (relation seed T)\n(relation ok T)\n(seed A :source \"(1)\")\n",
     );
     assert_eq!(plain.extent("ok"), ["(ok A)"], "the rule still fires");
@@ -751,7 +765,7 @@ fn a_guard_free_rule_parks_nothing() {
 
     let guarded = saturate(
         "(rule gate ()\n  :match (and (seed ?x) (absent (r ?x)))\n  \
-         :assert (ok ?x)\n  :why \"g\" :priority 100)\n\
+         :assert (ok ?x)\n  :why \"g\")\n\
          (relation seed T)\n(relation r T)\n(relation ok T)\n(seed A :source \"(1)\")\n",
     );
     assert_eq!(guarded.extent("ok"), ["(ok A)"]);
@@ -782,7 +796,7 @@ fn unknown_admits_exactly_the_undecided_pairs() {
                 (rule find-unknown ()\n  \
                 :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)\n              \
                 (unknown (likes ?a ?b)))\n  :assert (unknown-likes ?a ?b)\n  \
-                :why \"{?a} to {?b} undecided\" :priority 100)\n\
+                :why \"{?a} to {?b} undecided\")\n\
                 (relation likes T T)\n(relation unknown-likes T T)\n\
                 (is-a Person T)\n";
 
@@ -816,10 +830,10 @@ fn unknown_admits_exactly_the_undecided_pairs() {
 const DERIVED_NAF: &str = "\
 (rule probe ()
   :match  (and (seed ?a ?b) (absent (target ?a ?b)))
-  :assert (out ?a ?b) :why \"p\" :priority 100)
+  :assert (out ?a ?b) :why \"p\")
 (rule mk-target ()
   :match  (src ?a ?b)
-  :assert (target ?a ?b) :why \"m\" :priority 100)
+  :assert (target ?a ?b) :why \"m\")
 (relation seed   T T)
 (relation target T T)
 (relation out    T T)

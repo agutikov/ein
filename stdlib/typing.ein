@@ -33,7 +33,6 @@
   :match  (and (converse ?R1 ?R2) (type-hierarchy ?isR*))
   :assert (and (converse-illtyped-dom ?R1 ?R2 ?isR*)
                (converse-illtyped-ran ?R1 ?R2 ?isR*))
-  :priority 120
   :why    "typecheck converse {?R1}/{?R2} under hierarchy {?isR*}.")
 
 ;; ── (reflexive R) — reflexive closure of R, as a rule ───────────────────────
@@ -47,17 +46,14 @@
 (rule derive-reflexive ()
   :match  (reflexive ?R)
   :assert (and (reflexive-dom ?R) (reflexive-cod ?R))
-  :priority 120
   :why    "(reflexive {?R}) ⟹ close {?R} reflexively on both argument positions.")
 
 (rule reflexive-dom (?R)
   :match  (?R ?a ?b)
   :assert (?R ?a ?a)
-  :priority 110
   :why    "{?R} reflexive: ({?R} {?a} {?b}) ⟹ ({?R} {?a} {?a}).")
 
 (rule reflexive-cod (?R)
   :match  (?R ?a ?b)
   :assert (?R ?b ?b)
-  :priority 110
   :why    "{?R} reflexive: ({?R} {?a} {?b}) ⟹ ({?R} {?b} {?b}).")

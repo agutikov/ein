@@ -31,9 +31,9 @@ const SEATS: &str = r#"
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)
 (rule one-per-person (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-      :assert (false) :priority 250)
+      :assert (false))
 (rule one-per-seat (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-      :assert (false) :priority 250)
+      :assert (false))
 (one-per-person seat) (one-per-seat seat)
 (hrule guess (?p ?s) :match (instance ?p Person) :assert (seat ?p ?s))
 (solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
@@ -42,7 +42,7 @@ const SEATS: &str = r#"
 /// A program whose root is dead: R is empty, every node dead.
 const DEAD: &str = r#"
 (relation p T)
-(rule no () :match (p A) :assert (false) :priority 250)
+(rule no () :match (p A) :assert (false))
 (p A)
 "#;
 

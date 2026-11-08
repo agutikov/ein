@@ -34,8 +34,7 @@
   :match  (and (hypothesis ?h)
                (contradiction-under ?h))
   :assert (not ?h)
-  :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h})."
-  :priority 900)
+  :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h}).")
 
 (relation co-located T T)
 

@@ -113,7 +113,6 @@
 (rule closed-observed ()
   :match  (__closed__ ?R)
   :assert (closed-here ?R)
-  :priority 500
   :why    "{?R}'s extension is closed")
 
 ;; No `(r a1 b1)`. `a1` owes a `B` it can never be given.

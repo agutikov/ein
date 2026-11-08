@@ -12,7 +12,7 @@ use std::path::Path;
 use std::time::Instant;
 
 use ein_core::numfmt::format_spec;
-use ein_core::{Kb, NameCategory, ProvKind, SolverConfig, Terms};
+use ein_core::{Kb, NameCategory, ProvKind, SolverConfig, Symbol, Terms};
 use ein_infer::SharedMemo;
 use ein_infer::events::{Events, Level};
 use ein_infer::firing::Firing;
@@ -439,35 +439,13 @@ fn branch(p: &ein_core::Prov) -> String {
     }
 }
 
-/// Q41's priority bands.
-fn band_label(priority: Option<i64>) -> &'static str {
-    match priority {
-        None => "unbanded",
-        Some(p) if p < 200 => "propagate",
-        Some(p) if p < 300 => "derive",
-        Some(p) if p < 900 => "eliminate",
-        Some(_) => "hypothesis",
-    }
-}
-
-/// What the listing prints beside a rule's declared band (M1f S1f.5.15's T3):
-/// the band its shape derives and the stratum of what it writes, from the
-/// plans the run compiled, or that no plan of it was compiled.
-fn derived_column(rule: Option<&strata::RuleBand>) -> String {
-    match rule {
-        Some(strata::RuleBand {
-            derived: Some(band),
-            stratum,
-            ..
-        }) => match stratum {
-            Some(k) => format!("  derived {}  stratum {k}", band.label()),
-            None => format!("  derived {}", band.label()),
-        },
-        _ => "  derived -  (no plan compiled)".to_string(),
-    }
-}
-
-fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb, bands: &[strata::RuleBand], graph: &strata::Graph) {
+fn dump_kb(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    graph: &strata::Graph,
+    strata: &[(Symbol, Option<u32>)],
+) {
     println!();
     println!("{}", "=".repeat(70));
     println!("=  SATURATED KB DUMP");
@@ -504,22 +482,19 @@ fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb, bands: &[strata::RuleBand], graph:
         println!();
         println!(";; Rules ({})", p.rules.len());
         for rule in p.rules.values() {
-            let prio = rule.priority.and_then(|id| terms.ints.value(id));
-            let shown = match rule.priority {
-                Some(id) => terms.ints.text(id).to_string(),
-                None => "None".to_string(),
-            };
             let params: Vec<String> = rule
                 .params
                 .iter()
                 .map(|&s| format!("?{}", terms.sym(s)))
                 .collect();
             println!(
-                ";;   {}  :priority {shown} ({})  :params ({}){}",
+                ";;   {}  :params ({})  {}",
                 terms.sym(rule.name),
-                band_label(prio),
                 params.join(" "),
-                derived_column(bands.iter().find(|b| b.rule == rule.name))
+                match strata.iter().find(|(r, _)| *r == rule.name) {
+                    Some((_, Some(k))) => format!("stratum {k}"),
+                    _ => "no plan compiled".to_string(),
+                }
             );
         }
         // M1f S1f.5.15's T4: whether a stratification exists, and where not,
@@ -834,8 +809,8 @@ fn bench(
     if dump {
         let plans = ein_infer::monotone::plans_of(&memo);
         let graph = strata::graph(&kb, &terms, &plans);
-        let bands = strata::rule_bands(&kb, &terms, &plans, &graph);
-        dump_kb(&ast, &terms, &kb, &bands, &graph);
+        let rule_strata = strata::rule_strata(&kb, &terms, &plans, &graph);
+        dump_kb(&ast, &terms, &kb, &graph, &rule_strata);
     }
     Ok(())
 }

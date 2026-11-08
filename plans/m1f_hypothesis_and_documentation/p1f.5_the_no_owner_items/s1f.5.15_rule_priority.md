@@ -38,6 +38,11 @@ W29's witness. Measured one part at a time, the derived agenda holds every core 
 boundary moves them. Whether to remove with those moves, order the boundary by the band too, or keep `:priority` is
 [Q-M1f.6](../open_questions.md#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not), put to the
 user.
+**The user ruled Q-M1f.6 (b) and then re-ruled it the same day** (`3cb67474`, `f9148334`): *"plain FIFO, core is
+an explanation, F22 makes it canonical"*. So no derived order shipped: **T4 is done** (`ccc4e8ca`, [§ T4
+record](#t4-record-2026-11-08)), **T5 removed `:priority`** with the agenda and the boundary FIFO, the band with it,
+every core and `refuted by` it moves named as F22's ([§ T5 record](#t5-record-2026-11-08)), and T6 writes the
+docs.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
 And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
@@ -718,6 +723,91 @@ Three decisions, in order:
    `ein_corpus::mutants::without_priority`, and its golden, `ein-ir/tests/golden/generated_parser_corpus.txt`:
    once no file writes `:priority` the two readings are one, and its 133 files differing only by their
    `:priority` are none.
+
+### T5 record, 2026-11-08
+
+**Done on the user's re-ruling of Q-M1f.6** (`f9148334`), *"plain FIFO, core is an explanation, F22 makes it
+canonical"*: no band orders anything, so the removal is T1's stripped arm, and every core and `refuted by` it
+moves is accepted, named here as F22's to make canonical. T3's derived order (`saturator::Order`, the
+`derived-order` feature, `strata::band` and the `rule_bands` example) went with it, never having shipped; the graph
+and the strata stay for T4's diagnostic and `saturate --dump`'s per-rule stratum.
+
+**What the commit removes** (the dispositions of § T2 record, as ruled): a rule entity has no `priority`, and the
+loader reads none, so until S1f.5.5's swap a `:priority` written anyway is a rule keyword the hand-written loader
+drops, as it drops any (D-15), and from the swap the generated grammar refuses it. The agenda and the boundary are
+FIFO, the written and arrival order (consumers 1 and 2; `DEFAULT_PRIORITY` and its pin go); the obligation report is
+in load order (3); the KB-shape digest loses `priority=` (4); `saturate --dump`'s listing prints each rule's stratum
+and no band (5); the detector's order check reads every race as the written order's, and `Race`'s priorities and the
+summary's `priorities` and `at_one_priority` go (7); the `enqueue` event loses its `priority` field, the
+`tiebreaker` being the key (8, `events.md`). The corpus loses **475 clauses in 136 of the 415 files** under
+`examples/`, `tests/`, `stdlib/` and `corpus/`, a comment that names the keyword keeping it
+(`build/s1f.5.15/t5/strip_clauses.py`, which leaves outside comments exactly what `without_priority` leaves), the
+stdlib's manifest rewritten; `ein-corpus`'s `no_corpus_program_writes_a_priority` holds it. The records under
+`plans/` keep theirs. The Rust inline programs lose theirs too but where a test is about the keyword
+(`generated_parser`, `mutants`, `ir_semantics`' keyword-pair cases); the M1e2 census examples `node_census` and
+`detector_draft` read one local constant.
+
+**Restated, each by its rules or its written order and not by a number**:
+
+- **The `alt-cap-core` pair** (the flag's exemption, `explain_semantics`' smallest-closure test, the einb
+  round-trip): both read `(w1 X)` again as `(w3 X)` through `mk-w3`, written after `mk-q` in `alt-cap-core.ein`
+  and before it in the twin, so they differ by one rule's written place. Their cores are the same facts as before:
+  `(w1 X) (w2 X)` both, and with `:record-alternative-justifications false` the three-fact chain in the first file
+  and the pair in the twin, so the exemption keeps its witness. `w3` is a new candidate relation, so H grows from 70
+  to 103 candidates, every one dead alone; `W10/alt-cap-core`'s `now` names `w3` among the candidates' relations.
+- **W25's control**, `guard-only-first.ein`: `early` reads `(pp ?x)`, which `mk-pp` derives from `(p ?x)`, so
+  `w`'s candidate queues first and N `{(p a)}`'s core is `(p a)`, the witness's right answer, with the same R and N
+  (`outside` names `pp` too). The control keeps showing the right answer, by its rules; the witness shows W25's wrong
+  one in either order.
+- **W36**: stays open, and `features/12_expect_false.ein`, which no typed order hides any more, prints `refuted by
+  forced, occupied` under the flag; `lever_invariance`'s `REFUTED_BY_OPEN` names it under W36's row beside the
+  witness (the row's note names the file), with no second row.
+- **W29/core-two-ways**: its witness writes no `:priority`, and its answer does not move (pass 1, below).
+- Tests about the order itself: `naf_semantics::the_order_does_not_decide_what_is_derivable` (written gate-first and
+  derive-first, where it was two priorities), `explain_semantics::the_agenda_is_fifo_in_the_written_order` (in place
+  of the bands' order and the default's value), `search_semantics`' two derivations by written order, and the
+  detector's race strings and `region_modes`' order row without priorities.
+
+**The sweep, both passes, on this build** (`build/s1f.5.15/head/` a snapshot of `ccc4e8ca` and its binary on the
+corpus as written, against this tree's binary on the stripped corpus; `run_sweep5.sh`, `declared5.py`,
+`analyze5.py`, `core_moves5.py`, 2026-11-08):
+
+- **Pass 1**, 512 files through `solve -H --dump-answer`, `saturate --dump` and `test`: no exit code moved; no R, N,
+  H, claim or stored fact moved on any program but the three rewritten above, which moved by their new relation
+  (`w3`, `pp`) and nothing else, their cores held.
+- **Pass 2**, 1 380 declared cells over 405 entries: no exit code moved; 209 cells differ, the classes T1 found
+  (190 `saturate` and `saturate --dump`, 4 traces, 4 lattice dumps, the detector's order rows, `zebra2-bad`'s
+  `refuted by`) and the three rewritten programs' `solve`.
+- **The cores and `refuted by`, F22's to make canonical, exactly T1's FIFO arm** (`core_moves5.txt`):
+
+| program | cores whose facts move (of N) | facts over N | `refuted by` beside an unmoved core |
+|---|---|---|---:|
+| `zebra.ein` | 292 of 458: 223 grow, 50 shrink, 19 the same size | 13 193 → 14 697 | 46 |
+| `zebra2.ein`, `zebra2-obligations.ein` | 31 of 366: 18 grow, 13 the same size | 5 154 → 5 184 | 8 |
+| `zebra2-hints.ein` | 24 of 73: 20 grow, 4 the same size | 1 005 → 1 042 | 2 |
+| `zebra2-minus-15.ein`, `-obligations` | 215 of 1 495: 118 grow, 9 shrink, 88 the same size | 31 151 → 31 284 | 181 |
+| `ein-bugs/zebra2-bad.ein` | none | — | root's and N's one |
+| `branching/01` to `/11` | none | — | 2 to 62 each (`symmetric` → `transitive` beside `sibling-exclusive`) |
+| records: `inventory_2026-11-05/probes/guard_only_first.ein`, `probes/alt-cap-below-noalts.ein` (3 → 2), `s1e2.3.10_probes/two-rules-node.ein` and `-reordered` | 1, 1, 0, 0 | | 0, 0, 1, 2 |
+
+  Every moved core passes `ein-infer/tests/corpus_cores.rs` (each names its commitment and, with root, derives its
+  contradiction).
+
+**Re-blessed, the four T1 predicted and nothing else**: `corpus_shapes.md5` (`priority=` in every digest, and the
+read-out, trace, DOT, cores and oracle digests of the programs whose order-dependent output moved above),
+`generated_parser_corpus.txt`, `zebra2.golden` (the parsed program prints no `:priority`) and `trace_two-level.md`
+(the step order).
+
+**The generated parser** (`ein-ir`'s `the_builder_holds_on_the_corpus`): as written, **341 of 415** files agree
+(323 the same tree and 18 the same but for digits), and the reading without `:priority` is the same reading: no file
+differs only by its `:priority`. T1's prototype said 340 of 414 on the same count, 322 + 18; the one more is W36's
+witness, filed since, which both parsers read alike. (The 323 this stage's T3 report gave was the same-tree row
+alone, without the 18.)
+
+**Firings and wall time, declared against FIFO** (T1's arms, `ein saturate`, root, best of five each, 2026-11-08):
+the same **7 571 firings** over the 418 programs that saturate on both, 3 271 productive and 4 273 redundant on
+both (T1's sweep, 417 programs); the summed wall time is tens of milliseconds either way and moves more between
+re-takes (25 → 32 ms once, 37 → 32 ms again) than between the arms.
 
 ### Task T1f.5.15.6 — The docs
 

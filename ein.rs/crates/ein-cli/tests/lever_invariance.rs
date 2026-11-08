@@ -512,14 +512,22 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 const CORE_FLAG: &str = "record-alternative-justifications";
 
 /// The programs on which [`CORE_FLAG`] moves `refuted by` beside a core that
-/// did not move, each a register row's witness, `open` and owned by F22:
-/// `W36/alt-flag-refuted-by` (M1f S1f.5.15, Q-M1f.5 (a)). Each is compared
-/// less the `refuted by` row and `region.refuted_by` under that flag, and
-/// nothing else; an entry leaves with its row's fix.
-const REFUTED_BY_OPEN: [(&str, &str); 1] = [(
-    "W36/alt-flag-refuted-by",
-    "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein",
-)];
+/// did not move, each under a register row `open` and owned by F22:
+/// `W36/alt-flag-refuted-by` (M1f S1f.5.15, Q-M1f.5 (a)), on its witness and,
+/// since S1f.5.15 took every `:priority` out, on `features/12`, the program
+/// the witness was written from, which no typed order hides any more. Each is
+/// compared less the `refuted by` row and `region.refuted_by` under that flag,
+/// and nothing else; an entry leaves with its row's fix.
+const REFUTED_BY_OPEN: [(&str, &str); 2] = [
+    (
+        "W36/alt-flag-refuted-by",
+        "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein",
+    ),
+    (
+        "W36/alt-flag-refuted-by",
+        "examples/features/12_expect_false.ein",
+    ),
+];
 
 /// The rows that name a dead node's core: the read-out's `unsat core` and
 /// `source`, and since M1e2 S1e2.2.23 its `core search` row, which says the
@@ -783,8 +791,9 @@ fn no_config_flag_moves_a_line_of_any_mode() {
 /// **W36 is exempt from `refuted by` until F22 fixes it** (M1f S1f.5.15, the
 /// user's ruling of 2026-11-08 on Q-M1f.5 (a)).
 ///
-/// Each [`REFUTED_BY_OPEN`] entry is a register row that is `open`, owned by
-/// F22, whose witness is the program named; and on that program
+/// Each [`REFUTED_BY_OPEN`] entry names a register row that is `open` and
+/// owned by F22, and a program that is its witness or that its note names;
+/// and on that program
 /// [`CORE_FLAG`] still moves the `refuted by` row beside a core that did not
 /// move, on some question, and nothing else. The day it stops, the row is
 /// fixed and the entry goes with it.
@@ -798,13 +807,13 @@ fn w36_is_exempt_from_refuted_by_until_f22() {
             .find(|r| r.id == id)
             .unwrap_or_else(|| panic!("{id}: not a register row"));
         assert_eq!(
-            (
-                row.status.as_str(),
-                row.owner.as_str(),
-                row.witness.as_str()
-            ),
-            ("open", "F22", witness),
-            "{id}: the exemption is an open row of F22's, on its witness"
+            (row.status.as_str(), row.owner.as_str()),
+            ("open", "F22"),
+            "{id}: the exemption is an open row of F22's"
+        );
+        assert!(
+            row.witness == witness || row.note.as_deref().is_some_and(|n| n.contains(witness)),
+            "{id}: {witness} is neither its witness nor named in its note"
         );
         let path = repo_root().join(witness);
         let Reach::Known(k) = reach(&path) else {

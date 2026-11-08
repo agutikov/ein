@@ -61,7 +61,6 @@
 (rule probe-undecided ()
   :match  (unknown (co-loc Cat S2))
   :assert (undecided Cat S2)
-  :priority 500
   :why    "Cat is excluded from one seat of three — nothing may be forced")
 
 (solve

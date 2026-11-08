@@ -61,7 +61,6 @@
   :match  (and (group ?g)
                (forall ?y (member ?y ?g) (marked ?y)))
   :assert (complete ?g)
-  :priority 300
   :why    "every member of {?g} is marked (via forall)")
 
 ;; …and the same thing with `forall` expanded by hand. `(forall ?b G B)` is
@@ -70,7 +69,6 @@
   :match  (and (group ?g)
                (absent (and (member ?y ?g) (absent (marked ?y)))))
   :assert (complete-raw ?g)
-  :priority 300
   :why    "every member of {?g} is marked (expansion written out)")
 
 (solve

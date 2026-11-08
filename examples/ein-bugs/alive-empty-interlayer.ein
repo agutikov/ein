@@ -55,23 +55,21 @@
 ;; and it survives into the layer as an entering. Z sorts last, so its
 ;; entering is the layer's last and the two survivors are entered against a
 ;; root that has not grown yet.
-(rule taint () :match (p Z)   :assert (bad Z) :priority 200)
-(rule kill  () :match (bad Z) :assert (false) :priority 300)
+(rule taint () :match (p Z)   :assert (bad Z))
+(rule kill  () :match (bad Z) :assert (false))
 
 ;; Once Z is refuted, nothing may have p — ONE step from any (p ?x), which is
 ;; what empties `alive` on the recompute.
 (rule mutex ()
   :match  (and (not (p Z)) (p ?x))
-  :assert (false)
-  :priority 350)
+  :assert (false))
 
 ;; Totality as a saturation refutation: something must have p. Dormant at
 ;; phase 1 (no negative yet) and dormant in every fork entered before the
 ;; writeback landed — so the two live branches are genuinely alive.
 (rule totality ()
   :match  (and (not (p Z)) (absent (p A)) (absent (p B)))
-  :assert (false)
-  :priority 400)
+  :assert (false))
 
 (query
   :goal   (p ?x))

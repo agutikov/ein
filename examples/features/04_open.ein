@@ -37,7 +37,6 @@
   :match  (and (is-a ?h House) (is-a ?c Color)
                (unknown (house-color ?h ?c)))
   :assert (open-slot ?h ?c)
-  :priority 300
   :why    "({?h}, {?c}) is undecided")
 
 (relation house-color House Color)

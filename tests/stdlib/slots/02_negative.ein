@@ -72,7 +72,6 @@
 (rule probe-undecided ()
   :match  (unknown (co-loc Bob Rat))
   :assert (undecided Bob Rat)
-  :priority 500
   :why    "nothing relates Bob and Rat either way, and no rule may invent it")
 
 (solve

@@ -44,25 +44,21 @@
 (rule dead-1 ()
   :match  (and (h A) (h D) (absent (h B)) (absent (h E)))
   :assert (false)
-  :why    "A D is dead while B and E are missing"
-  :priority 300)
+  :why    "A D is dead while B and E are missing")
 
 (rule dead-2 ()
   :match  (and (h A) (h C) (h D) (absent (h E)))
   :assert (false)
-  :why    "A C D is dead while E is missing"
-  :priority 300)
+  :why    "A C D is dead while E is missing")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
   :assert (open h)
-  :why    "from the start: one of A is required"
-  :priority 500)
+  :why    "from the start: one of A is required")
 
 (rule owe-2 ()
   :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
   :assert (open h)
-  :why    "with B: one of C is required"
-  :priority 500)
+  :why    "with B: one of C is required")
 
 (query :goal (h ?x))

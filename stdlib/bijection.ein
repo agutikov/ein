@@ -64,16 +64,14 @@
                (total-owed ?R ?isa) (surjective-owed ?R ?isa)
                (domain-elimination ?R ?isa) (range-elimination ?R ?isa)
                (functional-negative ?R ?isa) (injective-negative ?R ?isa))
-  :why    "(bijective {?R}) + hierarchy {?isa} ⟹ totality / obligations / elimination / negative-completion activators."
-  :priority 100)
+  :why    "(bijective {?R}) + hierarchy {?isa} ⟹ totality / obligations / elimination / negative-completion activators.")
 
 ;; typecheck is bijective-gated (sound once the arg types are direct-parent — see
 ;; zebra2's note) and uses the TRANSITIVE hierarchy `(typecheck-hierarchy …)`.
 (rule typecheck-setup ()
   :match  (and (relation ?R ?A ?B) (bijective ?R) (typecheck-hierarchy ?isa))
   :assert (and (typecheck-arg-0 ?R ?isa ?A) (typecheck-arg-1 ?R ?isa ?B))
-  :why    "(bijective {?R}) typed {?A}×{?B} + hierarchy {?isa} ⟹ typecheck activators."
-  :priority 100)
+  :why    "(bijective {?R}) typed {?A}×{?B} + hierarchy {?isa} ⟹ typecheck activators.")
 
 ;; ── negative-completion (d=0) ─────────────────────────────────────────────────
 ;; A functional R: a positive (R a b) excludes every other b′ of b's type — the
@@ -87,8 +85,7 @@
                (?isa ?b_other ?B)
                (neq ?b_other ?b))
   :assert (not (?R ?a ?b_other))
-  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-  :priority 240)
+  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other})).")
 
 (rule injective-negative (?R ?isa)
   :match  (and (?R ?a ?b)
@@ -96,8 +93,7 @@
                (?isa ?a_other ?A)
                (neq ?a_other ?a))
   :assert (not (?R ?a_other ?b))
-  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-  :priority 240)
+  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b})).")
 
 ;; ── elimination: force the survivor when all-but-one partner is excluded ──────
 ;; Guarded by the 1-arg property markers (from std.algebra's `bijective-properties`,
@@ -113,8 +109,7 @@
                  (and (?isa ?b_other ?B) (neq ?b_other ?b))
                  (not (?R ?a ?b_other))))
   :assert (?R ?a ?b)
-  :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
-  :priority 400)
+  :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b}).")
 
 (rule range-elimination (?R ?isa)
   :match  (and (injective ?R) (surjective ?R)
@@ -125,8 +120,7 @@
                  (and (?isa ?a_other ?A) (neq ?a_other ?a))
                  (not (?R ?a_other ?b))))
   :assert (?R ?a ?b)
-  :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
-  :priority 400)
+  :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b}).")
 
 ;; ── arg typecheck against the transitive hierarchy ────────────────────────────
 ;; A fact whose arg-0 / arg-1 is not an `?isa`-member of the declared domain /
@@ -135,11 +129,9 @@
 (rule typecheck-arg-0 (?R ?isa ?Dom)
   :match  (and (?R ?a ?b) (absent (?isa ?a ?Dom)))
   :assert (false)
-  :why    "{?R} arg 0 expects {?Dom} (via {?isa}); {?a} is not a {?Dom}."
-  :priority 220)
+  :why    "{?R} arg 0 expects {?Dom} (via {?isa}); {?a} is not a {?Dom}.")
 
 (rule typecheck-arg-1 (?R ?isa ?Ran)
   :match  (and (?R ?a ?b) (absent (?isa ?b ?Ran)))
   :assert (false)
-  :why    "{?R} arg 1 expects {?Ran} (via {?isa}); {?b} is not a {?Ran}."
-  :priority 220)
+  :why    "{?R} arg 1 expects {?Ran} (via {?isa}); {?b} is not a {?Ran}.")

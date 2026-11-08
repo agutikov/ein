@@ -172,7 +172,7 @@ fn mutual_negation_is_detected_whatever_either_sides_origin() {
          (rule one-per-seat ()\n\
          \x20 :match  (and (sits ?p1 ?s) (is-a ?p2 Person) (neq ?p1 ?p2))\n\
          \x20 :assert (not (sits ?p2 ?s))\n\
-         \x20 :why \"{?s} is taken by {?p1}\" :priority 100)\n\
+         \x20 :why \"{?s} is taken by {?p1}\")\n\
          (sits A S1 :source \"clue (1)\")\n(sits B S1 :source \"clue (2)\")\n",
     );
     saturate(&ast, &mut terms, &mut kb);
@@ -327,8 +327,8 @@ fn witness_is_the_positive_for_a_pair_and_the_false_fact_for_a_direct() {
 #[test]
 fn fail_fast_agrees_with_the_post_hoc_scan_over_a_real_saturation() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 → x\" :priority 100)\n\
-         (rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 → ¬x\" :priority 100)\n\
+        "(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 → x\")\n\
+         (rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 → ¬x\")\n\
          (relation h1 T) (relation h2 T) (relation x T)\n(is-a a T)\n(h1 a) (h2 a)\n",
     );
     let (first_incremental, first_scan) = in_session(&ast, &mut terms, &mut kb, |s| {
@@ -534,7 +534,7 @@ fn dies(src: &str, rel: &str, args: &[&str]) -> bool {
 #[test]
 fn a_rule_that_negates_the_candidate_itself_kills_it() {
     let src = "(rule deny (?R)\n  :match (?R ?a ?b) :assert (not (?R ?a ?b))\n\
-               \x20 :why \"deny\" :priority 100)\n(relation r T T)\n(deny r)\n";
+               \x20 :why \"deny\")\n(relation r T T)\n(deny r)\n";
     let (ast, mut terms, mut kb) = kb_of(src);
     saturate(&ast, &mut terms, &mut kb);
     let h = fact(&mut terms, "r", &["A", "B"]);
@@ -556,9 +556,9 @@ fn a_rule_that_negates_the_candidate_itself_kills_it() {
 #[test]
 fn a_derived_negative_kills_against_a_positive_of_any_origin() {
     let src = "(rule deny ()\n  :match (cand ?x) :assert (not (r ?x))\n\
-               \x20 :why \"deny\" :priority 100)\n\
+               \x20 :why \"deny\")\n\
                (rule make-r ()\n  :match (seed ?x) :assert (r ?x)\n\
-               \x20 :why \"derive\" :priority 50)\n\
+               \x20 :why \"derive\")\n\
                (relation cand T)\n(relation r T)\n(relation seed T)\n\
                (r A :source \"given\")\n(seed C :source \"(1)\")\n";
 
@@ -601,18 +601,26 @@ fn a_kb_with_no_rules_never_kills() {
 /// One fact with two derivations, plus one clash — the R3 report's E3 fixture.
 ///
 /// `(X a)` follows from `(A a) ∧ (B a)` via `join` and from `(C a)` alone via
-/// `chain`; `(X a) ∧ (Y a)` is absurd. Only the two rules' `:priority` moves
-/// between instantiations, and lower fires first — so which derivation wins
-/// the dedup race and becomes `(X a)`'s *primary* provenance flips with it.
-fn two_derivations(join: i32, chain: i32) -> String {
+/// `chain`; `(X a) ∧ (Y a)` is absurd. Only the two rules' written order
+/// moves between instantiations, and the first written fires first (FIFO
+/// since M1f S1f.5.15; until then their `:priority`, lower first) — so which
+/// derivation wins the dedup race and becomes `(X a)`'s *primary* provenance
+/// flips with it.
+fn two_derivations(join_first: bool) -> String {
+    let join = "(rule join ()\n  :match (and (A ?o) (B ?o)) :assert (X ?o)\n\
+                \x20 :why \"join\")\n";
+    let chain = "(rule chain ()\n  :match (C ?o) :assert (X ?o)\n\
+                 \x20 :why \"chain\")\n";
+    let (first, second) = if join_first {
+        (join, chain)
+    } else {
+        (chain, join)
+    };
     format!(
         "(relation A T)\n(relation B T)\n(relation C T)\n(relation X T)\n(relation Y T)\n\
-         (rule join ()\n  :match (and (A ?o) (B ?o)) :assert (X ?o)\n\
-         \x20 :why \"join\" :priority {join})\n\
-         (rule chain ()\n  :match (C ?o) :assert (X ?o)\n\
-         \x20 :why \"chain\" :priority {chain})\n\
+         {first}{second}\
          (rule clash ()\n  :match (and (X ?o) (Y ?o)) :assert (false)\n\
-         \x20 :why \"clash\" :priority 300)\n\
+         \x20 :why \"clash\")\n\
          (A a :source \"(A)\")\n(B a :source \"(B)\")\n(C a :source \"(C)\")\n\
          (Y a :source \"(Y)\")\n"
     )
@@ -624,7 +632,7 @@ const FUNCTIONAL: &str = "\
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why    \"fn\" :priority 100)
+  :why    \"fn\")
 (relation R T T)
 (functional R)
 (R x One :source \"(1)\")
@@ -637,8 +645,9 @@ fn saturated(src: &str) -> (Ast, Terms, Kb) {
     (ast, terms, kb)
 }
 
-/// Flipping the two rules' priorities flips which derivation is recorded
-/// primary and leaves the reported frontier identical.
+/// Flipping the two rules' written order (their priorities until M1f
+/// S1f.5.15) flips which derivation is recorded primary and leaves the
+/// reported frontier identical.
 ///
 /// The deliberate inversion of a test that used to pin the opposite. With one
 /// justification per fact, the frontier was `{C, Y}` when `chain` fired first
@@ -650,13 +659,13 @@ fn saturated(src: &str) -> (Ast, Terms, Kb) {
 /// the fix is in the search rather than in which derivation wins.
 #[test]
 fn the_reported_frontier_does_not_depend_on_which_derivation_fired_first() {
-    for (join, chain, expected_primary) in [(100, 50, "chain"), (50, 100, "join")] {
-        let (_ast, terms, kb) = saturated(&two_derivations(join, chain));
+    for (join_first, expected_primary) in [(false, "chain"), (true, "join")] {
+        let (_ast, terms, kb) = saturated(&two_derivations(join_first));
         let frontier = smallest_contradiction_frontier(&kb, &terms, None);
         assert_eq!(
             rel_names(&terms, &frontier),
             ["C", "Y"],
-            "join={join} chain={chain}"
+            "join written first: {join_first}"
         );
 
         let mut terms = terms;
@@ -699,7 +708,7 @@ fn an_explanation_is_a_subset_of_the_or_aware_closure_and_not_of_the_primary_onl
         "with one derivation per fact the two readings coincide"
     );
 
-    let (_ast, terms, kb) = saturated(&two_derivations(50, 100));
+    let (_ast, terms, kb) = saturated(&two_derivations(true));
     let frontier = smallest_contradiction_frontier(&kb, &terms, None);
     let all = union_core(&kb, &terms, Justifications::All);
     assert!(
@@ -733,7 +742,7 @@ fn an_explanation_is_a_subset_of_the_or_aware_closure_and_not_of_the_primary_onl
 /// *not* supposed to reach.
 #[test]
 fn a_full_search_reports_exhaustion_and_a_budgeted_one_admits_it_did_not() {
-    let (_ast, terms, kb) = saturated(&two_derivations(50, 100));
+    let (_ast, terms, kb) = saturated(&two_derivations(true));
 
     let full = minimal_contradiction_frontier(&kb, &terms, None, &ExplanationBudget::default());
     assert!(full.exhausted);
@@ -768,7 +777,7 @@ fn a_full_search_reports_exhaustion_and_a_budgeted_one_admits_it_did_not() {
 /// only reason the smaller explanation is findable at all.
 #[test]
 fn turning_alternative_recording_off_restores_the_primary_only_frontier() {
-    let src = two_derivations(50, 100);
+    let src = two_derivations(true);
 
     let (ast, mut terms, mut kb) = kb_of(&src);
     kb.program_mut().config = Some(SolverConfig {

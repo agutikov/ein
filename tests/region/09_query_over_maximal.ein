@@ -16,12 +16,10 @@
 
 (rule one-seat-each (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-  :assert (false)
-  :priority 250)
+  :assert (false))
 (rule one-person-each (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-  :assert (false)
-  :priority 250)
+  :assert (false))
 (one-seat-each   seat)
 (one-person-each seat)
 

@@ -54,8 +54,7 @@
 (rule three-conflict ()
   :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
   :assert (false)
-  :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden"
-  :priority 200)
+  :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden")
 
 (hrule guess (?R ?T)
   :match  (is-a ?x ?T)

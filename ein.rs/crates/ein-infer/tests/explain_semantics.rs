@@ -45,11 +45,11 @@ use ein_ir::{Ast, dump_canonical, parse};
 const SHARED_OPTIMUM: &str = r#"
 (relation A T) (relation B T) (relation C T) (relation D T) (relation E T)
 (relation X T) (relation Z T)
-(rule x-join () :match (and (A ?o) (B ?o)) :assert (X ?o) :why "xj" :priority 100)
-(rule x-chain () :match (C ?o) :assert (X ?o) :why "xc" :priority 110)
-(rule z-join () :match (and (A ?o) (B ?o)) :assert (Z ?o) :why "zj" :priority 120)
-(rule z-pair () :match (and (D ?o) (E ?o)) :assert (Z ?o) :why "zp" :priority 130)
-(rule clash () :match (and (X ?o) (Z ?o)) :assert (false) :why "clash" :priority 300)
+(rule x-join () :match (and (A ?o) (B ?o)) :assert (X ?o) :why "xj")
+(rule x-chain () :match (C ?o) :assert (X ?o) :why "xc")
+(rule z-join () :match (and (A ?o) (B ?o)) :assert (Z ?o) :why "zj")
+(rule z-pair () :match (and (D ?o) (E ?o)) :assert (Z ?o) :why "zp")
+(rule clash () :match (and (X ?o) (Z ?o)) :assert (false) :why "clash")
 (A a :source "(A)") (B a :source "(B)") (C a :source "(C)")
 (D a :source "(D)") (E a :source "(E)")
 "#;
@@ -60,9 +60,9 @@ const SHARED_OPTIMUM: &str = r#"
 /// terminals and take no alternatives.
 const CYCLIC: &str = r#"
 (relation S T T) (relation P T T) (relation Q T)
-(rule seed () :match (S ?a ?b) :assert (P ?a ?b) :why "s" :priority 90)
-(rule mirror () :match (P ?a ?b) :assert (P ?b ?a) :why "m" :priority 100)
-(rule clash () :match (and (P y x) (Q x)) :assert (false) :why "c" :priority 300)
+(rule seed () :match (S ?a ?b) :assert (P ?a ?b) :why "s")
+(rule mirror () :match (P ?a ?b) :assert (P ?b ?a) :why "m")
+(rule clash () :match (and (P y x) (Q x)) :assert (false) :why "c")
 (S x y :source "(S)") (Q x :source "(Q)")
 "#;
 
@@ -71,7 +71,7 @@ const CONSISTENT: &str = "(relation R T T)\n(R x One :source \"(1)\")\n";
 /// One symmetric activator over one edge — the smallest program with a
 /// fixpoint worth reaching.
 const MIRRORED_EDGE: &str = r#"
-(rule sym (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s" :priority 100)
+(rule sym (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why "s")
 (relation r T T) (sym r)
 (r A B :source "(1)")
 "#;
@@ -88,10 +88,10 @@ const FORALL: &str = r#"
 (relation done T)
 (rule all-blocked ()
   :match  (and (row ?r) (absent (and (cell ?r ?c) (absent (blocked ?c)))))
-  :assert (full ?r) :why "every cell of {?r} is blocked" :priority 200)
+  :assert (full ?r) :why "every cell of {?r} is blocked")
 (rule finish ()
   :match  (and (full ?r) (absent (done ?r)))
-  :assert (done ?r) :why "close {?r}" :priority 300)
+  :assert (done ?r) :why "close {?r}")
 (row R1 :source "(1)") (row R2 :source "(2)")
 (cell R1 C1 :source "(3)") (cell R1 C2 :source "(4)")
 (cell R2 C3 :source "(5)")
@@ -304,8 +304,10 @@ fn fact_set(f: &Fixture) -> Vec<String> {
 /// The review's Q2, answered *yes* by M1e S1e.1.3: `Kb::record_justification`
 /// retains by **premise count**, which is local, and `explain` minimises
 /// **frontier size**, which is transitive, so a full list refused the
-/// derivation with the smaller frontier. The two files are one `:priority`
-/// apart and nothing else — same facts, same rules, same verdict:
+/// derivation with the smaller frontier. The two files were one `:priority`
+/// apart and nothing else until M1f S1f.5.15 removed the keyword; since then
+/// they are one rule's written place apart, `mk-w3` after `mk-q` or before it
+/// — same facts, same rules, same verdict:
 ///
 /// | | `(false)`'s primary | core until S1e2.2.11 | core since |
 /// |---|---|---|---|
@@ -325,13 +327,13 @@ fn a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core() {
     capped.saturate();
     reordered.saturate();
 
-    // One program, two priorities: if the fact sets ever diverge the pair is
-    // comparing two puzzles and says nothing about the cap.
+    // One program, two written orders: if the fact sets ever diverge the pair
+    // is comparing two puzzles and says nothing about the cap.
     assert_eq!(
         fact_set(&capped),
         fact_set(&reordered),
         "the two fixtures saturate to different fact sets — they are supposed \
-         to differ in one `:priority` and nothing else"
+         to differ in one rule's written place and nothing else"
     );
 
     let budget = ExplanationBudget::default();
@@ -979,7 +981,7 @@ fn an_identical_re_declaration_collapses() {
     let mut terms = Terms::new();
     let differing = format!(
         "{IMPORT_CLOSURE}(rule infer-closure () :match (functional ?R) \
-         :assert (__closed__ ?R) :priority 90)\n"
+         :assert (__closed__ ?R))\n"
     );
     let forms = parse(&mut ast, &differing, Some("<fixture>")).expect("parses");
     let err = ein_ir::load(&mut ast, &mut terms, &forms, None)
@@ -1078,7 +1080,7 @@ fn is_stalled_reopens_after_a_write_outside_step() {
 #[test]
 fn an_activator_with_an_empty_extent_saturates_to_nothing() {
     let mut f = load_text(
-        "(rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why \"s\" :priority 100)\n\
+        "(rule s (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a) :why \"s\")\n\
          (relation r T T) (s r)\n",
     );
     let run = f.saturate();
@@ -1099,86 +1101,34 @@ fn an_activator_with_an_empty_extent_saturates_to_nothing() {
     );
 }
 
-/// **priority-bands-order-the-firing-sequence.**
+/// **The agenda is FIFO: the written and arrival order** (M1f S1f.5.15, the
+/// user's ruling of 2026-11-08 on Q-M1f.6, *"plain FIFO"*).
 ///
-/// Bands are advisory for *soundness* since S1.21.8 — `(absent …)` is judged on
-/// the closure boundary either way — but they still decide the shape of every
-/// trace, and elimination reading negatives the propagate band has not produced
-/// yet would weaken the state it writes. The claim has two halves and the
-/// second is the one a naive implementation gets wrong: the bands are not a
-/// one-way sweep. A fact produced by a *higher* band re-enters the lower one
-/// immediately, ahead of the higher band's own remaining candidates — a global
-/// priority queue, not a pipeline.
+/// No rule has a priority: candidates fire in the order they were enqueued,
+/// and a rule's first candidates are enqueued in the order the rules are
+/// written. Four one-premise rules on one given fire in their written order,
+/// whatever their names; and a `:priority` written anyway is dropped by the
+/// loader as any rule keyword it does not read (D-15) until S1f.5.5's swap
+/// refuses it, so it orders nothing. Until S1f.5.15 this file held the bands'
+/// order (`priority_bands_order_the_firing_sequence`) and the default's value
+/// (`the_default_priority_is_1000_and_fires_last`), which went with the
+/// keyword.
 #[test]
-fn priority_bands_order_the_firing_sequence() {
+fn the_agenda_is_fifo_in_the_written_order() {
     let mut f = load_text(
-        "(rule symmetric (?rel) :match (?rel ?a ?b) :assert (?rel ?b ?a)\n\
-         \x20 :why \"s\" :priority 100)\n\
-         (rule transitive (?rel)\n\
-         \x20 :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))\n\
-         \x20 :assert (?rel ?a ?c) :why \"t\" :priority 200)\n\
-         (rule type-exclusivity (?R)\n\
-         \x20 :match (and (is-a ?a ?T) (is-a ?b ?T) (neq ?a ?b))\n\
-         \x20 :assert (not (?R ?a ?b)) :why \"x\" :priority 300)\n\
-         (is-a Red Color) (is-a Blue Color)\n\
-         (relation r T T) (symmetric r) (transitive r) (type-exclusivity r)\n\
-         (r A B :source \"(1)\") (r B C :source \"(2)\")\n",
+        "(relation a T) (relation b T) (relation c T) (relation d T) (relation e T)\n\
+         (a X)\n\
+         (rule unbanded () :match (a ?x) :assert (d ?x) :why \"first\")\n\
+         (rule hi () :match (a ?x) :assert (e ?x) :why \"second\" :priority 1001)\n\
+         (rule hyp () :match (a ?x) :assert (c ?x) :why \"third\" :priority 900)\n\
+         (rule lo () :match (a ?x) :assert (b ?x) :why \"fourth\")\n",
     );
     let run = f.saturate();
-    let rules = run.productive_rules(&f.terms);
-    assert!(!rules.is_empty(), "nothing was derived");
-
-    let first_of = |name: &str| rules.iter().position(|r| r == name);
-    let (sym, trans, excl) = (
-        first_of("symmetric"),
-        first_of("transitive"),
-        first_of("type-exclusivity"),
-    );
-    assert_eq!(sym, Some(0), "the 100 band must open: {rules:?}");
-    let trans = trans.expect("transitive must fire");
-    let excl = excl.expect("type-exclusivity must fire");
-    assert!(trans < excl, "300 preempted 200: {rules:?}");
-    assert!(
-        rules[..trans].iter().all(|r| r == "symmetric"),
-        "a 200-band firing before the 100 band drained: {rules:?}"
-    );
-    // The re-entry: transitive's conclusion opens a symmetric match, and that
-    // match runs before the rest of the transitive candidates.
     assert_eq!(
-        rules.get(trans + 1).map(String::as_str),
-        Some("symmetric"),
-        "the fact the 200 band produced did not re-enter the 100 band: {rules:?}"
-    );
-
-    // The scale arm: the same discipline on a real puzzle.
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = ein_ir::load_file(
-        &mut ast,
-        &mut terms,
-        &repo_root().join("examples/zebra.ein"),
-    )
-    .expect("zebra.ein loads");
-    let run = saturate_kb(&ast, &mut terms, &mut kb);
-    let rules = run.productive_rules(&terms);
-    let propagate = [
-        "slot-partition-setup",
-        "slot-spatial-setup",
-        "symmetric-negative-setup",
-        "symmetric",
-        "symmetric-negative",
-        "includes",
-    ];
-    let elimination = ["slot-elimination", "slot-fill"];
-    assert!(
-        propagate.contains(&rules[0].as_str()),
-        "zebra's first productive firing was {}, not propagate-band",
-        rules[0]
-    );
-    assert!(
-        rules.iter().any(|r| elimination.contains(&r.as_str())),
-        "zebra's root saturation must reach the elimination band — it is what \
-         places Yellow and Water in House-1"
+        run.productive_rules(&f.terms),
+        ["unbanded", "hi", "hyp", "lo"],
+        "the four fire in the order they are written, a dropped :priority \
+         ordering nothing"
     );
 }
 
@@ -1293,12 +1243,12 @@ fn a_runtime_derived_activator_gets_a_plan_on_a_fork() {
          \x20 :match  (trigger ?x)\n\
          \x20 :assert (target ?x)\n\
          \x20 :why    \"trigger implies a target activator\"\n\
-         \x20 :priority 100)\n\
+         \x20)\n\
          (rule target (?x)\n\
          \x20 :match  (trigger ?y)\n\
          \x20 :assert (done ?y)\n\
          \x20 :why    \"trigger fires target\"\n\
-         \x20 :priority 200)\n\
+         \x20)\n\
          (relation trigger T)\n(relation done T)\n(relation target T)\n\
          (trigger X :source \"(1)\")\n",
     );
@@ -1337,7 +1287,7 @@ fn a_why_reference_name_may_carry_hyphens_and_underscores() {
     let mut f = load_text(
         "(relation p T)\n(relation q T)\n\
          (rule r () :match (p ?some-var) :assert (q ?some-var)\n\
-         \x20 :why \"{?some-var} and {?some_var2}\" :priority 100)\n\
+         \x20 :why \"{?some-var} and {?some_var2}\")\n\
          (p A :source \"(1)\")\n",
     );
     f.saturate();
@@ -1438,38 +1388,5 @@ fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
         (witnesses.len(), union.len(), smallest, largest),
         (126, 39, 1, 22),
         "witnesses / union / smallest / largest single frontier"
-    );
-}
-
-/// **`DEFAULT_PRIORITY` is 1000 and fires last** — M1e S1e.4.8, `MA-L1`.
-///
-/// [`priority_bands_order_the_firing_sequence`] pins the *direction* (lower
-/// first) on a 100 / 200 / 300 fixture. It cannot pin the constant's **value**,
-/// and nothing else can either: 36 corpus rules carry no `:priority` and not
-/// one of them shares a file with a banded rule, so every golden and every
-/// digest is identical for any default above 900 — which is how the comment at
-/// the site came to describe a mid-band that does not exist and stay there for
-/// a milestone.
-///
-/// So the rules sandwich it. `lo` at 999 must fire before the undeclared rule
-/// and `hi` at 1001 after it, which fails for **every** change to the number,
-/// and `hyp` at 900 is there because the review claimed that band does not
-/// exist and three corpus rules declare it.
-#[test]
-fn the_default_priority_is_1000_and_fires_last() {
-    let mut f = load_text(
-        "(relation a T) (relation b T) (relation c T) (relation d T) (relation e T)\n\
-         (a X)\n\
-         (rule unbanded () :match (a ?x) :assert (d ?x) :why \"none\")\n\
-         (rule hi () :match (a ?x) :assert (e ?x) :why \"1001\" :priority 1001)\n\
-         (rule hyp () :match (a ?x) :assert (c ?x) :why \"900\" :priority 900)\n\
-         (rule lo () :match (a ?x) :assert (b ?x) :why \"999\" :priority 999)\n",
-    );
-    let run = f.saturate();
-    assert_eq!(
-        run.productive_rules(&f.terms),
-        ["hyp", "lo", "unbanded", "hi"],
-        "declared in a different order, the four must fire by ascending \
-         priority with the undeclared rule between 999 and 1001"
     );
 }

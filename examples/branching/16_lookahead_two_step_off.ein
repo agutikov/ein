@@ -81,21 +81,18 @@
 (rule pair-fast ()
   :match  (and (p A) (p B))
   :assert (false)
-  :why    "A and B cannot both have p"
-  :priority 200)
+  :why    "A and B cannot both have p")
 
 ;; A and C are exclusive too — but in TWO firings, which it cannot.
 (rule pair-slow-1 ()
   :match  (and (p A) (p C))
   :assert (clash)
-  :why    "A and C together are a clash"
-  :priority 200)
+  :why    "A and C together are a clash")
 
 (rule pair-slow-2 ()
   :match  (clash)
   :assert (false)
-  :why    "a clash is a contradiction"
-  :priority 210)
+  :why    "a clash is a contradiction")
 
 (solve :expect (region
                  ;; state 1 of 5 — ∅, root itself · minimal

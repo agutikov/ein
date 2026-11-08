@@ -600,7 +600,7 @@ note   = "M1e S1e.1.3 / Q2 — the `MAX_ALT_JUSTIFICATIONS = 32` cap **changed w
 path   = "examples/ein-bugs/alt-cap-core-reordered.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e S1e.1.3 / Q2 — `alt-cap-core.ein` with `wide` at priority 50 instead of 300 and nothing else changed. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it. Since M1e2 S1e2.2.11 (2026-11-04) the store keeps each fact's smallest-closure arrival beside its full list, and both files report the 2-fact core."
+note   = "M1e S1e.1.3 / Q2 — `alt-cap-core.ein` with `wide` at priority 50 instead of 300 and nothing else changed, and since M1f S1f.5.15 removed `:priority`, with `mk-w3` (which reads `(w1 X)` again as `(w3 X)`, `wide`'s premise) written before `mk-q` instead of after it. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it. Since M1e2 S1e2.2.11 (2026-11-04) the store keeps each fact's smallest-closure arrival beside its full list, and both files report the 2-fact core."
 
 [[entry]]
 path   = "examples/ein-bugs/unsat-core-id-space.ein"
@@ -1382,7 +1382,7 @@ note   = "M1e2 W25 (`W25/guard-only-second`), banked by S1e2.2.25 from the inven
 path   = "examples/ein-bugs/wrong-answers/guard-only-first.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W25's control, banked by S1e2.2.25: `guard-only-second.ein` with the two refuting rules' priorities swapped, so the premise-less derivation is `(false)`'s primary and N `{(p a)}`'s core is `(p a)`, the witness's right answer."
+note   = "M1e2 W25's control, banked by S1e2.2.25: `guard-only-second.ein` with the two refuting rules' priorities swapped until M1f S1f.5.15 removed `:priority`, and since then restated by its rules (`early` reads `(pp ?x)`, which `mk-pp` derives from `(p ?x)`, so `w`'s candidate queues first), so the premise-less derivation is `(false)`'s primary and N `{(p a)}`'s core is `(p a)`, the witness's right answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/closure-shared-given.ein"

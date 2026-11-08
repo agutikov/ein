@@ -82,7 +82,6 @@ pub fn goal_bindings(
         }),
         assert_: None,
         why: None,
-        priority: None,
         loc: None,
     };
     let plan = match crate::compile::compile_rule(ast, terms, &rule, None) {
@@ -139,7 +138,6 @@ pub fn goal_plan_error(
         }),
         assert_: None,
         why: None,
-        priority: None,
         loc: None,
     };
     crate::compile::compile_rule(ast, terms, &rule, None).err()

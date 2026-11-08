@@ -1,9 +1,7 @@
-//! The rule dependency graph, its strata, and a band per rule derived from its
-//! shape — M1f
+//! The rule dependency graph and its strata — M1f
 //! [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s
-//! T3, on the user's note of 2026-08-28, *"remove `:priority` completely /
-//! analyze rules structure instead"*, and the ruling of 2026-11-08 on
-//! Q-M1f.4, (b) *"Derive order first"*.
+//! T3 and T4, on the user's note of 2026-08-28, *"remove `:priority`
+//! completely / analyze rules structure instead"*.
 //!
 //! **The graph.** An edge from each relation a compiled plan reads to each it
 //! writes, negative where the read is under an odd number of `absent`s, and a
@@ -21,14 +19,14 @@
 //! is a **negative cycle**, where no stratification exists ([`Cycle`]). A
 //! rule's stratum is the highest of the relations its plans write.
 //!
-//! **The band** ([`band`]). `ein saturate --dump` has always printed the four
-//! bands a declared priority falls in (`propagate` < 200 ≤ `derive` < 300 ≤
-//! `eliminate` < 900 ≤ `hypothesis`, Q41's). This derives one from what the
-//! rule does instead of what its author typed ([`Shape`]): what it concludes,
-//! whether it reads under an `absent`, how many premises it joins, and whether
-//! it writes another rule's activator. [`declared_band`] reads the typed
-//! number the same way, so the two can be diffed rule by rule, which is the
-//! task's deliverable.
+//! **What it is for.** S1f.5.15 began by deriving a band per rule from its
+//! shape, to order the agenda where `:priority` had (T3, the diff against the
+//! typed numbers: 275 of 471 agreed). The user ruled on 2026-11-08 (Q-M1f.6,
+//! *"plain FIFO, core is an explanation, F22 makes it canonical"*) that nothing
+//! orders the agenda or the boundary but the written and arrival order, so the
+//! band went with `:priority`, and the graph is the stratification diagnostic's
+//! (T4: [`crate::monotone::Monotonicity::negative_cycles`]) and the stratum
+//! `ein saturate --dump` prints beside each rule ([`rule_strata`]).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
@@ -36,7 +34,7 @@ use std::sync::Arc;
 use ein_core::{Kb, Symbol, Terms};
 
 use crate::monotone;
-use crate::plan::{Plan, Slot, Step};
+use crate::plan::Plan;
 
 // ── The graph ───────────────────────────────────────────────────────
 
@@ -341,240 +339,30 @@ pub fn graph(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>]) -> Graph {
     }
 }
 
-// ── The band ────────────────────────────────────────────────────────
+// ── A rule's stratum ────────────────────────────────────────────────
 
-/// The four bands `ein saturate --dump` has printed since Q41, in the order
-/// the agenda fires them.
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
-pub enum Band {
-    /// Cheap forward propagation.
-    Propagate,
-    /// Ordinary derivation.
-    Derive,
-    /// Domain or range elimination.
-    Eliminate,
-    /// The guessing rung's.
-    Hypothesis,
-}
-
-impl Band {
-    pub const ALL: [Band; 4] = [
-        Band::Propagate,
-        Band::Derive,
-        Band::Eliminate,
-        Band::Hypothesis,
-    ];
-
-    /// The word `ein saturate --dump` prints.
-    pub fn label(self) -> &'static str {
-        match self {
-            Band::Propagate => "propagate",
-            Band::Derive => "derive",
-            Band::Eliminate => "eliminate",
-            Band::Hypothesis => "hypothesis",
-        }
-    }
-
-    /// Where the agenda puts the band, lower first: the floor of the band's
-    /// range of declared priorities.
-    pub fn rank(self) -> i64 {
-        match self {
-            Band::Propagate => 100,
-            Band::Derive => 200,
-            Band::Eliminate => 300,
-            Band::Hypothesis => 900,
-        }
-    }
-}
-
-/// The band a declared priority falls in, Q41's ranges: `propagate` below 200,
-/// `derive` below 300, `eliminate` below 900, `hypothesis` from 900.
-pub fn declared_band(priority: i64) -> Band {
-    match priority {
-        p if p < 200 => Band::Propagate,
-        p if p < 300 => Band::Derive,
-        p if p < 900 => Band::Eliminate,
-        _ => Band::Hypothesis,
-    }
-}
-
-/// What a rule's conclusions are, the strongest of them: an obligation's debt,
-/// `(false)`, a stored negative, or positive facts alone.
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
-pub enum Concludes {
-    Positive,
-    Negative,
-    False,
-    Open,
-}
-
-impl Concludes {
-    pub fn label(self) -> &'static str {
-        match self {
-            Concludes::Positive => "positive",
-            Concludes::Negative => "negative",
-            Concludes::False => "false",
-            Concludes::Open => "open",
-        }
-    }
-}
-
-/// What the band is derived from: what a rule does, read off a compiled plan.
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub struct Shape {
-    /// The strongest conclusion its `:assert` writes.
-    pub concludes: Concludes,
-    /// A disjunct reads under an `absent` (a `forall` included): its
-    /// candidates wait for the boundary.
-    pub naf: bool,
-    /// The most top-level relation premises a disjunct joins.
-    pub premises: u16,
-    /// It writes another rule's activator: a fact whose relation names a
-    /// rule, what a declaration's setup fan-out does.
-    pub activates: bool,
-    /// It reads a stored negative under a `forall`, `(absent (and G (absent
-    /// (not (R …)))))`: a conclusion drawn from every alternative excluded.
-    pub exhausts: bool,
-}
-
-/// A plan's [`Shape`]. `obligation` says the plan's rule asserts the verdict
-/// atom `(open ?R)` — an obligation rule, which the saturator never fires.
-pub fn shape(kb: &Kb, terms: &Terms, plan: &Plan, obligation: bool) -> Shape {
-    let program = kb.program();
-    let mut concludes = Concludes::Positive;
-    let mut activates = false;
-    for slot in plan.asserts.iter() {
-        let Slot::Nested { rel, .. } = slot else {
-            continue;
-        };
-        let c = if obligation || *rel == terms.kernel.open {
-            Concludes::Open
-        } else if *rel == terms.kernel.r#false {
-            Concludes::False
-        } else if *rel == terms.kernel.not {
-            Concludes::Negative
-        } else {
-            if program.rules.contains(*rel) || program.obligations.contains(*rel) {
-                activates = true;
-            }
-            Concludes::Positive
-        };
-        concludes = concludes.max(c);
-    }
-    let premises = plan
-        .disjuncts
-        .iter()
-        .map(|d| {
-            plan.steps(d.steps)
-                .iter()
-                .filter(|s| matches!(s, Step::Rel(_)))
-                .count() as u16
-        })
-        .max()
-        .unwrap_or(0);
-    let exhausts = monotone::reads_of(plan, terms)
-        .into_iter()
-        .any(|(r, depth)| r.negated && depth >= 2 && depth % 2 == 0);
-    Shape {
-        concludes,
-        naf: plan.has_naf(),
-        premises,
-        activates,
-        exhausts,
-    }
-}
-
-/// The band a rule's shape puts it in, read from what each band is for:
-///
-/// - **propagate**, cheap forward propagation: a declaration's fan-out (it
-///   writes another rule's activator); a rule of one premise that reads
-///   nothing under an `absent`, one fact mapped to one; and a refutation,
-///   `(false)`, which ends the node, so that a dead node is found before work
-///   is spent on it;
-/// - **eliminate**, domain or range elimination: an obligation, `(open ?R)`,
-///   the totality an exhausted domain still owes, which the obligations pass
-///   reads at quiescence; and a positive conclusion drawn from a `forall` over
-///   stored negatives, survivor forcing (every other value excluded, so this
-///   one);
-/// - **derive**, ordinary derivation: every other rule, a join that concludes
-///   a positive or a stored negative, or a conclusion read under an `absent`
-///   that is not a `forall` over negatives.
-///
-/// **hypothesis** is never derived: the guessing rung is `(hrule …)`'s and the
-/// generator's, and no saturation rule guesses.
-pub fn band(shape: &Shape) -> Band {
-    match shape.concludes {
-        Concludes::Open => Band::Eliminate,
-        Concludes::False => Band::Propagate,
-        _ if shape.activates => Band::Propagate,
-        Concludes::Positive if shape.exhausts => Band::Eliminate,
-        _ if !shape.naf && shape.premises <= 1 => Band::Propagate,
-        _ => Band::Derive,
-    }
-}
-
-/// One rule, its declared priority and the band its shape derives.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct RuleBand {
-    pub rule: Symbol,
-    /// The rule's `:priority`, where it writes one.
-    pub declared: Option<i64>,
-    /// The shape of its compiled plans, where the run compiled one; a rule
-    /// whose plans differ in shape takes the first's, and [`Self::shapes`]
-    /// counts how many there were.
-    pub shape: Option<Shape>,
-    /// How many distinct shapes its plans have.
-    pub shapes: usize,
-    /// The band [`band`] derives, where there is a shape.
-    pub derived: Option<Band>,
-    /// The highest stratum of what its plans write.
-    pub stratum: Option<u32>,
-}
-
-/// Every rule and obligation rule of the program, in load order, with its
-/// declared priority, its shape over `plans` and the band that derives.
-pub fn rule_bands(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], graph: &Graph) -> Vec<RuleBand> {
-    let program = kb.program();
-    let declared = |r: &ein_core::Rule| -> Option<i64> {
-        r.priority.map(|p| {
-            terms.ints.value(p).unwrap_or_else(|| {
-                if terms.int_text(p).starts_with('-') {
-                    i64::MIN
-                } else {
-                    i64::MAX
-                }
-            })
-        })
-    };
-    let mut out = Vec::new();
-    let rules = program
+/// Every saturation rule of the program, in load order, with the highest
+/// stratum of what its plans write, or `None` where the run compiled no plan
+/// of it: what `ein saturate --dump` prints beside each rule.
+pub fn rule_strata(
+    kb: &Kb,
+    terms: &Terms,
+    plans: &[Arc<Plan>],
+    graph: &Graph,
+) -> Vec<(Symbol, Option<u32>)> {
+    kb.program()
         .rules
         .values()
-        .map(|r| (r, false))
-        .chain(program.obligations.values().map(|r| (r, true)));
-    for (r, obligation) in rules {
-        let mut shapes: Vec<Shape> = Vec::new();
-        let mut stratum: Option<u32> = None;
-        for p in plans.iter().filter(|p| p.rule == r.name) {
-            let s = shape(kb, terms, p, obligation);
-            if !shapes.contains(&s) {
-                shapes.push(s);
-            }
-            for w in monotone::writes_of(p, terms) {
-                if let Some(&k) = graph.stratum.get(&w.label(terms)) {
-                    stratum = Some(stratum.map_or(k, |m| m.max(k)));
+        .map(|r| {
+            let mut stratum: Option<u32> = None;
+            for p in plans.iter().filter(|p| p.rule == r.name) {
+                for w in monotone::writes_of(p, terms) {
+                    if let Some(&k) = graph.stratum.get(&w.label(terms)) {
+                        stratum = Some(stratum.map_or(k, |m| m.max(k)));
+                    }
                 }
             }
-        }
-        let shape = shapes.first().copied();
-        out.push(RuleBand {
-            rule: r.name,
-            declared: declared(r),
-            shape,
-            shapes: shapes.len(),
-            derived: shape.as_ref().map(band),
-            stratum,
-        });
-    }
-    out
+            (r.name, stratum)
+        })
+        .collect()
 }

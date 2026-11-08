@@ -626,7 +626,7 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
               :match  (?p ?a ?b)
               :assert (?q ?a ?b)
               :why    "{{?p}} implies {{?q}}"
-              :priority 100)
+)
             (relation co-located T T) (relation next-to T T) (relation right-of T T)
             {activator}
             (right-of A B)

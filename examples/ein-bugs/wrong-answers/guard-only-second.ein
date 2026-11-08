@@ -3,15 +3,19 @@
 ;;; banked by S1e2.2.25 (2026-11-05) from the inventory of 2026-11-05's W-8
 ;;; (its probe `guard_only_second.ein`, the program unchanged), filed `open`
 ;;; and deferred to F22 on the user's ruling of that day (Q-M1e2.16 (2), (5)).
-;;; Its control is `guard-only-first.ein`, the same program with the two
-;;; refuting rules' priorities swapped.
+;;; Its control is `guard-only-first.ein`: until M1f S1f.5.15 the same program
+;;; with the two refuting rules' priorities swapped, and since then, no rule
+;;; having a priority, the same program with `early` reading `(pp ?x)`, which a
+;;; rule derives from `(p ?x)`, so that `w` arrives first (its header).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; Two candidates, `(p a)` and `(p2 a)`. Committing `(p a)` derives `(false)`
 ;;; twice: by `early`, from `(p a) (b a) (seed a)`, and by `w`, a rule with a
 ;;; parameter and no premise, whose activator `(w a)` `mk` derives from
-;;; `(p a)`. `early` fires first (priority 10 against 200).
+;;; `(p a)`. `early` fires first: its candidate queues when `(p a)` is
+;;; committed, before `mk` has derived `w`'s activator (FIFO, the written and
+;;; arrival order, since M1f S1f.5.15; until then priority 10 against 200).
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -29,14 +33,15 @@
 ;;; alternative and the core is `early`'s three facts: N `{(p a)}`, core
 ;;; `(b a) (p a) (seed a)` (`ein solve FILE --dump-answer DIR`'s
 ;;; `nogoods.json` and `ein oracle FILE --dump DIR` at `94c75204`, release and
-;;; debug alike; a store with no alternatives cap gives the same). Rule
-;;; priority decides which core is reported. No corpus program writes the
+;;; debug alike; a store with no alternatives cap gives the same). Which
+;;; rule fires first decides which core is reported, rule priority until M1f
+;;; S1f.5.15 and the written and arrival order since. No corpus program writes the
 ;;; shape. Owned by F22, whose search would re-derive what the store keeps.
 
 (relation seed T) (relation p T) (relation p2 T) (relation w T) (relation b T)
 (seed a) (b a)
 (hrule g  () :match (seed ?x) :assert (p ?x))
 (hrule g2 () :match (seed ?x) :assert (p2 ?x))
-(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false) :priority 10)
-(rule mk () :match (p ?x) :assert (w ?x) :priority 5)
-(rule w (?n) :match (eq ?n a) :assert (false) :priority 200)
+(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false))
+(rule mk () :match (p ?x) :assert (w ?x))
+(rule w (?n) :match (eq ?n a) :assert (false))

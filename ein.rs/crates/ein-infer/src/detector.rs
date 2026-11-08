@@ -99,7 +99,6 @@ use crate::monotone::{self, Monotonicity, SiteKind};
 use crate::obligations::{self, Owed};
 use crate::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use crate::region::{Candidate, DEAD, Node, Nodes, OWING, Topology};
-use crate::saturator::DEFAULT_PRIORITY;
 use crate::strata;
 
 /// What the warning says is assumed, on every flagged program: the node is
@@ -225,25 +224,15 @@ pub use crate::strata::Cycle;
 /// An order finding: a deferred rule, `reader`, reads under an `absent` a
 /// relation in `D` that another deferred rule, `writer`, concludes — directly,
 /// or through rules that are not deferred. The boundary admits one parked
-/// candidate a round in (priority, FIFO) order, so at one priority the written
-/// order decides which goes first, and with the reader's priority earlier the
-/// reader goes first in every order. The writer earlier is the stratified
-/// order, and is no finding.
+/// candidate a round in FIFO order, the written and arrival order (no rule
+/// has a priority since M1f S1f.5.15), so the written order decides which
+/// goes first.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Race {
     pub reader: String,
     pub writer: String,
     /// The relations raced over, sorted.
     pub relations: Vec<String>,
-    pub reader_priority: i64,
-    pub writer_priority: i64,
-}
-
-impl Race {
-    /// Both at one priority: which is admitted first is the written order.
-    pub fn at_one_priority(&self) -> bool {
-        self.reader_priority == self.writer_priority
-    }
 }
 
 impl Cycle {
@@ -262,7 +251,7 @@ impl Cycle {
     }
 }
 
-/// The `order` rows: one per finding, a mutual pair at one priority as one.
+/// The `order` rows: one per finding, a mutual pair as one.
 pub fn order_texts(order: &[Race]) -> Vec<String> {
     let pairs: BTreeSet<(&str, &str)> = order
         .iter()
@@ -276,27 +265,17 @@ pub fn order_texts(order: &[Race]) -> Vec<String> {
             continue;
         }
         said.insert((reader, writer));
-        let mutual = r.at_one_priority() && pairs.contains(&(writer, reader));
+        let mutual = pairs.contains(&(writer, reader));
         out.push(if mutual {
             format!(
-                "{reader} and {writer} each read under an absent what the other concludes, both at \
-                 priority {}: which the boundary admits first is the order they are written in",
-                r.reader_priority
-            )
-        } else if r.at_one_priority() {
-            format!(
-                "{reader} reads {} under an absent and {writer} concludes it, both at priority {}: \
-                 which the boundary admits first is the order they are written in",
-                r.relations.join(", "),
-                r.reader_priority
+                "{reader} and {writer} each read under an absent what the other concludes: which \
+                 the boundary admits first is the order they are written in"
             )
         } else {
             format!(
-                "{reader} (priority {}) reads {} under an absent and {writer} ({}) concludes it: \
-                 {reader} is admitted first, whatever the order",
-                r.reader_priority,
-                r.relations.join(", "),
-                r.writer_priority
+                "{reader} reads {} under an absent and {writer} concludes it: which the boundary \
+                 admits first is the order they are written in",
+                r.relations.join(", ")
             )
         });
     }
@@ -397,7 +376,7 @@ fn cycles_over(
 
 /// The order check. A saturation rule is **deferred** when a disjunct carries
 /// an `absent` guard: the boundary admits its candidates one a round, in
-/// (priority, FIFO) order. A deferred rule A that reads under an `absent` a
+/// FIFO order. A deferred rule A that reads under an `absent` a
 /// relation in `D` which a deferred rule B concludes — directly, or through
 /// rules that are not deferred, which fire before the boundary speaks — can be
 /// admitted before B and keep a fact B's conclusion then falsifies (the FIFO
@@ -413,14 +392,6 @@ fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>
         .map(|p| &**p)
         .collect();
     let deferred = |p: &Plan| p.disjuncts.iter().any(|d| !d.guards.is_empty());
-    let priority = |p: &Plan| -> i64 {
-        program
-            .rules
-            .get(p.rule)
-            .and_then(|r| r.priority)
-            .and_then(|i| terms.ints.value(i))
-            .unwrap_or(DEFAULT_PRIORITY)
-    };
     // What each relation reaches through rules that are not deferred.
     let mut forward: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     for p in sat.iter().filter(|p| !deferred(p)) {
@@ -468,17 +439,11 @@ fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>
             if raced.is_empty() {
                 continue;
             }
-            let (pa, pb) = (priority(a), priority(b));
-            if pa > pb {
-                continue;
-            }
             let key = (terms.sym(a.rule).to_string(), terms.sym(b.rule).to_string());
             let race = out.entry(key.clone()).or_insert_with(|| Race {
                 reader: key.0.clone(),
                 writer: key.1.clone(),
                 relations: Vec::new(),
-                reader_priority: pa,
-                writer_priority: pb,
             });
             for r in raced {
                 if !race.relations.contains(&r) {

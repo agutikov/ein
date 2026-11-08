@@ -22,8 +22,7 @@
 (rule implies (?p ?q)
   :match  (?p ?a ?b)
   :assert (?q ?a ?b)
-  :why    "{?p} implies {?q}."
-  :priority 100)
+  :why    "{?p} implies {?q}.")
 
 (relation parent-of T T)
 (relation ancestor-of T T)

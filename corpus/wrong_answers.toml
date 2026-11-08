@@ -637,6 +637,20 @@
 # open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
 # uniq -c`, 2026-11-08).
 #
+# **S1f.5.15 took `:priority` out of the language the same day**
+# (T1f.5.15.5), on the user's rulings of 2026-11-08 on Q-M1f.4 to Q-M1f.6
+# (*"plain FIFO, core is an explanation, F22 makes it canonical"*): the agenda
+# and the boundary are FIFO, the written and arrival order. No row's status
+# moved. `W10/alt-cap-core`'s witness and its twin, one `:priority` apart until
+# then, read `(w1 X)` again as `(w3 X)` through a rule written after `mk-q`
+# in one and before it in the other, so they differ by written order; the
+# row's `now` names `w3` among the candidates' relations, its core and its
+# twin's unmoved. W25's control is restated by its rules, its R, N and core
+# unmoved. W36 stays open, and `features/12` itself shows it under the flag
+# since, which `lever_invariance` names under the row. The register reads
+# **103 rows fixed, 34 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -3221,7 +3235,7 @@ core      = ["(p1 Y01)", "(p2 Y01)", "(p3 Y01)"]
 [[case.twin]]
 witness   = "examples/ein-bugs/alt-cap-core-reordered.ein"
 run       = "solve"
-why       = "wide at :priority 50 instead of 300, nothing else"
+why       = "wide at :priority 50 instead of 300, nothing else; since M1f S1f.5.15 removed :priority, mk-w3 written before mk-q instead of after, nothing else (both files read (w1 X) again as (w3 X) since, so the twin's order is its written order)"
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
@@ -3255,7 +3269,7 @@ line      = "all"
 exhausted = true
 k         = 0
 empty     = "dead"
-relations = ["p1", "p2", "p3", "q", "w1", "w2"]
+relations = ["p1", "p2", "p3", "q", "w1", "w2", "w3"]
 models    = []
 core      = ["(w1 X)", "(w2 X)"]
 
@@ -7336,7 +7350,7 @@ nogoods   = [{ set = ["(p a)"], core = ["(b a)", "(p a)", "(seed a)"] }]
 witness   = "examples/ein-bugs/wrong-answers/guard-only-first.ein"
 run       = "solve"
 by        = "region"
-why       = "early at priority 300 and w at 10, nothing else, at 94c75204: w's derivation is (false)'s primary, and N {(p a)}'s core is (p a)"
+why       = "early at priority 300 and w at 10, nothing else, at 94c75204: w's derivation is (false)'s primary, and N {(p a)}'s core is (p a). Since M1f S1f.5.15 removed :priority the control is restated by its rules: early reads (pp ?x), which mk-pp derives from (p ?x), so w's candidate queues first in FIFO order; the same R, N and core (`ein solve --dump-answer`, 2026-11-08)"
 verdict   = "Ambiguity"
 k         = 2
 exhausted = true
@@ -9017,7 +9031,7 @@ witness  = "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein"
 status   = "open"
 open_because = "deferred to F22 (Q-M1f.5 (a), the user, 2026-11-08, *\"Register row W36\"*): with every derivation recorded the core search takes root's core over (false), `no-room`'s, and with the flag off over a pair, (in P3 …) by `forced` against (not (in P3 …)) by `occupied`; the core is the same five facts either way. F22 re-derives what the store does not keep when the search reaches it, so that `refuted by` is a function of the core"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.5.15 (T1f.5.15.7, 2026-11-08) on the user's ruling of 2026-11-08 on Q-M1f.5, (a) *\"Register row W36\"*: S1f.5.15's T1 took every `:priority` out of the corpus and `lever_invariance` failed on `examples/features/12_expect_false.ein` so written. The witness is that program, its four priorities taken out (`ein_corpus::mutants::without_priority`), a `:why` on `instance`, and the flag set off in the file, so that `ein solve` shows the wrong answer; with the config line taken out it prints the right one. Written with its priorities, as `features/12` is, both arms print `refuted by no-room`. `lever_invariance` compares the witness less its `refuted by` row under the flag until F22 fixes the row (REFUTED_BY_OPEN)"
+note     = "Filed by S1f.5.15 (T1f.5.15.7, 2026-11-08) on the user's ruling of 2026-11-08 on Q-M1f.5, (a) *\"Register row W36\"*: S1f.5.15's T1 took every `:priority` out of the corpus and `lever_invariance` failed on `examples/features/12_expect_false.ein` so written. The witness is that program, its four priorities taken out (`ein_corpus::mutants::without_priority`), a `:why` on `instance`, and the flag set off in the file, so that `ein solve` shows the wrong answer; with the config line taken out it prints the right one. Written with its priorities, as `features/12` is, both arms print `refuted by no-room`. `lever_invariance` compares the witness less its `refuted by` row under the flag until F22 fixes the row (REFUTED_BY_OPEN). Since S1f.5.15 took every :priority out (T1f.5.15.5), `examples/features/12_expect_false.ein` itself shows the breach under the flag, and REFUTED_BY_OPEN names it under this row beside the witness"
 
 [case.wrong]
 run        = "solve"

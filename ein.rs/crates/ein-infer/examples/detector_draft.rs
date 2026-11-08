@@ -66,7 +66,12 @@ use ein_infer::match_::Matcher;
 use ein_infer::monotone::{self, SiteKind};
 use ein_infer::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use ein_infer::region::{self, DEAD, OWING, Topology};
-use ein_infer::saturator::{DEFAULT_PRIORITY, Saturator, Session};
+use ein_infer::saturator::{Saturator, Session};
+
+/// Every rule's priority since M1f S1f.5.15 removed the keyword: one, so the
+/// draft's order check reads every pair as at one priority, as the shipped
+/// detector does (`detector::order`).
+const DEFAULT_PRIORITY: i64 = 1000;
 use ein_infer::{contradiction, obligations};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet, FxHasher};
@@ -904,14 +909,7 @@ fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>
         .map(|p| &**p)
         .collect();
     let deferred = |p: &Plan| p.disjuncts.iter().any(|d| !d.guards.is_empty());
-    let priority = |p: &Plan| -> i64 {
-        program
-            .rules
-            .get(p.rule)
-            .and_then(|r| r.priority)
-            .and_then(|i| terms.ints.value(i))
-            .unwrap_or(DEFAULT_PRIORITY)
-    };
+    let priority = |_: &Plan| -> i64 { DEFAULT_PRIORITY };
     // What each relation reaches through rules that are not deferred.
     let mut forward: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     for p in sat.iter().filter(|p| !deferred(p)) {

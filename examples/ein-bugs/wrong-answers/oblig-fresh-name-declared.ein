@@ -24,8 +24,7 @@
   :match  (and (person ?a)
                (absent (and (food ?b) (likes ?a ?b))))
   :assert (open likes)
-  :why    "{?a} owes a liked food"
-  :priority 500)
+  :why    "{?a} owes a liked food")
 
 (rule no-soup ()
   :match  (likes Ann Soup)

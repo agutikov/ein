@@ -23,14 +23,12 @@
 (rule subrel (?Sub ?Super)
   :match  (?Sub ?a ?b)
   :assert (?Super ?a ?b)
-  :priority 100
   :why    "{?Sub} ⊆ {?Super}: lift edge")
 
 ;; The standard `transitive` rule, used here on is-a*.
 (rule transitive (?R)
   :match  (and (?R ?a ?b) (?R ?b ?c))
   :assert (?R ?a ?c)
-  :priority 200
   :why    "{?R} is transitive: {?a} →{?R}→ {?b} →{?R}→ {?c}.")
 
 (relation is-a  T T)

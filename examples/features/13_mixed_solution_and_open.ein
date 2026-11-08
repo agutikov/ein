@@ -64,14 +64,12 @@
 (rule feeds ()
   :match  (choice Ann)
   :assert (likes Ann Soup)
-  :priority 200
   :why    "the one chosen is fed")
 
 ;; Exactly one choice, so a single commitment is already complete.
 (rule mutex ()
   :match  (and (choice Ann) (choice Bob))
-  :assert (false)
-  :priority 300)
+  :assert (false))
 
 (solve
   ;; The blind rung would propose `is-a` and `likes` facts of its own; the

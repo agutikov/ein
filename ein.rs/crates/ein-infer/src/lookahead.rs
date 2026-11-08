@@ -255,7 +255,7 @@ mod tests {
     #[test]
     fn the_naf_world_includes_the_candidate() {
         let src = "(rule self-block ()\n  :match (and (cand ?x) (absent (cand ?x)))\n\
-                   \x20 :assert (false)\n  :why \"unsatisfiable in any one world\" :priority 100)\n\
+                   \x20 :assert (false)\n  :why \"unsatisfiable in any one world\")\n\
                    (relation cand T)";
         assert!(!dies(src, "cand", "A"));
     }
@@ -276,7 +276,7 @@ mod tests {
     fn a_nested_absent_is_not_judged_at_all() {
         let src = "(rule r ()\n  :match (and (s ?x) (absent (and (p ?y) \
                    (absent (and (q ?y) (absent (s ?y)))))))\n  :assert (false) \
-                   :priority 100)\n\
+)\n\
                    (relation s T) (relation p T) (relation q T)\n\
                    (p B :source \"(1)\") (q B :source \"(2)\")";
         assert!(!dies(src, "s", "B"));
@@ -288,7 +288,7 @@ mod tests {
     #[test]
     fn a_positive_rule_still_kills() {
         let src = "(rule blow-up ()\n  :match (and (cand ?x) (bad ?x))\n  :assert (false)\n\
-                   \x20 :why \"cand + bad is absurd\" :priority 100)\n\
+                   \x20 :why \"cand + bad is absurd\")\n\
                    (relation cand T)\n(relation bad T)\n(bad A :source \"(1)\")";
         assert!(dies(src, "cand", "A"));
         assert!(!dies(src, "cand", "B"));

@@ -48,13 +48,11 @@
 (rule r2 ()
   :match  (and (a ?x) (b ?x) (absent (q ?x)))
   :assert (p ?x)
-  :why    "{?x} has a and b and no q"
-  :priority 200)
+  :why    "{?x} has a and b and no q")
 
 (rule r1 ()
   :match  (and (a ?x) (absent (z ?x)))
   :assert (q ?x)
-  :why    "{?x} has a and no z"
-  :priority 200)
+  :why    "{?x} has a and no z")
 
 (query :goal (p ?x))

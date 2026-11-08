@@ -63,7 +63,6 @@
 (rule probe-undecided ()
   :match  (unknown (s B G))
   :assert (undecided B G)
-  :priority 500
   :why    "(s B G) is still open: no exclusion was derived from an absent (t A G)")
 
 (solve

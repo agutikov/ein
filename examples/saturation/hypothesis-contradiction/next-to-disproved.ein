@@ -21,8 +21,7 @@
   :match  (and (hypothesis ?h)
                (contradiction-under ?h))
   :assert (not ?h)
-  :why    "Assumed {?h}; contradicted. Therefore (not {?h})."
-  :priority 900)
+  :why    "Assumed {?h}; contradicted. Therefore (not {?h}).")
 
 (relation next-to T T)
 

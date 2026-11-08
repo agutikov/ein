@@ -60,7 +60,6 @@
 (rule probe-undecided ()
   :match  (unknown (wears Bob Red))
   :assert (undecided Bob Red)
-  :priority 500
   :why    "Bob's row is only one-third excluded, so nothing may be forced into it")
 
 (solve

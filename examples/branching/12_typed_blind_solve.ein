@@ -46,14 +46,12 @@
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
-  :priority 250)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}.")
 
 (rule injective (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
   :assert (false)
-  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
-  :priority 250)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}.")
 
 ;; ── Negative-completion companions (assert the row/column nots) ──
 (rule functional-negative (?R)
@@ -62,8 +60,7 @@
                (is-a ?b_other ?B)
                (neq ?b_other ?b))
   :assert (not (?R ?a ?b_other))
-  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-  :priority 240)
+  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other})).")
 
 (rule injective-negative (?R)
   :match  (and (?R ?a ?b)
@@ -71,20 +68,17 @@
                (is-a ?a_other ?A)
                (neq ?a_other ?a))
   :assert (not (?R ?a_other ?b))
-  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-  :priority 240)
+  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b})).")
 
 (rule derive-functional-negative ()
   :match  (functional ?R)
   :assert (functional-negative ?R)
-  :why    "{?R} functional ⟹ functional-negative active."
-  :priority 100)
+  :why    "{?R} functional ⟹ functional-negative active.")
 
 (rule derive-injective-negative ()
   :match  (injective ?R)
   :assert (injective-negative ?R)
-  :why    "{?R} injective ⟹ injective-negative active."
-  :priority 100)
+  :why    "{?R} injective ⟹ injective-negative active.")
 
 ;; ── Domain elimination (force the survivor) + no-room-left ──
 (rule domain-elimination (?R ?OT ?VT)
@@ -96,7 +90,6 @@
                  (and (is-a ?v_other ?VT) (neq ?v_other ?v))
                  (not (?R ?a ?v_other))))
   :assert (?R ?a ?v)
-  :priority 400
   :why    "every {?VT} except {?v} excluded for {?a} → ({?R} {?a} {?v})")
 
 (rule no-room-left (?R ?OT ?VT)
@@ -107,20 +100,17 @@
                  (is-a ?v ?VT)
                  (not (?R ?a ?v))))
   :assert (false)
-  :priority 110
   :why    "{?a} has every {?VT} excluded — no value left")
 
 ;; ── Closed-world type checks (the post-(b) contradiction rules) ──
 (rule typecheck-arg-0 (?R ?Dom)
   :match  (and (?R ?a ?b) (absent (is-a ?a ?Dom)))
   :assert (false)
-  :priority 110
   :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}")
 
 (rule typecheck-arg-1 (?R ?Ran)
   :match  (and (?R ?a ?b) (absent (is-a ?b ?Ran)))
   :assert (false)
-  :priority 110
   :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
 
 (relation color-of House Color)

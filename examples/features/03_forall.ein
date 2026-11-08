@@ -30,7 +30,6 @@
                  (and (player ?q) (neq ?p ?q))
                  (beats ?p ?q)))
   :assert (undefeated ?p)
-  :priority 200
   :why    "{?p} beats every other player ⇒ undefeated")
 
 (relation player T)

@@ -144,14 +144,12 @@
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
-  :priority 250)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}.")
 
 (rule injective (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
   :assert (false)
-  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
-  :priority 250)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}.")
 
 ;; ──── Negative-derivation companions for functional / injective ──
 ;; See zebra2.ein for the design rationale (S1.5a.19). From a
@@ -165,8 +163,7 @@
                (is-a ?b_other ?B)
                (neq ?b_other ?b))
   :assert (not (?R ?a ?b_other))
-  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-  :priority 240)
+  :why    "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other})).")
 
 (rule injective-negative (?R)
   :match  (and (?R ?a ?b)
@@ -174,20 +171,17 @@
                (is-a ?a_other ?A)
                (neq ?a_other ?a))
   :assert (not (?R ?a_other ?b))
-  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-  :priority 240)
+  :why    "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b})).")
 
 (rule derive-functional-negative ()
   :match  (functional ?R)
   :assert (functional-negative ?R)
-  :why    "{?R} functional ⟹ functional-negative active."
-  :priority 100)
+  :why    "{?R} functional ⟹ functional-negative active.")
 
 (rule derive-injective-negative ()
   :match  (injective ?R)
   :assert (injective-negative ?R)
-  :why    "{?R} injective ⟹ injective-negative active."
-  :priority 100)
+  :why    "{?R} injective ⟹ injective-negative active.")
 
 
 ;; ──── Cross-attribute propagation (B1) ─────────────────────
@@ -199,8 +193,7 @@
 (rule co-located (?R1 ?V1 ?R2 ?V2)
   :match  (?R1 ?V1 ?h)
   :assert (?R2 ?V2 ?h)
-  :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h})."
-  :priority 200)
+  :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h}).")
 
 ;; `co-located` is symmetric — (co-located A B C D) and
 ;; (co-located C D A B) express the same constraint. Authors
@@ -210,22 +203,19 @@
 (rule co-located-symmetric ()
   :match  (co-located ?R1 ?V1 ?R2 ?V2)
   :assert (co-located ?R2 ?V2 ?R1 ?V1)
-  :why    "co-located is symmetric: derive reverse activator."
-  :priority 100)
+  :why    "co-located is symmetric: derive reverse activator.")
 
 ;; `co-located-negative` — negative propagation across the
 ;; equivalence. See zebra2.ein for full rationale.
 (rule co-located-negative (?R1 ?V1 ?R2 ?V2)
   :match  (not (?R1 ?V1 ?h))
   :assert (not (?R2 ?V2 ?h))
-  :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h}))."
-  :priority 200)
+  :why    "co-located: (not ({?R1} {?V1} {?h})) ⟹ (not ({?R2} {?V2} {?h})).")
 
 (rule derive-co-located-negative ()
   :match  (co-located ?R1 ?V1 ?R2 ?V2)
   :assert (co-located-negative ?R1 ?V1 ?R2 ?V2)
-  :why    "co-located activator ⟹ co-located-negative active."
-  :priority 100)
+  :why    "co-located activator ⟹ co-located-negative active.")
 
 ;; `adjacent-via-*` — pure-structural cross-attribute propagation
 ;; across a spatial adjacency relation ?S (first parameter). The
@@ -239,16 +229,14 @@
                (?S ?h2 ?h1)
                (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
   :assert (?R2 ?V2 ?h2)
-  :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2})."
-  :priority 200)
+  :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2}).")
 
 (rule adjacent-via-bwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (?R2 ?V2 ?h2)
                (?S ?h2 ?h1)
                (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
   :assert (?R1 ?V1 ?h1)
-  :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1})."
-  :priority 200)
+  :why    "({?R2} {?V2} {?h2}) with unique-{?S}⁻¹ {?h1} ⟹ ({?R1} {?V1} {?h1}).")
 
 ;; ──── Negative-derivation companions for adjacent-via-{fwd,bwd} ──
 ;; Contrapositives — see zebra2.ein for the design rationale.
@@ -257,16 +245,14 @@
                (?S ?h2 ?h1)
                (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
   :assert (not (?R1 ?V1 ?h1))
-  :why    "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1}))."
-  :priority 240)
+  :why    "(not ({?R2} {?V2} {?h2})) + unique-{?S}-source {?h1} ⟹ (not ({?R1} {?V1} {?h1})).")
 
 (rule adjacent-via-bwd-negative (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (not (?R1 ?V1 ?h1))
                (?S ?h2 ?h1)
                (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
   :assert (not (?R2 ?V2 ?h2))
-  :why    "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2}))."
-  :priority 240)
+  :why    "(not ({?R1} {?V1} {?h1})) + unique-{?S}-target {?h2} ⟹ (not ({?R2} {?V2} {?h2})).")
 
 ;; `adjacent-via` — single non-directional activator that expands
 ;; into both fwd and bwd. The underlying constraint is one thing
@@ -279,26 +265,22 @@
 (rule derive-adjacent-via-fwd ()
   :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
   :assert (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via ⟹ adjacent-via-fwd (identical args)."
-  :priority 100)
+  :why    "adjacent-via ⟹ adjacent-via-fwd (identical args).")
 
 (rule derive-adjacent-via-bwd ()
   :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
   :assert (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via ⟹ adjacent-via-bwd (identical args)."
-  :priority 100)
+  :why    "adjacent-via ⟹ adjacent-via-bwd (identical args).")
 
 (rule derive-adjacent-via-fwd-negative ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-fwd ⟹ adjacent-via-fwd-negative."
-  :priority 200)
+  :why    "adjacent-via-fwd ⟹ adjacent-via-fwd-negative.")
 
 (rule derive-adjacent-via-bwd-negative ()
   :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-bwd ⟹ adjacent-via-bwd-negative."
-  :priority 200)
+  :why    "adjacent-via-bwd ⟹ adjacent-via-bwd-negative.")
 
 ;; ──── Disjunctive-prune: pre-emptive negatives ──────────────
 ;; For each adjacent-via constraint there's a pair of disjunctive
@@ -325,8 +307,7 @@
                (is-a ?h_other ?B)
                (absent (?S ?h_other ?h1)))
   :assert (not (?R2 ?V2 ?h_other))
-  :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded."
-  :priority 250)
+  :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded.")
 
 (rule disjunctive-prune-bwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (?R2 ?V2 ?h1)
@@ -334,20 +315,17 @@
                (is-a ?h_other ?B)
                (absent (?S ?h1 ?h_other)))
   :assert (not (?R1 ?V1 ?h_other))
-  :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded."
-  :priority 250)
+  :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded.")
 
 (rule derive-disjunctive-prune-fwd ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-fwd ⟹ disjunctive-prune-fwd."
-  :priority 200)
+  :why    "adjacent-via-fwd ⟹ disjunctive-prune-fwd.")
 
 (rule derive-disjunctive-prune-bwd ()
   :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-bwd ⟹ disjunctive-prune-bwd."
-  :priority 200)
+  :why    "adjacent-via-bwd ⟹ disjunctive-prune-bwd.")
 
 ;; ──── Spatial-endpoint exclusion ────────────────────────────
 ;; Prophylactic corner-house negatives at d=0 — see zebra2.ein for
@@ -361,28 +339,24 @@
                (is-a ?h1 ?B)
                (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
   :assert (not (?R1 ?V1 ?h1))
-  :why    "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible."
-  :priority 240)
+  :why    "{?h1} has no {?S}-source; ({?R1} {?V1} {?h1}) impossible.")
 
 (rule adjacent-via-endpoint-bwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (relation ?R2 ?A ?B)
                (is-a ?h2 ?B)
                (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
   :assert (not (?R2 ?V2 ?h2))
-  :why    "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible."
-  :priority 240)
+  :why    "{?h2} has no {?S}-target; ({?R2} {?V2} {?h2}) impossible.")
 
 (rule derive-adjacent-via-endpoint-fwd ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd."
-  :priority 200)
+  :why    "adjacent-via-fwd ⟹ adjacent-via-endpoint-fwd.")
 
 (rule derive-adjacent-via-endpoint-bwd ()
   :match  (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2)
-  :why    "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd."
-  :priority 200)
+  :why    "adjacent-via-bwd ⟹ adjacent-via-endpoint-bwd.")
 
 ;; ──── S1.5.8c.4 stdlib block (4 M1-blocking rules) ──────────
 ;; Typecheck against the transitive-closure relation `is-a*`
@@ -399,14 +373,12 @@
 (rule typecheck-arg-0 (?R ?Dom)
   :match  (and (?R ?a ?b) (absent (is-a* ?a ?Dom)))
   :assert (false)
-  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}."
-  :priority 220)
+  :why    "{?R} arg 0 expects {?Dom}; {?a} is not a {?Dom}.")
 
 (rule typecheck-arg-1 (?R ?Ran)
   :match  (and (?R ?a ?b) (absent (is-a* ?b ?Ran)))
   :assert (false)
-  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}."
-  :priority 220)
+  :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}.")
 
 ;; ──── Elimination rules ─────────────────────────────────────
 ;; `domain-elimination` and `range-elimination` mirror each
@@ -424,8 +396,7 @@
                  (and (is-a ?b_other ?B) (neq ?b_other ?b))
                  (not (?R ?a ?b_other))))
   :assert (?R ?a ?b)
-  :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b})."
-  :priority 400)
+  :why    "every {?B} except {?b} excluded for {?a} → ({?R} {?a} {?b}).")
 
 (rule range-elimination (?R)
   :match  (and (injective ?R) (surjective ?R)
@@ -436,24 +407,21 @@
                  (and (is-a ?a_other ?A) (neq ?a_other ?a))
                  (not (?R ?a_other ?b))))
   :assert (?R ?a ?b)
-  :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b})."
-  :priority 400)
+  :why    "every {?A} except {?a} excluded for {?b} → ({?R} {?a} {?b}).")
 
 (rule total (?R)
   :match  (and (relation ?R ?A ?B)
                (is-a ?a ?A)
                (forall ?b (is-a ?b ?B) (not (?R ?a ?b))))
   :assert (false)
-  :why    "{?R} not total at {?a}: every {?B} is excluded."
-  :priority 110)
+  :why    "{?R} not total at {?a}: every {?B} is excluded.")
 
 (rule surjective (?R)
   :match  (and (relation ?R ?A ?B)
                (is-a ?b ?B)
                (forall ?a (is-a ?a ?A) (not (?R ?a ?b))))
   :assert (false)
-  :why    "{?R} not surjective at {?b}: every {?A} is excluded."
-  :priority 110)
+  :why    "{?R} not surjective at {?b}: every {?A} is excluded.")
 
 ;; ──── `bijective` shorthand ─────────────────────────────────
 ;; bijective ≡ functional ∧ injective ∧ total ∧ surjective.
@@ -467,8 +435,7 @@
 (rule bijective-properties ()
   :match  (bijective ?R)
   :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
-  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
-  :priority 100)
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.")
 
 ;; ──── Typecheck activator derivation from relation signature ─
 ;; The (relation R A B) declaration is auto-stored as a fact by
@@ -491,14 +458,12 @@
 (rule derive-typecheck-arg-0 ()
   :match  (and (relation ?R ?A ?B) (bijective ?R))
   :assert (typecheck-arg-0 ?R ?A)
-  :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active."
-  :priority 100)
+  :why    "{?R} arg 0 typed {?A} ⟹ typecheck-arg-0 active.")
 
 (rule derive-typecheck-arg-1 ()
   :match  (and (relation ?R ?A ?B) (bijective ?R))
   :assert (typecheck-arg-1 ?R ?B)
-  :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active."
-  :priority 100)
+  :why    "{?R} arg 1 typed {?B} ⟹ typecheck-arg-1 active.")
 
 ;; ──── Elimination activators derived from property combos ────
 ;; domain-elimination is sound when R is functional + total in
@@ -510,14 +475,12 @@
 (rule derive-domain-elimination ()
   :match  (and (functional ?R) (total ?R))
   :assert (domain-elimination ?R)
-  :why    "{?R} functional + total ⟹ domain-elimination active."
-  :priority 100)
+  :why    "{?R} functional + total ⟹ domain-elimination active.")
 
 (rule derive-range-elimination ()
   :match  (and (injective ?R) (surjective ?R))
   :assert (range-elimination ?R)
-  :why    "{?R} injective + surjective ⟹ range-elimination active."
-  :priority 100)
+  :why    "{?R} injective + surjective ⟹ range-elimination active.")
 
 ;; ──── Hypothesis generation ────────────────────────────────
 ;; One hrule parameterised over (?R ?T1 ?T2); activators in the

@@ -11,19 +11,18 @@
 (rule bijective-properties ()
   :match  (bijective ?R)
   :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
-  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
-  :priority 100)
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.")
 
 ;; ── Violation rules: fire (false) when uniqueness breaks.
 ;;    These are what refute the wrong branches under pathway B.
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why "{?R} not functional: {?a} has both {?b} and {?c}." :priority 250)
+  :why "{?R} not functional: {?a} has both {?b} and {?c}.")
 (rule injective (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
   :assert (false)
-  :why "{?R} not injective: {?c} from both {?a} and {?b}." :priority 250)
+  :why "{?R} not injective: {?c} from both {?a} and {?b}.")
 
 ;; ── d=0 negative completion (S1.5a.19 shape). Kept so the two
 ;;    variants share an identical negative-derivation surface; with
@@ -33,23 +32,21 @@
   :match  (and (?R ?a ?b) (relation ?R ?A ?B)
                (is-a ?b_other ?B) (neq ?b_other ?b))
   :assert (not (?R ?a ?b_other))
-  :why "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other}))."
-  :priority 240)
+  :why "{?R} functional: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a} {?b_other})).")
 (rule injective-negative (?R)
   :match  (and (?R ?a ?b) (relation ?R ?A ?B)
                (is-a ?a_other ?A) (neq ?a_other ?a))
   :assert (not (?R ?a_other ?b))
-  :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b}))."
-  :priority 240)
+  :why "{?R} injective: ({?R} {?a} {?b}) ⟹ (not ({?R} {?a_other} {?b})).")
 
 ;; Activators for the parameterised negative-completion rules:
 ;; functional ⟹ functional-negative active, injective ⟹ injective-negative.
 (rule derive-functional-negative ()
   :match (functional ?R) :assert (functional-negative ?R)
-  :why "{?R} functional ⟹ functional-negative active." :priority 100)
+  :why "{?R} functional ⟹ functional-negative active.")
 (rule derive-injective-negative ()
   :match (injective ?R) :assert (injective-negative ?R)
-  :why "{?R} injective ⟹ injective-negative active." :priority 100)
+  :why "{?R} injective ⟹ injective-negative active.")
 
 ;; ── Pathway B: hypothesis generator.
 (hrule guess (?R ?T1 ?T2)

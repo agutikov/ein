@@ -101,8 +101,7 @@
   :match  (and (is-a ?x Guest)
                (absent (and (sort ?k Sortal) (is-a ?x ?k))))
   :assert (open is-a)
-  :why    "{?x} belongs to no declared sort."
-  :priority 500)
+  :why    "{?x} belongs to no declared sort.")
 
 ;; The typecheck quantifies over the transitive hierarchy; there is no
 ;; inheritance here, so it is `is-a` copied across.

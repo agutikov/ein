@@ -98,7 +98,6 @@
 (rule probe-undecided ()
   :match  (unknown (co-loc Bob Dog))
   :assert (undecided Bob Dog)
-  :priority 500
   :why    "Bob and Dog share seat S2, and the anchored closure says so neither way")
 
 (solve

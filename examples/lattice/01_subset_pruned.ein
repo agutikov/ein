@@ -53,8 +53,7 @@
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} symmetric: {?a} ↔ {?b}"
-  :priority 100)
+  :why    "{?rel} symmetric: {?a} ↔ {?b}")
 
 (rule incompat-block ()
   :match  (and (incompat ?a ?b)
@@ -62,8 +61,7 @@
                (proposed ?b)
                (neq ?a ?b))
   :assert (false)
-  :why    "{?a} and {?b} are jointly forbidden by an incompat fact"
-  :priority 200)
+  :why    "{?a} and {?b} are jointly forbidden by an incompat fact")
 
 (hrule guess (?R ?T)
   :match  (is-a ?x ?T)

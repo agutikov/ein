@@ -31,5 +31,4 @@
 (rule infer-closure ()
   :match  (and (functional ?R) (total ?R))
   :assert (__closed__ ?R)
-  :priority 90
   :why    "{?R} is functional + total → its extension is fixed (operational closure)")

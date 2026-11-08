@@ -29,10 +29,6 @@ einb     = ["dep:ein-einb"]
 # feature was real in the engine and fiction in the artefact. Off, `--jobs N`
 # parses and is inert, which `ein --version` says by not listing `parallel`.
 parallel = ["ein-infer/parallel", "ein-render/parallel"]
-# M1f S1f.5.15's T3: the engine's `derived-order`, forwarded so the stage's
-# sweep can build its arm of the binary. Off by default; `ein --version`
-# lists it when on.
-derived-order = ["ein-infer/derived-order"]
 
 [dependencies]
 ein-core   = { path = "../ein-core" }

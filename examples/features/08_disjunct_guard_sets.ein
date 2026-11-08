@@ -37,5 +37,4 @@
   :match  (or (and (is-a ?a ?Person) (absent (likes ?a Bob)))
               (and (is-a ?a ?Person) (likes ?a Bob)))
   :assert (touched ?a)
-  :why    "{?a} is either liked-by-nobody-named-Bob or likes Bob"
-  :priority 200)
+  :why    "{?a} is either liked-by-nobody-named-Bob or likes Bob")

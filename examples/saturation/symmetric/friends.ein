@@ -16,8 +16,7 @@
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
 (relation friend-of T T)
 (symmetric friend-of)

@@ -14,17 +14,12 @@
 //! and a version line that did not say so would leave "I passed `--jobs 8`
 //! and nothing happened" undiagnosable.
 
-/// The engine's features, in declaration order (the caller sorts the merged
-/// list).
+/// The engine's features, in declaration order (which is also alphabetical —
+/// the caller sorts the merged list anyway).
 pub fn features() -> Vec<&'static str> {
     let mut out = Vec::new();
     if cfg!(feature = "counters") {
         out.push("counters");
-    }
-    // M1f S1f.5.15's T3: the agenda ordered by the derived band, not by
-    // `:priority` — a build that answers another way must say so.
-    if cfg!(feature = "derived-order") {
-        out.push("derived-order");
     }
     if cfg!(feature = "parallel") {
         out.push("parallel");

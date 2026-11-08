@@ -925,13 +925,6 @@ fn ingest_rules(
             Some(w) => Some(terms.intern_text(w)?),
             None => None,
         };
-        let priority = match kw_get(&pairs, "priority").map(|n| ast.node(n)) {
-            Some(Node::Int(s)) => {
-                let text = ast.sym(s).to_string();
-                Some(terms.intern_int(&text)?)
-            }
-            _ => None,
-        };
         let param_names: Vec<String> = ast
             .form_args(params_form)
             .iter()
@@ -971,7 +964,6 @@ fn ingest_rules(
             match_: Some(pattern_from_ir(ast, terms, match_node)?),
             assert_: Some(pattern_from_ir(ast, terms, assert_node)?),
             why,
-            priority,
             loc: core_loc(ast, form),
         };
         if is_obligation {

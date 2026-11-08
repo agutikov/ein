@@ -18,8 +18,10 @@
 //!   which on `p ← absent q; q ← absent p` derives both — and `{p, q}` is not a
 //!   model of that program under any reading.
 //!
-//! Everything else stands: priority bands (advisory since S1.21.8, and
-//! still the order), FIFO within a band via the monotone tiebreaker, `seen`
+//! Everything else stands: FIFO, the written and arrival order, via the
+//! monotone tiebreaker (no rule has a priority since M1f S1f.5.15, the user's
+//! ruling of 2026-11-08 on Q-M1f.6: *"plain FIFO, core is an explanation, F22
+//! makes it canonical"*), `seen`
 //! keyed on `(binding_key, guards)`, and `naf_dropped` structurally 0 — there
 //! is no enqueue/fire window left for a guard to go stale in.
 
@@ -38,81 +40,6 @@ use crate::events::{self, Events};
 use crate::firing::{BindingKey, Env, FireError, Firing, build_fact, fire};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
-
-/// The priority a rule with no `:priority` runs at — **above every band any
-/// program declares, so an undeclared rule fires last.**
-///
-/// The agenda is a min-heap on `(priority, tiebreaker)` (`Ranked` below,
-/// popped in the closure step) and the parked set a `BTreeSet` walked
-/// ascending, so a *lower* number fires *earlier* — `01_grammar.md`'s "rule
-/// ordering — lower = earlier". 1000 is past the last boundary `ein-cli`'s
-/// `band_label` knows (`hypothesis`, ≥ 900), which is why `ein saturate
-/// --dump` prints such a rule `unbanded` rather than putting it in a band.
-///
-/// This said *"sit between the eliminate band (300) and the hypothesis band
-/// (900)"* until M1e S1e.4.8 (`MA-L1`) — wrong in the direction that matters.
-///
-/// The bands that exist are fifteen values over 374 occurrences,
-///
-/// ```text
-/// grep -rhoE ':priority +-?[0-9]+' stdlib examples tests --include='*.ein'
-/// ```
-///
-/// 2026-09-01 — of which the stdlib spans **90–500** and declares one on all
-/// 77 of its rules. The 900 band the old wording named as a ceiling **does
-/// exist**, contrary to the review: three `hypothesis-contradiction` rules
-/// under `examples/saturation/` carry it, continuously since `d94b7d9`. Only
-/// the stdlib stops at 500. So this constant is *above* the hypothesis band,
-/// not between it and 300.
-///
-/// Firing last is the intent rather than an artefact of the number: a rule
-/// nobody banded should not preempt one somebody did. **Nothing in the corpus
-/// can show it** — 36 rules carry no `:priority`, 23 of them under
-/// `examples/broken/`, and no program mixes a banded rule with an unbanded
-/// one, so every golden and every digest is identical for any default above
-/// 900. That is why the value is pinned by
-/// `explain_semantics::the_default_priority_is_1000_and_fires_last` instead,
-/// which sandwiches it between a 999 and a 1001.
-///
-/// `obligations::priority_of` returns this too, where it orders the **report**
-/// of what a state owes rather than the agenda — a second consumer neither the
-/// review nor this comment had.
-pub const DEFAULT_PRIORITY: i64 = 1000;
-
-/// What orders the closure's agenda and the boundary — M1f
-/// [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s
-/// T3, on the user's ruling of 2026-11-08 on Q-M1f.4, (b) *"Derive order
-/// first"*.
-///
-/// No order decides what is derivable on a stratified program
-/// (`naf_semantics::priority_does_not_decide_what_is_derivable`); it decides
-/// which derivation of a fact arrives first, which the alternatives cap, a
-/// program with `:record-alternative-justifications false` and W25 read
-/// (the stage's § T1 record). So the derived order is measured against the
-/// declared one before `:priority` goes, and it is not a lever: no `EIN_*`
-/// name and no `(config …)` field reaches it. Every shipped build is
-/// [`Order::Declared`]; the `derived-order` cargo feature, off by default,
-/// builds the other arm of the stage's sweep.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum Order {
-    /// Each rule's `:priority`, [`DEFAULT_PRIORITY`] where it writes none:
-    /// the agenda and the boundary both in (priority, FIFO) order.
-    Declared,
-    /// The band each rule's shape derives ([`crate::strata::band`]) orders
-    /// the agenda, FIFO within a band, and the boundary is FIFO: admitting by
-    /// stratum is F21's D2, not this stage's.
-    Derived,
-}
-
-impl Order {
-    /// [`Order::Declared`], or [`Order::Derived`] in a build with the
-    /// `derived-order` feature.
-    pub const DEFAULT: Order = if cfg!(feature = "derived-order") {
-        Order::Derived
-    } else {
-        Order::Declared
-    };
-}
 
 /// The kernel-native symmetric mirror trigger. A relation marked
 /// `(__symmetric__ R)` has its extension closed under arg-swap directly by the
@@ -271,9 +198,10 @@ struct WatchTables {
     spans: Vec<(u32, u32)>,
 }
 
-/// `(priority, tiebreaker, entry)`. The tiebreaker is unique and monotone, so
-/// the comparison never reaches the third field.
-type Ranked = Reverse<(i64, u64, u32)>;
+/// `(tiebreaker, entry)`: the order candidates were enqueued in, FIFO. The
+/// tiebreaker is unique and monotone, so the comparison never reaches the
+/// second field.
+type Ranked = Reverse<(u64, u32)>;
 
 /// An interned guard tuple — the `seen` key's second half.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -284,7 +212,7 @@ pub struct Saturator {
     matcher: Matcher,
     entries: Arena,
     queue: BinaryHeap<Ranked>,
-    /// The parked candidates, in (priority, FIFO) order — S1a.3.4 T7.
+    /// The parked candidates, in FIFO order — S1a.3.4 T7.
     ///
     /// A `BTreeSet` rather than a heap because a boundary round **reads** the
     /// whole set in order and removes at most one entry from it. Popping every
@@ -293,7 +221,7 @@ pub struct Saturator {
     /// iteration gives the same sequence — so "the first candidate
     /// whose guards pass" is the same candidate — without touching the ones
     /// it skips.
-    parked: std::collections::BTreeSet<(i64, u64, u32)>,
+    parked: std::collections::BTreeSet<(u64, u32)>,
     seen: FxHashSet<(BindingKey, GuardSetId)>,
     guard_sets: FxHashMap<Box<[u32]>, GuardSetId>,
     tiebreaker: u64,
@@ -328,7 +256,7 @@ pub struct Saturator {
     watched_grew: Vec<bool>,
     /// Scratch: what a boundary round takes out of `parked`, applied after the
     /// walk so the walk can hold the set.
-    retired_scratch: Vec<(i64, u64, u32)>,
+    retired_scratch: Vec<(u64, u32)>,
     /// Can a parked candidate's binding key reach `fired`? — see
     /// [`Saturator::refresh_collision_risk`].
     may_collide: bool,
@@ -341,11 +269,6 @@ pub struct Saturator {
     mirror_seeded: bool,
     record_alternatives: bool,
     last_firing: Option<Firing>,
-    /// What orders the agenda and the boundary ([`Order`]).
-    order: Order,
-    /// Under [`Order::Derived`], each plan's band rank, by its position in the
-    /// engine, filled as plans are first enqueued.
-    derived: Vec<Option<i64>>,
 
     // ── Observables ────────────────────────────────────────────────
     pub naf_rounds: u32,
@@ -407,7 +330,7 @@ pub struct Snapshot {
     engine: Engine,
     entries: Arc<Vec<Entry>>,
     queue: BinaryHeap<Ranked>,
-    parked: std::collections::BTreeSet<(i64, u64, u32)>,
+    parked: std::collections::BTreeSet<(u64, u32)>,
     seen: FxHashSet<(BindingKey, GuardSetId)>,
     guard_sets: FxHashMap<Box<[u32]>, GuardSetId>,
     tiebreaker: u64,
@@ -427,7 +350,6 @@ pub struct Snapshot {
     sym_rels: Vec<Symbol>,
     sym_n: usize,
     mirror_seeded: bool,
-    order: Order,
     facts: FxHashSet<FactId>,
 }
 
@@ -489,8 +411,6 @@ impl Saturator {
             // always closed.
             record_alternatives: cfg.record_alternative_justifications,
             last_firing: None,
-            order: Order::DEFAULT,
-            derived: Vec::new(),
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -531,7 +451,6 @@ impl Saturator {
             sym_rels: self.sym_rels.clone(),
             sym_n: self.sym_n,
             mirror_seeded: self.mirror_seeded,
-            order: self.order,
             facts: kb.facts().collect(),
         }
     }
@@ -603,8 +522,6 @@ impl Saturator {
             mirror_seeded: snapshot.mirror_seeded,
             record_alternatives: cfg.record_alternative_justifications,
             last_firing: None,
-            order: snapshot.order,
-            derived: Vec::new(),
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -621,20 +538,6 @@ impl Saturator {
     }
 
     // ── Public API ─────────────────────────────────────────────────
-
-    /// This saturation under `order` rather than [`Order::DEFAULT`], before
-    /// it has enqueued anything; a fork resumed from its snapshot keeps it.
-    /// What a test compares the two orders with: no surface reaches it.
-    pub fn with_order(mut self, order: Order) -> Saturator {
-        debug_assert_eq!(self.tiebreaker, 0, "set before the first enqueue");
-        self.order = order;
-        self
-    }
-
-    /// What orders this saturation's agenda and boundary.
-    pub fn order(&self) -> Order {
-        self.order
-    }
 
     /// The next firing, or `None` at the two-phase fixpoint.
     pub fn step(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
@@ -762,7 +665,7 @@ impl Saturator {
         let unfired = self
             .queue
             .iter()
-            .any(|Reverse((_, _, e))| !self.engine.fired.contains(self.entry_key(*e)));
+            .any(|Reverse((_, e))| !self.engine.fired.contains(self.entry_key(*e)));
         if unfired {
             return Ok(false);
         }
@@ -782,7 +685,7 @@ impl Saturator {
         if let Some(firing) = self.next_mirror_firing(s)? {
             return Ok(Some(firing));
         }
-        while let Some(Reverse((_, _, entry))) = self.queue.pop() {
+        while let Some(Reverse((_, entry))) = self.queue.pop() {
             if self.engine.fired.contains(self.entry_key(entry)) {
                 continue;
             }
@@ -1068,7 +971,6 @@ impl Saturator {
             c.enqueue_task_full += 1;
         });
         let plan = self.engine.plan_arc(at);
-        let priority = self.priority_for(s, at, &plan);
         // The matcher is moved out for the duration: `enqueue_binding` runs
         // *inside* its callback and needs the saturator, which the matcher is
         // part of. Moving it out is what keeps the enqueue on the match's own
@@ -1078,7 +980,7 @@ impl Saturator {
         for d in 0..plan.disjuncts.len() {
             let events = &mut *s.events;
             m.run_one(kb, terms, ast, &plan, d, &mut |mt| {
-                self.enqueue_binding(terms, events, at, &plan, mt, priority);
+                self.enqueue_binding(terms, events, at, &plan, mt);
                 ControlFlow::Continue(())
             });
         }
@@ -1088,11 +990,10 @@ impl Saturator {
     fn seed_match(&mut self, s: &mut Session<'_>, at: usize, fact: FactId) {
         ein_core::counters::bump(|c| c.enqueue_task += 1);
         let plan = self.engine.plan_arc(at);
-        let priority = self.priority_for(s, at, &plan);
         let mut m = std::mem::take(&mut self.matcher);
         let (kb, terms, ast, events) = (&*s.kb, &*s.terms, s.ast, &mut *s.events);
         m.run_seeded(kb, terms, ast, &plan, fact, &mut |mt| {
-            self.enqueue_binding(terms, events, at, &plan, mt, priority);
+            self.enqueue_binding(terms, events, at, &plan, mt);
             ControlFlow::Continue(())
         });
         self.matcher = m;
@@ -1111,7 +1012,6 @@ impl Saturator {
         at: usize,
         plan: &Plan,
         m: &crate::match_::Match<'_>,
-        (queued, waiting): (i64, i64),
     ) {
         let disjunct = m.disjunct;
         let key = BindingKey::new(plan, self.engine.activator(at), m.regs());
@@ -1127,7 +1027,6 @@ impl Saturator {
         self.seen.insert(seen_key);
         self.tiebreaker += 1;
         let parked = !plan.disjuncts[disjunct].guards.is_empty();
-        let priority = if parked { waiting } else { queued };
         if events.on() {
             let (rule, activator, bindings) = (
                 terms.sym(plan.rule).to_string(),
@@ -1144,7 +1043,6 @@ impl Saturator {
                 l.str("rule", &rule);
                 l.owned_strs("activator", activator);
                 l.bindings("bindings", bindings);
-                l.num("priority", priority);
                 l.num("tiebreaker", tb);
                 l.bool("parked", parked);
             });
@@ -1161,9 +1059,9 @@ impl Saturator {
         });
         self.judged_at.push(0);
         if parked {
-            self.parked.insert((priority, self.tiebreaker, entry));
+            self.parked.insert((self.tiebreaker, entry));
         } else {
-            self.queue.push(Reverse((priority, self.tiebreaker, entry)));
+            self.queue.push(Reverse((self.tiebreaker, entry)));
         }
     }
 
@@ -1205,49 +1103,6 @@ impl Saturator {
         id
     }
 
-    /// The keys a plan's candidates are ordered by: in the agenda, and parked
-    /// at the boundary ([`Order`]).
-    fn priority_for(&mut self, s: &Session<'_>, at: usize, plan: &Plan) -> (i64, i64) {
-        match self.order {
-            Order::Declared => {
-                let p = Self::declared(s, plan);
-                (p, p)
-            }
-            Order::Derived => {
-                if self.derived.len() <= at {
-                    self.derived.resize(at + 1, None);
-                }
-                let band = *self.derived[at].get_or_insert_with(|| {
-                    let program = s.kb.program();
-                    let obligation = program.obligations.contains(plan.rule);
-                    crate::strata::band(&crate::strata::shape(s.kb, s.terms, plan, obligation))
-                        .rank()
-                });
-                (band, DEFAULT_PRIORITY)
-            }
-        }
-    }
-
-    /// The rule's `:priority`, or [`DEFAULT_PRIORITY`].
-    fn declared(s: &Session<'_>, plan: &Plan) -> i64 {
-        let Some(rule) = s.kb.program().rules.get(plan.rule) else {
-            return DEFAULT_PRIORITY;
-        };
-        let Some(p) = rule.priority else {
-            return DEFAULT_PRIORITY;
-        };
-        s.terms.ints.value(p).unwrap_or_else(|| {
-            // Wider than an `i64`. The grammar accepts any width and nothing
-            // in the corpus is past three digits, so this is a bound rather
-            // than a behaviour: the extreme sorts to the extreme.
-            if s.terms.int_text(p).starts_with('-') {
-                i64::MIN
-            } else {
-                i64::MAX
-            }
-        })
-    }
-
     fn entry_key(&self, entry: u32) -> &BindingKey {
         &self.entries.get(entry).key
     }
@@ -1287,7 +1142,7 @@ impl Saturator {
         let parked = std::mem::take(&mut self.parked);
         let mut retired = std::mem::take(&mut self.retired_scratch);
         for &key in parked.iter() {
-            let (_, tb, entry) = key;
+            let (tb, entry) = key;
             // Fired by another route — impossible unless two entries can share
             // a binding key, which is what `may_collide` decides. Asking costs
             // a `BindingKey` hash per parked candidate per round, 3.8 % of

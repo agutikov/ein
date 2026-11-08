@@ -213,14 +213,6 @@ fn static_half(m: &Monotonicity) -> Vec<(&'static str, Json)> {
                             ("reader", Json::str(&r.reader)),
                             ("writer", Json::str(&r.writer)),
                             ("relations", strs(&r.relations)),
-                            (
-                                "priorities",
-                                Json::Array(vec![
-                                    Json::int(r.reader_priority),
-                                    Json::int(r.writer_priority),
-                                ]),
-                            ),
-                            ("at_one_priority", Json::Bool(r.at_one_priority())),
                         ])
                     })
                     .collect(),

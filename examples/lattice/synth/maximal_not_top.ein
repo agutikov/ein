@@ -36,13 +36,11 @@
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
   :assert (open h)
-  :why    "from the start: one of A is required"
-  :priority 500)
+  :why    "from the start: one of A is required")
 
 (rule owe-2 ()
   :match  (and (h C) (absent (and (need K2 ?x) (h ?x))))
   :assert (open h)
-  :why    "with C: a debt nothing pays"
-  :priority 500)
+  :why    "with C: a debt nothing pays")
 
 (query :goal (h ?x))

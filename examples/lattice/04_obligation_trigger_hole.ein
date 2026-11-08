@@ -31,8 +31,7 @@
 (rule seated-dines ()
   :match  (seats ?g ?c)
   :assert (is-a ?g Diner)
-  :why    "{?g} is seated, so {?g} dines"
-  :priority 200)
+  :why    "{?g} is seated, so {?g} dines")
 
 (total-owed meal is-a)
 

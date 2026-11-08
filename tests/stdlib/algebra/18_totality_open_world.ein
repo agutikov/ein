@@ -62,7 +62,6 @@
 (rule probe-undecided ()
   :match  (unknown (likes Ann Stew))
   :assert (undecided Ann Stew)
-  :priority 500
   :why    "Ann's extent is only half excluded, so `total` has nothing to refute")
 
 (solve

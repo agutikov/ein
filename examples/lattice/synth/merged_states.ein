@@ -35,25 +35,21 @@
 (rule imp-A-B ()
   :match  (h A)
   :assert (h B)
-  :why    "A brings B"
-  :priority 200)
+  :why    "A brings B")
 
 (rule imp-C-D ()
   :match  (h C)
   :assert (h D)
-  :why    "C brings D"
-  :priority 200)
+  :why    "C brings D")
 
 (rule dead-1 ()
   :match  (and (h A) (h C))
   :assert (false)
-  :why    "A C is dead"
-  :priority 300)
+  :why    "A C is dead")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
   :assert (open h)
-  :why    "from the start: one of A C is required"
-  :priority 500)
+  :why    "from the start: one of A C is required")
 
 (query :goal (h ?x))

@@ -35,43 +35,36 @@
 (rule dead-1 ()
   :match  (and (h A) (h B))
   :assert (false)
-  :why    "A B is dead"
-  :priority 300)
+  :why    "A B is dead")
 
 (rule dead-2 ()
   :match  (and (h A) (h C))
   :assert (false)
-  :why    "A C is dead"
-  :priority 300)
+  :why    "A C is dead")
 
 (rule dead-3 ()
   :match  (and (h B) (h C))
   :assert (false)
-  :why    "B C is dead"
-  :priority 300)
+  :why    "B C is dead")
 
 (rule dead-4 ()
   :match  (and (h A) (h D))
   :assert (false)
-  :why    "A D is dead"
-  :priority 300)
+  :why    "A D is dead")
 
 (rule dead-5 ()
   :match  (and (h B) (h D))
   :assert (false)
-  :why    "B D is dead"
-  :priority 300)
+  :why    "B D is dead")
 
 (rule dead-6 ()
   :match  (and (h C) (h D))
   :assert (false)
-  :why    "C D is dead"
-  :priority 300)
+  :why    "C D is dead")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
   :assert (open h)
-  :why    "from the start: one of A B C D is required"
-  :priority 500)
+  :why    "from the start: one of A B C D is required")
 
 (query :goal (h ?x))

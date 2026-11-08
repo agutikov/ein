@@ -64,7 +64,16 @@ use ein_infer::monotone;
 use ein_infer::mt19937::Mt19937;
 use ein_infer::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use ein_infer::region::{self, DEAD, OWING, Outcome, Topology};
-use ein_infer::saturator::{DEFAULT_PRIORITY, Saturator, Session};
+use ein_infer::saturator::{Saturator, Session};
+
+/// What every rule's priority was when it wrote none. No rule has a priority
+/// since M1f S1f.5.15 (the agenda and the boundary are FIFO, the user's ruling
+/// of 2026-11-08 on Q-M1f.6), and the loader drops a `:priority` written
+/// anyway until S1f.5.5's swap refuses it: so this census's equal-priority
+/// groups are one group, and its stratum emulation, which rewrote priorities,
+/// reads nothing since. Kept so the census runs as the record of what it
+/// measured.
+const DEFAULT_PRIORITY: i64 = 1000;
 use ein_infer::{contradiction, obligations};
 use ein_ir::{Ast, load, parse};
 use rustc_hash::{FxHashMap, FxHashSet, FxHasher};

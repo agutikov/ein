@@ -45,67 +45,56 @@
 (rule dead-1 ()
   :match  (and (h A) (h C))
   :assert (false)
-  :why    "A C is dead"
-  :priority 300)
+  :why    "A C is dead")
 
 (rule dead-2 ()
   :match  (and (h B) (h C))
   :assert (false)
-  :why    "B C is dead"
-  :priority 300)
+  :why    "B C is dead")
 
 (rule dead-3 ()
   :match  (and (h A) (h F) (absent (h B)))
   :assert (false)
-  :why    "A F is dead while B is missing"
-  :priority 300)
+  :why    "A F is dead while B is missing")
 
 (rule dead-4 ()
   :match  (and (h C) (h F))
   :assert (false)
-  :why    "C F is dead"
-  :priority 300)
+  :why    "C F is dead")
 
 (rule dead-5 ()
   :match  (and (h D) (h F))
   :assert (false)
-  :why    "D F is dead"
-  :priority 300)
+  :why    "D F is dead")
 
 (rule dead-6 ()
   :match  (and (h E) (h F))
   :assert (false)
-  :why    "E F is dead"
-  :priority 300)
+  :why    "E F is dead")
 
 (rule dead-7 ()
   :match  (and (h A) (h G) (absent (h D)))
   :assert (false)
-  :why    "A G is dead while D is missing"
-  :priority 300)
+  :why    "A G is dead while D is missing")
 
 (rule dead-8 ()
   :match  (and (h C) (h G))
   :assert (false)
-  :why    "C G is dead"
-  :priority 300)
+  :why    "C G is dead")
 
 (rule dead-9 ()
   :match  (and (h E) (h G))
   :assert (false)
-  :why    "E G is dead"
-  :priority 300)
+  :why    "E G is dead")
 
 (rule dead-10 ()
   :match  (and (h F) (h G))
   :assert (false)
-  :why    "F G is dead"
-  :priority 300)
+  :why    "F G is dead")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
   :assert (open h)
-  :why    "from the start: one of C F G is required"
-  :priority 500)
+  :why    "from the start: one of C F G is required")
 
 (query :goal (h ?x))

@@ -17,8 +17,7 @@
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
 (relation next-to T T)
 (symmetric next-to)

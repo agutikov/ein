@@ -98,7 +98,6 @@
 (rule probe-excluded ()
   :match  (not (co-loc Ann S4))
   :assert (excluded Ann S4)
-  :priority 500
   :why    "slot-adjacent-bwd-neg reached ¬(co-loc Ann S4) from ¬(co-loc Cat S3)")
 
 (solve

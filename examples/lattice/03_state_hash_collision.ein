@@ -59,14 +59,12 @@
 (rule h2-derives-h1 ()
   :match  (h2 ?x)
   :assert (h1 ?x)
-  :why    "h2({?x}) → h1({?x})"
-  :priority 100)
+  :why    "h2({?x}) → h1({?x})")
 
 (rule h2-derives-h3 ()
   :match  (h2 ?x)
   :assert (h3 ?x)
-  :why    "h2({?x}) → h3({?x})"
-  :priority 100)
+  :why    "h2({?x}) → h3({?x})")
 
 (hrule guess (?R ?T)
   :match  (is-a ?x ?T)

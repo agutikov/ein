@@ -56,7 +56,6 @@
                (?isa ?f Food)
                (unknown (likes ?p ?f)))
   :assert (state-open ?p ?f)
-  :priority 500
   :why    "{?p} and {?f} are in neither store")
 
 (third-state is-a)

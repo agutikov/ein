@@ -34,7 +34,6 @@
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
   :assert (open h)
-  :why    "from the start: one of A B is required"
-  :priority 500)
+  :why    "from the start: one of A B is required")
 
 (query :goal (h ?x))

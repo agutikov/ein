@@ -69,8 +69,7 @@
 (rule auto-sign ()
   :match  (and (pending ?y) (waived ?y))
   :assert (signed ?y)
-  :why    "{?y} is waived, so it is signed"
-  :priority 100)
+  :why    "{?y} is waived, so it is signed")
 
 (rule premature-signoff ()
   :match  (and (signed ?x)
@@ -78,8 +77,7 @@
                             (absent (and (needs-review ?y)
                                          (absent (signed ?y)))))))
   :assert (false)
-  :why    "signed {?x} while nothing pending was review-clear"
-  :priority 200)
+  :why    "signed {?x} while nothing pending was review-clear")
 
 (pending      B :source "(1)")
 (needs-review B :source "(2)")

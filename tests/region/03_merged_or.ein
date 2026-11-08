@@ -10,8 +10,7 @@
 
 (rule transitive (?rel)
   :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-  :assert (?rel ?a ?c)
-  :priority 200)
+  :assert (?rel ?a ?c))
 (relation co-located T T)
 (transitive co-located)
 (co-located A B)

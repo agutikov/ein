@@ -55,25 +55,21 @@
 (rule x-chain ()
   :match  (c ?y)
   :assert (x K)
-  :priority 100
   :why    "{?y} makes K an x")
 
 (rule x-join ()
   :match  (and (a ?k) (b ?k))
   :assert (x ?k)
-  :priority 200
   :why    "{?k} has a and b")
 
 (rule z-join ()
   :match  (and (a ?k) (b ?k))
   :assert (z ?k)
-  :priority 300
   :why    "{?k} has a and b")
 
 (rule clash ()
   :match  (and (x ?k) (z ?k))
   :assert (false)
-  :priority 400
   :why    "{?k} is both")
 
 (solve :expect (false))

@@ -59,11 +59,9 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
         for (name, rule) in registry.iter() {
             let params: Vec<String> = rule.params.iter().map(|&p| terms.sym(p).into()).collect();
             out.push(format!(
-                "{kind} {} params=({}) priority={} why={} vars=({}) rels=({})",
+                "{kind} {} params=({}) why={} vars=({}) rels=({})",
                 terms.sym(name),
                 params.join(" "),
-                rule.priority
-                    .map_or("None".to_string(), |p| terms.int_text(p).to_string()),
                 repr(&ReprValue::Str(
                     rule.why.map_or("", |w| terms.sym(w)).to_string()
                 )),

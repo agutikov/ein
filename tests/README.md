@@ -138,9 +138,11 @@ negatives are deliberately not closed by an expectation, so listing the
 exclusions that exist says nothing about the ones that do not. Ten programs
 carry a four-line `probe-undecided` rule whose body is `std.macro`'s `(unknown
 P)` — true exactly when a fact is in neither store — turning the absence into
-an ordinary positive fact the expectation *can* close. Its priority is 500,
-above everything the stdlib declares, because a probe that reads the world has
-to be the last thing to read it.
+an ordinary positive fact the expectation *can* close. It reads under an
+`absent`, so the boundary judges it once the closure is at its fixpoint, which
+is what a probe that reads the world needs: to be the last thing to read it.
+(Until M1f S1f.5.15 removed `:priority` it also carried priority 500, above
+everything the stdlib declared.)
 
 **A refutation rule gets two files.** "It fires and the answer is ⊥" is one
 test and it is not the one that finds bugs; the other is a program where the

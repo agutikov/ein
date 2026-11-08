@@ -9,7 +9,6 @@
 //! no type system, so a puzzle's inheritance forest is just `is-a` facts.
 
 use crate::intern::Symbol;
-use crate::value::IntId;
 use rustc_hash::FxHashMap;
 
 /// A source position, as the frontend recorded it.
@@ -103,9 +102,6 @@ pub struct Rule {
     pub match_: Option<Pattern>,
     pub assert_: Option<Pattern>,
     pub why: Option<Symbol>,
-    /// An `Int` literal, so it is pooled rather than parsed: the grammar
-    /// accepts any width and the saturator only ever compares priorities.
-    pub priority: Option<IntId>,
     pub loc: Option<Loc>,
 }
 

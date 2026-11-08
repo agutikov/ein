@@ -179,7 +179,7 @@ cover row is `examples/ein-bugs/naf-upward-closure.ein`, whose `bad` rule reads
 | `e` | emitted at | payload |
 |---|---|---|
 | `compile` | `Engine::compile_for` — **miss only** | `rule`, `activator`, `n_steps`, `n_disjuncts`, `n_guards`, `asserts` |
-| `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `priority`, `tiebreaker`, `parked` |
+| `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `tiebreaker` (the order it is queued in: FIFO since M1f S1f.5.15, which took the `priority` field out with `:priority`), `parked` |
 | `fire` | every `Firing` yielded by `Saturator::closure_step` | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant` |
 | `mirror` | the native `__symmetric__` arg-swap write | `relation`, `src`, `derived` |
 | `park` / `retire` | `Saturator::admit_from_boundary` — the candidate waits for a later round, or is dead | `tiebreaker`, `round`, `rule`, `watched` (**the failing guard's** watch set, sorted) |

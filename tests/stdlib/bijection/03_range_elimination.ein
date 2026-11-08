@@ -44,7 +44,6 @@
 (rule probe-undecided ()
   :match  (unknown (wears Ann Green))
   :assert (undecided Ann Green)
-  :priority 500
   :why    "Green's column is only one-third excluded, so nothing may be forced into it")
 
 (solve

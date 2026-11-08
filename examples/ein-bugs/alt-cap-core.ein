@@ -2,9 +2,11 @@
 ;;; — and hand it back the order-dependence the AND/OR search removed.**
 ;;;
 ;;; M1e S1e.1.3, answering the review's Q2. This file and
-;;; [`alt-cap-core-reordered.ein`](alt-cap-core-reordered.ein) differ in **one
-;;; integer** — the `:priority` of `wide`. Same facts, same rules, same
-;;; derivations, same verdict:
+;;; [`alt-cap-core-reordered.ein`](alt-cap-core-reordered.ein) differed in **one
+;;; integer**, the `:priority` of `wide`, until M1f S1f.5.15 removed the keyword;
+;;; since then they differ in the **written order** of one rule, `mk-w3` (§ The
+;;; written order, below). Same facts, same rules, same derivations, same
+;;; verdict:
 ;;;
 ;;;   alt-cap-core.ein             unsat core (3)   (p1 Y01) (p2 Y01) (p3 Y01)
 ;;;   alt-cap-core-reordered.ein   unsat core (2)   (w1 X) (w2 X)
@@ -74,6 +76,19 @@
 ;;; a full list, is still refused —
 ;;; [`wrong-answers/alt-cap-shared.ein`](wrong-answers/alt-cap-shared.ein),
 ;;; deferred to F22.
+;;;
+;;; ── The written order, since M1f S1f.5.15 (2026-11-08) ─────────────────────
+;;;
+;;; No rule has a priority since S1f.5.15: the agenda and the boundary are
+;;; FIFO, the written and arrival order (the user's ruling of 2026-11-08 on
+;;; Q-M1f.6). `wide` reads `(w3 ?x)`, which `mk-w3` derives from `(w1 ?x)`, so
+;;; `(w3 X)`'s closure is `(w1 X)` and the core's facts are what they were.
+;;; Here `mk-w3` is written after `mk-q`: the 33 `(q …)` and their `narrow`
+;;; candidates queue before `(w3 X)` exists, so `narrow` fills the list and
+;;; `wide` arrives at a full one, as `:priority 300` made it. The twin writes
+;;; `mk-w3` first, so `wide` fires before anything derives a `(q …)`. Both
+;;; still report `(w1 X) (w2 X)`; with the flag off this file reports the
+;;; three-fact chain and the twin the pair (`ein solve`, 2026-11-08).
 
 (relation p1 T :why "{?1} has p1")
 (relation p2 T :why "{?1} has p2")
@@ -81,6 +96,7 @@
 (relation q  T :why "{?1} is a witness")
 (relation w1 T :why "{?1} has w1")
 (relation w2 T :why "{?1} has w2")
+(relation w3 T :why "{?1} has w3")
 
 ;; 33 witnesses, each three givens deep.
 (p1 Y01) (p2 Y01) (p3 Y01) (p1 Y02) (p2 Y02) (p3 Y02) (p1 Y03) (p2 Y03) (p3 Y03)
@@ -101,22 +117,27 @@
 (rule mk-q ()
   :match  (and (p1 ?y) (p2 ?y) (p3 ?y))
   :assert (q ?y)
-  :priority 100
   :why    "{?y} has all three")
+
+;; `(w1 X)` read again as `(w3 X)`: written after `mk-q`, so it fires after
+;; every `(q …)` is derived and `wide` after every `narrow`.
+(rule mk-w3 ()
+  :match  (w1 ?x)
+  :assert (w3 ?x)
+  :why    "{?x} has w1")
 
 ;; One premise, and that premise is three givens deep. Fires 33 times, which
 ;; is one primary plus a full list of 32 alternatives.
 (rule narrow ()
   :match  (q ?y)
   :assert (false)
-  :priority 200
   :why    "{?y} is a witness")
 
-;; Two premises, both givens: the smallest frontier there is.
+;; Two premises, `(w3 X)` from the given `(w1 X)` and the given `(w2 X)`:
+;; the smallest frontier there is.
 (rule wide ()
-  :match  (and (w1 ?x) (w2 ?x))
+  :match  (and (w3 ?x) (w2 ?x))
   :assert (false)
-  :priority 300
   :why    "{?x} has both")
 
 (solve :expect (false))

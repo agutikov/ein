@@ -31,5 +31,5 @@
 (relation thing T)
 (relation q T)
 (thing one)
-(rule no-q () :match (q ?x) :assert (false) :priority 300)
+(rule no-q () :match (q ?x) :assert (false))
 (query :goal (thing ?x))

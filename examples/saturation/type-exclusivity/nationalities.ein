@@ -24,8 +24,7 @@
                (is-a ?b ?T)
                (neq ?a ?b))
   :assert (not (?R ?a ?b))
-  :why    "{?a} and {?b} are distinct members of {?T} — exclusive under {?R}."
-  :priority 300)
+  :why    "{?a} and {?b} are distinct members of {?T} — exclusive under {?R}.")
 
 (relation is-a T T)
 (is-a Norwegian Nationality)

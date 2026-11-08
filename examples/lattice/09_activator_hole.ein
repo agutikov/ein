@@ -32,8 +32,7 @@
 (rule kitchen-serves ()
   :match  (opens ?k)
   :assert (total-owed meal is-a)
-  :why    "{?k} is open, so every guest owes a meal"
-  :priority 200)
+  :why    "{?k} is open, so every guest owes a meal")
 
 (hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k))
 (hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f))

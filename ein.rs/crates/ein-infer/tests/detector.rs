@@ -26,8 +26,8 @@ use ein_ir::{Ast, load, parse};
 /// the two rules' text changes the universe (§ 7.1 there).
 const STRATIFIED_STALE: &str = "(relation thing T) (relation p T) (relation q T) (relation r T)
      (thing one)
-     (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :priority 200)
-     (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :priority 200)
+     (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x))
+     (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x))
      (query :goal (r ?x))";
 
 /// `lattice/10_fifo_gap.ein` with the reader `r2` at priority 100: it is
@@ -39,8 +39,8 @@ const FIFO_GAP_PRIORITY: &str = "(relation thing T) (relation a T) (relation b T
      (thing one)
      (hrule guess-a () :match (thing ?x) :assert (a ?x))
      (hrule guess-b () :match (thing ?x) :assert (b ?x))
-     (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :priority 100)
-     (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)
+     (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x))
+     (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x))
      (query :goal (p ?x))";
 
 /// A flagged program whose root is dead, over 17 candidates: an obligation's
@@ -87,20 +87,12 @@ fn written(text: &str) -> (Monotonicity, Terms) {
     checked(text, &repo_root().join("written.ein")).expect("loads")
 }
 
-/// `reader ← writer @ p/q: relations`, one per order finding.
+/// `reader ← writer: relations`, one per order finding. No rule has a
+/// priority since M1f S1f.5.15, so every race is the written order's.
 fn races(s: &Static) -> Vec<String> {
     s.order
         .iter()
-        .map(|r| {
-            format!(
-                "{} ← {} @ {}/{}: {}",
-                r.reader,
-                r.writer,
-                r.reader_priority,
-                r.writer_priority,
-                r.relations.join(" ")
-            )
-        })
+        .map(|r| format!("{} ← {}: {}", r.reader, r.writer, r.relations.join(" ")))
         .collect()
 }
 
@@ -199,13 +191,13 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     assert_eq!(
         found_races,
         [
-            "examples/ein-bugs/wrong-answers/f07-fpoff.ein derive-p ← derive-q @ 200/200: q",
-            "examples/ein-bugs/wrong-answers/f07-fpoff.ein derive-q ← derive-p @ 200/200: p",
-            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein derive-p ← derive-q @ 200/200: q",
-            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein derive-q ← derive-p @ 200/200: p",
-            "examples/features/07_unstratifiable.ein derive-p ← derive-q @ 200/200: q",
-            "examples/features/07_unstratifiable.ein derive-q ← derive-p @ 200/200: p",
-            "examples/lattice/10_fifo_gap.ein r2 ← r1 @ 200/200: q",
+            "examples/ein-bugs/wrong-answers/f07-fpoff.ein derive-p ← derive-q: q",
+            "examples/ein-bugs/wrong-answers/f07-fpoff.ein derive-q ← derive-p: p",
+            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein derive-p ← derive-q: q",
+            "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein derive-q ← derive-p: p",
+            "examples/features/07_unstratifiable.ein derive-p ← derive-q: q",
+            "examples/features/07_unstratifiable.ein derive-q ← derive-p: p",
+            "examples/lattice/10_fifo_gap.ein r2 ← r1: q",
         ]
     );
 }
@@ -233,8 +225,8 @@ fn a_cycle_through_an_absent_is_found_with_its_parity() {
 /// **Order sensitivity has no false negative** on the programs whose state or
 /// universe moves with the written order of two `absent` rules
 /// (`node_census.md` § 7.1: `features/07`, `f07-fpoff`, the written
-/// `stratified_stale`), on the FIFO-gap fixture (§ 12.1), and on the reader at
-/// an earlier priority, which no reorder moves.
+/// `stratified_stale`), on the FIFO-gap fixture (§ 12.1), and on the reader
+/// written at an earlier priority, which is one race more since M1f S1f.5.15.
 #[test]
 fn the_order_check_finds_every_fifo_race() {
     for rel in [
@@ -244,21 +236,19 @@ fn the_order_check_finds_every_fifo_race() {
         let (m, _) = file(rel);
         assert_eq!(
             races(&m.detector),
-            [
-                "derive-p ← derive-q @ 200/200: q",
-                "derive-q ← derive-p @ 200/200: p"
-            ],
+            ["derive-p ← derive-q: q", "derive-q ← derive-p: p"],
             "{rel}"
         );
     }
     let (m, _) = file("examples/lattice/10_fifo_gap.ein");
-    assert_eq!(races(&m.detector), ["r2 ← r1 @ 200/200: q"]);
-    assert!(m.detector.order[0].at_one_priority());
+    assert_eq!(races(&m.detector), ["r2 ← r1: q"]);
     let (m, _) = written(STRATIFIED_STALE);
-    assert_eq!(races(&m.detector), ["derive-p ← derive-q @ 200/200: q"]);
+    assert_eq!(races(&m.detector), ["derive-p ← derive-q: q"]);
+    // The reader at an earlier priority was the one order no reorder moved,
+    // until M1f S1f.5.15 took `:priority` out: written so, it is a race like
+    // any other, the written order's.
     let (m, _) = written(FIFO_GAP_PRIORITY);
-    assert_eq!(races(&m.detector), ["r2 ← r1 @ 100/200: q"]);
-    assert!(!m.detector.order[0].at_one_priority());
+    assert_eq!(races(&m.detector), ["r2 ← r1: q"]);
     // The static variant: `q` is outside D, so the program is monotone and
     // the gated detector reads nothing (monotonicity.md § 7.6).
     let (m, _) = file("examples/lattice/11_fifo_gap_static.ein");

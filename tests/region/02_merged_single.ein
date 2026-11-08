@@ -16,13 +16,12 @@
 (slot A) (slot B) (slot C) (slot D) (slot E)
 (need K1 A) (need K1 C)
 (hrule guess () :match (slot ?x) :assert (h ?x))
-(rule imp-A-B () :match (h A) :assert (h B) :priority 200)
-(rule imp-C-D () :match (h C) :assert (h D) :priority 200)
-(rule dead-1 () :match (and (h A) (h C)) :assert (false) :priority 300)
+(rule imp-A-B () :match (h A) :assert (h B))
+(rule imp-C-D () :match (h C) :assert (h D))
+(rule dead-1 () :match (and (h A) (h C)) :assert (false))
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
-  :assert (open h)
-  :priority 500)
+  :assert (open h))
 
 (solve
   :expect (region

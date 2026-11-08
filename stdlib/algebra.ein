@@ -47,7 +47,6 @@
 (rule converse (?R1 ?R2)
   :match  (?R1 ?a ?b)
   :assert (?R2 ?b ?a)
-  :priority 100
   :why    "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
 
 ;; ── imply1 — (imply1 R1 R2): (R1 a) ⇒ (R2 a), a 1-arg (property) implication.
@@ -56,21 +55,18 @@
 (rule imply1 (?R1 ?R2)
   :match  (?R1 ?a)
   :assert (?R2 ?a)
-  :priority 100
   :why    "(imply1 {?R1} {?R2}): {?R1}({?a}) → {?R2}({?a})")
 
 ;; ── imply2-fwd — (imply2-fwd R1 R2): (R1 a b) ⇒ (R2 a b), forward 2-arg.
 (rule imply2-fwd (?R1 ?R2)
   :match  (?R1 ?a ?b)
   :assert (?R2 ?a ?b)
-  :priority 100
   :why    "(imply2-fwd {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?a},{?b})")
 
 ;; ── imply2-reverse — ergonomic alias of `converse`: (R1 a b) ⇒ (R2 b a).
 (rule imply2-reverse (?R1 ?R2)
   :match  (?R1 ?a ?b)
   :assert (?R2 ?b ?a)
-  :priority 100
   :why    "(imply2-reverse {?R1} {?R2}): {?R1}({?a},{?b}) → {?R2}({?b},{?a})")
 
 ;; ── algebra lemmas ──────────────────────────────────────────────────────────
@@ -85,20 +81,17 @@
 (rule symmetric-is-self-converse ()
   :match  (symmetric ?R)
   :assert (converse ?R ?R)
-  :priority 90
   :why    "symmetric {?R} ⟹ (converse {?R} {?R})")
 
 (rule self-converse-is-symmetric ()
   :match  (converse ?R ?R)
   :assert (symmetric ?R)
-  :priority 90
   :why    "(converse {?R} {?R}) ⟹ symmetric {?R}")
 
 ;; converse is symmetric on the pair: (converse R1 R2) ⟹ (converse R2 R1).
 (rule converse-pair-symmetric ()
   :match  (converse ?R1 ?R2)
   :assert (converse ?R2 ?R1)
-  :priority 90
   :why    "(converse {?R1} {?R2}) ⟹ (converse {?R2} {?R1})")
 
 ;; ── converse well-formedness — domain/range typecheck (P1.8 S1.8.A10) ────────
@@ -123,7 +116,6 @@
                (neq ?Rn1 ?D2)
                (absent (?isR* ?Rn1 ?D2)))
   :assert (false)
-  :priority 110
   :why    "converse {?R1}/{?R2} ill-typed: range({?R1})={?Rn1} neither = nor <: domain({?R2})={?D2} under {?isR*}.")
 
 (rule converse-illtyped-ran (?R1 ?R2 ?isR*)
@@ -133,7 +125,6 @@
                (neq ?D1 ?Rn2)
                (absent (?isR* ?D1 ?Rn2)))
   :assert (false)
-  :priority 110
   :why    "converse {?R1}/{?R2} ill-typed: domain({?R1})={?D1} neither = nor <: range({?R2})={?Rn2} under {?isR*}.")
 
 ;; ╒═══════════════════════════════════════════════════════════════════════════╕
@@ -149,7 +140,6 @@
 (rule compose (?R1 ?R2 ?R3)
   :match  (and (?R1 ?a ?b) (?R2 ?b ?c))
   :assert (?R3 ?a ?c)
-  :priority 100
   :why    "(compose {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?b},{?c}) → {?R3}({?a},{?c}).")
 
 ;; identity — (identity R isa Dom) ⟺ R ⊇ 1' on Dom: self-loop every Dom element.
@@ -158,7 +148,6 @@
 (rule identity (?R ?isa ?Dom)
   :match  (?isa ?a ?Dom)
   :assert (?R ?a ?a)
-  :priority 100
   :why    "(identity {?R} {?isa} {?Dom}): {?a}∈{?Dom} → {?R}({?a},{?a}).")
 
 ;; ── Boolean (lattice) layer ──────────────────────────────────────────────────
@@ -167,7 +156,6 @@
 (rule meet (?R1 ?R2 ?R3)
   :match  (and (?R1 ?a ?b) (?R2 ?a ?b))
   :assert (?R3 ?a ?b)
-  :priority 100
   :why    "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
 
 ;; difference — (difference R1 R2 R3) ⟺ R3 ⊇ R1∖R2: in R1 but NOT R2 (NAF on R2).
@@ -177,7 +165,6 @@
 (rule difference (?R1 ?R2 ?R3)
   :match  (and (?R1 ?a ?b) (absent (?R2 ?a ?b)))
   :assert (?R3 ?a ?b)
-  :priority 100
   :why    "(difference {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧¬{?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
 
 ;; join — (join R1 R2 R3) ⟺ R3 ⊇ R1∪R2. A GENERIC `(rule join … :match (or …))`
@@ -191,33 +178,28 @@
 (rule derive-join ()
   :match  (join ?R1 ?R2 ?R3)
   :assert (and (join-l ?R1 ?R2 ?R3) (join-r ?R1 ?R2 ?R3))
-  :priority 120
   :why    "(join {?R1} {?R2} {?R3}): fan out into the two per-operand copiers.")
 
 (rule join-l (?R1 ?R2 ?R3)
   :match  (?R1 ?a ?b)
   :assert (?R3 ?a ?b)
-  :priority 100
   :why    "(join {?R1} {?R2} {?R3}): {?R1}({?a},{?b}) → {?R3}({?a},{?b}).")
 
 (rule join-r (?R1 ?R2 ?R3)
   :match  (?R2 ?a ?b)
   :assert (?R3 ?a ?b)
-  :priority 100
   :why    "(join {?R1} {?R2} {?R3}): {?R2}({?a},{?b}) → {?R3}({?a},{?b}).")
 
 ;; empty — (empty R) ⟺ R = 0: a CHECK. Any edge in R contradicts the claim.
 (rule empty (?R)
   :match  (?R ?a ?b)
   :assert (false)
-  :priority 110
   :why    "(empty {?R}) violated: {?R}({?a},{?b}) exists.")
 
 ;; top — (top R isa Dom Ran) ⟺ R ⊇ 1: the full Dom×Ran rectangle. EXTENSIVE (⊙).
 (rule top (?R ?isa ?Dom ?Ran)
   :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran))
   :assert (?R ?a ?b)
-  :priority 100
   :why    "(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b}).")
 
 ;; complement — (complement R1 R2 isa Dom Ran) ⟺ R2 ⊇ ¬R1 over Dom×Ran: the pairs
@@ -228,7 +210,6 @@
 (rule complement (?R1 ?R2 ?isa ?Dom ?Ran)
   :match  (and (?isa ?a ?Dom) (?isa ?b ?Ran) (absent (?R1 ?a ?b)))
   :assert (?R2 ?a ?b)
-  :priority 100
   :why    "(complement {?R1} {?R2}): {?a}∈{?Dom},{?b}∈{?Ran},¬{?R1}({?a},{?b}) → {?R2}({?a},{?b}).")
 
 ;; ── single-relation property checks (RA equations) ───────────────────────────
@@ -250,14 +231,12 @@
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why    "{?R} not functional: {?a} has both {?b} and {?c}."
-  :priority 250)
+  :why    "{?R} not functional: {?a} has both {?b} and {?c}.")
 
 (rule injective (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
   :assert (false)
-  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}."
-  :priority 250)
+  :why    "{?R} not injective: {?c} reached from both {?a} and {?b}.")
 
 ;; bijective — the "all four cardinality properties" shorthand. A single
 ;; `(bijective R)` declaration fans out into the four markers
@@ -271,8 +250,7 @@
 (rule bijective-properties ()
   :match  (bijective ?R)
   :assert (and (functional ?R) (injective ?R) (total ?R) (surjective ?R))
-  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective."
-  :priority 100)
+  :why    "{?R} is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.")
 
 ;; ── totality checks: total / surjective (S1.8a.f20) ──────────────────────────
 ;; The left-/right-TOTAL checks of R ⊆ A×B, the EXTENSIVE duals of the (intrinsic)
@@ -293,16 +271,14 @@
                (?isa ?a ?A)
                (forall ?b (?isa ?b ?B) (not (?R ?a ?b))))
   :assert (false)
-  :why    "{?R} not total at {?a}: every {?B} is excluded."
-  :priority 110)
+  :why    "{?R} not total at {?a}: every {?B} is excluded.")
 
 (rule surjective (?R ?isa)
   :match  (and (relation ?R ?A ?B)
                (?isa ?b ?B)
                (forall ?a (?isa ?a ?A) (not (?R ?a ?b))))
   :assert (false)
-  :why    "{?R} not surjective at {?b}: every {?A} is excluded."
-  :priority 110)
+  :why    "{?R} not surjective at {?b}: every {?A} is excluded.")
 
 ;; ── totality OBLIGATIONS: total-owed / surjective-owed (M1d P1d.2 S1d.2.4) ────
 ;; The other half of the same two properties, and the pair the `≥` half had no
@@ -338,30 +314,26 @@
                (?isa ?a ?A)
                (absent (and (?isa ?b ?B) (?R ?a ?b))))
   :assert (open ?R)
-  :why    "{?R} owes {?a} a {?B}."
-  :priority 500)
+  :why    "{?R} owes {?a} a {?B}.")
 
 (rule surjective-owed (?R ?isa)
   :match  (and (relation ?R ?A ?B)
                (?isa ?b ?B)
                (absent (and (?isa ?a ?A) (?R ?a ?b))))
   :assert (open ?R)
-  :why    "{?R} owes {?b} a preimage in {?A}."
-  :priority 500)
+  :why    "{?R} owes {?b} a preimage in {?A}.")
 
 ;; irreflexive — R∩1' = 0: no self-loop. The repeated ?a is an equality
 ;; constraint in the matcher (`_bind_arg`), so this fires only on `(R a a)`.
 (rule irreflexive (?R)
   :match  (?R ?a ?a)
   :assert (false)
-  :priority 110
   :why    "(irreflexive {?R}) violated: self-loop {?R}({?a},{?a}).")
 
 ;; antisymmetric — R∩R° ⊆ 1': R(a,b)∧R(b,a) ⟹ a=b, so a DISTINCT mutual pair is ⊥.
 (rule antisymmetric (?R)
   :match  (and (?R ?a ?b) (?R ?b ?a) (neq ?a ?b))
   :assert (false)
-  :priority 110
   :why    "(antisymmetric {?R}) violated: {?R}({?a},{?b})∧{?R}({?b},{?a}), {?a}≠{?b}.")
 
 ;; asymmetric — R∩R° = 0: ANY mutual pair (incl. a self-loop) is ⊥ — strictly
@@ -369,7 +341,6 @@
 (rule asymmetric (?R)
   :match  (and (?R ?a ?b) (?R ?b ?a))
   :assert (false)
-  :priority 110
   :why    "(asymmetric {?R}) violated: both {?R}({?a},{?b}) and {?R}({?b},{?a}).")
 
 ;; connex — R∪R° = 1 over Dom (a total / linear relation): every DISTINCT pair of
@@ -380,7 +351,6 @@
   :match  (and (?isa ?a ?Dom) (?isa ?b ?Dom) (neq ?a ?b)
                (absent (?R ?a ?b)) (absent (?R ?b ?a)))
   :assert (false)
-  :priority 110
   :why    "(connex {?R}) violated: {?a},{?b}∈{?Dom} incomparable (neither {?R}({?a},{?b}) nor {?R}({?b},{?a})).")
 
 ;; difunctional — R;R°;R ⊆ R: a CLOSURE. R(a,b)∧R(c,b)∧R(c,d) ⟹ R(a,d) (rows that
@@ -389,7 +359,6 @@
 (rule difunctional (?R)
   :match  (and (?R ?a ?b) (?R ?c ?b) (?R ?c ?d))
   :assert (?R ?a ?d)
-  :priority 90
   :why    "(difunctional {?R}): {?R}({?a},{?b})∧{?R}({?c},{?b})∧{?R}({?c},{?d}) → {?R}({?a},{?d}).")
 
 ;; ── single-relation property CLOSURES (vs the checks above) ───────────────────
@@ -405,8 +374,7 @@
 (rule symmetric (?rel)
   :match  (?rel ?a ?b)
   :assert (?rel ?b ?a)
-  :why    "{?rel} is symmetric: {?a} ↔ {?b}."
-  :priority 100)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
 ;; symmetric (negative) — the dual of the positive mirror: an impossible edge
 ;; mirrors too. `(symmetric R)` + `(not (R a b))` ⇒ `(not (R b a))`. Matching a
@@ -423,14 +391,12 @@
 (rule symmetric-negative-setup ()
   :match  (symmetric ?rel)
   :assert (symmetric-negative ?rel)
-  :why    "{?rel} symmetric ⟹ activate its negative mirror."
-  :priority 100)
+  :why    "{?rel} symmetric ⟹ activate its negative mirror.")
 
 (rule symmetric-negative (?rel)
   :match  (not (?rel ?a ?b))
   :assert (not (?rel ?b ?a))
-  :why    "{?rel} symmetric: ¬{?rel}({?a},{?b}) ⟹ ¬{?rel}({?b},{?a})."
-  :priority 100)
+  :why    "{?rel} symmetric: ¬{?rel}({?a},{?b}) ⟹ ¬{?rel}({?b},{?a}).")
 
 ;; transitive — R;R ⊆ R: the transitive closure. The guarded (`neq ?a ?c`)
 ;; special case of `(compose R R R)` — the guard suppresses the self-loop a bare
@@ -438,8 +404,7 @@
 (rule transitive (?rel)
   :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
   :assert (?rel ?a ?c)
-  :why    "{?rel} is transitive."
-  :priority 200)
+  :why    "{?rel} is transitive.")
 
 ;; includes — R ⊆ S (subrelation lifting): copy every R-edge into S. The
 ;; ⊆-flavoured twin of `imply2-fwd` (identical body) — `(includes is-a is-a*)`
@@ -447,8 +412,7 @@
 (rule includes (?p ?q)
   :match  (?p ?a ?b)
   :assert (?q ?a ?b)
-  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
-  :priority 100)
+  :why    "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}.")
 
 ;; ── equational theory: Tarski/Maddux axioms as lemma rules ───────────────────
 ;; B1–B5 (Boolean + monoid structure) hold by construction (ein relations are
@@ -468,13 +432,11 @@
 (rule compose-negative-s (?R ?S ?T)
   :match  (and (?R ?a ?b) (not (?T ?a ?c)))
   :assert (not (?S ?b ?c))
-  :priority 240
   :why    "Schröder ({?R};{?S}={?T} closed): {?R}({?a},{?b})∧¬{?T}({?a},{?c}) → ¬{?S}({?b},{?c}).")
 
 (rule compose-negative-r (?R ?S ?T)
   :match  (and (?S ?b ?c) (not (?T ?a ?c)))
   :assert (not (?R ?a ?b))
-  :priority 240
   :why    "Schröder ({?R};{?S}={?T} closed): {?S}({?b},{?c})∧¬{?T}({?a},{?c}) → ¬{?R}({?a},{?b}).")
 
 ;; B7 contravariance — (A;B)° = B°;A°. From a declared `(compose R S T)` plus the
@@ -486,7 +448,6 @@
   :match  (and (compose ?R ?S ?T)
                (converse ?R ?Rc) (converse ?S ?Sc) (converse ?T ?Tc))
   :assert (compose ?Sc ?Rc ?Tc)
-  :priority 90
   :why    "B7 contravariance: ({?R};{?S}={?T}) ⟹ ({?Sc};{?Rc}={?Tc}) (converses).")
 
 ;; B8 converse over join — (A∨B)° = A°∨B°. From `(join R S U)` plus the converse
@@ -495,5 +456,4 @@
   :match  (and (join ?R ?S ?U)
                (converse ?R ?Rc) (converse ?S ?Sc) (converse ?U ?Uc))
   :assert (join ?Rc ?Sc ?Uc)
-  :priority 90
   :why    "B8: ({?R}∪{?S}={?U}) ⟹ ({?Rc}∪{?Sc}={?Uc}) (converses).")

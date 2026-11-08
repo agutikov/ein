@@ -718,8 +718,8 @@ fn a_genuinely_ambiguous_symmetric_puzzle_reports_exactly_its_two_models() {
 /// got going.
 #[test]
 fn a_rule_that_derives_its_own_activator_still_reaches_a_fixpoint() {
-    let src = "(rule a (?rel) :match (?rel ?x ?y) :assert (mark ?rel) :why \"w\" :priority 100)
-        (rule mark () :match (mark ?r) :assert (a ?r) :why \"w\" :priority 100)
+    let src = "(rule a (?rel) :match (?rel ?x ?y) :assert (mark ?rel) :why \"w\")
+        (rule mark () :match (mark ?r) :assert (a ?r) :why \"w\")
         (relation k T T) (relation mark T) (relation a T)
         (a k)
         (k A B :source \"(1)\")
@@ -759,7 +759,7 @@ fn sibling_exclusive_can_negate_the_relation_it_reads() {
         "(rule sibling-exclusive (?siblings-via ?exclusive-under)
            :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
            :assert (not (?exclusive-under ?a ?b))
-           :why \"sib\" :priority 300)
+           :why \"sib\")
          (relation is-a       T T)
          (relation co-located T T)
          (sibling-exclusive is-a co-located)
