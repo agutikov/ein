@@ -1,0 +1,446 @@
+# S1f.5.16 — The read-out reference: every row and number `ein solve` prints, on one live page the printer is held to
+
+**Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
+**Was S1f.5.3**, proposed in the old P1f.5 (*Documentation, and other*), until 2026-11-08, and **S1e.5.3**, proposed
+in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other), until
+2026-08-29 ([§ The ids](README.md#the-ids)).
+**Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Not started.** No
+engine code, test, golden or page has moved.
+**Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s swap and the non-grammar halves after it
+([§ The order](README.md#the-order), item 8), so that the census is taken, and the examples are written, in the
+final grammar; and [S1f.5.15](s1f.5.15_rule_priority.md), done, whose `strata` row the page documents.
+**Runs before** every stage that changes what the read-out prints: [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md),
+[S1f.5.6](s1f.5.6_the_empty_state_decides_the_minimal_line.md), [S1f.5.8](s1f.5.8_no_contradiction_no_core.md)
+and [S1f.5.12](s1f.5.12_cores_for_n_only.md), and [S1f.5.14](s1f.5.14_nl_required.md) last. Each of them then
+changes the live page in the commit that changes the output, and the page's test fails until it does.
+
+## The proposal
+
+The old phase's row, until 2026-11-08: *one page for every number `ein solve` prints, and which of them counts
+models and which what the search did.* Three of M1e's findings are about that confusion
+([the ledger](../../../docs/history/m1e_review_processing/README.md#the-findings)):
+
+- **SE-M1**: `k` and `stats.solution_nodes` under one label. `--stats` printed `solutions (k)` above
+  `solution_nodes`, so one `ein solve … --stats` printed `solutions (k) 0` and `solutions (k) 1` a screen apart.
+- **AR-M2**: the count was read out by three crates, each choosing its own number. M1e
+  [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) gave it one
+  builder, and since M1e2 R's counts have one too, `ein_infer::described`.
+- **AR-M1**: hand-maintained parallel copies as the tree's recurring drift mechanism, whose rule is now
+  [`architecture.md` § One artifact, one owner](../../../docs/kernel/architecture.md#one-artifact-one-owner).
+
+A fourth item came to this stage by name. M1e's
+[Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+ruled 2026-08-28, gave its read-out half (*a projection has to exist, `model`, and `ein solve` and
+`--json-summary` print it under that name*) to *P1e.5's S1e.5.3*, which is this stage.
+
+The walk and its `k` are gone since M1e2 S1e2.1c.5 (2026-11-03). The question is unchanged, asked of R: which
+number counts R's states or commitments, which counts what lies around R (the cube, the universe), and which
+counts what the run did.
+
+## The case
+
+### The vocabulary is a closed milestone's plan
+
+[`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) was T1e2.1a.5.1's page diff,
+proposed and ruled on 2026-10-16. Every M1e2 stage that changed the read-out amended it in place, and `AGENTS.md`
+names it *the read-out's vocabulary*. Three things follow from where it lives.
+
+1. **The live specification sits in a plan directory.** M1e2 closed on 2026-11-08 with its plans kept in place,
+   and they are not frozen (the user, 2026-11-08: *"It is not frozed, I'm asking about the reason"*, `dc4c2946`):
+   S1f.5.15 added and reworded the `strata` row there (`ccc4e8ca`, `49666600`). Four stage files of this phase
+   name it as a page to edit: S1f.5.6 (T1f.5.6.4), S1f.5.7 (T1f.5.7.5), S1f.5.8 (T1f.5.8.3) and S1f.5.12
+   (T1f.5.12.3) (`grep -n 'read_out\.md' s1f.5.*.md`, 2026-11-08). Editing it is allowed; the case for a page
+   under `docs/kernel/` is that a reader looking for what `ein solve` prints looks there, and that nothing holds
+   the plan's prose to the printer (2).
+2. **Nothing holds its prose to the printer.** The prose is a hand copy, AR-M1's shape. Only the examples are
+   held: [`read_out_examples.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md), which
+   [`utils/read_out_examples.py`](../../../utils/read_out_examples.py) writes from the binary and
+   [`read_out_examples.rs`](../../../ein.rs/crates/ein-cli/tests/read_out_examples.rs) compares block by block.
+   That golden page lives in the same closed directory, so a stage that changes the read-out re-blesses a file
+   there. S1f.5.6's T1f.5.6.4 does.
+3. **The code and the kernel cite it as their specification.** There are eleven doc-comment links in nine files
+   under `ein.rs/crates/`: `ein-render`'s `read_out.rs`, `dump/region_answer.rs` and `trace/region.rs`;
+   `ein-infer`'s `described.rs`, `downset.rs` and `read_out.rs`; `ein-cli`'s `modes.rs`, `summary.rs` and
+   `tests/region_answer.rs`. There are ten links on six kernel pages: `answer_dump.md`, `configuration.md`,
+   `defined_behaviour.md`, `events.md`, `implementation.md` and `solution_semantics.md`
+   (`grep -rnoE '\]\([^)]*p1e2\.1a_the_solution_region/read_out\.md[^)]*\)' ein.rs/crates docs/kernel`,
+   2026-11-08).
+
+### A first look at the drift
+
+Taken on 2026-11-08 at `49666600`, with the runs on that day's release binary. T1 takes the whole list; these
+rows are what a first read found.
+
+| `read_out.md` says | the code prints | where |
+|---|---|---|
+| § 4, the `route` row: `1, the alive down-set — licence L1, dead is upward-closed` | `1, the alive down-set — L1 dead is upward-closed` | `Licence::label` in [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs) |
+| § 8.6, `-s`: *the wall clock per phase, and route 1's per-layer table (visited, dead, owing, in R, facts)* | one `wall` row. The per-phase clock is `-t`'s `timing` table (`load`, `route`, `read-out`, `print`, `total`), which the page does not list | `ein solve examples/lattice/02_genuine_3set_death.ein -s`, and `-t`; [`modes.rs`](../../../ein.rs/crates/ein-cli/src/modes.rs) |
+| § 8.1, `route: "1"\|"2"` | `"1"`, `"2"`, `"states"` or `"tree"`; `branching/05_mini_zebra.ein`'s summary says `"states"` | [`region_answer.rs`](../../../ein.rs/crates/ein-render/src/dump/region_answer.rs) |
+| § 8.1, a query's `over: all\|listed` | `all`, `minimal`, `maximal` or `listed` | the same |
+| § 8.1's block names neither `schema` nor `source` | both are top-level keys of every summary | the same |
+
+One kernel page also says something the read-out has disproved.
+[`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model) says *"No surface
+computes projection classes yet"*, and every query block has printed them since M1e2 S1e2.1a.5.
+
+None of these is a wrong answer. Each is prose that fell behind the printer, which is what happens to a page
+that nothing runs.
+
+### What is printed today
+
+At `49666600`, from a source scan of [`read_out.rs`](../../../ein.rs/crates/ein-render/src/read_out.rs) for the
+first argument of `row`, `sub_row` and `row_text` (2026-11-08):
+
+- **45 literal row labels**, and four computed ones: a mode's count row (`states of R`, `minimal line` or
+  `maximal line`), `query` or `query i of n`, `class i of n`, and `decided` in place of `exhausted` under
+  `--single`.
+- **Rows printed outside it.** `-s`'s `wall` and `-t`'s `timing` table are printed in
+  [`modes.rs`](../../../ein.rs/crates/ein-cli/src/modes.rs), and `ein oracle`'s `the cube` line in
+  [`oracle.rs`](../../../ein.rs/crates/ein-cli/src/oracle.rs).
+- **Lines that are not rows.** The listing's comments (`;; state i of k — …`, `;; not shown: …`, and the
+  others), each form's head after the read-out (`H — the universe: …`, `models — …`, and the heads of `-p`, `-P`,
+  `-f` and `--diff-models`), and the stderr lines (`note: FILE: partial — …`, and a claim's `FAILED` and
+  `NOT CHECKED`).
+- **10 of the 45 labels are printed by no block of `read_out_examples.md`**: `bit`, `core search`, `cycle`,
+  `monotone`, `negative cycle`, `order`, `source`, `stale`, `strata` and `…`. (The page's 32 `text` blocks were
+  scanned against the list above, 2026-11-08.)
+
+### The word *model* names two objects
+
+Q-M1e.7's ruling: *"the recorded object is the solution state. `model` is a projection of it, computed at the
+read-out: the positive part minus the positive initial KB"*, and `ein solve` and `--json-summary` print it
+*"under that name"*. [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model)
+states the definition. Here is what prints today (`ein solve examples/branching/05_mini_zebra.ein`, with and
+without `-P`, 2026-11-08):
+
+- **A listing's `(model …)`**: six facts for ∅, two of which the program states (`(co-located Alice Tea)` and
+  `(co-located Alice Cat)`). It is the region language's claim form, a state's facts over the candidates'
+  relations (`read_out.md` § 4), and § 3 calls it neither a state nor a model. `--json-summary`'s
+  `region.states[].facts` is the same set.
+- **`-P`**: four facts, which is § 3's model. Its head says *final-state facts (beyond the program as loaded,
+  (not …) omitted …)*.
+- **`-t`'s `read-out` row** says *each listed state's model*.
+
+So the object § 3 names *model* is printed under another name, and the word `model` is printed over another
+object. That is SE-M1's shape. This stage documents both objects by name, and [Q1](#q1--q-m1e7s-read-out-half)
+asks whether anything printed moves.
+
+## What it changes
+
+### The page: `docs/kernel/inference/read_out.md`
+
+The page is a current one, with no banner. It sits beside the pages of the other surfaces (`answer_dump.md`,
+`region_dump.md`, `events.md`, `lattice_dump.md`) and is named after its printer, `ein_render::read_out`. This file
+does not link to it, because it does not exist until T2 and the link check is a gate step.
+
+**Its subject** is what `ein solve` writes on stdout and stderr in each mode, and what `ein oracle` writes, which
+is the same printer plus the `the cube` line. It also covers the answer blocks of `--json-summary`. The modes are:
+
+- describe (a bare `ein solve`), and `--count`;
+- `--minimal` and `--maximal`;
+- `-n N`, alone and with a line;
+- `--single`, alone and with a line;
+- `--monotone`;
+- the runs that stop: `--region-budget` (under route 1, under the state route, and on a whole cube), past
+  `--region-limit` (describe and the line modes), and `-T`, which exits 2.
+
+**Every row says what its numbers count.** There are four kinds:
+
+| kind | what it counts | rows, today |
+|---|---|---|
+| **R**, the answer | states or commitments of R, or of the line or the part the question names | `states (k_s)`, `commitments (k_c)`, `minimal line`, `maximal line`, `components`, `sub-cubes`, `merged`, a mode's count row, `verdict` |
+| **around R**: the cube and the universe | candidates, and nodes and sets of the cube. None of them is a state of R | `N`, `E`, `minimal hole`, `universe` with `outside` and `types`, the `lattice` block's sites, `strata`'s cycles, `the cube` |
+| **the run**: what the search did | saturations, facts, layers, nodes met, facts spent and projected, the wall clock | `work`, the reasons on `exhausted` and `decided`, the listing's *other members met*, `-s`, `-t` |
+| **the listing**: what stdout shows | items printed and items left out | `;; state i of k`, `class i of n`, `… n more`, `not shown` |
+
+The page states the rule that SE-M1 and AR-M2 ended in. Each invocation prints one label for one number. Every
+number that a row prints and that the summary also holds is the summary's field.
+
+**Each row table has these columns:** the label; when it is printed; what the row says; the kind; the summary
+field that holds the same number, or none; and an example, by its block on the examples page. **A row table
+quotes no printed value.** Values are the examples' job, and the examples are generated, so a stage that rewords a
+value re-blesses an example and has no prose to chase. This is the rule that keeps the page from drifting where
+its test cannot see.
+
+**The sections**, as a default that T2 may reorder:
+
+1. the header and the four kinds;
+2. describe's rows, which also covers `--count`'s (a subset) and `ein oracle`'s;
+3. a mode's rows;
+4. `--monotone`'s rows;
+5. the `lattice` block's sub-rows and what each counts, with the theory left to
+   [`region_dump.md` § Monotonicity](../../../docs/kernel/inference/region_dump.md#monotonicity--the-static-check);
+6. the listing, the 100-line cut, and which object each `(model …)` holds;
+7. queries and claims;
+8. the forms after the read-out, with the object each prints and the numbers in its head;
+9. `-s` and `-t`;
+10. stderr;
+11. the summary's answer blocks, and the owner of every other block;
+12. the surfaces that repeat these numbers.
+
+**What the page links and does not restate:**
+
+- what R, k_s, k_c, a line and a model are:
+  [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md);
+- exit codes, and which stream each byte goes to:
+  [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes) and
+  [§ 5](../../../docs/kernel/defined_behaviour.md#5-the-cli-surface). The stderr section lists the shapes of the
+  lines and links § 4 for the codes;
+- the options and their defaults: [`configuration.md`](../../../docs/kernel/configuration.md);
+- the `--dump-answer` directory, and the summary's `work` and `root` blocks:
+  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md);
+- the `monotonicity` block and the warning's theory: `region_dump.md`;
+- the `--events` stream: [`events.md`](../../../docs/kernel/inference/events.md);
+- how each mode is computed, what it costs, and which command answers which question:
+  [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3 and § 4, until
+  P1f.20 re-homes it;
+- the rulings that made the vocabulary: `read_out.md`, linked once as the record.
+
+**Not its subject:** `--trace`'s file, `ein test`'s text and its `--json-report`, and the `--events` stream.
+Each repeats rows the page defines. The trace's headline is the `asked`, count and `exhausted` rows, and the
+report's `region` carries `k_s` and `k_c`. One table lists these surfaces with the rows each repeats and the test
+that holds it to the summary (for example `test_cli::the_verbose_header_and_the_report_row_agree_field_for_field`,
+SE-M1's cross-surface test), or records that none does. The table defines nothing.
+
+### `--json-summary`: which fields are this page's
+
+The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_answer.rs`'s module doc). On
+`branching/05_mini_zebra.ein` its top-level keys are `schema`, `source`, `asked`, `region`, `verdict`, `queries`,
+`claim`, `work`, `monotonicity`, `leftover`, `root` and `config` (`ein solve FILE --json-summary J`, 2026-11-08).
+
+- **On this page: `schema`, `source`, `asked`, `region`, `verdict`, `queries` and `claim`.** These blocks carry
+  stdout's rows as data, and today they are defined only in `read_out.md` § 8.1, a plan that differs from the
+  writer in three places (above). On this page each number is defined once, in the row that prints it, and the
+  row names its field. The fields that no row prints get one table of their own: `stopped`'s members,
+  `complete_up_to`, each minimal hole, each state's `closure`, `from`, `minimal_generators`, `commitments`,
+  `lines` and `listed`, `frontier`, and the rest that T1 finds. Defining these fields on a page about the summary
+  would split each number from the row that prints it, and that split is SE-M1's shape again.
+- **Not on this page: `work`, `root`, `monotonicity`, `config` and `leftover`.** Each already has an owner.
+  `work` and `root` are defined in [`answer_dump.md` § The run summary](../../../docs/kernel/inference/answer_dump.md#the-run-summary),
+  held field by field by `answer_dump::every_summary_counter_is_defined_on_this_page`. `monotonicity` is
+  `region_dump.md`'s. `config` and `leftover` are `configuration.md`'s, in its defaults block and its
+  `EIN_LEFTOVER` row. A second definition here would be the very copy this stage exists to remove. The `work`
+  row links answer_dump.md's three counters and does not restate them.
+- **An owners table** lists every top-level key and the page that defines it. The test holds it to the keys a
+  summary has. T1 checks that each owner defines every field of its block, and lists any field one does not.
+- `answer_dump.md` § The run summary keeps its list of blocks, and points at the page for the seven keys where
+  it points at `read_out.md` § 8.1 today.
+
+### The examples: a live golden page beside it, and M1e2's frozen
+
+- **`utils/read_out_examples.py` writes `docs/kernel/inference/read_out_examples.md`**, and
+  `read_out_examples.rs` reads it. The page's prose is in the reference's voice. X1 to X13 keep their numbers and
+  anchors, so the reference cites them as `read_out.md` does. The page gains a run for every label no block
+  prints (the ten above, and whatever T1 adds), and an `ein oracle` block for `the cube`. The test's caption
+  parser learns `ein oracle`.
+- **M1e2's `read_out_examples.md` is frozen**, and it is not moved. One banner line goes under its title: it is
+  frozen at the commit, no test reads it since, and the live golden page is the new one. Nothing else in it moves.
+  There are 29 links to it in 15 files, and 23 of them are in nine M1e2 records
+  (`grep -rnoE '\]\([^)]*read_out_examples\.md' plans docs AGENTS.md utils/README.md ein.rs`, and the same over
+  `plans/m1e2_correctness`, 2026-11-08). The records keep their links, so each still cites what it saw. Only the
+  live readers are re-pointed: `AGENTS.md`, `solution_semantics.md`, `utils/README.md`, the test's own doc
+  comment, and P1f.20's two plan files.
+- **The alternative is a move**: a `git mv`, with all 29 links re-pointed in one commit, as P1f.20's rule 1
+  asks. It would leave one golden page and no frozen one. It is not the default for two reasons. It edits nine
+  M1e2 records for link targets alone. And it points each record at blocks that later stages change, so a record
+  that quotes X9 would cite an X9 it never saw. The frozen copy is the legitimate case of
+  [One artifact, one owner](../../../docs/kernel/architecture.md#one-artifact-one-owner): two artifacts, a
+  snapshot and a live page, annotated at both sites with why they differ.
+
+### The test: `ein-cli/tests/read_out_reference.rs`
+
+The precedent is [`configuration.md`](../../../docs/kernel/configuration.md) with
+[`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs). Its judgement table is
+hand-written and diffed against `ein_core::config::FLAGS`, *"what makes the prose columns safe to hand-write"*,
+and its defaults block is the binary's own output. A second precedent is [`docs/api/rust.md`](../../../docs/api/rust.md)
+with [`embedding.rs`](../../../ein.rs/crates/ein-cli/tests/embedding.rs), the marker-guarded region. The test
+has four parts:
+
+1. **`every_row_label_has_a_row_and_no_row_is_orphaned`**: the page's row tables, marked so that the test finds
+   them, against the printer's label list (below), both ways and in printing order. A label added to the printer
+   with no row fails. So does a row the printer no longer has.
+2. **`every_row_is_printed_by_an_example`**: every label appears at its indent in at least one block of the
+   examples page, so every row the page defines is one the binary prints in a real run. `-s`'s `wall` and `-t`'s
+   `timing` rows print a clock, which no golden can hold. Each is held by one run with the times masked.
+3. **`every_answer_field_of_the_summary_has_a_row`**: every leaf path of the seven keys, over the summaries of
+   the examples' runs, is named by the page, and every path the page names is in a summary. The owners table
+   names every top-level key, and each key it names exists.
+4. **`each_row_prints_its_summary_fields_number`**: on every example run, every row whose summary column names
+   a path prints that path's value. This is *one label, one number*, held for every row.
+   `read_out::each_count_is_printed_once_and_is_the_summarys` holds it today for `k_s` and `k_c` alone.
+
+`read_out_examples.rs`, re-pointed, still holds every block of the examples page to what the binary prints.
+
+**The printer's label list.** The 45 labels are literals spread over the 1 947 lines of `read_out.rs`
+(`wc -l`, 2026-11-08), and four more are computed, so no list exists for the page to be diffed against. The
+default is an enum, `ein_render::read_out::Row`, whose `label()` is the only way `Out::row` and `sub_row` get a
+label. The computed labels are variants that carry their numbers. `wall`, the `timing` rows and `the cube` go in
+it, or in a second list in `ein-cli` that the test also reads. With the enum, a label the page lacks cannot be
+printed without being in the list, and the compiler enforces that at every print site. The alternative is a
+source scan of each row call's first argument, as `config_reference.rs`'s fourth test scans for `EIN_*` names.
+It needs no refactor, and it misses a computed label. T1's census decides between the two. **Either way, no
+byte of output moves**: every read-out golden stays unmoved, including `corpus_shapes.md5`'s read-out
+renderings and the examples page's blocks.
+
+### The record, and the pointers
+
+- **`read_out.md` stays where it is, as M1e2's record**, and gains one line under its title. The line says the
+  live vocabulary is the kernel page since M1f S1f.5.16 (with the commit), and that this page records the rulings
+  of 2026-10-16 and what M1e2's stages amended, and is not kept current. The line links the kernel page, which
+  exists by T4. Nothing else in the file moves, so its 13 links to the frozen examples page stay as they are.
+- **The live pointers move to the page**: `AGENTS.md`'s *"The read-out's vocabulary is …"* and the gate block's
+  `read_out_examples.py` line; each kernel page and crate doc comment that cites `read_out.md` as the layout the
+  code prints (T1 sorts these from the ones that cite a ruling, which stay); `solution_semantics.md` § 5.1's table,
+  which becomes a pointer that keeps its definition-level sentences, and § 3's projection sentence, which is
+  corrected; `answer_dump.md` § The run summary; `inference/README.md`'s tree; `docs/kernel/README.md`'s page
+  count and its user and embedder rows; and `utils/README.md`.
+- **The later stages' page lists name the live page**: S1f.5.6, S1f.5.7, S1f.5.8 and S1f.5.12 where they name
+  `read_out.md` or the golden page, and S1f.5.14's read-out risk.
+
+### P1f.20
+
+This stage creates the page now. [P1f.20](../p1f.20_docs_refactor/README.md)'s disposition table,
+[S1f.20.2](../p1f.20_docs_refactor/s1f.20.2_the_disposition_table.md), decides later where the page finally sits
+in `docs/ein/`, and this stage does not choose. Its default is `user/reference/`: the read-out is the *result*
+half of *problem → solve as a black box → result*. What S1f.20.2 then does differently is one line. Its row for
+the read-out is the two kernel pages, each moved with its test, its generator's path and its inbound links in one
+commit (rule 1), as [S1f.20.5](../p1f.20_docs_refactor/s1f.20.5_ein_rs.md) moves `rust.md`'s region. It is no
+longer a page under `plans/` to be rewritten. `solve_interface.md` remains a user-facing reference under `plans/`
+for S1f.20.2 to place. This stage takes none of its content.
+
+### What does not move
+
+No answer, exit code or summary field moves, and no byte of stdout or stderr. The only goldens touched are the
+live examples page, which is written at its new path with new blocks, and the frozen page's banner. That holds
+unless the user rules Q1 (b) or (c).
+
+## Q1 — Q-M1e.7's read-out half
+
+The ruling said *model* is printed under that name. Today the claim form owns the word, and § 3's model prints
+as *final-state facts*. There are three options:
+
+- **(a) Document it.** The page names the two objects apart: a listing's `(model …)` is the claim form, a state's
+  facts over the candidates' relations, and § 3's model is what `-P` prints. `glossary.md` says the same. Nothing
+  printed moves.
+- **(b)** (a), and the heads move. `-P`'s head names § 3's model, and `-t`'s `read-out` row says *each listed
+  state* instead of *each listed state's model*. The goldens that hold `-P`'s head move, and T1 names them first.
+- **(c)** (b), and each state's model is a summary field, so `--json-summary` prints it under that name, as the
+  ruling said.
+
+**The agent recommends (a).** The claim form's name belongs to the language, and the grammar is final from
+S1f.5.5's T3 on (the user's ruling of 2026-11-08). Printing *model* over § 3's object on the same screen as
+`(model …)` blocks that hold another set would make SE-M1's collision worse, not better. (a) is also the stage's
+default. T2 and T3 do not depend on Q1, because under every option the page names both objects. So Q1 is put to
+the user with T1's census, if it is still open then, and only T4's head edits wait on (b) or (c).
+
+## The method
+
+### Task T1f.5.16.1 — the census: every row and number, from the code and the binary, not from `read_out.md`
+
+- **From the code.** List every print site of `ein solve`'s and `ein oracle`'s stdout and stderr: `ein-render`'s
+  `read_out.rs` and the forms' renderers, and `ein-cli`'s `modes.rs` (`-s`, `-t`, and the forms through
+  `extras`) and `oracle.rs`. For each site, record its label or line shape, the condition it prints under, and the
+  numbers it prints.
+- **From the binary.** Run every corpus program under every mode the page covers: describe, `--count`,
+  `--minimal`, `--maximal`, `-n 1`, `--single`, `--maximal --single`, `--monotone`, and `ein oracle` where the cube
+  is within the limit. Write `--json-summary` beside each run, so that every label is tied to at least one program
+  that prints it, and every numeric row to the summary field that holds the same number. The numbers must be
+  equal on every run, or the difference is listed. The slow entries run under `EIN_CORPUS_SLOW=1`, as the
+  corpus's other sweeps do.
+- **Per mode**: which rows print, and which of the four kinds each numeric row counts.
+- **Every word that two surfaces use for a number**, such as *saturations* on `work` and on `-t`'s `route`,
+  and *model*: check that each is one number and one object, or list it.
+- **Every difference with `read_out.md`**, each with a disposition. Either the prose fell behind, and the page
+  states the code; or the printer says something false. A false line is a finding, shown to the user and not
+  fixed here: a surface that misreports is P1e2.3's class, and a register row if it misstates an answer.
+- **The summary.** List every leaf path of the seven keys over the runs above, against § 8.1. Check that each
+  owner page defines every field of its block.
+- **The inbound references.** Every link and doc comment that cites `read_out.md` or `read_out_examples.md`,
+  sorted into *cites the vocabulary* (re-pointed at T4) and *cites a ruling or a record* (stays).
+- **The label list's form**: the enum or the scan, from how many labels are computed.
+- **The record**: the census and the raw runs under `build/s1f.5.16/` (gitignored), the tables in a § T1 record
+  of this file, and Q1 put to the user if it is still open.
+
+### Task T1f.5.16.2 — the page, and the live examples
+
+- `docs/kernel/inference/read_out.md`, written from the census, as [§ The page](#the-page-docskernelinferenceread_outmd)
+  says.
+- `utils/read_out_examples.py` re-pointed at `docs/kernel/inference/read_out_examples.md`, its prose re-voiced,
+  and the runs added for every label no block prints. `read_out_examples.rs` re-pointed, and its caption parser
+  extended to `ein oracle`.
+- M1e2's `read_out_examples.md` frozen with its banner.
+- No output moves.
+
+### Task T1f.5.16.3 — the label list, and the test
+
+- The label list, as T1 chose it. A test holds that no golden moved.
+- `ein-cli/tests/read_out_reference.rs`, with the four tests [above](#the-test-ein-clitestsread_out_referencers).
+- **Mutation-checked**, as `gate_steps.rs` was. Each of these fails one test: a label added to the printer, a
+  row deleted from the page, a summary field renamed, and a row's field pointed at the wrong number. Each is tried
+  and reverted, and the record says so.
+
+### Task T1f.5.16.4 — the pointers, and the record
+
+- `read_out.md`'s line, and every pointer [above](#the-record-and-the-pointers).
+- Under Q1 (b) or (c), the heads and the summary field, with their goldens named before they move.
+- The later stages' page lists, as above.
+- This file's status, the phase README's row and [§ The order](README.md#the-order), and `AGENTS.md`'s P1f.5
+  passage.
+- `python3 utils/doc_audit.py --links --check` reports 0 findings, `RUSTDOCFLAGS="-D warnings" cargo doc` is
+  green, and so is `./run_tests.sh`.
+
+## Acceptance
+
+- `docs/kernel/inference/read_out.md` exists, current, with no banner. Every row label that `ein solve` and
+  `ein oracle` print is a row of it, and every row of it is a label they print, in printing order
+  (`read_out_reference.rs`).
+- Every row says whether its numbers count R, what lies around R, the run, or the listing, and names the summary
+  field that holds the same number where one does. On every example run, that number is the field's.
+- Every field of `schema`, `source`, `asked`, `region`, `verdict`, `queries` and `claim` is defined on the page.
+  Every other top-level key names its owner page, and the owners table is held to the keys a summary has.
+- No row table quotes a printed value. The values are on the examples page, which `utils/read_out_examples.py`
+  writes and `read_out_examples.rs` holds to the binary. Every label is printed by one of its blocks, apart from
+  the two clock rows, which are held by a masked run.
+- The page names a listing's `(model …)` and § 3's model as two objects, and says which surface prints which.
+  Under Q1 (b) or (c), the heads say so too.
+- M1e2's `read_out.md` and `read_out_examples.md` stay where they are as the record. Each gains one line, and
+  nothing else in either moves.
+- `AGENTS.md`, the kernel pages, the crates' doc comments and the later stage files point at the live page
+  wherever they cite the vocabulary.
+- No answer, exit code or summary field moves. The read-out goldens are unmoved, apart from the examples page,
+  which is written at its new path.
+- `./run_tests.sh` is green, `doc_audit.py --links --check` reports 0 findings, and `cargo doc` is green.
+
+## Risks
+
+- **A reference page is another hand-maintained copy.** That is the old phase's risk, and it still holds
+  ([§ The two stages that were P1f.5's](README.md#the-two-stages-that-were-p1f5s)). Labels, summary paths and
+  numbers are held both ways. A row's *meaning* is not: a stage that changes what a row says and keeps its label
+  passes the test with stale prose. The mitigation is the rule that no row table quotes a value, so that only the
+  meaning column can drift. It is not removed, because no test reads prose. The later stages' page lists name the
+  page, so a stage that changes a row is pointed at its line.
+- **The label list touches the printer that every later stage edits.** It moves no byte, and the goldens hold
+  it. It lands before S1f.5.6, S1f.5.7, S1f.5.8 and S1f.5.12 so that each of them edits the list rather than a
+  string.
+- **Computed labels and clock rows are held more weakly**: by pattern, and by a masked run.
+- **The page moves twice**: here, and at P1f.20. The test reads it at one path constant, as `embedding.rs` reads
+  `rust.md`, and S1f.20.5's rule moves the page and its test together.
+- **A frozen golden page can be mistaken for the live one.** Its banner, `AGENTS.md`'s pointer and
+  `utils/README.md` say which page is live.
+- **The census sweep is large**: every corpus program under nine questions. It writes to `build/` and moves
+  nothing.
+
+## Notes
+
+**What a later stage does.** It changes the page in the commit that changes the output. A new or renamed label
+fails test 1 until the list and the page agree. A row that changes its summary field fails test 3 or test 4. A
+reworded value is re-blessed in the examples page by `python3 utils/read_out_examples.py`. A changed meaning is
+in the page's prose, which the stage's page list names. S1f.5.14's NL rendering of a state's facts, *"the answer
+table is on every `ein solve`"*, is the largest such change, and it lands last, on the live page.
+
+**Why after the swap and before S1f.5.7**, and not sooner. The swap and its non-grammar halves change how names
+and strings print, and S1f.5.5's T6 changes what `--diff-models` compares. If the census and the examples ran
+before them, the swap would move both. Of the stages still to run before it, none adds, removes or renames a row
+(S1f.5.15's `strata` row is already in), so running earlier gains nothing. Running later leaves S1f.5.6, S1f.5.7,
+S1f.5.8 and S1f.5.12 writing their read-out changes into prose no test holds to the printer, and the census would
+then have four more stages' drift to find.

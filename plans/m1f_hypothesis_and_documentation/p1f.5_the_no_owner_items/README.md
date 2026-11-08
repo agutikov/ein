@@ -6,7 +6,8 @@ rows first, 1 day; [S1f.5.17](s1f.5.17_ci_green_again.md), which makes the CI gr
 Graphviz and re-banks the mutant baseline, 1 day (added 2026-11-08); the thirteen no-owner stages, 26.75 days,
 S1f.5.5 re-taken at its step 1 from 8.5 days to 10; [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md),
 W33 and G-14's load-time check, 1.5 days (added 2026-11-08, on Q-M1f.1 and Q-M1f.3); then the two stages P1f.5 already had, 10 days ([S1f.5.14](s1f.5.14_nl_required.md) 4 d,
-[S1f.5.15](s1f.5.15_rule_priority.md) 6 d). One more, S1f.5.16, is proposed and not specified. **It was 40
+[S1f.5.15](s1f.5.15_rule_priority.md) 6 d). One more, [S1f.5.16](s1f.5.16_the_read_out_reference.md), is specified since 2026-11-08 (*"Ok, schedule
+S1f.5.16 also"*), with no estimate. **It was 40
 days until the user's re-plan of 2026-11-08** ([§ The order](#the-order)): S1f.5.5 took the grammar parts of
 S1f.5.4, S1f.5.1, S1f.5.2 and S1f.5.11 and went from 10 days to 12.75, and the four went down by 2.5 days
 together (S1f.5.4 1.5 → 1.25, S1f.5.1 2 → 1.25, S1f.5.2 2.5 → 1.5, S1f.5.11 1.5 → 1), a net quarter of a day.
@@ -288,7 +289,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | **T1 done 2026-11-08, and stopped there, before any removal** ([§ T1 record](s1f.5.15_rule_priority.md#t1-record-2026-11-08)): every `:priority` taken out of the corpus and the stdlib moves no R, N, H, claim, exit code or stored fact on the 511 programs or the 1 378 declared runs, and moves the facts of cores on seven corpus programs (`zebra.ein`, the zebra2 family, W25's control), each through the alternatives cap, `:record-alternative-justifications false` or W25; and the stripped corpus shows a config-principle breach that exists today, `features/12`'s `refuted by` under the alternatives flag. [Q-M1f.4](../open_questions.md#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) and [Q-M1f.5](../open_questions.md#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) were put to the user, who **ruled both the same day** (`3998a1c1`): (b), derive the order first, and (a), W36, which T1f.5.15.7 filed, `open` and owned by F22, under the register's schema `/14`. **T2 and T3 done the same day, and the stage stopped again before T4** ([§ T3 record](s1f.5.15_rule_priority.md#t3-record-2026-11-08)): the graph, the strata and a band per rule from its shape ship in `ein_infer::strata` (275 of 471 declared rules derive the band their priority falls in, 62 of the stdlib's 77), the band orders the agenda in a `derived-order` build only, and the re-taken sweep moves the facts of cores on the programs T1 found and on W29's witness; the derived agenda holds every core of the zebra family and the FIFO boundary moves them, which is [Q-M1f.6](../open_questions.md#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not). **Done 2026-11-08** on the user's ruling of Q-M1f.6, *"plain FIFO, core is an explanation, F22 makes it canonical"*: T4 the static non-stratifiability diagnostic (`ccc4e8ca`), T5 the removal, the agenda and the boundary FIFO and every core it moves T1's and F22's (`a3cb1753`), T6 the docs ([§ T5 record](s1f.5.15_rule_priority.md#t5-record-2026-11-08)). **Moved 2026-11-08 to run after S1f.5.5's T3 and before T8**, on the user's ruling (*"S1f.5.15 before swap"*), so the generated grammar never has `:priority`: T3 built it without (`54715b5f`), and the 133 corpus files that differ between the two parsers only by their `:priority` are attributed to this stage, pending |
 | [S1f.5.17](s1f.5.17_ci_green_again.md) | CI green again: the per-commit job on Ubuntu 26.04's Graphviz, and the nightly's mutant baseline | 1 d | the red per-commit and nightly runs since `916d97ac` | **done 2026-11-08** (`3e6e40f8`, `76ede241`, T1f.5.17.3): the per-commit red was the runner's **amd64v3** build of Graphviz 14.1.2, whose `libpathplan` contracts `ccw` into an FMA; fixed view-side, `ranksep=0.55` on the overlay and Levi digraphs (`corpus_shapes.md5` 1 198 lines). The nightly's two mutants were killed by `597b2b7e`, *forbid*'s refusal, and re-banked: 167 of 217 killed. Both tiers green in a container built like the runner, `utils/ci_container.sh` (the user, 2026-11-08: *"add new stage to this phase - fix failing CI jobs"*) |
 | [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md) | An activator's nested fact: a value parameter binds it, and a relation parameter is refused at load | 1.5 d | W33; G-14's derived activator ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b)) | specified, not started; after S1f.5.7 and S1f.5.10, before S1f.5.9 |
-| *S1f.5.16* | *The read-out reference* | *proposed* | was S1f.5.3 | *proposed*: one page for every number `ein solve` prints, and which of them counts *models* and which *what the search did*. [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are findings about exactly this confusion. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) has since written much of it, and [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 gives that page a home |
+| [S1f.5.16](s1f.5.16_the_read_out_reference.md) | The read-out reference: every row and number `ein solve` prints, on one live page the printer is held to | — | was S1f.5.3; [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings), [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) and AR-M1, and [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s read-out half | specified 2026-11-08 on the user's instruction (*"Ok, schedule S1f.5.16 also"*), not started. It runs after S1f.5.5's swap and its non-grammar halves, and before S1f.5.7 ([§ The order](#the-order), item 9), so that every later stage that changes the read-out writes the live page. The page is `docs/kernel/inference/read_out.md`: each row and number, what it counts (R, what lies around R, the run, or the listing), and the summary field that holds it, together with `--json-summary`'s seven answer keys. The read-out's golden page is generated beside it, and `ein-cli/tests/read_out_reference.rs` holds both to the printer. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) and `read_out_examples.md` stay the record, with one line each. [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 places the two pages. One question, Q-M1e.7's read-out half, has the default (a): document it |
 
 ### The order
 
@@ -377,13 +378,21 @@ The order, as those rulings leave it:
    string value arms retired, moving no answer, with S1f.5.1's wildcard and S1f.5.11's keyword drops, each
    ruling held in every position by a test, and S1f.5.2's Unicode test and two examples; S1f.5.5's T6
    (`--diff-models`); then the pages, S1f.5.5's T7 and each stage's.
-9. **The stages the grammar does not frame, after the swap**, so that their fixtures and pages are written in
-   the final grammar: S1f.5.7, S1f.5.10 and S1f.5.18, then S1f.5.6, S1f.5.12, S1f.5.13, S1f.5.8 and S1f.5.9.
+9. **[S1f.5.16](s1f.5.16_the_read_out_reference.md), the read-out reference, after the swap's non-grammar halves
+   and before item 10's stages** (the user, 2026-11-08: *"Ok, schedule S1f.5.16 also"*). It writes one live
+   page, `docs/kernel/inference/read_out.md`, for every row and number `ein solve` prints and what each counts.
+   It generates the read-out's golden page beside it, and a test holds both to the printer. So S1f.5.7, S1f.5.6,
+   S1f.5.8 and S1f.5.12 below, and S1f.5.14 last, each change the live page with the output, and no stage edits
+   M1e2's `read_out.md` again. Its census and its examples are taken in the final grammar, which is why it waits
+   for the swap. It moves no answer.
+10. **The stages the grammar does not frame, after the swap and S1f.5.16**, so that their fixtures and pages are
+   written in the final grammar, and what they change in the read-out is written on S1f.5.16's live page: S1f.5.7,
+   S1f.5.10 and S1f.5.18, then S1f.5.6, S1f.5.12, S1f.5.13, S1f.5.8 and S1f.5.9.
    No stage file gives a reason for one to run earlier, and none needs the old parser: S1f.5.7's goals and
    claims over `eq` and `neq` already parse under [the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position),
    S1f.5.9's `(and)` is the grammar's refusal and its `:assert ()` the grammar's empty conclusion, and the rest
    touch no syntax. Each still runs one at a time, in that order, as their files say.
-10. **S1f.5.14 last**, after every other stage (the user's ruling of 2026-11-08). Its first code task built the
+11. **S1f.5.14 last**, after every other stage (the user's ruling of 2026-11-08). Its first code task built the
     loader flag that makes `:why` required, default false, **early, on 2026-11-08** (*"yes, land the :why flag
     early"*), so what stays here is its last: the default turned to true, once every program the corpus, the
     stdlib and the Rust suites load carries one. Until these rulings this item read
@@ -408,7 +417,7 @@ a review taken four times.
   grammar is the phase's final one from T3 on (the user's rulings of 2026-11-08): `:priority` leaves every program
   before the swap (S1f.5.15), and the `:why` S1f.5.14 requires is a loader flag's, not a grammar edit.
 - `./run_tests.sh` is green at every stage boundary.
-- Every page S1f.5.14 and S1f.5.15 add is **pinned by something that runs**, states its date and its commit,
+- Every page S1f.5.14, S1f.5.15 and S1f.5.16 add is **pinned by something that runs**, states its date and its commit,
   and links a `docs/history/` page rather than restating its subject. The rule is
   [Q-M1e.4](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)'s:
   *every count a test pins is exactly right; every count only prose states has drifted.*
@@ -419,11 +428,11 @@ a review taken four times.
 | until 2026-11-08 | since | stage |
 |---|---|---|
 | — | `S1f.5.0` | the known wrong answers filed, new on 2026-11-08 |
-| — | `S1f.5.17` | CI green again, new on 2026-11-08; `S1f.5.16` stays the proposed read-out reference |
+| — | `S1f.5.17` | CI green again, new on 2026-11-08; `S1f.5.16` stayed the read-out reference, proposed then and specified the same day |
 | `S1e2.5.1` … `S1e2.5.13`, in M1e2 | `S1f.5.1` … `S1f.5.13` | the no-owner items, in the same order |
 | `S1f.5.5` | **`S1f.5.14`** | Every statement convertible to NL |
 | `S1f.5.6` | **`S1f.5.15`** | Remove `:priority`; derive the order from the rules |
-| `S1f.5.3`, proposed | `S1f.5.16`, proposed | The read-out reference |
+| `S1f.5.3`, proposed | `S1f.5.16`, specified 2026-11-08 | The read-out reference |
 
 **`S1f.5.5` and `S1f.5.6` now name other stages.** A citation written before 2026-11-08 means the old
 ones. M1e's record cites `S1f.5.6` twice as the `:priority` stage
@@ -461,7 +470,8 @@ with every `:priority` stripped. Each stage file carries its own case, dated.
 
 **The risk the old phase named that still holds: a reference page is another hand-maintained copy.** A
 prose table beside a list the code holds is a copy with no diff, which is what
-[AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) found. So a page S1f.5.14 adds
-is generated, or diffed by a test. [`docs/api/rust.md`](../../../docs/api/rust.md)'s marker-guarded region
+[AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) found. So a page S1f.5.14 adds is generated, or diffed by a test, and so is
+[S1f.5.16](s1f.5.16_the_read_out_reference.md)'s, whose subject is the page this risk was first written
+about. [`docs/api/rust.md`](../../../docs/api/rust.md)'s marker-guarded region
 is the precedent that already works. The old phase's other two risks were about the configuration
 reference, which shipped as S1e.5.1.

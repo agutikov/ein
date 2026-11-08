@@ -473,6 +473,15 @@ constrained-reasoning research.
   default false, so nothing moved, and with it on 274 of the corpus's 339
   loadable files are refused (2026-11-08,
   [§ T1f.5.14.6 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5146-record-2026-11-08)).
+  S1f.5.16, the read-out reference, was specified the same day (*"Ok, schedule
+  S1f.5.16 also"*): one live page, `docs/kernel/inference/read_out.md`, for
+  every row and number `ein solve` prints and whether it counts R, what lies
+  around R, or the run's work, with the read-out's golden page generated beside
+  it and both held to the printer by `ein-cli/tests/read_out_reference.rs`; it
+  runs after the swap's non-grammar halves and before S1f.5.7, so the stages
+  that change the read-out write the live page, and M1e2's `read_out.md` stays
+  the record
+  ([S1f.5.16](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)).
   S1f.5.5's T8, the swap's prerequisite, renamed the names the parser and the
   loader make up out of the name space the same day (S1f.5.4's Q1 (a)):
   `#empty`, `#nested`, `#params`, `#query` and the generated parser's

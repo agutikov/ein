@@ -21,11 +21,13 @@ The phase's contract. One row per source page, with:
 - Every page under `docs/kernel/`, `docs/api/` and `docs/guide/`, and `docs/install.md`.
 - Every page under `docs/history/`: 73 on 2026-11-08, and more if M1e2's record has moved in by the time
   this runs.
-- The three user-facing references that live under `plans/`:
-  [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md),
-  [`read_out_examples.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md), which
-  `utils/read_out_examples.py` writes from the binary, and
-  [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md).
+- The read-out's two kernel pages, `docs/kernel/inference/read_out.md` and `read_out_examples.md`, which
+  [S1f.5.16](../p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) made the live vocabulary and
+  golden page. Each moves with its test, its generator's path and its inbound links in one commit, as `rust.md`'s
+  region does (default destination `user/reference/`), and neither is rewritten from a plan.
+  [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) is the one
+  user-facing reference still under `plans/`. M1e2's `read_out.md` and `read_out_examples.md` are records from
+  S1f.5.16 on, and get no row.
 - `docs/history/m1d_satisfiability/ideas.md`, whose row is decided: it moves to `plans/ideas/`.
 
 The inbound counts are produced mechanically, by S1f.20.1's checker. The destinations are chosen by hand.
