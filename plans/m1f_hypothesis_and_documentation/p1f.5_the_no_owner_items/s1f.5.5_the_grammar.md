@@ -61,6 +61,12 @@ limit is 1 000. No answer, golden or exit code moved.
 so the grammar never has `:priority`; `:why` stays optional in the grammar, and the loader flag that requires it
 is [S1f.5.14](s1f.5.14_nl_required.md)'s, the phase's last stage; and the vendored `lrpar` patch is not sent
 upstream ([F11](#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
+**T8 done on 2026-11-08** ([§ T8 record](#t8-record-2026-11-08)). **T9 done on 2026-11-08, and the stage stopped
+there for the user's review** ([§ T9 record](#t9-record-2026-11-08), [the attribution](s1f.5.5_attribution.md)):
+every one of the 167 files the swap moves, of 513, is credited to a ruling, none to no ruling; the census's 55 are all
+refused; the name-rule build moves 45 of S1f.5.4's 46, the 46th being Q1's witness, whose move T8's rename took away;
+and the generated build answers byte for byte as the name-rule build wherever the name rule alone moves a file.
+No engine code, test, golden, fixture or register row moved. T10 and T4 wait for the user.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -929,6 +935,106 @@ and extended to the other rulings. What it shows is each stage's step 1 as the s
 
 The user may overrule any decision of 2026-11-08 here: Q1 to Q4, C1 and C2. Nothing is edited until the user
 has read it.
+
+### T9 record, 2026-11-08
+
+**What ran**, on `git archive` snapshots of `efd2cc74` (T3, S1f.5.15 and T8 landed), each answer the release
+binary's with `EIN_STDLIB` the checkout's: **today** (the snapshot as committed); **the generated build**, the swap
+prototyped in three files (the `generated-parser` feature on by default, so every command reads its program
+through the generated parser; `ein_core::text::is_symbol` the name rule; every name a JSON string in
+`summary.json`'s bindings, Q4), whose diff, `build/s1f.5.5/t9/swap-prototype.patch`, is T4's starting point; and
+**the name-rule build**, S1f.5.4's step-1 prototype ported to the snapshot with Q4's writer, the name rule alone,
+the counterfactual S1f.5.4's credit is read off. Three runs: the CLI sweep, every `.ein` under the five roots (513;
+`find examples tests stdlib corpus plans -name '*.ein' | wc -l`) through `ein solve FILE --json-summary J -H
+--dump-answer D`, `ein saturate FILE --dump` and, where it states an `:expect`, `ein test FILE` on the three
+binaries (115 s); the parse, both parsers and the name-rule parser on every file and on 40 000 mutants from the
+census's generator (`ein_corpus::mutants`, seed 0), with today's loader on whatever today's parser accepts; and
+`cargo test --workspace` on the generated build, then blessed. The scripts are S1f.5.4's step-1 scripts extended,
+under `build/s1f.5.5/t9/scripts/`. **The attribution is [`s1f.5.5_attribution.md`](s1f.5.5_attribution.md)**, one
+row a file, with the tests, the goldens and the commands to re-take it.
+
+**Every difference is attributed.** 346 files answer as they did on every command, 167 move, and each is credited to
+the rulings that alone move it, **none to no ruling**: S1f.5.4 49 (45 by the name-rule build, 4 by the tree alone),
+the paper grammar's own 48, S1f.5.15 43, S1f.5.2 28, S1f.5.11 28 and S1f.5.1 24, a file once per ruling it reads by.
+On the 40 000 mutants the generated parser accepts only what the name-rule parser accepts, with its tree, on every
+one; the name rule's share is exact (where today's parser and the name-rule parser differ), and what the generated
+parser refuses past it, 6 827 mutants, is credited by its first error: S1f.5.11 2 141, the paper grammar's own
+2 114, S1f.5.2 1 547 and S1f.5.1 1 025 (`mutants.py`).
+
+**The cross-checks.**
+- **S1f.5.4's 46: holds as meant, and read literally fails on one file.** The name-rule build moves 45 of the 46 and
+  nothing outside them. The 46th, `assert-empty`, moved in step 1 only because its candidate printed `(q @empty)`
+  bare, step 1's finding; T8's rename (Q1 (a)) printed it `(q "#empty")` on both builds, so it moves under neither.
+  Put to the user at the stop (item 5 of the review's § 0).
+- **The generated parser's name rule is the prototype's**: on the 20 of the 45 it accepts, the generated build
+  answers byte for byte as the name-rule build on every command. The other 25 it refuses for a string, a
+  `:priority` or a keyword, the combined grammar's answer, credited to both rulings.
+- **The census's 55: all refused.** The 14 other corpus files the generated parser refuses that today's accepts are
+  witnesses filed since, each for its row's shape: W29's six, W32's seven and W35.
+
+**No difference is unattributed, and no cross-check fails as meant, so the swap does not stop.**
+
+**What the brief did not expect, each a report and not a stop** (each with a recommendation in the review's § 0):
+- **43 records under `plans/` are refused at their `:priority`.** The brief read *every program* as the four corpus
+  roots; S1f.5.15's T5 left the records as written, saying the swap refuses the keyword. Credited to S1f.5.15.
+- **Three scripts still write `:priority`**: `utils/region_synth.py`, which `region_dump`'s
+  `a_random_region_written_as_a_program_comes_back` and `detector`'s
+  `a_monotone_verdict_is_one_state_per_node_on_random_programs` read, `guard_split.py` and `fuzz_engine.py`. T4 takes
+  the clause out of the three (S1f.5.15's leftover).
+- **A template cannot name every variable: a wrong answer with no register row.** `ein_core::why::render_why` reads a
+  reference as `{?`, an alphanumeric, then alphanumerics, `_` and `-`, so `{?isR*}` prints unfilled in three stdlib
+  `:why`s today (`stdlib/typing.ein`, `stdlib/algebra.ein` twice; `ein solve
+  tests/stdlib/typing/02_type_hierarchy_converse.ein --trace T` on today's binary), and after the swap so does every
+  variable the name rule adds: `zebra2.ein` with `_`-led names answers as `zebra2.ein` does (k_s 1, k_c 261 982, N
+  366, H 56, the state and N the same once the underscores are taken off) and prints *“The {?\_who\_water\_} drinks
+  water in {?\_h\_water\_}; …”*. Reported here; a row is filed before anything fixes it (recommended: owned by
+  S1f.5.4, the reference reading the name rule's characters up to the first `}`).
+- **W34's printed region no longer reads back** (`claim_round_trip`): it holds the leaked `(q "#empty")`, a string
+  a claim may not write after the swap. Recommended: the witness joins that test's exceptions until S1f.5.9.
+- **A bare name after `:hypothesis-relations` or `:no-hypothesis`** is refused, the paper grammar taking a list;
+  `search_semantics`' `lattice_relation_keyword_accepts_a_bare_symbol` pins it, and no corpus file writes it.
+- **`value_label`'s `KwPair` arm is reached by no corpus file** (S1f.5.11's question): every `.ein` under the five
+  roots through six `ein render` views on a build that reports the arm, 0 lines.
+- **A `.einb` opens past its millisecond.** A container's cold open re-parses its PROGRAM section, so the generated
+  parser's speed lands on it: a saturated `zebra2` opens in 3.7 ms on the generated build against 0.76 to 1.0 ms
+  today (`cargo test --release -p ein-einb --test roundtrip`, three runs each), past design/10 § 6's 1 ms, and
+  `roundtrip`'s dev-profile 5 ms fails at 5.4. The cost the user accepted with grmtools; recommended, T4 restates
+  the budget, the container keeping the parsed tree left for when the millisecond is wanted.
+
+**The tests and goldens T4 moves.** `cargo test --workspace --no-fail-fast` on the generated build
+(`build/s1f.5.5/t9/proto-test.log`, 21 min 19 s): **834 passed and 109 failed, in 39 of 107 test binaries**, each row
+of [the attribution's table](s1f.5.5_attribution.md#the-tests-t4-moves) with its ruling and what T4 does: 47 in
+`ein-ir` (**T8's 47**, the same count, each a suite in today's language read through the generated grammar: its 19
+unit tests, `ir_semantics` 11, `kb_semantics` 5, `load_semantics` 4, `grammar_decisions` 3, `imports_semantics` 3,
+`dump_goldens` and `fuzz_properties` one each), 28 in `ein-infer`, 23 in `ein-cli`, 7 in `ein-render`, 3 in
+`ein-core`, and `ein-einb`'s `a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond`. Beyond the stage's
+list: the three named above (`region_dump`, `detector`'s random programs, `claim_round_trip`), `search_semantics`'
+bare name, the `.einb` cold open above, and `config_reference`'s and `load_semantics`'
+`require_why_decides_loading_only`, which the stage's `--require-why` bullet already covers (the stdlib's two macros
+get their `:why`). Blessed (`EIN_BLESS=1`, 23 min 49 s: 841 passed, 102 failed, nothing new failing), **eight goldens
+move**: `corpus_exits.txt` (87 of 1 390 cells), `corpus_shapes.md5` (89 files), `grammar_decisions.txt`,
+`fuzz_seeds.txt`, `config_coercion.txt`, the two `branching/12` traces, and `load_error_order.txt`, the one S1f.5.4's
+step 1 did not list ([§ The goldens T4 moves](s1f.5.5_attribution.md#the-goldens-t4-moves)).
+
+**The register: 37 of 139 rows, exactly the stage's list.** `wrong_answers::every_row_answers_what_the_register_records`
+on the generated build: 14 `open` rows the swap fixes (W29's six, W32's seven, W35) and 23 `fixed` rows it restates
+(W7, W15 ×2, W16 ×3, W18 ×5, W20 ×5, W21, W24 ×3, W28 ×3); W34 does not move. S1f.5.4's proposal A for the W7 and W15
+witnesses holds on the generated build: four states, the oracle the same.
+
+**The review stop.** `build/s1f.5.5/review/index.md` (gitignored, 207 programs, every artefact both binaries write
+for each, raw and rendered; 2.7 GB, `du -sh`, 2026-11-08): S1f.5.4's review rebuilt on the generated parser
+(`features/05`, `std.elim`, `zebra2.ein` unmoved, `(p 1) (p 01)`, the 46, Q1 to Q4) and extended to every ruling: S1f.5.1's fixtures and W20's
+three as written and rewritten, `zebra2.ein` with `_`-led names, its table of seventeen positions each computed, and
+the refusal as the parse error; S1f.5.2's witnesses, `zebra2.ein`'s text untouched, a probe with Cyrillic, CJK and
+an emoji on every surface, the escapes (`\u{1F993}` is 🦓 on the generated build, `u{1F993}` today) and the
+refusal; W32's seven refusals and `wrappers.ein` rewritten; the 55 and where each goes, the six rewritten fixtures
+and the refused programs with every error; the register's 37 rows with their new `now` and `right`; T8's leftover
+(the engine's writeback names are read by nothing, only printed; the dunders are the documented way to ask for the
+kernel's behaviour; recommended: the three writeback names renamed with `#` before the swap, the dunders kept); and
+T4's expected tokens (recommended: the repairs stand, and the error text folds the eleven position words into *a
+name* when it picks the three repairs to show). Its § 0 holds the questions, each with a recommendation. **Nothing was
+edited beyond this record**: no engine code, test, golden, fixture or register row moved. T10 and T4 wait for the
+user.
 
 ### Task T1f.5.5.10 — the fixture moves that move no answer
 
