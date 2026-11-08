@@ -26,6 +26,8 @@ optional in the grammar and a loader flag makes it required, which S1f.5.14, now
 `lrpar` patch is not sent upstream ([F11](#f11-grmtools-recovery-is-not-deterministic)). S1f.5.15's T1 ran the
 same day and stopped before any removal, on [Q-M1f.4](../open_questions.md#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs)
 and [Q-M1f.5](../open_questions.md#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core).
+On a fifth, *"yes, land the :why flag early"*, S1f.5.14's flag, `--require-why`, landed the same day
+([T1f.5.14.6](s1f.5.14_nl_required.md#t1f5146-record-2026-11-08)); the stage keeps only the flip, last.
 **Was P1e2.5**, in [M1e2](../../m1e2_correctness/README.md), until 2026-11-08. No stage had run. Each kept
 its number, `S1e2.5.<n>` → `S1f.5.<n>`, and the two stages P1f.5 had follow them
 ([§ The ids](#the-ids)). The questions the review raised keep their ids, `Q-M1e2.22` to `.28`, as M1f's
@@ -282,7 +284,7 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.11](s1f.5.11_closed_keywords.md) | Each form takes a fixed set of keywords, and `:where` is gone | 1 d, re-planned 2026-11-08 (was 1.5) | D-15, G-15, G-22 | specified, not started; **re-planned 2026-11-08**: the lists are the grammar's, and its step 1, its refusals and W32's seven rows land in S1f.5.5's T9 and swap, credited to this stage; after the swap, the compiler's and the expander's drops go, a keyword held in every form and place, and the pages |
 | [S1f.5.12](s1f.5.12_cores_for_n_only.md) | A run takes a core only for the nodes a surface prints: N's members, after the walk | 1 d | P-15 | specified, not started; independent of the grammar stages, and runs after S1f.5.5's swap ([§ The order](#the-order)) |
 | [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md) | The round trip's four large dumps move to the slow tier, and the nightly runs it | 0.5 d | P-16 | specified, not started; independent, and runs after S1f.5.5's swap ([§ The order](#the-order)) |
-| [S1f.5.14](s1f.5.14_nl_required.md) | Every statement convertible to NL | 4 d | was S1f.5.5 | specified, not started; **last**, after every other stage (the user's ruling of 2026-11-08): `:why` optional in the grammar, which T3 gave a macro too (`54715b5f`), and a loader flag that makes it required, built default false as the stage's first code task and turned to true as its last, once every program carries one; rung (d), *a load error*, reached through the flag |
+| [S1f.5.14](s1f.5.14_nl_required.md) | Every statement convertible to NL | 4 d | was S1f.5.5 | **T1f.5.14.6, the flag, done 2026-11-08, early** ([its record](s1f.5.14_nl_required.md#t1f5146-record-2026-11-08); the user: *"yes, land the :why flag early"*): `--require-why` on the seven commands that load a program, default false, refuses a relation, rule or hrule with no `:why`, and a macro once S1f.5.5's swap deletes its `cfg`; 274 of the corpus's 339 loadable files are refused with it on (2026-11-08). The rest **last**, after every other stage (the user's ruling of 2026-11-08): `:why` optional in the grammar, which T3 gave a macro too (`54715b5f`), and the flag turned to true as the stage's last task, once every program carries one; rung (d), *a load error*, reached through the flag |
 | [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | **T1 done 2026-11-08, and stopped there, before any removal** ([§ T1 record](s1f.5.15_rule_priority.md#t1-record-2026-11-08)): every `:priority` taken out of the corpus and the stdlib moves no R, N, H, claim, exit code or stored fact on the 511 programs or the 1 378 declared runs, and moves the facts of cores on seven corpus programs (`zebra.ein`, the zebra2 family, W25's control), each through the alternatives cap, `:record-alternative-justifications false` or W25; and the stripped corpus shows a config-principle breach that exists today, `features/12`'s `refuted by` under the alternatives flag. [Q-M1f.4](../open_questions.md#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) and [Q-M1f.5](../open_questions.md#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) are put to the user. **Moved 2026-11-08 to run after S1f.5.5's T3 and before T8**, on the user's ruling (*"S1f.5.15 before swap"*), so the generated grammar never has `:priority`: T3 built it without (`54715b5f`), and the 133 corpus files that differ between the two parsers only by their `:priority` are attributed to this stage, pending |
 | [S1f.5.17](s1f.5.17_ci_green_again.md) | CI green again: the per-commit job on Ubuntu 26.04's Graphviz, and the nightly's mutant baseline | 1 d | the red per-commit and nightly runs since `916d97ac` | **done 2026-11-08** (`3e6e40f8`, `76ede241`, T1f.5.17.3): the per-commit red was the runner's **amd64v3** build of Graphviz 14.1.2, whose `libpathplan` contracts `ccw` into an FMA; fixed view-side, `ranksep=0.55` on the overlay and Levi digraphs (`corpus_shapes.md5` 1 198 lines). The nightly's two mutants were killed by `597b2b7e`, *forbid*'s refusal, and re-banked: 167 of 217 killed. Both tiers green in a container built like the runner, `utils/ci_container.sh` (the user, 2026-11-08: *"add new stage to this phase - fix failing CI jobs"*) |
 | [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md) | An activator's nested fact: a value parameter binds it, and a relation parameter is refused at load | 1.5 d | W33; G-14's derived activator ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b)) | specified, not started; after S1f.5.7 and S1f.5.10, before S1f.5.9 |
@@ -325,7 +327,10 @@ the grammar later, and the user ruled both:
   changes the answer. T3 gave `(macro …)` an optional `:why` (`ein_ir::macros::Macro::why`), so every form that
   can carry a template may. The flag, default false, is [S1f.5.14](s1f.5.14_nl_required.md)'s first code task,
   and S1f.5.14 runs last: it turns the default to true and writes `:why` wherever the corpus, the stdlib and the
-  Rust suites' inline programs still lack it.
+  Rust suites' inline programs still lack it. **The flag landed early, on 2026-11-08** (the user: *"yes, land the
+  :why flag early"*; [T1f.5.14.6's record](s1f.5.14_nl_required.md#t1f5146-record-2026-11-08)): `--require-why`,
+  which asks a macro for its `:why` only in a `generated-parser` build until S1f.5.5's swap deletes that `cfg` and
+  writes the stdlib's two macros theirs.
 
 A fourth ruling of the same day is not the grammar's: the vendored `lrpar` patch stays in the tree and is not
 sent upstream ([F11](#f11-grmtools-recovery-is-not-deterministic)).
@@ -370,9 +375,10 @@ The order, as those rulings leave it:
    claims over `eq` and `neq` already parse under [the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position),
    S1f.5.9's `(and)` is the grammar's refusal and its `:assert ()` the grammar's empty conclusion, and the rest
    touch no syntax. Each still runs one at a time, in that order, as their files say.
-10. **S1f.5.14 last**, after every other stage (the user's ruling of 2026-11-08). Its first code task builds the
-    loader flag that makes `:why` required, default false, and its last turns the default to true, once every
-    program the corpus, the stdlib and the Rust suites load carries one. Until these rulings this item read
+10. **S1f.5.14 last**, after every other stage (the user's ruling of 2026-11-08). Its first code task built the
+    loader flag that makes `:why` required, default false, **early, on 2026-11-08** (*"yes, land the :why flag
+    early"*), so what stays here is its last: the default turned to true, once every program the corpus, the
+    stdlib and the Rust suites load carries one. Until these rulings this item read
     *S1f.5.14 and S1f.5.15 last, as the user placed them*; S1f.5.15 is item 3 since.
 
 It costs about what the old order did, a quarter of a day more on paper (the estimate above): the four hand-written

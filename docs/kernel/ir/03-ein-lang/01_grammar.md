@@ -161,7 +161,10 @@ but references the fact's argument **slots positionally**: `{?1}` is arg 0,
 `{?2}` is arg 1, … (a leading digit is the relation-template form;
 rule/goal `:why` uses letter-led var names). A relation with **no** `:why`
 renders as its raw IR s-expression `(R a b)` — there is no built-in
-relation→verb vocabulary, so untemplated relations stay in IR. Example:
+relation→verb vocabulary, so untemplated relations stay in IR. Optional in
+the grammar, on a relation, a rule and an hrule alike; `--require-why` makes it
+required at load, default off (M1f T1f.5.14.6,
+[`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why-under---require-why--m1f-t1f5146)). Example:
 
 ```lisp
 (relation drink-loc Drink House :why "{?1} is drunk in {?2}")

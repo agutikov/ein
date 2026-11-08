@@ -163,6 +163,25 @@ fn rule_mode() -> Arg {
         )
 }
 
+/// `--require-why`, on every command that loads a program — M1f S1f.5.14,
+/// T1f.5.14.6, on the user's rulings of 2026-11-08: `:why` is optional in the
+/// grammar, and a loader flag makes it required, default false. It sets
+/// [`ein_ir::LoadOptions::require_why`] and nothing else, so it decides
+/// whether a program loads and never what a loaded one answers (*"yes, the
+/// flag only decides loading"*). One builder, as [`rule_mode`] and
+/// [`event_args`] are, so the seven commands cannot describe it differently.
+fn require_why() -> Arg {
+    Arg::new("require-why")
+        .long("require-why")
+        .action(ArgAction::SetTrue)
+        .help(
+            "refuse to load a program in which a relation, rule or hrule \
+             carries no :why \"…\", one line per form (a macro too, in a build \
+             whose parser reads a macro's :why). It decides whether a program \
+             loads, never what a loaded one answers (M1f T1f.5.14.6)",
+        )
+}
+
 /// `--events` / `--events-level`, added to *both* `solve` and `saturate`.
 fn event_args(cmd: Command) -> Command {
     cmd.arg(
@@ -274,7 +293,8 @@ fn render_command() -> Command {
                         .long("no-instances")
                         .action(ArgAction::SetTrue)
                         .help("leave out the instance ovals and every fact edge"),
-                ),
+                )
+                .arg(require_why()),
         )
         // M1e2 S1e2.1a.2 — the cube an `ein oracle --dump` directory holds,
         // drawn from the files, so the picture is of the run whose answer it
@@ -351,7 +371,8 @@ fn render_command() -> Command {
                         .hide(true)
                         .num_args(1)
                         .value_parser(clap::value_parser!(String)),
-                ),
+                )
+                .arg(require_why()),
         )
 }
 
@@ -382,6 +403,7 @@ fn solve_command() -> Command {
              (--minimal, --maximal, --single, -n N, --count)",
         )
         .arg(Arg::new("file").required(true))
+        .arg(require_why())
         // ── the question: which part of R, and what is asked of it ──
         .arg(
             Arg::new("solutions")
@@ -759,6 +781,7 @@ fn test_command() -> Command {
                 .value_name("PATH")
                 .help("a .ein file, or a directory to walk for them"),
         )
+        .arg(require_why())
         .arg(
             Arg::new("region-budget")
                 .long("region-budget")
@@ -851,6 +874,7 @@ fn oracle_command() -> Command {
     Command::new("oracle")
         .about("the solution region by brute force: every subset of the root candidates saturated (M1e2)")
         .arg(Arg::new("file").required(true))
+        .arg(require_why())
         .arg(
             Arg::new("region-limit")
                 .long("region-limit")
@@ -972,6 +996,7 @@ pub fn saturate_command() -> Command {
             .bin_name("ein saturate")
             .about("Benchmark + state dump for the Saturator.")
             .arg(Arg::new("file").required(true).help("path to a .ein file"))
+            .arg(require_why())
             .arg(
                 Arg::new("dump")
                     .long("dump")
@@ -1025,7 +1050,8 @@ pub fn command() -> Command {
                         's',
                         "saturate",
                         "bank the least fixpoint too, not just the loaded KB",
-                    )),
+                    ))
+                    .arg(require_why()),
             )
     }
 

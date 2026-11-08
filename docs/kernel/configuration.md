@@ -22,6 +22,10 @@
 > last reader, became root's fixpoint and H as the routes have them (§ 4).
 > **Since S1e2.2.5 (2026-11-04)** a program sets two: the user retired
 > `warn-derived-naf`, whose refutation half became *forbid*'s refusal.
+> **Since M1f T1f.5.14.6 (2026-11-08)** every command that loads a program
+> takes `--require-why`, which refuses at load a relation, rule or hrule with
+> no `:why` and decides nothing else (§ [3.4](#34-the-option-that-decides-loading)),
+> so `ein solve` has 34.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -55,7 +59,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **2** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fifteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **71** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **78** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **2** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -315,7 +319,9 @@ walk's, and flipped to `fixed` at the switch where R answers them
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). Under a region
 run every flag reads **no**, and so do `--jobs` (§ 3.3) and every
 presentation and artefact option: they change speed, or what is printed beside
-the answer, never the answer.
+the answer, never the answer. `--require-why` (§ 3.4) is not a lever: it
+decides whether a program loads, and a program it lets through answers what it
+answers without it.
 
 ---
 
@@ -331,26 +337,27 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**71** options across fifteen parsers, in the default build (`einb`,
+**78** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 33 |
-| `ein oracle` | 10 |
-| `ein test` | 8 |
-| `ein saturate` | 5 |
-| `ein render kb` | 4 |
+| `ein solve` | 34 |
+| `ein oracle` | 11 |
+| `ein test` | 9 |
+| `ein saturate` | 6 |
+| `ein render kb` | 5 |
+| `ein render lattice` | 3 |
 | `ein render region` | 3 |
 | `ein render rule` | 2 |
-| `ein render lattice` | 2 |
 | `ein render program` | 2 |
+| `ein kb save` | 2 |
 | `ein render rules` | 1 |
-| `ein kb save` | 1 |
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 70 and no `ein kb` at all. M1e2
+`--no-default-features` build has 76 and no `ein kb` at all. M1f T1f.5.14.6
+added seven, `--require-why` on each command that loads a program (§ 3.4). M1e2
 S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
 `--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
 cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
@@ -399,8 +406,9 @@ as any — a `(config …)` head that sets the flag, and `--dump-config` to see 
 
 ### 3.3 What an option can do to the answer
 
-Five classes. Only the first touches the answer, and then only by asking a
-different question or stopping early.
+Six classes. Only the first touches the answer, and then only by asking a
+different question or stopping early; the sixth decides whether there is a
+program to answer about.
 
 - **The question and its budget** — `--minimal`, `--maximal`, `--single`,
   `-n`/`--solutions`, `--count`, `--monotone`, `--region-budget`,
@@ -475,6 +483,28 @@ different question or stopping early.
   every `(query …)` of its file from one solve, so no artefact flag is refused
   over several queries any more; `ein test` refuses `--events` and
   `--json-summary` over a selection of more than one file.
+- **Loading** — `--require-why`, § [3.4](#34-the-option-that-decides-loading):
+  a program it refuses is a load error, and one it lets through answers
+  exactly what it answers without it.
+
+### 3.4 The option that decides loading
+
+One option, on every command that loads a program — `ein solve`, `ein
+oracle`, `ein test`, `ein saturate`, `ein render kb`, `ein render lattice` and
+`ein kb save` — and on none that only parses one (`ein render program`,
+`rules`, `rule`, `constraints`) or loads nothing (`ein render region`). It sets
+`ein_ir::LoadOptions::require_why`, which an embedder sets the same way
+(`ein_ir::load_with`, `load_query_with`, `load_file_with`; `ein_einb::OpenOptions::load`).
+
+| option | default | what it changes | answer? | R? | stability |
+|---|---|---|---|---|---|
+| `--require-why` | off | whether a program loads: on, every `(relation …)`, `(rule …)` and `(hrule …)` the load reads, the stdlib's and an imported module's included, that carries no `:why "…"` is refused, one line per form, `relation 'p' has no :why "…", which this load requires of every relation, rule and hrule`, at the exit code the command gives every load error (1, and `ein test`'s 2). A `:why` that is not a string is none, as the loader's strings-only guard reads it. A `(macro …)` is asked for one only in a build with `ein-ir`'s `generated-parser` feature, whose parser reads a macro's `:why`: the hand-written parser refuses it, so no shipped build asks for what its parser cannot read, and S1f.5.5's swap deletes that `cfg`. A `.einb` is refused where its `.ein` is: a container re-loads its program from the text it stores. The stdlib loads under it: its 77 rules carry a `:why`, and it declares no relation or hrule (`ein-ir/tests/load_semantics.rs`, `require_why_decides_loading_only`) | **no**: it decides whether a program loads, never what a loaded one answers — the user's ruling of 2026-11-08, *"yes, the flag only decides loading"*. A program it lets through loads to the same KB, registries, facts and indexes, and prints the same bytes; the header leaves it out | no | contract: default false until [S1f.5.14](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s T1f.5.14.7 turns it to true, once every program the corpus, the stdlib and the Rust suites load carries its `:why` |
+
+The user's rulings of 2026-11-08: *":why is optional in grammar and loader has
+a flag that makes it required, start with default false so not break
+everything, then after other stages finished swith to default true and fix
+remaining ein code"*, and *"yes, land the :why flag early"*. What it refuses
+today is S1f.5.14's migration, counted there (§ T1f.5.14.6 record).
 
 ---
 
@@ -649,7 +679,7 @@ invisible in a stream that still counts them. The row and the reasons are
 
 ## 5. What is deliberately *not* configuration
 
-Three knobs sit outside `SolverConfig` on purpose, and the reason is the same
+Four knobs sit outside `SolverConfig` on purpose, and the reason is the same
 each time: **every `SolverConfig` field is `--dump-config`-printed,
 `(config …)`-settable and rendered into the KB-shape digest.**
 
@@ -658,6 +688,9 @@ each time: **every `SolverConfig` field is `--dump-config`-printed,
   differently on an 8-core machine than on a 4-core one, through a field the
   digest compares. Jobs is an execution knob; `SolverConfig` is the semantics.
 - **`--models`** (M1d T1d.3.3.4). Presentation has no business in the digest.
+- **`--require-why`** (M1f T1f.5.14.6, § 3.4). A field would let a program
+  turn its own mandate off, and would move every shape digest in the corpus;
+  it is a question about loading, which the program is the subject of.
 - **`EIN_TRAVERSAL` and `EIN_OBLIGATION_CHOICE`**, the walk's, both retired
   (§ 4). Both existed to be *compared*, and a knob whose settings are being
   compared would re-bless every shape golden in the corpus each time the
@@ -671,7 +704,7 @@ program, which is what makes a `.ein` reproducible on its own.
 ## 6. What pins this page
 
 [`ein-cli/tests/config_reference.rs`](../../ein.rs/crates/ein-cli/tests/config_reference.rs),
-seven tests, in `cargo test --workspace`. The phase's design constraint is
+eight tests, in `cargo test --workspace`. The phase's design constraint is
 *generate or diff, never a third hand-maintained copy*, and each of these is
 one or the other.
 
@@ -681,8 +714,9 @@ one or the other.
 | `every_flag_has_a_row_and_no_row_is_orphaned` | § 2.2's flags are not `FLAGS` in declaration order, or a row's type or default is not the block's |
 | `the_cli_counts_come_from_the_golden` | § 3.1's per-parser counts or the total are not `help_shape.txt`'s |
 | `the_shipped_environment_set_is_what_the_page_lists` | a shipping crate reads an `EIN_*` name with no row in § 4's first class, or that class lists one nothing reads |
-| `the_unread_flags_change_nothing_printed` | flipping one of § 2.2's five **unread** flags changes `solve -p`'s stdout, stderr or exit code on either of two fixtures |
+| `the_sanity_flag_adds_its_row_and_nothing_else` | `:lattice-sanity-check true` moves `solve -p`'s exit code, stdout or stderr past its own `paths` row on either of two fixtures, or prints no unbounded row |
 | `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's fifteen loads, or is refused without the stage and the reason |
+| `require_why_decides_loading_only` | § 3.4 has no `--require-why` row; the option is on another set of commands than the seven that load a program; on one of them a program missing three `:why`s loads with it, is refused at another exit code or without its three lines, or does not run without it; or a corpus program carrying every `:why` prints other bytes with it |
 | `the_surface_table_agrees_with_the_sections_it_summarises` | § 1's three counts are not the ones §§ 2–4 own |
 
 **Re-banking the block:**

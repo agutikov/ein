@@ -109,8 +109,22 @@ pub fn looks_like_einb(bytes: &[u8]) -> bool {
 /// stderr. There is nothing else to do — the caller was handed the `.einb` and
 /// not the `.ein`, so "re-parse the source" (design/10 §4) is not available to
 /// it — and the one thing that must not happen is believing it silently.
-pub fn load_any_or_exit(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Option<Kb> {
-    load_any_query_or_exit(ast, terms, path, 0)
+pub fn load_any_or_exit(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    path: &Path,
+    load: &ein_ir::LoadOptions,
+) -> Option<Kb> {
+    load_any_query_or_exit(ast, terms, path, 0, load)
+}
+
+/// What a command's argv asks of the load: `--require-why`, on every command
+/// that loads a program (M1f T1f.5.14.6). A command that does not define it
+/// loads as the default does.
+pub fn load_options(m: &clap::ArgMatches) -> ein_ir::LoadOptions {
+    ein_ir::LoadOptions {
+        require_why: m.try_get_one::<bool>("require-why").ok().flatten().copied() == Some(true),
+    }
 }
 
 /// [`load_any_or_exit`], about query number `query` — M1c S1c.1.2's plural
@@ -121,11 +135,12 @@ pub fn load_any_query_or_exit(
     terms: &mut Terms,
     path: &Path,
     query: usize,
+    load: &ein_ir::LoadOptions,
 ) -> Option<Kb> {
     let bytes = read_bytes_or_crash(path);
     if looks_like_einb(&bytes) {
         #[cfg(feature = "einb")]
-        return open_einb(ast, terms, path, &bytes, query);
+        return open_einb(ast, terms, path, &bytes, query, load);
         #[cfg(not(feature = "einb"))]
         {
             eprintln!(
@@ -150,7 +165,7 @@ pub fn load_any_query_or_exit(
             return None;
         }
     };
-    match ein_ir::load_query(ast, terms, &forms, path.parent(), query) {
+    match ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load) {
         Ok(kb) => Some(kb),
         Err(e) => {
             eprintln!("kb load error: {e}");
@@ -166,6 +181,7 @@ fn open_einb(
     path: &Path,
     bytes: &[u8],
     query: usize,
+    load: &ein_ir::LoadOptions,
 ) -> Option<Kb> {
     let opts = ein_einb::OpenOptions {
         // The paths the file names, re-hashed where they still exist. One that
@@ -180,6 +196,7 @@ fn open_einb(
             })
             .unwrap_or_default(),
         query,
+        load: *load,
         ..ein_einb::OpenOptions::default()
     };
     match ein_einb::open_bytes(bytes, terms, &opts) {

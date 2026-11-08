@@ -16,7 +16,7 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{Scratch, golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 64 options across 12
+/// The surface, counted from the parsers themselves — 67 options across 12
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
@@ -43,44 +43,46 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--dump-region`, `--region-states`. S1e2.1b.5 added `--monotone`, the
     // explicit check the user approved on 2026-11-03, and T1e2.1c.4.6
     // `--count`, which the user ruled the same day. S1e2.1c.5 retired `-L`
-    // and `-K` the same day (hidden, refused with why).
-    ("COMMAND ein solve\n", 33),
+    // and `-K` the same day (hidden, refused with why). M1f T1f.5.14.6 added
+    // `--require-why`, as it did to the six other commands that load a program.
+    ("COMMAND ein solve\n", 34),
     // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
     // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
-    // `--json-summary`, `--models`, `-p` and `-P`.
-    ("COMMAND ein oracle\n", 10),
-    ("COMMAND ein saturate\n", 5),
+    // `--json-summary`, `--models`, `-p` and `-P`; and `--require-why`.
+    ("COMMAND ein oracle\n", 11),
+    ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
     ("COMMAND ein render rule\n", 2),
     ("COMMAND ein render constraints\n", 0),
-    ("COMMAND ein render lattice\n", 2),
+    ("COMMAND ein render lattice\n", 3),
     // M1e2 S1e2.1.3's two doors: `--levi` and `--rule-mode`; `--since`,
-    // `--colour-by`, `--no-types`, `--no-instances`.
+    // `--colour-by`, `--no-types`, `--no-instances`, and `--require-why`.
     ("COMMAND ein render program\n", 2),
-    ("COMMAND ein render kb\n", 4),
+    ("COMMAND ein render kb\n", 5),
     // M1e2 S1e2.1a.2's `--view` over a region dump; S1e2.1a.7's `--visited`
     // and `--answer`, a region run's two dumps drawn on it.
     ("COMMAND ein render region\n", 3),
 ];
 
 /// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
-/// parser. **Eight**, and the number is the design: the two that decide
+/// parser. **Nine**: eight, and the number is the design, the two that decide
 /// whether a run can finish (`--region-budget`, `-T`; the walk's `-m` and `-E`
 /// retired with `solve`'s at M1e2 S1e2.1a.5), the two that decide how much of
 /// a passing run to print (`-v`, `-q`), the three file-only artefact ones the
 /// stage asked for by name (`--events`, `--events-level`, `--json-summary`),
-/// and M1d S1d.4.1's `--json-report`. There is deliberately no `-n`, no line
+/// and M1d S1d.4.1's `--json-report`; and M1f T1f.5.14.6's `--require-why`,
+/// which every command that loads a program takes. There is deliberately no `-n`, no line
 /// flag and no `--exhaustive`: a claim says what it is about, and `ein test`
 /// runs the mode that decides it, so a *missing* option is exactly the kind of
 /// thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 8)];
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 9)];
 
 /// P1a.8's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
 /// parser would otherwise pass.
 #[cfg(feature = "einb")]
-const CONTAINER: [(&str, usize); 2] = [("COMMAND ein kb\n", 0), ("COMMAND ein kb save\n", 1)];
+const CONTAINER: [(&str, usize); 2] = [("COMMAND ein kb\n", 0), ("COMMAND ein kb save\n", 2)];
 #[cfg(not(feature = "einb"))]
 const CONTAINER: [(&str, usize); 0] = [];
 
@@ -106,16 +108,16 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        62 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        67 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "62 options across the twelve parsers of `ein`, `solve`, `oracle`, \
-         `saturate` and `render`, plus `ein test`'s nine and `ein kb save --saturate`"
+        "67 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+         `saturate` and `render`, plus `ein test`'s nine and `ein kb save`'s two"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 71 across fifteen since M1e2 S1e2.1c.5, the count
+/// Every option of every parser — 78 across fifteen since M1f T1f.5.14.6, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.

@@ -29,7 +29,10 @@ pub mod stdlib;
 
 pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr, node_repr};
 pub use dump::{dump_canonical, dump_compact, dump_pretty};
-pub use from_ir::{KbLoadError, load, load_file, load_query, pattern_relations};
+pub use from_ir::{
+    KbLoadError, LoadOptions, WHY_REQUIRED_OF, load, load_file, load_file_with, load_query,
+    load_query_with, load_with, pattern_relations,
+};
 pub use imports::{LoadError, Resolver, resolve_and_minimize, resolve_imports};
 pub use macros::{Macro, MacroError, collect_macros, expand_macros};
 pub use parse::{ParseError, parse};

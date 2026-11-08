@@ -65,7 +65,7 @@ pub fn cmd_constraints(file: &str) -> i32 {
 /// S1e2.1a.5's switch re-pointed it from the walk's lattice proof, which no
 /// command builds any more. A run that reaches its budget is drawn as far as it
 /// went.
-pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>) -> i32 {
+pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::LoadOptions) -> i32 {
     use std::sync::{Arc, Mutex};
 
     use ein_infer::explore::{self, Ask, Mode, Which};
@@ -73,7 +73,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>) -> i32 {
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Some(mut kb) = load_any_or_exit(&mut ast, &mut terms, Path::new(file)) else {
+    let Some(mut kb) = load_any_or_exit(&mut ast, &mut terms, Path::new(file), load) else {
         return 1;
     };
     let visits = Arc::new(Mutex::new(Visits::default()));
@@ -147,16 +147,17 @@ pub fn cmd_kb(
     colour_by: ein_render::ColourBy,
     include_types: bool,
     include_instances: bool,
+    load: &ein_ir::LoadOptions,
 ) -> i32 {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Some(kb) = loaded_and_saturated(&mut ast, &mut terms, file) else {
+    let Some(kb) = loaded_and_saturated(&mut ast, &mut terms, file, load) else {
         return 1;
     };
     // One `Terms` for both, so a fact is the same `FactId` in each and the
     // renderer's `since` comparison is by identity.
     let before = match since {
-        Some(path) => match loaded_and_saturated(&mut ast, &mut terms, path) {
+        Some(path) => match loaded_and_saturated(&mut ast, &mut terms, path, load) {
             Some(kb) => Some(kb),
             None => return 1,
         },
@@ -173,8 +174,13 @@ pub fn cmd_kb(
     0
 }
 
-fn loaded_and_saturated(ast: &mut Ast, terms: &mut Terms, file: &str) -> Option<ein_core::Kb> {
-    let mut kb = load_any_or_exit(ast, terms, Path::new(file))?;
+fn loaded_and_saturated(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    file: &str,
+    load: &ein_ir::LoadOptions,
+) -> Option<ein_core::Kb> {
+    let mut kb = load_any_or_exit(ast, terms, Path::new(file), load)?;
     if let Err(e) = ein_infer::saturate_events(ast, terms, &mut kb) {
         eprintln!("{file}: {e}");
         return None;

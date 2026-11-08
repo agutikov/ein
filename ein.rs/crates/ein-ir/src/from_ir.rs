@@ -51,12 +51,64 @@ impl From<Overflow> for KbLoadError {
     }
 }
 
+/// What a load requires of a program beyond what the grammar does.
+///
+/// **One option, and it decides only whether a program loads** — M1f
+/// S1f.5.14, T1f.5.14.6, on the user's rulings of 2026-11-08: *":why is
+/// optional in grammar and loader has a flag that makes it required, start
+/// with default false so not break everything"*, and, asked whether it can
+/// change an answer, *"yes, the flag only decides loading"*. A program it lets
+/// through loads to the same `Kb` it loads to without it, so it is not a lever
+/// under the config principle (`docs/kernel/configuration.md` § 2.5). It is
+/// not a `(config …)` field, which a program could set against itself and
+/// which the KB-shape digest renders, and not an `EIN_*` name; the CLI's
+/// `--require-why` sets it on every command that loads a program.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct LoadOptions {
+    /// Refuse every `(relation …)`, `(rule …)` and `(hrule …)` the load reads,
+    /// the stdlib's and an imported module's included, that carries no
+    /// `:why "…"`, one line each ([`WHY_REQUIRED_OF`]). In a build with the
+    /// `generated-parser` feature a `(macro …)` too, since only that parser
+    /// reads a macro's `:why`: the hand-written one refuses it, so the flag
+    /// never asks a build for what its parser cannot read. S1f.5.5's swap
+    /// deletes that `cfg` and writes the stdlib's two macros their `:why`.
+    /// **Default false**, until S1f.5.14's T1f.5.14.7 turns it to true.
+    pub require_why: bool,
+}
+
+/// The forms [`LoadOptions::require_why`] asks for a `:why`, as its refusal
+/// names them.
+#[cfg(not(feature = "generated-parser"))]
+pub const WHY_REQUIRED_OF: &str = "relation, rule and hrule";
+/// The forms [`LoadOptions::require_why`] asks for a `:why`, as its refusal
+/// names them: a macro too, in the build whose parser reads its `:why`.
+#[cfg(feature = "generated-parser")]
+pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
+
+/// The line [`LoadOptions::require_why`] refuses a form with: its head and its
+/// name as written, in the W24 refusals' spelling.
+fn missing_why(head: &str, name: &str) -> String {
+    format!(
+        "{head} '{name}' has no :why \"…\", which this load requires of every {WHY_REQUIRED_OF}"
+    )
+}
+
 /// Parse and load a `.ein` file, resolving its imports file-relative.
 pub fn load_file(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Result<Kb, KbLoadError> {
+    load_file_with(ast, terms, path, &LoadOptions::default())
+}
+
+/// [`load_file`], under `opts`.
+pub fn load_file_with(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    path: &Path,
+    opts: &LoadOptions,
+) -> Result<Kb, KbLoadError> {
     let text = std::fs::read_to_string(path)
         .map_err(|e| KbLoadError(format!("{}: {e}", path.display())))?;
     let forms = parse(ast, &text, path.to_str()).map_err(|e| KbLoadError(e.to_string()))?;
-    load(ast, terms, &forms, path.parent())
+    load_with(ast, terms, &forms, path.parent(), opts)
 }
 
 /// Build a populated `Kb` from parsed IR forms, about the file's **first**
@@ -74,6 +126,17 @@ pub fn load(
     load_query(ast, terms, forms, base_dir, 0)
 }
 
+/// [`load`], under `opts`.
+pub fn load_with(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    forms: &[NodeId],
+    base_dir: Option<&Path>,
+    opts: &LoadOptions,
+) -> Result<Kb, KbLoadError> {
+    load_query_with(ast, terms, forms, base_dir, 0, opts)
+}
+
 /// [`load`], about query number `active_query`.
 ///
 /// Out-of-range is not an error and not a panic: `Program::query()` returns
@@ -84,6 +147,25 @@ pub fn load_query(
     forms: &[NodeId],
     base_dir: Option<&Path>,
     active_query: usize,
+) -> Result<Kb, KbLoadError> {
+    load_query_with(
+        ast,
+        terms,
+        forms,
+        base_dir,
+        active_query,
+        &LoadOptions::default(),
+    )
+}
+
+/// [`load_query`], under `opts`.
+pub fn load_query_with(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    forms: &[NodeId],
+    base_dir: Option<&Path>,
+    active_query: usize,
+    opts: &LoadOptions,
 ) -> Result<Kb, KbLoadError> {
     let mut kb = Kb::new(Program::new());
     kb.program_mut().active_query = active_query;
@@ -132,12 +214,29 @@ pub fn load_query(
 
     // Pass 0 — macros, first, because the rules pass expands invocations.
     let declared_macros = ingest_macros(ast, terms, &mut kb, &macro_forms, &mut errors)?;
+    // A macro's `:why` reaches the loader only through the generated parser
+    // (`Macro::why`); the hand-written one refuses it, so only that build asks
+    // for one (`LoadOptions::require_why`).
+    #[cfg(feature = "generated-parser")]
+    if opts.require_why {
+        for m in declared_macros.values().filter(|m| m.why.is_none()) {
+            errors.push(missing_why("macro", &m.name));
+        }
+    }
     // Pass 1 — relations, with their auto-stored declaration facts.
     for form in relations {
-        ingest_relation(ast, terms, &mut kb, form, &mut errors)?;
+        ingest_relation(ast, terms, &mut kb, form, opts, &mut errors)?;
     }
     // Pass 2 — rules. After this, rule-name resolution is possible.
-    ingest_rules(ast, terms, &mut kb, &rules, &declared_macros, &mut errors)?;
+    ingest_rules(
+        ast,
+        terms,
+        &mut kb,
+        &rules,
+        &declared_macros,
+        opts,
+        &mut errors,
+    )?;
     // Pass 3 — facts.
     for &form in &facts {
         ingest_fact(ast, terms, &mut kb, form, &mut errors)?;
@@ -650,6 +749,7 @@ fn ingest_relation(
     terms: &mut Terms,
     kb: &mut Kb,
     form: NodeId,
+    opts: &LoadOptions,
     errors: &mut Vec<String>,
 ) -> Result<(), Overflow> {
     let loc = loc_repr(ast, ast.loc(form));
@@ -675,6 +775,9 @@ fn ingest_relation(
         errors.push(format!("malformed (relation) at {loc}"));
         return Ok(());
     };
+    if opts.require_why && string_value(ast, kw_get(&kw_pairs(ast, &args), "why")).is_none() {
+        errors.push(missing_why("relation", &name));
+    }
     let signature: Vec<String> = args[1..]
         .iter()
         .filter_map(|&a| ast.atom_name(a).map(str::to_string))
@@ -732,6 +835,7 @@ fn ingest_rules(
     kb: &mut Kb,
     forms: &[NodeId],
     declared_macros: &BTreeMap<String, IrMacro>,
+    opts: &LoadOptions,
     errors: &mut Vec<String>,
 ) -> Result<(), Overflow> {
     for &form in forms {
@@ -749,6 +853,9 @@ fn ingest_rules(
             errors.push(format!("malformed ({head} …) at {loc}"));
             continue;
         };
+        if opts.require_why && string_value(ast, kw_get(&kw_pairs(ast, &args), "why")).is_none() {
+            errors.push(missing_why(&head, &name));
+        }
         // A rule named `absent` / `false` / `eq` / `relation` would never
         // fire — the compiler reads those as primitives — so it is rejected
         // rather than registered dead.

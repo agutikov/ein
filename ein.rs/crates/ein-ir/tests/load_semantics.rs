@@ -11,6 +11,9 @@
 //! | the 32-body `(config …)` coercion | [`the_config_coercion_table_is_stable`], against a checked-in table |
 //! | the accumulated message | [`load_errors_accumulate_in_pass_order`], the same way |
 //! | the 18 `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
+//! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag (M1f T1f.5.14.6) | [`require_why_refuses_each_form_without_one`] |
+//! | a macro is asked for a `:why` only in the build whose parser reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
+//! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB | [`require_why_decides_loading_only`] |
 
 use ein_core::{Terms, shape};
 use ein_corpus::{corpus_files, golden, golden_path, repo_root};
@@ -276,4 +279,189 @@ fn load_errors_accumulate_in_pass_order() {
     if let Some(msg) = golden(&golden_path("ein-ir", "load_error_order.txt"), &out) {
         panic!("{msg}");
     }
+}
+
+// ── `:why` required at load — M1f S1f.5.14, T1f.5.14.6 ─────────────────
+
+/// One program's load, under `require_why` or not, from text.
+fn load_text_with(text: &str, require_why: bool) -> Result<String, String> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = ein_ir::parse(&mut ast, text, None).map_err(|e| e.to_string())?;
+    let opts = ein_ir::LoadOptions { require_why };
+    ein_ir::load_with(&mut ast, &mut terms, &forms, None, &opts)
+        .map(|kb| shape(&kb, &terms))
+        .map_err(|e| e.0)
+}
+
+/// The line the loader refuses a form with.
+fn missing(head: &str, name: &str) -> String {
+    format!(
+        "{head} '{name}' has no :why \"…\", which this load requires of every {}",
+        ein_ir::WHY_REQUIRED_OF
+    )
+}
+
+/// **With `require_why` on, a relation, a rule and an hrule without a `:why`
+/// are each refused with one line naming the form; with it off, the default,
+/// each loads** — the user's ruling of 2026-11-08: *":why is optional in
+/// grammar and loader has a flag that makes it required, start with default
+/// false"*. A `:why` that is not a string is no template (the loader's
+/// strings-only guard), so it is refused as none.
+#[test]
+fn require_why_refuses_each_form_without_one() {
+    // Every form carries its `:why`; each case takes one away.
+    let whole = [
+        "(relation owns Person Thing :why \"{?1} owns {?2}\")",
+        "(relation has Person Thing :why \"{?1} has {?2}\")",
+        "(rule keep () :match (owns ?p ?x) :assert (has ?p ?x) :why \"{?p} keeps {?x}\")",
+        "(hrule guess () :match (has ?p ?x) :assert (owns ?p ?x) :why \"suppose {?p} owns {?x}\")",
+        "(owns Ann box)",
+    ];
+    let with = whole.join("\n");
+    let loaded = load_text_with(&with, true).expect("every form carries its :why");
+    assert_eq!(Ok(loaded), load_text_with(&with, false));
+
+    let cases = [
+        (0, "(relation owns Person Thing)", "relation", "owns"),
+        (
+            2,
+            "(rule keep () :match (owns ?p ?x) :assert (has ?p ?x))",
+            "rule",
+            "keep",
+        ),
+        (
+            3,
+            "(hrule guess () :match (has ?p ?x) :assert (owns ?p ?x))",
+            "hrule",
+            "guess",
+        ),
+    ];
+    // A `:why` that is no string: the hand-written parser reads one, and the
+    // loader's strings-only guard takes it for none. The generated grammar
+    // refuses it at the parse, so that build has no such case.
+    #[cfg(not(feature = "generated-parser"))]
+    let cases = [
+        cases[0],
+        cases[1],
+        cases[2],
+        (1, "(relation has Person Thing :why has)", "relation", "has"),
+    ];
+    for (at, without, head, name) in cases {
+        let mut forms = whole;
+        forms[at] = without;
+        let program = forms.join("\n");
+        assert_eq!(
+            load_text_with(&program, true),
+            Err(missing(head, name)),
+            "{without}"
+        );
+        assert!(load_text_with(&program, false).is_ok(), "{without}");
+    }
+
+    // One line per form, in pass order, beside the loader's other refusals.
+    let none = "(rule keep () :match (owns ?p ?x) :assert (has ?p ?x))\n\
+                (relation owns Person Thing)\n(relation owns Person Thing :why \"o\")\n\
+                (hrule guess () :match (has ?p ?x) :assert (owns ?p ?x))";
+    let refused = load_text_with(none, true).expect_err("refused");
+    let lines: Vec<&str> = refused.split("; ").collect();
+    assert_eq!(lines.len(), 4, "{refused}");
+    assert_eq!(lines[0], missing("relation", "owns"));
+    assert!(
+        lines[1].starts_with("duplicate relation 'owns' at "),
+        "{refused}"
+    );
+    assert_eq!(
+        lines[2..],
+        [missing("rule", "keep"), missing("hrule", "guess")]
+    );
+}
+
+/// **A macro is asked for its `:why` only in the build whose parser reads
+/// one.** The hand-written parser refuses a macro's `:why`, so on the shipped
+/// path no program could write what the flag would ask for; the generated
+/// parser reads it (`Macro::why`, S1f.5.5's T3), and a `generated-parser`
+/// build asks for it. S1f.5.5's swap deletes the `cfg`, and this test's first
+/// arm with it.
+#[test]
+fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
+    let load = |text: &str| {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = ein_ir::grammar::parse(&mut ast, text, None).expect("parses");
+        let opts = ein_ir::LoadOptions { require_why: true };
+        ein_ir::load_with(&mut ast, &mut terms, &forms, None, &opts)
+            .map(|_| ())
+            .map_err(|e| e.0)
+    };
+    let with = "(macro owns (?p ?x) (has ?p ?x) :why \"{?p} owns {?x}\")";
+    let without = "(macro owns (?p ?x) (has ?p ?x))";
+    assert_eq!(load(with), Ok(()));
+    #[cfg(not(feature = "generated-parser"))]
+    assert_eq!(load(without), Ok(()));
+    #[cfg(feature = "generated-parser")]
+    assert_eq!(load(without), Err(missing("macro", "owns")));
+}
+
+/// **`require_why` decides only whether a program loads** — the user's
+/// ruling of 2026-11-08, *"yes, the flag only decides loading"*. Over every
+/// corpus program: one that does not load without the flag does not load with
+/// it; one the flag refuses is refused by `has no :why` lines and nothing
+/// else; and one it lets through loads to the same KB, registries, facts and
+/// indexes, as without it. The stdlib's modules are all let through on the
+/// shipped path: its 77 rules carry their `:why`, and it declares no relation
+/// and no hrule. In a `generated-parser` build its two macros, `forall` and
+/// `unknown`, are refused until S1f.5.5's swap writes theirs.
+#[test]
+fn require_why_decides_loading_only() {
+    let (mut same, mut refused) = (0, 0);
+    for path in &corpus_files() {
+        let text = std::fs::read_to_string(path).expect("reads");
+        let load = |require_why: bool| {
+            let mut ast = Ast::new();
+            let mut terms = Terms::new();
+            let forms = ein_ir::parse(&mut ast, &text, path.to_str()).map_err(|e| e.to_string())?;
+            let opts = ein_ir::LoadOptions { require_why };
+            ein_ir::load_with(&mut ast, &mut terms, &forms, path.parent(), &opts)
+                .map(|kb| shape(&kb, &terms))
+                .map_err(|e| e.0)
+        };
+        let rel = path.strip_prefix(repo_root()).unwrap_or(path).display();
+        let Ok(without) = load(false) else {
+            assert!(load(true).is_err(), "{rel}");
+            continue;
+        };
+        match load(true) {
+            Ok(with) => {
+                assert!(with == without, "{rel}: the flag moved the KB it loads");
+                same += 1;
+            }
+            Err(e) => {
+                for line in e.split("; ") {
+                    assert!(
+                        line.contains(" has no :why \"…\", which this load requires of every "),
+                        "{rel}: the flag refused with {line}"
+                    );
+                }
+                refused += 1;
+            }
+        }
+        let in_stdlib = path.starts_with(repo_root().join("stdlib"));
+        #[cfg(feature = "generated-parser")]
+        let in_stdlib = in_stdlib && !path.ends_with("stdlib/macro.ein");
+        #[cfg(feature = "generated-parser")]
+        if path.ends_with("stdlib/macro.ein") {
+            let lines = [missing("macro", "forall"), missing("macro", "unknown")];
+            assert_eq!(load(true), Err(lines.join("; ")), "{rel}");
+        }
+        if in_stdlib {
+            assert!(load(true).is_ok(), "{rel}: a stdlib module is refused");
+        }
+    }
+    // Both outcomes are reached, or the sweep is looking at nothing.
+    assert!(
+        same > 0 && refused > 0,
+        "{same} let through, {refused} refused"
+    );
+    eprintln!("{same} let through, {refused} refused");
 }

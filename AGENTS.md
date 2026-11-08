@@ -64,7 +64,7 @@ constrained-reasoning research.
   [configuration reference](docs/kernel/configuration.md)** — the 2
   `(config …)` flags a program can set (fifteen more retired, nine at M1e2
   S1e2.1a.5, one at S1e2.1a.6, four at S1e2.1c.5 and `warn-derived-naf` at
-  S1e2.2.5, each refused with the stage and why), the 71 CLI options, the two `EIN_*` names the binary
+  S1e2.2.5, each refused with the stage and why), the 78 CLI options, the two `EIN_*` names the binary
   actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve
@@ -440,6 +440,13 @@ constrained-reasoning research.
   `features/12`'s `refuted by` moving under that flag beside one core; both are
   put to the user, Q-M1f.4 and Q-M1f.5
   ([§ T1 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t1-record-2026-11-08)).
+  S1f.5.14's loader flag landed early the same day (*"yes, land the :why flag
+  early"*): `--require-why`, on the seven commands that load a program,
+  refuses a relation, rule or hrule with no `:why`, one line each, and a macro
+  only in a `generated-parser` build until S1f.5.5's swap deletes that `cfg`;
+  default false, so nothing moved, and with it on 274 of the corpus's 339
+  loadable files are refused (2026-11-08,
+  [§ T1f.5.14.6 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5146-record-2026-11-08)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -947,7 +954,7 @@ set.** The shipped binary reads **two** since M1e2 S1e2.3.1 (three after
 S1e2.1c.5, eight before), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` fields and the 71 CLI options beside it and a *does it change the
+`(config …)` fields and the 78 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

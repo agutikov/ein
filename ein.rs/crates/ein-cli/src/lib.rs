@@ -91,6 +91,7 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                         .unwrap_or(ein_render::ColourBy::Relation),
                     !a.get_flag("no-types"),
                     !a.get_flag("no-instances"),
+                    &common::load_options(a),
                 ),
                 Some(("region", a)) => render::cmd_region(
                     a.get_one::<String>("dir").expect("required"),
@@ -117,6 +118,7 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     &file(a),
                     a.get_one::<String>("view").map(String::as_str) == Some("full"),
                     a.get_one::<i64>("region-budget").map(|&b| b as u64),
+                    &common::load_options(a),
                 ),
                 _ => 2,
             }
@@ -127,6 +129,7 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                 a.get_one::<String>("file").expect("required"),
                 a.get_one::<String>("out").expect("required"),
                 a.get_flag("saturate"),
+                &common::load_options(a),
             ),
             _ => 2,
         },

@@ -3,7 +3,8 @@
 **Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
 **Was S1f.5.5**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 4 days
-**Status:** specified 2026-08-28, not started. **Ruled and placed on 2026-11-08**
+**Status:** specified 2026-08-28; **T1f.5.14.6, the loader flag, done 2026-11-08, ahead of the phase** (the user:
+*"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); the rest not started. **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -18,7 +19,10 @@ so it keeps the rule that config never changes the answer
   a template may: `:why` on a relation, a rule, an hrule and a macro, `:goal-text` on a query, `:source` on a fact.
   The hand-written parser refuses a macro's `:why` until S1f.5.5's swap. § T3's macro bullet is settled with it.
 - **The flag**, default false, is this stage's first code task, [T1f.5.14.6](#task-t1f5146--the-loader-flag-default-false-first),
-  ahead of T1's census. Not built.
+  ahead of T1's census. **Built 2026-11-08, early**, on the user's third ruling that day, *"yes, land the :why flag
+  early"*: it landed as its own small commit while the rest of P1f.5 runs, and this stage keeps only the flip and
+  the migration, last in the phase. `--require-why` on every command that loads a program,
+  `ein_ir::LoadOptions::require_why` in the library ([§ T1f.5.14.6 record](#t1f5146-record-2026-11-08)).
 - **Rung (d), *a load error*, is the target**, reached through the flag, where § T4 recommended (a) + (b) + (c)
   and refused (d) in writing. § T4 keeps that argument as the record of what the user overrode, and it stands as
   the risk the flip has to answer.
@@ -207,11 +211,11 @@ re-derive the meaning of.
   every `.ein` anyone writes. T4 is where that is decided and written down.~~
   **Overruled 2026-11-08** (§ Status): the mandate binds every program the
   loader reads with the flag at its default, which is true after T1f.5.14.7.
-- **The flag** (T1f.5.14.6): with it on, a missing `:why` is a load error,
+- **The flag** (T1f.5.14.6), **met 2026-11-08**: with it on, a missing `:why` is a load error,
   one line naming the form; with it off, every program loads as before. It
   decides whether a program loads and nothing a loaded program answers, a test
   holds both, and [`configuration.md`](../../../docs/kernel/configuration.md)
-  has its row.
+  has its row ([§ T1f.5.14.6 record](#t1f5146-record-2026-11-08)).
 - **The flip** (T1f.5.14.7): the default is true, and every program under
   `examples/`, `tests/`, `corpus/` and `stdlib/`, and every inline program of
   the Rust suites, loads with it. No R, N or exit code moved; every golden the
@@ -222,7 +226,9 @@ re-derive the meaning of.
 ## Tasks
 
 *The order since the user's ruling of 2026-11-08 (§ Status): T6, the flag, first; then T1 to T5; then T7, the
-flip, last. T6 and T7 keep the next free numbers, as S1f.5.5's T8 to T10 run before its T4.*
+flip, last. T6 and T7 keep the next free numbers, as S1f.5.5's T8 to T10 run before its T4. T6 ran on 2026-11-08,
+ahead of the rest of P1f.5, on the user's ruling that day (*"yes, land the :why flag early"*); T1 to T5 and T7
+stay last in the phase.*
 
 ### Task T1f.5.14.1 — The census, and the four registers
 
@@ -360,7 +366,9 @@ standard cuts both ways, and a probe that comes back clean is still a result.
 
 The user's ruling of 2026-11-08 (§ Status), and the stage's first code task, ahead of T1, so that T1's census can
 count per root what the flag would refuse with it on. A flag that makes a missing `:why` a load error, **default
-false**, so that nothing moves when it lands: no answer, golden or exit code. Not built.
+false**, so that nothing moves when it lands: no answer, golden or exit code. **Done 2026-11-08**, ahead of the
+phase ([its record](#t1f5146-record-2026-11-08)); what follows is the task as it was specified, and the record says
+what was decided.
 
 **What it requires** is not ruled. **Recommended:** a `:why` on every relation, rule, hrule and macro a program
 writes, the four forms that take one. `:goal-text` and `:source` stay optional: a query's answer renders its
@@ -386,14 +394,108 @@ whether a program loads* in its *does it change the answer* column, and `config_
 **Its test:** with the flag on, a program missing a `:why` on each of the forms it requires is refused with one
 line naming the form; with it off, the default until T7, every corpus program loads as before.
 
+#### T1f.5.14.6 record, 2026-11-08
+
+Landed as its own commit, T1f.5.14.6's, on the user's rulings of 2026-11-08 (*":why is optional in grammar and
+loader has a flag that makes it required, start with default false so not break everything"*; *"yes, the flag only
+decides loading"*; *"yes, land the :why flag early"*). The coordinator decided the four open points the same day,
+on the agent's report: what the flag requires on the shipped path, the stdlib, the surface and the API.
+
+- **What it requires: a `:why "…"` on every `(relation …)`, `(rule …)` and `(hrule …)`** the load reads. A `:why`
+  that is not a string counts as none, as the loader's strings-only guard reads it (the generated grammar refuses
+  one at the parse). `:goal-text` and `:source` stay optional, as § T6 recommended.
+- **A macro only where its parser reads one.** The shipped hand-written parser refuses a macro's `:why`
+  (`parse.rs`' `alt_macro_decl` takes nothing after the body; `(macro mm (?x) (p ?x) :why "…")` is
+  *`m.ein:1:23: unexpected input`*, exit 1, `40272dbd`), and the user's re-plan forbids editing it, so a flag that
+  required one there would refuse a program for a `:why` it cannot write. The macro arm is under
+  `#[cfg(feature = "generated-parser")]`, the feature that routes `ein_ir::parse` through the generated parser,
+  whose `Macro::why` is filled: whichever parser a build has, the flag never asks for what that parser cannot read.
+  [S1f.5.5's T4](s1f.5.5_the_grammar.md#task-t1f554--the-swap), the swap, deletes the `cfg` and in the same
+  commit writes the stdlib's two macros their `:why` (`forall` and `unknown`, `stdlib/macro.ein`, with
+  `MANIFEST.sha256`).
+- **No stdlib exemption.** The check is uniform over every form the loader reads, imports included, and a `.einb`
+  is refused where its `.ein` is (a container re-loads its program from the text it stores). On the shipped path
+  the stdlib passes: its 77 rules carry their `:why` and it declares no relation and no hrule. In a
+  `generated-parser` build with the flag on, its two macros are refused until T4, and so is every program that
+  imports `std.macro` with them.
+- **The surface.** `ein_ir::LoadOptions { require_why }`, default false, with `load_with`, `load_query_with` and
+  `load_file_with` beside the unchanged `load`, `load_query` and `load_file`, and `ein_einb::OpenOptions::load`.
+  On the CLI, `--require-why`, one shared builder in `cmdline.rs` as `--rule-mode` and `--events` are, on the
+  seven commands that load a program: `solve`, `oracle`, `test`, `saturate`, `render kb`, `render lattice` and
+  `kb save`. Not on `render program`, `rules`, `rule` or `constraints`, which parse and never load, nor on `render
+  region`, which loads nothing. The CLI has 78 options where it had 71 (`help_shape.txt`; `config_reference.rs`
+  reads the counts off it). The header leaves the option out, as it leaves `-y`, so a program it lets through
+  prints the same bytes. Not a `(config …)` field and not an `EIN_*` name, for § T6's reasons.
+- **The refusal**, one line per form, `; `-joined with the loader's other refusals in pass order, at the exit code
+  the command gives every load error (1, `ein test`'s 2):
+  `relation 'p' has no :why "…", which this load requires of every relation, rule and hrule` (`… rule and hrule`
+  becomes `… rule, hrule and macro` in a `generated-parser` build).
+  [`defined_behaviour.md` § 4.10](../../../docs/kernel/defined_behaviour.md#410-a-form-with-no-why-under---require-why--m1f-t1f5146)
+  and [`configuration.md` § 3.4](../../../docs/kernel/configuration.md#34-the-option-that-decides-loading) state it.
+- **The tests.** `ein-ir/tests/load_semantics.rs`: `require_why_refuses_each_form_without_one` (each kind refused
+  with its line, and loaded without the flag; the lines in pass order beside another refusal),
+  `a_macro_needs_a_why_only_where_its_parser_reads_one` (both arms: the gate runs it without the feature, and it
+  ran on 2026-11-08 with `cargo test -p ein-ir --features generated-parser --test load_semantics`, which the gate
+  does not run), and `require_why_decides_loading_only` (every corpus program: the flag either refuses it with
+  `has no :why` lines alone, or loads it to the same KB shape; every stdlib module loads under it). And
+  `ein-cli/tests/config_reference.rs`' `require_why_decides_loading_only`: the page's row, the seven commands,
+  each command's refusal and exit code on an inline program missing three `:why`s, a `.einb`, and two corpus
+  programs that carry every `:why`, one importing the stdlib, printing the same bytes with the flag and without.
+  The `ein-ir` sweep's *both outcomes are reached* floor goes when T7 empties the refused side.
+- **No answer, golden or exit code moved**, past the option's own seven lines in `help_shape.txt` and the counts
+  that read them.
+
+**The migration's size**, what T7 has to write. Lexically, every top-level form under `examples/`, `tests/` and
+`corpus/` (2026-11-08, `3998a1c1`): **321 of 407 files** carry a form with no `:why`, **883 relations, 222 rules,
+69 hrules and 5 macros**. The scan reads comments, strings and parentheses and nothing of Ein's grammar:
+
+```sh
+python3 - examples tests corpus <<'PY'
+import pathlib, re, sys, collections
+tok = re.compile(r';[^\n]*|"(?:\\.|[^"\\])*"|[()]|[^\s()";]+')
+miss, files, n = collections.Counter(), set(), 0
+for p in sorted(q for r in sys.argv[1:] for q in pathlib.Path(r).rglob('*.ein')):
+    n += 1; d = 0; head = None; why = False
+    for t in tok.findall(p.read_text()):
+        if t[0] == ';': continue
+        if t == '(':
+            d += 1
+            if d == 1: head, why = None, False
+        elif t == ')':
+            d -= 1
+            if d == 0 and head in ('relation', 'rule', 'hrule', 'macro') and not why:
+                miss[head] += 1; files.add(p)
+        elif d == 1:
+            if head is None: head = t
+            elif t == ':why': why = True
+print(n, 'files,', len(files), 'with a form missing :why:', dict(miss))
+PY
+```
+
+By the loader, with the flag (2026-11-08, the T1f.5.14.6 build): of the 407 files, 68 do not load without it
+(`examples/broken/` and the parse-error fixtures among them); of the 339 that do, **274 are refused** (241 of
+`examples/`'s 331 files, 24 of `tests/`'s 66, 9 of `corpus/`'s 10) and 65 load. The refusals name **806
+relations, 198 rules and 68 hrules**, and no macro on the shipped path; a program that imports a module of the
+corpus is counted with that module's forms. The stdlib's 7 modules all load. Re-taken with
+
+```sh
+for f in $(find examples tests corpus -name '*.ein' | sort); do
+  ein kb save "$f" /tmp/x.einb >/dev/null 2>&1 &&
+  ein kb save --require-why "$f" /tmp/x.einb 2>&1 >/dev/null
+done | sed 's/^kb load error: //; s/; /\n/g' |
+  grep -oE "^(relation|rule|hrule|macro) '[^']*' has no :why" | cut -d' ' -f1 | sort | uniq -c
+```
+
 ### Task T1f.5.14.7 — the flip: default true, and every missing `:why` written (last)
 
 The stage's last task, after T1 to T5 and after every other stage of P1f.5, so that what the others write is in
 the final grammar before its `:why` is written. The default turns to true, and a `:why` is written wherever the
 corpus (`examples/`, `tests/`, `corpus/`), the stdlib and the Rust suites' inline programs lack one. The stdlib's
 two macros, `forall` and `unknown` in `stdlib/macro.ein`, carry none (`grep -n '(macro ' stdlib/*.ein`,
-2026-11-08), so if the flag requires a macro's `:why`, `MANIFEST.sha256` moves; `corpus_shapes.md5` prints `why=`
-per rule and relation and moves too. Every golden it moves is named here before the commit. T1's census counts what is missing before, and nothing after.
+2026-11-08); since T6 the flag asks a macro for its `:why` only once S1f.5.5's swap deletes its `cfg`, and that
+commit writes those two and moves `MANIFEST.sha256` ([§ T6 record](#t1f5146-record-2026-11-08)), so they are not
+this task's. Its size is T6's census, re-taken by T1. `corpus_shapes.md5` prints `why=`
+per rule and relation and moves with what this task writes. Every golden it moves is named here before the commit. T1's census counts what is missing before, and nothing after.
 
 **Each `:why` says what its form says.** None is a placeholder such as *"rule fired"*: that is § T4's argument
 for refusing (d), which the user overrode, and it stands as this task's risk.

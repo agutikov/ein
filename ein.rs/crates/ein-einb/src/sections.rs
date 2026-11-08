@@ -671,10 +671,12 @@ pub fn load_program(
     ast: &mut Ast,
     terms: &mut Terms,
     query: usize,
+    load: &ein_ir::LoadOptions,
 ) -> Result<Kb> {
     let forms = ein_ir::parse(ast, section.text, section.root.as_deref())
         .map_err(|e| EinbError::Program(e.to_string()))?;
-    ein_ir::load_query(ast, terms, &forms, None, query).map_err(|e| EinbError::Program(e.0))
+    ein_ir::load_query_with(ast, terms, &forms, None, query, load)
+        .map_err(|e| EinbError::Program(e.0))
 }
 
 // ── NOGOODS ────────────────────────────────────────────────────────

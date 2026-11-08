@@ -687,7 +687,9 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         region: None,
         scope: None,
     };
-    let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, path) else {
+    let load_opts = crate::common::load_options(m);
+    let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, path, &load_opts)
+    else {
         println!("{}", status("ERROR", path));
         tally.errors += 1;
         // A file that did not load states nothing, because a claim is a

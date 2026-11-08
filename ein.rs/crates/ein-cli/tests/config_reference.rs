@@ -32,6 +32,10 @@
 //!    three-row table at the top of the page repeats three numbers the
 //!    sections below own. Two hundred lines apart inside one file is still a
 //!    parallel copy.
+//! 7. [`require_why_decides_loading_only`] — § 3.4's `--require-why` is on
+//!    the seven commands that load a program, refuses there what its row
+//!    says, and moves nothing a program it lets through prints (M1f
+//!    T1f.5.14.6).
 //!
 //! [`docs/kernel/configuration.md`]: ../../../../docs/kernel/configuration.md
 
@@ -561,6 +565,125 @@ fn the_retired_flags_are_refused_with_why() {
                 "config flag :{flag} was retired at M1e2 {stage}: {why}"
             )),
             "{flag}: {err}"
+        );
+    }
+}
+
+// ── `--require-why`, the loader's flag ─────────────────────────────
+
+/// A program whose relation `p`, rule `r1` and hrule `h1` carry no `:why`,
+/// and which states a claim, so that `ein test` has one to check.
+const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?1} is q\")\n\
+                      (rule r1 () :match (p ?x) :assert (q ?x))\n\
+                      (hrule h1 () :match (q ?x) :assert (q ?x))\n(p a)\n\
+                      (solve :expect (region (model (p a) (q a))))\n";
+
+/// The commands that load a program: every one takes `--require-why`.
+const LOADING: [&[&str]; 7] = [
+    &["solve"],
+    &["oracle"],
+    &["test"],
+    &["saturate"],
+    &["render", "kb"],
+    &["render", "lattice"],
+    &["kb", "save"],
+];
+
+/// **`--require-why` decides whether a program loads, and nothing a loaded
+/// one answers** — M1f S1f.5.14, T1f.5.14.6, on the user's rulings of
+/// 2026-11-08 (*":why is optional in grammar and loader has a flag that makes
+/// it required, start with default false"*; *"yes, the flag only decides
+/// loading"*). Held from the outside, on every command that loads a program:
+/// the page has its row; the golden gives the option to those seven commands
+/// and no other; with it, a program missing three `:why`s is refused with one
+/// line for each, at the exit code that command gives every load error, and
+/// without it the program runs; and two corpus programs that carry every
+/// `:why`, one of them importing the stdlib, print byte for byte the same
+/// with it and without it.
+#[test]
+fn require_why_decides_loading_only() {
+    let text = page();
+    assert!(
+        text.contains("| `--require-why` |"),
+        "docs/kernel/configuration.md has no row for --require-why"
+    );
+    let golden = std::fs::read_to_string(
+        repo_root().join("ein.rs/crates/ein-cli/tests/golden/help_shape.txt"),
+    )
+    .expect("the help-shape golden");
+    let mut takes: Vec<String> = Vec::new();
+    let mut command = String::new();
+    for line in golden.lines() {
+        if let Some(c) = line.strip_prefix("COMMAND ") {
+            command = c.to_string();
+        } else if line.starts_with("  OPTION --require-why ") {
+            takes.push(command.clone());
+        }
+    }
+    let mut want: Vec<String> = LOADING
+        .iter()
+        .map(|c| format!("ein {}", c.join(" ")))
+        .collect();
+    want.sort();
+    takes.sort();
+    assert_eq!(takes, want, "the commands that take --require-why");
+
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the binary runs");
+        (
+            out.status.code(),
+            String::from_utf8_lossy(&out.stdout).into_owned(),
+            String::from_utf8_lossy(&out.stderr).into_owned(),
+        )
+    };
+    let dir = Scratch::new("ein-config-reference");
+    let f = write_fixture(&dir, "no-why", NO_WHY);
+    let f = f.to_string_lossy().to_string();
+    let out = dir.join("no-why.einb").to_string_lossy().to_string();
+    let lines = [("relation", "p"), ("rule", "r1"), ("hrule", "h1")].map(|(head, name)| {
+        format!(
+            "{head} '{name}' has no :why \"…\", which this load requires of every {}",
+            ein_ir::WHY_REQUIRED_OF
+        )
+    });
+    for command in LOADING {
+        let mut args: Vec<&str> = command.to_vec();
+        args.push(&f);
+        if command == ["kb", "save"] {
+            args.push(&out);
+        }
+        let (code, _, err) = run(&args);
+        assert_eq!(code, Some(0), "{args:?} without --require-why: {err}");
+        args.insert(command.len(), "--require-why");
+        let (code, _, err) = run(&args);
+        // `ein test` gives a load error 2, since its 1 means a claim is false.
+        let load_error = if command == ["test"] { 2 } else { 1 };
+        assert_eq!(code, Some(load_error), "{args:?}: {err}");
+        assert!(
+            err.contains(&format!("kb load error: {}", lines.join("; "))),
+            "{args:?}: {err}"
+        );
+    }
+    // A container re-loads its program, and is refused where its `.ein` is.
+    let (code, _, err) = run(&["solve", "--require-why", &out]);
+    assert_eq!(code, Some(1), "{err}");
+    assert!(err.contains(&lines.join("; ")), "{err}");
+
+    for (command, file) in [
+        ("solve", "examples/branching/16_lookahead_two_step_off.ein"),
+        ("solve", "tests/stdlib/slots/01_partition.ein"),
+        ("test", "tests/stdlib/slots/01_partition.ein"),
+    ] {
+        let without = run(&[command, file]);
+        assert_eq!(without.0, Some(0), "{command} {file}: {}", without.2);
+        assert_eq!(
+            run(&[command, "--require-why", file]),
+            without,
+            "{command} {file}: --require-why moved what a program it loads answers"
         );
     }
 }

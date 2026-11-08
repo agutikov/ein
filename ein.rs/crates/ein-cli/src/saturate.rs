@@ -658,6 +658,7 @@ fn bench(
     dump: bool,
     max_steps: Option<i64>,
     progress_every: i64,
+    load: &ein_ir::LoadOptions,
     open_log: impl FnOnce(Option<&SolverConfig>) -> Events,
 ) -> Result<(), String> {
     let src = crate::common::read_text_or_crash(path);
@@ -674,7 +675,7 @@ fn bench(
     // here where `solve` resolves it against the puzzle's own.
     let mut terms = Terms::new();
     let t = Instant::now();
-    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None)
+    let mut kb = ein_ir::load_with(&mut ast, &mut terms, &forms, None, load)
         .map_err(|e| format!("kb load error: {e}"))?;
     println!("kb load:  {} ms", ms(t));
 
@@ -836,6 +837,7 @@ pub fn main(argv: &[String]) -> i32 {
         m.get_flag("dump"),
         m.get_one::<i64>("max-steps").copied(),
         *m.get_one::<i64>("progress-every").unwrap_or(&500),
+        &crate::common::load_options(&m),
         open_log,
     ) {
         Ok(()) => 0,

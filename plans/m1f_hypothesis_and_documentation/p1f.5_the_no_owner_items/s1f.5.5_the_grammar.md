@@ -867,6 +867,15 @@ Q1 to Q4. It carries:
   the keyword. Until the user's rulings of 2026-11-08 this bullet kept `:priority DIGITS`, built as `Node::Int`
   by `b::count`, which T3 dropped. If S1f.5.15 ended in a written refusal, the production is back, and the guard
   is S1f.5.4's again.
+- **A macro's `:why` under `--require-why`** (added 2026-11-08, when S1f.5.14's
+  [T1f.5.14.6](s1f.5.14_nl_required.md#t1f5146-record-2026-11-08) landed the loader's flag early). The flag asks a
+  `(macro …)` for its `:why` only under `#[cfg(feature = "generated-parser")]`, since until this commit the shipped
+  parser refuses one. This commit deletes that `cfg` in `from_ir.rs`' `load_query_with`, with its `not` twin
+  `WHY_REQUIRED_OF`, and the first arm of `load_semantics`' `a_macro_needs_a_why_only_where_its_parser_reads_one`
+  and of `require_why_decides_loading_only`; and it writes the stdlib's two macros their `:why`, `forall` and
+  `unknown` in `stdlib/macro.ein`, with `MANIFEST.sha256` updated, so that the stdlib still loads under the flag.
+  The flag's line names a macro from then on (`relation, rule, hrule and macro`), and `defined_behaviour.md`
+  § 4.10, `configuration.md` § 3.4 and the option's help are restated. The default stays false, so no answer moves.
 - **The JSON writer.** S1f.5.4's [Q4](s1f.5.4_digits_are_names.md#q4--a-name-of-digits-in-summaryjson), decided
   2026-11-08, (a): every name is a JSON string in `summary.json`'s bindings (`region_answer.rs`' `binding`), so
   `(p 007)` and `(p 7)` stay two. `int-goal-binding`'s note is restated (`8`, `-7` and

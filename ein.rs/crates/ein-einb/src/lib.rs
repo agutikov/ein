@@ -318,6 +318,10 @@ pub struct OpenOptions {
     /// always rebuild about the first one, and `ein solve x.einb` would answer
     /// question 1 while saying it answered question 2.
     pub query: usize,
+    /// What the rebuilt program's load requires — M1f T1f.5.14.6. A container
+    /// re-loads its program from the text it stores, so `--require-why`
+    /// refuses a `.einb` exactly where it refuses the `.ein` it was saved from.
+    pub load: ein_ir::LoadOptions,
 }
 
 impl Default for OpenOptions {
@@ -327,6 +331,7 @@ impl Default for OpenOptions {
             verify_digest: true,
             engine: engine_version().to_string(),
             query: 0,
+            load: ein_ir::LoadOptions::default(),
         }
     }
 }
@@ -405,7 +410,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         terms,
         &mut maps,
     )?;
-    let loaded = sections::load_program(&program, &mut ast, terms, opts.query)?;
+    let loaded = sections::load_program(&program, &mut ast, terms, opts.query, &opts.load)?;
 
     // A file written before format 1.2 carries no record's universals (M1e2
     // S1e2.2.21), which a core follows on root's derivations as on a node's:

@@ -61,10 +61,13 @@ const UNSHOWN: [&str; 9] = [
 /// [`UNSHOWN`]'s flags with no value: the trace's shape and stderr's
 /// progress change nothing stdout prints. `-y` adds its own row, the spot
 /// check's, and changes no answer, so the header leaves it out as it leaves
-/// `-j` (C4).
-const UNSHOWN_FLAGS: [&str; 12] = [
+/// `-j` (C4). `--require-why` decides whether the program loads, and a
+/// program it lets through answers what it answers without it, so a run that
+/// prints a header prints the same one (M1f T1f.5.14.6).
+const UNSHOWN_FLAGS: [&str; 13] = [
     "-y",
     "--lattice-sanity-check",
+    "--require-why",
     "--no-diagrams",
     "-G",
     "--full-kb-snapshots",
@@ -252,7 +255,9 @@ pub fn run(m: &ArgMatches) -> i32 {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let t_load = Instant::now();
-    let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(&file))
+    let load_opts = crate::common::load_options(m);
+    let Some(mut kb) =
+        crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
         return 1;
     };
@@ -483,7 +488,9 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     let summary_path = m.get_one::<String>("json-summary").cloned();
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(file))
+    let load_opts = crate::common::load_options(m);
+    let Some(mut kb) =
+        crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(file), &load_opts)
     else {
         return 1;
     };

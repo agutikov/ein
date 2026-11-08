@@ -15,7 +15,7 @@ use ein_ir::Ast;
 use crate::common::read_text_or_crash;
 
 /// `ein kb save <file.ein> <out.einb> [--saturate]`.
-pub fn cmd_save(file: &str, out: &str, saturate: bool) -> i32 {
+pub fn cmd_save(file: &str, out: &str, saturate: bool, load: &ein_ir::LoadOptions) -> i32 {
     let path = PathBuf::from(file);
     let text = read_text_or_crash(&path);
     let mut ast = Ast::new();
@@ -27,7 +27,7 @@ pub fn cmd_save(file: &str, out: &str, saturate: bool) -> i32 {
             return 1;
         }
     };
-    let mut kb = match ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) {
+    let mut kb = match ein_ir::load_with(&mut ast, &mut terms, &forms, path.parent(), load) {
         Ok(kb) => kb,
         Err(e) => {
             eprintln!("kb load error: {e}");
