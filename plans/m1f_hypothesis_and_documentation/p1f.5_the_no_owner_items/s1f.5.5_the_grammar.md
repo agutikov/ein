@@ -66,7 +66,9 @@ there for the user's review** ([§ T9 record](#t9-record-2026-11-08), [the attri
 every one of the 167 files the swap moves, of 513, is credited to a ruling, none to no ruling; the census's 55 are all
 refused; the name-rule build moves 45 of S1f.5.4's 46, the 46th being Q1's witness, whose move T8's rename took away;
 and the generated build answers byte for byte as the name-rule build wherever the name rule alone moves a file.
-No engine code, test, golden, fixture or register row moved. T10 and T4 wait for the user.
+No engine code, test, golden, fixture or register row moved. **The user ruled the stop the same day**
+([§ The review stop ruled](#the-review-stop-ruled-2026-11-08)): `arg-kinds` scoped, the engine's five names
+reserved (T11), the `.einb` budget restated in T4, and the rest as recommended. T10, T11 and then T4 run next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1035,6 +1037,61 @@ T4's expected tokens (recommended: the repairs stand, and the error text folds t
 name* when it picks the three repairs to show). Its § 0 holds the questions, each with a recommendation. **Nothing was
 edited beyond this record**: no engine code, test, golden, fixture or register row moved. T10 and T4 wait for the
 user.
+
+### The review stop ruled, 2026-11-08
+
+The user read the stop the same day and ruled its § 0. None of Q1 to Q4, C1, C2 or the paper grammar's
+defaults was overruled.
+
+- **Item 1, `arg-kinds`:** *"Scope the solve"*. The corpus carries Q-M1f.2 (a)'s rewrite scoped with
+  `(solve :no-hypothesis (r))`, R {∅}, exit 0. This is Q3's (b), and it overtakes Q3 (a). The 2^128 limit stays
+  parked.
+- **Item 4, the engine's names:** *"they are also reserved names"*. That rules out both the rename to `#` and
+  leaving them as ordinary names. The five keep their spellings: `<forced-positive>`,
+  `<monotonic-unconditional>`, `<lookahead-dies-immediately>`, `__closed__` and `__symmetric__`. Each is
+  reserved in the sense
+  [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) and
+  [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md) give the word: written
+  only with its fixed meaning, never redefined. Read as follows (the coordinator's reading, for the user to
+  correct):
+  - **The three writeback names** have no meaning a program can write. A program that writes one, anywhere, is
+    refused, so a printed `:rule <forced-positive>` is always the engine's.
+  - **The dunders** keep the positions the corpus and the stdlib write them in: the relation of a fact, of a
+    `:match` pattern and of an `:assert` (`(__closed__ is-a)`, `(__symmetric__ knows)`, `:assert (__closed__ ?R)`).
+    Any other use is refused: a relation the program declares, a rule's name, or an argument value.
+  - This is T1f.5.5.11 below.
+- **Item 12, a `.einb` cold open:** *"Restate the budget"*. T4 restates design/10 § 6's millisecond and
+  `roundtrip`'s dev-profile 5 ms at what the generated parser costs, as the generator's accepted price. Keeping
+  the parsed tree in the container, a format bump, waits until the millisecond is wanted.
+- **Items 2, 3, 5 to 11:** *"Accept all as recommended"*.
+  - **Item 2:** the W16, W18 and W28 rows whose witness writes `"1"` are restated once, to the refusal, each
+    witness kept as the refusal's witness in its position. The two `activator-text` controls retire, and the
+    two `activator-text-key` seeds stay as seeds refused at the parse.
+  - **Item 3:** S1f.5.1's and S1f.5.2's refusal sentences become notes on the parse error.
+  - **Item 5:** cross-check 1 holds as meant, and `assert-empty` is Q1's witness.
+  - **Item 6:** the ranked repairs stand. The error text folds the eleven words a position gives a meaning to
+    into *a name* when it picks the three repairs to show.
+  - **Item 7:** a register row is filed for the template that cannot name every variable, `open` and owned by
+    S1f.5.4, before anything fixes it (T10's commits).
+  - **Item 8:** the 43 records under `plans/` stay as written. `utils/region_synth.py`, `guard_split.py` and
+    `fuzz_engine.py` lose `:priority`, credited to S1f.5.15, before the swap if that moves no answer.
+  - **Item 9:** W34's witness joins `claim_round_trip`'s exceptions until S1f.5.9 fixes W34.
+  - **Item 10:** a list is the one form after `:hypothesis-relations` and `:no-hypothesis`, and
+    `lattice_relation_keyword_accepts_a_bare_symbol` is restated to the refusal (T4).
+  - **Item 11:** `value_label`'s `KwPair` arm goes with T1f.5.11.2.
+
+### Task T1f.5.5.11 — the engine's names reserved
+
+On item 4's ruling, in its own commit before the swap, like T8, if it moves no corpus answer; otherwise in T4's,
+named there.
+
+- **The rule:** a program that writes one of the three writeback names, in any position, is refused. A program
+  that uses a dunder other than as the relation of a fact, a pattern or an `:assert` is refused.
+- **Where:** in the generated grammar, with its own refusal text, and in the loader where the hand-written
+  parser still reads the program until T4. Whichever holds the rule, both parsers agree.
+- **The tests:** one per name and position, and T9's probe `build/s1f.5.5/t9/probes/engine-names.ein` refused
+  at each of its five names.
+- **The page:** `reserved_engine_strings.md` says the five are refused as a program's own names.
 
 ### Task T1f.5.5.10 — the fixture moves that move no answer
 
