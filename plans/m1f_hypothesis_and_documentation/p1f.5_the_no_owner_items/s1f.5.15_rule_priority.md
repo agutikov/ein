@@ -42,7 +42,8 @@ user.
 an explanation, F22 makes it canonical"*. So no derived order shipped: **T4 is done** (`ccc4e8ca`, [§ T4
 record](#t4-record-2026-11-08)), **T5 removed `:priority`** with the agenda and the boundary FIFO, the band with it,
 every core and `refuted by` it moves named as F22's ([§ T5 record](#t5-record-2026-11-08)), and T6 wrote the
-docs ([§ T6 record](#t6-record-2026-11-08)). **The stage is done.**
+docs ([§ T6 record](#t6-record-2026-11-08)). **The stage is done.** **T1f.5.15.9, 2026-11-08** ([§ T9 record](#t9-record-2026-11-08)): the three scripts under
+`utils/` that still wrote `:priority` lose it, on the user's ruling on S1f.5.5's review stop, moving no answer.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
 And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
@@ -854,6 +855,48 @@ Two follow-ups from the coordinator's review of the stage, one commit (T1f.5.15.
   about the graph (its relations, its edges, *not stratifiable*), never a fact about the run.
   `strata_diagnostic.rs` holds the wording on `features/07` and on `rule-guards`, where no line claims *one of
   several*. The read-out vocabulary's `strata` row ([`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 4) says the same, and [`absent_semantics.md` § The stratification diagnostic](../../../docs/kernel/inference/absent_semantics.md#the-stratification-diagnostic) has every line the diagnostic prints, the row, the sub-row and the `rule-guards` example; `01_grammar.md` and `glossary.md` say the same.
+
+### Task T1f.5.15.9 — the three scripts that still wrote `:priority`
+
+Added 2026-11-08 on the user's ruling on S1f.5.5's T9 review stop, item 8 (*"Accept all as recommended"*): T9
+found three scripts under `utils/` still writing the keyword, which T5's sweep of the corpus roots did not read,
+and the user ruled that they lose it before the swap, credited to this stage, if that moves no answer; the 43
+records under `plans/` stay as written ([S1f.5.5 § The review stop
+ruled](s1f.5.5_the_grammar.md#the-review-stop-ruled-2026-11-08)).
+
+### T9 record, 2026-11-08
+
+One commit (T1f.5.15.9), no engine code. **`utils/region_synth.py`** writes its implications, dead rules and
+obligations with no `:priority 200`, `300` or `500`; **`utils/guard_split.py`** its cells' `gs-mark-*`,
+`gs-owe-*` and `gs-forbid-*` with no `:priority 100`, `500` or `300`; **`utils/fuzz_engine.py`** generates no
+`:priority`, its `mutate` no longer flips one (the other five edits keep their weights, 5 : 3 : 3 : 3 : 3), and its
+minimiser no longer strips one. The fuzzer's generator draws one number fewer per rule, so a seed generates other
+programs than it did; no banked find depends on a seed (each is its minimised program,
+`corpus/fuzz_findings/`).
+
+**It moves no answer**, since the hand-written loader drops a `:priority` (D-15, § T5 record), shown on every
+program each script writes, today's binary on the program with the clause and without
+(`build/s1f.5.5/t10/scripts/pair_answers.py`: exit codes, `ein saturate --dump`'s stored facts, `ein solve
+--json-summary`'s region, N and H, and `ein oracle --dump`'s `region.json`, 2026-11-08):
+
+| what | programs | clauses taken out | answers that differ |
+|---|---:|---:|---:|
+| `region_synth.py --random 300 --seed 1 --max-n 6`, `region_dump`'s draw | 300 | 942 | 0 |
+| `region_synth.py --random 200 --seed 5 --max-n 6`, `detector`'s draw | 200 | 710 | 0 |
+| `fuzz_engine.py`'s generator, seed 7, as written and with each clause taken out | 300, 187 with a clause | 257 | 0 |
+| `guard_split.py`'s cells on `examples/lattice/synth/` and `lattice/10_fifo_gap` | 18 | 4 | 0 |
+
+Each program the two `region_synth.py` scripts write is the old one with its clauses taken out, byte for byte,
+and so is each cell; the two gate tests that read `region_synth.py` pass on the scripts as edited
+(`region_dump::a_random_region_written_as_a_program_comes_back`, *300 targets, seed 1, 0 failed*;
+`detector::a_monotone_verdict_is_one_state_per_node_on_random_programs`, 121 monotone of 200, 2 102 nodes).
+`guard_split.py`'s rows are the same before and after (*unsupported* at cell 0 on six of the eight, the state
+route answering where the prototype expects route 1, and two that do not load since *forbid*): the script is a
+prototype the engine has outrun, and this changes nothing of that. One thing comes back: five of the seven
+programs under `examples/lattice/synth/`, which T5 stripped, are again byte for byte what `region_synth.py
+--example NAME` writes, where none was before; the other two, `three_components` and `trigger_hole`, are frozen
+as W3's witnesses since *forbid*. No page said these scripts write `:priority`, so `utils/README.md` does not
+move.
 
 ## Risks
 

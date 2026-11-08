@@ -316,8 +316,7 @@ def program(spec: dict) -> str:
         rules += [f"(rule imp-{a}-{b} ()",
                   f"  :match  {prem if len(a) == 1 else '(and ' + prem + ')'}",
                   f"  :assert {'(h ' + b + ')' if len(b) == 1 else '(and ' + ' '.join(f'(h {c})' for c in b) + ')'}",
-                  f"  :why    \"{a} brings {b}\"",
-                  "  :priority 200)", ""]
+                  f"  :why    \"{a} brings {b}\")", ""]
     for i, t in enumerate(dead_rules, 1):
         pos, neg = literals(t, cands)
         prem = [f"(h {c})" for c in pos] + [f"(absent (h {c}))" for c in neg]
@@ -328,8 +327,7 @@ def program(spec: dict) -> str:
         rules += [f"(rule dead-{i} ()",
                   f"  :match  {prem[0] if len(prem) == 1 else '(and ' + ' '.join(prem) + ')'}",
                   "  :assert (false)",
-                  f"  :why    \"{why}\"",
-                  "  :priority 300)", ""]
+                  f"  :why    \"{why}\")", ""]
     for j, t in enumerate(owe_rules, 1):
         pos, neg = literals(t, cands)
         key = f"K{j}"
@@ -342,8 +340,7 @@ def program(spec: dict) -> str:
         rules += [f"(rule owe-{j} ()",
                   f"  :match  (and {' '.join(prem)})",
                   "  :assert (open h)",
-                  f"  :why    \"{why}\"",
-                  "  :priority 500)", ""]
+                  f"  :why    \"{why}\")", ""]
     if needs:
         out += [" ".join(needs), ""]
     out += ["(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess: (h {?x})?\")", ""]

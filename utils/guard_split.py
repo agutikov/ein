@@ -430,16 +430,14 @@ def consistency(guards: list[Atom], gamma: int) -> list[list]:
     for i, a in enumerate(guards):
         if gamma >> i & 1:
             out.append(["gs-need", f"K{i}", f"M{i}"])
-            out.append(["rule", f"gs-mark-{i}", [], ":match", atom_form(a), ":assert", ["gs-seen", f"M{i}"],
-                        ":priority", "100"])
+            out.append(["rule", f"gs-mark-{i}", [], ":match", atom_form(a), ":assert", ["gs-seen", f"M{i}"]])
             out.append(["rule", f"gs-owe-{i}", [], ":match",
                         ["and", ["gs-world", "?w"],
                          ["absent", ["and", ["gs-need", f"K{i}", "?k"], ["gs-seen", "?k"]]]],
-                        ":assert", ["open", "gs-seen"], ":why", f'"the guess: {atom_text(a)} holds"',
-                        ":priority", "500"])
+                        ":assert", ["open", "gs-seen"], ":why", f'"the guess: {atom_text(a)} holds"'])
         else:
             out.append(["rule", f"gs-forbid-{i}", [], ":match", atom_form(a), ":assert", ["false"],
-                        ":why", f'"the guess: {atom_text(a)} does not hold"', ":priority", "300"])
+                        ":why", f'"the guess: {atom_text(a)} does not hold"'])
     return out
 
 

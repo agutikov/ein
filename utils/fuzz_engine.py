@@ -95,8 +95,9 @@ Every corpus file under the size limit is a mutation seed.
 
 - `gen` — pure generation.
 - `mutate` — take a corpus file and edit it: drop a form, swap two, rename an
-  atom, flip a `:priority`, add a `(not …)` fact, toggle a config lever. Finds
-  near-misses on programs that are known to be meaningful.
+  atom, add a `(not …)` fact, toggle a config lever. Finds near-misses on
+  programs that are known to be meaningful. (It flipped a `:priority` too,
+  until M1f S1f.5.15 took the keyword out of the language.)
 - `mixed` (default) — both, 60/40.
 
 ## Findings
@@ -310,8 +311,6 @@ class Gen:
                  f"  :assert {self.head(bound)}"]
         if self.r.random() < 0.4:
             lines.append(f'  :why    "{name} fired"')
-        if self.r.random() < 0.3:
-            lines.append(f"  :priority {self.r.choice([10, 100, 200])}")
         out = "\n".join(lines) + ")"
         return out if activator is None else f"{out}\n{activator}"
 
@@ -408,23 +407,21 @@ def mutate(text: str, rng: random.Random) -> str:
     if not forms:
         return text
     for _ in range(rng.randint(1, 3)):
-        pick = rng.random()
-        if pick < 0.25 and len(forms) > 3:
+        # Drop, swap, rename, a `(not …)` fact, a lever: 5 : 3 : 3 : 3 : 3, the
+        # weights they had beside the `:priority` flip M1f S1f.5.15 retired.
+        pick = rng.randrange(17)
+        if pick < 5 and len(forms) > 3:
             forms.pop(rng.randrange(len(forms)))
-        elif pick < 0.4 and len(forms) > 3:
+        elif pick < 8 and len(forms) > 3:
             i, j = rng.sample(range(len(forms)), 2)
             forms[i], forms[j] = forms[j], forms[i]
-        elif pick < 0.55:
+        elif pick < 11:
             atoms = sorted(set(re.findall(r"(?<=[( ])([A-Za-z][A-Za-z0-9_*-]*)", "\n".join(forms))))
             if atoms:
                 a = rng.choice(atoms)
                 forms = [re.sub(rf"(?<=[( ]){re.escape(a)}(?=[ )])", f"{a}x", f)
                          for f in forms]
-        elif pick < 0.7:
-            i = rng.randrange(len(forms))
-            forms[i] = re.sub(r":priority \d+", f":priority {rng.choice([1, 50, 999])}",
-                              forms[i])
-        elif pick < 0.85:
+        elif pick < 14:
             rels = sorted(set(re.findall(r"\(relation ([A-Za-z][\w*-]*)", text)))
             if rels:
                 forms.append(f"(not ({rng.choice(rels)} m1 m2))")
@@ -608,7 +605,7 @@ def minimise(text: str, case: Path, fails) -> str:
                 break
         if changed:
             continue
-        for pat in (r"\s*:why\s+\"[^\"]*\"", r"\s*:priority \d+", r"\s*:source \"[^\"]*\""):
+        for pat in (r"\s*:why\s+\"[^\"]*\"", r"\s*:source \"[^\"]*\""):
             trial = re.sub(pat, "", best)
             if trial != best and fails(trial):
                 best, changed = trial, True
