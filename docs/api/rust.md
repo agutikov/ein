@@ -98,8 +98,10 @@ copy compiled in — and `ein --version` prints which one answered.
 For a caller that already has the text, `ein_ir::parse(&mut ast, text,
 filename)` returns the top-level forms and `ein_ir::load(&mut ast, &mut terms,
 &forms, base_dir)` builds the KB. Both errors are structured values, not
-strings you have to re-parse: `ParseError` carries the location,
-`KbLoadError` the accumulated problems. **That is the difference a binding
+strings you have to re-parse: `ParseError` carries every error recovery
+reached, each with its line, column, notes and ranked repairs (since M1f
+S1f.5.5's swap, when the parser generated from the grammar became the only
+one), `KbLoadError` the accumulated problems. **That is the difference a binding
 would not have given** — the CLI can only hand back an exit code and a line of
 text, which is why M2's validator argues for linking rather than for a Python
 module.

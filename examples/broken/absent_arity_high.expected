@@ -1,0 +1,7 @@
+{FILE}:15:38: unexpected `(`
+  repair: Insert `)`
+{FILE}:16:3: unexpected `:assert`
+  repair: Delete `:assert`, Shift `(`, Insert `rule`, Shift `q`, Insert `(`
+  repair: Delete `:assert`, Shift `(`, Insert `hrule`, Shift `q`, Insert `(`
+  repair: Delete `:assert`, Shift `(`, Shift `q`, Delete `?x`, Delete `)`
+  and 1 more repair

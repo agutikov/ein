@@ -296,35 +296,59 @@ fn every_state_file_reloads_to_its_own_facts_by_value_7() {
     shard(7);
 }
 
-/// The witnesses: the probe the inventory of 2026-11-05 re-took S-5 on, and
-/// W16's pair, whose states hold the int `1` and the name `"1"` in one
-/// position and which `answer_dump.rs` named as the files the printer could
-/// not write.
+/// The witnesses: programs in the final grammar whose names exercise the
+/// printer, written here, and `syntax/arg-kinds`.
+///
+/// Restated at S1f.5.5's swap (T1f.5.5.4). Until then they were the probe the
+/// inventory of 2026-11-05 re-took S-5 on and W16's pair, whose states held the
+/// int `1` and the name `"1"` in one position and which `answer_dump.rs` named
+/// as the files the printer could not write, and `arg-kinds`. Each writes a
+/// string as a value, which S1f.5.2's ruling refuses at the parse, and since
+/// S1f.5.4's name rule there is no int: a run of digits is a name. What the
+/// printer must now get right is the name rule's characters, so the
+/// witnesses write `7` beside `07`, `-7` and `1..5`, every decorator, and the
+/// brackets, as fact arguments, candidates, nested facts and derived facts.
 #[test]
 fn the_witnesses_reload_to_their_states() {
     let root = Scratch::new("ein-answer-round-trip-w");
+    let digits = root.join("digits.ein");
+    std::fs::write(
+        &digits,
+        ";; A run of digits is a name: `7`, `07`, `-7` and `1..5` are four.\n\
+         (relation seen Thing :why \"{?1} is seen\")\n\
+         (relation pick Thing :why \"{?1} is picked\")\n\
+         (relation pair Thing Thing :why \"{?1} pairs with {?2}\")\n\
+         (seen 7) (seen 07) (seen -7) (seen 1..5)\n\
+         (rule pairs () :match (and (pick ?x) (seen ?y) (neq ?x ?y)) :assert (pair ?x ?y)\n\
+           :why \"{?x}, picked, pairs with {?y}\")\n\
+         (solve :hypothesis-relations (pick))\n",
+    )
+    .expect("the witness is written");
+    let decorated = root.join("decorated.ein");
+    std::fs::write(
+        &decorated,
+        ";; The name rule's decorators and brackets, bare and in a nested fact.\n\
+         (relation has Thing Thing :why \"{?1} has {?2}\")\n\
+         (relation tag Thing :why \"{?1} is tagged\")\n\
+         (relation kept Thing :why \"{?1} is kept\")\n\
+         (has $x [a]) (has a/b {b}) (has it's f') (has <= (box !x @x ~))\n\
+         (has a^b%=+& a.b-c_d*)\n\
+         (hrule tags () :match (has ?x ?y) :assert (tag ?x) :why \"{?x} may be tagged\")\n\
+         (rule keep () :match (and (tag ?x) (has ?x ?y)) :assert (kept ?y) :why \"{?y} kept\")\n\
+         (solve :hrules (tags))\n",
+    )
+    .expect("the witness is written");
     let mut bad = Vec::new();
     let mut states = 0;
     for (i, file) in [
-        "plans/m1e2_correctness/inventory_2026-11-05/probes/n5_string_space.ein",
-        "plans/m1e2_correctness/inventory_2026-11-05/probes/n5_int_vs_string.ein",
-        "examples/ein-bugs/activator-text-int-and-string.ein",
-        "examples/ein-bugs/activator-text-string-then-int.ein",
+        digits.to_str().expect("utf-8"),
+        decorated.to_str().expect("utf-8"),
         "examples/syntax/arg-kinds.ein",
     ]
     .iter()
     .enumerate()
     {
         let wrote = check(file, &root.join(format!("w{i}")), &mut bad);
-        // M1f S1f.5.3: `arg-kinds` writes a range, and the parser refuses it
-        // until S1f.5.4 (`ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways).
-        if ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(file) {
-            assert!(
-                wrote.is_none(),
-                "{file}: refused until S1f.5.4, and it answered"
-            );
-            continue;
-        }
         states += wrote.unwrap_or_else(|| panic!("{file}: no state written"));
     }
     assert!(states >= 40, "{states}");

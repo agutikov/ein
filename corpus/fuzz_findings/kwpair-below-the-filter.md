@@ -6,10 +6,20 @@ commit `38b2bff3`**, on the user's ruling (a), written down in
 [`defined_behaviour.md` § 2.5](../../docs/kernel/defined_behaviour.md#25-a-render-view-labels-an-ir-form-as-written-a-keyword-pair-as-key-value): `dot_util::value_label` labels a keyword pair
 `:key value` for every caller, the spelling `ir_dot`'s `(query …)` note already
 used, so both views below draw each `(step …)` as written and exit 0. The
-witness is banked as the `regression` corpus entry
-[`examples/ein-bugs/kwpair-below-the-filter.ein`](../../examples/ein-bugs/kwpair-below-the-filter.ein),
-whose `render constraints` and `render program` runs `corpus_cli.rs` holds at
-exit 0; `corpus_shapes.rs` and `dot_wellformed.rs` run every view over it. The
+witness was banked as the `regression` corpus entry
+`examples/ein-bugs/kwpair-below-the-filter.ein`, whose `render constraints`
+and `render program` runs `corpus_cli.rs` held at exit 0; `corpus_shapes.rs`
+and `dot_wellformed.rs` ran every view over it.
+
+**Refused at the parse since M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-08)**, at
+its first `:rule`: no keyword pair parses inside a term or a nested fact,
+S1f.5.11's ruling (its default; Q-M1e2.28). The program that reached
+`value_label`'s keyword-pair arm is no program now, a parse error rather than a
+load one, so the witness moved to
+[`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein),
+a `parse-negative` entry whose `.expected` is the report, and every run of it
+exits 1. The arm goes with S1f.5.11's T1f.5.11.2. The `.ein` beside this file
+stays a fuzz seed, its recorded outcome the parse refusal (`fuzz_seeds.txt`). The
 second door, `render program`, arrived at M1e2 S1e2.1.3, after the finding.
 This file and the `.ein` beside it stay: the panic signature below is what
 `utils/fuzz_engine.py` dedups a recurrence on, and the `.ein` is one of the

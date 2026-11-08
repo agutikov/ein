@@ -35,14 +35,14 @@ use std::path::{Path, PathBuf};
 
 /// Parse and load inline source with no base directory — `from_ir`.
 ///
-/// Fixtures here author rule provenance with `:rule R :using (via (p a b) …)`.
-/// The wrapper head — `via` throughout this file, `p` in
-/// `examples/broken/load/derivation_cycle.ein` — is read by nothing: `:using`
-/// takes one value, and the headless list `((p a b) …)` the engine's own dumps
-/// would prefer is [not in the
-/// grammar](../../../../docs/kernel/ir/03-ein-lang/05_inspirations.md). Every
-/// *inner* S-form is interned as a premise proposition, which is why a premise
-/// may name a fact this KB never held.
+/// Fixtures here author rule provenance with `:rule R :using ((p a b) …)`, a
+/// list of premises, each a fact: the paper grammar's default 2, since M1f
+/// S1f.5.5's swap (T1f.5.5.4). Until then `:using` took one value, the
+/// headless list was not in the grammar, and the fixtures wrapped the
+/// premises in a head the loader read nothing of (`via` throughout this file,
+/// `p` in `examples/broken/load/derivation_cycle.ein`), which the grammar
+/// refuses. Every premise is interned as a proposition, which is why a
+/// premise may name a fact this KB never held.
 fn kb_of(text: &str) -> (Terms, Kb) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -124,7 +124,7 @@ fn a_facts_origin_is_a_three_way_split_over_its_provenance() {
         r#"
         (relation r T T)
         (r a b :source "(1)")
-        (r c d :rule step :using (via (r a b)))
+        (r c d :rule step :using ((r a b)))
         (r e f)
         "#,
     );
@@ -438,14 +438,17 @@ fn a_symbols_import_pulls_the_name_reference_closure() {
 /// negation model. A guard written as a prefix test would reject `eq-elim` and
 /// `absent-of`, which are just names that begin with kernel words.
 ///
-/// The names that can *reach* the guard are `absent`, `eq`, `false`, `open`,
-/// `relation` and, since M1f S1f.5.5's T1f.5.5.11, the kernel's dunders
-/// `__closed__` and `__symmetric__` (Q-M1f.7 (b)) — the other four in
-/// [`ein_core::RESERVED`] (`and`, `neq`, `not`, `or`) are among the eleven
-/// words `SYMBOL`'s negative lookahead
-/// rejects, so `(hrule not …)` is a parse error and never becomes a load error
-/// at all. `open` joined the list at M1d S1d.2.3 and joined this sentence at
-/// M1e S1e.2.1, which is the same eight-against-nine drift `CO-H2` was.
+/// The names that can *reach* the guard were `absent`, `eq`, `false`, `open`
+/// and `relation` until M1f S1f.5.5's swap (T1f.5.5.4), and since its
+/// T1f.5.5.11 the kernel's dunders `__closed__` and `__symmetric__` (Q-M1f.7
+/// (b)); the other four in [`ein_core::RESERVED`] (`and`, `neq`, `not`, `or`)
+/// were among the words the hand-written lexer's `SYMBOL` rejected, so
+/// `(hrule not …)` was a parse error and never a load error. `open` joined
+/// the list at M1d S1d.2.3 and joined this sentence at M1e S1e.2.1, which is
+/// the same eight-against-nine drift `CO-H2` was. **Since the swap only the
+/// dunders reach it**: the other nine are tokens of their own that no
+/// declarator takes (the paper grammar's default 1), refused at the parse
+/// where a declarator binds one.
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) = kb_of("(not (likes A B) :source \"(1)\") (relation likes T T)");
@@ -464,16 +467,42 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     assert!(names(&terms, &kb.program().rules).contains(&"eq-elim".to_string()));
     assert!(names(&terms, &kb.program().relations).contains(&"absent-of".to_string()));
 
-    // Non-vacuity: the guard is live on the whole names those two extend.
-    for (declarator, source) in [
+    // Non-vacuity: the guard is live on the whole names, the dunders since
+    // the swap; the names those two extend are refused at the parse.
+    for (declarator, source, at) in [
         (
             "rule",
             "(rule eq () :match (x ?a) :assert (y ?a) :why \"w\")",
+            "1:7: unexpected `eq`",
         ),
-        ("relation", "(relation absent T T)"),
+        (
+            "relation",
+            "(relation absent T T)",
+            "1:11: unexpected `absent`",
+        ),
         (
             "hrule",
             "(hrule false () :match (x ?a) :assert (y ?a) :why \"w\")",
+            "1:8: unexpected `false`",
+        ),
+    ] {
+        let e = parse(&mut Ast::new(), source, None).expect_err(declarator);
+        let first = &e.errors[0];
+        assert_eq!(
+            format!("{}:{}: {}", first.line, first.col, first.what),
+            at,
+            "{declarator}: {e}"
+        );
+    }
+    for (declarator, source) in [
+        (
+            "rule",
+            "(rule __closed__ () :match (x ?a) :assert (y ?a) :why \"w\")",
+        ),
+        ("relation", "(relation __symmetric__ T T)"),
+        (
+            "hrule",
+            "(hrule __closed__ () :match (x ?a) :assert (y ?a) :why \"w\")",
         ),
     ] {
         let msg = load_error(source);
@@ -542,9 +571,9 @@ fn diamond() -> (Terms, Kb) {
         (relation r T T) (relation d T T) (relation top T T)
         (r A B :source "(1)")
         (r B C :source "(2)")
-        (d A C :rule compose :using (via (r A B) (r B C)))
-        (d C A :rule flip :using (via (r B C)))
-        (top A A :rule join :using (via (d A C) (d C A)))
+        (d A C :rule compose :using ((r A B) (r B C)))
+        (d C A :rule flip :using ((r B C)))
+        (top A A :rule join :using ((d A C) (d C A)))
         "#,
     )
 }
@@ -1187,7 +1216,7 @@ fn a_snapshot_still_resolves_its_premises_after_the_source_moves_on() {
         r#"
         (relation p T T) (relation q T T)
         (p a b :source "(1)")
-        (q a b :rule p-to-q :using (via (p a b)))
+        (q a b :rule p-to-q :using ((p a b)))
         "#,
     );
     let derived = fact(&terms, &kb, "(q a b)");

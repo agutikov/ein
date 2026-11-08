@@ -1,28 +1,29 @@
-//! The generated parser: S1f.5.5's grammar, `src/ein.l` and `src/ein.y` in
-//! grmtools' notation, compiled by `build.rs` (M1f S1f.5.5, T1f.5.5.3).
+//! The parser: S1f.5.5's grammar, `src/ein.l` and `src/ein.y` in grmtools'
+//! notation, compiled by `build.rs` (M1f S1f.5.5). Since the swap,
+//! T1f.5.5.4, it is the only parser: [`crate::parse()`] is [`parse`], and the
+//! hand-written lexer and parser, `lex.rs` and `parse.rs`, are gone.
 //!
-//! **It sits beside the hand-written parser and is not the default path.**
-//! Every command reads its program through [`crate::parse()`], which is the
-//! hand-written parser unless `ein-ir` is built with its `generated-parser`
-//! feature; this module is reached from that hook, from its own tests, and
-//! from T1f.5.5.9's comparison. The swap (T1f.5.5.4) makes it the only parser.
-//!
-//! **What it builds is the hand-written parser's tree**, node for node and
+//! **What it builds is the tree the loader reads**, node for node and
 //! [`Loc`](crate::Loc) for `Loc`, through one builder call per grammar action
-//! (`grammar/build_ast.rs`), so the loader reads it unchanged. Where the two
-//! languages differ, they differ by a ruling of this phase, which T1f.5.5.9
-//! attributes file by file; `ein-ir/tests/generated_parser.rs` banks every
-//! corpus file where the trees are not the same.
+//! (`grammar/build_ast.rs`): the tree the hand-written parser built, where the
+//! two languages agree, and where they differ, by a ruling of this phase,
+//! each attributed file by file before the swap (T1f.5.5.9,
+//! `plans/…/s1f.5.5_attribution.md`).
 //!
-//! **A refused file reports every error recovery reaches** ([`Refusal`]), each
-//! with its position, what was found there, and at most three of the repairs
-//! CPCT+ ranked, the first being the one the parse went on with, then a count
-//! of the rest. Recovery is deterministic: `lrpar` is the
+//! **A refused file reports every error recovery reaches** ([`ParseError`]),
+//! each with its true position, what was found there, its notes, and at most
+//! three of the repairs CPCT+ ranked, the first being the one the parse went
+//! on with, then a count of the rest. Where a place takes a name, the eleven
+//! words a position gives a meaning to ([`POSITION_WORDS`]) are names there
+//! too, so the repairs that differ only in which of them, or which name, they
+//! insert are one repair, *Insert a name* (the user's ruling of 2026-11-08 on
+//! the review stop's item 6). Recovery is deterministic: `lrpar` is the
 //! patched copy under `ein.rs/vendor/lrpar` (F11), which ranks equal repairs
 //! in the order its search found them and stops at a count of search steps,
 //! [`RECOVERY_STEP_BUDGET`], rather than at a wall-clock time; a report cut
 //! there says so after its last error. A file that parses pays nothing for
-//! recovery: the recoverer is built at the first error.
+//! recovery: the recoverer is built at the first error. **A refused file stays
+//! refused**: the repairs are advice, and no repaired program is loaded.
 //!
 //! **A program nested past [`NESTING_LIMIT`] is refused before it is parsed**
 //! (F10). The LR parser survives any depth, but macro expansion, the loader
@@ -36,6 +37,7 @@ use lrlex::{DefaultLexerTypes, LRNonStreamingLexerDef, LexerDef};
 use lrpar::{LexError, LexParseError, Lexeme, NonStreamingLexer, ParseRepair};
 
 use crate::ast::{Ast, NodeId};
+use ein_core::config::RETIRED;
 
 mod build_ast;
 use build_ast as b;
@@ -58,6 +60,29 @@ pub use lrpar::parser::RECOVERY_STEP_BUDGET;
 /// rest.
 pub const REPAIRS_SHOWN: usize = 3;
 
+/// The twelve words that are never a name: tokens of their own in `ein.l`,
+/// each a declarator or a kernel connective. `ein_core::text::LEXER_KEYWORDS`
+/// is the printer's copy, which `the_reserved_words_are_the_printers` holds
+/// to this one.
+pub const RESERVED_WORDS: [&str; 12] = [
+    "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
+    "import",
+];
+
+/// The eleven words a position gives a meaning to (the paper grammar's
+/// default 1): tokens of their own in `ein.l`, and names wherever a name goes
+/// (`ein.y`'s `Name`), so `(p model)` is a fact and `(relation step T)` a
+/// declaration.
+pub const POSITION_WORDS: [&str; 11] = [
+    "relation", "step", "eq", "absent", "false", "true", "open", "model", "region", "merged",
+    "owing",
+];
+
+/// The `(query …)` keywords that choose the lattice, which belong on
+/// `(solve …)` (M1e2 S1e2.1a.4): a query that writes one is refused at the
+/// keyword, with a note saying where it goes (the paper grammar's default 5).
+const LATTICE_KEYWORDS: [&str; 3] = [":hrules", ":hypothesis-relations", ":no-hypothesis"];
+
 /// One error of a refused file.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SyntaxError {
@@ -68,16 +93,22 @@ pub struct SyntaxError {
     /// What is wrong there: `unexpected …`, a character no token starts
     /// with, or the nesting limit.
     pub what: String,
+    /// What the error means, where a ruling of this phase says more than the
+    /// token does: a bare `_` (S1f.5.1), a string as a value (S1f.5.2), a
+    /// query's lattice keyword and a retired `(config …)` flag (the paper
+    /// grammar's default 5).
+    pub notes: Vec<String>,
     /// The first [`REPAIRS_SHOWN`] repairs recovery ranked, each a sequence of
-    /// steps; the first is the one the parse went on with.
+    /// steps, synonyms folded into one ([`crate::grammar`]); the first is the
+    /// one the parse went on with.
     pub repairs: Vec<String>,
-    /// How many ranked repairs the report leaves out.
+    /// How many ranked repairs the report leaves out, synonyms folded.
     pub more_repairs: usize,
 }
 
 /// A refused file: every error recovery reached, in file order.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Refusal {
+pub struct ParseError {
     pub file: String,
     pub errors: Vec<SyntaxError>,
     /// Recovery stopped at [`RECOVERY_STEP_BUDGET`] at the last error, so the
@@ -88,33 +119,46 @@ pub struct Refusal {
     pub recovery_steps: u64,
 }
 
-impl fmt::Display for Refusal {
+impl ParseError {
+    /// The first error's line and column: where the file stops being Ein.
+    pub fn position(&self) -> (u32, u32) {
+        self.errors.first().map_or((0, 0), |e| (e.line, e.col))
+    }
+}
+
+impl fmt::Display for ParseError {
+    /// One line an error, `file:line:col: what`, then its notes and repairs
+    /// indented under it, and, where recovery was cut, a last line saying so.
+    /// No trailing newline.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut lines = Vec::new();
         for e in &self.errors {
-            writeln!(f, "{}:{}:{}: {}", self.file, e.line, e.col, e.what)?;
+            lines.push(format!("{}:{}:{}: {}", self.file, e.line, e.col, e.what));
+            for n in &e.notes {
+                lines.push(format!("  note: {n}"));
+            }
             for r in &e.repairs {
-                writeln!(f, "  repair: {r}")?;
+                lines.push(format!("  repair: {r}"));
             }
             if e.more_repairs > 0 {
                 let s = if e.more_repairs == 1 { "" } else { "s" };
-                writeln!(f, "  and {} more repair{s}", e.more_repairs)?;
+                lines.push(format!("  and {} more repair{s}", e.more_repairs));
             }
         }
         if self.cut
             && let Some(last) = self.errors.last()
         {
-            writeln!(
-                f,
+            lines.push(format!(
                 "{}:{}:{}: recovery stopped here, at its budget of {} steps: \
                  errors after this one are not reported",
                 self.file, last.line, last.col, RECOVERY_STEP_BUDGET
-            )?;
+            ));
         }
-        Ok(())
+        f.write_str(&lines.join("\n"))
     }
 }
 
-impl std::error::Error for Refusal {}
+impl std::error::Error for ParseError {}
 
 /// The lexer, built once: its rules are regular expressions, compiled when
 /// it is made.
@@ -123,18 +167,22 @@ fn lexerdef() -> &'static LRNonStreamingLexerDef<DefaultLexerTypes<u32>> {
     DEF.get_or_init(ein_l::lexerdef)
 }
 
-/// Parse `text` with the generated parser, appending its top-level forms to
-/// `ast`, as [`crate::parse()`] does with the hand-written one.
+/// Parse `text` into its top-level forms, appending them to `ast`.
 ///
 /// `filename` is recorded in every `Loc` and in the report; `None` becomes
-/// `<string>`. On a refusal nothing the parse built stays in the arena.
-pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<NodeId>, Refusal> {
+/// `<string>`. On a refusal nothing the parse built stays in the arena, and
+/// the report holds every error recovery reached.
+pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<NodeId>, ParseError> {
+    ein_core::counters::bump(|k| {
+        k.parse_call += 1;
+        k.parse_bytes += text.len() as u64;
+    });
     let file = filename.unwrap_or("<string>").to_string();
     let lexer = lexerdef().lexer(text);
     let lines = b::Lines::new(text);
     if let Some(at) = past_the_nesting_limit(&lexer) {
         let (line, col) = lines.line_col(at);
-        return Err(Refusal {
+        return Err(ParseError {
             file,
             errors: vec![SyntaxError {
                 line,
@@ -142,6 +190,7 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
                 what: format!(
                     "this `(` nests deeper than the limit of {NESTING_LIMIT} parentheses"
                 ),
+                notes: Vec::new(),
                 repairs: Vec::new(),
                 more_repairs: 0,
             }],
@@ -160,11 +209,13 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
     Err(report(file, text, &lexer, &lines, &errors))
 }
 
-/// Does the generated lexer read `text` as exactly one `NAME`, spelling all of
-/// it? The name rule as the lexer applies it: a reserved word (`rule`) is a
-/// token of its own and no `NAME`, and so is a run with a character the rule
-/// leaves out. `ein-ir/tests/generated_parser.rs` holds every name the loader
-/// makes up to it (`ein_core::text::INTERNAL_NAMES`, T1f.5.5.8).
+/// Does the lexer read `text` as exactly one `NAME`, spelling all of it? The
+/// name rule as the lexer applies it: a reserved word (`rule`) is a token of
+/// its own and no `NAME`, and so is a run with a character the rule leaves
+/// out. The printer's statement of it, `ein_core::text::is_symbol`, is held
+/// to this one (`the_printers_symbol_is_the_lexers`), and every name the
+/// loader makes up is held not to be one (`ein_core::text::INTERNAL_NAMES`,
+/// T1f.5.5.8).
 pub fn is_one_name(text: &str) -> bool {
     let lexer = lexerdef().lexer(text);
     let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
@@ -172,13 +223,7 @@ pub fn is_one_name(text: &str) -> bool {
     let (Some(Ok(l)), None) = (tokens.next(), tokens.next()) else {
         return false;
     };
-    l.span().start() == 0
-        && l.span().len() == text.len()
-        && lexerdef()
-            .iter_rules()
-            .find(|r| r.tok_id() == Some(l.tok_id()))
-            .and_then(|r| r.name())
-            == Some("NAME")
+    l.span().start() == 0 && l.span().len() == text.len() && rule_name(l.tok_id()) == Some("NAME")
 }
 
 /// The byte offset of the first `(` that opens one level past
@@ -211,7 +256,7 @@ fn report(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
     lines: &b::Lines,
     errors: &[Error],
-) -> Refusal {
+) -> ParseError {
     let mut out = Vec::new();
     let (mut cut, mut steps) = (false, 0);
     for e in errors {
@@ -224,6 +269,7 @@ fn report(
                     line,
                     col,
                     what: format!("no token starts with {}", shown(&ch)),
+                    notes: Vec::new(),
                     repairs: Vec::new(),
                     more_repairs: 0,
                 }
@@ -233,33 +279,30 @@ fn report(
                 steps = p.recovery_steps();
                 let l = p.lexeme();
                 let (line, col) = lines.line_col(l.span().start());
+                let found = lexer.span_str(l.span());
                 let what = match token_display(l.tok_id()) {
                     None => "unexpected end of input".to_string(),
                     Some((name, description)) => {
-                        let found = shown(lexer.span_str(l.span()));
                         if description {
-                            format!("unexpected {found}: {name}")
+                            format!("unexpected {}: {name}", shown(found))
                         } else {
-                            format!("unexpected {found}")
+                            format!("unexpected {}", shown(found))
                         }
                     }
                 };
-                let ranked = p.repairs();
+                let ranked = folded(lexer, p.repairs());
                 SyntaxError {
                     line,
                     col,
                     what,
-                    repairs: ranked
-                        .iter()
-                        .take(REPAIRS_SHOWN)
-                        .map(|r| repair(lexer, r))
-                        .collect(),
+                    notes: notes(lexer, l, found),
+                    repairs: ranked.iter().take(REPAIRS_SHOWN).cloned().collect(),
                     more_repairs: ranked.len().saturating_sub(REPAIRS_SHOWN),
                 }
             }
         });
     }
-    Refusal {
+    ParseError {
         file,
         errors: out,
         cut,
@@ -267,16 +310,92 @@ fn report(
     }
 }
 
-/// How a report names a token: its `%epp` where that differs from its name,
-/// so a description (`("a name", true)`), and otherwise its name (`(":why",
-/// false)`, `(")", false)`); `None` for the end of the input, which no lexer
-/// rule makes. A token's name is its lexer rule's, whose id `build.rs` set to
-/// the parser's.
-fn token_display(tok: u32) -> Option<(&'static str, bool)> {
-    let name = lexerdef()
+/// A lexer rule's name, by its token id, which `build.rs` set to the
+/// parser's: `NAME`, `TEXT`, `UNDERSCORE`, or the token's own text (`:why`,
+/// `(`, `model`); `None` for the end of the input, which no rule makes.
+fn rule_name(tok: u32) -> Option<&'static str> {
+    lexerdef()
         .iter_rules()
         .find(|r| r.tok_id() == Some(tok))?
-        .name()?;
+        .name()
+}
+
+/// What a ruling of this phase says about the token an error found, beyond
+/// the token itself: the review stop's item 3 (S1f.5.1's and S1f.5.2's
+/// sentences) and the paper grammar's default 5 (the loader's two lines a
+/// keyword's position no longer reaches).
+fn notes(
+    lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
+    at: &lrlex::DefaultLexeme<u32>,
+    found: &str,
+) -> Vec<String> {
+    let mut out = Vec::new();
+    match rule_name(at.tok_id()) {
+        Some("UNDERSCORE" | "VARUNDERSCORE") => out.push(format!(
+            "{found} is reserved and names nothing: where any value will do, write a variable \
+             used once"
+        )),
+        Some("TEXT") => out.push(format!(
+            "{} is a string, and a string is natural-language text, written only after :why, \
+             :source or :goal-text: write a name bare",
+            cut_at_40(found)
+        )),
+        Some(k) if LATTICE_KEYWORDS.contains(&k) && top_form(lexer, at) == Some("query") => {
+            out.push(format!(
+                "{k} chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one \
+                 program, one lattice"
+            ));
+        }
+        _ if found.starts_with(':') && top_form(lexer, at) == Some("config") => {
+            if let Some((flag, stage, why)) = RETIRED.iter().find(|(f, _, _)| *f == &found[1..]) {
+                out.push(format!(
+                    "config flag :{flag} was retired at M1e2 {stage}: {why}"
+                ));
+            }
+        }
+        _ => {}
+    }
+    out
+}
+
+/// The head of the top-level form the lexeme `at` stands in, as written:
+/// `query`, `config`, a fact's relation; `None` at the top level.
+fn top_form<'i>(
+    lexer: &dyn NonStreamingLexer<'i, DefaultLexerTypes<u32>>,
+    at: &lrlex::DefaultLexeme<u32>,
+) -> Option<&'i str> {
+    let (mut depth, mut head, mut opened) = (0usize, None, false);
+    for l in lexer.iter().flatten() {
+        if l.span().start() >= at.span().start() {
+            break;
+        }
+        let t = lexer.span_str(l.span());
+        if opened && depth == 1 {
+            head = Some(t);
+        }
+        opened = false;
+        match t {
+            "(" => {
+                depth += 1;
+                opened = depth == 1;
+            }
+            ")" => {
+                depth = depth.saturating_sub(1);
+                if depth == 0 {
+                    head = None;
+                }
+            }
+            _ => {}
+        }
+    }
+    if depth == 0 { None } else { head }
+}
+
+/// How a report names a token: its `%epp` where that differs from its name,
+/// so a description (`("a name", true)`), and otherwise its name (`(":why",
+/// false)`, `(")", false)`); `None` for the end of the input.
+fn token_display(tok: u32) -> Option<(&'static str, bool)> {
+    let name = rule_name(tok)?;
     Some(match ein_y::token_epp(TIdx(tok)) {
         Some(epp) if epp != name => (epp, true),
         _ => (name, false),
@@ -293,16 +412,62 @@ fn token(tok: u32) -> String {
     }
 }
 
+/// The ranked repairs as a report lists them, best first, with synonyms
+/// folded (the review stop's item 6): where a place takes a name, each of the
+/// [`POSITION_WORDS`] is a name there too, so repairs that differ only in which
+/// of them, or which name, they insert are one repair, *Insert a name*, listed
+/// at the rank of the first of them. A place takes a name where a repair
+/// inserts one, or where four of the words or more are repairs there: every
+/// production of `ein.y` that takes four of them takes `NAME` too, and the
+/// places that take fewer and no name (a flag's `true` or `false`, a claim's
+/// `model`, `merged` or `owing`, a solve's `region`) keep their words, each
+/// listed as itself. CPCT+ often ranks the words and not the name where both
+/// are repairs, which is what this folds.
+fn folded(
+    lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
+    ranked: &[Vec<ParseRepair<lrlex::DefaultLexeme<u32>, u32>>],
+) -> Vec<String> {
+    let written: Vec<(String, String)> = ranked
+        .iter()
+        .map(|r| (repair(lexer, r, false), repair(lexer, r, true)))
+        .collect();
+    let is_a_name = |key: &String| {
+        let synonyms = written.iter().filter(|(_, k)| k == key).count();
+        written.iter().any(|(as_is, _)| as_is == key) || synonyms >= 4
+    };
+    let mut out: Vec<String> = Vec::new();
+    for (as_is, as_name) in &written {
+        let shown = if as_is != as_name && is_a_name(as_name) {
+            as_name
+        } else {
+            as_is
+        };
+        if !out.contains(shown) {
+            out.push(shown.clone());
+        }
+    }
+    out
+}
+
 /// One ranked repair, step by step: `Insert` a token, `Delete` or `Shift` one
-/// of the file's.
+/// of the file's; with `fold`, each of the [`POSITION_WORDS`] it inserts
+/// written as the name it also is.
 fn repair(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
     steps: &[ParseRepair<lrlex::DefaultLexeme<u32>, u32>],
+    fold: bool,
 ) -> String {
     steps
         .iter()
         .map(|s| match s {
-            ParseRepair::Insert(t) => format!("Insert {}", token(t.as_storaget())),
+            ParseRepair::Insert(t) => {
+                let t = t.as_storaget();
+                if fold && rule_name(t).is_some_and(|n| POSITION_WORDS.contains(&n)) {
+                    "Insert a name".to_string()
+                } else {
+                    format!("Insert {}", token(t))
+                }
+            }
             ParseRepair::Delete(l) => format!("Delete {}", shown(lexer.span_str(l.span()))),
             ParseRepair::Shift(l) => format!("Shift {}", shown(lexer.span_str(l.span()))),
         })
@@ -310,10 +475,10 @@ fn repair(
         .join(", ")
 }
 
-/// A token's text as a report quotes it: in backticks, a control character
-/// escaped so that one error stays one line, and cut at 40 characters.
-fn shown(text: &str) -> String {
-    let mut out = String::from("`");
+/// A token's text cut at 40 characters, a control character escaped so that
+/// one error stays one line.
+fn cut_at_40(text: &str) -> String {
+    let mut out = String::new();
     for (n, c) in text.chars().enumerate() {
         if n == 40 {
             out.push('…');
@@ -327,29 +492,95 @@ fn shown(text: &str) -> String {
             c => out.push(c),
         }
     }
-    out.push('`');
     out
 }
 
-/// The hand-written parser's signature over the generated parser: the
-/// `generated-parser` feature's hook in [`crate::parse()`]. The first error's
-/// position is the [`ParseError`](crate::ParseError)'s, and the whole report
-/// is its context.
-pub(crate) fn parse_as_hand_written(
-    ast: &mut Ast,
-    text: &str,
-    filename: Option<&str>,
-) -> Result<Vec<NodeId>, crate::ParseError> {
-    parse(ast, text, filename).map_err(|r| {
-        let (line, col) = r
-            .errors
-            .first()
-            .map_or((-1, -1), |e| (i64::from(e.line), i64::from(e.col)));
-        crate::ParseError {
-            file: r.file.clone(),
-            line,
-            col,
-            context: r.to_string().trim_end().to_string(),
+/// A token's text as a report quotes it: in backticks, [cut](cut_at_40).
+fn shown(text: &str) -> String {
+    format!("`{}`", cut_at_40(text))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The printer's list of the words that are never a name is the
+    /// lexer's.
+    #[test]
+    fn the_reserved_words_are_the_printers() {
+        assert_eq!(ein_core::text::LEXER_KEYWORDS, RESERVED_WORDS);
+        for w in RESERVED_WORDS {
+            assert!(!is_one_name(w), "{w}");
+            assert!(is_one_name(&format!("{w}-1")), "{w}-1");
         }
-    })
+        for w in POSITION_WORDS {
+            assert!(!is_one_name(w), "{w} is a token of its own");
+        }
+    }
+
+    /// M1e2 S1e2.3.8, restated at the swap (T1f.5.5.4): the one printer
+    /// prints a name bare exactly where this lexer reads the bare text back
+    /// as one `NAME` spelling it, or as one of the [`POSITION_WORDS`], which
+    /// are names wherever a name goes ([`ein_core::text::is_symbol`]), over
+    /// every reserved and position word, each followed and preceded by every
+    /// character class the name rule tests, and every ASCII character in
+    /// every position of a short name.
+    #[test]
+    fn the_printers_symbol_is_the_lexers() {
+        let mut names: Vec<String> = Vec::new();
+        let tails = [
+            "", "x", "X", "1", "_", "-", ".", "*", "-1", "?", ":", " ", "é", "١", "(", "\"", "#",
+            "|", "'", "[", "}",
+        ];
+        for w in RESERVED_WORDS.iter().chain(&POSITION_WORDS) {
+            for t in tails {
+                names.push(format!("{w}{t}"));
+                names.push(format!("__{w}{t}"));
+                names.push(format!("{t}{w}"));
+            }
+        }
+        for a in (0u8..128).map(char::from) {
+            for b in ["", "a", "1", "-", "_"] {
+                names.push(format!("{a}{b}"));
+                names.push(format!("a{a}{b}"));
+                names.push(format!("__{a}{b}"));
+            }
+        }
+        names.extend(
+            [
+                "",
+                "Åsa",
+                "aÅ",
+                "1..5",
+                "1..*",
+                "?x",
+                "_",
+                "__",
+                "___x",
+                "7",
+                "07",
+                "-7",
+                "it's",
+                "f'",
+                "[a]",
+                "{}",
+                "a#b",
+                "#empty",
+                "<forced-positive>",
+                "<forced-positive>x",
+            ]
+            .map(String::from),
+        );
+        let mut bare = 0;
+        for n in &names {
+            let reads_back = is_one_name(n) || POSITION_WORDS.contains(&n.as_str());
+            assert_eq!(ein_core::text::is_symbol(n), reads_back, "{n:?}");
+            bare += usize::from(reads_back);
+        }
+        assert!(
+            bare > 100 && bare < names.len() - 100,
+            "{bare} of {}",
+            names.len()
+        );
+    }
 }

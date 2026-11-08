@@ -12,7 +12,7 @@
 //! | the accumulated message | [`load_errors_accumulate_in_pass_order`], the same way |
 //! | the 18 `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
 //! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag (M1f T1f.5.14.6) | [`require_why_refuses_each_form_without_one`] |
-//! | a macro is asked for a `:why` only in the build whose parser reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
+//! | a macro is asked for a `:why` too, since S1f.5.5's swap made its parser the one that reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
 //! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB | [`require_why_decides_loading_only`] |
 
 use ein_core::{Terms, shape};
@@ -84,7 +84,13 @@ fn layering_holds_after_every_load() {
 /// names where `ein-core` had nine, and M1d S1d.2.3 added `open` to one of
 /// them. Four files rather than one because the route is what differed, and a
 /// fixture that only ever took the route that worked is the fixture that let
-/// this ship.
+/// this ship. **Since M1f S1f.5.5's swap (T1f.5.5.4)** `open` is a word a
+/// position gives a meaning to and no name a declarator takes (the paper
+/// grammar's default 1), so `(macro open …)` is refused at the parse, and each
+/// of the four reports that error in `reserved_open_direct.ein`, the module
+/// every route reaches; the route-independence `CO-H2` was about is held
+/// since by `imports_semantics`' cells over a kernel dunder, which the grammar
+/// reads as a name.
 #[test]
 fn the_load_negative_fixtures_are_byte_identical() {
     let root = repo_root();
@@ -94,21 +100,20 @@ fn the_load_negative_fixtures_are_byte_identical() {
         .unwrap_or_else(|_| root.join("stdlib"));
 
     let mut bad = Vec::new();
+    // Since M1f S1f.5.5's swap (T1f.5.5.4) nine of these are refused at the
+    // parse and moved to `examples/broken/` (Q-M1f.2 (a)), where
+    // `grammar_decisions.rs` holds their reports: `config_bad_value`,
+    // `config_unknown_flag`, `empty_absent`, `hrule_reserved_name`,
+    // `macro_reserved_name`, `relation_malformed`, `relation_needs_a_name`,
+    // `relation_reserved_name` and `rule_reserved_name`; and
+    // `relation_parameter_int` retired (S1f.5.4's Q2 (a)), `(mirror 3)`
+    // naming the relation `3`.
     for name in [
-        "config_bad_value",
-        "config_unknown_flag",
         "derivation_cycle",
-        "empty_absent",
         "hrule_duplicate_name",
-        "hrule_reserved_name",
         "macro_arity_mismatch",
         "macro_duplicate",
-        "macro_reserved_name",
         "relation_duplicate",
-        "relation_malformed",
-        "relation_needs_a_name",
-        "relation_parameter_int",
-        "relation_reserved_name",
         "reserved_open_aliased",
         "reserved_open_direct",
         "reserved_open_qualified",
@@ -117,7 +122,6 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "rule_half_declarators",
         "rule_missing_assert",
         "rule_missing_match",
-        "rule_reserved_name",
         "unbound_head",
         "unimported_std_macro",
     ] {
@@ -150,6 +154,16 @@ fn the_load_negative_fixtures_are_byte_identical() {
 /// last-one-wins rule — and each one's *answer* is the assertion. Rendered as
 /// one file so a change reads as a diff of the affected bodies rather than as
 /// thirty-two separate failures.
+///
+/// **Since M1f S1f.5.5's swap (T1f.5.5.4) most rows are parse errors**, the
+/// rows kept as the record of each path: a `(config …)` flag takes `true` or
+/// `false` and nothing else, so a string (S1f.5.2), a name of digits or any
+/// other name, a variable, a nested fact and a keyword no form takes are
+/// refused at the parse, each with its repairs, and a retired flag with the
+/// note naming the stage that retired it (the paper grammar's default 5). Only
+/// `true`, `false`, the empty block and the last-one-wins rows reach the
+/// loader; the coercion's other branches are reached by no program since, and
+/// go with T1f.5.5.5.
 #[test]
 fn the_config_coercion_table_is_stable() {
     let bodies = [
@@ -251,6 +265,14 @@ fn load_shape_text(text: &str) -> Answer {
 /// anything the grammar accepts.** Its one error — a non-atom head — is
 /// reachable only by hand-building an AST, since `(?R a b)` is a parse
 /// error. Facts either parse or load.
+///
+/// **Since M1f S1f.5.5's swap (T1f.5.5.4) the first four programs are parse
+/// errors**, kept as the record: `(relation)`, `(relation eq)`, `(relation r
+/// (A B))`, a rule or a macro named `absent` and an unknown `(config …)` flag
+/// are the grammar's, and the parse reports every one recovery reaches before
+/// the loader runs. The fifth, in the final grammar, holds the pass order with
+/// errors the loader still owns: a rule with no `:assert`, a relation declared
+/// twice, a macro declared twice and a derivation cycle.
 #[test]
 fn load_errors_accumulate_in_pass_order() {
     let programs = [
@@ -266,6 +288,10 @@ fn load_errors_accumulate_in_pass_order() {
         // A macro rejected for its name is *not* registered, so the rule that
         // invokes it keeps the unexpanded form rather than expanding it.
         "(macro absent (?p) (rel ?p))\n(rule r () :match (absent ?a) :assert (y ?a))",
+        // One loader error per pass, in the final grammar.
+        "(r a b :rule x :using ((r c d)))\n(r c d :rule x :using ((r a b)))\n\
+         (rule r () :match (x ?a))\n(relation dup)\n(relation dup)\n\
+         (macro m (?a) (rel ?a))\n(macro m (?a) (other ?a))",
     ];
     let mut out = String::new();
     for program in programs {
@@ -275,7 +301,7 @@ fn load_errors_accumulate_in_pass_order() {
             indented(&load_shape_text(program))
         ));
     }
-    assert_eq!(programs.len(), 4, "the table lost a program");
+    assert_eq!(programs.len(), 5, "the table lost a program");
     if let Some(msg) = golden(&golden_path("ein-ir", "load_error_order.txt"), &out) {
         panic!("{msg}");
     }
@@ -337,16 +363,17 @@ fn require_why_refuses_each_form_without_one() {
             "guess",
         ),
     ];
-    // A `:why` that is no string: the hand-written parser reads one, and the
-    // loader's strings-only guard takes it for none. The generated grammar
-    // refuses it at the parse, so that build has no such case.
-    #[cfg(not(feature = "generated-parser"))]
-    let cases = [
-        cases[0],
-        cases[1],
-        cases[2],
-        (1, "(relation has Person Thing :why has)", "relation", "has"),
-    ];
+    // A `:why` that is no string was a fourth case until S1f.5.5's swap: the
+    // hand-written parser read one, and the loader's strings-only guard took
+    // it for none. The grammar refuses it at the parse.
+    assert!(
+        ein_ir::parse(
+            &mut Ast::new(),
+            "(relation has Person Thing :why has)",
+            None
+        )
+        .is_err()
+    );
     for (at, without, head, name) in cases {
         let mut forms = whole;
         forms[at] = without;
@@ -377,18 +404,16 @@ fn require_why_refuses_each_form_without_one() {
     );
 }
 
-/// **A macro is asked for its `:why` only in the build whose parser reads
-/// one.** The hand-written parser refuses a macro's `:why`, so on the shipped
-/// path no program could write what the flag would ask for; the generated
-/// parser reads it (`Macro::why`, S1f.5.5's T3), and a `generated-parser`
-/// build asks for it. S1f.5.5's swap deletes the `cfg`, and this test's first
-/// arm with it.
+/// **A macro is asked for its `:why`**, as a relation, a rule and an hrule
+/// are. Until S1f.5.5's swap (T1f.5.5.4) only a `generated-parser` build
+/// asked, since the hand-written parser, the shipped one, refused a macro's
+/// `:why`; the swap deleted that `cfg`, and this test's first arm with it.
 #[test]
 fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
     let load = |text: &str| {
         let mut ast = Ast::new();
         let mut terms = Terms::new();
-        let forms = ein_ir::grammar::parse(&mut ast, text, None).expect("parses");
+        let forms = ein_ir::parse(&mut ast, text, None).expect("parses");
         let opts = ein_ir::LoadOptions { require_why: true };
         ein_ir::load_with(&mut ast, &mut terms, &forms, None, &opts)
             .map(|_| ())
@@ -397,9 +422,6 @@ fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
     let with = "(macro owns (?p ?x) (has ?p ?x) :why \"{?p} owns {?x}\")";
     let without = "(macro owns (?p ?x) (has ?p ?x))";
     assert_eq!(load(with), Ok(()));
-    #[cfg(not(feature = "generated-parser"))]
-    assert_eq!(load(without), Ok(()));
-    #[cfg(feature = "generated-parser")]
     assert_eq!(load(without), Err(missing("macro", "owns")));
 }
 
@@ -408,10 +430,10 @@ fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
 /// corpus program: one that does not load without the flag does not load with
 /// it; one the flag refuses is refused by `has no :why` lines and nothing
 /// else; and one it lets through loads to the same KB, registries, facts and
-/// indexes, as without it. The stdlib's modules are all let through on the
-/// shipped path: its 77 rules carry their `:why`, and it declares no relation
-/// and no hrule. In a `generated-parser` build its two macros, `forall` and
-/// `unknown`, are refused until S1f.5.5's swap writes theirs.
+/// indexes, as without it. The stdlib's modules are all let through: its 77
+/// rules and its two macros, `forall` and `unknown`, carry their `:why`
+/// (the macros' since S1f.5.5's swap), and it declares no relation and no
+/// hrule.
 #[test]
 fn require_why_decides_loading_only() {
     let (mut same, mut refused) = (0, 0);
@@ -446,15 +468,7 @@ fn require_why_decides_loading_only() {
                 refused += 1;
             }
         }
-        let in_stdlib = path.starts_with(repo_root().join("stdlib"));
-        #[cfg(feature = "generated-parser")]
-        let in_stdlib = in_stdlib && !path.ends_with("stdlib/macro.ein");
-        #[cfg(feature = "generated-parser")]
-        if path.ends_with("stdlib/macro.ein") {
-            let lines = [missing("macro", "forall"), missing("macro", "unknown")];
-            assert_eq!(load(true), Err(lines.join("; ")), "{rel}");
-        }
-        if in_stdlib {
+        if path.starts_with(repo_root().join("stdlib")) {
             assert!(load(true).is_ok(), "{rel}: a stdlib module is refused");
         }
     }

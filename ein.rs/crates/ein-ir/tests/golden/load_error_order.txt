@@ -1,8 +1,27 @@
 === (rule r () :match (x ?a)) ⏎ (relation) ⏎ (macro m (?a) (rel ?a)) ⏎ (macro m (?a) (other ?a)) ⏎ (config :nope true)
-  <KBLoadError> duplicate macro 'm' at None; (relation) needs a name at None; (rule r) missing :match or :assert at None; (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications)
+  <IRParseError> <string>:2:10: unexpected `)`
+    repair: Insert a name
+  <string>:5:9: unexpected `:nope`: a keyword this form does not take
+    repair: Insert `:lattice-sanity-check`, Delete `:nope`
+    repair: Insert `:record-alternative-justifications`, Delete `:nope`
+    repair: Delete `:nope`, Delete `true`
 === (relation) ⏎ (relation eq) ⏎ (relation dup) ⏎ (relation dup) ⏎ (relation r (A B))
-  <KBLoadError> (relation) needs a name at None; relation 'eq' shadows a reserved kernel name at None; duplicate relation 'dup' at None; malformed (relation) at None
+  <IRParseError> <string>:1:10: unexpected `)`
+    repair: Insert a name
+  <string>:2:11: unexpected `eq`
+    repair: Insert a name
+  <string>:5:13: unexpected `(`
+    repair: Insert `)`
+  <string>:5:18: unexpected `)`
+    repair: Delete `)`
 === (rule absent () :match (x ?a) :assert (y ?a)) ⏎ (rule ok () :match (x ?a) :assert (y ?a)) ⏎ (rule ok () :match (x ?a) :assert (z ?a))
-  <KBLoadError> rule 'absent' shadows a reserved kernel name at None; duplicate rule/hrule name 'ok' at None
+  <IRParseError> <string>:1:7: unexpected `absent`
+    repair: Insert a name, Delete `absent`
 === (macro absent (?p) (rel ?p)) ⏎ (rule r () :match (absent ?a) :assert (y ?a))
-  <KBLoadError> macro 'absent' shadows a reserved kernel name at None; rule 'r': its :match writes ?a as a premise of absent, and ?a is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises
+  <IRParseError> <string>:1:8: unexpected `absent`
+    repair: Insert a name, Delete `absent`
+  <string>:2:27: unexpected `?a`: a variable
+    repair: Insert `(`, Shift `?a`, Insert `)`
+    repair: Insert `(`, Shift `?a`, Shift `)`, Insert `)`
+=== (r a b :rule x :using ((r c d))) ⏎ (r c d :rule x :using ((r a b))) ⏎ (rule r () :match (x ?a)) ⏎ (relation dup) ⏎ (relation dup) ⏎ (macro m (?a) (rel ?a)) ⏎ (macro m (?a) (other ?a))
+  <KBLoadError> duplicate macro 'm' at None; duplicate relation 'dup' at None; (rule r) missing :match or :assert at None; derivation cycle: (r a b) -> (r c d) -> (r a b)

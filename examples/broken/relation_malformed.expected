@@ -1,0 +1,4 @@
+{FILE}:5:20: unexpected `(`
+  repair: Insert `)`
+{FILE}:5:34: unexpected `)`
+  repair: Delete `)`

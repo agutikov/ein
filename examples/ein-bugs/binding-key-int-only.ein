@@ -20,6 +20,17 @@
 ;;; `(noted 1 1)` and `(noted 2 1)`, and nothing about 3. H is empty (`ein
 ;;; solve -H`, 2026-11-04), so R is `{∅}`: root, with those two, which the
 ;;; `:expect` below states.
+;;;
+;;; ── Since M1f S1f.5.5's swap ───────────────────────────────────────────
+;;;
+;;; A run of digits is a name (S1f.5.4's ruling), so `1`, `2` and `3`, the
+;;; edges' ends, are candidate objects, and unscoped H is 10 candidates and R
+;;; 640 states (T1f.5.5.9's sweep). The solve below holds `edge` and `noted`
+;;; out of the hypotheses, S1f.5.4's proposal A (accepted 2026-11-08), so H is
+;;; `(holds 2)` and R is two states, root and `{(holds 2)}`, which adds no
+;;; `noted` fact, the int activator binding `?f` to 1; `ein oracle` gives the
+;;; same R. The point stands: one activator, one plan, root's two `noted`
+;;; facts.
 
 (relation edge  Node Node)
 (relation holds Node)
@@ -35,8 +46,17 @@
 (note edge 1)
 
 (solve
+  ;; S1f.5.4's proposal A (accepted 2026-11-08), at M1f S1f.5.5's swap: a
+  ;; run of digits is a name, so `1`, `2` and `3` are candidate objects and
+  ;; unscoped H is 10 candidates and R 640 states; `edge` and `noted` held
+  ;; out, H is `(holds 2)`, the oracle the same.
+  :no-hypothesis (edge noted)
   ;; `holds` and `noted` are named, so both are closed: each state lists
   ;; their complete extent, root's facts included.
   :expect (region
-            ;; state 1 of 1 — ∅, root itself · minimal · maximal
-            (model (holds 1) (holds 3) (noted 1 1) (noted 2 1))))
+            ;; state 1 of 2 — ∅, root itself · minimal
+            (model (holds 1) (holds 3)
+                   (noted 1 1) (noted 2 1))
+            ;; state 2 of 2 — 1 candidate · maximal · from {(holds 2)}
+            (model (holds 1) (holds 2) (holds 3)
+                   (noted 1 1) (noted 2 1))))

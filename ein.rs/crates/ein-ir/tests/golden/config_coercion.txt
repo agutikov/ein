@@ -7,73 +7,128 @@
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
 === (config :lattice-sanity-check "true")
-  QUERY None
-  CONFIG lattice-sanity-check=True
-  CONFIG record-alternative-justifications=True
+  <IRParseError> <string>:1:31: unexpected `"true"`: a string
+    note: "true" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+    repair: Insert `false`, Delete `"true"`
+    repair: Insert `true`, Delete `"true"`
 === (config :lattice-sanity-check TRUE)
-  QUERY None
-  CONFIG lattice-sanity-check=True
-  CONFIG record-alternative-justifications=True
+  <IRParseError> <string>:1:31: unexpected `TRUE`: a name
+    repair: Insert `false`, Delete `TRUE`
+    repair: Insert `true`, Delete `TRUE`
 === (config :lattice-sanity-check 1)
-  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Int(value=1)
+  <IRParseError> <string>:1:31: unexpected `1`: a name
+    repair: Insert `false`, Delete `1`
+    repair: Insert `true`, Delete `1`
 === (config :lattice-sanity-check maybe)
-  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Atom(name='maybe')
+  <IRParseError> <string>:1:31: unexpected `maybe`: a name
+    repair: Insert `false`, Delete `maybe`
+    repair: Insert `true`, Delete `maybe`
 === (config :lattice-sanity-check ?x)
-  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Var(name='x')
+  <IRParseError> <string>:1:31: unexpected `?x`: a variable
+    repair: Insert `false`, Delete `?x`
+    repair: Insert `true`, Delete `?x`
 === (config :lattice-sanity-check 1..5)
-  <IRParseError> <string>:1:32: unexpected input
-  (config :lattice-sanity-check 1..5)
-                                 ^
+  <IRParseError> <string>:1:31: unexpected `1..5`: a name
+    repair: Insert `false`, Delete `1..5`
+    repair: Insert `true`, Delete `1..5`
 === (config :lattice-sanity-check (nested a))
-  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got SForm(head=Atom(name='nested'), args=(Atom(name='a'),))
+  <IRParseError> <string>:1:31: unexpected `(`
+    repair: Insert `true`, Insert `)`
+    repair: Insert `false`, Insert `)`
+  <string>:1:41: unexpected `)`
+    repair: Delete `)`
 === (config :hypgen-scoring most-constrained)
-  <KBLoadError> (config …): config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-scoring`: a keyword this form does not take
+    note: config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-scoring`, Delete `most-constrained`
 === (config :hypgen-scoring "popularity")
-  <KBLoadError> (config …): config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-scoring`: a keyword this form does not take
+    note: config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-scoring`, Delete `"popularity"`
 === (config :hypgen-scoring 7)
-  <KBLoadError> (config …): config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-scoring`: a keyword this form does not take
+    note: config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-scoring`, Delete `7`
 === (config :lattice-order score-sum)
-  <KBLoadError> (config …): config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:lattice-order`: a keyword this form does not take
+    note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:lattice-order`, Delete `score-sum`
 === (config :candidate-order-seed 7)
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `7`
 === (config :candidate-order-seed -1)
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `-1`
 === (config :candidate-order-seed 007)
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `007`
 === (config :candidate-order-seed "7")
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `"7"`
 === (config :candidate-order-seed " 7 ")
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `" 7 "`
 === (config :candidate-order-seed "1_000")
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `"1_000"`
 === (config :candidate-order-seed "1_")
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `"1_"`
 === (config :candidate-order-seed "1.5")
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Delete `:candidate-order-seed`, Delete `"1.5"`
 === (config :candidate-order-seed true)
-  <KBLoadError> (config …): config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  <IRParseError> <string>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+    note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+    repair: Insert `:lattice-sanity-check`, Delete `:candidate-order-seed`
+    repair: Insert `:record-alternative-justifications`, Delete `:candidate-order-seed`
+    repair: Delete `:candidate-order-seed`, Delete `true`
 === (config :lattice-order-seed 3)
-  <KBLoadError> (config …): config flag :lattice-order-seed was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:lattice-order-seed`: a keyword this form does not take
+    note: config flag :lattice-order-seed was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:lattice-order-seed`, Delete `3`
 === (config :hypgen-rel-weight 2)
-  <KBLoadError> (config …): config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-rel-weight`: a keyword this form does not take
+    note: config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-rel-weight`, Delete `2`
 === (config :hypgen-rel-weight "1.5")
-  <KBLoadError> (config …): config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-rel-weight`: a keyword this form does not take
+    note: config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-rel-weight`, Delete `"1.5"`
 === (config :hypgen-rel-weight "1_0.5")
-  <KBLoadError> (config …): config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-rel-weight`: a keyword this form does not take
+    note: config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-rel-weight`, Delete `"1_0.5"`
 === (config :hypgen-obj-weight "nope")
-  <KBLoadError> (config …): config flag :hypgen-obj-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  <IRParseError> <string>:1:9: unexpected `:hypgen-obj-weight`: a keyword this form does not take
+    note: config flag :hypgen-obj-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+    repair: Delete `:hypgen-obj-weight`, Delete `"nope"`
 === (config foo)
-  <IRParseError> <string>:1:9: unexpected input
-  (config foo)
-          ^
+  <IRParseError> <string>:1:9: unexpected `foo`: a name
+    repair: Delete `foo`
 === (config :nope true)
-  <KBLoadError> (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications)
+  <IRParseError> <string>:1:9: unexpected `:nope`: a keyword this form does not take
+    repair: Insert `:lattice-sanity-check`, Delete `:nope`
+    repair: Insert `:record-alternative-justifications`, Delete `:nope`
+    repair: Delete `:nope`, Delete `true`
 === (config)
   QUERY None
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
 === (config :lattice-sanity-check true) (config :enable-path-nogoods false)
-  <KBLoadError> (config …): config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
+  <IRParseError> <string>:1:45: unexpected `:enable-path-nogoods`: a keyword this form does not take
+    note: config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
+    repair: Insert `:lattice-sanity-check`, Delete `:enable-path-nogoods`
+    repair: Insert `:record-alternative-justifications`, Delete `:enable-path-nogoods`
+    repair: Delete `:enable-path-nogoods`, Delete `false`
 === (config :lattice-sanity-check true :lattice-sanity-check false)
   QUERY None
   CONFIG lattice-sanity-check=False

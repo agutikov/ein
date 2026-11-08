@@ -1,4 +1,7 @@
-//! `ein-ir` — lexer, parser, AST, dumper, macros, imports, embedded stdlib.
+//! `ein-ir` — the parser, AST, dumper, macros, imports, embedded stdlib.
+//!
+//! The parser is generated from the grammar, `src/ein.l` and `src/ein.y`
+//! ([`grammar`], M1f S1f.5.5); since the swap (T1f.5.5.4) it is the only one.
 //!
 //! This crate owns the engine's only filesystem access — import resolution and
 //! the stdlib — which is what keeps any later policy on what the engine may
@@ -22,9 +25,7 @@ pub mod expect;
 pub mod from_ir;
 pub mod grammar;
 pub mod imports;
-pub mod lex;
 pub mod macros;
-pub mod parse;
 pub mod stdlib;
 
 pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr, node_repr};
@@ -33,6 +34,6 @@ pub use from_ir::{
     KbLoadError, LoadOptions, WHY_REQUIRED_OF, load, load_file, load_file_with, load_query,
     load_query_with, load_with, pattern_relations,
 };
+pub use grammar::{ParseError, SyntaxError, parse};
 pub use imports::{LoadError, Resolver, resolve_and_minimize, resolve_imports};
 pub use macros::{Macro, MacroError, collect_macros, expand_macros};
-pub use parse::{ParseError, parse};

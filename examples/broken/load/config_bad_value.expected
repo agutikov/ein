@@ -1,1 +1,0 @@
-(config …): config flag :lattice-sanity-check expects true/false, got Atom(name='maybe')

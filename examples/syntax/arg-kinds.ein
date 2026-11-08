@@ -1,7 +1,18 @@
 ;;; Syntax probe — arg-kinds.
 ;;;
-;;; Every argument kind a fact can carry: an int, a string, `1..5` and `1..*`
-;;; (no range: a parse error from M1f S1f.5.3, two names from S1f.5.4), `_`, `?x`, a nested fact.
+;;; Every argument kind a fact can carry: a name, digits (a name, so `7` and
+;;; `07` are two), `1..5` and `1..*` (names: the range token went at M1f
+;;; S1f.5.3, and S1f.5.4's name rule reads each as the name it spells), a name
+;;; with connectors and decorators, a nested fact, and a stored negation as a
+;;; value. The string, the bare `_` and the variable it carried until M1f
+;;; S1f.5.5's swap are refused at the parse (S1f.5.2 and S1f.5.1), Q-M1f.2
+;;; (a)'s rewrite.
+;;;
+;;; Its `(solve …)` holds `r` out of the hypotheses (the user's ruling of
+;;; 2026-11-08 on S1f.5.5's review stop, item 1, *"Scope the solve"*): the
+;;; fixture's point is the node kinds as written, and unscoped its universe's
+;;; commitments pass the state route's 2^128 limit, which stays parked
+;;; (S1f.5.4's § Notes). R is {∅}.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
@@ -9,8 +20,11 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation r T T)
-(r 7 "a string")
+(relation r T T :why "{?1} r {?2}")
+(r 7 07)
 (r 1..5 1..*)
-(r _ ?x)
+(r $x a-b_c.d)
 (r (nested a b) c)
+(r (not (nested a b)) c)
+
+(solve :no-hypothesis (r))

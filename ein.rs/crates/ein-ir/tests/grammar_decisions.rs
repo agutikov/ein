@@ -8,7 +8,7 @@
 //! | claim | where |
 //! |---|---|
 //! | the corpus-wide accept/reject surface | `corpus_shapes.md5`'s 111 `ir[parse]` lines, which carry the *message* of a refusal as well as the dump of an acceptance |
-//! | the four `examples/broken/*.ein` messages | `.expected` files beside them — see [`the_parse_negative_fixtures_reproduce_their_message`] |
+//! | the thirty `examples/broken/*.ein` reports | `.expected` files beside them — see [`the_parse_negative_fixtures_reproduce_their_message`] |
 //! | the 78 hand-written ambiguity cases | a checked-in decision table |
 //!
 //! The `.expected` files carry machine paths replaced by `{FILE}`, the way
@@ -26,15 +26,24 @@ fn answer(text: &str, filename: Option<&str>) -> String {
     }
 }
 
-/// **The four parse-negative fixtures reproduce their message.**
+/// **The parse-negative fixtures reproduce their report.**
 ///
 /// `examples/broken/` is the parse-negative group, and each fixture has an
-/// `.expected` beside it holding its message, with the absolute path replaced
+/// `.expected` beside it holding its report, with the absolute path replaced
 /// by `{FILE}` — the same placeholder convention
 /// `examples/broken/load/` uses, and for the same reason: a message captured
 /// verbatim passes on the machine that blessed it and fails everywhere else.
 ///
-/// The digest in `corpus_shapes.md5` covers these four too, but as sixteen hex
+/// **Thirty since M1f S1f.5.5's swap (T1f.5.5.4), and each `.expected` the
+/// whole report**: every error recovery reaches, each with its position, its
+/// notes and its ranked repairs, three and then a count. Until then there were
+/// four, each `{FILE}:line:col: unexpected input` and a caret. The
+/// twenty-five refusal fixtures whose refusal the grammar took over from the
+/// loader and the compiler moved here from `examples/broken/load/` and
+/// `examples/broken/compile/` (Q-M1f.2 (a)), and so did
+/// `kwpair-below-the-filter` from `examples/ein-bugs/` (S1f.5.11's default).
+///
+/// The digest in `corpus_shapes.md5` covers these too, but as sixteen hex
 /// digits. This is the half a reader can review.
 #[test]
 fn the_parse_negative_fixtures_reproduce_their_message() {
@@ -48,8 +57,8 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
     fixtures.sort();
     assert_eq!(
         fixtures.len(),
-        4,
-        "the parse-negative group is four fixtures"
+        30,
+        "the parse-negative group is thirty fixtures"
     );
 
     let mut bad = Vec::new();
@@ -84,8 +93,12 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
     );
 }
 
-/// **The 78 cases that make the parser non-obvious**, each one a decision in
-/// `lex.rs` or `parse.rs`.
+/// **The 78 cases that made the parser non-obvious**, each one a decision in
+/// the hand-written `lex.rs` or `parse.rs` until M1f S1f.5.5's swap
+/// (T1f.5.5.4), kept as the record of where a reading is not obvious and held
+/// since to the generated parser's answer (`ir_semantics`'
+/// `the_documented_ambiguities_resolve_as_recorded` says what each reads as,
+/// and why).
 ///
 /// A reserved word is a keyword only as a whole word, and a word character
 /// after it makes the whole name a SYMBOL (M1e2 S1e2.2.22: until then the split
@@ -209,30 +222,34 @@ fn the_documented_ambiguities_keep_their_decisions() {
 }
 
 /// **A keyword is a whole word, in every place the parser reads one** — M1e2
-/// S1e2.2.22 (W22), on the user's ruling of 2026-11-05 on Q-M1e2.17.
+/// S1e2.2.22 (W22), on the user's ruling of 2026-11-05 on Q-M1e2.17, and
+/// restated at S1f.5.5's swap (T1f.5.5.4) by the name rule (S1f.5.4's ruling).
 ///
-/// Every word the parser matches as a literal (`lex::LITERALS`), and as
+/// Every word the hand-written parser matched as a literal (its
+/// `lex::LITERALS`, written out below since `lex.rs` went with it), and as
 /// controls the kernel's eight other heads, each followed by a name
 /// character and an argument shape, written in each of the twenty places the
-/// parser reads a keyword: 53 460 parses. Until the stage 2 691 of them split
+/// parser reads a keyword: 53 460 parses. Until S1e2.2.22 2 691 of them split
 /// the name into the keyword and the rest of it, `(neqw ?x)` read as `(neq w
 /// ?x)`. Now:
 ///
-/// - a word followed by a word character (`_`, a letter, a digit) is never
-///   split: the whole name parses as the `SYMBOL` it spells, or, where no
-///   reading has it (a trace event, a non-ASCII letter `SYMBOL` does not
-///   take), the parse is an error;
-/// - a trace word followed by a word character, in a trace event, is a parse
-///   error, a `(trace …)` holding only events (Q-M1e2.17 (ii)(a));
-/// - `-`, `.` and `*` are no word characters, so the word before them is the
-///   keyword (Q-M1e2.17 (i)(a)): `(neq-1 ?x)` is `(neq -1 ?x)`, and nothing
-///   after `.` or `*` parses.
+/// - a word followed by a name character is never split: the whole name
+///   parses as the `NAME` it spells, or, where no reading has it (a trace
+///   event, which is `step` alone, a non-ASCII letter no name takes), the
+///   parse is an error;
+/// - a trace word followed by a name character, in a trace event, is a parse
+///   error, a `(trace …)` holding only `step` events (the paper grammar's
+///   default 8);
+/// - `-`, `.` and `*` are name characters, so `(neq-1 ?x)` is the fact or
+///   pattern of the relation `neq-1`, which overrides Q-M1e2.17 (i)(a): until
+///   the swap the word before them was the keyword, and 435 of these parses
+///   read `(neq -1 ?x)`.
 #[test]
 fn a_keyword_is_a_whole_word_in_every_place() {
     const CONTROLS: [&str; 8] = [
         "absent", "forall", "eq", "false", "open", "unknown", "true", "exists",
     ];
-    // A word character (the first seven), then `SYMBOL`'s three others.
+    // A word character (the first seven), then three other name characters.
     const SUFFIXES: [&str; 11] = ["w", "Z", "1", "_", "_a", "__a", "é", "-a", "-1", ".a", "*"];
     const ARGS: [&str; 9] = [
         "",
@@ -295,7 +312,7 @@ fn a_keyword_is_a_whole_word_in_every_place() {
         "contradiction",
         "symmetry-class",
     ];
-    let name_char = |c: char| c.is_ascii_alphanumeric() || matches!(c, '_' | '*' | '.' | '-');
+    let name_char = ein_core::text::is_name_char;
     // The name intact as a token of the dump.
     let whole = |dump: &str, name: &str| {
         dump.match_indices(name).any(|(i, _)| {
@@ -303,13 +320,31 @@ fn a_keyword_is_a_whole_word_in_every_place() {
                 && !dump[i + name.len()..].chars().next().is_some_and(name_char)
         })
     };
-    let words: Vec<&str> = ein_ir::lex::LITERALS
-        .iter()
-        .copied()
-        .chain(CONTROLS)
-        .collect();
+    // The hand-written parser's literals, `lex::LITERALS` until the swap.
+    const LITERALS: [&str; 19] = [
+        "relation",
+        "rule",
+        "hrule",
+        "query",
+        "solve",
+        "config",
+        "trace",
+        "macro",
+        "import",
+        "not",
+        "and",
+        "or",
+        "neq",
+        "step",
+        "branch-open",
+        "branch-close",
+        "branch-ref",
+        "contradiction",
+        "symmetry-class",
+    ];
+    let words: Vec<&str> = LITERALS.iter().copied().chain(CONTROLS).collect();
     assert_eq!(words.len(), 27);
-    let (mut parses, mut split, mut keyword_dash) = (0usize, Vec::new(), 0usize);
+    let (mut parses, mut split, mut named_dash) = (0usize, Vec::new(), 0usize);
     for (place, template) in PLACES {
         for word in &words {
             for suffix in SUFFIXES {
@@ -328,21 +363,17 @@ fn a_keyword_is_a_whole_word_in_every_place() {
                             continue;
                         }
                     };
-                    let word_char = suffix.starts_with(|c: char| c.is_alphanumeric() || c == '_');
-                    if word_char {
-                        // Never split; and a trace word in a trace event has
-                        // no reading at all.
-                        if !whole(&dump, &name) {
-                            split.push(format!("{place}: {src} -> {dump}"));
-                        }
-                        assert!(
-                            !(place == "trace-event" && TRACE_WORDS.contains(word)),
-                            "{src} parsed as {dump}: a trace word read whole is no event"
-                        );
-                    } else if suffix == "-1" && VALUE_WORDS.contains(word) && !whole(&dump, &name) {
-                        // The keyword, and the value -1.
-                        assert!(dump.contains(&format!("({word} -1")), "{src} -> {dump}");
-                        keyword_dash += 1;
+                    // Never split; and a trace word in a trace event has no
+                    // reading at all.
+                    if !whole(&dump, &name) {
+                        split.push(format!("{place}: {src} -> {dump}"));
+                    }
+                    assert!(
+                        !(place == "trace-event" && TRACE_WORDS.contains(word)),
+                        "{src} parsed as {dump}: a trace word read whole is no event"
+                    );
+                    if suffix == "-1" && VALUE_WORDS.contains(word) {
+                        named_dash += 1;
                     }
                 }
             }
@@ -355,7 +386,11 @@ fn a_keyword_is_a_whole_word_in_every_place() {
         split.len(),
         split.join("\n")
     );
-    // Q-M1e2.17 (i)(a): a keyword followed by `-` and a digit is the
-    // keyword, at `35186bc0` and since.
-    assert_eq!(keyword_dash, 435);
+    // The name rule: a value word followed by `-` and a digit is the name it
+    // spells wherever it parses, which overrides Q-M1e2.17 (i)(a); until the
+    // swap 435 of these parses read the keyword and `-1`. Since, 348 parse,
+    // each reading the whole name (re-taken by this test, `cargo test -p
+    // ein-ir --test grammar_decisions`, 2026-11-09); the rest of the 4 × 20 ×
+    // 9 `-1` cells are a parse error for their place or argument shape.
+    assert_eq!(named_dash, 348, "the `-1` parses that read the whole name");
 }

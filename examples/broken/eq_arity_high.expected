@@ -1,0 +1,2 @@
+{FILE}:16:32: unexpected `B`: a name
+  repair: Delete `B`

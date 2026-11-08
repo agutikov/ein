@@ -135,22 +135,26 @@ fn a_true_expectation_exits_zero() {
     assert!(r.out.contains("(solve :expect)   holds"), "{}", r.out);
 }
 
-/// The four load-time refusals, each with its message checked in beside it.
-/// This asserts the CLI reaches them at all — the messages themselves are the
-/// `load-negative` corpus group's.
+/// The four refusals of a malformed `(query …)`, each with its message
+/// checked in beside it. This asserts the CLI reaches them at all — the
+/// messages themselves are the `load-negative` and `parse-negative` corpus
+/// groups'. Since M1f S1f.5.5's swap two are the grammar's (an unknown
+/// keyword, S1f.5.11; a variable in a claim's fact, S1f.5.2's G-6), refused at
+/// the parse and moved to `examples/broken/` (Q-M1f.2 (a)), their `.expected`
+/// the parse report with the file written `{FILE}`; the other two stay the
+/// loader's.
 #[test]
 fn the_load_negatives_are_refused_with_their_banked_message() {
-    for name in [
-        "expect_unknown_keyword",
-        "expect_unknown_relation",
-        "expect_omits_the_goal",
-        "expect_is_a_pattern",
+    for (dir, name) in [
+        ("examples/broken", "expect_unknown_keyword"),
+        ("examples/broken/load", "expect_unknown_relation"),
+        ("examples/broken/load", "expect_omits_the_goal"),
+        ("examples/broken", "expect_is_a_pattern"),
     ] {
-        let ein_path = format!("examples/broken/load/{name}.ein");
-        let want = std::fs::read_to_string(
-            repo_root().join(format!("examples/broken/load/{name}.expected")),
-        )
-        .expect("a .expected beside the fixture");
+        let ein_path = format!("{dir}/{name}.ein");
+        let want = std::fs::read_to_string(repo_root().join(format!("{dir}/{name}.expected")))
+            .expect("a .expected beside the fixture")
+            .replace("{FILE}", &ein_path);
         let r = ein(&["solve", &ein_path]);
         assert_eq!(r.code, 1, "{name}: {}{}", r.out, r.err);
         assert!(

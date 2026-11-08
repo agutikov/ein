@@ -11,6 +11,17 @@ beside the single-activator controls; the two files here stay as frontend
 fuzzer seeds, their text unchanged. The note below is the finding as it
 stood.
 
+**Unwritable since M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-08).** A run of
+digits is a name (S1f.5.4's ruling) and a string is natural-language text,
+written only after `:why`, `:source` or `:goal-text` (S1f.5.2's), so an int
+and a string of one text no longer exist, and `(holds "1")` is refused at the
+parse. The two seeds here stay seeds whose recorded outcome is that refusal
+(`ein-ir/tests/golden/fuzz_seeds.txt`); the two witnesses stay the refusal's
+witnesses, their rows restated to it; and the two single-activator controls,
+`activator-text-int-only.ein` and `activator-text-string-only.ein`, retired,
+their case being unwritable (the user's ruling of 2026-11-08 on S1f.5.5's
+review stop, item 2).
+
 - found: 2026-11-04, by hand — M1e2
   [S1e2.2.7](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)
   (T1e2.2.7.1), reading the compile key for W7, and parked in its § Notes;
@@ -38,8 +49,8 @@ stood.
 
 The loader holds `1` and `"1"` as two values, an `Int` and a `Sym` whose text
 is `1`, so the KB has two `holds` facts, and each activator alone derives its
-own two `noted` facts (`examples/ein-bugs/activator-text-int-only.ein` and
-`activator-text-string-only.ein`). `compile::plan_key` keyed a plan by its
+own two `noted` facts (the controls `examples/ein-bugs/activator-text-int-only.ein`
+and `activator-text-string-only.ein`, retired at S1f.5.5's swap). `compile::plan_key` keyed a plan by its
 activator's arguments **as text**: a symbol is its own text, and anything else
 was rendered and the text interned. So both activators gave one key, and the
 second compiled no plan:

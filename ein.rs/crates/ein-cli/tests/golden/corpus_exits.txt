@@ -100,62 +100,72 @@
 0    examples/branching/16_lookahead_two_step_off.ein :: render rules
 0    examples/branching/16_lookahead_two_step_off.ein :: saturate
 0    examples/branching/16_lookahead_two_step_off.ein :: solve
+1    examples/broken/absent_arity_high.ein :: saturate
+1    examples/broken/absent_arity_high.ein :: solve
+1    examples/broken/absent_arity_zero.ein :: saturate
+1    examples/broken/absent_arity_zero.ein :: solve
 1    examples/broken/bare_top_level_atom.ein :: render rules
 1    examples/broken/bare_top_level_atom.ein :: saturate
 1    examples/broken/bare_top_level_atom.ein :: solve
-1    examples/broken/compile/absent_arity_high.ein :: saturate
-1    examples/broken/compile/absent_arity_high.ein :: solve
-1    examples/broken/compile/absent_arity_zero.ein :: saturate
-1    examples/broken/compile/absent_arity_zero.ein :: solve
 0    examples/broken/compile/activator_arity.ein :: render rules
 0    examples/broken/compile/activator_arity.ein :: saturate
 0    examples/broken/compile/activator_arity.ein :: saturate --dump
 0    examples/broken/compile/activator_arity.ein :: solve
-1    examples/broken/compile/eq_arity_high.ein :: saturate
-1    examples/broken/compile/eq_arity_high.ein :: solve
-1    examples/broken/compile/eq_arity_low.ein :: saturate
-1    examples/broken/compile/eq_arity_low.ein :: solve
 1    examples/broken/compile/nested_or.ein :: saturate
 1    examples/broken/compile/nested_or.ein :: solve
+1    examples/broken/config_bad_value.ein :: render rules
+1    examples/broken/config_bad_value.ein :: saturate
+1    examples/broken/config_bad_value.ein :: solve
+1    examples/broken/config_retired_flag.ein :: render rules
+1    examples/broken/config_retired_flag.ein :: saturate
+1    examples/broken/config_retired_flag.ein :: solve
+1    examples/broken/config_unknown_flag.ein :: render rules
+1    examples/broken/config_unknown_flag.ein :: saturate
+1    examples/broken/config_unknown_flag.ein :: solve
+1    examples/broken/empty_absent.ein :: render rules
+1    examples/broken/empty_absent.ein :: saturate
+1    examples/broken/empty_absent.ein :: solve
+1    examples/broken/eq_arity_high.ein :: saturate
+1    examples/broken/eq_arity_high.ein :: solve
+1    examples/broken/eq_arity_low.ein :: saturate
+1    examples/broken/eq_arity_low.ein :: solve
+1    examples/broken/expect_is_a_pattern.ein :: render rules
+1    examples/broken/expect_is_a_pattern.ein :: saturate
+1    examples/broken/expect_is_a_pattern.ein :: solve
+1    examples/broken/expect_unknown_keyword.ein :: render rules
+1    examples/broken/expect_unknown_keyword.ein :: saturate
+1    examples/broken/expect_unknown_keyword.ein :: solve
+1    examples/broken/hrule_reserved_name.ein :: render rules
+1    examples/broken/hrule_reserved_name.ein :: saturate
+1    examples/broken/hrule_reserved_name.ein :: solve
+1    examples/broken/import_alias_not_a_name.ein :: render rules
+1    examples/broken/import_alias_not_a_name.ein :: saturate
+1    examples/broken/import_alias_not_a_name.ein :: solve
+1    examples/broken/import_symbols_empty.ein :: render rules
+1    examples/broken/import_symbols_empty.ein :: saturate
+1    examples/broken/import_symbols_empty.ein :: solve
+1    examples/broken/import_symbols_not_a_list.ein :: render rules
+1    examples/broken/import_symbols_not_a_list.ein :: saturate
+1    examples/broken/import_symbols_not_a_list.ein :: solve
 1    examples/broken/keyword_as_value.ein :: render rules
 1    examples/broken/keyword_as_value.ein :: saturate
 1    examples/broken/keyword_as_value.ein :: solve
-1    examples/broken/load/config_bad_value.ein :: render rules
-1    examples/broken/load/config_bad_value.ein :: saturate
-1    examples/broken/load/config_bad_value.ein :: solve
-1    examples/broken/load/config_retired_flag.ein :: render rules
-1    examples/broken/load/config_retired_flag.ein :: saturate
-1    examples/broken/load/config_retired_flag.ein :: solve
-1    examples/broken/load/config_unknown_flag.ein :: render rules
-1    examples/broken/load/config_unknown_flag.ein :: saturate
-1    examples/broken/load/config_unknown_flag.ein :: solve
+1    examples/broken/kwpair-below-the-filter.ein :: render constraints
+1    examples/broken/kwpair-below-the-filter.ein :: render program
+1    examples/broken/kwpair-below-the-filter.ein :: saturate
+1    examples/broken/kwpair-below-the-filter.ein :: solve
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
-0    examples/broken/load/empty_absent.ein :: render rules
-1    examples/broken/load/empty_absent.ein :: saturate
-1    examples/broken/load/empty_absent.ein :: solve
-1    examples/broken/load/expect_is_a_pattern.ein :: render rules
-1    examples/broken/load/expect_is_a_pattern.ein :: saturate
-1    examples/broken/load/expect_is_a_pattern.ein :: solve
 1    examples/broken/load/expect_omits_the_goal.ein :: render rules
 1    examples/broken/load/expect_omits_the_goal.ein :: saturate
 1    examples/broken/load/expect_omits_the_goal.ein :: solve
-1    examples/broken/load/expect_unknown_keyword.ein :: render rules
-1    examples/broken/load/expect_unknown_keyword.ein :: saturate
-1    examples/broken/load/expect_unknown_keyword.ein :: solve
 1    examples/broken/load/expect_unknown_relation.ein :: render rules
 1    examples/broken/load/expect_unknown_relation.ein :: saturate
 1    examples/broken/load/expect_unknown_relation.ein :: solve
 0    examples/broken/load/hrule_duplicate_name.ein :: render rules
 1    examples/broken/load/hrule_duplicate_name.ein :: saturate
 1    examples/broken/load/hrule_duplicate_name.ein :: solve
-0    examples/broken/load/hrule_reserved_name.ein :: render rules
-1    examples/broken/load/hrule_reserved_name.ein :: saturate
-1    examples/broken/load/hrule_reserved_name.ein :: solve
-1    examples/broken/load/import_alias_not_a_name.ein :: render rules
-1    examples/broken/load/import_alias_not_a_name.ein :: saturate
-1    examples/broken/load/import_alias_not_a_name.ein :: solve
 1    examples/broken/load/import_as_and_symbols.ein :: render rules
 1    examples/broken/load/import_as_and_symbols.ein :: saturate
 1    examples/broken/load/import_as_and_symbols.ein :: solve
@@ -177,12 +187,6 @@
 1    examples/broken/load/import_relative_not_found.ein :: render rules
 1    examples/broken/load/import_relative_not_found.ein :: saturate
 1    examples/broken/load/import_relative_not_found.ein :: solve
-1    examples/broken/load/import_symbols_empty.ein :: render rules
-1    examples/broken/load/import_symbols_empty.ein :: saturate
-1    examples/broken/load/import_symbols_empty.ein :: solve
-1    examples/broken/load/import_symbols_not_a_list.ein :: render rules
-1    examples/broken/load/import_symbols_not_a_list.ein :: saturate
-1    examples/broken/load/import_symbols_not_a_list.ein :: solve
 1    examples/broken/load/import_symbols_not_provided.ein :: render rules
 1    examples/broken/load/import_symbols_not_provided.ein :: saturate
 1    examples/broken/load/import_symbols_not_provided.ein :: solve
@@ -192,27 +196,12 @@
 1    examples/broken/load/macro_duplicate.ein :: render rules
 1    examples/broken/load/macro_duplicate.ein :: saturate
 1    examples/broken/load/macro_duplicate.ein :: solve
-1    examples/broken/load/macro_reserved_name.ein :: render rules
-1    examples/broken/load/macro_reserved_name.ein :: saturate
-1    examples/broken/load/macro_reserved_name.ein :: solve
-0    examples/broken/load/open_arity.ein :: render rules
-1    examples/broken/load/open_arity.ein :: saturate
-1    examples/broken/load/open_arity.ein :: solve
 0    examples/broken/load/open_compound_witness.ein :: render rules
 1    examples/broken/load/open_compound_witness.ein :: saturate
 1    examples/broken/load/open_compound_witness.ein :: solve
-0    examples/broken/load/open_in_match.ein :: render rules
-1    examples/broken/load/open_in_match.ein :: saturate
-1    examples/broken/load/open_in_match.ein :: solve
-0    examples/broken/load/open_mixed_assert.ein :: render rules
-1    examples/broken/load/open_mixed_assert.ein :: saturate
-1    examples/broken/load/open_mixed_assert.ein :: solve
 1    examples/broken/load/query_class_twice.ein :: render rules
 1    examples/broken/load/query_class_twice.ein :: saturate
 1    examples/broken/load/query_class_twice.ein :: solve
-1    examples/broken/load/query_lattice_keyword.ein :: render rules
-1    examples/broken/load/query_lattice_keyword.ein :: saturate
-1    examples/broken/load/query_lattice_keyword.ein :: solve
 1    examples/broken/load/query_over_unknown.ein :: render rules
 1    examples/broken/load/query_over_unknown.ein :: saturate
 1    examples/broken/load/query_over_unknown.ein :: solve
@@ -222,24 +211,9 @@
 1    examples/broken/load/region_owing_with_states.ein :: render rules
 1    examples/broken/load/region_owing_with_states.ein :: saturate
 1    examples/broken/load/region_owing_with_states.ein :: solve
-1    examples/broken/load/region_top_level.ein :: render rules
-1    examples/broken/load/region_top_level.ein :: saturate
-1    examples/broken/load/region_top_level.ein :: solve
 1    examples/broken/load/relation_duplicate.ein :: render rules
 1    examples/broken/load/relation_duplicate.ein :: saturate
 1    examples/broken/load/relation_duplicate.ein :: solve
-1    examples/broken/load/relation_malformed.ein :: render rules
-1    examples/broken/load/relation_malformed.ein :: saturate
-1    examples/broken/load/relation_malformed.ein :: solve
-1    examples/broken/load/relation_needs_a_name.ein :: render rules
-1    examples/broken/load/relation_needs_a_name.ein :: saturate
-1    examples/broken/load/relation_needs_a_name.ein :: solve
-0    examples/broken/load/relation_parameter_int.ein :: render rules
-1    examples/broken/load/relation_parameter_int.ein :: saturate
-1    examples/broken/load/relation_parameter_int.ein :: solve
-1    examples/broken/load/relation_reserved_name.ein :: render rules
-1    examples/broken/load/relation_reserved_name.ein :: saturate
-1    examples/broken/load/relation_reserved_name.ein :: solve
 1    examples/broken/load/reserved_open_aliased.ein :: render rules
 1    examples/broken/load/reserved_open_aliased.ein :: solve
 1    examples/broken/load/reserved_open_direct.ein :: render rules
@@ -261,24 +235,51 @@
 0    examples/broken/load/rule_missing_match.ein :: render rules
 1    examples/broken/load/rule_missing_match.ein :: saturate
 1    examples/broken/load/rule_missing_match.ein :: solve
-0    examples/broken/load/rule_reserved_name.ein :: render rules
-1    examples/broken/load/rule_reserved_name.ein :: saturate
-1    examples/broken/load/rule_reserved_name.ein :: solve
 1    examples/broken/load/solve_twice.ein :: render rules
 1    examples/broken/load/solve_twice.ein :: saturate
 1    examples/broken/load/solve_twice.ein :: solve
-1    examples/broken/load/solve_unknown_keyword.ein :: render rules
-1    examples/broken/load/solve_unknown_keyword.ein :: saturate
-1    examples/broken/load/solve_unknown_keyword.ein :: solve
 0    examples/broken/load/unbound_head.ein :: render rules
 1    examples/broken/load/unbound_head.ein :: saturate
 1    examples/broken/load/unbound_head.ein :: solve
 0    examples/broken/load/unimported_std_macro.ein :: render rules
 1    examples/broken/load/unimported_std_macro.ein :: saturate
 1    examples/broken/load/unimported_std_macro.ein :: solve
+1    examples/broken/macro_reserved_name.ein :: render rules
+1    examples/broken/macro_reserved_name.ein :: saturate
+1    examples/broken/macro_reserved_name.ein :: solve
+1    examples/broken/open_arity.ein :: render rules
+1    examples/broken/open_arity.ein :: saturate
+1    examples/broken/open_arity.ein :: solve
+1    examples/broken/open_in_match.ein :: render rules
+1    examples/broken/open_in_match.ein :: saturate
+1    examples/broken/open_in_match.ein :: solve
+1    examples/broken/open_mixed_assert.ein :: render rules
+1    examples/broken/open_mixed_assert.ein :: saturate
+1    examples/broken/open_mixed_assert.ein :: solve
+1    examples/broken/query_lattice_keyword.ein :: render rules
+1    examples/broken/query_lattice_keyword.ein :: saturate
+1    examples/broken/query_lattice_keyword.ein :: solve
+1    examples/broken/region_top_level.ein :: render rules
+1    examples/broken/region_top_level.ein :: saturate
+1    examples/broken/region_top_level.ein :: solve
+1    examples/broken/relation_malformed.ein :: render rules
+1    examples/broken/relation_malformed.ein :: saturate
+1    examples/broken/relation_malformed.ein :: solve
+1    examples/broken/relation_needs_a_name.ein :: render rules
+1    examples/broken/relation_needs_a_name.ein :: saturate
+1    examples/broken/relation_needs_a_name.ein :: solve
+1    examples/broken/relation_reserved_name.ein :: render rules
+1    examples/broken/relation_reserved_name.ein :: saturate
+1    examples/broken/relation_reserved_name.ein :: solve
 1    examples/broken/rule_missing_params.ein :: render rules
 1    examples/broken/rule_missing_params.ein :: saturate
 1    examples/broken/rule_missing_params.ein :: solve
+1    examples/broken/rule_reserved_name.ein :: render rules
+1    examples/broken/rule_reserved_name.ein :: saturate
+1    examples/broken/rule_reserved_name.ein :: solve
+1    examples/broken/solve_unknown_keyword.ein :: render rules
+1    examples/broken/solve_unknown_keyword.ein :: saturate
+1    examples/broken/solve_unknown_keyword.ein :: solve
 1    examples/broken/unclosed_paren.ein :: render rules
 1    examples/broken/unclosed_paren.ein :: saturate
 1    examples/broken/unclosed_paren.ein :: solve
@@ -312,22 +313,12 @@
 1    examples/ein-bugs/activator-all-nested.ein :: solve
 0    examples/ein-bugs/activator-all-symbol.ein :: saturate
 1    examples/ein-bugs/activator-all-symbol.ein :: solve
-0    examples/ein-bugs/activator-text-int-and-string.ein :: saturate
-0    examples/ein-bugs/activator-text-int-and-string.ein :: saturate --dump
-0    examples/ein-bugs/activator-text-int-and-string.ein :: solve
-0    examples/ein-bugs/activator-text-int-and-string.ein :: test
-0    examples/ein-bugs/activator-text-int-only.ein :: saturate
-0    examples/ein-bugs/activator-text-int-only.ein :: saturate --dump
-0    examples/ein-bugs/activator-text-int-only.ein :: solve
-0    examples/ein-bugs/activator-text-int-only.ein :: test
-0    examples/ein-bugs/activator-text-string-only.ein :: saturate
-0    examples/ein-bugs/activator-text-string-only.ein :: saturate --dump
-0    examples/ein-bugs/activator-text-string-only.ein :: solve
-0    examples/ein-bugs/activator-text-string-only.ein :: test
-0    examples/ein-bugs/activator-text-string-then-int.ein :: saturate
-0    examples/ein-bugs/activator-text-string-then-int.ein :: saturate --dump
-0    examples/ein-bugs/activator-text-string-then-int.ein :: solve
-0    examples/ein-bugs/activator-text-string-then-int.ein :: test
+1    examples/ein-bugs/activator-text-int-and-string.ein :: saturate
+1    examples/ein-bugs/activator-text-int-and-string.ein :: saturate --dump
+1    examples/ein-bugs/activator-text-int-and-string.ein :: solve
+1    examples/ein-bugs/activator-text-string-then-int.ein :: saturate
+1    examples/ein-bugs/activator-text-string-then-int.ein :: saturate --dump
+1    examples/ein-bugs/activator-text-string-then-int.ein :: solve
 1    examples/ein-bugs/alive-empty-interlayer.ein :: solve
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve
 0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: solve
@@ -369,10 +360,6 @@
 1    examples/ein-bugs/int-goal-binding.ein :: render rules
 0    examples/ein-bugs/int-goal-binding.ein :: saturate
 0    examples/ein-bugs/int-goal-binding.ein :: solve
-0    examples/ein-bugs/kwpair-below-the-filter.ein :: render constraints
-0    examples/ein-bugs/kwpair-below-the-filter.ein :: render program
-0    examples/ein-bugs/kwpair-below-the-filter.ein :: saturate
-0    examples/ein-bugs/kwpair-below-the-filter.ein :: solve
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve
 0    examples/ein-bugs/naf-upward-closure.ein :: saturate
 1    examples/ein-bugs/naf-upward-closure.ein :: solve
@@ -389,8 +376,8 @@
 0    examples/ein-bugs/unsat-core-id-space.ein :: oracle --dump {out}/region
 0    examples/ein-bugs/unsat-core-id-space.ein :: saturate
 0    examples/ein-bugs/unsat-core-id-space.ein :: solve
-0    examples/ein-bugs/wrong-answers/absent-empty.ein :: saturate
-0    examples/ein-bugs/wrong-answers/absent-empty.ein :: solve
+1    examples/ein-bugs/wrong-answers/absent-empty.ein :: saturate
+1    examples/ein-bugs/wrong-answers/absent-empty.ein :: solve
 0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: saturate
 0    examples/ein-bugs/wrong-answers/activator-nested-value.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-cap-shared.ein :: solve
@@ -410,12 +397,12 @@
 0    examples/ein-bugs/wrong-answers/assert-neq-x-x.ein :: solve
 1    examples/ein-bugs/wrong-answers/bare-premise.ein :: saturate
 1    examples/ein-bugs/wrong-answers/bare-premise.ein :: solve
-0    examples/ein-bugs/wrong-answers/claim-int-name-solve.ein :: saturate
+1    examples/ein-bugs/wrong-answers/claim-int-name-solve.ein :: saturate
 1    examples/ein-bugs/wrong-answers/claim-int-name-solve.ein :: solve
-0    examples/ein-bugs/wrong-answers/claim-int-name.ein :: saturate
+1    examples/ein-bugs/wrong-answers/claim-int-name.ein :: saturate
 1    examples/ein-bugs/wrong-answers/claim-int-name.ein :: solve
-0    examples/ein-bugs/wrong-answers/classes-int-name.ein :: saturate
-0    examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve
+1    examples/ein-bugs/wrong-answers/classes-int-name.ein :: saturate
+1    examples/ein-bugs/wrong-answers/classes-int-name.ein :: solve
 0    examples/ein-bugs/wrong-answers/closure-shared-given-control.ein :: saturate
 0    examples/ein-bugs/wrong-answers/closure-shared-given-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/closure-shared-given.ein :: saturate
@@ -534,16 +521,16 @@
 0    examples/ein-bugs/wrong-answers/kw-relation-fact-twin.ein :: solve
 0    examples/ein-bugs/wrong-answers/kw-relation-fact.ein :: saturate
 0    examples/ein-bugs/wrong-answers/kw-relation-fact.ein :: solve
-0    examples/ein-bugs/wrong-answers/kwpair-in-assert.ein :: saturate
-0    examples/ein-bugs/wrong-answers/kwpair-in-assert.ein :: solve
-0    examples/ein-bugs/wrong-answers/kwpair-in-goal.ein :: saturate
-0    examples/ein-bugs/wrong-answers/kwpair-in-goal.ein :: solve
+1    examples/ein-bugs/wrong-answers/kwpair-in-assert.ein :: saturate
+1    examples/ein-bugs/wrong-answers/kwpair-in-assert.ein :: solve
+1    examples/ein-bugs/wrong-answers/kwpair-in-goal.ein :: saturate
+1    examples/ein-bugs/wrong-answers/kwpair-in-goal.ein :: solve
 1    examples/ein-bugs/wrong-answers/kwpair-in-guard.ein :: saturate
 1    examples/ein-bugs/wrong-answers/kwpair-in-guard.ein :: solve
-0    examples/ein-bugs/wrong-answers/kwpair-in-macro.ein :: saturate
-0    examples/ein-bugs/wrong-answers/kwpair-in-macro.ein :: solve
-0    examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein :: saturate
-0    examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein :: solve
+1    examples/ein-bugs/wrong-answers/kwpair-in-macro.ein :: saturate
+1    examples/ein-bugs/wrong-answers/kwpair-in-macro.ein :: solve
+1    examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein :: saturate
+1    examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein :: solve
 0    examples/ein-bugs/wrong-answers/match-only-declared.ein :: solve
 0    examples/ein-bugs/wrong-answers/match-only-declared.ein :: test
 0    examples/ein-bugs/wrong-answers/match-only.ein :: solve
@@ -584,49 +571,49 @@
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --maximal --region-limit 8
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --minimal --region-limit 8
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --region-limit 8
-1    examples/ein-bugs/wrong-answers/range-in-match.ein :: saturate
-1    examples/ein-bugs/wrong-answers/range-in-match.ein :: solve
+0    examples/ein-bugs/wrong-answers/range-in-match.ein :: saturate
+0    examples/ein-bugs/wrong-answers/range-in-match.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
-0    examples/ein-bugs/wrong-answers/str-in-absent.ein :: saturate
-0    examples/ein-bugs/wrong-answers/str-in-absent.ein :: solve
-0    examples/ein-bugs/wrong-answers/str-in-assert.ein :: saturate
-0    examples/ein-bugs/wrong-answers/str-in-assert.ein :: solve
-0    examples/ein-bugs/wrong-answers/str-in-guard.ein :: saturate
-0    examples/ein-bugs/wrong-answers/str-in-guard.ein :: solve
-0    examples/ein-bugs/wrong-answers/str-in-hrule.ein :: saturate
-0    examples/ein-bugs/wrong-answers/str-in-hrule.ein :: solve
-0    examples/ein-bugs/wrong-answers/str-in-match.ein :: saturate
-0    examples/ein-bugs/wrong-answers/str-in-match.ein :: solve
+1    examples/ein-bugs/wrong-answers/str-in-absent.ein :: saturate
+1    examples/ein-bugs/wrong-answers/str-in-absent.ein :: solve
+1    examples/ein-bugs/wrong-answers/str-in-assert.ein :: saturate
+1    examples/ein-bugs/wrong-answers/str-in-assert.ein :: solve
+1    examples/ein-bugs/wrong-answers/str-in-guard.ein :: saturate
+1    examples/ein-bugs/wrong-answers/str-in-guard.ein :: solve
+1    examples/ein-bugs/wrong-answers/str-in-hrule.ein :: saturate
+1    examples/ein-bugs/wrong-answers/str-in-hrule.ein :: solve
+1    examples/ein-bugs/wrong-answers/str-in-match.ein :: saturate
+1    examples/ein-bugs/wrong-answers/str-in-match.ein :: solve
 0    examples/ein-bugs/wrong-answers/template-var-star.ein :: saturate
 0    examples/ein-bugs/wrong-answers/template-var-star.ein :: solve
 0    examples/ein-bugs/wrong-answers/tree-dead.ein :: solve
 0    examples/ein-bugs/wrong-answers/uncovered-knows.ein :: solve
 0    examples/ein-bugs/wrong-answers/uncovered.ein :: solve
-0    examples/ein-bugs/wrong-answers/underscore-activator-arg.ein :: saturate
-0    examples/ein-bugs/wrong-answers/underscore-activator-arg.ein :: solve
+1    examples/ein-bugs/wrong-answers/underscore-activator-arg.ein :: saturate
+1    examples/ein-bugs/wrong-answers/underscore-activator-arg.ein :: solve
 0    examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein :: solve
-0    examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein :: saturate
-0    examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein :: solve
-0    examples/ein-bugs/wrong-answers/underscore-fact-arg.ein :: saturate
-0    examples/ein-bugs/wrong-answers/underscore-fact-arg.ein :: solve
-0    examples/ein-bugs/wrong-answers/underscore-goal-arg.ein :: saturate
-0    examples/ein-bugs/wrong-answers/underscore-goal-arg.ein :: solve
-0    examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein :: saturate
-0    examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein :: solve
-0    examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein :: saturate
-0    examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein :: solve
-0    examples/ein-bugs/wrong-answers/where-in-and.ein :: saturate
-0    examples/ein-bugs/wrong-answers/where-in-and.ein :: solve
-0    examples/ein-bugs/wrong-answers/where-in-pattern.ein :: saturate
-0    examples/ein-bugs/wrong-answers/where-in-pattern.ein :: solve
-0    examples/ein-bugs/wrong-answers/where-on-rule.ein :: saturate
-0    examples/ein-bugs/wrong-answers/where-on-rule.ein :: solve
+1    examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein :: saturate
+1    examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein :: solve
+1    examples/ein-bugs/wrong-answers/underscore-fact-arg.ein :: saturate
+1    examples/ein-bugs/wrong-answers/underscore-fact-arg.ein :: solve
+1    examples/ein-bugs/wrong-answers/underscore-goal-arg.ein :: saturate
+1    examples/ein-bugs/wrong-answers/underscore-goal-arg.ein :: solve
+1    examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein :: saturate
+1    examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein :: solve
+1    examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein :: saturate
+1    examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein :: solve
+1    examples/ein-bugs/wrong-answers/where-in-and.ein :: saturate
+1    examples/ein-bugs/wrong-answers/where-in-and.ein :: solve
+1    examples/ein-bugs/wrong-answers/where-in-pattern.ein :: saturate
+1    examples/ein-bugs/wrong-answers/where-in-pattern.ein :: solve
+1    examples/ein-bugs/wrong-answers/where-on-rule.ein :: saturate
+1    examples/ein-bugs/wrong-answers/where-on-rule.ein :: solve
 0    examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein :: solve
-0    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: saturate
-0    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: solve
+1    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: solve
 1    examples/ein-bugs/wrong-answers/wild-in-guard.ein :: saturate
 1    examples/ein-bugs/wrong-answers/wild-in-guard.ein :: solve
 0    examples/ein-bugs/wrong-answers/wild-in-head-twin.ein :: saturate
@@ -635,12 +622,12 @@
 1    examples/ein-bugs/wrong-answers/wild-in-head.ein :: solve
 0    examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein :: solve
-0    examples/ein-bugs/wrong-answers/wild-in-hrule.ein :: saturate
-0    examples/ein-bugs/wrong-answers/wild-in-hrule.ein :: solve
+1    examples/ein-bugs/wrong-answers/wild-in-hrule.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wild-in-hrule.ein :: solve
 0    examples/ein-bugs/wrong-answers/wild-in-match-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/wild-in-match-twin.ein :: solve
-0    examples/ein-bugs/wrong-answers/wild-in-match.ein :: saturate
-0    examples/ein-bugs/wrong-answers/wild-in-match.ein :: solve
+1    examples/ein-bugs/wrong-answers/wild-in-match.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wild-in-match.ein :: solve
 0    examples/ein-bugs/zebra2-bad.ein :: render constraints
 0    examples/ein-bugs/zebra2-bad.ein :: render lattice
 0    examples/ein-bugs/zebra2-bad.ein :: render rules
@@ -982,7 +969,7 @@
 0    examples/saturation/type-exclusivity/pets.ein :: saturate --dump
 0    examples/saturation/type-exclusivity/pets.ein :: solve
 1    examples/syntax/arg-kinds.ein :: render rules
-1    examples/syntax/arg-kinds.ein :: saturate
+0    examples/syntax/arg-kinds.ein :: saturate
 1    examples/syntax/config.ein :: render rules
 0    examples/syntax/config.ein :: saturate
 1    examples/syntax/constraint-scopes.ein :: render rules

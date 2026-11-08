@@ -14,7 +14,7 @@
 //! | `std.macro`'s exported names | [`stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`], which re-parses `stdlib/macro.ein` at test time |
 //! | the 14-module mangling | a checked-in table |
 //! | one module under two qualifications | [`one_module_under_two_qualifications_does_not_leak_either_way`] |
-//! | the 12 `.expected` fixtures | [`the_import_and_macro_failures_are_byte_identical`] |
+//! | the 9 `.expected` fixtures of the resolver and the expander | [`the_import_and_macro_failures_are_byte_identical`] (12 until M1f S1f.5.5's swap moved three to `examples/broken/`, refused at the parse) |
 
 use std::path::{Path, PathBuf};
 
@@ -92,9 +92,13 @@ fn the_import_and_macro_failures_are_byte_identical() {
     // Only the fixtures whose message this phase owns. The rest —
     // relation/rule/config/derivation, the duplicate and reserved macro
     // names, the S1.8a.f20 guard's wiring — are the loader's, and are
-    // compared when the loader lands (P1a.2).
+    // compared when the loader lands (P1a.2). Since M1f S1f.5.5's swap
+    // (T1f.5.5.4) `import_alias_not_a_name` (a string, S1f.5.2),
+    // `import_symbols_empty` and `import_symbols_not_a_list` (the paper
+    // grammar's `:symbols`, a list of one name or more) are refused at the
+    // parse, and moved to `examples/broken/`, where
+    // `grammar_decisions.rs` holds their reports.
     for name in [
-        "import_alias_not_a_name",
         "import_as_and_symbols",
         "import_bare_std",
         "import_conflicting_definitions",
@@ -102,8 +106,6 @@ fn the_import_and_macro_failures_are_byte_identical() {
         "import_cycle_b",
         "import_module_not_found",
         "import_relative_not_found",
-        "import_symbols_empty",
-        "import_symbols_not_a_list",
         "import_symbols_not_provided",
     ] {
         let path = dir.join(format!("{name}.ein"));
@@ -152,9 +154,17 @@ fn one_module_under_two_qualifications_does_not_leak_either_way() {
     let src = "(import std.macro :as m)\n(import std.macro :symbols (forall))\n";
     let mut ast = Ast::new();
     let forms = parse(&mut ast, src, Some("<string>")).expect("parses");
+    // One form a line: since M1f S1f.5.5's swap the stdlib's macros carry a
+    // `:why` (the brief's item 4), so the canonical dump breaks each over
+    // several lines; the compact one keeps each on one.
     let got = Resolver::new()
         .resolve_imports(&mut ast, &forms, Some(&base))
-        .map(|f| dump_canonical(&ast, &f))
+        .map(|f| {
+            f.iter()
+                .map(|&n| ein_ir::dump::dump_compact(&ast, n))
+                .collect::<Vec<_>>()
+                .join("\n")
+        })
         .expect("resolves");
     // Both qualifications survive, each spelled its own way.
     assert!(
@@ -317,12 +327,20 @@ fn declaration(decl: &str, name: &str) -> String {
 /// **The fourth route is this test's own finding.** The review named three —
 /// direct, flat `:symbols`, qualified — and `:as` is a fourth, taking the same
 /// `qualify()` path with a different prefix. It was equally broken.
+///
+/// **Since M1f S1f.5.5's swap (T1f.5.5.4) `open` and `absent` are refused at
+/// the parse wherever a declarator binds one**, each a word a position gives
+/// a meaning to and no name a declarator takes (the paper grammar's default
+/// 1): in the program on the direct route, in the module on the other three.
+/// The loader's route-independence is held since by a third name the grammar
+/// reads as a name, the kernel dunder `__closed__` (T1f.5.5.11), refused as a
+/// reserved name through every route: forty-eight cells.
 #[test]
 fn reserved_names_are_reserved_through_every_import_route() {
     let m = Modules::new("routes");
     let mut loaded: Vec<String> = Vec::new();
     for decl in ["rule", "hrule", "relation", "macro"] {
-        for name in ["open", "absent"] {
+        for name in ["open", "absent", "__closed__"] {
             let module = declaration(decl, name);
             for (route, src) in [
                 ("direct", format!("{module}(p A)\n")),
@@ -331,11 +349,16 @@ fn reserved_names_are_reserved_through_every_import_route() {
                 ("aliased", "(import m :as z)\n(p A)\n".to_string()),
             ] {
                 let cell = format!("{decl} {name} via {route}");
+                let want = if name.starts_with("__") {
+                    "shadows a reserved kernel name".to_string()
+                } else {
+                    format!(":3:{}: unexpected `{name}`", decl.len() + 3)
+                };
                 match m.load(&module, &src) {
                     Ok(()) => loaded.push(cell),
                     Err(e) => assert!(
-                        e.contains("shadows a reserved kernel name"),
-                        "{cell}: refused, but not as a reserved name: {e}"
+                        e.contains(&want),
+                        "{cell}: refused, but not with {want:?}: {e}"
                     ),
                 }
             }
@@ -343,7 +366,7 @@ fn reserved_names_are_reserved_through_every_import_route() {
     }
     assert!(
         loaded.is_empty(),
-        "{} of 32 cells bound a reserved name:\n  {}",
+        "{} of 48 cells bound a reserved name:\n  {}",
         loaded.len(),
         loaded.join("\n  ")
     );
@@ -384,11 +407,17 @@ fn an_unreserved_name_still_qualifies_through_all_four_routes() {
 /// the moment the two disagree, and it fails naming the name.
 ///
 /// Two outcomes count as reserved, and the split is the grammar's rather than
-/// the loader's: `and`, `neq`, `not` and `or` are SYMBOL-excluded by the lexer
-/// ([`crate::lex`]'s own list, which genuinely differs and is
+/// the loader's. Until M1f S1f.5.5's swap `and`, `neq`, `not` and `or` were
+/// SYMBOL-excluded by the hand-written lexer (its own list, which genuinely
+/// differed and is
 /// [`SE-L2`](../../../../docs/history/m1e_review_processing/README.md#s1e42--semantics-low)),
-/// so a module declaring one never parses; the rest reach the loader and are
-/// refused there. What no name may do is **load**.
+/// so a module declaring one never parsed, and the rest reached the loader.
+/// Since the swap (T1f.5.5.4) every name of the list that is a token of its
+/// own is refused at the parse where a declarator binds it, the four words
+/// that are never a name and the five a position gives a meaning to and no
+/// declarator takes (`absent`, `eq`, `false`, `open`, `relation`); the two
+/// kernel dunders, names the grammar reads, reach the loader and are refused
+/// there (T1f.5.5.11). What no name may do is **load**.
 #[test]
 fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
     let m = Modules::new("all-names");
@@ -399,9 +428,11 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
         match m.load(&module, "(import m)\n") {
             Ok(()) => bound.push(name),
             // The module's own parse error, surfaced through `resolve_imports`
-            // as a `LoadError` — the lexer refused the name a `SYMBOL` before
-            // any declaration existed to check.
-            Err(e) if e.contains("unexpected input") => refused_at_parse.push(name),
+            // as a `LoadError` — the grammar refused the name where a
+            // declarator binds one, before any declaration existed to check.
+            Err(e) if e.contains(&format!(":3:8: unexpected `{name}`")) => {
+                refused_at_parse.push(name)
+            }
             Err(e) => assert!(
                 e.contains("shadows a reserved kernel name"),
                 "{name}: refused, but not as a reserved name: {e}"
@@ -414,8 +445,10 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
     );
     assert_eq!(
         refused_at_parse,
-        ["and", "neq", "not", "or"],
-        "the lexer's SYMBOL exclusions are not the four SE-L2 names"
+        [
+            "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation"
+        ],
+        "the grammar's refusals are not every token of the list"
     );
 }
 

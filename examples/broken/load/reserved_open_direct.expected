@@ -1,1 +1,2 @@
-macro 'open' shadows a reserved kernel name at None
+{FILE}:16:8: unexpected `open`
+  repair: Insert a name, Delete `open`

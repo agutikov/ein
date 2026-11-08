@@ -48,9 +48,11 @@ fn loaded(path: &Path) -> (Kb, Terms, Ast) {
 /// The refusal of a witness the parser or the loader refuses, as the binary's
 /// first line on stderr, or `None` where it loads: a refusal at load (M1e2
 /// S1e2.2.20, W20's wildcard relation), which the binary prints as `kb load
-/// error: …`, and since M1f S1f.5.3 one at the parse (W20's range, until
-/// S1f.5.4), `<witness>:<line>:<col>: unexpected input`. The library cannot
-/// get past either.
+/// error: …`, and since M1f S1f.5.3 one at the parse, `<witness>:<line>:<col>:
+/// unexpected …` (W20's range until S1f.5.5's swap made it a name, and since
+/// the swap every witness of a shape the grammar refuses: W29's, W32's and
+/// W35's, and the W16, W18, W20 and W28 rows restated to the refusal). The
+/// library cannot get past either.
 fn refusal(witness: &str) -> Option<String> {
     let path = repo_root().join(witness);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{witness}: {e}"));

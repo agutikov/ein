@@ -9,33 +9,60 @@
 === "(trace (step s1 :rule r :using (c1) :derives (p a)))"
   ok 1 form(s)
 === "(query :goal :solve)"
-  refused <string>:1:14: unexpected input
-(query :goal :solve)
-             ^
+  refused <string>:1:14: unexpected `:solve`: a keyword this form does not take
+  repair: Insert `(`, Insert a variable, Insert `)`, Delete `:solve`
+  repair: Insert `(`, Insert a name, Insert `)`, Delete `:solve`
+  repair: Insert `(`, Insert a name, Delete `:solve`, Shift `)`, Insert `)`
+  and 1 more repair
 === "(config :enable-pre-branch-lookahead true)"
-  ok 1 form(s)
+  refused <string>:1:9: unexpected `:enable-pre-branch-lookahead`: a keyword this form does not take
+  note: config flag :enable-pre-branch-lookahead was retired at M1e2 S1e2.1c.5: the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork, and the filter's measured saving was in the noise
+  repair: Insert `:lattice-sanity-check`, Delete `:enable-pre-branch-lookahead`
+  repair: Insert `:record-alternative-justifications`, Delete `:enable-pre-branch-lookahead`
+  repair: Delete `:enable-pre-branch-lookahead`, Delete `true`
 === "(= a b :source \"s\")"
   ok 1 form(s)
 === "(not (color-loc Red House-1) :rule x :using (c1))"
-  ok 1 form(s)
+  refused <string>:1:46: unexpected `c1`: a name
+  repair: Insert `(`
+<string>:1:50: unexpected end of input
+  repair: Insert `)`
 === "(a 1..5 :k 1..* :s \"x\\ny\" :w _ :v ?v)"
-  refused <string>:1:5: unexpected input
-(a 1..5 :k 1..* :s "x\ny" :w _ :v ?v)
-    ^
+  refused <string>:1:9: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `1..*`, Delete `:s`, Delete `"x\ny"`, Delete `:w`, Delete `_`, Delete `:v`, Delete `?v`
+  repair: Insert a name, Delete `:k`, Shift `1..*`, Delete `:s`, Delete `"x\ny"`, Delete `:w`, Delete `_`, Delete `:v`, Delete `?v`
+  repair: Insert `:source`, Delete `:k`, Delete `1..*`, Delete `:s`, Shift `"x\ny"`, Delete `:w`, Delete `_`, Delete `:v`, Delete `?v`
+  and 3 more repairs
 === "(hrule h () :match (p ?a) :assert (q ?a) :why \"w\")"
   ok 1 form(s)
 === "()"
-  refused <string>:1:2: unexpected input
-()
- ^
+  refused <string>:1:2: unexpected `)`
+  repair: Insert `trace`
+  repair: Insert `config`
+  repair: Insert `solve`
+  and 1 more repair
 === ";;; `activator-text-key.ein` with its two activator lines swapped, and\n;;; nothing else. Register row `W16/string-then-int`; the note is\n;;; `activator-text-key.md`. Release loses the int's two `noted` facts\n;;; instead; debug builds abort here too.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds \"1\")\n\n(note edge \"1\")\n(note edge 1)\n"
-  ok 10 form(s)
+  refused <string>:14:19: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+  repair: Insert `:source`
+<string>:16:12: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+  repair: Insert `:source`
 === ";;; An int and a string with the same text share a compile key, and a\n;;; derivation is lost — M1e2 W16. Register row `W16/int-and-string`\n;;; (`corpus/wrong_answers.toml`); the note is `activator-text-key.md`.\n;;;\n;;; Release: the string's two `noted` facts are never derived. Debug:\n;;; `Engine::compile_all`'s shortcut check aborts.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds \"1\")\n\n(note edge 1)\n(note edge \"1\")\n"
-  ok 10 form(s)
-=== ";;; `binding-key-layout.ein` with its two activator lines swapped, and nothing\n;;; else — the twin that answers right in release (four `noted` facts).\n;;; Register row `W7/binding-key-layout`, as a twin; the note is\n;;; `binding-key-layout.md`. Debug builds abort here too.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge (src Y))\n(note edge 1)\n"
-  ok 10 form(s)
-=== ";;; Two activators of one rule share a binding key and a derivation is lost —\n;;; M1e2 W7, Q-M1e.16. Register row `W7/binding-key-layout`\n;;; (`corpus/wrong_answers.toml`); the note is `binding-key-layout.md`.\n;;;\n;;; Release: `(noted 1 3)` is never derived. Debug: `check_layout` aborts.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge 1)\n(note edge (src Y))\n"
-  ok 10 form(s)
+  refused <string>:16:19: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+  repair: Insert `:source`
+<string>:19:12: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+  repair: Insert `:source`
+=== ";;; `binding-key-layout.ein` with its two activator lines swapped, and nothing\n;;; else — the twin that answers right in release (four `noted` facts).\n;;; Register row `W7/binding-key-layout`, as a twin; the note is\n;;; `binding-key-layout.md`. Debug builds abort here too.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge (src Y))\n(note edge 1)\n\n;; M1f S1f.5.5's swap: a run of digits is a name, so `1`, `2` and `3` are candidate\n;; objects; scoped as the promoted witnesses are (S1f.5.4's proposal A), so that\n;; the seed costs what it did. H is `(holds 2)` and `(holds Y)`, R four states.\n(solve :no-hypothesis (edge noted))\n"
+  ok 11 form(s)
+=== ";;; Two activators of one rule share a binding key and a derivation is lost —\n;;; M1e2 W7, Q-M1e.16. Register row `W7/binding-key-layout`\n;;; (`corpus/wrong_answers.toml`); the note is `binding-key-layout.md`.\n;;;\n;;; Release: `(noted 1 3)` is never derived. Debug: `check_layout` aborts.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge 1)\n(note edge (src Y))\n\n;; M1f S1f.5.5's swap: a run of digits is a name, so `1`, `2` and `3` are candidate\n;; objects; scoped as the promoted witnesses are (S1f.5.4's proposal A), so that\n;; the seed costs what it did. H is `(holds 2)` and `(holds Y)`, R four states.\n(solve :no-hypothesis (edge noted))\n"
+  ok 11 form(s)
 === "(relation ok      T)\n(relation blessed T)\n(relation cand    T)\n(rule promote ()\n  :match  (and (ok ?x) (blessed ?x))\n  :assert (cand ?x))\n(ok      B)\n(blessed A)\n(query\n  :goal (cand ?x))\n"
   ok 7 form(s)
 === ";;; case 6710 (seed 20260820) — utils/fuzz_engine.py\n(relation r0 T T)\n(relation r1 T T)\n(relation is-a T T)\n(is-a o2 T)\n(is-a o3 T)\n(r0 o2 o3)\n(rule fire-0 (?P)\n  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))\n  :assert (not (r1 ?v0 ?v0)))\n(fire-0 T)\n(rule fire-1 ()\n  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))\n  :assert (r1 ?v2 ?v2))\n"
@@ -43,22 +70,176 @@
 === "(hrule hyp-0 ()\n  :match  (and (r0 ?v0 ?v1) (absent (not (r0 ?v1 ?v2))))\n  :assert (not (r1 ?v0 ?v0)))\n"
   ok 1 form(s)
 === "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))\n  (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))\n  (step s3 :using (s2))\n  (step s4 :derives (final X)))\n"
-  ok 1 form(s)
+  refused <string>:1:18: unexpected `:rule`
+  repair: Insert `)`
+<string>:1:47: unexpected `c10`: a name
+  repair: Insert `(`, Shift `c10`, Shift `)`, Delete `:derives`
+<string>:2:3: unexpected `(`
+  repair: Insert `)`
+<string>:2:35: unexpected `and`
+  repair: Insert `(`, Delete `and`
+<string>:2:47: unexpected `:derives`
+  repair: Delete `:derives`
+<string>:3:3: unexpected `(`
+  repair: Insert `)`
+<string>:3:20: unexpected `s2`: a name
+  repair: Insert `(`
+<string>:4:3: unexpected `(`
+  repair: Insert `)`
+<string>:4:12: unexpected `:derives`
+  repair: Delete `:derives`
+<string>:4:31: unexpected `)`
+  repair: Delete `)`
 === "(relation r1 T T)\n(is-a o1 T)\n(r1 o4 o5)\n(rule fire-2 ()\n  :match  (or (and (r1 ?v0 ?v1) (r1 ?v4 ?v0)) (and (r1 ?v0 ?v1) (r1 ?v0 ?v1) (not (r1 ?v2 ?v3))))\n  :assert (false))\n"
   ok 4 form(s)
+=== "; M1e S1e.2.1 — `(absent …)` over two premises.\n;\n; `(absent P)` is negation as failure over **one** premise; everything past\n; the first argument was dropped. This rule reads as \"no q and no p\", and\n; `(p A)` is stated below, so a reader expects it not to fire. Before S1e.2.1\n; it fired — the second conjunct was never compiled, never matched and never\n; mentioned.\n;\n; The fix for a program that means the conjunction is to write it: wrap the\n; two in an `(and …)`, which is what `std.macro`'s `forall` expands to.\n(relation p T)\n(relation q T)\n\n(rule two-subject-naf ()\n  :match  (and (p ?x) (absent (q ?x) (p ?x)))\n  :assert (q ?x))\n\n(p A)\n"
+  refused <string>:15:38: unexpected `(`
+  repair: Insert `)`
+<string>:16:3: unexpected `:assert`
+  repair: Delete `:assert`, Shift `(`, Insert `rule`, Shift `q`, Insert `(`
+  repair: Delete `:assert`, Shift `(`, Insert `hrule`, Shift `q`, Insert `(`
+  repair: Delete `:assert`, Shift `(`, Shift `q`, Delete `?x`, Delete `)`
+  and 1 more repair
+=== "; M1e S1e.2.1 — `(absent)` with nothing to be absent.\n;\n; The sibling `empty_absent.ein` is `(absent ?x)`, whose sub-plan compiles to\n; no steps and which has had a *CompileError* naming that exact hazard since\n; S1.22.0 — \"the guard would fail against every KB and its candidates would be\n; retired permanently\". With no argument at all the same thing happened and\n; nothing said so: `absent` fell through to the ordinary relation path, matched\n; the empty extent of a relation nobody declared, and retired the rule for the\n; run in silence.\n;\n; So the two files are one hazard at two arities, and only one of them was\n; refused.\n(relation p T)\n(relation q T)\n\n(rule guard-of-nothing ()\n  :match  (and (p ?x) (absent))\n  :assert (q ?x))\n"
+  refused <string>:17:30: unexpected `)`
+  repair: Delete `)`, Delete `)`, Delete `:assert`
+  repair: Insert `(`, Insert a variable, Insert `)`
+  repair: Insert `(`, Insert a name, Insert `)`
+  and 6 more repairs
+<string>:18:18: unexpected end of input
+  repair: Insert `)`, Insert `)`
 === ";; Should fail: a bare atom is not a form. Every top-level form is a\n;; parenthesised list `(...)`; post-P1.7c the head need not be a reserved\n;; wrapper (any non-declarator head is a fact), but a lone atom is not a list.\nNorwegian\n"
-  refused <string>:4:1: unexpected input
-Norwegian
-^
+  refused <string>:4:1: unexpected `Norwegian`: a name
+  repair: Delete `Norwegian`
+=== ";; …and a well-known key with an ill-typed value. The key was\n;; `:warn-derived-naf` until M1e2 S1e2.2.5 retired it.\n\n(relation r T T)\n(config :lattice-sanity-check maybe)\n"
+  refused <string>:5:31: unexpected `maybe`: a name
+  repair: Insert `false`, Delete `maybe`
+  repair: Insert `true`, Delete `maybe`
+=== ";; M1e2 S1e2.1a.5: nine `(config …)` flags were retired with the walk —\n;; the order levers, the two that wrote into root, and the two that were inert\n;; (`solve_interface.md` § 2.4). Setting one is a load error that says why,\n;; rather than an unknown flag or a flag that does nothing.\n\n(config :lattice-order lex)\n(relation p T)\n(p A)\n"
+  refused <string>:6:9: unexpected `:lattice-order`: a keyword this form does not take
+  note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  repair: Delete `:lattice-order`, Delete `lex`
+=== ";; An unknown `(config …)` key is a typo, not a silent default. The\n;; message enumerates every legal flag, so this fixture pins the\n;; SolverConfig field set as a byte-comparable surface.\n\n(relation r T T)\n(config :nope true)\n"
+  refused <string>:6:9: unexpected `:nope`: a keyword this form does not take
+  repair: Insert `:lattice-sanity-check`, Delete `:nope`
+  repair: Insert `:record-alternative-justifications`, Delete `:nope`
+  repair: Delete `:nope`, Delete `true`
+=== "; S1a.3.1 — an `(absent …)` whose sub-plan compiles to nothing.\n;\n; `?x` is not a premise: the premise compiler returns no steps for it, and an\n; empty sub-plan does not mean \"a query that finds nothing\" — it matches\n; VACUOUSLY, so the matcher's `holds` is true and the guard fails against every\n; possible KB. The guard is monotone (no nested absent), so the candidate is\n; retired permanently on its first judgement: a guard that can never pass.\n;\n; Compile-negative until M1e2 S1e2.2.24 (W24, Q-M1e2.18 (v)): the compiler\n; refused the empty sub-plan with a CompileError in the Python IR's spelling,\n; `(absent …) sub-plan compiled to no steps in SForm(…)`. Since then the\n; loader refuses `?x` as a premise that is not a form, before the compiler,\n; and this file moved here from `examples/broken/compile/`.\n(relation p Thing)\n\n(rule vacuous-guard ()\n  :match  (and (p ?x) (absent ?x))\n  :assert (p ?x))\n"
+  refused <string>:17:31: unexpected `?x`: a variable
+  repair: Insert `(`
+<string>:18:3: unexpected `:assert`
+  repair: Delete `:assert`
+  repair: Insert `)`
+<string>:18:18: unexpected end of input
+  repair: Insert `)`
+=== "; M1e S1e.2.1 — a built-in predicate above its arity.\n;\n; The half of `CO-H1`'s class that is worse than the panic, and the half the\n; review could not have guessed from the one instance it had: this file used\n; to **load, compile, fire and exit 0**. `guard_holds` read `args[0]` and\n; `args[1]` and dropped the rest, so a three-way equality was silently\n; evaluated as a two-way one — a wrong answer with a success exit code, where\n; the panic is at least loud.\n;\n; `A` and `B` are distinct, so a reader of this rule expects it not to fire.\n; Before S1e.2.1 it fired.\n(relation p T)\n(relation q T)\n\n(rule three-way-equality ()\n  :match  (and (p ?x) (eq ?x A B))\n  :assert (q ?x))\n"
+  refused <string>:16:32: unexpected `B`: a name
+  repair: Delete `B`
+=== "; M1e S1e.2.1 — a built-in predicate below its arity.\n;\n; `CO-H1`, and the only finding in the review that took the process down: the\n; compiler lowered `(eq …)` with no arity check at all, and the check that\n; existed was a runtime `assert!` in the matcher — \"`eq` needs two\n; arguments\" — an invariant of the matcher's own rather than a diagnostic\n; for the user. `ein saturate` on this file exited **101** with a stack\n; trace where every sibling malformation exits 1 with a message.\n;\n; Why `eq` and not `neq`: the grammar shape-pins `NeqForm`, so `(neq ?x)` is a\n; positioned *parse* error and always was. `eq` is an ordinary `GenericList`.\n; That is the rule the S1e.1.6 sweep found — four of the seven kernel\n; meta-primitives are pinned, and every cell that misbehaves is one of the\n; other three.\n(relation p T)\n(relation q T)\n\n(rule one-armed-guard ()\n  :match  (and (p ?x) (eq ?x))\n  :assert (q ?x))\n"
+  refused <string>:19:29: unexpected `)`
+  repair: Insert a variable
+  repair: Insert a name
+=== ";; An expectation is an *answer*, so it is ground. A `?var` here would match\n;; whatever the engine happened to derive, which is a test that cannot fail.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :expect (model (p A ?h)))\n"
+  refused <string>:6:43: unexpected `?h`: a variable
+  repair: Delete `?h`
+=== ";; A `(query …)` keyword the engine does not read is a load error and not a\n;; silent no-op — M1c S1c.1.2. The keyword this file mistypes carries a *test*,\n;; so a form that swallowed the typo would report success on a check nobody\n;; ran, which is the one outcome the form exists to prevent.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :expct (model (p A H1)))\n"
+  refused <string>:8:23: unexpected `:expct`: a keyword this form does not take
+  repair: Insert `:goal`, Delete `:expct`
+  repair: Insert `:expect`, Delete `:expct`
+=== ";; …and the hrule namespace, which reports its own kind.\n\n(hrule absent () :match (x ?a) :assert (y ?a) :why \"w\")\n"
+  refused <string>:3:8: unexpected `absent`
+  repair: Insert a name, Delete `absent`
+=== ";; `:as` takes a bare name.\n\n(import std.macro :as \"m\")\n"
+  refused <string>:3:23: unexpected `"m"`: a string
+  note: "m" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"m"`
+=== ";; …and not an empty one.\n\n(import std.macro :symbols ())\n"
+  refused <string>:3:29: unexpected `)`
+  repair: Insert a name
+=== ";; `:symbols` takes a `(name …)` list, not a bare name.\n\n(import std.macro :symbols forall)\n"
+  refused <string>:3:28: unexpected `forall`: a name
+  repair: Insert `(`, Shift `forall`, Insert `)`
+  repair: Insert `(`, Shift `forall`, Shift `)`, Insert `)`
 === ";; Should fail: :solve is a KEYWORD, never a value — kw-pair\n;; alternation enforces :kw value :kw value …\n(query :goal :solve)\n"
-  refused <string>:3:14: unexpected input
-(query :goal :solve)
-             ^
+  refused <string>:3:14: unexpected `:solve`: a keyword this form does not take
+  repair: Insert `(`, Insert a variable, Insert `)`, Delete `:solve`
+  repair: Insert `(`, Insert a name, Insert `)`, Delete `:solve`
+  repair: Insert `(`, Insert a name, Delete `:solve`, Shift `)`, Insert `)`
+  and 1 more repair
+=== ";;; **A keyword pair below a form crashed two render views.**\n;;;\n;;; Found 2026-08-23 by `utils/fuzz_engine.py` (property `no-crash`), which\n;;; mutated `examples/syntax/trace-steps.ein`'s `trace` to `tracex`; the note\n;;; is `corpus/fuzz_findings/kwpair-below-the-filter.md`. `tracex` is neither a\n;;; kernel head nor a declared relation, so the loader reads the form as an\n;;; ontology fact and accepts it: `ein saturate` and `ein solve` answer it.\n;;;\n;;; Two render views label the form's arguments with `dot_util::value_label`,\n;;; which recursed into each `(step …)` and reached its keyword pairs:\n;;;\n;;;   ein render constraints  — `constraints.rs` filters a declaration's own\n;;;                             keyword pairs, one level deep\n;;;   ein render program      — `ir_dot`'s ontology path, with no filter\n;;;\n;;; Both exited 101, *not a value node: KwPair*. M1e2 S1e2.3.2, on the user's\n;;; ruling (a) of 2026-11-03: `value_label` labels a keyword pair `:key value`\n;;; for every caller, as `ir_dot`'s `(query …)` note already spelled one, and\n;;; both views now draw each step as written. The corpus runs every view over\n;;; this file, which is the check that was missing.\n;;;\n;;; **Since M1f S1f.5.5's swap it is refused at the parse**, at its first\n;;; `:rule`: no keyword pair parses inside a term or a nested fact (S1f.5.11's\n;;; ruling, its default; Q-M1e2.28), so the shape that reached `value_label`'s\n;;; keyword-pair arm is no program, and the fixture moved here from\n;;; `examples/ein-bugs/`, its `.expected` the parse report (Q-M1f.2 (a)). The\n;;; arm goes with S1f.5.11's T1f.5.11.2 (the review stop's item 11).\n\n(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))\n  (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))\n  (step s3 :using (s2))\n  (step s4 :derives (final X)))\n"
+  refused <string>:29:18: unexpected `:rule`
+  repair: Insert `)`
+<string>:29:47: unexpected `c10`: a name
+  repair: Insert `(`, Shift `c10`, Shift `)`, Delete `:derives`
+<string>:30:3: unexpected `(`
+  repair: Insert `)`
+<string>:30:35: unexpected `and`
+  repair: Insert `(`, Delete `and`
+<string>:30:47: unexpected `:derives`
+  repair: Delete `:derives`
+<string>:31:3: unexpected `(`
+  repair: Insert `)`
+<string>:31:20: unexpected `s2`: a name
+  repair: Insert `(`
+<string>:32:3: unexpected `(`
+  repair: Insert `)`
+<string>:32:12: unexpected `:derives`
+  repair: Delete `:derives`
+<string>:32:31: unexpected `)`
+  repair: Delete `)`
+=== ";; Reserved-name guard, macro namespace.\n\n(macro absent (?p) (rel ?p))\n"
+  refused <string>:3:8: unexpected `absent`
+  repair: Insert a name, Delete `absent`
+=== ";; The superseded triple. `(open ?b G B)` restated the guard in the head,\n;; where it could disagree with it; `(open ?R)` points into the guard instead.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R ?isa)\n  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))\n"
+  refused <string>:9:20: unexpected `(`
+  repair: Insert `)`, Insert `:assert`
+  repair: Insert `)`, Insert `:match`
+<string>:9:33: unexpected `(`
+  repair: Insert `:assert`
+  repair: Insert `:match`
+<string>:9:44: unexpected `)`
+  repair: Delete `)`
+=== ";; `(open …)` is a verdict about the KB. The third-state probe for a\n;; *fact* is `(unknown P)` — one word until M1d P1d.2 renamed the macro.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))\n"
+  refused <string>:6:49: unexpected `open`
+  repair: Delete `open`
+  repair: Insert `neq`
+  repair: Insert a variable
+  and 1 more repair
+=== ";; A rule concluding `open` AND a fact would belong to the saturation\n;; agenda and to the post-fixpoint obligation pass at once.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R ?isa)\n  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  :assert (and (open ?R) (r ?a b)))\n"
+  refused <string>:9:17: unexpected `open`
+  repair: Delete `open`
+  repair: Insert `neq`
+  repair: Insert a variable
+  and 1 more repair
+=== ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; M1e2 S1e2.1a.4 split solving from asking: the keywords that choose the\n;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
+  refused <string>:13:23: unexpected `:no-hypothesis`
+  note: :no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  repair: Insert `:goal`, Delete `:no-hypothesis`
+=== ";; LOAD NEGATIVE — a region claim at the top level.\n;;\n;; M1e2 S1e2.1a.4: `region`, `merged` and `owing` mean something only inside\n;; `(solve … :expect …)`. A printed region pasted at the top of a file would\n;; otherwise load as a fact of a new relation called `region`, check nothing\n;; and say nothing — the `:expct` failure M1c S1c.1.2 closed for queries.\n\n(relation p T)\n(p A)\n(solve)\n(region (model (p A)))\n"
+  refused <string>:11:2: unexpected `region`
+  repair: Insert a name
+=== ";; The pre-R10 wrapped-arg form. It PARSES (as a generic fact headed\n;; `relation`, since `relation` is not SYMBOL-excluded) and the loader\n;; rejects it — otherwise an empty signature would swallow it silently.\n\n(relation lives-in (Person House))\n"
+  refused <string>:5:20: unexpected `(`
+  repair: Insert `)`
+<string>:5:34: unexpected `)`
+  repair: Delete `)`
+=== ";; `(relation)` with no name — an empty signature is legal since\n;; S1.22.4, a missing NAME is not.\n\n(relation)\n"
+  refused <string>:4:10: unexpected `)`
+  repair: Insert a name
+=== ";; A declarator may not shadow kernel vocabulary. One representative of\n;; the reserved set; the full sweep stays a parametrized unit test.\n\n(relation eq)\n"
+  refused <string>:4:11: unexpected `eq`
+  repair: Insert a name
 === ";; Should fail: rule parameter list is mandatory — `()` for non-generic.\n;; Flat form (P1.7c): a top-level `(rule …)` declarator with no params.\n(rule symmetric\n  :match  (?rel ?a ?b)\n  :assert (?rel ?b ?a)\n  :why    \"test\")\n"
-  refused <string>:4:3: unexpected input
-  :match  (?rel ?a ?b)
-  ^
+  refused <string>:4:3: unexpected `:match`
+  repair: Insert `(`, Insert `)`
+=== ";; Reserved-name guard, rule namespace: a rule named `absent` would\n;; never fire (the compiler reads it as the primitive).\n\n(rule absent () :match (x ?a) :assert (y ?a) :why \"w\")\n"
+  refused <string>:4:7: unexpected `absent`
+  repair: Insert a name, Delete `absent`
+=== ";; LOAD NEGATIVE — an unknown (solve …) keyword.\n;;\n;; M1e2 S1e2.1a.4: `(solve …)`'s keywords are an allow-list, as `(query …)`'s\n;; have been since M1c S1c.1.2, so a misspelled lattice keyword cannot load, do\n;; nothing and say nothing.\n;;\n;; Expected (load error): see solve_unknown_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(solve :no-hypothesys (p))\n(query :goal (p A ?h))\n"
+  refused <string>:11:8: unexpected `:no-hypothesys`: a keyword this form does not take
+  repair: Insert `:hrules`, Delete `:no-hypothesys`
+  repair: Insert `:hypothesis-relations`, Delete `:no-hypothesys`
+  repair: Insert `:no-hypothesis`, Delete `:no-hypothesys`
 === ";; Should fail: rule_decl body never closes.\n;; Flat form (P1.7c): a top-level `(rule …)` with an unterminated body.\n(rule x ()\n  :match a\n  :assert b\n"
-  refused <string>:-1:-1: unexpected input
-  :assert b
-           ^
+  refused <string>:4:10: unexpected `a`: a name
+  repair: Insert `(`, Shift `a`, Delete `:assert`, Shift `b`, Insert `)`, Insert `)`

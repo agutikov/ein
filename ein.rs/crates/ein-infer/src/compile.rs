@@ -1468,18 +1468,20 @@ mod tests {
         (ast, terms, plan)
     }
 
-    /// M1e2 S1e2.2.16 — the key is the activator's values. The int `7` and
-    /// the string `"7"`, which the loader holds as two values and so as two
-    /// activator facts, are two keys: until then each non-symbol argument's
-    /// text was interned and they were one key and one plan, and the second
-    /// activator's conclusions were lost (W16). A string and an atom with the
-    /// same text are one value, one fact and one key. The key's text is each
-    /// value's `display`, the text it interned before; since M1e2 S1e2.3.8
-    /// the one printer's, so the two keys print apart too.
+    /// M1e2 S1e2.2.16 — the key is the activator's values: until then each
+    /// non-symbol argument's text was interned, so the int `7` and the string
+    /// `"7"`, two values and two activator facts, were one key and one plan,
+    /// and the second activator's conclusions were lost (W16). The key's text
+    /// is each value's `display`, the one printer's since M1e2 S1e2.3.8.
+    ///
+    /// Restated at M1f S1f.5.5's swap: there is no int and no string value
+    /// (S1f.5.4's and S1f.5.2's rulings), so the two values of one text are
+    /// gone, and what the key must still tell apart is two names of digits,
+    /// `7` and `07`, and a name from a nested fact.
     #[test]
     fn plan_key_is_the_activators_values() {
         let src = "(relation edge A B)\n(rule walk (?R ?N)\n  :match (?R ?a ?b)\n  :assert (?R ?b ?a))\n\
-                   (walk edge 7)\n(walk edge \"7\")\n(walk edge seven)\n(walk edge \"seven\")\n\
+                   (walk edge 7)\n(walk edge 07)\n(walk edge seven)\n(walk edge seven)\n\
                    (walk edge (edge A B))\n";
         let mut ast = Ast::new();
         let mut terms = Terms::new();
@@ -1487,7 +1489,7 @@ mod tests {
         let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
         let rule = kb.program().rules.values().next().expect("a rule").clone();
         let acts = activators_for(&kb, &terms, &rule);
-        assert_eq!(acts.len(), 4, "`seven` and `\"seven\"` are one fact");
+        assert_eq!(acts.len(), 4, "`seven` twice is one fact");
         let keys: Vec<PlanKey> = acts.iter().map(|&a| plan_key(&terms, &rule, a)).collect();
         let distinct: FxHashSet<&PlanKey> = keys.iter().collect();
         assert_eq!(distinct.len(), 4, "one key per activator: {keys:?}");
@@ -1496,8 +1498,8 @@ mod tests {
         assert_eq!(
             text,
             [
-                ["edge", "\"7\""],
                 ["edge", "(edge A B)"],
+                ["edge", "07"],
                 ["edge", "7"],
                 ["edge", "seven"]
             ]
@@ -1665,74 +1667,88 @@ mod tests {
         }
     }
 
-    /// The same premise with nothing to key on inside it: an opaque inner slot
-    /// contributes no probe, so the step falls back to the extent scan.
+    /// The same premise with a variable used once inside it, in the place a
+    /// wildcard held until M1f S1f.5.5's swap refused a bare `_` (S1f.5.1):
+    /// a variable is a register, and a register stays a probe, since it may be
+    /// unbound, so the nested premise probes on both inner slots. Until the
+    /// swap the `_` was an opaque slot (`Slot::Any` since M1e2 S1e2.2.20,
+    /// before that a string, and a range) that contributed no probe; with no
+    /// program able to write one, `Slot::Any` goes with T1f.5.1.3.
     #[test]
     fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
         let (_, _terms, plan) = compile(
             "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes _ ?b))\n  :assert (likes ?b ?b))\n",
+             (rule r ()\n  :match (not (likes ?any ?b))\n  :assert (likes ?b ?b))\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         let Step::Rel(first) = steps[0] else {
             panic!("expected a relation step")
         };
-        // A wildcard has no value to key on, so it is not a key; `?b` still
-        // is. The example was a string until M1e2 S1e2.2.18, which made a
-        // string the symbol it names (the next test), and a range until
-        // S1e2.2.20, which refused one in a rule at load.
         let probes = plan.probes(first.probe);
-        assert_eq!(probes.len(), 1, "`?b` alone");
-        assert_eq!((probes[0].slot, probes[0].inner), (0, 1));
-        assert!(matches!(probes[0].src, ProbeSrc::Reg(_)));
+        assert_eq!(probes.len(), 2, "`?any`, then `?b`");
+        for (i, p) in probes.iter().enumerate() {
+            assert_eq!((p.slot, p.inner), (0, i as u16));
+            assert!(matches!(p.src, ProbeSrc::Reg(_)));
+        }
     }
 
-    /// M1e2 S1e2.2.20 — a wildcard in a pattern is [`Slot::Any`], which
-    /// matches any value and binds nothing: no register, no probe, no shared
-    /// variable, and two of them in one premise are independent. Until then it
-    /// was an opaque slot that matched nothing (W20).
+    /// M1e2 S1e2.2.20 — a wildcard in a pattern was [`Slot::Any`], which
+    /// matched any value and bound nothing (until then an opaque slot that
+    /// matched nothing, W20). Since M1f S1f.5.5's swap a bare `_` is refused
+    /// at the parse, in every position (S1f.5.1), so no program reaches
+    /// `Slot::Any`, which goes with T1f.5.1.3: the program that held it is
+    /// refused at each of its four `_`, and a variable used once matches any
+    /// value instead.
     #[test]
     fn a_wildcard_matches_any_value_and_binds_nothing() {
+        let src = "(relation likes A B)\n\
+                   (rule r ()\n  :match (and (likes _ ?b) (likes ?b _) (likes _ _))\n  :assert (likes ?b ?b))\n";
+        let refused = parse(&mut Ast::new(), src, Some("<test>")).expect_err("refused");
+        let at: Vec<(u32, u32)> = refused.errors.iter().map(|e| (e.line, e.col)).collect();
+        assert_eq!(at, [(3, 22), (3, 38), (3, 48)], "{refused}");
+        assert!(
+            refused
+                .errors
+                .iter()
+                .all(|e| e.what == "unexpected `_`: _ (reserved)"),
+            "{refused}"
+        );
         let (_, terms, plan) = compile(
             "(relation likes A B)\n\
-             (rule r ()\n  :match (and (likes _ ?b) (likes ?b _) (likes _ _))\n  :assert (likes ?b ?b))\n",
+             (rule r ()\n  :match (and (likes ?u ?b) (likes ?b ?v) (likes ?w ?z))\n  :assert (likes ?b ?b))\n",
         );
-        let names: Vec<&str> = plan.reg_names.iter().map(|&s| terms.sym(s)).collect();
-        assert_eq!(names, ["b"], "`_` takes no register");
-        let steps = plan.steps(plan.disjuncts[0].steps);
-        let rel = |i: usize| match steps[i] {
-            Step::Rel(r) => r,
-            _ => panic!("expected a relation step"),
-        };
-        assert!(matches!(
-            plan.slots(rel(0).slots),
-            [Slot::Any, Slot::Reg(_)]
-        ));
-        assert!(matches!(
-            plan.slots(rel(1).slots),
-            [Slot::Reg(_), Slot::Any]
-        ));
-        assert!(matches!(plan.slots(rel(2).slots), [Slot::Any, Slot::Any]));
-        assert!(rel(1).join, "the second premise shares `?b`, and only `?b`");
-        assert_eq!(plan.shared(rel(1).shared).len(), 1);
-        assert!(!rel(2).join, "two wildcards share nothing");
-        // No probe keys on a wildcard: the first premise probes on `?b` alone,
-        // the third on nothing.
-        let probes = plan.probes(rel(0).probe);
-        assert_eq!(probes.len(), 1);
-        assert_eq!(probes[0].slot, 1);
-        assert!(plan.probes(rel(2).probe).is_empty());
+        let mut names: Vec<&str> = plan.reg_names.iter().map(|&s| terms.sym(s)).collect();
+        names.sort_unstable();
+        assert_eq!(
+            names,
+            ["b", "u", "v", "w", "z"],
+            "a variable takes a register"
+        );
     }
 
-    /// M1e2 S1e2.2.18 — a string in a `:match` is the symbol it names, as the
-    /// loader holds it in a fact, so it is a key as an atom is: the nested
-    /// premise probes on `"lit"` and on `?b`, and the constant is the symbol
-    /// `lit`. Until then it was an opaque slot that matched nothing (W18).
+    /// M1e2 S1e2.2.18 — a string in a `:match` was the symbol it names, as the
+    /// loader held it in a fact, so it was a key as an atom is (until then an
+    /// opaque slot that matched nothing, W18). Since M1f S1f.5.5's swap a
+    /// string is natural-language text, written only after `:why`, `:source`
+    /// or `:goal-text` (S1f.5.2), so a string in a pattern and in an `:assert`
+    /// is refused at the parse, each with S1f.5.2's note; the name written bare
+    /// is the key the string was. The value arm goes with T1f.5.2.3.
     #[test]
     fn a_string_in_a_pattern_is_the_symbol_it_names() {
+        let src = "(relation likes A B)\n\
+                   (rule r ()\n  :match (not (likes \"lit\" ?b))\n  :assert (likes ?b \"lit\"))\n";
+        let refused = parse(&mut Ast::new(), src, Some("<test>")).expect_err("refused");
+        let at: Vec<(u32, u32)> = refused.errors.iter().map(|e| (e.line, e.col)).collect();
+        assert_eq!(at, [(3, 22), (4, 21)], "{refused}");
+        assert!(
+            refused.errors.iter().all(|e| e.notes.len() == 1
+                && e.notes[0]
+                    .starts_with("\"lit\" is a string, and a string is natural-language text")),
+            "{refused}"
+        );
         let (_, mut terms, plan) = compile(
             "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes \"lit\" ?b))\n  :assert (likes ?b \"lit\"))\n",
+             (rule r ()\n  :match (not (likes lit ?b))\n  :assert (likes ?b lit))\n",
         );
         let lit = Value::sym(terms.intern_text("lit").expect("room"));
         let steps = plan.steps(plan.disjuncts[0].steps);
@@ -1740,7 +1756,7 @@ mod tests {
             panic!("expected a relation step")
         };
         let probes = plan.probes(first.probe);
-        assert_eq!(probes.len(), 2, "the string, then `?b`");
+        assert_eq!(probes.len(), 2, "the name, then `?b`");
         assert_eq!((probes[0].slot, probes[0].inner), (0, 0));
         assert!(matches!(probes[0].src, ProbeSrc::Const(v) if v == lit));
         assert_eq!((probes[1].slot, probes[1].inner), (0, 1));
@@ -1749,7 +1765,7 @@ mod tests {
         };
         assert!(
             matches!(plan.slots(slots)[1], Slot::Const(v) if v == lit),
-            "the `:assert`'s string is the same symbol"
+            "the `:assert`'s name is the same symbol"
         );
     }
 

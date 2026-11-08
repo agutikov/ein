@@ -1,7 +1,11 @@
 ;; User-authored `:using` provenance must be well-founded — the
 ;; derivation-DAG walk would not terminate. (Engine-recorded
 ;; provenance is allowed to be cyclic; this check is load-time only.)
+;;
+;; `:using` lists the premises, each a fact (M1f S1f.5.5's grammar, its
+;; default 2): until the swap the fixture wrote `:using (p (r c d))`, a list
+;; whose head `p` the loader dropped, which the grammar refuses.
 
-(relation r T T)
-(r a b :rule x :using (p (r c d)))
-(r c d :rule x :using (p (r a b)))
+(relation r T T :why "{?1} r {?2}")
+(r a b :rule x :using ((r c d)))
+(r c d :rule x :using ((r a b)))

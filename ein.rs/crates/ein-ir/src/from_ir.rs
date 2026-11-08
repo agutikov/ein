@@ -17,7 +17,7 @@
 use crate::ast::{Ast, Node, NodeId, loc_repr, node_repr};
 use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
-use crate::parse::parse;
+use crate::parse;
 use ein_core::config::{FLAGS, FieldKind, SolverConfig};
 use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
@@ -65,24 +65,17 @@ impl From<Overflow> for KbLoadError {
 /// `--require-why` sets it on every command that loads a program.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct LoadOptions {
-    /// Refuse every `(relation …)`, `(rule …)` and `(hrule …)` the load reads,
-    /// the stdlib's and an imported module's included, that carries no
-    /// `:why "…"`, one line each ([`WHY_REQUIRED_OF`]). In a build with the
-    /// `generated-parser` feature a `(macro …)` too, since only that parser
-    /// reads a macro's `:why`: the hand-written one refuses it, so the flag
-    /// never asks a build for what its parser cannot read. S1f.5.5's swap
-    /// deletes that `cfg` and writes the stdlib's two macros their `:why`.
+    /// Refuse every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)`
+    /// the load reads, the stdlib's and an imported module's included, that
+    /// carries no `:why "…"`, one line each ([`WHY_REQUIRED_OF`]). A macro
+    /// since S1f.5.5's swap (T1f.5.5.4), when the one parser became the one
+    /// that reads a macro's `:why` and the stdlib's two macros got theirs.
     /// **Default false**, until S1f.5.14's T1f.5.14.7 turns it to true.
     pub require_why: bool,
 }
 
 /// The forms [`LoadOptions::require_why`] asks for a `:why`, as its refusal
 /// names them.
-#[cfg(not(feature = "generated-parser"))]
-pub const WHY_REQUIRED_OF: &str = "relation, rule and hrule";
-/// The forms [`LoadOptions::require_why`] asks for a `:why`, as its refusal
-/// names them: a macro too, in the build whose parser reads its `:why`.
-#[cfg(feature = "generated-parser")]
 pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
 
 /// The line [`LoadOptions::require_why`] refuses a form with: its head and its
@@ -214,10 +207,7 @@ pub fn load_query_with(
 
     // Pass 0 — macros, first, because the rules pass expands invocations.
     let declared_macros = ingest_macros(ast, terms, &mut kb, &macro_forms, &mut errors)?;
-    // A macro's `:why` reaches the loader only through the generated parser
-    // (`Macro::why`); the hand-written one refuses it, so only that build asks
-    // for one (`LoadOptions::require_why`).
-    #[cfg(feature = "generated-parser")]
+    // A macro's `:why` is `Macro::why` (`LoadOptions::require_why`).
     if opts.require_why {
         for m in declared_macros.values().filter(|m| m.why.is_none()) {
             errors.push(missing_why("macro", &m.name));
@@ -2122,6 +2112,18 @@ mod tests {
         kb.facts().map(|f| terms.compact(f)).collect()
     }
 
+    /// The parser's errors on `text`, which it must refuse, each `line:col:
+    /// what`: since M1f S1f.5.5's swap (T1f.5.5.4) the grammar refuses many
+    /// shapes the loader refused until then.
+    fn refused(text: &str) -> Vec<String> {
+        parse(&mut Ast::new(), text, None)
+            .expect_err("the parser refuses it")
+            .errors
+            .iter()
+            .map(|e| format!("{}:{}: {}", e.line, e.col, e.what))
+            .collect()
+    }
+
     /// The reserved verdict atom, and the classification it drives — M1d
     /// [S1d.2.3].
     ///
@@ -2189,72 +2191,65 @@ mod tests {
     /// at load**, one line per slot naming the rule and the slot as written,
     /// at any depth of either clause, in a rule, an hrule or an obligation
     /// (Q-M1e2.14 (c)). Until then a wildcard head stopped compilation with
-    /// the Python IR's spelling. A keyword pair's value is no slot and loads;
-    /// so does `_` as an argument, which matches any value, and in an
-    /// obligation's witness premise it is a slot the `absent` introduces, as a
-    /// fresh variable is. A range in a rule was refused here too, from
+    /// the Python IR's spelling. A range in a rule was refused here too, from
     /// S1e2.2.20 (Q-M1e2.13 (a)) until M1f S1f.5.3 retired the token
-    /// (Q-M1e2.24): `1..3` is a parse error since.
+    /// (Q-M1e2.24).
+    ///
+    /// **Since M1f S1f.5.5's swap (T1f.5.5.4) every case is refused at the
+    /// parse**, at its `_`: a bare `_` names nothing and is refused in every
+    /// position (S1f.5.1's ruling), as a relation and as an argument alike, so
+    /// what this test held loading until then (`_` as an argument, which
+    /// matched any value, and in an obligation's witness premise) is refused
+    /// too, and a keyword pair's value inside a pattern is refused at its
+    /// keyword (S1f.5.11). The loader's line goes with T1f.5.5.5. A variable
+    /// used once is what to write where any value will do, and it loads.
     #[test]
     fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
-        const HEAD: &str = "with the wildcard _ as its relation — a relation is named by a name or \
-                            by a parameter its activator binds, and _ stands for an argument";
+        const WILD: &str = "unexpected `_`: _ (reserved)";
         let pre = "(relation n T) (relation hit T) (relation box T) (relation tag T T)\n(n 2)\n";
         for (rule, want) in [
-            (
-                "(rule w () :match (_ 2) :assert (hit w))",
-                format!("rule 'w': its :match writes (_ 2) {HEAD}"),
-            ),
-            (
-                "(rule w () :match (box (_ 2)) :assert (hit w))",
-                format!("rule 'w': its :match writes (_ 2) {HEAD}"),
-            ),
+            ("(rule w () :match (_ 2) :assert (hit w))", vec![20]),
+            ("(rule w () :match (box (_ 2)) :assert (hit w))", vec![25]),
             (
                 "(rule w () :match (absent (not (_ b))) :assert (hit w))",
-                format!("rule 'w': its :match writes (_ b) {HEAD}"),
+                vec![33],
             ),
-            // A form as a guard's argument is refused as a form since M1e2
-            // S1e2.2.24 (Q-M1e2.18 (i)), and not read as a pattern inside.
             (
                 "(rule w () :match (and (n ?x) (eq ?x (_ 2))) :assert (hit w))",
-                "rule 'w': its :match writes (eq ?x (_ 2)), and the form (_ 2) is no \
-                 value — a guard compares two values, each a variable a premise before \
-                 it binds, a name, a string or an integer"
-                    .to_string(),
+                vec![39],
+            ),
+            ("(rule w () :match (n ?x) :assert (box (_ ?x)))", vec![40]),
+            ("(hrule h () :match (_ ?x) :assert (tag ?x ?x))", vec![21]),
+            // Every error recovery reaches, one per `_`.
+            (
+                "(rule r () :match (and (n ?x) (_ 2)) :assert (box (_ ?x)))",
+                vec![32, 52],
+            ),
+            // `_` as an argument, which loaded and matched any value.
+            (
+                "(rule r () :match (and (n _) (box (tag _ _))) :assert (hit r))",
+                vec![27, 40],
             ),
             (
-                "(rule w () :match (n ?x) :assert (box (_ ?x)))",
-                format!("rule 'w': its :assert writes (_ ?x) {HEAD}"),
-            ),
-            (
-                "(hrule h () :match (_ ?x) :assert (tag ?x ?x))",
-                format!("hrule 'h': its :match writes (_ ?x) {HEAD}"),
+                "(rule owe () :match (and (n ?x) (absent (tag ?x _))) :assert (open tag))",
+                vec![49],
             ),
         ] {
-            assert_eq!(err(&format!("{pre}{rule}")), want, "{rule}");
+            let want: Vec<String> = want.iter().map(|c| format!("3:{c}: {WILD}")).collect();
+            assert_eq!(refused(&format!("{pre}{rule}")), want, "{rule}");
         }
-        // One line per slot, `; `-joined.
         assert_eq!(
-            err(&format!(
-                "{pre}(rule r () :match (and (n ?x) (_ 2)) :assert (box (_ ?x)))"
+            refused(&format!(
+                "{pre}(rule r () :match (n ?x :where v) :assert (hit r))"
             )),
-            format!(
-                "rule 'r': its :match writes (_ 2) {HEAD}; \
-                 rule 'r': its :assert writes (_ ?x) {HEAD}"
-            )
+            ["3:25: unexpected `:where`: a keyword this form does not take"]
         );
-        // Not a slot: a keyword pair's value, which the compiler drops (Q32),
-        // and `_` as an argument, which matches any value.
+        // A variable used once matches any value, and loads.
         ok(&format!(
-            "{pre}(rule r () :match (n ?x :where v) :assert (hit r))"
+            "{pre}(rule r () :match (and (n ?u) (box (tag ?v ?w))) :assert (hit r))"
         ));
         ok(&format!(
-            "{pre}(rule r () :match (and (n _) (box (tag _ _))) :assert (hit r))"
-        ));
-        // An obligation whose witness premise writes `_`: a slot the `absent`
-        // introduces, as `?any` would be, where it was refused as ground.
-        ok(&format!(
-            "{pre}(rule owe () :match (and (n ?x) (absent (tag ?x _))) :assert (open tag))"
+            "{pre}(rule owe () :match (and (n ?x) (absent (tag ?x ?any))) :assert (open tag))"
         ));
     }
 
@@ -2262,44 +2257,89 @@ mod tests {
     /// S1e2.2.24, W24, on the user's rulings of 2026-11-05 (Q-M1e2.16 (1),
     /// Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
     /// and an obligation, one line naming the rule and the clause; and what
-    /// stays: a guard on values, Q32's top-level keyword pair, a parameter
-    /// head, `_` as an argument.
+    /// stays: a guard on values, a parameter head.
+    ///
+    /// **Since M1f S1f.5.5's swap (T1f.5.5.4) half of the shapes are the
+    /// grammar's**, each a parse error at its place: `_` as a guard's argument
+    /// or as a premise (S1f.5.1), a keyword pair as a guard's argument or
+    /// inside a pattern (S1f.5.11), a name, a variable or a string as a premise
+    /// (the paper grammar's own, and S1f.5.2 for the string). The loader keeps
+    /// what a context-free grammar does not see: a form as a guard's argument,
+    /// a guard on a variable no premise before it binds, a relation variable no
+    /// parameter binds, and an activator binding a relation parameter to a
+    /// nested fact. What this test held loading until the swap and the grammar
+    /// refuses (a string as a guard's argument, Q32's `:where` pairs, `_` as an
+    /// argument) is written in the final grammar below.
     #[test]
     fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         const GUARD: &str = "a guard compares two values, each a variable a premise before it \
                              binds, a name, a string or an integer";
-        const WILD: &str = "and _ names no value — a guard compares two values, and _ stands \
-                            for an argument of a pattern";
-        const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
-                               (neq a b), an (absent …), or an (and …) or (or …) of premises";
         const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
                             parameter its activator binds";
-        const KW: &str = "and no fact can hold it — a keyword pair is no value, so a pattern \
-                          inside a pattern that holds one matches nothing";
+        const WILD: &str = "unexpected `_`: _ (reserved)";
+        const KW: &str = "unexpected `:k`: a keyword this form does not take";
         let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) (relation tag T T)\n\
                    (relation item T) (relation lbl T)\n(p a) (q a) (box (p a))\n";
+        // At the parse, on line 4: `_`, a keyword pair, a name, a variable or
+        // a string where a premise or a guard's argument goes.
         for (rule, want) in [
-            // `_`, a form, a keyword pair and an unbound variable in a guard.
             (
-                "(rule e () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))".to_string(),
-                format!("rule 'e': its :match writes (eq ?x _), {WILD}"),
+                "(rule e () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))",
+                format!("4:38: {WILD}"),
             ),
             (
-                "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y _)))) :assert (hit ?x))"
-                    .to_string(),
-                format!("rule 'e': its :match writes (neq ?y _), {WILD}"),
+                "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y _)))) :assert (hit ?x))",
+                format!("4:59: {WILD}"),
             ),
+            (
+                "(rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit ?x))",
+                format!("4:38: {KW}"),
+            ),
+            (
+                "(hrule h () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))",
+                format!("4:39: {WILD}"),
+            ),
+            (
+                "(rule r () :match _ :assert (hit a))",
+                format!("4:19: {WILD}"),
+            ),
+            (
+                "(rule r () :match foo :assert (hit a))",
+                "4:19: unexpected `foo`: a name".to_string(),
+            ),
+            (
+                "(rule r () :match (and (p ?x) ?x) :assert (hit ?x))",
+                "4:31: unexpected `?x`: a variable".to_string(),
+            ),
+            (
+                "(rule r () :match (or 3 (q ?y)) :assert (hit a))",
+                "4:23: unexpected `3`: a name".to_string(),
+            ),
+            (
+                "(rule r () :match (and (p ?x) (absent \"s\")) :assert (hit ?x))",
+                "4:39: unexpected `\"s\"`: a string".to_string(),
+            ),
+            (
+                "(hrule h () :match (and (p ?x) _) :assert (hit ?x))",
+                format!("4:32: {WILD}"),
+            ),
+            (
+                "(rule r () :match (box (p a :k v)) :assert (hit a))",
+                format!("4:29: {KW}"),
+            ),
+            (
+                "(rule r () :match (p ?x) :assert (box (p ?x :k v)))",
+                format!("4:45: {KW}"),
+            ),
+        ] {
+            assert_eq!(refused(&format!("{pre}{rule}")), [want], "{rule}");
+        }
+        // At load: what a context-free grammar does not see.
+        for (rule, want) in [
             (
                 "(rule e () :match (and (p ?x) (eq ?x (p a))) :assert (hit ?x))".to_string(),
                 format!(
                     "rule 'e': its :match writes (eq ?x (p a)), and the form (p a) is no value — {GUARD}"
-                ),
-            ),
-            (
-                "(rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit ?x))".to_string(),
-                format!(
-                    "rule 'e': its :match writes (eq ?x :k a), and the keyword pair :k a is no \
-                     value — {GUARD}"
                 ),
             ),
             (
@@ -2320,43 +2360,6 @@ mod tests {
                     .to_string(),
                 format!(
                     "rule 'e': its :match writes (neq ?y a), and no premise before it binds ?y — {GUARD}"
-                ),
-            ),
-            (
-                "(hrule h () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))".to_string(),
-                format!("hrule 'h': its :match writes (eq ?x _), {WILD}"),
-            ),
-            // A premise that is not a form.
-            (
-                "(rule r () :match _ :assert (hit a))".to_string(),
-                format!("rule 'r': its :match is _, and _ is no premise — {PREMISE}"),
-            ),
-            (
-                "(rule r () :match foo :assert (hit a))".to_string(),
-                format!("rule 'r': its :match is foo, and foo is no premise — {PREMISE}"),
-            ),
-            (
-                "(rule r () :match (and (p ?x) ?x) :assert (hit ?x))".to_string(),
-                format!(
-                    "rule 'r': its :match writes ?x as a premise of and, and ?x is no premise — {PREMISE}"
-                ),
-            ),
-            (
-                "(rule r () :match (or 3 (q ?y)) :assert (hit a))".to_string(),
-                format!(
-                    "rule 'r': its :match writes 3 as a premise of or, and 3 is no premise — {PREMISE}"
-                ),
-            ),
-            (
-                "(rule r () :match (and (p ?x) (absent \"s\")) :assert (hit ?x))".to_string(),
-                format!(
-                    "rule 'r': its :match writes \"s\" as a premise of absent, and \"s\" is no premise — {PREMISE}"
-                ),
-            ),
-            (
-                "(hrule h () :match (and (p ?x) _) :assert (hit ?x))".to_string(),
-                format!(
-                    "hrule 'h': its :match writes _ as a premise of and, and _ is no premise — {PREMISE}"
                 ),
             ),
             // A relation variable no parameter binds, inside a pattern and at
@@ -2382,15 +2385,6 @@ mod tests {
                 "(hrule h () :match (p ?r) :assert (?r a))".to_string(),
                 format!("hrule 'h': its :assert writes (?r a) with ?r as its relation, {FREE}"),
             ),
-            // A keyword pair inside a pattern inside a pattern.
-            (
-                "(rule r () :match (box (p a :k v)) :assert (hit a))".to_string(),
-                format!("rule 'r': its :match writes :k v as an argument of p, {KW}"),
-            ),
-            (
-                "(rule r () :match (p ?x) :assert (box (p ?x :k v)))".to_string(),
-                format!("rule 'r': its :assert writes :k v as an argument of p, {KW}"),
-            ),
             // An obligation's `:match`.
             (
                 "(rule owe () :match (and (item ?x) (box (?r a)) (absent (tag ?x ?l))) \
@@ -2415,60 +2409,87 @@ mod tests {
                 "{activator}"
             );
         }
-        // What stays: a guard on values the premises before it bind, Q32's
-        // keyword pairs, a parameter head, `_` as an argument, a guard under
-        // an `absent` on a variable the enclosing premises bound.
+        // What stays: a guard on values the premises before it bind, a
+        // parameter head, a variable used once where any value will do, a
+        // guard under an `absent` on a variable the enclosing premises bound.
+        // Until the swap the first wrote `(neq ?x "b")`, a string, and three
+        // more Q32's `:where` and `_` as an argument, which the grammar
+        // refuses.
         for rule in [
-            "(rule e () :match (and (p ?x) (q ?y) (neq ?x ?y) (eq ?x a) (neq ?x \"b\") (eq ?x 1)) \
+            "(rule e () :match (and (p ?x) (q ?y) (neq ?x ?y) (eq ?x a) (neq ?x b) (eq ?x 1)) \
              :assert (hit ?x))",
             "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y ?x)))) :assert (hit ?x))",
-            "(rule e () :match (and (p ?x) :where (eq ?x a)) :assert (hit ?x))",
-            "(rule e () :match (p ?x :where v) :assert (hit ?x))",
-            "(rule e () :match (and (box (p _)) (p _)) :assert (hit a))",
+            "(rule e () :match (and (p ?x) (eq ?x a)) :assert (hit ?x))",
+            "(rule e () :match (and (box (p ?u)) (p ?v)) :assert (hit a))",
             "(rule e (?R) :match (box (?R a)) :assert (hit a))",
         ] {
             ok(&format!("{pre}{rule}"));
         }
     }
 
+    /// **The verdict atom refuses every shape it cannot resolve** — M1d
+    /// S1d.2.3, `defined_behaviour.md` § 4.2's table. **Since M1f S1f.5.5's
+    /// swap (T1f.5.5.4) the shapes a position states are the grammar's**: an
+    /// `(open …)` in a `:match` or beside another conclusion, with three
+    /// arguments, or with a term for its argument, and `open` bound by a
+    /// declarator, are parse errors at their place (`open` is a word a position
+    /// gives a meaning to, the paper grammar's default 1). The loader keeps the
+    /// refusals a context-free grammar does not see: an `(open …)` under a
+    /// `not`, and the projection's ways of not resolving.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
         let pre = "(relation is-a T T)\n(relation r A B)\n";
         let guard = "(and (relation ?R ?A ?B) (?isa ?a ?A) \
                      (absent (and (?isa ?b ?B) (?R ?a ?b))))";
         for (want, src) in [
-            // Match-side placement — and the message names the probe, because
-            // the two were one word until 2026-08-24.
+            // Match-side placement.
             (
-                "legal only in :assert",
+                "3:49: unexpected `open`",
                 format!(
                     "{pre}(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))"
                 ),
             ),
             // Arity: the superseded triple, and the positional sketch before it.
             (
-                "not 3 arguments",
+                "3:123: unexpected `(`",
                 format!(
                     "{pre}(rule bad (?R ?isa) :match {guard} :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))"
                 ),
             ),
             // A mixed conclusion would belong to both strata.
             (
-                "may assert nothing else",
+                "3:120: unexpected `open`",
                 format!(
                     "{pre}(rule bad (?R ?isa) :match {guard} :assert (and (open ?R) (r ?a b)))"
                 ),
             ),
+            // The argument is a term rather than a name — the tenth row of
+            // § 4.2's table.
+            (
+                "3:120: unexpected `(`",
+                format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (open (r ?a ?b)))"),
+            ),
+            // …and the name itself may not be bound.
+            (
+                "3:11: unexpected `open`",
+                format!("{pre}(relation open A B)"),
+            ),
+            (
+                "3:8: unexpected `open`",
+                format!("{pre}(macro open (?P) (absent ?P))"),
+            ),
+            (
+                "3:7: unexpected `open`",
+                format!("{pre}(rule open () :match (r ?a ?b) :assert (r ?b ?a))"),
+            ),
+        ] {
+            assert_eq!(refused(&src)[0], want, "{src}");
+        }
+        for (want, src) in [
             // Nested rather than concluded.
             (
                 "not a term inside one",
                 format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (not (open ?R)))"),
-            ),
-            // The argument is a term rather than a name — the tenth row of
-            // § 4.2's table, and the one this loop did not have.
-            (
-                "names a relation — a rule",
-                format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (open (r ?a ?b)))"),
             ),
             // The projection's three ways of not resolving.
             (
@@ -2516,19 +2537,6 @@ mod tests {
                     "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
                      (absent (?R ?a ?b))) :assert (open ?R))"
                 ),
-            ),
-            // …and the name itself may not be bound.
-            (
-                "shadows a reserved kernel name",
-                format!("{pre}(relation open A B)"),
-            ),
-            (
-                "shadows a reserved kernel name",
-                format!("{pre}(macro open (?P) (absent ?P))"),
-            ),
-            (
-                "shadows a reserved kernel name",
-                format!("{pre}(rule open () :match (r ?a ?b) :assert (r ?b ?a))"),
             ),
         ] {
             let got = err(&src);
@@ -2632,25 +2640,26 @@ mod tests {
         );
     }
 
+    /// A nested form is a fact, interned and not believed. **Since M1f
+    /// S1f.5.5's swap (T1f.5.5.4)** a nested fact's head is a name: `(p (?q
+    /// a))`, a variable in a fact, is refused at the parse (S1f.5.2's G-6), so
+    /// no fact reaches the loader with a nested head that is not a name, and
+    /// the `#nested` rename it collapsed to (printed `(_ a)`) is reached by no
+    /// program; until then the second fact here was `(p (?q a))`.
     #[test]
     fn a_nested_form_becomes_a_relational_node() {
-        let (terms, kb) = ok("(not (co-located a b))\n(p (?q a))");
+        assert_eq!(
+            refused("(not (co-located a b))\n(p (?q a))"),
+            ["2:5: unexpected `?q`: a variable"]
+        );
+        let (terms, kb) = ok("(not (co-located a b))\n(p (q a))");
         let nested: Vec<Vec<Tag>> = kb
             .facts()
             .map(|f| terms.facts.args(f).iter().map(|a| a.tag()).collect())
             .collect();
         assert_eq!(nested, vec![vec![Tag::Fact], vec![Tag::Fact]]);
-        // A nested head that is not a bare atom collapses to `#nested` — a
-        // lossy rename — which the one printer prints as the `_` head that
-        // loads it (M1e2 S1e2.3.8).
         let compacts = facts(&terms, &kb);
-        assert_eq!(compacts[1], "(p (_ a))", "{compacts:?}");
-        let (rel, _) = terms.fact(
-            terms.facts.args(kb.facts().nth(1).expect("two"))[0]
-                .as_fact()
-                .expect("nested"),
-        );
-        assert_eq!(terms.sym(rel), ein_core::text::NESTED_HEAD);
+        assert_eq!(compacts[1], "(p (q a))", "{compacts:?}");
         // The inner proposition is interned but not believed: it is not in
         // the fact list, and that is what makes the negated index meaningful.
         assert_eq!(kb.n_facts(), 2);
@@ -2661,10 +2670,18 @@ mod tests {
         assert!(kb.is_negated(inner));
     }
 
+    /// Since M1f S1f.5.5's swap (T1f.5.5.4) a fact's `:using` lists its
+    /// premises, each a fact (the paper grammar's default 2): `:using ((r a
+    /// b))`. Until then this test wrote `:using (p (r a b))`, a list whose head
+    /// the loader dropped, which the grammar refuses at the `p`.
     #[test]
     fn provenance_comes_from_source_or_from_rule_and_using() {
+        assert_eq!(
+            refused("(relation r T T)\n(r e f :rule x :using (p (r a b)))"),
+            ["2:24: unexpected `p`: a name"]
+        );
         let (terms, kb) = ok("(relation r T T)\n(r a b :source \"(1)\")\n(r c d)\n\
-             (r e f :rule x :using (p (r a b)))");
+             (r e f :rule x :using ((r a b)))");
         let kinds: Vec<(&str, usize)> = kb
             .facts()
             .filter_map(|f| kb.primary(f))
@@ -2691,15 +2708,27 @@ mod tests {
         assert_eq!(terms.compact(prov.premises[0]), "(r a b)");
     }
 
+    /// A `:source` must be a string and a `:rule` a name. Until M1f S1f.5.5's
+    /// swap anything else was no error: it simply did not register, and
+    /// `(r a b :source sentence :rule "x")` loaded as a given fact with no
+    /// source. **Since the swap each keyword's value is the grammar's**, so
+    /// the bare `sentence` is refused at the parse, and so is the string
+    /// `"x"` (S1f.5.2's ruling). What still reads as absent is a `:source`
+    /// with no `:rule`: a given fact, its sentence kept.
     #[test]
     fn a_present_but_unusable_annotation_reads_as_absent() {
-        // `:source` must be a String and `:rule` an Atom; anything else is
-        // not an error, it simply does not register.
-        let (terms, kb) = ok("(relation r T T)\n(r a b :source sentence :rule \"x\")");
+        assert_eq!(
+            refused("(relation r T T)\n(r a b :source sentence :rule \"x\")")[0],
+            "2:16: unexpected `sentence`: a name"
+        );
+        let (terms, kb) = ok("(relation r T T)\n(r a b :source \"sentence\")");
         let fact = kb.facts().last().expect("a fact");
         let prov = terms.provs.get(kb.primary(fact).expect("recorded"));
         assert_eq!(prov.kind, ProvKind::Source);
-        assert_eq!(prov.source, None);
+        assert_eq!(
+            prov.source.map(|s| terms.sym(s).to_string()).as_deref(),
+            Some("sentence")
+        );
     }
 
     /// Was `the_last_query_and_the_last_config_win` until M1c S1c.1.2. Half of
@@ -2708,10 +2737,25 @@ mod tests {
     /// `:expect` must not do. The config half is untouched, and is here in the
     /// same test because the *contrast* is the decision — a config is a
     /// setting, a query is content.
+    ///
+    /// Since M1f S1f.5.5's swap (T1f.5.5.4) the second query's `:mode all`
+    /// is `:over all` and the first config's retired `:print-alive` is
+    /// `:record-alternative-justifications false`: the grammar refuses a
+    /// keyword its form does not take (S1f.5.11), and both were.
     #[test]
     fn every_query_is_kept_and_the_last_config_still_wins() {
-        let (_terms, kb) = ok("(query :goal (a ?x))\n(query :goal (b ?x) :mode all)\n\
-             (config :print-alive true)\n(config :lattice-sanity-check true)");
+        assert_eq!(
+            refused(
+                "(query :goal (a ?x))\n(query :goal (b ?x) :mode all)\n\
+                     (config :print-alive true)"
+            ),
+            [
+                "2:21: unexpected `:mode`: a keyword this form does not take",
+                "3:9: unexpected `:print-alive`: a keyword this form does not take"
+            ]
+        );
+        let (_terms, kb) = ok("(query :goal (a ?x))\n(query :goal (b ?x) :over all)\n\
+             (config :record-alternative-justifications false)\n(config :lattice-sanity-check true)");
         let p = kb.program();
         assert_eq!(p.queries.len(), 2, "both blocks load");
         assert_eq!(p.queries[0].kw_pairs.len(), 1);
@@ -2723,7 +2767,10 @@ mod tests {
         );
         let config = p.config.as_ref().expect("a config");
         assert!(config.lattice_sanity_check);
-        assert!(!config.print_alive, "the earlier block is discarded whole");
+        assert!(
+            config.record_alternative_justifications,
+            "the earlier block is discarded whole"
+        );
     }
 
     // ── `:expect`, at load — M1c S1c.1.2 T1c.1.2.5 ────────────────
@@ -2731,22 +2778,41 @@ mod tests {
     // Every one of these is a load *error* rather than a run that checks
     // nothing, which is the whole reason the keyword exists.
 
+    /// An unknown query keyword was a load error that listed the allow-list
+    /// (M1c S1c.1.2). **Since M1f S1f.5.5's swap (T1f.5.5.4) it is a parse
+    /// error at the keyword** (S1f.5.11: each form takes a fixed set), whose
+    /// ranked repairs name a keyword the form does take.
     #[test]
     fn an_unknown_query_keyword_is_a_load_error() {
-        let e = err("(relation p T P)\n(p A H)\n(query :goal (p A ?h) :expct none)");
-        assert!(e.contains("unknown keyword :expct"), "{e}");
-        assert!(
-            e.contains(":expect"),
-            "the message lists the allow-list: {e}"
+        let e = parse(
+            &mut Ast::new(),
+            "(relation p T P)\n(p A H)\n(query :goal (p A ?h) :expct none)",
+            None,
+        )
+        .expect_err("refused");
+        assert_eq!(
+            e.errors[0].what, "unexpected `:expct`: a keyword this form does not take",
+            "{e}"
+        );
+        assert_eq!((e.errors[0].line, e.errors[0].col), (3, 23));
+        assert_eq!(
+            e.errors[0].repairs[0], "Insert `:over`, Delete `:expct`",
+            "{e}"
         );
     }
 
-    /// `:mode` is in the allow-list and read by nothing. Three corpus files
-    /// carry a comment saying it is obsolete; accepted-and-ignored is a
-    /// documented state, silently-unknown is not.
+    /// `:mode` was in the allow-list and read by nothing, accepted and
+    /// ignored, a documented state. **Since M1f S1f.5.5's swap (T1f.5.5.4) it
+    /// is refused at the parse** like any keyword a query does not take
+    /// (S1f.5.11's default: `:mode` is on no form's list); no corpus program
+    /// writes it.
     #[test]
     fn the_obsolete_mode_keyword_still_loads() {
-        let (_terms, kb) = ok("(query :goal (a ?x) :mode all)");
+        assert_eq!(
+            refused("(query :goal (a ?x) :mode all)"),
+            ["1:21: unexpected `:mode`: a keyword this form does not take"]
+        );
+        let (_terms, kb) = ok("(query :goal (a ?x))");
         assert_eq!(kb.program().queries.len(), 1);
     }
 
@@ -2803,22 +2869,31 @@ mod tests {
         }
     }
 
+    /// A malformed `:expect` was a load error naming what was expected (M1c
+    /// S1c.1.2). **Since M1f S1f.5.5's swap (T1f.5.5.4) a claim's shape is
+    /// the grammar's**, so each is a parse error at its first token, with the
+    /// repairs that make it a claim.
     #[test]
     fn a_malformed_expect_is_a_load_error() {
         for (src, want) in [
-            ("(query :goal (a ?x) :expect all)", "expected `(false)`"),
+            (
+                "(query :goal (a ?x) :expect all)",
+                "1:29: unexpected `all`: a name",
+            ),
             (
                 "(query :goal (a ?x) :expect (models (a b)))",
-                "expected `(false)`",
+                "1:30: unexpected `models`: a name",
             ),
-            ("(query :goal (a ?x) :expect none)", "expected `(false)`"),
+            (
+                "(query :goal (a ?x) :expect none)",
+                "1:29: unexpected `none`: a name",
+            ),
             (
                 "(query :goal (a ?x) :expect (model (a ?x)))",
-                "not a pattern",
+                "1:39: unexpected `?x`: a variable",
             ),
         ] {
-            let e = err(src);
-            assert!(e.contains(want), "{src}: {e}");
+            assert_eq!(refused(src), [want], "{src}");
         }
     }
 
@@ -2830,9 +2905,11 @@ mod tests {
         assert_eq!(kb.program().queries.len(), 1);
     }
 
+    /// The second query writes `:over all` since M1f S1f.5.5's swap, where it
+    /// wrote `:mode all`, which the grammar refuses (S1f.5.11).
     #[test]
     fn a_later_query_is_reachable_by_index() {
-        let src = "(query :goal (a ?x))\n(query :goal (b ?x) :mode all)";
+        let src = "(query :goal (a ?x))\n(query :goal (b ?x) :over all)";
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let forms = crate::parse(&mut ast, src, None).expect("parses");
@@ -2861,15 +2938,29 @@ mod tests {
         assert_eq!(names(&rule.params), vec!["p"]);
     }
 
+    /// Every pass accumulates rather than stopping at the first problem.
+    /// Since M1f S1f.5.5's swap (T1f.5.5.4) two of the three problems this
+    /// test wrote are the grammar's, `(relation)` with no name and a rule
+    /// named `absent`, so the parser reports both and the loader never sees
+    /// the file; the loader's passes are held with problems it still owns: a
+    /// macro declared twice (pass 0), a relation declared twice (pass 1) and a
+    /// rule named after a kernel dunder (pass 2, T1f.5.5.11).
     #[test]
     fn every_pass_accumulates_rather_than_stopping_at_the_first_problem() {
+        assert_eq!(
+            refused(
+                "(relation)\n(relation dup)\n(relation dup)\n(rule absent () :match (x ?a) :assert (y ?a))"
+            ),
+            ["1:10: unexpected `)`", "4:7: unexpected `absent`"]
+        );
         let message = err(
-            "(relation)\n(relation dup)\n(relation dup)\n(rule absent () :match (x ?a) :assert (y ?a))",
+            "(macro m (?a) (x ?a))\n(macro m (?a) (y ?a))\n(relation dup)\n\
+             (relation dup)\n(rule __closed__ () :match (x ?a) :assert (y ?a))",
         );
         assert_eq!(
             message,
-            "(relation) needs a name at None; duplicate relation 'dup' at None; \
-             rule 'absent' shadows a reserved kernel name at None"
+            "duplicate macro 'm' at None; duplicate relation 'dup' at None; \
+             rule '__closed__' shadows a reserved kernel name at None"
         );
     }
 }

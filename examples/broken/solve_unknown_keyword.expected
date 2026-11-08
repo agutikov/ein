@@ -1,0 +1,4 @@
+{FILE}:11:8: unexpected `:no-hypothesys`: a keyword this form does not take
+  repair: Insert `:hrules`, Delete `:no-hypothesys`
+  repair: Insert `:hypothesis-relations`, Delete `:no-hypothesys`
+  repair: Insert `:no-hypothesis`, Delete `:no-hypothesys`

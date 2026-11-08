@@ -145,8 +145,9 @@ fact for a pair.
     move. *Landed 2026-11-08, ahead of the swap, by S1f.5.5's
     [T1f.5.5.10](s1f.5.5_the_grammar.md#t10-record-2026-11-08): the same stored facts, R, N and exit codes on
     today's binary; its five parse-view digests moved.*
-  - [`examples/ein-bugs/kwpair-below-the-filter.ein`](../../../examples/ein-bugs/kwpair-below-the-filter.ein)
-    and its fuzz find, `corpus/fuzz_findings/kwpair-below-the-filter.ein`: `(tracex (step s1 :rule … :using …
+  - `examples/ein-bugs/kwpair-below-the-filter.ein` (since S1f.5.5's swap
+    [`examples/broken/kwpair-below-the-filter.ein`](../../../examples/broken/kwpair-below-the-filter.ein),
+    refused at the parse) and its fuzz find, `corpus/fuzz_findings/kwpair-below-the-filter.ein`: `(tracex (step s1 :rule … :using …
     :derives …) …)`. It was banked for a render crash, *not a value node: KwPair*, which
     [S1e2.3.2](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md) fixed
     by labelling a pair `:key value`. Once no pair loads below a form, the crash's path is closed at load.

@@ -180,24 +180,29 @@ mod tests {
 
     /// M1e2 S1e2.3.2, ruling (a): a keyword pair below a form is labelled
     /// `:key value` at every depth, and the form as written is the label.
-    /// The program is the fuzz witness's first step, the one that panicked.
+    /// The program was the fuzz witness's first step, the one that panicked;
+    /// since M1f S1f.5.5's swap no keyword pair parses inside a term or a
+    /// nested fact (S1f.5.11's ruling), so the witness is refused at its first
+    /// `:rule`, and a pair reaches the arm only as a form's own, which the
+    /// views filter (the review stop's item 11: the arm goes with S1f.5.11's
+    /// T1f.5.11.2). Held here through a fact's own `:rule` and `:using`.
     #[test]
     fn a_keyword_pair_below_a_form_is_labelled_key_value() {
-        let src = "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1)))";
+        let witness =
+            "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1)))";
+        let refused = ein_ir::parse(&mut Ast::new(), witness, None).expect_err("refused");
+        assert_eq!(refused.position(), (1, 18), "{refused}");
+        let src = "(lives-in N H1 :rule from-condition :using ((c10)))";
         let mut ast = Ast::new();
-        let top = ein_ir::parse(&mut ast, src, None).expect("the witness parses")[0];
-        let step = ast.form_args(top)[0];
-        assert_eq!(
-            value_label(&ast, step),
-            "(step s1 :rule from-condition :using (c10) :derives (lives-in N H1))"
-        );
-        let pair = ast.form_args(step)[1];
-        assert!(matches!(ast.node(pair), Node::KwPair { .. }));
-        assert_eq!(value_label(&ast, pair), ":rule from-condition");
-        assert_eq!(
-            value_label(&ast, top),
-            "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1)))"
-        );
+        let top = ein_ir::parse(&mut ast, src, None).expect("the fact parses")[0];
+        let pairs: Vec<String> = ast
+            .form_args(top)
+            .iter()
+            .filter(|&&a| matches!(ast.node(a), Node::KwPair { .. }))
+            .map(|&a| value_label(&ast, a))
+            .collect();
+        assert_eq!(pairs[0], ":rule from-condition");
+        assert_eq!(pairs.len(), 2, "{pairs:?}");
     }
 
     #[test]

@@ -1,1 +1,0 @@
-rule 'mirror': its parameter ?R names a relation, and (mirror 3) binds it to the integer 3 at Loc(file='{FILE}', line=18, col=9) — a relation is named by a symbol, not a number, and a rule cannot assert a name the program does not have

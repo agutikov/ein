@@ -1,15 +1,26 @@
 === "(rulex (?a) :match X :assert Y)"
-  ok (1 form(s))
+  <string>:1:9: unexpected `?a`: a variable
+    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Delete `X`, Delete `:assert`
+    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Insert `)`, Delete `:assert`
+    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Delete `:assert`, Shift `Y`, Insert `)`
+    and 4 more repairs
 === "(rulex A)"
   ok (1 form(s))
 === "(hrulex (?a) :match X :assert Y)"
-  ok (1 form(s))
+  <string>:1:10: unexpected `?a`: a variable
+    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Delete `X`, Delete `:assert`
+    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Insert `)`, Delete `:assert`
+    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Delete `:assert`, Shift `Y`, Insert `)`
+    and 4 more repairs
 === "(macrox (?a) B)"
-  ok (1 form(s))
+  <string>:1:10: unexpected `?a`: a variable
+    repair: Insert a name, Delete `?a`
 === "(importx :as m)"
-  ok (1 form(s))
+  <string>:1:10: unexpected `:as`
+    repair: Delete `:as`
 === "(importfoo.bar :as m)"
-  ok (1 form(s))
+  <string>:1:16: unexpected `:as`
+    repair: Delete `:as`
 === "(notx)"
   ok (1 form(s))
 === "(notx A)"
@@ -27,43 +38,48 @@
 === "(relationx R (T1 T2))"
   ok (1 form(s))
 === "(queryx :goal Y)"
-  ok (1 form(s))
+  <string>:1:9: unexpected `:goal`
+    repair: Delete `:goal`
 === "(configx)"
   ok (1 form(s))
 === "(tracex)"
   ok (1 form(s))
 === "(trace (stepx :a b))"
-  <string>:1:9: unexpected input
-  (trace (stepx :a b))
-          ^
+  <string>:1:9: unexpected `stepx`: a name
+    repair: Insert `step`, Delete `stepx`, Delete `:a`
+    repair: Insert `step`, Shift `stepx`, Insert `:rule`, Delete `:a`
+    repair: Insert `step`, Shift `stepx`, Delete `:a`, Delete `b`
 === "(trace (branch-openx :a b))"
-  <string>:1:9: unexpected input
-  (trace (branch-openx :a b))
-          ^
+  <string>:1:9: unexpected `branch-openx`: a name
+    repair: Insert `step`, Delete `branch-openx`, Delete `:a`
+    repair: Insert `step`, Shift `branch-openx`, Insert `:rule`, Delete `:a`
+    repair: Insert `step`, Shift `branch-openx`, Delete `:a`, Delete `b`
 === "(trace (branch-refx))"
-  <string>:1:9: unexpected input
-  (trace (branch-refx))
-          ^
+  <string>:1:9: unexpected `branch-refx`: a name
+    repair: Insert `step`
 === "(trace (contradictionx :a b))"
-  <string>:1:9: unexpected input
-  (trace (contradictionx :a b))
-          ^
+  <string>:1:9: unexpected `contradictionx`: a name
+    repair: Insert `step`, Delete `contradictionx`, Delete `:a`
+    repair: Insert `step`, Shift `contradictionx`, Insert `:rule`, Delete `:a`
+    repair: Insert `step`, Shift `contradictionx`, Delete `:a`, Delete `b`
 === "(trace (symmetry-classx :a b))"
-  <string>:1:9: unexpected input
-  (trace (symmetry-classx :a b))
-          ^
+  <string>:1:9: unexpected `symmetry-classx`: a name
+    repair: Insert `step`, Delete `symmetry-classx`, Delete `:a`
+    repair: Insert `step`, Shift `symmetry-classx`, Insert `:rule`, Delete `:a`
+    repair: Insert `step`, Shift `symmetry-classx`, Delete `:a`, Delete `b`
 === "(a (stepx :a b))"
-  ok (1 form(s))
+  <string>:1:11: unexpected `:a`: a keyword this form does not take
+    repair: Delete `:a`
 === "(rule-x A)"
-  <string>:1:6: unexpected input
-  (rule-x A)
-       ^
-=== "(rule.x A)"
-  <string>:1:6: unexpected input
-  (rule.x A)
-       ^
-=== "(rule_x (?a) :match X :assert Y)"
   ok (1 form(s))
+=== "(rule.x A)"
+  ok (1 form(s))
+=== "(rule_x (?a) :match X :assert Y)"
+  <string>:1:10: unexpected `?a`: a variable
+    repair: Insert a name, Delete `?a`, Shift `)`, Delete `:match`, Delete `X`, Delete `:assert`
+    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Insert `)`, Delete `:assert`
+    repair: Delete `?a`, Delete `)`, Delete `:match`, Shift `X`, Delete `:assert`, Shift `Y`, Insert `)`
+    and 4 more repairs
 === "(not_a X)"
   ok (1 form(s))
 === "(neq_test X)"
@@ -75,121 +91,154 @@
 === "(relation R A B)"
   ok (1 form(s))
 === "(relation R (T1 T2))"
-  ok (1 form(s))
+  <string>:1:13: unexpected `(`
+    repair: Insert `)`
+  <string>:1:20: unexpected `)`
+    repair: Delete `)`
 === "(relation)"
-  ok (1 form(s))
+  <string>:1:10: unexpected `)`
+    repair: Insert a name
 === "(relation R)"
   ok (1 form(s))
 === "(a 1 :k 2)"
-  ok (1 form(s))
+  <string>:1:6: unexpected `:k`: a keyword this form does not take
+    repair: Insert a name, Delete `:k`
+    repair: Insert `:rule`, Delete `:k`
+    repair: Delete `:k`, Delete `2`
 === "(a :k 1 :k 2)"
-  ok (1 form(s))
+  <string>:1:4: unexpected `:k`: a keyword this form does not take
+    repair: Delete `:k`, Delete `1`, Delete `:k`
+    repair: Delete `:k`, Shift `1`, Insert a name, Delete `:k`
+    repair: Delete `:k`, Shift `1`, Insert `:rule`, Delete `:k`
+    and 1 more repair
 === "(a :k 1 2)"
-  <string>:1:9: unexpected input
-  (a :k 1 2)
-          ^
+  <string>:1:4: unexpected `:k`: a keyword this form does not take
+    repair: Insert `(`, Delete `:k`
+    repair: Delete `:k`, Delete `1`
+    repair: Delete `:k`, Shift `1`, Delete `2`
+    and 2 more repairs
+  <string>:1:11: unexpected end of input
+    repair: Insert `)`
 === "(a 1 :k 2 3)"
-  <string>:1:11: unexpected input
-  (a 1 :k 2 3)
-            ^
+  <string>:1:6: unexpected `:k`: a keyword this form does not take
+    repair: Insert `(`, Delete `:k`
+  <string>:1:13: unexpected end of input
+    repair: Insert `)`
 === "(x (a 1 :k 2 3))"
-  ok (1 form(s))
+  <string>:1:9: unexpected `:k`: a keyword this form does not take
+    repair: Insert `(`, Delete `:k`
+  <string>:1:17: unexpected end of input
+    repair: Insert `)`
 === "(x (a :k 2 3))"
-  ok (1 form(s))
+  <string>:1:7: unexpected `:k`: a keyword this form does not take
+    repair: Insert `(`, Delete `:k`
+    repair: Delete `:k`, Delete `2`
+    repair: Delete `:k`, Shift `2`, Delete `3`
+    and 2 more repairs
+  <string>:1:15: unexpected end of input
+    repair: Insert `)`
 === "(= a b)"
   ok (1 form(s))
 === "(= a b c)"
-  <string>:1:8: unexpected input
-  (= a b c)
-         ^
-=== "(= a b :k 1)"
   ok (1 form(s))
+=== "(= a b :k 1)"
+  <string>:1:8: unexpected `:k`: a keyword this form does not take
+    repair: Insert a name, Delete `:k`
+    repair: Insert `:rule`, Delete `:k`
+    repair: Delete `:k`, Delete `1`
 === "(x (= a b c))"
   ok (1 form(s))
 === "(not A B)"
-  <string>:1:8: unexpected input
-  (not A B)
-         ^
+  <string>:1:6: unexpected `A`: a name
+    repair: Insert `(`
+  <string>:1:10: unexpected end of input
+    repair: Insert `)`
 === "(not A :k 1)"
-  ok (1 form(s))
+  <string>:1:6: unexpected `A`: a name
+    repair: Insert `(`, Shift `A`, Delete `:k`, Shift `1`, Insert `)`
+    repair: Insert `(`, Shift `A`, Delete `:k`, Shift `1`, Shift `)`, Insert `)`
 === "(query)"
-  <string>:1:7: unexpected input
-  (query)
-        ^
+  <string>:1:7: unexpected `)`
+    repair: Insert `:goal-text`, Insert a string
+    repair: Insert `:over`, Insert a name
 === "(config)"
   ok (1 form(s))
 === "(trace)"
   ok (1 form(s))
 === "(rule r ())"
-  <string>:1:11: unexpected input
-  (rule r ())
-            ^
+  ok (1 form(s))
 === "(rule r () :match X)"
-  ok (1 form(s))
+  <string>:1:19: unexpected `X`: a name
+    repair: Insert `(`, Shift `X`, Insert `)`
+    repair: Insert `(`, Shift `X`, Shift `)`, Insert `)`
 === "(macro m () B)"
-  <string>:1:11: unexpected input
-  (macro m () B)
-            ^
+  <string>:1:11: unexpected `)`
+    repair: Insert a variable, Shift `)`, Insert a variable, Delete `B`
+    repair: Insert a variable, Shift `)`, Insert `(`, Shift `B`, Insert `)`
+    repair: Insert a variable, Shift `)`, Insert `(`, Shift `B`, Shift `)`, Insert `)`
 === "(macro m (?a) B)"
-  ok (1 form(s))
+  <string>:1:15: unexpected `B`: a name
+    repair: Insert a variable, Delete `B`
+    repair: Insert `(`, Shift `B`, Insert `)`
+    repair: Insert `(`, Shift `B`, Shift `)`, Insert `)`
 === "(a __closed__)"
   ok (1 form(s))
 === "(a _)"
-  ok (1 form(s))
+  <string>:1:4: unexpected `_`: _ (reserved)
+    note: _ is reserved and names nothing: where any value will do, write a variable used once
+    repair: Delete `_`
 === "(a _x)"
-  <string>:1:4: unexpected input
-  (a _x)
-     ^
+  ok (1 form(s))
 === "(a 007)"
   ok (1 form(s))
 === "(a -0)"
   ok (1 form(s))
 === "(a 1..5)"
-  <string>:1:5: unexpected input
-  (a 1..5)
-      ^
+  ok (1 form(s))
 === "(a 1..*)"
-  <string>:1:5: unexpected input
-  (a 1..*)
-      ^
+  ok (1 form(s))
 === "(a 1..)"
-  <string>:1:5: unexpected input
-  (a 1..)
-      ^
+  ok (1 form(s))
 === "(a \"h\\di\")"
-  ok (1 form(s))
+  <string>:1:4: unexpected `"h\di"`: a string with an unknown escape
+    repair: Delete `"h\di"`
 === "(a \"a\nb\")"
-  ok (1 form(s))
+  <string>:1:4: unexpected `"a\nb"`: a string
+    note: "a\nb" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+    repair: Delete `"a\nb"`
+    repair: Insert `:source`
 === "(a \"a\\\nb\")"
-  <string>:1:4: unexpected input
-  (a "a\
-     ^
+  <string>:1:4: unexpected `"a\`: a token that is not a name
+    repair: Delete `"a\`, Delete `b"`
 === "(a \"unterminated)"
-  <string>:1:4: unexpected input
-  (a "unterminated)
-     ^
+  <string>:1:4: unexpected `"unterminated`: a token that is not a name
+    repair: Delete `"unterminated`
 === "(x (?p ?q))"
-  ok (1 form(s))
+  <string>:1:5: unexpected `?p`: a variable
+    repair: Insert a name, Delete `?p`, Delete `?q`
 === "(x (_ ?a))"
-  ok (1 form(s))
+  <string>:1:5: unexpected `_`: _ (reserved)
+    note: _ is reserved and names nothing: where any value will do, write a variable used once
+    repair: Insert a name, Delete `_`, Delete `?a`
 === "()"
-  <string>:1:2: unexpected input
-  ()
-   ^
+  <string>:1:2: unexpected `)`
+    repair: Insert `trace`
+    repair: Insert `config`
+    repair: Insert `solve`
+    and 1 more repair
 === "(x ())"
-  ok (1 form(s))
+  <string>:1:5: unexpected `)`
+    repair: Insert a name
 === "(x (()))"
-  <string>:1:5: unexpected input
-  (x (()))
-      ^
+  <string>:1:5: unexpected `(`
+    repair: Insert a name, Shift `(`, Insert a name
+    repair: Insert `not`, Shift `(`, Insert a name
 === "(x ; comment\n y)"
   ok (1 form(s))
 === "(x #| c |# y)"
   ok (1 form(s))
 === "(x #| never closed"
-  <string>:1:4: unexpected input
-  (x #| never closed
-     ^
+  <string>:1:4: no token starts with `#`
 === ""
   ok (0 form(s))
 === "   "
@@ -197,10 +246,8 @@
 === ";; only a comment\n"
   ok (0 form(s))
 === "(a))"
-  <string>:1:4: unexpected input
-  (a))
-     ^
+  <string>:1:4: unexpected `)`
+    repair: Delete `)`
 === "(a"
-  <string>:-1:-1: unexpected input
-  (a
-   ^
+  <string>:1:3: unexpected end of input
+    repair: Insert `)`

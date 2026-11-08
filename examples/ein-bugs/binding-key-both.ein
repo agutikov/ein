@@ -41,6 +41,18 @@
 ;;; identity interns every argument of the activator, as the compile cache's
 ;;; key does, so each plan has a space of its own; the `:expect` below
 ;;; states the answer, and it holds in either build.
+;;;
+;;; ── Since M1f S1f.5.5's swap ───────────────────────────────────────────
+;;;
+;;; A run of digits is a name (S1f.5.4's ruling), so `1`, `2` and `3`, the
+;;; edges' ends, are candidate objects beside `Y`, and unscoped H is 21
+;;; candidates whose R passes the budget (T1f.5.5.9's sweep). The solve below
+;;; holds `edge` and `noted` out of the hypotheses, S1f.5.4's proposal A
+;;; (accepted 2026-11-08), so H is `(holds 2)` and `(holds Y)` and R is four
+;;; states, the two above and each with `(holds 2)` added, which adds `(noted
+;;; 1 2)` and `(noted 2 2)`; `ein oracle` gives the same R. The point stands:
+;;; root's `noted` facts are the same in either activator order, and `Y` is a
+;;; candidate.
 
 (relation edge  Node Node)
 (relation holds Node)
@@ -57,13 +69,26 @@
 (note edge (src Y))
 
 (solve
+  ;; S1f.5.4's proposal A (accepted 2026-11-08), at M1f S1f.5.5's swap: a
+  ;; run of digits is a name, so `1`, `2` and `3` are candidate objects and
+  ;; unscoped H is 21 candidates whose R passes the budget; `edge` and
+  ;; `noted` held out, H is `(holds 2)` and `(holds Y)`, the oracle the same.
+  :no-hypothesis (edge noted)
   ;; `holds` and `noted` are named, so both are closed: each state lists
   ;; their complete extent, root's facts included.
   :expect (region
-            ;; state 1 of 2 — ∅, root itself · minimal
+            ;; state 1 of 4 — ∅, root itself · minimal
             (model (holds 1) (holds 3)
                    (noted 1 1) (noted 1 3) (noted 2 1) (noted 2 3))
-            ;; state 2 of 2 — 1 candidate · maximal · from {(holds Y)}
+            ;; state 2 of 4 — 1 candidate · from {(holds 2)}
+            (model (holds 1) (holds 2) (holds 3)
+                   (noted 1 1) (noted 1 2) (noted 1 3) (noted 2 1)
+                   (noted 2 2) (noted 2 3))
+            ;; state 3 of 4 — 1 candidate · from {(holds Y)}
             (model (holds 1) (holds 3) (holds Y)
-                   (noted 1 1) (noted 1 3) (noted 1 Y)
-                   (noted 2 1) (noted 2 3) (noted 2 Y))))
+                   (noted 1 1) (noted 1 3) (noted 1 Y) (noted 2 1)
+                   (noted 2 3) (noted 2 Y))
+            ;; state 4 of 4 — 2 candidates · maximal · from {(holds 2), (holds Y)}
+            (model (holds 1) (holds 2) (holds 3) (holds Y)
+                   (noted 1 1) (noted 1 2) (noted 1 3) (noted 1 Y)
+                   (noted 2 1) (noted 2 2) (noted 2 3) (noted 2 Y))))

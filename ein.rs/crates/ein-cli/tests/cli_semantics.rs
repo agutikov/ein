@@ -795,44 +795,32 @@ fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
     }
 }
 
-/// **A conclusion no fact can hold stops the run with one line in Ein's
-/// spelling, the same from every command** — M1e2 S1e2.2.18.
+/// **A conclusion no fact can hold is refused at the parse, whether its rule
+/// fires or not** — M1e2 S1e2.2.18, restated at M1f S1f.5.5's swap by the
+/// grammar (G-14, Q-M1f.1 (b), and S1f.5.11's and S1f.5.2's rulings).
 ///
-/// The line was `TypeError: expected NestedPattern at :assert top-level, got
-/// Atom` or `TypeError: an unrecognised `:assert` slot has no value to store`
-/// under `ein saturate`, and the message alone under `ein solve`: a Python
-/// class, a Python IR class's name, and no word of which rule or what it
-/// wrote. A string reached it until S1e2.2.18 lowered one (W18), a range
-/// until S1e2.2.20 refused one in a rule at load (W20, the next test), and a
-/// keyword pair inside a nested conclusion and a relation written as a
-/// variable no parameter binds, `(?x a b)` and `(tag a (?x b))`, until
-/// S1e2.2.24 refused both at load (W24, the test after); these four shapes
-/// still do, each a program the loader accepts and the rule's first firing
-/// stops, exit 1 as before. The line names the rule and the slot as the
-/// program writes it.
+/// Until S1e2.2.18 the line was `TypeError: expected NestedPattern at :assert
+/// top-level, got Atom` or `TypeError: an unrecognised `:assert` slot has no
+/// value to store` under `ein saturate`: a Python class, a Python IR class's
+/// name, and no word of which rule or what it wrote. From then until the swap
+/// the four shapes below loaded, and the rule's first firing stopped the run
+/// with one line in Ein's spelling naming the rule and the slot. Since the
+/// swap each is a parse error at the place, every command exit 1, with the
+/// file, line and column: a keyword pair in a conclusion (S1f.5.11), a bare
+/// `_` (S1f.5.1), a name or a variable as a whole conclusion (G-14, the paper
+/// grammar), and a string as a value (S1f.5.2), which S1e2.2.18 had made the
+/// symbol it names.
 #[test]
 fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
-    const ARG: &str = "and no fact can hold it — an argument is a name, a string, an int, a \
-                       variable its :match binds, or a fact (relation argument …)";
-    const TOP: &str = "which is not a fact — a conclusion is a fact (relation argument …), or \
-                       an (and …) of facts";
     let scratch = ein_corpus::Scratch::new("ein-not-a-fact");
-    let cases: [(&str, String); 4] = [
-        (
-            r#"(tag ?x b :source "x")"#,
-            format!(r#"its :assert writes :source "x" as an argument of tag, {ARG}"#),
-        ),
-        (
-            "(tag ?x _)",
-            format!("its :assert writes _ as an argument of tag, {ARG}"),
-        ),
-        ("foo", format!("its :assert concludes foo, {TOP}")),
-        (
-            "(and (tag ?x b) ?x)",
-            format!("its :assert concludes ?x, {TOP}"),
-        ),
+    let cases = [
+        (r#"(tag ?x b :source "x")"#, 48, "unexpected `:source`"),
+        ("(tag ?x _)", 46, "unexpected `_`: _ (reserved)"),
+        ("foo", 38, "unexpected `foo`: a name"),
+        ("(and (tag ?x b) ?x)", 54, "unexpected `?x`: a variable"),
+        (r#"(tag ?x "lbl")"#, 46, r#"unexpected `"lbl"`: a string"#),
     ];
-    for (i, (assert, line)) in cases.iter().enumerate() {
+    for (i, (assert, col, what)) in cases.iter().enumerate() {
         let file = scratch.path().join(format!("{i}.ein"));
         std::fs::write(
             &file,
@@ -843,63 +831,43 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
         )
         .expect("the program is written");
         let file = file.to_string_lossy();
-        let want = format!("rule 's': {line}");
+        let want = format!("{file}:3:{col}: {what}");
         for cmd in ["saturate", "solve"] {
             let r = ein(&[cmd, &file]);
             assert_eq!(r.code, 1, "ein {cmd} on :assert {assert}:\n{}", r.err);
-            assert_eq!(
-                r.err.lines().rfind(|l| !l.is_empty()),
-                Some(want.as_str()),
-                "ein {cmd} on :assert {assert}"
+            assert!(
+                r.err.lines().any(|l| l == want),
+                "ein {cmd} on :assert {assert}: no line {want:?}:\n{}",
+                r.err
             );
             for python in ["TypeError", "NestedPattern", "SForm", "unrecognised"] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
             }
         }
     }
-    // A string reaches it no more: it is the symbol it names.
-    let file = scratch.path().join("string.ein");
-    std::fs::write(
-        &file,
-        "(relation holds Node) (relation tag Node Node)\n(holds a)\n\
-         (rule s () :match (holds ?x) :assert (tag ?x \"lbl\"))\n",
-    )
-    .expect("the program is written");
-    let r = ein(&["saturate", "--dump", &file.to_string_lossy()]);
-    assert_eq!(r.code, 0, "{}", r.err);
-    assert!(r.out.contains("  (tag a lbl :rule s)\n"), "{}", r.out);
 }
 
-/// **A wildcard written as a relation is refused at load** — M1e2 S1e2.2.20
-/// (W20), on the user's ruling of 2026-11-05 (Q-M1e2.14 (c)).
+/// **A wildcard written as a relation is refused** — M1e2 S1e2.2.20 (W20), on
+/// the user's ruling of 2026-11-05 (Q-M1e2.14 (c)), and at the parse since M1f
+/// S1f.5.5's swap (S1f.5.1: a bare `_` is refused in every position).
 ///
-/// One line in Ein's spelling, naming the rule and the slot, from every
-/// command that loads the program: `ein saturate`, `ein solve` and `ein
-/// oracle` exit 1 and `ein test` 2, a load error's codes. Until then a
+/// One report, from every command that reads the program: `ein saturate`,
+/// `ein solve` and `ein oracle` exit 1 and `ein test` 2. Until S1e2.2.20 a
 /// wildcard head stopped compilation with `unbound relation head
-/// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling. A range
-/// in a rule was refused here too, from S1e2.2.20 (Q-M1e2.13 (a)) until M1f
-/// S1f.5.3 retired the token; the test below holds what it is since.
+/// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling; from
+/// then until the swap the loader refused it with one line naming the rule
+/// and the slot. A range in a rule was refused here too, from S1e2.2.20
+/// (Q-M1e2.13 (a)) until M1f S1f.5.3 retired the token; the test below holds
+/// what it is since.
 #[test]
 fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
-    const HEAD: &str = "with the wildcard _ as its relation — a relation is named by a name or \
-                        by a parameter its activator binds, and _ stands for an argument";
     let scratch = ein_corpus::Scratch::new("ein-refused-at-load");
     let cases = [
-        (
-            ":match (_ 2) :assert (hit r)",
-            format!("rule 'r': its :match writes (_ 2) {HEAD}"),
-        ),
-        (
-            ":match (box (_ 2)) :assert (hit r)",
-            format!("rule 'r': its :match writes (_ 2) {HEAD}"),
-        ),
-        (
-            ":match (absent (_ b)) :assert (hit r)",
-            format!("rule 'r': its :match writes (_ b) {HEAD}"),
-        ),
+        (":match (_ 2) :assert (hit r)", 20),
+        (":match (box (_ 2)) :assert (hit r)", 25),
+        (":match (absent (_ b)) :assert (hit r)", 28),
     ];
-    for (i, (clauses, line)) in cases.iter().enumerate() {
+    for (i, (clauses, col)) in cases.iter().enumerate() {
         let file = scratch.path().join(format!("{i}.ein"));
         std::fs::write(
             &file,
@@ -910,14 +878,14 @@ fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
         )
         .expect("the program is written");
         let file = file.to_string_lossy();
-        let want = format!("kb load error: {line}");
+        let want = format!("{file}:3:{col}: unexpected `_`: _ (reserved)");
         for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
             let r = ein(&[cmd, &file]);
             assert_eq!(r.code, code, "ein {cmd} on {clauses}:\n{}", r.err);
-            assert_eq!(
-                r.err.lines().rfind(|l| !l.is_empty()),
-                Some(want.as_str()),
-                "ein {cmd} on {clauses}"
+            assert!(
+                r.err.lines().any(|l| l == want),
+                "ein {cmd} on {clauses}: no line {want:?}:\n{}",
+                r.err
             );
             for python in ["CompileError", "Wildcard()", "SForm"] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
@@ -926,84 +894,143 @@ fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
     }
 }
 
-/// **No range is read anywhere: `1..5` stops the parse at its `.`** — M1f
-/// S1f.5.3, on the user's ruling of 2026-11-06 (Q-M1e2.24): Ein has no
-/// numbers and no ranges. The `RANGE` token is gone, so `1` is an `INT` and
-/// `..5` no token, in a fact, a keyword's value, a declaration, a rule's
-/// `:match` and `:assert`, and a `(config …)`: every command that reads the
-/// program refuses it with the parser's line at the `.`, exit 1 (`ein test`
-/// 2). Until then a range was a token: in a fact it stored the name `1..5`,
-/// as a keyword's value it was dropped, and in a rule the loader refused it
-/// (M1e2 S1e2.2.20). From M1f S1f.5.4, `1..5` is one name.
+/// **A range is the name it spells** — M1f S1f.5.5's swap, on S1f.5.4's
+/// ruling (the name rule) and S1f.5.3's (Q-M1e2.24: Ein has no numbers and no
+/// ranges), with S1f.5.11's (closed keywords) in the same commit.
+///
+/// `1..5`, `1..3`, `1..*` and `2..*` are each one name, in a fact, a
+/// declaration's signature, a rule's `:match` and `:assert`: the program
+/// loads, and each reads, matches and prints as written. `:card 1..*` is
+/// refused at the parse, at `:card`, a keyword no form takes; and a
+/// `(config …)` flag takes `true` or `false`, so `1..5` there is a name in a
+/// place that takes none, refused at the parse with its repairs. Until M1f
+/// S1f.5.3 a range was a token (in a fact it stored the name `1..5`, as a
+/// keyword's value it was dropped, and in a rule the loader refused it, M1e2
+/// S1e2.2.20); from S1f.5.3 to the swap `1` was an `INT` and `..5` no token,
+/// so every command refused each of these programs at the `.`, which this
+/// test held as `a_range_is_no_token`.
 #[test]
-fn a_range_is_no_token() {
-    let scratch = ein_corpus::Scratch::new("ein-no-range");
+fn a_range_is_the_name_it_spells() {
+    let scratch = ein_corpus::Scratch::new("ein-range-is-a-name");
     let pre = "(relation n Node) (relation hit Node) (relation r Node Node)\n(n a)\n";
-    let cases = [
-        ("(r 1..5 a)", 5),
-        ("(r a b :card 1..*)", 15),
-        ("(relation q Node Node :card 1..*)", 30),
-        ("(rule x () :match (n 1..3) :assert (hit a))", 23),
-        ("(rule x () :match (n ?v) :assert (r ?v 2..*))", 41),
-        ("(config :lattice-sanity-check 1..5)", 32),
+    let loads = [
+        ("(r 1..5 a)", "  (r 1..5 a)\n"),
+        ("(relation q 1..* Node)", "(relation q 1..* Node)\n"),
+        (
+            "(n 1..3)\n(rule x () :match (n 1..3) :assert (hit a))",
+            "  (hit a :rule x)\n",
+        ),
+        (
+            "(rule x () :match (n ?v) :assert (r ?v 2..*))",
+            "  (r a 2..* :rule x)\n",
+        ),
     ];
-    for (i, (form, col)) in cases.iter().enumerate() {
-        let file = scratch.path().join(format!("{i}.ein"));
+    for (i, (form, line)) in loads.iter().enumerate() {
+        let file = scratch.path().join(format!("loads{i}.ein"));
         std::fs::write(&file, format!("{pre}{form}\n")).expect("the program is written");
         let file = file.to_string_lossy();
-        let want = format!("{file}:3:{col}: unexpected input");
+        let r = ein(&["saturate", "--dump", &file]);
+        assert_eq!(r.code, 0, "ein saturate --dump on {form}:\n{}", r.err);
+        assert!(r.out.contains(line), "{form}: no line {line:?}:\n{}", r.out);
+        for (cmd, code) in [("solve", 0), ("oracle", 0)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} on {form}:\n{}", r.err);
+        }
+    }
+    let refused = [
+        (
+            "(r a b :card 1..*)",
+            8,
+            "unexpected `:card`: a keyword this form does not take",
+        ),
+        (
+            "(relation q Node Node :card 1..*)",
+            23,
+            "unexpected `:card`: a keyword this form does not take",
+        ),
+        (
+            "(config :lattice-sanity-check 1..5)",
+            31,
+            "unexpected `1..5`: a name",
+        ),
+    ];
+    for (i, (form, col, what)) in refused.iter().enumerate() {
+        let file = scratch.path().join(format!("refused{i}.ein"));
+        std::fs::write(&file, format!("{pre}{form}\n")).expect("the program is written");
+        let file = file.to_string_lossy();
+        let want = format!("{file}:3:{col}: {what}");
         for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
             let r = ein(&[cmd, &file]);
             assert_eq!(r.code, code, "ein {cmd} on {form}:\n{}", r.err);
-            assert_eq!(
-                r.err.lines().find(|l| !l.is_empty()),
-                Some(want.as_str()),
-                "ein {cmd} on {form}"
+            assert!(
+                r.err.lines().any(|l| l == want),
+                "ein {cmd} on {form}: no line {want:?}:\n{}",
+                r.err
             );
         }
     }
 }
 
-/// **A rule shape that reads nothing is refused at load** — M1e2 S1e2.2.24
-/// (W24), on the user's rulings of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18).
+/// **A rule shape that reads nothing is refused** — M1e2 S1e2.2.24 (W24), on
+/// the user's rulings of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18), and since M1f
+/// S1f.5.5's swap at the parse wherever the grammar states the place.
 ///
 /// Each of W24's seven witnesses, from every command that loads it: `ein
-/// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2, with the
-/// loader's line in Ein's spelling. Until then each loaded and read nothing,
-/// in silence: a guard on `_`, a form, a keyword pair or a variable no
-/// premise before it binds compared as a raw node or a null; a premise that is
-/// not a form was dropped; a pattern inside a pattern whose relation no
-/// parameter binds, or whose activator bound it to a nested fact, matched
-/// nothing. The three shapes an `:assert` writes, which stopped the firing
-/// with the line the test above holds, are refused at load too, and a
-/// top-level `(?r b)` whose `CompileError` printed the Python IR's spelling.
-/// A parameter a rule binds to a nested fact through a variable is the
+/// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2. Until
+/// S1e2.2.24 each loaded and read nothing, in silence: a guard on `_`, a form,
+/// a keyword pair or a variable no premise before it binds compared as a raw
+/// node or a null; a premise that is not a form was dropped; a pattern inside
+/// a pattern whose relation no parameter binds, or whose activator bound it to
+/// a nested fact, matched nothing. From then the loader refused each with a
+/// line in Ein's spelling. Since the swap three are the grammar's, each a
+/// parse error at the place with the file, line and column (`_` as a guard's
+/// argument and as a premise, S1f.5.1; `foo` as a premise, the paper
+/// grammar's; a keyword pair as a guard's argument, S1f.5.11), and the other
+/// four, which a context-free grammar does not see, keep the loader's line. A
+/// parameter a rule binds to a nested fact through a variable is the
 /// compiler's (`ein-infer/tests/compile_semantics.rs`).
 #[test]
 fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
     const GUARD: &str = "a guard compares two values, each a variable a premise before it \
                          binds, a name, a string or an integer";
-    const WILD: &str = "and _ names no value — a guard compares two values, and _ stands for \
-                        an argument of a pattern";
-    const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
-                           (neq a b), an (absent …), or an (and …) or (or …) of premises";
-    let witnesses: [(&str, String); 7] = [
+    let at_the_parse: [(&str, &[&str]); 3] = [
         (
             "wild-in-guard",
-            format!(
-                "rule 'e': its :match writes (eq ?x _), {WILD}; \
-                 rule 'n': its :match writes (neq ?x _), {WILD}; \
-                 rule 'b': its :match writes (eq _ _), {WILD}"
-            ),
+            &[
+                "35:38: unexpected `_`: _ (reserved)",
+                "36:39: unexpected `_`: _ (reserved)",
+                "37:35: unexpected `_`: _ (reserved)",
+            ],
         ),
         (
             "bare-premise",
-            format!(
-                "rule 'a': its :match is _, and _ is no premise — {PREMISE}; \
-                 rule 'b': its :match writes _ as a premise of and, and _ is no premise — {PREMISE}; \
-                 rule 'c': its :match is foo, and foo is no premise — {PREMISE}"
-            ),
+            &[
+                "37:19: unexpected `_`: _ (reserved)",
+                "38:33: unexpected `_`: _ (reserved)",
+                "39:19: unexpected `foo`: a name",
+            ],
         ),
+        (
+            "kwpair-in-guard",
+            &["33:38: unexpected `:k`: a keyword this form does not take"],
+        ),
+    ];
+    for (name, lines) in &at_the_parse {
+        let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} {file}:\n{}", r.err);
+            for line in *lines {
+                let want = format!("{file}:{line}");
+                assert!(
+                    r.err.lines().any(|l| l == want),
+                    "ein {cmd} {file}: no line {want:?}:\n{}",
+                    r.err
+                );
+            }
+        }
+    }
+    let at_load: [(&str, String); 4] = [
         (
             "nested-unbound-head",
             "rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter \
@@ -1025,19 +1052,13 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             ),
         ),
         (
-            "kwpair-in-guard",
-            format!(
-                "rule 'e': its :match writes (eq ?x :k a), and the keyword pair :k a is no value — {GUARD}"
-            ),
-        ),
-        (
             "nested-fact-activator",
             "rule 'r': its parameter ?R names a relation, and (r (a b)) binds it to the fact \
              (a b) — a relation is named by a symbol, not a fact"
                 .to_string(),
         ),
     ];
-    for (name, line) in &witnesses {
+    for (name, line) in &at_load {
         let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
         let want = format!("kb load error: {line}");
         for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
@@ -1054,15 +1075,25 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         }
     }
     // The `:assert` shapes the test above held at the firing, and the
-    // top-level relation variable, in Ein's spelling at load.
+    // top-level relation variable: a keyword pair inside a nested conclusion
+    // at the parse since the swap (S1f.5.11), the two relation variables no
+    // parameter binds in Ein's spelling at load.
     let scratch = ein_corpus::Scratch::new("ein-reads-nothing");
+    let file = scratch.path().join("kw.ein");
+    std::fs::write(
+        &file,
+        "(relation holds Node) (relation tag Node Node)\n(holds a)\n\
+         (rule s () :match (holds ?x) :assert (tag ?x (box a :k v)))\n",
+    )
+    .expect("the program is written");
+    let file = file.to_string_lossy();
+    let want = format!("{file}:3:53: unexpected `:k`: a keyword this form does not take");
+    for cmd in ["saturate", "solve"] {
+        let r = ein(&[cmd, &file]);
+        assert_eq!(r.code, 1, "ein {cmd} {file}:\n{}", r.err);
+        assert!(r.err.lines().any(|l| l == want), "{}", r.err);
+    }
     for (i, (assert, line)) in [
-        (
-            "(tag ?x (box a :k v))",
-            "its :assert writes :k v as an argument of box, and no fact can hold it — a \
-             keyword pair is no value, so a pattern inside a pattern that holds one matches \
-             nothing",
-        ),
         (
             "(?x a b)",
             "its :assert writes (?x a b) with ?x as its relation, which no parameter binds — \
@@ -1248,16 +1279,19 @@ fn the_json_summary_declares_its_schema_and_its_block_shape() {
     assert_eq!(j["region"]["k_s"], 7);
 }
 
-/// **An integer goal binding stays a JSON *number*** — at any width.
+/// **A goal binding of digits is a JSON *string*** — at any width, and as
+/// written. Restated at M1f S1f.5.5's swap, on S1f.5.4's Q4 (a), decided
+/// 2026-11-08.
 ///
-/// A goal binding is the *stored* argument, so an IR `INT` is an integer and
-/// writing it as `"8"` is a type error a consumer cannot undo. S1a.6.6's
-/// fuzzer found this on a two-line program: stdout was right, so only the
-/// summary showed it. The wide literal is the second half — the IR's
-/// `INT` is unbounded, so the value has to be carried as an exact numeric
-/// literal rather than clamped to an `i64`.
+/// Until the swap a goal binding was the *stored* argument, so an IR `INT` was
+/// an integer and writing it as `"8"` was a type error a consumer could not
+/// undo: S1a.6.6's fuzzer found it on a two-line program, and the wide literal
+/// was carried as an exact numeric literal rather than clamped to an `i64`.
+/// Since the swap a run of digits is a name (S1f.5.4's ruling), and every name
+/// is a JSON string, so that `(p 007)` and `(p 7)`, two names, stay two in the
+/// summary.
 #[test]
-fn an_integer_goal_binding_stays_a_json_number() {
+fn a_goal_binding_of_digits_is_a_json_string() {
     let scratch = Scratch::new("int-binding");
     let path = scratch.at("summary.json");
     ein(&[
@@ -1276,27 +1310,20 @@ fn an_integer_goal_binding_stays_a_json_number() {
     let bound: BTreeMap<String, String> = rows
         .iter()
         .map(|r| {
-            let x = r["x"].as_str().expect("?x is an atom").to_string();
-            assert!(
-                r["y"].is_number() && !r["y"].is_string(),
-                "?y = {} is not a number",
-                r["y"]
-            );
-            (x, r["y"].to_string())
+            let x = r["x"].as_str().expect("?x is a name").to_string();
+            let y = r["y"]
+                .as_str()
+                .unwrap_or_else(|| panic!("?y = {} is not a string", r["y"]));
+            (x, y.to_string())
         })
         .collect();
     assert_eq!(bound["o3"], "8");
     assert_eq!(bound["o4"], "-7");
+    assert_eq!(bound["o5"], "99999999999999999999999");
     assert_eq!(bound.len(), 3, "a binding went missing: {bound:?}");
-
-    // The wide one is checked against the **bytes**, because a `serde_json`
-    // built without `arbitrary_precision` — this workspace's — reads it back
-    // as an `f64` and hands out `1e23`. That is the reader's limit, not the
-    // writer's, and what the claim is about is what was written: the IR's
-    // `INT` is unbounded, so the summary carries the digits.
     assert!(
-        text.contains(r#""y": 99999999999999999999999"#),
-        "the wide literal was clamped or quoted:\n{text}"
+        text.contains(r#""y": "99999999999999999999999""#),
+        "the wide name was not written as written:\n{text}"
     );
 }
 
@@ -2231,8 +2258,10 @@ fn a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build() 
             "`ein {sub}` called a five-byte prefix a container: {:?}",
             r.err
         );
+        // The parse error's first line, since M1f S1f.5.5's swap the token
+        // it found (`unexpected input` until then).
         assert!(
-            r.err.contains("unexpected input"),
+            r.err.contains(&format!("{path}:1:1: unexpected `EINB")),
             "`ein {sub}` should have read it as text and failed to parse it: {:?}",
             r.err
         );

@@ -4,7 +4,24 @@ Files that **parse** and then fail to **load**. Each `<name>.ein` sits beside a
 `<name>.expected` holding the exact `KbLoadError` message it produces.
 
 Sibling `../*.ein` are the *parse*-negative fixtures — they never reach the
-loader. Everything here does.
+loader. Everything here does, but `reserved_open_direct.ein`, which three
+fixtures here import by path (`reserved_open_{aliased,qualified,symbols}`), so
+it stays beside them although the grammar refuses `(macro open …)` at the parse
+since M1f S1f.5.5's swap; the four `.expected` are that parse error.
+
+**Twenty-one moved to `../` at M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09,
+Q-M1f.2 (a)), each refused at the parse since, its `.expected` the parse
+report: `config_bad_value`, `config_retired_flag`, `config_unknown_flag`,
+`empty_absent`, `expect_is_a_pattern`, `expect_unknown_keyword`,
+`hrule_reserved_name`, `import_alias_not_a_name`, `import_symbols_empty`,
+`import_symbols_not_a_list`, `macro_reserved_name`, `open_arity`,
+`open_in_match`, `open_mixed_assert`, `query_lattice_keyword`,
+`region_top_level`, `relation_malformed`, `relation_needs_a_name`,
+`relation_reserved_name`, `rule_reserved_name` and `solve_unknown_keyword`.
+`relation_parameter_int` retired (S1f.5.4's Q2 (a)): `3` is a name since, and
+names the relation `3`. `derivation_cycle` was rewritten, `:using ((r c d))`, a
+list of facts (the paper grammar's default 2), and still reaches the loader's
+cycle line. What the sections below say of a moved fixture is its record.
 
 ## The `:expect` refusals — M1c S1c.1.2
 

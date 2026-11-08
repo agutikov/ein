@@ -1,0 +1,3 @@
+{FILE}:3:23: unexpected `"m"`: a string
+  note: "m" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"m"`

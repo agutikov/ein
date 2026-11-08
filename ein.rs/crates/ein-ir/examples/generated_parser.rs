@@ -1,10 +1,11 @@
-//! The generated parser, from the command line (M1f S1f.5.5, T1f.5.5.3).
+//! The parser, from the command line (M1f S1f.5.5, T1f.5.5.3; since the swap,
+//! T1f.5.5.4, the only parser).
 //!
 //! ```sh
 //! # each file's report: `parses, n forms`, or every error recovery reached
 //! cargo run --release -p ein-ir --example generated_parser -- check FILE…
 //! # N seeded corpus mutants (`ein_corpus::mutants`), each parsed twice: how
-//! # many each parser refuses, the recovery steps of the generated parser's
+//! # many the parser refuses, the recovery steps of its
 //! # refusals, how many recovery cut at its budget, the slowest, and whether
 //! # any report differed between its two parses
 //! cargo run --release -p ein-ir --example generated_parser -- mutants N [SEED [DIR]]
@@ -22,8 +23,8 @@
 use std::time::Instant;
 
 use ein_corpus::mutants::{mutants, sources, without_priority};
+use ein_ir::Ast;
 use ein_ir::grammar::{self, RECOVERY_STEP_BUDGET};
-use ein_ir::{Ast, parse::hand_written};
 
 fn check(files: &[String]) {
     for f in files {
@@ -72,7 +73,7 @@ fn sweep(n: usize, seed: u64, cut_dir: Option<&str>, strip: bool) {
         }
     }
     let set = mutants(&src, n, seed);
-    let (mut hand_refuses, mut refused, mut cut, mut differ) = (0, 0, 0, 0);
+    let (mut refused, mut cut, mut differ) = (0, 0, 0);
     let mut steps: Vec<u64> = Vec::new();
     let mut errors = 0usize;
     let mut slowest: Vec<(f64, u64, usize, String)> = Vec::new();
@@ -86,10 +87,6 @@ fn sweep(n: usize, seed: u64, cut_dir: Option<&str>, strip: bool) {
     };
     let mut most_rss = (0u64, String::new());
     for (which, text) in &set {
-        let mut a = Ast::new();
-        if hand_written(&mut a, text, None).is_err() {
-            hand_refuses += 1;
-        }
         let before = peak_rss_kib(true);
         let t0 = Instant::now();
         let mut b = Ast::new();
@@ -133,8 +130,7 @@ fn sweep(n: usize, seed: u64, cut_dir: Option<&str>, strip: bool) {
         src.len(),
         if strip { ", `:priority` taken out" } else { "" }
     );
-    println!("  the hand-written parser refuses {hand_refuses}");
-    println!("  the generated parser refuses {refused}, reporting {errors} errors");
+    println!("  the parser refuses {refused}, reporting {errors} errors");
     println!(
         "  recovery steps per refusal: median {}, 90 % {}, 99 % {}, 99.9 % {}, max {}",
         percentile(&steps, 0.5),
@@ -149,7 +145,7 @@ fn sweep(n: usize, seed: u64, cut_dir: Option<&str>, strip: bool) {
     }
     println!("  cut at the budget: {cut}");
     println!("  reports that differed between two parses: {differ}");
-    println!("  generated parser, first parse of each: {total:.2} s in all");
+    println!("  the parser, first parse of each: {total:.2} s in all");
     println!(
         "  the most one parse grew the peak resident set: {} KiB, a mutant of {}",
         most_rss.0, most_rss.1

@@ -703,12 +703,16 @@ fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
     assert_eq!((min.saturations, min.minimal.len()), (1, 1), "∅ ∈ R");
 }
 
-/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard answers what a fresh
+/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard answered what a fresh
 /// variable does**: on each program below, `_` in a rule's, an hrule's or an
-/// obligation's pattern gives the same candidates, the same root and the same
+/// obligation's pattern gave the same candidates, the same root and the same
 /// R as the program with each `_` written `?wN`, a variable read nowhere else.
 /// Until S1e2.2.20 the compiler lowered `_` as an opaque slot that matched
-/// nothing, and the loader refused the obligation as *ground*.
+/// nothing, and the loader refused the obligation as *ground*. **Since M1f
+/// S1f.5.5's swap a bare `_` is refused at the parse, in every position**
+/// (S1f.5.1's ruling), so each program written with `_` is refused at each
+/// `_`, and the fresh variable is what to write: each program so written
+/// loads and answers.
 #[test]
 fn a_wildcard_answers_what_a_fresh_variable_does() {
     fn loaded_text(text: &str) -> (Kb, Terms, Ast) {
@@ -792,7 +796,19 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
                 }
             })
             .collect();
-        assert_eq!(answer(wild), answer(&fresh), "{wild}");
+        let refused = parse(&mut Ast::new(), wild, Some("<fixture>"))
+            .expect_err("a bare `_` is refused at the parse");
+        assert!(
+            refused
+                .errors
+                .iter()
+                .all(|e| e.what == "unexpected `_`: _ (reserved)"),
+            "{wild}:\n{refused}"
+        );
+        // The fresh variable loads, and the run describes R whole (empty
+        // where the obligation owes and nothing discharges it).
+        let (_, candidates, _, exhausted) = answer(&fresh);
+        assert!(exhausted, "{fresh}: {candidates:?}");
     }
 }
 

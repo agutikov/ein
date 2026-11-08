@@ -25,9 +25,11 @@
 //! guard weaker than the one written. All seven are now a `CompileError` with
 //! a `file:line:col`, and this file is where that is asserted cell by cell:
 //! the seven rows below say `Refused` where they said `Panic`, `Fires` and
-//! `Silent`, and the fourteen that were already right are unmoved. The four
-//! shapes have `.expected` fixtures under
-//! [`examples/broken/compile/`](../../../../examples/broken/compile/README.md).
+//! `Silent`, and the fourteen that were already right are unmoved. **Since M1f
+//! S1f.5.5's swap the grammar pins `eq` and `absent` too**, and the seven are
+//! parse errors, positioned. The four shapes have `.expected` fixtures under
+//! [`examples/broken/`](../../../../examples/broken/), where they moved from
+//! `examples/broken/compile/` at the swap.
 //!
 //! [`CO-H1`]: ../../../../docs/history/m1e_review_processing/README.md
 //!
@@ -41,7 +43,8 @@ use std::process::Command;
 /// What one `(primitive …)` in a `:match` did to the program around it.
 #[derive(Debug, PartialEq, Eq)]
 enum Cell {
-    /// A positioned `file:line:col: unexpected input` — the grammar refused it.
+    /// A positioned `file:line:col: unexpected …` — the grammar refused it
+    /// (`unexpected input` until M1f S1f.5.5's swap).
     ParseError,
     /// A load or compile diagnostic, exit 1 — refused later, but refused.
     Refused,
@@ -110,7 +113,11 @@ fn cell(scratch: &Scratch, n: usize, guard: &str) -> Cell {
         return Cell::Panic;
     }
     if !out.status.success() {
-        return if both.contains("unexpected input") {
+        let at = format!("{}:", path.display());
+        return if both
+            .lines()
+            .any(|l| l.starts_with(&at) && l.contains(": unexpected "))
+        {
             Cell::ParseError
         } else {
             Cell::Refused
@@ -160,22 +167,26 @@ fn the_shape_pinned_primitives_refuse_a_wrong_arity() {
     }
 }
 
-/// **The three the grammar does not pin are checked where they are read, and
-/// since M1e S1e.2.1 they are checked.**
+/// **The three the grammar did not pin are checked, and since M1f S1f.5.5's
+/// swap the grammar pins `eq` and `absent` too.**
 ///
 /// Read the table as the sweep produced it — *want* is what a reader of the
-/// program expects, *2026-08-29* is what it did when the sweep ran, and *now*
-/// is what this test asserts:
+/// program expects, *2026-08-29* is what it did when the sweep ran, *S1e.2.1*
+/// what M1e's fix made it, and *now* is what this test asserts:
 ///
-/// | guard | a reader expects | 2026-08-29 | now |
-/// |---|---|---|---|
-/// | `(eq)` · `(eq ?x)` | a diagnostic | **panic**, exit 101 — `CO-H1` | refused |
-/// | `(eq ?x A)`, `A` bound to `?x` | fires | fires | fires |
-/// | `(eq ?x A B)` with `A ≠ B` | a diagnostic, or silence | **fires** — everything past the second argument dropped | refused |
-/// | `(absent)` | a diagnostic — `(absent ?x)` gets one | **silent**: the rule can never fire, and nothing says so | refused |
-/// | `(absent (q ?x))`, `q` empty | fires | fires | fires |
-/// | `(absent (q ?x) (p ?x))` with `p` non-empty | a diagnostic, or silence | **fires** — everything past the first argument dropped | refused |
-/// | `(false …)` in a `:match` | silence | silence, at every arity | silence |
+/// | guard | a reader expects | 2026-08-29 | S1e.2.1 | now |
+/// |---|---|---|---|---|
+/// | `(eq)` · `(eq ?x)` | a diagnostic | **panic**, exit 101 — `CO-H1` | refused | a parse error |
+/// | `(eq ?x A)`, `A` bound to `?x` | fires | fires | fires | fires |
+/// | `(eq ?x A B)` with `A ≠ B` | a diagnostic, or silence | **fires** — everything past the second argument dropped | refused | a parse error |
+/// | `(absent)` | a diagnostic — `(absent ?x)` gets one | **silent**: the rule can never fire, and nothing says so | refused | a parse error |
+/// | `(absent (q ?x))`, `q` empty | fires | fires | fires | fires |
+/// | `(absent (q ?x) (p ?x))` with `p` non-empty | a diagnostic, or silence | **fires** — everything past the first argument dropped | refused | a parse error |
+/// | `(false …)` in a `:match` | silence | silence, at every arity | silence | silence |
+///
+/// The paper grammar states each primitive's shape (`eq` takes two terms,
+/// `absent` one premise), so the compiler's refusals S1e.2.1 added are reached
+/// by no program since the swap; T1f.5.5.5 retires them.
 ///
 /// The two `(eq)` rows were the review's finding. The two dropped-argument
 /// rows were this sweep's, and they were the worse pair: a panic is loud, and
@@ -193,26 +204,27 @@ fn the_unpinned_primitives_are_refused_at_a_wrong_arity() {
     let s = Scratch::new("unpinned");
     let cases: [(&str, Cell); 11] = [
         // CO-H1: below its arity, a runtime `assert!` was the only check and
-        // it took the process down. A `CompileError` now, positioned.
-        ("(eq)", Cell::Refused),
-        ("(eq ?x)", Cell::Refused),
+        // it took the process down. A `CompileError` from S1e.2.1, and a
+        // parse error since S1f.5.5's swap.
+        ("(eq)", Cell::ParseError),
+        ("(eq ?x)", Cell::ParseError),
         // The control: at its own arity the guard works, in both directions.
         ("(eq ?x A)", Cell::Fires),
         ("(eq ?x B)", Cell::Silent),
         // …and above it, the tail was dropped. `A ≠ B`, and the rule fired.
-        ("(eq ?x A B)", Cell::Refused),
-        ("(eq ?x A B C)", Cell::Refused),
+        ("(eq ?x A B)", Cell::ParseError),
+        ("(eq ?x A B C)", Cell::ParseError),
         // `(absent ?x)` is a CompileError naming this exact hazard — "the
         // guard would fail against every KB". With no argument at all there
         // was no diagnostic and the rule was retired in silence.
-        ("(absent)", Cell::Refused),
+        ("(absent)", Cell::ParseError),
         // The control, both directions.
         ("(absent (q ?x))", Cell::Fires),
         ("(absent (p ?x))", Cell::Silent),
         // …and past the first argument, dropped: `(p A)` is present, so a
         // guard reading both of these must not pass. It did.
-        ("(absent (q ?x) (p ?x))", Cell::Refused),
-        ("(absent (q ?x) (p ?x) (p ?x))", Cell::Refused),
+        ("(absent (q ?x) (p ?x))", Cell::ParseError),
+        ("(absent (q ?x) (p ?x) (p ?x))", Cell::ParseError),
     ];
     for (i, (guard, want)) in cases.iter().enumerate() {
         assert_eq!(
@@ -229,20 +241,22 @@ fn the_unpinned_primitives_are_refused_at_a_wrong_arity() {
 /// the repo enforces on refusals, and a panic is a refusal that carries a
 /// stack trace instead.
 ///
-/// The four shapes have `.expected` fixtures under `examples/broken/compile/`,
-/// which is where the message is pinned byte for byte. What is pinned *here*
-/// is the part a fixture cannot see: that the diagnostic reaches **stderr**
-/// of a real process with a non-zero exit, and that it carries a `line=` and a
-/// `col=` — a premise is a `generic_list`, the one production the parser hands
-/// a `Loc`, so unlike the S1.22.0 four these can say where.
+/// The four shapes have `.expected` fixtures under `examples/broken/` (under
+/// `examples/broken/compile/` until M1f S1f.5.5's swap), which is where the
+/// message is pinned byte for byte. What is pinned *here* is the part a
+/// fixture cannot see: that the diagnostic reaches **stderr** of a real
+/// process with a non-zero exit, and that it says where. Until the swap it was
+/// the compiler's `CompileError` with a `line=` and a `col=`; since, each is a
+/// parse error, `file:line:col: unexpected …`, at the token where the shape
+/// stops being the primitive's.
 #[test]
 fn a_refused_arity_names_its_position() {
     let s = Scratch::new("positioned");
-    for (i, guard) in [
-        "(eq ?x)",
-        "(eq ?x A B)",
-        "(absent)",
-        "(absent (q ?x) (p ?x))",
+    for (i, (guard, col, found)) in [
+        ("(eq ?x)", 28, "`)`"),
+        ("(eq ?x A B)", 31, "`B`: a name"),
+        ("(absent)", 29, "`)`"),
+        ("(absent (q ?x) (p ?x))", 37, "`(`"),
     ]
     .iter()
     .enumerate()
@@ -258,19 +272,12 @@ fn a_refused_arity_names_its_position() {
             .current_dir(repo_root())
             .output()
             .expect("the `ein` binary runs");
-        let text = format!(
-            "{}{}",
-            String::from_utf8_lossy(&out.stderr),
-            String::from_utf8_lossy(&out.stdout)
-        );
-        assert_eq!(out.status.code(), Some(1), "{guard}: {text}");
+        let stderr = String::from_utf8_lossy(&out.stderr);
+        assert_eq!(out.status.code(), Some(1), "{guard}: {stderr}");
+        let want = format!("{}:4:{col}: unexpected {found}", path.display());
         assert!(
-            text.contains("CompileError"),
-            "{guard}: not a compile diagnostic: {text}"
-        );
-        assert!(
-            text.contains("line=4, col=") && text.contains(&path.display().to_string()),
-            "{guard}: the diagnostic does not say where: {text}"
+            stderr.lines().any(|l| l == want),
+            "{guard}: the diagnostic does not say where ({want}): {stderr}"
         );
     }
 }

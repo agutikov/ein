@@ -175,10 +175,10 @@ fn require_why() -> Arg {
         .long("require-why")
         .action(ArgAction::SetTrue)
         .help(
-            "refuse to load a program in which a relation, rule or hrule \
-             carries no :why \"…\", one line per form (a macro too, in a build \
-             whose parser reads a macro's :why). It decides whether a program \
-             loads, never what a loaded one answers (M1f T1f.5.14.6)",
+            "refuse to load a program in which a relation, rule, hrule or \
+             macro carries no :why \"…\", one line per form. It decides \
+             whether a program loads, never what a loaded one answers (M1f \
+             T1f.5.14.6)",
         )
 }
 

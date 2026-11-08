@@ -383,6 +383,18 @@ mod tests {
         parse(&ast, node)
     }
 
+    /// The parser's first error on `src`, `line:col: what`, and its first
+    /// repair: since M1f S1f.5.5's swap (T1f.5.5.4) a claim's shape is the
+    /// grammar's, so the shapes this module refused at load are parse errors.
+    fn refused(src: &str) -> (String, String) {
+        let e = parse_ein(&mut Ast::new(), src, None).expect_err(src);
+        let first = &e.errors[0];
+        (
+            format!("{}:{}: {}", first.line, first.col, first.what),
+            first.repairs.first().cloned().unwrap_or_default(),
+        )
+    }
+
     #[test]
     fn the_three_shapes() {
         let bottom = parsed("(query :goal (p ?x) :expect (false))").expect("(false)");
@@ -420,30 +432,81 @@ mod tests {
         );
     }
 
+    /// A claim's facts are ground. Until M1f S1f.5.5's swap (T1f.5.5.4) a
+    /// variable or a wildcard in one was refused here, *not a pattern*; since,
+    /// a claim's fact holds names and facts and the parse refuses both, at the
+    /// token, the `_` with S1f.5.1's note.
     #[test]
     fn a_variable_in_an_expectation_is_rejected() {
-        let e = parsed("(query :goal (p ?x) :expect (model (p ?x)))").expect_err("a pattern");
-        assert!(e.contains("?x"), "{e}");
-        assert!(e.contains("not a pattern"), "{e}");
-        let e = parsed("(query :goal (p ?x) :expect (model (p _)))").expect_err("a wildcard");
-        assert!(e.contains("wildcard"), "{e}");
+        assert_eq!(
+            refused("(query :goal (p ?x) :expect (model (p ?x)))").0,
+            "1:39: unexpected `?x`: a variable"
+        );
+        assert_eq!(
+            refused("(query :goal (p ?x) :expect (model (p _)))").0,
+            "1:39: unexpected `_`: _ (reserved)"
+        );
     }
 
+    /// Each malformed shape names what was expected. Until M1f S1f.5.5's swap
+    /// (T1f.5.5.4) each reached [`parse`], which refused it with a line that
+    /// starts `:expect`; since, a claim's shape is the grammar's, and each is a
+    /// parse error at its first wrong token, whose first repair is the shape it
+    /// wanted.
     #[test]
     fn the_shape_errors_name_what_was_expected() {
-        for src in [
-            "(query :goal (p ?x) :expect all)",
-            "(query :goal (p ?x) :expect none)",
-            "(query :goal (p ?x) :expect false)",
-            "(query :goal (p ?x) :expect (false A))",
-            "(query :goal (p ?x) :expect (and (p A) (p B)))",
-            "(query :goal (p ?x) :expect (models (p A)))",
-            "(query :goal (p ?x) :expect (or (p A)))",
-            "(query :goal (p ?x) :expect (model 3))",
-            "(query :goal (p ?x) :expect (model (p (?q A))))",
+        for (src, first, repair) in [
+            (
+                "(query :goal (p ?x) :expect all)",
+                "1:29: unexpected `all`: a name",
+                "Insert `(`, Insert `model`, Insert `)`, Delete `all`",
+            ),
+            (
+                "(query :goal (p ?x) :expect none)",
+                "1:29: unexpected `none`: a name",
+                "Insert `(`, Insert `model`, Insert `)`, Delete `none`",
+            ),
+            (
+                "(query :goal (p ?x) :expect false)",
+                "1:29: unexpected `false`",
+                "Insert `(`, Shift `false`, Insert `)`",
+            ),
+            (
+                "(query :goal (p ?x) :expect (false A))",
+                "1:36: unexpected `A`: a name",
+                "Delete `A`",
+            ),
+            (
+                "(query :goal (p ?x) :expect (and (p A) (p B)))",
+                "1:30: unexpected `and`",
+                "Insert `model`, Delete `and`",
+            ),
+            (
+                "(query :goal (p ?x) :expect (models (p A)))",
+                "1:30: unexpected `models`: a name",
+                "Insert `model`, Delete `models`",
+            ),
+            (
+                "(query :goal (p ?x) :expect (or (p A)))",
+                "1:34: unexpected `p`: a name",
+                "Insert `model`, Insert `(`",
+            ),
+            (
+                "(query :goal (p ?x) :expect (model 3))",
+                "1:36: unexpected `3`: a name",
+                "Delete `3`",
+            ),
+            (
+                "(query :goal (p ?x) :expect (model (p (?q A))))",
+                "1:40: unexpected `?q`: a variable",
+                "Delete `?q`",
+            ),
         ] {
-            let e = parsed(src).expect_err(src);
-            assert!(e.starts_with(":expect"), "{src}: {e}");
+            assert_eq!(
+                refused(src),
+                (first.to_string(), repair.to_string()),
+                "{src}"
+            );
         }
     }
 
@@ -465,17 +528,29 @@ mod tests {
     }
 
     /// ⊥ is `(false)`, the kernel's own word — and the two ways a reader is
-    /// likely to reach for it instead each get a message that says so.
+    /// likely to reach for it instead each got a message that said so, until
+    /// M1f S1f.5.5's swap (T1f.5.5.4). Since, both are parse errors, and the
+    /// first repair of the bare `false` is the parenthesised one.
     #[test]
     fn bottom_is_spelled_with_the_kernels_own_word() {
-        let e = parsed("(query :goal (p ?x) :expect false)").expect_err("unparenthesised");
-        assert!(e.contains("`(false)`"), "{e}");
-        assert!(
-            e.contains(":assert"),
-            "and says where that spelling comes from: {e}"
+        assert_eq!(
+            refused("(query :goal (p ?x) :expect false)"),
+            (
+                "1:29: unexpected `false`".to_string(),
+                "Insert `(`, Shift `false`, Insert `)`".to_string()
+            )
         );
-        let e = parsed("(query :goal (p ?x) :expect (and (p A)))").expect_err("a connective");
-        assert!(e.contains("complete* extent"), "{e}");
+        assert_eq!(
+            refused("(query :goal (p ?x) :expect (and (p A)))"),
+            (
+                "1:30: unexpected `and`".to_string(),
+                "Insert `model`, Delete `and`".to_string()
+            )
+        );
+        assert!(matches!(
+            parsed("(query :goal (p ?x) :expect (false))").expect("(false)"),
+            Expectation::Contradiction
+        ));
     }
 
     #[test]

@@ -1,3 +1,5 @@
-{FILE}:3:14: unexpected input
-(query :goal :solve)
-             ^
+{FILE}:3:14: unexpected `:solve`: a keyword this form does not take
+  repair: Insert `(`, Insert a variable, Insert `)`, Delete `:solve`
+  repair: Insert `(`, Insert a name, Insert `)`, Delete `:solve`
+  repair: Insert `(`, Insert a name, Delete `:solve`, Shift `)`, Insert `)`
+  and 1 more repair

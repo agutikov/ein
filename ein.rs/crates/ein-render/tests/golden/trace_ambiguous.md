@@ -11,11 +11,11 @@
   components        1
   sub-cubes         2, each of dimension 2
   merged            2 states reached by more than one commitment, with 4 minimal
-  N                 25 minimal dead sets
+  N                 51 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
-  universe          25 candidates, 21 dead alone
+  universe          51 candidates, 47 dead alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              30 saturations · 348 facts beyond root · 3 layers
+  work              56 saturations · 664 facts beyond root · 3 layers
 ```
 
 ## Root — 7 steps
@@ -302,7 +302,151 @@ Derives `not(color-of(H2, Blue))`.
 
 <dot>
 
-## N — 25 minimal dead sets
+## N — 51 minimal dead sets
+
+<details>
+<summary>{(color-of 0 1)} — dead</summary>
+
+Core: `(color-of 0 1)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 0 Blue)} — dead</summary>
+
+Core: `(color-of 0 Blue)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 0 Green)} — dead</summary>
+
+Core: `(color-of 0 Green)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 0 H1)} — dead</summary>
+
+Core: `(color-of 0 H1)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 0 H2)} — dead</summary>
+
+Core: `(color-of 0 H2)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 0 H3)} — dead</summary>
+
+Core: `(color-of 0 H3)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 0 Red)} — dead</summary>
+
+Core: `(color-of 0 Red)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 0)} — dead</summary>
+
+Core: `(color-of 1 0)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 Blue)} — dead</summary>
+
+Core: `(color-of 1 Blue)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 Green)} — dead</summary>
+
+Core: `(color-of 1 Green)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 H1)} — dead</summary>
+
+Core: `(color-of 1 H1)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 H2)} — dead</summary>
+
+Core: `(color-of 1 H2)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 H3)} — dead</summary>
+
+Core: `(color-of 1 H3)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of 1 Red)} — dead</summary>
+
+Core: `(color-of 1 Red)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of Blue 0)} — dead</summary>
+
+Core: `(color-of Blue 0)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of Blue 1)} — dead</summary>
+
+Core: `(color-of Blue 1)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
 
 <details>
 <summary>{(color-of Blue Green)} — dead</summary>
@@ -344,6 +488,24 @@ Refuted by `typecheck-arg-0`.
 <summary>{(color-of Blue Red)} — dead</summary>
 
 Core: `(color-of Blue Red)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of Green 0)} — dead</summary>
+
+Core: `(color-of Green 0)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of Green 1)} — dead</summary>
+
+Core: `(color-of Green 1)`
 
 Refuted by `typecheck-arg-0`.
 
@@ -395,6 +557,24 @@ Refuted by `typecheck-arg-0`.
 </details>
 
 <details>
+<summary>{(color-of H1 0)} — dead</summary>
+
+Core: `(color-of H1 0)`
+
+Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
+<summary>{(color-of H1 1)} — dead</summary>
+
+Core: `(color-of H1 1)`
+
+Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
 <summary>{(color-of H1 H2)} — dead</summary>
 
 Core: `(color-of H1 H2)`
@@ -407,6 +587,24 @@ Refuted by `typecheck-arg-1`.
 <summary>{(color-of H1 H3)} — dead</summary>
 
 Core: `(color-of H1 H3)`
+
+Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
+<summary>{(color-of H2 0)} — dead</summary>
+
+Core: `(color-of H2 0)`
+
+Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
+<summary>{(color-of H2 1)} — dead</summary>
+
+Core: `(color-of H2 1)`
 
 Refuted by `typecheck-arg-1`.
 
@@ -431,6 +629,24 @@ Refuted by `typecheck-arg-1`.
 </details>
 
 <details>
+<summary>{(color-of H3 0)} — dead</summary>
+
+Core: `(color-of H3 0)`
+
+Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
+<summary>{(color-of H3 1)} — dead</summary>
+
+Core: `(color-of H3 1)`
+
+Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
 <summary>{(color-of H3 H1)} — dead</summary>
 
 Core: `(color-of H3 H1)`
@@ -445,6 +661,24 @@ Refuted by `typecheck-arg-1`.
 Core: `(color-of H3 H2)`
 
 Refuted by `typecheck-arg-1`.
+
+</details>
+
+<details>
+<summary>{(color-of Red 0)} — dead</summary>
+
+Core: `(color-of Red 0)`
+
+Refuted by `typecheck-arg-0`.
+
+</details>
+
+<details>
+<summary>{(color-of Red 1)} — dead</summary>
+
+Core: `(color-of Red 1)`
+
+Refuted by `typecheck-arg-0`.
 
 </details>
 

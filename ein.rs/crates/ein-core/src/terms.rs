@@ -781,7 +781,11 @@ mod tests {
         assert_eq!(t.display(s), "House-1");
         assert_eq!(t.display(i), "7");
         assert_eq!(t.display(nested), "(co-located House-1 7)");
+        // Since S1f.5.5's swap a run of digits is a name (S1f.5.4's ruling),
+        // which prints bare, and no program writes an int.
         let one = t.value_text("1").expect("room");
-        assert_eq!(t.display(one), "\"1\"", "the name 1 is not the int 1");
+        assert_eq!(t.display(one), "1", "the name 1 prints as written");
+        let zero_one = t.value_text("01").expect("room");
+        assert_eq!(t.display(zero_one), "01", "and 01 is another name");
     }
 }

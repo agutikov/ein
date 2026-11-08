@@ -77,8 +77,10 @@ item 4 would refuse `(imply1 functional __closed__)`, which the stdlib documents
 cannot hold under it; where a program may write a dunder is
 [Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders), put to the user. **The user
 ruled (b), *"Never bound"*, the same day (`feb5e839`), and T11 is done**: a dunder is refused where a program binds
-a name and legal wherever one is used, and the three writeback names are refused wherever a program writes them. T4
-runs next.
+a name and legal wherever one is used, and the three writeback names are refused wherever a program writes them.
+**T4, the swap, done on 2026-11-09** ([§ T4 record](#t4-record-2026-11-09)): the generated parser is the only one,
+`lex.rs` and `parse.rs` gone, and it moved exactly T9's list, re-taken on the tree it leaves against T9's generated
+build; W29's six rows, W32's seven and W35 are `fixed`, and 23 fixed rows restated. T5, T6 and T7 run next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1315,6 +1317,194 @@ Q1 to Q4. It carries:
   [Q3](s1f.5.4_digits_are_names.md#q3--arg-kinds-and-the-round-trip), decided 2026-11-08, (a), scopes `arg-kinds`
   only if the gate visibly slows, and T9 shows what its rewrite costs.
 
+### T4 record, 2026-11-09
+
+**One commit, on `977829bf`** (T11 landed). The user's go-ahead: *"ok, continue with T4 after T11"*. Every ruling of
+[§ The review stop ruled](#the-review-stop-ruled-2026-11-08) is carried; T9's prototype
+(`build/s1f.5.5/t9/swap-prototype.patch`) was the start.
+
+**The parser.** `ein_ir::parse` is `ein_ir::grammar::parse`, and `ParseError` is the report type T3 called
+`Refusal`. `lex.rs` and `parse.rs` are deleted with the hand-written lexer's unit tests, T3's hook
+(`parse_as_hand_written`) and the `generated-parser` feature, which has nothing left to switch. The generated
+parser bumps the `parse_call` and `parse_bytes` counters the hand-written one did. `grammar::RESERVED_WORDS` (the
+twelve words never a name, `ein_core::text::LEXER_KEYWORDS`' source) and `grammar::POSITION_WORDS` (the eleven a
+position gives a meaning to) are public. `ein-ir/tests/generated_parser.rs` keeps the parser's own tests (twice the
+same, the cut, the macro's `:why`, the internal names, the nesting limit) and loses
+`the_builder_holds_on_the_corpus`, which held the generated tree to the hand-written one, with its golden,
+`generated_parser_corpus.txt`: with one parser there is no second tree, and T9 attributed every file where the two
+differed before the old one went. `engine_names.rs` and the `generated_parser` example read the one parser.
+
+**The error text.** Each error recovery reaches is one line, `file:line:col: unexpected X`, with the token's
+`%epp` description where it has one, then its notes, then at most three ranked repairs and `and n more repairs`; a
+report cut at the budget says so after its last error. No line names *the tokens expected*: the repairs stand for
+them (the review stop's item 6; T3's [§ Notes](#notes) item). The duplicated `unexpected input` header T9's
+prototype carried, a stand-in from T3's hook, is gone.
+- **The fold** (item 6). Where a place takes a name, each of the eleven position words is a name there too, so the
+  repairs that differ only in which of them, or which name, they insert are one repair, *Insert a name*, listed at
+  the rank of the first. Read literally, *fold the eleven into a name* where a repair inserting a name is ranked
+  beside them folds nothing in many places: CPCT+ ranks the words and not `NAME`. At `(tag ?x (box a :k v))`'s `:k`
+  it ranks fourteen repairs, *Insert* each of the eleven words, a variable or a `(`, then *Delete `:k`*, and none
+  inserting a name (T9's proto build with the shown repairs raised to 100, 2026-11-09). So a place also takes a
+  name where four of the words or more are repairs there: every production of `ein.y` that takes four of them
+  takes `NAME` (`Name`, `DeclName`, `FactHead`, `PremiseHead`), and the places that take fewer and no name, a
+  flag's `true` or `false`, a claim's `model`, `merged` or `owing`, a solve's `region`, keep their words, so no
+  report says *Insert a name* where no name parses. `(eq ?x)`'s three repairs, *Insert a variable*, *Insert
+  `owing`*, *Insert `merged`* and ten more on T9's prototype, are *Insert a variable* and *Insert a name*.
+- **The notes** (item 3 and the paper grammar's default 5): `_ is reserved and names nothing: where any value will
+  do, write a variable used once` at a `_` or a `?_` (S1f.5.1's sentence); `"a" is a string, and a string is
+  natural-language text, written only after :why, :source or :goal-text: write a name bare` at a string, quoting it
+  (S1f.5.2's); `:no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program,
+  one lattice` at a lattice keyword in a `(query …)`; and `config flag :lattice-order was retired at M1e2
+  S1e2.1a.5: …` at a retired flag in a `(config …)`, read from `ein_core::config::RETIRED`, the loader's two lines
+  the grammar no longer lets a program reach.
+- **What moved with it**: the thirty `.expected` under `examples/broken/` (the four parse-negatives, the twenty-five
+  moved and `kwpair-below-the-filter`), each the report with the path written `{FILE}`, and the four
+  `broken/load/reserved_open_*` whose import of `reserved_open_direct.ein` is refused at its parse;
+  `grammar_decisions.txt`, `recovery_cut.txt` (the `_`'s note) and the goldens below.
+
+**The printer.** `ein_core::text::is_symbol` is the name rule: a run of name characters, not a bare `_`, not one of
+the twelve reserved words and, beyond T9's prototype, not one of the engine's three writeback names, which the
+lexer reads as `WRITEBACK` since T11. `grammar.rs`' `the_printers_symbol_is_the_lexers`, moved from `lex.rs`, holds
+`is_symbol` to `is_one_name` (or a position word, a name wherever a name goes) over every reserved and position
+word with every boundary class, and every ASCII character in every position of a short name;
+`the_reserved_words_are_the_printers` holds the two lists to one. `(p 1) (p 01)` print as two facts and reload to
+themselves.
+
+**The JSON writer** (S1f.5.4's Q4 (a)): every binding in `summary.json` is a string, so `int-goal-binding`'s `8`,
+`-7` and `99999999999999999999999` are `"8"`, `"-7"` and `"99999999999999999999999"`; its header and corpus note
+say so, and `cli_semantics`' `a_goal_binding_of_digits_is_a_json_string` (until now
+`an_integer_goal_binding_stays_a_json_number`) holds it. **No schema id moves**: no reader of `ein-summary/2` reads
+a binding's JSON type (`feature_matrix.py` stores them, and no Rust reader does; `grep`, 2026-11-09).
+
+**A macro's `:why`.** The `cfg` arms in `from_ir.rs` (`WHY_REQUIRED_OF` and its twin, the macro check in
+`load_query_with`) and the first arms of `load_semantics`' two tests are gone; the flag's line names `relation,
+rule, hrule and macro` in every build. `stdlib/macro.ein`'s `forall` and `unknown` carry their `:why`, and
+`MANIFEST.sha256` moved with them (`utils/stdlib_manifest.py --write`). Restated: the option's help (so
+`help_shape.txt`), `configuration.md` § 3.4 and its opening note, and `defined_behaviour.md` § 4.10, where a `:why`
+that is not a string is now a parse error. The default stays false; no answer moved.
+
+**S1f.5.3's interim, gone.** `ein_corpus::REFUSED_UNTIL_S1F_5_4` and `corpus_cli`'s
+`the_files_refused_until_digits_are_names_are_refused` are deleted, and its readers (`every_positive_entry…`, the
+round trip, `SEEDED`, the dump fixed point) read both files. `cli_semantics`' `a_range_is_no_token` is
+`a_range_is_the_name_it_spells`: `(r 1..5 a)`, `(relation q 1..* Node)`, a `:match` over `1..3` and an `:assert`
+writing `2..*` load, read and print as written; `:card 1..*` is refused at `:card`, a keyword no form takes; and
+`(config :lattice-sanity-check 1..5)` is refused at the name, a flag taking `true` or `false`. The pages that said
+*until S1f.5.4 makes it one name* are restated: `00_ebnf.md`'s fact 3, `01_grammar.md`'s `INT` row and its no-`RANGE`
+paragraph, `defined_behaviour.md` § 4.8 (and § 4.6, whose integer rows the name rule makes unreachable),
+`examples/README.md`'s `syntax/` row, Q-M1e2.13 and Q-M1e2.24.
+
+**The register** (`corpus/wrong_answers.toml`, held by `wrong_answers.rs`, `register_region.rs` and
+`ein-corpus`'s well-formedness tests). **14 rows flipped to `fixed`**: W29's six, W32's seven and W35, each `now`
+the parse refusal's first line, each `right`'s *at load, with a line naming the place* restated *at the parse,
+with the file, line and column*, each `[case.region]` dropped (a refused `now` states none); `W29/core-two-ways`
+dropped its core and `W32/kwpair-in-goal` its query. **23 fixed rows restated**, as the attribution and item 2 say:
+W16's two `"1"` witnesses, W18's five and W28's three to the refusal (S1f.5.2), W20's three matching witnesses to
+the refusal (S1f.5.1), each witness kept as the refusal's in its position, W16's two `control` blocks dropped with
+the retired controls; `W20/range-in-match`'s `right`, a pattern over the name `1..3`, R the cube of 8, `(hit r)`
+exactly where `(n 1..3)` holds; `W7/binding-key-layout` and W15's two on the scoped witnesses, R four states,
+their regions re-banked (`EIN_BLESS=1 cargo test -p ein-infer --test register_region`); `W21/typed-blind-solve`'s
+`now` and `right`, N 25 → 51 sets, the twenty-six new singletons each `color-of` with `0` or `1` on a side and its
+own core (F8); and the refusal's line in `W16/activator-all-int` (`[activator 1]`), `W20/wild-in-head`, and W24's
+`wild-in-guard`, `bare-premise` and `kwpair-in-guard`, the last four refused at the parse since. **Which
+`[case.fixed]` names this commit:** the stage's lead sentence, *its `[case.fixed]` names this commit*, read as: a
+row whose `right` this commit turned into another kind of answer, an answer into a refusal or a refusal into an
+answer, names it (the fourteen flipped, and W16's two, W18's five, W28's three and W20's four), its earlier fix kept
+in its note; a row whose `right` it re-took on a scoped witness or a grown N (W7, W15's two, W21) or whose `now`
+alone moved keeps its fix. Each of the 28 carries the null id, `0000000`, the fixing commit not being able to name
+itself; the stage's next commit writes the hash, as S1e2.2.24's did. `ein-corpus`' three schema tests whose live
+example the swap turned into a refusal (schema /7's `now` held against a refusal, /12's claim and classes, /13's
+core and query beside a refusal) read the rows as they stood at `977829bf`, embedded. W34 does not move (T8's), and
+**W37 still holds** (`wrong_answers` green). The register reads **117 rows fixed, 22 open and 1 not-wrong**
+(`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**The fixtures.**
+- **Moved to `examples/broken/`** (Q-M1f.2 (a)), each a `parse-negative` entry, its runs and note kept, its
+  `.expected` the report: `broken/compile/`'s four arity fixtures and `broken/load/`'s twenty-one (`config_bad_value`,
+  `config_retired_flag`, `config_unknown_flag`, `empty_absent`, `expect_is_a_pattern`, `expect_unknown_keyword`,
+  `hrule_reserved_name`, `import_alias_not_a_name`, `import_symbols_empty`, `import_symbols_not_a_list`,
+  `macro_reserved_name`, `open_arity`, `open_in_match`, `open_mixed_assert`, `query_lattice_keyword`,
+  `region_top_level`, `relation_malformed`, `relation_needs_a_name`, `relation_reserved_name`,
+  `rule_reserved_name`, `solve_unknown_keyword`); `reserved_open_direct` stays. And `ein-bugs/kwpair-below-the-filter`
+  (S1f.5.11's default), its header and its fuzz find's note saying why; the seed stays a seed.
+- **Retired**: `broken/load/relation_parameter_int` with its `.expected` and corpus entry (Q2 (a)), and the two
+  `activator-text` controls, `-int-only` and `-string-only` (item 2); the two `activator-text-key` seeds stay,
+  refused at the parse, and the two witnesses lose their `test` cell with their claim.
+- **Rewritten**: `broken/load/derivation_cycle` (`:using ((r c d))`, its cycle line reached again), and
+  `syntax/unary-and-nary` (`:using ((u a))`), `syntax/arg-kinds` (Q-M1f.2 (a)'s rewrite, scoped `(solve
+  :no-hypothesis (r))`, R {∅}, item 1), `syntax/is-a-shapes` (`7` for the `?x` and the `_`) and `syntax/negation`
+  (`(not (plain))`); each new relation carries a `:why`.
+- **Scoped** (S1f.5.4's proposal A): the four `binding-key-*` witnesses, each `:expect` restated to its R (four
+  states; `-int-only` two) and its header saying why, and the two `binding-key-layout` seeds.
+- `SEEDED` is 27 rows (S1f.5.4's moves `stdlib/elim`'s `0` and `1`, `relation-decls`' `7`, `range-in-match`'s
+  `1..3`, and `arg-kinds`' `a` and `b`; out with their files' refusal, `eq_arity_high`'s `A` and `B`,
+  `kwpair-below-the-filter`'s four, W18's `lbl` twice, W28's `"1"`, W32's two `v` and W29's `a`); `detector.rs`'
+  flagged count 49 → 48 (`kwpair-in-macro` refused); no `slow` flag moves (the scoped witnesses cost what they did).
+
+**The tests.** Every test T9 named moved as the attribution says, and the ones it did not name are below. The ein-ir
+suites (T8's 47 and the rest) are restated in the final grammar: a shape the grammar refuses is asserted as the
+parse error, `line:col: what`; a program that wrote old syntax incidentally is rewritten so the test keeps its
+subject. Beyond T9's list: `cli_semantics`' `a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build`
+and `primitive_arity`'s `the_shape_pinned_primitives_refuse_a_wrong_arity`, which matched `unexpected input`, the
+prototype's stand-in header; `imports_semantics`' `one_module_under_two_qualifications_does_not_leak_either_way`,
+moved by the stdlib macros' `:why`; `config_reference`' `the_argument_surface_is_stable` (the help);
+`golden_dot`'s three fixtures, whose `:using` and trace shapes the grammar refuses; and `ein-corpus`' three schema
+tests above. `load_semantics`' `load_errors_accumulate_in_pass_order` and `from_ir`'s
+`every_pass_accumulates_rather_than_stopping_at_the_first_problem` gained a program the loader still reads, their
+old ones being parse errors now, so they still test the loader's pass order. `grammar_decisions`'
+`a_keyword_is_a_whole_word_in_every_place` reads the hand-written parser's nineteen literals as written, and its
+`-1` parses now read the name `keyword-1`: 348 of them parse (`cargo test -p ein-ir --test grammar_decisions`,
+2026-11-09), where 435 read the keyword and `-1` until now, which overrides Q-M1e2.17 (i)(a).
+`answer_round_trip`'s witnesses are two programs written in the test (`7` beside `07`, `-7` and `1..5`; every
+decorator and the brackets, bare, nested and derived) and `arg-kinds`. W34's witness joins `claim_round_trip`'s
+`DO_NOT_READ_BACK` until S1f.5.9 (item 9). `search_semantics`' bare name is restated to the refusal, its first
+repair the list (item 10). `region_synth.py` needed nothing: `region_dump`'s and `detector`'s random-program tests
+pass (T1f.5.15.9 took `:priority` out).
+
+**The `.einb` cold open** (item 12): design/10 § 6's millisecond and `roundtrip`'s 5 ms are restated to 6 ms
+(release) and 20 ms (dev). Measured on this commit, a saturated `zebra2` opens in 3.83 to 3.89 ms release and 5.40
+to 5.48 ms dev (`cargo test [--release] -p ein-einb --test roundtrip a_saturated_zebra2 -- --nocapture`, three runs
+each, 2026-11-09), the generated parser reading `PROGRAM`'s 10 960 bytes.
+
+**The cross-check: no answer moved that T9 did not list.** Every `.ein` under the five roots (511, `find examples
+tests stdlib corpus plans -name '*.ein' | wc -l`, 2026-11-09), on the tree as this commit leaves it, through T9's
+generated build (`build/s1f.5.5/t9/proto`) and this commit's release build: `ein solve FILE --json-summary J -H
+--dump-answer D`, `ein saturate FILE --dump` and, where the file states an `:expect`, `ein test FILE`, comparing
+exit codes, the summary (its `source` and `work` aside), the stored facts, `ein test`'s output and N's
+cores (`build/s1f.5.5/t4/xcheck/`, 77 s). **505 files answer the same on every command, 6 differ only in the width
+of `saturate`'s timing lines, and 137 differ only in their stderr**, the error text above. T9 attributed every
+move from today's parser to its generated build; this commit moves none past it.
+
+**Fourteen goldens move**, T9's eight and six more, each read: `corpus_exits.txt` (80 cells, each a move above,
+the moved fixtures' cells under their new paths and the retired files' gone), `corpus_shapes.md5` (158 files: the
+refused files' views, a refused file keeping its parse row; the moved and retired fixtures; the rewritten and scoped
+ones; S1f.5.4's name rule on `branching/12`, `features/05`, `activator-all-int`, `int-goal-binding`,
+`mixed-type-hypothesis`, `relation-decls`, `stdlib/elim` and `tests/stdlib/elim/01`, `02`; and the
+`ir[resolve]`, `ir[minimize]` and `ir[expand]` views of every program importing `std.macro`, which inline its
+macros' new `:why`), `grammar_decisions.txt`, `fuzz_seeds.txt` (the seeds the grammar refuses, each with its
+report, and the moved fixtures, which are seeds by their directory), `config_coercion.txt`, `load_error_order.txt`
+(its four programs parse errors now, and a fifth the loader reads), the two `branching/12` traces
+(`trace_ambiguous.md`, `trace_one-hypothesis.md`: N and the universe 25 → 51), and beyond T9's list
+`recovery_cut.txt` (the `_`'s note), `help_shape.txt` (`--require-why`'s help), and `golden_dot`'s
+`ir_render_trace_a.dot` and `ir_render_trace_dag.dot` (the fixture's second step names its step and a given, `:using
+(and s1 c15)`, where it wrote a fact the grammar refuses there). `generated_parser_corpus.txt` is deleted with
+the test that read it. The `.expected` beside the thirty parse-negatives and the four `reserved_open_*` are the new
+reports. The bless ran `EIN_BLESS=1 cargo test --workspace --no-fail-fast`: 939 passed, none failed (23 min 19 s,
+2026-11-09).
+
+**The nightly's two scripts**, run on this commit's release build: `utils/stdlib_mutants.py --check` kills 167 of
+217, as on 2026-11-08, its survivors the banked set, and `utils/stdlib_census.py --check` covers 77 of 77 rules
+(2026-11-09).
+
+**The gate.** On `977829bf`, before this commit, 14 min 14 s (`build/gate-s1f.5.5-T11.log`, T11's gate on the tree it
+committed). On this commit, 19 min 59 s (`build/gate-s1f.5.5-T4.log`), green: 939 tests, every static check, 5 min 45 s
+more. Not traced here; the suites start thousands of processes that each read a program, and the generated parser
+costs more a parse than the hand-written one did (the `.einb` open above).
+
+**Found here, each a report**: `ein_render::trace`'s `trace_to_ir` and `parse_trace_steps` have no caller, which the
+paper grammar's default 8 says go at the swap; they stay, moving nothing, for T5 or T7 to delete. A `\u{…}` beyond
+Unicode's range still reads as U+FFFD (`build_ast.rs`' `unescape`), which no file writes; refusing it is S1f.5.2's
+after the swap.
+
 ### Task T1f.5.5.5 — the grammar pages and the loader's refusals
 
 After the swap. `ein-ir/tests/grammar_pages.rs`, in `cargo test`. Each loader line the grammar now covers goes,
@@ -1427,4 +1617,6 @@ T1f.5.2.4 and S1f.5.11's T1f.5.11.3. `docs/history/` is a record, and does not c
   stack and the table are inside `lrpar` (the generated module keeps the table private). Two ways: a third
   change to the vendored crate, recording that set on each `ParseError`; or the ranked repairs stand for it,
   since each `Insert` in them is a token the parse goes on with. **Recommended: the repairs stand**, and the
-  error text says no more; T4 decides, with the error text, and T3's report leaves the line out.
+  error text says no more; T4 decides, with the error text, and T3's report leaves the line out. *Ruled 2026-11-08
+  as recommended (the review stop's item 6), and built at T4* ([§ T4 record](#t4-record-2026-11-09)): no line
+  names the tokens expected, and the eleven position words are folded into *a name* where a place takes one.

@@ -58,10 +58,14 @@ const SMALL_KB: &str = concat!(
     "(r a b :source \"(1)\")\n(tern a b c :source \"(2)\")\n",
 );
 
+/// A two-step trace. Since M1f S1f.5.5's swap a step's `:using` lists the
+/// steps and givens it used by name, `(c10)` or `(and s1 c15)` (the paper
+/// grammar's default 8), so `s2`'s, which wrote the fact it used, `(and
+/// (lives-in Norwegian House-1))`, names its step and a given instead.
 const TRACE: &str = concat!(
     "(trace (step s1 :rule from-condition :using (c10) ",
     ":derives (lives-in Norwegian House-1))",
-    " (step s2 :rule adjacent :using (and (lives-in Norwegian House-1)) ",
+    " (step s2 :rule adjacent :using (and s1 c15) ",
     ":derives (color-loc Blue House-2)))",
 );
 
@@ -89,9 +93,12 @@ fn the_per_form_ir_goldens_reproduce() {
             "ir_to_dot_neg",
             "(not (co-located Spaniard Coffee) :source \"(1)\")",
         ),
+        // A fact's `:using` lists its premises, each a fact, since M1f
+        // S1f.5.5's swap (the paper grammar's default 2); it wrote `(c10)`, a
+        // list whose head the loader dropped, until then.
         (
             "ir_to_dot_reasoning",
-            "(co-located Blue House-2 :rule square-fwd :using (c10))",
+            "(co-located Blue House-2 :rule square-fwd :using ((co-located Norwegian House-1)))",
         ),
     ] {
         let (ast, forms) = parsed(text);

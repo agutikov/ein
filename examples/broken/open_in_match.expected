@@ -1,0 +1,5 @@
+{FILE}:6:49: unexpected `open`
+  repair: Delete `open`
+  repair: Insert `neq`
+  repair: Insert a variable
+  and 1 more repair

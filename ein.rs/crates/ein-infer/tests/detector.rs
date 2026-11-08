@@ -177,8 +177,10 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // `total-owed` reads `is-a`, which `seated-dines` derives from a
     // commitment: an `obligation-trigger` site. 49 since M1f S1f.5.0 banked
     // W32's `kwpair-in-macro` on 2026-11-08: its `forall` is an `absent`
-    // over `q`, which a commitment can extend, an `absent` site.
-    assert_eq!(flagged, 49, "the flagged corpus programs");
+    // over `q`, which a commitment can extend, an `absent` site. 48 since
+    // S1f.5.5's swap the same day, which refuses `kwpair-in-macro` at the
+    // parse (S1f.5.11), so it loads here no more.
+    assert_eq!(flagged, 48, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

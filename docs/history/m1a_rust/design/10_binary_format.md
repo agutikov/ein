@@ -129,7 +129,16 @@ load and no search.
 - **Round-trip**: `save(kb) → open()` yields a KB that is identical
   (fact set and order, provenance, indexes, counters) for every corpus
   entry, in both the empty-interner and shared-interner cases.
-- **Cold open** of a saturated `zebra2.einb` < 1 ms.
+- **Cold open** of a saturated `zebra2.einb` < 1 ms. **Restated by M1f
+  S1f.5.5's swap (T1f.5.5.4) to < 6 ms**, on the user's ruling of
+  2026-11-08 (*"Restate the budget"*): an open re-parses `PROGRAM`, and the
+  parser generated from the grammar, the user's choice of 2026-11-07, reads
+  zebra2's 10 960 bytes in about 3 ms where the hand-written one took a
+  fraction of one. Measured 3.83 to 3.89 ms release, 5.40 to 5.48 ms dev
+  (`cargo test [--release] -p ein-einb --test roundtrip a_saturated_zebra2 --
+  --nocapture`, three runs each, 2026-11-09), so the test's ceilings are
+  6 ms and 20 ms. Keeping the parsed tree in the container, a format bump,
+  waits until the millisecond is wanted.
 - **Corruption**: a truncated or bit-flipped file is rejected by the
   digest, never mis-parsed (fuzzed).
 - **Forward compat**: a file with an unknown section kind in the same

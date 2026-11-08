@@ -583,11 +583,11 @@ fn every_positive_entry_answers_under_at_least_one_run() {
             *answered.entry(&c.path).or_insert(false) |= c.code == 0;
         }
     }
-    // M1f S1f.5.3: a positive entry the parser refuses until S1f.5.4 is
-    // named in `REFUSED_UNTIL_S1F_5_4`, which the test below holds both ways.
+    // Between M1f S1f.5.3 and S1f.5.5's swap two entries the parser refused
+    // were named in `ein_corpus::REFUSED_UNTIL_S1F_5_4`; the swap emptied it.
     let dead: Vec<&str> = answered
         .iter()
-        .filter(|(p, ok)| !**ok && !ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(p))
+        .filter(|(_, ok)| !**ok)
         .map(|(p, _)| *p)
         .collect();
     assert!(
@@ -617,41 +617,6 @@ fn every_positive_entry_answers_under_at_least_one_run() {
         "{} of the manifest's {eligible} positive/stdlib entries were swept — \
          the selection stopped looking",
         answered.len()
-    );
-}
-
-/// **The files the parser refuses between M1f S1f.5.3 and S1f.5.4 are
-/// refused, at the parse, by every run** — `ein_corpus::REFUSED_UNTIL_S1F_5_4`
-/// held both ways. Each writes a range, which S1f.5.3 retired as a token: every
-/// cell of each exits 1 (`ein test` 2) with the parser's line, `file:line:col:
-/// unexpected input`, first on stderr. When S1f.5.4 makes `1..5` one name the
-/// files load, this fails, and that commit empties the list.
-#[test]
-fn the_files_refused_until_digits_are_names_are_refused() {
-    let listed = ein_corpus::REFUSED_UNTIL_S1F_5_4;
-    let mut seen = 0usize;
-    let mut bad = Vec::new();
-    for c in cells().iter().filter(|c| listed.contains(&c.path.as_str())) {
-        seen += 1;
-        let first = c.stderr.lines().find(|l| !l.is_empty()).unwrap_or("");
-        let parse =
-            first.starts_with(&format!("{}:", c.path)) && first.ends_with(": unexpected input");
-        if !(c.code == 1 || c.run.starts_with("test") && c.code == 2) || !parse {
-            bad.push(format!(
-                "  {} :: {} exit {}: {first}",
-                c.path, c.run, c.code
-            ));
-        }
-    }
-    assert!(
-        seen >= listed.len(),
-        "only {seen} cells of {listed:?} were swept"
-    );
-    assert!(
-        bad.is_empty(),
-        "a file listed as refused until S1f.5.4 is not refused at the parse — \
-         empty `REFUSED_UNTIL_S1F_5_4` for it:\n{}",
-        bad.join("\n")
     );
 }
 

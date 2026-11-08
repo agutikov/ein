@@ -18,6 +18,13 @@
 ;;; for every caller, as `ir_dot`'s `(query …)` note already spelled one, and
 ;;; both views now draw each step as written. The corpus runs every view over
 ;;; this file, which is the check that was missing.
+;;;
+;;; **Since M1f S1f.5.5's swap it is refused at the parse**, at its first
+;;; `:rule`: no keyword pair parses inside a term or a nested fact (S1f.5.11's
+;;; ruling, its default; Q-M1e2.28), so the shape that reached `value_label`'s
+;;; keyword-pair arm is no program, and the fixture moved here from
+;;; `examples/ein-bugs/`, its `.expected` the parse report (Q-M1f.2 (a)). The
+;;; arm goes with S1f.5.11's T1f.5.11.2 (the review stop's item 11).
 
 (tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))
   (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))

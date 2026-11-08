@@ -16,6 +16,13 @@
 ;;;
 ;;; Fixed 2026-08-20 in ein.rs (`ein-render/src/dump/answer.rs::binding_value`).
 ;;; This file is the regression: `solve --json-summary` must agree.
+;;;
+;;; **Since M1f S1f.5.5's swap there is no INT**: a run of digits is a name
+;;; (S1f.5.4's ruling), and every name is a JSON *string* in the summary's
+;;; bindings (S1f.5.4's Q4 (a), decided 2026-11-08), so that `(p 007)` and
+;;; `(p 7)`, two names, stay two there. The three bindings below are
+;;; `"8"`, `"-7"` and `"99999999999999999999999"`; the file is kept for the
+;;; width, which a name carries as written.
 
 (r1 o3 8)
 (r1 o4 -7)

@@ -829,30 +829,50 @@ fn candidates(src: &str) -> (BTreeSet<String>, Vec<String>, HypGenStats) {
     (sexprs(&terms, out), rels, stats)
 }
 
-/// A `:hypothesis-relations` / `:no-hypothesis` value may be a bare SYMBOL,
-/// and it means exactly what the one-element list means.
+/// A `:hypothesis-relations` / `:no-hypothesis` value is a list, and a bare
+/// name is refused at the parse — restated at M1f S1f.5.5's swap, the user's
+/// ruling of 2026-11-08 on its review stop, item 10 (the paper grammar takes
+/// a list, the one form).
 ///
-/// No corpus file uses the bare form, so nothing else in the suite would
-/// notice if `coerce_relation_names` stopped reading an `Atom` value and fell
-/// through to the "keyword absent" branch — which for a whitelist is
-/// *unrestricted*, i.e. the filter silently turning itself off rather than
-/// failing.
+/// Until the swap a bare SYMBOL meant exactly what the one-element list
+/// means, which this test held because no corpus file uses the bare form and
+/// nothing else in the suite would notice if `coerce_relation_names` stopped
+/// reading an `Atom` value and fell through to the "keyword absent" branch —
+/// which for a whitelist is *unrestricted*, the filter silently turning itself
+/// off. Since the swap the bare form does not parse, so it cannot turn the
+/// filter off either: it is refused at the name, whose repair is the list.
 #[test]
 fn lattice_relation_keyword_accepts_a_bare_symbol() {
     let goal = "(query :goal (co-located A B))";
-    for (bare, list) in [
+    for (bare, list, col) in [
         (
             ":hypothesis-relations co-located",
             ":hypothesis-relations (co-located)",
+            30,
         ),
-        (":no-hypothesis likes", ":no-hypothesis (likes)"),
+        (":no-hypothesis likes", ":no-hypothesis (likes)", 23),
     ] {
-        let (bare_facts, bare_rels, _) = candidates(&format!("{TWO_REL}(solve {bare}) {goal}"));
+        let name = bare.split_whitespace().nth(1).expect("a name");
+        let refused = parse(
+            &mut Ast::new(),
+            &format!("{TWO_REL}(solve {bare}) {goal}"),
+            None,
+        )
+        .expect_err("a bare name is refused at the parse");
+        assert_eq!(
+            refused.errors[0].what,
+            format!("unexpected `{name}`: a name"),
+            "{bare}: {refused}"
+        );
+        assert_eq!(refused.position(), (5, col), "{bare}: {refused}");
+        assert_eq!(
+            refused.errors[0].repairs[0],
+            format!("Insert `(`, Shift `{name}`, Insert `)`"),
+            "{bare}: the first repair is the list: {refused}"
+        );
         let (list_facts, list_rels, _) = candidates(&format!("{TWO_REL}(solve {list}) {goal}"));
-        assert!(!bare_facts.is_empty(), "{bare}: nothing generated at all");
-        assert_eq!(bare_rels, ["co-located"], "{bare}");
-        assert_eq!(bare_facts, list_facts, "{bare} differs from {list}");
-        assert_eq!(bare_rels, list_rels);
+        assert!(!list_facts.is_empty(), "{list}: nothing generated at all");
+        assert_eq!(list_rels, ["co-located"], "{list}");
     }
 }
 

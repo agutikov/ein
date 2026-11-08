@@ -147,7 +147,7 @@ pub fn dump_canonical_width(ast: &Ast, nodes: &[NodeId], width: usize) -> String
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parse::parse;
+    use crate::parse;
 
     fn round(src: &str) -> String {
         let mut ast = Ast::new();
@@ -163,17 +163,23 @@ mod tests {
         assert_eq!(escape_string_literal("t\tr\r"), "\"t\\tr\\r\"");
     }
 
+    /// A synthetic head, a parameter list's (`#params`) and the empty form's
+    /// (`#empty`), prints without one. Since M1f S1f.5.5's swap (T1f.5.5.4)
+    /// the programs are in the final grammar: until then they wrote `:match X
+    /// :assert Y`, a name where a premise goes, and `(x ())`, `()` as a fact's
+    /// argument, which the grammar refuses (`()` is a whole `:match` or
+    /// `:assert`, the paper grammar's default 7).
     #[test]
     fn synthetic_heads_print_without_one() {
         assert_eq!(
-            round("(rule r () :match X :assert Y)"),
-            "(rule r () :match X :assert Y)\n"
+            round("(rule r () :match () :assert ())"),
+            "(rule r () :match () :assert ())\n"
         );
-        assert_eq!(round("(x ())"), "(x ())\n");
         assert_eq!(
-            round("(rule r (?a ?b) :match X)"),
-            "(rule r (?a ?b) :match X)\n"
+            round("(rule r (?a ?b) :match (x ?a))"),
+            "(rule r (?a ?b) :match (x ?a))\n"
         );
+        assert!(parse(&mut Ast::new(), "(x ())", None).is_err());
     }
 
     #[test]
@@ -200,17 +206,20 @@ mod tests {
         );
     }
 
+    /// Since M1f S1f.5.5's swap (T1f.5.5.4) a string is written only after
+    /// `:why`, `:source` or `:goal-text` (S1f.5.2), so the non-ASCII text
+    /// is a fact's `:source`, where until then it was the fact's argument.
     #[test]
     fn the_width_budget_counts_characters_not_bytes() {
         // 20 `⟹` are 20 characters and 60 bytes; at width 40 the form fits on
         // one line only if the budget counts characters.
         let arrows = "⟹".repeat(20);
-        let src = format!("(a \"{arrows}\")");
+        let src = format!("(a b :source \"{arrows}\")");
         let mut ast = Ast::new();
         let forms = parse(&mut ast, &src, None).expect("parses");
         assert_eq!(
             dump_pretty(&ast, forms[0], 0, 40),
-            format!("(a \"{arrows}\")")
+            format!("(a b :source \"{arrows}\")")
         );
         assert!(dump_pretty(&ast, forms[0], 0, 20).starts_with("(a\n"));
     }

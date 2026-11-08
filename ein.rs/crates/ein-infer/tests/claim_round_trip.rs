@@ -21,6 +21,17 @@ use ein_infer::claim::{self, Options};
 use ein_infer::expect::Outcome;
 use ein_ir::{Ast, load, parse};
 
+/// **The programs whose printed region does not read back today**, each the
+/// witness of an open register row (M1f S1f.5.5's swap, the user's ruling of
+/// 2026-11-08 on its review stop, item 9): W34, `:assert ()` stored as a fact
+/// named `#empty`, which joins H and prints as the name `"#empty"` in its
+/// region, a string a claim may not write since the swap (S1f.5.2's ruling).
+/// Not a printer's defect but the row's own wrong answer, so it is named
+/// rather than checked, and it must still fail: a printed region here that
+/// reads back is the row fixed, and S1f.5.9 takes it off the list in the
+/// commit that fixes W34, with `answer_round_trip.rs`'s `DO_NOT_LOAD`.
+const DO_NOT_READ_BACK: [&str; 1] = ["examples/ein-bugs/wrong-answers/assert-empty.ein"];
+
 fn loaded(src: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Ast)> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -119,11 +130,19 @@ fn every_printed_region_holds_as_its_own_claim() {
             None => format!("{src}\n(solve :expect {printed})\n"),
         };
         let Some((mut kb, mut terms, ast)) = loaded(&spliced, path.parent()) else {
-            bad.push(format!(
-                "{rel}: the printed claim does not load:\n  {printed}"
-            ));
+            if !DO_NOT_READ_BACK.contains(&rel.as_str()) {
+                bad.push(format!(
+                    "{rel}: the printed claim does not load:\n  {printed}"
+                ));
+            }
             continue;
         };
+        if DO_NOT_READ_BACK.contains(&rel.as_str()) {
+            bad.push(format!(
+                "{rel}: listed as not reading back, and its printed claim loads — \
+                 its row is fixed; take it off `DO_NOT_READ_BACK`:\n  {printed}"
+            ));
+        }
         let node = kb
             .program()
             .solve()

@@ -1580,11 +1580,251 @@ mod tests {
         }
     }
 
+    /// A row as it stood before M1f S1f.5.5's swap (T1f.5.5.4) restated it,
+    /// for the schema tests whose live example the swap turned into a refusal:
+    /// W28's claims and classes, and W29's core and query beside a refusal,
+    /// each recorded at `977829bf` with its long strings cut.
+    fn as_it_stood(row: &str) -> Row {
+        let reg: Register = toml::from_str(&format!("schema = \"{REGISTER_SCHEMA}\"\n{row}"))
+            .expect("the row as it stood parses");
+        reg.case.into_iter().next().expect("one row")
+    }
+
+    /// `W28/claim-int-name-solve` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    const W28_CLAIM_SOLVE: &str = r##"
+[[case]]
+id       = "W28/claim-int-name-solve"
+case     = "W28"
+title    = "a claim and a query's projection classes compare printed text, which printed …"
+class    = "claim"
+settings = "default"
+owner    = "S1e2.3.8"
+question = ["Q-M1e2.20"]
+witness  = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
+status   = "fixed"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28/claim-int-name: the same …"
+
+[case.fixed]
+commit = "712f23fd"
+by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
+date   = "2026-11-06"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve FILE` and `ein test -v FILE`, release and debug, at 86227f9a …"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+claim     = "held"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: a claim compares values. R is …"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+claim     = "failed"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+models    = [
+  [],
+]
+claim     = "failed"
+"##;
+
+    /// `W28/classes-int-name` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    const W28_CLASSES: &str = r##"
+[[case]]
+id       = "W28/classes-int-name"
+case     = "W28"
+title    = "a claim and a query's projection classes compare printed text, which printed …"
+class    = "claim"
+settings = "default"
+owner    = "S1e2.3.8"
+question = ["Q-M1e2.20"]
+witness  = "examples/ein-bugs/wrong-answers/classes-int-name.ein"
+status   = "fixed"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28's claims: the same text …"
+
+[case.fixed]
+commit = "712f23fd"
+by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
+date   = "2026-11-06"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve FILE`, release and debug, at 86227f9a (2026-11-06): R the eight …"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+queries   = [{ classes = 2, expect = "none" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(pick \"1\")", "(pick A)", "(pick B)"]]
+
+[case.right]
+derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: classes are keyed by value. A …"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+queries   = [{ classes = 4, expect = "none" }]
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 8
+relations = ["pick"]
+models    = [
+  [],
+  ["(pick \"1\")"],
+  ["(pick \"1\")", "(pick A)"],
+  ["(pick \"1\")", "(pick A)", "(pick B)"],
+  ["(pick \"1\")", "(pick B)"],
+  ["(pick A)"],
+  ["(pick A)", "(pick B)"],
+  ["(pick B)"],
+]
+queries   = [{ classes = 4, expect = "none" }]
+"##;
+
+    /// `W29/core-two-ways` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    const W29_CORE: &str = r##"
+[[case]]
+id       = "W29/core-two-ways"
+case     = "W29"
+title    = "a bare `_` loads in silence: dropped from a fact or an activator, and read in a …"
+class    = "core"
+settings = "default"
+owner    = "S1f.5.1"
+question = ["Q-M1e2.22"]
+witness  = "examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein"
+status   = "open"
+open_because = "A bare `_` in a rule's pattern matches any value and binds nothing (W20's …"
+look_at  = ["refuted", "summary"]
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from P1f.5's F3, S1f.5.1's case, the …"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ec004a48 (2026-11-08; the …"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(big b0)", "(big2 b0)", "(big3 b0)", "(c x)"]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein"
+run       = "solve"
+by        = "region"
+why       = "the slot written `?w0`, a variable the rule reads nowhere else, at ec004a48 …"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(c x)", "(small s0)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.22, the user's ruling of 2026-11-06: a bare `_` is reserved and refused, …"
+refused   = true
+derived   = "A bare `_` names nothing (Q-M1e2.22), so the rule is refused at load, with a …"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["big", "big2", "big3", "c", "hit", "holds", "small"]
+models    = []
+core      = ["(big b0)", "(big2 b0)", "(big3 b0)", "(c x)"]
+"##;
+
+    /// `W29/goal-arg` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    const W29_GOAL: &str = r##"
+[[case]]
+id       = "W29/goal-arg"
+case     = "W29"
+title    = "a bare `_` loads in silence: dropped from a fact or an activator, and read in a …"
+class    = "claim"
+settings = "default"
+owner    = "S1f.5.1"
+question = ["Q-M1e2.22"]
+witness  = "examples/ein-bugs/wrong-answers/underscore-goal-arg.ein"
+status   = "open"
+open_because = "A query's goal is compiled as a rule's pattern, where a bare `_` matches any …"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.1's case (the goal row), on …"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ec004a48 (2026-11-08; the …"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "none" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1e2.22, the user's ruling of 2026-11-06: a bare `_` is reserved and refused, …"
+refused   = true
+derived   = "A bare `_` names nothing, in a goal as anywhere else (Q-M1e2.22), so the query …"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "none" }]
+"##;
+
     /// **A run that ends in an error**, schema /7 (M1e2 S1e2.2.18):
     /// `W18/str-in-assert`'s `wrong` ended in one before it answered, exit 1,
     /// and states no verdict. Such a `now` lists nothing, states no region, is
     /// not also a refusal, and is never `right`, so a fixed row whose `now`
-    /// ends in an error is a defect.
+    /// ends in an error is a defect. The row's `right` is a refusal since M1f
+    /// S1f.5.5's swap (S1f.5.2's ruling: a string is no value), so the error is
+    /// held against a refusal; it was held against an answer until then.
     #[test]
     fn a_run_that_ends_in_an_error_is_no_answer() {
         let row = register()
@@ -1634,7 +1874,7 @@ mod tests {
             goal_text: None,
         };
         r.region = None;
-        assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
+        assert_eq!(r.now.against(&r.right), ["right: a refusal, now: an error"]);
         r.status = "fixed".to_string();
         r.open_because = None;
         r.fixed = Some(Fixed {
@@ -1643,7 +1883,7 @@ mod tests {
             date: "2026-11-04".to_string(),
         });
         assert!(defects(&r).iter().any(|d| {
-            d.contains("fixed, and [now] is not [right]: right: an answer, now: an error")
+            d.contains("fixed, and [now] is not [right]: right: a refusal, now: an error")
         }));
         let mut s = r.clone();
         s.now.k = 1;
@@ -1839,18 +2079,16 @@ mod tests {
             }
             .defects()
         };
-        let solve = reg
-            .case
-            .iter()
-            .find(|r| r.right.claim.is_some())
-            .expect("W28's solve-form row states the claim's outcome")
-            .clone();
-        let query = reg
-            .case
-            .iter()
-            .find(|r| r.right.queries.is_some())
-            .expect("W28's query rows state the classes")
-            .clone();
+        // No live row states a claim or the classes since M1f S1f.5.5's swap
+        // restated W28's to the refusal, so the rows as they stood.
+        assert!(
+            reg.case
+                .iter()
+                .all(|r| r.right.claim.is_none() && r.right.queries.is_none()),
+            "a live row states a claim or the classes again: use it"
+        );
+        let solve = as_it_stood(W28_CLAIM_SOLVE);
+        let query = as_it_stood(W28_CLASSES);
         for row in [&solve, &query] {
             assert!(defects(row).is_empty(), "{:?}", defects(row));
         }
@@ -1920,18 +2158,17 @@ mod tests {
             }
             .defects()
         };
-        let core = reg
-            .case
-            .iter()
-            .find(|r| r.right.refused && r.now.core.is_some())
-            .expect("W29/core-two-ways records today's core beside a refusal")
-            .clone();
-        let query = reg
-            .case
-            .iter()
-            .find(|r| r.right.refused && r.now.queries.is_some())
-            .expect("W29/goal-arg records today's query beside a refusal")
-            .clone();
+        // No live row records an answer beside a refusal since M1f S1f.5.5's
+        // swap fixed W29's and W32's, each `now` the parse refusal, so the rows
+        // as they stood.
+        assert!(
+            reg.case
+                .iter()
+                .all(|r| !(r.right.refused && (r.now.core.is_some() || r.now.queries.is_some()))),
+            "a live row records an answer beside a refusal: use it"
+        );
+        let core = as_it_stood(W29_CORE);
+        let query = as_it_stood(W29_GOAL);
         for row in [&core, &query] {
             assert!(defects(row).is_empty(), "{:?}", defects(row));
             // An answer, where `right` is a refusal: open, by the method.

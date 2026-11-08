@@ -1,6 +1,6 @@
 [package]
 name        = "ein-ir"
-description = "Lexer, parser, AST, dumper, macros, imports, embedded stdlib"
+description = "Parser, AST, dumper, macros, imports, embedded stdlib"
 version.workspace    = true
 edition.workspace    = true
 license.workspace    = true
@@ -28,14 +28,8 @@ lrpar     = "=0.15.0"
 lrlex = "=0.15.0"
 lrpar = "=0.15.0"
 
-[features]
-# T1f.5.5.3's hook, off by default: `ein_ir::parse` reads every program through
-# the generated parser instead of the hand-written one, so that a whole `ein`
-# built with `--features ein-ir/generated-parser` answers on the new grammar
-# (T1f.5.5.9's sweep). No shipped build turns it on, and no command's output,
-# option or environment name moves with it off. It goes at the swap
-# (T1f.5.5.4), when the generated parser is the only one.
-generated-parser = []
+# No `[features]`: T1f.5.5.3's `generated-parser` hook went at the swap
+# (T1f.5.5.4), when the generated parser became the only one.
 
 [dev-dependencies]
 # Verifying the embedded copy against `stdlib/MANIFEST.sha256`, in a test —

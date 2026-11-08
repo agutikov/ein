@@ -26,7 +26,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use crate::ast::{Ast, Node, NodeId, loc_repr};
-use crate::parse::{ParseError, parse};
+use crate::grammar::{ParseError, parse};
 use crate::stdlib;
 
 const MODULE_SEP: char = '.';

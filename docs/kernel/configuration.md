@@ -23,9 +23,9 @@
 > **Since S1e2.2.5 (2026-11-04)** a program sets two: the user retired
 > `warn-derived-naf`, whose refutation half became *forbid*'s refusal.
 > **Since M1f T1f.5.14.6 (2026-11-08)** every command that loads a program
-> takes `--require-why`, which refuses at load a relation, rule or hrule with
-> no `:why` and decides nothing else (§ [3.4](#34-the-option-that-decides-loading)),
-> so `ein solve` has 34.
+> takes `--require-why`, which refuses at load a relation, rule, hrule or
+> macro (a macro since S1f.5.5's swap) with no `:why` and decides nothing
+> else (§ [3.4](#34-the-option-that-decides-loading)), so `ein solve` has 34.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -498,7 +498,7 @@ oracle`, `ein test`, `ein saturate`, `ein render kb`, `ein render lattice` and
 
 | option | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|
-| `--require-why` | off | whether a program loads: on, every `(relation …)`, `(rule …)` and `(hrule …)` the load reads, the stdlib's and an imported module's included, that carries no `:why "…"` is refused, one line per form, `relation 'p' has no :why "…", which this load requires of every relation, rule and hrule`, at the exit code the command gives every load error (1, and `ein test`'s 2). A `:why` that is not a string is none, as the loader's strings-only guard reads it. A `(macro …)` is asked for one only in a build with `ein-ir`'s `generated-parser` feature, whose parser reads a macro's `:why`: the hand-written parser refuses it, so no shipped build asks for what its parser cannot read, and S1f.5.5's swap deletes that `cfg`. A `.einb` is refused where its `.ein` is: a container re-loads its program from the text it stores. The stdlib loads under it: its 77 rules carry a `:why`, and it declares no relation or hrule (`ein-ir/tests/load_semantics.rs`, `require_why_decides_loading_only`) | **no**: it decides whether a program loads, never what a loaded one answers — the user's ruling of 2026-11-08, *"yes, the flag only decides loading"*. A program it lets through loads to the same KB, registries, facts and indexes, and prints the same bytes; the header leaves it out | no | contract: default false until [S1f.5.14](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s T1f.5.14.7 turns it to true, once every program the corpus, the stdlib and the Rust suites load carries its `:why` |
+| `--require-why` | off | whether a program loads: on, every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` the load reads, the stdlib's and an imported module's included, that carries no `:why "…"` is refused, one line per form, `relation 'p' has no :why "…", which this load requires of every relation, rule, hrule and macro`, at the exit code the command gives every load error (1, and `ein test`'s 2). A `:why` that is not a string is refused at the parse since S1f.5.5's swap (it was none to the loader's strings-only guard until then). A `(macro …)` was asked for one only in a build with `ein-ir`'s `generated-parser` feature until the swap, the hand-written parser refusing a macro's `:why`; the swap deleted that `cfg` and wrote the stdlib's two macros theirs. A `.einb` is refused where its `.ein` is: a container re-loads its program from the text it stores. The stdlib loads under it: its 77 rules and its two macros carry a `:why`, and it declares no relation or hrule (`ein-ir/tests/load_semantics.rs`, `require_why_decides_loading_only`) | **no**: it decides whether a program loads, never what a loaded one answers — the user's ruling of 2026-11-08, *"yes, the flag only decides loading"*. A program it lets through loads to the same KB, registries, facts and indexes, and prints the same bytes; the header leaves it out | no | contract: default false until [S1f.5.14](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s T1f.5.14.7 turns it to true, once every program the corpus, the stdlib and the Rust suites load carries its `:why` |
 
 The user's rulings of 2026-11-08: *":why is optional in grammar and loader has
 a flag that makes it required, start with default false so not break

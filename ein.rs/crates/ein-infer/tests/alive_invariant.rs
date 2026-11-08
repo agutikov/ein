@@ -93,20 +93,20 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 ///   W14 (S1e2.2.15): an object of the blind enumerator, which the obligations
 ///   rung those programs take does not consult.
 /// - the three `*-disproved`, `syntax/equality` and `syntax/arg-kinds` — the
-///   corpus programs whose H that moved (W15's rows; `arg-kinds` has none, its
-///   R a lower bound both ways).
-/// - `broken/compile/eq_arity_high.ein` — a `:match` constant on a program the
-///   compiler refuses, so no run takes its candidates.
+///   corpus programs whose H that moved (W15's rows; `arg-kinds`' `a` and `b`
+///   inside `(r (nested a b) c)`, its solve scoped since M1f S1f.5.5's swap,
+///   R {∅}).
+/// - since M1f S1f.5.5's swap, a run of digits a name (S1f.5.4's ruling):
+///   `stdlib/elim.ein`'s `0` and `1`, `:match` constants of
+///   `domain-elimination` that were ints until then; `syntax/relation-decls`'
+///   `7`, inside its `ontology` fact; and `wrong-answers/range-in-match.ein`'s
+///   `1..3`, a `:match` constant the parser refused from S1f.5.3 to the swap.
 /// - `ein-bugs/binding-key-{both,swapped,nested-only}.ein` — `Y`, inside an
 ///   activator's nested `(src Y)`, M1e2's W7 family (S1e2.2.7): H is
 ///   `(holds Y)`, as W15 made it on the pair, which S1e2.2.7 promoted.
 /// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`,
 ///   M1e2's W16 (S1e2.2.16): its one candidate is the hrule's `(checked
 ///   (box a))`, and the name is no candidate's.
-/// - `wrong-answers/str-in-assert.ein` and `str-in-hrule.ein` — `lbl`, a
-///   string in a rule's `:assert` (an hrule's in the second), M1e2's W18
-///   (S1e2.2.18): a string a rule writes is the symbol it names, so a name of
-///   the program, as the atom `lbl` would be.
 /// - the rest — nested names on programs with no relation the blind rung
 ///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
 ///   name at root's fixpoint too, `(undecided B C)`.
@@ -122,27 +122,22 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// rule's `:assert` constant, and `nested-unbound-head.ein`'s `b` and `z`. The
 /// loader refuses both programs since, so neither loads here.
 ///
-/// M1e2's W28 witness `wrong-answers/classes-int-name.ein` (S1e2.3.8,
-/// T1e2.3.8.2) stands here: the name `1`, which only rule `b`'s string
-/// `"1"` writes, printed `"1"` since the stage's one printer.
-///
-/// Seven of the witnesses M1f S1f.5.0 banked on 2026-11-08 stand here, each a
-/// name only a rule or a nested fact writes: W30's `assert-neq-w-x.ein` and
+/// Four of the witnesses M1f S1f.5.0 banked on 2026-11-08 stand here, each a
+/// name only a rule writes: W30's `assert-neq-w-x.ein` and
 /// `assert-eq-x-w.ein`, `w` in a concluded `neq` or `eq`, which makes `(p w)`
-/// a candidate; W31's `empty-match-fact.ein` and `empty-match-hrule.ein`,
-/// `b` in a conclusion no firing reaches; W32's `kwpair-in-pattern.ein` and
-/// `kwpair-in-assert.ein`, `v`, the value of a keyword pair the compiler
-/// drops and the list of the program's names still reads; and W29's
-/// `underscore-nested-fact-arg.ein`, `a`, inside the nested fact a bare `_`
-/// was dropped from. Each owning stage says whether its fix moves its line.
-const SEEDED: [(&str, &[&str]); 33] = [
-    (
-        "examples/broken/compile/eq_arity_high.ein",
-        &[
-            "`A`, matched by rule `three-way-equality`",
-            "`B`, matched by rule `three-way-equality`",
-        ],
-    ),
+/// a candidate; and W31's `empty-match-fact.ein` and `empty-match-hrule.ein`,
+/// `b` in a conclusion no firing reaches. Each owning stage says whether its
+/// fix moves its line.
+///
+/// **Left at M1f S1f.5.5's swap (T1f.5.5.4)**, each refused at the parse since
+/// and so loading here no more: `broken/compile/eq_arity_high.ein`'s `A` and
+/// `B` (moved to `examples/broken/`, `eq` taking two terms), the moved
+/// `kwpair-below-the-filter.ein`'s four step names (S1f.5.11), W18's
+/// `str-in-assert.ein` and `str-in-hrule.ein`'s `lbl` and W28's
+/// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
+/// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
+/// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
+const SEEDED: [(&str, &[&str]); 27] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -160,15 +155,6 @@ const SEEDED: [(&str, &[&str]); 33] = [
         &["`Y`, in (note edge (src Y))"],
     ),
     (
-        "examples/ein-bugs/kwpair-below-the-filter.ein",
-        &[
-            "`s1`, in (tracex (step s1) (step s2) (step s3) (step s4))",
-            "`s2`, in (tracex (step s1) (step s2) (step s3) (step s4))",
-            "`s3`, in (tracex (step s1) (step s2) (step s3) (step s4))",
-            "`s4`, in (tracex (step s1) (step s2) (step s3) (step s4))",
-        ],
-    ),
-    (
         "examples/ein-bugs/mixed-type-hypothesis.ein",
         &["`Ann`, asserted by hrule `guess`"],
     ),
@@ -181,10 +167,6 @@ const SEEDED: [(&str, &[&str]); 33] = [
         &["`w`, asserted by rule `r`"],
     ),
     (
-        "examples/ein-bugs/wrong-answers/classes-int-name.ein",
-        &["`\"1\"`, asserted by rule `b`"],
-    ),
-    (
         "examples/ein-bugs/wrong-answers/empty-match-fact.ein",
         &["`b`, asserted by rule `r`"],
     ),
@@ -195,14 +177,6 @@ const SEEDED: [(&str, &[&str]); 33] = [
     (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
         &["`Z`, asserted by rule `spawn`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/kwpair-in-assert.ein",
-        &["`v`, asserted by rule `r`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein",
-        &["`v`, matched by rule `r`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/match-only.ein",
@@ -225,16 +199,8 @@ const SEEDED: [(&str, &[&str]); 33] = [
         &["`Z`, asserted by rule `special`"],
     ),
     (
-        "examples/ein-bugs/wrong-answers/str-in-assert.ein",
-        &["`lbl`, asserted by rule `s`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/str-in-hrule.ein",
-        &["`lbl`, asserted by hrule `h`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein",
-        &["`a`, in (r (f a) c)"],
+        "examples/ein-bugs/wrong-answers/range-in-match.ein",
+        &["`1..3`, matched by rule `r`"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",
@@ -272,6 +238,7 @@ const SEEDED: [(&str, &[&str]); 33] = [
     (
         "examples/syntax/relation-decls.ein",
         &[
+            "`7`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
             "`R2`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
             "`R3`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
             "`R4`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
@@ -289,6 +256,13 @@ const SEEDED: [(&str, &[&str]); 33] = [
             "`b`, in (facts (r a b))",
             "`c`, in (reasoning (r b c))",
             "`r`, in (ontology (relation r T T) (is-a a T))",
+        ],
+    ),
+    (
+        "stdlib/elim.ein",
+        &[
+            "`0`, matched by rule `domain-elimination`",
+            "`1`, matched by rule `domain-elimination`",
         ],
     ),
     (
@@ -358,12 +332,8 @@ fn every_name_of_the_program_is_a_candidate_object() {
         "only {programs} corpus files loaded — the sweep stopped looking"
     );
     found.sort();
-    // M1f S1f.5.3: `arg-kinds` writes a range, and the parser refuses it
-    // until S1f.5.4 (`ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways), so
-    // its two names are not read until then.
     let mut want: Vec<(String, String)> = SEEDED
         .iter()
-        .filter(|(p, _)| !ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(p))
         .flat_map(|(p, names)| names.iter().map(|n| (p.to_string(), n.to_string())))
         .collect();
     want.sort();

@@ -1,3 +1,2 @@
-{FILE}:-1:-1: unexpected input
-  :assert b
-           ^
+{FILE}:4:10: unexpected `a`: a name
+  repair: Insert `(`, Shift `a`, Delete `:assert`, Shift `b`, Insert `)`, Insert `)`

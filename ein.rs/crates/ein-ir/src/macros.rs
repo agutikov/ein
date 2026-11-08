@@ -44,8 +44,8 @@ pub struct Macro {
     /// `(macro NAME (params…) BODY :why "…")`'s template, which a macro may
     /// carry as a relation and a rule do: the user's ruling of 2026-11-08,
     /// that every form an NL template can go on takes one (M1f S1f.5.5, T3).
-    /// Only the generated parser writes it; the hand-written parser refuses a
-    /// macro with anything after its body.
+    /// Until S1f.5.5's swap (T1f.5.5.4) the hand-written parser, the shipped
+    /// one, refused a macro with anything after its body.
     pub why: Option<String>,
     /// The declaring form, for the `Loc` the loader stores on the program.
     pub form: NodeId,
@@ -374,7 +374,7 @@ fn concrete_heads(ast: &Ast, node: NodeId, out: &mut Vec<String>) {
 mod tests {
     use super::*;
     use crate::dump::dump_compact;
-    use crate::parse::parse;
+    use crate::parse;
 
     fn expand_src(src: &str) -> Result<String, MacroError> {
         let mut ast = Ast::new();
@@ -410,6 +410,10 @@ mod tests {
         assert!(out.contains("(forall a b)"), "{out}");
     }
 
+    /// The arity of an invocation is its positional arguments. Until M1f
+    /// S1f.5.5's swap (T1f.5.5.4) a call's trailing keyword pairs were
+    /// metadata and not counted; since, no keyword pair parses inside a term
+    /// (S1f.5.11's ruling), so a call carries none and the parse refuses one.
     #[test]
     fn arity_is_counted_over_positional_args_only() {
         let err = expand_src(&format!(
@@ -422,11 +426,28 @@ mod tests {
             "{}",
             err.0
         );
-        // Trailing kw-pairs are metadata, not arguments.
+        // A keyword pair in a call is refused at the parse, at its keyword.
+        let refused = parse(
+            &mut Ast::new(),
+            &format!(
+                "{FORALL}\n(rule r () :match (forall (p ?x) (q ?x) :why \"m\") :assert (done))"
+            ),
+            None,
+        )
+        .expect_err("a keyword pair in a call");
+        assert_eq!(
+            (
+                refused.errors[0].line,
+                refused.errors[0].col,
+                refused.errors[0].what.as_str()
+            ),
+            (2, 41, "unexpected `:why`"),
+            "{refused}"
+        );
         expand_src(&format!(
-            "{FORALL}\n(rule r () :match (forall (p ?x) (q ?x) :why \"m\") :assert (done))"
+            "{FORALL}\n(rule r () :match (forall (p ?x) (q ?x)) :assert (done))"
         ))
-        .expect("kw-pairs do not count");
+        .expect("two positional arguments");
     }
 
     #[test]

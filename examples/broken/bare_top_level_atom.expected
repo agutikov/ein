@@ -1,3 +1,2 @@
-{FILE}:4:1: unexpected input
-Norwegian
-^
+{FILE}:4:1: unexpected `Norwegian`: a name
+  repair: Delete `Norwegian`

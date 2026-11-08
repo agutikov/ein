@@ -117,15 +117,17 @@ fn the_dag_trace_view_chains_through_derived_facts() {
 
 /// **non-step-trace-events-render-as-ellipses.** Only a `step` is a box.
 ///
-/// The trace AST is open — `branch-open`, `branch-close`, `contradiction`,
-/// `symmetry-class` are events with the same `(head name :using …)` shape as a
-/// step. Drawing them identically would say they are derivations, which is the
-/// one thing they are not: nothing follows from a branch closing. The ellipse
-/// and the `"{kind}: {name}"` label are how the reader tells narration from
-/// inference.
+/// Until M1f S1f.5.5's swap the trace AST was open — `branch-open`,
+/// `branch-close`, `contradiction`, `symmetry-class` were events with the
+/// same `(head name :using …)` shape as a step, drawn as ellipses labelled
+/// `"{kind}: {name}"` so the reader told narration from inference. Since the
+/// swap a `(trace …)` takes `step` alone, with its five keywords (the paper
+/// grammar's default 8), so a trace that writes another event is refused at
+/// the parse at it, and every event a trace can hold is a box.
 #[test]
 fn only_a_step_event_is_a_box_the_rest_are_ellipses() {
-    let (ast, forms) = parsed(
+    let refused = parse(
+        &mut Ast::new(),
         "\
 (trace
   (step s1 :rule from-condition :using (c10) :derives (lives-in Norwegian House-1))
@@ -133,28 +135,31 @@ fn only_a_step_event_is_a_box_the_rest_are_ellipses() {
   (branch-close b2)
   (contradiction x1)
   (symmetry-class sc1))",
+        Some("<fixture>"),
+    )
+    .expect_err("a trace takes `step` alone");
+    assert_eq!(
+        (refused.position(), refused.errors[0].what.as_str()),
+        ((3, 4), "unexpected `branch-open`: a name"),
+        "{refused}"
+    );
+    let (ast, forms) = parsed(
+        "\
+(trace
+  (step s1 :rule from-condition :using (c10) :derives (lives-in Norwegian House-1))
+  (step s2 :using (c11)))",
     );
     let dot = render_trace(&ast, forms[0], TraceView::PerStep);
-    assert!(
-        dot.contains("\"s1\" [shape=box, label=\"step: s1\"];"),
-        "{dot}"
-    );
-    for (id, kind) in [
-        ("b1", "branch-open"),
-        ("b2", "branch-close"),
-        ("x1", "contradiction"),
-        ("sc1", "symmetry-class"),
-    ] {
+    for id in ["s1", "s2"] {
         assert!(
-            dot.contains(&format!(
-                "\"{id}\" [shape=ellipse, label=\"{kind}: {id}\"];"
-            )),
-            "{kind} is not an ellipse labelled by its kind:\n{dot}"
+            dot.contains(&format!("\"{id}\" [shape=box, label=\"step: {id}\"];")),
+            "{dot}"
         );
     }
-    // A premise is a dashed rectangle whichever kind of event consumes it.
+    assert!(!dot.contains("ellipse"), "{dot}");
+    // A premise is a dashed rectangle whichever step consumes it.
     assert!(dot.contains("\"c10\" [shape=rectangle];"), "{dot}");
-    assert!(dot.contains("\"c11\" -> \"b1\" [style=dashed];"), "{dot}");
+    assert!(dot.contains("\"c11\" -> \"s2\" [style=dashed];"), "{dot}");
 }
 
 // ── the per-form IR dispatch ───────────────────────────────────────
@@ -192,23 +197,26 @@ fn an_equality_fact_draws_a_class_node_rather_than_an_arrow() {
 /// **wildcard-and-var-heads-render-as-their-labels.** A pattern head that is
 /// not an atom still labels its edge.
 ///
-/// `(_ ?a ?b)` and `(?r ?a ?b)` are the two relation-abstract patterns the
-/// language has, and both have no relation *name* to colour or label an edge
-/// with. Dropping the clause — the easy failure, since every other path reads
-/// a head atom — would render a rule library in which the generic rules are
-/// blank, and the rules that quantify over relations are the interesting ones.
+/// `(?r ?a ?b)` is the relation-abstract pattern the language has, and it has
+/// no relation *name* to colour or label an edge with. Dropping the clause —
+/// the easy failure, since every other path reads a head atom — would render
+/// a rule library in which the generic rules are blank, and the rules that
+/// quantify over relations are the interesting ones. Until M1f S1f.5.5's swap
+/// `(_ ?a ?b)` was the other, labelled `_`; since, a bare `_` is refused at
+/// the parse in every position (S1f.5.1), and so is a variable as a whole
+/// conclusion, `:assert ?a` (G-14), which both rules wrote, so the rule that
+/// keeps its picture concludes a fact.
 #[test]
 fn a_wildcard_or_variable_pattern_head_still_labels_its_edge() {
-    let (ast, forms) = parsed(
-        "(rule w () :match (_ ?a ?b) :assert ?a :why \"w\")\n\
-         (rule v (?r) :match (?r ?a ?b) :assert ?a :why \"v\")",
-    );
-    let wildcard = render_rule_form(&ast, forms[0], RuleMode::Overlay);
-    assert!(
-        wildcard.contains("\"?a\" -> \"?b\" [label=\"_\""),
-        "the wildcard head did not become the edge label:\n{wildcard}"
-    );
-    let var = render_rule_form(&ast, forms[1], RuleMode::Overlay);
+    let refused = parse(
+        &mut Ast::new(),
+        "(rule w () :match (_ ?a ?b) :assert ?a :why \"w\")",
+        Some("<fixture>"),
+    )
+    .expect_err("a bare `_` and a variable conclusion are refused");
+    assert_eq!(refused.position(), (1, 20), "{refused}");
+    let (ast, forms) = parsed("(rule v (?r) :match (?r ?a ?b) :assert (q ?a) :why \"v\")");
+    let var = render_rule_form(&ast, forms[0], RuleMode::Overlay);
     assert!(
         var.contains("\"?a\" -> \"?b\" [label=\"?r\""),
         "the rule parameter did not become the edge label:\n{var}"

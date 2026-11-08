@@ -1,6 +1,7 @@
 recovery_cut.ein:8:3: unexpected `:bogus`: a keyword this form does not take
   repair: Delete `:bogus`, Delete `3`
 recovery_cut.ein:9:11: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
   repair: Insert `(`, Delete `_`
 recovery_cut.ein:11:9: unexpected `there:`: a token that is not a name
 recovery_cut.ein:11:9: recovery stopped here, at its budget of 30000 steps: errors after this one are not reported

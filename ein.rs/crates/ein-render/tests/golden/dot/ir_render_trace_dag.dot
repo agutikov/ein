@@ -2,5 +2,8 @@ digraph trace {
   "(lives-in Norwegian House-1)" [shape=box, style=bold, label="(lives-in Norwegian House-1)"];
   "c10" [shape=rectangle];
   "(color-loc Blue House-2)" [shape=box, style=bold, label="(color-loc Blue House-2)"];
+  "c15" [shape=rectangle];
   "c10" -> "(lives-in Norwegian House-1)" [label="from-condition"];
+  "(lives-in Norwegian House-1)" -> "(color-loc Blue House-2)" [label="adjacent"];
+  "c15" -> "(color-loc Blue House-2)" [label="adjacent"];
 }

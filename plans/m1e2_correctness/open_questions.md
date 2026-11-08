@@ -1623,9 +1623,12 @@ ranges, so the token goes rather than a range in a rule being refused at load.
 **Built 2026-11-08** by
 [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md)
 (T1f.5.3.2, `65d1ad85`): there is no `RANGE` token, the loader's range line is
-gone, and `1..3` is a parse error wherever it is written, until S1f.5.4 makes it
-one name; `W20/range-in-match` stays fixed, its `now` the parser's line. The
-wildcard half stands.
+gone, and `1..3` was a parse error wherever it was written until M1f S1f.5.5's
+swap (T1f.5.5.4, 2026-11-09) made it one name, S1f.5.4's ruling: `(n 1..3)` in
+a rule is a pattern over that name since, and `W20/range-in-match`'s `right`
+is the cube of 8 it answers. The wildcard half stood until the same swap, which
+refuses a bare `_` at the parse in every position (S1f.5.1's ruling,
+Q-M1e2.22).
 
 ## Q-M1e2.14 — How does a head wildcard match every relation?
 
@@ -2432,8 +2435,8 @@ number ranges either, and never had and don't have plant to have numbers or rang
 
 **Ranges.** The `RANGE` token goes, with
 [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md). **Built 2026-11-08**
-(T1f.5.3.2, `65d1ad85`): no terminal reads a range, and `1..5` is a parse error until S1f.5.4 makes it one
-name. It supersedes
+(T1f.5.3.2, `65d1ad85`): no terminal reads a range, and `1..5` was a parse error until M1f S1f.5.5's swap
+(T1f.5.5.4, 2026-11-09) made it one name, S1f.5.4's ruling. It supersedes
 [Q-M1e2.13](#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean) on a range.
 
 **Numbers.** No operation reads a value as a quantity: the built-in predicates are `eq` and

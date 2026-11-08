@@ -1,7 +1,9 @@
 ;;; Syntax probe — is-a-shapes.
 ;;;
-;;; The kernel `is-a` head with each argument kind in the subject
-;;; position — an atom, an int, a variable and the wildcard.
+;;; The kernel `is-a` head with each argument kind it can hold in the subject
+;;; position: a name, and digits, which are a name (M1f S1f.5.4's name rule).
+;;; The variable and the wildcard it carried until M1f S1f.5.5's swap are
+;;; refused at the parse (S1f.5.2's G-6 and S1f.5.1), Q-M1f.2 (a)'s rewrite.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
@@ -11,5 +13,3 @@
 
 (is-a a T)
 (is-a 7 T)
-(is-a ?x T)
-(is-a _ T)

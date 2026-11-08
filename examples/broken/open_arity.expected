@@ -1,0 +1,8 @@
+{FILE}:9:20: unexpected `(`
+  repair: Insert `)`, Insert `:assert`
+  repair: Insert `)`, Insert `:match`
+{FILE}:9:33: unexpected `(`
+  repair: Insert `:assert`
+  repair: Insert `:match`
+{FILE}:9:44: unexpected `)`
+  repair: Delete `)`

@@ -5,10 +5,12 @@
 > terminal table, the form set, what each declarator means. This file is the
 > grammar.
 >
-> The engine parses by **recursive descent**
-> ([`ein-ir/src/{lex,parse}.rs`](../../../../ein.rs/crates/ein-ir/src/parse.rs)),
-> which is an implementation and not a specification, so the grammar is
-> stated here. It is checked against that parser, and
+> The engine parsed by **recursive descent** (`ein-ir/src/{lex,parse}.rs`)
+> until M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-09); since, it parses with the
+> parser generated from
+> [`ein-ir/src/ein.l` and `ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y)
+> (`ein_ir::grammar`), and this page's blocks become that grammar's at
+> T1f.5.5.7. Until then the grammar is stated here. It is checked against that parser, and
 > [§5](#5-what-keeps-this-document-honest) is what pins it: a 78-case decision
 > table.
 
@@ -114,8 +116,10 @@ Four terminal facts that are load-bearing and easy to lose:
    2026-11-08): Ein has no numbers and no ranges, on the user's ruling of
    2026-11-06
    ([Q-M1e2.24](../../../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
-   `1..5` is the `INT` `1` and then `..5`, which no terminal matches, so the
-   parse stops at the first `.`; from S1f.5.4 it is one name. Until then
+   From S1f.5.3 to S1f.5.5's swap `1..5` was the `INT` `1` and then `..5`,
+   which no terminal matched, so the parse stopped at the first `.`; since the
+   swap it is one name (S1f.5.4's ruling, the generated parser's `NAME`, which
+   T1f.5.5.7 writes into this page). Until S1f.5.3
    `RANGE ::= [0-9]+ '..' ( [0-9]+ | '*' )`, *UML-style cardinality* nothing
    read, was tried before `INT`: in a fact it stored the name `1..5`, as a
    keyword's value it was dropped, and in a rule the loader refused it (M1e2

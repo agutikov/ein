@@ -4,20 +4,19 @@
 //!
 //! | name | where a program may write it | what holds it |
 //! |---|---|---|
-//! | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | nowhere: they are the rule names the engine writes for a conclusion no rule drew, with no meaning a program can give them | the generated grammar's `WRITEBACK` token, which no production takes; the hand-written lexer has no token that starts with `<` |
-//! | `__closed__`, `__symmetric__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, an hrule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name*, which both parsers feed |
+//! | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | nowhere: they are the rule names the engine writes for a conclusion no rule drew, with no meaning a program can give them | the grammar's `WRITEBACK` token, which no production takes |
+//! | `__closed__`, `__symmetric__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, an hrule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name* |
 //!
-//! Every program here is read by both parsers, the generated one and the
-//! hand-written one T1f.5.5.4 removes, and each is held to the same answer:
-//! refused, or loaded.
+//! Until the swap (T1f.5.5.4) every program here was also read by the
+//! hand-written parser, which refused each writeback name at its `<` and fed
+//! the loader the same dunders, and held to the same answer.
 //!
 //! ```text
 //! cargo test -p ein-ir --test engine_names
 //! ```
 
 use ein_ir::Ast;
-use ein_ir::grammar::{self, Refusal};
-use ein_ir::parse::hand_written;
+use ein_ir::grammar::{self, ParseError};
 
 /// The engine's three writeback rule names (`ein_core::terms::ENGINE`).
 const WRITEBACKS: [&str; 3] = [
@@ -29,28 +28,22 @@ const WRITEBACKS: [&str; 3] = [
 /// The kernel's two dunders.
 const DUNDERS: [&str; 2] = [ein_core::terms::CLOSED, ein_core::terms::SYMMETRIC];
 
-/// What the generated parser says of a writeback name where it stands.
+/// What the parser says of a writeback name where it stands.
 const WRITEBACK_REFUSED: &str = "the engine's writeback rule name (reserved)";
 
-/// Parse `text` with one parser and load it: `Ok(())`, or every line it is
-/// refused with.
-fn load(text: &str, generated: bool) -> Result<(), String> {
+/// Parse `text` and load it: `Ok(())`, or every line it is refused with.
+fn load(text: &str) -> Result<(), String> {
     let mut ast = Ast::new();
     let mut terms = ein_core::Terms::new();
-    let forms = if generated {
-        grammar::parse(&mut ast, text, Some("probe.ein")).map_err(|e| e.to_string())?
-    } else {
-        hand_written(&mut ast, text, Some("probe.ein")).map_err(|e| e.to_string())?
-    };
+    let forms = grammar::parse(&mut ast, text, Some("probe.ein")).map_err(|e| e.to_string())?;
     ein_ir::load(&mut ast, &mut terms, &forms, None)
         .map(|_| ())
         .map_err(|e| e.0)
 }
 
-/// The generated parser's report on `text`, which must refuse it.
-fn refusal(text: &str) -> Refusal {
-    grammar::parse(&mut Ast::new(), text, Some("probe.ein"))
-        .expect_err("the generated parser refuses it")
+/// The parser's report on `text`, which must refuse it.
+fn refusal(text: &str) -> ParseError {
+    grammar::parse(&mut Ast::new(), text, Some("probe.ein")).expect_err("the parser refuses it")
 }
 
 /// The 1-based line and column of each place `name` is written in `text`.
@@ -66,9 +59,8 @@ fn places(text: &str, name: &str) -> Vec<(u32, u32)> {
 }
 
 /// **A writeback name is refused wherever a program writes it.** One program
-/// per position, each name in turn: the generated parser reports an error at
-/// the name, in its own words, and the hand-written parser refuses the file at
-/// the name's `<`.
+/// per position, each name in turn: the parser reports an error at the name,
+/// in its own words.
 #[test]
 fn a_writeback_name_is_refused_wherever_a_program_writes_it() {
     let positions = [
@@ -123,15 +115,8 @@ fn a_writeback_name_is_refused_wherever_a_program_writes_it() {
                     .errors
                     .iter()
                     .any(|e| (e.line, e.col) == at[0] && e.what.ends_with(WRITEBACK_REFUSED)),
-                "{name} as {position}: the generated parser's report is not at {:?}:\n{report}",
+                "{name} as {position}: the parser's report is not at {:?}:\n{report}",
                 at[0]
-            );
-            let old = hand_written(&mut Ast::new(), &text, Some("probe.ein"))
-                .expect_err("the hand-written parser refuses it");
-            assert_eq!(
-                (old.line as u32, old.col as u32),
-                at[0],
-                "{name} as {position}: the hand-written parser refuses elsewhere: {old}"
             );
         }
     }
@@ -139,24 +124,17 @@ fn a_writeback_name_is_refused_wherever_a_program_writes_it() {
 
 /// **What is not a writeback name is not refused as one**: the name in a
 /// string or a comment, and a longer run that starts with one, which the name
-/// rule reads as the name it spells (the hand-written lexer has no token for a
-/// `<`, so it refuses that run as it refuses any).
+/// rule reads as the name it spells.
 #[test]
 fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
     for name in WRITEBACKS {
         let text = format!(
             "(relation p T :why \"{{?1}} is not {name}\")\n; {name}\n#| {name} |#\n(p a)\n"
         );
-        for generated in [true, false] {
-            load(&text, generated)
-                .unwrap_or_else(|e| panic!("{name} in a string or a comment: {e}"));
-        }
+        load(&text).unwrap_or_else(|e| panic!("{name} in a string or a comment: {e}"));
         let longer = format!("(relation p T)\n(p {name}x)\n");
-        load(&longer, true).unwrap_or_else(|e| panic!("{name}x is a name: {e}"));
-        assert!(
-            !grammar::is_one_name(name),
-            "{name} is a NAME of the generated lexer"
-        );
+        load(&longer).unwrap_or_else(|e| panic!("{name}x is a name: {e}"));
+        assert!(!grammar::is_one_name(name), "{name} is a NAME of the lexer");
         assert!(grammar::is_one_name(&format!("{name}x")));
     }
 }
@@ -166,9 +144,9 @@ fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
 /// program unchanged). It declares a relation named `<forced-positive>`,
 /// names two rules after the other two, and asks for both dunders' behaviour as
 /// the relation of a fact, which every reading of the ruling keeps legal. The
-/// generated parser reports every error recovery reaches: one at each place a
-/// writeback name is written, and none on the dunders' lines. The
-/// hand-written parser stops at the first `<`.
+/// parser reports every error recovery reaches: one at each place a writeback
+/// name is written, and none on the dunders' lines. The hand-written parser
+/// stopped at the first `<`, at 5:11, until the swap.
 #[test]
 fn t9s_probe_is_refused_at_its_three_writeback_names() {
     let probe = ";; S1f.5.5 T9 probe for T8's leftover: the engine's writeback rule names and the
@@ -212,14 +190,11 @@ fn t9s_probe_is_refused_at_its_three_writeback_names() {
         report.errors.iter().all(|e| e.line < 9),
         "an error on the dunders' lines:\n{report}"
     );
-    let old = hand_written(&mut Ast::new(), probe, Some("probe.ein"))
-        .expect_err("the hand-written parser refuses it");
-    assert_eq!((old.line, old.col), (5, 11), "{old}");
 }
 
 /// **A dunder is refused wherever a program binds it** (Q-M1f.7 (b)): a
 /// declared relation, a rule's, an hrule's or a macro's name, and an import's
-/// `:as`, each dunder in each, through both parsers, with the loader's line.
+/// `:as`, each dunder in each, with the loader's line.
 #[test]
 fn a_dunder_is_refused_wherever_a_program_binds_it() {
     let positions = [
@@ -253,19 +228,9 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
         for (position, template, line) in positions {
             let text = format!("{}\n", template.replace('D', name));
             let want = line.replace('D', name);
-            for generated in [true, false] {
-                let parser = if generated {
-                    "generated"
-                } else {
-                    "hand-written"
-                };
-                match load(&text, generated) {
-                    Ok(()) => panic!("{name} as {position} loads through the {parser} parser"),
-                    Err(e) => assert!(
-                        e.contains(&want),
-                        "{name} as {position}, the {parser} parser: {e}"
-                    ),
-                }
+            match load(&text) {
+                Ok(()) => panic!("{name} as {position} loads"),
+                Err(e) => assert!(e.contains(&want), "{name} as {position}: {e}"),
             }
         }
     }
@@ -275,7 +240,7 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
 /// relation of a fact, a nested fact, a premise, a conclusion, a goal and a
 /// claim's fact, and as a value: an argument, `std.algebra`'s documented
 /// `(imply1 functional __closed__)`, a `:no-hypothesis` list and a fact's
-/// `:rule`. One program, both parsers.
+/// `:rule`. One program.
 #[test]
 fn a_dunder_is_legal_wherever_a_program_uses_it() {
     let text = "(import std.algebra :symbols (imply1))
@@ -297,16 +262,5 @@ fn a_dunder_is_legal_wherever_a_program_uses_it() {
 (solve :no-hypothesis (__closed__ __symmetric__))
 (query :goal (__closed__ ?R) :expect (model (__closed__ p)))
 ";
-    for generated in [true, false] {
-        load(text, generated).unwrap_or_else(|e| {
-            panic!(
-                "the {} parser: {e}",
-                if generated {
-                    "generated"
-                } else {
-                    "hand-written"
-                }
-            )
-        });
-    }
+    load(text).unwrap_or_else(|e| panic!("{e}"));
 }

@@ -5,8 +5,15 @@ Files that **parse** and **load** and then fail to **compile**: the shapes
 raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 
-**Six, in two batches.** S1.22.0's four are below, two of them here since
-M1e2 S1e2.2.24; M1e
+**Two since M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-09)**: `nested_or` and
+`activator_arity`. The grammar states `eq`'s and `absent`'s shapes, `eq`
+taking two terms and `absent` one premise, so the second batch below is
+refused at the parse, and its four fixtures moved to `../` beside the
+parse-negatives (Q-M1f.2 (a)), each `.expected` the parse report; what
+follows is their record.
+
+**Six, in two batches, until then.** S1.22.0's four are below, two of them
+here since M1e2 S1e2.2.24; M1e
 [S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)
 added four more — `eq` and `absent`, each below and above its arity — which is
 [§ The second batch](#the-second-batch-m1e-arity).

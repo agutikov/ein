@@ -660,7 +660,7 @@ note   = "`(?R ?x)` with `?R` unbound is a `CompileError`: exit 1, and the messa
 path   = "examples/ein-bugs/int-goal-binding.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "render rules"]
-note   = "S1a.6.6 regression — an integer goal binding is a JSON *number* in `summary.json`, not a string. stdout cannot show the difference, and no other corpus file binds a query variable to an int. Carries a value wider than i64 on purpose."
+note   = "S1a.6.6 regression — a goal binding of digits in `summary.json`. Until M1f S1f.5.5's swap `8`, `-7` and `99999999999999999999999` were ints, each a JSON *number*, the last wider than i64 on purpose; since the swap a run of digits is a name (S1f.5.4's ruling) and every name is a JSON *string* (S1f.5.4's Q4 (a), decided 2026-11-08), so `(p 007)` and `(p 7)` stay two, and the three are `\"8\"`, `\"-7\"` and `\"99999999999999999999999\"`. stdout cannot show the difference."
 
 [[entry]]
 path   = "examples/ein-bugs/fact-goal-binding.ein"
@@ -669,10 +669,10 @@ runs   = ["solve", "saturate", "render rules"]
 note   = "S1a.6.6 regression — a *nested fact* goal binding, which `summary.json` renders as an s-expression string."
 
 [[entry]]
-path   = "examples/ein-bugs/kwpair-below-the-filter.ein"
-group  = "regression"
+path   = "examples/broken/kwpair-below-the-filter.ein"
+group  = "parse-negative"
 runs   = ["solve", "saturate", "render constraints", "render program"]
-note   = "M1e2 S1e2.3.2 (P1) — a keyword pair *below* an undeclared form, `(tracex (step s1 :rule … :using … :derives …) …)`. The loader accepts it as an ontology fact; `render constraints` and `render program` both exited 101 in `dot_util::value_label`, *not a value node: KwPair*, because `constraints.rs` filters a form's own keyword pairs one level deep and `ir_dot`'s ontology path filters none. Fixed on the user's ruling (a) of 2026-11-03: `value_label` labels a keyword pair `:key value` for every caller. Found by `utils/fuzz_engine.py` 2026-08-23 (`corpus/fuzz_findings/kwpair-below-the-filter.md`); banked here so `corpus_shapes.rs` and `dot_wellformed.rs` run every view over it."
+note   = "Refused at the parse since M1f S1f.5.5's swap, at its first `:rule` (S1f.5.11's default: no keyword pair inside a term or a nested fact), and moved here from `examples/ein-bugs/` (Q-M1f.2 (a)), its `.expected` the parse report; until then: M1e2 S1e2.3.2 (P1) — a keyword pair *below* an undeclared form, `(tracex (step s1 :rule … :using … :derives …) …)`. The loader accepts it as an ontology fact; `render constraints` and `render program` both exited 101 in `dot_util::value_label`, *not a value node: KwPair*, because `constraints.rs` filters a form's own keyword pairs one level deep and `ir_dot`'s ontology path filters none. Fixed on the user's ruling (a) of 2026-11-03: `value_label` labels a keyword pair `:key value` for every caller. Found by `utils/fuzz_engine.py` 2026-08-23 (`corpus/fuzz_findings/kwpair-below-the-filter.md`); banked here so `corpus_shapes.rs` and `dot_wellformed.rs` run every view over it."
 
 [[entry]]
 path   = "examples/ein-bugs/d3-goal-row-order.ein"
@@ -690,49 +690,37 @@ note   = "M1e2 S1e2.3.4 (P1e2.3's S8) — the only program known to put a nested
 path   = "examples/ein-bugs/binding-key-int-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): `defined_behaviour.md` § 3.2's program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare: `(noted 1 1)` and `(noted 2 1)` at root in either build and under either key, and R = {∅}, which `:expect` states."
+note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): `defined_behaviour.md` § 3.2's program with the nested-fact activator deleted, a control. One activator, one plan, so no second register layout for the binding key to compare: `(noted 1 1)` and `(noted 2 1)` at root in either build and under either key, and R = {∅}, which `:expect` states. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is two states, root and `{(holds 2)}`, each with root's two `noted` facts, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-nested-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key."
+note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, the two and each with `(holds 2)`, which `:expect` states."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-both.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's witness (`W7/binding-key-layout`, Q-M1e.16), promoted from `corpus/fuzz_findings/binding-key-layout.ein` by S1e2.2.7: an int and a nested fact in one activator position. The binding key interned only an activator's symbol arguments, so the two plans shared a space with two register layouts, and `(noted 1 3)` was lost in every state in a release build, while a debug build aborted in `check_layout`. Fixed by S1e2.2.7 (2026-11-04): the key interns every argument, as the compile cache's does. R is two states with the nested-only control's `noted` facts, which `:expect` states, in either build."
+note   = "M1e2 W7's witness (`W7/binding-key-layout`, Q-M1e.16), promoted from `corpus/fuzz_findings/binding-key-layout.ein` by S1e2.2.7: an int and a nested fact in one activator position. The binding key interned only an activator's symbol arguments, so the two plans shared a space with two register layouts, and `(noted 1 3)` was lost in every state in a release build, while a debug build aborted in `check_layout`. Fixed by S1e2.2.7 (2026-11-04): the key interns every argument, as the compile cache's does. R is two states with the nested-only control's `noted` facts, which `:expect` states, in either build. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, which `:expect` states; unscoped, H was 21 candidates and R past the budget."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-swapped.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both."
-
-[[entry]]
-path   = "examples/ein-bugs/activator-text-int-only.ein"
-group  = "regression"
-runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W16's family (S1e2.2.16): the stage file's program, `(holds 1) (holds \"1\")`, with the string activator deleted, a control. One activator, one plan, so no second activator for the compile key to collide with: `(noted 1 1)` and `(noted 2 1)` over the int at root, in either build and under either key, and R = {∅}; the pair with both activators reaches its four since S1e2.2.16. The `:expect` states them, and cannot tell them from the string control's: a claim compares facts as printed, and the printer drops a string's quotes (P1e2.3's N5); `ein saturate`'s count does."
-
-[[entry]]
-path   = "examples/ein-bugs/activator-text-string-only.ein"
-group  = "regression"
-runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W16's family (S1e2.2.16): the stage file's program with the int activator deleted, a control: `(noted 1 \"1\")` and `(noted 2 \"1\")` over the string at root, in either build and under either key, and R = {∅}, which `:expect` states as written."
+note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both. Since M1f S1f.5.5's swap scoped as its twin (S1f.5.4's proposal A): R four states, the same `:expect`."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-text-int-and-string.ein"
 group  = "regression"
-runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W16's witness (`W16/int-and-string`), promoted from `corpus/fuzz_findings/activator-text-key.ein` by S1e2.2.16: the activators `(note edge 1)` and `(note edge \"1\")`, an int and a string with one text. The compile key interned a non-symbol argument's text, so the two keyed one plan, the string activator compiled nothing, and root held the int's two `noted` facts and not the string's in a release build, while a debug build aborted in `Engine::compile_all`'s shortcut check. Fixed by S1e2.2.16 (2026-11-04): the key is the activator's values, and root holds the four, in either build. The `:expect` states them as written and cannot tell an int from a string (P1e2.3's N5); `ein saturate`'s `noted 4` and `rule_semantics.rs` do."
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1e2 W16's witness (`W16/int-and-string`), promoted from `corpus/fuzz_findings/activator-text-key.ein` by S1e2.2.16: the activators `(note edge 1)` and `(note edge \"1\")`, an int and a string with one text. The compile key interned a non-symbol argument's text, so the two keyed one plan, the string activator compiled nothing, and root held the int's two `noted` facts and not the string's in a release build, while a debug build aborted in `Engine::compile_all`'s shortcut check. Fixed by S1e2.2.16 (2026-11-04): the key is the activator's values, and root holds the four, in either build. The `:expect` states them as written and cannot tell an int from a string (P1e2.3's N5); `ein saturate`'s `noted 4` and `rule_semantics.rs` do. **Refused at the parse since M1f S1f.5.5's swap** (S1f.5.2's ruling: a string is natural-language text, so `(holds \"1\")` and `(note edge \"1\")` are refused, each at its `\"1\"`), and kept as the refusal's witness, its row restated to it (the user's ruling of 2026-11-08 on the review stop, item 2); its `test` cell went with its claim, which a refused file cannot state."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-text-string-then-int.ein"
 group  = "regression"
-runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W16's twin (`W16/string-then-int`): `activator-text-int-and-string.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/activator-text-key-swapped.ein` by S1e2.2.16. This order lost the int's two `noted` facts instead, and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both."
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1e2 W16's twin (`W16/string-then-int`): `activator-text-int-and-string.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/activator-text-key-swapped.ein` by S1e2.2.16. This order lost the int's two `noted` facts instead, and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both. **Refused at the parse since M1f S1f.5.5's swap**, as its twin is, and kept as the refusal's witness; its `test` cell went with its claim."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-all-int.ein"
@@ -998,31 +986,31 @@ note   = "M1e2 W17 (`W17/forbid-chain-node-writes`), found by S1e2.2.17: `chk` c
 path   = "examples/ein-bugs/wrong-answers/str-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W18 (`W18/str-in-match`), banked by S1e2.2.18 from S1e2.2.16's parked note: `s` matches `(holds \"1\")`, a fact the program states, and never fires, because the rule compiler does not lower a string and an opaque slot matches nothing; `t` (an atom matching a string fact) and `u` (an int) are the controls and fire. R the eight subsets of three candidates, no state holding `(hit s)`, where every state should. Since S1e2.2.18's fix the same day the compiler lowers a string as the loader does, the symbol it names, and `s` fires."
+note   = "M1e2 W18 (`W18/str-in-match`), banked by S1e2.2.18 from S1e2.2.16's parked note: `s` matches `(holds \"1\")`, a fact the program states, and never fires, because the rule compiler does not lower a string and an opaque slot matches nothing; `t` (an atom matching a string fact) and `u` (an int) are the controls and fire. R the eight subsets of three candidates, no state holding `(hit s)`, where every state should. Since S1e2.2.18's fix the same day the compiler lowers a string as the loader does, the symbol it names, and `s` fires. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W18 (`W18/str-in-assert`), banked by S1e2.2.18 from S1e2.2.16's parked note: `s` concludes `(tag ?x \"lbl\")`, and every command that saturates stops at its first firing, exit 1 (`ein saturate`: `TypeError: an unrecognised `:assert` slot has no value to store`), where root should derive `(tag 1 lbl)` and `(tag a lbl)` and R be four states. Since S1e2.2.18's fix the same day it does, and both runs exit 0."
+note   = "M1e2 W18 (`W18/str-in-assert`), banked by S1e2.2.18 from S1e2.2.16's parked note: `s` concludes `(tag ?x \"lbl\")`, and every command that saturates stops at its first firing, exit 1 (`ein saturate`: `TypeError: an unrecognised `:assert` slot has no value to store`), where root should derive `(tag 1 lbl)` and `(tag a lbl)` and R be four states. Since S1e2.2.18's fix the same day it does, and both runs exit 0. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W18 (`W18/str-in-guard`), found by S1e2.2.18: a guard's string is a raw node that equals no value, so `(eq ?x \"b\")` never holds and `(neq ?x \"b\")` always does. Root derived `(other a)` and `(other b)` and no `hit`, where it should derive `(hit b)` and `(other a)`, which it does since S1e2.2.18's fix the same day."
+note   = "M1e2 W18 (`W18/str-in-guard`), found by S1e2.2.18: a guard's string is a raw node that equals no value, so `(eq ?x \"b\")` never holds and `(neq ?x \"b\")` always does. Root derived `(other a)` and `(other b)` and no `hit`, where it should derive `(hit b)` and `(other a)`, which it does since S1e2.2.18's fix the same day. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W18 (`W18/str-in-absent`), found by S1e2.2.18: the pattern under `(absent (holds \"b\"))` is an opaque slot that matches nothing, so the `absent` always holds and `z` derives `(hit z)` though the program states `(holds \"b\")`. Every state held it, where none should; none does since S1e2.2.18's fix the same day."
+note   = "M1e2 W18 (`W18/str-in-absent`), found by S1e2.2.18: the pattern under `(absent (holds \"b\"))` is an opaque slot that matches nothing, so the `absent` always holds and `z` derives `(hit z)` though the program states `(holds \"b\")`. Every state held it, where none should; none does since S1e2.2.18's fix the same day. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/str-in-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W18 (`W18/str-in-hrule`), found by S1e2.2.18: the hrule's template `(tag ?x \"lbl\")` holds an opaque slot, builds no fact, and the hrule rung drops it in silence, so H is empty and R is {∅}, where the hrule should propose `(tag 1 lbl)` and `(tag a lbl)` and R be their four subsets, which it does since S1e2.2.18's fix the same day."
+note   = "M1e2 W18 (`W18/str-in-hrule`), found by S1e2.2.18: the hrule's template `(tag ?x \"lbl\")` holds an opaque slot, builds no fact, and the hrule rung drops it in silence, so H is empty and R is {∅}, where the hrule should propose `(tag 1 lbl)` and `(tag a lbl)` and R be their four subsets, which it does since S1e2.2.18's fix the same day. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/core-activator-committed.ein"
@@ -1052,7 +1040,7 @@ note   = "M1e2 W19's boundary, an activator root derives: `mk0` derives `(r2 a)`
 path   = "examples/ein-bugs/wrong-answers/wild-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W20 (`W20/wild-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `w`'s `:match` is `(holds _)`, and the rule compiler lowers `_` as an opaque slot that matches nothing, so `w` never fires on `(holds a)`: root holds no `hit`, R ∅ and {(hit a)}. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `_` matches any value, root holds `(hit w)`, R the twin's, which it answers since S1e2.2.20's fix the same day."
+note   = "M1e2 W20 (`W20/wild-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `w`'s `:match` is `(holds _)`, and the rule compiler lowers `_` as an opaque slot that matches nothing, so `w` never fires on `(holds a)`: root holds no `hit`, R ∅ and {(hit a)}. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `_` matches any value, root holds `(hit w)`, R the twin's, which it answers since S1e2.2.20's fix the same day. Refused at the parse since M1f S1f.5.5's swap (a bare `_`, S1f.5.1's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-match-twin.ein"
@@ -1064,7 +1052,7 @@ note   = "M1e2 W20's twin of `wild-in-match.ein`, banked by S1e2.2.20: `_` writt
 path   = "examples/ein-bugs/wrong-answers/wild-in-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W20 (`W20/wild-in-head`), banked by S1e2.2.20 from the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `w`'s `:match` is `(_ a)`, a head wildcard, and every command that compiles it exits 1 with `unbound relation head ?Wildcard() …` (`ein saturate`: prefixed `ein.inference.compile.CompileError:`), a Python spelling. Right, the user's ruling of 2026-11-05 (Q-M1e2.14 (c)): a wildcard written as a relation is refused at load, as a range is, which it is since S1e2.2.20's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W20 (`W20/wild-in-head`), banked by S1e2.2.20 from the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): `w`'s `:match` is `(_ a)`, a head wildcard, and every command that compiles it exits 1 with `unbound relation head ?Wildcard() …` (`ein saturate`: prefixed `ein.inference.compile.CompileError:`), a Python spelling. Right, the user's ruling of 2026-11-05 (Q-M1e2.14 (c)): a wildcard written as a relation is refused at load, as a range is, which it is since S1e2.2.20's fix the same day, both runs exit 1 with the loader's line. Refused at the parse since M1f S1f.5.5's swap (a bare `_`, S1f.5.1's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-head-twin.ein"
@@ -1076,13 +1064,13 @@ note   = "M1e2 W20's twin of `wild-in-head.ein`, banked by S1e2.2.20: the head w
 path   = "examples/ein-bugs/wrong-answers/range-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W20 (`W20/range-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `r`'s `:match` is `(n 1..3)`, and the rule compiler lowers the range as an opaque slot that matches nothing, so `r` never fires, in silence: R {∅}, exit 0. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): a range in a rule is refused at load, since no fact can hold one, which it is since S1e2.2.20's fix the same day, both runs exit 1 with the loader's line. Since M1f S1f.5.3 (Q-M1e2.24: no numbers and no ranges in Ein) there is no range token, and both runs exit 1 with the parser's line at the `.` of `1..3`, until S1f.5.4 makes it one name."
+note   = "M1e2 W20 (`W20/range-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `r`'s `:match` is `(n 1..3)`, and the rule compiler lowers the range as an opaque slot that matches nothing, so `r` never fires, in silence: R {∅}, exit 0. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): a range in a rule is refused at load, since no fact can hold one, which it is since S1e2.2.20's fix the same day, both runs exit 1 with the loader's line. Since M1f S1f.5.3 (Q-M1e2.24: no numbers and no ranges in Ein) there was no range token, and both runs exited 1 with the parser's line at the `.` of `1..3`, until M1f S1f.5.5's swap made it one name (S1f.5.4's ruling): the program loads as a pattern over the name `1..3`, which no fact at root holds, R the cube of 8, both runs exit 0."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W20 (`W20/wild-in-absent`), found by S1e2.2.20 probing the case's mechanism: `(absent (holds _))` beside the fact `(holds a)`. `_` is an opaque slot, so the pattern under `absent` finds nothing and `z` fires: root holds `(hit z)`, a conclusion the program refutes. Right: `_` matches any value, `z` never fires, R the twin's, ∅ and {(hit a)}, which it answers since S1e2.2.20's fix the same day."
+note   = "M1e2 W20 (`W20/wild-in-absent`), found by S1e2.2.20 probing the case's mechanism: `(absent (holds _))` beside the fact `(holds a)`. `_` is an opaque slot, so the pattern under `absent` finds nothing and `z` fires: root holds `(hit z)`, a conclusion the program refutes. Right: `_` matches any value, `z` never fires, R the twin's, ∅ and {(hit a)}, which it answers since S1e2.2.20's fix the same day. Refused at the parse since M1f S1f.5.5's swap (a bare `_`, S1f.5.1's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein"
@@ -1094,7 +1082,7 @@ note   = "M1e2 W20's twin of `wild-in-absent.ein`, banked by S1e2.2.20: `_` writ
 path   = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W20 (`W20/wild-in-hrule`), found by S1e2.2.20 probing the case's mechanism: `(hrule h () :match (holds ?x _) …)`, whose `_` matches nothing, so the hrule proposes no candidate: H empty, R {∅}. Right: `_` matches any value, H {(tag a)}, R the twin's, ∅ and {(tag a)}, which it answers since S1e2.2.20's fix the same day."
+note   = "M1e2 W20 (`W20/wild-in-hrule`), found by S1e2.2.20 probing the case's mechanism: `(hrule h () :match (holds ?x _) …)`, whose `_` matches nothing, so the hrule proposes no candidate: H empty, R {∅}. Right: `_` matches any value, H {(tag a)}, R the twin's, ∅ and {(tag a)}, which it answers since S1e2.2.20's fix the same day. Refused at the parse since M1f S1f.5.5's swap (a bare `_`, S1f.5.1's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-hrule-twin.ein"
@@ -1328,13 +1316,13 @@ note   = "M1e2 W23's twin, banked by S1e2.2.23: the witness's shape with five pa
 path   = "examples/ein-bugs/wrong-answers/wild-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/wild-in-guard`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-12: `_` as an argument of `eq` and `neq`. A guard compares `_` as a raw IR node, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds: root derives `(hit-neq a)` and `(hit-both a)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/wild-in-guard`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-12: `_` as an argument of `eq` and `neq`. A guard compares `_` as a raw IR node, so `(eq ?x _)` never holds, `(neq ?x _)` always does and `(eq _ _)` holds: root derives `(hit-neq a)` and `(hit-both a)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line. Refused at the parse since M1f S1f.5.5's swap (a bare `_`, S1f.5.1's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/bare-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/bare-premise`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-13: `:match _`, `(and (hit ?y) _)` and `:match foo`. The rule compiler drops a premise that is not a form, so each rule fires as if it were not written: root derives `(r1 z)`, `(r2 w)` and `(r3 z)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/bare-premise`), banked by S1e2.2.24 from the inventory of 2026-11-05's W-13: `:match _`, `(and (hit ?y) _)` and `:match foo`. The rule compiler drops a premise that is not a form, so each rule fires as if it were not written: root derives `(r1 z)`, `(r2 w)` and `(r3 z)`, exit 0, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.16 (1)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line. Refused at the parse since M1f S1f.5.5's swap (a bare `_`, S1f.5.1's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-unbound-head.ein"
@@ -1358,7 +1346,7 @@ note   = "M1e2 W24 (`W24/guard-before-binder`), banked by S1e2.2.24 from its ste
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/kwpair-in-guard`), banked by S1e2.2.24 from its step 1's probe `g-kw-rule.ein`: `(eq ?x :k a)`, a keyword pair as a guard's argument, compared as a raw IR node, so `e` never fired, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (iii)(a)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/kwpair-in-guard`), banked by S1e2.2.24 from its step 1's probe `g-kw-rule.ein`: `(eq ?x :k a)`, a keyword pair as a guard's argument, compared as a raw IR node, so `e` never fired, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (iii)(a)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line. Refused at the parse since M1f S1f.5.5's swap (a keyword pair in a term, S1f.5.11's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
@@ -1418,55 +1406,55 @@ note   = "M1e2 W27 (`W27/past-limit-lines-minimal`, `-maximal`), banked by S1e2.
 path   = "examples/ein-bugs/wrong-answers/claim-int-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W28 (`W28/claim-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a query's `:expect` claims `(model (holds 1))`, the int, over the one state, which holds the name `1` (`(holds \"1\")`). The claim is false and is the witness. Until S1e2.3.8 a claim was compared with the state as printed text, which printed the int and the name alike, so it held and `solve` exited 0. `ein test` is not declared: it reports the failed claim on stdout alone, an exit 1 with nothing on stderr (S1e2.3.8's Notes)."
+note   = "M1e2 W28 (`W28/claim-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a query's `:expect` claims `(model (holds 1))`, the int, over the one state, which holds the name `1` (`(holds \"1\")`). The claim is false and is the witness. Until S1e2.3.8 a claim was compared with the state as printed text, which printed the int and the name alike, so it held and `solve` exited 0. `ein test` is not declared: it reports the failed claim on stdout alone, an exit 1 with nothing on stderr (S1e2.3.8's Notes). Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W28 (`W28/claim-int-name-solve`), banked by S1e2.3.8 on Q-M1e2.20 (a): the solve form's `(region (model (holds 1)))`, the int, over the one state, which holds the name `1`. The claim is false and is the witness. Until S1e2.3.8 it held, compared as printed text, and `solve` exited 0. `ein test` is not declared, as for `claim-int-name`."
+note   = "M1e2 W28 (`W28/claim-int-name-solve`), banked by S1e2.3.8 on Q-M1e2.20 (a): the solve form's `(region (model (holds 1)))`, the int, over the one state, which holds the name `1`. The claim is false and is the witness. Until S1e2.3.8 it held, compared as printed text, and `solve` exited 0. `ein test` is not declared, as for `claim-int-name`. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/classes-int-name.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W28 (`W28/classes-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a goal `(got ?v)` answered by the int `1` in some states and by the name `1` in others. R is eight states in four projection classes; until S1e2.3.8 the classes were keyed by printed text, in which the int and the name were one, and the read-out counted two."
+note   = "M1e2 W28 (`W28/classes-int-name`), banked by S1e2.3.8 on Q-M1e2.20 (a): a goal `(got ?v)` answered by the int `1` in some states and by the name `1` in others. R is eight states in four projection classes; until S1e2.3.8 the classes were keyed by printed text, in which the int and the name were one, and the read-out counted two. Refused at the parse since M1f S1f.5.5's swap (a string as a value, S1f.5.2's ruling), with the file, line and column, and kept as the refusal's witness; its register row restated."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-fact-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W29 (`W29/fact-arg`), banked by S1f.5.0 from S1f.5.1's case (the inventory of 2026-11-06's W-22): `(r _ a)` loads as the one-argument `(r a)`, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+note   = "M1f W29 (`W29/fact-arg`), banked by S1f.5.0 from S1f.5.1's case (the inventory of 2026-11-06's W-22): `(r _ a)` loads as the one-argument `(r a)`, in silence. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.1): refused at the parse, with the file, line and column (Q-M1e2.22); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-is-a-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W29 (`W29/is-a-arg`), banked by S1f.5.0 from S1f.5.1's case (`syntax/is-a-shapes` writes it): `(is-a _ T)` loads as `(is-a T)`, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+note   = "M1f W29 (`W29/is-a-arg`), banked by S1f.5.0 from S1f.5.1's case (`syntax/is-a-shapes` writes it): `(is-a _ T)` loads as `(is-a T)`, in silence. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.1): refused at the parse, with the file, line and column (Q-M1e2.22); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-nested-fact-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W29 (`W29/nested-fact-arg`), banked by S1f.5.0 from S1f.5.1's case (W-22): `(r (f _ a) c)` loads as `(r (f a) c)`, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+note   = "M1f W29 (`W29/nested-fact-arg`), banked by S1f.5.0 from S1f.5.1's case (W-22): `(r (f _ a) c)` loads as `(r (f a) c)`, in silence. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.1): refused at the parse, with the file, line and column (Q-M1e2.22); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-activator-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W29 (`W29/activator-arg`), banked by S1f.5.0 from S1f.5.1's case (W-22): the activator `(q _)` loads as `(q)`, which binds no parameter, so `q` never fires, in silence. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+note   = "M1f W29 (`W29/activator-arg`), banked by S1f.5.0 from S1f.5.1's case (W-22): the activator `(q _)` loads as `(q)`, which binds no parameter, so `q` never fires, in silence. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.1): refused at the parse, with the file, line and column (Q-M1e2.22); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-goal-arg.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W29 (`W29/goal-arg`), banked by S1f.5.0 from S1f.5.1's case: a query's goal `(holds _)` loads and is answered, *the goal holds: it has no variable*, and the claim the read-out suggests is refused. Open, owned by S1f.5.1: refused at load (Q-M1e2.22). `ein test` is not declared: the query states no claim."
+note   = "M1f W29 (`W29/goal-arg`), banked by S1f.5.0 from S1f.5.1's case: a query's goal `(holds _)` loads and is answered, *the goal holds: it has no variable*, and the claim the read-out suggests is refused. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.1): refused at the parse, with the file, line and column (Q-M1e2.22); both runs exit 1. `ein test` is not declared: the query states no claim."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W29 (`W29/core-two-ways`), banked by S1f.5.0 from P1f.5's F3: `_` in a rule's pattern reports root's core as four facts where its twin, `?w0`, reports two. Open, owned by S1f.5.1: refused at load (Q-M1e2.22)."
+note   = "M1f W29 (`W29/core-two-ways`), banked by S1f.5.0 from P1f.5's F3: `_` in a rule's pattern reports root's core as four facts where its twin, `?w0`, reports two. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.1): refused at the parse, with the file, line and column (Q-M1e2.22); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein"
@@ -1520,43 +1508,43 @@ note   = "M1f W31 (`W31/empty-match-hrule`), banked by S1f.5.0 from S1f.5.9's ca
 path   = "examples/ein-bugs/wrong-answers/where-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/where-in-and`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-06's D-15): `:where (neq ?x a)` beside a `:match`'s conjuncts is dropped (Q32), so `r` derives `(q a)` and `(q b)`. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+note   = "M1f W32 (`W32/where-in-and`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-06's D-15): `:where (neq ?x a)` beside a `:match`'s conjuncts is dropped (Q32), so `r` derives `(q a)` and `(q b)`. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-in-pattern.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/where-in-pattern`), banked by S1f.5.0 from S1f.5.11's case (D-15): `:where (neq ?x a)` inside a pattern is dropped, so `r` derives `(q a)` and `(q b)`. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+note   = "M1f W32 (`W32/where-in-pattern`), banked by S1f.5.0 from S1f.5.11's case (D-15): `:where (neq ?x a)` inside a pattern is dropped, so `r` derives `(q a)` and `(q b)`. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-on-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/where-on-rule`), banked by S1f.5.0 from S1f.5.11's case (D-15): `:where (neq ?x a)` as a keyword of the rule form is ignored, so `r` derives `(q a)` and `(q b)`. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+note   = "M1f W32 (`W32/where-on-rule`), banked by S1f.5.0 from S1f.5.11's case (D-15): `:where (neq ?x a)` as a keyword of the rule form is ignored, so `r` derives `(q a)` and `(q b)`. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-pattern.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/kwpair-in-pattern`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-05's G-15): the pair `:k v` inside a pattern is dropped, so `r` derives `(q a)` and `(q b)`, and `v` is still a name of the program. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+note   = "M1f W32 (`W32/kwpair-in-pattern`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-05's G-15): the pair `:k v` inside a pattern is dropped, so `r` derives `(q a)` and `(q b)`, and `v` is still a name of the program. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/kwpair-in-assert`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-06's G-22): the pair `:k v` beside an `:assert`'s conjuncts is dropped, and `v` is still a name of the program. Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+note   = "M1f W32 (`W32/kwpair-in-assert`), banked by S1f.5.0 from S1f.5.11's case (the inventory of 2026-11-06's G-22): the pair `:k v` beside an `:assert`'s conjuncts is dropped, and `v` is still a name of the program. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/kwpair-in-goal`), banked by S1f.5.0 from S1f.5.11's case: the pair `:zz 1` in a query's goal is dropped, and the claim `(model (p a) (p b))` holds. Open, owned by S1f.5.11: refused at load (Q-M1e2.28). `ein test` is not declared, as for W22's goal witnesses: once refused it would exit 2, a load error, which no cell may."
+note   = "M1f W32 (`W32/kwpair-in-goal`), banked by S1f.5.0 from S1f.5.11's case: the pair `:zz 1` in a query's goal is dropped, and the claim `(model (p a) (p b))` holds. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1. `ein test` is not declared, as for W22's goal witnesses: once refused it would exit 2, a load error, which no cell may."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-macro.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W32 (`W32/kwpair-in-macro`), banked by S1f.5.0 from S1f.5.11's case: the pair `:k v` in a `forall` call is dropped by the macro expander, so `r` derives `(hit a)` and `(hit b)`. The static check flags it (the `forall`'s `absent` over `q`). Open, owned by S1f.5.11: refused at load (Q-M1e2.28)."
+note   = "M1f W32 (`W32/kwpair-in-macro`), banked by S1f.5.0 from S1f.5.11's case: the pair `:k v` in a `forall` call is dropped by the macro expander, so `r` derives `(hit a)` and `(hit b)`. The static check flags it (the `forall`'s `absent` over `q`). Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.11): refused at the parse, with the file, line and column (Q-M1e2.28); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
@@ -1574,7 +1562,7 @@ note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census 
 path   = "examples/ein-bugs/wrong-answers/absent-empty.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W35 (`W35/absent-empty`), banked by S1f.5.0 from S1f.5.5's census: `(absent ())` loads and holds, so `rr` derives `(hit a)` and `(hit b)`. Open, owned by S1f.5.5: refused at load (the paper grammar's default 7)."
+note   = "M1f W35 (`W35/absent-empty`), banked by S1f.5.0 from S1f.5.5's census: `(absent ())` loads and holds, so `rr` derives `(hit a)` and `(hit b)`. Fixed by M1f S1f.5.5's swap (T1f.5.5.4, owned by S1f.5.5): refused at the parse, with the file, line and column (the paper grammar's default 7); both runs exit 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein"
@@ -1617,30 +1605,6 @@ runs   = ["solve", "saturate"]
 # whatever reads them. Until S1e.2.1 that was a runtime `assert!` for
 # `eq` from below and nothing at all from above. The four cells:
 
-[[entry]]
-path   = "examples/broken/compile/eq_arity_low.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-note   = "`CO-H1` itself — `(eq ?x)` panicked the process, exit 101, on a runtime `assert!`. The only finding in the review reproduced against the release binary whose fix is a refusal."
-
-[[entry]]
-path   = "examples/broken/compile/eq_arity_high.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-note   = "The worse half: `(eq ?x A B)` loaded, compiled, **fired** and exited 0, because `guard_holds` read `args[0..2]` and dropped the tail. A three-way equality silently evaluated as a two-way one."
-
-[[entry]]
-path   = "examples/broken/compile/absent_arity_zero.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-note   = "`(absent)` fell through to the ordinary relation path and retired the rule in silence, where its sibling `empty_absent.ein` — `(absent ?x)` — has named that exact hazard in a CompileError since S1.22.0."
-
-[[entry]]
-path   = "examples/broken/compile/absent_arity_high.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-note   = "`(absent A B)` dropped everything past the first argument, so a two-subject negation fired as a one-subject one. The pair with `eq_arity_high.ein`: two of the twenty-one cells the S1e.1.6 sweep found answering wrongly with a success exit code."
-
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
@@ -1671,31 +1635,163 @@ path   = "examples/broken/unclosed_paren.ein"
 group  = "parse-negative"
 runs   = ["solve", "saturate", "render rules"]
 
+# M1f S1f.5.5's swap (Q-M1f.2 (a)): the refusal fixtures whose refusal the grammar
+# takes over from the loader and the compiler, moved here, each `.expected` the
+# parse report. `broken/load/reserved_open_direct` stays, three load-negatives
+# importing it by path.
+
+[[entry]]
+path   = "examples/broken/eq_arity_low.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate"]
+note   = "`CO-H1` itself — `(eq ?x)` panicked the process, exit 101, on a runtime `assert!`. The only finding in the review reproduced against the release binary whose fix is a refusal. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/compile/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/eq_arity_high.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate"]
+note   = "The worse half: `(eq ?x A B)` loaded, compiled, **fired** and exited 0, because `guard_holds` read `args[0..2]` and dropped the tail. A three-way equality silently evaluated as a two-way one. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/compile/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/absent_arity_zero.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate"]
+note   = "`(absent)` fell through to the ordinary relation path and retired the rule in silence, where its sibling `empty_absent.ein` — `(absent ?x)` — has named that exact hazard in a CompileError since S1.22.0. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/compile/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/absent_arity_high.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate"]
+note   = "`(absent A B)` dropped everything past the first argument, so a two-subject negation fired as a one-subject one. The pair with `eq_arity_high.ein`: two of the twenty-one cells the S1e.1.6 sweep found answering wrongly with a success exit code. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/compile/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/config_bad_value.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/expect_unknown_keyword.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1c S1c.1.2 — `(query …)`'s keywords are an allow-list. A mistyped `:expect` used to parse, load, check nothing and say nothing. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/query_lattice_keyword.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — a lattice keyword on (query …) is refused and pointed at (solve …): one program, one lattice. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/region_top_level.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — a region claim at the top level is refused: pasted outside (solve … :expect …) it would load as a fact of a new relation and check nothing. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/solve_unknown_keyword.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — (solve …)'s keywords are an allow-list, as (query …)'s are. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/expect_is_a_pattern.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1c S1c.1.2 — an expectation is an answer, so it is ground. A `?var` is a test that cannot fail. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/config_unknown_flag.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "its message enumerates every legal `(config …)` flag, so this entry pins the flag set a program can set as a byte-comparable surface: eight since M1e2 S1e2.1a.5. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/config_retired_flag.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.5 — a retired `(config …)` flag is refused with why it was retired, not as an unknown one. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/open_in_match.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — `open` is a verdict about the KB and is assert-side only. The message names `(unknown …)` because the two were one word until the P3 rename. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/open_arity.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — the superseded `forall`-dual triple. The form is `(open)` or `(open ?R)`; anything wider restates the guard in the head. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/open_mixed_assert.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — a rule concluding `open` and a fact would belong to the saturation agenda and the post-fixpoint pass at once. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/hrule_reserved_name.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/import_alias_not_a_name.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/import_symbols_empty.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/import_symbols_not_a_list.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/macro_reserved_name.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/relation_malformed.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/relation_needs_a_name.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/empty_absent.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`(absent ?x)`, a premise that is not a form, under an `absent`. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's empty-sub-plan CompileError in the Python spelling; since then the loader refuses it (W24, the user's ruling of 2026-11-05 on Q-M1e2.18 (v)), and it moved here from `examples/broken/compile/`, with `render rules` among its runs as every load-negative entry has. Refused at the parse since M1f S1f.5.5's swap, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/relation_reserved_name.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
+[[entry]]
+path   = "examples/broken/rule_reserved_name.ein"
+group  = "parse-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "A load-negative fixture until M1f S1f.5.5's swap, refused at the parse since, and moved here from `examples/broken/load/` (Q-M1f.2 (a)): its `.expected` is the parse report."
+
 
 # ── load-negative ───────────────────────────────────────────
-
-[[entry]]
-path   = "examples/broken/load/config_bad_value.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/expect_unknown_keyword.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1c S1c.1.2 — `(query …)`'s keywords are an allow-list. A mistyped `:expect` used to parse, load, check nothing and say nothing."
-
-[[entry]]
-path   = "examples/broken/load/query_lattice_keyword.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1e2 S1e2.1a.4 — a lattice keyword on (query …) is refused and pointed at (solve …): one program, one lattice."
-
-[[entry]]
-path   = "examples/broken/load/region_top_level.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1e2 S1e2.1a.4 — a region claim at the top level is refused: pasted outside (solve … :expect …) it would load as a fact of a new relation and check nothing."
 
 [[entry]]
 path   = "examples/broken/load/region_owing_with_states.ein"
@@ -1714,12 +1810,6 @@ path   = "examples/broken/load/solve_twice.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "M1e2 S1e2.1a.4 — a second (solve …) would be a second lattice, and is refused rather than merged or discarded."
-
-[[entry]]
-path   = "examples/broken/load/solve_unknown_keyword.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1e2 S1e2.1a.4 — (solve …)'s keywords are an allow-list, as (query …)'s are."
 
 [[entry]]
 path   = "examples/broken/load/expect_unknown_relation.ein"
@@ -1746,24 +1836,6 @@ runs   = ["solve", "saturate", "render rules"]
 note   = "M1e2 S1e2.1a.5 — a query's `:expect` lists its classes as a set, so one listed twice is refused."
 
 [[entry]]
-path   = "examples/broken/load/expect_is_a_pattern.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1c S1c.1.2 — an expectation is an answer, so it is ground. A `?var` is a test that cannot fail."
-
-[[entry]]
-path   = "examples/broken/load/config_unknown_flag.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "its message enumerates every legal `(config …)` flag, so this entry pins the flag set a program can set as a byte-comparable surface: eight since M1e2 S1e2.1a.5."
-
-[[entry]]
-path   = "examples/broken/load/config_retired_flag.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1e2 S1e2.1a.5 — a retired `(config …)` flag is refused with why it was retired, not as an unknown one."
-
-[[entry]]
 path   = "examples/broken/load/derivation_cycle.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
@@ -1774,38 +1846,10 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
-path   = "examples/broken/load/open_in_match.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1d S1d.2.3 — `open` is a verdict about the KB and is assert-side only. The message names `(unknown …)` because the two were one word until the P3 rename."
-
-[[entry]]
-path   = "examples/broken/load/open_arity.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1d S1d.2.3 — the superseded `forall`-dual triple. The form is `(open)` or `(open ?R)`; anything wider restates the guard in the head."
-
-[[entry]]
-path   = "examples/broken/load/open_mixed_assert.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1d S1d.2.3 — a rule concluding `open` and a fact would belong to the saturation agenda and the post-fixpoint pass at once."
-
-[[entry]]
 path   = "examples/broken/load/open_compound_witness.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "M1d S1d.2.3 — the projection's hardest refusal: two positive `?R` premises each binding a witness variable, so no single slot to branch on. The other eight shapes are pinned in `ein-ir`'s unit tests."
-
-[[entry]]
-path   = "examples/broken/load/hrule_reserved_name.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/import_alias_not_a_name.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
 path   = "examples/broken/load/import_as_and_symbols.ein"
@@ -1844,16 +1888,6 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
-path   = "examples/broken/load/import_symbols_empty.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/import_symbols_not_a_list.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
 path   = "examples/broken/load/import_symbols_not_provided.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
@@ -1865,11 +1899,6 @@ runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
 path   = "examples/broken/load/macro_duplicate.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/macro_reserved_name.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
@@ -1909,37 +1938,10 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
-path   = "examples/broken/load/relation_malformed.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/relation_needs_a_name.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/relation_parameter_int.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "M1e2 S1e2.2.4 — Q-M1e.21's residue: `(mirror 3)` binds a parameter that names a relation to an integer, whose decimal text the compiler would intern as a relation's name, a name the program does not have. Refused at load where the activator is written down; a derived one is the compiler's (`compile_semantics.rs`)."
-
-[[entry]]
-path   = "examples/broken/load/empty_absent.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-note   = "`(absent ?x)`, a premise that is not a form, under an `absent`. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's empty-sub-plan CompileError in the Python spelling; since then the loader refuses it (W24, the user's ruling of 2026-11-05 on Q-M1e2.18 (v)), and it moved here from `examples/broken/compile/`, with `render rules` among its runs as every load-negative entry has."
-
-[[entry]]
 path   = "examples/broken/load/unbound_head.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "`(?R ?x)`, a relation variable no parameter binds, at the top level. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's unbound-head CompileError in the Python spelling; since then the loader refuses it (W24, the stage's default 1), and it moved here from `examples/broken/compile/`, with `render rules` among its runs."
-
-[[entry]]
-path   = "examples/broken/load/relation_reserved_name.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
 path   = "examples/broken/load/rule_duplicate_name.ein"
@@ -1959,11 +1961,6 @@ runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
 path   = "examples/broken/load/rule_missing_match.ein"
-group  = "load-negative"
-runs   = ["solve", "saturate", "render rules"]
-
-[[entry]]
-path   = "examples/broken/load/rule_reserved_name.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
@@ -2383,7 +2380,7 @@ note   = "M1e2 S1e2.1a.5 — `:over maximal`: two people, two seats, seven class
 path   = "examples/syntax/arg-kinds.ein"
 group  = "positive"
 runs   = ["render rules", "saturate"]
-note   = "Refused at the parse between M1f S1f.5.3 and S1f.5.4, both runs exit 1 at `(r 1..5 1..*)`: S1f.5.3 retired the range token (Q-M1e2.24) and S1f.5.4 makes each a name. The program is unchanged, and `ein_corpus::REFUSED_UNTIL_S1F_5_4` names it, which `corpus_cli` holds both ways."
+note   = "Rewritten at M1f S1f.5.5's swap (Q-M1f.2 (a)): its string, `_` and `?x` are refused at the parse (S1f.5.2, S1f.5.1), and `1..5` and `1..*` are names (S1f.5.3 retired the range token, and S1f.5.4's name rule reads each as the name it spells). Its solve is scoped with `(solve :no-hypothesis (r))`, R {∅}, the user's ruling of 2026-11-08 on the review stop's item 1, since its universe's commitments pass the state route's 2^128 limit, which stays parked."
 
 [[entry]]
 path   = "examples/syntax/config.ein"

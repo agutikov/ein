@@ -16,3 +16,8 @@
 
 (note edge 1)
 (note edge (src Y))
+
+;; M1f S1f.5.5's swap: a run of digits is a name, so `1`, `2` and `3` are candidate
+;; objects; scoped as the promoted witnesses are (S1f.5.4's proposal A), so that
+;; the seed costs what it did. H is `(holds 2)` and `(holds Y)`, R four states.
+(solve :no-hypothesis (edge noted))

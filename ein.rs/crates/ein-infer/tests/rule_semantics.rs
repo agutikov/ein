@@ -884,24 +884,26 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
     }
 }
 
-/// **An int and a string with the same text are two activators, in either
-/// order and in either build** — M1e2 S1e2.2.16's regression for W16.
+/// **Two activators of one rule are two plans, in either order and in either
+/// build** — M1e2 S1e2.2.16's regression for W16, restated at M1f S1f.5.5's
+/// swap.
 ///
-/// The loader holds `1` and `"1"` as two values, an `Int` and a `Sym` whose
-/// text is `1`, so the program has two `holds` facts and each activator alone
-/// derives its own two `noted` facts. Until S1e2.2.16 the compile key rendered
-/// a non-symbol argument and interned its text, so the two activators keyed
-/// one plan, the first one's: in a release build the second compiled nothing
-/// and its two conclusions were lost, whichever came second, and in a debug
-/// build `Engine::compile_all`'s check that its shortcut skipped no activator
-/// aborted. The key is the activator's values since, so the two are two plans.
-/// Compared by value, and since M1e2 S1e2.3.8 as printed too: until then
-/// `(noted 1 1)` and `(noted 1 "1")` printed as one line (P1e2.3's N5), and
-/// the controls' printed sets were equal. The corpus family is
-/// `examples/ein-bugs/activator-text-*.ein`.
+/// Until the swap the loader held `1` and `"1"` as two values, an `Int` and a
+/// `Sym` whose text is `1`, so the program had two `holds` facts and each
+/// activator alone derived its own two `noted` facts; until S1e2.2.16 the
+/// compile key rendered a non-symbol argument and interned its text, so the two
+/// activators keyed one plan and the second's conclusions were lost (a debug
+/// build aborted). Since the swap neither value can be written: a run of
+/// digits is a name (S1f.5.4's ruling) and a string is refused at the parse
+/// (S1f.5.2's), so the program W16's witnesses write is refused at its `"1"`s
+/// (the user's ruling of 2026-11-08 on the review stop, item 2). What the key
+/// must still keep apart is two names of digits, `1` and `01`, which it does by
+/// value: each activator derives its own two conclusions, and both derive the
+/// four, in either order. The corpus witnesses are
+/// `examples/ein-bugs/activator-text-{int-and-string,string-then-int}.ein`.
 #[test]
 fn an_int_and_a_string_with_one_text_are_two_activators() {
-    let program = |activators: &str| {
+    let program = |holds: &str, activators: &str| {
         format!(
             r#"
             (relation edge  Node Node)
@@ -912,39 +914,44 @@ fn an_int_and_a_string_with_one_text_are_two_activators() {
               :assert (noted ?a ?f)
               :why    "note")
             (edge 1 2) (edge 2 3)
-            (holds 1)  (holds "1")
+            (holds 1)  {holds}
             {activators}
             "#
         )
     };
-    // The controls: one activator, one plan, two conclusions each, over two
-    // values the one printer prints apart.
-    let int = saturate(&program("(note edge 1)"));
-    let string = saturate(&program(r#"(note edge "1")"#));
+    let refused = try_saturate(&program(
+        r#"(holds "1")"#,
+        r#"(note edge 1) (note edge "1")"#,
+    ))
+    .err()
+    .expect("a string as a value is refused at the parse");
     assert!(
-        int.derived().is_disjoint(&string.derived()),
-        "printed, the int's and the string's conclusions are two sets"
+        refused.contains(r#"<fixture>:10:31: unexpected `"1"`: a string"#)
+            && refused.contains(r#"<fixture>:11:38: unexpected `"1"`: a string"#),
+        "{refused}"
     );
-    let (int, string) = (int.derived_values(), string.derived_values());
-    assert_eq!(int.len(), 2, "the int activator derives two: {int:?}");
+    // The controls: one activator, one plan, two conclusions each.
+    let one = saturate(&program("(holds 01)", "(note edge 1)"));
+    let zero_one = saturate(&program("(holds 01)", "(note edge 01)"));
+    let (one, zero_one) = (one.derived_values(), zero_one.derived_values());
+    assert_eq!(one.len(), 2, "the activator `1` derives two: {one:?}");
     assert_eq!(
-        string.len(),
+        zero_one.len(),
         2,
-        "the string activator derives two: {string:?}"
+        "the activator `01` derives two: {zero_one:?}"
     );
     assert!(
-        int.is_disjoint(&string),
-        "by value they are four facts: {int:?} {string:?}"
+        one.is_disjoint(&zero_one),
+        "two names: {one:?} {zero_one:?}"
     );
-    let union: BTreeSet<String> = int.union(&string).cloned().collect();
-
+    let union: BTreeSet<String> = one.union(&zero_one).cloned().collect();
     // Both, in both orders: one more activator cannot conclude less, and the
     // order two facts are written in changes nothing.
     for order in [
-        r#"(note edge 1) (note edge "1")"#,
-        r#"(note edge "1") (note edge 1)"#,
+        "(note edge 1) (note edge 01)",
+        "(note edge 01) (note edge 1)",
     ] {
-        let run = saturate(&program(order));
+        let run = saturate(&program("(holds 01)", order));
         assert_eq!(
             run.derived_values(),
             union,
@@ -957,116 +964,92 @@ fn an_int_and_a_string_with_one_text_are_two_activators() {
 
 // ── a string in a rule — M1e2 S1e2.2.18 ────────────────────────────────────
 
-/// **A string in a rule means what it means in a fact: it matches the fact it
-/// names, and an `:assert` stores it** — M1e2 S1e2.2.18's regression for W18,
-/// in either build.
+/// **A string in a rule is refused at the parse, as in a fact** — M1e2
+/// S1e2.2.18's regression for W18, restated at M1f S1f.5.5's swap.
 ///
-/// The loader holds a string written as a fact's argument as the symbol it
-/// names, so `(holds "b")` is `(holds b)`, and `"1"` is the symbol `1`, a value
-/// apart from the int. Until S1e2.2.18 the rule compiler did not lower a
-/// string: in a `:match` it was an opaque slot that matched nothing, so `s`
-/// never fired, and in an `:assert` it had no value to store, so the run
-/// stopped at `l`'s first firing. `t` (an atom matching the string's fact) and
-/// `u` (the int) are the controls. Compared by value (`derived_values`, a
-/// fact's `repr`), since the printer drops a string's quotes (P1e2.3's N5).
-/// The corpus witnesses are `examples/ein-bugs/wrong-answers/str-in-*.ein`.
+/// From S1e2.2.18 to the swap a string in a rule meant what it meant in a
+/// fact, the symbol it names: it matched the fact it named, and an `:assert`
+/// stored it (until S1e2.2.18 a string in a `:match` was an opaque slot that
+/// matched nothing, so `s` never fired, and in an `:assert` the run stopped).
+/// Since the swap a string is natural-language text, written only after
+/// `:why`, `:source` or `:goal-text` (S1f.5.2's ruling), so every string
+/// below, in a fact, a `:match` and an `:assert`, top-level and nested, is
+/// refused at the parse, each with S1f.5.2's note (the review stop's item 3),
+/// and the name written bare is what to write: the program so written
+/// derives what the string program derived. The corpus witnesses are
+/// `examples/ein-bugs/wrong-answers/str-in-*.ein`.
 #[test]
 fn a_string_in_a_rule_means_what_it_means_in_a_fact() {
-    let program = |rules: &str| {
+    let program = |q: &str| {
+        let s = |text: &str| format!("{q}{text}{q}");
         format!(
             r#"
             (relation holds Node) (relation hit Node) (relation tag Node Node)
-            (holds 1) (holds "1") (holds a) (holds "b")
-            {rules}
-            "#
+            (holds 1) (holds a) (holds {b})
+            (rule s () :match (holds {one}) :assert (hit s))
+            (rule t () :match (holds b)   :assert (hit t))
+            (rule l () :match (holds ?x) :assert (and (tag ?x {lbl}) (tag ?x (hit {lbl}))))
+            "#,
+            b = s("b"),
+            one = s("1"),
+            lbl = s("lbl"),
         )
     };
-    let matched = saturate(&program(
-        r#"
-        (rule s () :match (holds "1") :assert (hit s))
-        (rule t () :match (holds b)   :assert (hit t))
-        (rule u () :match (holds 1)   :assert (hit u))
-        "#,
-    ));
+    let refused = try_saturate(&program("\""))
+        .err()
+        .expect("a string is refused at the parse");
     assert_eq!(
-        matched.derived(),
-        BTreeSet::from(["(hit s)", "(hit t)", "(hit u)"].map(String::from)),
-        "`s` fires as `t` and `u` do"
+        refused
+            .matches(" is a string, and a string is natural-language text")
+            .count(),
+        4,
+        "one error and its note a string:\n{refused}"
     );
-    let premises = |run: &Run, rule: &str| -> Vec<String> {
-        run.productive()
-            .iter()
-            .filter(|f| run.rule_of(f) == rule)
-            .flat_map(|f| {
-                f.premises
-                    .iter()
-                    .map(|&p| ein_core::repr::repr(&run.terms.repr_fact(p)))
-            })
-            .collect()
-    };
-    // By value: `s` matched the string's fact, `u` the int's.
-    let (s, u) = (premises(&matched, "s"), premises(&matched, "u"));
-    assert_eq!(s.len(), 1, "one application of `s`: {s:?}");
-    assert_eq!(u.len(), 1, "one application of `u`: {u:?}");
-    assert!(
-        s[0].contains("'1'") && !u[0].contains("'1'"),
-        "`s` matched the string's fact, the symbol `1`, and `u` the int's: {s:?} {u:?}"
-    );
-
-    // An `:assert` stores the symbol, at the top level and nested, where the
-    // run stopped before.
-    let asserted = try_saturate(&program(
-        r#"(rule l () :match (holds ?x) :assert (and (tag ?x "lbl") (tag ?x (hit "lbl"))))"#,
-    ))
-    .unwrap_or_else(|e| panic!("an `:assert` with a string saturates: {e}"));
-    let control = saturate(&program(
-        r#"(rule l () :match (holds ?x) :assert (and (tag ?x lbl) (tag ?x (hit lbl))))"#,
-    ));
+    let names = saturate(&program(""));
     assert_eq!(
-        asserted.derived_values(),
-        control.derived_values(),
-        "a string in an `:assert` is the symbol it names"
+        names
+            .derived()
+            .into_iter()
+            .filter(|f| f.starts_with("(hit"))
+            .collect::<Vec<_>>(),
+        ["(hit s)", "(hit t)"],
+        "`s` fires as `t` does"
     );
     assert_eq!(
-        asserted.derived_values().len(),
+        names.derived_values().len(),
         8,
-        "two conclusions for each of the four values: {:?}",
-        asserted.derived_values()
+        "two hits, and two conclusions of `l` for each of the three values: {:?}",
+        names.derived_values()
     );
 }
 
-/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard in a pattern matches
-/// any value and binds nothing**, in either build. Until S1e2.2.20 the rule
-/// compiler lowered `_` as an opaque slot, so `w` never fired on `(holds a)`.
-/// A rule application's identity is its rule, activator and bindings, so two
-/// matches that differ only under `_` are one application, its first match
-/// its derivation, where a fresh variable makes one per match: the narration
-/// differs, and what the rule concludes does not. The corpus witnesses are
-/// `examples/ein-bugs/wrong-answers/wild-in-*.ein`.
+/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard in a pattern matched
+/// any value and bound nothing**, in either build (until S1e2.2.20 the rule
+/// compiler lowered `_` as an opaque slot, so `w` never fired on `(holds a)`).
+/// **Since M1f S1f.5.5's swap a bare `_` is refused at the parse, in every
+/// position** (S1f.5.1's ruling), each with its note, and a variable used
+/// once is what to write: it concludes what the wildcard did, one application
+/// per match where two matches under `_` alone were one. The corpus witnesses
+/// are `examples/ein-bugs/wrong-answers/wild-in-*.ein`.
 #[test]
 fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
-    let run = saturate(
+    let refused = try_saturate(
         "(relation holds T) (relation pair T T) (relation hit T)
          (holds a) (pair a b) (pair c d)
          (rule w () :match (holds _) :assert (hit w))
          (rule v () :match (pair _ _) :assert (hit v))",
+    )
+    .err()
+    .expect("a bare `_` is refused at the parse");
+    assert!(
+        refused.contains("<fixture>:3:35: unexpected `_`: _ (reserved)")
+            && refused.contains("<fixture>:4:34: unexpected `_`: _ (reserved)")
+            && refused.contains(
+                "note: _ is reserved and names nothing: where any value will do, write a \
+                 variable used once"
+            ),
+        "{refused}"
     );
-    assert_eq!(
-        run.derived(),
-        BTreeSet::from(["(hit v)", "(hit w)"].map(String::from)),
-        "`w` and `v` fire"
-    );
-    let v: Vec<&Firing> = run
-        .firings
-        .iter()
-        .filter(|f| run.rule_of(f) == "v")
-        .collect();
-    assert_eq!(
-        v.len(),
-        1,
-        "two matches under `_` alone are one application"
-    );
-    assert!(run.bindings_of(v[0]).is_empty(), "`_` binds nothing");
     let fresh = saturate(
         "(relation holds T) (relation pair T T) (relation hit T)
          (holds a) (pair a b) (pair c d)
@@ -1074,9 +1057,9 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
          (rule v () :match (pair ?x ?y) :assert (hit v))",
     );
     assert_eq!(
-        run.derived(),
         fresh.derived(),
-        "what a fresh variable concludes"
+        BTreeSet::from(["(hit v)", "(hit w)"].map(String::from)),
+        "`w` and `v` fire"
     );
     assert_eq!(
         fresh

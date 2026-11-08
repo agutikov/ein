@@ -256,13 +256,15 @@ fn display_renders_every_value_shape() {
     let mut bad = Vec::new();
     for (v, want) in [
         (norwegian, "Norwegian"),
-        (quote, "\"it's\""),
+        // `'` is a name character since S1f.5.5's swap (the name rule), so
+        // `it's` prints bare and reads back as itself.
+        (quote, "it's"),
         (seven, "7"),
         (big, "-123456789012345678901234567890"),
         (inner, "(co-located Norwegian 7)"),
         (
             outer,
-            "(hypothesis (co-located Norwegian 7) \"it's\" -123456789012345678901234567890)",
+            "(hypothesis (co-located Norwegian 7) it's -123456789012345678901234567890)",
         ),
     ] {
         let got = t.display(v);

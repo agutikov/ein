@@ -397,11 +397,11 @@ constrained-reasoning research.
   `(neq w w)` at `{(p w)}` is a false conclusion, so S1f.5.7's table, which
   said two states, was corrected to match (`cdbd0970`).
   S1f.5.3 retired the `RANGE` token the same day (Q-M1e2.24: Ein has no
-  numbers and no ranges, and none is planned): `1..5` is a parse error until
-  S1f.5.4 makes it one name, so the two corpus files that write one,
-  `syntax/arg-kinds` and `wrong-answers/range-in-match`, are refused at the
+  numbers and no ranges, and none is planned): `1..5` was a parse error until
+  S1f.5.5's swap made it one name, so the two corpus files that write one,
+  `syntax/arg-kinds` and `wrong-answers/range-in-match`, were refused at the
   parse in between, named in `ein_corpus::REFUSED_UNTIL_S1F_5_4`, which
-  `corpus_cli` holds both ways and S1f.5.4 empties.
+  `corpus_cli` held both ways and the swap emptied and deleted.
   The same day the user re-planned the rest of P1f.5's language work (*"It is
   the same work done twice, why not switch to grmtools first and remove
   hand-written parser and then verify requirement met (strings, names,
@@ -511,8 +511,31 @@ constrained-reasoning research.
   or a macro's name, an import's `:as`) and uses either as a relation or a
   value, `(imply1 functional __closed__)` among them; the three writeback
   names are the generated grammar's `WRITEBACK` token, refused wherever a
-  program writes them (`ein-ir/tests/engine_names.rs`). The swap, T4, is
-  next.
+  program writes them (`ein-ir/tests/engine_names.rs`).
+  **The swap, T4, landed on 2026-11-09**: the generated parser is the only
+  one, `lex.rs`, `parse.rs` and the `generated-parser` feature gone, and
+  `ein_ir::parse` is `ein_ir::grammar::parse`, whose `ParseError` reports every
+  error recovery reaches, each with its line and column, its notes (S1f.5.1's
+  `_`, S1f.5.2's string, a query's lattice keyword and a retired `(config …)`
+  flag) and three ranked repairs then a count, the eleven words a position
+  gives a meaning to folded into *a name*. It carries the name rule (S1f.5.4:
+  `(p 1) (p 01)` two facts, printed bare, `ein_core::text::is_symbol` held to
+  `grammar::is_one_name`), a bare `_` refused (S1f.5.1), a string only after
+  `:why`, `:source` or `:goal-text` (S1f.5.2), closed keywords (S1f.5.11) and
+  the paper grammar's defaults; every name a JSON string in the summary's
+  bindings (Q4); a macro's `:why` asked for by `--require-why` in every build,
+  the stdlib's two macros carrying theirs; and `ein_corpus::REFUSED_UNTIL_S1F_5_4`
+  deleted. It moved exactly T9's list
+  ([§ T4 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t4-record-2026-11-09)):
+  twenty-five refusal fixtures moved to `examples/broken/` with
+  `kwpair-below-the-filter`, `relation_parameter_int` and the two
+  `activator-text` controls retired, `derivation_cycle` and four `syntax/`
+  fixtures rewritten (`arg-kinds` scoped, R {∅}), the `binding-key-*`
+  witnesses scoped; and the register's W29, W32 and W35 rows flipped to
+  `fixed`, 23 fixed rows restated: 117 fixed, 22 open and 1 not wrong
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  A `.einb` opens in under 6 ms since, not one (design/10 § 6 restated, the
+  user's *"Restate the budget"*). T5, T6 and T7 are next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

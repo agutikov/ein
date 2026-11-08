@@ -1,7 +1,10 @@
 ;;; Syntax probe — negation.
 ;;;
-;;; Stored negation: over a binary fact, a unary one, a bare atom, and
-;;; one carrying a `:source`.
+;;; Stored negation: over a binary fact, a unary one, a nullary one, and
+;;; one carrying a `:source`. What `not` negates is a fact, so the nullary
+;;; one is `(not (plain))`; `(not plain)`, a negation of a bare name, which
+;;; the fixture wrote until M1f S1f.5.5's swap, is refused at the parse (the
+;;; paper grammar's default 3), Q-M1f.2 (a)'s rewrite.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
@@ -11,5 +14,5 @@
 
 (not (r a b))
 (not (u a))
-(not plain)
+(not (plain))
 (not (r a b) :source "(9)")

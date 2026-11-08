@@ -1107,28 +1107,48 @@ fn an_activator_with_an_empty_extent_saturates_to_nothing() {
 /// No rule has a priority: candidates fire in the order they were enqueued,
 /// and a rule's first candidates are enqueued in the order the rules are
 /// written. Four one-premise rules on one given fire in their written order,
-/// whatever their names; and a `:priority` written anyway is dropped by the
-/// loader as any rule keyword it does not read (D-15) until S1f.5.5's swap
-/// refuses it, so it orders nothing. Until S1f.5.15 this file held the bands'
-/// order (`priority_bands_order_the_firing_sequence`) and the default's value
+/// whatever their names. A `:priority` written anyway was dropped by the
+/// loader as any rule keyword it does not read (D-15) from S1f.5.15 until
+/// S1f.5.5's swap, and is refused at the parse since, as any keyword a rule
+/// does not take (S1f.5.11), so the program that wrote two orders nothing:
+/// it does not load. Until S1f.5.15 this file held the bands' order
+/// (`priority_bands_order_the_firing_sequence`) and the default's value
 /// (`the_default_priority_is_1000_and_fires_last`), which went with the
 /// keyword.
 #[test]
 fn the_agenda_is_fifo_in_the_written_order() {
-    let mut f = load_text(
-        "(relation a T) (relation b T) (relation c T) (relation d T) (relation e T)\n\
-         (a X)\n\
-         (rule unbanded () :match (a ?x) :assert (d ?x) :why \"first\")\n\
-         (rule hi () :match (a ?x) :assert (e ?x) :why \"second\" :priority 1001)\n\
-         (rule hyp () :match (a ?x) :assert (c ?x) :why \"third\" :priority 900)\n\
-         (rule lo () :match (a ?x) :assert (b ?x) :why \"fourth\")\n",
-    );
+    let rules = |priority: &str, other: &str| {
+        format!(
+            "(relation a T) (relation b T) (relation c T) (relation d T) (relation e T)\n\
+             (a X)\n\
+             (rule unbanded () :match (a ?x) :assert (d ?x) :why \"first\")\n\
+             (rule hi () :match (a ?x) :assert (e ?x) :why \"second\"{priority})\n\
+             (rule hyp () :match (a ?x) :assert (c ?x) :why \"third\"{other})\n\
+             (rule lo () :match (a ?x) :assert (b ?x) :why \"fourth\")\n"
+        )
+    };
+    let mut f = load_text(&rules("", ""));
     let run = f.saturate();
     assert_eq!(
         run.productive_rules(&f.terms),
         ["unbanded", "hi", "hyp", "lo"],
-        "the four fire in the order they are written, a dropped :priority \
-         ordering nothing"
+        "the four fire in the order they are written"
+    );
+    let written = rules(" :priority 1001", " :priority 900");
+    let refused = ein_ir::parse(&mut Ast::new(), &written, Some("<fixture>"))
+        .expect_err("a rule takes no :priority");
+    let at: Vec<String> = refused
+        .errors
+        .iter()
+        .map(|e| format!("{}:{}: {}", e.line, e.col, e.what))
+        .collect();
+    assert_eq!(
+        at,
+        [
+            "4:56: unexpected `:priority`: a keyword this form does not take",
+            "5:56: unexpected `:priority`: a keyword this form does not take"
+        ],
+        "{refused}"
     );
 }
 

@@ -206,12 +206,19 @@ fn a_saturated_kb_round_trips_with_its_derivations() {
 }
 
 /// design/10 §6's two numbers: a saturated `zebra2` under 64 KB, and a cold
-/// open under a millisecond.
+/// open within its budget — under a millisecond until M1f S1f.5.5's swap,
+/// under 6 ms since (the user's ruling of 2026-11-08 on its review stop, item
+/// 12, *"Restate the budget"*).
 ///
 /// The open is timed as a *median* of eleven, because a single one on a shared
 /// runner measures the runner. It is still the whole job — digest check,
 /// re-intern, re-parse of `PROGRAM`, registry rebuild, fact replay, index
-/// rebuild — and not a subset chosen to make the number.
+/// rebuild — and not a subset chosen to make the number. The re-parse is what
+/// the swap moved: the generated parser reads `PROGRAM`'s 10 960 bytes in
+/// about 3 ms where the hand-written one took a fraction of one, the price the
+/// user accepted with the generator (*"if speed will ever become an issue -
+/// will add super-optimized hand-written parser"*); keeping the parsed tree
+/// in the container, a format bump, waits until the millisecond is wanted.
 #[test]
 fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
     let path = repo_root().join("examples/zebra2.ein");
@@ -252,14 +259,18 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
     }
     times.sort_by(f64::total_cmp);
     let median = times[times.len() / 2];
-    // design/10 §6's millisecond is about the **shipped** engine. `cargo test`
-    // builds the dev profile — `opt-level = 1` with debug assertions on, which
-    // is 0.83 ms here against release's 0.61 — and CI runs it on a shared
-    // machine, so gating the design's number on an unoptimised build on a
-    // borrowed core would be measuring the runner. The number is printed
-    // either way, which is what a regression is read off; what differs is the
-    // ceiling that fails the test.
-    let budget = if cfg!(debug_assertions) { 5.0 } else { 1.0 };
+    // design/10 §6's number is about the **shipped** engine. `cargo test`
+    // builds the dev profile — `opt-level = 1` with debug assertions on — and
+    // CI runs it on a shared machine, so gating the design's number on an
+    // unoptimised build on a borrowed core would be measuring the runner. The
+    // number is printed either way, which is what a regression is read off;
+    // what differs is the ceiling that fails the test. Restated at M1f
+    // S1f.5.5's swap from 1 ms (release) and 5 ms (dev), measured then at 0.61
+    // and 0.83 ms, to 6 ms and 20 ms: the generated parser's open measured
+    // 3.83 to 3.89 ms release and 5.40 to 5.48 ms dev, three runs each
+    // (`cargo test [--release] -p ein-einb --test roundtrip a_saturated_zebra2
+    // -- --nocapture`, 2026-11-09).
+    let budget = if cfg!(debug_assertions) { 20.0 } else { 6.0 };
     eprintln!(
         "einb: saturated zebra2 = {} bytes ({}), {} facts, cold open {median:.3} ms",
         bytes.len(),
@@ -268,9 +279,10 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
     );
     // The message names the budget, the profile and the suspect — M1e
     // S1e.4.5, `TE-L1`, which found this site while auditing two others and
-    // did not list it. It is the workspace's second-tightest wall clock
+    // did not list it. It was the workspace's second-tightest wall clock
     // (measured 0.96 ms against the 5.0 ms dev budget, 2026-09-01, so 5.2×)
-    // and its failure said only what it took.
+    // and its failure said only what it took. Since the swap 5.45 ms against
+    // 20 ms, so 3.7×.
     assert!(
         median < budget,
         "cold open took {median:.3} ms against a {budget} ms {} budget \

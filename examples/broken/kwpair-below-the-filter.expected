@@ -1,0 +1,20 @@
+{FILE}:29:18: unexpected `:rule`
+  repair: Insert `)`
+{FILE}:29:47: unexpected `c10`: a name
+  repair: Insert `(`, Shift `c10`, Shift `)`, Delete `:derives`
+{FILE}:30:3: unexpected `(`
+  repair: Insert `)`
+{FILE}:30:35: unexpected `and`
+  repair: Insert `(`, Delete `and`
+{FILE}:30:47: unexpected `:derives`
+  repair: Delete `:derives`
+{FILE}:31:3: unexpected `(`
+  repair: Insert `)`
+{FILE}:31:20: unexpected `s2`: a name
+  repair: Insert `(`
+{FILE}:32:3: unexpected `(`
+  repair: Insert `)`
+{FILE}:32:12: unexpected `:derives`
+  repair: Delete `:derives`
+{FILE}:32:31: unexpected `)`
+  repair: Delete `)`

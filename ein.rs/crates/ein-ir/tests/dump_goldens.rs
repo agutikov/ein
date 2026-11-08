@@ -39,27 +39,23 @@ fn the_goldens_are_reproduced() {
 
 /// `parse(dump(parse(x))) == parse(x)`, structurally — the property `Loc`'s
 /// side table exists to make true.
+///
+/// Over every corpus file the parser accepts. Until S1f.5.5's swap that was
+/// every file outside `examples/broken/`; since, the refusal witnesses of the
+/// rulings the grammar carries (W29's, W32's, W35's, W18's, …) are refused at
+/// the parse too, wherever they live, and are left out by the parse rather
+/// than by their directory.
 #[test]
 fn dump_then_parse_is_a_fixed_point() {
-    let root = repo_root();
+    let (mut read, mut refused) = (0usize, 0usize);
     for path in corpus_files() {
-        if path.parent().is_some_and(|p| p.ends_with("broken")) {
-            continue;
-        }
-        // M1f S1f.5.3: the files that write a range, which the parser refuses
-        // until S1f.5.4 (`ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways).
-        let rel = path.strip_prefix(&root).unwrap_or(&path);
-        if ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(&rel.to_str().expect("utf-8")) {
-            let text = std::fs::read_to_string(&path).expect("readable");
-            assert!(
-                parse(&mut Ast::new(), &text, None).is_err(),
-                "{}: refused until S1f.5.4, and it parses",
-                rel.display()
-            );
-            continue;
-        }
+        let source = std::fs::read_to_string(&path).expect("readable");
         let mut ast = Ast::new();
-        let once = parse_file(&mut ast, &path);
+        let Ok(once) = parse(&mut ast, &source, Some(path.to_str().expect("utf-8"))) else {
+            refused += 1;
+            continue;
+        };
+        read += 1;
         let text = dump_canonical(&ast, &once);
         let twice = parse(&mut ast, &text, Some("<dumped>")).expect("a dump re-parses");
         assert_eq!(
@@ -80,4 +76,8 @@ fn dump_then_parse_is_a_fixed_point() {
         // And the text is a fixed point too, which is the observable half.
         assert_eq!(text, dump_canonical(&ast, &twice), "{}", path.display());
     }
+    assert!(
+        read >= 300 && refused < read / 4,
+        "{read} corpus files read, {refused} refused — the sweep stopped looking"
+    );
 }

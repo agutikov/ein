@@ -1,9 +1,11 @@
 //! The builder `ein.y`'s actions call: one call per action, each making the
-//! node the hand-written parser makes for the same text, so that the loader
-//! reads the generated parser's tree unchanged.
+//! node the hand-written parser made for the same text, so that the loader
+//! read the generated parser's tree unchanged; since the swap (T1f.5.5.4) it
+//! is the only builder.
 //!
 //! S1f.5.5 step 2's builder (T1f.5.5.2), made real at T1f.5.5.3. Its
-//! conventions are the hand-written parser's (`parse.rs`): a declarator,
+//! conventions are the hand-written parser's (`parse.rs`, deleted at the
+//! swap): a declarator,
 //! `and`, `or`, `not` and `neq` are built with a synthetic head and no `Loc`;
 //! any other list takes its head's `Loc`; a top-level fact has none; `()` is
 //! headed `#empty` and a parameter list `#params` (`ein_core::text`'s

@@ -237,9 +237,12 @@ The user ruled the rendering on 2026-11-03 (option (a) of
 [the stage's question](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md#the-question)),
 against filtering the pairs at every depth. Held by
 `dot_util::tests::a_keyword_pair_below_a_form_is_labelled_key_value` and by
-the corpus entry
-[`examples/ein-bugs/kwpair-below-the-filter.ein`](../../examples/ein-bugs/kwpair-below-the-filter.ein),
-whose two runs `corpus_cli.rs` holds at exit 0.
+the corpus entry `examples/ein-bugs/kwpair-below-the-filter.ein`, whose two
+runs `corpus_cli.rs` held at exit 0 until M1f S1f.5.5's swap refused the
+program at the parse (no keyword pair inside a term or a nested fact,
+S1f.5.11's ruling) and it moved to
+[`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein);
+the arm goes with S1f.5.11's T1f.5.11.2.
 
 ## 3. Search
 
@@ -786,15 +789,23 @@ the program does not have, which no rule's text predicts and so no candidate
 can hold ([§ 3.3](#33-the-m1-alive-set-invariant-operationally)). The user
 ruled on 2026-10-16 that rules cannot assert new names
 ([Q-M1e.21](../history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
-(b)), so both places that can see the binding refuse it, in ein's own words:
+(b)), so both places that can see the binding refused it, in ein's own words,
+**until M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09). Since the swap a run of
+digits is a name (S1f.5.4's ruling), so `(mirror 3)` names the relation `3` as
+`(mirror q)` names `q`, a name the program has, and neither row below is
+reached: its fixture, `examples/broken/load/relation_parameter_int.ein`,
+retired with its `.expected` and corpus entry (S1f.5.4's Q2 (a), decided
+2026-11-08), and `compile_semantics.rs`' test, now
+`a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused`, holds that
+`3` names a relation and keeps the nested-fact half below. The two lines,
+which T1f.5.5.5 or S1f.5.4's T1f.5.4.3 retires with the int kind, were:
 
 | input | message | exit |
 |---|---|---|
 | a fact, or a literal in a rule's `:assert`, that activates rule `<r>` with an integer where a parameter names a relation | `rule '<r>': its parameter ?<p> names a relation, and <activator> binds it to the integer <n> at <loc> — a relation is named by a symbol, not a number, and a rule cannot assert a name the program does not have` (a loader message; `<loc>` is the integer's) | 1 |
 | the same activator, derived by a rule through a variable | `the relation head ?<p> of <form> at <loc> is bound to the integer <n> — …` (a `CompileError`, § 4's second row) | 1 |
 
-The first is pinned by
-[`examples/broken/load/relation_parameter_int.ein`](../../examples/broken/load/relation_parameter_int.ein),
+The first was pinned by `examples/broken/load/relation_parameter_int.ein`,
 the second by `ein-infer/tests/compile_semantics.rs`'s
 `a_relation_parameter_a_rule_binds_to_a_number_is_refused`. An activator of
 the wrong arity activates nothing and is not checked; a string or a range
@@ -895,11 +906,14 @@ as an argument of n, and no fact can hold it — a range is cardinality
 metadata, and a rule matches and concludes facts`*. Ein has no numbers and no
 ranges (the user, 2026-11-06,
 [Q-M1e2.24](../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)),
-and S1f.5.3 retired the token, so `1..3` is a parse error wherever it is
-written (§ 1), from every command that reads the program, exit 1 (`ein
-test`: 2), until S1f.5.4 makes it one name. Pinned by `cli_semantics.rs`'
-`a_range_is_no_token` and `W20/range-in-match`, whose `now` is the parser's
-line.
+and S1f.5.3 retired the token, so `1..3` was a parse error wherever it was
+written (§ 1), from every command that read the program, exit 1 (`ein
+test`: 2), until S1f.5.5's swap made it one name (S1f.5.4's ruling): since,
+`(n 1..3)` in a rule is a pattern over the name `1..3`, which matches the
+facts that hold it, and `:card 1..*` is refused at the parse at `:card`, a
+keyword no form takes (S1f.5.11). Pinned by `cli_semantics.rs`'
+`a_range_is_the_name_it_spells` (`a_range_is_no_token` until the swap) and
+`W20/range-in-match`, whose `right` is the cube of 8 since.
 **Until S1e2.2.20** (W20) a range was a slot that matched nothing, in silence,
 and one in an `:assert` stopped the run at the rule's first firing with
 § 4's *conclusion no fact can hold* line; a `_` head stopped compilation with
@@ -950,9 +964,13 @@ which no program the loader accepts reaches since. Pinned by `ein-ir`'s
 `from_ir.rs` `a_rule_shape_that_reads_nothing_is_refused_at_load`,
 `ein-cli/tests/cli_semantics.rs`'s test of the same name,
 `ein-infer/tests/compile_semantics.rs`'s
-`a_relation_parameter_a_rule_binds_to_a_number_is_refused`,
-`examples/broken/load/empty_absent.ein` and `unbound_head.ein` (until then
-compile-negative fixtures), and `corpus/wrong_answers.toml`'s seven W24 rows.
+`a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused` (named for the
+integer until S1f.5.5's swap), `examples/broken/empty_absent.ein` (a
+compile-negative fixture until S1e2.2.24, a load-negative until S1f.5.5's
+swap, refused at the parse since) and `examples/broken/load/unbound_head.ein`,
+and `corpus/wrong_answers.toml`'s seven W24 rows, three of which, `_` in a
+guard, a premise that is not a form and a keyword pair in a guard, are refused
+at the parse since the swap (S1f.5.1, S1f.5.11, the paper grammar).
 
 ### 4.10 A form with no `:why`, under `--require-why` — M1f T1f.5.14.6
 
@@ -962,21 +980,24 @@ flag that makes it required, start with default false"*; *"yes, the flag only
 decides loading"*). With `--require-why` on a command that loads a program
 ([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)),
 or `ein_ir::LoadOptions::require_why` in the library, the loader refuses every
-`(relation …)`, `(rule …)` and `(hrule …)` it reads, the stdlib's and an
-imported module's included, that carries no `:why "…"`, one line per form,
+`(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` it reads, the stdlib's
+and an imported module's included, that carries no `:why "…"`, one line per
+form,
 `; `-joined with every other loader error in pass order, in ein's own words;
 exit 1 (`ein test`: 2):
 
 | input | message |
 |---|---|
-| a relation, rule or hrule with no `:why`, or a `:why` that is not a string | `<relation\|rule\|hrule> '<name>' has no :why "…", which this load requires of every relation, rule and hrule` |
+| a relation, rule, hrule or macro with no `:why` | `<relation\|rule\|hrule\|macro> '<name>' has no :why "…", which this load requires of every relation, rule, hrule and macro` |
 
-A `(macro …)` is asked for one only in a build with `ein-ir`'s
-`generated-parser` feature, the one parser that reads a macro's `:why`, and
-there the line names it, `macro '<m>' has no :why "…", which this load requires
-of every relation, rule, hrule and macro`; S1f.5.5's swap makes that every
-build. Off, the default until S1f.5.14's T1f.5.14.7, nothing is refused and
-nothing moves. Pinned by `ein-ir/tests/load_semantics.rs`'
+A `:why` that is not a string is refused at the parse since S1f.5.5's swap
+(T1f.5.5.4), where the loader's strings-only guard read it as none until then.
+Until the swap a `(macro …)` was asked for one only in a build with `ein-ir`'s
+`generated-parser` feature, the one parser that read a macro's `:why`, and the
+line read `… every relation, rule and hrule` elsewhere; the swap made the
+generated parser the only one, deleted the `cfg`, and wrote the stdlib's two
+macros, `forall` and `unknown`, their `:why`. Off, the default until
+S1f.5.14's T1f.5.14.7, nothing is refused and nothing moves. Pinned by `ein-ir/tests/load_semantics.rs`'
 `require_why_refuses_each_form_without_one`,
 `a_macro_needs_a_why_only_where_its_parser_reads_one` and
 `require_why_decides_loading_only`, and by `ein-cli/tests/config_reference.rs`'
