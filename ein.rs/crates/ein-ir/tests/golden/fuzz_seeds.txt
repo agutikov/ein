@@ -19,7 +19,9 @@
 === "(not (color-loc Red House-1) :rule x :using (c1))"
   ok 1 form(s)
 === "(a 1..5 :k 1..* :s \"x\\ny\" :w _ :v ?v)"
-  ok 1 form(s)
+  refused <string>:1:5: unexpected input
+(a 1..5 :k 1..* :s "x\ny" :w _ :v ?v)
+    ^
 === "(hrule h () :match (p ?a) :assert (q ?a) :why \"w\")"
   ok 1 form(s)
 === "()"

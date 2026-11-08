@@ -1076,7 +1076,7 @@ note   = "M1e2 W20's twin of `wild-in-head.ein`, banked by S1e2.2.20: the head w
 path   = "examples/ein-bugs/wrong-answers/range-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W20 (`W20/range-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `r`'s `:match` is `(n 1..3)`, and the rule compiler lowers the range as an opaque slot that matches nothing, so `r` never fires, in silence: R {∅}, exit 0. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): a range in a rule is refused at load, since no fact can hold one, which it is since S1e2.2.20's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W20 (`W20/range-in-match`), banked by S1e2.2.20 from S1e2.2.18's parked note: `r`'s `:match` is `(n 1..3)`, and the rule compiler lowers the range as an opaque slot that matches nothing, so `r` never fires, in silence: R {∅}, exit 0. Right, the user's ruling of 2026-11-04 (Q-M1e2.13 (a)): a range in a rule is refused at load, since no fact can hold one, which it is since S1e2.2.20's fix the same day, both runs exit 1 with the loader's line. Since M1f S1f.5.3 (Q-M1e2.24: no numbers and no ranges in Ein) there is no range token, and both runs exit 1 with the parser's line at the `.` of `1..3`, until S1f.5.4 makes it one name."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/wild-in-absent.ein"
@@ -2365,6 +2365,7 @@ note   = "M1e2 S1e2.1a.5 — `:over maximal`: two people, two seats, seven class
 path   = "examples/syntax/arg-kinds.ein"
 group  = "positive"
 runs   = ["render rules", "saturate"]
+note   = "Refused at the parse between M1f S1f.5.3 and S1f.5.4, both runs exit 1 at `(r 1..5 1..*)`: S1f.5.3 retired the range token (Q-M1e2.24) and S1f.5.4 makes each a name. The program is unchanged, and `ein_corpus::REFUSED_UNTIL_S1F_5_4` names it, which `corpus_cli` holds both ways."
 
 [[entry]]
 path   = "examples/syntax/config.ein"

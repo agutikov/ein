@@ -315,8 +315,17 @@ fn the_witnesses_reload_to_their_states() {
     .iter()
     .enumerate()
     {
-        states += check(file, &root.join(format!("w{i}")), &mut bad)
-            .unwrap_or_else(|| panic!("{file}: no state written"));
+        let wrote = check(file, &root.join(format!("w{i}")), &mut bad);
+        // M1f S1f.5.3: `arg-kinds` writes a range, and the parser refuses it
+        // until S1f.5.4 (`ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways).
+        if ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(file) {
+            assert!(
+                wrote.is_none(),
+                "{file}: refused until S1f.5.4, and it answered"
+            );
+            continue;
+        }
+        states += wrote.unwrap_or_else(|| panic!("{file}: no state written"));
     }
     assert!(states >= 40, "{states}");
     assert!(bad.is_empty(), "{}", bad.join("\n"));

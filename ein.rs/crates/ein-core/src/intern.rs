@@ -1,7 +1,7 @@
 //! The symbol table — every name in a program as a `u32`.
 //!
 //! Relation names, object names, rule names, variable names, keyword names,
-//! and every `String` / `Range` / `Var` literal that reaches a fact argument
+//! and every `String` / `Var` literal that reaches a fact argument
 //! intern here
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §2). Each
 //! becomes a 4-byte [`Symbol`] however often it occurs, and every identity

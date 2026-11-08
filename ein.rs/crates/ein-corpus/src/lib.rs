@@ -26,6 +26,22 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 pub use manifest::{Corpus, Entry};
 pub use register::{Register, Row};
 
+/// **The corpus files the parser refuses between M1f S1f.5.3 and S1f.5.4.**
+///
+/// Each writes a range, `1..5` or `1..3`. S1f.5.3 retired the `RANGE` token
+/// (Q-M1e2.24: Ein has no numbers and no ranges), so `1` is an `INT` and
+/// `..5` no token, and the parse stops at the `.`; S1f.5.4 makes `1..5` one
+/// name, and both files load again, each as it is written. Until then a test
+/// whose subject is a file that parses, loads or answers leaves these out by
+/// name, never by a silent skip, and `ein-cli`'s
+/// `corpus_cli::the_files_refused_until_digits_are_names_are_refused` holds
+/// the list both ways: every run of each is a parse error, so S1f.5.4 empties
+/// it in the commit that makes them load.
+pub const REFUSED_UNTIL_S1F_5_4: &[&str] = &[
+    "examples/ein-bugs/wrong-answers/range-in-match.ein",
+    "examples/syntax/arg-kinds.ein",
+];
+
 /// The repo root, found from the compiling crate rather than the working
 /// directory, so a test runs the same from anywhere.
 pub fn repo_root() -> PathBuf {

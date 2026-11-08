@@ -95,7 +95,7 @@ pub enum Slot {
     /// does not bind. A `String` was one until M1e2 S1e2.2.18, and a
     /// `Wildcard` and a `Range` until S1e2.2.20, which lowered the first to
     /// [`Self::Any`] and refused the second, and a wildcard as a relation, at
-    /// load. **Since S1e2.2.24** (W24, Q-M1e2.16 (1)) the loader refuses the
+    /// load (and M1f S1f.5.3 retired the range token). **Since S1e2.2.24** (W24, Q-M1e2.16 (1)) the loader refuses the
     /// two that were left, a keyword pair inside a pattern inside a pattern
     /// and a relation variable no parameter binds, and the compiler a
     /// parameter its activator bound to a nested fact, so no program the

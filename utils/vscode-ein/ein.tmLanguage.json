@@ -159,11 +159,6 @@
     "number": {
       "patterns": [
         {
-          "comment": "RANGE — n..m / n..* (arity / interval). Must precede integer.",
-          "name": "constant.numeric.range.ein",
-          "match": "(?<![\\w.-])[0-9]+\\.\\.(?:[0-9]+|\\*)"
-        },
-        {
           "comment": "INT. Lookbehind keeps the trailing digits of symbols like House-1 / House_3 from being mis-lexed as numbers.",
           "name": "constant.numeric.integer.ein",
           "match": "(?<![\\w.-])-?[0-9]+"

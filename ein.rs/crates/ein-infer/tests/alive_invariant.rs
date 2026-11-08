@@ -358,8 +358,12 @@ fn every_name_of_the_program_is_a_candidate_object() {
         "only {programs} corpus files loaded — the sweep stopped looking"
     );
     found.sort();
+    // M1f S1f.5.3: `arg-kinds` writes a range, and the parser refuses it
+    // until S1f.5.4 (`ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways), so
+    // its two names are not read until then.
     let mut want: Vec<(String, String)> = SEEDED
         .iter()
+        .filter(|(p, _)| !ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(p))
         .flat_map(|(p, names)| names.iter().map(|n| (p.to_string(), n.to_string())))
         .collect();
     want.sort();

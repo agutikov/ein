@@ -41,8 +41,21 @@ fn the_goldens_are_reproduced() {
 /// side table exists to make true.
 #[test]
 fn dump_then_parse_is_a_fixed_point() {
+    let root = repo_root();
     for path in corpus_files() {
         if path.parent().is_some_and(|p| p.ends_with("broken")) {
+            continue;
+        }
+        // M1f S1f.5.3: the files that write a range, which the parser refuses
+        // until S1f.5.4 (`ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways).
+        let rel = path.strip_prefix(&root).unwrap_or(&path);
+        if ein_corpus::REFUSED_UNTIL_S1F_5_4.contains(&rel.to_str().expect("utf-8")) {
+            let text = std::fs::read_to_string(&path).expect("readable");
+            assert!(
+                parse(&mut Ast::new(), &text, None).is_err(),
+                "{}: refused until S1f.5.4, and it parses",
+                rel.display()
+            );
             continue;
         }
         let mut ast = Ast::new();

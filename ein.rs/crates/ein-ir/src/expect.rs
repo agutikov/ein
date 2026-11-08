@@ -339,11 +339,6 @@ pub fn render(ast: &Ast, node: NodeId) -> String {
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
-        Node::Range { low, high } => ein_core::text::symbol(&match high {
-            Some(h) => format!("{}..{}", ast.sym(low), ast.sym(h)),
-            None => format!("{}..*", ast.sym(low)),
-        })
-        .into_owned(),
         Node::KwPair { key, value } => format!("{} {}", render(ast, key), render(ast, value)),
         Node::SForm { head, args } => {
             // `(q)`, no trailing space — `events::sexpr`'s nullary case, and

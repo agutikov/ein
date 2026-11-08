@@ -90,9 +90,6 @@ pub enum Node {
     /// intern to the same symbol, and the width is unbounded
     /// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
     Int(SymId),
-    /// `low..high`, or `low..*` when `high` is `None`. Both bounds are
-    /// canonical decimal text, for the same reason as [`Node::Int`].
-    Range { low: SymId, high: Option<SymId> },
     /// `:key value`. `key` is a [`Node::Keyword`] node so it keeps its own
     /// `Loc`.
     KwPair { key: NodeId, value: NodeId },
@@ -283,9 +280,6 @@ impl Ast {
             (Node::Wildcard, Node::Wildcard) => true,
             (Node::Str(x), Node::Str(y)) => x == y,
             (Node::Int(x), Node::Int(y)) => x == y,
-            (Node::Range { low: l1, high: h1 }, Node::Range { low: l2, high: h2 }) => {
-                l1 == l2 && h1 == h2
-            }
             (Node::KwPair { key: k1, value: v1 }, Node::KwPair { key: k2, value: v2 }) => {
                 self.eq_nodes(k1, k2) && self.eq_nodes(v1, v2)
             }
@@ -332,13 +326,8 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
         Node::Keyword(s) => format!("Keyword(name={})", repr_str(ast.sym(s))),
         Node::Wildcard => "Wildcard()".to_string(),
         Node::Str(s) => format!("String(value={})", repr_str(ast.sym(s))),
-        // `Int` and `Range` carry *integers*, so they print unquoted.
+        // `Int` carries an *integer*, so it prints unquoted.
         Node::Int(s) => format!("Int(value={})", ast.sym(s)),
-        Node::Range { low, high } => format!(
-            "Range(low={}, high={})",
-            ast.sym(low),
-            high.map_or("None".to_string(), |h| ast.sym(h).to_string())
-        ),
         Node::KwPair { key, value } => format!(
             "KwPair(key={}, value={})",
             node_repr(ast, key),

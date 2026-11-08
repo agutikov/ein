@@ -69,14 +69,6 @@ fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
         }
         Node::Str(s) => out.push_str(&escape_string_literal(ast.sym(s))),
         Node::Int(s) => out.push_str(ast.sym(s)),
-        Node::Range { low, high } => {
-            out.push_str(ast.sym(low));
-            out.push_str("..");
-            match high {
-                Some(h) => out.push_str(ast.sym(h)),
-                None => out.push('*'),
-            }
-        }
         Node::KwPair { key, value } => {
             compact_into(ast, key, out);
             out.push(' ');

@@ -76,7 +76,6 @@ pub enum Term {
     Keyword,
     Wildcard,
     Eq,
-    Range,
     Int,
     Str,
 }
@@ -346,7 +345,6 @@ pub fn match_term(src: &str, c: Cursor, term: Term) -> Option<Lexeme> {
         Term::Symbol => match_symbol(rest),
         Term::Var => match_var(rest),
         Term::Keyword => match_keyword(rest),
-        Term::Range => match_range(rest),
         Term::Int => match_int(rest),
         Term::Str => match_string(rest),
     }?;
@@ -445,25 +443,6 @@ fn match_keyword(rest: &str) -> Option<usize> {
     Some(1 + len)
 }
 
-/// `RANGE: /[0-9]+\.\.([0-9]+|\*)/`. Digit-anchored, so it never collides with
-/// a dotted `SYMBOL`; tried before `INT` because both start on a digit.
-fn match_range(rest: &str) -> Option<usize> {
-    let low = rest
-        .find(|c: char| !c.is_ascii_digit())
-        .unwrap_or(rest.len());
-    if low == 0 || !rest[low..].starts_with("..") {
-        return None;
-    }
-    let after = &rest[low + 2..];
-    if after.starts_with('*') {
-        return Some(low + 3);
-    }
-    let high = after
-        .find(|c: char| !c.is_ascii_digit())
-        .unwrap_or(after.len());
-    (high > 0).then_some(low + 2 + high)
-}
-
 /// `INT: /-?[0-9]+/`.
 fn match_int(rest: &str) -> Option<usize> {
     let neg = usize::from(rest.starts_with('-'));
@@ -555,12 +534,27 @@ mod tests {
         assert_eq!(lex("_x", Term::Symbol), None);
     }
 
+    /// **No terminal reads a range** — M1f S1f.5.3, on the user's ruling of
+    /// 2026-11-06 (Q-M1e2.24): Ein has no numbers and no ranges. `1..5` is
+    /// the `INT` `1` and then `..5`, which no terminal matches, so the parse
+    /// stops there; from S1f.5.4 on it is one name.
     #[test]
-    fn range_is_digit_anchored_and_beats_int() {
-        assert_eq!(lex("1..5", Term::Range), Some("1..5"));
-        assert_eq!(lex("12..*", Term::Range), Some("12..*"));
-        assert_eq!(lex("1..", Term::Range), None);
-        assert_eq!(lex("1..5", Term::Int), Some("1"));
+    fn no_terminal_reads_a_range() {
+        for t in ["1..5", "12..*", "1.."] {
+            assert_eq!(lex(t, Term::Int), Some(t.split('.').next().unwrap()), "{t}");
+            let rest = &t[t.find('.').unwrap()..];
+            for term in [
+                Term::Symbol,
+                Term::Var,
+                Term::Keyword,
+                Term::Wildcard,
+                Term::Eq,
+                Term::Int,
+                Term::Str,
+            ] {
+                assert_eq!(lex(rest, term), None, "{rest} as {term:?}");
+            }
+        }
         assert_eq!(lex("-5", Term::Int), Some("-5"));
         assert_eq!(lex("-", Term::Int), None);
     }

@@ -1269,10 +1269,7 @@ impl<'a> Compiler<'a> {
             Node::Wildcard => self.guard_keys.push(3),
             Node::Str(s) => self.guard_keys.extend([4, s.0]),
             Node::Int(s) => self.guard_keys.extend([5, s.0]),
-            Node::Range { low, high } => {
-                self.guard_keys
-                    .extend([6, low.0, high.map(|h| h.0).unwrap_or(u32::MAX)]);
-            }
+            // 6 was a range's, until M1f S1f.5.3 retired the token.
             Node::KwPair { key, value } => {
                 self.guard_keys.push(7);
                 self.encode_node(key);

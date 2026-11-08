@@ -145,9 +145,13 @@
 === "(a -0)"
   ok (1 form(s))
 === "(a 1..5)"
-  ok (1 form(s))
+  <string>:1:5: unexpected input
+  (a 1..5)
+      ^
 === "(a 1..*)"
-  ok (1 form(s))
+  <string>:1:5: unexpected input
+  (a 1..*)
+      ^
 === "(a 1..)"
   <string>:1:5: unexpected input
   (a 1..)

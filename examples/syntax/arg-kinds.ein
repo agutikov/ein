@@ -1,7 +1,7 @@
 ;;; Syntax probe — arg-kinds.
 ;;;
-;;; Every argument kind a fact can carry — int, string, the two range
-;;; literals, the wildcard, a variable, and a nested fact.
+;;; Every argument kind a fact can carry: an int, a string, `1..5` and `1..*`
+;;; (no range: a parse error from M1f S1f.5.3, two names from S1f.5.4), `_`, `?x`, a nested fact.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

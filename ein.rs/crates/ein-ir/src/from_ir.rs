@@ -255,7 +255,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
             Node::Int(s) => {
                 let _ = terms.value_int(ast.sym(s));
             }
-            Node::Keyword(_) | Node::Wildcard | Node::Range { .. } => {}
+            Node::Keyword(_) | Node::Wildcard => {}
             Node::KwPair { key, value } => {
                 walk(ast, terms, key);
                 walk(ast, terms, value);
@@ -559,7 +559,7 @@ fn string_value(ast: &Ast, node: Option<NodeId>) -> Option<&str> {
     }
 }
 
-/// Stringify an `Atom` / `String` / `Int` / `Var` / `Range` for use as a fact
+/// Stringify an `Atom` / `String` / `Int` / `Var` for use as a fact
 /// argument. Anything else (a `Wildcard`, a keyword, a nested form) answers
 /// `None`.
 fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Value>, Overflow> {
@@ -567,16 +567,6 @@ fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Val
         Node::Atom(s) | Node::Str(s) => terms.value_text(ast.sym(s))?,
         Node::Int(s) => terms.value_int(ast.sym(s))?,
         Node::Var(s) => terms.value_var(ast.sym(s))?,
-        Node::Range { low, high } => {
-            let low = ast.sym(low).to_string();
-            match high {
-                Some(h) => {
-                    let h = ast.sym(h).to_string();
-                    terms.value_range(&low, Some(&h))?
-                }
-                None => terms.value_range(&low, None)?,
-            }
-        }
         _ => return Ok(None),
     }))
 }
@@ -800,8 +790,8 @@ fn ingest_rules(
                 }
             }
         };
-        // A range, or a wildcard as a relation, in a rule — M1e2 S1e2.2.20
-        // (W20, Q-M1e2.13 (a), Q-M1e2.14 (c)).
+        // A wildcard as a relation, in a rule — M1e2 S1e2.2.20 (W20,
+        // Q-M1e2.14 (c)) — and the shapes S1e2.2.24 refuses (W24).
         let n_refused = errors.len();
         let param_vars: Vec<&str> = ast
             .form_args(params_form)
@@ -903,9 +893,6 @@ fn ingest_rules(
 /// conclusions, given the rule's parameters. It refuses, one line per slot
 /// as written, naming the rule and the clause:
 ///
-/// - a **range**, `1..3` or `2..*`, where a pattern's argument goes, at any
-///   depth of either clause, or as a whole clause: cardinality metadata, which
-///   no fact can hold (`01_grammar.md`'s `RANGE` row);
 /// - a **wildcard written as a relation**, `(_ a)`: `_` stands for an argument;
 /// - a **relation written as a variable no parameter binds**, `(?r b)`, at
 ///   the top level or inside a pattern, in either clause: a relation is named
@@ -918,7 +905,7 @@ fn ingest_rules(
 /// - a **guard's argument that is no value it can compare**: `_`, a form, a
 ///   keyword pair, or a variable no premise before the guard binds.
 ///
-/// Not refused: a keyword pair at a pattern's top level, `(n ?x :where 1..3)`,
+/// Not refused: a keyword pair at a pattern's top level, `(n ?x :where v)`,
 /// or as a premise of an `(and …)`, `:where (neq ?a ?b)`, which the compiler
 /// drops (Q32); `_` as a pattern's argument, which matches any value; and in
 /// an `:assert`'s conclusion, `_` or a keyword pair at its top level, which
@@ -927,8 +914,12 @@ fn ingest_rules(
 ///
 /// **Until S1e2.2.20** the compiler lowered a range as an opaque slot that
 /// matched nothing, in silence, and a wildcard head stopped compilation with
-/// the Python IR's spelling of the pattern. **Until S1e2.2.24** each of the
-/// rest read nothing, in silence: a guard compared `_`, a form or a keyword
+/// the Python IR's spelling of the pattern. From S1e2.2.20 this pass refused a
+/// range in a rule too, until M1f S1f.5.3 retired the token: Ein has no
+/// ranges (Q-M1e2.24), and `1..3` is a parse error.
+///
+/// **Until S1e2.2.24** each of the rest read nothing, in silence: a guard
+/// compared `_`, a form or a keyword
 /// pair as a raw IR node, equal to no value, and an unbound variable as a
 /// null, so `(eq ?x _)` never held and `(and (neq ?x a) (p ?x))` fired for
 /// `a`; the compiler dropped a premise that is not a form, so the rule fired
@@ -948,8 +939,6 @@ fn refuse_no_fact_holds(
     errors: &mut Vec<String>,
 ) {
     enum Found {
-        /// A range, and the form it is an argument of (`None`: the clause).
-        Range(NodeId, Option<NodeId>),
         /// A form whose relation is the wildcard.
         WildHead(NodeId),
         /// A form whose relation is a variable no parameter binds.
@@ -981,20 +970,16 @@ fn refuse_no_fact_holds(
             }
         }
         /// A pattern's argument, at any depth below a pattern.
-        fn slot(&mut self, node: NodeId, within: NodeId) {
+        fn slot(&mut self, node: NodeId) {
             let ast = self.ast;
-            match ast.node(node) {
-                Node::Range { .. } => self.out.push(Found::Range(node, Some(within))),
-                Node::SForm { head, args } => {
-                    self.form_head(node, head);
-                    for &a in ast.args(args) {
-                        match ast.node(a) {
-                            Node::KwPair { .. } => self.out.push(Found::NestedKw(a, node)),
-                            _ => self.slot(a, node),
-                        }
+            if let Node::SForm { head, args } = ast.node(node) {
+                self.form_head(node, head);
+                for &a in ast.args(args) {
+                    match ast.node(a) {
+                        Node::KwPair { .. } => self.out.push(Found::NestedKw(a, node)),
+                        _ => self.slot(a),
                     }
                 }
-                _ => {}
             }
         }
         /// A pattern written as a premise or a conclusion: its relation, and
@@ -1011,7 +996,7 @@ fn refuse_no_fact_holds(
                 if matches!(ast.node(a), Node::KwPair { .. }) {
                     continue;
                 }
-                self.slot(a, node);
+                self.slot(a);
                 if let Some(b) = bound.as_deref_mut() {
                     vars_in(ast, a, b);
                 }
@@ -1036,7 +1021,6 @@ fn refuse_no_fact_holds(
             for &a in ast.form_args(node) {
                 match ast.node(a) {
                     Node::Wildcard => wild = true,
-                    Node::Range { .. } => found.push(Found::Range(a, Some(node))),
                     Node::SForm { .. } | Node::KwPair { .. } if once(a) => {
                         found.push(Found::GuardNode(node, a))
                     }
@@ -1059,7 +1043,6 @@ fn refuse_no_fact_holds(
             let ast = self.ast;
             match ast.node(node) {
                 Node::KwPair { .. } => {}
-                Node::Range { .. } => self.out.push(Found::Range(node, within)),
                 Node::SForm { args, .. } => match ast.head_name(node) {
                     Some("absent") => {
                         let mut inner = bound.clone();
@@ -1087,7 +1070,6 @@ fn refuse_no_fact_holds(
         fn conclusion(&mut self, node: NodeId, within: Option<NodeId>) {
             let ast = self.ast;
             match ast.node(node) {
-                Node::Range { .. } => self.out.push(Found::Range(node, within)),
                 Node::SForm { args, .. }
                     if within.is_none() && ast.head_name(node) == Some("and") =>
                 {
@@ -1136,19 +1118,6 @@ fn refuse_no_fact_holds(
                          binds, a name, a string or an integer";
     for f in walk.out {
         errors.push(match f {
-            Found::Range(range, within) => {
-                let written = dc(range);
-                let place = match within.map(|form| ast.node(form)) {
-                    Some(Node::SForm { head: h, .. }) => {
-                        format!("writes {written} as an argument of {}", dc(h))
-                    }
-                    _ => format!("is {written}"),
-                };
-                format!(
-                    "{head} '{name}': its {clause} {place}, and no fact can hold it — a range is \
-                     cardinality metadata, and a rule matches and concludes facts"
-                )
-            }
             Found::WildHead(form) => format!(
                 "{head} '{name}': its {clause} writes {} with the wildcard _ as its relation — a \
                  relation is named by a name or by a parameter its activator binds, and _ \
@@ -1230,8 +1199,8 @@ fn refuse_no_fact_holds(
 /// rule's `:assert`. An activator a rule derives through a variable is known
 /// only to a run, and the compiler refuses it when it binds one
 /// (`ein_infer::compile`). An activator of the wrong arity activates nothing
-/// (`activators_for`'s filter), so it is not checked; a string or a range
-/// binds a name, and a nested fact binds nothing.
+/// (`activators_for`'s filter), so it is not checked; a string binds a
+/// name, and a nested fact binds nothing.
 fn validate_relation_parameters(
     ast: &Ast,
     terms: &Terms,
@@ -2111,55 +2080,22 @@ mod tests {
     /// S1e.4.7 (`DO-L1`): the one with no case was an `open` whose argument is
     /// neither a variable nor a name, and the page claiming the coverage is
     /// what stopped anybody counting.
-    /// M1e2 S1e2.2.20 (W20) — **a range in a rule, and a wildcard written as
-    /// a relation, are refused at load**, one line per slot naming the rule
-    /// and the slot as written, at any depth of either clause, in a rule, an
-    /// hrule or an obligation (Q-M1e2.13 (a), Q-M1e2.14 (c)). Until then a
-    /// range was an opaque slot that matched nothing, in silence, and a
-    /// wildcard head stopped compilation with the Python IR's spelling. A
-    /// keyword pair's value is no slot and loads; so does `_` as an argument,
-    /// which matches any value, and in an obligation's witness premise it is a
-    /// slot the `absent` introduces, as a fresh variable is.
+    /// M1e2 S1e2.2.20 (W20) — **a wildcard written as a relation is refused
+    /// at load**, one line per slot naming the rule and the slot as written,
+    /// at any depth of either clause, in a rule, an hrule or an obligation
+    /// (Q-M1e2.14 (c)). Until then a wildcard head stopped compilation with
+    /// the Python IR's spelling. A keyword pair's value is no slot and loads;
+    /// so does `_` as an argument, which matches any value, and in an
+    /// obligation's witness premise it is a slot the `absent` introduces, as a
+    /// fresh variable is. A range in a rule was refused here too, from
+    /// S1e2.2.20 (Q-M1e2.13 (a)) until M1f S1f.5.3 retired the token
+    /// (Q-M1e2.24): `1..3` is a parse error since.
     #[test]
-    fn a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load() {
-        const RANGE: &str = "and no fact can hold it — a range is cardinality metadata, and a rule \
-                             matches and concludes facts";
+    fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
         const HEAD: &str = "with the wildcard _ as its relation — a relation is named by a name or \
                             by a parameter its activator binds, and _ stands for an argument";
         let pre = "(relation n T) (relation hit T) (relation box T) (relation tag T T)\n(n 2)\n";
         for (rule, want) in [
-            (
-                "(rule r () :match (n 1..3) :assert (hit r))",
-                format!("rule 'r': its :match writes 1..3 as an argument of n, {RANGE}"),
-            ),
-            (
-                "(rule r () :match (absent (n 1..3)) :assert (hit r))",
-                format!("rule 'r': its :match writes 1..3 as an argument of n, {RANGE}"),
-            ),
-            (
-                "(rule r () :match (box (not (n 2..*))) :assert (hit r))",
-                format!("rule 'r': its :match writes 2..* as an argument of n, {RANGE}"),
-            ),
-            (
-                "(rule r () :match (and (n ?x) (neq ?x 1..3)) :assert (hit r))",
-                format!("rule 'r': its :match writes 1..3 as an argument of neq, {RANGE}"),
-            ),
-            (
-                "(rule r () :match 1..3 :assert (hit r))",
-                format!("rule 'r': its :match is 1..3, {RANGE}"),
-            ),
-            (
-                "(rule r () :match (n ?x) :assert (and (hit ?x) (tag ?x (box 1..3))))",
-                format!("rule 'r': its :assert writes 1..3 as an argument of box, {RANGE}"),
-            ),
-            (
-                "(hrule h () :match (n 1..3) :assert (tag a b))",
-                format!("hrule 'h': its :match writes 1..3 as an argument of n, {RANGE}"),
-            ),
-            (
-                "(hrule h () :match (n ?x) :assert (tag ?x 1..3))",
-                format!("hrule 'h': its :assert writes 1..3 as an argument of tag, {RANGE}"),
-            ),
             (
                 "(rule w () :match (_ 2) :assert (hit w))",
                 format!("rule 'w': its :match writes (_ 2) {HEAD}"),
@@ -2192,21 +2128,20 @@ mod tests {
         ] {
             assert_eq!(err(&format!("{pre}{rule}")), want, "{rule}");
         }
-        // One line per slot, ranges and wildcard heads alike, `; `-joined.
+        // One line per slot, `; `-joined.
         assert_eq!(
             err(&format!(
-                "{pre}(rule r () :match (and (n 1..3) (_ 2)) :assert (tag 2..* r))"
+                "{pre}(rule r () :match (and (n ?x) (_ 2)) :assert (box (_ ?x)))"
             )),
             format!(
-                "rule 'r': its :match writes 1..3 as an argument of n, {RANGE}; \
-                 rule 'r': its :match writes (_ 2) {HEAD}; \
-                 rule 'r': its :assert writes 2..* as an argument of tag, {RANGE}"
+                "rule 'r': its :match writes (_ 2) {HEAD}; \
+                 rule 'r': its :assert writes (_ ?x) {HEAD}"
             )
         );
         // Not a slot: a keyword pair's value, which the compiler drops (Q32),
         // and `_` as an argument, which matches any value.
         ok(&format!(
-            "{pre}(rule r () :match (n ?x :where 1..3) :assert (hit r))"
+            "{pre}(rule r () :match (n ?x :where v) :assert (hit r))"
         ));
         ok(&format!(
             "{pre}(rule r () :match (and (n _) (box (tag _ _))) :assert (hit r))"
@@ -2383,7 +2318,7 @@ mod tests {
              :assert (hit ?x))",
             "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y ?x)))) :assert (hit ?x))",
             "(rule e () :match (and (p ?x) :where (eq ?x a)) :assert (hit ?x))",
-            "(rule e () :match (p ?x :where 1..3) :assert (hit ?x))",
+            "(rule e () :match (p ?x :where v) :assert (hit ?x))",
             "(rule e () :match (and (box (p _)) (p _)) :assert (hit a))",
             "(rule e (?R) :match (box (?R a)) :assert (hit a))",
         ] {

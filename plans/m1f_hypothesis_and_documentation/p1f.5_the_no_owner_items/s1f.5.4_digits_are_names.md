@@ -116,6 +116,20 @@ standing rule on syntax): `features/05`, `std.elim`, `zebra2.ein` unmoved, and `
 
 The lexer, the `:priority` guard, the fixtures and the register.
 
+**What [S1f.5.3](s1f.5.3_range_retired.md) left for this task** (2026-11-08, [§ Between this stage and
+S1f.5.4](s1f.5.3_range_retired.md#between-this-stage-and-s1f54)):
+
+- **Empty `ein_corpus::REFUSED_UNTIL_S1F_5_4`** and delete `corpus_cli`'s
+  `the_files_refused_until_digits_are_names_are_refused`, which holds the list both ways and fails in this
+  commit, once `syntax/arg-kinds` and `wrong-answers/range-in-match` parse. With the list empty, the round
+  trip's witnesses, `alive_invariant`'s `SEEDED`, the dump fixed point and `every_positive_entry_answers…`
+  read both files again with no other edit; `W20/range-in-match` loads, a pattern over the name `1..3`, and
+  its `right` is restated.
+- **`cli_semantics`' `a_range_is_no_token` becomes its plain-name counterpart**: `1..5`, `1..*` and `2..*`
+  in a fact, a keyword's value, a declaration, a rule's `:match` and `:assert` and a `(config …)` each read
+  as the name it spells, which is S1f.5.3's acceptance, *a test holds each*. `:card 1..*` then loads with
+  `:card` dropped until [S1f.5.11](s1f.5.11_closed_keywords.md) refuses the keyword, and the row says so.
+
 ### Task T1f.5.4.3 — what only an int used
 
 Retired as a separate commit, so that no answer moves in it.

@@ -357,16 +357,6 @@ impl<'a> Parser<'a> {
             let loc = self.loc(&l);
             return Some((self.ast.push(Node::Wildcard, loc), l.next));
         }
-        // RANGE before INT: both are digit-anchored, and the INT reading of
-        // `1..5` always dies on the `..` that follows it.
-        if let Some(l) = match_term(self.src, c, Term::Range) {
-            let loc = self.loc(&l);
-            let text = l.text(self.src);
-            let (low_s, high_s) = text.split_once("..").expect("RANGE has ..");
-            let low = self.ast.intern(&canonical_int(low_s));
-            let high = (high_s != "*").then(|| self.ast.intern(&canonical_int(high_s)));
-            return Some((self.ast.push(Node::Range { low, high }, loc), l.next));
-        }
         if let Some(l) = match_term(self.src, c, Term::Int) {
             let loc = self.loc(&l);
             let v = self.ast.intern(&canonical_int(l.text(self.src)));

@@ -612,6 +612,16 @@
 # at `ec004a48`, release and debug alike, and is the census's answer. The
 # register reads **103 rows fixed, 33 open and 1 not-wrong**.
 #
+# **S1f.5.3 retired the `RANGE` token the same day** (T1f.5.3.2), on the
+# user's ruling of 2026-11-06 (Q-M1e2.24: no numbers and no ranges in Ein).
+# `W20/range-in-match` stays fixed, its `right` the refusal: its `now` is the
+# parser's line at the `.` of `1..3`, where it was the loader's, and
+# `register_region.rs` reads a refusal at the parse as it reads one at load.
+# S1f.5.4 makes `1..3` one name, and the row's `right` is restated there. No
+# other row moved; the register reads **103 rows fixed, 33 open and 1
+# not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-08).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -5544,7 +5554,7 @@ question = ["Q-M1e2.13"]
 witness  = "examples/ein-bugs/wrong-answers/range-in-match.ein"
 status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from S1e2.2.18 § Notes' first note, where the witness was build/s1e2.2.18/probes/range-in-match.ein, on the user's ruling of 2026-11-04 (Q-M1e2.13 (a)). Its twin is the refusal, so no file. Fixed by T1e2.2.20.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+note     = "Filed by S1e2.2.20 (T1e2.2.20.1, 2026-11-05) from S1e2.2.18 § Notes' first note, where the witness was build/s1e2.2.18/probes/range-in-match.ein, on the user's ruling of 2026-11-04 (Q-M1e2.13 (a)). Its twin is the refusal, so no file. Fixed by T1e2.2.20.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Since M1f S1f.5.3 (2026-11-08, Q-M1e2.24: no numbers and no ranges in Ein) there is no RANGE token, and the refusal is the parser's line at the `.` of `1..3`, from every command that reads the program, exit 1 (`ein test`: 2); S1f.5.4 makes `1..3` one name, the program loads as a pattern over it, and restates `right`"
 
 [case.fixed]
 commit = "eddea251"
@@ -5569,7 +5579,7 @@ derived   = "A range is cardinality metadata (01_grammar.md's RANGE row), and no
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: rule 'r': its :match writes 1..3 as an argument of n, and no fact can hold it — a range is cardinality metadata, and a rule matches and concludes facts"
+refused = "examples/ein-bugs/wrong-answers/range-in-match.ein:32:23: unexpected input"
 
 [[case]]
 id       = "W20/wild-in-absent"

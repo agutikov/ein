@@ -2,13 +2,13 @@
 //! value (M1e2 S1e2.3.8, P1e2.3's N5).
 //!
 //! A fact argument is a name (a [`crate::Symbol`]), an int or a nested fact,
-//! and the loader makes a name of every textual argument: an atom, a string,
-//! a variable written in a fact (`?x` is the name `?x`) and a range (`1..5`
-//! is the name `1..5`) all intern as the symbol they spell
+//! and the loader makes a name of every textual argument: an atom, a string
+//! and a variable written in a fact (`?x` is the name `?x`) all intern as the
+//! symbol they spell
 //! ([`crate::Terms::value_text`]). So a name prints **bare** where its text
 //! lexes back as one `SYMBOL` and is no reserved word, and as a **quoted
 //! string** everywhere else: a space, a parenthesis, a quote, a leading digit,
-//! `?`, `:` or `_`, a range's shape, a non-ASCII letter, the empty name, and
+//! `?`, `:` or `_`, a non-ASCII letter, the empty name, and
 //! every word `SYMBOL` refuses ([`LEXER_KEYWORDS`] at a word boundary,
 //! `00_ebnf.md` § 1). An int prints bare, as its canonical decimal. A nested
 //! fact prints as `(rel arg …)` with its arguments printed the same way.

@@ -870,33 +870,22 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     assert!(r.out.contains("  (tag a lbl :rule s)\n"), "{}", r.out);
 }
 
-/// **A range in a rule, and a wildcard written as a relation, are refused at
-/// load** — M1e2 S1e2.2.20 (W20), on the user's rulings of 2026-11-04
-/// (Q-M1e2.13 (a)) and 2026-11-05 (Q-M1e2.14 (c)).
+/// **A wildcard written as a relation is refused at load** — M1e2 S1e2.2.20
+/// (W20), on the user's ruling of 2026-11-05 (Q-M1e2.14 (c)).
 ///
 /// One line in Ein's spelling, naming the rule and the slot, from every
 /// command that loads the program: `ein saturate`, `ein solve` and `ein
-/// oracle` exit 1 and `ein test` 2, a load error's codes. Until then a range
-/// in a `:match` matched nothing, in silence, a range in an `:assert` stopped
-/// the run at the rule's first firing with the line the test above holds, and
-/// a wildcard head stopped compilation with `unbound relation head
-/// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling.
+/// oracle` exit 1 and `ein test` 2, a load error's codes. Until then a
+/// wildcard head stopped compilation with `unbound relation head
+/// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling. A range
+/// in a rule was refused here too, from S1e2.2.20 (Q-M1e2.13 (a)) until M1f
+/// S1f.5.3 retired the token; the test below holds what it is since.
 #[test]
-fn a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load() {
-    const RANGE: &str = "and no fact can hold it — a range is cardinality metadata, and a rule \
-                         matches and concludes facts";
+fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
     const HEAD: &str = "with the wildcard _ as its relation — a relation is named by a name or \
                         by a parameter its activator binds, and _ stands for an argument";
     let scratch = ein_corpus::Scratch::new("ein-refused-at-load");
     let cases = [
-        (
-            ":match (n 1..3) :assert (hit r)",
-            format!("rule 'r': its :match writes 1..3 as an argument of n, {RANGE}"),
-        ),
-        (
-            ":match (n ?x) :assert (tag ?x 1..3)",
-            format!("rule 'r': its :assert writes 1..3 as an argument of tag, {RANGE}"),
-        ),
         (
             ":match (_ 2) :assert (hit r)",
             format!("rule 'r': its :match writes (_ 2) {HEAD}"),
@@ -933,6 +922,44 @@ fn a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load() {
             for python in ["CompileError", "Wildcard()", "SForm"] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
             }
+        }
+    }
+}
+
+/// **No range is read anywhere: `1..5` stops the parse at its `.`** — M1f
+/// S1f.5.3, on the user's ruling of 2026-11-06 (Q-M1e2.24): Ein has no
+/// numbers and no ranges. The `RANGE` token is gone, so `1` is an `INT` and
+/// `..5` no token, in a fact, a keyword's value, a declaration, a rule's
+/// `:match` and `:assert`, and a `(config …)`: every command that reads the
+/// program refuses it with the parser's line at the `.`, exit 1 (`ein test`
+/// 2). Until then a range was a token: in a fact it stored the name `1..5`,
+/// as a keyword's value it was dropped, and in a rule the loader refused it
+/// (M1e2 S1e2.2.20). From M1f S1f.5.4, `1..5` is one name.
+#[test]
+fn a_range_is_no_token() {
+    let scratch = ein_corpus::Scratch::new("ein-no-range");
+    let pre = "(relation n Node) (relation hit Node) (relation r Node Node)\n(n a)\n";
+    let cases = [
+        ("(r 1..5 a)", 5),
+        ("(r a b :card 1..*)", 15),
+        ("(relation q Node Node :card 1..*)", 30),
+        ("(rule x () :match (n 1..3) :assert (hit a))", 23),
+        ("(rule x () :match (n ?v) :assert (r ?v 2..*))", 41),
+        ("(config :lattice-sanity-check 1..5)", 32),
+    ];
+    for (i, (form, col)) in cases.iter().enumerate() {
+        let file = scratch.path().join(format!("{i}.ein"));
+        std::fs::write(&file, format!("{pre}{form}\n")).expect("the program is written");
+        let file = file.to_string_lossy();
+        let want = format!("{file}:3:{col}: unexpected input");
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} on {form}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().find(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} on {form}"
+            );
         }
     }
 }

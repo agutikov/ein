@@ -23,7 +23,7 @@ wrappers).
 | Variables | `?rel` `?h_other` `?R*` | `variable.parameter` |
 | Wildcard | `_` | `variable.language.wildcard` |
 | Strings (+ `{?var}` interpolation) | `"{?rel} is symmetric."` | `string.quoted.double` (+ `variable.other.interpolation`) |
-| Numbers | `42`, `1..*` | `constant.numeric.integer` / `.range` |
+| Numbers | `42` | `constant.numeric.integer` (no range: M1f S1f.5.3 retired the token) |
 | Comments | `; line`, `#\| block \|#` | `comment.line` / `comment.block` |
 
 Declarators / primitives / predicates are highlighted **only in head

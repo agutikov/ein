@@ -490,14 +490,6 @@ impl Terms {
         self.value_text(&format!("?{name}"))
     }
 
-    /// A `Range` in argument position — `lo..hi`, or `lo..*` when unbounded.
-    pub fn value_range(&mut self, low: &str, high: Option<&str>) -> Result<Value, Overflow> {
-        match high {
-            Some(high) => self.value_text(&format!("{low}..{high}")),
-            None => self.value_text(&format!("{low}..*")),
-        }
-    }
-
     /// An integer literal, at any width. `text` need not be canonical.
     pub fn value_int(&mut self, text: &str) -> Result<Value, Overflow> {
         Ok(Value::int(self.intern_int(text)?))
@@ -727,14 +719,6 @@ mod tests {
         assert_eq!(
             t.value_var("x").expect("room"),
             t.value_text("?x").expect("room")
-        );
-        assert_eq!(
-            t.value_range("1", Some("5")).expect("room"),
-            t.value_text("1..5").expect("room")
-        );
-        assert_eq!(
-            t.value_range("1", None).expect("room"),
-            t.value_text("1..*").expect("room")
         );
         // An int is *not* the atom that spells it.
         assert_ne!(

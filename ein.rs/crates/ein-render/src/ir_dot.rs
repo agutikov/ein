@@ -99,7 +99,7 @@ fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
         // one value.
         Node::Str(s) => quote(&ein_core::text::symbol(ast.sym(s))),
         Node::Int(s) => quote(ast.sym(s)),
-        Node::Range { .. } | Node::SForm { .. } => quote(&value_label(ast, id)),
+        Node::SForm { .. } => quote(&value_label(ast, id)),
         Node::Keyword(_) | Node::KwPair { .. } => {
             panic!("cannot use as DOT node id")
         }

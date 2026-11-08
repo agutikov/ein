@@ -332,7 +332,7 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// decorative.
 #[test]
 fn every_syntactic_shape_survives_dump_then_parse() {
-    let cases: [&str; 49] = [
+    let cases: [&str; 46] = [
         "(type Person) (type Engineer Person)",
         "(= (color House-1) Red)",
         "(lives-in Norwegian House-1 :source \"condition (10)\")",
@@ -351,10 +351,6 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         "(lives-in a b :source \"back\\\\slash\")",
         "(lives-in a b :source \"\")",
         "(lives-in a b :source \"unicode é·»→\")",
-        // Range edges, including the degenerate `0..0`.
-        "(relation r A B :cardinality 0..0)",
-        "(relation r A B :cardinality 0..*)",
-        "(relation r A B :cardinality 9999..*)",
         // Four-deep `(and …)`: the width-driven line breaker's worst case.
         "(rule deep () :match (and (and (and (and (rel ?a ?b))))) :assert ?a :why \"d\")",
         // Variable / wildcard heads.
@@ -790,14 +786,15 @@ fn the_documented_ambiguities_resolve_as_recorded() {
         ("(macro m () B)", None),
         ("(macro m (?a) B)", Some("(macro m (?a) B)")),
         // Terminals: `_` is the wildcard and nothing longer is; an integer
-        // canonicalises; a RANGE beats an INT; a string keeps its body.
+        // canonicalises; no terminal reads a range (M1f S1f.5.3, Q-M1e2.24),
+        // so `1..5` stops at its `.`; a string keeps its body.
         ("(a __closed__)", Some("(a __closed__)")),
         ("(a _)", Some("(a _)")),
         ("(a _x)", None),
         ("(a 007)", Some("(a 7)")),
         ("(a -0)", Some("(a 0)")),
-        ("(a 1..5)", Some("(a 1..5)")),
-        ("(a 1..*)", Some("(a 1..*)")),
+        ("(a 1..5)", None),
+        ("(a 1..*)", None),
         ("(a 1..)", None),
         ("(a \"h\\di\")", Some("(a \"hdi\")")),
         ("(a \"a\nb\")", Some("(a \"a\\nb\")")),

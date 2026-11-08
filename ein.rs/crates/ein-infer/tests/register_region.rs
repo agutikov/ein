@@ -45,18 +45,24 @@ fn loaded(path: &Path) -> (Kb, Terms, Ast) {
     (kb, terms, ast)
 }
 
-/// The load error of a witness the loader refuses, or `None` where it loads:
-/// a refusal at load (M1e2 S1e2.2.20, W20's range), which the binary prints
-/// as `kb load error: …` and the library cannot get past either.
-fn load_error(path: &Path) -> Option<String> {
-    let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+/// The refusal of a witness the parser or the loader refuses, as the binary's
+/// first line on stderr, or `None` where it loads: a refusal at load (M1e2
+/// S1e2.2.20, W20's wildcard relation), which the binary prints as `kb load
+/// error: …`, and since M1f S1f.5.3 one at the parse (W20's range, until
+/// S1f.5.4), `<witness>:<line>:<col>: unexpected input`. The library cannot
+/// get past either.
+fn refusal(witness: &str) -> Option<String> {
+    let path = repo_root().join(witness);
+    let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{witness}: {e}"));
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let forms = parse(&mut ast, &text, path.to_str())
-        .unwrap_or_else(|e| panic!("{}: {e:?}", path.display()));
+    let forms = match parse(&mut ast, &text, Some(witness)) {
+        Ok(forms) => forms,
+        Err(e) => return Some(e.to_string().lines().next().unwrap_or("").to_string()),
+    };
     load(&mut ast, &mut terms, &forms, path.parent())
         .err()
-        .map(|e| e.0)
+        .map(|e| format!("kb load error: {}", e.0))
 }
 
 fn ask(path: &Path, mode: Mode) -> Answer {
@@ -311,12 +317,12 @@ fn every_row_states_its_witness_s_region() {
         }
         // A refused row (M1e2 S1e2.2.5, *forbid*) states no region, and the
         // library refuses its witness as the binary does: at load since M1e2
-        // S1e2.2.20 (W20, a range or a wildcard relation in a rule), the
-        // binary's line the loader's, or by *forbid*.
+        // S1e2.2.20 (W20, a wildcard relation in a rule), the binary's line
+        // the loader's, at the parse since M1f S1f.5.3 (W20's range, until
+        // S1f.5.4), the parser's, or by *forbid*.
         if let Some(want) = &row.now.refused {
-            let path = repo_root().join(&row.witness);
-            if let Some(e) = load_error(&path) {
-                if want.strip_prefix("kb load error: ") != Some(e.as_str()) {
+            if let Some(e) = refusal(&row.witness) {
+                if *want != e {
                     bad.push(format!(
                         "{} ({}): [now] is the refusal {want:?} and the loader says {e:?}",
                         row.id, row.witness

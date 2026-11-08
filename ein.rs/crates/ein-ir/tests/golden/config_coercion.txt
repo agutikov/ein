@@ -21,7 +21,9 @@
 === (config :lattice-sanity-check ?x)
   <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Var(name='x')
 === (config :lattice-sanity-check 1..5)
-  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Range(low=1, high=5)
+  <IRParseError> <string>:1:32: unexpected input
+  (config :lattice-sanity-check 1..5)
+                                 ^
 === (config :lattice-sanity-check (nested a))
   <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got SForm(head=Atom(name='nested'), args=(Atom(name='a'),))
 === (config :hypgen-scoring most-constrained)
