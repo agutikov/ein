@@ -31,6 +31,13 @@ put to the user.
 (a), *"Register row W36"*. The stage resumed with [T1f.5.15.7](#task-t1f5157--w36-filed-q-m1f5-a), which files W36,
 then T2 and T3; the sweep is re-taken with the derived order before anything is removed, and whatever still moves
 goes back to the user.
+**T2 and T3 done 2026-11-08, and the stage stopped again, before T4 and any removal** ([§ T3
+record](#t3-record-2026-11-08)): the derived band orders the agenda in a `derived-order` build, and the re-taken
+sweep moves no R, N, H, claim, exit code or stored fact, and moves the facts of cores on the programs T1 found and on
+W29's witness. Measured one part at a time, the derived agenda holds every core of the zebra family and the FIFO
+boundary moves them. Whether to remove with those moves, order the boundary by the band too, or keep `:priority` is
+[Q-M1f.6](../open_questions.md#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not), put to the
+user.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
 And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
@@ -515,6 +522,119 @@ Note the trap the graph must not fall into: a **relation-polymorphic** rule
 edges exist only once an activator fact binds `?rel`, so the graph is over the
 compile cache — the same scoping `naf_deps.rs` documents: *"pass the engine of
 a saturator that has run."*
+
+### T3 record, 2026-11-08
+
+**What ships** (`ein_infer::strata`, T1f.5.15.3's code commit). The graph over the plans a run compiled, as
+`naf_deps` asks (a polymorphic rule has edges per plan only): an edge from each relation a plan reads to each it
+writes, negative at odd `absent` depth, and one from a rule's activator relation (`strata::edges`, which the
+detector's cycle check now reads, restricted to `D`, with nothing moved). Each relation's stratum, the longest path
+into it counting negative edges over the components, and the negative cycles (`strata::graph`). A band per rule
+from its shape (`strata::shape`, `strata::band`): **propagate** for a declaration's fan-out (it writes another
+rule's activator), a one-premise rule that reads nothing under an `absent`, and a refutation, `(false)`, which ends
+a node; **eliminate** for an obligation and for a positive drawn from a `forall` over stored negatives (survivor
+forcing); **derive** for every other rule. No saturation rule guesses, so `hypothesis` is never derived. The agenda
+switch is `saturator::Order`: `Declared` in every shipped build, and `Derived` (the band's rank orders the agenda,
+FIFO within a band; the boundary FIFO) only in a build with the `derived-order` cargo feature, which `ein --version`
+names; no `EIN_*` name and no `(config …)` field reaches it. `ein saturate --dump` prints each rule's derived band
+and stratum beside its declared one. `ein-infer/tests/strata.rs` holds one rule of each band, the strata, both
+fixtures of T4 (`features/07` has a negative cycle, `features/01` none), four stdlib bands, and that the two orders
+store the same facts at root on every corpus program that saturates. On the shipped path nothing moved: the code
+commit re-blessed no golden, and its gate is green (`build/gate-s1f.5.15-T3.log`).
+
+**The diff, the task's deliverable** (`cargo run --release -p ein-infer --example rule_bands`, 2026-11-08): 331
+programs of the corpus and the register's witnesses saturate at root, holding **660 rule definitions** (a stdlib
+rule is one definition however many programs import it). **471 are compiled and declare a priority: 275 derive the
+band their priority falls in (58 %) and 196 another**; 168 declare none and 21 are compiled by no program. Of the
+stdlib's 77, **62 agree**; the 15 that differ are `compose`, `meet`, `top`, `difference`, `complement`,
+`difunctional`, `join-converse`, `infer-closure` and `type-hierarchy-converse` (typed `propagate`, derived
+`derive`: joins, or a positive under an `absent`) and `functional`, `injective`, `slot-no-room`, `slot-no-fill`,
+`typecheck-arg-0` and `-1` of `std.bijection` (typed `derive`, derived `propagate`: refutations). Two of the
+authors' choices no shape can reproduce: `functional` and `injective` at 250 beside `antisymmetric` and
+`asymmetric` at 110, one shape (a refutation from a self-join); and `typecheck-arg-0`/`-1`, one rule written twice,
+at 110 in `std.elim` and 220 in `std.bijection`. Across the corpus the largest disagreement is refutations, which
+the corpus's own programs type `derive` or `eliminate` (95 definitions) where the stdlib types most `propagate`.
+
+| declared → derived | definitions |
+|---|---:|
+| propagate → propagate · derive · eliminate | 116 · 15 · 0 |
+| derive → propagate · derive · eliminate | 103 · 124 · 0 |
+| eliminate → propagate · derive · eliminate | 46 · 29 · 35 |
+| hypothesis → derive | 3 |
+
+**The strata**: 324 of the 331 are stratified, the deepest in three strata (`lattice/10_fifo_gap.ein`), and 7
+carry a negative cycle: `features/07_unstratifiable`, `ein-bugs/d3-unsat-core`, `wrong-answers/f07-fpoff` and
+`f07-rules-swapped`, and `syntax/rule-forall-and-not`, `rule-guards` and `rule-shared-guard-var`.
+
+**The re-take of T1's sweep**, both passes, as the ruling asks: arm a the shipped binary at this commit on the
+corpus as written, arm b the `derived-order` build on the corpus with every `:priority` taken out (576 clauses in
+178 of the 512 files under the five roots, 475 in 136 of the 415 under the first four, and the stdlib through
+`EIN_STDLIB` with its manifest rewritten). The scripts are T1's, two binaries apart (`build/s1f.5.15/restrip.sh`,
+`run_sweep2.sh`, `declared2.py`, `analyze2.py`, `core_moves2.py`).
+
+- **Pass 1**, 512 files through `solve -H --dump-answer`, `saturate --dump` and `test`, 3 072 runs: no exit code,
+  R, N, H, claim or stored fact moved; 280 files identical in every compared part.
+- **Pass 2**, every declared run, 1 380 cells over 405 entries: no exit code moved; 195 cells differ. 181
+  `saturate` and `saturate --dump` (the listing, the narration, the character count); 3 `solve --trace`
+  (`branching/05`, `zebra2`, `zebra2-obligations`); 2 `solve --dump-lattice` (`zebra2` and `-obligations`: 24 of
+  374 nodes' cores, 15 larger, and 9 nodes' `refuted by` beside an unmoved core); 7 the detector's `order` rows
+  (`features/07`, `lattice/10` four times, `f07-fpoff`, `f07-rules-swapped`: `200` read as `1000`); `zebra2-bad`'s
+  `solve`; and `underscore-core-two-ways`' `solve`.
+
+**Cores still move: this is the stop the ruling names** (*"whatever still moves comes back to the user"*). N's
+cores and root's (`build/s1f.5.15/core_moves2.txt`), and what moves them, measured by builds of this commit with one
+part of the order changed at a time (`build/s1f.5.15/attr/`, a snapshot never committed; `attribute.sh`,
+`attribute.py`): **va** the derived agenda with the boundary in declared (priority, FIFO) order, **vb** the declared
+agenda with a FIFO boundary, **bn** arm b uncapped (`MAX_ALT_JUSTIFICATIONS` at 10⁶) against T1's uncapped arm a,
+**vc** the derived agenda with the boundary ordered by the derived band too.
+
+| program | N | cores whose facts move | facts over N | `refuted by` beside an unmoved core | va | vb | bn | vc | what moves them |
+|---|---:|---|---|---:|---:|---:|---:|---:|---|
+| `zebra.ein` | 458 | 292: 223 grow, 50 shrink, 19 the same size | 13 193 → 14 699 | 42 | 0 / 2 | 292 / 40 | 292 / 42 | 35 / 2 | **the boundary**: FIFO admission; the program sets `:record-alternative-justifications false`, so a fact's first derivation is its core |
+| `zebra2.ein`, `zebra2-obligations.ein` | 366 | 31: 18 grow, 13 the same size | 5 154 → 5 184 | 8 | 0 / 0 | 31 / 8 | 0 / 7 | 0 / 0 | **the boundary, through the cap**: uncapped no core moves |
+| `zebra2-hints.ein` | 73 | 24: 20 grow, 4 the same size | 1 005 → 1 042 | 2 | 0 / 0 | 24 / 2 | 0 / 0 | 0 / 0 | the same |
+| `zebra2-minus-15.ein`, `-obligations` | 1 495 | 212: 116 grow, 9 shrink, 87 the same size | 31 151 → 31 280 | 177 | 0 / 0 | 212 / 177 | 0 / 107 | 0 / 0 | the same |
+| `ein-bugs/zebra2-bad.ein` | 1, root | none | — | root's and N's one: `adjacent-via-endpoint-bwd` → `co-located-negative` | 0 / 0 | 0 / 2 | 0 / 2 | 0 / 0 | the boundary |
+| `wrong-answers/guard-only-first.ein`, W25's control | 1 | `(p a)` → `(b a) (p a) (seed a)` | 1 → 3 | — | 1 | 0 | 1 | 1 | **the agenda**: `early` (a refutation), `mk` (one premise) and `w` (a refutation with no premise) all derive `propagate`, so FIFO fires `early` before `w`'s plan exists, and the control reports the witness's wrong core, as stripped in T1 |
+| `wrong-answers/underscore-core-two-ways.ein`, `W29/core-two-ways` | 1, root | `(big b0) (big2 b0) (big3 b0) (c x)` → `(c x) (small s0)` | 4 → 2 | — | 2 | 0 | 2 | 2 | the agenda: the file writes no `:priority`, so this moves on any `derived-order` build: `s` (one premise) derives `propagate` and `m1` (a join) `derive`, and the witness reports its twin's two-fact core, where the row's `now` records the four |
+| records: `inventory_2026-11-05/probes/guard_only_first.ein`, `probes/alt-cap-below-noalts.ein`, `s1e2.3.10_probes/two-rules-node.ein` and `-reordered` | 1 each | W25's probe as its control; `alt-cap-below-noalts` 3 → 2 | | the two `two-rules` probes | as b | 0 | as b | as b | the agenda |
+
+Each cell of the four variant columns is *cores moved / `refuted by` moved beside an unmoved core*, against arm a
+(bn against T1's uncapped arm a). **The derived agenda holds every core of the zebra family**: with the boundary in
+its declared order (va) no core of `zebra.ein`, `zebra2`'s family or `zebra2-bad` moves, and `refuted by` moves
+beside an unmoved core on 2 of `zebra.ein`'s 458 alone. **What moves them is the
+FIFO boundary** the ruling kept (vb moves exactly what arm b moves): the boundary admits the candidates of
+`domain-elimination`, `slot-*`'s exclusions and the other rules read under an `absent` in an order the typed
+numbers set today, and on the zebra2 family that order picks which 32 derivations the cap keeps (uncapped, bn, none
+of their cores move). Ordering the boundary by the derived band too (vc) holds the zebra2 family and `zebra2-bad`,
+and leaves 35 of `zebra.ein`'s 458 cores moving, through `:record-alternative-justifications false`. The agenda
+moves W25's control, W29's witness and three records, whichever boundary.
+
+**vc over the whole corpus** (pass 1 again, arm b the vc build on the stripped corpus, `run_sweep3.sh`,
+`core_moves3.py`, 2026-11-08) moves nothing the table does not name, and one row more: no R, N, H, claim, exit code
+or stored fact; `zebra.ein`'s 35 cores **all shrink or keep their size** (33 and 2, 13 193 → 13 136 facts over N),
+with `refuted by` beside an unmoved core on 2; the zebra2 family and `zebra2-bad` nothing; W25's control, W29's
+witness and the records as in b; and **W36's witness**, which writes no `:priority`, prints `refuted by no-room`
+under its flag, its right answer, where every other build prints `forced, occupied`.
+
+The named cases. **W25's control**, `guard-only-first.ein`, reports the witness's wrong core under the derived
+order, as it did stripped in T1 (above). **The `alt-cap-core` pair** is one program once stripped, and under the
+derived order both report `(w1 X) (w2 X)` and `refuted by wide`, as written today: `wide` and `narrow` are
+refutations and derive `propagate`, `mk-q` a join and `derive`, so `wide`, whose premises are givens, fires first.
+With `:record-alternative-justifications false` both report the same two facts (`ein solve`, the `derived-order`
+build, 2026-11-08), where today's `alt-cap-core.ein` reports `(p1 Y01) (p2 Y01) (p3 Y01)` and `refuted by narrow`:
+the flag no longer moves a core there, so `lever_invariance::the_core_exemption_is_one_flag_and_the_core_rows` loses
+its witness at the removal, and so do `explain_semantics::a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core`
+and `ein-einb`'s round-trip, which read the pair as two programs (T1's finding, unchanged). **W36's witness** prints
+`refuted by forced, occupied` under the derived order with its flag, as it does today, and `features/12` stripped
+prints `refuted by no-room` without it: after a removal `features/12` itself would show W36 under
+`lever_invariance`, so its exemption would name it too.
+
+**So the stage stops here, after T3 and before T4**, on
+[Q-M1f.6](../open_questions.md#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not), put to the
+user: remove `:priority` with the FIFO boundary and its moves, order the boundary by the derived band too and remove
+with what is left, or keep `:priority` until F22. Nothing was removed and no answer moved: the derived order exists
+in a `derived-order` build only.
 
 ### Task T1f.5.15.4 — The static non-stratifiability diagnostic
 

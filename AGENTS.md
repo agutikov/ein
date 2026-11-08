@@ -447,7 +447,17 @@ constrained-reasoning research.
   under the register's schema `/14` (a `now` records what root's `refuted by`
   names), which `lever_invariance` exempts until F22 fixes it: 103 fixed, 34
   open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort |
-  uniq -c`, 2026-11-08).
+  uniq -c`, 2026-11-08). Its T3 shipped the same day what *"analyze rules
+  structure"* asked for, `ein_infer::strata`: the rule dependency graph over the
+  plans a run compiled, its strata and negative cycles, and a band per rule from
+  its shape, beside the declared one in `ein saturate --dump` (275 of 471
+  declared rules agree, `cargo run --release -p ein-infer --example
+  rule_bands`); the band orders the agenda only in a build with the
+  `derived-order` cargo feature, `saturator::Order`, which `ein --version`
+  names. The re-taken sweep stopped the stage again before any removal: the
+  derived agenda holds every core of the zebra family, the FIFO boundary moves
+  them, and the choice is Q-M1f.6, put to the user
+  ([§ T3 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t3-record-2026-11-08)).
   S1f.5.14's loader flag landed early the same day (*"yes, land the :why flag
   early"*): `--require-why`, on the seven commands that load a program,
   refuses a relation, rule or hrule with no `:why`, one line each, and a macro

@@ -14,6 +14,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; [S1f.5.0](p1f.5_the_no_owner_items/s1f.5.0_the_known_wrong_answers_filed.md) files W33–W35 |
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
+| [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **open**, put to the user 2026-11-08; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) stopped on it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -140,3 +141,43 @@ before it is fixed.
 program until F22 fixes it. S1f.5.15 files it before the removal: filed the same day by T1f.5.15.7 as
 `W36/alt-flag-refuted-by`, the witness `examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein` with the flag set
 in the file, under the register's schema `/14`.
+
+### Q-M1f.6 — The derived agenda holds the cores; the FIFO boundary does not
+
+**Raised** 2026-11-08 by [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s T3
+([§ T3 record](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t3-record-2026-11-08)), on Q-M1f.4 (b)'s
+instruction that whatever still moves comes back to the user. T3 derives a band per rule from its shape and, in a
+`derived-order` build, orders the closure's agenda by it with the boundary FIFO, as ruled. T1's sweep re-taken
+with it (that build on the corpus without `:priority`, against today's binary on the corpus as written) moves no
+R, N, H, claim, exit code or stored fact on the 512 programs or the 1 380 declared runs, and moves **the facts of
+cores** on the same programs T1 found: `zebra.ein` 292 of N's 458 (13 193 → 14 699 facts), the zebra2 family 24 to
+212 a program, and W25's control; plus `W29/core-two-ways`' witness, 4 facts → 2, its twin's, and three records;
+and `refuted by` beside an unmoved core on the zebra family and `zebra2-bad`.
+
+Measured one part at a time on builds of T3's commit: **the derived agenda with the declared boundary moves no core
+of `zebra.ein`, the zebra2 family or `zebra2-bad`**; the declared agenda with a FIFO boundary moves exactly what the
+derived arm moves. So the typed numbers' work that the shape does not reproduce is at the **boundary**, where the
+candidates of `absent`-reading rules (`domain-elimination`, the `slot-*` exclusions and prunes) are admitted one a
+round. On the zebra2 family that order chooses which 32 derivations the alternatives cap keeps (uncapped, no core
+moves, Q-M1e.15 and F22's); on `zebra.ein` it is the first derivation, `:record-alternative-justifications false`
+(the flag's exemption). The agenda moves the rest, W25's control (`early` fires before `w`, all three rules
+`propagate`) and W29's witness (`s` before `m1`), whichever the boundary.
+
+- **(a) Remove it as ruled, the boundary FIFO, and accept the moves**: every move above is named in the removal
+  commit as F22's to make order-free; W25's control and W29's `now` are restated; the `alt-cap-core` tests and the
+  flag's exemption take a witness that differs by its written order; `features/12` joins W36's exemption.
+- **(b) Order the boundary by the derived band as well, then remove.** The band is the agenda's key, not a stratum,
+  and the boundary is ordered by a key today (`:priority`). Measured over the whole corpus: the zebra2 family and
+  `zebra2-bad` hold every core and `refuted by`; 35 of `zebra.ein`'s 458 cores move (through the flag's first
+  derivation), every one smaller or the same size (13 193 → 13 136 facts over N); W36's witness prints its right
+  answer, `refuted by no-room`; and the agenda's moves of (a) remain. What is left is restated as in (a). On a program with a negative cycle the band picks the
+  admission order where `:priority` does today, which is F21's D2's ground.
+- **(c) Keep `:priority` until F22 makes a core a function of the program**, the written refusal the stage allows:
+  the production comes back to the generated grammar before S1f.5.5's T9, S1f.5.4's guard with it, and the graph,
+  the strata, the band read-out and T4's diagnostic ship.
+
+**The agent recommends (b)**, then (a) for the 35 and the agenda's moves. It keeps the discipline the typed numbers
+gave the boundary with a key derived from the rules, holds every core the cap decides, and leaves only the moves the
+order-dependencies the store already has decide (`zebra.ein`'s flag, W25, W29), each owned. It does take an order at
+the boundary, which the ruling of Q-M1f.4 left FIFO on purpose: if that is D2's to decide, (a) is the ruling's own
+consequence and (c) the refusal.
