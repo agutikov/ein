@@ -9,10 +9,14 @@
 > until M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-09); since, it parses with the
 > parser generated from
 > [`ein-ir/src/ein.l` and `ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y)
-> (`ein_ir::grammar`), and this page's blocks become that grammar's at
-> T1f.5.5.7. Until then the grammar is stated here. It is checked against that parser, and
-> [§5](#5-what-keeps-this-document-honest) is what pins it: a 78-case decision
-> table.
+> (`ein_ir::grammar`). **Since T1f.5.5.5 (2026-11-09) §1's and §2's blocks
+> are that grammar**, written from the two files by
+> [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs),
+> which fails when they differ (`EIN_BLESS=1` rewrites them). The prose around
+> them still describes the hand-written grammar in places, and T1f.5.5.7
+> restates it; where the two disagree, the blocks are right.
+> [§5](#5-what-keeps-this-document-honest) pins the parser's decisions: a
+> 78-case decision table.
 
 **Notation** — W3C EBNF, as in the XML specification:
 
@@ -35,54 +39,69 @@ separate scanner pass.
 Terminals, over the character stream. Every one is ASCII-anchored: a
 non-ASCII character can appear only inside a `STRING` or a comment.
 
-```ebnf
-Char          ::= /* any character */
-
-/* Trivia — skipped everywhere between tokens, never a token itself. */
-Trivia        ::= Space | LineComment | BlockComment
-Space         ::= /* one character with Unicode White_Space, plus U+001C-U+001F */
-LineComment   ::= ';' [^#xA]*
-BlockComment  ::= '#|' ( Char* - ( Char* '|#' Char* ) ) '|#'   /* non-nesting */
-
-/* Atoms. */
-SYMBOL        ::= ( '__' )? [A-Za-z] [A-Za-z0-9_*.-]*
-                  /* …and the match is rejected outright when the input at
-                     this position begins with one of the twelve
-                     LEXER_KEYWORDS followed by a non-word character (or by
-                     end of input). The lookahead is START-anchored, so
-                     `std.rule` is one SYMBOL and `rule.x` is not a SYMBOL at
-                     all. */
-LEXER_KEYWORDS ::= 'not' | 'and' | 'or' | 'neq' | 'rule' | 'hrule'
-                 | 'query' | 'solve' | 'config' | 'trace' | 'macro' | 'import'
-                  /* Twelve since M1e2 S1e2.1a.4 added 'solve'. */
-                  /* This production was called RESERVED until M1e S1e.4.2,
-                     and so was a DIFFERENT set in ein-core — the nine names a
-                     declarator may not BIND, which is where `open` lives.
-                     Reading the two together said the lexer's eleven had
-                     become twelve (they did, with 'solve', which is a
-                     declarator and not `open`). They overlap in four (`not` `and` `or`
-                     `neq`) and neither contains the other:
-                     06_reserved_names.md § What is reserved, and by which
-                     set has the table.
-
-                     `relation` is deliberately NOT here: rules match
-                     `(relation ?R ?A ?B)` patterns, so it must lex as an
-                     ordinary SYMBOL. `(relation R (T1 T2))` therefore parses
-                     — as a fact — and the LOADER rejects it. Same for
-                     `open`, whose `(open ?R)` is an ordinary fact head. */
-WordChar      ::= /* `_`, or one character with Unicode Alphabetic or a
-                     numeric general category (Nd, Nl, No) — the class the
-                     word boundary after a LEXER_KEYWORD tests */
-
-VAR           ::= '?' [A-Za-z] [A-Za-z0-9_*-]*    /* no '.', unlike SYMBOL */
-KEYWORD       ::= ':' [a-z] [A-Za-z0-9_-]*        /* lower-case first character */
-WILDCARD      ::= '_'
-                  /* …only where the next character is not [A-Za-z0-9_], so
-                     the leading `__` of a dunder atom is never two wildcards. */
-EQ            ::= '='
-INT           ::= '-'? [0-9]+                     /* no RANGE: fact 3 */
-STRING        ::= '"' ( [^"\\] | '\\' ( Char - #xA ) )* '"'
+<!-- generated: ein.l -->
+```text
+/* ein-ir/src/ein.l, read by lrlex: a token's regular expression, the
+   start conditions it is tried in, the one it enters, and the name an
+   error gives it. Written by ein-ir/tests/grammar_pages.rs. */
+%x AFTER_WORD
+'('          ::= \(    /* in INITIAL, AFTER_WORD; then INITIAL */
+')'          ::= \)    /* in INITIAL, AFTER_WORD; then INITIAL */
+'not'        ::= not    /* then AFTER_WORD */
+'and'        ::= and    /* then AFTER_WORD */
+'or'         ::= or    /* then AFTER_WORD */
+'neq'        ::= neq    /* then AFTER_WORD */
+'rule'       ::= rule    /* then AFTER_WORD */
+'hrule'      ::= hrule    /* then AFTER_WORD */
+'query'      ::= query    /* then AFTER_WORD */
+'solve'      ::= solve    /* then AFTER_WORD */
+'config'     ::= config    /* then AFTER_WORD */
+'trace'      ::= trace    /* then AFTER_WORD */
+'macro'      ::= macro    /* then AFTER_WORD */
+'import'     ::= import    /* then AFTER_WORD */
+'relation'   ::= relation    /* then AFTER_WORD */
+'step'       ::= step    /* then AFTER_WORD */
+'eq'         ::= eq    /* then AFTER_WORD */
+'absent'     ::= absent    /* then AFTER_WORD */
+'false'      ::= false    /* then AFTER_WORD */
+'true'       ::= true    /* then AFTER_WORD */
+'open'       ::= open    /* then AFTER_WORD */
+'model'      ::= model    /* then AFTER_WORD */
+'region'     ::= region    /* then AFTER_WORD */
+'merged'     ::= merged    /* then AFTER_WORD */
+'owing'      ::= owing    /* then AFTER_WORD */
+':why'       ::= :why    /* then AFTER_WORD */
+':source'    ::= :source    /* then AFTER_WORD */
+':goal-text' ::= :goal\-text    /* then AFTER_WORD */
+':match'     ::= :match    /* then AFTER_WORD */
+':assert'    ::= :assert    /* then AFTER_WORD */
+':rule'      ::= :rule    /* then AFTER_WORD */
+':using'     ::= :using    /* then AFTER_WORD */
+':goal'      ::= :goal    /* then AFTER_WORD */
+':over'      ::= :over    /* then AFTER_WORD */
+':expect'    ::= :expect    /* then AFTER_WORD */
+':hrules'    ::= :hrules    /* then AFTER_WORD */
+':hypothesis-relations' ::= :hypothesis\-relations    /* then AFTER_WORD */
+':no-hypothesis' ::= :no\-hypothesis    /* then AFTER_WORD */
+':lattice-sanity-check' ::= :lattice\-sanity\-check    /* then AFTER_WORD */
+':record-alternative-justifications' ::= :record\-alternative\-justifications    /* then AFTER_WORD */
+':symbols'   ::= :symbols    /* then AFTER_WORD */
+':as'        ::= :as    /* then AFTER_WORD */
+':derives'   ::= :derives    /* then AFTER_WORD */
+':assumes'   ::= :assumes    /* then AFTER_WORD */
+UNDERSCORE   ::= _    /* then AFTER_WORD; "_ (reserved)" */
+VARUNDERSCORE ::= \?_    /* then AFTER_WORD; "?_ (reserved)" */
+WRITEBACK    ::= [<](forced\-positive|monotonic\-unconditional|lookahead\-dies\-immediately)[>]    /* then AFTER_WORD; "the engine's writeback rule name (reserved)" */
+NAME         ::= [A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a name" */
+VAR          ::= \?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a variable" */
+KEYWORD      ::= :[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a keyword this form does not take" */
+TEXT         ::= "([^"\\]|\\[ntr"\\]|\\u\{[0-9A-Fa-f]{1,6}\})*"    /* then AFTER_WORD; "a string" */
+BADESCAPE    ::= "([^"\\]|\\[^\n])*"    /* then AFTER_WORD; "a string with an unknown escape" */
+BADTEXT      ::= "([^"\\]|\\[^\n])*"[^\s();\x1c-\x1f]+    /* then AFTER_WORD; "a string glued to what follows" */
+BAD          ::= ([^\s();#\x1c-\x1f]|#[^|\s();\x1c-\x1f])+    /* then AFTER_WORD; "a token that is not a name" */
+(skipped)    ::= ([\s\x1c-\x1f]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+    /* in INITIAL, AFTER_WORD; then INITIAL */
 ```
+<!-- /generated: ein.l -->
 
 `(` and `)` carry no terminal name: they appear as literals in §2, which is
 the only place they occur.
@@ -134,60 +153,105 @@ Four terminal facts that are load-bearing and easy to lose:
 
 `Program` is the start symbol. Trivia may appear between any two terminals.
 
-```ebnf
-Program       ::= Form*
-
-Form          ::= RelationDecl
-                | RuleDecl | HruleDecl
-                | QueryForm | SolveForm | ConfigForm
-                | TraceForm
-                | MacroDecl | ImportForm
-                | FactForm                        /* anything else */
-
-/* ── Declarators (the closed reserved set) ───────────────────────── */
-RelationDecl  ::= '(' 'relation' SYMBOL SYMBOL* KwPair* ')'
-RuleDecl      ::= '(' 'rule'  SYMBOL RuleParams KwPair+ ')'
-HruleDecl     ::= '(' 'hrule' SYMBOL RuleParams KwPair+ ')'
-RuleParams    ::= '(' VAR* ')'                    /* MANDATORY; `()` when non-generic */
-QueryForm     ::= '(' 'query'  KwPair+ ')'
-SolveForm     ::= '(' 'solve'  KwPair* ')'        /* `(solve)` is valid: the default lattice */
-ConfigForm    ::= '(' 'config' KwPair* ')'        /* `(config)` is valid: all defaults */
-MacroDecl     ::= '(' 'macro' SYMBOL MacroParams Value ')'
-MacroParams   ::= '(' VAR+ ')'
-ImportForm    ::= '(' 'import' SYMBOL KwPair* ')' /* SYMBOL is a dotted logical name */
-
-/* ── Facts: the flat default, i.e. any non-declarator head ───────── */
-FactForm      ::= EqFact | NotForm | GenericFact
-EqFact        ::= '(' EQ Value Value KwPair* ')'
-GenericFact   ::= '(' SYMBOL Value* KwPair* ')'
-
-/* ── Trace: engine output, same IR as input ──────────────────────── */
-TraceForm     ::= '(' 'trace' TraceEvent* ')'
-TraceEvent    ::= StepDecl | BranchOpen | BranchClose
-                | BranchRef | ContradictionDecl | SymmetryDecl
-StepDecl          ::= '(' 'step'            SYMBOL KwPair* ')'
-BranchOpen        ::= '(' 'branch-open'     SYMBOL KwPair* ')'
-BranchClose       ::= '(' 'branch-close'    SYMBOL KwPair* ')'
-BranchRef         ::= '(' 'branch-ref'      SYMBOL ')'
-ContradictionDecl ::= '(' 'contradiction'   SYMBOL KwPair* ')'
-SymmetryDecl      ::= '(' 'symmetry-class'  SYMBOL KwPair* ')'
-
-/* ── The value sub-language (the interior of every KwPair) ───────── */
-KwPair        ::= KEYWORD Value                   /* KEYWORD is never a Value */
-Value         ::= NotForm | AndForm | OrForm | NeqForm
-                | GenericList
-                | SYMBOL | VAR | WILDCARD | INT | STRING
-GenericList   ::= '(' ')'
-                | '(' ListHead ListItem* ')'
-ListHead      ::= SYMBOL | VAR | WILDCARD | EQ    /* never KEYWORD */
-ListItem      ::= Value | KwPair
-
-/* ── Kernel meta-primitives (shape-pinned) ───────────────────────── */
-NotForm       ::= '(' 'not' Value KwPair* ')'
-NeqForm       ::= '(' 'neq' Value Value ')'
-AndForm       ::= '(' 'and' Value+ KwPair* ')'
-OrForm        ::= '(' 'or'  Value+ KwPair* ')'
+<!-- generated: ein.y -->
+```text
+/* ein-ir/src/ein.y, read by cfgrammar: every rule and its alternatives.
+   Written by ein-ir/tests/grammar_pages.rs. The start rule is Program. */
+Program ::= /* empty */ | Program Form
+Form ::= Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact
+Name ::= NAME | 'relation' | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'open' | 'model'
+       | 'region' | 'merged' | 'owing'
+DeclName ::= NAME | 'step' | 'true' | 'model' | 'region' | 'merged' | 'owing'
+FactHead ::= NAME | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'open' | 'model'
+PremiseHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'model' | 'region' | 'merged'
+              | 'owing' | Var
+ConclusionHead ::= NAME | 'relation' | 'step' | 'absent' | 'true' | 'model' | 'region'
+                 | 'merged' | 'owing' | Var
+Var ::= VAR
+Text ::= TEXT
+Bool ::= 'true' | 'false'
+Names ::= /* empty */ | Names Name
+NamesPlus ::= Name | NamesPlus Name
+Vars ::= /* empty */ | Vars Var
+VarsPlus ::= Var | VarsPlus Var
+NameList ::= '(' ')' | '(' Name Names ')'
+NameListPlus ::= '(' Name Names ')'
+Fact ::= '(' FactHead FactArgs FactClauses ')'
+NotFact ::= '(' 'not' NestedFact FactClauses ')'
+NestedFact ::= '(' Name FactArgs ')'
+FactArg ::= Name | NestedFact | '(' 'not' NestedFact ')'
+FactArgs ::= /* empty */ | FactArgs FactArg
+FactClause ::= ':source' Text | ':rule' Name | ':using' '(' NestedFacts ')'
+FactClauses ::= /* empty */ | FactClauses FactClause
+NestedFacts ::= NestedFact | NestedFacts NestedFact
+Relation ::= '(' 'relation' DeclName Names RelationClauses ')'
+RelationClauses ::= /* empty */ | RelationClauses ':why' Text
+Rule ::= '(' 'rule' DeclName Params RuleClauses ')'
+       | '(' 'hrule' DeclName Params RuleClauses ')'
+Params ::= '(' Vars ')'
+RuleClause ::= ':match' Match | ':assert' Assert | ':why' Text
+RuleClauses ::= /* empty */ | RuleClauses RuleClause
+Match ::= '(' ')' | Premise
+Premise ::= '(' PremiseHead Args ')' | Connective
+Premises ::= Premise | Premises Premise
+Connective ::= '(' 'and' Premises ')' | '(' 'or' Premises ')' | '(' 'not' Pattern ')'
+             | '(' 'absent' Premise ')' | Guard
+Guard ::= '(' 'eq' Term Term ')' | '(' 'neq' Term Term ')'
+Args ::= /* empty */ | Args Arg
+Arg ::= Name | Var | '(' ArgHead Args ')' | Connective
+ArgHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'open' | 'model' | 'region'
+          | 'merged' | 'owing' | Var
+Pattern ::= '(' AnyHead Terms ')'
+AnyHead ::= Name | Var
+Term ::= Name | Var | Pattern | '(' 'not' Pattern ')'
+Terms ::= /* empty */ | Terms Term
+Assert ::= '(' ')' | Conclusion | '(' 'open' ')' | '(' 'open' AnyHead ')'
+Conclusion ::= '(' ConclusionHead Terms ')' | '(' 'and' Conclusions ')' | '(' 'not' Pattern ')'
+             | '(' 'not' Var ')' | '(' 'false' ')' | Guard
+Conclusions ::= Conclusion | Conclusions Conclusion
+Query ::= '(' 'query' QueryClausesPlus ')'
+QueryClause ::= ':goal' Premise | ':goal-text' Text | ':over' Name | ':expect' Claim
+QueryClausesPlus ::= QueryClause | QueryClausesPlus QueryClause
+Claim ::= Model | '(' 'or' Models ')' | '(' 'false' ')'
+Model ::= '(' 'model' ClaimFacts ')'
+Models ::= Model | Models Model
+ClaimFact ::= NestedFact | '(' 'not' NestedFact ')' | '(' 'neq' FactArg FactArg ')'
+ClaimFacts ::= /* empty */ | ClaimFacts ClaimFact
+Solve ::= '(' 'solve' SolveClauses ')'
+SolveClause ::= ':hrules' Hrules | ':hypothesis-relations' NameList | ':no-hypothesis' NameList
+              | ':expect' RegionClaim
+SolveClauses ::= /* empty */ | SolveClauses SolveClause
+Hrules ::= '(' ')' | '(' Name HruleItems ')'
+HruleItem ::= Name | NameListPlus
+HruleItems ::= /* empty */ | HruleItems HruleItem
+RegionClaim ::= '(' 'region' RegionItems ')' | '(' 'false' ')'
+RegionItem ::= Model | '(' 'merged' Model MergedFrom ')' | '(' 'owing' Models ')'
+RegionItems ::= /* empty */ | RegionItems RegionItem
+MergedFrom ::= Model | '(' 'or' Models ')'
+Config ::= '(' 'config' ConfigClauses ')'
+ConfigClause ::= ':lattice-sanity-check' Bool | ':record-alternative-justifications' Bool
+ConfigClauses ::= /* empty */ | ConfigClauses ConfigClause
+Macro ::= '(' 'macro' DeclName MacroParams Template ')'
+        | '(' 'macro' DeclName MacroParams Template ':why' Text ')'
+MacroParams ::= '(' VarsPlus ')'
+Template ::= Var | '(' 'and' Templates ')' | '(' 'or' Templates ')' | '(' 'not' Template ')'
+           | '(' 'neq' TemplateItem TemplateItem ')' | '(' AnyHead TemplateItems ')'
+Templates ::= Template | Templates Template
+TemplateItem ::= Name | Template
+TemplateItems ::= /* empty */ | TemplateItems TemplateItem
+Import ::= '(' 'import' Name ImportClauses ')'
+ImportClause ::= ':symbols' NameListPlus | ':as' DeclName
+ImportClauses ::= /* empty */ | ImportClauses ImportClause
+Trace ::= '(' 'trace' Steps ')'
+Steps ::= /* empty */ | Steps Step
+Step ::= '(' 'step' Name StepClauses ')'
+StepClause ::= ':rule' Name | ':using' StepUsing | ':derives' Derived | ':source' Text
+             | ':assumes' Derived
+StepClauses ::= /* empty */ | StepClauses StepClause
+StepUsing ::= NameListPlus | '(' 'and' NamesPlus ')'
+Derived ::= NestedFact | '(' 'not' NestedFact ')'
 ```
+<!-- /generated: ein.y -->
 
 `NotForm` carries trailing `KwPair*` so that a *derived* `(not …)` fact's
 provenance (`:rule type-exclusivity :using (c10)`) attaches naturally; in

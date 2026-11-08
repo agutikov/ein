@@ -127,17 +127,6 @@ fn fails(body: &str, kws: &str, claim_src: &str, says: &str) {
     );
 }
 
-/// `src` refused at the parse, its first error `line:col: what` (since M1f
-/// S1f.5.5's swap the grammar states a claim's shapes).
-fn refused_at_parse(src: &str, first: &str) {
-    let e = parse(&mut Ast::new(), src, None).expect_err("refused at the parse");
-    let got = e
-        .errors
-        .first()
-        .map(|e| format!("{}:{}: {}", e.line, e.col, e.what));
-    assert_eq!(got.as_deref(), Some(first), "{src}:\n{e}");
-}
-
 fn refused(src: &str, says: &str) {
     match loaded(src) {
         Ok(_) => panic!("loaded: {src}"),
@@ -452,29 +441,18 @@ fn a_route_that_stops_leaves_the_claim_unchecked() {
 // ── What the loader refuses ────────────────────────────────────────────
 
 /// What is not a claim is refused. Until M1f S1f.5.5's swap the loader
-/// refused every shape below with a line of its own; since, the grammar states
-/// a claim's shapes (the paper grammar's own, and S1f.5.2's G-6 for a variable
-/// in a claim's fact), so a top-level `(region …)` or `(owing …)`, a claim
-/// that is no `(region …)`, a variable in a claim's fact, a `(merged …)`
-/// with no `<from>`, an empty `(owing)` and a fact where a `(model …)` goes
-/// are parse errors at their place, and the loader keeps what a context-free
+/// refused every shape a claim may not take with a line of its own; since, the
+/// grammar states a claim's shapes, so a top-level `(region …)` or `(owing
+/// …)`, a claim that is no `(region …)`, a variable in a claim's fact, a
+/// `(merged …)` with no `<from>`, an empty `(owing)` and a fact where a
+/// `(model …)` goes are parse errors at their place, rows of `ein-ir`'s
+/// grammar table since T1f.5.5.5 deleted the loader's lines for them
+/// (`ein-ir/tests/grammar_pages.rs`). The loader keeps what a context-free
 /// grammar does not see: an `(owing …)` beside listed states, a merged state
 /// the region does not list, and a relation no declaration or fact makes.
 #[test]
 fn the_loader_refuses_what_is_not_a_claim() {
     let body = "(relation p T) (p A)";
-    refused_at_parse(
-        &format!("{body} (region (model (p A)))"),
-        "1:23: unexpected `region`",
-    );
-    refused_at_parse(
-        &format!("{body} (owing (model))"),
-        "1:23: unexpected `owing`",
-    );
-    refused_at_parse(
-        &format!("{body} (solve :expect (model (p A)))"),
-        "1:38: unexpected `model`",
-    );
     refused(
         &format!("{body} (solve :expect (region (model (p A)) (owing (model))))"),
         "`(owing …)` says R is empty, and the region lists states",
@@ -487,20 +465,12 @@ fn the_loader_refuses_what_is_not_a_claim() {
         &format!("{body} (solve :expect (region (model (nosuch A))))"),
         "names nosuch, which no declaration or fact makes a relation",
     );
-    refused_at_parse(
-        &format!("{body} (solve :expect (region (model (p ?x))))"),
-        "1:55: unexpected `?x`: a variable",
+    refused(
+        &format!("{body} (solve :expect (region (owing (model)) (owing (model))))"),
+        "one `(owing …)`, listing every owing state",
     );
-    refused_at_parse(
-        &format!("{body} (solve :expect (region (merged (model (p A)))))"),
-        "1:66: unexpected `)`",
-    );
-    refused_at_parse(
-        &format!("{body} (solve :expect (region (owing)))"),
-        "1:51: unexpected `)`",
-    );
-    refused_at_parse(
-        &format!("{body} (solve :expect (region (p A)))"),
-        "1:46: unexpected `p`: a name",
+    refused(
+        &format!("{body} (solve :expect (region (merged (model) (model (p A)))))"),
+        "a `(merged …)` names a state, and the region lists none",
     );
 }

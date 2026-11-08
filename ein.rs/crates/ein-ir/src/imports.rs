@@ -463,15 +463,14 @@ struct ImportSpec {
 fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
     let loc = loc_repr(ast, ast.loc(form));
     let args = ast.form_args(form).to_vec();
-    let Some(module) = args
-        .first()
-        .and_then(|a| ast.atom_name(*a))
-        .map(str::to_string)
-    else {
-        return Err(LoadError(format!(
-            "malformed (import …) — missing module name at {loc}"
-        )));
-    };
+    // An import is a module's name, then `:symbols` or `:as` (`ein.y`'s
+    // `Import`). Until M1f S1f.5.5's T5 four shapes were refused here, each
+    // the grammar's since the swap: no module name, an `:as` that is no name,
+    // a `:symbols` that is no list, and `:symbols ()`.
+    let module = ast
+        .atom_name(args[0])
+        .expect("an import's first argument is a module's name (ein.y's Import)")
+        .to_string();
     // Last wins on a repeated key.
     let mut kws: BTreeMap<String, NodeId> = BTreeMap::new();
     for &a in &args {
@@ -492,26 +491,21 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
         // An alias binds a name, so it may not be a reserved one (M1f
         // S1f.5.5's T1f.5.5.11, Q-M1f.7 (b)): `ein_core::RESERVED`, the
         // kernel's dunders among them.
-        Some(v) => match ast.atom_name(v) {
-            Some(name) if ein_core::is_reserved(name) => {
+        Some(v) => match ast
+            .atom_name(v)
+            .expect(":as takes a name (ein.y's ImportClause)")
+        {
+            name if ein_core::is_reserved(name) => {
                 return Err(LoadError(format!(
                     "(import {module} :as {name}) — alias '{name}' shadows a reserved kernel \
                      name at {loc}"
                 )));
             }
-            Some(name) => Some(name.to_string()),
-            None => {
-                return Err(LoadError(format!(
-                    "(import {module} :as …) — alias must be a bare name at {loc}"
-                )));
-            }
+            name => Some(name.to_string()),
         },
         None => None,
     };
-    let symbols = match symbols_value {
-        Some(v) => Some(symbol_list(ast, v, &module, &loc)?),
-        None => None,
-    };
+    let symbols = symbols_value.map(|v| symbol_list(ast, v));
     Ok(ImportSpec {
         module,
         alias,
@@ -520,36 +514,19 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
 }
 
 /// Names inside a `:symbols (a b …)` list — the list lowers to a form whose
-/// head and atom args are the names.
-fn symbol_list(
-    ast: &Ast,
-    value: NodeId,
-    module: &str,
-    loc: &str,
-) -> Result<Vec<String>, LoadError> {
+/// head and arguments are the names, one or more (`ein.y`'s `NameListPlus`).
+fn symbol_list(ast: &Ast, value: NodeId) -> Vec<String> {
     let Node::SForm { head, args } = ast.node(value) else {
-        return Err(LoadError(format!(
-            "(import {module} :symbols …) — expected a (name …) list at {loc}"
-        )));
+        unreachable!(":symbols takes a list of names (ein.y's ImportClause)");
     };
-    let mut names: Vec<String> = Vec::new();
-    if let Some(name) = ast.atom_name(head)
-        && !ein_core::text::is_internal(name)
-    {
-        names.push(name.to_string());
-    }
-    names.extend(
-        ast.args(args)
-            .iter()
-            .filter_map(|a| ast.atom_name(*a))
-            .map(str::to_string),
-    );
-    if names.is_empty() {
-        return Err(LoadError(format!(
-            "(import {module} :symbols ()) — empty list at {loc}"
-        )));
-    }
-    Ok(names)
+    std::iter::once(head)
+        .chain(ast.args(args).iter().copied())
+        .map(|n| {
+            ast.atom_name(n)
+                .expect("a :symbols list holds names")
+                .to_string()
+        })
+        .collect()
 }
 
 // ── Qualification and selection ────────────────────────────────────

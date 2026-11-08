@@ -17,6 +17,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **ruled 2026-11-08, (b)**: never bound; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 |
 | [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) | the parser's remaining cost: within grmtools, or past it? | **defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12 |
+| [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **defaulted 2026-11-09 (the user's instruction): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -293,3 +294,26 @@ the user's rulings rule out today, so the brief would have stopped here:
 2026-11-09: *"just continue with default decisions till the end of the phase"*. So (a) stands, and (b) and (c)
 are parked for the phase's close with the numbers above ([§ T12 record, Parked for the phase
 close](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#parked-for-the-phase-close)).
+
+### Q-M1f.9 — What a deleted loader line leaves behind
+
+**Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5
+([§ T5 record](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t5-record-2026-11-09)), which deleted the 55 refusal
+lines the grammar covers since the swap, each shown unreachable from any program the parser accepts. Where a line
+was an arm of a match on the tree's shape, something has to stand in its place, because `ein_ir::load` is public
+API (`docs/api/rust.md`) and an `Ast` can be built by hand, past the grammar:
+
+- **(a) An `expect`, `unreachable!` or `assert!` naming the production of `ein.y` that states the shape**: a
+  hand-built `Ast` the grammar would refuse panics with the grammar's name for what was wanted, and the readers that
+  can no longer fail say so in their types (`expect::parse`, `expect::fact`, `config_from_kw_pairs`).
+- **(b) A single internal load error** in place of each, *a shape the grammar refuses*, keeping every reader's
+  `Result`.
+- **(c) Keep the lines**, as `examples/broken/load/README.md` argued for six of them (*defence in depth for a
+  caller that hand-builds an AST*), which the stage's instruction rules out: *each loader line the grammar now covers
+  goes*.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default
+decisions till the end of the phase"*. (a) is the agent's recommendation: no program reaches any of them (940 tests
+and 240 000 mutants with a panic at each, the record), a panic is louder than a load error for the one caller that
+can, and (b) would keep 55 error arms for a shape nothing builds. Re-opening it means (b), at any later stage.
+

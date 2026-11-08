@@ -79,9 +79,7 @@ fn want(ast: &Ast, m: &Model) -> Want {
     let mut closes: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     let mut negatives = Vec::new();
     for &node in &m.facts {
-        let Ok(f) = ein_ir::expect::fact(ast, node) else {
-            continue;
-        };
+        let f = ein_ir::expect::fact(ast, node);
         if f.negated {
             negatives.push(f.rendered);
         } else {
@@ -172,9 +170,7 @@ fn main() {
         let Some(enode) = query_value(&ast, &query, "expect") else {
             continue;
         };
-        let Ok(expectation) = ein_ir::expect::parse(&ast, enode) else {
-            continue;
-        };
+        let expectation = ein_ir::expect::parse(&ast, enode);
         let mut goal = BTreeSet::new();
         if let Some(g) = query_value(&ast, &query, "goal") {
             goal_relations(&ast, g, &mut goal);

@@ -10,6 +10,6 @@ pub mod region;
 pub mod relevance;
 pub mod render;
 
-pub use ast::{FactRef, RefArg, TraceStep, fact_ref, parse_trace_steps, step_to_ir, trace_to_ir};
+pub use ast::{FactRef, RefArg, TraceStep, fact_ref};
 pub use linearize::{steps_of, steps_of_with};
 pub use relevance::relevant_firings;

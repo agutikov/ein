@@ -93,18 +93,15 @@ pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec
         }
         let loc = loc_repr(ast, ast.loc(form));
         let args = ast.form_args(form);
-        if args.len() < 3 {
-            errors.push(format!("(macro) needs name + params + body at {loc}"));
-            continue;
-        }
+        // A macro is a name, a parameter list and a body (`ein.y`'s `Macro`).
+        // Until M1f S1f.5.5's T5 a macro with fewer than three arguments, *needs
+        // name + params + body*, and one whose name or parameters were not
+        // one, *malformed (macro …)*, were refused here; since the swap the
+        // grammar refuses both.
         let (name, params, body) = (args[0], args[1], args[2]);
-        let Some(name) = ast
+        let name = ast
             .atom_name(name)
-            .filter(|_| matches!(ast.node(params), Node::SForm { .. }))
-        else {
-            errors.push(format!("malformed (macro …) at {loc}"));
-            continue;
-        };
+            .expect("a macro's first argument is its name (ein.y's Macro)");
         if ein_core::is_reserved(name) {
             errors.push(format!(
                 "macro '{name}' shadows a reserved kernel name at {loc}"

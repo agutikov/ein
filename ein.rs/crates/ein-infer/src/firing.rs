@@ -159,10 +159,15 @@ fn not_a_fact(
              its activator does not bind — a relation written as a variable is \
              one of the rule's parameters, which its activator binds to a name"
         ),
-        (None, Some(rel)) => format!(
-            "rule '{rule}': its :assert writes {written} as an argument of {}, \
-             and no fact can hold it — an argument is a name, a string, an int, \
-             a variable its :match binds, or a fact (relation argument …)",
+        // An argument no fact can hold, `_` or a keyword pair: refused at
+        // load until M1e2 S1e2.2.18, and with a line here (*writes … as an
+        // argument of …, and no fact can hold it*) until M1f S1f.5.5's T5.
+        // Since the swap a conclusion's argument is a name, a variable or a
+        // fact (`ein.y`'s `Term`), and a macro's body holds the same, so no
+        // slot reaches here as one but a relation variable, the arm above.
+        (None, Some(rel)) => unreachable!(
+            "rule '{rule}': {written} as an argument of {} — the grammar's Term holds a name, \
+             a variable or a fact",
             terms.sym(rel)
         ),
         (None, None) => format!(

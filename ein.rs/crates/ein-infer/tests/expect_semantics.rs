@@ -372,13 +372,13 @@ fn rendering_agrees_with_the_fact_dump() {
         }
         found.expect("an :expect")
     };
-    let Expectation::One(model) = ein_ir::expect::parse(&ast2, value).expect("parses") else {
+    let Expectation::One(model) = ein_ir::expect::parse(&ast2, value) else {
         panic!("one model");
     };
     let rendered: Vec<String> = model
         .facts
         .iter()
-        .map(|&f| ein_ir::expect::fact(&ast2, f).expect("a fact").rendered)
+        .map(|&f| ein_ir::expect::fact(&ast2, f).rendered)
         .collect();
     let dumped: Vec<String> = kb
         .facts()

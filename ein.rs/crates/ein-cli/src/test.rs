@@ -409,21 +409,16 @@ fn over_key(over: Over) -> &'static str {
     }
 }
 
-/// The claim a query states, or `None` — read from the **loaded** program.
-///
-/// The loader has already refused every shape `expect::parse` can, so a parse
-/// failure here is an engine bug and the row simply carries no claim rather
-/// than inventing one; [`check_query`] is where it is reported.
+/// The claim a query states, or `None` where it states none — read from the
+/// **loaded** program, whose claim's shape is the grammar's (M1f S1f.5.5).
 fn claim_of(ast: &Ast, query: &ein_core::Query) -> Option<Claim> {
     let node = ein_infer::query_value(ast, query, "expect")?;
-    let e = ein_ir::expect::parse(ast, node).ok()?;
+    let e = ein_ir::expect::parse(ast, node);
     let (mut facts, mut negated) = (0usize, 0usize);
     let mut relations: Vec<String> = Vec::new();
     for m in e.models() {
         for &f in &m.facts {
-            let Ok(f) = ein_ir::expect::fact(ast, f) else {
-                continue;
-            };
+            let f = ein_ir::expect::fact(ast, f);
             facts += 1;
             negated += usize::from(f.negated);
             if !relations.iter().any(|r| r == f.relation) {
@@ -466,9 +461,7 @@ fn solve_claim_of(ast: &Ast, claim: &ein_ir::claim::Claim) -> Claim {
     };
     for m in listed {
         for &f in &m.facts {
-            let Ok(f) = ein_ir::expect::fact(ast, f) else {
-                continue;
-            };
+            let f = ein_ir::expect::fact(ast, f);
             facts += 1;
             negated += usize::from(f.negated);
             if !relations.iter().any(|r| r == f.relation) {

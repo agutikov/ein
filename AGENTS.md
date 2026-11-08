@@ -21,7 +21,8 @@ constrained-reasoning research.
   it*, and `ein solve` exits 1 when the claim is false
   ([`ir/03-ein-lang/01_grammar.md` § Query](docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
   A file may carry several `(query …)` blocks and each is run; the last one no
-  longer silently wins, and an unrecognised query keyword is now a load error.
+  longer silently wins, and an unrecognised query keyword is refused (a parse
+  error since M1f S1f.5.5's swap).
   **Since M1e2 S1e2.1a.5 a query's `:expect` lists its projection classes**
   over the states its `:over` names (`all`, `minimal`, `maximal`), and a claim
   about the whole state is the solve form's, `(solve … :expect (region (model
@@ -544,7 +545,14 @@ constrained-reasoning research.
   close
   ([Q-M1f.8](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it),
   [§ T12 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t12-record-2026-11-09)).
-  T5, T6 and T7 are next.
+  **T5 (2026-11-09) made `00_ebnf.md`'s two grammar blocks generated**: they
+  are `ein.l` and `ein.y` as `ein-ir/tests/grammar_pages.rs` reads them through
+  grmtools, so edit the grammar and re-bless (`EIN_BLESS=1`), never the blocks;
+  the same file's table holds each refusal the grammar took over from the
+  loader, the 55 loader lines it covers are deleted
+  ([§ T5 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t5-record-2026-11-09)),
+  and a stage that makes the grammar refuse a shape adds a row there.
+  T6 and T7 are next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

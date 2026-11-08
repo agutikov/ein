@@ -344,9 +344,7 @@ fn want(ast: &Ast, m: &Model) -> Want {
     let mut closes: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     let mut negatives = Vec::new();
     for &f in &m.facts {
-        let Ok(f) = ein_ir::expect::fact(ast, f) else {
-            continue;
-        };
+        let f = ein_ir::expect::fact(ast, f);
         if f.negated {
             negatives.push(f.rendered);
         } else {

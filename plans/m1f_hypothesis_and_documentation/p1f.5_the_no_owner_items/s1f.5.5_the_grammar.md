@@ -85,7 +85,13 @@ build; W29's six rows, W32's seven and W35 are `fixed`, and 23 fixed rows restat
 skip rule and a start condition in `ein.l` and a lexer per thread halve the lexing and move no token, and the
 gate went from 19 min 59 s to 15 min 53 s; T4's register ids are written and its golden count corrected; what
 lrlex's shape leaves is parked for the phase's close
-([Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it)). T5, T6 and T7 run next.
+([Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it)).
+**T5, the grammar's pages and the loader's refusals, done on 2026-11-09** ([§ T5 record](#t5-record-2026-11-09)):
+`00_ebnf.md`'s grammar blocks are written from `ein.l` and `ein.y` by `ein-ir/tests/grammar_pages.rs`, which carries
+the grammar's table, 123 refusals the grammar took over; 55 refusal lines the grammar covers are deleted, each shown
+unreachable first, and the 12 the census counted the grammar's that a macro's body or a pattern's argument still
+reaches are kept, each held by a test; the two dead trace functions are gone; nothing a user sees moved
+([Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind), defaulted). T6 and T7 run next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1724,6 +1730,149 @@ among them (`Found::WildHead`, `NestedKw`, `NotAForm`, `WildGuard`, the closed f
 `QUERY_KEYWORDS`). What each ruling leaves past its loader lines is its own stage's after this task: S1f.5.1's
 wildcard, S1f.5.2's string value arms, S1f.5.4's int kind and S1f.5.11's keyword drops, each retired moving no
 answer, and each stage's positions added to this table.
+
+### T5 record, 2026-11-09
+
+**One commit, on `77589255`.** `ein-ir/tests/grammar_pages.rs` holds `00_ebnf.md`'s grammar blocks to `ein.l` and
+`ein.y` and carries the grammar's table; 55 refusal lines the grammar covers are deleted, each first shown
+unreachable; the 12 the census counted the grammar's that a program the grammar accepts still reaches are kept,
+each held by a test; the two dead trace functions are deleted. **Nothing a user sees moved**: no answer, golden,
+`.expected`, error text or register row (below, *Nothing moved*).
+
+**The page.** The test reads `ein.l` through `lrlex` (`LRNonStreamingLexerDef`: each rule's regex, the start
+conditions it is tried in, the one it enters, its `%epp` name) and `ein.y` through `cfgrammar` (`YaccGrammar`: each
+rule's alternatives), and writes them into `00_ebnf.md` between `<!-- generated: ein.l -->` and `<!-- generated:
+ein.y -->` markers, where § 1's and § 2's hand-written blocks were; it fails when the page differs, and
+`EIN_BLESS=1` rewrites the two regions, as `embedding.rs` does for `docs/api/rust.md`. A second test holds that
+every token `ein.y` names is a rule of `ein.l`. The page's header says the blocks are the grammar and that the prose
+around them is restated at T7, which § 1's facts and § 3 still contradict until then.
+
+**The grammar's table** (`TABLE`, 123 rows, its outcomes banked in `ein-ir/tests/golden/grammar_table.txt`, 872
+lines; `cargo test -p ein-ir --test grammar_pages`, 2026-11-09). A row is a place, a program and the deleted lines it
+replaced (`DELETED`, 55 ids, each with its file and sentence), and the golden holds the report the parse refuses it
+with: every error, its notes and its ranked repairs. One test asserts that every row is refused at the parse and
+matches the golden; another, that every deleted line is named by a row and every row names only deleted lines. 103
+rows name a deleted line; 20 name none, each a ruling's: shapes the loader never refused (`_` as an argument, which
+loaded until S1f.5.1, `:where`, which the compiler dropped), and shapes whose loader line stays because a macro's
+body or a pattern's argument still reaches it (a name, a variable or a string where a premise goes, `open` bound by
+a declarator, `(open …)`'s placements). The four language stages add their positions to it as rows.
+
+**How unreachable was shown.** A copy of `77589255` (`git archive`, `build/s1f.5.5/t5/probe/`) with a panic,
+`T5-PROBE <id>`, at each of 59 sites (the 55 lines and the four dead config coercions; `build/s1f.5.5/t5/`'s
+`probe_patch.py` places them by `77589255`'s line numbers), then:
+- `cargo test --workspace --no-fail-fast` on it: 940 tests passed, 0 failed, and no `T5-PROBE` in the log, over
+  every corpus sweep, golden and fuzz property the gate runs (`build/s1f.5.5/t5/probe-tests.log`, 2026-11-09);
+- every corpus file under 6 000 bytes (398) and 40 000 seeded mutants of them (`ein_corpus::mutants`, seed 0, the
+  census's), each parsed, loaded and saturated in process (`t5_sweep`, an example in the copy): 16 308 refused at the
+  parse, 2 671 at load, 82 at compile, 21 238 saturated, 99 stopped saturating, no probe and no other panic
+  (`build/s1f.5.5/t5/sweep.txt`, `t5_sweep.rs` beside it);
+- the same with 200 000 mutants, seed 987654321 (the nightly fuzzer's second): 81 452, 12 999, 352, 105 126 and
+  469, no probe and no other panic (`sweep2.txt`).
+
+And by construction, which is what the probes test: the parser builds no `_` and no integer (S1f.5.1's and S1f.5.4's
+rulings), no keyword pair inside a clause's value (S1f.5.11's), and a name wherever a declarator, a fact or an
+import wants one; the import resolver renames atoms and nothing else; and the macro expander copies only what a
+program wrote, into the positions a template has.
+
+**Deleted (55 lines, and the dead arms).**
+- `from_ir.rs`, 18: *unexpected top-level form*; *a top-level (region …)* (with `claim::CLAIM_HEADS`); the
+  `(solve …)` and `(query …)` keyword lines with `SOLVE_KEYWORDS`, `QUERY_KEYWORDS` and `LATTICE_KEYWORDS`;
+  *(relation) needs a name*, *malformed (relation)*; *({head}) needs name + params*, *malformed ({head} …)*;
+  `Found::WildHead`, `Found::NestedKw`, `Found::WildGuard` and `Found::GuardNode`'s keyword-pair half; *fact with
+  non-atom head*; and `config_from_kw_pairs`' four (*body expects kw_pairs*, a retired flag, an unknown flag,
+  *expects true/false*), with the integer, number and string coercions no flag has reached since M1e2 S1e2.1a.5 and
+  `set_flag`'s nine arms for retired bool flags: it reads two flags, `true` or `false`, and cannot fail. The range
+  line, the census's 27th, went at S1f.5.3.
+- `expect.rs`, 18: the seventeen shape lines, so `expect::parse` and `expect::fact` cannot fail and return the claim
+  and the fact; and, beyond the census's list, `Over::parse`'s arm for a value that is no name (`:over Name`).
+- `claim.rs`, 11: the region claim's shape lines; `claim::parse` keeps its four.
+- `imports.rs`, 4: no module name, an `:as` that is no name, a `:symbols` that is no list, `:symbols ()`.
+- `macros.rs`, 2: *(macro) needs name + params + body*, *malformed (macro …)*.
+- `ein-infer` `firing.rs`, 1: *writes … as an argument of …, and no fact can hold it* (`not_a_fact`'s `(None,
+  Some(rel))` arm, now `unreachable!`).
+- `ein-infer` `compile.rs`, 1: *`(absent …)` sub-plan compiled to no steps*, now an `assert!` with the same
+  sentence: an `absent` takes one premise, a premise that is no form is the loader's refusal, and every form a
+  premise can be compiles to a step.
+
+Where the types need it, each is replaced by an `expect`, an `unreachable!` or an `assert!` that names the
+production of `ein.y` that states the shape (taken by default; Q-M1f.9).
+
+**Kept, the 12 the census counted the grammar's that are still reached**, each by a program the grammar accepts,
+banked in `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached` and
+`compile_semantics::the_compile_and_firing_lines_a_macro_still_reaches`:
+- the reserved-name lines of `(relation …)`, `(rule …)`/`(hrule …)` and `(macro …)` (2 in `from_ir.rs`, 1 in
+  `macros.rs`): the kernel's dunders are names a declarator may write and the loader refuses (Q-M1f.7 (b), T11);
+  the other reserved words are tokens no declarator takes, refused at the parse;
+- `validate_open`'s five: `(open …)` in a `:match` (a pattern's argument may be any name, `open` among them:
+  `(p (open ?y))`), inside a conclusion (`(not (open ?R))`), beside another conclusion, with two arguments and with a
+  term for its argument (each through a macro whose body is the shape, called in an `:assert`);
+- `Found::NotAForm`: `(macro id (?x) ?x)` called as `(id foo)`, or the stdlib's `forall` called with a name,
+  puts the name where a premise goes;
+- the compiler's arity lines for `absent` and `eq`: a macro's body is a template whose head may be any name at any
+  arity, `(macro two (?a ?b) (absent ?a ?b))`;
+- the firing's *concludes ?y, which is not a fact*: a body that is a bare parameter, called in an `:assert`.
+
+Each reach is by a macro or by a pattern's argument, which a context-free grammar of the call site cannot see; the
+census read the paper grammar's productions alone.
+
+**The two dead functions.** `ein_render::trace`'s `trace_to_ir` and `parse_trace_steps` had no caller (`grep -rn
+'trace_to_ir\|parse_trace_steps' ein.rs/crates`, 2026-11-09, one export line and their own definitions), and the
+paper grammar's default 8 says they go at the swap: they are deleted, with `step_to_ir`, the writer half's other
+export, whose `:bind` and `:why` on a step the grammar's `Step` refuses, and the private readers they used. A
+`(trace …)` a program writes is still drawn by `ir_dot::render_trace`.
+
+**The tests that moved to the table.** `from_ir`'s `a_wildcard_relation_in_a_rule_is_refused_at_load` (its refusals;
+what loads stays, as `a_variable_used_once_loads_where_a_wildcard_was_written`), the parse half of
+`a_rule_shape_that_reads_nothing_is_refused_at_load` and of `the_verdict_atom_refuses_every_shape_it_cannot_resolve`,
+`an_unknown_query_keyword_is_a_load_error`, `the_obsolete_mode_keyword_still_loads`,
+`a_malformed_expect_is_a_load_error`, and the refused halves of `every_query_is_kept_and_the_last_config_still_wins`
+and `every_pass_accumulates_rather_than_stopping_at_the_first_problem`; `expect`'s
+`a_variable_in_an_expectation_is_rejected`, `the_shape_errors_name_what_was_expected`,
+`two_shapes_are_parse_errors_before_they_are_load_errors` and `bottom_is_spelled_with_the_kernels_own_word`;
+`ein-infer`'s `claim_semantics::the_loader_refuses_what_is_not_a_claim`'s parse rows (it gained the two loader
+refusals it did not hold, two `(owing …)` and a `(merged …)` with no state), `compile_semantics`'
+`an_absent_that_compiles_to_no_steps_is_refused`, `the_retired_flags_are_refused_with_why`,
+`the_config_rejections_name_the_flag_and_the_shape_they_wanted` and the refused halves of
+`bool_flags_coerce_from_their_ir_shapes` and `a_bare_declaration_is_declared…`, and
+`naf_semantics::the_stratification_advisory_is_the_librarys_and_the_flag_is_retired`'s refused half. Each assertion
+is a row, its report in the golden with every repair the old assertion checked. The `ein-cli` tests of the same
+shapes stay (`cli_semantics`): they hold the CLI's surface, the exit code and the report line on each command, which
+the table, a parse in process, does not.
+
+**Pages restated with the lines** (beyond T7's list, each naming a line T5 deleted): `defined_behaviour.md` § 4.1's
+seven rows the grammar took over; `configuration.md` § 2's refused `(config …)` lines, which showed `kb load
+error:` lines the swap had already replaced, re-taken from `ein saturate` (2026-11-09);
+`06_reserved_names.md`'s keyword lists; `examples/broken/load/README.md`'s unreachable lines; and AGENTS.md's
+*an unrecognised query keyword is now a load error*. `00_ebnf.md`'s prose, `01_grammar.md`, `02_patterns.md`,
+`defined_behaviour.md` § 1, § 4.8 and § 4.9 stay T7's.
+
+**Nothing moved.** No golden or `.expected` changed: the new golden and `00_ebnf.md`'s two regions are the only
+generated files the commit writes, and the gate below reads every other one as it was. The release binaries of
+`77589255` and of this commit answer the 511 programs alike on `solve --json-summary -H --dump-answer`, `saturate
+--dump` and `test`, exit codes, stdout, stderr, summary and dump compared, timings masked, and T12's 2 000 mutants
+through `saturate` alike, the error text included: 511 of 511 the same on every command, and the 2 000 mutants
+1 047 accepted, 767 refused with repairs and 186 without, each the same (`build/s1f.5.5/t5/xcheck/`, T12's
+scripts pointed at T12's binary and this one's, 87 s, 2026-11-09). The two binaries differ: T12's holds *unexpected
+top-level form* and this one does not (`strings`).
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end
+of the phase"*), each the agent's recommendation:
+- **The page's blocks land with the test.** `00_ebnf.md`'s header put the generated blocks at T7, and the test that
+  writes them is T5's and cannot pass without them, so T5 writes the blocks and T7 the prose around them.
+- **A deleted line becomes an `expect`, `unreachable!` or `assert!` naming the production**, where the type needs
+  an arm: a caller that builds an `Ast` by hand and hands `ein_ir::load` a shape the grammar refuses gets a panic
+  naming the grammar, where it got a load error (`examples/broken/load/README.md` called those lines *defence in
+  depth* for such a caller), and `expect::parse`, `expect::fact`, `from_ir::config_from_kw_pairs` and
+  `imports`' `symbol_list` cannot fail. A decision a reviewer would name, so
+  [Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind) records it.
+- **The table's outcomes are a golden**, `grammar_table.txt`, as `grammar_decisions.txt` is, so a stage adding a row
+  blesses it; the rows, the deleted ids and the check between them are in the test.
+- **The CLI's tests of the same shapes stay** (above), and **`Over::parse`'s non-name arm and `step_to_ir` go**
+  beyond the census's list, each unreachable or uncalled by the same evidence.
+
+**The gate.** On this commit, 15 min 55 s (`build/gate-s1f.5.5-T5.log`), green: 936 tests, every static check,
+where T12's ran 940 in 15 min 53 s: nine tests whose every case is a row of the table went, and
+`grammar_pages`' five came.
 
 ### Task T1f.5.5.6 — `--diff-models` compares by value (S-15)
 

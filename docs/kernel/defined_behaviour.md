@@ -585,23 +585,33 @@ Five arrived on 2026-08-23 with
 
 | input | message | exit |
 |---|---|---|
-| a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :over :expect :mode` | 1 |
-| a lattice keyword on a `(query …)` (M1e2 S1e2.1a.4) | `(query …): :<k> chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice` | 1 |
-| a `(solve …)` keyword outside the allow-list | `(solve …): unknown keyword :<k> — one of :hrules :hypothesis-relations :no-hypothesis :expect` | 1 |
+| a `(query …)` keyword it does not take | a parse error at the keyword, `<file>:<l>:<c>: unexpected `:<k>`: a keyword this form does not take` † | 1 |
+| a lattice keyword on a `(query …)` (M1e2 S1e2.1a.4) | a parse error at the keyword, its note `:<k> chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice` † | 1 |
+| a `(solve …)` keyword it does not take | a parse error at the keyword † | 1 |
 | more than one `(solve …)` | `<n> (solve …) forms — a program states its lattice once` | 1 |
-| a top-level `(region …)`, `(merged …)` or `(owing …)` | `a top-level (<h> …) — a region claim belongs under (solve … :expect …)` | 1 |
-| a `(solve … :expect …)` that is not `(false)` or `(region …)` | `(solve … :expect (<h> …)) — …`, naming the query's forms where `(model …)` or `(or …)` was written | 1 |
+| a top-level `(region …)`, `(merged …)` or `(owing …)` | a parse error at the word † | 1 |
+| a `(solve … :expect …)` that is not `(false)` or `(region …)`, or a region item that is not `(model …)`, `(merged …)` or `(owing …)` of their shapes | a parse error at the first token that is not † | 1 |
 | `(owing …)` beside states of R | `` (region …) — `(owing …)` says R is empty, and the region lists states `` | 1 |
 | a `(merged …)` whose `<to>` is not a listed state | `(merged …) — its state is not one the region lists` | 1 |
 | a claim naming a relation the program does not have | `(solve … :expect …) names <r>, which no declaration or fact makes a relation` | 1 |
-| `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | ``:expect <what> — expected `(false)`, `(model …)` or `(or (model …) …)` `` | 1 |
+| `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | a parse error at the first token that is not † | 1 |
 | `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
-| a `?var` or `_` inside an `:expect` | ``:expect — `?v` is a variable; an expectation is an answer, not a pattern`` | 1 |
+| a `?var` or `_` inside an `:expect` | a parse error at the variable, or at the `_` with S1f.5.1's note † | 1 |
 
 They accumulate and `; `-join with every other loader error, as §1.5's do, and
 each is pinned by a fixture in
 [`examples/broken/load/`](../../examples/broken/load/).
+
+† **A shape, the grammar's since M1f S1f.5.5's swap** (2026-11-09): each form
+takes a fixed set of keywords (S1f.5.11), and a claim's and a region's shapes
+are productions of [`ein.y`](../../ein.rs/crates/ein-ir/src/ein.y), so the
+parse refuses the file first, every error with its line, column and ranked
+repairs (§ 1), and the loader never reads it. The loader's lines for these
+rows, `QUERY_KEYWORDS`' and `SOLVE_KEYWORDS`' allow-lists among them, were
+deleted at T1f.5.5.5, and each shape is a row of `ein-ir`'s grammar table
+([`grammar_pages.rs`](../../ein.rs/crates/ein-ir/tests/grammar_pages.rs)).
+Their fixtures moved to [`examples/broken/`](../../examples/broken/) at the swap.
 
 **And one non-error that is also new**: a claim that is *false* prints
 `:expect FAILED` with the disagreement, writes one `<file>: … :expect FAILED —

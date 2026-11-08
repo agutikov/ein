@@ -20,13 +20,16 @@
 //! ```
 //!
 //! **The words are this keyword's alone.** `region`, `merged` and `owing` are
-//! read here and nowhere else, as `model` is under a query's `:expect`. None of
-//! them is reserved, apart from the top-level guard in the loader: a `(region
-//! …)` pasted at the top of a file would otherwise load as a fact of a new
-//! relation, check nothing and say nothing.
+//! read here and nowhere else, as `model` is under a query's `:expect`. Each
+//! is a word a position gives a meaning to since M1f S1f.5.5's swap, a name
+//! wherever a name goes but not a top-level fact's relation (`ein.y`'s
+//! `FactHead`), so a `(region …)` pasted at the top of a file is refused at the
+//! parse, where until then it would have loaded as a fact of a new relation,
+//! checked nothing and said nothing, but for the loader's guard (M1e2
+//! S1e2.1a.4, `CLAIM_HEADS` until T1f.5.5.5).
 
 use crate::ast::{Ast, Node, NodeId};
-use crate::expect::{Model, fact};
+use crate::expect::Model;
 
 /// A parsed `(solve … :expect …)` value.
 #[derive(Clone, Debug)]
@@ -58,25 +61,21 @@ pub struct Merged {
     pub from: Vec<Model>,
 }
 
-/// The heads the loader refuses at the top level.
-pub const CLAIM_HEADS: [&str; 3] = ["region", "merged", "owing"];
-
-const SHAPE: &str = "(solve … :expect …) — expected `(false)` or `(region …)`";
-
 /// Read a `(solve … :expect …)` value, or say what is wrong with it.
+///
+/// **Its shape is the grammar's** since M1f S1f.5.5's swap (`ein.y`'s
+/// `RegionClaim`, `RegionItem` and `MergedFrom`): `(false)`, or a `(region
+/// …)` of `(model …)`s, `(merged (model …) <from>)`s whose `<from>` is a
+/// `(model …)` or an `(or …)` of one or more, and `(owing (model …) …)`s of
+/// one or more. Until T1f.5.5.5 this module refused every other shape, eleven
+/// lines; since the swap the parse refuses each first. What stays is what a
+/// grammar cannot see: one `(owing …)` at most, not beside a state, and a
+/// `(merged …)` whose state is one the region lists.
 pub fn parse(ast: &Ast, node: NodeId) -> Result<Claim, String> {
-    let Some((name, items)) = form(ast, node) else {
-        return Err(SHAPE.into());
-    };
-    match name {
-        "false" if items.is_empty() => Ok(Claim::False),
-        "false" => Err("(solve … :expect (false …)) — ⊥ takes no arguments".into()),
-        "region" => region(ast, items).map(Claim::Region),
-        "model" | "or" => Err(format!(
-            "(solve … :expect ({name} …)) — a region is stated as `(region (model …) …)`; \
-             `({name} …)` is a query's answer"
-        )),
-        other => Err(format!("(solve … :expect ({other} …)) — {SHAPE}")),
+    match form(ast, node).expect("a region claim is a form (ein.y's RegionClaim)") {
+        ("false", _) => Ok(Claim::False),
+        ("region", items) => region(ast, items).map(Claim::Region),
+        (other, _) => unreachable!("a region claim is (false) or (region …), not ({other} …)"),
     }
 }
 
@@ -87,73 +86,43 @@ fn form(ast: &Ast, node: NodeId) -> Option<(&str, &[NodeId])> {
     Some((ast.atom_name(head)?, ast.args(args)))
 }
 
+/// A `(model …)`'s facts, which the grammar makes the one shape at each place
+/// this reads one.
+fn model(ast: &Ast, node: NodeId) -> Model {
+    match form(ast, node) {
+        Some(("model", facts)) => Model {
+            facts: facts.to_vec(),
+        },
+        _ => unreachable!("a (model …) (ein.y's Model)"),
+    }
+}
+
 fn region(ast: &Ast, items: &[NodeId]) -> Result<Region, String> {
     let mut out = Region::default();
     let mut owing_seen = false;
     for &item in items {
         match form(ast, item) {
-            Some(("model", facts)) => out.models.push(model(ast, facts)?),
-            Some(("merged", parts)) => {
-                let [to, from] = parts else {
-                    return Err("(merged …) — expected `(merged (model …) <from>)`, \
-                                a state and its minimal commitments"
-                        .into());
-                };
-                let to = match form(ast, *to) {
-                    Some(("model", facts)) => model(ast, facts)?,
-                    _ => {
-                        return Err("(merged …) — its first part is a `(model …)`, \
-                                     one of the states the region lists"
-                            .into());
-                    }
-                };
+            Some(("model", _)) => out.models.push(model(ast, item)),
+            Some(("merged", [to, from])) => {
                 let from = match form(ast, *from) {
-                    Some(("model", facts)) => vec![model(ast, facts)?],
-                    Some(("or", alts)) if !alts.is_empty() => {
-                        let mut v = Vec::with_capacity(alts.len());
-                        for &a in alts {
-                            match form(ast, a) {
-                                Some(("model", facts)) => v.push(model(ast, facts)?),
-                                _ => {
-                                    return Err("(merged …) — every commitment in its \
-                                                 `(or …)` is a `(model …)`"
-                                        .into());
-                                }
-                            }
-                        }
-                        v
-                    }
-                    _ => {
-                        return Err("(merged …) — its second part is a `(model …)`, or an \
-                                     `(or (model …) …)` of them"
-                            .into());
-                    }
+                    Some(("or", alts)) => alts.iter().map(|&a| model(ast, a)).collect(),
+                    _ => vec![model(ast, *from)],
                 };
-                out.merged.push(Merged { to, from });
+                out.merged.push(Merged {
+                    to: model(ast, *to),
+                    from,
+                });
             }
             Some(("owing", models)) => {
                 if owing_seen {
                     return Err("(region …) — one `(owing …)`, listing every owing state".into());
                 }
                 owing_seen = true;
-                if models.is_empty() {
-                    return Err("(owing) — it lists the alive nodes that owe; an empty R \
-                                with nothing listed is `(region)`"
-                        .into());
-                }
-                for &m in models {
-                    match form(ast, m) {
-                        Some(("model", facts)) => out.owing.push(model(ast, facts)?),
-                        _ => return Err("(owing …) — every item is a `(model …)`".into()),
-                    }
-                }
+                out.owing.extend(models.iter().map(|&m| model(ast, m)));
             }
-            _ => {
-                return Err(format!(
-                    "(region …) — `{}` is not `(model …)`, `(merged …)` or `(owing …)`",
-                    crate::expect::render(ast, item)
-                ));
-            }
+            _ => unreachable!(
+                "a region lists (model …), (merged …) and (owing …) (ein.y's RegionItem)"
+            ),
         }
     }
     if !out.owing.is_empty() && !out.models.is_empty() {
@@ -179,13 +148,4 @@ fn region(ast: &Ast, items: &[NodeId]) -> Result<Region, String> {
         }
     }
     Ok(out)
-}
-
-fn model(ast: &Ast, items: &[NodeId]) -> Result<Model, String> {
-    for &item in items {
-        fact(ast, item).map_err(|e| e.replacen(":expect", "(solve … :expect …)", 1))?;
-    }
-    Ok(Model {
-        facts: items.to_vec(),
-    })
 }

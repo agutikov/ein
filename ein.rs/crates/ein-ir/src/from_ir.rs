@@ -14,15 +14,15 @@
 //! It lives in `ein-ir` rather than beside the store because it needs the
 //! frontend and the data model at once, and `ein-core` depends on nothing.
 
-use crate::ast::{Ast, Node, NodeId, loc_repr, node_repr};
+use crate::ast::{Ast, Node, NodeId, loc_repr};
 use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
 use crate::parse;
-use ein_core::config::{FLAGS, FieldKind, SolverConfig};
+use ein_core::config::{FLAGS, SolverConfig};
 use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
-    is_predicate, is_reserved, parse_float, parse_int,
+    is_predicate, is_reserved,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -175,14 +175,18 @@ pub fn load_query_with(
         (Vec::new(), Vec::new());
     let mut solve_blocks: Vec<NodeId> = Vec::new();
     for &form in &forms {
-        let Some(head) = ast.head_name(form).map(str::to_string) else {
-            errors.push(format!(
-                "unexpected top-level form: {}",
-                node_repr(ast, form)
-            ));
-            continue;
-        };
-        match head.as_str() {
+        // Every top-level form has a name for its head: a declarator's word,
+        // or a fact's relation (`ein.y`'s `Form`). Until M1f S1f.5.5's T5 a
+        // form that had none was refused here, *unexpected top-level form*,
+        // and a fact headed by a claim's word, `(region …)`, `(merged …)` or
+        // `(owing …)`, *a region claim belongs under (solve … :expect …)*
+        // (M1e2 S1e2.1a.4); since the swap the grammar refuses both, the
+        // second because a top-level fact's relation (`FactHead`) is none of
+        // the three.
+        let head = ast
+            .head_name(form)
+            .expect("a top-level form's head is a name (ein.y's Form)");
+        match head {
             "relation" => relations.push(form),
             "rule" | "hrule" => rules.push(form),
             "macro" => macro_forms.push(form),
@@ -192,12 +196,6 @@ pub fn load_query_with(
             )),
             "query" => query_blocks.push(form),
             "solve" => solve_blocks.push(form),
-            // A claim's words, at the top level: a printed region pasted
-            // outside `(solve … :expect …)` would otherwise load as a fact of
-            // a new relation, check nothing and say nothing (M1e2 S1e2.1a.4).
-            h if crate::claim::CLAIM_HEADS.contains(&h) => errors.push(format!(
-                "a top-level ({h} …) — a region claim belongs under (solve … :expect …)"
-            )),
             "config" => config_blocks.push(form),
             // Engine-emitted output; parsed by the trace reader, not here.
             "trace" => {}
@@ -229,7 +227,7 @@ pub fn load_query_with(
     )?;
     // Pass 3 — facts.
     for &form in &facts {
-        ingest_fact(ast, terms, &mut kb, form, &mut errors)?;
+        ingest_fact(ast, terms, &mut kb, form)?;
     }
     // A rule parameter that names a relation, bound to an integer by an
     // activator the program writes down (M1e2 S1e2.2.4).
@@ -260,10 +258,7 @@ pub fn load_query_with(
     validate_queries(ast, terms, &kb, &mut errors);
     if let Some(&last) = config_blocks.last() {
         let args: Vec<NodeId> = ast.form_args(last).to_vec();
-        match config_from_kw_pairs(ast, &args) {
-            Ok(config) => kb.program_mut().config = Some(config),
-            Err(e) => errors.push(format!("(config …): {e}")),
-        }
+        kb.program_mut().config = Some(config_from_kw_pairs(ast, &args));
     }
 
     // The S1.8a.f20 guard: a `(forall …)` / `(unknown …)` used without importing
@@ -385,61 +380,21 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     }
 }
 
-/// Every `(query …)` keyword the engine reads.
+/// The `(solve …)` block's `:expect`, whose claims [`crate::claim::parse`]
+/// checks and whose relations must be the program's, as a query's
+/// `:expect`'s are.
 ///
-/// The list is an **allow-list**, and an unrecognised keyword is a load error
-/// rather than a silent no-op — M1c
-/// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
-/// Before it, `(query :expct (model …))` parsed, loaded, checked nothing and
-/// said nothing, which is the failure mode `:expect` exists to remove; a form
-/// that carries a *test* cannot also be the place a typo goes to die.
-///
-/// `mode` is here and is read by nothing. It was a real keyword, three corpus
-/// files carry a comment saying it is obsolete, and rejecting it would make a
-/// stale file fail to load rather than fail to matter. Accepted-and-ignored is
-/// documented; silently-unknown is not.
-///
-/// The three keywords that choose the candidate list left for `(solve …)` at
-/// M1e2 S1e2.1a.4, so that one program has one lattice and one R. On a query
-/// each is a load error naming its new home ([`LATTICE_KEYWORDS`]).
-///
-/// `:over` is M1e2 T1e2.1a.5.3's: which states of R the query asks about.
-const QUERY_KEYWORDS: [&str; 5] = ["goal", "goal-text", "over", "expect", "mode"];
-
-/// The keywords that choose the candidate list — the lattice — and so belong
-/// to `(solve …)`, M1e2 S1e2.1a.4.
-const LATTICE_KEYWORDS: [&str; 3] = ["hrules", "hypothesis-relations", "no-hypothesis"];
-
-/// Every `(solve …)` keyword the engine reads: the lattice's, and `:expect`,
-/// the expected region ([`crate::claim`]).
-const SOLVE_KEYWORDS: [&str; 4] = ["hrules", "hypothesis-relations", "no-hypothesis", "expect"];
-
-/// The `(solve …)` block's keywords — an allow-list, as `(query …)`'s is — and
-/// its `:expect`, whose shape [`crate::claim::parse`] checks and whose
-/// relations must be the program's, as a query's `:expect`'s are.
+/// **Which keywords a `(solve …)` and a `(query …)` take is the grammar's**
+/// since M1f S1f.5.5's swap (S1f.5.11's ruling, `ein.y`'s `SolveClause` and
+/// `QueryClause`): any other is a parse error at its place, a query's lattice
+/// keyword with a note naming its home on `(solve …)`. Until T1f.5.5.5 each
+/// form had an allow-list here, `SOLVE_KEYWORDS` and `QUERY_KEYWORDS` (M1c
+/// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects),
+/// M1e2 S1e2.1a.4), which no program the grammar accepts reached since.
 fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
     let Some(solve) = kb.program().solve() else {
         return;
     };
-    for &pair in solve.kw_pairs.iter() {
-        let Node::KwPair { key, .. } = ast.node(NodeId(pair.0)) else {
-            continue;
-        };
-        let Node::Keyword(name) = ast.node(key) else {
-            continue;
-        };
-        let name = ast.sym(name);
-        if !SOLVE_KEYWORDS.contains(&name) {
-            errors.push(format!(
-                "(solve …): unknown keyword :{name} — one of {}",
-                SOLVE_KEYWORDS
-                    .iter()
-                    .map(|k| format!(":{k}"))
-                    .collect::<Vec<_>>()
-                    .join(" ")
-            ));
-        }
-    }
     let Some(node) = solve_keyword(ast, &solve.kw_pairs, "expect") else {
         return;
     };
@@ -462,9 +417,7 @@ fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
     let mut reported: BTreeSet<String> = BTreeSet::new();
     for model in models {
         for &f in &model.facts {
-            let Ok(fact) = crate::expect::fact(ast, f) else {
-                continue;
-            };
+            let fact = crate::expect::fact(ast, f);
             let known = terms
                 .syms
                 .get(fact.relation)
@@ -494,37 +447,15 @@ fn solve_keyword(ast: &Ast, kw_pairs: &[ExprRef], want: &str) -> Option<NodeId> 
     None
 }
 
-/// The `(query …)` blocks' own validation — keywords, and `:expect`.
+/// The `(query …)` blocks' own validation — `:over`, and `:expect`. Which
+/// keywords a query takes, and a claim's shape, are the grammar's since M1f
+/// S1f.5.5's swap ([`validate_solve`]).
 ///
 /// Runs after the fact pass, because two of the three `:expect` rules are
 /// about the *program*: a relation it names must be one the program knows, and
 /// the goal's relations must be among the ones it closes.
 fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
     for query in &kb.program().queries {
-        for &pair in query.kw_pairs.iter() {
-            let Node::KwPair { key, .. } = ast.node(NodeId(pair.0)) else {
-                continue;
-            };
-            let Node::Keyword(name) = ast.node(key) else {
-                continue;
-            };
-            let name = ast.sym(name);
-            if LATTICE_KEYWORDS.contains(&name) {
-                errors.push(format!(
-                    "(query …): :{name} chooses the lattice and belongs on (solve …) \
-                     since M1e2 S1e2.1a.4 — one program, one lattice"
-                ));
-            } else if !QUERY_KEYWORDS.contains(&name) {
-                errors.push(format!(
-                    "(query …): unknown keyword :{name} — one of {}",
-                    QUERY_KEYWORDS
-                        .iter()
-                        .map(|k| format!(":{k}"))
-                        .collect::<Vec<_>>()
-                        .join(" ")
-                ));
-            }
-        }
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
         {
@@ -533,22 +464,14 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
         let Some(node) = query_keyword(ast, query, "expect") else {
             continue;
         };
-        let expectation = match crate::expect::parse(ast, node) {
-            Ok(e) => e,
-            Err(message) => {
-                errors.push(message);
-                continue;
-            }
-        };
+        let expectation = crate::expect::parse(ast, node);
         // Rule 3's precondition: a relation an expectation *closes* has to be
         // one the program has. A name nothing declares and no fact uses would
         // close a relation that does not exist, and pass — vacuously, for
         // ever.
         for model in expectation.models() {
             for &f in &model.facts {
-                let Ok(fact) = crate::expect::fact(ast, f) else {
-                    continue; // already reported by `expect::parse`
-                };
+                let fact = crate::expect::fact(ast, f);
                 let known = terms
                     .syms
                     .get(fact.relation)
@@ -572,9 +495,6 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
         let mut classes: Vec<Vec<String>> = Vec::new();
         for model in expectation.models() {
             for &f in &model.facts {
-                if crate::expect::fact(ast, f).is_err() {
-                    continue;
-                }
                 if !atoms.iter().any(|&a| crate::expect::matches(ast, f, a)) {
                     errors.push(format!(
                         ":expect lists {}, which no atom of the query's :goal matches — a \
@@ -751,23 +671,16 @@ fn ingest_relation(
     // `(relation R)` declares a relation node with no declared arg types, and
     // is deliberately not a hypothesis target, since the "declared domain
     // relation" signal is signature *presence*.
-    if args.is_empty() {
-        errors.push(format!("(relation) needs a name at {loc}"));
-        return Ok(());
-    }
-    let name = ast.atom_name(args[0]).map(str::to_string);
-    // Every arg after the name must be a type atom or a kw-pair. The check is
-    // explicit *because* an empty signature is legal: without it the wrapped
-    // form `(relation R (T1 T2))` — which the grammar routes to a generic
-    // fact — would silently load as a bare declaration instead of being
-    // rejected.
-    let ill_formed = args[1..]
-        .iter()
-        .any(|&a| !matches!(ast.node(a), Node::Atom(_) | Node::KwPair { .. }));
-    let Some(name) = name.filter(|_| !ill_formed) else {
-        errors.push(format!("malformed (relation) at {loc}"));
-        return Ok(());
-    };
+    //
+    // A declaration is a name, then names, then its `:why` (`ein.y`'s
+    // `Relation`). Until M1f S1f.5.5's T5 this pass refused `(relation)`,
+    // *needs a name*, and a signature holding anything but names, *malformed
+    // (relation)*, which kept the wrapped `(relation R (T1 T2))` from loading
+    // as a bare declaration; since the swap the grammar refuses both.
+    let name = ast
+        .atom_name(args[0])
+        .expect("a declaration's first argument is its name (ein.y's Relation)")
+        .to_string();
     if opts.require_why && string_value(ast, kw_get(&kw_pairs(ast, &args), "why")).is_none() {
         errors.push(missing_why("relation", &name));
     }
@@ -835,17 +748,16 @@ fn ingest_rules(
         let head = ast.head_name(form).expect("bucketed by head").to_string();
         let loc = loc_repr(ast, ast.loc(form));
         let args = ast.form_args(form).to_vec();
-        if args.len() < 2 {
-            errors.push(format!("({head}) needs name + params at {loc}"));
-            continue;
-        }
-        let name = ast.atom_name(args[0]).map(str::to_string);
+        // A rule is a name, a parameter list, then its clauses (`ein.y`'s
+        // `Rule`). Until M1f S1f.5.5's T5 this pass refused a rule with fewer
+        // than two arguments, *needs name + params*, and one whose name or
+        // parameter list was not one, *malformed*; since the swap the grammar
+        // refuses both.
+        let name = ast
+            .atom_name(args[0])
+            .expect("a rule's first argument is its name (ein.y's Rule)")
+            .to_string();
         let params_form = args[1];
-        let Some(name) = name.filter(|_| matches!(ast.node(params_form), Node::SForm { .. }))
-        else {
-            errors.push(format!("malformed ({head} …) at {loc}"));
-            continue;
-        };
         if opts.require_why && string_value(ast, kw_get(&kw_pairs(ast, &args), "why")).is_none() {
             errors.push(missing_why(&head, &name));
         }
@@ -985,19 +897,23 @@ fn ingest_rules(
 /// conclusions, given the rule's parameters. It refuses, one line per slot
 /// as written, naming the rule and the clause:
 ///
-/// - a **wildcard written as a relation**, `(_ a)`: `_` stands for an argument;
 /// - a **relation written as a variable no parameter binds**, `(?r b)`, at
 ///   the top level or inside a pattern, in either clause: a relation is named
 ///   by a name or by a parameter its activator binds (Q29);
-/// - a **keyword pair inside a pattern inside a pattern**, `(box (a :k v))`:
-///   a keyword pair is no value;
-/// - a **premise that is not a form**: an atom, a variable, `_`, an integer
-///   or a string written where a premise goes, the whole `:match`, a member
-///   of an `(and …)` or an `(or …)`, an `(absent …)`'s body;
-/// - a **guard's argument that is no value it can compare**: `_`, a form, a
-///   keyword pair, or a variable no premise before the guard binds.
+/// - a **premise that is not a form**, the whole `:match`, a member of an
+///   `(and …)` or an `(or …)`, an `(absent …)`'s body: since M1f S1f.5.5's
+///   swap only a macro's body puts one there, a name or a variable;
+/// - a **guard's argument that is no value it can compare**: a form, or a
+///   variable no premise before the guard binds.
 ///
-/// Not refused: a keyword pair at a pattern's top level, `(n ?x :where v)`,
+/// **Since M1f S1f.5.5's swap the grammar refuses the rest**, and T1f.5.5.5
+/// deleted their lines: a wildcard written as a relation, `(_ a)`; a keyword
+/// pair inside a pattern inside a pattern, `(box (a :k v))`; `_` or a keyword
+/// pair as a guard's argument; and an atom, `_`, a string or a variable
+/// written where a premise goes. Each is a row of the grammar's table
+/// (`ein-ir/tests/grammar_pages.rs`).
+///
+/// Not refused, until S1f.5.11's T1f.5.11.2 says so: a keyword pair at a pattern's top level, `(n ?x :where v)`,
 /// or as a premise of an `(and …)`, `:where (neq ?a ?b)`, which the compiler
 /// drops (Q32); `_` as a pattern's argument, which matches any value; and in
 /// an `:assert`'s conclusion, `_` or a keyword pair at its top level, which
@@ -1030,18 +946,21 @@ fn refuse_no_fact_holds(
     node: NodeId,
     errors: &mut Vec<String>,
 ) {
+    // Four more were refused here until M1f S1f.5.5's T5, each a shape the
+    // grammar refuses since the swap, so no program reached them: a wildcard
+    // written as a relation (`WildHead`), a keyword pair inside a pattern
+    // inside a pattern (`NestedKw`), `_` as a guard's argument (`WildGuard`)
+    // and a keyword pair as one (`GuardNode`'s other half). The parser builds
+    // no `_` (S1f.5.1's ruling) and no keyword pair inside a clause's value
+    // (S1f.5.11's), and macro expansion copies only what a program wrote.
+    // `NotAForm` stays: a macro's body is a template, and `(macro id (?x) ?x)`
+    // called as `(id foo)` leaves the name `foo` where a premise goes.
     enum Found {
-        /// A form whose relation is the wildcard.
-        WildHead(NodeId),
         /// A form whose relation is a variable no parameter binds.
         FreeHead(NodeId, NodeId),
-        /// A keyword pair inside a pattern inside a pattern, and that pattern.
-        NestedKw(NodeId, NodeId),
         /// A premise that is not a form, and what it is a premise of.
         NotAForm(NodeId, Option<NodeId>),
-        /// A guard with `_` as an argument.
-        WildGuard(NodeId),
-        /// A guard, and its argument that is a form or a keyword pair.
+        /// A guard, and its argument that is a form.
         GuardNode(NodeId, NodeId),
         /// A guard, and its variable no premise before it binds.
         GuardFree(NodeId, NodeId),
@@ -1053,12 +972,10 @@ fn refuse_no_fact_holds(
     }
     impl Walk<'_> {
         fn form_head(&mut self, node: NodeId, head: NodeId) {
-            match self.ast.node(head) {
-                Node::Wildcard => self.out.push(Found::WildHead(node)),
-                Node::Var(s) if !self.params.contains(&self.ast.sym(s)) => {
-                    self.out.push(Found::FreeHead(node, head))
-                }
-                _ => {}
+            if let Node::Var(s) = self.ast.node(head)
+                && !self.params.contains(&self.ast.sym(s))
+            {
+                self.out.push(Found::FreeHead(node, head))
             }
         }
         /// A pattern's argument, at any depth below a pattern.
@@ -1067,10 +984,7 @@ fn refuse_no_fact_holds(
             if let Node::SForm { head, args } = ast.node(node) {
                 self.form_head(node, head);
                 for &a in ast.args(args) {
-                    match ast.node(a) {
-                        Node::KwPair { .. } => self.out.push(Found::NestedKw(a, node)),
-                        _ => self.slot(a),
-                    }
+                    self.slot(a);
                 }
             }
         }
@@ -1099,7 +1013,6 @@ fn refuse_no_fact_holds(
             let ast = self.ast;
             // One line per argument as written: `(eq (f a) (f a))` and
             // `(eq ?u ?u)` name theirs once.
-            let mut wild = false;
             let mut seen: Vec<String> = Vec::new();
             let mut once = |a: NodeId| {
                 let text = crate::dump::dump_compact(ast, a);
@@ -1112,18 +1025,12 @@ fn refuse_no_fact_holds(
             let mut found: Vec<Found> = Vec::new();
             for &a in ast.form_args(node) {
                 match ast.node(a) {
-                    Node::Wildcard => wild = true,
-                    Node::SForm { .. } | Node::KwPair { .. } if once(a) => {
-                        found.push(Found::GuardNode(node, a))
-                    }
+                    Node::SForm { .. } if once(a) => found.push(Found::GuardNode(node, a)),
                     Node::Var(s) if !bound.iter().any(|b| b == ast.sym(s)) && once(a) => {
                         found.push(Found::GuardFree(node, a))
                     }
                     _ => {}
                 }
-            }
-            if wild {
-                found.push(Found::WildGuard(node));
             }
             self.out.extend(found);
         }
@@ -1210,12 +1117,6 @@ fn refuse_no_fact_holds(
                          binds, a name, a string or an integer";
     for f in walk.out {
         errors.push(match f {
-            Found::WildHead(form) => format!(
-                "{head} '{name}': its {clause} writes {} with the wildcard _ as its relation — a \
-                 relation is named by a name or by a parameter its activator binds, and _ \
-                 stands for an argument",
-                dc(form)
-            ),
             Found::FreeHead(form, h) => format!(
                 "{head} '{name}': its {clause} writes {} with {} as its relation, which no \
                  parameter binds — a relation is named by a name or by a parameter its \
@@ -1223,18 +1124,6 @@ fn refuse_no_fact_holds(
                 dc(form),
                 dc(h)
             ),
-            Found::NestedKw(kw, form) => {
-                let h = match ast.node(form) {
-                    Node::SForm { head: h, .. } => dc(h),
-                    _ => dc(form),
-                };
-                format!(
-                    "{head} '{name}': its {clause} writes {} as an argument of {h}, and no fact \
-                     can hold it — a keyword pair is no value, so a pattern inside a pattern \
-                     that holds one matches nothing",
-                    dc(kw)
-                )
-            }
             Found::NotAForm(p, within) => {
                 let place = match within.map(|form| ast.node(form)) {
                     Some(Node::SForm { head: h, .. }) => {
@@ -1247,22 +1136,11 @@ fn refuse_no_fact_holds(
                     dc(p)
                 )
             }
-            Found::WildGuard(guard) => format!(
-                "{head} '{name}': its {clause} writes {}, and _ names no value — a guard compares \
-                 two values, and _ stands for an argument of a pattern",
-                dc(guard)
+            Found::GuardNode(guard, arg) => format!(
+                "{head} '{name}': its {clause} writes {}, and the form {} is no value — {GUARD}",
+                dc(guard),
+                dc(arg)
             ),
-            Found::GuardNode(guard, arg) => {
-                let what = match ast.node(arg) {
-                    Node::KwPair { .. } => "the keyword pair",
-                    _ => "the form",
-                };
-                format!(
-                    "{head} '{name}': its {clause} writes {}, and {what} {} is no value — {GUARD}",
-                    dc(guard),
-                    dc(arg)
-                )
-            }
             Found::GuardFree(guard, var) => format!(
                 "{head} '{name}': its {clause} writes {}, and no premise before it binds {} — \
                  {GUARD}",
@@ -1860,18 +1738,14 @@ fn walk_pattern(ast: &Ast, node: NodeId, variables: &mut Vec<String>, relations:
 
 // ── Pass 3 — facts ─────────────────────────────────────────────────
 
-fn ingest_fact(
-    ast: &Ast,
-    terms: &mut Terms,
-    kb: &mut Kb,
-    form: NodeId,
-    errors: &mut Vec<String>,
-) -> Result<(), Overflow> {
-    let loc = loc_repr(ast, ast.loc(form));
-    let Some(head_name) = ast.head_name(form).map(str::to_string) else {
-        errors.push(format!("fact with non-atom head at {loc}"));
-        return Ok(());
-    };
+/// One fact, with its provenance. A fact's relation is a name (`ein.y`'s
+/// `FactHead`); until M1f S1f.5.5's T5 this pass refused one that was not,
+/// *fact with non-atom head*, which the grammar refuses since the swap.
+fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Result<(), Overflow> {
+    let head_name = ast
+        .head_name(form)
+        .expect("a fact's relation is a name (ein.y's FactHead)")
+        .to_string();
     let args = ast.form_args(form).to_vec();
     let pairs = kw_pairs(ast, &args);
     let source = string_value(ast, kw_get(&pairs, "source")).map(str::to_string);
@@ -1935,154 +1809,36 @@ fn ingest_fact(
 
 // ── Config ─────────────────────────────────────────────────────────
 
-/// `SolverConfig.from_kw_pairs` — kebab flags to fields, with the coercions
-/// and the messages a puzzle author reads.
-pub fn config_from_kw_pairs(ast: &Ast, args: &[NodeId]) -> Result<SolverConfig, String> {
-    let mut config = SolverConfig::default();
-    for &arg in args {
-        let Node::KwPair { key, value } = ast.node(arg) else {
-            return Err(format!(
-                "(config …) body expects kw_pairs, got {}",
-                node_repr(ast, arg)
-            ));
-        };
-        let key_name = match ast.node(key) {
-            Node::Keyword(s) => ast.sym(s).to_string(),
-            _ => node_repr(ast, key),
-        };
-        if let Some((_, stage, why)) = ein_core::config::RETIRED
-            .iter()
-            .find(|(f, _, _)| *f == key_name)
-        {
-            return Err(format!(
-                "config flag :{key_name} was retired at M1e2 {stage}: {why}"
-            ));
-        }
-        let Some(&(flag, kind)) = FLAGS.iter().find(|(f, _)| *f == key_name) else {
-            let mut valid: Vec<&str> = FLAGS.iter().map(|(f, _)| *f).collect();
-            valid.sort_unstable();
-            return Err(format!(
-                "unknown config flag :{key_name} (expected one of: {})",
-                valid.join(", ")
-            ));
-        };
-        set_flag(ast, &mut config, flag, kind, value)?;
-    }
-    Ok(config)
-}
-
-/// What a `(config …)` value unwraps to, *typed* — because the coercers
-/// dispatch on the kind of value, not on the text.
+/// `SolverConfig.from_kw_pairs` — the two flags a program can set, each
+/// `true` or `false` (`ein_core::config::FLAGS`). A repeated flag takes its
+/// last value.
 ///
-/// A `String` unwraps to its body and an `Atom` / `Var` / `Keyword` to its
-/// name, both as text; an `Int` unwraps to an integer; anything else stays a
-/// node. So a `String` and an `Atom` both satisfy a string flag, while an
-/// `Int` does **not** — which is the one place a text-only unwrapping would
-/// silently accept a value the loader rejects.
-enum Unwrapped<'a> {
-    Text(&'a str),
-    Int(&'a str),
-    Node,
-}
-
-fn unwrap(ast: &Ast, node: NodeId) -> Unwrapped<'_> {
-    match ast.node(node) {
-        Node::Str(s) => Unwrapped::Text(ast.sym(s)),
-        // A `Var`'s and a `Keyword`'s names are the bare names, `?` and `:`
-        // not included — the unwrap takes the name without looking at what
-        // kind of node it found.
-        Node::Atom(s) | Node::Var(s) | Node::Keyword(s) => Unwrapped::Text(ast.sym(s)),
-        Node::Int(s) => Unwrapped::Int(ast.sym(s)),
-        _ => Unwrapped::Node,
-    }
-}
-
-fn set_flag(
-    ast: &Ast,
-    config: &mut SolverConfig,
-    flag: &str,
-    kind: FieldKind,
-    value: NodeId,
-) -> Result<(), String> {
-    let raw = unwrap(ast, value);
-    let numeric = match raw {
-        Unwrapped::Text(t) | Unwrapped::Int(t) => Some(t),
-        Unwrapped::Node => None,
-    };
-    let got = || node_repr(ast, value);
-    match kind {
-        FieldKind::Bool => {
-            let text = match raw {
-                Unwrapped::Text(t) => Some(t.to_ascii_lowercase()),
-                _ => None,
-            };
-            let b = match text.as_deref() {
-                Some("true") => true,
-                Some("false") => false,
-                _ => {
-                    return Err(format!(
-                        "config flag :{flag} expects true/false, got {}",
-                        got()
-                    ));
-                }
-            };
-            match flag {
-                "enable-pre-branch-lookahead" => config.enable_pre_branch_lookahead = b,
-                "enable-lookahead-kill-cache" => config.enable_lookahead_kill_cache = b,
-                "print-alive" => config.print_alive = b,
-                "warn-derived-naf" => config.warn_derived_naf = b,
-                "lattice-sanity-check" => config.lattice_sanity_check = b,
-                "enable-path-nogoods" => config.enable_path_nogoods = b,
-                "enable-symmetric-mirror" => config.enable_symmetric_mirror = b,
-                "enable-singleton-writeback" => config.enable_singleton_writeback = b,
-                "enable-forced-positive" => config.enable_forced_positive = b,
-                "record-alternative-justifications" => {
-                    config.record_alternative_justifications = b;
-                }
-                "enable-fail-fast-fork" => config.enable_fail_fast_fork = b,
-                other => unreachable!("{other} is not a bool flag"),
-            }
-        }
-        FieldKind::Int => {
-            // A `true` / `false` atom is not an integer: it reaches here as
-            // text, and `parse_int` rejects it with the ordinary message.
-            let n = numeric
-                .and_then(parse_int)
-                .ok_or_else(|| format!("config flag :{flag} expects an integer, got {}", got()))?;
-            match flag {
-                "candidate-order-seed" => config.candidate_order_seed = n,
-                "lattice-order-seed" => config.lattice_order_seed = Some(n),
-                other => unreachable!("{other} is not an int flag"),
-            }
-        }
-        FieldKind::Float => {
-            let n = numeric
-                .and_then(parse_float)
-                .ok_or_else(|| format!("config flag :{flag} expects a number, got {}", got()))?;
-            match flag {
-                "hypgen-rel-weight" => config.hypgen_rel_weight = n,
-                "hypgen-obj-weight" => config.hypgen_obj_weight = n,
-                other => unreachable!("{other} is not a float flag"),
-            }
-        }
-        FieldKind::Str => {
-            let s = match raw {
-                Unwrapped::Text(t) => t.to_string(),
-                _ => {
-                    return Err(format!(
-                        "config flag :{flag} expects a string, got {}",
-                        got()
-                    ));
-                }
-            };
-            match flag {
-                "hypgen-scoring" => config.hypgen_scoring = s,
-                "lattice-order" => config.lattice_order = s,
-                other => unreachable!("{other} is not a string flag"),
-            }
+/// **Infallible since M1f S1f.5.5's T5.** A `(config …)` takes those two
+/// keywords and a `true` or a `false` after each (`ein.y`'s `ConfigClause`
+/// and `Bool`), so the grammar refuses what this function refused until then:
+/// a body that is not keyword pairs, an unknown flag, a flag retired at M1e2
+/// (its *was retired at* sentence a note on the parse error since the swap,
+/// read from `ein_core::config::RETIRED`), and a value that is no bool; and
+/// the integer, number and string coercions had no flag to reach since M1e2
+/// S1e2.1a.5 retired the last one.
+pub fn config_from_kw_pairs(ast: &Ast, args: &[NodeId]) -> SolverConfig {
+    let mut config = SolverConfig::default();
+    for (flag, value) in kw_pairs(ast, args) {
+        let on = match ast.atom_name(value) {
+            Some("true") => true,
+            Some("false") => false,
+            _ => unreachable!("a flag takes true or false (ein.y's Bool)"),
+        };
+        match flag.as_str() {
+            "lattice-sanity-check" => config.lattice_sanity_check = on,
+            "record-alternative-justifications" => config.record_alternative_justifications = on,
+            other => unreachable!(
+                "(config …) takes {:?} (ein.y's ConfigClause), not :{other}",
+                FLAGS.iter().map(|(f, _)| *f).collect::<Vec<_>>()
+            ),
         }
     }
-    Ok(())
+    config
 }
 
 #[cfg(test)]
@@ -2173,78 +1929,18 @@ mod tests {
         );
     }
 
-    /// **The ten refusals plus the three shadow cases**, each with the shape
-    /// that provokes it — `defined_behaviour.md` § 4.2's table, and this is
-    /// the test that page names as pinning all ten.
+    /// **A variable used once is what to write where any value will do**, and
+    /// it loads, in a pattern and in an obligation's witness premise.
     ///
-    /// They are refusals rather than guesses because every one of them is a
-    /// place where the engine would otherwise have to pick a reading: which
-    /// `absent` states the obligation, which premise is the witness, whether a
-    /// mixed conclusion belongs to the agenda or the pass. A wrong pick is
-    /// silent, and silence is what this phase exists to remove.
-    ///
-    /// It said *the four refusals* and covered **nine** of ten until M1e
-    /// S1e.4.7 (`DO-L1`): the one with no case was an `open` whose argument is
-    /// neither a variable nor a name, and the page claiming the coverage is
-    /// what stopped anybody counting.
-    /// M1e2 S1e2.2.20 (W20) — **a wildcard written as a relation is refused
-    /// at load**, one line per slot naming the rule and the slot as written,
-    /// at any depth of either clause, in a rule, an hrule or an obligation
-    /// (Q-M1e2.14 (c)). Until then a wildcard head stopped compilation with
-    /// the Python IR's spelling. A range in a rule was refused here too, from
-    /// S1e2.2.20 (Q-M1e2.13 (a)) until M1f S1f.5.3 retired the token
-    /// (Q-M1e2.24).
-    ///
-    /// **Since M1f S1f.5.5's swap (T1f.5.5.4) every case is refused at the
-    /// parse**, at its `_`: a bare `_` names nothing and is refused in every
-    /// position (S1f.5.1's ruling), as a relation and as an argument alike, so
-    /// what this test held loading until then (`_` as an argument, which
-    /// matched any value, and in an obligation's witness premise) is refused
-    /// too, and a keyword pair's value inside a pattern is refused at its
-    /// keyword (S1f.5.11). The loader's line goes with T1f.5.5.5. A variable
-    /// used once is what to write where any value will do, and it loads.
+    /// Until M1f S1f.5.5's swap this test held a wildcard written as a
+    /// relation refused at load (M1e2 S1e2.2.20, W20, Q-M1e2.14 (c)), one line
+    /// per slot, and `_` as an argument loading; since the swap the grammar
+    /// refuses a bare `_` in every position (S1f.5.1), and T1f.5.5.5 deleted
+    /// the loader's line (`Found::WildHead`) and moved those cases to the
+    /// grammar's table (`ein-ir/tests/grammar_pages.rs`).
     #[test]
-    fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
-        const WILD: &str = "unexpected `_`: _ (reserved)";
+    fn a_variable_used_once_loads_where_a_wildcard_was_written() {
         let pre = "(relation n T) (relation hit T) (relation box T) (relation tag T T)\n(n 2)\n";
-        for (rule, want) in [
-            ("(rule w () :match (_ 2) :assert (hit w))", vec![20]),
-            ("(rule w () :match (box (_ 2)) :assert (hit w))", vec![25]),
-            (
-                "(rule w () :match (absent (not (_ b))) :assert (hit w))",
-                vec![33],
-            ),
-            (
-                "(rule w () :match (and (n ?x) (eq ?x (_ 2))) :assert (hit w))",
-                vec![39],
-            ),
-            ("(rule w () :match (n ?x) :assert (box (_ ?x)))", vec![40]),
-            ("(hrule h () :match (_ ?x) :assert (tag ?x ?x))", vec![21]),
-            // Every error recovery reaches, one per `_`.
-            (
-                "(rule r () :match (and (n ?x) (_ 2)) :assert (box (_ ?x)))",
-                vec![32, 52],
-            ),
-            // `_` as an argument, which loaded and matched any value.
-            (
-                "(rule r () :match (and (n _) (box (tag _ _))) :assert (hit r))",
-                vec![27, 40],
-            ),
-            (
-                "(rule owe () :match (and (n ?x) (absent (tag ?x _))) :assert (open tag))",
-                vec![49],
-            ),
-        ] {
-            let want: Vec<String> = want.iter().map(|c| format!("3:{c}: {WILD}")).collect();
-            assert_eq!(refused(&format!("{pre}{rule}")), want, "{rule}");
-        }
-        assert_eq!(
-            refused(&format!(
-                "{pre}(rule r () :match (n ?x :where v) :assert (hit r))"
-            )),
-            ["3:25: unexpected `:where`: a keyword this form does not take"]
-        );
-        // A variable used once matches any value, and loads.
         ok(&format!(
             "{pre}(rule r () :match (and (n ?u) (box (tag ?v ?w))) :assert (hit r))"
         ));
@@ -2260,12 +1956,14 @@ mod tests {
     /// stays: a guard on values, a parameter head.
     ///
     /// **Since M1f S1f.5.5's swap (T1f.5.5.4) half of the shapes are the
-    /// grammar's**, each a parse error at its place: `_` as a guard's argument
-    /// or as a premise (S1f.5.1), a keyword pair as a guard's argument or
-    /// inside a pattern (S1f.5.11), a name, a variable or a string as a premise
-    /// (the paper grammar's own, and S1f.5.2 for the string). The loader keeps
-    /// what a context-free grammar does not see: a form as a guard's argument,
-    /// a guard on a variable no premise before it binds, a relation variable no
+    /// grammar's**, each a parse error at its place, and a row of the grammar's
+    /// table since T1f.5.5.5 deleted the loader's lines for them
+    /// (`ein-ir/tests/grammar_pages.rs`): `_` as a guard's argument or as a
+    /// premise (S1f.5.1), a keyword pair as a guard's argument or inside a
+    /// pattern (S1f.5.11), a name, a variable or a string as a premise (the
+    /// paper grammar's own, and S1f.5.2 for the string). The loader keeps what
+    /// a context-free grammar does not see: a form as a guard's argument, a
+    /// guard on a variable no premise before it binds, a relation variable no
     /// parameter binds, and an activator binding a relation parameter to a
     /// nested fact. What this test held loading until the swap and the grammar
     /// refuses (a string as a guard's argument, Q32's `:where` pairs, `_` as an
@@ -2276,64 +1974,8 @@ mod tests {
                              binds, a name, a string or an integer";
         const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
                             parameter its activator binds";
-        const WILD: &str = "unexpected `_`: _ (reserved)";
-        const KW: &str = "unexpected `:k`: a keyword this form does not take";
         let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) (relation tag T T)\n\
                    (relation item T) (relation lbl T)\n(p a) (q a) (box (p a))\n";
-        // At the parse, on line 4: `_`, a keyword pair, a name, a variable or
-        // a string where a premise or a guard's argument goes.
-        for (rule, want) in [
-            (
-                "(rule e () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))",
-                format!("4:38: {WILD}"),
-            ),
-            (
-                "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y _)))) :assert (hit ?x))",
-                format!("4:59: {WILD}"),
-            ),
-            (
-                "(rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit ?x))",
-                format!("4:38: {KW}"),
-            ),
-            (
-                "(hrule h () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))",
-                format!("4:39: {WILD}"),
-            ),
-            (
-                "(rule r () :match _ :assert (hit a))",
-                format!("4:19: {WILD}"),
-            ),
-            (
-                "(rule r () :match foo :assert (hit a))",
-                "4:19: unexpected `foo`: a name".to_string(),
-            ),
-            (
-                "(rule r () :match (and (p ?x) ?x) :assert (hit ?x))",
-                "4:31: unexpected `?x`: a variable".to_string(),
-            ),
-            (
-                "(rule r () :match (or 3 (q ?y)) :assert (hit a))",
-                "4:23: unexpected `3`: a name".to_string(),
-            ),
-            (
-                "(rule r () :match (and (p ?x) (absent \"s\")) :assert (hit ?x))",
-                "4:39: unexpected `\"s\"`: a string".to_string(),
-            ),
-            (
-                "(hrule h () :match (and (p ?x) _) :assert (hit ?x))",
-                format!("4:32: {WILD}"),
-            ),
-            (
-                "(rule r () :match (box (p a :k v)) :assert (hit a))",
-                format!("4:29: {KW}"),
-            ),
-            (
-                "(rule r () :match (p ?x) :assert (box (p ?x :k v)))",
-                format!("4:45: {KW}"),
-            ),
-        ] {
-            assert_eq!(refused(&format!("{pre}{rule}")), [want], "{rule}");
-        }
         // At load: what a context-free grammar does not see.
         for (rule, want) in [
             (
@@ -2430,61 +2072,21 @@ mod tests {
     /// **The verdict atom refuses every shape it cannot resolve** — M1d
     /// S1d.2.3, `defined_behaviour.md` § 4.2's table. **Since M1f S1f.5.5's
     /// swap (T1f.5.5.4) the shapes a position states are the grammar's**: an
-    /// `(open …)` in a `:match` or beside another conclusion, with three
+    /// `(open …)` as a premise or beside another conclusion, with three
     /// arguments, or with a term for its argument, and `open` bound by a
     /// declarator, are parse errors at their place (`open` is a word a position
-    /// gives a meaning to, the paper grammar's default 1). The loader keeps the
-    /// refusals a context-free grammar does not see: an `(open …)` under a
+    /// gives a meaning to, the paper grammar's default 1), each a row of the
+    /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`). The
+    /// loader's lines for them stay, a pattern's argument and a macro's body
+    /// still reaching each (that file's
+    /// `the_lines_the_grammar_does_not_cover_are_still_reached`); below are
+    /// the refusals a context-free grammar does not see: an `(open …)` under a
     /// `not`, and the projection's ways of not resolving.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
         let pre = "(relation is-a T T)\n(relation r A B)\n";
         let guard = "(and (relation ?R ?A ?B) (?isa ?a ?A) \
                      (absent (and (?isa ?b ?B) (?R ?a ?b))))";
-        for (want, src) in [
-            // Match-side placement.
-            (
-                "3:49: unexpected `open`",
-                format!(
-                    "{pre}(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))"
-                ),
-            ),
-            // Arity: the superseded triple, and the positional sketch before it.
-            (
-                "3:123: unexpected `(`",
-                format!(
-                    "{pre}(rule bad (?R ?isa) :match {guard} :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))"
-                ),
-            ),
-            // A mixed conclusion would belong to both strata.
-            (
-                "3:120: unexpected `open`",
-                format!(
-                    "{pre}(rule bad (?R ?isa) :match {guard} :assert (and (open ?R) (r ?a b)))"
-                ),
-            ),
-            // The argument is a term rather than a name — the tenth row of
-            // § 4.2's table.
-            (
-                "3:120: unexpected `(`",
-                format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (open (r ?a ?b)))"),
-            ),
-            // …and the name itself may not be bound.
-            (
-                "3:11: unexpected `open`",
-                format!("{pre}(relation open A B)"),
-            ),
-            (
-                "3:8: unexpected `open`",
-                format!("{pre}(macro open (?P) (absent ?P))"),
-            ),
-            (
-                "3:7: unexpected `open`",
-                format!("{pre}(rule open () :match (r ?a ?b) :assert (r ?b ?a))"),
-            ),
-        ] {
-            assert_eq!(refused(&src)[0], want, "{src}");
-        }
         for (want, src) in [
             // Nested rather than concluded.
             (
@@ -2741,19 +2343,10 @@ mod tests {
     /// Since M1f S1f.5.5's swap (T1f.5.5.4) the second query's `:mode all`
     /// is `:over all` and the first config's retired `:print-alive` is
     /// `:record-alternative-justifications false`: the grammar refuses a
-    /// keyword its form does not take (S1f.5.11), and both were.
+    /// keyword its form does not take (S1f.5.11), and both were, a row of the
+    /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`).
     #[test]
     fn every_query_is_kept_and_the_last_config_still_wins() {
-        assert_eq!(
-            refused(
-                "(query :goal (a ?x))\n(query :goal (b ?x) :mode all)\n\
-                     (config :print-alive true)"
-            ),
-            [
-                "2:21: unexpected `:mode`: a keyword this form does not take",
-                "3:9: unexpected `:print-alive`: a keyword this form does not take"
-            ]
-        );
         let (_terms, kb) = ok("(query :goal (a ?x))\n(query :goal (b ?x) :over all)\n\
              (config :record-alternative-justifications false)\n(config :lattice-sanity-check true)");
         let p = kb.program();
@@ -2776,45 +2369,12 @@ mod tests {
     // ── `:expect`, at load — M1c S1c.1.2 T1c.1.2.5 ────────────────
     //
     // Every one of these is a load *error* rather than a run that checks
-    // nothing, which is the whole reason the keyword exists.
-
-    /// An unknown query keyword was a load error that listed the allow-list
-    /// (M1c S1c.1.2). **Since M1f S1f.5.5's swap (T1f.5.5.4) it is a parse
-    /// error at the keyword** (S1f.5.11: each form takes a fixed set), whose
-    /// ranked repairs name a keyword the form does take.
-    #[test]
-    fn an_unknown_query_keyword_is_a_load_error() {
-        let e = parse(
-            &mut Ast::new(),
-            "(relation p T P)\n(p A H)\n(query :goal (p A ?h) :expct none)",
-            None,
-        )
-        .expect_err("refused");
-        assert_eq!(
-            e.errors[0].what, "unexpected `:expct`: a keyword this form does not take",
-            "{e}"
-        );
-        assert_eq!((e.errors[0].line, e.errors[0].col), (3, 23));
-        assert_eq!(
-            e.errors[0].repairs[0], "Insert `:over`, Delete `:expct`",
-            "{e}"
-        );
-    }
-
-    /// `:mode` was in the allow-list and read by nothing, accepted and
-    /// ignored, a documented state. **Since M1f S1f.5.5's swap (T1f.5.5.4) it
-    /// is refused at the parse** like any keyword a query does not take
-    /// (S1f.5.11's default: `:mode` is on no form's list); no corpus program
-    /// writes it.
-    #[test]
-    fn the_obsolete_mode_keyword_still_loads() {
-        assert_eq!(
-            refused("(query :goal (a ?x) :mode all)"),
-            ["1:21: unexpected `:mode`: a keyword this form does not take"]
-        );
-        let (_terms, kb) = ok("(query :goal (a ?x))");
-        assert_eq!(kb.program().queries.len(), 1);
-    }
+    // nothing, which is the whole reason the keyword exists. Until M1f
+    // S1f.5.5's T5 so were an unknown query keyword, the obsolete `:mode` and a
+    // malformed `:expect`, the loader's lines until the swap made each a parse
+    // error; they are rows of the grammar's table since
+    // (`ein-ir/tests/grammar_pages.rs`), and what stays here is what a grammar
+    // cannot see.
 
     #[test]
     fn an_expect_naming_a_relation_the_program_does_not_have_is_a_load_error() {
@@ -2869,34 +2429,6 @@ mod tests {
         }
     }
 
-    /// A malformed `:expect` was a load error naming what was expected (M1c
-    /// S1c.1.2). **Since M1f S1f.5.5's swap (T1f.5.5.4) a claim's shape is
-    /// the grammar's**, so each is a parse error at its first token, with the
-    /// repairs that make it a claim.
-    #[test]
-    fn a_malformed_expect_is_a_load_error() {
-        for (src, want) in [
-            (
-                "(query :goal (a ?x) :expect all)",
-                "1:29: unexpected `all`: a name",
-            ),
-            (
-                "(query :goal (a ?x) :expect (models (a b)))",
-                "1:30: unexpected `models`: a name",
-            ),
-            (
-                "(query :goal (a ?x) :expect none)",
-                "1:29: unexpected `none`: a name",
-            ),
-            (
-                "(query :goal (a ?x) :expect (model (a ?x)))",
-                "1:39: unexpected `?x`: a variable",
-            ),
-        ] {
-            assert_eq!(refused(src), [want], "{src}");
-        }
-    }
-
     /// A query with no `:expect` is untouched by any of the above — the
     /// corpus is 128 entries of exactly that.
     #[test]
@@ -2942,17 +2474,12 @@ mod tests {
     /// Since M1f S1f.5.5's swap (T1f.5.5.4) two of the three problems this
     /// test wrote are the grammar's, `(relation)` with no name and a rule
     /// named `absent`, so the parser reports both and the loader never sees
-    /// the file; the loader's passes are held with problems it still owns: a
-    /// macro declared twice (pass 0), a relation declared twice (pass 1) and a
-    /// rule named after a kernel dunder (pass 2, T1f.5.5.11).
+    /// the file (a row of the grammar's table since T1f.5.5.5); the loader's
+    /// passes are held with problems it still owns: a macro declared twice
+    /// (pass 0), a relation declared twice (pass 1) and a rule named after a
+    /// kernel dunder (pass 2, T1f.5.5.11).
     #[test]
     fn every_pass_accumulates_rather_than_stopping_at_the_first_problem() {
-        assert_eq!(
-            refused(
-                "(relation)\n(relation dup)\n(relation dup)\n(rule absent () :match (x ?a) :assert (y ?a))"
-            ),
-            ["1:10: unexpected `)`", "4:7: unexpected `absent`"]
-        );
         let message = err(
             "(macro m (?a) (x ?a))\n(macro m (?a) (y ?a))\n(relation dup)\n\
              (relation dup)\n(rule __closed__ () :match (x ?a) :assert (y ?a))",

@@ -3,9 +3,12 @@
 //! The form M1c
 //! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 //! settled, and the one part of it that is *shape* rather than comparison. The
-//! comparison is `ein_infer::expect`, which needs solutions; this module is
-//! what the loader validates against, so a program that checks nothing is
-//! rejected before anything runs.
+//! comparison is `ein_infer::expect`, which needs solutions; this module reads
+//! the claim the loader validates, so a program that checks nothing is
+//! rejected before anything runs. Since M1f S1f.5.5's swap the shape itself is
+//! the grammar's (`ein.y`'s `Claim`), and what the loader still checks is what
+//! a grammar cannot see: that a listed relation is the program's, and that a
+//! listed fact is one the query's goal matches.
 //!
 //! ```lisp
 //! (query :goal   (pet-loc Zebra ?h)
@@ -20,15 +23,13 @@
 //! ```
 //!
 //! **Why a `(model …)` head.** The proposed shape was a bare list of facts —
-//! `:expect ((p A H1) (p B H2))` — and it does not parse, because
-//! `ListHead ::= SYMBOL | VAR | WILDCARD | EQ` and a list is none of those
-//! ([`00_ebnf.md` §2](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)).
-//! Widening `ListHead` to admit a list would change the grammar of *every*
-//! form to buy one keyword's ergonomics. A `SYMBOL` head costs nothing: it
-//! parses, dumps and round-trips today, and `(or (model …) (model …))` falls
-//! out of `OrForm ::= '(' 'or' Value+ ')'` with no further work. `model` is
-//! not reserved and needs no exclusion — it is read structurally under
-//! `:expect` and nowhere else, so a relation of that name is unaffected.
+//! `:expect ((p A H1) (p B H2))` — and it did not parse under the hand-written
+//! grammar, whose `ListHead ::= SYMBOL | VAR | WILDCARD | EQ` a list is none
+//! of. Widening `ListHead` to admit a list would have changed the grammar of
+//! *every* form to buy one keyword's ergonomics, where a `SYMBOL` head cost
+//! nothing. Since M1f S1f.5.5's swap `model` is a word a position gives a
+//! meaning to, and still a name wherever a name goes, so a relation of that
+//! name is unaffected ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)).
 //!
 //! **The verdict is implied, never asserted.** One `(model …)` means
 //! `Solution`; `(or …)` means `Ambiguity` with `k` equal to the number of
@@ -44,9 +45,6 @@
 //! already says. It was `none` until the day it shipped.
 
 use crate::ast::{Ast, Node, NodeId};
-
-const SHAPE_TAIL: &str = "expected `(false)`, `(model …)` or `(or (model …) …)`";
-const SHAPE: &str = ":expect — expected `(false)`, `(model …)` or `(or (model …) …)`";
 
 /// One expected model — the facts it lists, in source order.
 #[derive(Clone, Debug)]
@@ -101,20 +99,20 @@ pub enum Over {
 }
 
 impl Over {
-    /// Read `:over`'s value, or say what is wrong with it.
+    /// Read `:over`'s value, a name (`ein.y`'s `QueryClause`), or say what
+    /// is wrong with it: which name, the grammar does not say. Until M1f
+    /// S1f.5.5's T5 a value that was no name was refused here too, which the
+    /// grammar refuses since the swap.
     pub fn parse(ast: &Ast, node: NodeId) -> Result<Over, String> {
-        match ast.node(node) {
-            Node::Atom(s) => match ast.sym(s) {
-                "all" => Ok(Over::All),
-                "minimal" => Ok(Over::Minimal),
-                "maximal" => Ok(Over::Maximal),
-                other => Err(format!(
-                    "(query …): :over {other} — one of all, minimal, maximal"
-                )),
-            },
-            _ => Err(format!(
-                "(query …): :over {} — one of all, minimal, maximal",
-                render(ast, node)
+        match ast
+            .atom_name(node)
+            .expect(":over takes a name (ein.y's QueryClause)")
+        {
+            "all" => Ok(Over::All),
+            "minimal" => Ok(Over::Minimal),
+            "maximal" => Ok(Over::Maximal),
+            other => Err(format!(
+                "(query …): :over {other} — one of all, minimal, maximal"
             )),
         }
     }
@@ -191,132 +189,64 @@ pub struct ExpectFact<'a> {
     pub rendered: String,
 }
 
-/// Read a `:expect` value, or say what is wrong with it.
+/// Read a `:expect` value.
 ///
-/// The messages are the loader's, so they end where a loader message ends and
-/// name the form rather than a node id.
-pub fn parse(ast: &Ast, node: NodeId) -> Result<Expectation, String> {
-    if let Node::Atom(s) = ast.node(node) {
-        // A bare atom is never an expectation. `false` gets its own line
-        // because writing it unparenthesised is the likely slip, and ⊥ is
-        // spelled `(false)` everywhere else in the language.
-        return Err(match ast.sym(s) {
-            "false" => {
-                ":expect false — ⊥ is spelled `(false)`, as it is in every `:assert`".to_string()
-            }
-            other => {
-                format!(":expect {other} — expected `(false)`, `(model …)` or `(or (model …) …)`")
-            }
-        });
-    }
-    let Node::SForm { head, args } = ast.node(node) else {
-        return Err(SHAPE.into());
-    };
-    let Some(name) = ast.atom_name(head) else {
-        return Err(SHAPE.into());
-    };
+/// **Its shape is the grammar's** since M1f S1f.5.5's swap (`ein.y`'s
+/// `Claim`, `Model` and `ClaimFact`): `(false)`, one `(model …)`, or an
+/// `(or …)` of one or more, each listing ground facts, stored negations and
+/// `neq` facts. Until T1f.5.5.5 this function refused every other shape with
+/// a line that started `:expect`, seventeen of them (a bare atom, `(false …)`
+/// with arguments, `(or)`, a disjunct that is not a `(model …)`, `(and …)`, a
+/// listed fact that is no fact, a variable or `_` in one); since the swap the
+/// parse refuses each first, at its token, and the loader never reads one.
+pub fn parse(ast: &Ast, node: NodeId) -> Expectation {
+    let (name, items) = form(ast, node).expect("a claim is a form (ein.y's Claim)");
     match name {
-        "false" if ast.args(args).is_empty() => Ok(Expectation::Contradiction),
-        "false" => Err(":expect (false …) — ⊥ takes no arguments".into()),
-        "model" => Ok(Expectation::One(model(ast, ast.args(args))?)),
-        "or" => {
-            let items = ast.args(args);
-            if items.is_empty() {
-                return Err(":expect (or) — an empty disjunction expects nothing".into());
-            }
-            let mut out = Vec::with_capacity(items.len());
-            for &item in items {
-                let Node::SForm {
-                    head: h,
-                    args: iargs,
-                } = ast.node(item)
-                else {
-                    return Err(":expect (or …) — every disjunct must be a `(model …)`".into());
-                };
-                if ast.atom_name(h) != Some("model") {
-                    return Err(":expect (or …) — every disjunct must be a `(model …)`".into());
-                }
-                out.push(model(ast, ast.args(iargs))?);
-            }
-            Ok(Expectation::Any(out))
-        }
-        // `and` / `or` / `not` land here when they are used as a model
-        // wrapper, and the message says what they are missing rather than
-        // reporting them as an unknown relation two checks later.
-        "and" => Err(":expect (and …) — a model is `(model …)`; `and` is a \
-                     connective and would not say that the listed facts are a \
-                     relation's *complete* extent"
-            .into()),
-        other => Err(format!(":expect ({other} …) — {SHAPE_TAIL}")),
+        "false" => Expectation::Contradiction,
+        "model" => Expectation::One(Model {
+            facts: items.to_vec(),
+        }),
+        "or" => Expectation::Any(
+            items
+                .iter()
+                .map(|&m| Model {
+                    facts: form(ast, m)
+                        .expect("a disjunct is a (model …) (ein.y's Models)")
+                        .1
+                        .to_vec(),
+                })
+                .collect(),
+        ),
+        other => unreachable!("a claim is (false), (model …) or (or …), not ({other} …)"),
     }
 }
 
-fn model(ast: &Ast, items: &[NodeId]) -> Result<Model, String> {
-    for &item in items {
-        fact(ast, item)?;
-    }
-    Ok(Model {
-        facts: items.to_vec(),
-    })
+/// A form's head name and its arguments.
+fn form(ast: &Ast, node: NodeId) -> Option<(&str, &[NodeId])> {
+    let Node::SForm { head, args } = ast.node(node) else {
+        return None;
+    };
+    Some((ast.atom_name(head)?, ast.args(args)))
 }
 
-/// Split a listed fact, checking it is a **ground** fact form.
+/// Split a listed fact: a ground fact form, `(not F)` of one, or a `neq` fact
+/// (`ein.y`'s `ClaimFact`).
 ///
 /// Ground is the whole of the rule: an expectation is an answer, and an answer
 /// with a `?var` in it is a pattern. A variable here would silently match
-/// anything, which is the one outcome this form exists to prevent.
-pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> Result<ExpectFact<'a>, String> {
-    let (negated, inner) = match ast.node(node) {
-        Node::SForm { head, args } if ast.atom_name(head) == Some("not") => match ast.args(args) {
-            [one] => (true, *one),
-            _ => return Err(":expect — `(not …)` takes exactly one fact".into()),
-        },
+/// anything, which is the one outcome this form exists to prevent; since M1f
+/// S1f.5.5's swap it is the grammar that refuses one, a claim's fact holding
+/// names and facts.
+pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> ExpectFact<'a> {
+    let (negated, inner) = match form(ast, node) {
+        Some(("not", [one])) => (true, *one),
         _ => (false, node),
     };
-    let Node::SForm { head, args } = ast.node(inner) else {
-        return Err(format!(":expect — `{}` is not a fact", render(ast, inner)));
-    };
-    let Some(relation) = ast.atom_name(head) else {
-        return Err(format!(
-            ":expect — `{}` has no relation name in head position",
-            render(ast, inner)
-        ));
-    };
-    for &arg in ast.args(args) {
-        ground(ast, arg)?;
-    }
-    Ok(ExpectFact {
+    let (relation, _) = form(ast, inner).expect("a listed fact is a form (ein.y's ClaimFact)");
+    ExpectFact {
         negated,
         relation,
         rendered: render(ast, node),
-    })
-}
-
-fn ground(ast: &Ast, node: NodeId) -> Result<(), String> {
-    match ast.node(node) {
-        Node::Atom(_) | Node::Int(_) | Node::Str(_) => Ok(()),
-        Node::Var(s) => Err(format!(
-            ":expect — `?{}` is a variable; an expectation is an answer, not a pattern",
-            ast.sym(s)
-        )),
-        Node::Wildcard => Err(":expect — `_` is a wildcard; an expectation is an answer, \
-                              not a pattern"
-            .into()),
-        Node::SForm { head, args } => {
-            if ast.atom_name(head).is_none() {
-                return Err(
-                    ":expect — a nested fact needs a relation name in head position".into(),
-                );
-            }
-            for &arg in ast.args(args) {
-                ground(ast, arg)?;
-            }
-            Ok(())
-        }
-        _ => Err(format!(
-            ":expect — `{}` is not a fact argument",
-            render(ast, node)
-        )),
     }
 }
 
@@ -378,36 +308,29 @@ mod tests {
         panic!("no :expect in {src}");
     }
 
-    fn parsed(src: &str) -> Result<Expectation, String> {
+    fn parsed(src: &str) -> Expectation {
         let (ast, node) = value(src);
         parse(&ast, node)
     }
 
-    /// The parser's first error on `src`, `line:col: what`, and its first
-    /// repair: since M1f S1f.5.5's swap (T1f.5.5.4) a claim's shape is the
-    /// grammar's, so the shapes this module refused at load are parse errors.
-    fn refused(src: &str) -> (String, String) {
-        let e = parse_ein(&mut Ast::new(), src, None).expect_err(src);
-        let first = &e.errors[0];
-        (
-            format!("{}:{}: {}", first.line, first.col, first.what),
-            first.repairs.first().cloned().unwrap_or_default(),
-        )
-    }
+    // The shapes a claim may not take, which this module refused until M1f
+    // S1f.5.5's T5, are rows of the grammar's table since
+    // (`ein-ir/tests/grammar_pages.rs`): a variable or `_` in a fact, a bare
+    // `false`, `(false A)`, `(and …)`, `(models …)`, `(or)`, a disjunct that
+    // is no `(model …)`, and `(not …)` of two facts.
 
     #[test]
     fn the_three_shapes() {
-        let bottom = parsed("(query :goal (p ?x) :expect (false))").expect("(false)");
+        let bottom = parsed("(query :goal (p ?x) :expect (false))");
         assert!(matches!(bottom, Expectation::Contradiction));
         assert_eq!(bottom.verdict_name(), "Contradiction");
 
-        let one = parsed("(query :goal (p ?x) :expect (model (p A) (not (p B))))").expect("model");
+        let one = parsed("(query :goal (p ?x) :expect (model (p A) (not (p B))))");
         assert_eq!(one.models().len(), 1);
         assert_eq!(one.models()[0].facts.len(), 2);
         assert_eq!(one.verdict_name(), "Solution");
 
-        let any =
-            parsed("(query :goal (p ?x) :expect (or (model (p A)) (model (p B))))").expect("or");
+        let any = parsed("(query :goal (p ?x) :expect (or (model (p A)) (model (p B))))");
         assert_eq!(any.models().len(), 2);
         assert_eq!(any.verdict_name(), "Ambiguity");
     }
@@ -416,13 +339,13 @@ mod tests {
     /// the number of disjuncts and 1 is a legal number of them.
     #[test]
     fn a_single_disjunct_implies_solution() {
-        let any = parsed("(query :goal (p ?x) :expect (or (model (p A))))").expect("or");
+        let any = parsed("(query :goal (p ?x) :expect (or (model (p A))))");
         assert_eq!(any.verdict_name(), "Solution");
     }
 
     #[test]
     fn the_empty_model_is_not_false() {
-        let empty = parsed("(query :goal (p ?x) :expect (model))").expect("model");
+        let empty = parsed("(query :goal (p ?x) :expect (model))");
         assert_eq!(empty.models()[0].facts.len(), 0);
         assert_eq!(
             empty.verdict_name(),
@@ -432,138 +355,17 @@ mod tests {
         );
     }
 
-    /// A claim's facts are ground. Until M1f S1f.5.5's swap (T1f.5.5.4) a
-    /// variable or a wildcard in one was refused here, *not a pattern*; since,
-    /// a claim's fact holds names and facts and the parse refuses both, at the
-    /// token, the `_` with S1f.5.1's note.
-    #[test]
-    fn a_variable_in_an_expectation_is_rejected() {
-        assert_eq!(
-            refused("(query :goal (p ?x) :expect (model (p ?x)))").0,
-            "1:39: unexpected `?x`: a variable"
-        );
-        assert_eq!(
-            refused("(query :goal (p ?x) :expect (model (p _)))").0,
-            "1:39: unexpected `_`: _ (reserved)"
-        );
-    }
-
-    /// Each malformed shape names what was expected. Until M1f S1f.5.5's swap
-    /// (T1f.5.5.4) each reached [`parse`], which refused it with a line that
-    /// starts `:expect`; since, a claim's shape is the grammar's, and each is a
-    /// parse error at its first wrong token, whose first repair is the shape it
-    /// wanted.
-    #[test]
-    fn the_shape_errors_name_what_was_expected() {
-        for (src, first, repair) in [
-            (
-                "(query :goal (p ?x) :expect all)",
-                "1:29: unexpected `all`: a name",
-                "Insert `(`, Insert `model`, Insert `)`, Delete `all`",
-            ),
-            (
-                "(query :goal (p ?x) :expect none)",
-                "1:29: unexpected `none`: a name",
-                "Insert `(`, Insert `model`, Insert `)`, Delete `none`",
-            ),
-            (
-                "(query :goal (p ?x) :expect false)",
-                "1:29: unexpected `false`",
-                "Insert `(`, Shift `false`, Insert `)`",
-            ),
-            (
-                "(query :goal (p ?x) :expect (false A))",
-                "1:36: unexpected `A`: a name",
-                "Delete `A`",
-            ),
-            (
-                "(query :goal (p ?x) :expect (and (p A) (p B)))",
-                "1:30: unexpected `and`",
-                "Insert `model`, Delete `and`",
-            ),
-            (
-                "(query :goal (p ?x) :expect (models (p A)))",
-                "1:30: unexpected `models`: a name",
-                "Insert `model`, Delete `models`",
-            ),
-            (
-                "(query :goal (p ?x) :expect (or (p A)))",
-                "1:34: unexpected `p`: a name",
-                "Insert `model`, Insert `(`",
-            ),
-            (
-                "(query :goal (p ?x) :expect (model 3))",
-                "1:36: unexpected `3`: a name",
-                "Delete `3`",
-            ),
-            (
-                "(query :goal (p ?x) :expect (model (p (?q A))))",
-                "1:40: unexpected `?q`: a variable",
-                "Delete `?q`",
-            ),
-        ] {
-            assert_eq!(
-                refused(src),
-                (first.to_string(), repair.to_string()),
-                "{src}"
-            );
-        }
-    }
-
-    /// Two malformed shapes never reach [`parse`] at all, because the grammar
-    /// refuses them first: `OrForm ::= '(' 'or' Value+ ')'` wants at least one
-    /// disjunct, and `NotForm ::= '(' 'not' Value KwPair* ')'` exactly one
-    /// fact. Both guards stay in `parse` — an empty `Any` would be an
-    /// `Ambiguity` with nothing to be ambiguous between — but this is where it
-    /// is written down that a *program* cannot get there.
-    #[test]
-    fn two_shapes_are_parse_errors_before_they_are_load_errors() {
-        for src in [
-            "(query :goal (p ?x) :expect (or))",
-            "(query :goal (p ?x) :expect (model (not (p A) (p B))))",
-        ] {
-            let mut ast = Ast::new();
-            assert!(parse_ein(&mut ast, src, None).is_err(), "{src}");
-        }
-    }
-
-    /// ⊥ is `(false)`, the kernel's own word — and the two ways a reader is
-    /// likely to reach for it instead each got a message that said so, until
-    /// M1f S1f.5.5's swap (T1f.5.5.4). Since, both are parse errors, and the
-    /// first repair of the bare `false` is the parenthesised one.
-    #[test]
-    fn bottom_is_spelled_with_the_kernels_own_word() {
-        assert_eq!(
-            refused("(query :goal (p ?x) :expect false)"),
-            (
-                "1:29: unexpected `false`".to_string(),
-                "Insert `(`, Shift `false`, Insert `)`".to_string()
-            )
-        );
-        assert_eq!(
-            refused("(query :goal (p ?x) :expect (and (p A)))"),
-            (
-                "1:30: unexpected `and`".to_string(),
-                "Insert `model`, Delete `and`".to_string()
-            )
-        );
-        assert!(matches!(
-            parsed("(query :goal (p ?x) :expect (false))").expect("(false)"),
-            Expectation::Contradiction
-        ));
-    }
-
     #[test]
     fn a_fact_splits_into_relation_polarity_and_text() {
         let (ast, node) = value("(query :goal (p ?x) :expect (model (p A 3) (not (q B))))");
-        let Expectation::One(m) = parse(&ast, node).expect("model") else {
+        let Expectation::One(m) = parse(&ast, node) else {
             panic!("one model");
         };
-        let pos = fact(&ast, m.facts[0]).expect("a fact");
+        let pos = fact(&ast, m.facts[0]);
         assert!(!pos.negated);
         assert_eq!(pos.relation, "p");
         assert_eq!(pos.rendered, "(p A 3)");
-        let neg = fact(&ast, m.facts[1]).expect("a fact");
+        let neg = fact(&ast, m.facts[1]);
         assert!(neg.negated);
         assert_eq!(
             neg.relation, "q",
@@ -575,9 +377,9 @@ mod tests {
     #[test]
     fn a_nullary_fact_renders_without_a_trailing_space() {
         let (ast, node) = value("(query :goal (p ?x) :expect (model (q)))");
-        let Expectation::One(m) = parse(&ast, node).expect("model") else {
+        let Expectation::One(m) = parse(&ast, node) else {
             panic!("one model");
         };
-        assert_eq!(fact(&ast, m.facts[0]).expect("a fact").rendered, "(q)");
+        assert_eq!(fact(&ast, m.facts[0]).rendered, "(q)");
     }
 }

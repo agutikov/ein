@@ -1,25 +1,25 @@
 //! The trace AST.
 //!
-//! A trace is itself IR: a list of `(step …)` forms carrying the rule name,
-//! the premises it consumed, the derived edge, the bindings, and a generated
-//! English explanation. [`trace_to_ir`] and [`parse_trace_steps`] round-trip
-//! it through the parser as a `(trace …)` form — the same form
-//! [`crate::ir_dot::render_trace`] draws.
+//! A derivation's steps as `steps_of` narrates them: each carries the rule
+//! name, the premises it consumed, the derived edge, the bindings, and a
+//! generated English explanation. `diagram` and `section` are render-time
+//! enrichments.
 //!
-//! The serialisable core is `(n, rule, premises, derived, why)` plus the
-//! bindings. `diagram` and `section` are render-time enrichments and come back
-//! `None` after a round trip.
+//! **Until M1f S1f.5.5's T5 a trace round-tripped through the parser**:
+//! `trace_to_ir` and `step_to_ir` wrote it as a `(trace …)` form and
+//! `parse_trace_steps` read one back. Nothing called either half (`grep -rn
+//! trace_to_ir ein.rs/crates`, 2026-11-08, S1f.5.5's census), and the writer
+//! put a `:bind` and a `:why` on a step, which the grammar's `Step` does not
+//! take; the paper grammar's default 8 retired them with the swap, and T5
+//! deleted them. A `(trace …)` form a program writes is still drawn, by
+//! [`crate::ir_dot::render_trace`].
 //!
 //! **Why a fact here is not a `FactId`.** Everywhere else in the engine a
-//! fact is an interned id. A parsed trace is the exception: `parse_trace_steps`
-//! rebuilds facts that may name relations and objects no KB ever held, so
-//! there is nothing to intern them *into*. [`FactRef`] is therefore an owned
-//! `(relation_name, args)` pair, and [`fact_ref`] converts one *out* of the KB
-//! where the linearizer needs it.
+//! fact is an interned id. [`FactRef`] is an owned `(relation_name, args)`
+//! pair, which [`fact_ref`] converts *out* of the KB where the linearizer
+//! needs it, so a step outlives the store it was read from.
 
 use ein_core::{FactId, Tag, Terms, Value};
-use ein_ir::dump::escape_string_literal;
-use ein_ir::{Ast, Node, NodeId, node_repr};
 
 /// One argument of a [`FactRef`]: a string, an integer as its canonical
 /// decimal text, or a nested fact.
@@ -136,220 +136,4 @@ impl TraceStep {
     pub fn premise_labels(&self) -> Vec<String> {
         self.premises.iter().map(FactRef::label).collect()
     }
-}
-
-// ── IR round-trip: out ─────────────────────────────────────────────
-
-fn arg_to_sexpr(a: &RefArg) -> String {
-    match a {
-        RefArg::Fact(f) => fact_to_sexpr(f),
-        RefArg::Int(i) => i.clone(),
-        // The one printer's name (M1e2 S1e2.3.8), where this file had its own
-        // `atom_safe`, which wrote `?x`, `1a` and `Åsa` bare.
-        RefArg::Str(s) => ein_core::text::symbol(s).into_owned(),
-    }
-}
-
-fn fact_to_sexpr(f: &FactRef) -> String {
-    let inner: Vec<String> = f.args.iter().map(arg_to_sexpr).collect();
-    if inner.is_empty() {
-        format!("({})", f.rel)
-    } else {
-        format!("({} {})", f.rel, inner.join(" "))
-    }
-}
-
-/// One `(step …)` S-expression line.
-pub fn step_to_ir(step: &TraceStep) -> String {
-    let mut parts = vec![format!("(step s{} :rule {}", step.n, step.rule)];
-    if !step.premises.is_empty() {
-        let using = if step.premises.len() == 1 {
-            fact_to_sexpr(&step.premises[0])
-        } else {
-            let inner: Vec<String> = step.premises.iter().map(fact_to_sexpr).collect();
-            format!("(and {})", inner.join(" "))
-        };
-        parts.push(format!(":using {using}"));
-    }
-    parts.push(format!(":derives {}", fact_to_sexpr(&step.derived)));
-    if !step.bindings.is_empty() {
-        let binds: Vec<String> = step
-            .bindings
-            .iter()
-            // A binding is the one printer's text already (`Terms::display`).
-            .map(|(k, v)| format!("?{k} {v}"))
-            .collect();
-        parts.push(format!(":bind ({})", binds.join(" ")));
-    }
-    if !step.why.is_empty() {
-        parts.push(format!(":why {}", escape_string_literal(&step.why)));
-    }
-    format!("{})", parts.join(" "))
-}
-
-/// The whole trace as a `(trace …)` IR form, which round-trips through the
-/// parser.
-pub fn trace_to_ir(steps: &[TraceStep]) -> String {
-    if steps.is_empty() {
-        return "(trace)".to_string();
-    }
-    let body: Vec<String> = steps.iter().map(step_to_ir).collect();
-    format!("(trace\n  {})", body.join("\n  "))
-}
-
-// ── IR round-trip: back ────────────────────────────────────────────
-
-/// One IR scalar's value: `Atom` → its name, `Int` / `String` → their value,
-/// anything else → its [`node_repr`].
-fn atom_or_value(ast: &Ast, id: NodeId) -> RefArg {
-    match ast.node(id) {
-        Node::Atom(s) => RefArg::Str(ast.sym(s).to_string()),
-        Node::Str(s) => RefArg::Str(ast.sym(s).to_string()),
-        Node::Int(s) => RefArg::Int(ast.sym(s).to_string()),
-        _ => RefArg::Str(node_repr(ast, id)),
-    }
-}
-
-fn sform_to_factref(ast: &Ast, form: NodeId) -> FactRef {
-    let (head, args) = match ast.node(form) {
-        Node::SForm { head, args } => (head, ast.args(args).to_vec()),
-        _ => return FactRef::empty(),
-    };
-    let rel = match ast.node(head) {
-        Node::Atom(s) => ast.sym(s).to_string(),
-        _ => node_repr(ast, head),
-    };
-    let mut out = Vec::new();
-    for a in args {
-        match ast.node(a) {
-            Node::KwPair { .. } => continue,
-            Node::SForm { .. } => out.push(RefArg::Fact(sform_to_factref(ast, a))),
-            _ => out.push(atom_or_value(ast, a)),
-        }
-    }
-    FactRef { rel, args: out }
-}
-
-/// Premises from a `:using` value — an `(and …)` of facts, or one fact.
-fn parse_using(ast: &Ast, val: NodeId) -> Vec<FactRef> {
-    let Node::SForm { head, args } = ast.node(val) else {
-        return Vec::new();
-    };
-    // A head that is not an atom is not `and` — and is unreachable anyway,
-    // because a `:using` is always written by `step_to_ir`.
-    let is_and = matches!(ast.node(head), Node::Atom(s) if ast.sym(s) == "and");
-    if is_and {
-        return ast
-            .args(args)
-            .iter()
-            .filter(|a| matches!(ast.node(**a), Node::SForm { .. }))
-            .map(|a| sform_to_factref(ast, *a))
-            .collect();
-    }
-    vec![sform_to_factref(ast, val)]
-}
-
-/// Variable bindings from a `:bind (?v value …)` flat pair list.
-fn parse_bindings(ast: &Ast, val: NodeId) -> Vec<(String, String)> {
-    let Node::SForm { head, args } = ast.node(val) else {
-        return Vec::new();
-    };
-    let mut items = vec![head];
-    items.extend_from_slice(ast.args(args));
-    let mut out: Vec<(String, String)> = Vec::new();
-    let mut i = 0;
-    while i + 1 < items.len() {
-        // Only `Atom` / `Var` / `Keyword` carry a name, and an empty one is
-        // skipped too.
-        let name = match ast.node(items[i]) {
-            Node::Atom(s) | Node::Var(s) | Node::Keyword(s) => Some(ast.sym(s).to_string()),
-            _ => None,
-        };
-        if let Some(name) = name.filter(|n| !n.is_empty()) {
-            let value = match atom_or_value(ast, items[i + 1]) {
-                RefArg::Str(s) => s,
-                RefArg::Int(s) => s,
-                RefArg::Fact(f) => f.label(),
-            };
-            match out.iter_mut().find(|(k, _)| *k == name) {
-                Some(slot) => slot.1 = value,
-                None => out.push((name, value)),
-            }
-        }
-        i += 2;
-    }
-    out
-}
-
-fn kw_get(ast: &Ast, form: NodeId, key: &str) -> Option<NodeId> {
-    let mut found = None;
-    for a in ast.form_args(form) {
-        if let Node::KwPair { key: k, value } = ast.node(*a)
-            && let Node::Keyword(s) = ast.node(k)
-            && ast.sym(s) == key
-        {
-            // Last wins — a repeated keyword overrides the earlier one.
-            found = Some(value);
-        }
-    }
-    found
-}
-
-/// One `(step …)` form → a [`TraceStep`], the serialisable core only.
-fn parse_step(ast: &Ast, ev: NodeId, default_n: u64) -> TraceStep {
-    let name = ast
-        .form_args(ev)
-        .iter()
-        .find_map(|a| match ast.node(*a) {
-            Node::Atom(s) => Some(ast.sym(s).to_string()),
-            _ => None,
-        })
-        .unwrap_or_else(|| "s0".to_string());
-    let tail: String = name.chars().skip(1).collect();
-    let n = if !tail.is_empty() && tail.chars().all(|c| c.is_numeric()) {
-        tail.parse::<u64>().unwrap_or(default_n)
-    } else {
-        default_n
-    };
-    let rule = match kw_get(ast, ev, "rule") {
-        None => String::new(),
-        Some(v) => match ast.node(v) {
-            Node::Atom(s) => ast.sym(s).to_string(),
-            _ => node_repr(ast, v),
-        },
-    };
-    let is_sform = |id: NodeId| matches!(ast.node(id), Node::SForm { .. });
-    let mut step = TraceStep::new(
-        n,
-        rule,
-        kw_get(ast, ev, "derives")
-            .filter(|v| is_sform(*v))
-            .map_or_else(FactRef::empty, |v| sform_to_factref(ast, v)),
-    );
-    step.premises = kw_get(ast, ev, "using")
-        .filter(|v| is_sform(*v))
-        .map_or_else(Vec::new, |v| parse_using(ast, v));
-    step.bindings = kw_get(ast, ev, "bind")
-        .filter(|v| is_sform(*v))
-        .map_or_else(Vec::new, |v| parse_bindings(ast, v));
-    step.why = match kw_get(ast, ev, "why") {
-        Some(v) => match ast.node(v) {
-            Node::Str(s) => ast.sym(s).to_string(),
-            _ => String::new(),
-        },
-        None => String::new(),
-    };
-    step
-}
-
-/// Reconstruct `TraceStep`s from a parsed `(trace …)` form.
-pub fn parse_trace_steps(ast: &Ast, form: NodeId) -> Vec<TraceStep> {
-    let mut steps: Vec<TraceStep> = Vec::new();
-    for ev in ast.form_args(form).to_vec() {
-        if ast.head_name(ev) == Some("step") {
-            let n = steps.len() as u64 + 1;
-            steps.push(parse_step(ast, ev, n));
-        }
-    }
-    steps
 }

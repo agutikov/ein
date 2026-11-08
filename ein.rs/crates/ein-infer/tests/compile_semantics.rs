@@ -102,6 +102,23 @@ impl Loaded {
             .expect("the fixture saturates");
     }
 
+    /// The line the closure stops with, for the fixtures whose point is that
+    /// a firing stops it.
+    fn saturate_error(&mut self) -> String {
+        let mut events = Events::off();
+        let mut s = Session {
+            kb: &mut self.kb,
+            terms: &mut self.terms,
+            ast: &self.ast,
+            events: &mut events,
+            memo: SharedMemo::default(),
+        };
+        let mut sat = Saturator::new(&mut s).expect("the fixture compiles");
+        sat.saturate(&mut s, None, &mut |_| {})
+            .expect_err("the closure must stop")
+            .to_string()
+    }
+
     /// Every fact under `head`, as s-expressions, sorted — the readable form
     /// of "what did this rule conclude".
     fn facts_under(&self, head: &str) -> Vec<String> {
@@ -159,17 +176,6 @@ fn errors(r: &ein_ir::ParseError) -> Vec<String> {
             line
         })
         .collect()
-}
-
-/// A `(config …)` block the parser refuses: its report, every error.
-fn config_refused(body: &str) -> String {
-    parse(
-        &mut Ast::new(),
-        &format!("(config {body})\n"),
-        Some("<config>"),
-    )
-    .expect_err("the parser refuses the block")
-    .to_string()
 }
 
 // ── The in-`:match` keyword pair ───────────────────────────────────
@@ -454,42 +460,55 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
     }
 }
 
-/// An `(absent …)` that compiles to no steps is refused — work-list
-/// `an-absent-whose-sub-plan-is-empty-is-refused`.
+/// **The compiler's and the firing's lines a macro's body still reaches** —
+/// M1f S1f.5.5, T1f.5.5.5.
 ///
-/// An empty sub-plan is not "a query that finds nothing": the matcher reads an
-/// empty step tuple as one *vacuous* match, so the negative query holds, the
-/// premise fails, and — the guard being monotone — the candidate is retired
-/// permanently. The failure is therefore silent and irreversible, which is why
-/// it was a compile error and not a warning.
+/// An `(absent …)` that compiled to no steps was refused here until T5 (work-list
+/// `an-absent-whose-sub-plan-is-empty-is-refused`): an empty sub-plan is not "a
+/// query that finds nothing", the matcher reads an empty step tuple as one
+/// *vacuous* match, so the guard fails and, being monotone, retires its
+/// candidate for good, in silence. No program reaches it since the swap: an
+/// `absent` takes one premise (`ein.y`'s `Connective`), the two programs that
+/// did, `(absent :k v)` and `(absent ?x)`, are parse errors (rows of `ein-ir`'s
+/// grammar table), and a premise that is no form, which only a macro's body
+/// still writes, is the loader's refusal (`Found::NotAForm`). So T5 made it an
+/// assertion, and deleted the line.
 ///
-/// **No program reaches it since M1f S1f.5.5's swap**: an `absent` takes one
-/// premise, a form, so `(absent :k v)` (a keyword pair as its whole body, the
-/// one program the loader accepted that reached it, which the compiler
-/// dropped, Q32) and `(absent ?x)` (a premise that is not a form, the loader's
-/// since M1e2 S1e2.2.24) are parse errors, each at its place; the branch goes
-/// with T1f.5.5.5. `(absent (?R ?x))`, a relation variable no parameter binds,
-/// is still the loader's, a context-free grammar not seeing which parameter
-/// binds what.
+/// The census counted three more lines the grammar's, and each is still
+/// reached, through a macro: a macro's body is a template whose head may be
+/// any name (`ein.y`'s `Template`), `absent` and `eq` among them, at any
+/// arity, so the compiler's arity checks stay; and a body that is a bare
+/// parameter, called in an `:assert`, leaves a variable as the whole
+/// conclusion, which the firing refuses. So do a relation variable no parameter
+/// binds under an `absent`, the loader's since S1e2.2.24.
 #[test]
-fn an_absent_that_compiles_to_no_steps_is_refused() {
-    let kw = refused(
-        "(relation p T) (relation out T)\n\
-         (rule vacuous ()\n  :match (and (p ?x) (absent :k v))\n  :assert (out ?x))\n",
+fn the_compile_and_firing_lines_a_macro_still_reaches() {
+    let mut l = load_text(
+        "(macro two (?a ?b) (absent ?a ?b))\n(relation p T) (relation hit T)\n(p a)\n\
+         (rule r () :match (and (p ?x) (two (p ?x) (p ?x))) :assert (hit ?x))\n",
+    );
+    let err = l.compile_error(true);
+    assert!(
+        err.starts_with("`(absent …)` takes exactly 1 argument and was given 2:"),
+        "{err}"
+    );
+    let mut l = load_text(
+        "(macro three (?a ?b ?c) (eq ?a ?b ?c))\n(relation p T) (relation hit T)\n(p a)\n\
+         (rule r () :match (and (p ?x) (three ?x ?x ?x)) :assert (hit ?x))\n",
+    );
+    let err = l.compile_error(true);
+    assert!(
+        err.starts_with("`(eq …)` takes exactly 2 arguments and was given 3:"),
+        "{err}"
+    );
+    let mut l = load_text(
+        "(macro id (?x) ?x)\n(relation p T) (relation hit T)\n(p a)\n\
+         (rule r () :match (p ?y) :assert (id ?y))\n",
     );
     assert_eq!(
-        errors(&kw)[0],
-        "3:30: unexpected `:k`: a keyword this form does not take",
-        "{kw}"
-    );
-    let not_a_form = refused(
-        "(relation p T) (relation out T)\n\
-         (rule vacuous ()\n  :match (and (p ?x) (absent ?x))\n  :assert (out ?x))\n",
-    );
-    assert_eq!(
-        errors(&not_a_form)[0],
-        "3:30: unexpected `?x`: a variable",
-        "{not_a_form}"
+        l.saturate_error(),
+        "rule 'r': its :assert concludes ?y, which is not a fact — a conclusion is a fact \
+         (relation argument …), or an (and …) of facts"
     );
     let unbound = load_error(
         "(relation a T) (relation out T)\n\
@@ -606,53 +625,19 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
 
 // ── `(config …)` coercion ──────────────────────────────────────────
 
-/// The numeric and string flags are retired — M1e2 S1e2.1a.5: every flag a
-/// program can set is a bool, and setting a retired one says why
-/// (`solve_interface.md` § 2.4). The coercions they reached stay the
-/// container's (`ein-einb` round-trips every field), and
-/// `ein-ir/tests/golden/config_coercion.txt` pins each refusal. **Since M1f
-/// S1f.5.5's swap a retired flag is refused at the parse**, as any keyword a
-/// `(config …)` does not take (S1f.5.11), and the loader's line is a note on
-/// the parse error (the paper grammar's default 5).
-#[test]
-fn the_retired_flags_are_refused_with_why() {
-    for (flag, why) in [
-        (":lattice-order-seed 7", "an order lever"),
-        (":candidate-order-seed 5", "it was inert"),
-        (":print-alive true", "it was inert"),
-        (":lattice-order lex", "an order lever"),
-        (":hypgen-rel-weight 2", "an order lever"),
-        (":enable-singleton-writeback false", "it wrote into root"),
-        (":enable-forced-positive false", "it wrote into root"),
-    ] {
-        let e = config_refused(flag);
-        let name = flag.split_whitespace().next().expect("a flag");
-        assert!(
-            e.contains(&format!(
-                "<config>:1:9: unexpected `{name}`: a keyword this form does not take\n  note: config flag {name} was retired at M1e2 S1e2.1a.5"
-            )) && e.contains(why),
-            "{flag}: {e}"
-        );
-    }
-    // S1e2.1a.6: the one flag that changed R, retired on the user's ruling of
-    // 2026-11-01. The mirror itself is always on.
-    let e = config_refused(":enable-symmetric-mirror false");
-    assert!(
-        e.contains("was retired at M1e2 S1e2.1a.6") && e.contains("always on"),
-        "{e}"
-    );
-    assert_eq!(
-        SolverConfig::default().lattice_order_seed,
-        None,
-        "an unset optional field is absent, not zero"
-    );
-}
-
 /// The bool coercion reads its IR shapes — work-list
 /// `bool-str-and-float-flags-coerce-from-their-ir-shapes`, whose string and
-/// float halves retired with their flags. Since M1f S1f.5.5's swap a flag
-/// takes `true` or `false` and nothing else: the quoted `"false"` this test
-/// coerced until then is a string, refused at the parse (S1f.5.2).
+/// float halves retired with their flags (M1e2 S1e2.1a.5: every flag a program
+/// can set is a bool). Since M1f S1f.5.5's swap a flag takes `true` or `false`
+/// and nothing else, and every other shape a `(config …)` was refused for is the
+/// grammar's: the quoted `"false"` this test coerced until then (a string,
+/// S1f.5.2), an unknown flag, a value no bool, and a flag retired at M1e2, with
+/// its *was retired at* sentence as a note (the paper grammar's default 5).
+/// Each is a row of `ein-ir`'s grammar table since T1f.5.5.5 deleted the
+/// loader's lines and moved their tests there (`the_retired_flags_are_refused_with_why`
+/// and `the_config_rejections_name_the_flag_and_the_shape_they_wanted` until
+/// then). The coercions the retired flags reached stay the container's
+/// (`ein-einb` round-trips every field).
 #[test]
 fn bool_flags_coerce_from_their_ir_shapes() {
     // `lattice-sanity-check` since M1e2 S1e2.2.5 retired `warn-derived-naf`.
@@ -661,47 +646,12 @@ fn bool_flags_coerce_from_their_ir_shapes() {
     // `record-alternative-justifications` since M1e2 S1e2.1c.5 retired
     // `enable-path-nogoods`, which carried it.
     assert!(!cfg(":record-alternative-justifications false").record_alternative_justifications);
-    let quoted = config_refused(r#":record-alternative-justifications "false""#);
-    assert!(
-        quoted.starts_with(r#"<config>:1:44: unexpected `"false"`: a string"#),
-        "{quoted}"
-    );
-}
-
-/// The two refusals name the flag and the shape they wanted — work-list
-/// `the-three-config-rejections-say-what-they-say`, whose integer refusal
-/// retired with the integer flags.
-///
-/// A `(config …)` block is hand-authored and its keys are easy to misspell.
-/// Until M1f S1f.5.5's swap the loader refused an unknown flag with a line
-/// that enumerated the accepted set, and a value of the wrong shape with the
-/// shape it wanted. Since the swap both are the grammar's, each a parse error
-/// at its place: an unknown flag is a keyword the form does not take
-/// (S1f.5.11), and a flag's value is `true` or `false`, so `7`, a name since
-/// S1f.5.4, is refused with the two repairs that insert one. Where the value
-/// is a bool, the repairs are the accepted set: each inserts a flag the form
-/// takes. Silently coercing `7` to `true` would hand a puzzle a configuration
-/// its author did not write, and the run would still look successful.
-#[test]
-fn the_config_rejections_name_the_flag_and_the_shape_they_wanted() {
-    let unknown = config_refused(":nope 1");
-    assert!(
-        unknown.starts_with("<config>:1:9: unexpected `:nope`: a keyword this form does not take"),
-        "must name the offending key: {unknown}"
-    );
-    let retired = config_refused(":print-alive true");
-    for (known, _) in ein_core::config::FLAGS {
-        assert!(
-            retired.contains(&format!("repair: Insert `:{known}`, Delete `:print-alive`")),
-            "the accepted set is the repairs, and {known} is missing: {retired}"
-        );
-    }
-    let not_a_bool = config_refused(":lattice-sanity-check 7");
-    assert!(
-        not_a_bool.starts_with("<config>:1:31: unexpected `7`: a name")
-            && not_a_bool.contains("repair: Insert `false`, Delete `7`")
-            && not_a_bool.contains("repair: Insert `true`, Delete `7`"),
-        "{not_a_bool}"
+    // The last of a repeated flag wins.
+    assert!(cfg(":lattice-sanity-check false :lattice-sanity-check true").lattice_sanity_check);
+    assert_eq!(
+        SolverConfig::default().lattice_order_seed,
+        None,
+        "an unset optional field is absent, not zero"
     );
 }
 
@@ -810,12 +760,8 @@ fn a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact() 
     );
     // Since M1f S1f.5.5's swap a declaration's signature is names, so the
     // wrapped list is a parse error at its `(`, where the loader refused it as
-    // `malformed (relation)` until then.
-    assert_eq!(
-        errors(&refused("(relation R (T1 T2))\n"))[0],
-        "1:13: unexpected `(`",
-        "a wrapped argument list must not slip through as a bare declaration"
-    );
+    // `malformed (relation)` until then: a row of `ein-ir`'s grammar table
+    // since T1f.5.5.5 deleted the line.
 }
 
 // ── S1.22.4 — what the blind enumerator fills ──────────────────────

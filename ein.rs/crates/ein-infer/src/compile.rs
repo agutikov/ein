@@ -681,9 +681,7 @@ impl<'a> Compiler<'a> {
             // enclosing sub-plan's binding environment.
             let mut sub: Vec<Step> = Vec::new();
             self.premise(body, false, &mut sub)?;
-            if sub.is_empty() {
-                return Err(self.empty_sub_plan(node));
-            }
+            assert!(!sub.is_empty(), "{}", self.empty_sub_plan(node));
             let span = self.push_steps(sub);
             out.push(Step::Absent { sub: span });
             return Ok(());
@@ -717,9 +715,7 @@ impl<'a> Compiler<'a> {
         let space = self.sub.take().expect("the sub-space is still mine");
         self.sub_scope.clear();
         compiled?;
-        if sub.is_empty() {
-            return Err(self.empty_sub_plan(node));
-        }
+        assert!(!sub.is_empty(), "{}", self.empty_sub_plan(node));
         let span = self.push_steps(sub);
 
         let mut watched = self.watched_relations(span);
@@ -817,18 +813,26 @@ impl<'a> Compiler<'a> {
             .map(|(_, v)| *v)
     }
 
-    fn empty_sub_plan(&self, node: NodeId) -> CompileError {
-        // S1.22.0 — an empty sub-plan is not "a query that finds nothing", it
-        // is a query that matches VACUOUSLY: running no steps yields one match,
-        // so `holds` is true and the guard fails against every possible KB.
-        // `monotone` is then true, so the candidate is retired permanently on
-        // its first judgement.
-        CompileError(format!(
+    /// What an `(absent …)` whose sub-plan compiled to no steps would be.
+    ///
+    /// S1.22.0 — an empty sub-plan is not "a query that finds nothing", it is
+    /// a query that matches VACUOUSLY: running no steps yields one match, so
+    /// `holds` is true and the guard fails against every possible KB.
+    /// `monotone` is then true, so the candidate is retired permanently on its
+    /// first judgement. That silence is why it was a `CompileError` until M1f
+    /// S1f.5.5's T5, and is an assertion since: an `absent` takes one premise
+    /// (`ein.y`'s `Connective`), a premise that is no form is the loader's
+    /// refusal (`from_ir`'s `NotAForm`, which a macro's body can still reach),
+    /// and every form a premise can be compiles to a step, so no program
+    /// reaches one. The last that did, `(absent :k v)`, a keyword pair the
+    /// compiler dropped (Q32), is a parse error since the swap.
+    fn empty_sub_plan(&self, node: NodeId) -> String {
+        format!(
             "`(absent …)` sub-plan compiled to no steps in {} — the guard \
              would fail against every KB and its candidates would be retired \
              permanently.",
             node_repr(self.ast, node)
-        ))
+        )
     }
 
     fn relation(

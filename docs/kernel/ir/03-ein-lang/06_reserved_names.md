@@ -283,18 +283,22 @@ candidate stays parked and is re-judged at every later quiescence
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
-| `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |
-| `expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region (M1e2 S1e2.1a.4): R's states, `(merged …)` generators, `(owing …)`, read only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a load error; `model` stays unreserved | `ein-ir/claim.rs` (shape, at load) + `ein-infer/claim.rs` (against R) |
+| `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein.y`'s `Claim` (shape, at the parse) + `ein-ir/expect.rs` (its relations, at load) + `ein-infer/expect.rs` (the comparison) |
+| `expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region (M1e2 S1e2.1a.4): R's states, `(merged …)` generators, `(owing …)`, read only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error since M1f S1f.5.5's swap, and was a load error until then; `model` stays a name | `ein.y`'s `RegionClaim` (shape, at the parse) + `ein-ir/claim.rs` (what the shape cannot say, at load) + `ein-infer/claim.rs` (against R) |
 
-**A `(query …)` keyword outside the allow-list is a load error** since M1c
-S1c.1.2. The list is **four**: `:expect` above (the two dunder triggers in the
-same table are facts, not keywords), plus `:goal`, `:goal-text` and the
-obsolete, ignored `:mode`
-([`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs)'s
-`QUERY_KEYWORDS`). It was seven until M1e2 S1e2.1a.4 moved `:hrules`,
-`:hypothesis-relations` and `:no-hypothesis` to `(solve …)`, whose own
-allow-list is those three (`SOLVE_KEYWORDS`). On a query each of them is a
-load error that names `(solve …)`. The diagnostics are in
+**A `(query …)` keyword outside its list is refused** since M1c S1c.1.2, and
+**at the parse** since M1f S1f.5.5's swap (S1f.5.11's closed keywords: each
+form takes the keywords its production in
+[`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y) lists). A query takes
+**four**: `:goal`, `:goal-text`, `:over` and `:expect` above (the two dunder
+triggers in the same table are facts, not keywords); the obsolete `:mode`,
+accepted and ignored until the swap, is refused like any other. It was seven
+until M1e2 S1e2.1a.4 moved `:hrules`, `:hypothesis-relations` and
+`:no-hypothesis` to `(solve …)`, which takes those three and `:expect`; on a
+query each of them is a parse error whose note names `(solve …)`. Until
+T1f.5.5.5 the loader held the two lists, `QUERY_KEYWORDS` and `SOLVE_KEYWORDS`
+in [`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), which no
+program reached after the swap. The diagnostics are in
 [`defined_behaviour.md` §4.1](../../defined_behaviour.md). It was a silent
 no-op, which stopped being survivable when a keyword could carry a *test*.
 

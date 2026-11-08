@@ -93,19 +93,44 @@ settings are being *compared* would re-bless every shape golden in the corpus
 ```
 
 Names are `:kebab-case`, and since M1e2 S1e2.1a.5 every flag a program can set
-is a bool: `true` / `false`, bare or quoted. An unknown flag, a wrong-typed
-value and a **retired** flag are all **load errors**, exit 1. The unknown-flag
-message lists the valid names *sorted*, where `--dump-config` prints them in
-declaration order, and the retired-flag message says why the flag went
-([`defined_behaviour.md` § Errors and exit codes](defined_behaviour.md#4-errors-and-exit-codes)):
+is a bool: `true` or `false`, bare. An unknown flag, a value that is not one of
+the two and a **retired** flag are all **parse errors** since M1f S1f.5.5's
+swap, exit 1: a `(config …)` takes the two keywords and a bool after each
+([`ein.y`](../../ein.rs/crates/ein-ir/src/ein.y)'s `ConfigClause`), so an unknown
+or retired flag is a keyword the form does not take and the repairs name the two
+it does, and a retired flag's note says why it went
+([`defined_behaviour.md` § Errors and exit codes](defined_behaviour.md#4-errors-and-exit-codes)).
+Until the swap each was a `kb load error:`, the unknown flag's listing the valid
+names *sorted*; the loader's lines went at T1f.5.5.5, and each shape is a row
+of `ein-ir`'s grammar table (`ein-ir/tests/grammar_pages.rs`). The lines `ein
+saturate` writes for six such blocks, each in a file `c.ein` (2026-11-09):
 
 ```text
-kb load error: (config …): unknown config flag :nonsense (expected one of: …)
-kb load error: (config …): config flag :lattice-sanity-check expects true/false, got Int(value=7)
-kb load error: (config …): config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
-kb load error: (config …): config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
-kb load error: (config …): config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
-kb load error: (config …): config flag :warn-derived-naf was retired at M1e2 S1e2.2.5: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R
+c.ein:1:9: unexpected `:nonsense`: a keyword this form does not take
+  repair: Insert `:lattice-sanity-check`, Delete `:nonsense`
+  repair: Insert `:record-alternative-justifications`, Delete `:nonsense`
+  repair: Delete `:nonsense`, Delete `true`
+c.ein:1:31: unexpected `7`: a name
+  repair: Insert `false`, Delete `7`
+  repair: Insert `true`, Delete `7`
+c.ein:1:9: unexpected `:lattice-order`: a keyword this form does not take
+  note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  repair: Delete `:lattice-order`, Delete `lex`
+c.ein:1:9: unexpected `:enable-symmetric-mirror`: a keyword this form does not take
+  note: config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
+  repair: Insert `:lattice-sanity-check`, Delete `:enable-symmetric-mirror`
+  repair: Insert `:record-alternative-justifications`, Delete `:enable-symmetric-mirror`
+  repair: Delete `:enable-symmetric-mirror`, Delete `false`
+c.ein:1:9: unexpected `:enable-path-nogoods`: a keyword this form does not take
+  note: config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
+  repair: Insert `:lattice-sanity-check`, Delete `:enable-path-nogoods`
+  repair: Insert `:record-alternative-justifications`, Delete `:enable-path-nogoods`
+  repair: Delete `:enable-path-nogoods`, Delete `true`
+c.ein:1:9: unexpected `:warn-derived-naf`: a keyword this form does not take
+  note: config flag :warn-derived-naf was retired at M1e2 S1e2.2.5: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R
+  repair: Insert `:lattice-sanity-check`, Delete `:warn-derived-naf`
+  repair: Insert `:record-alternative-justifications`, Delete `:warn-derived-naf`
+  repair: Delete `:warn-derived-naf`, Delete `true`
 ```
 
 ### 2.1 The defaults

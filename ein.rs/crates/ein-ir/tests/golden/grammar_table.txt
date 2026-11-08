@@ -1,0 +1,872 @@
+## 0. a top-level form's head (was: top-level-form, fact-head)
+    ((p) a)
+<row>:1:2: unexpected `(`
+  repair: Insert a name
+
+## 1. a top-level form's head (was: top-level-form, fact-head)
+    (?x a)
+<row>:1:2: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 2. a top-level form's head (was: top-level-form, fact-head)
+    ("s" a)
+<row>:1:2: unexpected `"s"`: a string
+  note: "s" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"s"`
+
+## 3. a top-level fact's relation (was: top-level-claim)
+    (relation p T) (p A) (region (model (p A)))
+<row>:1:23: unexpected `region`
+  repair: Insert a name
+
+## 4. a top-level fact's relation (was: top-level-claim)
+    (relation p T) (p A) (owing (model))
+<row>:1:23: unexpected `owing`
+  repair: Insert a name
+
+## 5. a top-level fact's relation (was: top-level-claim)
+    (merged (model) (model))
+<row>:1:2: unexpected `merged`
+  repair: Insert a name
+
+## 6. a relation's name (was: relation-name)
+    (relation)
+<row>:1:10: unexpected `)`
+  repair: Insert a name
+
+## 7. a relation's name (was: relation-name)
+    (relation)
+    (relation dup)
+    (relation dup)
+    (rule absent () :match (x ?a) :assert (y ?a))
+<row>:1:10: unexpected `)`
+  repair: Insert a name
+<row>:4:7: unexpected `absent`
+  repair: Insert a name, Delete `absent`
+
+## 8. a relation's signature (was: relation-malformed)
+    (relation R (T1 T2))
+<row>:1:13: unexpected `(`
+  repair: Insert `)`
+<row>:1:20: unexpected `)`
+  repair: Delete `)`
+
+## 9. a relation's signature (was: relation-malformed)
+    (relation r ?A)
+<row>:1:13: unexpected `?A`: a variable
+  repair: Delete `?A`
+
+## 10. a relation's name (was: relation-malformed)
+    (relation (r) A)
+<row>:1:11: unexpected `(`
+  repair: Delete `(`, Shift `r`, Delete `)`
+  repair: Delete `(`, Shift `r`, Shift `)`, Insert `(`
+
+## 11. a relation's name (was: —)
+    (relation open A B)
+<row>:1:11: unexpected `open`
+  repair: Delete `open`
+
+## 12. a rule's name and parameters (was: rule-name-params)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule x)
+<row>:3:8: unexpected `)`
+  repair: Insert `(`, Insert `)`
+  repair: Insert `(`, Shift `)`, Insert `)`
+
+## 13. a rule's name and parameters (was: rule-name-params)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule x)
+<row>:3:9: unexpected `)`
+  repair: Insert `(`, Insert `)`
+  repair: Insert `(`, Shift `)`, Insert `)`
+
+## 14. a rule's name and parameters (was: rule-name-params)
+    (rule)
+<row>:1:6: unexpected `)`
+  repair: Insert a name, Insert `(`, Insert `)`
+  repair: Insert a name, Insert `(`, Shift `)`, Insert `)`
+
+## 15. a rule's name (was: rule-malformed)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule (x) () :match (a) :assert (b))
+<row>:3:7: unexpected `(`
+  repair: Delete `(`, Shift `x`, Delete `)`
+
+## 16. a rule's parameters (was: rule-malformed)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule x y :match (a) :assert (b))
+<row>:3:9: unexpected `y`: a name
+  repair: Insert `(`, Insert `)`, Delete `y`
+  repair: Delete `y`, Delete `:match`, Shift `(`, Delete `a`
+
+## 17. a rule's parameters (was: rule-malformed)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule x :match (a) :assert (b))
+<row>:3:9: unexpected `:match`
+  repair: Insert `(`, Insert `)`
+  repair: Delete `:match`, Shift `(`, Delete `a`
+
+## 18. a rule's name (was: —)
+    (relation r A B)
+    (rule open () :match (r ?a ?b) :assert (r ?b ?a))
+<row>:2:7: unexpected `open`
+  repair: Insert a name, Delete `open`
+
+## 19. a macro's parameters and body (was: macro-arity)
+    (macro foo (?p))
+<row>:1:16: unexpected `)`
+  repair: Insert a variable
+
+## 20. a macro's parameters and body (was: macro-arity)
+    (macro)
+<row>:1:7: unexpected `)`
+  repair: Insert a name, Insert `(`, Insert a variable, Insert `)`, Insert a variable
+  repair: Insert a name, Insert `(`, Insert a variable, Shift `)`, Insert a variable, Insert `)`
+
+## 21. a macro's name (was: macro-malformed)
+    (macro ?x ?y)
+<row>:1:8: unexpected `?x`: a variable
+  repair: Insert a name, Insert `(`
+<row>:1:14: unexpected end of input
+  repair: Insert a variable, Insert `)`
+
+## 22. a macro's parameters (was: macro-malformed)
+    (macro foo () (rel ?a))
+<row>:1:13: unexpected `)`
+  repair: Insert a variable
+
+## 23. a macro's name (was: macro-malformed)
+    (macro (f) (?p) (r ?p))
+<row>:1:8: unexpected `(`
+  repair: Delete `(`, Shift `f`, Delete `)`
+
+## 24. a macro's name (was: —)
+    (macro open (?P) (absent ?P))
+<row>:1:8: unexpected `open`
+  repair: Insert a name, Delete `open`
+
+## 25. an import's module (was: import-module)
+    (import)
+<row>:1:8: unexpected `)`
+  repair: Insert a name
+
+## 26. an import's module (was: import-module)
+    (import (std) :as m)
+<row>:1:9: unexpected `(`
+  repair: Insert a name, Insert `:symbols`
+  repair: Delete `(`, Shift `std`, Delete `)`
+
+## 27. an import's alias (was: import-as)
+    (import std.macro :as "m")
+<row>:1:23: unexpected `"m"`: a string
+  note: "m" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"m"`
+
+## 28. an import's alias (was: import-as)
+    (import std.macro :as (m))
+<row>:1:23: unexpected `(`
+  repair: Insert a name, Insert `:symbols`
+  repair: Delete `(`, Shift `m`, Delete `)`
+  repair: Delete `(`, Shift `m`, Shift `)`, Delete `)`
+
+## 29. an import's symbols (was: import-symbols-list)
+    (import std.macro :symbols forall)
+<row>:1:28: unexpected `forall`: a name
+  repair: Insert `(`, Shift `forall`, Insert `)`
+  repair: Insert `(`, Shift `forall`, Shift `)`, Insert `)`
+
+## 30. an import's symbols (was: import-symbols-empty)
+    (import std.macro :symbols ())
+<row>:1:29: unexpected `)`
+  repair: Insert a name
+
+## 31. a premise's relation (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (_ 2) :assert (hit w))
+<row>:3:20: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 32. a pattern's relation (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (box (_ 2)) :assert (hit w))
+<row>:3:25: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 33. a pattern's relation (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (absent (not (_ b))) :assert (hit w))
+<row>:3:33: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 34. a pattern's relation, in a guard (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (and (n ?x) (eq ?x (_ 2))) :assert (hit w))
+<row>:3:39: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 35. a conclusion's relation (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (n ?x) :assert (box (_ ?x)))
+<row>:3:40: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 36. a premise's relation, in an hrule (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (_ ?x) :assert (tag ?x ?x))
+<row>:3:21: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 37. a premise's relation and a conclusion's (was: wild-head)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (_ 2)) :assert (box (_ ?x)))
+<row>:3:32: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+<row>:3:52: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 38. a pattern's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n _) (box (tag _ _))) :assert (hit r))
+<row>:3:27: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+<row>:3:40: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`, Delete `_`
+
+## 39. a pattern's argument, under an absent (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule owe () :match (and (n ?x) (absent (tag ?x _))) :assert (open tag))
+<row>:3:49: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 40. a pattern's argument (was: nested-kw)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (box (p a :k v)) :assert (hit a))
+<row>:3:29: unexpected `:k`: a keyword this form does not take
+  repair: Insert a name, Delete `:k`
+  repair: Insert a variable, Delete `:k`
+  repair: Delete `:k`, Delete `v`
+
+## 41. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x :where v) :assert (hit r))
+<row>:3:25: unexpected `:where`: a keyword this form does not take
+  repair: Delete `:where`
+
+## 42. a guard's argument (was: wild-guard)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule e () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))
+<row>:3:38: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+  repair: Insert a variable, Delete `_`
+
+## 43. a guard's argument, under an absent (was: wild-guard)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y _)))) :assert (hit ?x))
+<row>:3:59: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+  repair: Insert a variable, Delete `_`
+
+## 44. a guard's argument, in an hrule (was: wild-guard)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))
+<row>:3:39: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+  repair: Insert a variable, Delete `_`
+
+## 45. a guard's argument (was: guard-kwpair)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit ?x))
+<row>:3:38: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 46. a :match (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match _ :assert (hit a))
+<row>:3:19: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`, Delete `:assert`
+
+## 47. a :match (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match foo :assert (hit a))
+<row>:3:19: unexpected `foo`: a name
+  repair: Delete `foo`, Delete `:assert`
+  repair: Insert `(`, Shift `foo`, Delete `:assert`
+  repair: Insert `(`, Shift `foo`, Insert `)`
+
+## 48. a conjunct (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) ?x) :assert (hit ?x))
+<row>:3:31: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 49. a disjunct (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (or 3 (q ?y)) :assert (hit a))
+<row>:3:23: unexpected `3`: a name
+  repair: Delete `3`
+
+## 50. an absent's premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (absent "s")) :assert (hit ?x))
+<row>:3:39: unexpected `"s"`: a string
+  note: "s" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert `(`, Insert a variable, Insert `)`, Delete `"s"`
+  repair: Insert `(`, Insert a name, Insert `)`, Delete `"s"`
+  repair: Delete `"s"`, Delete `)`, Delete `)`, Delete `:assert`
+  and 6 more repairs
+
+## 51. a conjunct, in an hrule (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (and (p ?x) _) :assert (hit ?x))
+<row>:3:32: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 52. an absent's premise (was: absent-empty)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule vacuous ()
+      :match (and (p ?x) (absent :k v))
+      :assert (hit ?x))
+<row>:4:30: unexpected `:k`: a keyword this form does not take
+  repair: Insert `(`, Delete `:k`
+<row>:5:3: unexpected `:assert`
+  repair: Delete `:assert`
+  repair: Insert `)`
+<row>:5:20: unexpected end of input
+  repair: Insert `)`
+
+## 53. an absent's premise (was: absent-empty)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule vacuous ()
+      :match (and (p ?x) (absent ?x))
+      :assert (hit ?x))
+<row>:4:30: unexpected `?x`: a variable
+  repair: Insert `(`
+<row>:5:3: unexpected `:assert`
+  repair: Delete `:assert`
+  repair: Insert `)`
+<row>:5:20: unexpected end of input
+  repair: Insert `)`
+
+## 54. a premise's relation (was: —)
+    (relation is-a T T) (relation r A B)
+    (rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))
+<row>:2:49: unexpected `open`
+  repair: Delete `open`
+  repair: Insert `neq`
+  repair: Insert a variable
+  and 1 more repair
+
+## 55. a conclusion's argument (was: nested-kw, conclusion-argument)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (box (p ?x :k v)))
+<row>:3:45: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 56. a conclusion's argument (was: conclusion-argument)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert (tag ?x _))
+<row>:3:42: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 57. a conclusion's argument (was: conclusion-argument)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert (tag ?x "lbl"))
+<row>:3:42: unexpected `"lbl"`: a string
+  note: "lbl" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"lbl"`
+
+## 58. a conclusion's keyword (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert (tag ?x b :source "x"))
+<row>:3:44: unexpected `:source`
+  repair: Delete `:source`, Delete `"x"`
+
+## 59. an :assert (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert foo)
+<row>:3:34: unexpected `foo`: a name
+  repair: Insert `(`, Shift `foo`, Insert `)`
+  repair: Insert `(`, Shift `foo`, Shift `)`, Insert `)`
+
+## 60. a conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert (and (tag ?x b) ?x))
+<row>:3:50: unexpected `?x`: a variable
+  repair: Delete `?x`
+  repair: Insert `(`
+
+## 61. an (open …)'s arguments (was: —)
+    (relation is-a T T) (relation r A B)
+    (rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))
+<row>:2:123: unexpected `(`
+  repair: Insert `)`, Insert `:assert`
+  repair: Insert `)`, Insert `:match`
+<row>:2:136: unexpected `(`
+  repair: Insert `:assert`
+  repair: Insert `:match`
+<row>:2:147: unexpected `)`
+  repair: Delete `)`
+
+## 62. a conclusion beside (open …) (was: —)
+    (relation is-a T T) (relation r A B)
+    (rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (and (open ?R) (r ?a b)))
+<row>:2:120: unexpected `open`
+  repair: Delete `open`
+  repair: Insert `neq`
+  repair: Insert a variable
+  and 1 more repair
+
+## 63. an (open …)'s argument (was: —)
+    (relation is-a T T) (relation r A B)
+    (rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (open (r ?a ?b)))
+<row>:2:120: unexpected `(`
+  repair: Insert `)`, Insert `:assert`
+  repair: Insert `)`, Insert `:match`
+<row>:2:130: unexpected `)`
+  repair: Delete `)`
+
+## 64. a query's keyword (was: query-keyword)
+    (relation p T P)
+    (p A H)
+    (query :goal (p A ?h) :expct none)
+<row>:3:23: unexpected `:expct`: a keyword this form does not take
+  repair: Insert `:over`, Delete `:expct`
+  repair: Delete `:expct`, Delete `none`
+
+## 65. a query's keyword (was: query-keyword)
+    (query :goal (a ?x) :mode all)
+<row>:1:21: unexpected `:mode`: a keyword this form does not take
+  repair: Insert `:over`, Delete `:mode`
+  repair: Delete `:mode`, Delete `all`
+
+## 66. a query's keyword (was: query-keyword)
+    (query :goal (a ?x))
+    (query :goal (b ?x) :mode all)
+    (config :print-alive true)
+<row>:2:21: unexpected `:mode`: a keyword this form does not take
+  repair: Insert `:over`, Delete `:mode`
+  repair: Delete `:mode`, Delete `all`
+<row>:3:9: unexpected `:print-alive`: a keyword this form does not take
+  note: config flag :print-alive was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  repair: Insert `:lattice-sanity-check`, Delete `:print-alive`
+  repair: Insert `:record-alternative-justifications`, Delete `:print-alive`
+  repair: Delete `:print-alive`, Delete `true`
+
+## 67. a query's keyword (was: query-lattice-keyword)
+    (query :goal (a ?x) :hrules (h))
+<row>:1:21: unexpected `:hrules`
+  note: :hrules chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  repair: Insert `:goal`, Delete `:hrules`
+
+## 68. a query's keyword (was: query-lattice-keyword)
+    (query :goal (a ?x) :no-hypothesis (p))
+<row>:1:21: unexpected `:no-hypothesis`
+  note: :no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  repair: Insert `:goal`, Delete `:no-hypothesis`
+
+## 69. a query's :over (was: over-not-a-name)
+    (query :goal (a ?x) :over (all))
+<row>:1:27: unexpected `(`
+  repair: Insert a name, Insert `:goal`
+  repair: Delete `(`, Shift `all`, Delete `)`
+  repair: Delete `(`, Shift `all`, Shift `)`, Delete `)`
+
+## 70. a query's :over (was: over-not-a-name)
+    (query :goal (a ?x) :over ?x)
+<row>:1:27: unexpected `?x`: a variable
+  repair: Insert a name, Delete `?x`
+
+## 71. a query's claim (was: expect-atom)
+    (query :goal (p ?x) :expect all)
+<row>:1:29: unexpected `all`: a name
+  repair: Insert `(`, Insert `model`, Insert `)`, Delete `all`
+  repair: Insert `(`, Insert `false`, Insert `)`, Delete `all`
+  repair: Insert `(`, Insert `false`, Insert `)`, Insert `:over`
+  and 3 more repairs
+
+## 72. a query's claim (was: expect-atom)
+    (query :goal (p ?x) :expect none)
+<row>:1:29: unexpected `none`: a name
+  repair: Insert `(`, Insert `model`, Insert `)`, Delete `none`
+  repair: Insert `(`, Insert `false`, Insert `)`, Delete `none`
+  repair: Insert `(`, Insert `false`, Insert `)`, Insert `:over`
+  and 3 more repairs
+
+## 73. a query's claim (was: expect-atom-false)
+    (query :goal (p ?x) :expect false)
+<row>:1:29: unexpected `false`
+  repair: Insert `(`, Shift `false`, Insert `)`
+  repair: Insert `(`, Shift `false`, Shift `)`, Insert `)`
+
+## 74. a query's claim (was: expect-not-a-form)
+    (query :goal (p ?x) :expect ?x)
+<row>:1:29: unexpected `?x`: a variable
+  repair: Insert `(`, Insert `model`, Insert `)`, Delete `?x`
+  repair: Insert `(`, Insert `false`, Insert `)`, Delete `?x`
+  repair: Insert `(`, Insert `false`, Delete `?x`, Shift `)`, Insert `)`
+  and 1 more repair
+
+## 75. a query's claim (was: expect-not-a-form)
+    (query :goal (p ?x) :expect "s")
+<row>:1:29: unexpected `"s"`: a string
+  note: "s" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert `(`, Insert `model`, Insert `)`, Delete `"s"`
+  repair: Insert `(`, Insert `false`, Insert `)`, Delete `"s"`
+  repair: Insert `(`, Insert `false`, Insert `)`, Insert `:goal-text`
+  and 3 more repairs
+
+## 76. a query's claim (was: expect-head)
+    (query :goal (p ?x) :expect (?m (p A)))
+<row>:1:30: unexpected `?m`: a variable
+  repair: Insert `model`, Delete `?m`
+
+## 77. a query's claim (was: expect-false-args)
+    (query :goal (p ?x) :expect (false A))
+<row>:1:36: unexpected `A`: a name
+  repair: Delete `A`
+
+## 78. a query's claim (was: expect-and)
+    (query :goal (p ?x) :expect (and (p A) (p B)))
+<row>:1:30: unexpected `and`
+  repair: Insert `model`, Delete `and`
+
+## 79. a query's claim (was: expect-and)
+    (query :goal (p ?x) :expect (and (p A)))
+<row>:1:30: unexpected `and`
+  repair: Insert `model`, Delete `and`
+
+## 80. a query's claim (was: expect-head-other)
+    (query :goal (p ?x) :expect (models (p A)))
+<row>:1:30: unexpected `models`: a name
+  repair: Insert `model`, Delete `models`
+  repair: Insert `model`, Insert `(`
+
+## 81. a query's claim (was: expect-or-empty)
+    (query :goal (p ?x) :expect (or))
+<row>:1:32: unexpected `)`
+  repair: Insert `(`, Insert `model`, Insert `)`
+  repair: Insert `(`, Insert `model`, Shift `)`, Insert `)`
+  repair: Insert `(`, Insert `model`, Shift `)`, Shift `)`, Insert `)`
+
+## 82. a query's claim (was: expect-or-item-not-model)
+    (query :goal (p ?x) :expect (or (p A)))
+<row>:1:34: unexpected `p`: a name
+  repair: Insert `model`, Insert `(`
+<row>:1:40: unexpected end of input
+  repair: Insert `)`
+
+## 83. a query's claim (was: expect-or-item-not-a-form)
+    (query :goal (p ?x) :expect (or a))
+<row>:1:33: unexpected `a`: a name
+  repair: Insert `(`, Insert `model`, Insert `(`
+<row>:1:36: unexpected end of input
+  repair: Insert `)`, Insert `)`
+
+## 84. a claim's fact (was: expect-not-arity)
+    (query :goal (p ?x) :expect (model (not (p A) (p B))))
+<row>:1:47: unexpected `(`
+  repair: Insert `)`
+<row>:1:54: unexpected `)`
+  repair: Delete `)`
+
+## 85. a claim's fact (was: expect-fact-not-a-form)
+    (query :goal (p ?x) :expect (model 3))
+<row>:1:36: unexpected `3`: a name
+  repair: Delete `3`
+  repair: Insert `(`
+
+## 86. a claim's fact (was: expect-fact-head)
+    (query :goal (p ?x) :expect (model (?p A)))
+<row>:1:37: unexpected `?p`: a variable
+  repair: Delete `?p`
+
+## 87. a claim's fact's argument (was: expect-var)
+    (query :goal (p ?x) :expect (model (p ?x)))
+<row>:1:39: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 88. a claim's fact's argument (was: expect-wildcard)
+    (query :goal (p ?x) :expect (model (p _)))
+<row>:1:39: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 89. a claim's fact's argument (was: expect-nested-head)
+    (query :goal (p ?x) :expect (model (p (?q A))))
+<row>:1:40: unexpected `?q`: a variable
+  repair: Delete `?q`
+
+## 90. a claim's fact's argument (was: expect-arg-other)
+    (query :goal (p ?x) :expect (model (p :k v)))
+<row>:1:39: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 91. a claim's fact's argument (was: expect-arg-other)
+    (query :goal (p ?x) :expect (model (p "s")))
+<row>:1:39: unexpected `"s"`: a string
+  note: "s" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"s"`
+
+## 92. a solve's keyword (was: solve-keyword)
+    (solve :hrule (h))
+<row>:1:8: unexpected `:hrule`: a keyword this form does not take
+  repair: Insert `:hrules`, Delete `:hrule`
+  repair: Insert `:hypothesis-relations`, Delete `:hrule`
+  repair: Insert `:no-hypothesis`, Delete `:hrule`
+
+## 93. a solve's keyword (was: solve-keyword)
+    (solve :goal (p ?x))
+<row>:1:8: unexpected `:goal`
+  repair: Insert `)`, Insert `(`, Insert `query`
+  repair: Insert `:no-hypothesis`, Delete `:goal`, Shift `(`, Shift `p`, Delete `?x`
+  repair: Insert `:hypothesis-relations`, Delete `:goal`, Shift `(`, Shift `p`, Delete `?x`
+  and 1 more repair
+
+## 94. a solve's claim (was: claim-not-a-form)
+    (solve :expect region)
+<row>:1:16: unexpected `region`
+  repair: Insert `(`, Shift `region`, Insert `)`
+  repair: Insert `(`, Shift `region`, Shift `)`, Insert `)`
+
+## 95. a solve's claim (was: claim-false-args)
+    (solve :expect (false A))
+<row>:1:23: unexpected `A`: a name
+  repair: Delete `A`
+
+## 96. a solve's claim (was: claim-model-or-or)
+    (relation p T) (p A) (solve :expect (model (p A)))
+<row>:1:38: unexpected `model`
+  repair: Insert `region`, Insert `(`
+<row>:1:51: unexpected end of input
+  repair: Insert `)`
+
+## 97. a solve's claim (was: claim-model-or-or)
+    (solve :expect (or (model) (model)))
+<row>:1:17: unexpected `or`
+  repair: Insert `region`, Delete `or`
+
+## 98. a solve's claim (was: claim-head-other)
+    (solve :expect (models))
+<row>:1:17: unexpected `models`: a name
+  repair: Insert `false`, Delete `models`
+  repair: Insert `region`, Delete `models`
+
+## 99. a region's item (was: region-item)
+    (relation p T) (p A) (solve :expect (region (p A)))
+<row>:1:46: unexpected `p`: a name
+  repair: Insert `model`, Insert `(`
+<row>:1:52: unexpected end of input
+  repair: Insert `)`
+
+## 100. a region's item (was: merged-arity)
+    (relation p T) (p A) (solve :expect (region (merged (model (p A)))))
+<row>:1:66: unexpected `)`
+  repair: Insert `(`, Insert `model`
+<row>:1:69: unexpected end of input
+  repair: Insert `)`
+
+## 101. a region's item (was: merged-to)
+    (solve :expect (region (model) (merged (p A) (model))))
+<row>:1:41: unexpected `p`: a name
+  repair: Insert `model`, Insert `(`
+<row>:1:54: unexpected `)`
+  repair: Insert `(`, Insert `model`, Insert `)`, Insert `)`
+  repair: Insert `(`, Insert `model`, Shift `)`, Insert `)`, Insert `)`
+  repair: Insert `(`, Insert `model`, Insert `)`, Shift `)`, Insert `)`
+  and 3 more repairs
+
+## 102. a region's item (was: merged-from)
+    (solve :expect (region (model) (merged (model) (p A))))
+<row>:1:49: unexpected `p`: a name
+  repair: Insert `model`, Insert `(`
+<row>:1:56: unexpected end of input
+  repair: Insert `)`
+
+## 103. a region's item (was: merged-or-item)
+    (solve :expect (region (model) (merged (model) (or (p A)))))
+<row>:1:53: unexpected `p`: a name
+  repair: Insert `model`, Insert `(`
+<row>:1:61: unexpected end of input
+  repair: Insert `)`
+
+## 104. a region's item (was: owing-empty)
+    (relation p T) (p A) (solve :expect (region (owing)))
+<row>:1:51: unexpected `)`
+  repair: Insert `(`, Insert `model`
+<row>:1:54: unexpected end of input
+  repair: Insert `)`
+
+## 105. a region's item (was: owing-item)
+    (solve :expect (region (owing (p A))))
+<row>:1:32: unexpected `p`: a name
+  repair: Insert `model`, Insert `(`
+<row>:1:39: unexpected end of input
+  repair: Insert `)`
+
+## 106. a claim's fact's argument (was: —)
+    (relation p T) (p A) (solve :expect (region (model (p ?x))))
+<row>:1:55: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 107. a config's body (was: config-kw-pairs)
+    (config true)
+<row>:1:9: unexpected `true`
+  repair: Delete `true`
+  repair: Insert `:record-alternative-justifications`
+  repair: Insert `:lattice-sanity-check`
+
+## 108. a config's body (was: config-kw-pairs)
+    (config lattice-sanity-check true)
+<row>:1:9: unexpected `lattice-sanity-check`: a name
+  repair: Insert `)`, Insert `(`
+  repair: Insert `:lattice-sanity-check`, Delete `lattice-sanity-check`
+  repair: Insert `:record-alternative-justifications`, Delete `lattice-sanity-check`
+  and 1 more repair
+
+## 109. a config's keyword (was: config-unknown)
+    (config :nope 1)
+<row>:1:9: unexpected `:nope`: a keyword this form does not take
+  repair: Delete `:nope`, Delete `1`
+
+## 110. a config's keyword (was: config-unknown)
+    (config :lattice-sanity true)
+<row>:1:9: unexpected `:lattice-sanity`: a keyword this form does not take
+  repair: Insert `:lattice-sanity-check`, Delete `:lattice-sanity`
+  repair: Insert `:record-alternative-justifications`, Delete `:lattice-sanity`
+  repair: Delete `:lattice-sanity`, Delete `true`
+
+## 111. a config's keyword (was: config-retired)
+    (config :lattice-order-seed 7)
+<row>:1:9: unexpected `:lattice-order-seed`: a keyword this form does not take
+  note: config flag :lattice-order-seed was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  repair: Delete `:lattice-order-seed`, Delete `7`
+
+## 112. a config's keyword (was: config-retired)
+    (config :candidate-order-seed 5)
+<row>:1:9: unexpected `:candidate-order-seed`: a keyword this form does not take
+  note: config flag :candidate-order-seed was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  repair: Delete `:candidate-order-seed`, Delete `5`
+
+## 113. a config's keyword (was: config-retired)
+    (config :print-alive true)
+<row>:1:9: unexpected `:print-alive`: a keyword this form does not take
+  note: config flag :print-alive was retired at M1e2 S1e2.1a.5: it was inert: no code path read it (Q-M1e.10)
+  repair: Insert `:lattice-sanity-check`, Delete `:print-alive`
+  repair: Insert `:record-alternative-justifications`, Delete `:print-alive`
+  repair: Delete `:print-alive`, Delete `true`
+
+## 114. a config's keyword (was: config-retired)
+    (config :lattice-order lex)
+<row>:1:9: unexpected `:lattice-order`: a keyword this form does not take
+  note: config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  repair: Delete `:lattice-order`, Delete `lex`
+
+## 115. a config's keyword (was: config-retired)
+    (config :hypgen-rel-weight 2)
+<row>:1:9: unexpected `:hypgen-rel-weight`: a keyword this form does not take
+  note: config flag :hypgen-rel-weight was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+  repair: Delete `:hypgen-rel-weight`, Delete `2`
+
+## 116. a config's keyword (was: config-retired)
+    (config :enable-singleton-writeback false)
+<row>:1:9: unexpected `:enable-singleton-writeback`: a keyword this form does not take
+  note: config flag :enable-singleton-writeback was retired at M1e2 S1e2.1a.5: it wrote into root, which no route does: a candidate dead alone leaves the universe by L1
+  repair: Insert `:lattice-sanity-check`, Delete `:enable-singleton-writeback`
+  repair: Insert `:record-alternative-justifications`, Delete `:enable-singleton-writeback`
+  repair: Delete `:enable-singleton-writeback`, Delete `false`
+
+## 117. a config's keyword (was: config-retired)
+    (config :enable-forced-positive false)
+<row>:1:9: unexpected `:enable-forced-positive`: a keyword this form does not take
+  note: config flag :enable-forced-positive was retired at M1e2 S1e2.1a.5: it wrote into root, which no route does: a candidate dead alone leaves the universe by L1
+  repair: Insert `:lattice-sanity-check`, Delete `:enable-forced-positive`
+  repair: Insert `:record-alternative-justifications`, Delete `:enable-forced-positive`
+  repair: Delete `:enable-forced-positive`, Delete `false`
+
+## 118. a config's keyword (was: config-retired)
+    (config :enable-symmetric-mirror false)
+<row>:1:9: unexpected `:enable-symmetric-mirror`: a keyword this form does not take
+  note: config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
+  repair: Insert `:lattice-sanity-check`, Delete `:enable-symmetric-mirror`
+  repair: Insert `:record-alternative-justifications`, Delete `:enable-symmetric-mirror`
+  repair: Delete `:enable-symmetric-mirror`, Delete `false`
+
+## 119. a config's keyword (was: config-retired)
+    (config :warn-derived-naf true)
+<row>:1:9: unexpected `:warn-derived-naf`: a keyword this form does not take
+  note: config flag :warn-derived-naf was retired at M1e2 S1e2.2.5: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R
+  repair: Insert `:lattice-sanity-check`, Delete `:warn-derived-naf`
+  repair: Insert `:record-alternative-justifications`, Delete `:warn-derived-naf`
+  repair: Delete `:warn-derived-naf`, Delete `true`
+
+## 120. a config flag's value (was: config-bool)
+    (config :lattice-sanity-check 7)
+<row>:1:31: unexpected `7`: a name
+  repair: Insert `false`, Delete `7`
+  repair: Insert `true`, Delete `7`
+
+## 121. a config flag's value (was: config-bool)
+    (config :record-alternative-justifications "false")
+<row>:1:44: unexpected `"false"`: a string
+  note: "false" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert `false`, Delete `"false"`
+  repair: Insert `true`, Delete `"false"`
+
+## 122. a config flag's value (was: config-bool)
+    (config :lattice-sanity-check TRUE)
+<row>:1:31: unexpected `TRUE`: a name
+  repair: Insert `false`, Delete `TRUE`
+  repair: Insert `true`, Delete `TRUE`
+

@@ -692,10 +692,8 @@ fn query_claim(
             ),
         });
     }
-    // The loader refused every shape this can.
-    let Ok(e) = ein_ir::expect::parse(ast, node) else {
-        return not_checked("the claim did not parse".to_string());
-    };
+    // A claim's shape is the grammar's, so a loaded claim always reads.
+    let e = ein_ir::expect::parse(ast, node);
     let want: Vec<Vec<String>> = e
         .models()
         .iter()

@@ -854,8 +854,8 @@ const DERIVED_NAF: &str = "\
 /// refusal, and a non-monotone site is the detector's warning on every surface.
 /// What is left is [`ein_infer::derived_naf_warnings`], read by the corpus's
 /// `naf` shape op. So: the library still names the rule and the relation; a
-/// run narrates no `warn`; and a program that sets the flag is refused with
-/// the stage that retired it.
+/// run narrates no `warn`; and a program that sets the flag is refused at the
+/// parse, with the stage that retired it.
 #[test]
 fn the_stratification_advisory_is_the_librarys_and_the_flag_is_retired() {
     let (ast, mut terms, mut kb) = load_src(DERIVED_NAF);
@@ -894,19 +894,9 @@ fn the_stratification_advisory_is_the_librarys_and_the_flag_is_retired() {
     );
 
     // Since M1f S1f.5.5's swap the flag is a keyword a `(config …)` does
-    // not take, refused at the parse (S1f.5.11), and the loader's line is a
-    // note on the parse error (the paper grammar's default 5).
-    let src = format!("{DERIVED_NAF}(config :warn-derived-naf true)\n");
-    let refused = parse(&mut Ast::new(), &src, Some("<naf>"))
-        .expect_err("a program that sets a retired flag is refused")
-        .to_string();
-    assert!(
-        refused.contains(
-            "unexpected `:warn-derived-naf`: a keyword this form does not take\n  note: config \
-             flag :warn-derived-naf was retired at M1e2 S1e2.2.5"
-        ),
-        "{refused}"
-    );
+    // not take, refused at the parse (S1f.5.11), the loader's line a note on
+    // the parse error (the paper grammar's default 5): a row of `ein-ir`'s
+    // grammar table since T1f.5.5.5 deleted that line.
 }
 
 /// **The NAF map is incomplete before saturation, which is why the warning
