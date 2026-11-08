@@ -500,6 +500,13 @@ constrained-reasoning research.
   prints as written, as the stdlib's three `{?isR*}` `:why`s do on `--trace`:
   103 fixed, 36 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
+  T10 also moved `syntax/wrappers`, the one fixture rewrite that moves no
+  answer on today's parser, and S1f.5.15's T1f.5.15.9 took `:priority` out
+  of `utils/region_synth.py`, `guard_split.py` and `fuzz_engine.py`. T11,
+  the engine's five names reserved, stopped before any edit on
+  [Q-M1f.7](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders):
+  the reading refuses a dunder as an argument, and the stdlib documents
+  `(imply1 functional __closed__)`. T11 and the swap wait on the user.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -72,6 +72,11 @@ reserved (T11), the `.einb` budget restated in T4, and the rest as recommended. 
 **T10 done on 2026-11-08** ([§ T10 record](#t10-record-2026-11-08)): W37 filed, `open` and S1f.5.4's (item 7), and
 of the three fixture candidates `syntax/wrappers` moved, the other two refused at the parse by today's parser and
 so T4's; item 8, the scripts' `:priority`, landed as S1f.5.15's T1f.5.15.9.
+**T11 stopped on 2026-11-08 before any edit** ([§ T11 record](#t11-record-2026-11-08)): the coordinator's reading of
+item 4 would refuse `(imply1 functional __closed__)`, which the stdlib documents and a test holds, and T11's test
+cannot hold under it; where a program may write a dunder is
+[Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders), put to the user. T11 and
+then T4 wait on it.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1062,7 +1067,8 @@ defaults was overruled.
   - **The dunders** keep the positions the corpus and the stdlib write them in: the relation of a fact, of a
     `:match` pattern and of an `:assert` (`(__closed__ is-a)`, `(__symmetric__ knows)`, `:assert (__closed__ ?R)`).
     Any other use is refused: a relation the program declares, a rule's name, or an argument value.
-  - This is T1f.5.5.11 below.
+  - This is T1f.5.5.11 below. **T11 stopped on this reading's dunder half on 2026-11-08**, before any edit:
+    [Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders).
 - **Item 12, a `.einb` cold open:** *"Restate the budget"*. T4 restates design/10 § 6's millisecond and
   `roundtrip`'s dev-profile 5 ms at what the generated parser costs, as the generator's accepted price. Keeping
   the parsed tree in the container, a format bump, waits until the millisecond is wanted.
@@ -1095,6 +1101,38 @@ named there.
 - **The tests:** one per name and position, and T9's probe `build/s1f.5.5/t9/probes/engine-names.ein` refused
   at each of its five names.
 - **The page:** `reserved_engine_strings.md` says the five are refused as a program's own names.
+
+### T11 record, 2026-11-08
+
+**Stopped before any edit, on [Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders)**,
+put to the user. No engine code, grammar, test, golden, fixture, page or register row moved.
+
+**The writeback half meets nothing.** No `.ein` under `examples/`, `tests/`, `stdlib/`, `corpus/` or `plans/`, and
+no inline program of the Rust suites, writes `<forced-positive>`, `<monotonic-unconditional>` or
+`<lookahead-dies-immediately>`; the one place in the crates that spells them is `ein_core::terms` (`grep`,
+2026-11-08). Today's parser refuses each at its `<` (*2:4: unexpected input*, `(p <forced-positive>)` and its two
+twins), and T9's generated build loads each, as a value, as a relation and as a rule's name, whose firings then
+print as the engine's writebacks (T9's probe). No `(trace …)` the engine writes is read back through the parser
+on any command (`trace_to_ir` has no caller outside the crate's exports), so refusing them in every position a
+program writes costs no engine output.
+
+**The dunder half meets two things the reading did not see**, Q-M1f.7's two bullets: the stdlib documents
+`(imply1 functional __closed__)`, a dunder as an argument value, which `algebra_semantics` holds and both builds
+derive `(__closed__ foo)` from; and the task's test, T9's probe refused at each of its five names, cannot hold
+under the reading, which keeps the probe's two dunder facts legal. Neither moves a corpus answer: no corpus
+program writes a dunder anywhere but as the relation of a fact, a premise or a conclusion, the positions every
+reading keeps (`branching/12`, `features/06`, `stdlib/closure.ein`, `tests/stdlib/closure/02` and `03`). The
+positions no reading stated (a macro's name, an import's `:as`, a goal, a claim, a nested fact's relation, a
+`:no-hypothesis` list, a fact's `:rule __symmetric__`) all load on both builds today (the probes under
+`build/s1f.5.5/t11/`, 2026-11-08), and a dunder declared as a relation or named as a rule loads too, its firings
+printing `:rule __symmetric__`, the native mirror's provenance.
+
+**What T11 does once Q-M1f.7 is ruled**, under every option: the three writeback names are tokens of their own in
+`ein.l`, before `NAME`, that no production takes, so the generated grammar refuses each where it stands with its
+own `%epp` text, as it refuses `_`; the dunders' binding positions join the loader's *shadows a reserved kernel
+name* check (`ein_core::is_reserved`'s callers in `from_ir.rs` and `macros.rs`, and the import alias), which both
+parsers feed, so they agree without an edit to `lex.rs` or `parse.rs`; under (a) a loader line refuses a dunder
+as an argument too. The pages: `reserved_engine_strings.md` and `06_reserved_names.md`.
 
 ### Task T1f.5.5.10 — the fixture moves that move no answer
 
@@ -1129,7 +1167,7 @@ The register reads **103 rows fixed, 36 open and 1 not-wrong** (`grep '^status' 
 uniq -c`, 2026-11-08). Item 8 landed between the two, as S1f.5.15's
 ([its T9 record](s1f.5.15_rule_priority.md#t9-record-2026-11-08), `4c272aae`).
 
-**The fixture moves that move no answer** (this record's commit). Each of the three candidates was put through the test, today's
+**The fixture moves that move no answer** (`9e54d3a8`). Each of the three candidates was put through the test, today's
 binary (`a50cf081`'s engine) on the fixture as written and on Q-M1f.2 (a)'s rewrite
 ([`s1f.5.5_parser_probe/programs/`](s1f.5.5_parser_probe/programs/)), every declared run, `ein saturate --dump`
 and `ein solve -H --json-summary --dump-answer` (`build/s1f.5.5/t10/wrappers/`, 2026-11-08):

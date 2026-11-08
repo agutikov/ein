@@ -15,6 +15,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
 | [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
+| [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **open**, put to the user 2026-11-08; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 waits on it |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -196,3 +197,65 @@ answer, the user ruled: *"plain FIFO, core is an explanation, F22 makes it canon
 boundary are FIFO, the written order, and no band orders either; Q-M1f.4 (b)'s derived agenda is withdrawn with
 this (b). Every core and `refuted by` the removal moves is named in its commit as F22's; each stays a valid core
 (`ein-infer/tests/corpus_cores.rs`). T3's rule graph and strata stay for T4's diagnostic; nothing orders by them.
+
+### Q-M1f.7 — Where may a program write the kernel's dunders?
+
+**Raised** 2026-11-08 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11
+([§ T11 record](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t11-record-2026-11-08)), before any edit. The user
+ruled at the T9 review stop that the engine's five names *"are also reserved names"*, and the coordinator read it,
+for the user to correct: the three writeback names `<forced-positive>`, `<monotonic-unconditional>` and
+`<lookahead-dies-immediately>` are refused wherever a program writes them, and the dunders `__closed__` and
+`__symmetric__` keep the positions the corpus writes them in, the relation of a fact, of a pattern and of an
+`:assert`, and are refused as a declared relation, a rule's name, or **an argument value**. The writeback half
+meets nothing. The dunder half meets two things the reading did not see:
+
+- **The stdlib documents a dunder as an argument value, and a test holds it.** `stdlib/algebra.ein`'s `imply1`,
+  *"Doubles as property→property: (imply1 functional __closed__) turns a functional relation closed"*;
+  [`07_stdlib_api.md`](../../docs/kernel/ir/03-ein-lang/07_stdlib_api.md)'s `imply1` row, *e.g. `(imply1
+  functional __closed__)`*; and `ein-infer/tests/algebra_semantics.rs`'
+  `imply1_lifts_a_property_marker_onto_a_kernel_trigger`, which holds that the program derives `(__closed__
+  foo)`, *"userspace reaching a kernel switch"*. Today's binary and T9's generated build both derive `(__closed__
+  foo :rule imply1)` from it (`ein saturate --dump`, `build/s1f.5.5/t11/imply1.ein`, 2026-11-08). No corpus
+  program writes it outside that comment (`grep` over `examples/`, `tests/`, `stdlib/`, `corpus/`, 2026-11-08), so
+  no corpus answer moves either way.
+- **The stage file's test cannot hold under the reading.** T11 asks for T9's probe refused at each of its five
+  names; the probe writes its dunders as `(__symmetric__ s)` and `(__closed__ hit)`, the relation of a fact, which
+  the reading keeps legal. Under the reading the probe is refused at its three writeback names only.
+
+Where each position stands (`grep` of every `.ein` under the five roots, the Rust suites' inline programs, and
+two probes on today's binary and T9's generated build, 2026-11-08):
+
+| position | written by | today, both builds | the reading | (b) |
+|---|---|---|---|---|
+| the relation of a fact, `(__closed__ is-a)` | `branching/12`, `features/06` (three) | loads | legal | legal |
+| the relation of a premise, `:match (__closed__ ?R)` | `tests/stdlib/closure/02`, `/03` | loads | legal | legal |
+| the relation of a conclusion, `:assert (__closed__ ?R)` | `stdlib/closure.ein` | loads | legal | legal |
+| an argument value, `(imply1 functional __closed__)` | `stdlib/algebra.ein`'s comment, `07_stdlib_api.md`, `algebra_semantics`; `(a __closed__)` in `ir_semantics`' and `grammar_decisions`' parse tables | loads, derives `(__closed__ foo)` | refused | legal |
+| a declared relation, `(relation __closed__ T)` | none | loads, and declares it | refused | refused |
+| a rule's or hrule's name, `(rule __symmetric__ () …)` | none | loads, and its firings print `:rule __symmetric__`, the native mirror's provenance | refused | refused |
+| a macro's name, an import's `:as` | none | loads | not stated | refused |
+| a query's goal, a claim's fact, a nested fact's relation | none | loads | not stated (a pattern's or a fact's relation?) | legal |
+| a `:hypothesis-relations` or `:no-hypothesis` list; a fact's `:rule __symmetric__` | none | loads | not stated (an argument?) | legal |
+
+- **(a) The reading as written.** A dunder is legal only as a relation: of a fact, a premise, a conclusion, and,
+  read the same way, of a goal, a claim's fact and a nested fact; refused everywhere else, an argument value and a
+  name list included. `imply1`'s documented use is refused at load: the comment and the API row go, and
+  `algebra_semantics`' test is restated to the refusal (a program that wants its functional relations closed
+  writes the rule, `:match (functional ?R) :assert (__closed__ ?R)`). The refusal of an argument is a loader line
+  (the grammar's `Name` is every name), which both parsers share.
+- **(b) Never bound.** A dunder is refused where a program **binds** a name, the positions where the loader already
+  refuses the kernel's `RESERVED` names (*shadows a reserved kernel name*): a declared relation, a rule's, an
+  hrule's or a macro's name, and an import's `:as`. It is legal wherever a name is **used**, as a relation or as a
+  value, which keeps `(imply1 functional __closed__)`. One loader check, `is_reserved`'s, shared by both parsers.
+  T11's test is T9's probe refused at its three writeback names, and a probe binding each dunder in each of those
+  positions refused at each.
+- **(c) Never bound, and a value only where it names a relation**: (b), and a dunder as an argument refused unless
+  the argument binds a rule's relation parameter, as `imply1`'s `?R2` does. A check on activators, not on
+  positions, for a case no program writes.
+
+**The agent recommends (b).** *Reserved* is written *"only with its fixed meaning, never redefined"* (§ The review
+stop ruled), and only a binding position can give a dunder another meaning; a value names the kernel's trigger,
+which is how `imply1` hands it to a rule that asserts it, a stdlib idiom that works on both builds today. Under
+every option the three writeback names are refused wherever a program writes them: in the generated grammar as a
+token of their own that no production takes, with its own text, and today at the parse already, `<` being no name
+character in the hand-written lexer.
