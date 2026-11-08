@@ -525,8 +525,9 @@ them, in three forms:
   hold it — an argument is a name, a string, an int, a variable its :match
   binds, or a fact (relation argument …)` (a wildcard `_`, a keyword pair such
   as `:source "x"`, at the conclusion's top level; a range until M1e2
-  S1e2.2.20, which refuses one in a rule at load, § 4.8; a keyword pair inside
-  a nested conclusion until S1e2.2.24, § 4.9);
+  S1e2.2.20, which refused one in a rule at load, and M1f S1f.5.3, which
+  retired the token, § 4.8; a keyword pair inside a nested conclusion until
+  S1e2.2.24, § 4.9);
 - `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
   a fact (relation argument …), or an (and …) of facts` (an atom, a
   variable, a string where a fact belongs);
@@ -860,33 +861,43 @@ and by `corpus/wrong_answers.toml`'s fifteen refused rows (`python3 -c
 "import tomllib; print(sum(1 for r in tomllib.load(open('corpus/wrong_answers.toml','rb'))['case'] if r['right'].get('refused')))"`,
 2026-11-04).
 
-### 4.8 A range, or a wildcard as a relation, in a rule — M1e2 S1e2.2.20
+### 4.8 A wildcard as a relation in a rule — M1e2 S1e2.2.20
 
-A range, `1..3` or `2..*`, is cardinality metadata, and no fact can hold
-one; a wildcard `_` stands for an argument, and a relation is named by a name
-or by a parameter its activator binds (Q29). So, on the user's rulings of
-2026-11-04 and 2026-11-05
-([Q-M1e2.13](../../plans/m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
-(a), [Q-M1e2.14](../../plans/m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
-(c)), the loader refuses a range written where a pattern's argument goes, at
-any depth of a rule's `:match` or `:assert` (an `absent`, a `not`, a nested
-fact, a guard's argument) or as a whole clause, and a `_` written as a form's
-relation, `(_ a)`, at any depth of either clause, in a rule, an hrule or an
+A wildcard `_` stands for an argument, and a relation is named by a name or
+by a parameter its activator binds (Q29). So, on the user's ruling of
+2026-11-05
+([Q-M1e2.14](../../plans/m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
+(c)), the loader refuses a `_` written as a form's relation, `(_ a)`, at any
+depth of a rule's `:match` or `:assert`, in a rule, an hrule or an
 obligation. One line per slot, `; `-joined with every other loader error, in
 ein's own words:
 
 | input | message | exit |
 |---|---|---|
-| a range in a rule | `<rule\|hrule> '<r>': its <:match\|:assert> writes 1..3 as an argument of <rel>, and no fact can hold it — a range is cardinality metadata, and a rule matches and concludes facts` (`… its :match is 1..3, …` for a whole clause) | 1 (`ein test`: 2) |
 | a wildcard as a relation | `<rule\|hrule> '<r>': its <:match\|:assert> writes (_ a) with the wildcard _ as its relation — a relation is named by a name or by a parameter its activator binds, and _ stands for an argument` | 1 (`ein test`: 2) |
 
-A keyword's value inside a clause, `(n ?x :where 1..3)`, is no slot, which
+A keyword's value inside a clause, `(n ?x :where v)`, is no slot, which
 the compiler drops, and loads. A `_` as an argument matches any value
 ([`01_grammar.md`'s `WILDCARD` row](ir/03-ein-lang/01_grammar.md#1-lexical-rules)).
 Pinned by `ein-ir`'s `from_ir.rs`
-`a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load` and
+`a_wildcard_relation_in_a_rule_is_refused_at_load` and
 `ein-cli/tests/cli_semantics.rs`'s test of the same name, and by
-`corpus/wrong_answers.toml`'s `W20/range-in-match` and `W20/wild-in-head`.
+`corpus/wrong_answers.toml`'s `W20/wild-in-head`.
+
+**A range was refused here too, until M1f S1f.5.3** (2026-11-08). From
+S1e2.2.20, on the user's ruling of 2026-11-04
+([Q-M1e2.13](../../plans/m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
+(a)), the loader refused a range, `1..3` or `2..*`, written where a pattern's
+argument goes or as a whole clause, with *`rule 'r': its :match writes 1..3
+as an argument of n, and no fact can hold it — a range is cardinality
+metadata, and a rule matches and concludes facts`*. Ein has no numbers and no
+ranges (the user, 2026-11-06,
+[Q-M1e2.24](../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)),
+and S1f.5.3 retired the token, so `1..3` is a parse error wherever it is
+written (§ 1), from every command that reads the program, exit 1 (`ein
+test`: 2), until S1f.5.4 makes it one name. Pinned by `cli_semantics.rs`'
+`a_range_is_no_token` and `W20/range-in-match`, whose `now` is the parser's
+line.
 **Until S1e2.2.20** (W20) a range was a slot that matched nothing, in silence,
 and one in an `:assert` stopped the run at the rule's first firing with
 § 4's *conclusion no fact can hold* line; a `_` head stopped compilation with

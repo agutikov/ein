@@ -1,8 +1,9 @@
 //! The built-in predicate registry — `eq` and `neq`, and nothing else.
 //!
 //! Q33 caps the M1 registry at two: a predicate's truth is *computed* from the
-//! bindings, where a relation's truth is *data*. All numeric / set /
-//! cardinality / aggregation primitives are deferred to followups.
+//! bindings, where a relation's truth is *data*. Ein has no numbers and none
+//! is planned (the user, 2026-11-06, Q-M1e2.24), so no numeric, cardinality
+//! or aggregation primitive is either.
 //!
 //! It is an enum with a four-function surface, because a `PredId`-indexed
 //! table is what the matcher wants and because the *set* of names is fixed:

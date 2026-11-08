@@ -395,6 +395,12 @@ constrained-reasoning research.
   (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08),
   and one right, `W30/assert-neq-w-x`'s, R {∅} where S1f.5.7 says two
   states, waits on the user.
+  S1f.5.3 retired the `RANGE` token the same day (Q-M1e2.24: Ein has no
+  numbers and no ranges, and none is planned): `1..5` is a parse error until
+  S1f.5.4 makes it one name, so the two corpus files that write one,
+  `syntax/arg-kinds` and `wrong-answers/range-in-match`, are refused at the
+  parse in between, named in `ein_corpus::REFUSED_UNTIL_S1F_5_4`, which
+  `corpus_cli` holds both ways and S1f.5.4 empties.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

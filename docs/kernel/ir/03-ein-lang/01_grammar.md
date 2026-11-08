@@ -19,11 +19,21 @@ documentation split.
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
 | `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House-1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
-| `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:cardinality`        | argument markers; **always** followed by a value  |
+| `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:source`             | argument markers; **always** followed by a value  |
 | `WILDCARD` | `_`                            | `_`                                      | argument wildcard in patterns: in a rule's `:match`, at any depth (a premise, a nested fact, a `not`, an `(absent …)`, an hrule's or an obligation's pattern), `_` matches any value and binds nothing, so two of them are independent and neither can be read in an `:assert` or a guard; in an `:assert` it is no value, and the run stops at the rule's first firing ([`defined_behaviour.md` § 4](../../defined_behaviour.md#4-errors-and-exit-codes)). Written as a form's **relation**, `(_ a)`, it is refused at load, at any depth of either clause: a relation is named by a name or by a parameter its activator binds (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, on the user's rulings Q-M1e2.13 (a) and Q-M1e2.14 (c)). Until then this row read *head / arg wildcard in patterns*, and the rule compiler lowered `_` as a slot that matched nothing: a premise with one never fired, an `(absent …)` over one always held, an hrule with one proposed nothing, and a head `_` stopped compilation with the Python IR's spelling (W20). In a guard, `(eq ?x _)`, it names no value and is refused at load since M1e2 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24, Q-M1e2.16 (1)); until then it compared as a raw IR node, equal to no value, so `(eq ?x _)` never held and `(neq ?x _)` always did, in silence. As a whole premise, `:match _`, it is refused at load too, where the compiler dropped it |
 | `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms (e.g. `:priority 10`)               |
-| `RANGE`    | `[0-9]+\.\.([0-9]+|\*)`        | `0..1`, `1..1`, `1..*`                  | UML-style cardinality. No fact can hold one, so in a rule a range written where a pattern's argument goes, at any depth of a `:match` or an `:assert`, or as a whole clause, is refused at load with a line naming the rule and the slot (M1e2 S1e2.2.20, 2026-11-05, Q-M1e2.13 (a)); a keyword's value inside a clause is not a slot and is not refused. Until then the rule compiler lowered it as a slot that matched nothing, in silence, and one in an `:assert` stopped the run at the rule's first firing (W20) |
 | `STRING`   | `"…"` with `\\` escape          | `"condition (10)"`, `"{?r} is transitive"` | `:source` provenance, `:why` templates and other keyword values; and a **fact's argument**, top-level or nested, which the loader holds as a symbol whose text is the string's body: `"foo"` and `foo` are one value, and `"1"` is not the int `1` (`examples/syntax/arg-kinds.ein`; M1e2 S1e2.2.16, 2026-11-04). In a **rule**, a string means what it means in a fact, the symbol it names, at any depth of a `:match`, a guard, an `(absent …)` or an `:assert`, and it is a name of the program as that atom is: `(holds "b")` in a rule matches the fact `(holds b)`, and `(tag ?x "lbl")` stores `lbl` (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04). Until then the rule compiler did not lower one: it matched nothing in a `:match`, equalled no value in a guard, held under every `absent`, proposed nothing from an hrule, and in an `:assert` stopped saturation with a `TypeError` (W18). A string that is a keyword's value inside a rule's clause keeps its meaning, text |
+
+**There is no `RANGE`**, and no number of any kind: Ein has no numbers and no
+ranges, and none is planned (the user, 2026-11-06,
+[Q-M1e2.24](../../../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
+M1f [S1f.5.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md)
+retired the token on 2026-11-08, so `1..5` is the `INT` `1` and then `..5`,
+no token, and a parse error wherever it is written, until S1f.5.4 makes it one
+name. Until then `RANGE`, `[0-9]+\.\.([0-9]+|\*)`, was *UML-style
+cardinality* for a `:cardinality` no program wrote and no code read: in a fact
+it stored the name `1..5`, as a keyword's value it was dropped, and in a rule
+the loader refused it (M1e2 S1e2.2.20, Q-M1e2.13 (a)).
 
 The regexes above are the readable form.
 [`00_ebnf.md` §1](00_ebnf.md#1-lexical-grammar) is the exact one, including
@@ -88,7 +98,7 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 
 ```lisp
 (relation <name> [<T1> <T2> ...]         ; signature: zero or more type atoms
-  [:why <STRING>] [:cardinality <RANGE>]  ; optional metadata kw-pairs
+  [:why <STRING>]                         ; optional metadata kw-pair
   [...])
 ```
 

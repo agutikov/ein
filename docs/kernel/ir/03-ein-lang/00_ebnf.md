@@ -78,8 +78,7 @@ WILDCARD      ::= '_'
                   /* …only where the next character is not [A-Za-z0-9_], so
                      the leading `__` of a dunder atom is never two wildcards. */
 EQ            ::= '='
-RANGE         ::= [0-9]+ '..' ( [0-9]+ | '*' )    /* digit-anchored */
-INT           ::= '-'? [0-9]+
+INT           ::= '-'? [0-9]+                     /* no RANGE: fact 3 */
 STRING        ::= '"' ( [^"\\] | '\\' ( Char - #xA ) )* '"'
 ```
 
@@ -110,8 +109,17 @@ Four terminal facts that are load-bearing and easy to lose:
 2. **`__dunder__` atoms lex as `SYMBOL`.** `(?:__)?` still requires a letter
    after it, so a bare `_` stays `WILDCARD` and `_x` is neither. `WILDCARD`'s
    own lookahead is what stops `__closed__` from starting as two wildcards.
-3. **`RANGE` is tried before `INT`** — both start on a digit — and it never
-   collides with a dotted `SYMBOL`, which is letter-anchored.
+3. **There is no `RANGE`** (M1f
+   [S1f.5.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md),
+   2026-11-08): Ein has no numbers and no ranges, on the user's ruling of
+   2026-11-06
+   ([Q-M1e2.24](../../../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
+   `1..5` is the `INT` `1` and then `..5`, which no terminal matches, so the
+   parse stops at the first `.`; from S1f.5.4 it is one name. Until then
+   `RANGE ::= [0-9]+ '..' ( [0-9]+ | '*' )`, *UML-style cardinality* nothing
+   read, was tried before `INT`: in a fact it stored the name `1..5`, as a
+   keyword's value it was dropped, and in a rule the loader refused it (M1e2
+   S1e2.2.20).
 4. **`STRING` takes a raw newline but not an escaped one.** `[^"\\]` accepts
    `#xA`; `'\\' ( Char - #xA )` refuses it: a backslash escapes any
    character but a newline. Unescaping
@@ -164,7 +172,7 @@ SymmetryDecl      ::= '(' 'symmetry-class'  SYMBOL KwPair* ')'
 KwPair        ::= KEYWORD Value                   /* KEYWORD is never a Value */
 Value         ::= NotForm | AndForm | OrForm | NeqForm
                 | GenericList
-                | SYMBOL | VAR | WILDCARD | INT | RANGE | STRING
+                | SYMBOL | VAR | WILDCARD | INT | STRING
 GenericList   ::= '(' ')'
                 | '(' ListHead ListItem* ')'
 ListHead      ::= SYMBOL | VAR | WILDCARD | EQ    /* never KEYWORD */
@@ -255,7 +263,7 @@ A specification with no test is a wish. Three checked-in artefacts pin §3:
 
 | | |
 |---|---|
-| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files are the engine's defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
+| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..` (each a parse error since M1f S1f.5.3), `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files are the engine's defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
 | the same file's `a_keyword_is_a_whole_word_in_every_place` | **53 460 parses** (M1e2 S1e2.2.22): every literal of §2 and the kernel's eight other heads, each followed by a name character and an argument shape, in each of the twenty places the parser reads a keyword; no name split after a word character, every trace word followed by one a parse error, and the 435 readings of a keyword before `-` and a digit counted |
 | `corpus_shapes.md5`'s `ir[parse]` lines | every corpus file's parse, digested — the *structure* of an acceptance, not just the fact of one |
 
@@ -263,7 +271,8 @@ A specification with no test is a wish. Three checked-in artefacts pin §3:
 containing at least one): `relation` 90 · `rule` 88 · `query` 67 · `and` 65 ·
 `import` 42 · `not` 43 · `neq` 39 · `hrule` 23 · `config` 18 · `or` 10 ·
 `macro` 5 · `trace` 3 · `=` 3 · `step` 1. Terminals: `VAR` 105 · `STRING` 95 ·
-`INT` 84 · dunder `SYMBOL` 11 · `RANGE` 4 · `WILDCARD` 3.
+`INT` 84 · dunder `SYMBOL` 11 · `WILDCARD` 3. (`RANGE` 4 until M1f S1f.5.3
+retired the token.)
 
 **Five productions have no exerciser at all**, and it is better to write that
 down than to let a reader assume otherwise: `BranchOpen`, `BranchClose`,

@@ -97,7 +97,7 @@ Each program is `(relation p Node) (relation q Node) (relation hit Node) (p a) (
 | `(eq ?x :k a)` | refused at load since W24 | refused, with this stage's line |
 | **An annotation dropped** | | |
 | `(rule … :zz 1)`, `(hrule … :zz 1)` | loads; the keyword is ignored | refused |
-| `(relation s Node :cardinality 1..1)`, `(relation s Node :zz 1)` | loads; ignored | refused |
+| `(relation s Node :cardinality 1..1)`, `(relation s Node :zz 1)` | loads; ignored (the first a parse error at `1..1` from S1f.5.3, 2026-11-08, until S1f.5.4 makes it a name) | refused |
 | `(q c :zz 1)`, `(q c :why "text")` | loads; ignored | refused |
 | `(query :goal (p ?x) :mode x)` | loads; ignored, as an obsolete keyword | refused |
 | `(import std.macro :zz 1)`, `(trace (step s1 :rule r :derives (q a) :zz 1))` | loads; ignored | refused |
@@ -184,8 +184,8 @@ The inventory's D-15 named `02_patterns.md`. The sweep (`grep -rn ':where' docs/
 | [`ir/01-ein-graph/02_rules.md`](../../../docs/kernel/ir/01-ein-graph/02_rules.md) | § 4, *The :where clause — predicate guards* (389–410); the figures' `:where` labels (29, 134, 470); the examples at 110, 170 and 320; step 2 of the matching algorithm (529) |
 | [`ir/01-ein-graph/README.md`](../../../docs/kernel/ir/01-ein-graph/README.md) | line 14, *rule (LHS / `:where` / RHS)* |
 | [`ir/03-ein-lang/03_examples.md`](../../../docs/kernel/ir/03-ein-lang/03_examples.md) | line 27: the `transitive` rule written `:where (neq ?a ?c)`, which loads today with its guard dropped. `zebra.ein` has written `(neq ?a ?c)` since Q32, and no test reads the page |
-| [`ir/03-ein-lang/01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) | line 22's `KEYWORD` row, whose examples are `:rule`, `:where` and `:cardinality`; line 256; the relation's `[:cardinality <RANGE>]`; the query's `:mode` |
-| [`glossary.md`](../../../docs/kernel/glossary.md), [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) | glossary line 56; `defined_behaviour.md` line 883, *a keyword's value inside a clause, `(n ?x :where 1..3)`*, and its Q32 lines |
+| [`ir/03-ein-lang/01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) | line 22's `KEYWORD` row, whose examples are `:rule`, `:where` and `:source` (`:cardinality` went with S1f.5.3, 2026-11-08, as did the relation's `[:cardinality <RANGE>]`); line 256; the query's `:mode` |
+| [`glossary.md`](../../../docs/kernel/glossary.md), [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) | glossary line 56; `defined_behaviour.md` § 4.8, *a keyword's value inside a clause, `(n ?x :where v)`* (`1..3` until S1f.5.3), and its Q32 lines |
 
 Each page says what the form takes, that any other keyword is refused, and that a guard is a premise,
 `(neq ?a ?c)`. `01_grammar.md` gains the table of [§ The lists](#the-lists). In

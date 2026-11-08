@@ -85,7 +85,7 @@ digraph ontology {
   House-1    [shape=oval];
   Norwegian -> Person [style=dashed, arrowhead=empty];   // instance-of
   House-1   -> House  [style=dashed, arrowhead=empty];
-  Person -> House [label="lives-in (1..1)", style=dashed]; // relation schema
+  Person -> House [label="lives-in", style=dashed];        // relation schema
 }
 ```
 

@@ -11,17 +11,16 @@
 user's rule for a name
 ([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)): `1..5` stops being a range and
 becomes a plain name, where this page had it refused.
-**Started 2026-11-08** on the user's go-ahead to run the phase stage by stage (*"run
+**Done 2026-11-08**, on the user's go-ahead to run the phase stage by stage (*"run
 plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in separate subagent, …, ask if
-decision required"*). **T1f.5.3.1 is done** ([§ Step 1](#step-1--every-move-listed-2026-11-08)), and the
-stage **stopped there, before any engine edit**, on its own rule: a fifth program moved, S1f.5.5's rewrite of
-`arg-kinds` under `plans/`, which writes `(r 1..5 1..*)` and was banked two days after this page listed four.
-Step 1 also found what the interim costs: between this stage and S1f.5.4 two corpus files do not parse, and
-five tests read them as files that parse, load or answer
-([§ Between this stage and S1f.5.4](#between-this-stage-and-s1f54)), and that the parse-negative fixture this
-page asks for would be wrong-grouped from S1f.5.4 on ([§ The parse-negative
-fixture](#the-parse-negative-fixture)). The three are put to the coordinator, each with a recommendation. No
-engine code, test, golden or fixture has moved.
+decision required"*): T1f.5.3.1 `b1ac2178` (every move listed, [§ Step 1](#step-1--every-move-listed-2026-11-08)),
+T1f.5.3.2 `65d1ad85` (the token retired) and T1f.5.3.3, the commit after it (the pages, and this record).
+Step 1 stopped before any engine edit on its own rule, for a fifth program, and put three questions to the
+coordinator, who settled them the same day as recommended, none of them the user's: the fifth program is
+accepted; between this stage and S1f.5.4 the two corpus files that write a range keep their programs and are
+named in one list, held both ways ([§ Between this stage and S1f.5.4](#between-this-stage-and-s1f54)); and a
+`cli_semantics` test holds `:card 1..*` in place of a parse-negative fixture
+([§ The parse-negative fixture](#the-parse-negative-fixture)). [§ What changed](#what-changed) is the result.
 **Depends on:** nothing. It touches what [S1f.5.1](s1f.5.1_bare_underscore_refused.md)
 and [S1f.5.2](s1f.5.2_strings_are_natural_language.md) touch, so the three land one at a
 time. [S1f.5.4](s1f.5.4_digits_are_names.md) follows it, and [S1f.5.5](s1f.5.5_the_grammar.md) frames it.
@@ -46,7 +45,11 @@ advertises it (lines 22 and 91).
 Outside comments, four programs write one: the fixture `syntax/arg-kinds` (`(r 1..5 1..*)`,
 2026-08-20), W20's witness `range-in-match`, and two probes under M1e2's plans,
 `inventory_2026-11-05/probes/kwpair_in_pattern.ein` and
-`p1e2.3_…/s1e2.3.8_probes/values.ein`.
+`p1e2.3_…/s1e2.3.8_probes/values.ein`. **A fifth** was banked after this page was written, which is why it is
+not among the four: S1f.5.5's rewrite of `arg-kinds` for the final grammar,
+`s1f.5.5_parser_probe/programs/arg-kinds.ein` (`49e9fed6`, 2026-11-08), which writes `(r 1..5 1..*)` and is
+refused today for its `$x`. Step 1 found it, and the coordinator accepted it the same day: it moves by this
+stage's mechanism alone, and it is a record under `plans/` that stays, as M1e2's two probes do.
 
 ## The ruling
 
@@ -76,9 +79,12 @@ program relies on a range. A dropped `:card 1..*` is not an answer, and closed k
 **The fixtures.** `syntax/arg-kinds` keeps `(r 1..5 1..*)` as a fact over two names once S1f.5.4 lands,
 and the node-kind probes lose that kind (`examples/README.md`). `range-in-match` stays as the refusal's witness. One
 parse-negative fixture holds `:card 1..*`. The two probes under M1e2's plans are records and
-stay, each exiting as its new line says.
+stay, each exiting as its new line says. *(Step 1 changed the fixture to a test: a parse-negative fixture
+would sit in the wrong group from S1f.5.4 to S1f.5.11, so `cli_semantics`' `a_range_is_no_token` holds
+`:card 1..*` instead, [§ The parse-negative fixture](#the-parse-negative-fixture).)*
 
-**The goldens and tests, named before they move** (step 1 completes this list):
+**The goldens and tests, named before they move** (step 1 completes this list, in
+[§ The tests and goldens that move](#the-tests-and-goldens-that-move)):
 `corpus_shapes.md5`'s rows for `arg-kinds` and `range-in-match`; `grammar_decisions.txt` and
 its test; `lex.rs`' unit tests (lines 560 to 562); `cli_semantics.rs`'s refusal test.
 
@@ -232,6 +238,11 @@ test's floor of 40. Three ways through:
   commit. S1f.5.4 stops at its step 1 to show the user real programs, and the phase's order lands each so
   that every move is attributed to its ruling, so this is the user's.
 
+**Settled 2026-11-08 by the coordinator: (a).** The page licenses it: both programs stay as written, its
+Default 2 makes the refusal the plain parse error between the stages, and the name `1..5` stays writable as
+the string `"1..5"` meanwhile, so the phase's *no name is ever left unwritable* holds. Built by T1f.5.3.2,
+with [S1f.5.4](s1f.5.4_digits_are_names.md)'s T2 told to empty the list and delete the interim test.
+
 ### The parse-negative fixture
 
 [§ What it changes](#what-it-changes) has *one parse-negative fixture hold `:card 1..*`*. A fixture's group is
@@ -244,3 +255,51 @@ as a fact's keyword value and as a declaration's, in the `cli_semantics` test th
 range in a fact, in a rule's `:match` and `:assert`, and in a `(config …)`, each the parser's line from
 `saturate`, `solve`, `oracle` and `test`; S1f.5.4 and S1f.5.11 each restate their rows. The alternative is the
 fixture, which S1f.5.4's step 1 then has to move.
+
+**Settled 2026-11-08 by the coordinator: the test.** The `examples/broken/` fixture was not banked, since it
+would sit in the wrong group from S1f.5.4 to S1f.5.11; `a_range_is_no_token` holds `:card 1..*` with the other
+places, and S1f.5.4's T2 turns it into its plain-name counterpart, the acceptance's *a test holds each*.
+
+## What changed
+
+**The token** (T1f.5.3.2, `65d1ad85`). No terminal reads a range: `Term::Range` and `match_range` in
+`lex.rs`, the `RANGE` branch of `parse.rs`' `leaf_value`, `Node::Range` and its arms (`ast.rs`; `from_ir.rs`'
+interning walk, `atomic_value` and `refuse_no_fact_holds`' `Found::Range` with its line; `compile.rs`' guard
+key, whose tag 6 stays unused; `expect.rs`, `dump.rs`, `ir_dot.rs`, `dot_util.rs`) and `Terms::value_range`
+are gone (`grep -rn 'Term::Range\|Node::Range\|value_range' ein.rs/crates` is empty, 2026-11-08). `1..5` is
+the `INT` `1` and then `..5`, and the parse stops at the `.`, from every command that reads the program, exit
+1 (`ein test` 2). The editor grammar lost its `RANGE` rule (`utils/vscode-ein/`).
+
+**The tests.** `lex.rs`' `no_terminal_reads_a_range`; `from_ir`'s and `cli_semantics`'
+`a_wildcard_relation_in_a_rule_is_refused_at_load`, the range cases gone; `cli_semantics`' new
+`a_range_is_no_token`, a range in a fact, a fact's and a declaration's `:card`, a rule's `:match` and
+`:assert` and a `(config …)`, each the parser's line from `saturate`, `solve`, `oracle` and `test`;
+`ir_semantics`' two tables. The interim: `ein_corpus::REFUSED_UNTIL_S1F_5_4` and `corpus_cli`'s
+`the_files_refused_until_digits_are_names_are_refused`, which holds it both ways, read by
+`every_positive_entry_answers…`, the round trip's witnesses, `alive_invariant`'s `SEEDED` and the dump fixed
+point. `register_region` reads a refusal at the parse as the binary prints it.
+
+**The register.** `W20/range-in-match` stays fixed, its `now` the parser's line at `32:23` (its header is one
+line longer), its note and the header's paragraph saying why; 103 fixed, 33 open and 1 not-wrong (`grep
+'^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08). No other row moved.
+
+**The goldens**, each named at step 1 before it moved: `corpus_exits.txt` (1 of 1 302 cells), `corpus_shapes.md5`
+(61 lines out and 2 in), `grammar_decisions.txt`, `fuzz_seeds.txt` and `config_coercion.txt`. No answer
+outside step 1's five programs moved. `./run_tests.sh` green at T1f.5.3.2, 13 min 24 s
+(`build/gate-s1f.5.3-T2.log`), and at T1f.5.3.3, which touches `predicates.rs`' module line, 13 min 24 s
+(`build/gate-s1f.5.3-T3.log`); and `ein-render`'s `dot_wellformed` green at `65d1ad85` in a container built
+like GitHub's runner (`utils/ci_container.sh --tests-only -p ein-render --test dot_wellformed`: Ubuntu
+26.04.1, Graphviz 14.1.2 with `libpathplan4` amd64v3, 3 tests in 77 s, 2026-11-08), since `ir_dot.rs` and
+`dot_util.rs` changed.
+
+**The pages** (T1f.5.3.3). `00_ebnf.md` (`RANGE` out of § 1 and the `Value` production; fact 3 says there
+is none, numbered as before so that fact 4's citations hold; the terminal census), `01_grammar.md` (the
+`RANGE` row replaced by a paragraph after the table; `:cardinality` out of the `KEYWORD` row's examples and
+the relation declarator), `02_patterns.md` (a guard's refusals; the registry's sentence on numbers),
+`04_dot_rendering.md` (the ontology sketch's `(1..1)`), `defined_behaviour.md` (§ 4.8 is the wildcard
+relation, with the range's history; § 4's *conclusion no fact can hold* bullet), `examples/README.md`,
+`predicates.rs`' module line (what the ruling says: no numeric, cardinality or aggregation primitive, and
+none planned), [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
+and [Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein) (built),
+[S1f.5.11](s1f.5.11_closed_keywords.md)'s rows this stage touched, the phase README's rows, and `AGENTS.md`.
+`docs/history/` is a record and did not change.

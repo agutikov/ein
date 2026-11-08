@@ -111,8 +111,9 @@ exists at all — no puzzle in the corpus writes one.
 - **Universal quantifiers / aggregates as expressions** — `forall` is
   available as a **macro** over nested `absent`s
   ([`std.macro`](../../../../stdlib/macro.ein)), not as a primitive. A
-  counting or cardinality aggregate has no spelling at all; § Predicate
-  registry is where that lands.
+  counting or cardinality aggregate has no spelling at all, and none is
+  planned: Ein has no numbers (the user, 2026-11-06,
+  [Q-M1e2.24](../../../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
 
 The line is governed by trace fidelity: anything the matcher can see, the
 trace planner can name. An opaque host-language fallback would render as a
@@ -133,18 +134,19 @@ registry — `eq` and `neq`, and nothing else."*
 
 **A guard's argument is a value**: a variable a premise before the guard
 binds (or a rule's parameter), a name, a string or an integer. A guard is
-judged where it is written. `_`, a form, a keyword pair, a range, or a
-variable no premise before it binds is **refused at load** (a range since M1e2
-S1e2.2.20, the rest since S1e2.2.24, W24;
+judged where it is written. `_`, a form, a keyword pair, or a variable no
+premise before it binds is **refused at load** (since M1e2 S1e2.2.24, W24;
 [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
 Until then each read nothing: a raw node was equal to no value and an
 unbound variable compared as a null, so `(eq ?x (f a))` never held, even
 where `?x` was the fact `(f a)`, and `(and (neq ?x a) (p ?x))` fired for
-`a`.
+`a`. A range was refused there too, from S1e2.2.20, until M1f S1f.5.3
+retired the token: `1..3` is a parse error since.
 
 Q33 caps it there for a stated reason: *a predicate's truth is **computed**
-from the bindings, where a relation's truth is **data***. Numeric, set,
-cardinality and aggregation primitives are deferred to followups.
+from the bindings, where a relation's truth is **data***. Ein has no numbers
+and none is planned (the user, 2026-11-06, Q-M1e2.24), so no numeric,
+cardinality or aggregation primitive is either.
 
 `(transitive ?r)` and `(symmetric ?r)` are **not** predicates and never
 were — they are ordinary relation patterns matching a stored property fact
