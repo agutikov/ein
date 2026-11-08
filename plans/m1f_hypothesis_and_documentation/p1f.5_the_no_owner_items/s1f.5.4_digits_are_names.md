@@ -10,8 +10,12 @@
 **Status:** specified 2026-11-06 on the user's ruling of that day, and extended 2026-11-07 on the
 user's rulings on F8 and on what a name is
 ([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
-**Not started, and not to start until the user says so.** No engine code, test, golden or
-fixture has moved.
+**Started 2026-11-08**, on the user's go-ahead to run the phase stage by stage (*"run
+plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in separate subagent, …, ask if
+decision required"*). **Step 1 done** (T1f.5.4.1, [§ Step 1](#step-1--every-move-listed-2026-11-08)), and the
+stage **stopped there, as its method says, to show the user real programs before any edit**: one finding (two
+synthetic names become spellable) and four questions wait on the user. No engine code, test, golden or fixture
+has moved.
 **Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), so that `1..5` is gone first.
 [S1f.5.5](s1f.5.5_the_grammar.md) frames it.
 
@@ -153,3 +157,249 @@ Retired as a separate commit, so that no answer moves in it.
   plain digit.
 - `Tag::Int` and `Node::Int` are gone, and that commit moved no golden.
 - `./run_tests.sh` is green.
+
+## Step 1 — every move listed (2026-11-08)
+
+T1f.5.4.1, at `67da56a7`. **The prototype** is a `git archive` snapshot under `build/s1f.5.4/proto` (gitignored)
+with four edits, each marked `S1f.5.4 prototype` and nothing else: the lexer's name rule (`lex.rs`: `SYMBOL` a run
+of [name characters](s1f.5.5_the_grammar.md#the-name-rule) up to a separator, any of them first, not a bare `_` and
+not a whole reserved word; `VAR` `?` and such a run, `?_` refused; a string, a keyword and a reserved word end at a
+separator too, so nothing splits), no `INT` and no `EQ` (`parse.rs`: `leaf_value`, `list_head`, `alt_eq_fact`), the
+printer's `is_symbol` as the same rule (`ein-core/src/text.rs`), and the `:priority` guard (`from_ir.rs`: an atom of
+digits is the count). Release build, target inside the snapshot. Today's binary is the checkout's at `67da56a7`.
+Every answer below is one of the two, `EIN_STDLIB` the checkout's.
+
+**The review material is `build/s1f.5.4/review/index.md`** (gitignored; `python3 build/s1f.5.4/review_build.py &&
+python3 build/s1f.5.4/index_build.py` rebuilds it, 54 programs, 3.2 GB): for each program the program as written,
+its plain digits marked, today against the prototype (exit codes, k_s, k_c, N, H, the `universe` rows, the
+read-out, `saturate --dump`), and every artefact both binaries write, raw: `--json-summary`, `--dump-answer` with
+every state file, N's `nogoods.json` and H's `hyp-stats.txt`, `--dump-lattice`, `--trace`, `ein test -v`, `ein oracle
+--dump --states` where H has 16 candidates or fewer, and every `ein render` view as DOT, drawn as SVG where it moved.
+
+### The sweep: 46 programs move, and 465 answer as they did
+
+`build/s1f.5.4/run_sweep.sh`: every `.ein` under `examples/`, `tests/`, `stdlib/`, `corpus/` and `plans/`, 511 files
+(`find examples tests stdlib corpus plans -name '*.ein' | wc -l`, 2026-11-08), each through `ein solve FILE
+--json-summary J -H --dump-answer D` and `ein saturate FILE --dump` on both binaries, timing lines removed, 1 min 14 s;
+`build/s1f.5.4/analyze.py` compares exit codes, k_s, k_c, the states, N's sets, H's candidates and the stored facts
+(`build/s1f.5.4/moves.tsv`, one row a file). 44 of the 46 write a plain digit or import `std.elim`
+(`build/s1f.5.4/digits.py`: a token today's lexer reads as an `INT`, outside a `:priority` value, comments and strings);
+two write none, `assert-empty` ([the finding](#the-finding-two-synthetic-names-become-spellable)) and S1f.5.5's
+`refused/names.ein`, refused both ways, at `a?x` (3:4) where today's parser stopped at `a:b` (5:7).
+
+| § What moves | measured on 2026-11-06 without a prototype | the prototype |
+|---|---|---|
+| `features/05_stdlib_domain_elim` | k_s 32, k_c 32; N 21 → 47 | the same: k_s 32, k_c 32, **N 21 → 47, H 26 → 52**, each new candidate (`(color-of 0 1)`, `(color-of 1 House-2)`, …) dead alone; the stored facts the same |
+| `branching/12_typed_blind_solve` | k_s 3, k_c 7; N 25 → 51 | the same: **N 25 → 51, H 25 → 51** |
+| the `(edge 1 2)` family | k_s 1 or 2 → past 56 000, stopped; one exits 1 | `binding-key-both`, `-swapped`, `-nested-only` and the two `binding-key-layout` fuzz seeds: k_s 2 → **≥ 56 401, stopped at the budget**, k_c 2²¹, H 1 → 21, each `:expect` NOT CHECKED (exit 0); `binding-key-int-only`: k_s 1 → 640, H 0 → 10; the four `activator-text-*` and the two `activator-text-key` seeds: k_s 1 → **1 280, exhausted**, k_c 2 048, H 0 → 11. **Five exit 1**, not one, each its own `:expect` refuted: the measurement renamed `1` to `d1` and kept the string `"1"` apart, and the prototype makes `1` and `"1"` one name |
+| `str-in-assert`, `str-in-match`, `classes-int-name` | k_s doubles or more (S1f.5.2's) | `str-in-assert` k_s 4 → 32, H 2 → 5; `str-in-match` and `classes-int-name` keep k_s 8 and H 3, the candidate printed `(hit 1)` and `(pick 1)` where it was `(hit "1")` and `(pick "1")`, the same value; `classes-int-name`'s query **4 classes → 2**, the int and the name being one name (as above) |
+| `syntax/arg-kinds` | stopped either way | refused (S1f.5.3's interim) → **loads**: k_s ≥ 342 542, stopped at the budget, k_c 2⁵⁴, H 54; `saturate` stores `(r 7 "a string")`, `(r 1..5 1..*)`, `(r "?x")`, `(r (nested a b) c)` |
+| `broken/load/relation_parameter_int` | refused → loads | refused → **loads**: `(mirror 3)` names the relation `3`; k_s 32, H 5 |
+| *not in the table:* `wrong-answers/range-in-match` | (S1f.5.3's interim) | refused → **loads**, the rule a pattern over the name `1..3`: H `(hit 1..3)`, `(hit 2)`, `(n 1..3)`, R the whole cube, 8 states, `(hit r)` exactly where `(n 1..3)` holds; the oracle the same |
+| `wrong-answers/claim-int-name`, `-solve` | — | exit 1 → **0**: the claim `(model (holds 1))` holds, the int and the state's name `"1"` being one name |
+| `ein-bugs/activator-all-int` | — | refused both ways; the line gains `[activator 1]`, as its symbol control's has `[activator a]` |
+| `ein-bugs/int-goal-binding`, `mixed-type-hypothesis`, `str-in-hrule`, `syntax/is-a-shapes`, `tests/stdlib/elim/01` and `/02`, S1f.5.5's `programs/is-a-shapes` | — | `saturate`'s name table alone, a digit now counting as a name; R, N, H and the stored facts the same |
+| 16 more under `plans/` (M1e2's probes and S1f.5.5's), records that stay | — | listed in the review's § 5; `values.ein` and `kwpair_in_pattern.ein` load again, and S1f.5.5's `programs/arg-kinds.ein` now stops `solve` with the state route's *a state's commitments pass 2^128* (exit 1), an engine limit three M1e2 probes reach today |
+
+`zebra2.ein` is unmoved: k_s 1, k_c 261 982, N 366, H 56, byte for byte. `std.elim`'s text does not change; read
+differently, its `0` and `1` move `features/05` and `branching/12` as above and nothing on `tests/stdlib/elim/`, whose
+four programs close their relations, so the two names join no H. `(p 1) (p 01)` stores one fact today and two in the
+prototype, each printing as written and reloading to itself. **Order:** candidates sort as text, so `(p 10)` lists
+before `(p 2)` (`build/s1f.5.4/scratch/order2.ein`); no corpus program writes a two-digit name.
+
+### H moved on a program that writes no plain digit: the finding
+
+The stop this page sets. One program: `examples/ein-bugs/wrong-answers/assert-empty.ein` (W34, open, S1f.5.9's),
+whose one candidate printed `(q "@empty")` today and `(q @empty)` in the prototype. **The value is the same**: the
+printer prints a name bare where it lexes back as itself, and under the name rule `@empty` does.
+
+#### The finding: two synthetic names become spellable
+
+The loader names two things no program could spell until now, `@empty` (the relation of the empty form `()`) and
+`<nested>` (the relation of a nested form whose head is not a name, `(_ a)`), and `@`, `<` and `>` are name
+characters. In the prototype a program can write either and gets the loader's: on `(relation p T) (p ()) (p (@empty))
+(p (_ a)) (p (<nested> a))`, `ein saturate --dump` is a parse error today (3:5) and **two** stored facts in the
+prototype, `(p ())` and `(p (_ a))`, for the four written (`build/s1f.5.4/scratch/synthetic-heads.ein`). That is a
+wrong answer this stage would introduce. `@params` (the parameter list's head, which the loader's pattern walk skips
+as a relation name) and `<query>` (the query's rule name, which a firing's `:rule` prints) are spellable too; a
+relation `@params` and a rule `<query>` answer as their renamed twins on the probes tried. [Q1](#q1--the-synthetic-names).
+
+### `:priority`: H unmoved, and where the trap is
+
+179 files write `:priority`, 577 values; 175 write no plain digit, and H is the same as printed on all 175
+(`build/s1f.5.4/priority.txt`, from the sweep). One value is not digits, `:priority high` in S1f.5.5's
+`refused/rules.ein`, refused both ways for other reasons. **The guard holds the rule order, not a name:** every file
+that contains `:priority`, 180 (`grep -l`, one of them in a comment alone), through the prototype and through the
+prototype without the guard (`build/s1f.5.4/noguard/`, every value dropped by the loader's `_ => None`): 17 are
+identical, and 163 move in `saturate --dump`'s rule list alone (`:priority 200 (derive)` → `:priority
+None (unbanded)`), none in an exit code, R, N or H (`build/s1f.5.4/noguard_sweep.txt`). So the trap is `from_ir.rs`'
+`priority` match, which reads `Node::Int` only and drops anything else in silence; `invariant.rs`' name walk reads a
+rule's `:match` and `:assert` alone (`rule_constants`), never `:priority`. Today `:priority high` and `:priority
+"110"` load with the value dropped, `-5` loads as an int, and `1.5` is a parse error; the prototype drops all four.
+The acceptance's *a run of digits and nothing else* is a loader line in T2.
+
+### The acceptance list against the paper grammar
+
+`build/s1f.5.4/acceptance/probe.sh`, each as `(p NAME)` under `(relation p T)`, `saturate --dump` and the printed fact
+reloaded: in the prototype `1st`, `1_a`, `7`, `-7`, `1..5`, `$x`, `%`, `a^b`, `a/b`, `<=`, `!x`, `@x`, `~`, `'name'`,
+`f'`, `{}` and `[a]` each print as written and reload to themselves, `'name'` and `name` are two facts, `(p 1) (p 01)
+(p -7) (p 7)` four, `?a.b` binds as a variable, `a?x`, `?x?y`, `??x`, `a:b`, `a,b`, `a#b`, `a|b`, `a\b`, `Жук`, `"a"b`
+and `?_` are parse errors, and `Жук` in a `:why` loads. Today `a?x`, `?x?y` and `"a"b` load split, `01` stores `1`,
+`1st` stores `(p 1 st)`, and the rest of the names are refused.
+
+**No item of the list disagrees with [the paper grammar](s1f.5.5_paper_grammar.md)** (`ein.l`'s `NAME`, `VAR`,
+`DIGITS` and its catch-alls). It says more in five places, which the prototype follows and the acceptance should
+name: `_x`, `__`, `_-1` and `?_x` are a name and a variable (any name character first; [C1](#for-the-coordinator));
+`rule-x`, `rule.x`, `neq-1` and `not-a` are names, a reserved word being a whole token, which overrides
+[Q-M1e2.17](../../m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a) as
+[the name rule](s1f.5.5_the_grammar.md#the-name-rule) says; `=` is a name, so `(= a b c)` is a fact; `(1 a)` and
+`(relation 1 T)` are a fact of and a declaration of the relation `1`; and a keyword is `:` and a run of name
+characters, any unknown one refused ([C2](#for-the-coordinator)). The finding above is the one place it says nothing.
+
+### `cargo test --workspace` on the snapshot
+
+`build/s1f.5.4/proto-test.log`, 2026-11-08, 14 min 41 s: 888 passed and 33 failed, in 21 targets, each by this stage's
+mechanism:
+
+| target | test | why it moves |
+|---|---|---|
+| `ein-cli` `answer_dump` | `every_recorded_state_is_a_fixpoint_of_its_own_program` | `claim-int-name-solve` exits 0: its claim holds (W28) |
+| `ein-cli` `answer_round_trip` | `the_witnesses_reload_to_their_states` | `arg-kinds` answers: `REFUSED_UNTIL_S1F_5_4`, which T2 empties |
+| `ein-cli` `cli_semantics` | `a_range_is_no_token` | `(r 1..5 a)` loads: S1f.5.3's test, which T2 turns into its plain-name counterpart |
+| `ein-cli` `corpus_cli` | `the_files_refused_until_digits_are_names_are_refused` | the interim list, which T2 deletes |
+| | `every_cell_reproduces_its_exit_code` | `corpus_exits.txt`, 20 of 1 302 cells (below) |
+| | `every_refusal_carries_a_diagnostic` | the eight `ein-bugs/` witnesses' `test` cells exit 1 (each `:expect` refuted) with an empty stderr |
+| | `the_slow_flag_still_describes_the_sweep` | `binding-key-both` 5 185 ms, `-swapped` 5 203 ms, `-nested-only` 4 504 ms of cells, past the 1 s mark |
+| `ein-cli` `wrong_answers` | `every_row_answers_what_the_register_records` | 12 of 137 rows |
+| `ein-core` lib | `terms::tests::display_of_each_of_the_three_shapes`, `text::tests::a_name_is_bare_only_where_it_lexes_as_itself` | the name `1` prints bare |
+| `ein-core` `values_semantics` | `display_renders_every_value_shape` | `it's` prints bare (`'` is a name character) |
+| `ein-infer` lib | `compile::tests::plan_key_is_the_activators_values` | the int and the name with one text are one value: 3 plans, not 4 |
+| `ein-infer` `alive_invariant` | `every_name_of_the_program_is_a_candidate_object` | `SEEDED` moves: digits are names, and `arg-kinds` loads |
+| | `no_run_reaches_a_name_the_program_does_not_have` | `KNOWN_R1`'s W34 line prints `@empty` bare |
+| `ein-infer` `compile_semantics` | `a_relation_parameter_a_rule_binds_to_a_number_is_refused` | `(mirror 3)` names the relation `3` |
+| | `a_string_in_a_rule_is_the_symbol_it_names` | `(tag other 1)` and `(tag other "1")` are one fact |
+| `ein-infer` `refutation_under_absent` | `the_refused_set_is_exactly_these` | `activator-all-int`'s line gains `[activator 1]` |
+| `ein-infer` `register_region` | `every_row_states_its_witness_s_region` | 10 rows' `[case.region]`: W7, W15 ×2, W16 ×2, W18 ×2, W20, W28/classes-int-name, W34 |
+| `ein-infer` `rule_semantics` | `an_int_and_a_string_with_one_text_are_two_activators`, `a_string_in_a_rule_means_what_it_means_in_a_fact` | W16's and W18's int-against-string cases: one value now |
+| `ein-ir` lib | `lex::tests::a_literal_is_a_whole_word` | `neq-1` is a name |
+| | `lex::tests::a_single_underscore_is_the_wildcard_and_a_dunder_is_not` | `_x` is a name |
+| | `lex::tests::no_terminal_reads_a_range` | `1..5` is one name |
+| | `lex::tests::symbol_rejects_reserved_words_at_a_word_boundary` | `rule-x`, `rule.x` are names |
+| `ein-ir` `dump_goldens` | `dump_then_parse_is_a_fixed_point` | `range-in-match` parses: the interim list |
+| `ein-ir` `fuzz_properties` | `every_seed_and_finding_parses_the_way_it_was_recorded` | `fuzz_seeds.txt` |
+| `ein-ir` `grammar_decisions` | `a_keyword_is_a_whole_word_in_every_place` | its 435 `keyword-1` parses read the name `keyword-1`, overriding Q-M1e2.17 (i)(a) |
+| | `the_documented_ambiguities_keep_their_decisions` | `grammar_decisions.txt` |
+| `ein-ir` `ir_semantics` | `the_documented_ambiguities_resolve_as_recorded` | 9 of 78: `(rule-x A)`, `(rule.x A)`, `(= a b c)`, `(a _x)`, `(a 1..5)`, `(a 1..*)` and `(a 1..)` parse; `(a 007)` and `(a -0)` keep their spelling |
+| `ein-ir` `load_semantics` | `the_config_coercion_table_is_stable` | `config_coercion.txt`: `got Int(value=1)` → `got Atom(name='1')` |
+| | `the_load_negative_fixtures_are_byte_identical` | `relation_parameter_int` loads |
+| `ein-render` `corpus_shapes` | `every_corpus_rendering_reproduces_its_digest` | `corpus_shapes.md5` (below) |
+| `ein-render` `golden_trace` | `every_real_solve_reproduces_its_golden` | `trace_one-hypothesis.md`, `trace_ambiguous.md`: both `branching/12`, its universe and N 25 → 51 |
+
+`dot_wellformed`, `id_order_invariance`, `jobs_invariance`, `lever_invariance`, `route_invariance`,
+`corpus_cores`, `stdlib_coverage` and every other target pass.
+
+**The goldens, named before they move.** Blessed on the snapshot (`EIN_BLESS=1 cargo test --workspace
+--no-fail-fast`, `build/s1f.5.4/proto-bless.log`, 2026-11-08, 16 min 57 s; diffed against an untouched
+`build/s1f.5.4/base`), seven goldens move, and the register's `[case.region]` blocks (45 lines). This is the
+prototype's list; T2's scoping ([§ The register](#the-register-12-rows-move), [§ The fixtures](#the-fixtures)) changes the `ein-bugs/` witnesses' rows again.
+
+| golden | what moves |
+|---|---|
+| `ein-cli` `corpus_exits.txt` | 20 of 1 302 cells: `relation_parameter_int`'s `saturate` and `solve`, `range-in-match`'s two, `arg-kinds`' `saturate` and the two `claim-int-name` `solve` cells 1 → 0; the eight `ein-bugs/` witnesses' `test` cells and five of their `solve` cells 0 → 1 |
+| `ein-render` `corpus_shapes.md5` | 537 lines out and 638 in, over 30 files (`build/s1f.5.4/shapes_by_file.txt`): the 22 corpus files above that move; `arg-kinds` and `range-in-match`, one `ir[parse]` row each → 41 rows; and nine whose digest moves and whose answer does not, a digit now an atom in the tree: `syntax/relation-decls` (`(relation R4 7 T)`), `syntax/is-a-shapes`, `int-goal-binding`, `mixed-type-hypothesis`, `str-in-hrule`, W24's `form-in-guard`, `guard-before-binder` and `kwpair-in-guard`, and `tests/stdlib/elim/01` and `/02` |
+| `ein-ir` `grammar_decisions.txt` | seven rows: `(rule-x A)`, `(rule.x A)`, `(= a b c)`, `(a _x)`, `(a 1..5)`, `(a 1..*)` and `(a 1..)` parse |
+| `ein-ir` `fuzz_seeds.txt` | the seed `(a 1..5 :k 1..* :s "x\ny" :w _ :v ?v)` parses |
+| `ein-ir` `config_coercion.txt` | `(config :lattice-sanity-check 1)`: `got Int(value=1)` → `got Atom(name='1')`; `… 1..5`: the parser's line → the loader's, `got Atom(name='1..5')` |
+| `ein-render` `trace_one-hypothesis.md`, `trace_ambiguous.md` | `branching/12`: the universe and N, 25 → 51 (238 lines in the second) |
+
+The 27 tests the bless leaves failing are assertions T2 restates by hand: the lexer's and printer's unit tests, the
+int-against-string cases of `rule_semantics`, `compile_semantics` and `compile.rs`, `ir_semantics`' table, the
+interim list's four readers, `alive_invariant`'s two lists, the refused set, the register's rows, the load-negative
+fixture, the slow flags and the diagnostics check.
+
+### The register: 12 rows move
+
+`wrong_answers::every_row_answers_what_the_register_records`, and `register_region`'s `[case.region]` blocks for ten:
+
+| row | what moves | proposed in T2 |
+|---|---|---|
+| `W7/binding-key-layout`, `W15/binding-key-layout`, `W15/binding-key-layout-swapped` | `binding-key-both` and `-swapped`: H 1 → 21, R past the budget, `--maximal` lists every candidate | **keep, scoped A** (`(solve :no-hypothesis (edge noted) …)`): H `(holds 2)`, `(holds Y)`, R four states, the oracle the same; `now`, `right`, `[case.region]` and both files' `:expect` restated to them. W15's point stays visible (`Y`, written only inside `(src Y)`, is a candidate), and W7's (root's four `noted` facts in either order) |
+| `W16/int-and-string`, `W16/string-then-int` | `1` and `"1"` are one name, so each file's two activators are one fact: the case cannot be written | **keep, scoped C** (`(solve :no-hypothesis (edge holds noted) …)`): R {∅} and `now` exactly as recorded today, and each file's `:expect` holds unchanged (its six facts are root's three); `right` and `[case.region]` restated (one value: `(holds 1)`, `(noted 1 1)`, `(noted 2 1)`), the note saying the case is unwritable since this stage; [S1f.5.2](s1f.5.2_strings_are_natural_language.md) then refuses `"1"` as a value |
+| `W16/activator-all-int` | the refusal's line gains `[activator 1]` | **keep**, `now.refused` restated; `right`, a refusal, unchanged. The witness is now its symbol control with `1` for `a` |
+| `W20/range-in-match` | refused at the parse → loads | **`right` restated**: `1..3` is a name and the rule a pattern over it, which no fact at root holds; H `(hit 1..3)`, `(hit 2)`, `(n 1..3)`, R the whole cube of 8, `(hit r)` exactly where `(n 1..3)` holds, the oracle the same; `now` that `solve`; fixed; the witness's header restated |
+| `W21/typed-blind-solve` | N's cores, 25 → 51 (`branching/12`) | **`now` re-taken**, F8's accepted move |
+| `W28/claim-int-name`, `-solve` | the claim holds, exit 1 → 0 | **`right` restated**: one name, the claim held, exit 0; the note saying the case is unwritable since this stage, and S1f.5.2 refusing `"1"` |
+| `W28/classes-int-name` | 4 classes → 2; the candidate prints `(pick 1)` | **`right` and `now` restated**: 2 classes |
+| `W34/assert-empty` (open, S1f.5.9's) | the candidate prints `(q @empty)` | **`now` restated** to whatever Q1 decides the name is |
+| `W18/str-in-match`, `W18/str-in-assert` (S1f.5.2's) | `[case.region]` only (`str-in-assert` 4 → 32 states) | **re-banked** |
+
+Alternatively a status `retired` (schema /14) for rows whose case cannot be written, keeping their record blocks and
+running nothing. Not recommended: the register kept W1's lever rows as rows, restated, when their flags retired.
+
+### The fixtures
+
+| fixture | proposed |
+|---|---|
+| `binding-key-both`, `-swapped` (W7, W15), `-nested-only`, `-int-only` (W7's controls) | keep, **scoped A**, each `:expect` restated to its R (four states; `-int-only` two). Unscoped, every one of the eight `ein-bugs/` witnesses' `:expect` is refuted, and its `test` cell exits 1 with an empty stderr ([C3](#for-the-coordinator)) |
+| `activator-text-int-and-string`, `-string-then-int` (W16), `-int-only`, `-string-only` (W16's controls) | keep, **scoped C**, each `:expect` unchanged and holding; S1f.5.2 refuses the string ones |
+| the four `corpus/fuzz_findings/` seeds | keep as seeds, scoped as their promoted witnesses (A, C), so that the cost stays where it is: unscoped, three `ein-bugs/` entries cross the corpus's 1 s slow mark (`binding-key-both` 5.2 s of cells, `-swapped` 5.2 s, `-nested-only` 4.5 s: `the_slow_flag_still_describes_the_sweep`), and the two `binding-key-layout` seeds stop at the budget too |
+| `activator-all-int` (W16) | keep; its line restated |
+| `claim-int-name`, `-solve`, `classes-int-name` (W28) | keep; headers say what they answer now; S1f.5.2 refuses `"1"` |
+| `range-in-match` (W20), `syntax/arg-kinds` | parse again; `REFUSED_UNTIL_S1F_5_4` emptied and its test deleted, as S1f.5.3 left it; `arg-kinds`' 342 542 states are the round trip's cost ([Q3](#q3--arg-kinds-and-the-round-trip)) |
+| `broken/load/relation_parameter_int` | [Q2](#q2--relation_parameter_int) |
+| `ein-bugs/int-goal-binding` | [Q4](#q4--a-name-of-digits-in-summaryjson) |
+
+### The questions for the user
+
+#### Q1 — the synthetic names
+
+`@empty`, `<nested>`, `@params` and `<query>` are names a program can now write
+([the finding](#the-finding-two-synthetic-names-become-spellable)).
+
+- **(a) Recommended: T2 renames the four out of the name space**, to text the list cannot spell (a character it
+  excludes, such as `#`: `#empty`, `#nested`, `#params`, `#query`). Nothing moves but the spelling of W34's leaked
+  candidate, `(q "#empty")`, which S1f.5.9 removes.
+- (b) Leave them until their producers go (S1f.5.9 for `:assert ()`, S1f.5.1 for `(_ a)`, S1f.5.5 for `()` as a
+  value), the collision filed as a register row meanwhile.
+- (c) Refuse the four spellings at load.
+
+#### Q2 — `relation_parameter_int`
+
+The load-negative fixture of an int binding a relation parameter loads now: `(mirror 3)` names the relation `3`.
+
+- **(a) Recommended: retire it**, its `.expected` and its corpus entry. The refusal it pinned is int-only code T3
+  retires; the nested-fact shape has its own fixtures (W24, [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)).
+- (b) Move it to a positive group, as *a relation named `3`*.
+
+#### Q3 — `arg-kinds` and the round trip
+
+`arg-kinds` writes 342 542 state files in the prototype (S1f.5.3 measured 112 793 before the interim), each reloaded
+by `answer_round_trip`. **Recommended: (a)** leave the program as written and let the round trip read it (it took
+18.5 s for `solve` with `--dump-answer` here), as S1f.5.3's interim said; (b) scope it with `(solve :no-hypothesis
+(r))`, which the fixture's point (the node kinds as written) does not need: R is then {∅}, one state, no candidate
+(`build/s1f.5.4/scoped/arg-kinds.scoped.ein`).
+
+#### Q4 — a name of digits in `summary.json`
+
+`summary.json`'s query rows render a binding whose text is digits as a JSON number (`region_answer.rs`, `binding`;
+M1a S1a.6.6's regression, `ein-bugs/int-goal-binding`). With digits as names, `(p 007)` and `(p 7)`, two names, both
+render `{"x": 7}` (`build/s1f.5.4/scratch/json-binding.ein`).
+
+- **(a) Recommended: every name is a JSON string** in T2, and `int-goal-binding`'s note restated: a name of digits,
+  and one wider than an i64, is a string. Its summary moves (`8`, `-7`, `99999999999999999999999` become strings).
+- (b) Keep the number for a canonical run of digits only (`7`, not `007` or `-0`); two spellings would still not
+  collide, but a name would be a number on one surface.
+
+#### For the coordinator
+
+- **C1.** `_x`, `__`, `_-1` and `?_x` become a name and a variable here, with the rule (*any of them first*), and
+  [S1f.5.1](s1f.5.1_bare_underscore_refused.md) keeps the bare `_` alone; its table lists them as its own. No corpus
+  program writes one. Recommended.
+- **C2.** A keyword keeps today's characters (`:[a-z][A-Za-z0-9_-]*`) and ends at a separator, so no keyword that
+  reads today reads differently; the paper grammar's `:` and any name characters come with
+  [S1f.5.11](s1f.5.11_closed_keywords.md)'s closed lists. Recommended.
+- **C3.** Two things found here are not this stage's: `ein test` exits 1 with an empty stderr on a refuted claim (every
+  `test` cell; `ein solve` writes one line), which `corpus_cli::every_refusal_carries_a_diagnostic` would catch on a
+  corpus cell and which no corpus cell reaches today or under T2 as proposed; and the state route's *pass 2^128* limit,
+  reached by three M1e2 probes today and by S1f.5.5's `programs/arg-kinds.ein` in the prototype. To be parked where
+  the coordinator files out-of-phase findings.
