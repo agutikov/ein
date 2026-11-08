@@ -14,7 +14,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; [S1f.5.0](p1f.5_the_no_owner_items/s1f.5.0_the_known_wrong_answers_filed.md) files W33–W35 |
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
-| [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (b)**: the boundary ordered by the derived band too, then removal; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
+| [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -185,3 +185,14 @@ consequence and (c) the refusal.
 **Ruled 2026-11-08, (b).** The user chose *"Order boundary by band"*: the boundary admits its candidates in
 derived-band order, as the agenda does, and `:priority` is removed; what still moves (`zebra.ein`'s cores through
 the flag, W25's control, W29's witness, the records) is named in the removal commit as F22's, each witness restated.
+
+**Re-ruled 2026-11-08, (a).** Asked what `:priority` is for, the user reasoned that it orders saturation and is in
+effect an optimisation, so that a removal needs only the saturation results to agree, not the numbers reproduced
+(*"it is not about particular values of priorities, it is about order of rules during saturation. What if
+completely remove priority and don't make ordering of rules at all, what changes?"*). Told that T1's sweep is that
+experiment (no stored fact, R, N, H, claim or exit code moved; cores, `refuted by`, narration and cost did), that
+no order and no band makes a core a function of the program, and that the choice is whether a core is part of the
+answer, the user ruled: *"plain FIFO, core is an explanation, F22 makes it canonical"*. So the agenda and the
+boundary are FIFO, the written order, and no band orders either; Q-M1f.4 (b)'s derived agenda is withdrawn with
+this (b). Every core and `refuted by` the removal moves is named in its commit as F22's; each stays a valid core
+(`ein-infer/tests/corpus_cores.rs`). T3's rule graph and strata stay for T4's diagnostic; nothing orders by them.
