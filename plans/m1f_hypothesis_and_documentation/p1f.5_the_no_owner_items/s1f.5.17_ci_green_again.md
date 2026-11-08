@@ -332,8 +332,9 @@ section says which Graphviz build `dot_wellformed` meets on the CI, and how to c
 - **The cause is Graphviz's, or Ubuntu's build of it**, and this stage reported it nowhere: `ccw` in
   `lib/pathplan/shortest.c` is not robust to FMA contraction, and Ubuntu builds the amd64v3 variant with
   GNU C's default `-ffp-contract=fast`. Whether to report it upstream (Graphviz's issue tracker, or
-  Launchpad's `graphviz` package) is the user's. The evidence is § Step 1's tables, and
-  `build/s1f.5.17/tools/pathplan_fma.sh` rebuilds the library both ways.
+  Launchpad's `graphviz` package) was the user's, and **the user ruled it on 2026-11-08: not reported**
+  (*"don't report the graphviz bug upstream"*). The view-side fix stands on its own. The evidence is
+  § Step 1's tables, and `build/s1f.5.17/tools/pathplan_fma.sh` rebuilds the library both ways.
 - **`dot_wellformed` still reads stderr as a refusal.** A router fallback on one build is Graphviz's
   statement about itself, as the test already reads a signal. The stage reserved telling the two apart for
   the user, and did not need to ask, since a view-side fix existed. If a later corpus program trips the
