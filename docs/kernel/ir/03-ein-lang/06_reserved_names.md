@@ -83,7 +83,13 @@ former-wrapper head like `(facts …)` therefore parses as a plain fact.
 P1.8 S1.8.A1 D3): a `(rule …)` / `(hrule …)` / `(relation …)` / `(macro …)`
 may not *bind* a name that shadows reserved kernel vocabulary — the
 structural primitives (`absent` / `false`), the **verdict atom** `open`, the
-computed predicates (`eq` / `neq`), or `relation`. The SYMBOL-excluded keywords
+computed predicates (`eq` / `neq`), `relation`, or, since M1f S1f.5.5's
+T1f.5.5.11, the kernel's dunders `__closed__` and `__symmetric__`, which a
+program uses and never binds
+([Q-M1f.7](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders)
+(b)); an import's `:as` takes the same guard since then. The engine's three
+writeback rule names are refused wherever a program writes them
+([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The SYMBOL-excluded keywords
 (`not` / `and` / `or` / `neq` / the declarators) can't be written as a declared
 name at all (parse error). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `unknown` / `forall`
@@ -120,7 +126,7 @@ lexer's set is twelve since M1e2 S1e2.1a.4, with the `solve` declarator.)
 
 | | the question it answers | membership | how it fails |
 |---|---|---|---|
-| `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
+| `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` (the two dunders since M1f T1f.5.5.11) | a **load** error, at the declaration |
 | `ein-ir`'s `LEXER_KEYWORDS` — [`00_ebnf.md`](00_ebnf.md) | what may not **lex** as a `SYMBOL`? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever the word appears |
 
 Four names are in both and neither set contains the other. **`open` and
@@ -273,8 +279,8 @@ candidate stays parked and is re-judged at every later quiescence
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 (S1.7.10). | `ein-infer/closed.rs` (`CLOSED = "__closed__"`); the hypgen filter |
-| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
+| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 (S1.7.10). Used as a relation or a value, never bound (M1f T1f.5.5.11). | `ein-infer/closed.rs` (`CLOSED = "__closed__"`); the hypgen filter |
+| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
 | `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |

@@ -17,6 +17,26 @@ triggers kernel behaviour). `__closed__` and `__symmetric__` are the two so
 far. The surface task-class / control keywords below predate the
 convention and keep their bare names.
 
+**The engine's five names are reserved, and refused as a program's own**
+(M1f S1f.5.5's T1f.5.5.11, 2026-11-08, on the user's ruling of that day,
+*"they are also reserved names"*, and on
+[Q-M1f.7](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders)
+(b), *"Never bound"*). Each is written only with its fixed meaning:
+
+| name | a program may | a program may not | refused by |
+|---|---|---|---|
+| `__closed__`, `__symmetric__` | **use** it wherever a name is used: as the relation of a fact, a premise, a conclusion, a goal or a claim's fact, and as a value, `(imply1 functional __closed__)` among them | **bind** it: declare a relation of that name, name a rule, an hrule or a macro after it, or import a module `:as` it | the loader, *relation '__closed__' shadows a reserved kernel name* (and *rule*, *hrule*, *macro*, *alias*): the dunders are in [`ein_core::RESERVED`](../../../ein.rs/crates/ein-core/src/terms.rs), the names a declarator may not bind |
+| `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | — | write it anywhere: they name a conclusion no rule drew, which a program cannot | the parse: the generated grammar's `WRITEBACK` token, which no production takes (*unexpected `<forced-positive>`: the engine's writeback rule name (reserved)*), and the hand-written lexer, which has no token that starts with `<` |
+
+So a printed `:rule <lookahead-dies-immediately>` is always the engine's, and a
+rule's firings never print `:rule __symmetric__`, the native mirror's. The
+name in a string or a comment is not the name, and a longer run that starts
+with one (`<forced-positive>x`) is the name it spells.
+[`ein-ir/tests/engine_names.rs`](../../../ein.rs/crates/ein-ir/tests/engine_names.rs)
+holds each name in each position through both parsers. Until T1f.5.5.11 a
+program could bind a dunder through either parser, and write a writeback name
+through the generated one.
+
 ## Bookkeeping carrier heads
 
 **None currently.** The search once wrapped speculative facts in

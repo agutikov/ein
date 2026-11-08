@@ -14,8 +14,10 @@
 //   - a token runs to a separator: a space, a paren, `;`, `#|` or the end.
 //     BAD, BADTEXT and BADESCAPE are the catch-alls that make it so (F2):
 //     whatever is glued to a token makes one longer, bad, token.
-// No production uses UNDERSCORE, VARUNDERSCORE, KEYWORD, BAD, BADTEXT or
-// BADESCAPE; ein.y lists them under %expect-unused.
+//   - the engine's three writeback names are a token of their own, used by no
+//     production, so each is refused where it stands (Q-M1f.7, T1f.5.5.11).
+// No production uses UNDERSCORE, VARUNDERSCORE, WRITEBACK, KEYWORD, BAD,
+// BADTEXT or BADESCAPE; ein.y lists them under %expect-unused.
 %%
 \( "("
 \) ")"
@@ -68,6 +70,15 @@ owing "owing"
 // Reserved and refused: a bare `_`, and `?_`.
 _ "UNDERSCORE"
 \?_ "VARUNDERSCORE"
+// Reserved and refused: the engine's three writeback rule names, which it
+// writes as the rule of a conclusion no rule drew (`ein_core::terms::ENGINE`).
+// Each is a NAME of the same length, so this rule, being earlier, wins; a
+// longer run (`<forced-positive>x`) is the NAME it spells. The user's ruling of
+// 2026-11-08 on S1f.5.5's review stop, *"they are also reserved names"*, read
+// by Q-M1f.7 (b): no meaning a program can write, so refused wherever written
+// (T1f.5.5.11). `[<]` and `[>]`, since a rule that starts with `<` names a
+// start condition and `\<` is a word boundary.
+[<](forced\-positive|monotonic\-unconditional|lookahead\-dies\-immediately)[>] "WRITEBACK"
 // The name rule (Q-M1e2.24): a run of digits is a name like any other, and
 // no token of its own, since `:priority`, which took digits alone, is not in
 // this grammar (the user, 2026-11-08: S1f.5.15 deletes it before the swap).

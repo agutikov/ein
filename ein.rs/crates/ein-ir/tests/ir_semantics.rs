@@ -161,10 +161,10 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `reserved-macro-names-beyond-absent` — the loader's shadowing check covers
 /// the whole kernel vocabulary, not just `absent`.
 ///
-/// [`ein_core::RESERVED`] is **nine** names, and four of them (`not` / `and` /
-/// `or` / `neq`) cannot even be *written* as a macro name — the grammar stops
+/// [`ein_core::RESERVED`] is **eleven** names, and four of them (`not` / `and`
+/// / `or` / `neq`) cannot even be *written* as a macro name — the grammar stops
 /// them first (see `a_reserved_keyword_cannot_be_written_as_a_macro_name`).
-/// The other five are ordinary SYMBOLs, so nothing but this check stands
+/// The other seven are ordinary SYMBOLs, so nothing but this check stands
 /// between a puzzle and a macro called `eq` silently shadowing the equality
 /// predicate in every rule that mentions it. The second half of the test is
 /// what makes the claim "exactly": `forall` and `unknown` are kernel *sugar*
@@ -178,10 +178,22 @@ fn a_macro_body_may_invoke_another_macro() {
 /// those three was [`CO-H2`], a shipped defect; the first two were only ever
 /// this comment being wrong, which is the same drift one layer out.
 ///
+/// **The kernel's two dunders are the sixth and the seventh since M1f
+/// S1f.5.5's T1f.5.5.11** (Q-M1f.7 (b)): `__closed__` and `__symmetric__` are
+/// used, never bound.
+///
 /// [`CO-H2`]: ../../../../docs/history/m1e_review_processing/review/correctness/high.md
 #[test]
 fn the_kernel_names_a_macro_may_not_shadow() {
-    for name in ["absent", "eq", "false", "open", "relation"] {
+    for name in [
+        "absent",
+        "eq",
+        "false",
+        "open",
+        "relation",
+        "__closed__",
+        "__symmetric__",
+    ] {
         let src = format!("(macro {name} (?p) (rel ?p))");
         let err = load_macro_names(&src).expect_err("reserved names are rejected at load");
         assert!(

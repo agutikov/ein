@@ -503,10 +503,16 @@ constrained-reasoning research.
   T10 also moved `syntax/wrappers`, the one fixture rewrite that moves no
   answer on today's parser, and S1f.5.15's T1f.5.15.9 took `:priority` out
   of `utils/region_synth.py`, `guard_split.py` and `fuzz_engine.py`. T11,
-  the engine's five names reserved, stopped before any edit on
-  [Q-M1f.7](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders):
-  the reading refuses a dunder as an argument, and the stdlib documents
-  `(imply1 functional __closed__)`. T11 and the swap wait on the user.
+  the engine's five names reserved, stopped on
+  [Q-M1f.7](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders),
+  which the user ruled (b), *"Never bound"*, and landed the same day: the
+  dunders `__closed__` and `__symmetric__` are in `ein_core::RESERVED`, so
+  a program may not bind either (a declared relation, a rule's, an hrule's
+  or a macro's name, an import's `:as`) and uses either as a relation or a
+  value, `(imply1 functional __closed__)` among them; the three writeback
+  names are the generated grammar's `WRITEBACK` token, refused wherever a
+  program writes them (`ein-ir/tests/engine_names.rs`). The swap, T4, is
+  next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

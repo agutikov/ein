@@ -489,7 +489,16 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
         )));
     }
     let alias = match as_value {
+        // An alias binds a name, so it may not be a reserved one (M1f
+        // S1f.5.5's T1f.5.5.11, Q-M1f.7 (b)): `ein_core::RESERVED`, the
+        // kernel's dunders among them.
         Some(v) => match ast.atom_name(v) {
+            Some(name) if ein_core::is_reserved(name) => {
+                return Err(LoadError(format!(
+                    "(import {module} :as {name}) — alias '{name}' shadows a reserved kernel \
+                     name at {loc}"
+                )));
+            }
             Some(name) => Some(name.to_string()),
             None => {
                 return Err(LoadError(format!(

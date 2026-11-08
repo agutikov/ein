@@ -22,8 +22,8 @@
 // generates the parser from this file and `ein.l` (T1f.5.5.3).
 %start Program
 %parse-param p: &::std::cell::RefCell<b::B>
-%token "UNDERSCORE" "VARUNDERSCORE" "KEYWORD" "BAD" "BADTEXT" "BADESCAPE"
-%expect-unused "UNDERSCORE" "VARUNDERSCORE" "KEYWORD" "BAD" "BADTEXT" "BADESCAPE"
+%token "UNDERSCORE" "VARUNDERSCORE" "WRITEBACK" "KEYWORD" "BAD" "BADTEXT" "BADESCAPE"
+%expect-unused "UNDERSCORE" "VARUNDERSCORE" "WRITEBACK" "KEYWORD" "BAD" "BADTEXT" "BADESCAPE"
 %epp "(" "("
 %epp ")" ")"
 %epp "NAME" "a name"
@@ -31,6 +31,7 @@
 %epp "TEXT" "a string"
 %epp "UNDERSCORE" "_ (reserved)"
 %epp "VARUNDERSCORE" "?_ (reserved)"
+%epp "WRITEBACK" "the engine's writeback rule name (reserved)"
 %epp "KEYWORD" "a keyword this form does not take"
 %epp "BAD" "a token that is not a name"
 %epp "BADTEXT" "a string glued to what follows"

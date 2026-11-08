@@ -193,8 +193,19 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// (`SE-L2`); the two overlap in four names and neither contains the other.
 /// The one that matters is `open`: it is **here** and it must never be there,
 /// because `(open ?R)` is an ordinary fact head and has to lex as a `SYMBOL`.
-pub const RESERVED: [&str; 9] = [
-    "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
+///
+/// **The kernel's two dunders are here since M1f S1f.5.5's T1f.5.5.11**
+/// (2026-11-08), on the user's ruling of that day on Q-M1f.7, *"Never bound
+/// (b)"*: [`CLOSED`] and [`SYMMETRIC`] are written only with their fixed
+/// meaning, so a program may not bind either, as a relation it declares, a
+/// rule's, an hrule's or a macro's name, or an import's `:as`; it may use
+/// either wherever a name is used, as a relation or as a value, which is how
+/// `(imply1 functional __closed__)` hands the trigger to a rule. The engine's
+/// three writeback names ([`FORCED_POSITIVE`], [`MONOTONIC_UNCONDITIONAL`],
+/// [`LOOKAHEAD_DIES`]) are not here: the grammar refuses them wherever a
+/// program writes them.
+pub const RESERVED: [&str; 11] = [
+    CLOSED, SYMMETRIC, "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
 ];
 
 pub fn is_predicate(name: &str) -> bool {

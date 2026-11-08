@@ -75,8 +75,10 @@ so T4's; item 8, the scripts' `:priority`, landed as S1f.5.15's T1f.5.15.9.
 **T11 stopped on 2026-11-08 before any edit** ([§ T11 record](#t11-record-2026-11-08)): the coordinator's reading of
 item 4 would refuse `(imply1 functional __closed__)`, which the stdlib documents and a test holds, and T11's test
 cannot hold under it; where a program may write a dunder is
-[Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders), put to the user. T11 and
-then T4 wait on it.
+[Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders), put to the user. **The user
+ruled (b), *"Never bound"*, the same day (`feb5e839`), and T11 is done**: a dunder is refused where a program binds
+a name and legal wherever one is used, and the three writeback names are refused wherever a program writes them. T4
+runs next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1068,7 +1070,11 @@ defaults was overruled.
     `:match` pattern and of an `:assert` (`(__closed__ is-a)`, `(__symmetric__ knows)`, `:assert (__closed__ ?R)`).
     Any other use is refused: a relation the program declares, a rule's name, or an argument value.
   - This is T1f.5.5.11 below. **T11 stopped on this reading's dunder half on 2026-11-08**, before any edit:
-    [Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders).
+    [Q-M1f.7](../open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders). **The user ruled (b) the
+    same day, *"Never bound"***, which corrects the reading's dunder half: a dunder is refused where a program
+    binds a name (a declared relation, a rule's, an hrule's or a macro's name, an import's `:as`) and legal wherever
+    one is used, as a relation or as a value, `(imply1 functional __closed__)` among them. The writeback half
+    stands.
 - **Item 12, a `.einb` cold open:** *"Restate the budget"*. T4 restates design/10 § 6's millisecond and
   `roundtrip`'s dev-profile 5 ms at what the generated parser costs, as the generator's accepted price. Keeping
   the parsed tree in the container, a format bump, waits until the millisecond is wanted.
@@ -1099,7 +1105,9 @@ named there.
 - **Where:** in the generated grammar, with its own refusal text, and in the loader where the hand-written
   parser still reads the program until T4. Whichever holds the rule, both parsers agree.
 - **The tests:** one per name and position, and T9's probe `build/s1f.5.5/t9/probes/engine-names.ein` refused
-  at each of its five names.
+  at each of its five names. *Restated by Q-M1f.7 (b), 2026-11-08:* the probe writes its dunders as the relation
+  of a fact, a use, so it is refused at its three writeback names; a probe binding each dunder in each binding
+  position is refused at each, and each use stays legal.
 - **The page:** `reserved_engine_strings.md` says the five are refused as a program's own names.
 
 ### T11 record, 2026-11-08
@@ -1133,6 +1141,39 @@ own `%epp` text, as it refuses `_`; the dunders' binding positions join the load
 name* check (`ein_core::is_reserved`'s callers in `from_ir.rs` and `macros.rs`, and the import alias), which both
 parsers feed, so they agree without an edit to `lex.rs` or `parse.rs`; under (a) a loader line refuses a dunder
 as an argument too. The pages: `reserved_engine_strings.md` and `06_reserved_names.md`.
+
+**Built the same day, on the user's ruling of Q-M1f.7, (b) *"Never bound"* (`feb5e839`)**, in one commit, as
+planned above; no edit to `lex.rs` or `parse.rs`.
+
+- **The dunders.** `ein_core::RESERVED`, the names a declarator may not bind, gains `__closed__` and
+  `__symmetric__` (eleven names), so the loader's existing check refuses each as a declared relation and as a
+  rule's, an hrule's or a macro's name, *… '__closed__' shadows a reserved kernel name*, through both parsers and
+  through every import route (`imports_semantics`' `every_ein_core_reserved_name_is_unbindable_through_a_qualified_import`
+  reads the list, so it holds the dunders too). An import's `:as` takes the same check, *(import M :as __closed__)
+  — alias '__closed__' shadows a reserved kernel name*, which also refuses an alias that is one of the other nine;
+  no program writes one (`grep ':as '` over every `.ein`, 2026-11-08: four aliases, each `m` or `"m"`). `qualify` leaves a module's
+  dunder unrenamed, so the loader refuses it there too. Every use stays legal.
+- **The writeback names.** `ein.l`'s `WRITEBACK` token, `[<](forced\-positive|monotonic\-unconditional|lookahead\-dies\-immediately)[>]`,
+  before `NAME`, so that the one of two matches of one length the lexer takes is it, and `ein.y` lists it under
+  `%expect-unused` with its `%epp`, so the generated parser refuses each where it stands: *unexpected
+  `<forced-positive>`: the engine's writeback rule name (reserved)*. A longer run, `<forced-positive>x`, is the
+  name it spells, and the name in a string or a comment is text. The hand-written lexer has no token that starts
+  with `<`, so it refuses the same files at the same column.
+- **The tests**, `ein-ir/tests/engine_names.rs`, five, every program through both parsers: each writeback name in
+  eighteen positions refused, at the name, by both; the name in a string, a comment and a longer run not refused;
+  T9's probe, verbatim, refused at its four occurrences of the three names and nowhere else (the generated parser:
+  5:11, 7:7, 8:7, 8:61; the hand-written: 5:11); each dunder in the five binding positions refused with the
+  loader's line; and one program using both dunders as the relation of a fact, a nested fact, a premise, a
+  conclusion, a goal and a claim's fact, and as a value (an argument, `(imply1 functional __closed__)` from
+  `std.algebra`, a `:no-hypothesis` list, a fact's `:rule`), loaded by both. `ir_semantics`'
+  `the_kernel_names_a_macro_may_not_shadow` takes the two dunders, and the comments that counted nine count eleven
+  (`ir_semantics`, `kb_semantics`; `lex.rs`'s, which T4 deletes, stay).
+- **The pages**: `reserved_engine_strings.md` (a table of the five: what a program may write and what refuses
+  it), `06_reserved_names.md` (the guard's list, the table of `RESERVED`, the two dunder rows) and
+  `defined_behaviour.md` § 4.2 (*the nine names*, eleven since). `(imply1 functional __closed__)`, its comment in
+  `stdlib/algebra.ein`, its row in `07_stdlib_api.md` and `algebra_semantics`' test stay as they are.
+- **What moved:** no corpus answer, golden, fixture or register row (no corpus program binds a dunder or writes a
+  writeback name: the `grep` above). The gate below is the check.
 
 ### Task T1f.5.5.10 — the fixture moves that move no answer
 

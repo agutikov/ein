@@ -653,7 +653,9 @@ citation said the shortfall was covered.
 Binding the name is the eleventh and is not new: `(relation open …)`,
 `(macro open …)` and `(rule open …)` take §1's existing *shadows a reserved
 kernel name* message, because `open` joined `ein_core::RESERVED` — the nine
-names a declarator may not **bind**, and *not* `ein-ir`'s eleven-word
+names a declarator may not **bind** (eleven since M1f S1f.5.5's T1f.5.5.11,
+which added the kernel's two dunders, and the guard an import's `:as` too), and
+*not* `ein-ir`'s eleven-word
 `LEXER_KEYWORDS`, which `open` must stay out of because `(open ?R)` is an
 ordinary fact head. Both sets were called `RESERVED` until M1e S1e.4.2.
 
