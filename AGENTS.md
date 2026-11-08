@@ -422,6 +422,16 @@ constrained-reasoning research.
   steps, not 500 ms). It is outside the workspace on purpose: no gate check
   formats or lints it, and nothing here should edit it but a change to the patch
   ([S1f.5.5 § T3 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t3-record-2026-11-08)).
+  The user's rulings of that day make the generated grammar the phase's
+  final one from the start (*"collect all requirement for the parser in this
+  phase and implement grammar that will already meet all of them"*):
+  S1f.5.15, which removes `:priority`, runs after T3 and before the swap
+  (*"S1f.5.15 before swap"*); `:why` stays optional in the grammar and a
+  loader flag, default false, makes it required, which S1f.5.14, now the
+  phase's last stage, turns to true once every program carries one (*"the
+  flag only decides loading"*, so it moves no answer); and the patch is not
+  sent upstream (*"don't send the lrpar patch upstream either"*)
+  ([P1f.5 § The order](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-order)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

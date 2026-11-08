@@ -3,7 +3,26 @@
 **Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
 **Was S1f.5.6**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 6 days — 3 to measure and decide, 3 to remove.
-**Depends on:** [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
+**Status:** specified 2026-08-28, not started. **Moved on 2026-11-08, on the user's ruling, to run after
+[S1f.5.5](s1f.5.5_the_grammar.md)'s T3 and before its T8, T9, T10 and the swap (T4)**, where P1f.5's order had it
+last ([P1f.5 § The order](README.md#the-order)). The user's principle that day: *"collect all requirement for the
+parser in this phase and implement grammar that will already meet all of them instead of making wrong parser that
+meets our old wrong parser and then updating it step by step"*. `:priority` was one of the two items that would
+have edited the generated grammar later, and the user chose *"S1f.5.15 before swap"*. So the generated grammar
+never has `:priority`: T3 built it without (`54715b5f`, [S1f.5.5 § T3
+record](s1f.5.5_the_grammar.md#t3-record-2026-11-08)), refusing a rule's `:priority` like any keyword a rule does
+not take, and attributed to this stage, pending, the 133 corpus files that differ between the two parsers only by
+their `:priority`. This stage removes the keyword from every program both parsers read before the swap, so S1f.5.5's
+T9 has no `:priority` difference to attribute. **If it ends in the written refusal its acceptance allows, the
+production comes back then**, in the generated grammar and before the swap, and S1f.5.4's `:priority` guard
+(T1f.5.4.3) with it. **The keyword's disposal (§ T5, decision 1) is settled for the generated grammar**: refused
+like any keyword a rule does not take. What the hand-written parser does with it between this stage and the swap is
+this stage's to decide and record (§ T5). T1 re-takes § Context's count: T3 found 482 `:priority` clauses in 137 of
+the 414 files under `examples/`, `stdlib/`, `tests/` and `corpus/` (`grep -l`, `grep -o`, 2026-11-08), where
+§ Context's 353 in 82 files are `9ba2349`'s.
+**Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
+stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
+And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
 [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — **hard.**
 Q2 asks whether `MAX_ALT_JUSTIFICATIONS = 32` ever changes which unsat core is
 reported; § The one place it still decides an answer shows it doing so, and a
@@ -329,6 +348,20 @@ Three decisions, in order:
    than fail to matter. Accepted-and-ignored is documented;
    silently-unknown is not."* **Take that**: accept, ignore, document, and
    note it in `defined_behaviour.md`'s diagnostics.
+
+   **Settled for the generated grammar on 2026-11-08, the other way.** The user ruled on 2026-11-07 that each
+   form takes a fixed set of keywords and any other is an error
+   ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take),
+   [S1f.5.11](s1f.5.11_closed_keywords.md)). That overtakes the `QUERY_KEYWORDS` precedent: S1f.5.11 refuses
+   `:mode`, and S1f.5.5's T5 deletes `QUERY_KEYWORDS`. The generated grammar refuses `:priority` like any keyword a
+   rule does not take (T3, `54715b5f`). What is left is the hand-written parser, between this stage and the
+   swap. Taking `from_ir.rs`' `priority` match out alone would make `:priority` an unknown keyword on a rule,
+   which today's loader drops in silence (D-15, S1f.5.11's case): that is accept-and-ignore, undocumented, and a
+   program that changes behaviour in silence on upgrade (§ Risks). **Recommended: refuse it at load once no
+   program writes it**, one loader line naming the rule and saying the keyword is gone, so that the two parsers
+   agree and T9 has nothing to attribute here. The line is the loader's, not the parser's, so it keeps S1f.5.5's
+   rule that nothing edits the hand-written parser for a language stage. It is also a line S1f.5.5's T5 deletes
+   once the grammar refuses the keyword, which is the one cost: the re-plan wrote no such line for S1f.5.11's lists.
 2. **Strip the corpus** — 353 occurrences, 82 files, one commit, no other
    change.
 3. **Re-bless, predicted in advance.** The goldens this moves, named now:
@@ -336,6 +369,12 @@ Three decisions, in order:
    `trace_*.md`, `zebra.golden` and `zebra2.golden`
    (firing order); `events_*.jsonl`; `dump_*` (the band column). Anything
    *else* that moves is a finding, not a re-bless.
+
+   **Since S1f.5.5's T3 (2026-11-08)** the list also has `ein-ir`'s
+   `generated_parser::the_builder_holds_on_the_corpus`, which reads the corpus both as written and with
+   `ein_corpus::mutants::without_priority`, and its golden, `ein-ir/tests/golden/generated_parser_corpus.txt`:
+   once no file writes `:priority` the two readings are one, and its 133 files differing only by their
+   `:priority` are none.
 
 ### Task T1f.5.15.6 — The docs
 

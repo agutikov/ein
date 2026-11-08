@@ -98,6 +98,15 @@ StepClause   ::= :rule Name | :using ('(' Name+ ')' | '(' and Name+ ')') | :deri
 Derived      ::= NestedFact | '(' not NestedFact ')'
 ```
 
+*A dated note, 2026-11-08, after this block was accepted: T3 built it with two changes, both the user's rulings of
+that day* ([S1f.5.5 § T3 record](s1f.5.5_the_grammar.md#t3-record-2026-11-08), `54715b5f`). **No `:priority`**:
+the user chose *"S1f.5.15 before swap"*, so S1f.5.15 removes the keyword from every program before the swap.
+`RuleClause` is `:match Match | :assert Assert | :why STRING`, a rule's `:priority` is refused like any keyword a
+rule does not take, and `DIGITS` is no token: a run of digits is a `NAME`. **A macro takes a `:why`**, once,
+after the body: `'(' macro DeclName '(' VAR+ ')' Template (:why STRING)? ')'`. It is optional there as everywhere,
+since the user ruled that `:why` is optional in the grammar and a loader flag, S1f.5.14's, makes it required. The
+block above is left as accepted.
+
 What stays the loader's: arity against a signature; which keywords a form requires and that each
 appears once; a variable no parameter or premise binds; a relation parameter an activator binds to a
 fact; `:over`'s three words; the macro table and imports; one `(solve …)`; a claim's relations and the

@@ -3,7 +3,30 @@
 **Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
 **Was S1f.5.5**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 4 days
-**Depends on:** nothing to start. Its *definition* leans on
+**Status:** specified 2026-08-28, not started. **Ruled and placed on 2026-11-08**
+([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
+requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
+wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
+items that would have edited the generated grammar later, and the user ruled it: *":why is optional in grammar and
+loader has a flag that makes it required, start with default false so not break everything, then after other
+stages finished swith to default true and fix remaining ein code"*. Asked whether the flag can change an answer:
+*"yes, the flag only decides loading"*. It decides whether a program loads, never what a loaded program answers,
+so it keeps the rule that config never changes the answer
+([`configuration.md`](../../../docs/kernel/configuration.md) § 2.5). What that settles here:
+- **The grammar part is done.** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3 gave `(macro …)` an optional `:why`, once,
+  after the body (`54715b5f`, `ein_ir::macros::Macro::why`), so in the generated grammar every form that can carry
+  a template may: `:why` on a relation, a rule, an hrule and a macro, `:goal-text` on a query, `:source` on a fact.
+  The hand-written parser refuses a macro's `:why` until S1f.5.5's swap. § T3's macro bullet is settled with it.
+- **The flag**, default false, is this stage's first code task, [T1f.5.14.6](#task-t1f5146--the-loader-flag-default-false-first),
+  ahead of T1's census. Not built.
+- **Rung (d), *a load error*, is the target**, reached through the flag, where § T4 recommended (a) + (b) + (c)
+  and refused (d) in writing. § T4 keeps that argument as the record of what the user overrode, and it stands as
+  the risk the flip has to answer.
+- **This stage runs last**, after every other stage of P1f.5 (*"after other stages finished"*). Its last task,
+  [T1f.5.14.7](#task-t1f5147--the-flip-default-true-and-every-missing-why-written-last), turns the default to true
+  and writes `:why` wherever the corpus, the stdlib and the Rust suites' inline programs still lack it.
+**Depends on:** every other stage of P1f.5, which runs before it (the user's ruling of 2026-11-08); nothing else
+to start. Its *definition* leans on
 [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
 and [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
 which decide **which fact set** the claim quantifies over — the model or the
@@ -178,14 +201,28 @@ re-derive the meaning of.
   - *no unsubstituted placeholder reaches an output* — a rendered line
     containing `{?` is a defect, and `render_why`'s documented
     leave-it-verbatim behaviour is what makes it reachable.
-- **A scoped mandate, not a global one.** Whatever binds, binds the way
+- ~~**A scoped mandate, not a global one.** Whatever binds, binds the way
   [`stdlib_coverage.rs`](../../../ein.rs/crates/ein-infer/tests/stdlib_coverage.rs)
   binds: to the roots the repo controls (`stdlib/`, `tests/stdlib/`), never to
-  every `.ein` anyone writes. T4 is where that is decided and written down.
+  every `.ein` anyone writes. T4 is where that is decided and written down.~~
+  **Overruled 2026-11-08** (§ Status): the mandate binds every program the
+  loader reads with the flag at its default, which is true after T1f.5.14.7.
+- **The flag** (T1f.5.14.6): with it on, a missing `:why` is a load error,
+  one line naming the form; with it off, every program loads as before. It
+  decides whether a program loads and nothing a loaded program answers, a test
+  holds both, and [`configuration.md`](../../../docs/kernel/configuration.md)
+  has its row.
+- **The flip** (T1f.5.14.7): the default is true, and every program under
+  `examples/`, `tests/`, `corpus/` and `stdlib/`, and every inline program of
+  the Rust suites, loads with it. No R, N or exit code moved; every golden the
+  written `:why`s move is named before the commit.
 - No number in the page is one this stage counted by hand and nothing
   re-counts — [Q-M1e.4](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all).
 
 ## Tasks
+
+*The order since the user's ruling of 2026-11-08 (§ Status): T6, the flag, first; then T1 to T5; then T7, the
+flip, last. T6 and T7 keep the next free numbers, as S1f.5.5's T8 to T10 run before its T4.*
 
 ### Task T1f.5.14.1 — The census, and the four registers
 
@@ -254,7 +291,11 @@ Three forms have no slot. Decide each, and write the decision down:
 - **`(macro …)`** — 6 in the corpus, 0 templated. A macro is consumed at load
   time and nothing reads the registry afterwards, so a macro never appears in
   an answer. The likely answer is *no slot, and here is why*, which is a
-  sentence in the page and not a change.
+  sentence in the page and not a change. **Settled 2026-11-08, the other
+  way**: the generated grammar gives a macro an optional `:why` (S1f.5.5's T3,
+  `54715b5f`), on the user's ruling that `:why` is optional in the grammar and
+  a loader flag makes it required. What a macro's `:why` renders, when nothing
+  reads the registry after load, is still this task's to write down.
 - **An auto-vivified relation** — no declaration to annotate. The provenance
   route (T2) covers every *derived* one. What it does not cover is a
   load-time fact of an undeclared relation; that is a small, countable set and
@@ -275,6 +316,21 @@ Four rungs, and the stage picks one *and writes the argument*:
 | **c. gate scoped to a root** | stdlib + `tests/stdlib/` must be 100 %; `examples/` need not | 1 cargo test; the `stdlib_coverage.rs` shape |
 | **d. a load error** | `:why` mandatory in the grammar | breaks 18 rules, 247 relations, and every inline program in the Rust suites; re-blesses `corpus_shapes.md5`, which prints `why=` per rule and relation |
 
+**Ruled 2026-11-08: (d), through a loader flag, not the grammar** (§ Status). The user: *":why is optional in
+grammar and loader has a flag that makes it required, start with default false so not break everything, then
+after other stages finished swith to default true and fix remaining ein code"*. `:why` stays optional in the
+grammar, and a loader flag ([T1f.5.14.6](#task-t1f5146--the-loader-flag-default-false-first)) makes it required:
+default false until [T1f.5.14.7](#task-t1f5147--the-flip-default-true-and-every-missing-why-written-last), the
+stage's last task, turns it to true. So the target is (d) in two steps, and (d)'s cost row is the migration
+T1f.5.14.7 does; its counts, taken at `9ba2349`, are re-taken by T1 and T6. The other rungs still serve. (a) and
+(b), the fallback ladder and the census, cover what no flag can reach: a relation nobody declares has no form to
+carry a `:why`, and the rendered-output reading (3) is measured by the census, not by keyword presence. (c), a
+test that loads `stdlib/` and `tests/stdlib/` with the flag on, holds those roots between T6 and the flip, and
+the default holds them after. T5's two checks are unchanged.
+
+*The recommendation as it stood until the ruling, kept as the record of what the user overrode, and as the risk
+T1f.5.14.7 has to answer:*
+
 **Recommendation: (a) + (b) + (c), and (d) explicitly refused in writing.**
 Rung (d) is where a mandate turns into a lie: 100 % coverage bought with
 `:why "rule fired"` is *worse* than 39 % with honest s-expressions, because the
@@ -283,7 +339,8 @@ once, in `answer.rs`'s *never invented prose*, and a mandate that reverses it
 should be a ruling and not a side effect.
 
 If the user wants (d) anyway, it is a separate stage with a corpus-wide
-migration commit, and this stage's page is its specification.
+migration commit, and this stage's page is its specification. *Since the
+ruling it is this stage's T1f.5.14.7, not a separate stage.*
 
 ### Task T1f.5.14.5 — Bank both checks
 
@@ -299,12 +356,57 @@ Both are cheap and neither is a discovery. Say that in the commit message —
 [Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
 standard cuts both ways, and a probe that comes back clean is still a result.
 
+### Task T1f.5.14.6 — the loader flag, default false (first)
+
+The user's ruling of 2026-11-08 (§ Status), and the stage's first code task, ahead of T1, so that T1's census can
+count per root what the flag would refuse with it on. A flag that makes a missing `:why` a load error, **default
+false**, so that nothing moves when it lands: no answer, golden or exit code. Not built.
+
+**What it requires** is not ruled. **Recommended:** a `:why` on every relation, rule, hrule and macro a program
+writes, the four forms that take one. `:goal-text` and `:source` stay optional: a query's answer renders its
+conjuncts through their relations (§ T3), and only a given has a sentence to quote. A relation nobody declares has
+no form to require one on; T2's provenance route covers it, and no flag can.
+
+**Its name and surface** are this task's design; the stage file named neither before the ruling. What constrains
+them in the tree:
+- **A `(config …)` field** would be a grammar edit: the generated grammar's `Config` takes exactly two flags,
+  `:lattice-sanity-check` and `:record-alternative-justifications` (`ein.y`, S1f.5.5's T3), and the user's first
+  ruling of 2026-11-08 has that grammar final. A program could also turn its own mandate off, and `SolverConfig` is
+  rendered into the KB-shape digest ([S1f.5.15 § T1](s1f.5.15_rule_priority.md#task-t1f5151--the-census-and-the-control-experiment-properly)),
+  so a field there would move every digest.
+- **An `EIN_*` name**: the binary reads two, `config_reference.rs` pins them, and the repo's `EIN_*` levers have
+  been measurement controls, retired once measured.
+- **Recommended:** an option of the loader in `ein_ir`'s API (today `ein_ir::load` takes the AST, the terms, the
+  forms and a base directory, `from_ir.rs`), and one CLI option on every command that loads a program, so that a
+  program without `:why` can still be loaded once the default is true.
+
+Wherever it lands, [`configuration.md`](../../../docs/kernel/configuration.md) gains a row, with *no: it decides
+whether a program loads* in its *does it change the answer* column, and `config_reference.rs` pins it.
+
+**Its test:** with the flag on, a program missing a `:why` on each of the forms it requires is refused with one
+line naming the form; with it off, the default until T7, every corpus program loads as before.
+
+### Task T1f.5.14.7 — the flip: default true, and every missing `:why` written (last)
+
+The stage's last task, after T1 to T5 and after every other stage of P1f.5, so that what the others write is in
+the final grammar before its `:why` is written. The default turns to true, and a `:why` is written wherever the
+corpus (`examples/`, `tests/`, `corpus/`), the stdlib and the Rust suites' inline programs lack one. The stdlib's
+two macros, `forall` and `unknown` in `stdlib/macro.ein`, carry none (`grep -n '(macro ' stdlib/*.ein`,
+2026-11-08), so if the flag requires a macro's `:why`, `MANIFEST.sha256` moves; `corpus_shapes.md5` prints `why=`
+per rule and relation and moves too. Every golden it moves is named here before the commit. T1's census counts what is missing before, and nothing after.
+
+**Each `:why` says what its form says.** None is a placeholder such as *"rule fired"*: that is § T4's argument
+for refusing (d), which the user overrode, and it stands as this task's risk.
+
 ## Risks
 
 - **A mandate that manufactures prose.** The whole risk of the stage, and the
   mitigation is that acceptance is measured on *rendered output* with a
   register split, not on keyword presence. A relation nobody can describe in
-  English is a relation whose s-expression is the honest rendering.
+  English is a relation whose s-expression is the honest rendering. Since the
+  user's ruling of 2026-11-08 every declared form must carry a `:why` once the
+  flag is on by default, so this risk is T1f.5.14.7's to answer, one `:why` at
+  a time.
 - **The engine/domain boundary is not written down anywhere.** Eight English
   strings live in `ein-render`. If the page draws the line loosely, the next
   stage that adds a verdict word will not know which side it is on. The line

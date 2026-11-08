@@ -20,6 +20,10 @@ plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in s
 decision required"*): S1f.5.0, S1f.5.17 and S1f.5.3 are done, and so are S1f.5.5's steps 1 and 2 and
 S1f.5.4's step 1. **Re-planned the same day on the user's ruling**: the generated parser first
 ([§ The order](#the-order)), and S1f.5.5's T3, the generated parser beside the old one, is done the same day.
+**Four more rulings the same day** ([§ The order](#the-order)): the generated grammar is the phase's final one
+from the start, so S1f.5.15 runs after T3 and before the swap and the grammar never has `:priority`; `:why` is
+optional in the grammar and a loader flag makes it required, which S1f.5.14, now last, turns on; and the vendored
+`lrpar` patch is not sent upstream ([F11](#f11-grmtools-recovery-is-not-deterministic)).
 **Was P1e2.5**, in [M1e2](../../m1e2_correctness/README.md), until 2026-11-08. No stage had run. Each kept
 its number, `S1e2.5.<n>` → `S1f.5.<n>`, and the two stages P1f.5 had follow them
 ([§ The ids](#the-ids)). The questions the review raised keep their ids, `Q-M1e2.22` to `.28`, as M1f's
@@ -216,7 +220,10 @@ at a 500 ms wall-clock budget. Over 20 runs on the probe's `four_mistakes.ein` i
 first error is unaffected, since no recovery code runs before it. **The user ruled the same day that recovery
 is on**, so [S1f.5.5](s1f.5.5_the_grammar.md#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so) vendors `lrpar` with a
 patch: a stable order for equal repairs, and a step budget in place of the clock. On the probe it gave one
-report on each of 5 000 corpus mutants over three runs, where the unpatched crate differed on 1 032.
+report on each of 5 000 corpus mutants over three runs, where the unpatched crate differed on 1 032. **The patch
+is not sent upstream**: the user, 2026-11-08, *"don't send the lrpar patch upstream either"*, as on the Graphviz
+bug ([S1f.5.17 § Notes](s1f.5.17_ci_green_again.md#notes)). It stays vendored, `ein.rs/vendor/lrpar/ein.patch`
+(T3, `54715b5f`).
 
 ### F12: an empty `:match` never fires
 
@@ -263,8 +270,8 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.1](s1f.5.1_bare_underscore_refused.md) | A bare `_` is reserved and refused, and `_` is valid anywhere in a name | 1.25 d, re-planned 2026-11-08 (was 2) | W-22, F3 | specified, not started; **re-planned 2026-11-08**: its step 1 is S1f.5.5's attribution sweep and review stop (T1f.5.5.9), its refusal, register rows (W29's six) and fixtures land at S1f.5.5's swap (T1f.5.5.4), credited to this stage; after the swap, F3 traced, `_` held in every position, `Slot::Any` and `Node::Wildcard` retired, and the pages |
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | A string is natural language: only in `:why`, `:source` and `:goal-text` | 1.5 d, re-planned 2026-11-08 (was 2.5) | F4, F5, G-6 | specified, not started; **re-planned 2026-11-08**: its step 1 is S1f.5.5's T1f.5.5.9, its refusal, escapes and restated rows (W16, W18, W28) land at the swap, credited to this stage; after the swap, the string's value arms retired, a string held in every position, the Unicode test and two examples, and the pages |
 | [S1f.5.3](s1f.5.3_range_retired.md) | No ranges: the `RANGE` token retired | 1 d | F6, G-6's range half | **done 2026-11-08** (`b1ac2178`, `65d1ad85`, T1f.5.3.3): no terminal reads a range, `Node::Range` and `Terms::value_range` are gone, and `1..5` is a parse error until S1f.5.4 makes it one name; five programs moved, four the case's and S1f.5.5's `arg-kinds` rewrite under `plans/`. The two corpus files that write one, `syntax/arg-kinds` and `range-in-match`, keep their programs and are named in `ein_corpus::REFUSED_UNTIL_S1F_5_4`, held both ways, which S1f.5.5's swap empties since the re-plan of 2026-11-08 (S1f.5.4's T2 until then); `W20/range-in-match` stays fixed, its `now` the parser's line; `a_range_is_no_token` holds each place a range was written. Five goldens moved, named at step 1 |
-| [S1f.5.4](s1f.5.4_digits_are_names.md) | Digits are plain names, and a name is any run of name characters | 1.25 d, re-planned 2026-11-08 (was 1.5) | F7, F8, F2 | **step 1 done 2026-11-08** (T1f.5.4.1, `8b12ae07`, `638b1062`): 46 of 511 programs move on the prototype, each by the ruling, and H moved on one program with no plain digit, which is the finding (`@empty` and `<nested>`, the loader's synthetic names, become spellable); its four questions **decided by the coordinator the same day** as the step recommended, open to the user's review at S1f.5.5's stop ([§ Step 1](s1f.5.4_digits_are_names.md#step-1--every-move-listed-2026-11-08)). **Re-planned 2026-11-08**: the name rule, the register's 12 rows and the fixtures land at S1f.5.5's swap, credited to this stage, and the 46 are the attribution's first cross-check; after the swap, the int kind retired with the `:priority` guard, and the pages |
-| [S1f.5.5](s1f.5.5_the_grammar.md) | The grammar revisited: each position says what it holds, and the parser is generated from it | 12.75 d, re-planned 2026-11-08 (10 at its step 1, 8.5 before) | F9, F10, F11, F2, S-15, G-14, W35, and since 2026-11-08 the grammar parts of S1f.5.4, .1, .2 and .11 | **steps 1 and 2 done** (`49e9fed6`); the paper grammar shown and stands, [Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b) and [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) (a) ruled 2026-11-08. **T3 done 2026-11-08** ([§ T3 record](s1f.5.5_the_grammar.md#t3-record-2026-11-08)): the generated parser in `ein-ir` beside the hand-written one, behind the `generated-parser` cargo feature, off in every shipped build; the builder holds on 340 of 414 corpus files with `:priority` taken out (204 as written, 133 differing only by it), 0 trees differing; the grammar has no `:priority` (S1f.5.15 before the swap) and a macro takes a `:why`, the user's rulings of 2026-11-08; `lrpar` 0.15.0 vendored and patched, recovery deterministic at a budget of 30 000 steps, chosen from 40 000 corpus mutants; nesting limit 1 000; no answer, golden or exit code moved. **Re-planned 2026-11-08**: T3 (the generated parser beside the old one) ran first and waited for no other stage, then T8 (the loader's names out of the name space), T9 (every difference attributed to a ruling, one review stop), T10 (the fixture moves that move no answer) and T4, the swap; T5 to T7 after it |
+| [S1f.5.4](s1f.5.4_digits_are_names.md) | Digits are plain names, and a name is any run of name characters | 1.25 d, re-planned 2026-11-08 (was 1.5) | F7, F8, F2 | **step 1 done 2026-11-08** (T1f.5.4.1, `8b12ae07`, `638b1062`): 46 of 511 programs move on the prototype, each by the ruling, and H moved on one program with no plain digit, which is the finding (`@empty` and `<nested>`, the loader's synthetic names, become spellable); its four questions **decided by the coordinator the same day** as the step recommended, open to the user's review at S1f.5.5's stop ([§ Step 1](s1f.5.4_digits_are_names.md#step-1--every-move-listed-2026-11-08)). **Re-planned 2026-11-08**: the name rule, the register's 12 rows and the fixtures land at S1f.5.5's swap, credited to this stage, and the 46 are the attribution's first cross-check; after the swap, the int kind retired, and the pages. Its `:priority` guard has nothing to guard once S1f.5.15 has removed the keyword before the swap (the user's ruling of 2026-11-08), unless S1f.5.15 ends in a written refusal |
+| [S1f.5.5](s1f.5.5_the_grammar.md) | The grammar revisited: each position says what it holds, and the parser is generated from it | 12.75 d, re-planned 2026-11-08 (10 at its step 1, 8.5 before) | F9, F10, F11, F2, S-15, G-14, W35, and since 2026-11-08 the grammar parts of S1f.5.4, .1, .2 and .11 | **steps 1 and 2 done** (`49e9fed6`); the paper grammar shown and stands, [Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b) and [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) (a) ruled 2026-11-08. **T3 done 2026-11-08** ([§ T3 record](s1f.5.5_the_grammar.md#t3-record-2026-11-08)): the generated parser in `ein-ir` beside the hand-written one, behind the `generated-parser` cargo feature, off in every shipped build; the builder holds on 340 of 414 corpus files with `:priority` taken out (204 as written, 133 differing only by it), 0 trees differing; the grammar has no `:priority` (S1f.5.15 before the swap) and a macro takes a `:why`, the user's rulings of 2026-11-08; `lrpar` 0.15.0 vendored and patched, recovery deterministic at a budget of 30 000 steps, chosen from 40 000 corpus mutants; nesting limit 1 000; no answer, golden or exit code moved. **Re-planned 2026-11-08**: T3 (the generated parser beside the old one) ran first and waited for no other stage, then S1f.5.15, which removes `:priority` (the user's ruling of 2026-11-08: *"S1f.5.15 before swap"*), then T8 (the loader's names out of the name space), T9 (every difference attributed to a ruling, one review stop), T10 (the fixture moves that move no answer) and T4, the swap; T5 to T7 after it |
 | [S1f.5.6](s1f.5.6_the_empty_state_decides_the_minimal_line.md) | Where ∅ is in R, every minimal-line question stops at root, and says only ∅ | 1.5 d | S-16, P-14, S-17, F1 | specified, not started; independent of the grammar stages, and runs after S1f.5.5's swap ([§ The order](#the-order)) |
 | [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md) | `eq` and `neq` are relations: in a goal, a premise and a conclusion | 3 d | S-18, G-21; restates W24's guard rows | specified, not started; restates two W24 rows |
 | [S1f.5.8](s1f.5.8_no_contradiction_no_core.md) | A node with no contradiction has no core: `null`, not `[]` | 0.5 d | D-14 | specified, not started |
@@ -273,8 +280,8 @@ or, after S1f.5.7, `(eq ?y ?y)`. **Ruled the same day:** *"yes, file F13 with th
 | [S1f.5.11](s1f.5.11_closed_keywords.md) | Each form takes a fixed set of keywords, and `:where` is gone | 1 d, re-planned 2026-11-08 (was 1.5) | D-15, G-15, G-22 | specified, not started; **re-planned 2026-11-08**: the lists are the grammar's, and its step 1, its refusals and W32's seven rows land in S1f.5.5's T9 and swap, credited to this stage; after the swap, the compiler's and the expander's drops go, a keyword held in every form and place, and the pages |
 | [S1f.5.12](s1f.5.12_cores_for_n_only.md) | A run takes a core only for the nodes a surface prints: N's members, after the walk | 1 d | P-15 | specified, not started; independent of the grammar stages, and runs after S1f.5.5's swap ([§ The order](#the-order)) |
 | [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md) | The round trip's four large dumps move to the slow tier, and the nightly runs it | 0.5 d | P-16 | specified, not started; independent, and runs after S1f.5.5's swap ([§ The order](#the-order)) |
-| [S1f.5.14](s1f.5.14_nl_required.md) | Every statement convertible to NL | 4 d | was S1f.5.5 | specified, not started |
-| [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | specified, not started |
+| [S1f.5.14](s1f.5.14_nl_required.md) | Every statement convertible to NL | 4 d | was S1f.5.5 | specified, not started; **last**, after every other stage (the user's ruling of 2026-11-08): `:why` optional in the grammar, which T3 gave a macro too (`54715b5f`), and a loader flag that makes it required, built default false as the stage's first code task and turned to true as its last, once every program carries one; rung (d), *a load error*, reached through the flag |
+| [S1f.5.15](s1f.5.15_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | was S1f.5.6 | specified, not started; **moved 2026-11-08 to run after S1f.5.5's T3 and before T8**, on the user's ruling (*"S1f.5.15 before swap"*), so the generated grammar never has `:priority`: T3 built it without (`54715b5f`), and the 133 corpus files that differ between the two parsers only by their `:priority` are attributed to this stage, pending |
 | [S1f.5.17](s1f.5.17_ci_green_again.md) | CI green again: the per-commit job on Ubuntu 26.04's Graphviz, and the nightly's mutant baseline | 1 d | the red per-commit and nightly runs since `916d97ac` | **done 2026-11-08** (`3e6e40f8`, `76ede241`, T1f.5.17.3): the per-commit red was the runner's **amd64v3** build of Graphviz 14.1.2, whose `libpathplan` contracts `ccw` into an FMA; fixed view-side, `ranksep=0.55` on the overlay and Levi digraphs (`corpus_shapes.md5` 1 198 lines). The nightly's two mutants were killed by `597b2b7e`, *forbid*'s refusal, and re-banked: 167 of 217 killed. Both tiers green in a container built like the runner, `utils/ci_container.sh` (the user, 2026-11-08: *"add new stage to this phase - fix failing CI jobs"*) |
 | [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md) | An activator's nested fact: a value parameter binds it, and a relation parameter is refused at load | 1.5 d | W33; G-14's derived activator ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b)) | specified, not started; after S1f.5.7 and S1f.5.10, before S1f.5.9 |
 | *S1f.5.16* | *The read-out reference* | *proposed* | was S1f.5.3 | *proposed*: one page for every number `ein solve` prints, and which of them counts *models* and which *what the search did*. [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are findings about exactly this confusion. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) has since written much of it, and [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 gives that page a home |
@@ -291,7 +298,37 @@ names, etc...) ?"* The coordinator proposed the variant below, and the user: *"y
 **From then on nothing edits the hand-written lexer or parser for S1f.5.4, S1f.5.1, S1f.5.2 or S1f.5.11.** No
 stage id is renumbered: each of the four keeps its id and is cut to its non-grammar part, and its grammar part,
 its step-1 sweep and its review are [S1f.5.5](s1f.5.5_the_grammar.md)'s tasks, credited to it by name
-([S1f.5.5 § The order](s1f.5.5_the_grammar.md#the-order-re-planned-2026-11-08)). The order:
+([S1f.5.5 § The order](s1f.5.5_the_grammar.md#the-order-re-planned-2026-11-08)).
+
+**The grammar is final from the start: the user's rulings of 2026-11-08, after the re-plan.** The user: *"collect
+all requirement for the parser in this phase and implement grammar that will already meet all of them instead of
+making wrong parser that meets our old wrong parser and then updating it step by step"*. The coordinator checked
+[the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position) against every stage of the phase. It already
+meets S1f.5.1, .2, .3, .4 and .11, S1f.5.7 (`eq` and `neq` in a goal, a premise and a conclusion, since
+`Conclusion` takes a `Guard`) and S1f.5.9 (`:match ()`, and `(and)` refused). S1f.5.10's and S1f.5.18's checks,
+arity, and a claim's closed relations are binding or type checks that no context-free grammar can make, so they
+stay load-time checks by design. S1f.5.6, .8, .12 and .13 have no grammar part. Only two items would have edited
+the grammar later, and the user ruled both:
+
+- **`:priority`.** The user chose *"S1f.5.15 before swap"*: [S1f.5.15](s1f.5.15_rule_priority.md) runs after
+  S1f.5.5's T3 and before T8, T9, T10 and the swap, so the generated grammar never has `:priority`. T3 built it
+  without (`54715b5f`): a rule's `:priority` is refused like any keyword a rule does not take, and the 133 corpus
+  files that differ between the two parsers only by their `:priority` are attributed to S1f.5.15, pending
+  ([S1f.5.5 § T3 record](s1f.5.5_the_grammar.md#t3-record-2026-11-08)). S1f.5.15's acceptance allows a written
+  refusal; if it ends in one, the production comes back then, before the swap.
+- **NL `:why`.** The user: *":why is optional in grammar and loader has a flag that makes it required, start with
+  default false so not break everything, then after other stages finished swith to default true and fix remaining
+  ein code"*. Asked whether the flag can change an answer: *"yes, the flag only decides loading"*. It decides
+  whether a program loads, never what a loaded program answers, so it does not breach the rule that config never
+  changes the answer. T3 gave `(macro …)` an optional `:why` (`ein_ir::macros::Macro::why`), so every form that
+  can carry a template may. The flag, default false, is [S1f.5.14](s1f.5.14_nl_required.md)'s first code task,
+  and S1f.5.14 runs last: it turns the default to true and writes `:why` wherever the corpus, the stdlib and the
+  Rust suites' inline programs still lack it.
+
+A fourth ruling of the same day is not the grammar's: the vendored `lrpar` patch stays in the tree and is not
+sent upstream ([F11](#f11-grmtools-recovery-is-not-deterministic)).
+
+The order, as those rulings leave it:
 
 1. **Done:** S1f.5.0, so that every known wrong answer is a register row before a stage moves it; S1f.5.17, so
    that every later stage boundary is held to a green CI as well as a green gate; S1f.5.5's census and paper
@@ -299,32 +336,39 @@ its step-1 sweep and its review are [S1f.5.5](s1f.5.5_the_grammar.md)'s tasks, c
    before the re-plan; and S1f.5.4's step 1 (46 of 511 programs move on its prototype), which stands.
 2. **S1f.5.5's T3, done 2026-11-08** ([its record](s1f.5.5_the_grammar.md#t3-record-2026-11-08)): the generated parser beside the old one, with the full paper grammar, the patched `lrpar`
    that makes recovery deterministic (F11) and the nesting limit (F10). Nothing in the shipped path moves.
-3. **T8, the swap's prerequisite:** the loader's four internal names renamed out of the name space (S1f.5.4's
+3. **S1f.5.15, before the swap** (the user's ruling of 2026-11-08): `:priority` removed from every program the
+   two parsers read, and the order derived from the rule graph. What the hand-written parser does with a
+   `:priority` between this stage and the swap is S1f.5.15's to decide and record; the recommendation is to
+   refuse it at load once no program writes it, so the two parsers agree.
+4. **T8, the swap's prerequisite:** the loader's four internal names renamed out of the name space (S1f.5.4's
    Q1, decided 2026-11-08), held by a test.
-4. **T9, every difference attributed:** both parsers over the corpus and the fuzzer, the old one the reference,
+5. **T9, every difference attributed:** both parsers over the corpus and the fuzzer, the old one the reference,
    and each difference credited to S1f.5.4's name rule, S1f.5.1's bare `_`, S1f.5.2's strings, S1f.5.11's
    closed keywords or the paper grammar's own list (step 2's defaults, W35); S1f.5.4's 46 are the first
-   cross-check. **An unattributed difference stops the swap**, and the comparison happens while the old parser,
-   the only reference, still exists. **One review stop** shows the user real programs for every ruling at once.
-5. **T10:** whatever of [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts)
+   cross-check. With S1f.5.15 landed no program writes `:priority`, so no difference is its. **An unattributed
+   difference stops the swap**, and the comparison happens while the old parser, the only reference, still
+   exists. **One review stop** shows the user real programs for every ruling at once.
+6. **T10:** whatever of [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts)
    (a)'s fixture moves and rewrites can land without moving an answer.
-6. **T4, the swap, one commit:** the old `lex.rs` and `parse.rs` go and the printer reads names as the new
-   lexer does; `:priority 110` stays out of the program's names; the register rows the grammar fixes flip
+7. **T4, the swap, one commit:** the old `lex.rs` and `parse.rs` go and the printer reads names as the new
+   lexer does; no program writes `:priority` and the grammar refuses it; the register rows the grammar fixes flip
    (W29's six, W32's seven, W35) and the rows the rulings restate are restated; the commit body lists the moved
    answers grouped by ruling.
-7. **After the swap, the non-grammar halves**, one small stage at a time on the generated parser: S1f.5.5's T5
+8. **After the swap, the non-grammar halves**, one small stage at a time on the generated parser: S1f.5.5's T5
    (the loader's refusals the grammar now covers, and the grammar pages test); S1f.5.4's int kind and S1f.5.2's
    string value arms retired, moving no answer, with S1f.5.1's wildcard and S1f.5.11's keyword drops, each
    ruling held in every position by a test, and S1f.5.2's Unicode test and two examples; S1f.5.5's T6
    (`--diff-models`); then the pages, S1f.5.5's T7 and each stage's.
-8. **The stages the grammar does not frame, after the swap**, so that their fixtures and pages are written in
+9. **The stages the grammar does not frame, after the swap**, so that their fixtures and pages are written in
    the final grammar: S1f.5.7, S1f.5.10 and S1f.5.18, then S1f.5.6, S1f.5.12, S1f.5.13, S1f.5.8 and S1f.5.9.
    No stage file gives a reason for one to run earlier, and none needs the old parser: S1f.5.7's goals and
    claims over `eq` and `neq` already parse under [the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position),
    S1f.5.9's `(and)` is the grammar's refusal and its `:assert ()` the grammar's empty conclusion, and the rest
    touch no syntax. Each still runs one at a time, in that order, as their files say.
-9. **S1f.5.14 and S1f.5.15 last**, as the user placed them. S1f.5.15 deletes `:priority`, to which S1f.5.5's
-   grammar gives nothing new until then.
+10. **S1f.5.14 last**, after every other stage (the user's ruling of 2026-11-08). Its first code task builds the
+    loader flag that makes `:why` required, default false, and its last turns the default to true, once every
+    program the corpus, the stdlib and the Rust suites load carries one. Until these rulings this item read
+    *S1f.5.14 and S1f.5.15 last, as the user placed them*; S1f.5.15 is item 3 since.
 
 It costs about what the old order did, a quarter of a day more on paper (the estimate above): the four hand-written
 lexer edits and the loader lines S1f.5.11 would have added for T5 to delete are not written, and the attribution
@@ -341,7 +385,9 @@ a review taken four times.
   [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), outlives M1e2's plans.
 - Every golden a stage moves is named in its file before it moves.
 - The language's grammar changes once, at S1f.5.5's swap, and every answer the swap moves is attributed to a
-  ruling before the old parser goes (the re-plan of 2026-11-08, [§ The order](#the-order)).
+  ruling before the old parser goes (the re-plan of 2026-11-08, [§ The order](#the-order)). The generated
+  grammar is the phase's final one from T3 on (the user's rulings of 2026-11-08): `:priority` leaves every program
+  before the swap (S1f.5.15), and the `:why` S1f.5.14 requires is a loader flag's, not a grammar edit.
 - `./run_tests.sh` is green at every stage boundary.
 - Every page S1f.5.14 and S1f.5.15 add is **pinned by something that runs**, states its date and its commit,
   and links a `docs/history/` page rather than restating its subject. The rule is

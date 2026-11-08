@@ -112,8 +112,9 @@ the tree they left, and one out of that review's close:
   theory could state in advance (the exclusion relation, groups, the restricted
   join) and may not move one model doing it; `P1f.5` takes M1e2's no-owner
   items (P1e2.5 until 2026-11-08: the grammar generated, names and digits,
-  closed keywords, `eq`/`neq` as relations and the rest), then writes the NL
-  pages and removes `:priority`; `P1f.20`, split out of P1f.5 on 2026-11-08,
+  closed keywords, `eq`/`neq` as relations and the rest), removes `:priority`
+  before the generated grammar is swapped in, and last makes `:why` required
+  through a loader flag and writes the NL pages; `P1f.20`, split out of P1f.5 on 2026-11-08,
   rebuilds the doc tree. Phase numbers 1–4, 6–9 and 11–19 are deliberately
   free.
 - **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))

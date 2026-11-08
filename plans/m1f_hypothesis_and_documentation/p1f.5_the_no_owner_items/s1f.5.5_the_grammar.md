@@ -56,6 +56,11 @@ differing on none, and 133 files differing only by their `:priority`, which the 
 user's ruling of 2026-11-08: S1f.5.15 deletes it before the swap); a macro takes a `:why` (the same day);
 recovery is deterministic, with `lrpar` 0.15.0 vendored and patched and a budget of 30 000 steps; the nesting
 limit is 1 000. No answer, golden or exit code moved.
+**The generated grammar is the phase's final one**, on the user's rulings of 2026-11-08
+([§ The order](#the-order-re-planned-2026-11-08)): [S1f.5.15](s1f.5.15_rule_priority.md) runs between T3 and T8,
+so the grammar never has `:priority`; `:why` stays optional in the grammar, and the loader flag that requires it
+is [S1f.5.14](s1f.5.14_nl_required.md)'s, the phase's last stage; and the vendored `lrpar` patch is not sent
+upstream ([F11](#f11-grmtools-recovery-is-not-deterministic-and-this-stage-makes-it-so)).
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -209,6 +214,8 @@ the tree is already a `SYMBOL`, `VAR`, `KEYWORD`, `INT`, `RANGE`, `STRING`, `_` 
    corpus use is (`grep -rhoE ':priority +-?[^ )]+'` over the four roots, 2026-11-07). The by-position
    grammar refuses any other value as a by-product. Today the loader drops a value that is not an int
    in silence (`from_ir.rs`, the `priority` match), and reads `-5` as an int, which no program writes.
+   *Since 2026-11-08 the generated grammar has no `:priority` at all: the user ruled that S1f.5.15 removes
+   it before the swap ([§ The order](#the-order-re-planned-2026-11-08)), and T3 built the grammar without it.*
 
 ## What it changes
 
@@ -229,7 +236,8 @@ The probe's draft holds the whole of it, in grmtools' notation
 ([`ein.y`](s1f.5.5_parser_probe/c_grm/src/ein.y)) and in five others, the shortest being LALRPOP's 80
 lines. It accepts every puzzle, stdlib module and `tests/` program as written. Three shapes real programs
 write corrected the first draft: `:hrules (guess (color-loc Color House) guess …)`, `(not ?h)` in an
-`:assert`, and `:using (and s1 c15)`.
+`:assert`, and `:using (and s1 c15)`. *Since T3 (2026-11-08) `RuleClause` has no `:priority`, on the user's
+ruling, and a macro takes a `:why` ([§ T3 record](#t3-record-2026-11-08)).*
 
 **Closed keywords.** Each form names the keywords it takes, with what each holds. An unknown keyword is
 refused at the parse, rather than dropped. **The lists are ruled** (2026-11-07,
@@ -341,8 +349,11 @@ source, apart from a build-time stamp in a comment.
 **How it ships.** `lrpar` 0.15.0 with the patch, vendored as `ein.rs/vendor/lrpar/` and used through
 `[patch.crates-io]` in the workspace's `Cargo.toml`, so the compiled parser and a grammar loaded at run time
 both get it. It is `#![forbid(unsafe_code)]` as published. `utils/check_hashmap_iteration.py` reads
-`ein.rs/crates/` only; the patch's `HashSet` is probed for duplicates and never iterated. **Sending the patch upstream is the
-user's call**, since it is outward-facing; if a grmtools release carries it, the vendored copy goes.
+`ein.rs/crates/` only; the patch's `HashSet` is probed for duplicates and never iterated. Sending the patch upstream was the
+user's call, since it is outward-facing, and **the user ruled it on 2026-11-08: not sent** (*"don't send the lrpar
+patch upstream either"*, as on the Graphviz bug, [S1f.5.17 § Notes](s1f.5.17_ci_green_again.md#notes)). It stays
+vendored, `ein.rs/vendor/lrpar/ein.patch`; if a grmtools release ever makes recovery deterministic on its own, the
+vendored copy can go.
 
 **What it costs.** Nothing on a file that parses: `lrpar` builds its recoverer at the first error. On a
 refused file, recovery's time, bounded by the budget.
@@ -518,20 +529,37 @@ this stage's:
 
 | stage | its ruling | what is this stage's | what the stage keeps, after the swap |
 |---|---|---|---|
-| [S1f.5.4](s1f.5.4_digits_are_names.md) | digits are names, and a name is any run of name characters (F7, F8, F2) | the name rule, which the paper grammar states; its step 1, done (`8b12ae07`, `638b1062`), as T9's first cross-check; T1f.5.4.2: the register's 12 rows, the fixtures, the printer, the JSON writer, S1f.5.3's interim (T4), and the loader's internal names (T8) | T1f.5.4.3, the int kind retired with the `:priority` guard; T1f.5.4.4, the pages |
+| [S1f.5.4](s1f.5.4_digits_are_names.md) | digits are names, and a name is any run of name characters (F7, F8, F2) | the name rule, which the paper grammar states; its step 1, done (`8b12ae07`, `638b1062`), as T9's first cross-check; T1f.5.4.2: the register's 12 rows, the fixtures, the printer, the JSON writer, S1f.5.3's interim (T4), and the loader's internal names (T8) | T1f.5.4.3, the int kind retired, its `:priority` guard moot once S1f.5.15 has landed before the swap; T1f.5.4.4, the pages |
 | [S1f.5.1](s1f.5.1_bare_underscore_refused.md) | a bare `_` refused, and `_` valid anywhere in a name (W-22, F3) | T1f.5.1.1, its step 1 (T9); T1f.5.1.2, the refusal, the printer, the fixtures, W29's six rows and W20's and W24's `_` rows (T4) | T1f.5.1.3, F3 traced, `_` held in every position, `Slot::Any` and `Node::Wildcard` retired; T1f.5.1.4, the pages |
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | a string is natural language, only in `:why`, `:source` and `:goal-text` (F4, F5, G-6) | T1f.5.2.1, its step 1 (T9); the refusal, the escapes, the fixtures and the restated W16, W18 and W28 rows (T4) | T1f.5.2.2, a string held in every position, the Unicode test and the two examples; T1f.5.2.3, the string's value arms retired; T1f.5.2.4, the pages |
 | [S1f.5.11](s1f.5.11_closed_keywords.md) | each form takes a fixed set of keywords (D-15, G-15, G-22) | T1f.5.11.1, its step 1 (T9); the lists and the refusal inside terms, and W32's seven rows (T4) | T1f.5.11.2, the compiler's and the expander's drops gone, a keyword held in every form and place; T1f.5.11.3, the pages |
 
-**The sequence.** T3, the generated parser beside the old one; T8, the swap's prerequisite; T9, every
-difference attributed, and the one review stop; T10, the fixture moves that move no answer; T4, the swap. After
-it, one at a time on the generated parser: T5, then the four stages' code tasks above, each moving no answer,
-then T6, then the pages, T7 and each stage's, which share `00_ebnf.md`, `01_grammar.md`, `02_patterns.md` and
-`defined_behaviour.md`.
+**The grammar is final from the start: the user's rulings of 2026-11-08, after the re-plan.** The user:
+*"collect all requirement for the parser in this phase and implement grammar that will already meet all of them
+instead of making wrong parser that meets our old wrong parser and then updating it step by step"*. The paper
+grammar already meets every stage of the phase that has a grammar part
+([P1f.5 § The order](README.md#the-order) lists them). Only two items would have edited it later, and the user
+ruled both:
+- **`:priority`**: *"S1f.5.15 before swap"*. [S1f.5.15](s1f.5.15_rule_priority.md) runs after T3 and before T8,
+  removing the keyword from every program both parsers read, so the generated grammar never has it. T3 built it
+  so ([§ T3 record](#t3-record-2026-11-08)). If S1f.5.15 ends in the written refusal its acceptance allows, the
+  production comes back then, before T9.
+- **NL `:why`**: *":why is optional in grammar and loader has a flag that makes it required, start with default
+  false so not break everything, then after other stages finished swith to default true and fix remaining ein
+  code"*; and, asked whether the flag can change an answer, *"yes, the flag only decides loading"*. T3 gave a
+  macro its `:why`, so every form that can carry a template may. The flag is
+  [S1f.5.14](s1f.5.14_nl_required.md)'s, which runs last, and the grammar is not edited for it.
+
+**The sequence.** T3, the generated parser beside the old one; S1f.5.15, `:priority` removed; T8, the swap's
+prerequisite; T9, every difference attributed, and the one review stop; T10, the fixture moves that move no
+answer; T4, the swap. After it, one at a time on the generated parser: T5, then the four stages' code tasks above,
+each moving no answer, then T6, then the pages, T7 and each stage's, which share `00_ebnf.md`, `01_grammar.md`,
+`02_patterns.md` and `defined_behaviour.md`.
 
 **Nothing edits the hand-written lexer or parser for S1f.5.4, S1f.5.1, S1f.5.2 or S1f.5.11.** It gets two
 edits before it goes, both this stage's and neither a reading of the language: T3's hook, if the comparison
-needs one, and T8's spelling of the loader's internal names.
+needs one, and T8's spelling of the loader's internal names. S1f.5.15's refusal of `:priority`, if it takes one,
+is a loader line, not a parser edit.
 
 ### Task T1f.5.5.3 — the generated parser, beside the old one
 
@@ -718,8 +746,11 @@ the swap.
 
 ### Task T1f.5.5.9 — every difference attributed, and one review stop
 
-On the tree with T3 and T8 landed. **The old parser is the reference**, and a difference can be read as one only
-while it exists, so this comes before the swap.
+On the tree with T3, S1f.5.15 and T8 landed. **The old parser is the reference**, and a difference can be read as
+one only while it exists, so this comes before the swap. **No difference is `:priority`'s**: S1f.5.15 has removed
+it from every program before this runs (the user's ruling of 2026-11-08), so T3's 133 files that differed only by
+their `:priority` read as the same tree, and the table below has no row for it. If S1f.5.15 ended in a written
+refusal, its production is back and those files are attributed to it here.
 
 **What runs.**
 - **The sweep:** every `.ein` under `examples/`, `tests/`, `stdlib/`, `corpus/` and `plans/` (511 on
@@ -737,7 +768,7 @@ while it exists, so this comes before the swap.
 
 | ruling | what it moves | its cross-check |
 |---|---|---|
-| **S1f.5.4**, the name rule (F7, F8, F2) | a run of digits is a name (`(p 1) (p 01)` two facts, `-7`, `1st`, `1..5`); the other name characters; a reserved word only as a whole token (`rule-x`, `neq-1`); `=` a name; a token ends at a separator (`a?x`, `?x?y`, `"a"b`, `a:b`, `Жук` refused); `:priority` takes digits only | [its step 1](s1f.5.4_digits_are_names.md#the-sweep-46-programs-move-and-465-answer-as-they-did): **the files credited to it, alone or beside another ruling, are exactly its 46 of 511** |
+| **S1f.5.4**, the name rule (F7, F8, F2) | a run of digits is a name (`(p 1) (p 01)` two facts, `-7`, `1st`, `1..5`); the other name characters; a reserved word only as a whole token (`rule-x`, `neq-1`); `=` a name; a token ends at a separator (`a?x`, `?x?y`, `"a"b`, `a:b`, `Жук` refused) | [its step 1](s1f.5.4_digits_are_names.md#the-sweep-46-programs-move-and-465-answer-as-they-did): **the files credited to it, alone or beside another ruling, are exactly its 46 of 511** |
 | **S1f.5.1**, a bare `_` refused (W-22, F3) | `_` and `?_` refused in every position | W29's six witnesses, W20's three `wild-*` and `wild-in-head`, W24's `wild-in-guard` and `bare-premise`, `arg-kinds` and `is-a-shapes`; and `zebra2.ein` renamed with `_`-led names and variables (`_Old_Gold_`, `?_h_water_`), R unmoved ([its step 1](s1f.5.1_bare_underscore_refused.md#task-t1f511--w29-re-taken-every-move-listed-real-programs-shown)) |
 | **S1f.5.2**, strings only in `:why`, `:source` and `:goal-text` (F4, F5, G-6) | a string as any value refused; `?x` in a fact refused; `\u{…}` its code point, and any other escape refused | the 13 files its case names (`arg-kinds` and 12 witnesses of W16, W18 and W28), `is-a-shapes` for its `?x`, the two `activator-text-key` fuzz seeds, and the probes under `plans/` that write one; every `:why`, `:source` and `:goal-text` in the tree reads as before, `zebra2.ein` byte for byte |
 | **S1f.5.11**, closed keywords (D-15, G-15, G-22) | a keyword its form does not take, and any keyword inside a term or a nested fact, refused | W32's seven witnesses, `wrappers.ein`, `kwpair-below-the-filter` and its fuzz find, and the five refusal fixtures whose line moves ([its census](s1f.5.11_closed_keywords.md#what-moves-in-the-corpus)) |
@@ -830,10 +861,12 @@ Q1 to Q4. It carries:
 - **The printer.** `ein_core::text::is_symbol` is the name rule, so a name prints bare where the generated lexer
   reads it back as one name (`(p 1)`, `(hit 1)`, `it's`), and `the_printers_symbol_is_the_lexers` holds the two to
   one answer. Without it every name of digits prints quoted, the same value.
-- **`:priority 110` stays out of the program's names.** The grammar's action builds today's `Node::Int` for
-  `:priority DIGITS` (`b::count`), and `from_ir.rs`' `priority` match reads it as it does today, so H is unmoved
-  on every program that writes no plain digit, which T9 checked. That match drops any other value in silence, so
-  it is the trap, and its guard is S1f.5.4's T1f.5.4.3, when the int kind goes.
+- **No `:priority`.** With S1f.5.15 landed no program writes one, and the grammar refuses it like any keyword a
+  rule does not take (T3), so `:priority 110` puts no name in the program and S1f.5.4's guard (T1f.5.4.3) has
+  nothing to guard. `from_ir.rs`' `priority` match, the trap S1f.5.4's step 1 found, is S1f.5.15's to remove with
+  the keyword. Until the user's rulings of 2026-11-08 this bullet kept `:priority DIGITS`, built as `Node::Int`
+  by `b::count`, which T3 dropped. If S1f.5.15 ended in a written refusal, the production is back, and the guard
+  is S1f.5.4's again.
 - **The JSON writer.** S1f.5.4's [Q4](s1f.5.4_digits_are_names.md#q4--a-name-of-digits-in-summaryjson), decided
   2026-11-08, (a): every name is a JSON string in `summary.json`'s bindings (`region_answer.rs`' `binding`), so
   `(p 007)` and `(p 7)` stay two. `int-goal-binding`'s note is restated (`8`, `-7` and
@@ -963,8 +996,13 @@ T1f.5.2.4 and S1f.5.11's T1f.5.11.3. `docs/history/` is a record, and does not c
   overrides [Q-M1e2.17](../../m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end) (i)(a);
   `=` is a name, so `(= a b c)` is a fact; `(1 a)` and `(relation 1 T)` are a fact of, and a declaration of, the
   relation `1`; and a keyword is `:` and a run of name characters, one its form does not take refused.
-- `:priority` takes a run of digits and nothing else, and `:priority 110` puts no name in the program: H is
-  unmoved on every program that writes no plain digit.
+- **The grammar is the phase's final one** (the user's rulings of 2026-11-08). It has no `:priority`: a rule's
+  `:priority` is refused like any keyword a rule does not take, and no program writes one, since S1f.5.15 runs
+  before the swap. If S1f.5.15 ends in a written refusal, the production comes back, and with it this item as it
+  stood until then: `:priority` takes a run of digits and nothing else, and puts no name in the program. **Every
+  form that can carry a template takes `:why`**, optional: a relation, a rule, an hrule and a macro, with
+  `:goal-text` on a query and `:source` on a fact. Whether a form must carry one is S1f.5.14's loader flag, not
+  the grammar.
 - **A bare `_`**, S1f.5.1's ruling: `_` and `?_` alone are refused in every position, on every command that reads
   a program. `_a_in_b_`, `_______01` and `A________B`, and the same as variables, load, match and print as
   written, and reload to the same value. `zebra2`'s R is unmoved under the renaming.

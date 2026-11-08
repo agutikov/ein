@@ -30,6 +30,13 @@ work done twice, why not switch to grmtools first and remove hand-written parser
 (T1f.5.5.4), credited to this stage's ruling; this step's 46 programs are the first cross-check of the
 attribution that precedes the swap (T1f.5.5.9). T1f.5.4.2 moved there. What is left, T1f.5.4.3 and T1f.5.4.4,
 runs after the swap, on the generated parser. Nothing edits the hand-written lexer or parser for this stage.
+**A dated note, 2026-11-08, on the user's ruling *"S1f.5.15 before swap"*** ([P1f.5 § The order](README.md#the-order)):
+S1f.5.5's T3 built the grammar with no `:priority` and no `b::count` (`54715b5f`), and
+[S1f.5.15](s1f.5.15_rule_priority.md) removes the keyword from every program before the swap. So the `:priority`
+guard this page plans (§ What it changes, step 1's tables, T1f.5.4.3 and the acceptance's second item) has nothing
+to guard: at the swap no program writes `:priority`, and retiring the int kind moves no rule order. If S1f.5.15
+ends in a written refusal, the production comes back, and the guard with it. The sentences below are left as the
+plan stood.
 **Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), done, so that `1..5` was gone first. Its remaining tasks
 run after [S1f.5.5](s1f.5.5_the_grammar.md)'s swap.
 

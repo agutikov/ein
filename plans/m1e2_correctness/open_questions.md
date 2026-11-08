@@ -2526,7 +2526,9 @@ grmtools"*. **Not built.** S1f.5.5 vendors `lrpar` with a patch: equal repairs k
 found them in, and a count of search steps replaces the clock. On the probe the patched crate gave one report
 per file over three runs of 5 000 corpus mutants, where the unpatched one differed on 1 032 (2026-11-07). A
 refused file reports every error recovery reaches, each with up to three ranked repairs, and stays refused:
-no repaired program is loaded. Sending the patch upstream is the user's call.
+no repaired program is loaded. Sending the patch upstream was the user's call, and **ruled 2026-11-08: not
+sent**. The user: *"don't send the lrpar patch upstream either"*, as on the Graphviz bug; it stays vendored,
+`ein.rs/vendor/lrpar/ein.patch` (S1f.5.5's T3, `54715b5f`).
 **S-15, ruled the same day, as recommended:** `ein solve --diff-models FILE` reads the file's facts through
 the generated parser and compares them by value, so other spacing or a trailing comment still matches, and a
 fact that does not parse is refused before the run. A task of S1f.5.5,
