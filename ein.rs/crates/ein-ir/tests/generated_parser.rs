@@ -359,6 +359,131 @@ fn a_macro_carries_its_why() {
     }
 }
 
+/// **No name the loader makes up is a name a program can write** (T1f.5.5.8,
+/// on S1f.5.4's Q1, decided (a) on 2026-11-08).
+///
+/// The parser, the loader and the engine name what a program writes no name
+/// for: the empty form `()`, a nested form whose head is not a name, a
+/// parameter list, a fact's `:using` list and a query's goal
+/// (`ein_core::text::INTERNAL_NAMES`). None is one `NAME` of the generated
+/// lexer, and both parsers refuse each where a name goes. The spellings they
+/// had until then, `@empty`, `<nested>`, `@params`, `@list` and `<query>`, are
+/// each one `NAME` under the name rule, which is why they moved.
+#[test]
+fn no_name_the_loader_makes_up_is_a_name() {
+    for name in ein_core::text::INTERNAL_NAMES {
+        assert!(
+            !grammar::is_one_name(name),
+            "{name} is a NAME of the generated lexer"
+        );
+        for text in [
+            format!("(p {name})"),
+            format!("(p ({name} a))"),
+            format!("({name} a)"),
+        ] {
+            assert!(
+                grammar::parse(&mut Ast::new(), &text, None).is_err(),
+                "the generated parser reads {text}"
+            );
+            assert!(
+                hand_written(&mut Ast::new(), &text, None).is_err(),
+                "the hand-written parser reads {text}"
+            );
+        }
+    }
+    for old in ["@empty", "<nested>", "@params", "@list", "<query>"] {
+        assert!(grammar::is_one_name(old), "{old} is no NAME");
+    }
+    assert!(grammar::is_one_name("a-1"));
+    assert!(
+        !grammar::is_one_name("rule"),
+        "a reserved word is its own token"
+    );
+    assert!(!grammar::is_one_name("a b"));
+}
+
+/// The argument of the one `p` fact `text` stores, read by the generated
+/// parser or by the hand-written one, interned in `terms`.
+fn p_argument(terms: &mut ein_core::Terms, text: &str, generated: bool) -> ein_core::Value {
+    let text = format!("(relation p Node :why \"p holds {{?a}}\")\n{text}\n");
+    let mut ast = Ast::new();
+    let forms = if generated {
+        grammar::parse(&mut ast, &text, Some("twin.ein")).expect("the generated parser reads it")
+    } else {
+        hand_written(&mut ast, &text, Some("twin.ein")).expect("the hand-written parser reads it")
+    };
+    let kb = ein_ir::load(&mut ast, terms, &forms, None).expect("it loads");
+    let p = terms.syms.get("p").expect("p is interned");
+    let fact = kb
+        .facts()
+        .find(|&f| terms.facts.get(f).0 == p)
+        .expect("a p fact");
+    terms.facts.args(fact)[0]
+}
+
+/// **`(p ())` and `(p (@empty))` are two facts, and so are `(p (_ a))` and
+/// `(p (<nested> a))`** (T1f.5.5.8): the twins S1f.5.4's step 1 found on a
+/// prototype that read the name rule with today's parser, where each pair
+/// stored one fact ([its finding](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#the-finding-two-synthetic-names-become-spellable)).
+///
+/// The generated grammar refuses `()` and `_` as a fact's argument (a fact
+/// holds names and facts), so each pair is read by the two parsers T1f.5.5.9
+/// compares, into one interner: the hand-written parser reads `(p ())` and
+/// `(p (_ a))`, the generated one `(p (@empty))` and `(p (<nested> a))`. T4
+/// removes the first half with its parser. What stays is the generated
+/// parser's own twin, `ein-infer/tests/rule_semantics.rs`'
+/// `an_empty_conclusion_and_one_named_at_empty_are_two_facts`, and the two
+/// places below that read a written name as the parser's.
+#[test]
+fn the_loaders_names_and_the_names_a_program_writes_are_two() {
+    let mut terms = ein_core::Terms::new();
+    for (internal, made, written, head) in [
+        (
+            "(p ())",
+            ein_core::text::EMPTY_HEAD,
+            "(p (@empty))",
+            "@empty",
+        ),
+        (
+            "(p (_ a))",
+            ein_core::text::NESTED_HEAD,
+            "(p (<nested> a))",
+            "<nested>",
+        ),
+    ] {
+        let by_loader = p_argument(&mut terms, internal, false);
+        let by_program = p_argument(&mut terms, written, true);
+        assert_ne!(
+            by_loader, by_program,
+            "{internal} and {written} are one fact"
+        );
+        for (v, want) in [(by_loader, made), (by_program, head)] {
+            let (rel, _) = terms.fact(v.as_fact().expect("a nested fact"));
+            assert_eq!(terms.sym(rel), want);
+        }
+    }
+
+    // The dumper prints a synthetic head's form without its head, and a
+    // pattern's relations leave out the synthetic heads: until T1f.5.5.8 the
+    // first read any head with a leading `@` as one, and the second `@empty`
+    // and `@params` as written.
+    let text = "(@params b)\n(rule r () :match (and (@empty ?x) (@params ?x)) :assert (q ?x) :why \"q {?x}\")\n";
+    let mut ast = Ast::new();
+    let forms = grammar::parse(&mut ast, text, Some("heads.ein")).expect("it parses");
+    assert_eq!(ein_ir::dump_compact(&ast, forms[0]), "(@params b)");
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("it loads");
+    let (_, rule) = kb.program().rules.iter().next().expect("one rule");
+    let read: Vec<&str> = rule
+        .match_
+        .as_ref()
+        .expect("a :match")
+        .relation_names
+        .iter()
+        .map(|&r| terms.sym(r))
+        .collect();
+    assert_eq!(read, ["@empty", "@params"]);
+}
+
 /// A program whose deepest `(` is `depth` deep: a macro, a rule whose
 /// `:match` nests a call of it at the limit, and a fact nested to it.
 fn nested(depth: usize) -> String {

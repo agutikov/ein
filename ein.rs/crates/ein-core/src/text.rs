@@ -91,14 +91,53 @@ pub fn symbol(s: &str) -> Cow<'_, str> {
     }
 }
 
+/// The first character of every name the parser, the loader and the engine
+/// make up for something a program writes no name for ([`INTERNAL_NAMES`]).
+///
+/// `#` is no name character in either lexer: the name rule's list leaves it
+/// out (the user, 2026-11-07: *"`;`,`#`,`|` - for comments, also not allowed
+/// in names"*), the generated lexer reads a `#` that does not open a `#|`
+/// comment as part of a token that is not a name, and the hand-written lexer
+/// starts no token with it. None of these names is followed by `|`, so none
+/// opens a comment either. Until M1f S1f.5.5's T1f.5.5.8 (2026-11-08) they were
+/// spelled with `@` and `<…>`, which the name rule makes name characters, so
+/// that `(p ())` and `(p (@empty))` would have loaded as one fact.
+pub const INTERNAL_MARK: char = '#';
+
 /// The relation name the loader gives a nested form whose head is not an atom
 /// (`(r (?x a))`, `(r (_ a))`): it is no name text can spell, and `_` in head
 /// position loads as it, so a nested fact with this head prints `(_ …)`.
-pub const NESTED_HEAD: &str = "<nested>";
+pub const NESTED_HEAD: &str = "#nested";
 
 /// The relation name the loader gives the empty form `()`, which prints as
 /// `()`.
-pub const EMPTY_HEAD: &str = "@empty";
+pub const EMPTY_HEAD: &str = "#empty";
+
+/// The head the parser gives a rule's or a macro's parameter list, which the
+/// dumper prints without a head and the loader reads as no relation.
+pub const PARAMS_HEAD: &str = "#params";
+
+/// The head the generated parser gives a fact's `:using` list, which the
+/// dumper prints without a head and the loader does not read.
+pub const LIST_HEAD: &str = "#list";
+
+/// Every name the parser, the loader and the engine make up for something a
+/// program writes no name for, each starting with [`INTERNAL_MARK`], so no
+/// program can spell one (`ein-ir/tests/generated_parser.rs`,
+/// `no_name_the_loader_makes_up_is_a_name`).
+pub const INTERNAL_NAMES: [&str; 5] = [
+    EMPTY_HEAD,
+    NESTED_HEAD,
+    PARAMS_HEAD,
+    LIST_HEAD,
+    crate::terms::QUERY_RULE,
+];
+
+/// Is `name` one the parser, the loader or the engine made up
+/// ([`INTERNAL_NAMES`]), rather than one a program wrote?
+pub fn is_internal(name: &str) -> bool {
+    name.starts_with(INTERNAL_MARK)
+}
 
 /// A fact's head as Ein text: a relation is a `SYMBOL`, a kernel form's head
 /// (`not`, `and`, `or`, `neq`, `=`) reads back as that form, and the two names
@@ -174,5 +213,16 @@ mod tests {
         assert_eq!(form("not", &["(p A)".into()]), "(not (p A))");
         assert_eq!(form(NESTED_HEAD, &["a".into()]), "(_ a)");
         assert_eq!(form(EMPTY_HEAD, &[]), "()");
+    }
+
+    #[test]
+    fn every_internal_name_carries_the_mark_and_prints_quoted() {
+        for name in INTERNAL_NAMES {
+            assert!(is_internal(name), "{name}");
+            assert_eq!(symbol(name), quote(name), "{name}");
+        }
+        for written in ["@empty", "<nested>", "@params", "@list", "<query>", "empty"] {
+            assert!(!is_internal(written), "{written}");
+        }
     }
 }

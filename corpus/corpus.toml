@@ -1568,7 +1568,7 @@ note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5
 path   = "examples/ein-bugs/wrong-answers/assert-empty.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `@empty`, which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-empty.ein"

@@ -525,7 +525,7 @@ fn symbol_list(
     };
     let mut names: Vec<String> = Vec::new();
     if let Some(name) = ast.atom_name(head)
-        && !name.starts_with('@')
+        && !ein_core::text::is_internal(name)
     {
         names.push(name.to_string());
     }

@@ -473,6 +473,16 @@ constrained-reasoning research.
   default false, so nothing moved, and with it on 274 of the corpus's 339
   loadable files are refused (2026-11-08,
   [§ T1f.5.14.6 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5146-record-2026-11-08)).
+  S1f.5.5's T8, the swap's prerequisite, renamed the names the parser and the
+  loader make up out of the name space the same day (S1f.5.4's Q1 (a)):
+  `#empty`, `#nested`, `#params`, `#query` and the generated parser's
+  `#list`, where `@empty`, `<nested>`, `@params`, `<query>` and `@list` were
+  names under the name rule, so `(p ())` and `(p (@empty))` would have loaded
+  as one fact; `ein_core::text::INTERNAL_NAMES` lists them,
+  `generated_parser::no_name_the_loader_makes_up_is_a_name` holds them, and
+  no answer moved, only W34's candidate's spelling and the renderings that
+  print a renamed head
+  ([§ T8 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t8-record-2026-11-08)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

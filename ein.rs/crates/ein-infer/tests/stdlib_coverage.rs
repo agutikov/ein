@@ -179,12 +179,13 @@ fn heads(ast: &Ast, forms: &[NodeId]) -> (Vec<(String, usize)>, Vec<String>) {
 /// Two shapes need care and neither is exotic: the head of a parameter list is
 /// a `Var`, so `head_name` is `None` there and the count is `1 + args`; and
 /// `()` — fifteen rules over five of the seven modules — parses to the
-/// synthetic `@empty` head, which is **zero** parameters rather than one.
+/// synthetic `#empty` head ([`ein_core::text::EMPTY_HEAD`]), which is **zero**
+/// parameters rather than one.
 fn params_of(ast: &Ast, form: NodeId) -> usize {
     let Node::SForm { head, args } = ast.node(form) else {
         return 0;
     };
-    if ast.atom_name(head) == Some("@empty") {
+    if ast.atom_name(head) == Some(ein_core::text::EMPTY_HEAD) {
         0
     } else {
         1 + ast.args(args).len()

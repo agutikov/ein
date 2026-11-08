@@ -557,7 +557,8 @@ Candidates:
 - **Forbidden** — `()` is a parse error; no hole notation.
 
 **Working answer:** *parked*. The grammar's current behaviour
-parses `()` as a synthetic `@empty`-headed `SForm` with no
+parses `()` as a synthetic `#empty`-headed `SForm` (`@empty` until
+M1f S1f.5.5's T1f.5.5.8, 2026-11-08) with no
 attributes; the engine treats it as a no-op atom. No semantic
 commitment in M1. Revisit when a concrete use case forces the
 question — most likely the negative-fact representation in P1.5

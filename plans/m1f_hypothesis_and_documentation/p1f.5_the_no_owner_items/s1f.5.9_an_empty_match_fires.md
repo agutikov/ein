@@ -42,7 +42,7 @@ over `examples/`, `tests/`, `stdlib/` and `corpus/`).
 | `(rule r (?x) :match () :assert (hit ?x))` with `(r a)` | loads, never fires: no `(hit a)` | root holds `(hit a :rule r)`, one firing per activator |
 | `(hrule h () :match () :assert (q b))` with `(solve :hrules (h))` | proposes nothing: *no candidate* | proposes `(q b)`, as `:match (p ?x)` does: one candidate |
 | `(rule r () :match (and) :assert (false))` | refused at parse: *unexpected input* | refused, with a line that says `and` takes a conjunct and the empty conjunction is `()` |
-| `(rule r () :match (q ?x) :assert ())` over `(q a)` | stores a fact named `@empty`, listed `( :rule r)`, which joins H: R two states, the second `(model (q "@empty") (q a))` | an empty conclusion asserts nothing: R {∅}, one state |
+| `(rule r () :match (q ?x) :assert ())` over `(q a)` | stores a fact named `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), listed `( :rule r)`, which joins H: R two states, the second `(model (q "#empty") (q a))` | an empty conclusion asserts nothing: R {∅}, one state |
 
 The first four are wrong answers, a shape that reads nothing in silence, as W24's were. [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed them
 on 2026-11-08 as W31, `open` and owned by this stage, each witness under `examples/ein-bugs/wrong-answers/`
@@ -54,7 +54,7 @@ ruled on 2026-11-08 that it be filed (*"Q3 - as recommended"*), and S1f.5.0 file
 `W34/assert-empty`, `open` and owned by this stage: an empty conclusion is F12's to fix, and the paper
 grammar keeps `:assert ()` as the empty conclusion (its default 7). Its `--dump-answer` state files do not
 load, the stored fact written as a line `()`, so `ein-cli/tests/answer_round_trip.rs` and `answer_dump.rs`
-name the witness (`DO_NOT_LOAD`) until step 2 takes it off both lists. Its `@empty` is also a name no fact or
+name the witness (`DO_NOT_LOAD`) until step 2 takes it off both lists. Its `#empty` is also a name no fact or
 rule writes, which the M1 alive-set invariant's R1 finds, so `ein-infer/tests/alive_invariant.rs` names it
 (`KNOWN_R1`) until the same commit empties that list.
 
@@ -64,7 +64,7 @@ rule writes, which the M1 alive-set invariant's R1 finds, so `ein-infer/tests/al
   per activator fact, with only its parameters bound.
 - **Hrules.** The same, so the hrule rung proposes the conclusion once, or once per activator.
 - **An empty conclusion** (W34, added 2026-11-08). `:assert ()` asserts nothing: no fact with the parser's
-  synthetic head is stored, and `@empty` is no name of the program.
+  synthetic head is stored, and `#empty` is no name of the program.
 - **`(and)`.** Refused at load on today's parser, in Ein's spelling, naming the rule and the clause. On
   S1f.5.5's grammar, `and` takes one conjunct or more, and the parse error says so.
 - **What it reaches.** A contradiction derived this way has an empty core, the first `[]` core in Ein. A
@@ -85,7 +85,7 @@ It starts from W31's four rows and W34's one, which S1f.5.0 filed `open` on 2026
 | `W31/empty-match-fact` | `empty-match-fact.ein` | `solve --minimal`: `(model (q a))`, no `(q b)` |
 | `W31/empty-match-activator` | `empty-match-activator.ein` | `solve --minimal`: no `(hit a)` |
 | `W31/empty-match-hrule` | `empty-match-hrule.ein` | `solve`: no candidate, R {∅} |
-| `W34/assert-empty` | `assert-empty.ein`, the census's `assert_empty.ein` | `solve`: R two states, `(q "@empty")` a candidate |
+| `W34/assert-empty` | `assert-empty.ein`, the census's `assert_empty.ein` | `solve`: R two states, `(q "#empty")` a candidate (`(q "@empty")` at `ec004a48`; S1f.5.5's T1f.5.5.8 renamed the head and restated the `now`) |
 
 Each re-taken, with the `(and)` refusal's probe. `ein-infer/tests/alive_invariant.rs`' `SEEDED` names `b` on
 `empty-match-fact` and `empty-match-hrule`, a name only the conclusion writes; step 2 says whether the fix

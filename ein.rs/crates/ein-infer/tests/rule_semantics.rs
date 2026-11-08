@@ -37,9 +37,14 @@ struct Run {
 /// separately would have to guess which phase to unwrap in.
 fn try_saturate(text: &str) -> Result<Run, String> {
     let mut ast = Ast::new();
-    let mut terms = Terms::new();
     let forms = parse(&mut ast, text, Some("<fixture>")).map_err(|e| e.to_string())?;
-    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.to_string())?;
+    saturate_forms(ast, &forms)
+}
+
+/// Load and saturate the forms a parser built into `ast`.
+fn saturate_forms(mut ast: Ast, forms: &[ein_ir::NodeId]) -> Result<Run, String> {
+    let mut terms = Terms::new();
+    let mut kb = ein_ir::load(&mut ast, &mut terms, forms, None).map_err(|e| e.to_string())?;
     let mut firings = Vec::new();
     {
         let mut events = Events::off();
@@ -1081,5 +1086,48 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
             .count(),
         2,
         "a fresh variable makes one application per match"
+    );
+}
+
+/// **An empty conclusion and a conclusion a program names `@empty` are two
+/// facts** (M1f S1f.5.5's T1f.5.5.8), through the generated parser, which reads
+/// `@empty` as a name (S1f.5.4's ruling) and `()` only as a whole `:match` or
+/// `:assert`.
+///
+/// `:assert ()` stores a fact under the parser's synthetic head for `()`
+/// today, which is `W34/assert-empty`'s wrong answer, open and S1f.5.9's to
+/// fix: an empty conclusion asserts nothing. Until T1f.5.5.8 that head was
+/// `@empty`, so `written`'s `(@empty)` was the fact `empty-form` had already
+/// stored, and its firing re-derived it. The head is `#empty` since, which no
+/// program can spell, so `written` stores a fact of its own whether or not
+/// `empty-form` stores one.
+#[test]
+fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
+    let text = "(relation q Node :why \"{?a} is a node\")\n(q a)\n\
+         (rule empty-form () :match (q ?x) :assert () :why \"nothing, for {?x}\")\n\
+         (rule written () :match (q ?x) :assert (@empty) :why \"@empty, for {?x}\")\n";
+    let mut ast = Ast::new();
+    let forms =
+        ein_ir::grammar::parse(&mut ast, text, Some("<fixture>")).expect("the generated parser");
+    let run = saturate_forms(ast, &forms).expect("it saturates");
+    let by = |rule: &str| -> Vec<ein_core::FactId> {
+        run.productive()
+            .into_iter()
+            .filter(|f| run.rule_of(f) == rule)
+            .flat_map(|f| f.derived.iter().copied())
+            .collect()
+    };
+    let written = by("written");
+    assert_eq!(
+        written.len(),
+        1,
+        "`written` re-derived a fact it did not store"
+    );
+    let (rel, args) = run.terms.facts.get(written[0]);
+    assert_eq!((run.terms.sym(rel), args.len()), ("@empty", 0));
+    assert!(run.kb.contains(written[0]));
+    assert!(
+        !by("empty-form").contains(&written[0]),
+        "`:assert ()` and `:assert (@empty)` stored one fact"
     );
 }

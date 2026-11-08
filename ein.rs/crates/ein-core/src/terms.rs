@@ -249,8 +249,9 @@ pub const LOOKAHEAD_DIES: &str = "<lookahead-dies-immediately>";
 /// The singleton writeback's `(not h)` — a layer-1 death, generalised.
 pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";
 /// The synthetic rule a `(query :goal …)` compiles to, so a goal binding has a
-/// rule name to be reported under.
-pub const QUERY_RULE: &str = "<query>";
+/// rule name to be reported under. One of [`crate::text::INTERNAL_NAMES`], so
+/// no rule a program writes can be named it (`<query>` until M1f T1f.5.5.8).
+pub const QUERY_RULE: &str = "#query";
 /// `(__closed__ R)` — R is a relation no rule can positively conclude.
 pub const CLOSED: &str = "__closed__";
 /// `(__symmetric__ R)` — R's extension is closed under arg-swap by the kernel.
@@ -324,8 +325,8 @@ impl Terms {
             absent: intern("absent"),
             r#false: intern("false"),
             equals: intern("="),
-            empty: intern("@empty"),
-            params: intern("@params"),
+            empty: intern(crate::text::EMPTY_HEAD),
+            params: intern(crate::text::PARAMS_HEAD),
             forced_positive: intern(FORCED_POSITIVE),
             lookahead_dies: intern(LOOKAHEAD_DIES),
             monotonic_unconditional: intern(MONOTONIC_UNCONDITIONAL),

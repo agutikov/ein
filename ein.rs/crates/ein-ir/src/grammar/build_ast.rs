@@ -6,14 +6,16 @@
 //! conventions are the hand-written parser's (`parse.rs`): a declarator,
 //! `and`, `or`, `not` and `neq` are built with a synthetic head and no `Loc`;
 //! any other list takes its head's `Loc`; a top-level fact has none; `()` is
-//! `@empty` and a parameter list `@params`.
+//! headed `#empty` and a parameter list `#params` (`ein_core::text`'s
+//! `EMPTY_HEAD` and `PARAMS_HEAD`, no name a program can spell since
+//! T1f.5.5.8).
 //!
 //! Two leaves differ, by the rulings this grammar carries: a run of digits is
 //! a name, `Atom("01")` and not `Int(1)` (Q-M1e2.24, S1f.5.4's ruling), so the
 //! generated parser builds no `Int` at all, since `:priority`, whose value was
 //! the one place digits stayed one, is not in the grammar (the user,
 //! 2026-11-08: S1f.5.15 deletes it before the swap); and a fact's `:using`
-//! lists its premises under the synthetic head `@list`, where the hand-written
+//! lists its premises under the synthetic head `#list`, where the hand-written
 //! parser took the list's first element as its head, which the loader then
 //! dropped (the paper grammar's default 2). A macro's `:why`, which the
 //! hand-written parser refuses, is a key pair after its body.
@@ -230,17 +232,17 @@ pub(super) fn top(p: &RefCell<B>, head: Id, args: Vec<Id>, clauses: Vec<Id>) -> 
 
 /// `()`.
 pub(super) fn empty(p: &RefCell<B>) -> Id {
-    named(p, "@empty", none())
+    named(p, ein_core::text::EMPTY_HEAD, none())
 }
 
 /// A rule's or a macro's parameter list.
 pub(super) fn params(p: &RefCell<B>, vars: Vec<Id>) -> Id {
-    named(p, "@params", vars)
+    named(p, ein_core::text::PARAMS_HEAD, vars)
 }
 
 /// A fact's `:using`: its premises, each a fact.
 pub(super) fn premises(p: &RefCell<B>, facts: Vec<Id>) -> Id {
-    named(p, "@list", facts)
+    named(p, ein_core::text::LIST_HEAD, facts)
 }
 
 #[cfg(test)]

@@ -69,6 +69,31 @@ as terminals labelled with the empty environment, which is exactly the
 A new writeback name must be registered here and must keep the
 empty-`premises_raw` shape, or the walks will try to expand it.
 
+## Names the parser and the loader make up
+
+Five names stand for something a program writes no name for. Each starts
+with `#`, which is no name character: the name rule leaves it out, since `#|`
+opens a comment, so no program can spell one. `ein_core::text::INTERNAL_NAMES`
+lists them, `ein_core::text::is_internal` is the test the dumper and
+`(import … :symbols …)` read, and
+[`ein-ir/tests/generated_parser.rs`](../../../ein.rs/crates/ein-ir/tests/generated_parser.rs)'
+`no_name_the_loader_makes_up_is_a_name` holds that none is a name of the
+generated lexer. Until M1f S1f.5.5's T1f.5.5.8 (2026-11-08) they were spelled
+with `@` and `<…>`, which the name rule makes name characters, so a program
+could have written `(p (@empty))` and loaded the fact `(p ())`.
+
+| name | until T1f.5.5.8 | names | printed as |
+|---|---|---|---|
+| `#empty` | `@empty` | the empty form `()`: a `:match ()`, an `:assert ()`, an empty name list | `()` |
+| `#nested` | `<nested>` | a nested form whose head is not a name, `(r (_ a))` | `(_ …)` |
+| `#params` | `@params` | a rule's or a macro's parameter list | the list, with no head |
+| `#list` | `@list` | a fact's `:using` list, in the generated parser's tree | the list, with no head |
+| `#query` | `<query>` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |
+
+`(q "#empty")` is a value a run can reach only through `W34/assert-empty`,
+open and S1f.5.9's: `:assert ()` stores a fact under `#empty`, which then
+joins H.
+
 ## Engine entry + verdict
 
 > **This section is the walk's read-out, deleted with the walk at M1e2

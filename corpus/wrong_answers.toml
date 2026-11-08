@@ -659,6 +659,15 @@
 # 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-08).
 #
+# **S1f.5.5's T1f.5.5.8 renamed the loader's internal names the same day**,
+# on S1f.5.4's Q1 (a), decided by the coordinator on 2026-11-08: the head the
+# parser gives `()` is `#empty`, where it was `@empty`, which S1f.5.4's name
+# rule makes a name a program can write. No row's status moved. W34's `now`
+# and `[case.region]` print its candidate `(q "#empty")`; its `wrong` keeps
+# `(q "@empty")`, the answer at `ec004a48`. The register reads **103 rows
+# fixed, 35 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-08).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -8925,18 +8934,18 @@ models    = [
   [],
 ]
 
-# ══ W34 — `:assert ()` stores a fact named `@empty`, which joins H ══
+# ══ W34 — `:assert ()` stores a fact named `#empty`, which joins H ══
 [[case]]
 id       = "W34/assert-empty"
 case     = "W34"
-title    = "`:assert ()` stores a fact named `@empty`, which joins H"
+title    = "`:assert ()` stores a fact named `#empty`, which joins H"
 class    = "model set"
 settings = "default"
 owner    = "S1f.5.9"
 question = ["P1f.5 F12", "S1f.5.5 census"]
 witness  = "examples/ein-bugs/wrong-answers/assert-empty.ein"
 status   = "open"
-open_because = "The rule compiler lowers an empty conclusion as a fact whose head is the parser's synthetic `@empty`, stored at root as `( :rule r)`, and the list of the program's names then reads `@empty`, so `(q \"@empty\")` is a candidate and R gains a state; S1f.5.9 makes an empty conclusion assert nothing (F12's ruling, and the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+open_because = "The rule compiler lowers an empty conclusion as a fact whose head is the parser's synthetic `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), stored at root as `( :rule r)`, and the list of the program's names then reads `#empty`, so `(q \"#empty\")` is a candidate and R gains a state; S1f.5.9 makes an empty conclusion assert nothing (F12's ruling, and the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
 look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/assert_empty.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. P1f.5's F12 table said `:assert ()` *loads, adds nothing*, which the census found false (S1f.5.0 corrected the row, and added it to S1f.5.9's case); the paper grammar's default 7 keeps `:assert ()` as the empty conclusion, so the fix is the engine's. The query's classes are two today and one right"
 
@@ -8956,7 +8965,7 @@ monotone = true
 k_s      = 2
 k_c      = 2
 minimal  = [[]]
-maximal  = [["(q \"@empty\")"]]
+maximal  = [["(q \"#empty\")"]]
 
 [case.right]
 reading   = "P1f.5's F12, the user's ruling of 2026-11-07, its fifth row: an empty conclusion asserts nothing"
@@ -8974,7 +8983,7 @@ exhausted = true
 k         = 2
 relations = ["q"]
 models    = [
-  ["(q \"@empty\")", "(q a)"],
+  ["(q \"#empty\")", "(q a)"],
   ["(q a)"],
 ]
 

@@ -744,6 +744,106 @@ candidate prints the renamed head (it stays `open`, [S1f.5.9](s1f.5.9_an_empty_m
 commit, so the swap carries no rename. If the user's review at T9 overrules Q1, this commit is replaced before
 the swap.
 
+### T8 record, 2026-11-08
+
+**What was renamed.** The names the parser, the loader and the engine make up for something a program writes no
+name for, each now starting with `#`, listed in `ein_core::text::INTERNAL_NAMES`:
+
+| was | now | names | made by |
+|---|---|---|---|
+| `@empty` | `#empty` | the empty form `()` | `ein_core::text::EMPTY_HEAD`: `parse.rs`' `alt_generic_list`, `build_ast.rs`' `empty` |
+| `<nested>` | `#nested` | a nested form whose head is not a name, `(p (_ a))` | `NESTED_HEAD`: `from_ir.rs`' `fact_args` |
+| `@params` | `#params` | a rule's or a macro's parameter list | `PARAMS_HEAD`: `parse.rs`' `params`, `build_ast.rs`' `params` |
+| `<query>` | `#query` | the rule a query's `:goal` compiles to | `ein_core::terms::QUERY_RULE` |
+| `@list` | `#list` | a fact's `:using` list, in the generated parser's tree | `LIST_HEAD`: `build_ast.rs`' `premises` |
+
+**Why `#`.** Neither lexer reads it in a name. The name rule leaves it out by the user's ruling (*"`;`,`#`,`|` -
+for comments, also not allowed in names"*); `ein.l` reads a `#` that does not open `#|` as part of a `BAD` token,
+*a token that is not a name*; and the hand-written lexer starts no token with it. Ein's text uses `#` only in
+`#|`…`|#`, the block comment, and no internal name has a `|` after its `#`. Of the other characters the list leaves
+out, `?`, `:`, `;`, `|`, `\`, `"` and the parentheses each have a job, and `,` reads as punctuation in every
+surface that lists names. `#` was the stage's suggestion and Q1's.
+
+**The fifth name, `@list`**, which T3's builder gives a `:using` list, was as spellable as the four and was read
+the same way, so it moved with them. Three places read a synthetic head by its spelling, and each now reads the
+constants: the dumper (`dump.rs`' `is_headless`) and `(import … :symbols …)` (`imports.rs`' `symbol_list`) tested
+a leading `@`, so under the name rule a form a program writes as `(@a b)` would have dumped as `(b)`; both test
+`ein_core::text::is_internal`. `from_ir.rs`' pattern walk left `@empty` and `@params` out of a pattern's relations
+by spelling, so a rule matching a relation a program names `@params` would not have listed it.
+
+**The printer, and what reads it back.** `ein_core::text::head` prints `#nested` as `_` and `form` prints
+`#empty` with no arguments as `()`, by the constants, as before. A name with a `#` prints quoted, `"#empty"`, as
+`"@empty"` did, and the hand-written loader reads a string in a fact as the name it spells, so a state file that
+writes `(q "#empty")` reloads to that value. W34's state files still do not load, for the line `()` the row is
+about (`DO_NOT_LOAD` in `answer_round_trip.rs` and `answer_dump.rs`, unchanged). `#query` is never printed as
+reloadable text: no rendering or CLI output in the sweeps below names `<query>`, before or after.
+
+**What moved, named before it landed.** A grep of the four spellings over code, goldens, docs and the corpus,
+and a dump of every rendering `corpus_shapes` digests (15 104) on the tree before the change, listed it; the
+same dump after the change, and the CLI sweep below, checked it:
+- **`W34/assert-empty`** (open, S1f.5.9's): its `[case.now]` and `[case.region]` print the candidate `(q
+  "#empty")`, where they printed `(q "@empty")`. Its `wrong` keeps `(q "@empty")`, the answer at `ec004a48`; its
+  title, `open_because`, the witness's header (its 35 lines kept, so no `Loc` moves) and its corpus note say
+  `#empty`. No row's status moved: 103 fixed, 35 open and 1 not wrong
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
+- **`alive_invariant`'s `KNOWN_R1`**: its two lines print `"#empty"`.
+- **`corpus_shapes.md5`: 94 lines on eleven files**, more than the task named, each a rendering that prints a
+  renamed head. `@params` in the five IR DOT views and `dot[constraints]` of `stdlib/macro.ein` and the four
+  macro fixtures under `examples/broken/load/` (30 lines); `@empty` in the seven IR and rule DOT views of W34's,
+  W35's and W31's four witnesses, the plan of each but `empty-match-hrule`'s, and on W34's own in its
+  `saturate` events, `naf`, `hyp`, `dot[kb-since]`, four read-outs, the region trace and lattice, five core views
+  and, with W35's, the oracle (64). Of the 94, 50 differ by the spelling alone. The other 44 also differ by what
+  a renderer derives from a name, each on a line that names the renamed head: a relation's
+  colour is `sha1(name) mod 10` (`ein_render::palette::hash_color`), so `#empty` is cyan where `@empty` was grey,
+  and a DOT fact node's id hashes its fact's text (three ids, each a renamed head's fact).
+- **No golden printed a firing's `:rule <query>`**, which the task expected might move.
+
+**The CLI sweep.** The binaries built before and after the change, on every `.ein` under `examples/`, `tests/`,
+`stdlib/`, `corpus/` and `plans/` (513; `find examples tests stdlib corpus plans -name '*.ein' | wc -l`,
+2026-11-08), each through `ein saturate FILE --dump`, `ein solve FILE --json-summary J -H --dump-answer D --events E
+--trace T -G`, `ein render program FILE` and, where it states an `:expect`, `ein test FILE`. No exit code of the
+1 687 runs moved. Of the 935 755 files they write, 934 802 are the same bytes, 426 differ only by the sweep's own
+output directory in the `run` event's `argv`, and 504 only by a time. **23 moved by the rename**: ten of W34's
+witness (its `saturate --dump`, `solve`'s stdout, summary, events, trace and five answer files, `models/02.ein`
+among them), and `ein render program`'s view of thirteen programs that write `()` or a macro's parameter list
+(`stdlib/macro.ein`, the four macro fixtures, the six empty-form witnesses of W31, W34 and W35, and two probes under
+`plans/`, `empty_arg.ein` and `heads.ein`), six of them with the name's colour. None names `<query>` or `#query`.
+
+**The tests.**
+- `ein-ir/tests/generated_parser.rs`' **`no_name_the_loader_makes_up_is_a_name`**: no name of
+  `INTERNAL_NAMES` is one `NAME` of the generated lexer (`ein_ir::grammar::is_one_name`, added for it), and both
+  parsers refuse each as a fact's argument, a nested fact's head and a fact's head; each old spelling is one
+  `NAME`.
+- The same file's **`the_loaders_names_and_the_names_a_program_writes_are_two`**: `(p ())` and `(p (@empty))`
+  load as two facts into one interner, and so do `(p (_ a))` and `(p (<nested> a))`. The generated grammar
+  refuses `()` and `_` as a fact's argument (a fact holds names and facts), so the stage's twin `(p ()) (p
+  (@empty))` does not parse through it whole: the hand-written parser reads the first of each pair and the
+  generated one the second, the two parsers T9 compares, and T4 removes the first half with its parser. Through
+  the generated parser, `(@params b)` dumps with its head, and a rule matching `(@empty ?x)` and `(@params ?x)`
+  lists both among the relations it reads.
+- `ein-infer/tests/rule_semantics.rs`' **`an_empty_conclusion_and_one_named_at_empty_are_two_facts`**, the twin
+  that outlives the hand-written parser: through the generated parser, `:assert ()` and `:assert (@empty)` store
+  two facts, the second's relation the name `@empty`. It holds whether or not `:assert ()` stores a fact, so
+  S1f.5.9's fix of W34 leaves it standing.
+- `ein_core::text`'s `every_internal_name_carries_the_mark_and_prints_quoted`.
+
+With the old spellings put back in `ein_core`, each of the three fails at its collision (2026-11-08).
+
+**The `generated-parser` build**, which the gate does not build: `cargo test -p ein-ir --features generated-parser
+--no-fail-fast` passes 80 tests and fails 47, and on an export of the commit before (`git archive HEAD`) the same
+47 fail, one more fails only because its golden names the checkout's root, and the two new tests do not exist
+(2026-11-08). The 47 are suites in today's language read through the generated grammar: each of the nineteen unit
+tests among them parses a program the grammar refuses (a string, `_`, a variable in a fact, a keyword its form
+does not take, `:match X`). They are T4's to move with the swap.
+
+**Not renamed, and parked for T9's review with Q1.** The engine's three writeback rule names, `<forced-positive>`,
+`<monotonic-unconditional>` and `<lookahead-dies-immediately>` (`ein_core::terms::ENGINE`), are names under the
+name rule too, and so are the dunders `__closed__` and `__symmetric__`, which a program can write today. None is
+the loader's, and nothing reads the first three by name: a record is a terminal by its empty premises
+(`Prov::is_terminal`), so a rule a program names `<forced-positive>` would share a printed name with the
+writeback and nothing else. The dunders are reserved names
+[`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md) documents.
+
 ### Task T1f.5.5.9 — every difference attributed, and one review stop
 
 On the tree with T3, S1f.5.15 and T8 landed. **The old parser is the reference**, and a difference can be read as

@@ -442,7 +442,9 @@ running nothing. Not recommended: the register kept W1's lever rows as rows, res
 S1f.5.5's stop. The four are renamed out of the name space, in characters the name rule refuses, no later than the
 swap: a prerequisite of it, held by a test, in its own commit
 ([T1f.5.5.8](s1f.5.5_the_grammar.md#task-t1f558--the-swaps-prerequisite-the-loaders-names-out-of-the-name-space)).
-W34's `now` is restated there, since its candidate's printing moves.
+W34's `now` is restated there, since its candidate's printing moves. **Done 2026-11-08**: `#empty`, `#nested`,
+`#params` and `#query`, with the generated parser's `@list` as `#list`
+([S1f.5.5 § T8 record](s1f.5.5_the_grammar.md#t8-record-2026-11-08)).
 
 #### Q2 — `relation_parameter_int`
 

@@ -50,7 +50,8 @@ fn kw_value(ast: &Ast, kw_pairs: &[ein_core::ExprRef], kw_name: &str) -> Option<
 ///
 /// There is no free-standing pattern compiler —
 /// [`compile_rule`](crate::compile_rule) is the entry point — so the goal is
-/// wrapped in a parameter-less synthetic rule named `<query>`, which compiles
+/// wrapped in a parameter-less synthetic rule named `#query`
+/// ([`ein_core::terms::QUERY_RULE`]), which compiles
 /// to the pattern's own steps: no activator to bind, no `:assert` templates,
 /// no `:why`.
 pub fn goal_bindings(

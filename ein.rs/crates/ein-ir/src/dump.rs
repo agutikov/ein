@@ -24,11 +24,13 @@ const INDENT: &str = "  ";
 /// The default column budget.
 pub const DEFAULT_WIDTH: usize = 80;
 
-/// A `@`-prefixed head is synthetic (`@params`, `@empty`) and is printed
-/// without a head at all.
+/// A synthetic head (`#params`, `#empty`, `#list`: [`ein_core::text::is_internal`])
+/// is printed without a head at all. Until T1f.5.5.8 the test was a leading
+/// `@`, which the name rule makes a name character, so a form a program wrote
+/// with a head such as `@a` would have printed without it.
 fn is_headless(ast: &Ast, node: NodeId) -> bool {
     match ast.node(node) {
-        Node::SForm { head, .. } => ast.atom_name(head).is_some_and(|n| n.starts_with('@')),
+        Node::SForm { head, .. } => ast.atom_name(head).is_some_and(ein_core::text::is_internal),
         _ => false,
     }
 }

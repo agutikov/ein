@@ -14,9 +14,11 @@
 //! Two quirks are *deliberately* kept rather than fixed, because they are
 //! observable:
 //!
-//! - **Synthetic heads.** `()` lowers to a form headed `@empty` and a
-//!   `rule`/`macro` parameter list to one headed `@params`; the dumper prints
-//!   any `@`-headed form without its head.
+//! - **Synthetic heads.** `()` lowers to a form headed `#empty` and a
+//!   `rule`/`macro` parameter list to one headed `#params`
+//!   (`ein_core::text::EMPTY_HEAD`, `PARAMS_HEAD`); the dumper prints any
+//!   `#`-headed form without its head. `#` is no name character, so no
+//!   program can write one (T1f.5.5.8; `@empty` and `@params` until then).
 //! - **Top-level forms carry no `loc`.** `relation_decl`, `generic_fact`,
 //!   `eq_fact`, `not_form`, … all build their `SForm` without one, and only
 //!   `generic_list` takes its head's. A loader error that interpolates a

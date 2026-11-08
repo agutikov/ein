@@ -545,13 +545,16 @@ impl<'a> Parser<'a> {
 
     /// `generic_list: "(" ")" | "(" list_head list_item* ")"`.
     ///
-    /// The empty case gets the synthetic `@empty` head the dumper prints as
-    /// `()`; the non-empty case is the **one** production that gives its form
-    /// a `Loc` — its head's.
+    /// The empty case gets the synthetic [`ein_core::text::EMPTY_HEAD`] the
+    /// dumper prints as `()`; the non-empty case is the **one** production
+    /// that gives its form a `Loc` — its head's.
     fn alt_generic_list(&mut self, c: Cursor) -> Parsed {
         if let Some(close) = match_term(self.src, c, Term::RParen) {
             let mark = self.scratch.len();
-            return Some((self.finish_named(mark, "@empty", None), close.next));
+            return Some((
+                self.finish_named(mark, ein_core::text::EMPTY_HEAD, None),
+                close.next,
+            ));
         }
         let (head, mut c) = self.list_head(c)?;
         let head_loc = self.ast.loc(head);
@@ -688,7 +691,10 @@ impl<'a> Parser<'a> {
             return None;
         }
         let close = self.eat(c, Term::RParen)?;
-        Some((self.finish_named(mark, "@params", None), close.next))
+        Some((
+            self.finish_named(mark, ein_core::text::PARAMS_HEAD, None),
+            close.next,
+        ))
     }
 
     fn alt_query(&mut self, c: Cursor) -> Parsed {

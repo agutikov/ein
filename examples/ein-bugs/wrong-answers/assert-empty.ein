@@ -1,4 +1,4 @@
-;;; `:assert ()` stores a fact named `@empty`, which joins H — M1f **W34**,
+;;; `:assert ()` stores a fact named `#empty`, which joins H — M1f **W34**,
 ;;; register row `W34/assert-empty` (`corpus/wrong_answers.toml`), banked by
 ;;; S1f.5.0 (2026-11-08) from S1f.5.5's census (§ Findings outside the
 ;;; grammar; its probe `assert_empty.ein`, the program unchanged), filed
@@ -18,11 +18,11 @@
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
 ;;; The rule stores a fact with the parser's synthetic head for `()`, listed
-;;; as `( :rule r)` (`ein saturate FILE --dump`), whose name `@empty` becomes
-;;; one of the program's names: `(q "@empty")` is a candidate, and R is two
-;;; states, the second `(model (q "@empty") (q a))`, the query's classes two,
-;;; exit 0 (`ein solve FILE` and `ein oracle FILE` at `ec004a48`, the engine
-;;; `916d97ac`'s, release and debug alike). P1f.5's F12 table said it
+;;; as `( :rule r)` (`ein saturate FILE --dump`), whose name `#empty` becomes
+;;; one of the program's names: `(q "#empty")` is a candidate, and R is two
+;;; states, the second `(model (q "#empty") (q a))`, the query's classes two,
+;;; exit 0 (`ein solve FILE`, `ein oracle FILE`; at `ec004a48` the head was
+;;; `@empty`, renamed by S1f.5.5's T1f.5.5.8). P1f.5's F12 table said it
 ;;; *loads, adds nothing*. Neither state file `--dump-answer` writes loads:
 ;;; the stored fact is written as a line `()`, a parse error, so
 ;;; `answer_round_trip.rs` and `answer_dump.rs` name this file until S1f.5.9

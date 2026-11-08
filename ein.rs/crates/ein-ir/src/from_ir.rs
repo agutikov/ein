@@ -673,8 +673,8 @@ fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Val
 /// Fact arguments: kw-pairs dropped, atomics flattened, a nested form interned
 /// as a **relational node**.
 ///
-/// A nested form whose head is not a bare atom takes the head `"<nested>"`,
-/// which is a lossy collapse.
+/// A nested form whose head is not a bare atom takes the head
+/// [`ein_core::text::NESTED_HEAD`], which is a lossy collapse.
 fn fact_args(ast: &Ast, terms: &mut Terms, args: &[NodeId]) -> Result<Vec<Value>, Overflow> {
     let mut out = Vec::new();
     for &a in args {
@@ -686,7 +686,10 @@ fn fact_args(ast: &Ast, terms: &mut Terms, args: &[NodeId]) -> Result<Vec<Value>
             continue;
         }
         if let Node::SForm { head, args } = ast.node(a) {
-            let head_name = ast.atom_name(head).unwrap_or("<nested>").to_string();
+            let head_name = ast
+                .atom_name(head)
+                .unwrap_or(ein_core::text::NESTED_HEAD)
+                .to_string();
             let inner = ast.args(args).to_vec();
             let inner = fact_args(ast, terms, &inner)?;
             let rel = terms.intern_text(&head_name)?;
@@ -1849,7 +1852,10 @@ fn walk_pattern(ast: &Ast, node: NodeId, variables: &mut Vec<String>, relations:
             );
             if !structural
                 && let Some(name) = head_name
-                && !matches!(name.as_str(), "@empty" | "@params")
+                && !matches!(
+                    name.as_str(),
+                    ein_core::text::EMPTY_HEAD | ein_core::text::PARAMS_HEAD
+                )
                 && !relations.contains(&name)
             {
                 relations.push(name);
@@ -2634,7 +2640,7 @@ mod tests {
             .map(|f| terms.facts.args(f).iter().map(|a| a.tag()).collect())
             .collect();
         assert_eq!(nested, vec![vec![Tag::Fact], vec![Tag::Fact]]);
-        // A nested head that is not a bare atom collapses to `<nested>` — a
+        // A nested head that is not a bare atom collapses to `#nested` — a
         // lossy rename — which the one printer prints as the `_` head that
         // loads it (M1e2 S1e2.3.8).
         let compacts = facts(&terms, &kb);

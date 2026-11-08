@@ -160,6 +160,27 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
     Err(report(file, text, &lexer, &lines, &errors))
 }
 
+/// Does the generated lexer read `text` as exactly one `NAME`, spelling all of
+/// it? The name rule as the lexer applies it: a reserved word (`rule`) is a
+/// token of its own and no `NAME`, and so is a run with a character the rule
+/// leaves out. `ein-ir/tests/generated_parser.rs` holds every name the loader
+/// makes up to it (`ein_core::text::INTERNAL_NAMES`, T1f.5.5.8).
+pub fn is_one_name(text: &str) -> bool {
+    let lexer = lexerdef().lexer(text);
+    let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
+    let mut tokens = lexer.iter();
+    let (Some(Ok(l)), None) = (tokens.next(), tokens.next()) else {
+        return false;
+    };
+    l.span().start() == 0
+        && l.span().len() == text.len()
+        && lexerdef()
+            .iter_rules()
+            .find(|r| r.tok_id() == Some(l.tok_id()))
+            .and_then(|r| r.name())
+            == Some("NAME")
+}
+
 /// The byte offset of the first `(` that opens one level past
 /// [`NESTING_LIMIT`], if any does. A lexing error ends nothing here: the
 /// parse reports it.

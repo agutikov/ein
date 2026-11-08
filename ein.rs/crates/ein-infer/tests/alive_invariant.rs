@@ -377,18 +377,19 @@ fn every_name_of_the_program_is_a_candidate_object() {
 
 /// **The breach a register row holds today** (M1f S1f.5.0, 2026-11-08):
 /// W34, `:assert ()` stored as a fact whose head is the parser's synthetic
-/// `@empty`, a name no fact or rule writes, which then joins H as an object.
+/// `#empty` (`@empty` until M1f T1f.5.5.8), a name no fact or rule writes,
+/// which then joins H as an object.
 /// It is the row's own wrong answer (`W34/assert-empty`), so it is named
 /// rather than failed, and held both ways: S1f.5.9 empties the list in the
 /// commit that fixes W34.
 const KNOWN_R1: [(&str, &str); 2] = [
     (
         "examples/ein-bugs/wrong-answers/assert-empty.ein",
-        "new-object: `\"@empty\"` in (q \"@empty\")",
+        "new-object: `\"#empty\"` in (q \"#empty\")",
     ),
     (
         "examples/ein-bugs/wrong-answers/assert-empty.ein",
-        "new-relation: `\"@empty\"` in ()",
+        "new-relation: `\"#empty\"` in ()",
     ),
 ];
 
