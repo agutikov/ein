@@ -322,6 +322,15 @@ pub struct Monotonicity {
     /// findings (M1e2 S1e2.1b.5, [`crate::detector`]). Empty on a program
     /// with none, which it never reads.
     pub detector: Box<crate::detector::Static>,
+    /// The **negative cycles** of the saturation rules' dependency graph over
+    /// every relation, not only `D` — M1f S1f.5.15's T4, the static
+    /// non-stratifiability diagnostic ([`crate::strata::graph`]). Empty on a
+    /// stratified program. Read on every program, flagged or not: a cycle
+    /// through an `absent` among relations no commitment changes leaves `D`
+    /// alone, so the static check calls the program monotone, and root's own
+    /// fixpoint is still one of several, the one the boundary's admission order
+    /// reaches. A diagnostic and not a refusal: the answer stands.
+    pub negative_cycles: Vec<crate::strata::Cycle>,
 }
 
 impl Monotonicity {
@@ -507,6 +516,9 @@ pub fn classify(
     // The detector's static half, gated on the verdict just reached: a program
     // with no site gets none and pays one test (M1e2 S1e2.1b.5).
     out.detector = Box::new(crate::detector::of_program(kb, terms, plans, &out));
+    // Whether a stratification exists at all (M1f S1f.5.15's T4), on every
+    // program: the graph is the one the detector restricts to `D`.
+    out.negative_cycles = crate::strata::graph(kb, terms, plans).cycles;
     out
 }
 

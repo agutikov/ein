@@ -467,7 +467,7 @@ fn derived_column(rule: Option<&strata::RuleBand>) -> String {
     }
 }
 
-fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb, bands: &[strata::RuleBand]) {
+fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb, bands: &[strata::RuleBand], graph: &strata::Graph) {
     println!();
     println!("{}", "=".repeat(70));
     println!("=  SATURATED KB DUMP");
@@ -521,6 +521,26 @@ fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb, bands: &[strata::RuleBand]) {
                 params.join(" "),
                 derived_column(bands.iter().find(|b| b.rule == rule.name))
             );
+        }
+        // M1f S1f.5.15's T4: whether a stratification exists, and where not,
+        // each negative cycle by its relations and the rules on its edges.
+        println!();
+        if graph.stratified() {
+            let k = graph.depth();
+            println!(
+                ";; Strata — stratified, {k} {}",
+                if k == 1 { "stratum" } else { "strata" }
+            );
+        } else {
+            println!(
+                ";; Strata — not stratifiable: {} negative cycle{}; the fixpoint below is the one \
+                 the boundary's admission order reaches",
+                graph.cycles.len(),
+                if graph.cycles.len() == 1 { "" } else { "s" }
+            );
+            for c in &graph.cycles {
+                println!(";;   negative cycle  {}", c.stratum_text());
+            }
         }
     }
 
@@ -815,7 +835,7 @@ fn bench(
         let plans = ein_infer::monotone::plans_of(&memo);
         let graph = strata::graph(&kb, &terms, &plans);
         let bands = strata::rule_bands(&kb, &terms, &plans, &graph);
-        dump_kb(&ast, &terms, &kb, &bands);
+        dump_kb(&ast, &terms, &kb, &bands, &graph);
     }
     Ok(())
 }

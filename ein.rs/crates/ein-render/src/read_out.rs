@@ -348,6 +348,7 @@ fn lattice_block(
         if let Some(p) = spot {
             out.line(sub_row("paths", paths_text(p)));
         }
+        strata_block(out, m);
         return;
     }
     let holes = holes.or_else(|| warning.and_then(|w| w.status.holes()));
@@ -371,6 +372,30 @@ fn lattice_block(
         for l in dynamic_rows(w, uncut, hint) {
             out.line(l);
         }
+    }
+    strata_block(out, m);
+}
+
+/// The `strata` row, on a program with no stratification only — M1f
+/// S1f.5.15's T4, the static non-stratifiability diagnostic: each negative
+/// cycle of the rules' dependency graph over every relation, by its relations
+/// and the rules on its negative edges. A diagnostic, not a refusal: the
+/// answer above stands, and is the one the boundary's admission order reaches.
+/// A stratified program prints nothing, as it did.
+fn strata_block(out: &mut Out, m: &Monotonicity) {
+    if m.negative_cycles.is_empty() {
+        return;
+    }
+    out.row(
+        "strata",
+        format!(
+            "not stratifiable: {} through an absent — root's fixpoint is the one the boundary's \
+             admission order reaches, one of several",
+            plural(m.negative_cycles.len() as u64, "cycle", "cycles")
+        ),
+    );
+    for c in &m.negative_cycles {
+        out.line(sub_row("negative cycle", c.stratum_text()));
     }
 }
 

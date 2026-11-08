@@ -40,9 +40,9 @@
 ; S1e2.2.5), which refuses `stale-naf-fork.ein`, does not reach this file:
 ; both rules conclude a positive fact, so nothing here refutes. No `:expect`
 ; is stated, so `ein test` has nothing to check.
-(relation thing Thing)
-(relation p Thing)
-(relation q Thing)
+(relation thing Thing :why "{1} is a thing")
+(relation p Thing :why "{1} is p")
+(relation q Thing :why "{1} is q")
 
 (rule derive-p ()
   :match  (and (thing ?x) (absent (q ?x)))

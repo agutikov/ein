@@ -56,6 +56,24 @@ pub struct Cycle {
     pub odd: bool,
 }
 
+impl Cycle {
+    /// The cycle as the stratification diagnostic says it (M1f S1f.5.15's
+    /// T4): its relations, its negative edges, and what the parity means for
+    /// root's fixpoint.
+    pub fn stratum_text(&self) -> String {
+        format!(
+            "{} — {} — {}",
+            self.relations.join(", "),
+            self.negative.join(" · "),
+            if self.odd {
+                "odd: a fixpoint supported at the boundary need not exist, and the one reached is the boundary's"
+            } else {
+                "even: several fixpoints, and the one reached is the one the boundary admits first"
+            }
+        )
+    }
+}
+
 /// The saturation rules' dependency graph over every relation their plans
 /// name (`node_census.md` § 5's): an edge from each relation a plan reads to
 /// each it writes, negative at odd `absent` depth, and a positive one from an

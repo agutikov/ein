@@ -650,6 +650,31 @@ honest statement of what Ein computes — a fixpoint supported at the boundary"*
 The diagnostic says the answer is one of several; it does not withhold it. If
 anyone wants a refusal that is a `Q-M1e.<n>`.
 
+### T4 record, 2026-11-08
+
+Done on the user's re-ruling of Q-M1f.6 (`f9148334`), which keeps the graph and the strata for this task: no band
+orders anything, so the diagnostic is the one thing the graph is for. `monotone::Monotonicity` carries
+`negative_cycles`, the negative cycles of `strata::graph` over every relation the saturation plans name, read at
+root on **every** program, flagged or not: a cycle through an `absent` among relations no commitment changes leaves
+`D` alone, so the static check calls the program monotone and the detector never looks, and root's own fixpoint is
+still one of several. The read-out prints a `strata` row under `lattice` on such a program, and a `negative cycle` row each (not `cycle`, the detector's word for its cycles over `D`),
+its relations, the rules on its negative edges and its parity; `ein saturate --dump` prints `;; Strata —
+stratified, k strata` or `;; Strata — not stratifiable: …` with the same cycles. A stratified program prints no
+`strata` row, as before. It is a diagnostic: the run answers and exits as it did.
+
+- **Fixtures, both ways, as specified**: `features/07_unstratifiable.ein` trips it (`p, q — derive-p: q →¬ p ·
+  derive-q: p →¬ q`, even) and `features/01_not_and_absent.ein` does not; each now carries a `:why` on its relations
+  and loads under `--require-why` (`ein-cli/tests/strata_diagnostic.rs`, and `ein-infer/tests/strata.rs` on the
+  graph).
+- **Where it trips** (`cargo run --release -p ein-infer --example rule_bands`, 2026-11-08): 7 of the 331 programs
+  that saturate, `features/07`, `ein-bugs/d3-unsat-core`, `wrong-answers/f07-fpoff` and `f07-rules-swapped`, and
+  three the detector cannot see because their cycle is not over `D`: `syntax/rule-guards` (`g: s →¬ s`),
+  `rule-forall-and-not` and `rule-shared-guard-var`, each monotone by the static check.
+- **Its cost**: one graph over root's plans per run, under 2 % of `ein solve` on the zebra family (`zebra2` 530 →
+  533 ms, `zebra` 888 → 905 ms, `zebra2-minus-15` 7 683 → 7 737 ms, best of five, release, 2026-11-08).
+- **Not in the summary**: `ein-summary/2` is unchanged; the row and the dump line are the surfaces.
+- **Re-blessed, predicted**: `corpus_shapes.md5`, 96 lines over 7 entries, every one either the read-out or region-trace digest of a program whose read-out gains the `strata` row (`features/07`, `f07-fpoff`, `f07-rules-swapped`, `syntax/rule-forall-and-not`, `rule-guards`, `rule-shared-guard-var`) or the IR digests of the two fixtures, whose relations gained a `:why`. Nothing else moved.
+
 ### Task T1f.5.15.5 — Remove it
 
 Three decisions, in order:

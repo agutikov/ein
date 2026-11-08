@@ -38,8 +38,8 @@
   :why    "neither (likes {?a} {?b}) nor its neg stored → undecided"
   :priority 200)
 
-(relation likes T T)
-(relation is-a  T T)
+(relation likes T T :why "{1} likes {2}")
+(relation is-a  T T :why "{1} is a {2}")
 (unknown-feeling Person)
 
 (is-a Person     T)
