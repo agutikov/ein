@@ -48,6 +48,10 @@
 //! today's answer reports, read from the summary as above, where `right`
 //! states none of them.
 //!
+//! **Since M1f S1f.5.15 a `now` can record what root's `refuted by` names**
+//! (schema /14, W36): the summary's `region.refuted_by`, in the order the
+//! read-out prints it.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -264,6 +268,18 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     // row records them (schema /12, M1e2 S1e2.3.8, W28).
     let outcome = |e: &J| e["outcome"].as_str().unwrap_or("none").to_string();
     let claim = row.now.claim.as_ref().map(|_| outcome(&s["claim"]));
+    // What root's `refuted by` names, where the row records it (schema /14,
+    // M1f S1f.5.15, W36): in the order printed, empty where none is stated.
+    let refuted_by = row.now.refuted_by.as_ref().map(|_| {
+        region["refuted_by"]
+            .as_array()
+            .map(|v| {
+                v.iter()
+                    .filter_map(|x| x.as_str().map(str::to_string))
+                    .collect()
+            })
+            .unwrap_or_default()
+    });
     let queries = row.now.queries.as_ref().map(|_| {
         s["queries"]
             .as_array()
@@ -296,6 +312,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         others,
         claim,
         queries,
+        refuted_by,
     })
 }
 
@@ -342,6 +359,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "nogoods",
         format!("{:?}", want.nogoods.as_deref().map(sorted_nogoods)),
         format!("{:?}", got.nogoods),
+    );
+    field(
+        "refuted_by",
+        format!("{:?}", want.refuted_by),
+        format!("{:?}", got.refuted_by),
     );
     field(
         "core_status",

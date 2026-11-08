@@ -437,9 +437,17 @@ constrained-reasoning research.
   the 511 programs, but moves the facts of cores on seven, through the
   alternatives cap, `zebra.ein`'s `:record-alternative-justifications false`
   and W25, and shows a config-principle breach that exists today,
-  `features/12`'s `refuted by` moving under that flag beside one core; both are
-  put to the user, Q-M1f.4 and Q-M1f.5
+  `features/12`'s `refuted by` moving under that flag beside one core
   ([§ T1 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md#t1-record-2026-11-08)).
+  The user ruled both the same day (`3998a1c1`): Q-M1f.4 (b), *"Derive order
+  first"*, a band derived from each rule's shape orders the closure's agenda,
+  the boundary FIFO, and the sweep is re-taken before any removal, whatever
+  still moves going back to the user; and Q-M1f.5 (a), *"Register row W36"*,
+  filed by S1f.5.15 as `W36/alt-flag-refuted-by`, `open` and owned by F22,
+  under the register's schema `/14` (a `now` records what root's `refuted by`
+  names), which `lever_invariance` exempts until F22 fixes it: 103 fixed, 34
+  open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort |
+  uniq -c`, 2026-11-08).
   S1f.5.14's loader flag landed early the same day (*"yes, land the :why flag
   early"*): `--require-why`, on the seven commands that load a program,
   refuses a relation, rule or hrule with no `:why`, one line each, and a macro

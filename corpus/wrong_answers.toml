@@ -622,6 +622,21 @@
 # not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-08).
 #
+# **W36 was filed the same day by M1f's S1f.5.15** (T1f.5.15.7), on the
+# user's ruling of 2026-11-08 on Q-M1f.5, (a) *"Register row W36"*: the
+# stage's T1 took every `:priority` out of the corpus, and
+# `features/12_expect_false.ein` so written prints `refuted by no-room`, but
+# `refuted by forced, occupied` under `:record-alternative-justifications
+# false`, beside the same five-fact core. The flag's exemption is the core
+# (Q-M1e2.11 (ii)) and `refuted by` follows it only where it moved
+# (Q-M1e2.21 (a)), so the row is `open`, deferred to F22, its witness the
+# program with the flag set in the file. **Schema /14**: a `now` records the
+# rules root's `refuted by` names, the summary's `region.refuted_by`, where
+# `right` states them. `lever_invariance` compares the witness less that row
+# under the flag until F22 fixes it. The register reads **103 rows fixed, 34
+# open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+# uniq -c`, 2026-11-08).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -744,6 +759,10 @@
 #               `W32/kwpair-in-goal`). A run whose
 #               `claim` or a query's `expect` is `failed` refutes the claim
 #               and exits 1, which `wrong_answers.rs` expects
+#     refuted_by (schema /14, M1f S1f.5.15) the rules root's `refuted by`
+#               row names, in the order printed: the summary's
+#               `region.refuted_by`; stated exactly when `[case.right]`
+#               states `refuted_by` (W36's row)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -778,6 +797,8 @@
 #               the answer moves (W11)
 #     claim, queries   (schema /12) the claims' outcomes and the classes the
 #               run gave, as `[case.now]`'s; a record (W28's `wrong`)
+#     refuted_by  (schema /14) what root's `refuted by` named, as
+#               `[case.now]`'s; a record (W36's `wrong`)
 #
 #   [case.right] — the answer the definitions give; any field it omits is not
 #     claimed. `refused = true` (schema /4) says the answer is a refusal, which
@@ -800,7 +821,8 @@
 #     verdict, so such a right states `k`, `exhausted = false` and no verdict.
 #     `claim` and `queries` (schema /12, M1e2 S1e2.3.8) are the outcome the
 #     program's claims come to and each query's count of projection classes,
-#     compared by value (W28).
+#     compared by value (W28). `refuted_by` (schema /14, M1f S1f.5.15) is the
+#     rules root's `refuted by` should name, in order (W36).
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -848,7 +870,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/13"
+schema = "ein-wrong-answers/14"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -8981,6 +9003,65 @@ relations = []
 models    = [
   [],
 ]
+
+# ══ W36 — the alternatives flag moves `refuted by` beside an unmoved core ══
+[[case]]
+id       = "W36/alt-flag-refuted-by"
+case     = "W36"
+title    = "the alternatives flag moves `refuted by` beside an unmoved core"
+class    = "core"
+settings = "lever: (config :record-alternative-justifications false) in the file"
+owner    = "F22"
+question = ["Q-M1f.5", "Q-M1e2.11", "Q-M1e2.21"]
+witness  = "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1f.5 (a), the user, 2026-11-08, *\"Register row W36\"*): with every derivation recorded the core search takes root's core over (false), `no-room`'s, and with the flag off over a pair, (in P3 …) by `forced` against (not (in P3 …)) by `occupied`; the core is the same five facts either way. F22 re-derives what the store does not keep when the search reaches it, so that `refuted by` is a function of the core"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.15 (T1f.5.15.7, 2026-11-08) on the user's ruling of 2026-11-08 on Q-M1f.5, (a) *\"Register row W36\"*: S1f.5.15's T1 took every `:priority` out of the corpus and `lever_invariance` failed on `examples/features/12_expect_false.ein` so written. The witness is that program, its four priorities taken out (`ein_corpus::mutants::without_priority`), a `:why` on `instance`, and the flag set off in the file, so that `ein solve` shows the wrong answer; with the config line taken out it prints the right one. Written with its priorities, as `features/12` is, both arms print `refuted by no-room`. `lever_invariance` compares the witness less its `refuted by` row under the flag until F22 fixes the row (REFUTED_BY_OPEN)"
+
+[case.wrong]
+run        = "solve"
+by         = "region"
+why        = "`ein solve` on the witness, release, at 62f3f8bc (2026-11-08): R empty, root dead, the five-fact core, and `refuted by forced, occupied`; with the config line taken out, the same core and `refuted by no-room`"
+verdict    = "Contradiction"
+k          = 0
+exhausted  = true
+core       = ["(in P1 H1)", "(instance H2 Hole)", "(instance P2 Pigeon)", "(instance P3 Pigeon)", "(not (in P2 H1))"]
+refuted_by = ["forced", "occupied"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict    = "Contradiction"
+k          = 0
+exhausted  = true
+core       = ["(in P1 H1)", "(instance H2 Hole)", "(instance P2 Pigeon)", "(instance P3 Pigeon)", "(not (in P2 H1))"]
+refuted_by = ["no-room"]
+derived    = "No config option may change the answer (the user's ruling of 2026-10-15, configuration.md § 2.5). The flag's one exemption is the core (Q-M1e2.11 (ii)), and `refuted by` may follow it only where the core moved (Q-M1e2.21 (a)). The core is the same five facts with the flag and without it, so `refuted by` is the default's: the witness with its config line taken out prints `refuted by no-room` beside that core (`ein solve`, 2026-11-08)"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-08"
+bundle  = "40272dbd"
+note    = "The user's ruling of 2026-11-08 on Q-M1f.5, '(a) Register row W36', on S1f.5.15's T1 hand-back (40272dbd): the flag exempts the core and not its explanation, a wrong answer is a row before it is fixed, and F22 owns it; `lever_invariance` exempts its program until then."
+
+[case.now]
+run        = "solve"
+line       = "all"
+exhausted  = true
+k          = 0
+empty      = "dead"
+relations  = []
+models     = []
+core       = ["(in P1 H1)", "(instance H2 Hole)", "(instance P2 Pigeon)", "(instance P3 Pigeon)", "(not (in P2 H1))"]
+refuted_by = ["forced", "occupied"]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

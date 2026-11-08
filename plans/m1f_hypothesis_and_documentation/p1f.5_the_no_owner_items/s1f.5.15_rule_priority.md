@@ -27,6 +27,10 @@ programs, `zebra.ein`, the zebra2 family and W25's control, each through an orde
 has (the alternatives cap, `:record-alternative-justifications false`, W25). Whether to remove it anyway, derive
 the order first or keep it is [Q-M1f.4](../open_questions.md#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs),
 put to the user.
+**The user ruled both questions the same day** (`3998a1c1`): Q-M1f.4 (b), *"Derive order first"*, and Q-M1f.5
+(a), *"Register row W36"*. The stage resumed with [T1f.5.15.7](#task-t1f5157--w36-filed-q-m1f5-a), which files W36,
+then T2 and T3; the sweep is re-taken with the derived order before anything is removed, and whatever still moves
+goes back to the user.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3, done 2026-11-08 (`54715b5f`): the generated grammar this
 stage leaves `:priority` out of. It lands on the programs both parsers read, before S1f.5.5's T8 and the swap.
 And on [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
@@ -427,6 +431,36 @@ flag's exemption widened. Q-M1f.5's wrong answer exists with or without this sta
 the corpus, where `lever_invariance` fails on it, so Q-M1f.4 (a) and (b) wait on it too. Nothing in the tree
 moved: no engine code, test, golden, fixture or register row.
 
+### Task T1f.5.15.7 — W36 filed (Q-M1f.5 (a))
+
+Added on the user's ruling of 2026-11-08 on Q-M1f.5, (a) *"Register row W36"*, and run first, since the removal
+would put the wrong answer in the corpus: `W36/alt-flag-refuted-by`, `open` and owned by F22. Its witness,
+`examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein`, is `features/12_expect_false.ein` with its four
+priorities taken out (`without_priority`), a `:why` on `instance` (it loads under `--require-why`), and
+`(config :record-alternative-justifications false)` in the file, so that `ein solve` prints the wrong answer:
+`refuted by forced, occupied`, where the same program without the config line prints `refuted by no-room`, beside
+the same five-fact core (`ein solve`, release, 2026-11-08). Both arms store the same facts with the same first
+justification (`ein saturate --dump`); what differs is the contradiction the core search takes the core over,
+(false) by default and a pair, (in P3 …) against (not (in P3 …)), with the flag off. Written with its priorities,
+as `features/12` is, both arms print `refuted by no-room`.
+
+- **Schema /14**: `[case.now]`, `[case.right]` and `[case.wrong]` gain `refuted_by`, the rules root's `refuted by`
+  names in the order printed (the summary's `region.refuted_by`), recorded exactly where `right` states it and
+  beside a core; `wrong_answers.rs` reads it, and `ein-corpus`'s `what_refuted_by_names_is_an_answer` holds the
+  rules.
+- **`lever_invariance`** compares the witness less its `refuted by` row under the flag, and nothing else
+  (`REFUTED_BY_OPEN`); `w36_is_exempt_from_refuted_by_until_f22` holds the row open, F22's, on that witness, and
+  the difference still there, so the entry leaves with the fix.
+- The witness is a corpus entry (`solve`, `saturate`), and the catalogue counts it.
+
+The register reads **103 rows fixed, 34 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+uniq -c`, 2026-11-08). Moved by banking, each only by the new file: `corpus_exits.txt` 2 cells, both exit 0;
+`corpus_shapes.md5` 41 digests added, none removed; `generated_parser_corpus.txt` 414 → 415 files, the new one the
+same tree under both readings. The same commit writes `ein.rs/Cargo.toml`'s `lrpar` comment as the user ruled
+(§ Notes), and takes the wall clock out of `config_reference::require_why_decides_loading_only`, which compared
+`ein test`'s `(0.00 s)` with its `(0.01 s)` and failed this commit's first run (T1f.5.14.6's test; nothing else in
+it moved).
+
 ### Task T1f.5.15.2 — Disposition the six consumers
 
 The two that matter:
@@ -572,8 +606,8 @@ cores of seven corpus programs move, and a config-principle breach shows.
 
 **Owed to this stage's first code commit**, from the coordinator's brief of 2026-11-08: `ein.rs/Cargo.toml`'s
 comment on the vendored `lrpar` still says sending the patch upstream is the user's call, and the user ruled that
-day *"don't send the lrpar patch upstream either"*. T1 changed no code, so the comment waits for T3's commit or
-T5's.
+day *"don't send the lrpar patch upstream either"*. T1 changed no code, so the comment waited for the stage's
+first code commit, T1f.5.15.7's, which writes the ruling there.
 
 ## Connections
 

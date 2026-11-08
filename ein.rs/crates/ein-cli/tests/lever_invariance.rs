@@ -48,6 +48,14 @@
 //! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
+//! **And one register row** (M1f S1f.5.15, the user's ruling of 2026-11-08 on
+//! Q-M1f.5 (a)): W36's witness prints another `refuted by` under that flag
+//! beside the same core, which the exemption does not cover. It is a wrong
+//! answer, `open` and owned by F22, and its program is compared less that row
+//! until F22 fixes it ([`REFUTED_BY_OPEN`]);
+//! [`w36_is_exempt_from_refuted_by_until_f22`] holds the row open and the
+//! difference there.
+//!
 //! **Byte for byte, cost counters included**, because no route reads a lever
 //! today. The day one does, its `work` row and block may move, and this file
 //! is where that is relaxed, on purpose (`jobs_invariance.rs`'s stance).
@@ -503,6 +511,16 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 /// `configuration.md` § 2.2); `alt-cap-core.ein` is where it changes a core.
 const CORE_FLAG: &str = "record-alternative-justifications";
 
+/// The programs on which [`CORE_FLAG`] moves `refuted by` beside a core that
+/// did not move, each a register row's witness, `open` and owned by F22:
+/// `W36/alt-flag-refuted-by` (M1f S1f.5.15, Q-M1f.5 (a)). Each is compared
+/// less the `refuted by` row and `region.refuted_by` under that flag, and
+/// nothing else; an entry leaves with its row's fix.
+const REFUTED_BY_OPEN: [(&str, &str); 1] = [(
+    "W36/alt-flag-refuted-by",
+    "examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein",
+)];
+
 /// The rows that name a dead node's core: the read-out's `unsat core` and
 /// `source`, and since M1e2 S1e2.2.23 its `core search` row, which says the
 /// core's search was cut: off, each fact's first derivation is all the search
@@ -729,7 +747,8 @@ fn no_config_flag_moves_a_line_of_any_mode() {
                 if want != got {
                     exempt.insert(rel.clone());
                 }
-                let moved = core_moved(want, got);
+                // W36's program: `refuted by` too, until F22 (Q-M1f.5 (a)).
+                let moved = core_moved(want, got) || REFUTED_BY_OPEN.iter().any(|(_, w)| *w == rel);
                 (without_core(want, moved), without_core(got, moved))
             } else {
                 (want.clone(), got.clone())
@@ -759,6 +778,63 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     );
     // 180 on 2026-11-01, of 255 files: 12 partial, 63 with no read-out.
     assert!(known.len() >= 180, "{} programs compared", known.len());
+}
+
+/// **W36 is exempt from `refuted by` until F22 fixes it** (M1f S1f.5.15, the
+/// user's ruling of 2026-11-08 on Q-M1f.5 (a)).
+///
+/// Each [`REFUTED_BY_OPEN`] entry is a register row that is `open`, owned by
+/// F22, whose witness is the program named; and on that program
+/// [`CORE_FLAG`] still moves the `refuted by` row beside a core that did not
+/// move, on some question, and nothing else. The day it stops, the row is
+/// fixed and the entry goes with it.
+#[test]
+fn w36_is_exempt_from_refuted_by_until_f22() {
+    let reg = register();
+    for (id, witness) in REFUTED_BY_OPEN {
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.id == id)
+            .unwrap_or_else(|| panic!("{id}: not a register row"));
+        assert_eq!(
+            (
+                row.status.as_str(),
+                row.owner.as_str(),
+                row.witness.as_str()
+            ),
+            ("open", "F22", witness),
+            "{id}: the exemption is an open row of F22's, on its witness"
+        );
+        let path = repo_root().join(witness);
+        let Reach::Known(k) = reach(&path) else {
+            panic!("{witness}: R is not known");
+        };
+        let flipped_text = format!("{}{}", k.text, flipped(&k.resolved, CORE_FLAG));
+        let mut moved = 0usize;
+        for (flags, mode) in &k.questions {
+            let want = printed(&k.path, &k.text, flags, *mode);
+            let got = printed(&k.path, &flipped_text, flags, *mode);
+            let at = flags.join(" ");
+            assert!(
+                !core_moved(&want, &got),
+                "{witness} {at}: the core moved, which the flag's own exemption covers"
+            );
+            assert_eq!(
+                without_core(&want, true),
+                without_core(&got, true),
+                "{witness} {at}: :{CORE_FLAG} moved more than `refuted by`"
+            );
+            if want != got {
+                moved += 1;
+            }
+        }
+        assert!(
+            moved >= 1,
+            "{witness}: :{CORE_FLAG} no longer moves `refuted by` — {id} is fixed: flip \
+             the row and take its entry out of REFUTED_BY_OPEN"
+        );
+    }
 }
 
 /// **The core exemption is one flag and the core rows** (M1e2 S1e2.2.11, the

@@ -79,7 +79,12 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// [`Now::queries`]), what the refusal replaces, W29's
 /// (`W29/core-two-ways`'s core, a bare `_` in a rule; `W29/goal-arg`'s and
 /// `W32/kwpair-in-goal`'s query); a refused `now` records none of them.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/13";
+/// `/14` since M1f S1f.5.15 (2026-11-08): a `now` records the rules root's
+/// `refuted by` names ([`Now::refuted_by`], the summary's `region.refuted_by`)
+/// where `right` states them ([`Right::refuted_by`]), W36's: under
+/// `:record-alternative-justifications false` the row names other rules
+/// beside the same core, which the config principle does not exempt.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/14";
 
 /// What a claim's check came to, as the summary spells it (schema /12):
 /// `none` where the program states no such claim.
@@ -418,6 +423,12 @@ pub struct Now {
     /// exactly where [`Right::queries`] is stated.
     #[serde(default)]
     pub queries: Option<Vec<QueryAnswer>>,
+    /// The rules root's `refuted by` row names, in the order it prints them —
+    /// the summary's `region.refuted_by` (schema /14, M1f S1f.5.15, W36),
+    /// empty where the summary states none. Recorded exactly where
+    /// [`Right::refuted_by`] is stated.
+    #[serde(default)]
+    pub refuted_by: Option<Vec<String>>,
 }
 
 /// One query's answer — schema `/12` (M1e2 S1e2.3.8, W28): how many
@@ -552,6 +563,15 @@ impl Now {
             if Some(&want) != self.core.as_ref() {
                 out.push(format!("core: right {want:?}, now {:?}", self.core));
             }
+        }
+        // The rules `refuted by` names (schema /14, M1f S1f.5.15, W36).
+        if let Some(w) = &right.refuted_by
+            && Some(w) != self.refuted_by.as_ref()
+        {
+            out.push(format!(
+                "refuted by: right {w:?}, now {:?}",
+                self.refuted_by
+            ));
         }
         // The core's status (schema /9, M1e2 S1e2.2.23, W23).
         if let Some(s) = &right.core_status
@@ -718,6 +738,10 @@ pub struct Answer {
     /// `/12` (W28's `wrong`). A record.
     #[serde(default)]
     pub queries: Option<Vec<QueryAnswer>>,
+    /// The rules root's `refuted by` names, as [`Now::refuted_by`] — schema
+    /// `/14` (M1f S1f.5.15, W36's `wrong`). A record.
+    #[serde(default)]
+    pub refuted_by: Option<Vec<String>>,
 }
 
 /// The witness's `R` — M1e2 S1e2.1a.10. What `ein solve` describes, in its
@@ -810,6 +834,10 @@ pub struct Right {
     /// with [`Now::queries`].
     #[serde(default)]
     pub queries: Option<Vec<QueryAnswer>>,
+    /// The rules root's `refuted by` should name, in order — schema `/14`
+    /// (M1f S1f.5.15, W36). Compared with [`Now::refuted_by`].
+    #[serde(default)]
+    pub refuted_by: Option<Vec<String>>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -926,6 +954,18 @@ impl Register {
                     )));
                 }
             }
+            // The rules `refuted by` names (schema /14, M1f S1f.5.15).
+            if r.now.refuted_by.is_some() != r.right.refuted_by.is_some() {
+                out.push(at(
+                    "[now] records what `refuted by` names exactly when [right] states it"
+                        .to_string(),
+                ));
+            }
+            if r.right.refuted_by.is_some() && r.right.core.is_none() {
+                out.push(at(
+                    "[right] states what `refuted by` names beside its core".to_string()
+                ));
+            }
             // The members met and not listed (schema /11, M1e2 S1e2.2.26).
             if r.now.others.is_some() != r.right.others.is_some() {
                 out.push(at(
@@ -943,6 +983,7 @@ impl Register {
                     || !r.now.models.is_empty()
                     || !r.now.relations.is_empty()
                     || r.now.core.is_some()
+                    || r.now.refuted_by.is_some()
                     || r.now.claim.is_some()
                     || r.now.queries.is_some())
             {
@@ -1552,6 +1593,7 @@ mod tests {
             others: None,
             claim: None,
             queries: None,
+            refuted_by: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
@@ -1888,6 +1930,56 @@ mod tests {
         );
         r.now.core = None;
         assert!(defects(&r).is_empty(), "{:?}", defects(&r));
+    }
+
+    /// **What `refuted by` names is an answer**, schema /14 (M1f S1f.5.15,
+    /// W36): the rules root's row names, recorded exactly where `right`
+    /// states them and compared in the order printed. W36's `now` names
+    /// `forced, occupied` beside the core whose right names `no-room`, so it
+    /// is open by the method; the same `now` naming `no-room` answers it.
+    #[test]
+    fn what_refuted_by_names_is_an_answer() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.right.refuted_by.is_some())
+            .expect("W36 states what refuted by names")
+            .clone();
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        let differs = row.now.against(&row.right);
+        assert!(
+            differs.len() == 1 && differs[0].starts_with("refuted by: "),
+            "{differs:?}"
+        );
+        let mut r = row.clone();
+        r.now.refuted_by = r.right.refuted_by.clone();
+        assert!(r.now.against(&r.right).is_empty());
+        // The order is the read-out's, so a permutation is another answer.
+        if let Some(v) = r.now.refuted_by.as_mut() {
+            v.push("another".to_string());
+            v.reverse();
+        }
+        assert!(!r.now.against(&r.right).is_empty());
+        // Recorded exactly where `right` states it, and beside a core.
+        let mut r = row.clone();
+        r.right.refuted_by = None;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("[now] records what `refuted by` names"))
+        );
+        let mut r = row;
+        r.right.core = None;
+        r.now.core = None;
+        assert!(defects(&r).iter().any(|d| d.contains("beside its core")));
     }
 
     #[test]

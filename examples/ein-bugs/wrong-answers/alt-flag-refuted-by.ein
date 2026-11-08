@@ -1,0 +1,107 @@
+;;; **W36 (`W36/alt-flag-refuted-by`): the alternatives flag moves `refuted by`
+;;; beside an unmoved core.**
+;;;
+;;; M1f S1f.5.15. Its T1 (2026-11-08) took every rule's priority out of the
+;;; corpus and found `examples/features/12_expect_false.ein`, so written,
+;;; printing a different `refuted by` under `:record-alternative-justifications
+;;; false` than without it, beside the same five-fact core. The user ruled
+;;; Q-M1f.5 (a) the same day, *"Register row W36"*: an `open` row, owned by F22,
+;;; this file its witness, and `lever_invariance` exempting it until F22 fixes
+;;; it. This is `features/12` with its four priorities taken out
+;;; (`ein_corpus::mutants::without_priority`), a `:why` on `instance`, and the
+;;; flag set off in the file, so `ein solve` shows the wrong answer.
+;;;
+;;; ── The shape ──────────────────────────────────────────────────────────────
+;;;
+;;; Three pigeons, two holes, P1 in H1 and P2 not. Root is dead two ways:
+;;; `occupied` and `forced` place P2 in H2 and exclude P3 from both holes, so
+;;; `no-room` concludes (false); and `forced`, reading the same exclusions,
+;;; places P3 where `occupied` says it is not, a pair contradiction. Both arms
+;;; store the same facts, each with the same first justification (`ein
+;;; saturate --dump`). What differs is the contradiction the core search takes
+;;; the core over: (false), `no-room`'s, with every derivation recorded, and
+;;; the pair, (in P3 …) by `forced` against (not (in P3 …)) by `occupied`,
+;;; with the flag off. The core is the same five facts either way, (in P1 H1)
+;;; (not (in P2 H1)) (instance P2 Pigeon) (instance P3 Pigeon) (instance H2
+;;; Hole).
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   ein solve FILE, at 62f3f8bc (2026-11-08), release:
+;;;     as written, the flag off      unsat core the five facts · refuted by forced, occupied
+;;;     the config line taken out     unsat core the five facts · refuted by no-room
+;;;
+;;; R is empty and exhausted either way, and `(solve :expect (false))` holds.
+;;;
+;;; ── Why it is wrong ────────────────────────────────────────────────────────
+;;;
+;;; No config option may change the answer (the user's ruling of 2026-10-15,
+;;; `configuration.md` § 2.5). The flag's one exemption is the core (M1e2
+;;; S1e2.2.11, Q-M1e2.11 (ii)), and `refuted by` may follow it only where the
+;;; core moved (S1e2.3.10, Q-M1e2.21 (a), argued from *"where the core is the
+;;; same the primaries are a derivation from it"*). Here the core is the same
+;;; and one core derives the contradiction through two rules: the flag decides
+;;; which the store keeps. The right answer is the default's, `refuted by
+;;; no-room`. F22 re-derives what the store does not keep when the search
+;;; reaches it, which makes `refuted by` a function of the core.
+;;;
+;;; Written with its priorities, as `features/12` is, both arms print `refuted
+;;; by no-room` (`ein solve`, with the config line and without, 2026-11-08):
+;;; the typed order is what kept the corpus from showing this, and the program
+;;; written without it is one anyone can write.
+
+(relation instance Thing Type :why "{1} is a {2}")
+(relation in       Pigeon Hole :why "{1} is in {2}")
+
+(instance P1 Pigeon) (instance P2 Pigeon) (instance P3 Pigeon)
+(instance H1 Hole)   (instance H2 Hole)
+
+(import std.macro :symbols (forall))
+
+;; A hole with an occupant admits no other pigeon.
+(rule occupied (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?b Pigeon) (neq ?b ?a))
+  :assert (not (?R ?b ?h))
+  :why    "{?h} is taken by {?a}, so not by {?b}")
+
+;; A pigeon in one hole is in no other.
+(rule elsewhere (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?h_other Hole) (neq ?h_other ?h))
+  :assert (not (?R ?a ?h_other))
+  :why    "{?a} is in {?h}, so not in {?h_other}")
+
+;; Survivor forcing: every hole but one excluded for a pigeon ⟹ it is in that
+;; one.
+(rule forced (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (?isa ?h Hole)
+               (forall ?h_other
+                 (and (?isa ?h_other Hole) (neq ?h_other ?h))
+                 (not (?R ?a ?h_other))))
+  :assert (?R ?a ?h)
+  :why    "every hole but {?h} is excluded for {?a}")
+
+;; …and a pigeon with every hole excluded has nowhere to go.
+(rule no-room (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (forall ?h (?isa ?h Hole) (not (?R ?a ?h))))
+  :assert (false)
+  :why    "{?a} has every hole excluded")
+
+(occupied  in instance)
+(elsewhere in instance)
+(forced    in instance)
+(no-room   in instance)
+
+(in P1 H1)
+(not (in P2 H1))
+
+(solve
+  :no-hypothesis (in instance)
+  :expect (false))
+
+(query
+  :goal   (in ?who ?hole))
+
+;; The flag the row is about: off, a fact keeps its first derivation alone.
+(config :record-alternative-justifications false)

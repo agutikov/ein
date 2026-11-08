@@ -114,8 +114,9 @@ clap        = { version = "4", default-features = false, features = ["std", "hel
 # published crate, apart from the licence files the crate does not ship,
 # which are grmtools' at the commit it was published from. Through
 # `[patch.crates-io]`, so the parser `ein-ir`'s `build.rs` generates and any
-# grammar loaded at run time both get it. Sending the patch upstream is the
-# user's call; if a grmtools release carries it, this copy goes.
+# grammar loaded at run time both get it. The patch stays here and is not
+# sent upstream (the user's ruling of 2026-11-08, "don't send the lrpar patch
+# upstream either"); nothing but a change to `ein.patch` edits the copy.
 [patch.crates-io]
 lrpar = { path = "vendor/lrpar" }
 

@@ -137,4 +137,6 @@ before it is fixed.
 
 **Ruled 2026-11-08, (a).** The user chose *"Register row W36"*: `open`, owned by F22, its witness
 `features/12` without `:priority` under `examples/ein-bugs/wrong-answers/`, and `lever_invariance` exempting that
-program until F22 fixes it. S1f.5.15 files it before the removal.
+program until F22 fixes it. S1f.5.15 files it before the removal: filed the same day by T1f.5.15.7 as
+`W36/alt-flag-refuted-by`, the witness `examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein` with the flag set
+in the file, under the register's schema `/14`.

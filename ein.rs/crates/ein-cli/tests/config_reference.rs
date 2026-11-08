@@ -678,10 +678,23 @@ fn require_why_decides_loading_only() {
         ("solve", "tests/stdlib/slots/01_partition.ein"),
         ("test", "tests/stdlib/slots/01_partition.ein"),
     ] {
-        let without = run(&[command, file]);
+        // `ein test`'s summary line ends in its wall clock, `(0.01 s)`, which
+        // is no part of the answer: taken out of both sides.
+        let untimed = |(code, out, err): (Option<i32>, String, String)| {
+            let out: String = out
+                .lines()
+                .map(|l| match l.rfind("  (") {
+                    Some(i) if l.ends_with(" s)") => &l[..i],
+                    _ => l,
+                })
+                .collect::<Vec<_>>()
+                .join("\n");
+            (code, out, err)
+        };
+        let without = untimed(run(&[command, file]));
         assert_eq!(without.0, Some(0), "{command} {file}: {}", without.2);
         assert_eq!(
-            run(&[command, "--require-why", file]),
+            untimed(run(&[command, "--require-why", file])),
             without,
             "{command} {file}: --require-why moved what a program it loads answers"
         );
