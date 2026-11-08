@@ -11872,11 +11872,11 @@ a683663a0a6e9898        7L  examples/syntax/wrappers.ein::hyp
 1f391579fecc8e56        1L  examples/syntax/wrappers.ein::naf
 6bb1bf061f810f9f        7L  examples/syntax/wrappers.ein::explain
 6bb1bf061f810f9f        7L  examples/syntax/wrappers.ein::explain-noalts
-1fb69d16525ddee1        5L  examples/syntax/wrappers.ein::ir[parse]
-aa581ac6507e42a0        3L  examples/syntax/wrappers.ein::ir[dump-compact]
-1fb69d16525ddee1        5L  examples/syntax/wrappers.ein::ir[resolve]
-1fb69d16525ddee1        5L  examples/syntax/wrappers.ein::ir[minimize]
-1fb69d16525ddee1        5L  examples/syntax/wrappers.ein::ir[expand]
+db5cf060316b4b33        5L  examples/syntax/wrappers.ein::ir[parse]
+c7b7d867aca780c5        3L  examples/syntax/wrappers.ein::ir[dump-compact]
+db5cf060316b4b33        5L  examples/syntax/wrappers.ein::ir[resolve]
+db5cf060316b4b33        5L  examples/syntax/wrappers.ein::ir[minimize]
+db5cf060316b4b33        5L  examples/syntax/wrappers.ein::ir[expand]
 28036eda9ef16dac       18L  examples/syntax/wrappers.ein::dot[ir]
 38932d228245afb5       24L  examples/syntax/wrappers.ein::dot[ir-levi]
 28036eda9ef16dac       18L  examples/syntax/wrappers.ein::dot[ir-overlay]

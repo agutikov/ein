@@ -69,6 +69,9 @@ and the generated build answers byte for byte as the name-rule build wherever th
 No engine code, test, golden, fixture or register row moved. **The user ruled the stop the same day**
 ([§ The review stop ruled](#the-review-stop-ruled-2026-11-08)): `arg-kinds` scoped, the engine's five names
 reserved (T11), the `.einb` budget restated in T4, and the rest as recommended. T10, T11 and then T4 run next.
+**T10 done on 2026-11-08** ([§ T10 record](#t10-record-2026-11-08)): W37 filed, `open` and S1f.5.4's (item 7), and
+of the three fixture candidates `syntax/wrappers` moved, the other two refused at the parse by today's parser and
+so T4's; item 8, the scripts' `:priority`, landed as S1f.5.15's T1f.5.15.9.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1110,6 +1113,43 @@ fixture's group is its directory and each belongs under `examples/broken/` only 
 `arg-kinds`, `is-a-shapes` and `negation`, whose rewrite moves a stored fact or does not parse today; and
 `kwpair-below-the-filter`, which loads today. It edits no parser. If nothing passes the test, this task is empty
 and says so.
+
+### T10 record, 2026-11-08
+
+Two commits, before the swap and before T11.
+
+**W37 filed** (`b7561e93`), item 7 of the stop: `W37/template-var-star`, `open` and owned by S1f.5.4, its witness
+`examples/ein-bugs/wrong-answers/template-var-star.ein`, a corpus entry. A `:goal-text` that names `{?n*}` prints as
+written, *“{?n\*} is a q”*, where *“a is a q”* is right, and the rule's `:why` likewise on `--trace`, as the
+stdlib's three `{?isR*}` templates do today. The register's schema `/15` records what a query's `:goal-text`
+prints (`goal_text`, read off the read-out, which the summary does not carry). T9's generated build parses the
+witness and answers the same, so the swap does not move the row; S1f.5.4's
+[T1f.5.4.5](s1f.5.4_digits_are_names.md#task-t1f545--a-template-names-every-variable-w37) fixes it after the swap.
+The register reads **103 rows fixed, 36 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+uniq -c`, 2026-11-08). Item 8 landed between the two, as S1f.5.15's
+([its T9 record](s1f.5.15_rule_priority.md#t9-record-2026-11-08), `4c272aae`).
+
+**The fixture moves that move no answer** (this record's commit). Each of the three candidates was put through the test, today's
+binary (`a50cf081`'s engine) on the fixture as written and on Q-M1f.2 (a)'s rewrite
+([`s1f.5.5_parser_probe/programs/`](s1f.5.5_parser_probe/programs/)), every declared run, `ein saturate --dump`
+and `ein solve -H --json-summary --dump-answer` (`build/s1f.5.5/t10/wrappers/`, 2026-11-08):
+
+| candidate | the rewrite | today's binary on it | lands |
+|---|---|---|---|
+| `broken/load/derivation_cycle` | `:using ((r c d))` | refused **at the parse**, `7:24: unexpected input`, exit 1, where the fixture is refused at load with *derivation cycle: (r a b) -> (r c d) -> (r a b)*, its `.expected` | T4 |
+| `syntax/unary-and-nary` | `:using ((u a))` | refused **at the parse**, `12:32: unexpected input`, exit 1, where the fixture saturates, exit 0 | T4 |
+| `syntax/wrappers` | the inner facts' pairs gone | `render rules` exit 1 (*no rule forms*) and `saturate`, `saturate --dump` and `solve` exit 0, as written; the same three stored facts, R {∅} (k_s 1, k_c 1), N 0, H 0, the summary and the state file's state the same but for the file's name | **here** |
+
+Step 2's evidence said both parsers refuse `derivation_cycle`'s rewrite with today's line; T9 found today's parser
+refuses `:using ((…))` at the parse, so the line is the generated build's alone, and the attribution's three test
+rows that name T10's rewrite of it (`cli_semantics`' two, `render_doors`') are T4's. **One fixture moves:**
+`syntax/wrappers.ein` loses `:source "(1)"` and `:rule sym :using (x)` from its inner facts, which today's loader
+dropped, its header saying so; the rest of the program and its node-kind shapes stay. **The goldens it moves, named
+before the bless:** `corpus_shapes.md5` (its parse-view digests, the pairs no longer drawn) and
+`generated_parser_corpus.txt` (`wrappers` from *the hand-written parser accepts, the generated one refuses* to *both
+accept, same tree*). `corpus_exits.txt` does not move (its two cells keep their exit codes). With it the swap
+carries one file fewer: `wrappers`' row of the attribution (S1f.5.11's) and its name in
+`every_positive_entry_answers_under_at_least_one_run`'s row.
 
 ### Task T1f.5.5.4 — the swap
 

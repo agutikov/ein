@@ -142,7 +142,9 @@ fact for a pair.
   - [`examples/syntax/wrappers.ein`](../../../examples/syntax/wrappers.ein): `(facts (r a b :source "(1)"))`
     and `(reasoning (r b c :rule sym :using (x)))`. It is a syntax fixture for the wrapper heads, whose inner
     pairs were never read. **Default:** the pairs go, the fixture keeps its wrapper shapes, and its digests
-    move.
+    move. *Landed 2026-11-08, ahead of the swap, by S1f.5.5's
+    [T1f.5.5.10](s1f.5.5_the_grammar.md#t10-record-2026-11-08): the same stored facts, R, N and exit codes on
+    today's binary; its five parse-view digests moved.*
   - [`examples/ein-bugs/kwpair-below-the-filter.ein`](../../../examples/ein-bugs/kwpair-below-the-filter.ein)
     and its fuzz find, `corpus/fuzz_findings/kwpair-below-the-filter.ein`: `(tracex (step s1 :rule … :using …
     :derives …) …)`. It was banked for a render crash, *not a value node: KwPair*, which
