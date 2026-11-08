@@ -16,6 +16,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
 | [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **ruled 2026-11-08, (b)**: never bound; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 |
+| [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) | the parser's remaining cost: within grmtools, or past it? | **defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -265,3 +266,30 @@ name: a declared relation, a rule's, an hrule's or a macro's name, and an import
 name is used, as a relation or as a value, so `(imply1 functional __closed__)`, its comment, its API row and
 `algebra_semantics`' test stay as they are. The three writeback names are refused wherever a program writes
 them. T11 builds it.
+
+### Q-M1f.8 — The parser's remaining cost: within grmtools, or past it?
+
+**Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12
+([§ T12 record](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t12-record-2026-11-09)), which recovered what it
+could of the swap's cost inside grmtools: one rule for whitespace and comments and a start condition in `ein.l`,
+and a lexer per thread in `grammar.rs`, which halve the lexing and move no token. What remains of the cost is the
+shape of lrlex itself: it runs the regex of every rule its start condition allows at every position (55 rules
+where a token starts), and it compiles every rule's regex once a process. Recovering more needs one of two things
+the user's rulings rule out today, so the brief would have stopped here:
+
+- **(a) Within grmtools**, as T12 leaves it: the lexer generated from `ein.l` by lrlex as published, `lrpar`
+  patched only for F11.
+- **(b) A second vendored patch, to `lrlex`**: its loop tries only the rules whose regex can start with the byte
+  at the cursor, each rule's first bytes read off its DFA when the lexer is built. Measured by a probe of that loop
+  over T4's rules, the 414 corpus files lex in 11.1 ms a pass, against lrlex's 108.3 ms on T4's `ein.l` and
+  57.1 ms on T12's, the tokens the same on every file (`lexbench dispatch`, pinned to one P-core, 2026-11-09); it
+  recovers lexing, not the 55 regexes a process compiles.
+- **(c) A hand-written lexer feeding `lrpar`**, which the user's *"if speed will ever become an issue - will add
+  super-optimized hand-written parser"* (2026-11-07) anticipated for the whole parser. The old hand-written parser
+  is the measure of what it buys: `saturate` of `01_copiers.ein` 1.86 ms against T12's 4.77, of `zebra.ein` 4.67
+  against 9.02 (pinned to one P-core, 50 runs each, 2026-11-09).
+
+**Defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close.** The user,
+2026-11-09: *"just continue with default decisions till the end of the phase"*. So (a) stands, and (b) and (c)
+are parked for the phase's close with the numbers above ([§ T12 record, Parked for the phase
+close](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#parked-for-the-phase-close)).

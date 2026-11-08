@@ -8,6 +8,7 @@
 //! | a macro carries its `:why` (the user, 2026-11-08) | [`a_macro_carries_its_why`] |
 //! | no name the loader makes up is a name a program can write (T1f.5.5.8) | [`no_name_the_loader_makes_up_is_a_name`] |
 //! | a program at the nesting limit parses and goes through the dumper, macro expansion and the loader on a test thread; one past it is refused with a line (F10) | [`the_nesting_limit`] |
+//! | `ein.l`'s one skip rule and its start condition give the parser the tokens T4's `ein.l` did (T1f.5.5.12) | [`the_lexer_gives_the_tokens_t4s_did`] |
 //!
 //! Until the swap this file also held the generated parser to the
 //! hand-written one, tree for tree on every corpus file both accepted, and
@@ -373,4 +374,318 @@ fn relative(p: &Path) -> String {
         .unwrap_or(p)
         .to_string_lossy()
         .into_owned()
+}
+
+/// `ein.l`'s skip rule as it ships, and the three rules it replaced at
+/// T1f.5.5.12, each as `ein.l` writes it, without a start condition.
+const SKIP_RULE: &str =
+    r"<INITIAL,AFTER_WORD>([\s\x1c-\x1f]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;";
+const THREE_SKIP_RULES: &str = "[\\s\\x1c-\\x1f]+ ;\n;[^\\n]* ;\n#\\|([^|]|\\|+[^|#])*\\|+# ;";
+
+type LexerDef = lrlex::LRNonStreamingLexerDef<lrlex::DefaultLexerTypes<u32>>;
+
+/// `ein.l` as T1f.5.5.4 shipped it, from `ein.l` as it ships: the skip rule
+/// split back into the three it replaced, and the start condition
+/// `AFTER_WORD` taken out, its declaration, the states a rule is tried in and
+/// the state a rule enters.
+fn as_t4_wrote_it(shipped: &str) -> String {
+    let (mut out, mut entered, mut tried) = (Vec::new(), 0, 0);
+    for line in shipped.lines() {
+        if line == "%x AFTER_WORD" {
+            continue;
+        }
+        if line == SKIP_RULE {
+            out.push(THREE_SKIP_RULES.to_string());
+            continue;
+        }
+        let mut line = line.to_string();
+        if let Some(rest) = line.strip_prefix("<INITIAL,AFTER_WORD>") {
+            line = rest.to_string();
+            tried += 1;
+        }
+        for target in [" <AFTER_WORD>\"", " <INITIAL>\""] {
+            if line.contains(target) {
+                line = line.replacen(target, " \"", 1);
+                entered += 1;
+            }
+        }
+        out.push(line);
+    }
+    assert_eq!(tried, 2, "the parens are not tried after a word");
+    assert!(entered > 50, "only {entered} rules enter a state");
+    out.join("\n")
+}
+
+/// A token stream as the parser receives it, by rule name: each token's kind
+/// and span, and each lexing error's position.
+fn tokens(def: &LexerDef, text: &str) -> Vec<(String, usize, usize)> {
+    use lrlex::LexerDef as _;
+    use lrpar::{LexError as _, Lexeme as _, Lexer as _};
+    def.lexer(text)
+        .iter()
+        .map(|t| match t {
+            Ok(l) => {
+                let rule = def
+                    .iter_rules()
+                    .find(|r| r.tok_id() == Some(l.tok_id()))
+                    .and_then(|r| r.name())
+                    .unwrap_or("?");
+                (rule.to_string(), l.span().start(), l.span().len())
+            }
+            Err(e) => ("a lexing error".to_string(), e.span().start(), 0),
+        })
+        .collect()
+}
+
+/// **The lexer gives the parser the tokens T4's did** (T1f.5.5.12).
+///
+/// lrlex runs the regex of every rule the current start condition allows at
+/// every position, and T1f.5.5.12 cut what it runs twice in `ein.l`: whitespace,
+/// `;` comments and `#| … |#` comments are one rule where they were three, so
+/// a run of them is one position; and after any token but a paren, the
+/// exclusive state `AFTER_WORD` tries only `(`, `)` and that rule, the only
+/// three that can match there. The tokens the parser receives must not move.
+/// Each input is lexed by `ein.l` as it ships and by `ein.l` as T4 wrote it
+/// ([`as_t4_wrote_it`]), both read at run time through `lrlex` (`build.rs`
+/// compiles the same text with the same flags), and the two streams are
+/// compared, kind and span, lexing errors included: every `.ein` under
+/// `examples/`, `stdlib/`, `tests/`, `corpus/` and `plans/` (the fuzzer's
+/// seed files among them), 500 seeded mutants of the corpus, edge cases
+/// around the rules and the separators, and 20 000 seeded strings over the
+/// characters they read.
+#[test]
+fn the_lexer_gives_the_tokens_t4s_did() {
+    use lrlex::LexerDef as _;
+    let shipped = include_str!("../src/ein.l");
+    assert_eq!(
+        shipped.lines().filter(|l| *l == SKIP_RULE).count(),
+        1,
+        "ein.l's skip rule is not the one this test holds"
+    );
+    let now = LexerDef::from_str(shipped).expect("ein.l");
+    let t4 = LexerDef::from_str(&as_t4_wrote_it(shipped)).expect("ein.l as T4 wrote it");
+    assert_eq!(t4.iter_rules().count(), now.iter_rules().count() + 2);
+    assert_eq!(now.iter_start_states().count(), 2);
+    assert_eq!(t4.iter_start_states().count(), 1);
+
+    let mut inputs: Vec<(String, String)> = Vec::new();
+    let root = repo_root();
+    for dir in ["examples", "stdlib", "tests", "corpus", "plans"] {
+        for p in ein_corpus::ein_files_under(&root.join(dir)) {
+            let text = std::fs::read_to_string(&p).expect("readable");
+            inputs.push((relative(&p), text));
+        }
+    }
+    let files = inputs.len();
+    let sources = ein_corpus::mutants::sources();
+    for (i, (which, text)) in ein_corpus::mutants::mutants(&sources, 500, 0)
+        .into_iter()
+        .enumerate()
+    {
+        inputs.push((
+            format!("mutant {i} of {}", relative(&sources[which].0)),
+            text,
+        ));
+    }
+    const EDGES: &[&str] = &[
+        "",
+        ";",
+        ";\n",
+        ";;;",
+        "; é ☃ \u{a0}\n(p a)",
+        ";\r\n(p a)",
+        ";\x1c(p a)\n(q b)",
+        "(p a);",
+        "(p a) ; c\n(q b)",
+        "(p a);c\n;d\n   ;e\n(q b)",
+        "#|",
+        "#||#",
+        "#|||#",
+        "#| a | b |#",
+        "#| |# |#",
+        "#| #| |# |#",
+        "#|\n|#",
+        "#|é☃|#",
+        "#",
+        "#a",
+        "a#|b|#c",
+        "#|#",
+        "|#",
+        "##|x|#",
+        "#|x|",
+        "#|x||",
+        "#|x|#|#",
+        "#|;|#;#||#",
+        "\u{a0}(p a)\u{2028}",
+        "\u{3000}\u{85}(p a)",
+        "\x1c\x1d\x1e\x1f(p a)",
+        "\x0b\x0c\r(p a)",
+        "(p\u{a0}a)",
+        "(p\u{200b}a)",
+        "(p\u{feff}a)",
+        "(p \"a ; b\")",
+        "(p \"#|\")",
+        "(p \"|#\")",
+        "(p :why \"\\u{1F600}\")",
+        "(p :why \"\\u{110000}\")",
+        "(p :why \"\\u{}\")",
+        "(p :why \"é\")",
+        "(p :why \"a\\\"b\")",
+        "(p :why \"a\\\\\")",
+        "(p :why \"\\q\")",
+        "(p :why \"x\"y)",
+        "(p :why \"x\";c\n)",
+        "(p :why \"abc",
+        "(p :why \"a\nb\")",
+        "(p :why \"a\\\nb\")",
+        "\"x\"#|c|#",
+        "\"x\"#c",
+        "(<forced-positive> a)",
+        "(p <forced-positive>x)",
+        "(p <monotonic-unconditional>;c\n)",
+        "(p <lookahead-dies-immediately>#|c|#)",
+        "(p a;b)",
+        "(p a#|b|#)",
+        "(p a#b)",
+        "(p ?x;)",
+        "(p :k#|c|# v)",
+        "(p _)",
+        "(p ?_)",
+        "(p __)",
+        "(p 1..5)",
+        "(p -7)",
+        "(p it's)",
+        "(p a,b)",
+        "(p a\x00b)",
+        "(p a\x7fb)",
+        "(p a);c\n(q b)#|x|#(r c)",
+        "( ; c\n p ; d\n a ; e\n )",
+    ];
+    inputs.extend(EDGES.iter().map(|e| (format!("{e:?}"), e.to_string())));
+    const CHARS: &[char] = &[
+        ' ',
+        '\n',
+        '\t',
+        '\r',
+        '\x0b',
+        '\x0c',
+        '\x1c',
+        '\x1d',
+        '\x1e',
+        '\x1f',
+        '\u{85}',
+        '\u{a0}',
+        '\u{1680}',
+        '\u{2000}',
+        '\u{2028}',
+        '\u{2029}',
+        '\u{3000}',
+        '\u{feff}',
+        '\u{200b}',
+        ';',
+        ';',
+        '#',
+        '#',
+        '|',
+        '|',
+        '"',
+        '"',
+        '\\',
+        '(',
+        ')',
+        'a',
+        'Z',
+        '0',
+        '7',
+        '_',
+        '-',
+        '.',
+        '?',
+        ':',
+        '<',
+        '>',
+        '{',
+        '}',
+        'u',
+        'n',
+        'é',
+        '☃',
+        '\u{1F600}',
+        '\x00',
+        '\x7f',
+        ',',
+    ];
+    const PIECES: &[&str] = &[
+        "#|",
+        "|#",
+        "||",
+        "##",
+        ";;",
+        "\\u{41}",
+        "\\u{110000}",
+        "\\u{}",
+        "\\n",
+        "\\q",
+        "\\\"",
+        "<forced-positive>",
+        "<monotonic-unconditional>",
+        "<lookahead-dies-immediately>",
+        "?_",
+        ":why",
+        "not",
+        "rule",
+        "relation",
+        "1..5",
+        "it's",
+        " ; c\n",
+        "#| c |#",
+        "\"s\"",
+        "\r\n",
+    ];
+    // xorshift64*, as `fuzz_properties` draws its stream.
+    let mut x: u64 = 0x5EED_1A17 | 1;
+    let mut next = move || {
+        x ^= x >> 12;
+        x ^= x << 25;
+        x ^= x >> 27;
+        x.wrapping_mul(0x2545_F491_4F6C_DD1D) as usize
+    };
+    for i in 0..20_000 {
+        let mut text = String::new();
+        for _ in 0..next() % 48 {
+            if next() % 4 == 0 {
+                text.push_str(PIECES[next() % PIECES.len()]);
+            } else {
+                text.push(CHARS[next() % CHARS.len()]);
+            }
+        }
+        inputs.push((format!("string {i}"), text));
+    }
+
+    let (mut moved, mut lexemes, mut errors) = (Vec::new(), 0, 0);
+    for (name, text) in &inputs {
+        let (a, b) = (tokens(&now, text), tokens(&t4, text));
+        lexemes += a.len();
+        errors += a.iter().filter(|t| t.0 == "a lexing error").count();
+        if a != b {
+            let at = a.iter().zip(&b).take_while(|(p, q)| p == q).count();
+            moved.push(format!(
+                "{name}: token {at}: {:?} now, {:?} as T4 wrote it",
+                a.get(at),
+                b.get(at)
+            ));
+        }
+    }
+    assert!(
+        moved.is_empty(),
+        "{} of {} inputs lex otherwise than under T4's ein.l:\n{}",
+        moved.len(),
+        inputs.len(),
+        moved.join("\n")
+    );
+    assert!(files > 500, "only {files} files");
+    assert!(
+        lexemes > 100_000 && errors > 1_000,
+        "{lexemes} tokens, {errors} lexing errors"
+    );
 }

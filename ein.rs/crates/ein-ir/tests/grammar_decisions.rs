@@ -344,40 +344,83 @@ fn a_keyword_is_a_whole_word_in_every_place() {
     ];
     let words: Vec<&str> = LITERALS.iter().copied().chain(CONTROLS).collect();
     assert_eq!(words.len(), 27);
-    let (mut parses, mut split, mut named_dash) = (0usize, Vec::new(), 0usize);
-    for (place, template) in PLACES {
-        for word in &words {
-            for suffix in SUFFIXES {
-                for args in ARGS {
-                    let name = format!("{word}{suffix}");
-                    let src = template.replacen('S', &format!("{name}{args}"), 1);
-                    parses += 1;
-                    let mut ast = Ast::new();
-                    let dump = match parse(&mut ast, &src, None) {
-                        Ok(forms) => forms
-                            .iter()
-                            .map(|&f| ein_ir::dump_compact(&ast, f))
-                            .collect::<Vec<_>>()
-                            .join(" "),
-                        Err(_) => {
-                            continue;
-                        }
-                    };
-                    // Never split; and a trace word in a trace event has no
-                    // reading at all.
-                    if !whole(&dump, &name) {
-                        split.push(format!("{place}: {src} -> {dump}"));
+    // The 540 cells, a place and a word each, on a worker per core
+    // (T1f.5.5.12): most of these parses are refused, and a refusal runs
+    // recovery, whose report this test does not read. The counts and the split
+    // parses are summed in the order one loop over the places and the words
+    // took them, so a failure reads as it did. A cell gives its parses, its
+    // split parses and its `-1` parses read whole.
+    type Cell = (usize, Vec<String>, usize);
+    let one_cell = |place: &str, template: &str, word: &str| -> Cell {
+        let (mut parses, mut split, mut named_dash) = (0usize, Vec::new(), 0usize);
+        for suffix in SUFFIXES {
+            for args in ARGS {
+                let name = format!("{word}{suffix}");
+                let src = template.replacen('S', &format!("{name}{args}"), 1);
+                parses += 1;
+                let mut ast = Ast::new();
+                let dump = match parse(&mut ast, &src, None) {
+                    Ok(forms) => forms
+                        .iter()
+                        .map(|&f| ein_ir::dump_compact(&ast, f))
+                        .collect::<Vec<_>>()
+                        .join(" "),
+                    Err(_) => {
+                        continue;
                     }
-                    assert!(
-                        !(place == "trace-event" && TRACE_WORDS.contains(word)),
-                        "{src} parsed as {dump}: a trace word read whole is no event"
-                    );
-                    if suffix == "-1" && VALUE_WORDS.contains(word) {
-                        named_dash += 1;
-                    }
+                };
+                // Never split; and a trace word in a trace event has no
+                // reading at all.
+                if !whole(&dump, &name) {
+                    split.push(format!("{place}: {src} -> {dump}"));
+                }
+                assert!(
+                    !(place == "trace-event" && TRACE_WORDS.contains(&word)),
+                    "{src} parsed as {dump}: a trace word read whole is no event"
+                );
+                if suffix == "-1" && VALUE_WORDS.contains(&word) {
+                    named_dash += 1;
                 }
             }
         }
+        (parses, split, named_dash)
+    };
+    let cells: Vec<(&str, &str, &str)> = PLACES
+        .iter()
+        .flat_map(|&(place, template)| words.iter().map(move |&word| (place, template, word)))
+        .collect();
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let workers = std::thread::available_parallelism().map_or(4, |n| n.get());
+    let mut done: Vec<(usize, Cell)> = std::thread::scope(|s| {
+        let threads: Vec<_> = (0..workers)
+            .map(|_| {
+                s.spawn(|| {
+                    let mut out = Vec::new();
+                    loop {
+                        let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        let Some(&(place, template, word)) = cells.get(i) else {
+                            return out;
+                        };
+                        out.push((i, one_cell(place, template, word)));
+                    }
+                })
+            })
+            .collect();
+        threads
+            .into_iter()
+            .flat_map(|t| {
+                t.join()
+                    .unwrap_or_else(|panic| std::panic::resume_unwind(panic))
+            })
+            .collect()
+    });
+    done.sort_by_key(|(i, _)| *i);
+    assert_eq!(done.len(), cells.len());
+    let (mut parses, mut split, mut named_dash) = (0usize, Vec::new(), 0usize);
+    for (_, (p, sp, nd)) in done {
+        parses += p;
+        split.extend(sp);
+        named_dash += nd;
     }
     assert_eq!(parses, 53_460);
     assert!(

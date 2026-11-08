@@ -535,7 +535,16 @@ constrained-reasoning research.
   `fixed`, 23 fixed rows restated: 117 fixed, 22 open and 1 not wrong
   (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   A `.einb` opens in under 6 ms since, not one (design/10 § 6 restated, the
-  user's *"Restate the budget"*). T5, T6 and T7 are next.
+  user's *"Restate the budget"*). T12 bought back most of the swap's cost
+  inside grmtools the same day, moving no token: one skip rule and a start
+  condition in `ein.l` and a lexer per thread halve the lexing, so `ein
+  saturate examples/zebra.ein` takes 9.0 ms where T4's took 11.9 and the
+  hand-written parser's 4.7, and the gate 15 min 53 s where T4's took
+  19 min 59 s; a patch to `lrlex` or a hand-written lexer is parked for the
+  close
+  ([Q-M1f.8](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it),
+  [§ T12 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t12-record-2026-11-09)).
+  T5, T6 and T7 are next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

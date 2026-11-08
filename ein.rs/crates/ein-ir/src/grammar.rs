@@ -160,11 +160,26 @@ impl fmt::Display for ParseError {
 
 impl std::error::Error for ParseError {}
 
+type Def = LRNonStreamingLexerDef<DefaultLexerTypes<u32>>;
+
 /// The lexer, built once: its rules are regular expressions, compiled when
-/// it is made.
-fn lexerdef() -> &'static LRNonStreamingLexerDef<DefaultLexerTypes<u32>> {
-    static DEF: OnceLock<LRNonStreamingLexerDef<DefaultLexerTypes<u32>>> = OnceLock::new();
+/// it is made. Read here for its rules; a parse lexes with [`LEXER`].
+fn lexerdef() -> &'static Def {
+    static DEF: OnceLock<Def> = OnceLock::new();
     DEF.get_or_init(ein_l::lexerdef)
+}
+
+thread_local! {
+    /// This thread's copy of [`lexerdef`], which every lex goes through
+    /// (T1f.5.5.12). A clone shares the compiled regular expressions and has
+    /// its own pool of their search caches, and a pool hands its cache out
+    /// cheaply only to the first thread that used it: every other thread
+    /// takes a lock per search, and a fresh cache where the lock is taken.
+    /// lrlex searches with every rule at every position, so a thread lexing
+    /// through another thread's pool lexed 1.8 times slower alone and 3.1
+    /// times slower beside seven others (the T12 record), which is every
+    /// parse of a test thread but the first.
+    static LEXER: Def = lexerdef().clone();
 }
 
 /// Parse `text` into its top-level forms, appending them to `ast`.
@@ -177,8 +192,17 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
         k.parse_call += 1;
         k.parse_bytes += text.len() as u64;
     });
+    LEXER.with(|def| parse_with(def, ast, text, filename))
+}
+
+fn parse_with(
+    def: &Def,
+    ast: &mut Ast,
+    text: &str,
+    filename: Option<&str>,
+) -> Result<Vec<NodeId>, ParseError> {
     let file = filename.unwrap_or("<string>").to_string();
-    let lexer = lexerdef().lexer(text);
+    let lexer = def.lexer(text);
     let lines = b::Lines::new(text);
     if let Some(at) = past_the_nesting_limit(&lexer) {
         let (line, col) = lines.line_col(at);
@@ -217,13 +241,17 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
 /// loader makes up is held not to be one (`ein_core::text::INTERNAL_NAMES`,
 /// T1f.5.5.8).
 pub fn is_one_name(text: &str) -> bool {
-    let lexer = lexerdef().lexer(text);
-    let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
-    let mut tokens = lexer.iter();
-    let (Some(Ok(l)), None) = (tokens.next(), tokens.next()) else {
-        return false;
-    };
-    l.span().start() == 0 && l.span().len() == text.len() && rule_name(l.tok_id()) == Some("NAME")
+    LEXER.with(|def| {
+        let lexer = def.lexer(text);
+        let lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>> = &lexer;
+        let mut tokens = lexer.iter();
+        let (Some(Ok(l)), None) = (tokens.next(), tokens.next()) else {
+            return false;
+        };
+        l.span().start() == 0
+            && l.span().len() == text.len()
+            && rule_name(l.tok_id()) == Some("NAME")
+    })
 }
 
 /// The byte offset of the first `(` that opens one level past

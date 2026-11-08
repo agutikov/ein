@@ -80,7 +80,12 @@ ruled (b), *"Never bound"*, the same day (`feb5e839`), and T11 is done**: a dund
 a name and legal wherever one is used, and the three writeback names are refused wherever a program writes them.
 **T4, the swap, done on 2026-11-09** ([§ T4 record](#t4-record-2026-11-09)): the generated parser is the only one,
 `lex.rs` and `parse.rs` gone, and it moved exactly T9's list, re-taken on the tree it leaves against T9's generated
-build; W29's six rows, W32's seven and W35 are `fixed`, and 23 fixed rows restated. T5, T6 and T7 run next.
+build; W29's six rows, W32's seven and W35 are `fixed`, and 23 fixed rows restated.
+**T12, the swap's cost recovered inside grmtools, done on 2026-11-09** ([§ T12 record](#t12-record-2026-11-09)): one
+skip rule and a start condition in `ein.l` and a lexer per thread halve the lexing and move no token, and the
+gate went from 19 min 59 s to 15 min 53 s; T4's register ids are written and its golden count corrected; what
+lrlex's shape leaves is parked for the phase's close
+([Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it)). T5, T6 and T7 run next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1474,20 +1479,22 @@ cores (`build/s1f.5.5/t4/xcheck/`, 77 s). **505 files answer the same on every c
 of `saturate`'s timing lines, and 137 differ only in their stderr**, the error text above. T9 attributed every
 move from today's parser to its generated build; this commit moves none past it.
 
-**Fourteen goldens move**, T9's eight and six more, each read: `corpus_exits.txt` (80 cells, each a move above,
-the moved fixtures' cells under their new paths and the retired files' gone), `corpus_shapes.md5` (158 files: the
-refused files' views, a refused file keeping its parse row; the moved and retired fixtures; the rewritten and scoped
-ones; S1f.5.4's name rule on `branching/12`, `features/05`, `activator-all-int`, `int-goal-binding`,
-`mixed-type-hypothesis`, `relation-decls`, `stdlib/elim` and `tests/stdlib/elim/01`, `02`; and the
-`ir[resolve]`, `ir[minimize]` and `ir[expand]` views of every program importing `std.macro`, which inline its
-macros' new `:why`), `grammar_decisions.txt`, `fuzz_seeds.txt` (the seeds the grammar refuses, each with its
-report, and the moved fixtures, which are seeds by their directory), `config_coercion.txt`, `load_error_order.txt`
-(its four programs parse errors now, and a fifth the loader reads), the two `branching/12` traces
-(`trace_ambiguous.md`, `trace_one-hypothesis.md`: N and the universe 25 → 51), and beyond T9's list
-`recovery_cut.txt` (the `_`'s note), `help_shape.txt` (`--require-why`'s help), and `golden_dot`'s
+**Twelve goldens move**, T9's eight and four more, each read (*fourteen* and *six* until T1f.5.5.12, which counted
+them: the list below names twelve, and `git show --stat 8c3fe86e` modifies twelve files under `tests/golden/` and
+deletes a thirteenth, `generated_parser_corpus.txt`; the commit body's *fourteen* stands as written, [§ T12
+record](#t12-record-2026-11-09)): `corpus_exits.txt` (80 cells, each a move above, the moved fixtures' cells under
+their new paths and the retired files' gone), `corpus_shapes.md5` (158 files: the refused files' views, a refused
+file keeping its parse row; the moved and retired fixtures; the rewritten and scoped ones; S1f.5.4's name rule on
+`branching/12`, `features/05`, `activator-all-int`, `int-goal-binding`, `mixed-type-hypothesis`, `relation-decls`,
+`stdlib/elim` and `tests/stdlib/elim/01`, `02`; and the `ir[resolve]`, `ir[minimize]` and `ir[expand]` views of
+every program importing `std.macro`, which inline its macros' new `:why`), `grammar_decisions.txt`, `fuzz_seeds.txt`
+(the seeds the grammar refuses, each with its report, and the moved fixtures, which are seeds by their directory),
+`config_coercion.txt`, `load_error_order.txt` (its four programs parse errors now, and a fifth the loader reads),
+the two `branching/12` traces (`trace_ambiguous.md`, `trace_one-hypothesis.md`: N and the universe 25 → 51), and
+beyond T9's list `recovery_cut.txt` (the `_`'s note), `help_shape.txt` (`--require-why`'s help), and `golden_dot`'s
 `ir_render_trace_a.dot` and `ir_render_trace_dag.dot` (the fixture's second step names its step and a given, `:using
-(and s1 c15)`, where it wrote a fact the grammar refuses there). `generated_parser_corpus.txt` is deleted with
-the test that read it. The `.expected` beside the thirty parse-negatives and the four `reserved_open_*` are the new
+(and s1 c15)`, where it wrote a fact the grammar refuses there). `generated_parser_corpus.txt` is deleted with the
+test that read it. The `.expected` beside the thirty parse-negatives and the four `reserved_open_*` are the new
 reports. The bless ran `EIN_BLESS=1 cargo test --workspace --no-fail-fast`: 939 passed, none failed (23 min 19 s,
 2026-11-09).
 
@@ -1504,6 +1511,210 @@ costs more a parse than the hand-written one did (the `.einb` open above).
 paper grammar's default 8 says go at the swap; they stay, moving nothing, for T5 or T7 to delete. A `\u{…}` beyond
 Unicode's range still reads as U+FFFD (`build_ast.rs`' `unescape`), which no file writes; refusing it is S1f.5.2's
 after the swap.
+
+### Task T1f.5.5.12 — the swap's cost, recovered inside grmtools
+
+**Added on 2026-11-09 by the coordinator, after reviewing T4.** The swap moved no answer, and the gate went from
+14 min 14 s on `977829bf` (`build/gate-s1f.5.5-T11.log`) to 19 min 59 s on `8c3fe86e`
+(`build/gate-s1f.5.5-T4.log`). The coordinator measured, on 2026-11-09:
+
+- **Per test binary**, from the `Running …` and `finished in` lines of the two logs: 823 s → 1 164 s summed, the
+  movers `answer_round_trip` 20 → 140 s, `grammar_decisions` 0.2 → 48 s, `answer_dump` 32 → 77 s, `read_out`
+  (one crate's) 2 → 41 s, `jobs_invariance` 105 → 142 s, `id_order_invariance` 112 → 146 s, `explore` 16 → 42 s,
+  `corpus_shapes` 58 → 77 s and `corruption` 2 → 16 s, with `dot_wellformed` down from 139 to 95 s.
+- **Per process**, 50 runs each, the old parser's build (`build/s1f.5.5/t9/base/`) against T4's: `--version` 3.7
+  and 3.8 ms, `saturate` of a one-fact file 4.0 and 7.1 ms, of `tests/stdlib/algebra/01_copiers.ein` 5.0 and
+  11.5 ms, of `examples/zebra.ein` 9.8 and 17.2 ms.
+- **Where it goes** (`perf record -g` over 40 one-fact runs): mostly `regex_automata` and `regex_syntax`, the
+  NFA and DFA compilation with its UTF-8 sequences, and `hybrid::dfa::Lazy::init_cache` and `find_fwd`, as lrlex
+  tries every rule's regex at each position; `LRNonStreamingLexerDef::lexer` itself about 2 %. `grammar.rs`
+  already built the lexer once a process (a `OnceLock`), and the generated `ein.y.rs` its tables.
+
+**The goal**: recover what can be recovered **inside grmtools**, moving nothing a program or a user sees (an
+answer, a golden, an `.expected`, the error text with recovery's repairs, the register), under the user's rulings
+that the parser is generated by grmtools with the vendored, patched `lrpar` (F11) and that nothing goes upstream.
+The levers to measure: lrlex's builder options and `%grmtools` flags; `ein.l`'s regexes rewritten to lex the
+**same language** more cheaply, held by a test over the corpus, the fuzz seeds and edge cases, token for token,
+kind and span; test-side waste the swap may have added; anything else, measured. **Stop**, until the user's
+instruction below, where what remains needs a second vendored patch (to `lrlex`), a hand-written lexer feeding
+`lrpar`, or any other change to a ruling, or where anything a user sees would move.
+
+**The user's instruction of 2026-11-09, relayed by the coordinator mid-task**: *"just continue with default
+decisions till the end of the phase"*. So T12 does not stop: a lever that needs a second patch or a hand-written
+lexer is not built, the alternatives are parked for the phase's close with their measured gain
+([Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it)), and every other
+choice the brief left is taken by default and says so. It still stops if anything a user sees would move.
+
+**Also in this commit, T4's bookkeeping**: `corpus/wrong_answers.toml`'s 28 `[case.fixed]` blocks that carry the
+null id, `0000000`, name `8c3fe86e`; and § T4 record's *fourteen goldens*, which its own list gives as twelve, is
+corrected, the commit body staying as written.
+
+### T12 record, 2026-11-09
+
+**One commit, on `8c3fe86e`.** Three changes inside grmtools and one to a test: `ein.l` skips whitespace and both
+kinds of comment with one rule, and tries only `(`, `)` and that rule after any other token, in an exclusive start
+condition, `AFTER_WORD`; `grammar.rs` lexes through a copy of the lexer per thread; and `grammar_decisions`'
+keyword test runs its 540 cells on a worker per core. **Nothing a program or a user sees moved**: no answer,
+golden, `.expected`, error text or register row (below, *The proof*). The gate went from 19 min 59 s on T4 to
+15 min 53 s, against 14 min 14 s before the swap. Every number here was taken on 2026-11-09, pinned with `utils/bench_env.sh` where it says so
+(`--core 2`, one P-core; `--cores P:8`), and the harness is `build/s1f.5.5/t12/` (`lexbench`, built against this
+tree's `ein-ir`, and `lexbench-t4`, against T4's, exported with `git archive 8c3fe86e` to
+`build/s1f.5.5/t12/base/`; `ptime.py` times a command over fresh processes).
+
+**Where the swap's cost was.** Four things, each measured.
+
+1. **lrlex runs the regex of every rule the start condition allows at every position**
+   (`LRNonStreamingLexerDef::lexer` in `lrlex` 0.15.0's `lexer.rs`), longest match winning. T4's `ein.l` had 57
+   rules and one start condition, so every token and every run of whitespace or comment cost 57 `find` calls,
+   most failing at the first byte at about 16 ns each. Lexing was 2.0 µs a token, 104 of the 127 ms a release
+   parse of the 414 corpus files took (`lexbench lex` and `parse`), and the old hand-written parser's whole parse
+   of `zebra2.ein` was 0.165 ms (§ The measurements).
+2. **A `Regex` hands its search cache cheaply only to the thread that first used it.** Every other thread takes a
+   lock per search, and a fresh cache, built and thrown away, where the lock is contended
+   (`regex_automata::util::pool`'s `get_slow`). `grammar.rs` kept one lexer in a `OnceLock` for the process, and
+   libtest runs each test on a thread of its own, so after the first test thread every parse of a suite took the
+   slow path, 57 times a position. Lexing the 414 files through another thread's lexer took 401 ms against 222 ms
+   through the thread's own, alone; 766 against 244 ms with eight threads at once; 1 611 against 568 ms with 32
+   (`lexbench mt … 2 shared|clone`, release, two passes each, unpinned). The CLI parses on its main thread, the
+   owner, and paid none of it.
+3. **Recovery whose report nobody reads.** `grammar_decisions`' `a_keyword_is_a_whole_word_in_every_place` makes
+   53 460 parses, most of them refused, and takes the `Err` of each as *no reading*: 47.6 s of the suite's 48 s
+   at T4 (`--exact`, the gate's debug build), nearly all in CPCT+'s search (`perf record`, 12 s of it). Recovery
+   is part of what the parser is, so it stays; the work was serial.
+4. **What a process pays.** The lexer's 57 regexes compile once a process, 1.0 ms in release (`lexbench
+   defbuild`, 40 builds), about 10 µs a rule and 23 to 43 µs for the seven that read past ASCII, whose UTF-8
+   compilation allocates a map of 10 000 entries (`regex-automata`'s `Utf8State`); with each regex's first search cache, 2.4 ms on a cold
+   pinned core, against 0.29 ms for the parser's tables and a first parse (`lexbench startup`, 30 processes). The
+   rest is lexing what the run loads, the stdlib's modules among them: the seven are 69 KB and lexed in 6.45 ms
+   at T4.
+
+**The coordinator's pairing**, checked as asked: the `read_out` row paired one crate's binary with the other's.
+`ein-cli`'s `read_out` went 2.10 → 2.28 s and `ein-infer`'s 40.10 → 41.20 s (the two logs, paired by the binary's
+hash); neither moved. The other rows pair as given. `dot_wellformed` is Graphviz's time, 139 → 95 → 108.8 s
+over the three gates, and nothing here touches it.
+
+**The levers.**
+
+| lever | measured | kept |
+|---|---|---|
+| **One skip rule** for whitespace, `;` comments and `#\| … \|#` comments, where there were three: a run of them is one position | lexing the 414 files 104.6 → 80.2 ms (release, `lexbench lex`, unpinned); the tokens the same (below) | **yes** |
+| **`AFTER_WORD`**, an exclusive start condition: after any token but `(` and `)` lrlex tries only those two and the skip rule, the only three that can match there, since every other token runs until `BAD` or `BADTEXT` could not go on | with the skip rule, lexing 109.6 → 58.0 ms, 2.02 → 1.07 µs a token (release, pinned), and 162.0 → 86.5 ms in the gate's dev profile; the stdlib's seven 6.45 → 3.61 ms; the lexer's build 1.02 → 0.89 ms, two regexes fewer | **yes** |
+| **A lexer per thread**: a `thread_local!` clone of the `OnceLock`'s, which shares the compiled regexes and owns its cache pools | a parse of the 414 files on a thread other than the first 220.7 → 75.7 ms a pass; eight threads, three passes each, 1 243 → 235 ms wall (`lexbench-t4` and `lexbench mtparse`, `--core 2` and `--cores P:8`); on the main thread 119.4 → 75.8 ms a pass with the two above (`parse`, `--core 2`) | **yes** |
+| **The keyword test's cells on a worker per core**: each place and word a cell, the results merged in the loop's order, every assertion as it was | 48.05 → 4.36 s for the suite (the gate's lines); 7.1 s with one thread a place, the slowest place bounding it | **yes** |
+| `%grmtools {!unicode}`, the rules that read past ASCII wrapped in `(?u:…)` so they lex the same | the lexer's build 0.758 → 0.723 ms, lexing 80.6 → 79.3 ms: inside the noise | no: nothing to keep, and a flag every later Unicode class must remember |
+| `regex`'s `perf-dfa-full` feature, through cargo's feature unification | lexing 108.0 → 106.8 ms; the lexer's build 1.36 → 2.09 ms | no: a process pays more than a parse saves |
+| `size_limit`, `dfa_size_limit`, `nest_limit` | not built: they bound how large a compiled program or a lazy DFA's cache may grow, and change no search a rule makes | no |
+| the parser tables' `FixedSizeInteger` encoding | not built: the tables and a first parse are 0.29 ms of a process | no |
+
+**What it gave, per process** (`utils/bench_env.sh --core 2 python3 build/s1f.5.5/t12/ptime.py 50 … BIN saturate
+FILE`, 50 fresh processes each; *old* is T9's base, the hand-written parser):
+
+| | old | T4 | T12 |
+|---|---:|---:|---:|
+| `--version` | 1.15 ms | 1.20 ms | 1.13 ms |
+| `saturate` of a one-fact file | 1.28 ms | 2.84 ms | 2.71 ms |
+| `saturate tests/stdlib/algebra/01_copiers.ein` | 1.86 ms | 6.17 ms | 4.77 ms |
+| `saturate examples/zebra.ein` | 4.67 ms | 11.90 ms | 9.02 ms |
+| `saturate examples/zebra2.ein` | 4.33 ms | 11.27 ms | 8.60 ms |
+
+**What it gave, per test binary** (the `finished in` line of each log, paired by the binary's hash with
+`build/s1f.5.5/t12/pair2.py`; every binary that moved by a second or more):
+
+| test binary | T11 (`977829bf`) | T4 (`8c3fe86e`) | T12 |
+|---|---:|---:|---:|
+| `answer_round_trip` | 20.07 s | 139.91 s | 52.19 s |
+| `answer_dump` | 32.35 s | 76.88 s | 56.62 s |
+| `jobs_invariance` | 105.26 s | 142.06 s | 126.99 s |
+| `id_order_invariance` | 111.96 s | 146.40 s | 131.51 s |
+| ein-render's `corpus_shapes` | 57.76 s | 76.75 s | 66.43 s |
+| `explore` | 15.70 s | 41.68 s | 22.67 s |
+| `corruption` | 2.34 s | 16.49 s | 7.43 s |
+| `corpus_cli` | 9.22 s | 14.97 s | 13.82 s |
+| `grammar_decisions` | 0.21 s | 48.05 s | 4.36 s |
+| `summary_properties` | 22.71 s | 29.19 s | 24.43 s |
+| `region_dump` | 2.47 s | 4.36 s | 4.11 s |
+| `line_modes_past_the_limit` | 6.19 s | 8.93 s | 7.66 s |
+| `claim_round_trip` | 7.22 s | 9.09 s | 8.25 s |
+| `roundtrip` | 0.33 s | 2.87 s | 1.10 s |
+| `region_modes` | 0.46 s | 1.54 s | 1.22 s |
+| `region` | 15.48 s | 17.99 s | 16.22 s |
+| `load_semantics` | 0.16 s | 2.41 s | 0.85 s |
+| `kb_semantics` | 0.17 s | 2.39 s | 0.84 s |
+| `interning` | 8.07 s | 9.38 s | 8.55 s |
+| `lever_invariance` | 17.23 s | 19.59 s | 17.64 s |
+| `detector` | 6.49 s | 7.61 s | 6.86 s |
+| `refutation_under_absent` | 0.13 s | 1.25 s | 0.49 s |
+| `compile_limits` | 0.08 s | 1.18 s | 0.42 s |
+| `alive_invariant` | 8.46 s | 9.64 s | 8.74 s |
+| ein-infer's `read_out` | 40.10 s | 41.20 s | 40.35 s |
+| `generated_parser` | 3.66 s | 5.08 s | 3.69 s |
+| `corpus_cores` | 46.93 s | 47.41 s | 45.43 s |
+| `dot_wellformed` | 139.07 s | 95.20 s | 108.83 s |
+| **all 91 binaries, summed** | **822.8 s** | **1 164.3 s** | **929.6 s** |
+
+**What remains** is the shape of lrlex: one regex search per rule the state allows at each position (55 where a
+token starts), and 55 regexes compiled per process. `answer_round_trip`'s and `answer_dump`'s rest is that:
+each state file writes the program as loaded, imports inlined, before its facts, so a dump of 542 213 state files
+(the corpus, below) is as many parses of a program and the stdlib, and `perf` over the round trip finds 70 % of
+its samples in the `ein` processes it starts and the rest reloading, both lexing and compiling the lexer first.
+[S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md) moves the round trip's four large dumps to the slow tier,
+already planned. The rest is the parked alternatives' to recover.
+
+**The proof that no token moved.** `generated_parser::the_lexer_gives_the_tokens_t4s_did` builds the lexer twice
+at run time through `lrlex`, from `ein.l` as it ships and from `ein.l` as T4 wrote it (its start condition taken
+out and the three skip rules put back, a reconstruction equal to `8c3fe86e`'s `ein.l` rule for rule), and
+compares the two token streams, kind and span, lexing errors included, over 21 083 inputs: every `.ein` under
+the five roots (the fuzzer's seed files among them), 500 of `ein_corpus::mutants`, 72 edge cases (comments
+glued, unterminated and nested, Unicode whitespace and `\x1c` to `\x1f`, a string glued to a comment, `\u{…}`
+in and out of range, the writeback names, the name rule's corners) and 20 000 seeded strings over the characters
+the rules read. With the reference's whitespace rule narrowed to `\s` it fails on 8 867 of them. Beside it, the
+harness compared T4's `ein.l` with this one over the 511 files (66 313 tokens) and 200 072 edge cases and
+strings (739 654 tokens, 54 878 lexing errors): none differ (`lexbench same`, `fuzzsame … 200000`); a control
+whose whitespace is ASCII differs on 11 896 of 20 072. **And end to end**, T4's release binary against this
+one's (`build/s1f.5.5/t12/xcheck/`): all 511 programs through `solve --json-summary -H --dump-answer`, `saturate
+--dump` and `test`, comparing exit codes, stdout, stderr, the summary and every file the dump wrote, timings
+masked, are the same on every command (174 refused at the parse, 134 of them with repairs; 313 dumps, 542 213
+state files); and 2 000 seeded mutants of the corpus through `saturate` are the same, the error text included
+(1 047 accepted, 767 refused with repairs, 186 without). The gate's goldens did not move.
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end
+of the phase"*), each the agent's recommendation:
+- **A start condition in the grammar's lexer.** `AFTER_WORD` is lexer machinery that T5's grammar pages will read
+  out of `ein.l` with the rules; it is a lex feature lrlex publishes, so it is inside the ruling, and it is half
+  of the lexing recovered.
+- **The keyword test on threads, not a parser without recovery.** A parse with `RecoveryKind::None` would need
+  `build.rs` to generate a second parser, tables and actions, for one test's questions; the cells on workers
+  keep one parser and every assertion.
+- **The equivalence test stays in the gate** (0.9 s): it is what holds the start condition's argument, which a
+  later edit to `ein.l` could break.
+
+#### Parked for the phase close
+
+What lrlex's shape leaves, with what each alternative was measured to recover; none is built, and
+[Q-M1f.8](../open_questions.md#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) records the default.
+
+- **A second vendored patch, to `lrlex`: try only the rules whose regex can start with the byte at the cursor.**
+  Each rule's first bytes are read off its anchored DFA when the lexer is built (1.2 rules a byte on average), and
+  the loop is otherwise lrlex's. Probed in `lexbench dispatch` over T4's 57 rules: the 414 files lex in 11.1 ms a
+  pass, 0.20 µs a token, against lrlex's 108.3 ms on T4's `ein.l` and 57.1 ms on this one, the tokens the same
+  on every file (`--core 2`, two runs each). It recovers lexing, not the 55 regexes a process compiles. Not taken:
+  a second patch beside `lrpar`'s is the user's to rule.
+- **A hand-written lexer feeding `lrpar`**, which the user's *"if speed will ever become an issue - will add
+  super-optimized hand-written parser"* (2026-11-07) anticipated for the whole parser, held to the generated one
+  as § The generator says. The old hand-written parser measures what it buys a process: the table above's *old*
+  column, 1.86 against 4.77 ms on `01_copiers.ein` and 4.67 against 9.02 ms on `zebra.ein`. Not taken: the user
+  ruled the parser generated.
+
+**The bookkeeping T4 left.** `corpus/wrong_answers.toml`'s 28 `[case.fixed]` blocks with the null id, every one
+added by `8c3fe86e` and none before it (`git show 977829bf:corpus/wrong_answers.toml`: none), name `8c3fe86e`:
+W16's two, W18's five, W20's four, W28's three, W29's six, W32's seven and W35; the header's paragraph on the
+swap says so, and `wrong_answers` is green. § T4 record said *fourteen goldens move, T9's eight and six more*;
+its own list names twelve, T9's eight and four more, and `git show --stat 8c3fe86e` modifies twelve files under
+`tests/golden/` and deletes `generated_parser_corpus.txt`. The record is corrected; T4's commit body, which says
+fourteen, cannot be.
+
+**The gate.** On `977829bf`, 14 min 14 s (`build/gate-s1f.5.5-T11.log`, 1 736 s user); on `8c3fe86e`, 19 min 59 s
+(`build/gate-s1f.5.5-T4.log`, 2 512 s user); on this commit, 15 min 53 s (`build/gate-s1f.5.5-T12.log`, 1 990 s user), green: 4 min 6 s of the 5 min 45 s the swap added, 1 min 39 s above T11 still.
 
 ### Task T1f.5.5.5 — the grammar pages and the loader's refusals
 
