@@ -11,8 +11,17 @@
 user's rule for a name
 ([Q-M1e2.24](../../m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)): `1..5` stops being a range and
 becomes a plain name, where this page had it refused.
-**Not started, and not to start until the user says so.** No engine code, test, golden or
-fixture has moved.
+**Started 2026-11-08** on the user's go-ahead to run the phase stage by stage (*"run
+plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in separate subagent, …, ask if
+decision required"*). **T1f.5.3.1 is done** ([§ Step 1](#step-1--every-move-listed-2026-11-08)), and the
+stage **stopped there, before any engine edit**, on its own rule: a fifth program moved, S1f.5.5's rewrite of
+`arg-kinds` under `plans/`, which writes `(r 1..5 1..*)` and was banked two days after this page listed four.
+Step 1 also found what the interim costs: between this stage and S1f.5.4 two corpus files do not parse, and
+five tests read them as files that parse, load or answer
+([§ Between this stage and S1f.5.4](#between-this-stage-and-s1f54)), and that the parse-negative fixture this
+page asks for would be wrong-grouped from S1f.5.4 on ([§ The parse-negative
+fixture](#the-parse-negative-fixture)). The three are put to the coordinator, each with a recommendation. No
+engine code, test, golden or fixture has moved.
 **Depends on:** nothing. It touches what [S1f.5.1](s1f.5.1_bare_underscore_refused.md)
 and [S1f.5.2](s1f.5.2_strings_are_natural_language.md) touch, so the three land one at a
 time. [S1f.5.4](s1f.5.4_digits_are_names.md) follows it, and [S1f.5.5](s1f.5.5_the_grammar.md) frames it.
@@ -113,3 +122,125 @@ does not change.
   `:cardinality` as part of the language.
 - No corpus program outside step 1's list moved.
 - `./run_tests.sh` is green.
+
+## Step 1 — every move listed (2026-11-08)
+
+T1f.5.3.1, at `fd800fe0`. The prototype is the parser with no range reading and nothing else: `parse.rs`'
+`leaf_value` no longer asks for `Term::Range`, on a `git archive` snapshot under `build/s1f.5.3/snapshot`
+(gitignored), release build. The sweep, `build/s1f.5.3/sweep.sh`: every `.ein` under `examples/`, `tests/`,
+`stdlib/`, `corpus/` and `plans/`, 511 files (`find examples tests stdlib corpus plans -name '*.ein' | wc
+-l`, 2026-11-08), each through `ein solve FILE` and `ein saturate FILE --dump` on today's binary and the
+prototype, stdout and stderr compared with the timing lines removed, 37 s. `1..5` is the `INT` `1` and then
+`..5`, which no terminal matches, so the parse stops at the first `.`, as Default 2 says.
+
+### Five programs move, and 506 answer as they did
+
+| program | today | the prototype |
+|---|---|---|
+| `examples/syntax/arg-kinds.ein` | loads: `solve` exit 0, R decided as the whole cube of 41 candidates, k_s a lower bound (112 793 states) past `--region-budget`; `saturate` exit 0, six facts | refused at the parse, `14:5`; both exit 1 |
+| `examples/ein-bugs/wrong-answers/range-in-match.ein` | refused at load, W20's line (*kb load error: rule 'r': its :match writes 1..3 as an argument of n, …*), exit 1 | refused at the parse, `31:23`, exit 1 |
+| `plans/m1e2_correctness/inventory_2026-11-05/probes/kwpair_in_pattern.ein` | loads, R {∅}, exit 0 | refused at the parse, `4:33` (`:where 1..3`), exit 1 |
+| `plans/m1e2_correctness/p1e2.3_…/s1e2.3.8_probes/values.ein` | loads, R 8 states, exit 0 | refused at the parse, `30:18` (`(given 1 "1" ?v 1..5 …)`), exit 1 |
+| **`s1f.5.5_parser_probe/programs/arg-kinds.ein`** (this phase's directory) | refused at the parse at `$x`, `12:4`, exit 1 | refused at the parse at `1..5`, `11:5`, exit 1 |
+
+The first four are [§ The case](#the-case)'s. **The fifth is not**, which is the stop: it is S1f.5.5's
+rewrite of `arg-kinds` for the final grammar ([`s1f.5.5_paper_grammar.md`](s1f.5.5_paper_grammar.md),
+`49e9fed6`, 2026-11-08), banked after this page listed four. It writes `(r 1..5 1..*)` on line 11, so it
+moves by this stage's mechanism and no other: refused both ways, exit 1 both ways, only the position of the
+first refusal moves, from `$x` (which today's parser cannot read either) to `1..5`. It is a probe of a
+grammar not yet built, a record under `plans/` as M1e2's two probes are, and like them it stays, exiting as
+its new line says. **Recommended:** accept it as the fifth of the list.
+
+### `arg-kinds`, as written and after
+
+```lisp
+(relation r T T)
+(r 7 "a string")
+(r 1..5 1..*)
+(r _ ?x)
+(r (nested a b) c)
+```
+
+| run | today (`fd800fe0`) | after this stage |
+|---|---|---|
+| `ein saturate FILE --dump` | exit 0; stores `(r 7 "a string")`, `(r "1..5" "1..*")`, `(r "?x")`, `(r (nested a b) c)` and the declaration's two facts | exit 1: `examples/syntax/arg-kinds.ein:14:5: unexpected input`, under it `(r 1..5 1..*)` and a caret at the first `.` |
+| `ein solve FILE` | exit 0; `states (k_s) 112 793 (a lower bound: complete up to states of 3 candidates)`, `commitments (k_c) 2 199 023 255 552`, ∅ and ⊤ both in R, so R is the whole cube of 41 candidates; `note: … partial — the state route stopped before the states of 4 candidates at --region-budget 1048576` | exit 1, the same line |
+| `ein render rules FILE` | exit 1, *no rule forms* | exit 1, the same line |
+| `ein test FILE` | exit 2, *nothing to check* | exit 2, the same line |
+
+From [S1f.5.4](s1f.5.4_digits_are_names.md) it loads again as written, `(r 1..5 1..*)` a fact over two names.
+
+### The tests and goldens that move
+
+`cargo test --workspace --no-fail-fast` on the snapshot (`build/s1f.5.3/proto-test.log`, 2026-11-08):
+sixteen tests in thirteen targets move, each by the stage's mechanism, and no other.
+
+| test | what moves |
+|---|---|
+| `ein-cli` `corpus_cli::every_cell_reproduces_its_exit_code` | `corpus_exits.txt`, 1 of 1 302 cells: `arg-kinds :: saturate` 0 → 1. `range-in-match`'s two cells stay 1 |
+| `ein-render` `corpus_shapes` | `corpus_shapes.md5`, 61 lines out and 2 in: `arg-kinds`' 41 rows and `range-in-match`'s 20 become one `ir[parse]` row each, the parse error (`diff` against the golden blessed on the snapshot, run with its target inside it) |
+| `ein-ir` `grammar_decisions` | `grammar_decisions.txt`: `(a 1..5)` and `(a 1..*)`, `ok (1 form(s))` → `<string>:1:5: unexpected input`; `(a 1..)` was refused and stays |
+| `ein-ir` `fuzz_properties` | `fuzz_seeds.txt`: the seed `(a 1..5 :k 1..* …)`, `ok` → refused at `1:5` |
+| `ein-ir` `load_semantics::the_config_coercion_table_is_stable` | `config_coercion.txt`: `(config :lattice-sanity-check 1..5)`, the loader's *got Range(low=1, high=5)* → `<IRParseError> <string>:1:32` |
+| `ein-ir` `ir_semantics`, two | the round-trip table's `(a 1..5)` and `(a 1..*)` stop parsing; the dump-then-parse shapes lose `:cardinality 0..0`, `0..*` and `9999..*` |
+| `ein-ir` `from_ir` unit tests, two | `a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load`'s eight range cases and its joined case, and `a_rule_shape_that_reads_nothing_is_refused_at_load`'s `(p ?x :where 1..3)` |
+| `ein-cli` `cli_semantics::a_range_or_a_wildcard_relation_in_a_rule_is_refused_at_load` | its two range cases: the loader's line → the parser's |
+| `ein-cli` `wrong_answers` | `W20/range-in-match`'s `refused`: the loader's line → `…/range-in-match.ein:31:23: unexpected input` |
+| `ein-infer` `register_region` | it reads a refused row's witness as a load error, and a parse error panics |
+| `ein-cli` `corpus_cli::every_positive_entry_answers_under_at_least_one_run` | `arg-kinds` answers under no run |
+| `ein-cli` `answer_round_trip::the_witnesses_reload_to_their_states` | `arg-kinds` writes no state |
+| `ein-infer` `alive_invariant::every_name_of_the_program_is_a_candidate_object` | `SEEDED`'s two `arg-kinds` lines, `a` and `b` in `(r (nested a b) c)` |
+| `ein-ir` `dump_goldens::dump_then_parse_is_a_fixed_point` | every corpus file outside `examples/broken/` parses, and these two would be the first that do not |
+
+Two more failed on the snapshot and are the snapshot's, not the prototype's: `ein-ir`'s `imports_semantics`
+(two tests) and `corpus_shapes` resolve the stdlib by walking up from the test binary, and with the target
+under `build/` that found the checkout's `stdlib/`; with the target inside the snapshot the first two pass
+and the third moves as the table says. Retiring the rest (`Term::Range`, `match_range`, `Node::Range`,
+`Terms::value_range` and their arms) moves no answer, only the unit tests that name them: `lex.rs`'
+`range_is_digit_anchored_and_beats_int` and `terms.rs`' value test. `dot_wellformed` passes: a file that does
+not parse draws no view. `grep -rn 'Term::Range\|Node::Range\|value_range' ein.rs/crates` names every
+site [§ What it changes](#what-it-changes) lists and no other.
+
+### Between this stage and S1f.5.4
+
+This page has `arg-kinds` keep its program and be refused, by the plain parse error, until S1f.5.4 makes
+`1..5` a name; `range-in-match` likewise, until S1f.5.4 loads it as a pattern over the name `1..3`. Its
+golden list foresaw `corpus_shapes`' rows. It did not foresee the last five rows of the table above: tests
+that read the two files as files that parse, load or answer. `arg-kinds` is `positive` because a group is a
+directory (`ein-corpus`'s `negatives_are_grouped_by_where_they_fail`), its one answering cell is
+`saturate` (`render rules` exits 1, *no rule forms*), and it is 112 793 of the round trip's 112 836 state
+files (`ein solve FILE --dump-answer DIR` on each witness, 2026-11-08); the other four witnesses keep the
+test's floor of 40. Three ways through:
+
+- **(a) Recommended: both programs as written, one named list, held both ways.** `ein_corpus::
+  REFUSED_UNTIL_S1F_5_4` names the two files; `every_positive_entry_answers…`, the round trip, `SEEDED` and
+  the dump fixed point read it by name, never by a silent skip, the round trip asserting that a listed
+  witness writes no state; and one new `corpus_cli` test holds the list both ways: every run of each file is
+  the parser's line, exit 1 (`ein test` 2), so the commit of S1f.5.4 that makes them load fails it and
+  empties the list. That is S1f.5.0's `KNOWN_R1` pattern (`alive_invariant.rs`, W34, which S1f.5.9 empties).
+  `register_region` reads a parse refusal as the binary prints it, which is permanent and not the
+  interim's. S1f.5.4's page gains one line: empty the list. Nothing here edits a program. **Prototyped**
+  with the whole retirement on a second snapshot, `build/s1f.5.3/full`: with the five goldens above
+  re-banked and the register's line moved, `cargo test --workspace` passes, 921 tests and none failed
+  (`build/s1f.5.3/full-test.log`, 2026-11-08), and `cargo fmt --check`, `clippy -D warnings` and `cargo doc
+  -D warnings` are clean. The gate runs at T2.
+- **(b) Edit `arg-kinds` for the interim**, dropping `(r 1..5 1..*)` until S1f.5.4 puts it back. Three of
+  the five tests stay as they are, but it edits a fixture's program, which this page does not license, and
+  moves `arg-kinds`' H and R twice; `range-in-match` still needs (a)'s dump-point and `register_region`
+  changes.
+- **(c) No interim**: land S1f.5.4's reading of `1..5` as one name here, or S1f.5.3 and S1f.5.4 as one
+  commit. S1f.5.4 stops at its step 1 to show the user real programs, and the phase's order lands each so
+  that every move is attributed to its ruling, so this is the user's.
+
+### The parse-negative fixture
+
+[§ What it changes](#what-it-changes) has *one parse-negative fixture hold `:card 1..*`*. A fixture's group is
+its directory, and `(relation r T T :card 1..*)` is a parse error only until S1f.5.4: from S1f.5.4 `1..*` is a
+name and the form loads with `:card` dropped in silence, from [S1f.5.11](s1f.5.11_closed_keywords.md) the
+loader refuses `:card`, and with [S1f.5.5](s1f.5.5_the_grammar.md)'s grammar the parser does. In
+`examples/broken/` it would be wrong-grouped from S1f.5.4 to S1f.5.11, and `grammar_decisions`'
+`the_parse_negative_fixtures_reproduce_their_message` counts four fixtures. **Recommended:** hold `:card 1..*`,
+as a fact's keyword value and as a declaration's, in the `cli_semantics` test the acceptance asks for, with a
+range in a fact, in a rule's `:match` and `:assert`, and in a `(config …)`, each the parser's line from
+`saturate`, `solve`, `oracle` and `test`; S1f.5.4 and S1f.5.11 each restate their rows. The alternative is the
+fixture, which S1f.5.4's step 1 then has to move.
