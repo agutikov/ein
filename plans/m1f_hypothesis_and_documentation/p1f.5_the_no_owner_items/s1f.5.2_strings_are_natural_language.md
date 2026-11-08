@@ -2,21 +2,33 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.2**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 2.5 days.
-- Half a day to re-take the positions, list every move, and show real programs.
-- Half a day for the refusal and the printer.
-- Half a day for the escapes, the Unicode test and the two examples.
-- Half a day for the register, the fixtures and what only a string used.
-- Half a day for the pages.
+**Estimate:** 1.5 days, re-taken on 2026-11-08 on the user's re-plan ([P1f.5 § The order](README.md#the-order));
+it was 2.5.
+- A quarter of a day for a string held in every position, in the grammar's table (T1f.5.2.2).
+- Half a day for the Unicode test and the two examples (T1f.5.2.2).
+- A quarter of a day for what only a string used (T1f.5.2.3).
+- Half a day for the pages (T1f.5.2.4).
+- Re-taking the positions, every move and the real programs (half a day), the refusal and the printer (half a
+  day), the escapes, which the grammar's `STRING` states, and the register and the fixtures (a quarter) are
+  [S1f.5.5](s1f.5.5_the_grammar.md)'s since the re-plan: its attribution sweep and review stop (T1f.5.5.9) and
+  its swap (T1f.5.5.4).
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
 ([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
-**Not started, and not to start until the user says so.** No engine code, test,
-golden or fixture has moved.
-**Depends on:** [S1f.5.1](s1f.5.1_bare_underscore_refused.md) and
-[S1f.5.4](s1f.5.4_digits_are_names.md), for the spellings that replace a string (`_rule`,
-`1`). It is the only order that never leaves a name unwritable.
-[S1f.5.5](s1f.5.5_the_grammar.md) frames it.
+**Not started.** No engine code, test, golden or fixture has moved.
+**Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
+work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
+(strings, names, etc...) ?"* The refusal and the escapes are the generated parser's (`STRING` only after `:why`,
+`:source` and `:goal-text`, and `\u{…}` or a refused escape in the token, in
+[the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position)), and nothing edits the hand-written lexer
+or parser for them. This stage's step 1 is done inside S1f.5.5's attribution sweep and its one review stop
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)), and the
+refusal, the printer, the fixtures and the restated rows land in S1f.5.5's swap
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)), credited to this stage's ruling. What is left,
+T1f.5.2.2 to T1f.5.2.4, runs after the swap, on the generated parser.
+**Depends on:** S1f.5.5's swap, which lands this stage's refusal with S1f.5.1's and S1f.5.4's in one commit, so
+the spellings that replace a string (`_rule`, `1`) are names from the commit that refuses it, and no name is ever
+left unwritable.
 
 ## The case
 
@@ -75,6 +87,10 @@ This overrides S1e2.2.18's default. The rulings behind W16 and W28 stay true of 
 name and an int, and now have nothing to tell apart in a string.
 
 ## What it changes
+
+*Since the re-plan of 2026-11-08 the refusal, the escapes, the printer, the register and the fixtures are S1f.5.5's
+swap, credited to this ruling, and the Unicode test, the two examples and what only a string used are this
+stage's, after it.*
 
 **The refusal.** A string is refused everywhere but as the value of `:why`, `:source`
 or `:goal-text`, on every command that reads a program, with one line. Proposed
@@ -139,7 +155,9 @@ Step 1 reads the rest: `trace/ast.rs:207` and `:337` read an engine-written
 `(trace …)`, whose strings have to stay readable if they are natural language.
 
 **The register.** No new case, since each move is a restated `right`: W16's 4 rows,
-W18's 5 and W28's 3 are refused where a witness writes a string as a value. 30 lines of
+W18's 5 and W28's 3 are refused where a witness writes a string as a value. All land in S1f.5.5's swap, where
+S1f.5.4's proposals for the W16 and W28 rows meet this refusal and give way to it, and this stage owns no row of
+its own after it. 30 lines of
 `corpus/wrong_answers.toml` hold a quoted value (`grep -cE 'models.*\\"|\(.*\\"'`,
 2026-11-06). Whether W16's and W28's value-keyed fixes can then be simplified is
 step 1's to report, and they stay unless the user says otherwise.
@@ -184,6 +202,13 @@ retiring where the case no longer exists. Step 1 lists which.
 
 ### Task T1f.5.2.1 — every position re-taken, every move listed, real programs shown
 
+**Done inside S1f.5.5 since the re-plan of 2026-11-08**: its attribution sweep credits every string difference to
+this ruling, and its one review stop shows what step 4 below lists, the two examples as a probe until T1f.5.2.2
+writes them ([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)).
+Two of its questions the paper grammar settled: `:priority` takes `DIGITS`, so `:priority "high"` is a parse
+error, and a trace step's `:source` holds a string, as natural language. The task as it stood is that sweep's
+brief for this ruling:
+
 1. Re-take the table on a fresh build, release and debug, and settle the two rows it
    leaves open: what `:priority "high"` does today, and any other keyword's string.
 2. Read `(trace …)`'s strings, and say whether they are natural language.
@@ -198,16 +223,21 @@ retiring where the case no longer exists. Step 1 lists which.
 
 **Stops if** any program outside `arg-kinds`, `is-a-shapes` and the 12 witnesses moves.
 
-### Task T1f.5.2.2 — refused
+### Task T1f.5.2.2 — held in every position, and shown in Unicode
 
-The refusal, the escapes, the printer, the fixtures and the register rows, as listed, then
-the Unicode test and the two examples.
+The refusal, the escapes, the printer, the fixtures and the register rows **moved to S1f.5.5's swap on
+2026-11-08** ([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)). What is left, after the swap: a test per
+position, a string refused in each and `(p "1")` by name, as rows of the grammar's table S1f.5.5's T5 builds; then
+the Unicode test and the two examples, as [§ What it changes](#what-it-changes) says.
 
 ### Task T1f.5.2.3 — what only a string used
 
-Retired as a separate commit, so that no answer moves in it.
+After the swap and S1f.5.5's T5: the `Node::Str` arms that make a value, retired as a separate commit, so that no
+answer moves in it.
 
 ### Task T1f.5.2.4 — the pages
+
+After the swap, beside S1f.5.5's T7.
 
 `00_ebnf.md` (fact 4 and the line that says where a non-ASCII character may appear),
 `01_grammar.md` (the `STRING` row), `02_patterns.md`,
@@ -217,13 +247,15 @@ default each say what overrode them. `docs/history/` is a record, and does not c
 
 ## Acceptance
 
-- A string outside `:why`, `:source` and `:goal-text` is refused on every command that
-  reads a program, by one line, and a test holds each position, `(p "1")` by name.
-- A variable in a fact, `(r ?x)`, is refused the same way.
-- Every `:why`, `:source` and `:goal-text` in the tree reads as it did, and every corpus
-  answer outside step 1's list is unmoved.
-- Every `--dump-answer` state file reloads to its state by value, with no quoted value.
+**Since the re-plan of 2026-11-08 the items the grammar settles are
+[S1f.5.5's acceptance](s1f.5.5_the_grammar.md#acceptance)**, held at its swap: a string refused outside the three
+keywords, `(r ?x)` refused, every `:why`, `:source` and `:goal-text` reading as it did, `\u{…}` its code point and
+an unknown escape refused, and every state file reloading by value with no quoted value. This stage's own, after
+the swap:
+
+- A test holds each position, a string refused in it, `(p "1")` by name, and a variable in a fact.
 - Unicode in the three keywords reaches every surface that carries them byte for byte, and
-  a test holds it. `\u{…}` means its code point, and an unknown escape is refused.
+  a test holds it.
 - The two examples are in the corpus, and no other example changed.
+- The `Node::Str` arms that make a value are gone, and that commit moved no golden.
 - `./run_tests.sh` is green.

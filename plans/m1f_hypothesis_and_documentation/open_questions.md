@@ -56,7 +56,9 @@ the 26 refusal fixtures whose refusal the grammar takes over stay refusal fixtur
 regression fixtures are the owning stages' (S1f.5.1, S1f.5.2, S1f.5.4, S1f.5.11). The alternatives were (b)
 the 26 left in place with only their `.expected` moved, and (c) the 26 rewritten.
 
-**Ruled 2026-11-08: (a).** The user: *"Q2 - a"*.
+**Ruled 2026-11-08: (a).** The user: *"Q2 - a"*. Since the user's re-plan the same day, the 23 the owning stages
+had land in S1f.5.5's swap, each credited to its stage's ruling, and of the rest what moves no answer lands just
+before it ([S1f.5.5 § The order](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#the-order-re-planned-2026-11-08)).
 
 ### Q-M1f.3 — Three wrong answers the census found with no row
 

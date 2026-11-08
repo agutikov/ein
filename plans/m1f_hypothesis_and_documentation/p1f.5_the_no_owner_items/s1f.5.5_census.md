@@ -6,7 +6,10 @@ snapshot built a second time with the final grammar behind `EIN_PARSER=grm`
 ([`s1f.5.5_paper_grammar.md`](s1f.5.5_paper_grammar.md) is step 2, and says how). Nothing under
 `ein.rs/`, `corpus/`, `examples/`, `tests/`, `stdlib/` or `docs/` moved. The scripts and their
 outputs are in [`s1f.5.5_parser_probe/census/`](s1f.5.5_parser_probe/census/), and
-[§ Re-taking it](#re-taking-it) has the commands.
+[§ Re-taking it](#re-taking-it) has the commands. *Since the user's re-plan of 2026-11-08 the moves this page
+puts before the swap, by S1f.5.4's ruling, land in it instead, each credited to its ruling
+([S1f.5.5 § The order](s1f.5.5_the_grammar.md#the-order-re-planned-2026-11-08)), and this page's
+[estimate](#the-estimate-re-taken) is re-taken again in the stage file.*
 
 ## What it found
 

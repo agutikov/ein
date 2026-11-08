@@ -2,10 +2,14 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.4**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 1.5 days.
-- Half a day to re-take the moves on a prototype and show real programs.
-- Half a day for the lexer, and to retire the int kind.
-- Half a day for the register, the fixtures and the pages.
+**Estimate:** 1.25 days, re-taken on 2026-11-08 on the user's re-plan ([P1f.5 § The order](README.md#the-order));
+it was 1.5.
+- Half a day to re-take the moves on a prototype and show real programs. Done (T1f.5.4.1).
+- Half a day to retire the int kind, with the `:priority` guard it needs, after the swap (T1f.5.4.3).
+- A quarter of a day for the pages, after the swap (T1f.5.4.4).
+- The lexer, and the register and the fixtures, a quarter of a day each in the old estimate, are
+  [S1f.5.5](s1f.5.5_the_grammar.md)'s swap since the re-plan (T1f.5.5.4), and the review of this stage's moves is
+  its stop (T1f.5.5.9). The int kind's retirement grows by the quarter its `:priority` guard takes.
 
 **Status:** specified 2026-11-06 on the user's ruling of that day, and extended 2026-11-07 on the
 user's rulings on F8 and on what a name is
@@ -14,10 +18,20 @@ user's rulings on F8 and on what a name is
 plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items, each stage in separate subagent, …, ask if
 decision required"*). **Step 1 done** (T1f.5.4.1, [§ Step 1](#step-1--every-move-listed-2026-11-08)), and the
 stage **stopped there, as its method says, to show the user real programs before any edit**: one finding (two
-synthetic names become spellable) and four questions wait on the user. No engine code, test, golden or fixture
-has moved.
-**Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), so that `1..5` is gone first.
-[S1f.5.5](s1f.5.5_the_grammar.md) frames it.
+synthetic names become spellable) and four questions. No engine code, test, golden or fixture has moved.
+**The four questions were decided on 2026-11-08 by the coordinator**, each as this step recommended, and the user
+may still overrule any of them at S1f.5.5's review stop (T1f.5.5.9): [Q1](#q1--the-synthetic-names) (a),
+[Q2](#q2--relation_parameter_int) (a), [Q3](#q3--arg-kinds-and-the-round-trip) (a) and
+[Q4](#q4--a-name-of-digits-in-summaryjson) (a). C1 and C2 are the attribution's rules, and C3 is parked
+([§ Notes](#notes)).
+**Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
+work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
+(strings, names, etc...) ?"* The name rule is built once, in S1f.5.5's generated parser, and lands at its swap
+(T1f.5.5.4), credited to this stage's ruling; this step's 46 programs are the first cross-check of the
+attribution that precedes the swap (T1f.5.5.9). T1f.5.4.2 moved there. What is left, T1f.5.4.3 and T1f.5.4.4,
+runs after the swap, on the generated parser. Nothing edits the hand-written lexer or parser for this stage.
+**Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), done, so that `1..5` was gone first. Its remaining tasks
+run after [S1f.5.5](s1f.5.5_the_grammar.md)'s swap.
 
 ## The ruling
 
@@ -78,16 +92,20 @@ exists. Step 1 says which retire and which are kept, scoped with `:no-hypothesis
 
 **The lexer.** `SYMBOL` becomes [the name rule](s1f.5.5_the_grammar.md#the-name-rule): a run of name
 characters up to a separator, any of them first. `INT` goes as a value, and `EQ` with it, since `=` is a
-name. On the hand-written parser this is the stage that lands the rule, and so most of F2.
+name. This was to land on the hand-written parser; since the re-plan of 2026-11-08 the rule is the generated
+parser's, and lands with most of F2 at S1f.5.5's swap.
 
-**`:priority` is the trap.** `invariant.rs`' name walk reads `Node::Atom` even under a keyword
-(line 501), so `:priority 110`, lexed as an atom, would make `110` a name of the program and a
-candidate on every rule that has one, which is 136 files. It has to stay out: the walk skips a
-keyword's value, or the loader reads it as a count and stores no atom. **Step 1 stops if H moves
-on any program that writes no plain digit.** `:priority` itself is
-[S1f.5.15](s1f.5.15_rule_priority.md)'s
-to delete (the user, 2026-11-07), so this stage keeps it working and gives it nothing new: its value is a
-run of digits, as every corpus use is. `ein_core::parse_int` is for CLI options, and stays.
+**`:priority` is the trap.** This page said until step 1 that the trap was `invariant.rs`' name walk (line 501).
+Step 1 found it elsewhere ([§ `:priority`](#priority-h-unmoved-and-where-the-trap-is)): the walk reads a rule's
+`:match` and `:assert` alone, and **`from_ir.rs`' `priority` match** reads `Node::Int` only and drops any other
+value in silence, so a `:priority 110` lexed as a name would lose every rule's order, moving 163 files' rule
+lists and no answer. At the swap the generated parser's action builds today's `Node::Int` for `:priority
+DIGITS`, so nothing moves; when T1f.5.4.3 retires the int kind, the loader reads the digits as a count and stores
+no atom, which is the guard. **Step 1 stopped if H moved on any program that writes no plain digit**: it moved on
+one, for the loader's internal names and not for `:priority`
+([§ H moved](#h-moved-on-a-program-that-writes-no-plain-digit-the-finding)). `:priority` itself is [S1f.5.15](s1f.5.15_rule_priority.md)'s to delete (the user,
+2026-11-07), so this stage keeps it working and gives it nothing new: its value is a run of digits, as every
+corpus use is. `ein_core::parse_int` is for CLI options, and stays.
 
 **What only an int used.** `Tag::Int`, `IntId`, the pool and `cmp_value` in `value.rs` and
 `terms.rs`; `Node::Int` in `parse.rs`, `ast.rs`, `from_ir.rs`, `expect.rs`, `compile.rs`, `dump.rs`,
@@ -100,7 +118,8 @@ digit programs move, and step 1 lists them.
 
 **The register.** W7's, W16's and W28's rows are about an int beside another value, and each `right`
 is restated or retired on step 1's list. The fixes behind W16 and W28 compare by value, which is
-still right.
+still right. Since the re-plan the rows move in S1f.5.5's swap, where S1f.5.2's ruling lands too, so a witness
+that also writes a string is refused for it ([S1f.5.5 § T4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)).
 
 **What it closes.** F7, F8, and F2: `a?x`, `?x?y` and `"a"b` are refused once a token runs to a
 separator. S-15 shrinks: `(p 01)` against a stored `(p 1)` is
@@ -118,6 +137,12 @@ standing rule on syntax): `features/05`, `std.elim`, `zebra2.ein` unmoved, and `
 
 ### Task T1f.5.4.2 — digits are names
 
+**Moved to S1f.5.5 on 2026-11-08**, on the user's re-plan: the lexer is the generated parser's name rule, and the
+fixtures, the register, the printer, the JSON writer and the interim below land in its swap
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)), the loader's internal names before it
+([T1f.5.5.8](s1f.5.5_the_grammar.md#task-t1f558--the-swaps-prerequisite-the-loaders-names-out-of-the-name-space)).
+The `:priority` guard is T1f.5.4.3's. What follows is the task as it stood, and what the swap now carries.
+
 The lexer, the `:priority` guard, the fixtures and the register.
 
 **What [S1f.5.3](s1f.5.3_range_retired.md) left for this task** (2026-11-08, [§ Between this stage and
@@ -134,28 +159,32 @@ S1f.5.4](s1f.5.3_range_retired.md#between-this-stage-and-s1f54)):
   as the name it spells, which is S1f.5.3's acceptance, *a test holds each*. `:card 1..*` then loads with
   `:card` dropped until [S1f.5.11](s1f.5.11_closed_keywords.md) refuses the keyword, and the row says so.
 
-### Task T1f.5.4.3 — what only an int used
+### Task T1f.5.4.3 — what only an int used, after the swap
 
-Retired as a separate commit, so that no answer moves in it.
+On the generated parser, after S1f.5.5's T5. `Tag::Int`, `IntId`, the pool, `cmp_value`, `Node::Int` and
+`.einb`'s int section ([§ What it changes](#what-it-changes)), retired as a separate commit, so that no answer
+moves in it: after the swap no program yields an int but `:priority`'s count. **The `:priority` guard lands
+here**: the grammar's `b::count` and `from_ir.rs`' `priority` match read the digits as a count with no int value
+behind it (`Rule::priority` needs a count that is not a value), so `:priority 110` still orders the rule and puts
+no name in the program, and every rule list `saturate --dump` prints is unmoved.
 
 ### Task T1f.5.4.4 — the pages
 
-`00_ebnf.md`, `01_grammar.md` (the `INT` row), `02_patterns.md`, `defined_behaviour.md`, `glossary.md`,
-`examples/README.md`. Q-M1e2.20 says what overrode it.
+After the swap, beside S1f.5.5's T7. `00_ebnf.md`, `01_grammar.md` (the `INT` row), `02_patterns.md`,
+`defined_behaviour.md`, `glossary.md`, `examples/README.md`. Q-M1e2.20 says what overrode it.
 
 ## Acceptance
 
-- `(p 1) (p 01)` is two facts, each printing as written and reloading to itself.
-- `1st`, `1_a`, `7`, `-7`, `1..5`, `$x`, `%`, `a^b`, `a/b`, `<=`, `!x`, `@x`, `~`, `'name'`, `f'`, `{}` and
-  `[a]` load as names, and each prints as written and reloads to itself. `'name'` and `name` are two names.
-  `?a.b` is a variable.
-- A name holds only the characters [the list](s1f.5.5_the_grammar.md#the-name-rule) allows, so `a?x`,
-  `?x?y`, `??x`, `a:b`, `a,b`, `a#b`, `a|b`, `a\b`, `Жук` and `"a"b` are refused, and no
-  token splits in silence. `Жук` in a rule's `:why` string loads.
-- `:priority` takes a run of digits and nothing else, until S1f.5.15 deletes it.
-- `:priority 110` puts no name in the program, and H is unmoved on every program that writes no
-  plain digit.
+**Since the re-plan of 2026-11-08 the items the grammar settles are
+[S1f.5.5's acceptance](s1f.5.5_the_grammar.md#acceptance)**, held at its swap: `(p 1) (p 01)` two facts, the
+names that load and print as written, the characters refused, `:priority` digits only and no name, and the five
+places [the paper grammar says more](#the-acceptance-list-against-the-paper-grammar). This stage's own, after the
+swap:
+
 - `Tag::Int` and `Node::Int` are gone, and that commit moved no golden.
+- With the int kind gone, `:priority 110` still orders its rule and puts no name in the program: H, and every
+  rule list `saturate --dump` prints, are unmoved on every program.
+- No page describes an `INT` token or an int value.
 - `./run_tests.sh` is green.
 
 ## Step 1 — every move listed (2026-11-08)
@@ -402,6 +431,12 @@ running nothing. Not recommended: the register kept W1's lever rows as rows, res
   value), the collision filed as a register row meanwhile.
 - (c) Refuse the four spellings at load.
 
+**Decided 2026-11-08 by the coordinator, on this step's recommendation: (a)**, open to the user's review at
+S1f.5.5's stop. The four are renamed out of the name space, in characters the name rule refuses, no later than the
+swap: a prerequisite of it, held by a test, in its own commit
+([T1f.5.5.8](s1f.5.5_the_grammar.md#task-t1f558--the-swaps-prerequisite-the-loaders-names-out-of-the-name-space)).
+W34's `now` is restated there, since its candidate's printing moves.
+
 #### Q2 — `relation_parameter_int`
 
 The load-negative fixture of an int binding a relation parameter loads now: `(mirror 3)` names the relation `3`.
@@ -410,6 +445,10 @@ The load-negative fixture of an int binding a relation parameter loads now: `(mi
   retires; the nested-fact shape has its own fixtures (W24, [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)).
 - (b) Move it to a positive group, as *a relation named `3`*.
 
+**Decided 2026-11-08 by the coordinator, on this step's recommendation: (a)**, open to the user's review at
+S1f.5.5's stop. Retired in the swap's commit
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)).
+
 #### Q3 — `arg-kinds` and the round trip
 
 `arg-kinds` writes 342 542 state files in the prototype (S1f.5.3 measured 112 793 before the interim), each reloaded
@@ -417,6 +456,15 @@ by `answer_round_trip`. **Recommended: (a)** leave the program as written and le
 18.5 s for `solve` with `--dump-answer` here), as S1f.5.3's interim said; (b) scope it with `(solve :no-hypothesis
 (r))`, which the fixture's point (the node kinds as written) does not need: R is then {∅}, one state, no candidate
 (`build/s1f.5.4/scoped/arg-kinds.scoped.ein`).
+
+**Decided 2026-11-08 by the coordinator, on this step's recommendation: (a)**, open to the user's review at
+S1f.5.5's stop: the program is kept as written, the swap measures the gate's cost, and the fixture is scoped only
+if the gate visibly slows. **What the re-plan adds** (2026-11-08): the program this question measured is the one
+written today, which the paper grammar refuses for its `"a string"`, `_` and `?x`. After the swap the corpus
+carries [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) (a)'s
+rewrite, and on this step's prototype its `ein solve` stops with *a state's commitments pass 2^128*, exit 1,
+writing no state ([§ Notes](#notes)). S1f.5.5's stop puts it to the user, recommending (b) for the rewrite
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)).
 
 #### Q4 — a name of digits in `summary.json`
 
@@ -429,7 +477,16 @@ render `{"x": 7}` (`build/s1f.5.4/scratch/json-binding.ein`).
 - (b) Keep the number for a canonical run of digits only (`7`, not `007` or `-0`); two spellings would still not
   collide, but a name would be a number on one surface.
 
+**Decided 2026-11-08 by the coordinator, on this step's recommendation: (a)**, open to the user's review at
+S1f.5.5's stop. Every name is a JSON string, with the swap; if the summary's schema id has to move, the swap's
+commit names the move, and `int-goal-binding`'s note is restated
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)).
+
 #### For the coordinator
+
+Taken by the coordinator on 2026-11-08: C1 and C2 are the rules S1f.5.5's attribution reads by
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)), and C3's two
+findings are parked in [§ Notes](#notes).
 
 - **C1.** In the swap's attribution, `_x`, `__`, `_-1` and `?_x` (a name and a variable) are the name rule's, S1f.5.4's
   (*any of them first*), and the bare `_` and `?_` [S1f.5.1](s1f.5.1_bare_underscore_refused.md)'s, whose table lists
@@ -442,3 +499,20 @@ render `{"x": 7}` (`build/s1f.5.4/scratch/json-binding.ein`).
   corpus cell and which no corpus cell reaches today or with the witnesses scoped as proposed; and the state route's *pass 2^128* limit,
   reached by three M1e2 probes today and by S1f.5.5's `programs/arg-kinds.ein` in the prototype. To be parked where
   the coordinator files out-of-phase findings.
+
+## Notes
+
+Parked on 2026-11-08 by the coordinator, from [C3](#for-the-coordinator), as findings outside this stage and
+outside P1f.5's rulings. Neither is a task here.
+
+- **`ein test` exits 1 with an empty stderr on a refuted claim**, on every `test` cell, where `ein solve` writes one
+  line. `corpus_cli::every_refusal_carries_a_diagnostic` would catch it on a corpus cell, and no corpus cell
+  reaches it today, nor with the witnesses scoped as [§ The register](#the-register-12-rows-move) proposes. The
+  prototype's unscoped `ein-bugs/` witnesses reached it eight times.
+- **The state route's *a state's commitments pass 2^128: the state route cannot count them*** stops `ein solve`,
+  exit 1, where k_c needs more than 128 bits. Three M1e2 probes reach it today, and on this step's prototype so
+  does S1f.5.5's [`programs/arg-kinds.ein`](s1f.5.5_parser_probe/programs/arg-kinds.ein), which is
+  [Q-M1f.2](../open_questions.md#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) (a)'s rewrite
+  of `syntax/arg-kinds` (`build/s1f.5.4/protobin/ein solve` on it: exit 1; `saturate`: exit 0; 2026-11-08). So the
+  limit is on the swap's path, through that one fixture: S1f.5.5's stop shows it with [Q3](#q3--arg-kinds-and-the-round-trip),
+  and the limit stays parked.

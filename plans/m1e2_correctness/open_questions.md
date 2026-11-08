@@ -2625,6 +2625,8 @@ other keyword is an error, refused before anything runs. A term and a nested fac
 [Q32](../open_questions.md#q32--where-semantics) (2026-05-20) that left a `:where` pair to be dropped in
 silence. Q32's move of a guard to a positional premise, `(neq ?a ?c)`, stands. A retired keyword gets no
 hint of its own: it is an unknown keyword like any other. **Not built**:
-[S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) checks the lists in the loader, on the
-hand-written parser, and [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s grammar makes them
-parse errors.
+[S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s generated parser makes them
+parse errors at its swap, credited to
+[S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), which keeps the pages and the
+compiler's drops. Until the user's re-plan of 2026-11-08 S1f.5.11 was to check the lists in the loader first,
+on the hand-written parser.

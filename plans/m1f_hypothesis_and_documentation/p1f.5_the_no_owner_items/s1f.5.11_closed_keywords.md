@@ -2,22 +2,32 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.11**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 1.5 days.
-- A quarter of a day to re-take the rows [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed, sweep the corpus and list every move.
-- Half a day for the loader's lists and the check inside terms.
-- A quarter of a day for the drops that go, in the compiler and the macro expander, and the tests.
-- Half a day for the pages: six current kernel pages describe `:where`.
+**Estimate:** 1 day, re-taken on 2026-11-08 on the user's re-plan ([P1f.5 § The order](README.md#the-order)); it
+was 1.5.
+- A quarter of a day for the drops that go, in the compiler and the macro expander (T1f.5.11.2).
+- A quarter of a day for a keyword held in every form and place, and the fuzzer's property (T1f.5.11.2).
+- Half a day for the pages: six current kernel pages describe `:where` (T1f.5.11.3).
+- Re-taking the rows [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed, the sweep and every move (a
+  quarter), and the lists and the check inside terms (half a day, in the loader) are
+  [S1f.5.5](s1f.5.5_the_grammar.md)'s since the re-plan: its attribution sweep and review stop (T1f.5.5.9) and
+  its swap (T1f.5.5.4), where each keyword is a token of its form and no loader list is written.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on D-15, G-15 and G-22
 ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
-**Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
-moved.
-**Depends on:** nothing. It lands on the hand-written parser before [S1f.5.5](s1f.5.5_the_grammar.md)'s
-swap, as S1f.5.1 to S1f.5.4 do, so each move is attributed to this ruling. S1f.5.5's grammar then makes
-each keyword a token of its own form, and this stage's loader lines move into the grammar
-([S1f.5.5 § What it changes](s1f.5.5_the_grammar.md#what-it-changes), *Refusals move up*).
-[S1f.5.3](s1f.5.3_range_retired.md) and this stage each refuse `:cardinality 1..1`, for its value and for
-its keyword, so either can land first.
+**Not started.** No engine code, test, golden or fixture has moved.
+**Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
+work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
+(strings, names, etc...) ?"* Until then this stage was to land the lists in the loader, on the hand-written
+parser, before S1f.5.5's swap, and S1f.5.5's T5 was to move them into the grammar. Since then the lists are
+written once, as the grammar's tokens ([the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position)), and
+nothing edits the hand-written parser or the loader for them. This stage's step 1 is done inside S1f.5.5's
+attribution sweep and its one review stop
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)), and the
+refusals and **W32's seven rows land in S1f.5.5's swap** ([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)),
+credited to this stage's ruling: each `right` is a refusal the grammar makes at the parse, so none waits for a
+task here. What is left, T1f.5.11.2 and T1f.5.11.3, runs after the swap, on the generated parser.
+**Depends on:** S1f.5.5's swap, which makes each keyword a token of its form. [S1f.5.3](s1f.5.3_range_retired.md),
+done, refused `:cardinality 1..1` for its value; the swap refuses it for its keyword.
 
 ## The ruling
 
@@ -44,7 +54,8 @@ kwarg - it is an error"*.
    - `:why` on a fact is refused.
 4. **"If parser sees".** Today a keyword is one token for every form, so the check is the loader's. It runs
    before any run, and names the keyword's file, line and column, as a parse error does. S1f.5.5 moves it
-   into the grammar, where it is a parse error.
+   into the grammar, where it is a parse error. *Since the re-plan of 2026-11-08 there is no loader check in
+   between: the parser sees it, from the swap.*
 
 ## The lists
 
@@ -145,6 +156,9 @@ fact for a pair.
 
 ## What it changes
 
+*Since the re-plan of 2026-11-08 the first two bullets are the grammar's, at S1f.5.5's swap, where a keyword its
+form does not take is a parse error and no loader list is written; the rest is this stage's, after the swap.*
+
 - **The loader** ([`from_ir.rs`](../../../ein.rs/crates/ein-ir/src/from_ir.rs)): one list per form, beside
   `QUERY_KEYWORDS`. Any other keyword is refused with one line per keyword, in the shape the query's line
   already has: *rule 'r': unknown keyword :where — one of :match :assert :why :priority*. `QUERY_KEYWORDS`
@@ -196,6 +210,13 @@ Each page says what the form takes, that any other keyword is refused, and that 
 
 ### Task T1f.5.11.1 — the rows, every move listed
 
+**Done inside S1f.5.5 since the re-plan of 2026-11-08**: its attribution sweep credits every keyword difference to
+this ruling, and its one review stop shows the refusal lines and `wrappers.ein` as rewritten
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)). `wrappers`'
+rewrite lands before the swap if it moves no answer (T1f.5.5.10), and `kwpair-below-the-filter` moves to
+`examples/broken/` at the swap, a parse error and not a load one. The task as it stood is that sweep's brief for
+this ruling:
+
 It starts from W32's seven rows, which S1f.5.0 filed `open` on 2026-11-08, each `now` taken at
 `ec004a48` (the engine `916d97ac`'s), release and debug alike, every one the case's answer above:
 
@@ -221,24 +242,32 @@ prototype. Every move must be one of the case's rows, the three files above, or 
 changes. **Stop and show the user** the refusal lines and `wrappers.ein` as rewritten, computed on the
 prototype.
 
-### Task T1f.5.11.2 — the lists and the refusals
+### Task T1f.5.11.2 — the drops gone, and a keyword held in every place
 
-The loader's lists and the check inside terms. The drops go, and the tests move. A test in `ein-ir` holds one
-line for each form and for each place in a term: a `:match`'s `and`, a pattern, an `:assert`, a `:goal`, an
-`absent`, a guard, a macro call and a nested fact. `fuzz_properties` gains the property that no accepted
-program carries a keyword its form does not list. The case's rows are fixed.
+The lists and the refusals, and the case's rows fixed, **moved to S1f.5.5's swap on 2026-11-08**
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)); the loader's lines for the three forms already closed,
+and `QUERY_KEYWORDS`, go in S1f.5.5's T5. What is left, after both: the drops go (the compiler's in-`:match` pair
+and its `KwPair` filters, the macro expander's arity filter, `from_ir.rs`' *not refused* note), and the tests that
+named them move. A test holds one parse error for each form and for each place in a term, as rows of the grammar's
+table: a `:match`'s `and`, a pattern, an `:assert`, a `:goal`, an `absent`, a guard, a macro call and a nested
+fact. `fuzz_properties` gains the property that no accepted program carries a keyword its form does not list.
 
 ### Task T1f.5.11.3 — the pages
+
+After the swap, beside S1f.5.5's T7.
 
 The six pages, Q32's line, and the inventory's D-15 and G-22, each saying what fixed it.
 
 ## Acceptance
 
-- Each form takes exactly the keywords its row lists. Any other keyword is refused at load, on every command,
-  one line per keyword naming the form and its list; that includes `:where`, `:cardinality`, `:mode`, `:k`,
-  `:G` and `:notes`.
-- No keyword pair loads inside a term or a nested fact.
+**Since the re-plan of 2026-11-08 the items the grammar settles are
+[S1f.5.5's acceptance](s1f.5.5_the_grammar.md#acceptance)**, held at its swap: each form takes exactly the
+keywords its row lists and any other is refused on every command, `:where`, `:cardinality`, `:mode`, `:k`, `:G`
+and `:notes` among them, no keyword pair parses inside a term or a nested fact, the case's rows are `fixed`, and
+no corpus answer moves outside the three files listed. A refusal is the parse error, naming the file, line and
+column and the keywords the form takes, where this page had the loader's line. This stage's own, after the swap:
+
+- A test holds one parse error for each form and each place in a term, and the fuzzer holds the property.
 - Nothing in the compiler or the macro expander drops a keyword pair, and the code that did is gone.
 - No current kernel page describes `:where`, and `03_examples.md`'s `transitive` writes `(neq ?a ?c)`.
-- The case's rows are `fixed`, and no corpus answer moves outside the three files listed.
 - `./run_tests.sh` is green.

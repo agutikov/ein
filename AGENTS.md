@@ -402,6 +402,16 @@ constrained-reasoning research.
   `syntax/arg-kinds` and `wrong-answers/range-in-match`, are refused at the
   parse in between, named in `ein_corpus::REFUSED_UNTIL_S1F_5_4`, which
   `corpus_cli` holds both ways and S1f.5.4 empties.
+  The same day the user re-planned the rest of P1f.5's language work (*"It is
+  the same work done twice, why not switch to grmtools first and remove
+  hand-written parser and then verify requirement met (strings, names,
+  etc...) ?"*): S1f.5.5's generated parser is built beside the hand-written
+  one and swapped in first, every answer it moves attributed to S1f.5.4's,
+  S1f.5.1's, S1f.5.2's or S1f.5.11's ruling or to the paper grammar's own
+  before the old parser goes, so the swap and not S1f.5.4 empties that list, and
+  S1f.5.4's step 1, done that day (46 of 511 programs move on its
+  prototype), is the attribution's first cross-check
+  ([P1f.5 § The order](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-order)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

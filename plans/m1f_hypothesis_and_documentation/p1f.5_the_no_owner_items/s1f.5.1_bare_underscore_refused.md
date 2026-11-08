@@ -2,19 +2,33 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.1**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 2 days.
-- Half a day to re-take W29's rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed on 2026-11-08, prototype, list every move, and show real programs.
-- Half a day for the lexer, the refusal and the printer.
-- Half a day to retire what only `_` used.
-- Half a day for the pages.
+**Estimate:** 1.25 days, re-taken on 2026-11-08 on the user's re-plan ([P1f.5 § The order](README.md#the-order));
+it was 2.
+- A quarter of a day to trace F3's cause in the matcher, before `Slot::Any` goes (T1f.5.1.3).
+- A quarter of a day for `_` held in every position, in the grammar's table (T1f.5.1.3).
+- A quarter of a day to retire what only `_` used (T1f.5.1.3).
+- Half a day for the pages (T1f.5.1.4).
+- Re-taking W29's rows, the prototype, every move and the real programs (T1f.5.1.1, half a day), and the
+  refusal, the printer, the fixtures and the register (T1f.5.1.2, half a day) are
+  [S1f.5.5](s1f.5.5_the_grammar.md)'s since the re-plan: its attribution sweep and review stop
+  (T1f.5.5.9) and its swap (T1f.5.5.4).
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
 ([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)), and revised 2026-11-07 on the
 user's rule for a name ([S1f.5.5](s1f.5.5_the_grammar.md#the-name-rule)): a run of underscores is a
 name, and only a bare `_` and `?_` stay refused.
-**Not started, and not to start until the user says so** (*"do not apply
-modifications now"*). No engine code, test, golden or fixture has moved.
-**Depends on:** nothing.
+**Not started.** No engine code, test, golden or fixture has moved.
+**Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
+work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
+(strings, names, etc...) ?"* The refusal is the generated parser's (bare `_` is no `NAME` and `?_` no `VAR` in
+[the paper grammar](s1f.5.5_paper_grammar.md#the-grammar-by-position)), and nothing edits the hand-written lexer or
+parser for it. This stage's step 1 is done inside S1f.5.5's attribution sweep and its one review stop
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)), and its
+refusal, printer, fixtures and register rows land in S1f.5.5's swap
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)), credited to this stage's ruling. **W29's six rows
+are fixed in the swap's commit**: each `right` is the refusal, which the grammar makes at the parse, so none waits
+for a task here. What is left, T1f.5.1.3 and T1f.5.1.4, runs after the swap, on the generated parser.
+**Depends on:** S1f.5.5's swap, which lands the refusal.
 
 ## The case
 
@@ -91,6 +105,9 @@ This reverses [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--wha
 (c), and W20's `_` rows move with them.
 
 ## What it changes
+
+*Since the re-plan of 2026-11-08 the grammar, the refusal, the printer, the register and the fixtures are S1f.5.5's
+swap, credited to this ruling, and what only `_` used is this stage's, after it.*
 
 **The grammar.** `_` stays a token only so the refusal can say why.
 
@@ -179,9 +196,18 @@ Each holds unless the user says otherwise, and step 1 shows it working.
    refuses a string as a name altogether.
 4. **A keyword is unchanged.** The ruling names atoms and variables.
 
+*Since the re-plan of 2026-11-08 defaults 2 and 3 are moot.* The name rule (S1f.5.4's ruling) and S1f.5.2's
+refusal land at the same swap as this stage's, so `1_a` is one name from the first commit that refuses `_`, and
+`"_"` is refused there too.
+
 ## The method
 
 ### Task T1f.5.1.1 — W29 re-taken, every move listed, real programs shown
+
+**Done inside S1f.5.5 since the re-plan of 2026-11-08**: its attribution sweep credits every `_` difference to
+this ruling, and its one review stop shows what step 5 below lists
+([T1f.5.5.9](s1f.5.5_the_grammar.md#task-t1f559--every-difference-attributed-and-one-review-stop)). Step 3, F3's
+trace, moved to T1f.5.1.3. The task as it stood is that sweep's brief for this ruling:
 
 1. Re-take the case on a fresh build, release and debug.
 2. Start from W29's six rows, which [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md) filed `open` on
@@ -220,16 +246,27 @@ fixtures moves, or if a rename moves `zebra2`'s R.
 
 ### Task T1f.5.1.2 — refused, and valid in a name
 
-The lexer, the parser's refusal, the printer, the fixtures and the register. W29,
-and W20's and W24's rows, as listed. `arg-kinds` and `is-a-shapes` answer without
-the dropped fact.
+**Moved to S1f.5.5's swap on 2026-11-08** ([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)): the
+grammar's refusal, the printer, the fixtures and the register, W29's six rows flipped to `fixed`, and W20's and
+W24's `_` rows restated, as listed. `arg-kinds` and `is-a-shapes` are Q-M1f.2 (a)'s rewrites, without the
+dropped fact.
 
-### Task T1f.5.1.3 — what only `_` used
+### Task T1f.5.1.3 — F3 traced, `_` held in every position, and what only `_` used
 
-`Slot::Any` and `Node::Wildcard` retired, as a separate commit, so that no answer
-moves in it. Every golden unmoved by this task, byte for byte.
+After the swap, on the generated parser, after S1f.5.5's T5. Three steps:
+
+1. **F3's cause traced** in the matcher (T1f.5.1.1's step 3, moved here), while `Slot::Any` still exists: say
+   whether it reaches anything `_` does not (a rule with no variable in that slot cannot, by construction). A
+   reach is a wrong answer, filed as a register row before anything moves.
+2. **A test per position**: `_` and `?_` refused in every position of [the table](#what-it-changes), on every
+   command that reads a program, as rows of the grammar's table S1f.5.5's T5 builds.
+3. **`Slot::Any` and `Node::Wildcard` retired**, as a separate commit, so that no answer moves in it. Every
+   golden unmoved by this step, byte for byte. The loader's refusal lines for `_` (`Found::WildHead` and the
+   lines for a head, a guard and a premise) went in S1f.5.5's T5; this step retires the rest of the 42 lines.
 
 ### Task T1f.5.1.4 — the pages
+
+After the swap, beside S1f.5.5's T7.
 
 `00_ebnf.md` (the tokens and fact 2), `01_grammar.md` (the `WILDCARD` row and
 § Rules), `02_patterns.md` (the construct table's two rows, and its premise and
@@ -241,15 +278,14 @@ two Q entries the ruling reverses say so. W-22 and F3 marked in
 
 ## Acceptance
 
-- `_` alone is refused in every position of the table, by one line, on every
-  command that reads a program, and a test holds each position.
-- `_a_in_b_`, `_______01` and `A________B`, and the same as variables, load, match
-  and print as written, and reload to the same value.
-- `1_a` is one name where S1f.5.4 has landed and refused where it has not, and no input the stage touches
-  splits into two tokens.
-- W29's rows are `fixed`; W20's and W24's rows answer their new `right`.
-- No corpus program outside step 1's list moved, and `zebra2`'s R is unmoved under
-  the renaming.
+**Since the re-plan of 2026-11-08 the items the grammar settles are
+[S1f.5.5's acceptance](s1f.5.5_the_grammar.md#acceptance)**, held at its swap: `_` and `?_` refused in every
+position, `_a_in_b_`, `_______01` and `A________B` names and variables, `1_a` one name, W29's rows `fixed` and
+W20's and W24's answering their new `right`, and `zebra2`'s R unmoved under the renaming. This stage's own, after
+the swap:
+
+- A test holds each position of the table, `_` and `?_` refused in it, on every command that reads a program.
+- F3's cause is named, and anything it reaches beyond `_` is a register row.
 - `Slot::Any` and `Node::Wildcard` are gone, and that commit moved no golden.
 - `./run_tests.sh` is green.
 

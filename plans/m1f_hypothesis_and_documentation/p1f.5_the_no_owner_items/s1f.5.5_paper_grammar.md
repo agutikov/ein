@@ -18,6 +18,12 @@ and everything after it, macros, imports, the stdlib, the loader and the solver,
 ([§ Re-taking it](#re-taking-it)). What the prototype prints that a later stage changes is marked: the
 printer quotes a name of digits, `"7"`, until S1f.5.4 makes the printer print it bare.
 
+*Re-planned 2026-11-08, after this page was written* ([S1f.5.5 § The order](s1f.5.5_the_grammar.md#the-order-re-planned-2026-11-08)):
+what this page has landing before the swap, on the hand-written parser, lands in the swap's commit instead,
+credited to the same rulings: S1f.5.4's printer and `features/05`'s N, and the 23 files of
+[Q2](#q2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) the owning stages were to refuse first.
+Of Q2's own moves, what moves no answer lands just before the swap (T1f.5.5.10).
+
 ## The grammar, by position
 
 The lexical grammar. A token runs to a separator; no token starts inside another.

@@ -241,7 +241,10 @@ test's floor of 40. Three ways through:
 **Settled 2026-11-08 by the coordinator: (a).** The page licenses it: both programs stay as written, its
 Default 2 makes the refusal the plain parse error between the stages, and the name `1..5` stays writable as
 the string `"1..5"` meanwhile, so the phase's *no name is ever left unwritable* holds. Built by T1f.5.3.2,
-with [S1f.5.4](s1f.5.4_digits_are_names.md)'s T2 told to empty the list and delete the interim test.
+with [S1f.5.4](s1f.5.4_digits_are_names.md)'s T2 told to empty the list and delete the interim test. *Since the
+user's re-plan of the same day the list is emptied, and `a_range_is_no_token` turned into its plain-name
+counterpart, by [S1f.5.5](s1f.5.5_the_grammar.md)'s swap
+([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)), which lands the name rule; S1f.5.4's T2 moved there.*
 
 ### The parse-negative fixture
 
