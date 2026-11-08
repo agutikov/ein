@@ -1094,7 +1094,7 @@ pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
 /// closes p q          compare over these relations only (optional)
 /// model
 /// (p A)
-/// (q A)
+/// (q A)               ; a fact may carry a comment, and span lines
 /// model               a model with no fact over the closed relations
 /// ```
 ///
@@ -1102,49 +1102,154 @@ pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
 /// it — and is what lets a file say *one model with no `q`*. Without it a
 /// model is compared as its positive facts minus the program's given ones
 /// ([`solution_semantics.md` § 3](../../../../docs/kernel/inference/solution_semantics.md)).
+///
+/// **A model's facts are Ein, compared by value** — M1f S1f.5.5, T1f.5.5.6
+/// (S-15, the user's ruling of 2026-11-07). The text between two `model`
+/// lines is read by the generated parser as facts, so a fact may span lines
+/// and carry a comment, and each is printed by the one printer
+/// ([`Terms::fact_text`]), which prints the states' facts too: `(p  a)`,
+/// `( p a )` and `(p a) ; the fact` are all `(p a)`. Until then each line that
+/// started with `(` was kept as written and compared as text, so the same fact
+/// in another spelling matched nothing, and `(p a` was a fact.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Expected {
     pub closes: Option<Vec<String>>,
     pub models: Vec<Vec<String>>,
 }
 
-pub fn parse_expected(text: &str) -> Result<Expected, String> {
+/// Why a `--diff-models` file could not be read.
+#[derive(Debug)]
+pub enum ExpectedError {
+    /// A line that is not `closes …`, `model` or part of a fact, or a fact
+    /// before the first `model`: `line n: …`.
+    Format(String),
+    /// A model's facts do not parse: every error recovery reaches, each
+    /// segment's report in file order, positions the file's.
+    Parse(Vec<ein_ir::ParseError>),
+    /// A model lists a form that is no fact, or its facts do not load.
+    NotFacts(String),
+}
+
+impl std::fmt::Display for ExpectedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ExpectedError::Format(m) | ExpectedError::NotFacts(m) => f.write_str(m),
+            ExpectedError::Parse(reports) => {
+                f.write_str("a model's facts do not parse")?;
+                for r in reports {
+                    write!(f, "\n{r}")?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/// Read a `--diff-models` file, `file` the name its parse errors carry.
+pub fn parse_expected(text: &str, file: &str) -> Result<Expected, ExpectedError> {
+    // Split at `\n` alone, as the parser counts lines, so that a model's
+    // positions are the file's to the end of input.
+    let lines: Vec<&str> = text.split('\n').collect();
     let mut out = Expected::default();
-    let mut current: Option<Vec<String>> = None;
-    for (n, raw) in text.lines().enumerate() {
-        let line = raw.trim();
-        if line.is_empty() || line.starts_with(';') {
+    // Each model's lines, by index: the lines between two `model` lines that
+    // are not `closes …`, blank or a comment.
+    let mut segments: Vec<Vec<usize>> = Vec::new();
+    for (n, raw) in lines.iter().enumerate() {
+        let code = raw.split(';').next().unwrap_or("").trim();
+        let mut words = code.split_whitespace();
+        match words.next() {
+            Some("closes") => {
+                if out.closes.is_some() {
+                    return Err(ExpectedError::Format(format!(
+                        "line {}: a second `closes` line",
+                        n + 1
+                    )));
+                }
+                out.closes = Some(words.map(str::to_string).collect());
+            }
+            Some("model") if words.next().is_none() => segments.push(Vec::new()),
+            _ => match segments.last_mut() {
+                Some(s) => s.push(n),
+                None if code.is_empty() => {}
+                None => {
+                    return Err(ExpectedError::Format(format!(
+                        "line {}: expected `closes …` or `model` before the first fact, got {:?}",
+                        n + 1,
+                        raw.trim()
+                    )));
+                }
+            },
+        }
+    }
+    // Each model's text, every other line blank, so that a parse error's
+    // line and column are the file's.
+    let mut refused: Vec<ein_ir::ParseError> = Vec::new();
+    for seg in &segments {
+        let mut masked: Vec<&str> = vec![""; lines.len()];
+        for &i in seg {
+            masked[i] = lines[i];
+        }
+        let masked = masked.join("\n");
+        let mut ast = ein_ir::Ast::new();
+        let forms = match ein_ir::parse(&mut ast, &masked, Some(file)) {
+            Ok(forms) => forms,
+            Err(e) => {
+                refused.push(e);
+                continue;
+            }
+        };
+        if !refused.is_empty() {
             continue;
         }
-        if let Some(rest) = line.strip_prefix("closes") {
-            if out.closes.is_some() {
-                return Err(format!("line {}: a second `closes` line", n + 1));
-            }
-            out.closes = Some(rest.split_whitespace().map(str::to_string).collect());
-        } else if line == "model" {
-            if let Some(m) = current.take() {
-                out.models.push(m);
-            }
-            current = Some(Vec::new());
-        } else if line.starts_with('(') {
-            match current.as_mut() {
-                Some(m) => m.push(line.to_string()),
-                None => return Err(format!("line {}: a fact before the first `model`", n + 1)),
-            }
-        } else {
-            return Err(format!(
-                "line {}: expected `closes …`, `model` or a fact, got {line:?}",
-                n + 1
-            ));
-        }
+        out.models.push(model_facts(&mut ast, &forms, file)?);
     }
-    if let Some(m) = current {
-        out.models.push(m);
-    }
-    for m in &mut out.models {
-        m.sort();
+    if !refused.is_empty() {
+        return Err(ExpectedError::Parse(refused));
     }
     Ok(out)
+}
+
+/// A model's forms, each a fact or a stored negation, printed by the one
+/// printer, sorted: the facts loaded into a fresh store, as a program's are,
+/// so a value is the value a program's fact of the same text holds.
+fn model_facts(
+    ast: &mut ein_ir::Ast,
+    forms: &[ein_ir::NodeId],
+    file: &str,
+) -> Result<Vec<String>, ExpectedError> {
+    const NOT_FACTS: [&str; 9] = [
+        "relation", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
+    ];
+    for &form in forms {
+        if let Some(head) = ast.head_name(form).filter(|h| NOT_FACTS.contains(h)) {
+            let at = first_loc(ast, form)
+                .map_or_else(String::new, |l| format!("{file}:{}:{}: ", l.line, l.col));
+            return Err(ExpectedError::NotFacts(format!(
+                "{at}a model lists facts, and ({head} …) is no fact"
+            )));
+        }
+    }
+    let mut terms = Terms::new();
+    let kb = ein_ir::load(ast, &mut terms, forms, None)
+        .map_err(|e| ExpectedError::NotFacts(format!("a model's facts do not load: {e}")))?;
+    let mut facts: Vec<String> = kb.facts().map(|f| terms.fact_text(f)).collect();
+    facts.sort();
+    Ok(facts)
+}
+
+/// The first position under `node`: a top-level form keeps none.
+fn first_loc(ast: &ein_ir::Ast, node: ein_ir::NodeId) -> Option<ein_ir::Loc> {
+    if let Some(l) = ast.loc(node) {
+        return Some(l);
+    }
+    match ast.node(node) {
+        ein_ir::Node::SForm { head, .. } => first_loc(ast, head)
+            .or_else(|| ast.form_args(node).iter().find_map(|&a| first_loc(ast, a))),
+        ein_ir::Node::KwPair { key, value } => {
+            first_loc(ast, key).or_else(|| first_loc(ast, value))
+        }
+        _ => None,
+    }
 }
 
 /// A recorded state's facts the way an [`Expected`] compares them: over
@@ -1355,17 +1460,68 @@ mod diff_tests {
 
     #[test]
     fn the_empty_model_is_a_model() {
-        let e = parse_expected("closes q\nmodel\n").expect("parses");
+        let e = parse_expected("closes q\nmodel\n", "<want>").expect("parses");
         assert_eq!(e.closes.as_deref(), Some(&["q".to_string()][..]));
         assert_eq!(e.models, vec![Vec::<String>::new()]);
         assert!(diff_model_sets(&s(&[&[]]), &e.models).agrees());
         assert_eq!(diff_model_sets(&[], &e.models).missing, [0]);
     }
 
+    /// The format's own refusals keep their `line n:` sentences; a model's
+    /// facts are the parser's (M1f S1f.5.5, T1f.5.5.6), so `p A` is refused
+    /// where it was a line the format did not know, and a form that is no
+    /// fact is refused with its position.
     #[test]
     fn the_file_format_refuses_what_it_cannot_read() {
-        assert!(parse_expected("(p A)\n").is_err());
-        assert!(parse_expected("model\np A\n").is_err());
-        assert!(parse_expected("closes p\ncloses q\n").is_err());
+        let err = |t: &str| parse_expected(t, "<want>").expect_err(t).to_string();
+        assert_eq!(
+            err("(p A)\n"),
+            "line 1: expected `closes …` or `model` before the first fact, got \"(p A)\""
+        );
+        assert_eq!(
+            err("closes p\ncloses q\n"),
+            "line 2: a second `closes` line"
+        );
+        assert!(
+            err("model\np A\n")
+                .starts_with("a model's facts do not parse\n<want>:2:1: unexpected `p`: a name"),
+            "{}",
+            err("model\np A\n")
+        );
+        assert_eq!(
+            err("model\n(p a)\n(relation p T)\n"),
+            "<want>:3:11: a model lists facts, and (relation …) is no fact"
+        );
+    }
+
+    /// A fact's spelling is not its value: the parser reads it, the one
+    /// printer prints it, so spacing, a comment and a line break move nothing,
+    /// and a fact listed twice is one.
+    #[test]
+    fn a_models_facts_are_read_by_value() {
+        let e = parse_expected(
+            "; the probe\ncloses p q\nmodel\n( p  a )  ; the fact\n(q\n  (p a))\n(p a)\nmodel\n",
+            "<want>",
+        )
+        .expect("parses");
+        assert_eq!(
+            e.closes.as_deref(),
+            Some(&["p".to_string(), "q".to_string()][..])
+        );
+        assert_eq!(
+            e.models,
+            vec![
+                vec!["(p a)".to_string(), "(q (p a))".to_string()],
+                Vec::<String>::new()
+            ]
+        );
+        let unclosed = parse_expected("model\n(p a\nmodel\n(q b\n", "<want>")
+            .expect_err("two models' facts do not parse")
+            .to_string();
+        assert!(
+            unclosed.contains("<want>:2:5: unexpected end of input")
+                && unclosed.contains("<want>:4:5: unexpected end of input"),
+            "every model's report: {unclosed}"
+        );
     }
 }

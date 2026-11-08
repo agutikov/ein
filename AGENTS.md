@@ -552,7 +552,9 @@ constrained-reasoning research.
   loader, the 55 loader lines it covers are deleted
   ([§ T5 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t5-record-2026-11-09)),
   and a stage that makes the grammar refuse a shape adds a row there.
-  T6 and T7 are next.
+  T6 (the same day) reads a `--diff-models` file's facts with the parser and
+  compares them by value, so a fact's spelling no longer decides a match.
+  T7 is next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

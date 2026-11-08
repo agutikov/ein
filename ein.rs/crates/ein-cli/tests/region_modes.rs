@@ -258,6 +258,69 @@ fn the_oracles_directory_has_no_walk_and_draws_with_none() {
     assert!(!dir.join("walk.json").exists());
 }
 
+/// **`--diff-models` compares by value** — M1f S1f.5.5, T1f.5.5.6 (S-15), the
+/// user's ruling of 2026-11-07.
+///
+/// The file keeps its line format, and the facts between two `model` lines are
+/// read by the generated parser and printed by the one printer, which prints
+/// the states' facts too, so the same fact in another spelling matches. The
+/// five rows of the stage's table, re-taken on `916d97ac` on the inventory's
+/// probe: until this task the second to fourth matched nothing (`0 matched … 1
+/// missing`), and the fifth, `(p a` with no `)`, was compared as written, with
+/// no error. Since, a fact the parser refuses is a usage error, exit 2, before
+/// the run, with every error recovery reaches. The probe's state held `(q "x
+/// y")` too, a string, which S1f.5.2 refuses as a value; the state here holds
+/// `(p a)` alone, which `closes p` compares. A fact that spans lines is the
+/// sixth case.
+#[test]
+fn diff_models_reads_a_models_facts_as_ein() {
+    let dir = scratch("diff-by-value");
+    let program = dir.join("one.ein");
+    std::fs::write(&program, "(relation p T)\n(p a)\n").expect("the program is written");
+    let p = program.to_string_lossy().to_string();
+    for (n, fact) in [
+        "(p a)",
+        "(p  a)",
+        "( p a )",
+        "(p a) ; the fact",
+        "(p\n   a)",
+    ]
+    .iter()
+    .enumerate()
+    {
+        let want = dir.join(format!("want-{n}.txt"));
+        std::fs::write(&want, format!("closes p\nmodel\n{fact}\n")).expect("written");
+        let r = ein(&["solve", &p, "--diff-models", &want.to_string_lossy()]);
+        assert_eq!(r.code, 0, "{fact:?}: {}", r.err);
+        assert!(
+            r.out
+                .contains("1 matched, 0 near, 0 missing, 0 spurious — the sets agree"),
+            "{fact:?}:\n{}",
+            r.out
+        );
+    }
+    let bad = dir.join("unclosed.txt");
+    std::fs::write(&bad, "closes p\nmodel\n(p a\n").expect("written");
+    let b = bad.to_string_lossy().to_string();
+    let r = ein(&["solve", &p, "--diff-models", &b]);
+    assert_eq!(r.code, 2, "{}", r.err);
+    assert!(r.out.is_empty(), "it ran:\n{}", r.out);
+    assert!(
+        r.err.starts_with(&format!(
+            "error: --diff-models {b}: a model's facts do not parse\n"
+        )),
+        "{}",
+        r.err
+    );
+    assert!(
+        r.err
+            .lines()
+            .any(|l| l == format!("{b}:3:5: unexpected end of input")),
+        "{}",
+        r.err
+    );
+}
+
 #[test]
 fn the_oracle_refuses_past_its_limit() {
     let r = ein(&["oracle", THREE, "--region-limit", "2"]);

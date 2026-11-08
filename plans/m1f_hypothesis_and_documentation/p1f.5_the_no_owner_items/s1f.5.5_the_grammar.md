@@ -91,7 +91,11 @@ lrlex's shape leaves is parked for the phase's close
 the grammar's table, 123 refusals the grammar took over; 55 refusal lines the grammar covers are deleted, each shown
 unreachable first, and the 12 the census counted the grammar's that a macro's body or a pattern's argument still
 reaches are kept, each held by a test; the two dead trace functions are gone; nothing a user sees moved
-([Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind), defaulted). T6 and T7 run next.
+([Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind), defaulted).
+**T6, `--diff-models` by value (S-15), done the same day** ([§ T6 record](#t6-record-2026-11-09)): a model's facts
+are read by the generated parser and printed by the one printer, so `(p  a)`, `( p a )` and `(p a) ; the fact`
+match `(p a)`, and a file whose facts do not parse is refused before the run, exit 2, with every error and its line
+and column; no answer or register row moved. T7 runs next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1901,6 +1905,46 @@ exits 0 either way, so this is a report, as P1e2.3's surfaces were.
 
 **Its test** is the five rows, in `ein-cli/tests/region_modes.rs` beside the option's other tests, with each
 file written to the gate's scratch.
+
+### T6 record, 2026-11-09
+
+**One commit, on T5's (`3a9207ae`).** `ein_render::models::parse_expected` reads a `--diff-models` file by value. It
+keeps its line format: `;` comments, an optional `closes` line and `model` lines, each recognised as a line of its
+own. The text between two `model` lines is read by the generated parser with every other line blanked, so a
+position is the file's; each form must be a fact or a stored negation; the facts are loaded into a fresh store, as
+a program's are, and printed by the one printer (`Terms::fact_text`), which prints the states' facts the diff
+compares them with (`comparable_facts`, through `events::sexpr`). A fact may span lines and carry a comment, a value
+is the value a program's fact of the same text holds, and a model's facts are a set, a fact listed twice being one.
+The reader takes the file's name, so its errors carry it, and returns `ExpectedError`: the format's own refusals
+keep their `line n:` sentences (a second `closes`, a line before the first `model`, the latter's wording now naming
+both), a model's facts that do not parse give every error recovery reaches, each model's report in file order, and a
+form that is no fact, `(relation p T)` in a model, is refused with its position.
+
+**The table, re-taken** on one program, `(relation p T) (p a)`, each file `closes p`, through T5's release binary
+(`build/s1f.5.5/t5/xcheck/bin/ein-t5`) and this commit's debug one (2026-11-09). The inventory's probe held `(q "x
+y")` beside `(p a)`, a string S1f.5.2 refuses as a value, so it is not re-used:
+
+| the file writes | T5 | this commit |
+|---|---|---|
+| `(p a)` | `1 matched, 0 near, 0 missing, 0 spurious` | the same |
+| `(p  a)` | `0 matched, 0 near, 1 missing, 1 spurious` | `1 matched …` |
+| `( p a )` | `0 matched, 0 near, 1 missing, 1 spurious` | `1 matched …` |
+| `(p a) ; the fact` | `0 matched, 0 near, 1 missing, 1 spurious` | `1 matched …` |
+| `(p a`, with no `)` | `0 matched, 0 near, 1 missing, 1 spurious`, no error | exit 2 before the run: `error: --diff-models FILE: a model's facts do not parse`, then `FILE:3:5: unexpected end of input` and `repair: Insert `)`` |
+| `(p` and `a)`, on two lines | exit 2, `line 4: expected `closes …`, `model` or a fact, got "a)"` | `1 matched …` |
+
+`ein-cli/tests/region_modes.rs`' `diff_models_reads_a_models_facts_as_ein` holds the six rows, each file written to
+the gate's scratch (`Scratch`), and `models.rs`' unit tests hold the reader: the format's refusals, a form that is
+no fact, two unclosed models reported both, and spacing, a comment, a line break and a repeat moving nothing.
+
+**No answer moved, and no register row**: `--diff-models` exits 0 either way, a report, as the stage said; every
+other test that writes a `--diff-models` file (`models_grid`, `forms_cut`, `region_modes`' listed states) passes
+unchanged. The option's help still says *one fact per line*, which is one way to write the file and not the only one;
+`configuration.md`'s sentence on a file that does not parse is true as it stands. Both are left to T7, which owns
+that sentence.
+
+**The gate.** On this commit, 15 min 46 s (`build/gate-s1f.5.5-T6.log`), green: 938 tests, T5's 936 and the two
+above, and every static check.
 
 ### Task T1f.5.5.7 — the pages
 

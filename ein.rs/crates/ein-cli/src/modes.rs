@@ -237,12 +237,14 @@ pub fn run(m: &ArgMatches) -> i32 {
         || m.get_one::<String>("events").is_some()
         || m.get_one::<String>("trace").is_some();
     // `--diff-models FILE` is read before the run, as the walk's is: a file
-    // it cannot read is a usage error, and nothing runs.
+    // it cannot read, or whose facts the parser refuses (M1f S1f.5.5,
+    // T1f.5.5.6: every error recovery reaches, each with the file's line and
+    // column), is a usage error, and nothing runs.
     let want = match m.get_one::<String>("diff-models") {
         None => None,
         Some(path) => match std::fs::read_to_string(path)
             .map_err(|e| e.to_string())
-            .and_then(|t| ein_render::models::parse_expected(&t))
+            .and_then(|t| ein_render::models::parse_expected(&t, path).map_err(|e| e.to_string()))
         {
             Ok(e) => Some((path.clone(), e)),
             Err(e) => {
