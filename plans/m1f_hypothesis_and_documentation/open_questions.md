@@ -14,7 +14,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; [S1f.5.0](p1f.5_the_no_owner_items/s1f.5.0_the_known_wrong_answers_filed.md) files W33–W35 |
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
-| [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **open**, put to the user 2026-11-08; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) stopped on it |
+| [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (b)**: the boundary ordered by the derived band too, then removal; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -181,3 +181,7 @@ gave the boundary with a key derived from the rules, holds every core the cap de
 order-dependencies the store already has decide (`zebra.ein`'s flag, W25, W29), each owned. It does take an order at
 the boundary, which the ruling of Q-M1f.4 left FIFO on purpose: if that is D2's to decide, (a) is the ruling's own
 consequence and (c) the refusal.
+
+**Ruled 2026-11-08, (b).** The user chose *"Order boundary by band"*: the boundary admits its candidates in
+derived-band order, as the agenda does, and `:priority` is removed; what still moves (`zebra.ein`'s cores through
+the flag, W25's control, W29's witness, the records) is named in the removal commit as F22's, each witness restated.
