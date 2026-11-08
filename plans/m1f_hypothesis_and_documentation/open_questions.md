@@ -15,7 +15,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
 | [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
-| [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **open**, put to the user 2026-11-08; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 waits on it |
+| [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **ruled 2026-11-08, (b)**: never bound; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -259,3 +259,9 @@ which is how `imply1` hands it to a rule that asserts it, a stdlib idiom that wo
 every option the three writeback names are refused wherever a program writes them: in the generated grammar as a
 token of their own that no production takes, with its own text, and today at the parse already, `<` being no name
 character in the hand-written lexer.
+
+**Ruled 2026-11-08: (b).** The user chose *"Never bound (b)"*. A dunder is refused where a program binds a
+name: a declared relation, a rule's, an hrule's or a macro's name, and an import's `:as`. It is legal wherever a
+name is used, as a relation or as a value, so `(imply1 functional __closed__)`, its comment, its API row and
+`algebra_semantics`' test stay as they are. The three writeback names are refused wherever a program writes
+them. T11 builds it.
