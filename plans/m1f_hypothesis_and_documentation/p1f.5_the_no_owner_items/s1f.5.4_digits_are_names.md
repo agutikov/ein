@@ -180,6 +180,23 @@ no name in the program, and every rule list `saturate --dump` prints is unmoved.
 After the swap, beside S1f.5.5's T7. `00_ebnf.md`, `01_grammar.md` (the `INT` row), `02_patterns.md`,
 `defined_behaviour.md`, `glossary.md`, `examples/README.md`. Q-M1e2.20 says what overrode it.
 
+### Task T1f.5.4.5 — a template names every variable (W37)
+
+**Added 2026-11-08**, on the user's ruling on S1f.5.5's T9 review stop, item 7 (*"Accept all as recommended"*):
+S1f.5.5's T10 filed [`W37/template-var-star`](../../../corpus/wrong_answers.toml), `open` and owned by this
+stage, since the name rule is what gives a variable its characters. `ein_core::why::render_why` reads a template
+reference as `{?`, one letter or digit, then letters, digits, `_` and `-`, then `}`, so a reference to a variable
+holding any other character is printed as written: the stdlib's three `{?isR*}` `:why`s on `--trace` today, the
+witness's `:goal-text` on the read-out, and after the swap every variable the name rule adds (`?_x_`, `?a.b`,
+`?x'`; [S1f.5.5's T9 review § 11](s1f.5.5_the_grammar.md#t9-record-2026-11-08)). **The fix, as ruled:** a
+reference reads the name rule's characters up to the first `}`. After the swap, on the generated parser, with
+W37's row flipped in the same commit and the stdlib's three traces printing the hierarchy relation
+(`tests/stdlib/typing/02_type_hierarchy_converse.ein`, `03_type_hierarchy_welltyped.ein`,
+`tests/stdlib/algebra/17_converse_illtyped_ran.ein`). One question rides on it, which T9's review recommended and
+this stage settles: `{` and `}` are name characters for now (the user, 2026-11-07), so a variable holding `}`
+cannot be referenced; recommended, the loader refuses a template that names a variable it cannot reach, which no
+corpus program writes.
+
 ## Acceptance
 
 **Since the re-plan of 2026-11-08 the items the grammar settles are
@@ -192,6 +209,7 @@ swap:
 - With the int kind gone, `:priority 110` still orders its rule and puts no name in the program: H, and every
   rule list `saturate --dump` prints, are unmoved on every program.
 - No page describes an `INT` token or an int value.
+- `W37/template-var-star` is fixed: a template reference names every variable the name rule spells (T1f.5.4.5).
 - `./run_tests.sh` is green.
 
 ## Step 1 — every move listed (2026-11-08)

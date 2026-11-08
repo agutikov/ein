@@ -492,6 +492,14 @@ constrained-reasoning research.
   no answer moved, only W34's candidate's spelling and the renderings that
   print a renamed head
   ([§ T8 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#t8-record-2026-11-08)).
+  Its T9 review stop, ruled by the user the same day, found a wrong answer with
+  no row, which T10 filed as `W37/template-var-star`, `open` and owned by
+  S1f.5.4, under the register's schema `/15` (a `now` records the sentences a
+  query's `:goal-text` prints): a template reference cannot name a variable
+  holding a character other than a letter, a digit, `_` or `-`, so `{?n*}`
+  prints as written, as the stdlib's three `{?isR*}` `:why`s do on `--trace`:
+  103 fixed, 36 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-08).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

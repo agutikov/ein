@@ -84,7 +84,13 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// where `right` states them ([`Right::refuted_by`]), W36's: under
 /// `:record-alternative-justifications false` the row names other rules
 /// beside the same core, which the config principle does not exempt.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/14";
+/// `/15` since M1f S1f.5.5 (2026-11-08): a `now` records the sentences the
+/// read-out prints for a query's `:goal-text` ([`Now::goal_text`], its `“…”`
+/// lines, which the summary does not carry) where `right` states them
+/// ([`Right::goal_text`]), W37's: a template reference that names a variable
+/// with a character other than a letter, a digit, `_` or `-` is printed as
+/// written.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/15";
 
 /// What a claim's check came to, as the summary spells it (schema /12):
 /// `none` where the program states no such claim.
@@ -429,6 +435,13 @@ pub struct Now {
     /// [`Right::refuted_by`] is stated.
     #[serde(default)]
     pub refuted_by: Option<Vec<String>>,
+    /// Each sentence the read-out prints for a query's `:goal-text`, one per
+    /// row of a projection class, in the order printed (schema /15, M1f
+    /// S1f.5.5, W37): the read-out's `“…”` lines, since the summary carries
+    /// the rows and not the sentences. Recorded exactly where
+    /// [`Right::goal_text`] is stated.
+    #[serde(default)]
+    pub goal_text: Option<Vec<String>>,
 }
 
 /// One query's answer — schema `/12` (M1e2 S1e2.3.8, W28): how many
@@ -572,6 +585,12 @@ impl Now {
                 "refuted by: right {w:?}, now {:?}",
                 self.refuted_by
             ));
+        }
+        // A query's sentences (schema /15, M1f S1f.5.5, W37), in order.
+        if let Some(w) = &right.goal_text
+            && Some(w) != self.goal_text.as_ref()
+        {
+            out.push(format!("goal text: right {w:?}, now {:?}", self.goal_text));
         }
         // The core's status (schema /9, M1e2 S1e2.2.23, W23).
         if let Some(s) = &right.core_status
@@ -742,6 +761,11 @@ pub struct Answer {
     /// `/14` (M1f S1f.5.15, W36's `wrong`). A record.
     #[serde(default)]
     pub refuted_by: Option<Vec<String>>,
+    /// The sentences the read-out printed for a query's `:goal-text`, as
+    /// [`Now::goal_text`] — schema `/15` (M1f S1f.5.5, W37's `wrong`). A
+    /// record.
+    #[serde(default)]
+    pub goal_text: Option<Vec<String>>,
 }
 
 /// The witness's `R` — M1e2 S1e2.1a.10. What `ein solve` describes, in its
@@ -838,6 +862,11 @@ pub struct Right {
     /// (M1f S1f.5.15, W36). Compared with [`Now::refuted_by`].
     #[serde(default)]
     pub refuted_by: Option<Vec<String>>,
+    /// The sentences the read-out should print for a query's `:goal-text`,
+    /// in order, each template's references filled — schema `/15` (M1f
+    /// S1f.5.5, W37). Compared with [`Now::goal_text`].
+    #[serde(default)]
+    pub goal_text: Option<Vec<String>>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -961,6 +990,13 @@ impl Register {
                         .to_string(),
                 ));
             }
+            // A query's sentences (schema /15, M1f S1f.5.5).
+            if r.now.goal_text.is_some() != r.right.goal_text.is_some() {
+                out.push(at(
+                    "[now] records a query's sentences exactly when [right] states them"
+                        .to_string(),
+                ));
+            }
             if r.right.refuted_by.is_some() && r.right.core.is_none() {
                 out.push(at(
                     "[right] states what `refuted by` names beside its core".to_string()
@@ -984,6 +1020,7 @@ impl Register {
                     || !r.now.relations.is_empty()
                     || r.now.core.is_some()
                     || r.now.refuted_by.is_some()
+                    || r.now.goal_text.is_some()
                     || r.now.claim.is_some()
                     || r.now.queries.is_some())
             {
@@ -1594,6 +1631,7 @@ mod tests {
             claim: None,
             queries: None,
             refuted_by: None,
+            goal_text: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: an answer, now: an error"]);
@@ -1980,6 +2018,64 @@ mod tests {
         r.right.core = None;
         r.now.core = None;
         assert!(defects(&r).iter().any(|d| d.contains("beside its core")));
+    }
+
+    /// **What a query's `:goal-text` prints is an answer**, schema /15 (M1f
+    /// S1f.5.5, W37): the read-out's sentences, recorded exactly where `right`
+    /// states them and compared in the order printed. W37's `now` prints the
+    /// template as written where its right fills the reference, so it is open
+    /// by the method; the same `now` printing the filled sentence answers it.
+    #[test]
+    fn what_a_goal_text_prints_is_an_answer() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.right.goal_text.is_some())
+            .expect("W37 states what its goal text prints")
+            .clone();
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        let differs = row.now.against(&row.right);
+        assert!(
+            differs.len() == 1 && differs[0].starts_with("goal text: "),
+            "{differs:?}"
+        );
+        let mut r = row.clone();
+        r.now.goal_text = r.right.goal_text.clone();
+        assert!(r.now.against(&r.right).is_empty());
+        // The order is the read-out's, so a permutation is another answer.
+        if let Some(v) = r.now.goal_text.as_mut() {
+            v.push("another".to_string());
+            v.reverse();
+        }
+        assert!(!r.now.against(&r.right).is_empty());
+        // Recorded exactly where `right` states it.
+        let mut r = row.clone();
+        r.right.goal_text = None;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("[now] records a query's sentences"))
+        );
+        // A refused `now` prints no sentence.
+        let mut r = row;
+        r.now.refused = Some("a line".to_string());
+        r.now.k = 0;
+        r.now.exhausted = false;
+        r.now.models = Vec::new();
+        r.region = None;
+        assert!(
+            defects(&r)
+                .iter()
+                .any(|d| d.contains("a refused [now] lists nothing"))
+        );
     }
 
     #[test]

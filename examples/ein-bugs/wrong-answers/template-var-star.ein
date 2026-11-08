@@ -1,0 +1,50 @@
+;;; A template cannot name a variable whose name holds a character other than
+;;; a letter, a digit, `_` or `-` — M1f **W37**, register row
+;;; `W37/template-var-star` (`corpus/wrong_answers.toml`), filed by S1f.5.5
+;;; (2026-11-08) from its T9 review's § 11, on the user's ruling of that day
+;;; on the review stop (item 7, *"Accept all as recommended"*): `open`, owned
+;;; by S1f.5.4, before anything fixes it.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, a rule that concludes `(q ?n*)` from `(p ?n*)`, and a
+;;; query over `q` whose `:goal-text` names the goal's variable, `{?n*}`.
+;;; `?n*` is a variable today's lexer reads (`?`, a letter, then letters,
+;;; digits, `_`, `*` and `-`), and the generated grammar's `VAR` reads it too,
+;;; `*` being one of the name rule's characters. The stdlib writes the same
+;;; shape: `?isR*`, named by three `:why` templates (`stdlib/typing.ein`'s
+;;; `type-hierarchy-converse`, `stdlib/algebra.ein`'s `converse-illtyped-dom`
+;;; and `-ran`).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `reach` fires on `(p a)` with `?n*` bound to `a`, so root holds `(p a)`
+;;; and `(q a)`, nothing is a candidate, and R is {∅}, one state. The query's
+;;; one class has one row, `?n* = a`, and its sentence is the template with
+;;; the reference filled: *“a is a q”*. The trace says *a is a p, so it is a
+;;; q* at `reach`'s firing.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R is {∅} and the class is right, but the sentence is the template as
+;;; written, *“{?n*} is a q”* (`ein solve FILE`, exit 0), and so is the
+;;; trace's *{?n*} is a p, so it is a q* (`ein solve FILE --trace T`).
+;;; `ein_core::why::render_why` reads a reference as `{?`, one letter or
+;;; digit, then letters, digits, `_` and `-`, then `}`; `{?n*}` does not fit,
+;;; so it is copied as text, which is an unbound reference's fallback. The
+;;; stdlib's three templates print *under hierarchy {?isR\*}* the same way
+;;; (`ein solve tests/stdlib/typing/02_type_hierarchy_converse.ein --trace
+;;; T`, 2026-11-08). After S1f.5.5's swap every variable the name rule adds
+;;; does too (`?_x_`, `?a.b`, `?x'`): the T9 review's `zebra2.ein` with
+;;; `_`-led names prints *“The {?\_who\_water\_} drinks water in …”*.
+;;; S1f.5.4 fixes it (T1f.5.4.5): a reference reads the name rule's
+;;; characters up to the first `}`.
+
+(relation p T :why "{?1} is a p")
+(relation q T :why "{?1} is a q")
+(p a)
+(rule reach ()
+  :match  (p ?n*)
+  :assert (q ?n*)
+  :why    "{?n*} is a p, so it is a q")
+(query :goal (q ?n*) :goal-text "{?n*} is a q")

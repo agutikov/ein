@@ -52,6 +52,11 @@
 //! (schema /14, W36): the summary's `region.refuted_by`, in the order the
 //! read-out prints it.
 //!
+//! **Since M1f S1f.5.5 a `now` can record what a query's `:goal-text` prints**
+//! (schema /15, W37): the read-out's `“…”` sentences, one per row of a
+//! projection class, in the order printed. The summary carries the rows and
+//! not the sentences, so they are read off stdout, as `-H`'s relations are.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -162,6 +167,21 @@ fn relations(stdout: &str) -> Vec<String> {
     out.sort();
     out.dedup();
     out
+}
+
+/// The sentences the read-out prints for a query's `:goal-text`, in order —
+/// its `“…”` lines (schema /15, M1f S1f.5.5, W37), which nothing else on the
+/// read-out writes.
+fn goal_text(stdout: &str) -> Vec<String> {
+    stdout
+        .lines()
+        .filter_map(|l| {
+            l.trim_start()
+                .strip_prefix('“')
+                .and_then(|r| r.strip_suffix('”'))
+                .map(str::to_string)
+        })
+        .collect()
 }
 
 /// What the summary says, in `[case.now]`'s fields.
@@ -280,6 +300,9 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
             })
             .unwrap_or_default()
     });
+    // What a query's `:goal-text` prints, where the row records it (schema
+    // /15, M1f S1f.5.5, W37): off stdout, in the order printed.
+    let goal_text = row.now.goal_text.as_ref().map(|_| goal_text(&got.stdout));
     let queries = row.now.queries.as_ref().map(|_| {
         s["queries"]
             .as_array()
@@ -313,6 +336,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         claim,
         queries,
         refuted_by,
+        goal_text,
     })
 }
 
@@ -364,6 +388,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "refuted_by",
         format!("{:?}", want.refuted_by),
         format!("{:?}", got.refuted_by),
+    );
+    field(
+        "goal_text",
+        format!("{:?}", want.goal_text),
+        format!("{:?}", got.goal_text),
     );
     field(
         "core_status",

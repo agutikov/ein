@@ -1588,6 +1588,12 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W36's second witness (`W36/alt-flag-two-derivations`), banked by S1f.5.15: `(u a)` derived first by the longer of two joins of one kind, in every order, so with `:record-alternative-justifications false` in the file the core search takes the core `(g1 a) (g2 a)` over a pair, `refuted by v, w`, where the default takes it over `(false)`, `refuted by k1`. Open, owned by F22; `lever_invariance` compares it less that row under the flag until then."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/template-var-star.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W37 (`W37/template-var-star`), banked by S1f.5.5 from its T9 review's § 11: a template reference cannot name the variable `?n*`, so the query's `:goal-text` prints *“{?n*} is a q”* where *“a is a q”* is right, and the rule's `:why` likewise on `--trace`, as the stdlib's three `{?isR*}` templates do. Open, owned by S1f.5.4: a reference reads the characters a variable takes."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

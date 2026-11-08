@@ -3,17 +3,17 @@
 # its `:priority` clauses taken out, which the grammar does not have (the
 # user, 2026-11-08; S1f.5.15 deletes them). Re-bank with
 # EIN_BLESS=1 cargo test -p ein-ir --test generated_parser
-416 files
+417 files
 
 as written:
    18  both accept, digits read as names
-  324  both accept, same tree
+  325  both accept, same tree
     5  both refuse
    68  the hand-written parser accepts, the generated one refuses
     1  the hand-written parser refuses, the generated one accepts
 without `:priority`:
    18  both accept, digits read as names
-  324  both accept, same tree
+  325  both accept, same tree
     5  both refuse
    68  the hand-written parser accepts, the generated one refuses
     1  the hand-written parser refuses, the generated one accepts
