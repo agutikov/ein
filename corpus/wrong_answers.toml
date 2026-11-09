@@ -845,6 +845,30 @@
 # **140 rows fixed, 19 open and 1 not-wrong** (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
+# **W57 and W58 were filed the same day by S1f.5.10's T1f.5.10.1**, every
+# move the stage makes listed before it moves, on the user's ruling of
+# 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the refusal"*): a
+# conclusion's every variable is bound on every way its `:match` can hold,
+# and a rule or an hrule that writes one nothing binds is refused at load.
+# W57, four rows, one per way the engine answers such a program today, each
+# `right` the refusal: `assert-var-stops`, root fires the rule and every
+# command stops at the firing, *unbound var ?y in :assert — bindings: {'x':
+# 'a'}*, which is no answer (an error is never a refusal, W18's precedent);
+# `assert-var-under-commitment`, only a commitment fires it, so `ein
+# saturate` and `ein solve --minimal` answer, exit 0, where describe and
+# `ein oracle` stop; `hrule-assert-var`, an hrule's template that builds no
+# fact proposes nothing, in silence; and `assert-var-never-fires`, a rule
+# that never fires, an empty `:match` (F12), loads and answers. Each is
+# owned by S1f.5.10 (Q-M1f.36, taken by default on the user's instruction
+# of 2026-11-09). W58, one row, outside the case: a value parameter its
+# activator binds to a nested fact, read only by the conclusion, reaches it
+# unbound and stops the run, W33's cause, which a loader cannot see, since a
+# parameter is bound by its activator; `open` and owned by S1f.5.18
+# (Q-M1f.37). Each witness is under `examples/ein-bugs/wrong-answers/` and a
+# corpus entry, each `wrong` and `now` taken at `2eb483e0`, release and debug
+# alike. The register reads **140 rows fixed, 24 open and 1 not-wrong**
+# (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -10222,3 +10246,193 @@ models    = [
   [],
 ]
 
+
+# ══ W57 — a conclusion's variable that no premise binds loads, and is found only where a firing reaches it ══
+[[case]]
+id       = "W57/assert-var-stops"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/assert-var-stops.ein"
+status   = "open"
+open_because = "The loader does not check a conclusion's variables against its premises, so the run finds `?y` at the rule's first firing, root's here, and stops with `ein_infer::firing::FireError::UnboundVar`'s line, the Python implementation's spelling, on every command; S1f.5.10's T1f.5.10.2 refuses the program at load, on the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*)"
+look_at  = ["root"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): root fires the rule, and every command stops. The same stop is reached through an `(or …)` whose arm leaves the variable unbound (`examples/ein-bugs/unbound-assert-var.ein`, the fuzzer's of 2026-08-20), a variable read only inside an `(absent …)`, an `unknown` or a `forall`, and one nested in a conclusion's argument. A stop is no answer, and the ruling's is a refusal (Q-M1f.36: a stop where a refusal is right is a row, as W18's stops were)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 2eb483e0 (2026-11-09): the program loads, root fires `r` on `(p a)`, and the run stops, exit 1; `ein saturate --dump`, `solve --minimal` and `oracle` the same, `saturate` quoting the line as `KeyError: \"…\"`, and `ein test` an `ERROR`, exit 2"
+exit      = 1
+error     = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*): every variable of a rule's or an hrule's `:assert` is bound on every way its `:match` can hold, by a parameter, a premise or an `eq` / `neq` guard, and a rule that writes one nothing binds is refused at load"
+refused   = true
+derived   = "`?y` is written by `r`'s `:assert` and bound by no premise or parameter, so `r` is refused at load, one line naming the rule, the variable and the two explicit spellings, `(is-a ?y T)` and `(eq ?y ?y)`: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run   = "solve"
+line  = "all"
+error = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[[case]]
+id       = "W57/assert-var-under-commitment"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein"
+status   = "open"
+open_because = "The loader does not check a conclusion's variables against its premises, so only a run that reaches a commitment firing the rule finds `?y`: `ein saturate` and `ein solve --minimal` answer, where describe and `ein oracle` stop, which the user's rule that no two commands may disagree forbids; S1f.5.10's T1f.5.10.2 refuses the program at load on every command"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): root never fires the rule and a commitment holding a candidate `(s …)` does. The row's `now` is describe's stop, since a run that stops states no region; its `wrong` is the answer `--minimal` gives, the corpus entry banking both exits"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve --minimal` on the witness, release and debug, at 2eb483e0 (2026-11-09): the minimal line is root's state alone, {∅}, H two candidates, `(q a)` and `(s a)`, exit 0, with no word of `?y`; `ein saturate --dump` answers root's fixpoint, exit 0; `ein solve` (describe) and `ein oracle` stop at a commitment that fires `r`, exit 1, with `unbound var ?y in :assert — bindings: {'x': 'a'}`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*): every variable of a rule's or an hrule's `:assert` is bound on every way its `:match` can hold, whether or not any state fires it, and a rule that writes one nothing binds is refused at load"
+refused   = true
+derived   = "`?y` is written by `r`'s `:assert` and bound by no premise or parameter, so `r` is refused at load, whatever fires it: every command that loads the program exits 1 with the one line (`ein test`: 2), and no command answers it"
+
+[case.now]
+run   = "solve"
+line  = "all"
+error = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[[case]]
+id       = "W57/hrule-assert-var"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-assert-var.ein"
+status   = "open"
+open_because = "The loader does not check an hrule's template against its premises, and the candidate generator skips a template that builds no fact (`hrule::Hrules::candidates`), so the hrule proposes nothing, in silence; S1f.5.10's T1f.5.10.2 refuses the program at load"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): an hrule's template, which no run stops on"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 2eb483e0 (2026-11-09): H is empty and R is {∅}, exit 0, with no word of `?y`; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*), which S1f.5.10's stage file holds an hrule's `:assert` to as it holds a rule's"
+refused   = true
+derived   = "`?y` is written by `h`'s `:assert` and bound by no premise or parameter, so `h` is refused at load: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W57/assert-var-never-fires"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein"
+status   = "open"
+open_because = "The loader does not check a conclusion's variables against its premises, and a rule that never fires is never checked, so the program loads and answers; S1f.5.10's T1f.5.10.2 refuses it at load, before S1f.5.9 makes an empty `:match` fire (F12), which would stop the run at root"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): a rule that never fires, its `:match` empty, `W31/empty-match-*`'s shape (S1f.5.9's). An activator never written reads the same (`examples/syntax/rule-nary-and-or.ein`, the one corpus program the check refuses, rewritten by T1f.5.10.2), and so does an `(absent …)` that never holds"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 2eb483e0 (2026-11-09): `r` never fires, H is empty and R is {∅}, exit 0, with no word of `?y`; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*): every variable of a rule's `:assert` is bound on every way its `:match` can hold, and `()` binds nothing"
+refused   = true
+derived   = "`?y` is written by `r`'s `:assert`, and an empty `:match` binds nothing, so `r` is refused at load, whether or not it fires: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+# ══ W58 — a value parameter its activator binds to a nested fact, read only by the conclusion, stops the run ══
+[[case]]
+id       = "W58/parameter-nested-assert"
+case     = "W58"
+title    = "a value parameter its activator binds to a nested fact, read only by the conclusion, stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1f.37", "S1f.5.5 census"]
+witness  = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
+status   = "open"
+open_because = "The compiler seeds a rule's parameters from its activator and skips a nested fact (*a nested Fact does not bind*), W33's cause: where the parameter is read only by the `:assert`, it reaches the conclusion unbound and the run stops. The loader cannot refuse it, a parameter being bound by its activator, which is what S1f.5.10's check holds a conclusion to; S1f.5.18 binds the parameter to the nested fact as to any other value (the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*), and with it retires `FireError::UnboundVar`, whose last path this is (Q-M1f.37)"
+look_at  = ["root"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), outside its case: its step 1 (`build/s1f.5.10/shapes`, 2026-11-09) found the one shape that still reaches `FireError::UnboundVar` once the loader checks a conclusion's variables. W33's witness reads the parameter in its `:match` too, so `act` fires on every `p`; this one reads it only in the `:assert`, so the run stops"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve --minimal` on the witness, release and debug, at 2eb483e0 (2026-11-09): the program loads, root fires `act` on `(p a)` with `?y` unbound, and the run stops, exit 1; every command the same"
+exit      = 1
+error     = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[case.right]
+reading   = "an activator binds a rule's parameter to its argument, a nested fact a value as any other (W33's right, the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit (f a))"]]
+derived   = "`(act (f a))` binds `?y` to `(f a)`, so `act` fires on `(p a)` and root holds `(hit (f a))`: the minimal line is root's state. It is the twin's answer, the rule written `(rule act () :match (p ?x) :assert (hit (f a)))` (`ein solve --minimal` at 2eb483e0, release)"
+
+[case.now]
+run   = "solve --minimal"
+line  = "minimal"
+error = "unbound var ?y in :assert — bindings: {'x': 'a'}"

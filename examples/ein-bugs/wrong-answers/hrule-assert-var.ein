@@ -1,0 +1,35 @@
+;;; An hrule's template writes a variable that no premise binds, and
+;;; proposes nothing, in silence — M1f **W57**, register row
+;;; `W57/hrule-assert-var` (`corpus/wrong_answers.toml`), filed by S1f.5.10
+;;; (T1f.5.10.1, 2026-11-09), `open` and owned by S1f.5.10, on the user's
+;;; ruling of 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the
+;;; refusal"*).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, and an hrule, which the `(solve …)` block names, whose
+;;; `:assert` writes `?y`, which its `:match` never binds.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The ruling holds an hrule's `:assert` to the rule a rule's is held to
+;;; (S1f.5.10's stage file): every variable bound on every way its `:match`
+;;; can hold. `?y` is not, so the program is refused at load, and every
+;;; command that loads it exits 1 with the loader's line (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, and the hrule's template builds no fact for any match,
+;;; which the candidate generator skips (`hrule::Hrules::candidates`): H is
+;;; empty and R is {∅}, exit 0 on every command, with no word of `?y` (`ein
+;;; solve FILE` and `ein oracle FILE` at `2eb483e0`, release and debug
+;;; alike).
+
+(relation p Node :why "{?1} is a node")
+(relation q Node :why "{?1} is a q")
+(p a)
+(hrule h ()
+  :match (p ?x)
+  :assert (q ?y)
+  :why "suppose a q, since {?x} is a p")
+(solve :hrules (h))

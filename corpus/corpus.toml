@@ -1708,6 +1708,36 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W56 (`W56/goal-absent`), filed by S1f.5.7's T1f.5.7.5 (2026-11-09) outside its case: a goal's `(absent (q ?y))` is never judged, so `?y = b` is a row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance is refused at load. Open, owned by S1f.5.7 (Q-M1f.35): T1f.5.7.6 judges the goal's lifted guards and lets the claim load, which then holds."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-var-stops.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W57 (`W57/assert-var-stops`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule root fires, so every command stops at the firing, exit 1, with `unbound var ?y in :assert — bindings: {'x': 'a'}`. Open, owned by S1f.5.10: the program is refused at load (F13)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "solve --minimal", "saturate"]
+note   = "M1f W57 (`W57/assert-var-under-commitment`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule only a commitment fires, so `saturate` and `solve --minimal` answer, exit 0, where describe stops, exit 1, the three runs banking the disagreement. Open, owned by S1f.5.10: the program is refused at load on every command (F13)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-assert-var.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W57 (`W57/hrule-assert-var`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): an hrule's template writes a variable no premise binds, builds no fact, and proposes nothing, in silence: H empty, R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W57 (`W57/assert-var-never-fires`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable nothing binds, in a rule whose `:match` is `()`, which never fires (F12), so the program loads and answers R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13), before S1f.5.9 makes an empty `:match` fire."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W58 (`W58/parameter-nested-assert`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09) outside its case: a value parameter its activator binds to a nested fact, read only by the `:assert`, reaches it unbound, W33's cause, and the run stops, exit 1. Open, owned by S1f.5.18, which binds the parameter (Q-M1f.37)."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

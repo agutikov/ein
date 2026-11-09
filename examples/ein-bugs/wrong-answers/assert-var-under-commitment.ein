@@ -1,0 +1,37 @@
+;;; A conclusion's variable that no premise binds, in a rule only a
+;;; commitment fires: two commands answer and two stop — M1f **W57**,
+;;; register row `W57/assert-var-under-commitment`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.10 (T1f.5.10.1,
+;;; 2026-11-09), `open` and owned by S1f.5.10, on the user's ruling of
+;;; 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the refusal"*).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, and a rule over `s`, which no fact holds, whose
+;;; `:assert` writes `?y`, which its `:match` never binds. Root never fires
+;;; it; a commitment holding a candidate `(s …)` does.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The ruling: a conclusion's every variable is bound on every way its
+;;; `:match` can hold, and a rule that writes one nothing binds is refused at
+;;; load, whether or not any state fires it. Every command that loads the
+;;; program exits 1 with the loader's line (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; At `2eb483e0`, release and debug alike, the commands disagree, which the
+;;; user's rule that no two commands may disagree forbids: `ein saturate`
+;;; answers root's fixpoint and `ein solve --minimal` the minimal line, {∅},
+;;; each exit 0, never reaching a commitment; `ein solve` (describe) and
+;;; `ein oracle` stop at the first commitment that fires `r`, exit 1, with
+;;; `unbound var ?y in :assert — bindings: {'x': 'a'}`.
+
+(relation p Node :why "{?1} is a node")
+(relation s Node :why "{?1} is an s")
+(relation q Node :why "{?1} is a q")
+(p a)
+(rule r ()
+  :match (s ?x)
+  :assert (q ?y)
+  :why "{?x} is an s")

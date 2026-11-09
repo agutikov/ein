@@ -32,6 +32,11 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.33](#q-m1f33--a-written-fact-of-eq) | a written fact of `eq` | **defaulted 2026-11-09 (the user's instruction): a conclusion with no premise, checked, never stored**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
 | [Q-M1f.34](#q-m1f34--where-a-guards-free-variable-is-bound-beside-an-absent) | where a guard's free variable is bound, beside an `(absent …)` | **defaulted 2026-11-09 (the user's instruction): where it is written, as a relation premise binds**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
 | [Q-M1f.35](#q-m1f35--a-goals-absent--whose-row-is-it) | a goal's `(absent …)`: whose row is it? | **defaulted 2026-11-09 (the user's instruction): S1f.5.7's, filed (W56) and fixed in a task of its own**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.5 |
+| [Q-M1f.36](#q-m1f36--what-the-refusal-replaces-which-of-it-is-a-register-row) | what the refusal replaces: which of it is a register row? | **defaulted 2026-11-09 (the user's instruction): a row per way the engine answers today, W57's four**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.37](#q-m1f37--fireerrorunboundvars-last-path-w33s-cause) | `FireError::UnboundVar`'s last path: W33's cause | **defaulted 2026-11-09 (the user's instruction): it stays until S1f.5.18, which retires it; W58 filed, S1f.5.18's**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.38](#q-m1f38--the-refusals-line-its-separator-and-a-disjunction) | the refusal's line: its separator, and a disjunction | **defaulted 2026-11-09 (the user's instruction): ` — `, and the disjuncts that leave the variable unbound named**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.39](#q-m1f39--the-one-corpus-program-the-check-refuses) | the one corpus program the check refuses | **defaulted 2026-11-09 (the user's instruction): `syntax/rule-nary-and-or` rewritten, its answer unmoved**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.40](#q-m1f40--where-the-fuzz-property-lives-and-what-it-reads) | where the fuzz property lives, and what it reads | **defaulted 2026-11-09 (the user's instruction): `fuzz_properties`, over every plan an accepted program compiles**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -640,3 +645,99 @@ writes an `(absent …)`, `forall` or `unknown`. The register's `W56/goal-absent
 **Defaulted 2026-11-09 (the user's instruction): (a).** It is the goal evaluation the stage changed, the class the
 stage's own guards made claimable, and a deferred row would have no owner to wait on. `W56/goal-absent` is filed `open`
 by T1f.5.7.5 and fixed by T1f.5.7.6.
+
+### Q-M1f.36 — What the refusal replaces: which of it is a register row?
+
+**Raised** 2026-11-09 by [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s
+T1f.5.10.1. The stage refuses at load a rule or an hrule whose conclusion writes a variable nothing binds (the user's
+ruling of 2026-11-07 on F13). Its step 1 (`build/s1f.5.10/shapes`, `2eb483e0`'s release and debug builds) found four
+ways the engine answers such a program today: root fires the rule, and every command stops at the firing, exit 1,
+*unbound var ?y in :assert — bindings: {'x': 'a'}* (`ein test`: 2, an `ERROR`); only a commitment fires it, and `ein
+saturate` and `ein solve --minimal` answer, exit 0, where describe and `ein oracle` stop; an hrule's template builds no
+fact, and proposes nothing, in silence; and a rule that never fires, an empty `:match` (F12) among them, loads and
+answers. The stage file says its fixture, `examples/ein-bugs/unbound-assert-var.ein`, *needs no register row, since it is
+a regression fixture, not a wrong answer*.
+
+- **(a) A row per way, each `right` the refusal**: W57's four, `assert-var-stops`, `assert-var-under-commitment`,
+  `hrule-assert-var` and `assert-var-never-fires`, `open` and S1f.5.10's, fixed by its T1f.5.10.2. The fixture stays no
+  row: its program is the first row's shape, reached through an `(or …)` arm.
+- **(b) Only the three that answer**: no exit code moves on a stop, 1 → 1 and `ein test`'s 2 → 2, only its line.
+- **(c) No row**, as the stage file says, the fixture and the stage's tests holding the refusal.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The register compares a run that stops (`now.error`) and one
+refused at load (`now.refused`) as two answers (`ein_corpus::register::Now::against`: *an error is no answer at all, so
+it is never the right one*), and W18 filed its stops as rows; the second way is the user's rule that no two commands may
+disagree; and S1f.5.7 filed every move it made. Re-opening it means (b).
+
+### Q-M1f.37 — `FireError::UnboundVar`'s last path: W33's cause
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1, outside its case. Once the loader checks a conclusion's variables, one
+shape still reaches `ein_infer::firing::FireError::UnboundVar`: a value parameter its activator binds to a nested fact,
+read only by the `:assert`. The compiler seeds a parameter from its activator and skips a nested fact (*a nested Fact
+does not bind*), W33's cause, so the parameter reaches the conclusion unbound and the run stops, exit 1. The loader
+cannot refuse it, since a parameter is bound by its activator, and the user ruled on 2026-11-08 that a nested fact binds
+a value parameter as any other value (S1f.5.5's census, *"Q3 - as recommended"*), which is
+[S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s, the next stage on lane 2. The stage
+file's acceptance says *`FireError::UnboundVar` is gone*.
+
+- **(a) It stays until S1f.5.18**, its doc naming the one path, and S1f.5.18 retires it with W33's fix. The shape is a
+  wrong answer, a program the ruling answers that stops, so it is a row, `W58/parameter-nested-assert`, `open` and
+  owned by S1f.5.18, and that acceptance item moves to S1f.5.18.
+- **(b) S1f.5.10 binds the parameter** itself, which is W33's fix and S1f.5.18's step 1, sweep and review.
+- **(c) A loader refusal** of a parameter read only by a conclusion, which would refuse a program the ruling answers.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It keeps each fix with the stage that owns its cause, in the order
+the coordinator set (S1f.5.10, then S1f.5.18), and loses nothing: the stop's line is unchanged until S1f.5.18, and W58
+holds it. Re-opening it means (b).
+
+### Q-M1f.38 — The refusal's line: its separator, and a disjunction
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. The stage file's line reads *rule 'r': its :assert writes ?y, which no
+premise or parameter binds; to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of
+every name of the program with (eq ?y ?y)*. The loader joins several lines with `; ` on one stderr line
+(`KbLoadError`), and its other lines separate the finding from the advice with ` — `. And where a top-level `(or …)` is
+one way per disjunct, some disjuncts may bind the variable and others not (`unbound-assert-var.ein`).
+
+- **(a) ` — ` for the stage file's `;`**, and where some disjuncts bind the variable, the line names those that do not:
+  *rule 'fire-3': its :assert writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1
+  ?v3) — to conclude it …*.
+- **(b) The stage file's text verbatim**, its `;` read as a line's end by anyone splitting the loader's report.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The line is the stage file's in every word but the separator, as
+every loader line is one finding, ` — `, and what to write; and a reader of `unbound-assert-var.ein`'s line can see which
+arm to fix.
+
+### Q-M1f.39 — The one corpus program the check refuses
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. Its cross-check of every program of the five roots through `2eb483e0`'s
+build and the prototype's (`build/s1f.5.10/xcheck`, 533 files) moved two: the stage's fixture, and
+`examples/syntax/rule-nary-and-or.ein`, one of the eighteen node-kind fixtures, a parametrised rule with a top-level
+`(or …)` over disjuncts of two arities whose `:assert`, `(quad ?d ?c ?b ?a)`, writes `?c` and `?d`, which the second
+disjunct, `(?rel ?a ?b)`, leaves unbound. No activator is written, so the rule never fires, and the program answers R
+{∅} on every command; the check refuses it.
+
+- **(a) Rewritten**: its `:assert` concludes `(quad ?b ?a ?b ?a)`, which both disjuncts bind. It keeps its node kinds and
+  its answer, R {∅}, and its digests move.
+- **(b) Moved to `examples/broken/load/`**, a load-negative fixture whose `.expected` is the refusal.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** A node-kind fixture exists for the shapes it draws, which a
+rewrite keeps, as S1f.5.5's swap rewrote four `syntax/` fixtures (T1f.5.5.4); the refusal's shapes are W57's witnesses
+and the stage's tests. Re-opening it means (b).
+
+### Q-M1f.40 — Where the fuzz property lives, and what it reads
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. The stage file says *`fuzz_properties` gains the property that no firing
+meets an unbound variable*. `fuzz_properties` is `ein-ir`'s, the frontend fuzzer the nightly runs a million times a seed,
+and a firing is `ein-infer`'s.
+
+- **(a) In `fuzz_properties`, over the plans**: `ein-ir` takes `ein-infer` as a dev-dependency, as `ein-infer` takes
+  `ein-render`, and for every generated program the loader accepts, every plan the compiler builds for its rules and
+  hrules reads, in each conclusion, only registers each disjunct binds, a parameter excepted until S1f.5.18 (W58). It
+  is every firing at once, an hrule's and a rule's that never fires among them, and it holds the loader's reading of
+  what binds to the compiler's.
+- **(b) In `fuzz_properties`, by firing**: each accepted program saturated at root, and no stop; it reaches no hrule and
+  no rule that root does not fire.
+- **(c) In `utils/fuzz_engine.py`**, the engine fuzzer, as a line no run prints; not in the gate or the nightly.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is the stage file's place and the strongest reading of its
+property; the dev-dependency adds no edge to any shipped crate.

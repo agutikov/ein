@@ -1238,6 +1238,11 @@ fn one_verdict_on_every_corpus_program() {
         unread,
         [
             "examples/ein-bugs/query-goal-free-head.ein",
+            // `W57/assert-var-under-commitment` (M1f S1f.5.10's T1f.5.10.1):
+            // `--monotone` answers and the read-out stops at a commitment's
+            // firing, on a conclusion variable nothing binds, until
+            // T1f.5.10.2 refuses the program at load.
+            "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein",
             "examples/features/02_star_in_identifiers.ein"
         ],
         "the programs whose read-out errs, and so has no lattice block to compare"

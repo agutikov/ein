@@ -395,6 +395,13 @@
 0    examples/ein-bugs/wrong-answers/assert-neq-w-x.ein :: solve
 0    examples/ein-bugs/wrong-answers/assert-neq-x-x.ein :: saturate
 0    examples/ein-bugs/wrong-answers/assert-neq-x-x.ein :: solve
+0    examples/ein-bugs/wrong-answers/assert-var-never-fires.ein :: saturate
+0    examples/ein-bugs/wrong-answers/assert-var-never-fires.ein :: solve
+1    examples/ein-bugs/wrong-answers/assert-var-stops.ein :: saturate
+1    examples/ein-bugs/wrong-answers/assert-var-stops.ein :: solve
+0    examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein :: saturate
+1    examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein :: solve
+0    examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein :: solve --minimal
 1    examples/ein-bugs/wrong-answers/bare-premise.ein :: saturate
 1    examples/ein-bugs/wrong-answers/bare-premise.ein :: solve
 1    examples/ein-bugs/wrong-answers/claim-int-name-solve.ein :: saturate
@@ -482,6 +489,8 @@
 0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: saturate
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: solve
+0    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: saturate
+0    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: solve
 0    examples/ein-bugs/wrong-answers/hrule-eq.ein :: saturate
 0    examples/ein-bugs/wrong-answers/hrule-eq.ein :: solve
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein :: saturate
@@ -596,6 +605,8 @@
 0    examples/ein-bugs/wrong-answers/pair-core-root-given.ein :: solve
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: saturate
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: solve
+1    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: saturate
+1    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: solve
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: saturate
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --maximal --region-limit 8
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --minimal --region-limit 8

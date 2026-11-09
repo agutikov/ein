@@ -1,0 +1,36 @@
+;;; A conclusion's variable that no premise binds, in a rule that never
+;;; fires, loads and answers — M1f **W57**, register row
+;;; `W57/assert-var-never-fires` (`corpus/wrong_answers.toml`), filed by
+;;; S1f.5.10 (T1f.5.10.1, 2026-11-09), `open` and owned by S1f.5.10, on the
+;;; user's ruling of 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the
+;;; refusal"*).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(q a)`, and a rule whose `:match` is empty and whose `:assert`
+;;; writes `?y`, which nothing binds: read literally, *every name is a q*.
+;;; An empty `:match` never fires (P1f.5's F12, `W31/empty-match-*`), so no
+;;; firing reaches `?y`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The ruling: a conclusion's every variable is bound on every way its
+;;; `:match` can hold, and `()` binds nothing, so the program is refused at
+;;; load, whether or not any state fires the rule. Every command that loads
+;;; it exits 1 with the loader's line (`ein test`: 2). It is the shape S1f.5.9
+;;; would otherwise make stop at root, once an empty `:match` fires (F12).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, the rule never fires, H is empty and R is {∅}, exit 0
+;;; on every command, with no word of `?y` (`ein solve FILE` and `ein oracle
+;;; FILE` at `2eb483e0`, release and debug alike). A rule that never fires is
+;;; never checked: an activator never written, or an `(absent …)` that never
+;;; holds, read the same.
+
+(relation q Node :why "{?1} is a q")
+(q a)
+(rule r ()
+  :match ()
+  :assert (q ?y)
+  :why "every name is a q")
