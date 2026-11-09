@@ -15,6 +15,12 @@
 # docs/history/m1a_rust/measurements/corpus_cost.md and
 # `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
 #
+# `heavy_dump = true` (M1f S1f.5.13) keeps an entry out of the per-commit
+# round trip, `ein-cli/tests/answer_round_trip.rs`, which reloads every state
+# file `ein solve FILE --dump-answer DIR` writes: the entry's dump writes at
+# least `ein_corpus::manifest::HEAVY_DUMP_FILES` state files, a count, held both
+# ways by that test and run nightly. corpus/README.md § `heavy_dump`.
+#
 # Generated once from the tree; maintained by hand from here.
 #
 # schema 2 (S1a.10.3) introduced the `regression` group and split the
@@ -156,6 +162,7 @@ group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
 cost_ms = 2267
+heavy_dump = true
 note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.67 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 2.27 s together, the slowest `solve` at 1.67 s."
 
 [[entry]]
@@ -174,6 +181,7 @@ runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constr
 path   = "examples/features/04_open.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+heavy_dump = true
 note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus. **Not slow since M1e2 S1e2.1a.5's switch**: no cell runs the walk, and the region's description stops at the default --region-budget, 329 ms together (`utils/corpus_cost.py`, 2026-10-18). M1e2 S1e2.1b.5's detector reads every node `render lattice` computes for stale facts (21 042 of its 64 761 hold one): 379 → 529 ms together, re-taken with `utils/corpus_cost.py --runs 3` on both binaries, 2026-11-03."
 
 [[entry]]
@@ -449,18 +457,21 @@ note   = "no solve, solve -e: a per-rule demo of `square-fwd` (examples/saturati
 path   = "examples/saturation/square-unique/corner-house.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
+heavy_dump = true
 note   = "no solve, solve -e, render lattice: a per-rule demo of `square-unique` — one rule, one firing — over a street it never closes, so all three run the blind enumerator instead of the rule. solve and solve -e end in the OOM killer at ~60 s; `render lattice` is the same search at -m 3 and did finish, in 125 s and 58.6 MB of DOT nobody reads — against 26.8 KB for zebra2's, which is what a lattice view looks like when there is one. Those two cells were 90 % of the old slow tier. Same runs column as its sibling terminus, now for the same stated reason."
 
 [[entry]]
 path   = "examples/saturation/square-unique/cul-de-sac.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
+heavy_dump = true
 note   = "no solve, solve -e, render lattice: a per-rule demo of `square-unique` — one rule, one firing — over a street it never closes, so all three run the blind enumerator instead of the rule. solve and solve -e end in the OOM killer at ~60 s; `render lattice` is the same search at -m 3 and did finish, in 94 s and 49.2 MB of DOT nobody reads — against 26.8 KB for zebra2's, which is what a lattice view looks like when there is one. Those two cells were 90 % of the old slow tier. Same runs column as its sibling terminus, now for the same stated reason."
 
 [[entry]]
 path   = "examples/saturation/square-unique/terminus.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints"]
+heavy_dump = true
 note   = "no render lattice, solve, solve -e: as corner-house and cul-de-sac — the demo is one `square-unique` firing, and the three missing runs are the blind enumerator over a street the demo never closes. The biggest of the three streets, and it shows: solve and solve -e are OOM-killed at ~151 s where its siblings go at ~60, and `render lattice` outlives 300 s where theirs take 94 and 125."
 
 [[entry]]

@@ -77,8 +77,8 @@
 # other argument and runs none of the gate's steps. A step is the statement
 # after a `nightly_step "…"` banner, and `ein-cli/tests/nightly_steps.rs`
 # diffs that list against the workflow's, as `gate_steps.rs` does the gate's.
-# Its four test steps run under their own `build/gate-tmp-<pid>`, checked as
-# the gate's is. The fuzz and bench jobs are in it because they are cheap:
+# Its test steps run under their own `build/gate-tmp-<pid>`, checked as the
+# gate's is. The fuzz and bench jobs are in it because they are cheap:
 # both fuzz seeds and the bench smoke took 15 s together, against
 # `deep-corpus`'s 594 s, in S1e2.3.6's sweep of 2026-11-03.
 # One thing differs from the runner's fresh checkout: the bundle step writes
@@ -125,9 +125,11 @@ fi
 # `--slow` is the gate with the two depths the nightly's test steps set, for
 # every test at once: `EIN_CORPUS_SLOW=1` (the slow entries' cells, and the
 # slow half of every test that has one) and eight id-space permutations
-# instead of one. It is not the nightly, which runs four test targets at those
+# instead of one. It is not the nightly, which runs some test targets at those
 # depths and five scripts besides: `--nightly` is. `corpus/corpus.toml` is the
-# authority on what is slow, and `cost_ms` is the measurement.
+# authority on what is slow, with `cost_ms` the measurement, and since M1f
+# S1f.5.13 on which entries' `--dump-answer` the round trip leaves to this
+# tier, `heavy_dump`.
 ARGS=()
 CHECKS=1
 NIGHTLY=0
@@ -181,6 +183,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus: answer_dump"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_dump
+
+    nightly_step "deep-corpus: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_round_trip
 
     nightly_step "deep-corpus: lever_invariance, the slow cells"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test lever_invariance

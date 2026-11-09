@@ -43,9 +43,24 @@
 //! event (`no_core_unless_dead`). Until S1f.5.8 an owing hole, and every node that
 //! is not dead in the last three, was written `[]`.
 //!
+//! **Two tiers** (M1f S1f.5.13, the user's ruling of 2026-11-08 on P-16:
+//! *"move to slow tier"*). Per commit the test dumps every entry that is
+//! neither `slow` nor `heavy_dump`, the manifest's flag for a dump of at
+//! least `ein_corpus::manifest::HEAVY_DUMP_FILES` state files, and fails on
+//! one that writes that many unflagged. Under `EIN_CORPUS_SLOW=1`, which the
+//! nightly's `deep-corpus` job sets, it dumps every entry, and fails as well
+//! on a flagged one that writes fewer. Five entries were flagged on
+//! 2026-11-09, `square-unique`'s three, `features/04_open` and
+//! `features/01_not_and_absent`, each writing 64 514 to 65 214 state files;
+//! until then the first four ran per commit, and most of the test's time
+//! (`ein_corpus`'s `the_heavy_dump_set_is_exactly_these_five`).
+//! `past-limit-lines` keeps a run past `--region-limit` in the per-commit
+//! tier, three state files and 15 members of N.
+//!
 //! ```text
 //! cargo test -p ein-cli --test answer_round_trip
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test answer_round_trip  # + the slow entries
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test answer_round_trip  # + the slow and heavy_dump entries
+//! EIN_ROUND_TRIP_LIST=1 … -- --nocapture  # each program's state files
 //! ```
 
 use std::collections::BTreeSet;
@@ -53,6 +68,7 @@ use std::path::Path;
 use std::process::Command;
 
 use ein_core::{Kb, ProvKind, Terms};
+use ein_corpus::manifest::HEAVY_DUMP_FILES;
 use ein_corpus::{Scratch, corpus, repo_root};
 use ein_infer::explore::{Ask, Mode, Options, Which};
 use ein_infer::read_out::{self, Listing};
@@ -476,16 +492,43 @@ fn no_core_unless_dead(file: &str, dir: &Path, bad: &mut Vec<String>) -> Held {
     held
 }
 
-/// The shards [`shard`] splits the corpus into, one test each, so the four
-/// programs whose dump is past `--region-limit` (65 214 state files on
-/// `square-unique/corner-house`) run beside the rest and not after them.
+/// The shards [`shard`] splits the corpus into, one test each. Per commit no
+/// program dominates them since S1f.5.13 (`type-exclusivity/pets` writes the
+/// most, 11 339 state files); under `EIN_CORPUS_SLOW=1` they put the five
+/// `heavy_dump` entries and the zebra family's beside the rest, not after
+/// them.
 const SHARDS: usize = 8;
+
+/// The `heavy_dump` flag held to the count a dump wrote, `None` where the
+/// program wrote none: an unflagged entry that wrote
+/// [`HEAVY_DUMP_FILES`] or more, or a flagged one that wrote fewer.
+fn heavy_dump_flag(e: &ein_corpus::Entry, wrote: Option<usize>) -> Option<String> {
+    let n = wrote.unwrap_or(0);
+    match (e.heavy_dump, n >= HEAVY_DUMP_FILES) {
+        (false, true) => Some(format!(
+            "{}: its dump writes {n} state files, {HEAVY_DUMP_FILES} or more, and its \
+             corpus entry is not `heavy_dump = true`: flag it, which moves its round trip \
+             to the slow tier, and bank it in `the_heavy_dump_set_is_exactly_these_five`",
+            e.path
+        )),
+        (true, false) => Some(format!(
+            "{}: `heavy_dump = true`, and its dump writes {n} state files, under \
+             {HEAVY_DUMP_FILES}: take the flag off, which brings its round trip back to \
+             every commit",
+            e.path
+        )),
+        _ => None,
+    }
+}
 
 /// Every corpus program `ein solve` answers, whether or not its entry declares
 /// the run, every state file of its describe run (the listed states, the
 /// members met and not listed, and an empty R's owing frontier), each against
-/// the run's own state, by value: the entries whose manifest index is `k`
-/// modulo [`SHARDS`].
+/// the run's own state, by value: the entries whose index in the selection is
+/// `k` modulo [`SHARDS`]. The selection is every entry under
+/// `EIN_CORPUS_SLOW=1`, and per commit every entry that is neither `slow` nor
+/// `heavy_dump`; each entry it dumps is held to its `heavy_dump` flag
+/// ([`heavy_dump_flag`]).
 fn shard(k: usize) {
     let root = Scratch::new(&format!("ein-answer-round-trip-{k}"));
     let slow = include_slow();
@@ -494,12 +537,19 @@ fn shard(k: usize) {
     let (mut programs, mut states, mut eager) = (0, 0, 0);
     let mut held = Held::default();
     let entries = corpus();
-    for (i, e) in entries.select(&[], None, slow).iter().enumerate() {
+    let selected: Vec<_> = entries
+        .select(&[], None, slow)
+        .into_iter()
+        .filter(|e| slow || !e.heavy_dump)
+        .collect();
+    for (i, e) in selected.iter().enumerate() {
         if i % SHARDS != k {
             continue;
         }
         let dir = root.join(format!("e{i}"));
-        match check(&e.path, &dir, &mut bad, &mut eager, &mut held) {
+        let wrote = check(&e.path, &dir, &mut bad, &mut eager, &mut held);
+        bad.extend(heavy_dump_flag(e, wrote));
+        match wrote {
             Some(n) => {
                 programs += 1;
                 states += n;

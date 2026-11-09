@@ -6,7 +6,8 @@
 **Status:** specified 2026-11-08 on the user's ruling of that day on P-16. **Running 2026-11-09**, on the user's
 go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions till the end
 of the phase"*), after S1f.5.8 and beside the second lane's S1f.5.9: T1f.5.13.1, the distribution and the slow tier's
-first run ([its record](#t1-record-2026-11-09)). One choice was taken by default and recorded,
+first run ([its record](#t1-record-2026-11-09)); T1f.5.13.2, the field, its checks, the selection and the nightly
+step ([its record](#t2-record-2026-11-09)). One choice was taken by default and recorded,
 [Q-M1f.50](../open_questions.md#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag).
 **Depends on:** nothing. [S1f.5.12](s1f.5.12_cores_for_n_only.md) made each of the four dumps cheaper, and
 neither stage waited for the other.
@@ -134,6 +135,45 @@ N each with its core (S1f.5.12's T3 record), so `members_of_n`'s past-the-limit 
 
 The field in `ein-corpus`'s manifest and on the four entries. The two checks, the test's selection, and its
 doc comment's `SHARDS` paragraph restated.
+
+### T2 record, 2026-11-09
+
+**The field.** `ein_corpus::Entry::heavy_dump`, with its line, `ein_corpus::manifest::HEAVY_DUMP_FILES = 40_000`,
+whose doc carries T1's distribution; `corpus/corpus.toml` flags the five entries and says what the flag is in its
+header. `ein-corpus`'s `the_heavy_dump_set_is_exactly_these_five` pins the set per commit, as
+`the_slow_set_is_exactly_these_fourteen` pins `slow`'s: whether a flag is true is the round trip's to say, and it dumps
+a flagged entry only in the slow tier, so a flag gained by an entry that writes few files would take it out of the
+per-commit round trip with nothing per commit to notice.
+
+**The checks and the selection.** `answer_round_trip.rs`' `shard` takes every entry under `EIN_CORPUS_SLOW=1`, and per
+commit every entry that is neither `slow` nor `heavy_dump`; `heavy_dump_flag` holds each entry it dumps to its flag,
+so an unflagged entry that writes 40 000 state files or more fails in either tier, and a flagged one that writes
+fewer, none included, fails in the slow tier. The doc comment's new paragraph says what runs where, and `SHARDS`' says
+what the shards now spread. **Mutation-checked** (2026-11-09, release, the manifest restored after): with
+`corner-house` unflagged, the per-commit run fails naming it, 65 214 files, and so does the set's pin; with
+`syntax/equality` flagged as well, the slow tier fails naming both, `equality`'s 4 096 under the line.
+
+**The nightly step**, brought forward from T3 so that no commit leaves the four out of every CI tier:
+`TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test answer_round_trip` under `EIN_CORPUS_SLOW: "1"`, in
+`nightly.yml`'s `deep-corpus` after `answer_dump`'s step and before the scratch check, with a comment in the same
+style; `./run_tests.sh --nightly` runs the same step, which `nightly_steps.rs` holds against the workflow, and its new
+`the_round_trips_slow_half_runs_with_the_flag` pins the flag, as `the_slow_cells_run_under_release_with_the_flag` pins
+`corpus_cli`'s: with `EIN_CORPUS_SLOW` taken out of both copies the diff passes and the pin fails (a scratch mutation,
+reverted). Two comments that counted the nightly's test steps, *four* in `nightly.yml` and `run_tests.sh` where there
+were five and are now six, no longer count them, and `run_tests.sh`' `--slow` paragraph names `heavy_dump`.
+
+**The per-commit time, before and after** (`build/s1f.5.13/before_after.sh debug default 2`, the two test binaries
+built from `7bc6ea72`'s test and this one and run alternately, debug as the gate builds them, no other cargo process
+running, 2026-11-09, `build/s1f.5.13/t2_per_commit_before_after.log`): **55.1 s and 56.5 s before, 8.60 s and
+8.67 s after.** The run dumps 278 programs and 20 623 state files, where it dumped 282 and 279 929; `pets`' 11 339
+are the most any program writes per commit.
+
+**The slow tier**, on this commit's code (`WHICH=after build/s1f.5.13/before_after.sh release slow 1`, no other cargo
+process at its start, 2026-11-09, `build/s1f.5.13/t2_slow_tier.log`): 9 of 9 tests pass in **121.4 s**. It is what the
+nightly's new step runs.
+
+**Nothing else moves.** The change is a test's selection, a manifest field and a CI step: no engine code, golden,
+answer or register row.
 
 ### Task T1f.5.13.3 — the nightly step and the pages
 

@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     # M1e2 S1e2.3.6 — the tests' `TMPDIR`, a fresh directory under `build/`,
-    # as in the per-commit tier since S1e2.3.5: the four test steps run under
+    # as in the per-commit tier since S1e2.3.5: the job's test steps run under
     # it, and `check_test_scratch.py` holds it empty after them. The slow cells
     # are tests the per-commit tier never runs, so this is the one place their
     # scratch is checked. `run_tests.sh --nightly` names its own
@@ -66,6 +66,15 @@ jobs:
       # S1e2.3.6's notes.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test answer_dump
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.5.13 — every corpus program's `--dump-answer` state files, each
+      # reloaded to its state by value, with the entries the per-commit tier
+      # leaves out: the `slow` ones, and the `heavy_dump` ones, whose dump
+      # writes 40 000 state files or more (`ein_corpus::manifest::HEAVY_DUMP_FILES`;
+      # `square-unique`'s three, `features/04_open` and `features/01`, 64 514
+      # to 65 214 each on 2026-11-09). The user's ruling of 2026-11-08 on P-16,
+      # *"move to slow tier"*; until it no CI tier ran this test's slow half.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test answer_round_trip
+        env: { EIN_CORPUS_SLOW: "1" }
       # M1e2 S1e2.1a.6 — every mode's read-out and summary under every lever,
       # held to the default's, with the cells the per-commit tier leaves out
       # for their cost: the declared lever cells of the slow entries (the
@@ -79,7 +88,7 @@ jobs:
         env: { EIN_CORPUS_SLOW: "1" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
-      # M1e2 S1e2.3.6 — the four test steps left nothing in their `TMPDIR`,
+      # M1e2 S1e2.3.6 — the test steps left nothing in their `TMPDIR`,
       # every entry named with the file that writes it (S1e2.3.5's check).
       - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
         working-directory: ${{ github.workspace }}

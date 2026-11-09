@@ -213,6 +213,24 @@ fn the_slow_cells_run_under_release_with_the_flag() {
     );
 }
 
+/// **The round trip's slow half runs in the nightly** (M1f S1f.5.13, the
+/// user's ruling of 2026-11-08 on P-16). Per commit `answer_round_trip` leaves
+/// out the `slow` and `heavy_dump` entries, and only `EIN_CORPUS_SLOW` brings
+/// them back, so a step that lost the flag in both copies would round-trip
+/// them nowhere, as no tier did before the stage, and the diff above would
+/// pass.
+#[test]
+fn the_round_trips_slow_half_runs_with_the_flag() {
+    let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
+    assert!(
+        nightly.iter().any(|s| s.contains("EIN_CORPUS_SLOW=\"1\"")
+            && s.ends_with("cargo test -p ein-cli --release --test answer_round_trip")),
+        "no nightly step runs answer_round_trip under --release with \
+         EIN_CORPUS_SLOW=\"1\": the heavy_dump and slow entries' dumps would be \
+         round-tripped by no CI tier: {nightly:#?}"
+    );
+}
+
 /// **The tests' scratch is checked** (S1e2.3.6, after S1e2.3.5). Every
 /// `cargo test` of the job that runs `check_test_scratch.py` runs under
 /// `TMPDIR="${GATE_TMP}"`, and the check comes after the last of them; so the

@@ -61,6 +61,25 @@ pub struct Entry {
     /// with `utils/bench_env.sh python3 utils/corpus_cost.py`.
     #[serde(default)]
     pub cost_ms: Option<u64>,
+    /// **This entry's describe dump writes at least [`HEAVY_DUMP_FILES`]
+    /// state files** (M1f S1f.5.13, the user's ruling of 2026-11-08 on P-16:
+    /// *"move to slow tier"*). `ein-cli/tests/answer_round_trip.rs` runs every
+    /// corpus program's `ein solve FILE --dump-answer DIR` and reloads each
+    /// state file it writes, so a dump of tens of thousands of files is most
+    /// of that test's time; per commit it leaves a flagged entry out, and
+    /// under `EIN_CORPUS_SLOW=1`, which the nightly sets, it takes it.
+    ///
+    /// Not [`Entry::slow`], which is a claim about the entry's *declared*
+    /// runs: the round trip's dump is none of them, and the four entries the
+    /// ruling moved declare runs that cost milliseconds. It is a count, not
+    /// a time, so it holds on any machine, and the round trip holds it in
+    /// both directions wherever it dumps an entry: an unflagged entry that
+    /// writes [`HEAVY_DUMP_FILES`] or more fails, and so does a flagged one
+    /// that writes fewer. A `slow` entry is held to it too, in the slow
+    /// tier, so the flag says the same thing of every entry.
+    /// `the_heavy_dump_set_is_exactly_these_five` pins the set per commit.
+    #[serde(default)]
+    pub heavy_dump: bool,
     /// Free-text; why this entry is interesting, when that is not obvious.
     #[serde(default)]
     pub note: Option<String>,
@@ -143,6 +162,22 @@ pub const SCHEMA: &str = "ein-corpus/2";
 /// [`corpus_cost.md`](../../../../docs/history/m1a_rust/measurements/corpus_cost.md)
 /// is the measurement and `corpus/README.md` § `slow` is the rule.
 pub const SLOW_MS: u64 = 1000;
+
+/// **The `heavy_dump` threshold**, in state files an entry's describe dump
+/// writes (M1f S1f.5.13): what `answer_round_trip`'s `check` reloads, and
+/// what `EIN_ROUND_TRIP_LIST=1` prints beside each program.
+///
+/// Set in the gap of the distribution, on 2026-11-09 at `7bc6ea72`
+/// (`EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release
+/// --test answer_round_trip -- --nocapture`): 296 of the 417 entries write a
+/// state file, five write 64 514 to 65 214, the next six 23 390 each (the
+/// `slow` `square-fwd` and `square-bwd`), then 11 339
+/// (`type-exclusivity/pets`) and 4 096 or fewer. Forty thousand is 1.6×
+/// under the five and 1.7× over the six, and it moves the four the ruling
+/// named and `features/01_not_and_absent`, which is `slow` anyway. A count
+/// depends on the engine and the corpus, never on the machine, so the line
+/// moves only when a dump does, and the round trip says which.
+pub const HEAVY_DUMP_FILES: usize = 40_000;
 
 /// The group vocabulary — `corpus/README.md`.
 ///
@@ -398,6 +433,41 @@ mod tests {
         );
     }
 
+    /// **The `heavy_dump` set, per commit** (M1f S1f.5.13), as
+    /// [`the_slow_set_is_exactly_these_fourteen`] pins `slow`'s. Whether the
+    /// flag is *true* is `answer_round_trip`'s to say, which dumps the
+    /// unflagged entries per commit and the flagged ones only under
+    /// `EIN_CORPUS_SLOW=1`; so an entry that gained the flag would leave the
+    /// per-commit round trip with nothing per commit to notice. This does.
+    #[test]
+    fn the_heavy_dump_set_is_exactly_these_five() {
+        let manifest = corpus();
+        let heavy: Vec<&str> = manifest
+            .entry
+            .iter()
+            .filter(|e| e.heavy_dump)
+            .map(|e| e.path.as_str())
+            .collect();
+        assert_eq!(
+            heavy,
+            // Taken 2026-11-09 at `7bc6ea72`, the distribution in
+            // `HEAVY_DUMP_FILES`' doc: the four P-16 named, and
+            // `features/01_not_and_absent`, `slow` too.
+            [
+                "examples/features/01_not_and_absent.ein",
+                "examples/features/04_open.ein",
+                "examples/saturation/square-unique/corner-house.ein",
+                "examples/saturation/square-unique/cul-de-sac.ein",
+                "examples/saturation/square-unique/terminus.ein",
+            ],
+            "the `heavy_dump` set moved. An entry that gained the flag has left \
+             the per-commit round trip: check its dump writes at least \
+             HEAVY_DUMP_FILES state files (`EIN_ROUND_TRIP_LIST=1 \
+             EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release --test \
+             answer_round_trip -- --nocapture`) before banking it here"
+        );
+    }
+
     #[test]
     fn every_entry_has_at_least_one_run() {
         let corpus = corpus();
@@ -532,6 +602,7 @@ mod tests {
             levers: vec!["-L".into(), "-o score-sum".into()],
             slow: false,
             cost_ms: None,
+            heavy_dump: false,
             note: None,
         };
         assert_eq!(e.all_runs(), ["solve", "solve -L", "solve -o score-sum"]);
