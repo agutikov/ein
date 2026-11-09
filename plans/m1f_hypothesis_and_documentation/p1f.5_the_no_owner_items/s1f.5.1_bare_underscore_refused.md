@@ -19,7 +19,8 @@ user's rule for a name ([S1f.5.5](s1f.5.5_the_grammar.md#the-name-rule)): a run 
 name, and only a bare `_` and `?_` stay refused.
 **Not started** until the swap, which moved its refusal, fixtures and rows (below). **Running since 2026-11-09**
 ([§ T1f.5.1.3 record](#t1f513-record-2026-11-09)): T1f.5.1.3's step 1 done, F3's cause traced to a rule application's
-identity, which reaches a disjunction too, filed as `W39/or-one-key`, `open` and deferred to F22.
+identity, which reaches a disjunction too, filed as `W39/or-one-key`, `open` and deferred to F22 (`728e716a`); step 2,
+`_` and `?_` held refused in every position (66 rows of the grammar's table) and on every command.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal is the generated parser's (bare `_` is no `NAME` and `?_` no `VAR` in
@@ -336,6 +337,37 @@ its alternative.
 every_cell_reproduces` and `-p ein-render --test corpus_shapes`; and `alive_invariant`'s `SEEDED`, 27 → 28 rows,
 the twin's `w`, which a rule asserts and no fact names (in the witness a rule named `w` makes it a name of the program).
 `wrong_answers` and `register_region` hold the row.
+
+**Step 2, `_` held in every position: one commit, on step 1's (`728e716a`).** A bare `_` and `?_` are refused at the
+parse in every place of [the table](#what-it-changes) and wherever a name or a variable goes, on every command that
+reads a program. No answer moved, and no register row.
+- **The grammar's table** (`ein-ir/tests/grammar_pages.rs`), 66 rows at its end (190 → 256; `cargo test -p ein-ir
+  --test grammar_pages`, 2026-11-09), each refused at the parse at its token, with S1f.5.1's note: `_` and `?_` as a
+  fact's, a nested fact's, an `is-a` fact's, a stored negation's and an activator's argument (W-22's places), a
+  nested fact's relation, a top-level form's head, a relation's name and signature, a rule's name and parameters, a
+  premise's, a pattern's (under an `absent` too) and an hrule premise's argument and relation, a guard's argument, a
+  `:match`, a conjunct, a disjunct and an `absent`'s premise, a conclusion, its relation and argument (a stored
+  negation's in one too), an `(open …)`'s relation and an hrule's conclusion, a query's goal and `:over`, a claim's
+  fact and `neq`, a region claim's fact, a solve's relation lists and `:hrules`, a config flag's value, a macro's
+  name, parameters and body, an import's module, alias and symbols, a fact's `:rule` and `:using`, and a trace
+  step's name and `:derives`. Each place writes the token the earlier rows did not: T5's sixteen `_` rows (`awk` over
+  `grammar_table.txt`'s first 190, 2026-11-09) (a pattern's
+  relation and argument, a guard's argument, a premise, a conclusion's argument, `:expect`) gain their `?_`, and the
+  places they did not cover gain both.
+- **Every command** (`ein-cli/tests/cli_semantics.rs`' `a_bare_underscore_names_nothing_in_every_place`): fifteen
+  programs, one per place of the stage's table, each written with `_` and with `?_`, through `ein saturate`, `solve`,
+  `oracle`, `render program`, `render rules`, `render constraints`, `render kb` and `kb save` (exit 1) and `ein
+  test` (exit 2), each with the line at the token and the note; and a module whose macro body writes `_`, refused
+  where it is imported, with the module's line, by `ein solve`, `oracle`, `test`, `render kb` and `kb save`, the
+  commands that resolve a file-relative import.
+- **Found outside the brief:** `ein saturate` resolves no file-relative import at all, where `solve`, `oracle` and
+  `test` do: it loads with no base directory (`saturate.rs`, whose comment says it resolves against the working
+  directory), so `(import mod)` is refused with *file-relative import needs a base directory (load from a file path)
+  at None* from any directory, and `examples/broken/load/README.md` calls that line *not expressible as a file*.
+  Not this stage's; reported to the coordinator.
+
+**What moved**, the table's golden and nothing else: `grammar_table.txt` gains the 66 rows' reports, 460 lines
+(`EIN_BLESS=1 cargo test -p ein-ir --test grammar_pages`), each the token's line, the note and the repair *Delete*.
 
 ### Task T1f.5.1.4 — the pages
 

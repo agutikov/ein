@@ -1034,6 +1034,158 @@ fn a_string_is_natural_language_and_no_value() {
     }
 }
 
+/// **A bare `_` and `?_` name nothing, in every place** — M1f S1f.5.1's
+/// T1f.5.1.3, on the user's ruling of 2026-11-06 (Q-M1e2.22: *"simple `_`
+/// reserved and refused because of potential ambiguity, but remain valid in
+/// any place in atom and variable names"*), at the parse since S1f.5.5's swap.
+///
+/// Every command that reads a program refuses each token in each place of
+/// S1f.5.1's table: `ein saturate`, `solve`, `oracle`, `render program`,
+/// `render rules`, `render constraints`, `render kb` and `kb save` exit 1 and
+/// `ein test` 2, each with one line at the token, `FILE:L:C: unexpected `_`: _
+/// (reserved)`, and S1f.5.1's note under it. Until the swap `_` was dropped
+/// from a fact, a nested fact and an activator in silence (W-22, W29), matched
+/// any value in a rule's pattern (W20), was read in a goal, and was refused at
+/// load as a relation, a guard's argument or a premise; `?_` was refused at
+/// the lexer. A module that writes one is refused where it is imported, with
+/// the module's line, by every command that resolves a file-relative import:
+/// `ein solve`, `oracle`, `test`, `render kb` and `kb save` (`ein saturate`
+/// resolves none, and `render program`, `rules` and `constraints` draw the
+/// file as written). The same tokens in every other place a name or a
+/// variable goes are rows of the grammar's table
+/// (`ein-ir/tests/grammar_pages.rs`), and a name that holds `_` anywhere else,
+/// `_a_in_b_` or `?_______01`, is a name or a variable (`ein-ir`'s
+/// `grammar.rs` tests).
+#[test]
+fn a_bare_underscore_names_nothing_in_every_place() {
+    let scratch = ein_corpus::Scratch::new("ein-underscore-names-nothing");
+    let pre = "(relation p T) (relation r T T) (relation h T) (relation hit T) (relation tag T T)\n\
+               (rule q (?x) :match (p ?x) :assert (hit ?x))\n";
+    // The place, as S1f.5.1's table names it, and line 3 with `{}` for the token.
+    let places = [
+        ("a fact's argument", "(r {} a)"),
+        ("a nested fact's argument", "(r (f {} a) c)"),
+        ("a nested fact's relation", "(h ({} b))"),
+        ("an activator's argument", "(q {})"),
+        ("a top-level form's head", "({} a)"),
+        ("a relation's signature", "(relation s {} T)"),
+        (
+            "a premise's argument",
+            "(rule w () :match (p {}) :assert (hit w))",
+        ),
+        (
+            "a pattern's argument, under an absent",
+            "(rule w () :match (and (p ?x) (absent (tag ?x {}))) :assert (hit ?x))",
+        ),
+        (
+            "a premise's relation",
+            "(rule w () :match ({} a) :assert (hit w))",
+        ),
+        (
+            "a guard's argument",
+            "(rule w () :match (and (p ?x) (eq ?x {})) :assert (hit ?x))",
+        ),
+        (
+            "a premise",
+            "(rule w () :match (and (p ?x) {}) :assert (hit ?x))",
+        ),
+        (
+            "a conclusion's argument",
+            "(rule w () :match (p ?x) :assert (tag ?x {}))",
+        ),
+        (
+            "an hrule's conclusion",
+            "(hrule g () :match (p ?x) :assert (tag ?x {}))",
+        ),
+        ("a query's goal", "(query :goal (hit {}))"),
+        (
+            "a claim's fact",
+            "(query :goal (hit ?x) :expect (model (hit {})))",
+        ),
+    ];
+    let commands: [(&[&str], i32); 8] = [
+        (&["saturate"], 1),
+        (&["solve"], 1),
+        (&["oracle"], 1),
+        (&["test"], 2),
+        (&["render", "program"], 1),
+        (&["render", "rules"], 1),
+        (&["render", "constraints"], 1),
+        (&["render", "kb"], 1),
+    ];
+    let note = |token: &str| {
+        format!(
+            "  note: {token} is reserved and names nothing: where any value will do, write a \
+             variable used once"
+        )
+    };
+    let refused_by = |argv: &[&str], code: i32, want: &str, token: &str, what: &str| {
+        let r = ein(argv);
+        assert_eq!(r.code, code, "ein {argv:?} on {what}:\n{}", r.err);
+        assert!(
+            r.err.lines().any(|l| l == want),
+            "ein {argv:?} on {what}: no line {want:?}:\n{}",
+            r.err
+        );
+        assert!(
+            r.err.lines().any(|l| l == note(token)),
+            "ein {argv:?} on {what}: no note:\n{}",
+            r.err
+        );
+    };
+    for (i, (place, form)) in places.iter().enumerate() {
+        for token in ["_", "?_"] {
+            let file = scratch.path().join(format!("{i}-{}.ein", token.len()));
+            std::fs::write(&file, format!("{pre}{}\n", form.replace("{}", token)))
+                .expect("the program is written");
+            let file = file.to_string_lossy();
+            let col = form.find("{}").expect("the token's place") + 1;
+            let want = format!("{file}:3:{col}: unexpected `{token}`: {token} (reserved)");
+            let what = format!("`{token}` as {place}");
+            for (cmd, code) in &commands {
+                let argv: Vec<&str> = cmd.iter().copied().chain([file.as_ref()]).collect();
+                refused_by(&argv, *code, &want, token, &what);
+            }
+            #[cfg(feature = "einb")]
+            {
+                let out = scratch.path().join(format!("{i}-{}.einb", token.len()));
+                let out = out.to_string_lossy();
+                refused_by(&["kb", "save", &file, &out], 1, &want, token, &what);
+            }
+        }
+    }
+    // A module that writes one is refused where it is imported.
+    let module = scratch.path().join("module.ein");
+    std::fs::write(&module, "(relation p T T)\n(macro m (?a) (p ?a _))\n")
+        .expect("the module is written");
+    let main = scratch.path().join("main.ein");
+    std::fs::write(&main, "(import module)\n(relation q T)\n(q a)\n")
+        .expect("the program is written");
+    let (module, main) = (module.to_string_lossy(), main.to_string_lossy());
+    let want = format!("kb load error: {module}:2:21: unexpected `_`: _ (reserved)");
+    let what = "`_` in an imported macro's body";
+    for (cmd, code) in [
+        (&["solve"][..], 1),
+        (&["oracle"][..], 1),
+        (&["test"][..], 2),
+        (&["render", "kb"][..], 1),
+    ] {
+        let argv: Vec<&str> = cmd.iter().copied().chain([main.as_ref()]).collect();
+        refused_by(&argv, code, &want, "_", what);
+    }
+    #[cfg(feature = "einb")]
+    {
+        let out = scratch.path().join("main.einb");
+        refused_by(
+            &["kb", "save", &main, &out.to_string_lossy()],
+            1,
+            &want,
+            "_",
+            what,
+        );
+    }
+}
+
 /// **A run of digits is a name in every place a name goes** — M1f S1f.5.4's
 /// T1f.5.4.3, on the user's rulings of 2026-11-06 (*"digits are not numbers,
 /// digits are plain names … (p 1) and (p 01) are VERY DIFFERENT facts"*) and

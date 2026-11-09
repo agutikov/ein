@@ -1309,3 +1309,463 @@
   repair: Insert `:goal-text`, Delete `:why`
   repair: Delete `:why`, Delete `"text"`
 
+## 190. a fact's argument (was: —)
+    (relation r T T) (r _ a)
+<row>:1:21: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 191. a fact's argument (was: —)
+    (relation r T T) (r ?_ a)
+<row>:1:21: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 192. a nested fact's argument (was: —)
+    (relation r T T) (r (f _ a) c)
+<row>:1:24: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 193. a nested fact's argument (was: —)
+    (relation r T T) (r (f ?_ a) c)
+<row>:1:24: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 194. a nested fact's relation (was: —)
+    (relation h T) (h (_ b))
+<row>:1:20: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 195. a nested fact's relation (was: —)
+    (relation h T) (h (?_ b))
+<row>:1:20: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 196. a fact's argument (was: —)
+    (relation is-a T T) (is-a _ T)
+<row>:1:27: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 197. a fact's argument (was: —)
+    (relation is-a T T) (is-a ?_ T)
+<row>:1:27: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 198. a stored negation's argument (was: —)
+    (relation p T) (not (p _))
+<row>:1:24: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 199. a stored negation's argument (was: —)
+    (relation p T) (not (p ?_))
+<row>:1:24: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 200. an activator's argument (was: —)
+    (relation p T) (relation hit T) (rule q (?x) :match (p ?x) :assert (hit ?x)) (q _)
+<row>:1:81: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 201. an activator's argument (was: —)
+    (relation p T) (relation hit T) (rule q (?x) :match (p ?x) :assert (hit ?x)) (q ?_)
+<row>:1:81: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 202. a fact's :rule (was: —)
+    (relation p T) (p a :rule _)
+<row>:1:27: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+
+## 203. a fact's :using (was: —)
+    (relation p T) (p a :rule r :using ((q ?_)))
+<row>:1:40: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 204. a top-level form's head (was: —)
+    (_ a)
+<row>:1:2: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 205. a top-level form's head (was: —)
+    (?_ a)
+<row>:1:2: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 206. a relation's name (was: —)
+    (relation _ T)
+<row>:1:11: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 207. a relation's name (was: —)
+    (relation ?_ T)
+<row>:1:11: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 208. a relation's signature (was: —)
+    (relation r _ T)
+<row>:1:13: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 209. a relation's signature (was: —)
+    (relation r ?_ T)
+<row>:1:13: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 210. a rule's name (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule _ () :match (p ?x) :assert (q ?x))
+<row>:3:7: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+
+## 211. a rule's name (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule ?_ () :match (p ?x) :assert (q ?x))
+<row>:3:7: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `?_`
+
+## 212. a rule's parameters (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r (_) :match (p ?x) :assert (q ?x))
+<row>:3:10: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 213. a rule's parameters (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r (?_) :match (p ?x) :assert (q ?x))
+<row>:3:10: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 214. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?_) :assert (hit r))
+<row>:3:22: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 215. a pattern's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (box (tag ?_ a)) :assert (hit r))
+<row>:3:29: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 216. a pattern's argument, under an absent (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (absent (tag ?x ?_))) :assert (hit ?x))
+<row>:3:47: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 217. a premise's argument, in an hrule (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (n _) :assert (hit a))
+<row>:3:23: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 218. a premise's argument, in an hrule (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (n ?_) :assert (hit a))
+<row>:3:23: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 219. a premise's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (?_ 2) :assert (hit w))
+<row>:3:20: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 220. a pattern's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (box (?_ 2)) :assert (hit w))
+<row>:3:25: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 221. a premise's relation, in an hrule (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (?_ ?x) :assert (tag ?x ?x))
+<row>:3:21: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 222. a guard's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule e () :match (and (p ?x) (eq ?x ?_)) :assert (hit ?x))
+<row>:3:38: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `?_`
+  repair: Insert a variable, Delete `?_`
+
+## 223. a guard's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule e () :match (and (p ?x) (neq ?_ ?x)) :assert (hit ?x))
+<row>:3:36: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `?_`
+  repair: Insert a variable, Delete `?_`
+  repair: Delete `?_`, Shift `?x`, Insert a variable
+  and 1 more repair
+
+## 224. a :match (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match ?_ :assert (hit a))
+<row>:3:19: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`, Delete `:assert`
+
+## 225. a conjunct (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) ?_) :assert (hit ?x))
+<row>:3:31: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 226. a disjunct (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (or _ (q ?y)) :assert (hit a))
+<row>:3:23: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 227. an absent's premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (absent _)) :assert (hit ?x))
+<row>:3:39: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert `(`, Insert a variable, Insert `)`, Delete `_`
+  repair: Insert `(`, Insert a name, Insert `)`, Delete `_`
+  repair: Delete `_`, Delete `)`, Delete `)`, Delete `:assert`
+  and 6 more repairs
+
+## 228. a conclusion's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule w () :match (n ?x) :assert (?_ ?x))
+<row>:3:35: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 229. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert (tag ?x ?_))
+<row>:3:42: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 230. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert (and (hit ?x) (not (tag ?x _))))
+<row>:3:61: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 231. a conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert _)
+<row>:3:34: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert `(`, Insert `)`, Delete `_`
+  repair: Insert `(`, Delete `_`, Shift `)`, Insert `)`
+
+## 232. a conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule s () :match (p ?x) :assert ?_)
+<row>:3:34: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert `(`, Insert `)`, Delete `?_`
+  repair: Insert `(`, Delete `?_`, Shift `)`, Insert `)`
+
+## 233. an open conclusion's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (open _))
+<row>:3:40: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 234. an hrule's conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule g () :match (p ?x) :assert (tag ?x _))
+<row>:3:43: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 235. an hrule's conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule g () :match (p ?x) :assert (tag ?x ?_))
+<row>:3:43: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 236. a query's goal (was: —)
+    (relation holds T) (holds a) (query :goal (holds _))
+<row>:1:50: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 237. a query's goal (was: —)
+    (relation holds T) (holds a) (query :goal (holds ?_))
+<row>:1:50: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 238. a query's :over (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :over _)
+<row>:1:48: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+
+## 239. a claim's fact's argument (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :expect (model (p ?_)))
+<row>:1:60: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 240. a claim's neq (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :expect (model (neq _ b)))
+<row>:1:62: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+  repair: Delete `_`, Shift `b`, Insert a name
+
+## 241. a region claim's fact (was: —)
+    (relation p T) (p a) (solve :expect (region (model (p _))))
+<row>:1:55: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 242. a region claim's fact (was: —)
+    (relation p T) (p a) (solve :expect (region (model (p ?_))))
+<row>:1:55: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 243. a solve's relation list (was: —)
+    (relation p T) (solve :no-hypothesis (_))
+<row>:1:39: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 244. a solve's relation list (was: —)
+    (relation p T) (solve :hypothesis-relations (?_))
+<row>:1:46: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 245. a solve's hrules (was: —)
+    (solve :hrules (_))
+<row>:1:17: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 246. a config flag's value (was: —)
+    (config :lattice-sanity-check _)
+<row>:1:31: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert `false`, Delete `_`
+  repair: Insert `true`, Delete `_`
+
+## 247. a macro's name (was: —)
+    (macro _ (?a) (p ?a))
+<row>:1:8: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+
+## 248. a macro's parameters (was: —)
+    (macro m (?_) (p a))
+<row>:1:11: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a variable, Delete `?_`
+
+## 249. a macro's body (was: —)
+    (macro m (?a) (p ?a _))
+<row>:1:21: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `_`
+
+## 250. a macro's body (was: —)
+    (macro m (?a) (p ?a ?_))
+<row>:1:21: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
+## 251. an import's module (was: —)
+    (import _)
+<row>:1:9: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+
+## 252. an import's alias (was: —)
+    (import std.macro :as _)
+<row>:1:23: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+
+## 253. an import's symbols (was: —)
+    (import std.macro :symbols (?_))
+<row>:1:29: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `?_`
+
+## 254. a trace step's name (was: —)
+    (trace (step _ :rule r))
+<row>:1:14: unexpected `_`: _ (reserved)
+  note: _ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Insert a name, Delete `_`
+  repair: Delete `_`, Delete `:rule`
+
+## 255. a trace step's :derives (was: —)
+    (trace (step s1 :derives (p ?_)))
+<row>:1:29: unexpected `?_`: ?_ (reserved)
+  note: ?_ is reserved and names nothing: where any value will do, write a variable used once
+  repair: Delete `?_`
+
