@@ -738,6 +738,21 @@ constrained-reasoning research.
   W61, follow W43's, the goldens were re-taken rather than spliced, and the
   register reads 161 fixed, 13 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  **S1f.5.19**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md#t2-record-2026-11-09),
+  Q-M1f.52 (b) and Q-M1f.53 to .55 defaulted) made the nightly green again
+  behind a gate that had stayed green: `utils/review_bundle.py`, red since
+  `fc53818f` on W40's and W41's command runs and on four refusals its index
+  read as verdicts, builds all 175 cases (`00c4ed34`), a run that is not a
+  solve on a case page of its own (`utils/review/command.py`: the command, its
+  exit, its stdout and stderr in full, against `wrong`, `now` and `right` as
+  `wrong_answers.rs` reads them, every artefact linked and drawn); the gate's
+  `--smoke` reads every register row with no run and builds two command
+  cases, so the next row shape the bundle cannot read fails per commit; every
+  rule view the bundle drew, cut at a subgraph's close and refused by Graphviz
+  since S1e2.1.5, is drawn; and the merged tree's first nightly is green in
+  every job and step, 81 min 54 s (`./run_tests.sh --nightly`, 2026-11-09),
+  the register unmoved.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
