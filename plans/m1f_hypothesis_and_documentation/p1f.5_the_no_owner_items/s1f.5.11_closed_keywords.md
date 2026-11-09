@@ -14,11 +14,12 @@ was 1.5.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on D-15, G-15 and G-22
 ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
-**Not started** until the swap, which moved its refusals, fixtures and rows (below). **Running since 2026-11-09**:
-T1f.5.11.2 done ([its record](#t1f5112-record-2026-11-09)): the compiler's drop and its filters, the expander's arity
-filter, the loader validator's skips and the renderers' arms retired, each shown unreachable first, 33 rows of the
-grammar's table and a fuzz property holding the lists, no answer and no golden but the table's moving; T1f.5.11.3,
-the pages, next.
+**Not started** until the swap, which moved its refusals, fixtures and rows (below). **Done 2026-11-09**
+([§ T1f.5.11.2 record](#t1f5112-record-2026-11-09), [§ T1f.5.11.3 record](#t1f5113-record-2026-11-09)): T1f.5.11.2,
+the compiler's drop and its filters, the expander's arity filter, the loader validator's skips and the renderers'
+arms retired, each shown unreachable first, 33 rows of the grammar's table and a fuzz property holding the lists,
+no answer and no golden but the table's moving (`bb87d53e`); and T1f.5.11.3, the pages: none describes `:where`
+as live, `01_grammar.md` carries the lists, and Q32, D-15, G-22 and G-15 say what fixed them.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* Until then this stage was to land the lists in the loader, on the hand-written
@@ -383,6 +384,63 @@ the fuzz property, and every static check.
 After the swap, beside S1f.5.5's T7.
 
 The six pages, Q32's line, and the inventory's D-15 and G-22, each saying what fixed it.
+
+### T1f.5.11.3 record, 2026-11-09
+
+**One commit, on T1f.5.11.2's (`bb87d53e`)**, pages only. Each sentence that described `:where`, a dropped keyword
+pair or a form's keywords as open says what it was and what it is since S1f.5.11; a record, a dated note and a
+quotation of an engine line are left as written. S1f.5.5's T7 keeps the grammar pages' prose: what this commit
+restates there is only the keywords.
+
+**Restated.**
+- `ir/03-ein-lang/02_patterns.md`: § Closure (two computed predicates, each a premise; a rule's three keywords and a
+  term's none; Q32 and the drop); the construct table's `:where` row, struck through and *refused at the parse*, and
+  the relation-property tag's, a premise; the premise paragraph's keyword-pair sentence and the guard paragraph's;
+  the property-tag paragraph (a `:where` was dropped with its pair, so it gated nothing); § Triangle rule: the T3
+  form written with its guard as a premise and said not to load, with the loader's line, and the T2 form
+  `std.algebra`'s `transitive` word for word, which derives `(co-located a c :rule transitive)` from `(co-located a
+  b)` and `(co-located b c)` (both through `ein saturate FILE --dump`, this commit's release binary, 2026-11-09).
+- `ir/03-ein-lang/03_examples.md`: `transitive` writes `(neq ?a ?c)`, with a sentence saying what it wrote.
+- `ir/03-ein-lang/01_grammar.md`: the `KEYWORD` row; § 2's forms table, each shape its keywords (`[:kw v]*` gone, a
+  query's `:over` and a solve's `:expect` in); **a new § *The keywords each form takes***, [§ The lists](#the-lists)
+  as they stand (no `:priority`, S1f.5.15's, and a macro's `:why`, the user's of 2026-11-08), with what it was
+  until the swap; the relation declarator's block; *facts discard unrecognised kw-pairs*; the meta-primitives'
+  *`:where` clauses*; § Rules' `:priority` sentence; § Premise forms' two keyword-pair sentences; § Solve's and
+  § Query's keyword lists, and `:mode`, refused since the swap.
+- `ir/01-ein-graph/02_rules.md`: § 1's anatomy, the figure's middle part and the paragraph (guards are premises of
+  the LHS); § 2's mixed-flavour note; the three sketches' `:where` lines and the two figures' `:where neq` edges;
+  § 4, retitled *Guards — premises that compare the bindings*, with what it was titled; § 7's step 2. No page
+  linked § 4's old anchor.
+- `ir/01-ein-graph/README.md`: the rule anatomy's `:where`.
+- `glossary.md`: § Rule.
+- `defined_behaviour.md`: § 2.5, retitled *A render view labels an IR form as written* (since T1f.5.11.2 no keyword
+  pair reaches a value's label; the `:key value` labelling kept as its record, from M1e2 S1e2.3.2 to this stage),
+  and its anchor's three referrers (the kwpair fuzz finding's note and two of M1e2's P1e2.3 pages); § 4.8's `:where`
+  sentence; § 4.9's two keyword-pair rows and its *what stays*, which stayed until the swap.
+- [Q32](../../open_questions.md#q32--where-semantics): its index row and a paragraph, *the pair is refused since M1f
+  S1f.5.11*.
+- The no-owner inventory's **D-15** and **G-22**, each table row and section marked done with what fixed it, and the
+  inventory of 2026-11-05's **G-15**, settled with D-15.
+- AGENTS.md, one sentence: S1f.5.11 ran to its end.
+- `docs/history/` is a record, and does not change.
+
+**Left to S1f.5.5's T7**, the grammar pages' prose beyond the keywords: `01_grammar.md`'s quotation of the
+hand-written grammar's `relation_decl … kw_pair*` and its *every arg after the name is a type atom or a kw-pair*,
+and § Trace's block, whose `branch-open`, `branch-close`, `contradiction` and `symmetry-class` events and their
+keywords the grammar refuses since the swap (the paper grammar's default 8: a trace takes `step` alone). Its
+`step` keywords are this stage's list.
+
+**What a page still says about `:where`** (`grep -rn ':where' docs --include='*.md' | grep -v '^docs/history/'`,
+2026-11-09): nineteen lines, each in a sentence above saying what `:where` was and that it is refused, or
+`01_grammar.md`'s example of the refusal. None describes it as live.
+
+**The nightly's fuzz job on T1f.5.11.2's tree** (`bb87d53e`'s, whose generator splices five keywords more):
+green on both seeds, the five properties passing at 1 000 000 iterations each (`EIN_FUZZ_ITERS=1000000
+EIN_FUZZ_SEED=1` and `=987654321 cargo test --release -p ein-ir --test fuzz_properties`, 1 502 s and 1 456 s, the
+first beside T1f.5.11.2's gate, 2026-11-09; `build/s1f.5.11/t2/fuzz-nightly-*.log`).
+
+**Tests that read an edited page**: none (each page's path, `grep -rn` under `ein.rs/crates`, 2026-11-09: only
+comments cite them), and the register is not edited. `utils/doc_audit.py --links --check` over the tree: 0 findings.
 
 ## Acceptance
 

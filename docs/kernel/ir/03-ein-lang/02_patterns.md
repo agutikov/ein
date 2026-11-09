@@ -11,11 +11,23 @@ documentation split.
 
 ## Closure
 
-The pattern language is **positive conjunctive** + `:where` filters + two
-computed predicates. (The rewrite-DSL + named-predicate fallback of
+The pattern language is **positive conjunctive** + two computed predicates,
+`eq` and `neq`, each written as a premise, `(neq ?a ?c)`. (The rewrite-DSL +
+named-predicate fallback of
 [Q4](../../../../plans/open_questions.md#q4--rule-presentation-language)
 chose the first half; the *named structural predicate* registry the second
 half proposed was never built — § Predicate registry below.)
+
+A rule takes `:match`, `:assert` and `:why` and no other keyword, and a term
+takes none: `:where`, the filter clause this page described until M1f
+[S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md),
+is refused at the parse wherever it is written (the user's ruling of
+2026-11-07,
+[Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
+[Q32](../../../../plans/open_questions.md#q32--where-semantics) dropped
+`:where` for the positional premise on 2026-05-20, and a pair written anyway
+was dropped by the compiler, in silence, until S1f.5.5's swap refused it;
+S1f.5.11's T1f.5.11.2 retired the drop.
 
 **Where a malformed primitive is caught** is one of two places, and the split
 is not stylistic:
@@ -49,8 +61,8 @@ compiler enforce well-formedness against the rules below.
 | **equality fact**        | `(= ?a ?b)`                             | ✓ EQ     | matches a **stored** `(= …)` fact — see below     |
 | **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the two registered predicates: compare the bindings |
 | **membership check**     | `(is-a ?a ?T)`                          | ✓ RELATION | ordinary relation pattern                      |
-| `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | NEQ inside | type / inequality / structural-predicate filters |
-| relation-property tag    | `:where (transitive ?r)`                | —         | an ordinary premise matching a stored property fact |
+| ~~`:where` filter~~      | `:where (transitive ?r) (neq ?a ?b)`    | —         | **refused at the parse** since M1f S1f.5.5's swap, as every keyword a rule does not take and every keyword pair inside a term is (S1f.5.11, Q-M1e2.28): write each guard as a premise beside the patterns, `(and (?r ?a ?b) (?r ?b ?c) (neq ?a ?c))`. This row read *type / inequality / structural-predicate filters*; Q32 (2026-05-20) dropped `:where` for the positional premise, and the compiler dropped a pair written anyway, in silence, until the swap; S1f.5.11's T1f.5.11.2 retired the drop |
+| relation-property tag    | `(transitive ?r)`                       | —         | an ordinary premise matching a stored property fact, a join and not a test; this row wrote it `:where (transitive ?r)` until S1f.5.11 |
 
 **A premise is a form** — a pattern, a guard, an `(absent …)`, or an
 `(and …)` or `(or …)` of premises. An atom (a run of digits among them, an
@@ -58,10 +70,12 @@ integer until M1f S1f.5.4), a variable, `_` or a string (the last two at the
 parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2) written where a premise goes is **refused at load** since M1e2
 S1e2.2.24 (W24, [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
 until then the compiler dropped it in silence, so `:match _` fired with no
-premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. A keyword pair
-as a premise of an `(and …)` is Q32's `:where`, dropped, as is one at a
-pattern's top level; one **inside a pattern inside a pattern**, `(box (a b :k
-v))`, matched nothing and is refused at load since the same stage.
+premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. **A keyword
+pair anywhere in a premise is refused at the parse** since M1f S1f.5.5's swap
+(S1f.5.11): a term takes no keyword. Until then one as a premise of an `(and
+…)`, Q32's `:where`, was dropped, as was one at a pattern's top level, and
+one inside a pattern inside a pattern, `(box (a b :k v))`, matched nothing
+until S1e2.2.24 refused it at load.
 
 The ✓-marked heads have dedicated grammar rules with fixed arities, so
 `(neq ?a)` is a parse error. **A misspelled relation is not**: `instance` has
@@ -137,8 +151,8 @@ registry — `eq` and `neq`, and nothing else."*
 binds (or a rule's parameter), or a name; a run of digits is a name, an
 integer until M1f S1f.5.4, and a string was a name too, the one it spells, until
 M1f S1f.5.5's swap refused a string there (S1f.5.2). A guard is
-judged where it is written. `_` (at the parse since M1f S1f.5.5's swap,
-S1f.5.1), a form, a keyword pair, or a variable no
+judged where it is written. `_` and a keyword pair (each at the parse since
+M1f S1f.5.5's swap, S1f.5.1 and S1f.5.11), a form, or a variable no
 premise before it binds is **refused at load** (since M1e2 S1e2.2.24, W24;
 [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
 Until then each read nothing: a raw node was equal to no value and an
@@ -154,8 +168,10 @@ cardinality or aggregation primitive is either.
 
 `(transitive ?r)` and `(symmetric ?r)` are **not** predicates and never
 were — they are ordinary relation patterns matching a stored property fact
-that the puzzle or the stdlib asserted. Writing one in `:where` works, and
-what it does is a join, not a computation.
+that the puzzle or the stdlib asserted. Written as a premise, what one does
+is a join, not a computation. Written in a `:where`, as this page showed until
+M1f S1f.5.11, it was dropped with the pair (Q32), so it gated nothing, until
+S1f.5.5's swap refused it at the parse.
 
 > **The aggregate registry was designed and never built.** An earlier draft of
 > this page listed `unique-remaining`, `no-remaining-option` and
@@ -184,21 +200,32 @@ Both forms produce the same conclusions from the same working memory;
 they differ in which **rule type** they instantiate (per
 [`../01-ein-graph/02_rules.md`](../01-ein-graph/02_rules.md)).
 
-### As a T3 structural rule (explicit `:where` guard)
+### As a T3 structural rule — which Ein does not load
 
 ```lisp
 (rule triangle-composition ()
   :match (and (?r ?a ?b)
               (?r ?b ?c)
-              :where (transitive ?r))
+              (transitive ?r))
   :assert (?r ?a ?c)
   :why "From {0} and {1}, since {?r} is transitive, {?a} {?r} {?c}.")
 ```
 
-Non-generic (`()` params), fires universally; the `:where` guard
-restricts to transitive relations. The structural predicate
-`(transitive ?r)` introspects whether `?r` has a corresponding
-`(transitive ?r)` application fact in the ontology.
+Non-generic (`()` params), meant to fire universally, the premise
+`(transitive ?r)` restricting it to the relations an application fact tags.
+It does not load: a relation is named by a name or by a parameter its
+activator binds (Q29), so the loader refuses `?r` in each of the three
+patterns, since M1e2 S1e2.2.24 (W24, `3ab9a231`):
+
+```text
+kb load error: rule 'triangle-composition': its :match writes (?r ?a ?b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds; …
+```
+
+With `?r` a parameter the rule is the T2 form below. Until M1f S1f.5.11 this
+section wrote the tag `:where (transitive ?r)`, a keyword pair the compiler
+dropped (Q32), so the guard read nothing even before the loader refused the
+relation variable; since S1f.5.5's swap that spelling is a parse error at
+`:where`.
 
 ### As a T2 relation-polymorphic property-rule (gated by parameter)
 
@@ -206,19 +233,23 @@ restricts to transitive relations. The structural predicate
 (rule transitive (?rel)
   :match (and (?rel ?a ?b)
               (?rel ?b ?c)
-              :where (neq ?a ?c))
+              (neq ?a ?c))
   :assert (?rel ?a ?c)
   :why "{?rel} is transitive.")
 ```
 
 Applied via `(transitive co-located)` in ontology; fires only on
-relations explicitly tagged. The T2 form is the one used in the M1
-zebra.ein rule library.
+relations explicitly tagged. The T2 form is the one the stdlib ships,
+[`std.algebra`](../../../../stdlib/algebra.ein)'s `transitive`, word for word:
+with `(co-located a b)` and `(co-located b c)` it derives `(co-located a c
+:rule transitive)` (`ein saturate FILE --dump`, 2026-11-09). Its guard is the
+premise `(neq ?a ?c)`; until M1f S1f.5.11 this page wrote it `:where (neq ?a
+?c)`, which the compiler dropped (Q32), so the rule fired unguarded, and which
+is a parse error since S1f.5.5's swap.
 
-The two forms are not equivalent in *trace shape*: the T3 form names
-`triangle-composition` in the firing, the T2 form names `transitive`.
-The choice is a documentation question — which name reads better in
-a human trace? — and is per-puzzle.
+The two forms were meant to differ in *trace shape*: the T3 form would name
+`triangle-composition` in the firing, the T2 form names `transitive`. Only the
+T2 form loads.
 
 ## See also
 

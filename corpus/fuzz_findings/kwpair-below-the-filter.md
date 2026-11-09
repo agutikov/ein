@@ -3,7 +3,7 @@
 **Fixed 2026-11-03, M1e2
 [S1e2.3.2](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md),
 commit `38b2bff3`**, on the user's ruling (a), written down in
-[`defined_behaviour.md` § 2.5](../../docs/kernel/defined_behaviour.md#25-a-render-view-labels-an-ir-form-as-written-a-keyword-pair-as-key-value): `dot_util::value_label` labels a keyword pair
+[`defined_behaviour.md` § 2.5](../../docs/kernel/defined_behaviour.md#25-a-render-view-labels-an-ir-form-as-written): `dot_util::value_label` labels a keyword pair
 `:key value` for every caller, the spelling `ir_dot`'s `(query …)` note already
 used, so both views below draw each `(step …)` as written and exit 0. The
 witness was banked as the `regression` corpus entry

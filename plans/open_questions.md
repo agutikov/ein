@@ -35,7 +35,7 @@ file it keeps its id; do not reuse a closed id.
 | Q29 | Pattern: walker vs cached executable program — compile unit?                  | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q30 | Universal rule library + import mechanism — does `examples/rules.ein` exist?  | [M1](#absorbed--the-m1-milestone-questions-q4q42) — deferred to P1.8 (2026-05-20) |
 | Q31 | `:why` template substitution language — `{?var}` or bare `{var}`?             | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
-| Q32 | `:where` semantics — sugar, top-level, or drop entirely?                      | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
+| Q32 | `:where` semantics — sugar, top-level, or drop entirely?                      | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20; the pair refused since M1f S1f.5.11 (2026-11-09) |
 | Q33 | Predicate primitives — minimal set for M1                                     | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product | [followups F4](followups/f4_cross_cutting.md) |
 | Q35 | Variable typing via `(is-a ?var Type)` patterns                              | [followups F4](followups/f4_cross_cutting.md) |
@@ -676,6 +676,17 @@ Concrete:
 
 Closes Q24 retroactively (the "sugar" framing was effectively
 saying "drop the keyword once registry exists").
+
+**The pair is refused since M1f S1f.5.11 (2026-11-09).** Q32 removed
+`:where` and left a pair written anyway to be dropped, by the compiler, in
+silence, so the rule fired unguarded. The user's ruling of 2026-11-07
+([Q-M1e2.28](m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take),
+the no-owner inventory's D-15 and G-22) supersedes that half: each form takes a
+fixed set of keywords and a term takes none, so `:where` is refused at the
+parse wherever it is written since S1f.5.5's swap (2026-11-09), and
+[S1f.5.11](m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s
+T1f.5.11.2 retired the compiler's drop. The positional guard, `(neq ?a ?c)`,
+is what Q32 asked for and what every program writes.
 
 Full context:
 `p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q32.

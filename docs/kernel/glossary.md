@@ -60,8 +60,10 @@ in the compact view for binary facts. See
 [`ir/01-ein-graph/01_kb.md` §1](ir/01-ein-graph/01_kb.md).
 
 ### Rule
-A graph rewriting rule with `:match` LHS / `:assert` RHS / optional
-`:where` guard. Three families (T1/T2/T3) by what the LHS quantifies
+A graph rewriting rule with `:match` LHS, whose guards, `(neq ?a ?b)`, are
+premises in it / `:assert` RHS / optional `:why` template, and no other keyword:
+a `:where` guard, which Q32 dropped in 2026-05, is refused at the parse since
+M1f S1f.5.11. Three families (T1/T2/T3) by what the LHS quantifies
 over. See [`ir/01-ein-graph/02_rules.md`](ir/01-ein-graph/02_rules.md).
 
 ### Hyperedge

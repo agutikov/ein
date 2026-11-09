@@ -11,7 +11,7 @@ this tree describes Ein in graph-theory terms.
   reasoning); provenance, hypothesis branches, equality classes,
   open-class node kinds.
 - [`02_rules.md`](02_rules.md) — Graph rewriting rules. Anatomy of a
-  rule (LHS / `:where` / RHS); the three rule types (T1 first-order,
+  rule (LHS with its guards / RHS); the three rule types (T1 first-order,
   T2 relation-polymorphic, T3 structural / aggregate); negative
   conclusions; rule rendering modes; saturation.
 - [`03_ein_model.md`](03_ein_model.md) — The reflexive ein algebra.

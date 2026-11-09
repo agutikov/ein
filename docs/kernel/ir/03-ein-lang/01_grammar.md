@@ -19,7 +19,7 @@ documentation split.
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
 | `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House-1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
-| `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:source`             | argument markers; **always** followed by a value  |
+| `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:match`, `:rule`, `:source`             | a form's clause markers, each **always** followed by its value. **Each form takes a fixed set** ([§ 2's table](#the-keywords-each-form-takes)), each keyword a token of the forms that take it, and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact (M1f [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), the user's ruling of 2026-11-07, [Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)). Until S1f.5.5's swap a keyword was one token for every form: only `query`, `solve` and `config` refused one they did not know, and every other form, and every term, dropped one in silence (D-15, G-15, G-22; W32's seven rows); S1f.5.11's T1f.5.11.2 retired the compiler's and the macro expander's drops |
 | `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, Q-M1e2.13 (a)); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (Q-M1e2.14 (c), S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
 | `INT`      | —                              | —                                        | **none since M1f S1f.5.5's swap**: a run of digits is a `NAME` like any other (S1f.5.4's ruling, the user's of 2026-11-06), so `7`, `07` and `-7` are three names, each printed as written, and a fact of one is never a fact of another. Until the swap `INT`, `-?[0-9]+`, lexed *integer atoms*, `007` and `7` one value; `:priority 10`, the one keyword that took one, went with S1f.5.15. The int value kind went with [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 (2026-11-09): a value is a name or a nested fact |
 | `STRING`   | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else since M1f S1f.5.5's swap** (S1f.5.2's ruling, the user's of 2026-11-06, [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)): the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, which the read-out, `--trace`, `saturate --dump`, a state file and `render program` carry byte for byte (`ein-cli/tests/natural_language_text.rs`). Written anywhere else, a fact's or a rule's argument, a name, a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact. A `\u{…}` names a Unicode scalar value ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 4). **Until the swap** a string was also a **fact's argument**, top-level or nested, the name its body spells: `"foo"` and `foo` were one value (M1e2 S1e2.2.16, 2026-11-04); and in a **rule** the symbol it names at any depth, a name of the program as that atom is (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04), where until then the rule compiler did not lower one (W18) |
@@ -62,14 +62,61 @@ key on it).
 
 | head | role | shape |
 |------|------|-------|
-| `relation` | declare a relation-type + its arg-type signature | `(relation <name> <T1> <T2> [<T3> …] [:kw v]*)` |
+| `relation` | declare a relation-type + its arg-type signature | `(relation <name> <T1> <T2> [<T3> …] [:why "…"])` |
 | `rule` | a saturation rewrite rule | `(rule <name> (<param-vars>*) :match … :assert … …)` |
 | `hrule` | a hypothesis-generation rule (drives the blind enumerator) | same shape as `rule` |
-| `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:expect …])`; several per file |
-| `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …])`; at most one per file |
-| `config` | solver knobs | `(config [:flag v]*)` |
+| `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:over …] [:expect …])`; several per file |
+| `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect …])`; at most one per file |
+| `config` | solver knobs | `(config [:lattice-sanity-check true\|false] [:record-alternative-justifications true\|false])` |
 | `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace <step\|branch-open\|…>*)` |
-| *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:kw v]*)` |
+| *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:source "…"] [:rule <name> :using (…)])` |
+
+#### The keywords each form takes
+
+Each form takes the keywords its production in
+[`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y) lists, and no other; a
+term and a nested fact take none. Any other keyword, or a keyword pair inside
+a term, is refused at the parse, from every command that reads the program,
+with the file, line and column: *unexpected `:where`: a keyword this form does
+not take*, and the repairs (M1f
+[S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s
+lists, the user's ruling of 2026-11-07,
+[Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
+Which keywords a form requires, and that each appears once, stay the loader's.
+
+| form | keyword | holds | required |
+|---|---|---|---|
+| `relation` | `:why` | a string: the template that renders the relation's facts | no |
+| `rule`, `hrule` | `:match` | a premise: the LHS | yes |
+| | `:assert` | a conclusion: the RHS | yes |
+| | `:why` | a string: the template that explains a firing | no |
+| a fact, negated or not | `:source` | a string: the fact is given, and where it is stated | no |
+| | `:rule`, `:using` | a rule's name and its premises: the fact is derived | no |
+| `query` | `:goal` | a premise: the pattern asked about | yes |
+| | `:goal-text` | a string: the headline template | no |
+| | `:over` | `all`, `minimal` or `maximal`: which states | no |
+| | `:expect` | a claim: the answer stated | no |
+| `solve` | `:hrules`, `:hypothesis-relations`, `:no-hypothesis` | what may be guessed: the lattice | no |
+| | `:expect` | a claim about the region | no |
+| `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags, `true` or `false` ([`configuration.md`](../../configuration.md)) | no |
+| `import` | `:symbols` | the names imported | no |
+| | `:as` | an alias | no |
+| `macro` | `:why` | a string, after the body (the user's ruling of 2026-11-08) | no |
+| `trace` | none; its `step` takes `:rule`, `:using`, `:derives`, `:source`, `:assumes` | one derivation step | no |
+| a term, a nested fact | none | | |
+
+Until S1f.5.5's swap (2026-11-09) only `query`, `solve` and `config` refused a
+keyword they did not list, at load. Every other form dropped one, and so did
+every term: a keyword pair in a `:match` or a `:goal` was dropped by the
+compiler (Q32), one in a macro call by the expander's arity filter, and an
+annotation such as `(relation s Node :cardinality 1..1)` or `(q c :why
+"text")` by the loader, so a written condition or conclusion read as nothing
+(W32's seven rows, fixed by the swap). `:cardinality` and a query's `:mode`,
+which nothing read, are refused like any other, and `:priority` went with
+S1f.5.15. The grammar's table holds a row for each form and each place in a
+term (`ein-ir/tests/grammar_pages.rs`), and the fuzzer holds the lists on every
+program it accepts (`fuzz_properties`'
+`no_accepted_program_carries_a_keyword_its_form_does_not_list`).
 
 The block wrappers `(ontology …)` / `(facts …)` / `(reasoning …)` /
 `(rules …)` were **removed in P1.7c** (S1.7c.4); a former-wrapper head now
@@ -100,8 +147,7 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 
 ```lisp
 (relation <name> [<T1> <T2> ...]         ; signature: zero or more type atoms
-  [:why <STRING>]                         ; optional metadata kw-pair
-  [...])
+  [:why <STRING>])                        ; the one keyword a relation takes
 ```
 
 `relation` declares a relation-type node + its arg-type signature
@@ -241,8 +287,10 @@ reserved set would be renamed, not shrunk. What demotion *would* cost is
 concrete: the malformed / shadowed-name / duplicate-declaration checks lose
 their load-time `loc` (a conflicting re-declaration would become two stored
 facts and an ambiguous signature lookup feeding the enumerator, with no
-diagnostic), and `:why` would be silently dropped, since facts discard
-unrecognised kw-pairs. Userspace gives up nothing for this: the
+diagnostic), and `:why` would be refused, since a fact takes `:source`,
+`:rule` and `:using` and no other keyword (S1f.5.11; until S1f.5.5's swap a
+fact discarded one it did not read, and `:why` would have been dropped in
+silence). Userspace gives up nothing for this: the
 declaration is *already* published as the mirror fact — and, since the
 same decision, as the **membership fact** above, which is what the
 question "can a rule check that `?R` is a relation?" was really after. The
@@ -268,7 +316,8 @@ shapes:
 
 `=` and `not` are **shape-pinned reserved heads** (wrong arity is a parse
 error). `and` / `or` / `neq` are kernel meta-primitives that belong inside
-`:match` patterns / `:where` clauses, never a top-level fact head — and the
+`:match` premises (a guard is a premise, `(neq ?a ?c)`, since Q32 dropped the
+`:where` clause), never a top-level fact head — and the
 declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
 heads either (they're SYMBOL-excluded). Everything else — `instance`,
 `type`, `symmetric`, `co-located`, `lives-in`, … — is an ordinary generic
@@ -353,10 +402,10 @@ explanation, F22 makes it canonical"*): the saturation agenda and the
 arrive in. Until then `:priority <INT>` ordered the agenda, lower
 first, which resolved [Q15](../../../../plans/open_questions.md#q15--rule-ordering)
 (rule ordering) with static per-rule numbers. A `:priority` written
-anyway is a rule keyword the loader does not read and drops, as it
-drops any (D-15), until S1f.5.5's generated grammar refuses it as it
-refuses every keyword a rule does not take; no corpus program writes
-one (`ein-corpus`'s `no_corpus_program_writes_a_priority`).
+anyway is refused at the parse since S1f.5.5's swap, as every keyword a
+rule does not take is (S1f.5.11); from S1f.5.15 to the swap the loader
+did not read it and dropped it, as it dropped any (D-15). No corpus
+program writes one (`ein-corpus`'s `no_corpus_program_writes_a_priority`).
 
 The **parameter list** is mandatory. Two cases (mapping onto the
 three rule types from
@@ -422,12 +471,15 @@ an atom (a run of digits among them, an integer until M1f S1f.5.4), a
 variable, `_` or a string written where a premise goes (`_` and a string at
 the parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2); a relation written as a variable no parameter binds, at the top level
 or inside a pattern, in a `:match` or an `:assert`; a keyword pair inside a
-pattern inside a pattern; and an activator that binds a relation parameter
-to a nested fact. Until then each read nothing, in silence: a premise that is
+pattern inside a pattern (at the parse since M1f S1f.5.5's swap, which
+refuses a keyword pair anywhere in a term, S1f.5.11); and an activator that
+binds a relation parameter to a nested fact. Until then each read nothing, in silence: a premise that is
 not a form was dropped, so the rule fired as if it were not written, and the
 rest matched nothing, where the same relation variable at the top level
 stopped compilation in the Python IR's spelling. A keyword pair at a
-pattern's top level, or as a premise of an `(and …)`, is Q32's, dropped.
+pattern's top level, or as a premise of an `(and …)`, was Q32's, dropped by
+the compiler, until the swap refused it at the parse; S1f.5.11's T1f.5.11.2
+retired the drop.
 
 #### Conclusion forms in `:assert`
 
@@ -574,8 +626,10 @@ region and about specific solutions"*.
 - **At most one per file.** A second is a load error. With none, the lattice is
   the default ladder's, unrestricted.
 - **`(solve)` is valid**, as `(config)` is: the default lattice, stated.
-- **Its keywords are an allow-list**, as a query's are. On a `(query …)`, each
-  of the three is a load error that names `(solve …)`.
+- **It takes four keywords**, the three above and `:expect`, and any other is
+  refused at the parse (S1f.5.11), as a query's are. On a `(query …)` each of
+  the three is refused at the parse too, with a note that names `(solve …)`
+  (a load error until M1f S1f.5.5's swap).
 - **`solve` lexes as a keyword**, as `query` and `config` do, so it cannot be
   a relation name ([`00_ebnf.md`](00_ebnf.md)).
 - `:hrules` is read by the hrule rung, the other two by the candidate filter
@@ -641,14 +695,17 @@ every corpus region it prints back as its own claim.
 (query
   :goal <expr>                             ; what to find / verify
   [:goal-text <STRING>]                    ; NL headline template (optional)
+  [:over all|minimal|maximal]              ; which states (M1e2)
   [:expect <expectation>])                 ; what the answer should be (M1c)
 ```
 
-**The keywords are an allow-list.** Those three, plus the obsolete `:mode`, are
-what a `(query …)` may carry; anything else is a **load error**. The three
+**The keywords are an allow-list.** Those four are what a `(query …)` may
+carry; anything else is refused **at the parse** since M1f S1f.5.5's swap
+(S1f.5.11), the obsolete `:mode` among them, which loaded and was ignored
+until then, and was a **load error** from M1c S1c.1.2 to the swap. The three
 lattice keywords were here until M1e2 S1e2.1a.4 moved them to
-[`(solve …)`](#solve), and on a query each is refused with a message that
-says so. It used to be
+[`(solve …)`](#solve), and on a query each is refused with a note that says
+so. It used to be
 a silent no-op, which was survivable while a query only asked a question and
 became untenable the moment one could carry a *test*: a mistyped `:expect`
 that loaded, checked nothing and said nothing is the exact failure the keyword
@@ -673,8 +730,9 @@ The engine answers idea 03's three task classes —
 to one problem, read off the result `k`** (the count of distinct complete
 models: `k = 1` / `k > 1` / `k = 0`) — **not** chosen up front. There is one
 `ein solve`, no `--mode` flag, and the engine's goal test is hardwired to
-SOLVE. A `:mode` keyword on the query is **obsolete** (vestigial; the engine
-ignores it) — omit it.
+SOLVE. A `:mode` keyword on the query was **obsolete** (vestigial; the
+engine ignored it) and is refused at the parse since M1f S1f.5.5's swap, as
+any keyword a query does not take is (S1f.5.11's default).
 
 **`:expect` — what the answer should be (M1c
 [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)).**

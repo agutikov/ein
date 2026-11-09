@@ -591,6 +591,18 @@ constrained-reasoning research.
   ([S1f.5.1](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)):
   119 fixed, 22 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  **S1f.5.11 ran to its end the same day**: nothing in the compiler or the
+  macro expander drops a keyword pair, and a pair inside a term is an
+  `unreachable!` naming the grammar where a match needs an arm, each path
+  shown unreachable first, the walkers that descend into a pair's value kept
+  ([Q-M1f.14](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f14--which-keyword-pair-arms-go-once-no-term-holds-one),
+  defaulted); the grammar's table refuses a keyword in each form and each
+  place in a term, `fuzz_properties` holds each form's list on every program
+  it accepts, `01_grammar.md` carries the lists, and no current kernel page
+  describes `:where` as live
+  ([S1f.5.11](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)):
+  the register unmoved, 119 fixed, 22 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   T7 follows the language stages' remaining halves.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is

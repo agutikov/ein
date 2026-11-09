@@ -231,29 +231,33 @@ id. Where the key is *displayed* — `--dump-states` orders its nodes — the
 `repr` order of §2.2 is used instead, because that is the order every
 checked-in dump was baselined against.
 
-### 2.5 A render view labels an IR form as written, a keyword pair as `:key value`
+### 2.5 A render view labels an IR form as written
 
 The DOT views that draw the program rather than a KB — `render constraints`,
 `render program`, `render rules` — label an IR value with
-`ein_render::value_label`, which recurses into a nested form. A keyword pair
-anywhere below the form a view draws is labelled `:key value`, the spelling the
-`(query …)` and `(solve …)` note nodes already gave their keywords, so
-`(tracex (step s1 :rule from-condition …))` draws its step as
-`(step s1 :rule from-condition :using (c10) :derives (lives-in N H1))`. A view's
-own filter still drops the keyword pairs of the form it draws, which is a
-presentation choice the view keeps; what is defined is that no keyword pair
-below it aborts the process. Until M1e2 S1e2.3.2 one did, exit 101 on both
-`render constraints` and `render program`, on a program the loader accepts.
-The user ruled the rendering on 2026-11-03 (option (a) of
+`ein_render::value_label`, which recurses into a nested form. A value holds no
+keyword pair since M1f S1f.5.5's swap (S1f.5.11's ruling: a term and a nested
+fact take no keyword), and a form's own pairs are its clauses, which each view
+reads or filters before it labels the form's arguments; the `(query …)` and
+`(solve …)` note nodes give their keywords as `:key value`. What is defined is
+that no keyword pair reaches a value's label, and no view aborts on a program
+the parser accepts.
+
+**From M1e2 S1e2.3.2 to M1f S1f.5.11**, a keyword pair below the form a view
+drew was labelled `:key value`, so `(tracex (step s1 :rule from-condition …))`
+drew its step as `(step s1 :rule from-condition :using (c10) :derives
+(lives-in N H1))`; until S1e2.3.2 one aborted the process, exit 101 on both
+`render constraints` and `render program`, on a program the loader accepted.
+The user ruled that rendering on 2026-11-03 (option (a) of
 [the stage's question](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md#the-question)),
-against filtering the pairs at every depth. Held by
-`dot_util::tests::a_keyword_pair_below_a_form_is_labelled_key_value` and by
-the corpus entry `examples/ein-bugs/kwpair-below-the-filter.ein`, whose two
-runs `corpus_cli.rs` held at exit 0 until M1f S1f.5.5's swap refused the
-program at the parse (no keyword pair inside a term or a nested fact,
-S1f.5.11's ruling) and it moved to
+against filtering the pairs at every depth. S1f.5.5's swap refused the witness,
+`examples/ein-bugs/kwpair-below-the-filter.ein`, at the parse, and it moved to
 [`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein);
-the arm goes with S1f.5.11's T1f.5.11.2.
+S1f.5.11's T1f.5.11.2 retired `value_label`'s arm for a pair, shown unreachable
+first, an `unreachable!` naming the grammar's productions. Held by
+`dot_util::tests::no_keyword_pair_reaches_a_values_label` and by the grammar's
+table, whose rows refuse a keyword pair in each place in a term
+(`ein-ir/tests/grammar_pages.rs`).
 
 ## 3. Search
 
@@ -933,8 +937,9 @@ ein's own words:
 |---|---|---|
 | a wildcard as a relation | `<rule\|hrule> '<r>': its <:match\|:assert> writes (_ a) with the wildcard _ as its relation — a relation is named by a name or by a parameter its activator binds, and _ stands for an argument` | 1 (`ein test`: 2) |
 
-A keyword's value inside a clause, `(n ?x :where v)`, is no slot, which
-the compiler drops, and loads. A `_` as an argument matched any value, until
+A keyword's value inside a clause, `(n ?x :where v)`, was no slot, which
+the compiler dropped, and loaded, until the swap refused a keyword pair inside
+a term at the parse (S1f.5.11); S1f.5.11's T1f.5.11.2 retired the drop. A `_` as an argument matched any value, until
 the swap
 ([`01_grammar.md`'s `WILDCARD` row](ir/03-ein-lang/01_grammar.md#1-lexical-rules)).
 Pinned by `ein-cli/tests/cli_semantics.rs`'
@@ -983,22 +988,23 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 | input | message |
 |---|---|
 | `_` as a guard's argument (a parse error since M1f S1f.5.5's swap, § 4.8) | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
-| a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one) |
+| a form or a keyword pair as a guard's argument (the keyword pair a parse error since M1f S1f.5.5's swap, S1f.5.11) | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one, until the swap) |
 | a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name` |
 | a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string (`_` and a string a parse error since M1f S1f.5.5's swap, § 4.8 and § 4.12) | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
-| a keyword pair inside a pattern inside a pattern, in either clause | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
+| a keyword pair inside a pattern inside a pattern, in either clause (a parse error since M1f S1f.5.5's swap, S1f.5.11, which refuses a keyword pair anywhere in a term) | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
 | the same activator, derived by a rule through a variable | `the relation head ?<p> of <form> at <loc> is bound to the fact (a b) — a relation is named by a symbol, not a fact.` (a `CompileError`, § 4's second row, as § 4.6's integer) |
 
 A guard's variable counts as bound by the rule's parameters and by the
 variables of the positive patterns written before it; under an `(absent …)`,
 by those the enclosing premises bound before it and the `absent`'s own
-earlier premises. What stays: a keyword pair at a pattern's top level or as a
-premise of an `(and …)`, which the compiler drops (Q32); `_` as a pattern's
-argument; `_` and a keyword pair at a conclusion's top level, which stop the
-firing with § 4's line (each `_` a parse error since M1f S1f.5.5's swap,
-§ 4.8, and the keyword pair since the same swap, S1f.5.11). **Until S1e2.2.24** (W24): a guard compared `_`, a
+earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
+pattern's top level or as a premise of an `(and …)`, which the compiler
+dropped (Q32); `_` as a pattern's argument; `_` and a keyword pair at a
+conclusion's top level, which stopped the firing with § 4's line. Each is a
+parse error since the swap (`_` § 4.8, S1f.5.1; the keyword pair S1f.5.11),
+and S1f.5.11's T1f.5.11.2 retired the compiler's drop. **Until S1e2.2.24** (W24): a guard compared `_`, a
 form or a keyword pair as a raw IR node, equal to no value, and a variable
 not yet bound as a null, so `(eq ?x _)` never held and `(and (neq ?x a) (p
 ?x))` fired for `a`; a premise that is not a form was dropped, so the rule

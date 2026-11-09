@@ -26,7 +26,7 @@ Every rule has three parts:
 ```dot
 digraph rule_anatomy {
   node [shape=record];
-  rule [label="{LHS — match pattern\n(what subgraph must exist)|:where — guards (optional)\n(predicates over the bindings)|RHS — assert subgraph\n(fact(s) to add when LHS + guards hold)}"];
+  rule [label="{LHS — match pattern\n(what subgraph must exist)|guards — premises (optional)\n(predicates over the bindings)|RHS — assert subgraph\n(fact(s) to add when LHS + guards hold)}"];
 }
 ```
 
@@ -42,10 +42,18 @@ A **match** is a binding from each variable to a concrete graph node
 such that, with the substitution applied, the LHS subgraph appears
 literally in working memory.
 
-The **:where** clause is a list of predicates that the bindings must
-satisfy — distinctness (`(neq ?a ?b)`), structural properties
-(`(transitive ?R)`), aggregates (`(unique-remaining ?slot ?type)`).
-Guards are positive (the predicate must hold).
+The **guards** are premises of the LHS that compare the bindings rather than
+match a fact: distinctness `(neq ?a ?b)` and equality `(eq ?a ?b)`, written
+beside the patterns, `(and (?R ?a ?b) (?R ?b ?c) (neq ?a ?c))` (§4).
+Guards are positive (the predicate must hold). This section called them the
+**:where** clause, with structural properties (`(transitive ?R)`) and
+aggregates (`(unique-remaining ?slot ?type)`) among them, until M1f
+[S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md):
+[Q32](../../../../plans/open_questions.md#q32--where-semantics) dropped
+`:where` for the positional premise on 2026-05-20, a `:where` written anyway
+was dropped in silence, and since S1f.5.5's swap it is refused at the parse,
+as every keyword a rule does not take is (the user's ruling of 2026-11-07,
+[Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
 
 The **RHS** is a small graph fragment that *appends* to working
 memory upon firing. RHS nodes that are variables are *resolved* to
@@ -93,7 +101,7 @@ name* in the firing.
 | **T3 — structural / aggregate** | the whole subgraph's shape    | uses an aggregate predicate (count, uniqueness, position) | fires when a global property of the graph changes |
 
 The three types are not exclusive: a rule can mix flavours (a
-relation variable + a `:where` aggregate). The taxonomy describes
+relation variable + an aggregate guard). The taxonomy describes
 the *primary* axis the rule extends along.
 
 ### 2.1 Type 1 — first-order rules
@@ -107,7 +115,7 @@ bindings.
 ```text
    LHS:   ( R₁  ?a  ?b )       — `R₁` is a literal relation name
           ( R₂  ?b  ?c )       — same: `R₂` literal
-   :where (neq ?a ?c)
+          ( neq ?a ?c )        — a guard: a premise that compares
    RHS:   ( R₃  ?a  ?c )       — `R₃` literal
 ```
 
@@ -131,7 +139,7 @@ digraph t1_example {
     c1 [shape=diamond, label="?c"];
     a1 -> b1 [label="R₁"];
     b1 -> c1 [label="R₂"];
-    a1 -> c1 [label=":where neq", style=dotted, dir=none, constraint=false];
+    a1 -> c1 [label="neq", style=dotted, dir=none, constraint=false];
   }
 
   subgraph cluster_after {
@@ -167,7 +175,7 @@ but also which relation `?R` binds to.
 ```text
    LHS:   ( ?R  ?a  ?b )
           ( ?R  ?b  ?c )
-   :where (neq ?a ?c)
+          ( neq ?a ?c )        — a guard
    RHS:   ( ?R  ?a  ?c )
 ```
 
@@ -317,7 +325,7 @@ checks.
 ```text
    LHS:   ( instance ?a ?T )      — two distinct instances
           ( instance ?b ?T )      — of the same type
-   :where ( neq ?a ?b )
+          ( neq ?a ?b )           — a guard
    RHS:   ( not (co-located ?a ?b) )   — a NEGATIVE fact
 ```
 
@@ -386,26 +394,31 @@ relation R\* and bridge it via the `includes` activator
 After saturation, `is-a*` holds every ancestor edge while `is-a`
 remains direct — the "two parallel relations" closure idiom.
 
-## 4. The :where clause — predicate guards
+## 4. Guards — premises that compare the bindings
 
-Predicates allowed in `:where`:
+A guard is a premise, written beside the patterns it reads. The predicates a
+guard may be:
 
 - **Distinctness** — `(neq ?a ?b)`: bindings must refer to distinct
-  graph nodes.
+  graph nodes. **Equality** — `(eq ?a ?b)`: the same one.
 - **Relation-property tags** — `(transitive ?R)`, `(symmetric ?R)`,
   `(functional ?R)`: these are not computed at all. Each is an ordinary
   premise matching a **stored property fact** the ontology asserted, so
-  writing one in `:where` is a join and not a test.
+  writing one is a join and not a test.
 - **Aggregates** — none. The T3 family above is a design sketch and no
   aggregate predicate is registered (§2.3); a cardinality guard is written as
-  a `forall` over nested `absent`s instead, which is not a `:where` predicate
-  at all (below).
+  a `forall` over nested `absent`s instead, which is not a guard at all
+  (below).
+
+This section was *The :where clause — predicate guards* until M1f S1f.5.11:
+a rule takes `:match`, `:assert` and `:why`, and any other keyword, `:where`
+among them, is refused at the parse since S1f.5.5's swap (§1).
 
 Guards are evaluated *after* the LHS pattern matches but *before*
 the RHS is asserted. They filter spurious matches; they don't
 participate in unification. All of them are **positive** — they are
 part of the closure plan (§7) and are decided during matching. The
-negative premise `(absent …)` is not a `:where` predicate and is not
+negative premise `(absent …)` is not a guard and is not
 decided there: it is lifted out of the plan and asked at the closure
 boundary.
 
@@ -467,7 +480,7 @@ digraph rule_side_by_side {
     c1 [shape=diamond, label="?c"];
     a1 -> b1 [label="R"];
     b1 -> c1 [label="R"];
-    a1 -> c1 [label=":where neq", style=dotted, dir=none, constraint=false];
+    a1 -> c1 [label="neq", style=dotted, dir=none, constraint=false];
   }
 
   subgraph cluster_rhs {
@@ -526,7 +539,7 @@ produced. Since S1.21.8 it runs in **two alternating phases**.
 At each step:
 
 1. For each rule, find all matches in working memory.
-2. For each match, check `:where` guards.
+2. For each match, check its guards.
 3. For each passing match, build the RHS substitution.
 4. If the resulting fact(s) aren't already in working memory, add
    them with `rule`-kind provenance; if they
