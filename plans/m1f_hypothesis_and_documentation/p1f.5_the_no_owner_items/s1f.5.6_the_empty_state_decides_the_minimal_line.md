@@ -2,16 +2,13 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.6**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 1.5 days.
-- A quarter of a day to re-take the moves on the build and list every golden.
-- Half a day for the rule in the flagged route, and its tests.
-- A quarter of a day for the clause dropped, the summary's field and their goldens (S-17, F1).
-- Half a day for the pages.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-16, which closes P-14 with it,
-and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)).
-**Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
-moved.
+and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Running since 2026-11-09**, on the
+user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default
+decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)).
+The coordinator handed the stage a fifth item the same day, S1f.5.16's Q-M1f.22, a class label glued to its
+value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)).
 **Depends on:** nothing. It touches `explore.rs` and the read-out, and none of the grammar stages do.
 
 ## The ruling
@@ -134,6 +131,74 @@ The `--json-summary` field `minimal.trivial` is read off the same bit
 The sweep above re-taken on the build, with `--json-summary` and `--dump-answer`, and `cargo test
 --workspace` run on a prototype. Every move must be one of the 23's rows above.
 
+### T1 record, 2026-11-09
+
+**Re-taken at `4aa9f3ef`**, after S1f.5.5's swap and S1f.5.16, on the release binary, by
+`build/s1f.5.6/sweep.py` (gitignored, kept with its logs): every `.ein` under `examples/`, `tests/`, `stdlib/` and
+`corpus/`, 423 files, under `ein solve`, `--minimal -n 1`, `--minimal -n 2`, `--minimal --single` and `--minimal`,
+each with `--json-summary` and `--dump-answer`; and on every program the static check flags, the same five at
+`--region-limit 1` and at `--region-limit 2`: 2 405 runs. The same sweep on a prototype of T2's rule and T3's clause,
+and `build/s1f.5.6/diff.py` puts every run whose exit code, stdout, stderr, summary or any answer file moved in one
+class.
+
+**The case, today** (`python3 build/s1f.5.6/census.py build/s1f.5.6/base.jsonl`, 2026-11-09). 298 of the 423 files
+answer a bare `ein solve`; the rest are refused at load or by *forbid*, or are stdlib modules.
+
+- **211 have ∅ in R** (213 at `916d97ac`), by describe's `∅` row, the summary's `region.root = "in-r"`.
+- **188 answer every minimal question at root**, one saturation each.
+- **The other 23 are the 23 above**, every one flagged: the 16 within the limit spend 2, 4 or 8 saturations on `-n 2`,
+  `--single` and `--minimal`, and the 7 past it the table's counts, unchanged to the node (65 536, 65 389, 65 299,
+  65 029, 64 923, 64 761 and 64 655). Past the limit `--single` says `not decided — the run stopped first`, `-n 2`
+  `1 state   (a lower bound: the run stopped first)` and `--minimal` `exhausted  no — not monotone, and the question
+  needs the whole cube`; `-n 1` says `1 state, as asked — the minimal line may hold more` on all 23.
+- **Over the 23, each of `-n 2`, `--single` and `--minimal` costs 455 658 saturations**, and over the 211, 455 846.
+- **Describe's row prints the clause on 204 of the 211** (206 of 213 at `916d97ac`): 196 programs that state no
+  obligation, and the 8 `tests/stdlib/` programs that state one and whose root discharges it
+  (`algebra/24_total_owed_satisfied`, `algebra/26_surjective_owed_satisfied`, `bijection/06_blind_enumeration`,
+  `closure/02_closed_and_satisfied`, `slots/01_partition`, `slots/08_spatial_adjacent`, `slots/10_owed_room_satisfied`,
+  `slots/12_owed_fill_satisfied`). The other 7 print `1 state — ∅`: each a flagged program whose run met a node that
+  owes. At `--region-limit 1` 21 of the 23 flagged programs print the clause, and at `--region-limit 2` 16.
+
+**Every move, on the prototype** (`python3 build/s1f.5.6/diff.py build/s1f.5.6/base.jsonl
+build/s1f.5.6/proto.jsonl`, 2026-11-09): 533 of the 2 405 runs move, every one in a class, and **0 runs in no
+class**. No exit code moves.
+
+- **The rule: 276 runs, on the 23 programs and no other**, every minimal question the sweep asks of each, the four
+  at each of three limits. Each now lists ∅ alone, exhausted, and `--single` says `Solution`, after one saturation:
+  over the 23, each of `-n 2`, `--single` and `--minimal` costs 23 saturations where it cost 455 658, and at
+  `--region-limit 1` and `2`, 46 and 86. The rows that move are the words table's: the count row and `exhausted` on
+  141 runs, `verdict` and `decided` on 36, `work` on 207. The `note: … partial` stderr line goes from the 108 runs
+  that stopped at a limit. Beside them, **the warning's dynamic half**, because the run reads one node: its `state` row
+  counts one node computed (207 runs), and the stale facts of the nodes it no longer meets go (33 runs); and on the 99
+  runs within the limit whose walk had read the whole cube, the `status` row says ``not known — this run stopped before
+  it read the cube's 2^n nodes: `ein oracle FILE` reads them, and so does a bare `ein solve FILE` ``
+  where it gave the cube's reading: `monotone here (conservative)` on 69 and `non-monotone here (exercised, …)` on 30.
+  The members met past the limit and not listed go (`region.states` on 10 runs, and `--dump-answer`'s state files,
+  64 760 of them on `features/04_open`), and with them the `paths` row's count of them. Every answer is {∅}, as the
+  oracle has it, and no R moves.
+- **The clause: 257 describe runs, on the 211 programs**, every describe the sweep asks of a program with ∅ in R:
+  the row loses `, the trivial line: no obligation is stated` on 241 (204 at the default limit, 21 at
+  `--region-limit 1` and 16 at `2`), and `region.minimal.trivial` turns true on the 16 where it was false (the 7
+  above, and 9 at the lowered limits). Nothing else of a describe moves.
+
+**The goldens and tests that move** (`cargo test --workspace --no-fail-fast` on the prototype, 2026-11-09, and
+`EIN_BLESS=1` on `corpus_shapes` to read its manifest's diff), each named before it moves:
+
+- **T1f.5.6.2, the rule.** `ein-render/tests/golden/corpus_shapes.md5`: `read-out[minimal]` and `cores[minimal]` of the
+  23 programs, 46 of its 13 678 renderings. `read_out_examples.md`'s X9 `--minimal` block, and the prose above it
+  (`utils/read_out_examples.py`). The register's two W27 minimal rows, restated as above, and with them
+  `ein-corpus`'s schema `/11` rule, which held a right that states `others` to `exhausted = false`: a line decided at
+  root meets no member it does not list, so `others = 0` and `exhausted = true` (`the_register_is_well_formed`,
+  `a_line_past_the_limit_counts_what_it_does_not_list`). `ein-render/tests/line_modes_past_the_limit.rs`, which held a
+  minimal question past the limit to describe's row and to the members describe met: on the 23 it is held to the
+  rule instead.
+- **T1f.5.6.3, the clause.** `corpus_shapes.md5`: `read-out[describe]` and `region-trace` of 198 programs, and
+  `cores[describe]` of the 7 whose `minimal.trivial` turns true, 403 renderings. The two trace goldens that print the
+  clause, `ein-render/tests/golden/trace_ambiguous.md` and `trace_unconditional.md`. Five describe blocks of
+  `read_out_examples.md` (X1, X2's describe and `-y`, X3 and X11).
+- **Nothing else.** `corpus_cli`, `wrong_answers` (whose W27 rows answer the restated `right`), `explore`,
+  `region_modes`, `lever_invariance` and every other test pass unchanged on the prototype.
+
 ### Task T1f.5.6.2 — the rule
 
 The check in `flagged`, and three tests:
@@ -162,6 +227,23 @@ limit, its `minimal line` row (no name for {∅}) and its summary fields, in the
 `read_out.md` is a record, and is not edited. The inventory's S-16, P-14, S-17 and F1 say what
 fixed them. The probe outputs under `p1e2.1b_non_monotone_programs/detector_proposal/outputs/` are a record,
 and do not change.
+
+### Task T1f.5.6.5 — a label never touches its value (Q-M1f.22)
+
+**Handed to the stage by the coordinator on 2026-11-09**, from S1f.5.16's T1f.5.16.4, which found it and documented
+it as [Q-M1f.22](../open_questions.md#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) without filing
+or fixing it. The read-out pads a block's label to sixteen characters and prints the value straight after it, so a
+label of sixteen characters or more touches its value: `examples/features/04_open.ein`'s `--dump-answer` `answer.txt`
+prints `class 100 of 27728 states` for class 100 of 277, 28 states, and a reader reads a wrong count. Under the user's
+rule a line that garbles a count is a wrong answer on a surface, so it is a register row before it is fixed. It touches
+the dump's printer and nothing T1f.5.6.2 or .3 does, so it runs after them, in two commits, one per task:
+
+- **T1f.5.6.5, the row.** W42, filed `open` with today's text as its `now`, and what the register test needs to hold a
+  line the run prints, read off stdout or off `--dump-answer`'s `answer.txt`, under schema `/17`. Every other surface
+  that pads a label to a width is checked by the same column logic, and one that glues is another witness of the case.
+- **T1f.5.6.6, the fix.** The printer puts one space at least between a label and its value, at every width; every
+  golden that moves is named first, and W42's rows flip in the same commit, `[case.fixed]` carrying `0000000`, which the
+  next commit writes. Q-M1f.22 says it is fixed, and by which commit.
 
 ## Acceptance
 
