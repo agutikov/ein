@@ -21,6 +21,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **defaulted 2026-11-09 (the user's instruction): the section stays, written empty, and a file that holds an int is refused; no format bump**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
 | [Q-M1f.11](#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) | a template reference to a variable no reference can name | **defaulted 2026-11-09 (the user's instruction): the loader refuses it, one line a reference**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5 |
 | [Q-M1f.12](#q-m1f12--which-surfaces-carry-natural-language-text) | which surfaces carry natural-language text | **defaulted 2026-11-09 (the user's instruction): those that carried it before the swap, each held byte for byte; none added**; [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2 |
+| [Q-M1f.13](#q-m1f13--f3s-cause-reaches-a-disjunction-whose-row-is-it) | F3's cause reaches a disjunction: whose row is it? | **defaulted 2026-11-09 (the user's instruction): W39, `open`, deferred to F22, as W25 is**; [S1f.5.1](p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s T1f.5.1.3 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -387,3 +388,32 @@ till the end of the phase"*. (a) moves nothing a user sees, which the stage's ac
 asks that a program *can* emit Unicode text, which (a) holds on every surface that emits any;
 `ein-cli/tests/natural_language_text.rs` holds it. Re-opening it means (b), surface by surface; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md),
 which makes `:why` required, is where a reader of the text is most likely to ask for one.
+
+### Q-M1f.13 — F3's cause reaches a disjunction: whose row is it?
+
+**Raised** 2026-11-09 by [S1f.5.1](p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s T1f.5.1.3, step 1
+([its record](p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md#t1f513-record-2026-11-09)), which traced
+P1f.5's F3: `_` in a rule's pattern reported root's core as four facts where a variable used once reported two. The
+cause is a rule application's identity, its rule, activator and register file (`firing::BindingKey`): the saturator
+drops a match whose key it has seen or fired, so a second match that binds every register as the first did is never
+fired redundantly and never recorded as an alternative, whatever facts it matched. A premise's fact is a function of
+the register file except through `Slot::Any`, which bound nothing, and across the disjuncts of one top-level `(or …)`,
+which share their registers by name. With `_` refused since S1f.5.5's swap, the disjunction is left:
+`examples/ein-bugs/wrong-answers/or-one-key.ein`, one rule `(or (p ?y) (q ?y))`, reports four facts where the same
+rule written as two rules reports two. The brief: *a reach is a wrong answer, filed as a register row before anything
+moves, and fixed if it is in scope*.
+
+- **(a) File it `open`, deferred to F22**, as the user put W25 there on 2026-11-05 (Q-M1e2.16 (2) and (5): a
+  derivation the saturator never offers to the store, from an activator a node derived). F22 decides which
+  derivations a core is the smallest over, and how it gets them.
+- **(b) Fix it in S1f.5.1**: the disjunct joins the application's identity (the `seen` and `fired` keys), so the
+  second disjunct's match fires redundantly and records its alternative. It moves the cores of programs that write
+  such a disjunction and the redundant firings `--events` narrates, and it changes the identity every fork inherits.
+- **(c) Not a wrong answer**: the promise is *the smallest frontier over every derivation the program records*, and
+  this derivation is never recorded. The register's W25 reads the promise over every derivation, recorded or not.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: it follows the user's ruling on W25, the same class of
+defect, and keeps S1f.5.1, whose subject is `_`, from moving the saturator's dedup, which every match crosses. In the corpus at `1e751131` one program reaches the cause, `wild-in-head-twin.ein`, whose run
+reports no core, so no printed answer moves today (the census, T1f.5.1.3's record). `W39/or-one-key` is the row.
+Re-opening it means (b), in F22 or before it.

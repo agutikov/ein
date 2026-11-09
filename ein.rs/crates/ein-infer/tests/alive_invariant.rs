@@ -105,6 +105,10 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `ein-bugs/binding-key-{both,swapped,nested-only}.ein` — `Y`, inside an
 ///   activator's nested `(src Y)`, M1e2's W7 family (S1e2.2.7): H is
 ///   `(holds Y)`, as W15 made it on the pair, which S1e2.2.7 promoted.
+/// - `wrong-answers/or-one-key-twin.ein` — `w`, in `m1`'s and `s`'s
+///   `:assert`, M1f's W39 (S1f.5.1's T1f.5.1.3): the witness beside it names a
+///   rule `w`, which makes `w` a name of the program there, and the twin,
+///   whose rules are `w1` and `w2`, names it in no fact.
 /// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`,
 ///   M1e2's W16 (S1e2.2.16): its one candidate is the hrule's `(checked
 ///   (box a))`, and the name is no candidate's.
@@ -138,7 +142,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
 /// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
 /// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
-const SEEDED: [(&str, &[&str]); 27] = [
+const SEEDED: [(&str, &[&str]); 28] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -198,6 +202,10 @@ const SEEDED: [(&str, &[&str]); 27] = [
     (
         "examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein",
         &["`Z`, asserted by rule `special`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/or-one-key-twin.ein",
+        &["`w`, asserted by rule `m1`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/range-in-match.ein",

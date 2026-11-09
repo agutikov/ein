@@ -34,6 +34,16 @@ a per-fact choice cannot see the saving.
 The milestone's acceptance, amended by the user on 2026-11-03 for exactly
 this kind of row, names each at M1e2's close beside F21's. W23's residual,
 the exact core past the search's budget, is this followup's and no row's.
+**Three more since M1f**, each `open` with F22 as its `owner`:
+`W36/alt-flag-refuted-by` and `W36/alt-flag-two-derivations` (M1f
+[S1f.5.15](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md),
+2026-11-08, the user's ruling on Q-M1f.5 (a): `:record-alternative-justifications
+false` moves `refuted by` beside an unmoved core), and `W39/or-one-key` (M1f
+[S1f.5.1](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s
+T1f.5.1.3, 2026-11-09, Q-M1f.13 (a), defaulted on the user's instruction of
+that day): a top-level `(or …)` whose second disjunct's match binds every
+register as the first's did is dropped as the same application, so its
+derivation is never offered to the store, as W25's is not.
 
 ## The case
 

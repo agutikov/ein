@@ -1600,6 +1600,18 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W38 (`W38/escape-past-unicode`), filed and fixed by S1f.5.2's T1f.5.2.5 (2026-11-09) from S1f.5.5's T4 record: a `:goal-text` writing `\\u{110000}`, one past the last code point, and `\\u{D800}`, a surrogate. Until the fix the parser read each as U+FFFD, so the program loaded and the read-out printed *“a � �”*, exit 0, in silence. Right, S1f.5.2's ruling (the user, 2026-11-06, *\"reasonable escape symbols\"*): `\\u{…}` names a character, and any other escape is refused; since the fix both runs exit 1, refused at the parse with the file, line and column and a note naming each escape and where it is."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/or-one-key.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W39 (`W39/or-one-key`), filed by S1f.5.1's T1f.5.1.3 from F3's trace: a top-level `(or …)` whose second disjunct binds what the first did is dropped as one application, so root's core is four facts where its twin's is two. Open, deferred to F22."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/or-one-key-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W39 (`W39/or-one-key`'s twin), filed by S1f.5.1's T1f.5.1.3: the witness with `w` written as two rules, whose root core is `(c x) (small s0)`."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

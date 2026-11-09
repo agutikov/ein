@@ -745,6 +745,20 @@
 # `W24/guard-before-binder`'s `now` record the new line, the first's `right`
 # the new sentence, and both keep their fix.
 #
+# **W39 was filed the same day by S1f.5.1** (T1f.5.1.3, step 1), from the
+# trace of P1f.5's F3, `_` in a rule's pattern reporting a larger core than a
+# variable used once. The cause is a rule application's identity, its rule,
+# activator and register file (`firing::BindingKey`): a match that binds
+# every register as an earlier one did is dropped, whatever facts it matched,
+# so its derivation is never recorded as an alternative. `Slot::Any` bound
+# nothing, and the disjuncts of one top-level `(or …)` share their registers
+# by name; with `_` refused since S1f.5.5's swap, the disjunction is the
+# shape left. One row, `W39/or-one-key`, `open` and deferred to F22, which
+# owns W25's never-offered derivation (Q-M1f.13 (a), taken by default on the
+# user's instruction of 2026-11-09). The register reads **119 rows fixed, 22
+# open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+# uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -9038,6 +9052,72 @@ derived   = "Neither `\\u{110000}` nor `\\u{D800}` names a character a string ca
 run     = "solve"
 line    = "all"
 refused = "examples/ein-bugs/wrong-answers/escape-past-unicode.ein:37:32: unexpected `\"{?x} \\u{110000} \\u{D800}\"`: a string with an unknown escape"
+
+# ══ W39 — a disjunct's match that binds what an earlier one bound is never recorded as a derivation ══
+[[case]]
+id       = "W39/or-one-key"
+case     = "W39"
+title    = "a disjunct's match that binds every register as an earlier match did is never recorded as a derivation"
+class    = "core"
+settings = "default"
+owner    = "F22"
+question = ["Q-M1e2.22", "Q-M1f.13"]
+witness  = "examples/ein-bugs/wrong-answers/or-one-key.ein"
+status   = "open"
+open_because = "deferred to F22 (Q-M1f.13 (a), taken by default on the user's instruction of 2026-11-09, as the user put W25's never-offered derivation there on Q-M1e2.16 (2) and (5)): a rule application's identity is its rule, its activator and its register file (`firing::BindingKey`), and a top-level `(or …)` is one plan whose disjuncts share their registers by name, so `(q w)`'s match through the second disjunct binds `?y` to `w` as `(p w)`'s did through the first, and `Saturator::enqueue_binding` drops it as seen: it is never fired redundantly, so never recorded as an alternative, and the core search never sees the two-fact frontier"
+look_at  = ["summary", "events alt"]
+note     = "Filed by S1f.5.1 (T1f.5.1.3 step 1, 2026-11-09) from F3's trace (S1f.5.1's case: `_` reported a larger core than a variable used once). The cause is the application's identity: a match that binds every register as an earlier one did is dropped, whatever facts it matched, and a premise's fact is a function of the register file except through `Slot::Any`, which bound nothing, and except across the disjuncts of one plan. With `_` refused since S1f.5.5's swap, the disjunction is the one shape left, and this row is it: the same rule written as two rules, the twin, records both derivations. The same holds at a dead node: with `(c x)` taken out and `k` reading `(c b0)`, N {(c b0)}'s core is four facts, the twin's two (`ein solve --dump-answer`, 2026-11-09). A census copy of `1e751131` logging each such drop (`build/s1f.5.1/t3/`) names this cause and `Slot::Any` alone, over the corpus, 2 000 mutants and 240 000 seeded mutants (S1f.5.1's T1f.5.1.3 record)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 1e751131 (2026-11-09): R is empty, every node dead, and root's core (the summary's `region.core`) is four facts, through `(p w)`'s derivation alone"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(big b0)", "(big2 b0)", "(big3 b0)", "(c x)"]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/or-one-key-twin.ein"
+run       = "solve"
+by        = "region"
+why       = "`w` written as two rules, `w1` and `w2`, one per disjunct, at 1e751131 (2026-11-09), release and debug: `w2`'s derivation of `(hit w)` is a second application, recorded as an alternative, and root's core is the smallest frontier, two facts"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(c x)", "(small s0)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(c x)", "(small s0)"]
+derived   = "the file's header: `(hit w)` has two derivations, through `(p w)` and through `(q w)`, and the smallest frontier over every derivation of `(false)`, with `(c x)`, is `(c x) (small s0)` (`glossary.md` § Smallest contradiction frontier); the twin, the same rule as two rules, reports it"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-09"
+bundle  = "1e751131"
+note    = "Taken by default on the user's instruction of 2026-11-09 (*\"just continue with default decisions till the end of the phase\"*), Q-M1f.13 (a): a derivation the saturator never offers to the store is F22's, as W25's is by the user's ruling of 2026-11-05 on Q-M1e2.16 (2) and (5), and S1f.5.1, whose subject is `_`, does not move the application's identity. The milestone's close names it beside F22's other rows."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["big", "big2", "big3", "c", "hit", "p", "q", "small"]
+models    = []
+core      = ["(big b0)", "(big2 b0)", "(big3 b0)", "(c x)"]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

@@ -17,7 +17,9 @@ it was 2.
 ([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)), and revised 2026-11-07 on the
 user's rule for a name ([S1f.5.5](s1f.5.5_the_grammar.md#the-name-rule)): a run of underscores is a
 name, and only a bare `_` and `?_` stay refused.
-**Not started.** No engine code, test, golden or fixture has moved.
+**Not started** until the swap, which moved its refusal, fixtures and rows (below). **Running since 2026-11-09**
+([§ T1f.5.1.3 record](#t1f513-record-2026-11-09)): T1f.5.1.3's step 1 done, F3's cause traced to a rule application's
+identity, which reaches a disjunction too, filed as `W39/or-one-key`, `open` and deferred to F22.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal is the generated parser's (bare `_` is no `NAME` and `?_` no `VAR` in
@@ -263,6 +265,77 @@ After the swap, on the generated parser, after S1f.5.5's T5. Three steps:
 3. **`Slot::Any` and `Node::Wildcard` retired**, as a separate commit, so that no answer moves in it. Every
    golden unmoved by this step, byte for byte. The loader's refusal lines for `_` (`Found::WildHead` and the
    lines for a head, a guard and a premise) went in S1f.5.5's T5; this step retires the rest of the 42 lines.
+
+### T1f.5.1.3 record, 2026-11-09
+
+**Step 1, F3 traced: one commit, on `1e751131`** (S1f.5.2's T1f.5.2.4). F3's cause is the identity of a rule
+application, and it reaches one shape `_` does not: a disjunction whose disjuncts bind the same registers. That is a
+wrong answer, filed as `W39/or-one-key`, `open` and deferred to F22. No answer of any program moved.
+
+**The trace**, read on `1e751131` while `Slot::Any` still exists:
+- **The drop.** `Saturator::enqueue_binding` keys each match by `(BindingKey, GuardSetId)`, where `BindingKey` is
+  the rule, the activator and the register file (`firing.rs`). A match whose key `seen` holds, or whose `BindingKey`
+  `engine.fired` holds, returns before it is enqueued. Only `apply` fires a match redundantly, and only
+  `record_alternative`, which `apply` calls, offers its premises to the store as an alternative justification. So a
+  dropped match's derivation is never recorded, and the core search, which reads the recorded justifications, never
+  sees it. The comment above `encode_guards` says the collapse is meant: *two `(or …)` disjuncts asking the same
+  negative question collapse in `seen`*.
+- **Within one disjunct, nothing is lost but through `Slot::Any`.** A positive step has a fixed relation (a symbol;
+  a relation variable is a constant its activator binds, or refused at load since W24), and each slot is a `Const`, a
+  `Reg` (in the key), a `Nested` pattern of the same, an `Opaque` slot that never matches, or `Slot::Any`, which
+  `Matcher::unify` matches against any value, binding nothing. So two matches of one disjunct under one key matched
+  the same facts unless a premise holds `Slot::Any`. F3's `(holds _)` compiled to a plan with no register at all:
+  every match keyed alike, `(holds s0)`'s was dropped as seen after `(holds b0)`'s, and `(hit w)`'s one recorded
+  derivation rests on `big`, `big2` and `big3`. That is the case's *likely cause*, confirmed in the code.
+- **Across disjuncts, the reach.** A top-level `(or …)` is one plan whose disjuncts share their registers by name
+  (`compile.rs`' `run`), and neither key names the disjunct: two disjuncts with no guards share a guard set, and
+  `fired` has none. So a match through the second disjunct that binds every register as one through the first did is
+  dropped the same way. `examples/ein-bugs/wrong-answers/or-one-key.ein`, one rule `:match (or (p ?y) (q ?y))`,
+  reports root's core as `(big b0) (big2 b0) (big3 b0) (c x)`; its twin, the rule written as two rules, `(c x)
+  (small s0)` (`ein solve FILE`, release and debug, 2026-11-09). The same holds at a dead node: with `(c x)` taken
+  out and `k` reading `(c b0)`, N {(c b0)}'s core is four facts against two (`ein solve --dump-answer`, 2026-11-09).
+
+**The census.** A copy of `1e751131` (`git archive`, `build/s1f.5.1/t3/f3/`, patched by `f3_patch.py`) logs each
+match dropped at `seen` or `fired` whose premises, as a set, differ from those of the match kept under the same key,
+with both disjuncts and whether the dropped one's has a `Slot::Any`; and with `F3_WILD=name` its builder makes `?name`
+a `Node::Wildcard`, which is what the parser made of `_` in the same places until the swap.
+- **F3 itself**, the twin of `W29/core-two-ways` with `F3_WILD=w0`: root's core is the four facts again, and the log
+  names `cause=slot-any`, `(holds s0)` dropped beside `(holds b0)`; without the variable, the two facts and no line
+  (`f3-demo.log`). The witness above logs `cause=other-disjunct`, `(q w)` beside `(p w)`.
+- **Every corpus program** (515, `find examples tests stdlib corpus plans -name '*.ein' | wc -l` at `1e751131`)
+  under `ein solve` and `ein saturate`: one program reaches it, `examples/ein-bugs/wrong-answers/wild-in-head-twin.ein`,
+  whose `(or (holds a) (hit a))` binds no register, at the node that commits `(hit a)`; its R is two states, it
+  reports no core, and no answer it prints depends on the drop (`f3-corpus.log`).
+- **T12's 2 000 mutants** under `ein solve`: three, `m0044`, `m1489` and `m1738`, each that program unchanged in its
+  first lines, the same drop (`f3-mutants2000.log`).
+- **40 000 seeded mutants (seed 0) and 200 000 (seed 987654321)**, parsed, loaded and saturated in process
+  (`f3_sweep.rs`, T1f.5.2.3's sweep with the input named in the log): no line, the outcomes T1f.5.2.3's on the same
+  inputs (`f3-sweep.txt`, `f3-sweep2.txt`); `ein saturate` of the census copy, the same path, logs both demo causes.
+- **No line names a third cause**, a drop within one disjunct with no `Slot::Any`, and none a key `fired` holds that
+  no kept match had (409 s, 2026-11-09).
+
+So F3's cause reaches nothing `_` does not but the disjunction, and with `_` refused since the swap the disjunction is
+what is left.
+
+**W39, filed** (`corpus/wrong_answers.toml`, the header's paragraph and one row): `W39/or-one-key`, class `core`,
+`open`, owner F22, reviewed `deferred`, its `wrong` and `now` root's four facts, its twin's and its `right` the two;
+the witness and its twin each a corpus entry (`solve`, `saturate`) with a header deriving the answer by hand and a
+`:why` on every relation and rule, and a clause in `examples/README.md`'s `wrong-answers/` line. F22's page lists it.
+The register reads **119 rows fixed, 22 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+uniq -c`, 2026-11-09).
+
+**Not fixed here.** Taken by default on the user's instruction of 2026-11-09 (*"just continue with default decisions
+till the end of the phase"*): the row is F22's, as W25's never-offered derivation is by the user's ruling of
+2026-11-05 on Q-M1e2.16 (2) and (5), and this stage, whose subject is `_`, does not move the saturator's dedup
+([Q-M1f.13](../open_questions.md#q-m1f13--f3s-cause-reaches-a-disjunction-whose-row-is-it) (a), defaulted). The fix
+the question prices as (b) is the disjunct in both keys, so the second disjunct's match fires redundantly and records
+its alternative.
+
+**What moved**, the two new programs' and nothing else: `corpus_exits.txt` (four cells, each exit 0) and
+`corpus_shapes.md5` (82 rows, 41 a program), blessed with `EIN_BLESS=1 cargo test -p ein-cli --test corpus_cli
+every_cell_reproduces` and `-p ein-render --test corpus_shapes`; and `alive_invariant`'s `SEEDED`, 27 → 28 rows,
+the twin's `w`, which a rule asserts and no fact names (in the witness a rule named `w` makes it a name of the program).
+`wrong_answers` and `register_region` hold the row.
 
 ### Task T1f.5.1.4 — the pages
 

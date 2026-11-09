@@ -1,0 +1,38 @@
+;;; M1f **W39**, register row `W39/or-one-key` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.5.1's T1f.5.1.3 (2026-11-09) from F3's trace: what made a
+;;; bare `_` report a larger core than a variable used once reaches a
+;;; disjunction too. Its twin, `or-one-key-twin.ein`, is the same program
+;;; with `w` written as two rules, one per disjunct.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Root is dead. `(hit w)` has two derivations, `w`'s first disjunct through
+;;; `(p w)` and its second through `(q w)`, and the smallest frontier over
+;;; them, with `(c x)`, is `(c x) (small s0)`: two facts (`glossary.md`
+;;; § Smallest contradiction frontier).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; R is empty, every node dead, and root's core is `(big b0) (big2 b0)
+;;; (big3 b0) (c x)`: four facts (`ein solve FILE` at `1e751131`, release and
+;;; debug alike). The identity of a rule application is its rule, its
+;;; activator and its register file (`firing::BindingKey`), and a top-level
+;;; `(or …)` is one plan whose disjuncts share their registers by name, so
+;;; `(q w)`'s match binds `?y` to `w` as `(p w)`'s did: the saturator drops it
+;;; as seen, and the derivation is never recorded as an alternative. The twin
+;;; records both and reports two facts.
+
+(relation p     T :why "{1} is p")
+(relation q     T :why "{1} is q")
+(relation hit   T :why "{1} is hit")
+(relation big   T :why "{1} is big")
+(relation big2  T :why "{1} is big2")
+(relation big3  T :why "{1} is big3")
+(relation small T :why "{1} is small")
+(relation c     T :why "{1} is c")
+(big b0) (big2 b0) (big3 b0)
+(rule m1 () :match (and (big ?x) (big2 ?x) (big3 ?x)) :assert (p w) :why "{?x} is big, big2 and big3, so w is p")
+(rule s () :match (small ?x) :assert (q w) :why "{?x} is small, so w is q")
+(rule w () :match (or (p ?y) (q ?y)) :assert (hit ?y) :why "{?y} is p or q, so it is hit")
+(rule k () :match (and (hit w) (c x)) :assert (false) :why "w is hit and x is c")
+(c x) (small s0)
