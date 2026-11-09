@@ -513,6 +513,8 @@ fn region_block(r: &Region) -> Json {
         .map(|m| {
             let i = m as usize;
             let node = &r.nodes[i];
+            // A node that is not dead has no core (M1f S1f.5.8, D-14).
+            let dead = r.status[i] & ein_infer::region::DEAD != 0;
             let comp = t.component_of[i];
             let mut pairs = vec![
                 ("mask", Json::int(m as i64)),
@@ -540,12 +542,18 @@ fn region_block(r: &Region) -> Json {
                 ),
                 ("owes", Json::int(node.owes as i64)),
                 ("owed", strs(&node.owed)),
-                ("core", strs(&node.core)),
+                (
+                    "core",
+                    super::region_answer::core_field(dead, node.core_status, &node.core),
+                ),
                 (
                     "core_status",
                     super::region_answer::core_status(node.core_status),
                 ),
-                ("refuted_by", strs(&node.refuted_by)),
+                (
+                    "refuted_by",
+                    super::region_answer::core_field(dead, node.core_status, &node.refuted_by),
+                ),
                 ("absent_premises", strs(&node.absent_premises)),
             ];
             if let Some(states) = &r.states {

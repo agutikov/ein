@@ -34,6 +34,15 @@
 //! goes, has the same core, status and rules in `nodes.json` as in
 //! `nogoods.json` (`eager_cores`).
 //!
+//! **And a node that is not dead has no core** (M1f S1f.5.8, the user's
+//! ruling of 2026-11-07 on D-14): every JSON surface that writes a node's
+//! core writes a dead node's as a list, `[]` the empty set, and every other
+//! node's as `null`, its rules beside it the same way: the summary's root and
+//! minimal holes, `nogoods.json`, `ein oracle --dump`'s `region.json`,
+//! `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines and `region`
+//! event (`no_core_unless_dead`). Until S1f.5.8 an owing hole, and every node that
+//! is not dead in the last three, was written `[]`.
+//!
 //! ```text
 //! cargo test -p ein-cli --test answer_round_trip
 //! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test answer_round_trip  # + the slow entries
@@ -107,8 +116,15 @@ fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
 /// `ein solve FILE --dump-answer DIR`, then every state file it wrote against
 /// the run's own state: the number of files checked, or `None` where the
 /// program does not load or the run writes no state. `eager` counts the
-/// members of N held to their eager cores ([`eager_cores`]).
-fn check(file: &str, dir: &Path, bad: &mut Vec<String>, eager: &mut usize) -> Option<usize> {
+/// members of N held to their eager cores ([`eager_cores`]), and `held` the
+/// nodes and holes held to their deadness ([`no_core_unless_dead`]).
+fn check(
+    file: &str,
+    dir: &Path,
+    bad: &mut Vec<String>,
+    eager: &mut usize,
+    held: &mut Held,
+) -> Option<usize> {
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .args(["solve", file, "--dump-answer"])
         .arg(dir)
@@ -151,7 +167,8 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>, eager: &mut usize) -> Op
         }
     }
     members_of_n(file, dir, bad);
-    *eager += eager_cores(file, dir, bad);
+    *eager += eager_cores(file, dir, bad, held);
+    held.add(no_core_unless_dead(file, dir, bad));
     let candidates = r.answer.candidates.clone();
     let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &candidates).expect("prepares");
     for (path, set) in &files {
@@ -219,8 +236,10 @@ fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
 /// `nogoods.json` that run visited, its core, status and rules in `nodes.json`
 /// equal `nogoods.json`'s. A member the route reads off others and does not
 /// visit (the state route's `N`, by duality) is not compared. How many were
-/// compared.
-fn eager_cores(file: &str, dir: &Path, bad: &mut Vec<String>) -> usize {
+/// compared. Every node of that `nodes.json` is held to its deadness too, a
+/// dead one's core a list and every other's `null` ([`no_core_unless_dead`],
+/// M1f S1f.5.8).
+fn eager_cores(file: &str, dir: &Path, bad: &mut Vec<String>, held: &mut Held) -> usize {
     let read = |path: &Path| -> Option<serde_json::Value> {
         serde_json::from_str(&std::fs::read_to_string(path).ok()?).ok()
     };
@@ -254,6 +273,9 @@ fn eager_cores(file: &str, dir: &Path, bad: &mut Vec<String>) -> usize {
         members.iter().map(|m| (m["set"].to_string(), m)).collect();
     let mut compared = 0;
     for node in nodes["nodes"].as_array().into_iter().flatten() {
+        let at = format!("{file}: nodes.json's {}", node["commitment"]);
+        let dead = node["kind"] == "dead";
+        held_to_its_deadness(held, bad, &at, dead, node, &["core", "refuted_by"]);
         let Some(m) = by_set.get(&node["commitment"].to_string()) else {
             continue;
         };
@@ -269,6 +291,189 @@ fn eager_cores(file: &str, dir: &Path, bad: &mut Vec<String>) -> usize {
     }
     let _ = std::fs::remove_dir_all(&lattice);
     compared
+}
+
+/// The nodes and holes [`no_core_unless_dead`] held, by whether each is dead.
+#[derive(Default)]
+struct Held {
+    dead: usize,
+    not_dead: usize,
+}
+
+impl Held {
+    fn add(&mut self, other: Held) {
+        self.dead += other.dead;
+        self.not_dead += other.not_dead;
+    }
+}
+
+/// One node or hole of a JSON surface: where it is dead, each of `fields` is a
+/// list; where it is not, each is `null`, and present.
+fn held_to_its_deadness(
+    held: &mut Held,
+    bad: &mut Vec<String>,
+    at: &str,
+    dead: bool,
+    x: &serde_json::Value,
+    fields: &[&str],
+) {
+    for f in fields {
+        let ok = match x.get(f) {
+            Some(v) if dead => v.is_array(),
+            Some(v) => v.is_null(),
+            None => false,
+        };
+        if !ok {
+            bad.push(format!(
+                "{at}: a {} node's {f} is {}, where it should be {}",
+                if dead { "dead" } else { "not-dead" },
+                x.get(f).map_or("absent".to_string(), |v| v.to_string()),
+                if dead { "a list" } else { "null" }
+            ));
+        }
+    }
+    if dead {
+        held.dead += 1;
+    } else {
+        held.not_dead += 1;
+    }
+}
+
+/// A summary's `region` block: root's core and rules where root's kind is
+/// stated, and each minimal hole's core.
+fn summary_cores(held: &mut Held, bad: &mut Vec<String>, at: &str, summary: &serde_json::Value) {
+    let region = &summary["region"];
+    if let Some(root) = region["root"].as_str() {
+        held_to_its_deadness(
+            held,
+            bad,
+            &format!("{at}'s root"),
+            root == "dead",
+            region,
+            &["core", "refuted_by"],
+        );
+    }
+    for h in region["holes"]["minimal"].as_array().into_iter().flatten() {
+        held_to_its_deadness(
+            held,
+            bad,
+            &format!("{at}'s hole {}", h["set"]),
+            h["dead"] == true,
+            h,
+            &["core"],
+        );
+    }
+}
+
+/// **A node that is not dead has no core** (M1f S1f.5.8, the user's ruling
+/// of 2026-11-07 on D-14, Q-M1e2.27): a core is one object, the set of facts
+/// a dead node's contradiction rests on, so a dead node's `core` and
+/// `refuted_by` are lists, `[]` the empty set, and a node that is not dead,
+/// whose core does not exist, has `null`. Held on every JSON surface that
+/// writes a node's core: the summary's root and minimal holes
+/// (`answer.json`, `index.json`, and `ein oracle --json-summary`),
+/// `nogoods.json`, and `ein oracle --dump`'s `region.json`, `--dump-lattice`'s
+/// `nodes.json` and `--events`' `enter` lines and `region` event, the last
+/// four where the oracle answers at `--region-limit 10`, which bounds what
+/// they cost, the `enter` lines node for node against `nodes.json`; [`eager_cores`] holds the
+/// `nodes.json` of every other program it dumps. Until S1f.5.8 a node that is
+/// not dead was written `[]`, which reads as *the empty set of facts
+/// suffices*.
+fn no_core_unless_dead(file: &str, dir: &Path, bad: &mut Vec<String>) -> Held {
+    let mut held = Held::default();
+    let read = |path: &Path| -> Option<serde_json::Value> {
+        serde_json::from_str(&std::fs::read_to_string(path).ok()?).ok()
+    };
+    for name in ["answer.json", "index.json"] {
+        if let Some(j) = read(&dir.join(name)) {
+            summary_cores(&mut held, bad, &format!("{file}: {name}"), &j);
+        }
+    }
+    if let Some(n) = read(&dir.join("nogoods.json")) {
+        for m in n.as_array().into_iter().flatten() {
+            let at = format!("{file}: nogoods.json's {}", m["set"]);
+            held_to_its_deadness(&mut held, bad, &at, true, m, &["core", "refuted_by"]);
+        }
+    }
+    let cube = dir.join("cube");
+    let oracle_summary = dir.join("oracle.json");
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(["oracle", file, "--region-limit", "10", "--dump"])
+        .arg(&cube)
+        .arg("--json-summary")
+        .arg(&oracle_summary)
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    // Past the limit, or a program the oracle refuses: nothing to read.
+    if !out.status.success() {
+        return held;
+    }
+    if let Some(j) = read(&oracle_summary) {
+        summary_cores(&mut held, bad, &format!("{file}: ein oracle's summary"), &j);
+    }
+    match read(&cube.join("region.json")) {
+        Some(r) => {
+            for n in r["region"]["nodes"].as_array().into_iter().flatten() {
+                let dead = n["status"].as_str().is_some_and(|s| s.starts_with("dead"));
+                let at = format!("{file}: region.json's node {}", n["mask"]);
+                held_to_its_deadness(&mut held, bad, &at, dead, n, &["core", "refuted_by"]);
+            }
+        }
+        None => bad.push(format!("{file}: ein oracle --dump wrote no region.json")),
+    }
+    let lattice = dir.join("visited");
+    let events = dir.join("events.jsonl");
+    Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(["solve", file, "--dump-lattice"])
+        .arg(&lattice)
+        .arg("--events")
+        .arg(&events)
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    let Some(nodes) = read(&lattice.join("nodes.json")) else {
+        bad.push(format!("{file}: --dump-lattice wrote no nodes.json"));
+        return held;
+    };
+    let nodes = nodes["nodes"].as_array().cloned().unwrap_or_default();
+    for n in &nodes {
+        let at = format!("{file}: nodes.json's {}", n["commitment"]);
+        let dead = n["kind"] == "dead";
+        held_to_its_deadness(&mut held, bad, &at, dead, n, &["core", "refuted_by"]);
+    }
+    let lines: Vec<serde_json::Value> = std::fs::read_to_string(&events)
+        .unwrap_or_default()
+        .lines()
+        .filter_map(|l| serde_json::from_str::<serde_json::Value>(l).ok())
+        .collect();
+    // The `region` event carries the summary's blocks, its holes among them.
+    for e in lines.iter().filter(|e| e["e"] == "region") {
+        summary_cores(&mut held, bad, &format!("{file}: the region event"), e);
+    }
+    let enter: Vec<&serde_json::Value> = lines.iter().filter(|e| e["e"] == "enter").collect();
+    if enter.len() != nodes.len() {
+        bad.push(format!(
+            "{file}: {} enter lines, where nodes.json has {} nodes",
+            enter.len(),
+            nodes.len()
+        ));
+    }
+    for (&e, n) in enter.iter().zip(&nodes) {
+        let at = format!("{file}: the enter line of {}", e["commitment"]);
+        held_to_its_deadness(&mut held, bad, &at, e["kind"] == "dead", e, &["core"]);
+        if (&e["commitment"], &e["kind"], &e["core"]) != (&n["commitment"], &n["kind"], &n["core"])
+        {
+            bad.push(format!(
+                "{at}: {} {} {}, where nodes.json has {} {} {}",
+                e["commitment"], e["kind"], e["core"], n["commitment"], n["kind"], n["core"]
+            ));
+        }
+    }
+    let _ = std::fs::remove_dir_all(&cube);
+    let _ = std::fs::remove_dir_all(&lattice);
+    let _ = std::fs::remove_file(&events);
+    held
 }
 
 /// The shards [`shard`] splits the corpus into, one test each, so the four
@@ -287,13 +492,14 @@ fn shard(k: usize) {
     let list = std::env::var("EIN_ROUND_TRIP_LIST").is_ok();
     let mut bad = Vec::new();
     let (mut programs, mut states, mut eager) = (0, 0, 0);
+    let mut held = Held::default();
     let entries = corpus();
     for (i, e) in entries.select(&[], None, slow).iter().enumerate() {
         if i % SHARDS != k {
             continue;
         }
         let dir = root.join(format!("e{i}"));
-        match check(&e.path, &dir, &mut bad, &mut eager) {
+        match check(&e.path, &dir, &mut bad, &mut eager, &mut held) {
             Some(n) => {
                 programs += 1;
                 states += n;
@@ -308,13 +514,17 @@ fn shard(k: usize) {
         let _ = std::fs::remove_dir_all(&dir);
     }
     assert!(
-        programs > 20 && states > programs && eager > 0,
+        programs > 20 && states > programs && eager > 0 && held.dead > 0 && held.not_dead > 0,
         "shard {k}: {programs} programs, {states} states, {eager} members of N held to their \
-         eager cores"
+         eager cores, {} dead nodes and {} others held to their deadness",
+        held.dead,
+        held.not_dead
     );
     eprintln!(
         "shard {k}: {programs} programs, {states} state files, {eager} members of N held to \
-         their eager cores"
+         their eager cores, {} dead nodes and holes each with a core and {} others each with \
+         none",
+        held.dead, held.not_dead
     );
     assert!(
         bad.is_empty(),
@@ -416,7 +626,13 @@ fn the_witnesses_reload_to_their_states() {
     .iter()
     .enumerate()
     {
-        let wrote = check(file, &root.join(format!("w{i}")), &mut bad, &mut 0);
+        let wrote = check(
+            file,
+            &root.join(format!("w{i}")),
+            &mut bad,
+            &mut 0,
+            &mut Held::default(),
+        );
         states += wrote.unwrap_or_else(|| panic!("{file}: no state written"));
     }
     assert!(states >= 40, "{states}");

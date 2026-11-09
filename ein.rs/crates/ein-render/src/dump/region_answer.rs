@@ -154,9 +154,11 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             let root = d.map(|d| &d.root);
             (
                 Json::Null,
-                root.map_or(Json::Null, |x| strs(&x.core)),
+                root.map_or(Json::Null, |x| core_field(!x.alive, x.core_status, &x.core)),
                 root.map_or(Json::Null, |x| core_status(x.core_status)),
-                root.map_or(Json::Null, |x| strs(&x.refuted_by)),
+                root.map_or(Json::Null, |x| {
+                    core_field(!x.alive, x.core_status, &x.refuted_by)
+                }),
             )
         }
         _ => (Json::Null, Json::Null, Json::Null, Json::Null),
@@ -318,7 +320,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
                                         Json::obj(vec![
                                             ("set", set_json(cands, &h.set)),
                                             ("dead", Json::Bool(h.dead)),
-                                            ("core", strs(&h.core)),
+                                            ("core", core_field(h.dead, h.core_status, &h.core)),
                                             ("core_status", core_status(h.core_status)),
                                             ("owes", Json::int(i64::from(h.owes))),
                                         ])
@@ -361,6 +363,30 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
 /// S1f.5.12, which gives every member its core.
 pub fn core_status(c: Option<ein_infer::explain::CoreStatus>) -> Json {
     c.map_or(Json::Null, |c| Json::str(c.word()))
+}
+
+/// A node's core, or the rules its contradiction's derivation takes, as every
+/// JSON surface writes them (M1f S1f.5.8, the user's ruling of 2026-11-07 on
+/// D-14, Q-M1e2.27): a core is one object, the set of facts a dead node's
+/// contradiction rests on, so a dead node's is a list, and `[]` is the empty
+/// set, a core that exists and holds no fact; a node that is not dead has no
+/// contradiction, so its core does not exist: `null`. A dead node whose core
+/// the run did not take is `null` too, beside a `null` `core_status`, and no
+/// surface the binary writes holds one, each asking for the cores it prints
+/// ([`ein_infer::region::Cores`]). Until S1f.5.8 a node that is not dead was
+/// written `[]`, which reads as *the empty set of facts suffices*: the
+/// summary's owing holes, and every such node of `region.json`, `nodes.json`
+/// and `--events`' `enter` lines.
+pub fn core_field(
+    dead: bool,
+    status: Option<ein_infer::explain::CoreStatus>,
+    v: &[String],
+) -> Json {
+    if dead && status.is_some() {
+        strs(v)
+    } else {
+        Json::Null
+    }
 }
 
 fn route(r: Route) -> &'static str {
@@ -635,9 +661,9 @@ pub fn nogoods(r: &ReadOut) -> Result<Json, String> {
             }
             dead.push(Json::obj(vec![
                 ("set", set_json(&cands, &x.set)),
-                ("core", strs(&x.core)),
+                ("core", core_field(true, x.core_status, &x.core)),
                 ("core_status", core_status(x.core_status)),
-                ("refuted_by", strs(&x.refuted_by)),
+                ("refuted_by", core_field(true, x.core_status, &x.refuted_by)),
             ]));
         }
     }

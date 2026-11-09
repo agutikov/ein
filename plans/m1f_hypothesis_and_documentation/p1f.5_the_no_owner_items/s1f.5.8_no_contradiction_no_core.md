@@ -7,7 +7,7 @@
 ([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)). **Running since
 2026-11-09**, on the user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with
 default decisions till the end of the phase"*), beside the second lane's S1f.5.18: T1f.5.8.1, every surface listed
-([its record](#t1-record-2026-11-09)). Two choices were taken by default and recorded:
+(`2b63223d`, [its record](#t1-record-2026-11-09)); T1f.5.8.2, `null` ([its record](#t2-record-2026-11-09)). Two choices were taken by default and recorded:
 [Q-M1f.28](../open_questions.md#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer), no register row, and
 [Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count), a dead root's core under `--count`.
 **Depends on:** nothing.
@@ -196,6 +196,42 @@ build/s1f.5.8/proto.jsonl`).
 The two writers, and a test in `ein-cli/tests/answer_round_trip.rs`, which already reads every corpus dump:
 over every corpus program, every node and hole that is not dead has `core` and `refuted_by` `null`, and every
 dead one has a list.
+
+### T2 record, 2026-11-09
+
+**One rule, one function.** `ein_render::dump::region_answer::core_field(dead, status, list)` writes a node's core, or
+its rules, as a list where the node is dead and the run took its core, and `null` otherwise; every writer in
+`ein-render` calls it: the summary's root (`!alive`) and minimal holes (`dead`), `nogoods.json` (every member dead),
+`region.json` (the node's `DEAD` bit) and `nodes.json` (`kind == "dead"`). The `enter` line is written in `ein-infer`,
+which cannot call `ein-render`, and `region::narrate_node` applies the same test. A dead node whose core the run did
+not take would be `null` beside a `null` `core_status`, the ruling's *not known*, where it would have been the `[]`
+S1e2.3.9 removed; no surface the binary writes holds one, each asking for the cores it prints, and the test below
+holds every dead node to a list.
+
+**The test** is `ein-cli/tests/answer_round_trip.rs`' `no_core_unless_dead`, run on every corpus program the round
+trip already dumps: `answer.json`'s and `index.json`'s root and minimal holes, `nogoods.json`'s members, and, where
+`ein oracle --region-limit 10` answers, which bounds their cost, the oracle's summary, `region.json`, and one `ein
+solve --dump-lattice --events` run's `nodes.json`, `enter` lines and `region` event, the `enter` lines held node for
+node to `nodes.json`; `eager_cores` holds the `nodes.json` of every other program it dumps. Each node or hole that is
+dead must have its fields lists and every other `null`, and present: 5 016 dead and 17 004 not dead over the eight
+shards, each shard held to at least one of each (release, 2026-11-09, `cargo test --release -p ein-cli --test
+answer_round_trip -- --nocapture`). With the old spelling put back in `core_field` and the `enter` line, the test fails
+on every surface: `answer.json`, `index.json`, the oracle's summary and the `region` event on the seven holes,
+`region.json` on 2 312 nodes, `nodes.json` on 27 872 and the `enter` lines on 1 107 (a scratch mutation, 2026-11-09).
+
+**What moved** is T1's list and nothing else. `corpus_shapes.md5`'s 1 505 renderings (`EIN_BLESS=1 cargo test -p
+ein-render --test corpus_shapes`, the manifest's diff read before it was kept: exactly the 1 505 lines T1 named, each
+a digest and no line count). The kernel pages that describe the spelling say it in the same commit:
+[`read_out.md` § 11](../../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks), where the
+summary's keys are defined, carries the rule, `[]` the empty set and `null` an object that does not exist or that the
+run does not state, with `--count`'s dead root
+([Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count)); [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s
+`nodes` row, [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md)'s `nodes.json` and
+[`events.md`](../../../docs/kernel/inference/events.md)'s `enter` row say a node that is not dead has `null`; and
+[`glossary.md`](../../../docs/kernel/glossary.md) states the rule beside the core's definition.
+[`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) defines no summary field of its own, deferring them to
+`read_out.md` § 11, and its `nogoods.json` holds dead nodes alone, so it is unedited. No answer, exit code or register
+row moved.
 
 ### Task T1f.5.8.3 — the pages
 

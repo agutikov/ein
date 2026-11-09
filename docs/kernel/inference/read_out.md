@@ -357,6 +357,20 @@ The shapes of the lines a question writes beside an answer; [`defined_behaviour.
 The summary is the same facts as stdout, from the same read-out, with every key on every run and `null` where it does
 not apply (`ein-summary/2`). Every bound sits beside `exhausted`.
 
+**`[]` and `null`** (the user's ruling of 2026-11-07 on
+[Q-M1e2.27](../../../plans/m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json), built by
+M1f [S1f.5.8](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)):
+`[]` is a set known to be empty, and `null` an object that does not exist or that the run does not state, on every
+field of every JSON surface. A core is one object, the set of facts a dead node's contradiction rests on, so a dead
+node's core and rules are lists, and a node that is not dead, whose core does not exist, has `null`: `region.core` and
+`region.refuted_by` are root's lists where R is empty of the dead kind and `null` where root is not dead;
+`region.holes.minimal[].core` is a dead hole's list and an owing hole's `null`. Under `--count` and a mode they are
+`null` on a dead root too, since the question prints no core
+([Q-M1f.29](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f29--a-dead-roots-core-under---count)).
+`[]` would be a core that holds no fact, *the empty set suffices*, which no corpus program reaches (S1f.5.9). Until
+S1f.5.8 an owing hole's core was written `[]`; `region.json`, `nodes.json` and `--events`' `enter` lines, which follow
+the same rule, wrote `[]` on every node that is not dead.
+
 ### 11.1 Which page owns which key
 
 <!-- owners -->

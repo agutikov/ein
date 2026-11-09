@@ -1644,7 +1644,15 @@ pub(crate) fn narrate_node(
         l.owned_strs("commitment", commitment);
         l.str("kind", kind);
         l.num("owes", i64::from(out.owes));
-        l.strs("core", out.node.core.iter().map(String::as_str));
+        // A node that is not dead has no core, so it is `null`, and `[]` is
+        // the empty set (M1f S1f.5.8, the user's ruling of 2026-11-07 on
+        // D-14): `ein_render::dump::region_answer::core_field`'s rule, which
+        // every other JSON surface writes a core by.
+        if out.dead && out.node.core_status.is_some() {
+            l.strs("core", out.node.core.iter().map(String::as_str));
+        } else {
+            l.json("core", "null");
+        }
         match out.node.core_status {
             Some(c) => l.str("core_status", &c.word()),
             None => l.json("core_status", "null"),

@@ -82,18 +82,26 @@ pub fn json(v: &Visits, inputs: &Inputs<'_>) -> Json {
         .iter()
         .enumerate()
         .map(|(i, n)| {
+            // A node that is not dead has no core (M1f S1f.5.8, D-14).
+            let dead = n.kind == "dead";
             Json::obj(vec![
                 ("n", Json::int(i as i64)),
                 ("commitment", strs(&n.commitment)),
                 ("kind", Json::str(n.kind)),
                 ("owes", Json::int(i64::from(n.owes))),
                 ("owed", strs(&n.owed)),
-                ("core", strs(&n.core)),
+                (
+                    "core",
+                    super::region_answer::core_field(dead, n.core_status, &n.core),
+                ),
                 (
                     "core_status",
                     super::region_answer::core_status(n.core_status),
                 ),
-                ("refuted_by", strs(&n.refuted_by)),
+                (
+                    "refuted_by",
+                    super::region_answer::core_field(dead, n.core_status, &n.refuted_by),
+                ),
                 ("closure", strs(&n.closure)),
                 ("facts", Json::int(n.facts as i64)),
             ])

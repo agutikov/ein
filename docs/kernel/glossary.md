@@ -168,6 +168,16 @@ names, and changes nothing else, the config principle's one exemption
 ([`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row),
 the user's ruling of 2026-11-04).
 
+**A node that is not dead has no core** (M1f S1f.5.8, the user's ruling of 2026-11-07 on
+[Q-M1e2.27](../../plans/m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)): a core
+is one object, the set of facts a dead node's contradiction rests on, so every JSON surface writes a dead node's core
+and rules as lists, `[]` being the empty set, a core that holds no fact, and a node that is not dead, whose core does
+not exist, as `null`: the summary's root and minimal holes (and `--events`' `region` event, which carries the
+summary's block), `nogoods.json`, `region.json`, `nodes.json` and `--events`' `enter` lines
+(`ein_render::dump::region_answer::core_field`, held over the corpus by
+`ein-cli/tests/answer_round_trip.rs`). Until S1f.5.8 a node that is not dead was written `[]`, which reads as *the
+empty set of facts suffices*.
+
 **What a derivation rests on**: its premises, and the activator its plan
 was compiled from where a node derived or committed it — the fact `(rule
 args…)` that bound a rule's parameters, which every firing records since
