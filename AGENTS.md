@@ -581,6 +581,16 @@ constrained-reasoning research.
   ([S1f.5.2](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)):
   119 fixed, 21 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  **S1f.5.1 ran to its end the same day**: F3's cause is a rule
+  application's identity, its register file (`firing::BindingKey`), which
+  drops a second match that binds what the first did, and it reaches a
+  top-level `(or …)` whose disjuncts bind the same registers, filed
+  `W39/or-one-key`, `open` and F22's (`728e716a`); `_` and `?_` are held
+  refused in every position on every command (`307021db`), and `Slot::Any`
+  and `Node::Wildcard` are gone (`ef5374a1`)
+  ([S1f.5.1](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)):
+  119 fixed, 22 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   T7 follows the language stages' remaining halves.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is

@@ -17,11 +17,12 @@ it was 2.
 ([Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)), and revised 2026-11-07 on the
 user's rule for a name ([S1f.5.5](s1f.5.5_the_grammar.md#the-name-rule)): a run of underscores is a
 name, and only a bare `_` and `?_` stay refused.
-**Not started** until the swap, which moved its refusal, fixtures and rows (below). **Running since 2026-11-09**
-([§ T1f.5.1.3 record](#t1f513-record-2026-11-09)): T1f.5.1.3's step 1 done, F3's cause traced to a rule application's
+**Not started** until the swap, which moved its refusal, fixtures and rows (below). **Done 2026-11-09**
+([§ T1f.5.1.3 record](#t1f513-record-2026-11-09), [§ T1f.5.1.4 record](#t1f514-record-2026-11-09)): T1f.5.1.3's step 1 done, F3's cause traced to a rule application's
 identity, which reaches a disjunction too, filed as `W39/or-one-key`, `open` and deferred to F22 (`728e716a`); step 2,
 `_` and `?_` held refused in every position (66 rows of the grammar's table) and on every command (`307021db`);
-step 3, `Slot::Any` and `Node::Wildcard` retired, no answer and no golden moving.
+step 3, `Slot::Any` and `Node::Wildcard` retired, no answer and no golden moving (`ef5374a1`); and T1f.5.1.4, the
+pages.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal is the generated parser's (bare `_` is no `NAME` and `?_` no `VAR` in
@@ -446,6 +447,52 @@ guard sentences), `04_dot_rendering.md`, `06_reserved_names.md`,
 two Q entries the ruling reverses say so. W-22 and F3 marked in
 [the no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md).
 `docs/history/` is a record, and does not change.
+
+### T1f.5.1.4 record, 2026-11-09
+
+**One commit, on step 3's (`ef5374a1`)**, pages only. Each sentence that described a bare `_` as live, a wildcard
+token, slot, node or shape, says what it was and what it is since S1f.5.1; a record, a dated note and a quotation of
+an engine line are left as written. S1f.5.5's T7 keeps the grammar pages' prose: what this commit restates there is
+only `_`.
+
+**Restated.**
+- `00_ebnf.md`: **fact 2**, which said a bare `_` *stays `WILDCARD`*: `_` and `?_` are tokens no production takes,
+  refused with S1f.5.1's note, and `_` anywhere else in a word a name character, with what `WILDCARD` was until the
+  swap; § 4's `ListHead` and § 5's census line, each saying the token is refused.
+- `01_grammar.md`: the `WILDCARD` row, *none since the swap*, with what it matched and refused and dropped until
+  then, and the lookahead sentence under the table; § Rules' premise paragraph (a pattern's arguments, and `_` where
+  a premise goes, at the parse since the swap) and the guard paragraph.
+- `02_patterns.md`: the construct table's two rows, both struck through and *refused at the parse*, the argument
+  row saying what to write instead; the premise and guard sentences.
+- `04_dot_rendering.md`: the wildcard's shape row, none since T1f.5.1.3.
+- `06_reserved_names.md`: a new section, *A bare `_` and `?_` — reserved, and written nowhere*, since neither set
+  the page lists holds them.
+- `defined_behaviour.md`: § 4's *conclusion no fact can hold* row; § 4.8, a header paragraph saying the refusal is
+  the parse's since the swap and the section below is the record from S1e2.2.20 to it, and its pins (the `from_ir`
+  unit test T5 moved to the grammar's table, the CLI test, `a_bare_underscore_names_nothing_in_every_place`); § 4.9's
+  two rows and its *what stays* sentence.
+- The root `README.md`'s W20 paragraph and `examples/README.md`'s W20 and W29 families, each witness refused at the
+  parse since the swap.
+- [Q-M1e2.13](../../m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean):
+  **reversed for `_` on 2026-11-06** by Q-M1e2.22, and what (a) built gone; its index row.
+  [Q-M1e2.14](../../m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation):
+  **absorbed** by Q-M1e2.22; its index row.
+  [Q-M1e2.22](../../m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard): **built 2026-11-09**, the
+  swap's commit and this stage's three.
+- [The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md): **W-22** marked done in its
+  table row and its section, and **F3** in its bullet, with W39.
+- AGENTS.md, one sentence: S1f.5.1 ran to its end, F3's cause and W39, the positions held, the node and slot gone.
+- `docs/history/` is a record, and does not change.
+
+**What a page still says about the wildcard, each on purpose** (`grep -rn -i "wildcard" docs/kernel docs/api
+docs/guide`, 2026-11-09, and each `_` those pages write read): every sentence restated above, each dated; § 4.8's
+record of S1e2.2.20 under its new header; § 4's firing line and § 4.9's guard row, quotations of lines T5 deleted; and
+`00_ebnf.md` § 5's `grammar_decisions.rs` row (`_` vs `_x` vs `__closed__`, decisions the table still pins).
+
+**Tests that read an edited page**, run on this tree: `ein-ir`'s `grammar_pages` (`00_ebnf.md`, 5 passed), and
+`ein-cli`'s `primitive_arity` (`00_ebnf.md`, 3 passed), `world_anchors` (`examples/README.md`, 2 passed) and
+`guide_transcripts` (`README.md`, 1 passed); no page the register's or the configuration's tests read is edited.
+`utils/doc_audit.py --links --check` over the tree: 0 findings.
 
 ## Acceptance
 

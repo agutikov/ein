@@ -130,9 +130,21 @@ Four terminal facts that are load-bearing and easy to lose:
    `(neq w ?x)` and stored `(neq w a)`, `(relationship a b)` declared a
    relation `ship`, and `(trace (stepx …))` was the step `x` (W22,
    [`corpus/wrong_answers.toml`](../../../../corpus/wrong_answers.toml)).
-2. **`__dunder__` atoms lex as `SYMBOL`.** `(?:__)?` still requires a letter
-   after it, so a bare `_` stays `WILDCARD` and `_x` is neither. `WILDCARD`'s
-   own lookahead is what stops `__closed__` from starting as two wildcards.
+2. **A bare `_` and `?_` name nothing** (M1f [S1f.5.1](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md), on the
+   user's ruling of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)). `UNDERSCORE` and
+   `VARUNDERSCORE` are tokens no production of §2 takes: they are there so
+   the parse error can say why, wherever either is written, with the note
+   *`_ is reserved and names nothing: where any value will do, write a
+   variable used once`*. Anywhere else in a word `_` is a name character:
+   `_a_in_b_`, `_______01`, `A________B` and `__closed__` are names and
+   `?_x` a variable. **Until S1f.5.5's swap** `WILDCARD`, a `_` no word
+   character followed, was a token of its own, and `__dunder__` atoms lexed
+   as `SYMBOL` through `(?:__)?` and a letter, so `_x` and `__` were no
+   token: in a rule's pattern `_` matched any value and bound nothing (M1e2
+   S1e2.2.20), as a relation, a guard's argument or a premise it was refused
+   at load, and in a fact, a nested fact or an activator it was dropped in
+   silence (W-22, W29). The AST's `Wildcard` node and the compiler's
+   `Slot::Any` went with S1f.5.1's T1f.5.1.3 (`ef5374a1`).
 3. **There is no `RANGE`** (M1f
    [S1f.5.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md),
    2026-11-08): Ein has no numbers and no ranges, on the user's ruling of
@@ -326,8 +338,8 @@ different messages, and the corpus has a fixture directory for each
   grammar they are an ordinary `GenericList` with a `SYMBOL` head and an
   `OrForm`, which is exactly why they cost no production here. The shape the
   form was first proposed with — a bare list of facts, `:expect ((p A) (q B))`
-  — is **not** in this grammar: `ListHead` is a `SYMBOL`, `VAR`, `WILDCARD` or
-  `EQ` and never a list, so admitting it would have changed the shape of every
+  — is **not** in this grammar: `ListHead` is a `SYMBOL`, `VAR`, `WILDCARD` (a
+  bare `_`, refused since S1f.5.5's swap) or `EQ` and never a list, so admitting it would have changed the shape of every
   form to buy one keyword its ergonomics. Also loader-checked: that an
   expectation's facts are **ground**, that the relations it names exist, and
   that it names the goal's.
@@ -358,7 +370,8 @@ containing at least one): `relation` 90 · `rule` 88 · `query` 67 · `and` 65 �
 `macro` 5 · `trace` 3 · `=` 3 · `step` 1. Terminals: `VAR` 105 · `STRING` 95 ·
 `INT` 84 · dunder `SYMBOL` 11 · `WILDCARD` 3. (`RANGE` 4 until M1f S1f.5.3
 retired the token; `INT`'s 84 are runs of digits, each a name since S1f.5.5's
-swap, S1f.5.4's ruling.)
+swap, S1f.5.4's ruling; `WILDCARD`'s 3 counted files that write a bare `_`,
+which no program loads since the swap refused one, S1f.5.1's ruling.)
 
 **Five productions have no exerciser at all**, and it is better to write that
 down than to let a reader assume otherwise: `BranchOpen`, `BranchClose`,

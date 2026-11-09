@@ -525,7 +525,7 @@ names the failure's class, and exiting non-zero:
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
-| a conclusion no fact can hold: an `:assert` that is not a fact, or an argument that is a keyword pair or a wildcard at the conclusion's top level | `rule '<r>': its :assert …`, naming no class (below) | 1 |
+| a conclusion no fact can hold: an `:assert` that is not a fact (an argument that is a keyword pair or a wildcard at the conclusion's top level until M1f S1f.5.5's swap refused each at the parse) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
@@ -909,6 +909,17 @@ and by `corpus/wrong_answers.toml`'s fifteen refused rows (`python3 -c
 
 ### 4.8 A wildcard as a relation in a rule — M1e2 S1e2.2.20
 
+**At the parse since M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09), on the
+user's ruling of 2026-11-06
+([Q-M1e2.22](../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)):
+a bare `_`, and `?_`, is refused wherever it is written, a relation among
+the places, with the file, line and column and S1f.5.1's note, *`_ is reserved
+and names nothing: where any value will do, write a variable used once`*, from
+every command that reads the program, exit 1 (`ein test`: 2); S1f.5.5's T5
+deleted the line below (`Found::WildHead`), and S1f.5.1's T1f.5.1.3 retired
+the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`). What
+follows is the section as it stood from S1e2.2.20 to the swap.
+
 A wildcard `_` stands for an argument, and a relation is named by a name or
 by a parameter its activator binds (Q29). So, on the user's ruling of
 2026-11-05
@@ -923,11 +934,14 @@ ein's own words:
 | a wildcard as a relation | `<rule\|hrule> '<r>': its <:match\|:assert> writes (_ a) with the wildcard _ as its relation — a relation is named by a name or by a parameter its activator binds, and _ stands for an argument` | 1 (`ein test`: 2) |
 
 A keyword's value inside a clause, `(n ?x :where v)`, is no slot, which
-the compiler drops, and loads. A `_` as an argument matches any value
+the compiler drops, and loads. A `_` as an argument matched any value, until
+the swap
 ([`01_grammar.md`'s `WILDCARD` row](ir/03-ein-lang/01_grammar.md#1-lexical-rules)).
-Pinned by `ein-ir`'s `from_ir.rs`
-`a_wildcard_relation_in_a_rule_is_refused_at_load` and
-`ein-cli/tests/cli_semantics.rs`'s test of the same name, and by
+Pinned by `ein-cli/tests/cli_semantics.rs`'
+`a_wildcard_relation_in_a_rule_is_refused_at_load` (at the parse since the
+swap) and `a_bare_underscore_names_nothing_in_every_place` (T1f.5.1.3), by
+the rows of `ein-ir/tests/grammar_pages.rs`' table that write `_` and `?_`
+(`from_ir.rs`' unit test, until T5 moved it there), and by
 `corpus/wrong_answers.toml`'s `W20/wild-in-head`.
 
 **A range was refused here too, until M1f S1f.5.3** (2026-11-08). From
@@ -968,10 +982,10 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 
 | input | message |
 |---|---|
-| `_` as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
+| `_` as a guard's argument (a parse error since M1f S1f.5.5's swap, § 4.8) | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
 | a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one) |
 | a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name` |
-| a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string (a parse error since M1f S1f.5.5's swap, § 4.12) | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
+| a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string (`_` and a string a parse error since M1f S1f.5.5's swap, § 4.8 and § 4.12) | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 | a keyword pair inside a pattern inside a pattern, in either clause | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
@@ -983,7 +997,8 @@ by those the enclosing premises bound before it and the `absent`'s own
 earlier premises. What stays: a keyword pair at a pattern's top level or as a
 premise of an `(and …)`, which the compiler drops (Q32); `_` as a pattern's
 argument; `_` and a keyword pair at a conclusion's top level, which stop the
-firing with § 4's line. **Until S1e2.2.24** (W24): a guard compared `_`, a
+firing with § 4's line (each `_` a parse error since M1f S1f.5.5's swap,
+§ 4.8, and the keyword pair since the same swap, S1f.5.11). **Until S1e2.2.24** (W24): a guard compared `_`, a
 form or a keyword pair as a raw IR node, equal to no value, and a variable
 not yet bound as a null, so `(eq ?x _)` never held and `(and (neq ?x a) (p
 ?x))` fired for `a`; a premise that is not a form was dropped, so the rule

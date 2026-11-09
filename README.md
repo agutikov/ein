@@ -342,7 +342,9 @@ were measured, not assumed:
   nothing, so a rule never fired, an `absent` always held and an hrule
   proposed nothing, until M1e2 S1e2.2.20 made `_` match any value and
   refused a range, and a `_` written as a relation, at load, on the user's
-  rulings (Q-M1e2.13 (a), Q-M1e2.14 (c)), on 2026-11-05 — one
+  rulings (Q-M1e2.13 (a), Q-M1e2.14 (c)), on 2026-11-05 (since M1f S1f.5.5's
+  swap a bare `_` is refused at the parse wherever it is written, S1f.5.1's
+  ruling, Q-M1e2.22, and S1f.5.1 retired the slot that matched any value) — one
   ruled not wrong (C1), and **2 open**, both deferred to a followup by the
   user, each saying why: W8's other row (F21) and W10's second, a saving
   between two facts behind a full list, which no bounded list keeps (F22).

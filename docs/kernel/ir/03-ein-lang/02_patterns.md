@@ -41,8 +41,8 @@ compiler enforce well-formedness against the rules below.
 | ground atoms             | `Red`, `House-1`                        | —         | match literally                                 |
 | relation pattern         | `(?R ?a ?b [?c …])`                     | —         | the VAR head is one of the rule's parameters, which its activator binds to a relation's name; args bind positions. A head variable no parameter binds, at the top level or inside a pattern, in either clause, is **refused at load** since M1e2 S1e2.2.24 (W24): this row read *VAR head binds the relation name*, and a premise binding it, `(and (rel ?r) (box (?r b)))`, bound nothing — the pattern inside matched nothing, in silence, and one at the top level stopped compilation. A parameter its activator binds to a nested fact is refused too, at load where the activator is written and by the compiler where a rule derives it |
 | named relation pattern   | `(co-located ?a ?b)`                    | —         | match a specific relation's instances                  |
-| argument wildcard        | `(holds _)`, `(pair ?a _)`              | —         | match any value, binding nothing; two are independent (M1e2 S1e2.2.20). Not a guard's argument: `(eq ?x _)` is refused at load since S1e2.2.24 |
-| ~~head wildcard~~        | `(_ ?a ?b)`                             | —         | **refused at load** since M1e2 S1e2.2.20 (Q-M1e2.14 (c)): a relation is a name or a parameter its activator binds. This row read *match any binary list head*, which no engine did: the compiler stopped on it (W20) |
+| ~~argument wildcard~~    | `(holds _)`, `(pair ?a _)`              | —         | **refused at the parse** since M1f S1f.5.5's swap, in every position (S1f.5.1, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)): write a variable used once, `(holds ?any)`, which matches any value and is read nowhere else. This row read *match any value, binding nothing; two are independent* (M1e2 S1e2.2.20 until the swap), and `(eq ?x _)` was refused at load from S1e2.2.24; S1f.5.1's T1f.5.1.3 retired the slot (`ef5374a1`) |
+| ~~head wildcard~~        | `(_ ?a ?b)`                             | —         | **refused at the parse** since M1f S1f.5.5's swap, as every bare `_` is (S1f.5.1), and at load from M1e2 S1e2.2.20 (Q-M1e2.14 (c)): a relation is a name or a parameter its activator binds. This row read *match any binary list head*, which no engine did: the compiler stopped on it (W20) |
 | **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
@@ -54,8 +54,8 @@ compiler enforce well-formedness against the rules below.
 
 **A premise is a form** — a pattern, a guard, an `(absent …)`, or an
 `(and …)` or `(or …)` of premises. An atom (a run of digits among them, an
-integer until M1f S1f.5.4), a variable, `_` or a string (at the parse since
-M1f S1f.5.5's swap, S1f.5.2) written where a premise goes is **refused at load** since M1e2
+integer until M1f S1f.5.4), a variable, `_` or a string (the last two at the
+parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2) written where a premise goes is **refused at load** since M1e2
 S1e2.2.24 (W24, [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
 until then the compiler dropped it in silence, so `:match _` fired with no
 premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. A keyword pair
@@ -137,7 +137,8 @@ registry — `eq` and `neq`, and nothing else."*
 binds (or a rule's parameter), or a name; a run of digits is a name, an
 integer until M1f S1f.5.4, and a string was a name too, the one it spells, until
 M1f S1f.5.5's swap refused a string there (S1f.5.2). A guard is
-judged where it is written. `_`, a form, a keyword pair, or a variable no
+judged where it is written. `_` (at the parse since M1f S1f.5.5's swap,
+S1f.5.1), a form, a keyword pair, or a variable no
 premise before it binds is **refused at load** (since M1e2 S1e2.2.24, W24;
 [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
 Until then each read nothing: a raw node was equal to no value and an

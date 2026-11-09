@@ -136,6 +136,18 @@ is a pattern rules match. `lex::tests::the_lexer_keywords_are_twelve_and_are_not
 holds the twelve, the four-name intersection, and both of those. They were
 eleven until M1e2 S1e2.1a.4 added `solve`.
 
+### A bare `_` and `?_` — reserved, and written nowhere (M1f S1f.5.1)
+
+Neither set above holds them, because neither is a name: `_` and `?_` are
+tokens of their own (`ein.l`'s `UNDERSCORE` and `VARUNDERSCORE`) that no
+production takes, so a program may write neither anywhere, where a reserved
+name may be written and not bound. Each is refused at the parse, with the note
+*`_ is reserved and names nothing: where any value will do, write a variable
+used once`* (the user's ruling of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)). `_`
+anywhere else in a word is a name character, so `_a_in_b_` and `__x` are names
+and `?_x` a variable. Until M1f S1f.5.5's swap `_` was the argument wildcard
+of a rule's pattern ([`01_grammar.md`'s `WILDCARD` row](01_grammar.md#1-lexical-rules)).
+
 ## The verdict atom — `open` (M1d P1d.2 S1d.2.3, read since S1d.2.4)
 
 Reserved, but **not** a rule-body primitive: it appears only as an `:assert`

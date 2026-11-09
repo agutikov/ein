@@ -31,7 +31,7 @@ this document specifies the *concrete DOT encoding*.
 | hyperedge (Levi-bipartite) | `octagon`                          |
 | equality class            | `doublecircle`                     |
 | pattern variable `?x`     | `diamond`                          |
-| wildcard `_`              | `diamond` with `style=dashed`      |
+| ~~wildcard `_`~~          | none since M1f S1f.5.1: a bare `_` is refused at the parse, and T1f.5.1.3 retired the node and its shape; it was a `diamond` with `style=dashed` |
 | relation schema           | dashed labelled edge               |
 | derived edge (fact)       | solid labelled edge                |
 | hypothetical edge         | solid edge with `style=dashed`     |

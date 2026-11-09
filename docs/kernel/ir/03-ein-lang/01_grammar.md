@@ -20,7 +20,7 @@ documentation split.
 | `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House-1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:source`             | argument markers; **always** followed by a value  |
-| `WILDCARD` | `_`                            | `_`                                      | argument wildcard in patterns: in a rule's `:match`, at any depth (a premise, a nested fact, a `not`, an `(absent …)`, an hrule's or an obligation's pattern), `_` matches any value and binds nothing, so two of them are independent and neither can be read in an `:assert` or a guard; in an `:assert` it is no value, and the run stops at the rule's first firing ([`defined_behaviour.md` § 4](../../defined_behaviour.md#4-errors-and-exit-codes)). Written as a form's **relation**, `(_ a)`, it is refused at load, at any depth of either clause: a relation is named by a name or by a parameter its activator binds (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, on the user's rulings Q-M1e2.13 (a) and Q-M1e2.14 (c)). Until then this row read *head / arg wildcard in patterns*, and the rule compiler lowered `_` as a slot that matched nothing: a premise with one never fired, an `(absent …)` over one always held, an hrule with one proposed nothing, and a head `_` stopped compilation with the Python IR's spelling (W20). In a guard, `(eq ?x _)`, it names no value and is refused at load since M1e2 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24, Q-M1e2.16 (1)); until then it compared as a raw IR node, equal to no value, so `(eq ?x _)` never held and `(neq ?x _)` always did, in silence. As a whole premise, `:match _`, it is refused at load too, where the compiler dropped it |
+| `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, Q-M1e2.13 (a)); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (Q-M1e2.14 (c), S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
 | `INT`      | —                              | —                                        | **none since M1f S1f.5.5's swap**: a run of digits is a `NAME` like any other (S1f.5.4's ruling, the user's of 2026-11-06), so `7`, `07` and `-7` are three names, each printed as written, and a fact of one is never a fact of another. Until the swap `INT`, `-?[0-9]+`, lexed *integer atoms*, `007` and `7` one value; `:priority 10`, the one keyword that took one, went with S1f.5.15. The int value kind went with [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 (2026-11-09): a value is a name or a nested fact |
 | `STRING`   | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else since M1f S1f.5.5's swap** (S1f.5.2's ruling, the user's of 2026-11-06, [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)): the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, which the read-out, `--trace`, `saturate --dump`, a state file and `render program` carry byte for byte (`ein-cli/tests/natural_language_text.rs`). Written anywhere else, a fact's or a rule's argument, a name, a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact. A `\u{…}` names a Unicode scalar value ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 4). **Until the swap** a string was also a **fact's argument**, top-level or nested, the name its body spells: `"foo"` and `foo` were one value (M1e2 S1e2.2.16, 2026-11-04); and in a **rule** the symbol it names at any depth, a name of the program as that atom is (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04), where until then the rule compiler did not lower one (W18) |
 
@@ -39,7 +39,8 @@ the loader refused it (M1e2 S1e2.2.20, Q-M1e2.13 (a)).
 The regexes above are the readable form.
 [`00_ebnf.md` §1](00_ebnf.md#1-lexical-grammar) is the exact one, including
 the three lookaheads this table cannot show: `SYMBOL`'s reserved-word
-exclusion, `WILDCARD`'s, and `STRING`'s refusal of an escaped newline.
+exclusion, `WILDCARD`'s (until S1f.5.5's swap, which made a bare `_` a
+token no production takes), and `STRING`'s refusal of an escaped newline.
 
 **Comments** — SMT-LIB-compatible: `; line` to end of line, `#| block |#`
 non-nesting.
@@ -411,15 +412,15 @@ each *top-level* one out of the match plan (below).
 **What a premise may be.** A premise is a form: a fact pattern, a guard
 (`eq`, `neq`), an `(absent …)`, or an `(and …)` or `(or …)` of premises. A
 pattern's relation is a name, or one of the rule's parameters, which its
-activator binds to a name; its arguments are values, variables, `_`, or
-patterns. Since M1e2
+activator binds to a name; its arguments are values, variables or patterns
+(and `_` until M1f S1f.5.5's swap refused a bare `_`, S1f.5.1). Since M1e2
 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md)
 (W24, the user's rulings of 2026-11-05) the loader refuses, with one line
 naming the rule and the clause
 ([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
 an atom (a run of digits among them, an integer until M1f S1f.5.4), a
-variable, `_` or a string written where a premise goes (a string at the parse
-since M1f S1f.5.5's swap, S1f.5.2); a relation written as a variable no parameter binds, at the top level
+variable, `_` or a string written where a premise goes (`_` and a string at
+the parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2); a relation written as a variable no parameter binds, at the top level
 or inside a pattern, in a `:match` or an `:assert`; a keyword pair inside a
 pattern inside a pattern; and an activator that binds a relation parameter
 to a nested fact. Until then each read nothing, in silence: a premise that is
@@ -545,8 +546,8 @@ a name (a run of digits is a name, an integer until M1f S1f.5.4; a string
 was one too, the name it spells, until M1f S1f.5.5's swap refused one there,
 S1f.5.2). Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii))
 `(and (neq ?x a) (p ?x))`, a guard on a variable no premise before it binds,
-is refused at load, naming the variable, as is `_`, a form or a keyword pair
-as a guard's argument; until then the unbound `?x` compared as a null, so
+is refused at load, naming the variable, as is a form or a keyword pair as a
+guard's argument (and `_`, at the parse since M1f S1f.5.5's swap, S1f.5.1); until then the unbound `?x` compared as a null, so
 that rule fired for every `?x`, `a` included, in silence. Under an
 `(absent …)`, the enclosing premises before it bind, as they scope the
 `absent` itself.
