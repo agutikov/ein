@@ -476,6 +476,8 @@
 0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: saturate
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: solve
+0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve
+0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve -H
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein :: solve
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert.ein :: saturate

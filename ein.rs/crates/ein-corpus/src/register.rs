@@ -97,8 +97,33 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// ([`Now::container`]), saved by `ein kb save` first, and then answers what the
 /// same run answers on the witness; and a recorded answer can be a command's
 /// ([`Answer::by`] `command`, with [`Answer::refused`]), W40's and W41's: one
-/// command refused a program another answered.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/16";
+/// command refused a program another answered. `/17` since M1f S1f.5.6
+/// (T1f.5.6.5, 2026-11-09): a `now` records lines the run prints, each found
+/// by the label it begins with, on stdout or in `--dump-answer`'s
+/// `answer.txt` ([`Now::printed`], [`Printed`]), where `right` states them
+/// ([`Right::printed`]), W42's: a label as long as its column glued to its
+/// value, so `class 100 of 277` and `28 states` read as `class 100 of 27728
+/// states`.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/17";
+
+/// Where a [`Printed`] line is read (schema /17): the run's stdout, or the
+/// read-out `--dump-answer DIR` writes uncut, `DIR/answer.txt`.
+pub const PRINTED_FILES: [&str; 2] = ["stdout", "answer.txt"];
+
+/// A line a run prints — schema `/17` (M1f S1f.5.6, W42): the first line of
+/// [`Self::file`] that begins, past its indent, with [`Self::label`], as
+/// printed, its trailing spaces aside.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Printed {
+    /// One of [`PRINTED_FILES`].
+    pub file: String,
+    /// What the line begins with, past its indent: a row's label, or `-H`'s
+    /// relation.
+    pub label: String,
+    /// The whole line.
+    pub line: String,
+}
 
 /// What a claim's check came to, as the summary spells it (schema /12):
 /// `none` where the program states no such claim.
@@ -468,6 +493,12 @@ pub struct Now {
     /// [`Right::goal_text`] is stated.
     #[serde(default)]
     pub goal_text: Option<Vec<String>>,
+    /// Lines the run prints, each found by its label (schema /17, M1f
+    /// S1f.5.6, W42): on stdout, or in `--dump-answer`'s `answer.txt`, which
+    /// the run then writes. Recorded exactly where [`Right::printed`] is
+    /// stated.
+    #[serde(default)]
+    pub printed: Option<Vec<Printed>>,
 }
 
 /// One query's answer — schema `/12` (M1e2 S1e2.3.8, W28): how many
@@ -653,6 +684,12 @@ impl Now {
         {
             out.push(format!("goal text: right {w:?}, now {:?}", self.goal_text));
         }
+        // The lines printed (schema /17, M1f S1f.5.6, W42).
+        if let Some(w) = &right.printed
+            && Some(w) != self.printed.as_ref()
+        {
+            out.push(format!("printed: right {w:?}, now {:?}", self.printed));
+        }
         // The core's status (schema /9, M1e2 S1e2.2.23, W23).
         if let Some(s) = &right.core_status
             && Some(s) != self.core_status.as_ref()
@@ -837,6 +874,10 @@ pub struct Answer {
     /// record.
     #[serde(default)]
     pub goal_text: Option<Vec<String>>,
+    /// The lines printed, as [`Now::printed`] — schema `/17` (M1f S1f.5.6,
+    /// W42's `wrong`). A record.
+    #[serde(default)]
+    pub printed: Option<Vec<Printed>>,
 }
 
 /// The witness's `R` — M1e2 S1e2.1a.10. What `ein solve` describes, in its
@@ -947,6 +988,10 @@ pub struct Right {
     /// S1f.5.5, W37). Compared with [`Now::goal_text`].
     #[serde(default)]
     pub goal_text: Option<Vec<String>>,
+    /// The lines the run should print, each found by its label — schema
+    /// `/17` (M1f S1f.5.6, W42). Compared with [`Now::printed`].
+    #[serde(default)]
+    pub printed: Option<Vec<Printed>>,
     #[serde(default)]
     pub closes: Vec<String>,
     #[serde(default)]
@@ -1082,6 +1127,38 @@ impl Register {
                         .to_string(),
                 ));
             }
+            // The lines printed (schema /17, M1f S1f.5.6): exactly when
+            // [right] states them, label for label, each read where it can be.
+            if r.now.printed.is_some() != r.right.printed.is_some() {
+                out.push(at(
+                    "[now] records the lines printed exactly when [right] states them".to_string(),
+                ));
+            }
+            let labels = |p: &Option<Vec<Printed>>| {
+                p.iter()
+                    .flatten()
+                    .map(|x| (x.file.clone(), x.label.clone()))
+                    .collect::<Vec<_>>()
+            };
+            if labels(&r.now.printed) != labels(&r.right.printed) {
+                out.push(at(
+                    "[now] and [right] print the same labels in the same files".to_string(),
+                ));
+            }
+            for p in r.now.printed.iter().chain(r.right.printed.iter()).flatten() {
+                if !PRINTED_FILES.contains(&p.file.as_str()) {
+                    out.push(at(format!(
+                        "printed file {:?} is not one of {PRINTED_FILES:?}",
+                        p.file
+                    )));
+                }
+                if p.label.is_empty() || !p.line.trim_start().starts_with(&p.label) {
+                    out.push(at(format!(
+                        "printed line {:?} does not begin with its label {:?}",
+                        p.line, p.label
+                    )));
+                }
+            }
             if r.right.refuted_by.is_some() && r.right.core.is_none() {
                 out.push(at(
                     "[right] states what `refuted by` names beside its core".to_string()
@@ -1106,6 +1183,7 @@ impl Register {
                     || r.now.core.is_some()
                     || r.now.refuted_by.is_some()
                     || r.now.goal_text.is_some()
+                    || r.now.printed.is_some()
                     || r.now.claim.is_some()
                     || r.now.queries.is_some())
             {
@@ -1177,6 +1255,7 @@ impl Register {
                     || r.now.queries.is_some()
                     || r.now.refuted_by.is_some()
                     || r.now.goal_text.is_some()
+                    || r.now.printed.is_some()
                 {
                     out.push(at(
                         "a command's [now] (schema /16) writes no summary, and states nothing one \
@@ -2040,6 +2119,7 @@ queries   = [{ classes = 1, expect = "none" }]
             queries: None,
             refuted_by: None,
             goal_text: None,
+            printed: None,
         };
         r.region = None;
         assert_eq!(r.now.against(&r.right), ["right: a refusal, now: an error"]);
@@ -2497,6 +2577,68 @@ models    = [
 ]
 goal_text = ["{?n*} is a q"]
 "##;
+
+    /// **A line a run prints is an answer**, schema /17 (M1f S1f.5.6, W42):
+    /// recorded exactly where `right` states lines, the same labels in the
+    /// same files, each file one the test reads and each line beginning with
+    /// its label; compared whole, so a label glued to its value is another
+    /// answer than the label and the value apart.
+    #[test]
+    fn a_line_a_run_prints_is_an_answer() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let rows: Vec<&Row> = reg
+            .case
+            .iter()
+            .filter(|r| r.right.printed.is_some())
+            .collect();
+        assert!(rows.len() >= 2, "W42's rows state the lines printed");
+        for row in rows {
+            assert!(defects(row).is_empty(), "{:?}", defects(row));
+            let mut r = row.clone();
+            r.now.printed = r.right.printed.clone();
+            assert!(
+                r.now
+                    .against(&r.right)
+                    .iter()
+                    .all(|d| !d.starts_with("printed")),
+                "{}",
+                r.id
+            );
+            // Glue the label to its value: another answer.
+            if let Some(p) = r.now.printed.as_mut().and_then(|v| v.first_mut()) {
+                p.line = p.line.replacen(&format!("{} ", p.label), &p.label, 1);
+            }
+            assert!(
+                r.now
+                    .against(&r.right)
+                    .iter()
+                    .any(|d| d.starts_with("printed")),
+                "{}",
+                r.id
+            );
+            // Recorded exactly where `right` states it, label for label.
+            let mut r = row.clone();
+            r.right.printed = None;
+            assert!(defects(&r).iter().any(|d| d.contains("the lines printed")));
+            let mut r = row.clone();
+            if let Some(p) = r.now.printed.as_mut().and_then(|v| v.first_mut()) {
+                p.label = "another".to_string();
+            }
+            assert!(defects(&r).iter().any(|d| d.contains("the same labels")));
+            let mut r = row.clone();
+            if let Some(p) = r.right.printed.as_mut().and_then(|v| v.first_mut()) {
+                p.file = "answer.json".to_string();
+            }
+            assert!(defects(&r).iter().any(|d| d.contains("is not one of")));
+        }
+    }
 
     /// **What a query's `:goal-text` prints is an answer**, schema /15 (M1f
     /// S1f.5.5, W37): the read-out's sentences, recorded exactly where `right`

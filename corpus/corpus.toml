@@ -1642,6 +1642,12 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W41's module: `saturate-import.ein` imports `q` from it by its file-relative name. A program of its own too, one relation and no fact."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/h-long-relation.ein"
+group  = "regression"
+runs   = ["solve", "solve -H"]
+note   = "M1f W42 (`W42/h-long-relation`), filed by S1f.5.6's T1f.5.6.5 (2026-11-09) beside `W42/class-label-04-open`: a relation named `lives-next-door-to`, eighteen characters, which `-H`'s form pads to sixteen and prints its candidate count straight after, `lives-next-door-to2 candidates`. R is the cube of H's two facts, four states."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

@@ -792,6 +792,20 @@
 # the run certifies of them moved. The register still reads **126 rows fixed,
 # 22 open and 1 not-wrong**.
 #
+# **W42 was filed on 2026-11-09 by M1f S1f.5.6** (T1f.5.6.5), from S1f.5.16's
+# Q-M1f.22, handed to the stage by the coordinator: a label as long as its
+# column is printed with no space before its value, so a count reads as
+# another number. Two rows: `W42/class-label-04-open`, the read-out's block
+# rows, where `answer.txt` prints `class 100 of 2771 state` for class 100 of
+# 277, one state; and `W42/h-long-relation`, `-H`'s form, where a relation of
+# eighteen characters prints `lives-next-door-to2 candidates`. **Schema /17**:
+# a `now` records lines the run prints (`printed`), each the first line that
+# begins, past its indent, with a label, read off stdout or off
+# `--dump-answer`'s `answer.txt`, since neither line is in the summary. Both
+# rows are `open`, owned by S1f.5.6, whose next task fixes them. The register
+# reads **126 rows fixed, 24 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -813,8 +827,9 @@
 #              (schema /10), how many it met and does not list (schema
 #              /11), a claim's outcome and each query's classes (schema
 #              /12), what `refuted by` names (schema /14), the
-#              sentences a query's `:goal-text` prints (schema /15), and
-#              whether a command's run answers (schema /16).
+#              sentences a query's `:goal-text` prints (schema /15),
+#              whether a command's run answers (schema /16), and the lines
+#              it prints at a label (schema /17).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
 #   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
@@ -940,6 +955,13 @@
 #               stdout, since the summary carries the rows and not the
 #               sentences; stated exactly when `[case.right]` states
 #               `goal_text` (W37's row)
+#     printed   (schema /17, M1f S1f.5.6) lines the run prints,
+#               `[{ file, label, line }]`: in `file`, `stdout` or
+#               `answer.txt` (`--dump-answer DIR`'s, which the run then
+#               writes), the first line that begins past its indent with
+#               `label`, whole, its trailing spaces aside; stated exactly
+#               when `[case.right]` states `printed`, the same labels in the
+#               same files (W42's rows)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -965,6 +987,8 @@
 #     k, exhausted
 #     core      the unsat core, as a set; required on every `Contradiction`
 #     nogoods   (schema /8) N's members and their cores, as `[case.now]`'s
+#     printed   (schema /17) the lines the run printed at a label, as
+#               `[case.now]`'s (W42's `wrong`)
 #     closes    the relations a model is compared on — naming a relation
 #               closes it, `:expect`'s rule, so `models = [[]]` with
 #               `closes = ["q"]` is *one model with no q fact*, which
@@ -1055,7 +1079,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/16"
+schema = "ein-wrong-answers/17"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -9533,3 +9557,131 @@ derived  = "a file-relative `(import …)` resolves against the importing file's
 [case.now]
 run      = "saturate"
 answered = true
+
+# ══ W42 — a label as long as its column glues to its value ═════════════════
+[[case]]
+id       = "W42/class-label-04-open"
+case     = "W42"
+title    = "a label as long as its column is printed with no space before its value, so a count reads as another number"
+class    = "read-out"
+settings = "`--region-limit 12`: a bound the read-out qualifies, not a lever, which puts the witness's 277 classes in `answer.txt` at a 16th of the default's cost"
+owner    = "S1f.5.6"
+question = ["Q-M1f.22"]
+witness  = "examples/features/04_open.ein"
+status   = "open"
+look_at  = ["answer"]
+note     = "Filed by S1f.5.6 (T1f.5.6.5, 2026-11-09) from S1f.5.16's T1f.5.16.4, which found it and documented it as Q-M1f.22 without filing or fixing it, and handed to the stage by the coordinator the same day. The read-out pads a block's label to sixteen characters and prints the value straight after it (`ein_render::read_out`'s `padded`), so `class 100 of 277`, sixteen characters, touches its count: at the default limit `answer.txt` prints `class 100 of 27728 states` for class 100 of 277, 28 states (`ein solve examples/features/04_open.ein --dump-answer DIR`, 2026-11-09), and at `--region-limit 12`, the row's run, `class 100 of 2771 state` for one state. Stdout's 100 lines never reach a hundredth class on the corpus, so only `answer.txt` prints it, and no golden holds that file's text; a row label of eighteen characters would glue the same way at the margin, and none is that long (`commitments (k_c)` is seventeen). `W42/h-long-relation` is the same column logic on `-H`'s form"
+open_because = "the read-out's printer pads a label to its column and prints the value straight after it, so a label of the column's width or longer touches its value; S1f.5.6's T1f.5.6.6 puts one space at least between them"
+
+[case.wrong]
+run       = "solve --region-limit 12"
+by        = "region"
+why       = "`ein solve examples/features/04_open.ein --region-limit 12 --dump-answer DIR`, release, at ccd1007f (2026-11-09): past the limit the run lists ∅ and answers the query over it, 277 classes over the members met, and `DIR/answer.txt` prints classes 100 to 277 with no space between the label and the count"
+verdict   = "Solution"
+k         = 1
+exhausted = false
+closes    = ["house-color", "is-a", "open-slot"]
+models    = [["(house-color House-1 Yellow)", "(is-a Blue Color)", "(is-a Color T)", "(is-a House T)", "(is-a House-1 House)", "(is-a House-2 House)", "(is-a House-3 House)", "(is-a Red Color)", "(is-a Yellow Color)", "(open-slot House-1 Blue)", "(open-slot House-1 Red)", "(open-slot House-2 Blue)", "(open-slot House-2 Yellow)", "(open-slot House-3 Blue)", "(open-slot House-3 Red)", "(open-slot House-3 Yellow)"]]
+printed   = [{ file = "answer.txt", label = "class 100 of 277", line = "    class 100 of 2771 state" }]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 64761
+k_c      = 64761
+stopped  = "limit"
+minimal  = [[]]
+maximal  = []
+
+[case.right]
+derived   = "Q-M1f.22's (b), the fix S1f.5.16 named: one space at least between a label and its value, so the label reads `class 100 of 277` and the count `1 state`. Nothing else of the answer is in question: R is not exhausted past the limit, and describe lists ∅, the minimal line it certifies"
+verdict   = "Solution"
+k         = 1
+exhausted = false
+closes    = ["house-color", "is-a", "open-slot"]
+models    = [["(house-color House-1 Yellow)", "(is-a Blue Color)", "(is-a Color T)", "(is-a House T)", "(is-a House-1 House)", "(is-a House-2 House)", "(is-a House-3 House)", "(is-a Red Color)", "(is-a Yellow Color)", "(open-slot House-1 Blue)", "(open-slot House-1 Red)", "(open-slot House-2 Blue)", "(open-slot House-2 Yellow)", "(open-slot House-3 Blue)", "(open-slot House-3 Red)", "(open-slot House-3 Yellow)"]]
+printed   = [{ file = "answer.txt", label = "class 100 of 277", line = "    class 100 of 277 1 state" }]
+
+[case.now]
+run       = "solve --region-limit 12"
+line      = "all"
+exhausted = false
+k         = 1
+relations = ["house-color", "is-a", "open-slot"]
+models    = [
+  [
+    "(house-color House-1 Yellow)",
+    "(is-a Blue Color)",
+    "(is-a Color T)",
+    "(is-a House T)",
+    "(is-a House-1 House)",
+    "(is-a House-2 House)",
+    "(is-a House-3 House)",
+    "(is-a Red Color)",
+    "(is-a Yellow Color)",
+    "(open-slot House-1 Blue)",
+    "(open-slot House-1 Red)",
+    "(open-slot House-2 Blue)",
+    "(open-slot House-2 Yellow)",
+    "(open-slot House-3 Blue)",
+    "(open-slot House-3 Red)",
+    "(open-slot House-3 Yellow)",
+  ],
+]
+printed   = [{ file = "answer.txt", label = "class 100 of 277", line = "    class 100 of 2771 state" }]
+
+[[case]]
+id       = "W42/h-long-relation"
+case     = "W42"
+title    = "a label as long as its column is printed with no space before its value, so a count reads as another number"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.5.6"
+question = ["Q-M1f.22"]
+witness  = "examples/ein-bugs/wrong-answers/h-long-relation.ein"
+status   = "open"
+look_at  = ["answer"]
+note     = "Filed by S1f.5.6 (T1f.5.6.5, 2026-11-09) beside `W42/class-label-04-open`, from the task's check of every surface that pads a label to a width: `-H`'s form pads a relation's name to sixteen characters and prints its candidate count straight after (`ein-cli`'s `modes.rs`), so a name of sixteen characters or more touches the count. No corpus program declares one (`grep -rhoE '\\(relation [^ ()]+' examples tests stdlib corpus`, 2026-11-09: none of sixteen characters or more), so the witness is written for it: `lives-next-door-to`, eighteen. The register test's own reader of `-H` (`wrong_answers.rs`' `relations`) reads the glued line as no relation, so `now` lists none. The other padded surfaces leave a separator: `-t`'s table right-aligns a time after a ten-character column whose labels are at most eight, and `ein saturate --stats`, `ein test`, `ein --version` and the key and grid forms each print two spaces or more"
+open_because = "`-H`'s form pads a relation's name to sixteen characters and prints its count straight after it; S1f.5.6's T1f.5.6.6 puts one space at least between them"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve examples/ein-bugs/wrong-answers/h-long-relation.ein -H`, release, at ccd1007f (2026-11-09): R is the cube, four states, and H's form prints `lives-next-door-to2 candidates, 0 dead alone`"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["lives-next-door-to"]
+models    = [[], ["(lives-next-door-to Ann Bob)"], ["(lives-next-door-to Bob Ann)"], ["(lives-next-door-to Ann Bob)", "(lives-next-door-to Bob Ann)"]]
+printed   = [{ file = "stdout", label = "lives-next-door-to", line = "  lives-next-door-to2 candidates, 0 dead alone" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(lives-next-door-to Ann Bob)", "(lives-next-door-to Bob Ann)"]]
+
+[case.right]
+derived   = "the same fix: one space at least between a label and its value, so the relation reads `lives-next-door-to` and its count `2 candidates`. R is the cube of H's two facts, four states, no rule restricting them"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["lives-next-door-to"]
+models    = [[], ["(lives-next-door-to Ann Bob)"], ["(lives-next-door-to Bob Ann)"], ["(lives-next-door-to Ann Bob)", "(lives-next-door-to Bob Ann)"]]
+printed   = [{ file = "stdout", label = "lives-next-door-to", line = "  lives-next-door-to 2 candidates, 0 dead alone" }]
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 4
+relations = []
+models    = [
+  [],
+  ["(lives-next-door-to Ann Bob)"],
+  ["(lives-next-door-to Bob Ann)"],
+  ["(lives-next-door-to Ann Bob)", "(lives-next-door-to Bob Ann)"],
+]
+printed   = [{ file = "stdout", label = "lives-next-door-to", line = "  lives-next-door-to2 candidates, 0 dead alone" }]

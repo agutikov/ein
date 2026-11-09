@@ -32,6 +32,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.21](#q-m1f21--regionstoppedlayer-on-two-routes) | `region.stopped.layer` on two routes | **defaulted 2026-11-09 (the user's instruction): documented per route, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 | [Q-M1f.22](#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) | a class label of sixteen characters glues to its value | **defaulted 2026-11-09 (the user's instruction): documented, not fixed here; the stage that fixes it files its row first**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 | [Q-M1f.23](#q-m1f23--what-the-route-row-names-where-root-decides-a-flagged-programs-minimal-line) | what the `route` row names where root decides a flagged program's minimal line | **defaulted 2026-11-09 (the user's instruction): (a), the cube and `L7 the cube`, as `-n 1` printed; no new licence**; [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.2 |
+| [Q-M1f.24](#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own) | a second surface that glues: another row of W42, or a case of its own? | **defaulted 2026-11-09 (the user's instruction): (a), W42's second row, `W42/h-long-relation`**; [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.5 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -656,3 +657,21 @@ till the end of the phase"*. (a) moves no `route` row the rule does not already 
 row on the live page says why the line is decided ([`read_out.md`](../../docs/kernel/inference/read_out.md) § 3).
 Re-opening it means (b), which is [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another)'s
 neighbour: both ask what a route row's licence list is for.
+
+### Q-M1f.24 — A second surface that glues: another row of W42, or a case of its own?
+
+**Raised** 2026-11-09 by [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s
+T1f.5.6.5, which files [Q-M1f.22](#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value)'s glue as W42 and
+checks every other surface that pads a label to a width. `-H`'s form glues the same way: it pads a relation's name to
+sixteen characters and prints its candidate count straight after, so `lives-next-door-to`, eighteen, prints
+`lives-next-door-to2 candidates`. It is another printer (`ein-cli`'s `modes.rs`, not `ein_render::read_out`), and no
+corpus program declares a name that long.
+
+- **(a) W42's second row**, `W42/h-long-relation`, with a witness written for it: one defect, a padded column with no
+  separator, and one rule fixes both printers, so one case closes when both do.
+- **(b) A case of its own**, W43: the register's cases are one mechanism each, and these are two printers.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*, and the coordinator's brief for the task: *"If another one glues, it is the same row
+(another witness) or another, in the same task"*. (a) keeps the fix and its witnesses together; re-opening it moves one
+row's id.

@@ -1,0 +1,25 @@
+;;; A relation's name glued to its candidate count in `-H` — M1f **W42**, register row
+;;; `W42/h-long-relation` (`corpus/wrong_answers.toml`), filed by S1f.5.6's T1f.5.6.5
+;;; (2026-11-09) beside `W42/class-label-04-open`: the same column logic on another surface.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two people and one relation between them whose name is eighteen characters,
+;;; `lives-next-door-to`. `is-a` is closed by `:no-hypothesis`, so H is the two facts the blind
+;;; enumerator proposes over the one relation, `(lives-next-door-to Ann Bob)` and
+;;; `(lives-next-door-to Bob Ann)`, and no rule restricts them: R is the cube, four states.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `ein solve FILE -H` prints H's form after the read-out, a line per relation: its name, then
+;;; how many candidates are over it. The name is padded to sixteen characters and the count
+;;; printed straight after, so a name of sixteen or more touches it, and until S1f.5.6's
+;;; T1f.5.6.6 the line read `lives-next-door-to2 candidates, 0 dead alone`: a reader reads a
+;;; relation `lives-next-door-to2`, and the register test's own reader of `-H` lost the
+;;; relation. Right: one space at least, `lives-next-door-to 2 candidates, 0 dead alone`.
+(relation is-a T T
+  :why "{1} is a {2}")
+(relation lives-next-door-to Person Person
+  :why "{1} lives next door to {2}")
+(is-a Ann Person) (is-a Bob Person)
+(solve :no-hypothesis (is-a))

@@ -6,8 +6,8 @@
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-16, which closes P-14 with it,
 and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Running since 2026-11-09**, on the
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default
-decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), so are T1f.5.6.2, the rule
-([its record](#t2-record-2026-11-09)), and T1f.5.6.3, the clause ([its record](#t3-record-2026-11-09)).
+decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), and so are T1f.5.6.2, the rule
+([its record](#t2-record-2026-11-09)), T1f.5.6.3, the clause ([its record](#t3-record-2026-11-09)), and T1f.5.6.5, W42 filed ([its record](#t5-record-2026-11-09)).
 The coordinator handed the stage a fifth item the same day, S1f.5.16's Q-M1f.22, a class label glued to its
 value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)).
 **Depends on:** nothing. It touches `explore.rs` and the read-out, and none of the grammar stages do.
@@ -312,6 +312,43 @@ the dump's printer and nothing T1f.5.6.2 or .3 does, so it runs after them, in t
 - **T1f.5.6.6, the fix.** The printer puts one space at least between a label and its value, at every width; every
   golden that moves is named first, and W42's rows flip in the same commit, `[case.fixed]` carrying `0000000`, which the
   next commit writes. Q-M1f.22 says it is fixed, and by which commit.
+
+### T5 record, 2026-11-09
+
+**W42 is filed, `open`, two rows**, each owned by this stage and `question = ["Q-M1f.22"]`, under the register's
+**schema `/17`**: a `now` records lines the run prints, `printed = [{ file, label, line }]`, each the first line of
+`file` that begins, past its indent, with `label`, whole; `file` is `stdout`, or `answer.txt`, which the run then
+writes with `--dump-answer`. Neither line is in the summary, so the register test reads it where it is printed, as
+schema `/15` reads a `:goal-text`'s sentences off stdout. `ein-corpus`'s `Printed` and `PRINTED_FILES`, its
+well-formedness (recorded exactly where `right` states lines, the same labels in the same files, a known file, a line
+that begins with its label) and `a_line_a_run_prints_is_an_answer`; `wrong_answers.rs`' `printed_line`.
+
+- **`W42/class-label-04-open`**, the found witness, `examples/features/04_open.ein`, at `--region-limit 12`: the
+  query's 277 classes are in `answer.txt` there as at the default limit, at a 16th of the default's 2^16 nodes
+  (0.16 s, `ein solve examples/features/04_open.ein --region-limit 12 --dump-answer DIR`, release, 2026-11-09). Its
+  `now` prints `    class 100 of 2771 state` for class 100 of 277, one state; the default limit prints `class 100 of
+  27728 states` for 28.
+- **`W42/h-long-relation`**, from the check of every surface that pads a label to a width. `-H`'s form pads a
+  relation's name to sixteen characters and prints its count straight after (`ein-cli`'s `modes.rs`), so a name of
+  sixteen or more glues: `  lives-next-door-to2 candidates, 0 dead alone`. No corpus program declares such a name, so
+  the witness is written for it, `examples/ein-bugs/wrong-answers/h-long-relation.ein`, a corpus entry (`solve`,
+  `solve -H`). The register test's own reader of `-H` reads the glued line as no relation, so `now` lists none.
+- **The other surfaces leave a separator**, read from the code: `-t`'s table right-aligns a time in twelve after a
+  ten-character column whose labels are eight at most (`modes.rs`); `-H`'s dead-alone column, `ein saturate`'s
+  `--stats` tables, `ein test`'s rows, `ein --version`, `--dump-config` and the key and grid forms each print one space
+  or more after the padded field. The read-out's rows, `-s`, `ein oracle`, `--trace`'s headline and `answer.txt` are
+  one printer, `read_out::padded`, whose block width is sixteen and row width eighteen: only a numbered label reaches
+  either, `class i of n` at sixteen once n has three digits and i three, `query i of n` at eighteen with four.
+
+What moved: the register (schema `/17`, two rows, its header, the field's documentation), `ein-corpus` and
+`wrong_answers.rs` as above, the witness and its corpus entry, two new cells in `corpus_exits.txt` and 41 new
+renderings in `corpus_shapes.md5` (`EIN_BLESS=1`, none moved). No answer moved. The register reads 126 fixed, 24 open
+and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**One choice, taken by default** on the user's instruction of 2026-11-09:
+[Q-M1f.24](../open_questions.md#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own), whether
+`-H`'s glue is W42's second row or a case of its own: (a), W42's, its own witness, since the defect is one, a padded
+column with no separator, and the fix is one rule applied to both printers.
 
 ## Acceptance
 

@@ -66,6 +66,12 @@
 //! what the run read aside. `{FILE}` in a recorded line is the path the run
 //! was handed.
 //!
+//! **Since M1f S1f.5.6 a `now` can record a line the run prints** (schema
+//! /17, W42): the first line that begins, past its indent, with a label, on
+//! stdout or in `--dump-answer`'s `answer.txt`, which the run then writes. A
+//! label as long as its column glued to its value until S1f.5.6's
+//! T1f.5.6.6, so the line, and not a field of the summary, is the answer.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -80,7 +86,7 @@
 use std::path::Path;
 use std::process::Command;
 
-use ein_corpus::register::{Nogood, Now, QueryAnswer, Row, Stale, sorted_nogoods};
+use ein_corpus::register::{Nogood, Now, Printed, QueryAnswer, Row, Stale, sorted_nogoods};
 use ein_corpus::{Scratch, plan, register, repo_root};
 use serde_json::Value as J;
 
@@ -95,6 +101,9 @@ struct Got {
     summary: Option<J>,
     /// `--dump-answer`'s `nogoods.json`, where the row records `N`'s cores.
     nogoods: Option<J>,
+    /// `--dump-answer`'s `answer.txt`, where the row records a line of it
+    /// (schema /17, W42).
+    answer_txt: Option<String>,
 }
 
 fn run(row: &Row, dir: &Path) -> Got {
@@ -129,9 +138,16 @@ fn run(row: &Row, dir: &Path) -> Got {
     if !row.now.is_command() {
         argv.push("-H".to_string());
     }
-    // A dead node's core is the answer directory's (M1e2 S1e2.2.19, W19).
+    // A dead node's core is the answer directory's (M1e2 S1e2.2.19, W19), and
+    // so is `answer.txt` (schema /17, W42).
     let answer = dir.join("answer");
-    if row.now.nogoods.is_some() {
+    let reads_answer_txt = row
+        .now
+        .printed
+        .iter()
+        .flatten()
+        .any(|p| p.file == "answer.txt");
+    if row.now.nogoods.is_some() || reads_answer_txt {
         argv.push("--dump-answer".to_string());
         argv.push(answer.display().to_string());
     }
@@ -146,6 +162,7 @@ fn run(row: &Row, dir: &Path) -> Got {
     let nogoods = std::fs::read_to_string(answer.join("nogoods.json"))
         .ok()
         .map(|s| serde_json::from_str(&s).expect("nogoods.json parses"));
+    let answer_txt = std::fs::read_to_string(answer.join("answer.txt")).ok();
     Got {
         file,
         code: out.status.code().unwrap_or(-1),
@@ -153,6 +170,7 @@ fn run(row: &Row, dir: &Path) -> Got {
         stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
         summary,
         nogoods,
+        answer_txt,
     }
 }
 
@@ -307,6 +325,15 @@ fn goal_text(stdout: &str) -> Vec<String> {
         .collect()
 }
 
+/// The first line of `text` that begins, past its indent, with `label`, its
+/// trailing spaces aside (schema /17, M1f S1f.5.6, W42); empty where none does.
+fn printed_line(text: &str, label: &str) -> String {
+    text.lines()
+        .find(|l| l.trim_start().starts_with(label))
+        .map(|l| l.trim_end().to_string())
+        .unwrap_or_default()
+}
+
 /// What the summary says, in `[case.now]`'s fields.
 fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     let s = got.summary.as_ref().ok_or("no summary.json was written")?;
@@ -426,6 +453,29 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     // What a query's `:goal-text` prints, where the row records it (schema
     // /15, M1f S1f.5.5, W37): off stdout, in the order printed.
     let goal_text = row.now.goal_text.as_ref().map(|_| goal_text(&got.stdout));
+    // The lines printed, where the row records them (schema /17, M1f S1f.5.6,
+    // W42): each found by its label, on stdout or in `answer.txt`.
+    let printed = match &row.now.printed {
+        None => None,
+        Some(want) => {
+            let mut v = Vec::new();
+            for p in want {
+                let text = match p.file.as_str() {
+                    "answer.txt" => got
+                        .answer_txt
+                        .as_deref()
+                        .ok_or("no answer.txt was written")?,
+                    _ => got.stdout.as_str(),
+                };
+                v.push(Printed {
+                    file: p.file.clone(),
+                    label: p.label.clone(),
+                    line: printed_line(text, &p.label),
+                });
+            }
+            Some(v)
+        }
+    };
     let queries = row.now.queries.as_ref().map(|_| {
         s["queries"]
             .as_array()
@@ -462,6 +512,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         queries,
         refuted_by,
         goal_text,
+        printed,
     })
 }
 
@@ -518,6 +569,11 @@ fn differences(want: &Now, got: &Now) -> Vec<String> {
         "goal_text",
         format!("{:?}", want.goal_text),
         format!("{:?}", got.goal_text),
+    );
+    field(
+        "printed",
+        format!("{:?}", want.printed),
+        format!("{:?}", got.printed),
     );
     field(
         "core_status",
