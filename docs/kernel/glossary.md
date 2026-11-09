@@ -248,10 +248,11 @@ from a cut search.
 **A core is taken only where a surface prints one** (M1e2 S1e2.2.21, the
 user's ruling of 2026-11-05, *minimum work per question*): a bare `ein
 solve` takes root's and, on the cube, the minimal holes', which the
-read-out and the summary print; `--dump-answer`, `--dump-lattice`,
-`--events`, `--trace`, `ein oracle --dump` and `ein render` take every
-dead node's they visit. Each core taken is the one an eager run takes
-(`explore.rs`' `a_run_that_prints_no_core_takes_none_and_answers_alike`).
+read-out and the summary print; `--dump-lattice`, `--events` and `ein
+render lattice` take every dead node's they visit, `--dump-answer` and
+`--trace` each member of N's after the walk (M1f S1f.5.12), and `ein oracle
+--dump` every dead node's of the cube. Each core taken is the one an eager
+run takes (`explore.rs`' `a_run_that_prints_no_core_takes_none_and_answers_alike`).
 
 **What the store keeps of every derivation**: a fact's primary, up to 32
 alternatives with the fewest premises (`MAX_ALT_JUSTIFICATIONS`), and,

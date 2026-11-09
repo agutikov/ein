@@ -40,7 +40,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein) | Are there numbers in Ein? | [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md) (F6), [S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) (F7) | **ruled 2026-11-06 and -07**: no numbers and no ranges, now or planned; any run of name characters is a name, digits included, and a digit label is a candidate; a name's characters are an ASCII allow-list, forever, `\` never and quotes and brackets for now; **the range token retired 2026-11-08** by S1f.5.3 (`65d1ad85`), the rest not built |
 | [Q-M1e2.25](#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it) | How strict is the grammar, and what holds the parser to it? | [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md) (F9) | **the user's instructions, 2026-11-06 and -07**: revisit it, and generate the parser; **ruled 2026-11-07: grmtools, with recovery on**, made deterministic (F11); not built |
 | [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations) | Are `eq` and `neq` relations? | [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (S-18, G-21) | **ruled 2026-11-07**: yes, of equality and non-equality, their facts fixed by name identity and computed, in a goal, a premise and a conclusion, a free variable over the program's names; supersedes Q-M1e2.18 (ii)(a); a nested fact as a guard's argument answered; not built |
-| [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; not built |
+| [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; **built 2026-11-09** by S1f.5.8 (`c4708638`) |
 | [Q-M1e2.28](#q-m1e228--which-keywords-does-each-form-take) | Which keywords does each form take? | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) (D-15, G-15, G-22) | **ruled 2026-11-07**: a fixed list per form, and any other keyword is an error; a term and a nested fact take none, so `:where` is refused wherever written; `:cardinality` and `:mode` retired, a fact keeps `:rule` and `:using`, and `:why` on a fact is refused; supersedes Q32's drop; not built |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
@@ -2664,8 +2664,12 @@ with no contradiction has no core, `null`, and `[]` is a core that exists and is
 facts suffices*, which no corpus program reaches today (F12). A dead node whose core a run did not keep is
 `null` with `core_status: "not-kept"` saying why. **Ruled the same day:** *"Yes, plan it that way"*. The rule
 holds for every field of every JSON surface: `[]` where the set is known and empty, `null` where the object
-does not exist or is not known. The summary's `holes` already follows it. **Not built**:
-[S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md).
+does not exist or is not known. The summary's `holes` already follows it. **Built 2026-11-09** by
+[S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (`c4708638`):
+every JSON surface writes a node that is not dead `core: null`, and its rules `null` beside it, where the summary's
+holes, `region.json`, `nodes.json` and `--events`' `enter` lines wrote `[]`, and a dead node's as lists; held over
+the corpus by `ein-cli/tests/answer_round_trip.rs`. M1e2 S1e2.3.9's `not-kept`, the ruling's *not kept* case, retired
+with M1f S1f.5.12, which gives every member of N its core.
 
 ## Q-M1e2.28 — Which keywords does each form take?
 

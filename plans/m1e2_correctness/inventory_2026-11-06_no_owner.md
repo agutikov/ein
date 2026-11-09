@@ -20,7 +20,7 @@
 | **S-17** | surface | the minimal-line row says *no obligation is stated* where no node the run met owes | a surface | non-monotone: a probe, at a lowered limit | **ruled 2026-11-07, (a)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes). **Done 2026-11-09**: the clause is gone (`ccd1007f`) |
 | **F1** | surface | the same sentence on complete runs of programs that state one | a surface | monotone: 8 under `tests/stdlib/` | **ruled 2026-11-07, (a)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes). **Done 2026-11-09**, with S-17 (`ccd1007f`) |
 | **S-18** | surface | a guard as a query's goal prints *the goal holds: it has no variable* | a surface | monotone: a probe | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) |
-| **D-14** | spelling | an owing hole that is not dead is written `core: []`, where `null` means no core taken | a surface | non-monotone: 8 holes on 7 programs | **ruled 2026-11-07**: [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) |
+| **D-14** | spelling | an owing hole that is not dead is written `core: []`, where `null` means no core taken | a surface | non-monotone: 8 holes on 7 programs | **ruled 2026-11-07**: [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md). **Done 2026-11-09**: a node that is not dead has `core: null` on every JSON surface (`c4708638`) |
 | **D-15** | page | `02_patterns.md` describes `:where` as a filter, and its T3 example no longer loads | a page | refused at load: the page's own example | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), ruled 2026-11-07. **Done 2026-11-09**: `:where` refused at the parse since M1f S1f.5.5's swap (`8c3fe86e`), the compiler's drop retired by S1f.5.11's T1f.5.11.2, and no current kernel page describes `:where` (T1f.5.11.3) |
 | **G-21** | gap | a rule may conclude a fact of the reserved `neq` | unruled | monotone: a probe, 0 corpus programs | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21) |
 | **G-22** | gap | a keyword pair beside an `:assert`'s conjuncts is dropped in silence | unruled | monotone: a probe, 0 corpus programs | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), ruled 2026-11-07. **Done 2026-11-09**: refused at the parse since M1f S1f.5.5's swap (`8c3fe86e`, `W32/kwpair-in-assert` fixed), the compiler's filter retired by S1f.5.11's T1f.5.11.2 |
@@ -260,6 +260,12 @@ kb load error: :expect — `?y` is a variable; an expectation is an answer, not 
 **Where.** [`region_answer.rs`](../../ein.rs/crates/ein-render/src/dump/region_answer.rs), line 304.
 
 **Ruled 2026-11-07** ([Q-M1e2.27](open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)): `[]` is the empty set and `null` an object that does not exist, so a node that is not dead has `core: null`. The re-take found it wider than written: `ein oracle --dump`'s `region.json` writes `core: []` and `refuted_by: []` on every node that is not dead, members of R included. The plan is [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md).
+
+**Fixed 2026-11-09** by S1f.5.8 (`c4708638`): every JSON surface writes a node that is not dead `core: null`, and
+`refuted_by: null` where it writes that field, and a dead node's as lists, through one rule
+(`region_answer::core_field`): the summary's holes, and `region.json`, `nodes.json` and `--events`' `enter` lines,
+the last two of which the stage's re-take found writing `[]` too. No answer moved, and no register row was filed
+([Q-M1f.28](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer)).
 
 ### D-15: `02_patterns.md` and `:where`
 

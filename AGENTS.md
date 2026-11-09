@@ -648,6 +648,15 @@ constrained-reasoning research.
   solve X.einb --dump-answer DIR` refused, was filed under the register's
   schema `/19` and fixed: 129 fixed, 22 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  **S1f.5.8 ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md#t1-record-2026-11-09)):
+  a node that is not dead has no core, so every JSON surface writes its core
+  and rules `null` where it wrote `[]`, which reads as *the empty set of facts
+  suffices* (the summary's owing holes, `region.json`, `nodes.json` and
+  `--events`' `enter` lines), and a dead node's as lists, `[]` the empty set
+  (the user's ruling on D-14, Q-M1e2.27); no answer moved and no register row
+  was filed (Q-M1f.28): 129 fixed, 22 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

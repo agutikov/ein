@@ -4,12 +4,15 @@
 **Was S1e2.5.8**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 
 **Status:** specified 2026-11-07 on the user's ruling of that day on D-14
-([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)). **Running since
+([Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)). **Done
 2026-11-09**, on the user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with
-default decisions till the end of the phase"*), beside the second lane's S1f.5.18: T1f.5.8.1, every surface listed
-(`2b63223d`, [its record](#t1-record-2026-11-09)); T1f.5.8.2, `null` ([its record](#t2-record-2026-11-09)). Two choices were taken by default and recorded:
+default decisions till the end of the phase"*), beside the second lane's S1f.5.18, in three commits: T1f.5.8.1, every
+surface listed (`2b63223d`, [its record](#t1-record-2026-11-09)); T1f.5.8.2, `null` (`c4708638`, [its
+record](#t2-record-2026-11-09)); and T1f.5.8.3, the records ([its record](#t3-record-2026-11-09)). Two choices
+were taken by default and recorded:
 [Q-M1f.28](../open_questions.md#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer), no register row, and
 [Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count), a dead root's core under `--count`.
+The acceptance is re-taken [below](#acceptance-re-taken-2026-11-09).
 **Depends on:** nothing.
 
 ## The ruling
@@ -239,6 +242,24 @@ row moved.
 § 11 (S1f.5.16), each
 with the rule: `null`, the core does not exist; `[]`, the empty set. The inventory's D-14 says what fixed it.
 
+### T3 record, 2026-11-09
+
+T2 carried the kernel pages, in the commit that moved the spelling. This task wrote the records:
+- **AGENTS.md**: one sentence in the P1f.5 account, with the register's counts.
+- **[The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md)**: D-14 says what fixed it, in the
+  summary table and under its item, which stays as it was taken.
+- **[Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)** says what
+  built it, in its table and its section.
+- **[`glossary.md`](../../../docs/kernel/glossary.md)**'s sentence on which surfaces take a core, which still said
+  `--dump-answer` and `--trace` take every dead node's they visit (T1's second finding): `--dump-lattice`, `--events`
+  and `ein render lattice` take every dead node's they visit, `--dump-answer` and `--trace` each member of N's after
+  the walk (S1f.5.12), and `ein oracle --dump` every dead node's of the cube.
+- **The records**: this file's status, T2 and T3 records and acceptance; [the phase README](README.md)'s S1f.5.8 row
+  and § The order's item 10; [Q-M1f.28 and .29](../open_questions.md)'s rows stand defaulted.
+
+Pages only: `doc_audit --links --check`, 0 findings; no test reads a page this task edits (`grep -rln` over
+`ein.rs/crates/*/tests/`, 2026-11-09).
+
 ## Acceptance
 
 - Every JSON surface writes `"core": null` for a node that is not dead, and `"refuted_by": null` where it
@@ -246,3 +267,27 @@ with the rule: `null`, the core does not exist; `[]`, the empty set. The invento
 - A dead node's core and rules are unchanged.
 - No answer moves.
 - `./run_tests.sh` is green.
+
+### Acceptance, re-taken 2026-11-09
+
+Re-taken on the stage's last build, `c4708638`, whose release binary is the prototype's byte for byte (`cmp`, 2026-11-09),
+by T1's sweep, 427 files and 6 150 runs, against T1's at `e0162f7c` (`python3 build/s1f.5.8/diff.py
+build/s1f.5.8/base.jsonl build/s1f.5.8/proto.jsonl` and `python3 build/s1f.5.8/tally.py build/s1f.5.8/proto.jsonl`,
+2026-11-09), item by item:
+
+- **Every JSON surface writes `"core": null` for a node that is not dead, and `"refuted_by": null` where it writes that
+  field, on every corpus program.** Over the sweep, every node that is not dead is written `null` and none `[]`: the
+  summary's 20 owing holes on 6 programs (and `answer.json`'s, `index.json`'s, the oracle's 7 and the `region`
+  event's), `region.json`'s 53 617 nodes on 235 programs, `nodes.json`'s 2 092 457 on 263, and 2 095 947 `enter` lines
+  on 265 and `ein test`'s 293; root's where root is not dead, as before. `answer_round_trip.rs`' `no_core_unless_dead`
+  holds it per commit on every surface, mutation-checked (T2). **Met.**
+- **A dead node's core and rules are unchanged.** The move touches no dead node: every dead node's fields are the
+  base's on every run (the diff's 0 findings), 417 086 in `nodes.json` and the `enter` lines, 244 491 in
+  `region.json`, 5 554 members of N, and root's on 39 programs and the oracle's 32, each a list. `--count`'s dead root
+  stays `null`, as it was ([Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count)). **Met.**
+- **No answer moves.** 1 714 runs of 265 programs move, each by D-14's move alone; no exit code, stdout, stderr,
+  state file, `nogoods.json`, trace, `answer.txt`, `nodes.md`, `region.md`, report or drawing. The register is
+  unmoved, no row filed ([Q-M1f.28](../open_questions.md#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer)):
+  129 fixed, 22 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  **Met.**
+- **`./run_tests.sh` is green.** At T2, 16 min 35 s (`build/gate-s1f.5.8-T2.log`); T1 and T3 are pages only. **Met.**
