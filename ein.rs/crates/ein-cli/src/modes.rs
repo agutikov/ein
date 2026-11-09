@@ -1085,8 +1085,12 @@ fn universe(r: &ReadOut, terms: &Terms) -> Form {
     let mut groups: Vec<(Option<String>, Vec<Vec<String>>)> = Vec::new();
     for (rel, cands) in &by_rel {
         let d = cands.iter().filter(|(i, _)| is_dead(*i)).count();
+        // One space at least after the relation (M1f S1f.5.6, W42): a name of
+        // sixteen characters or more touched its count, `lives-next-door-to2
+        // candidates`.
+        let w = 16.max(rel.chars().count() + 1);
         let line = format!(
-            "  {rel:<16}{} candidate{}{}",
+            "  {rel:<w$}{} candidate{}{}",
             cands.len(),
             if cands.len() == 1 { "" } else { "s" },
             if dead.is_some() {

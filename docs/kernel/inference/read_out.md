@@ -37,7 +37,9 @@ which.
 
 The read-out opens with a header, the command and its arguments as typed, and a rule under it. Then come the rows,
 each a label and a value: a row at the left margin at two spaces, a row of a block under it at four, every value at
-column 20. A row's value that runs over a line break of a text the program wrote (a `:goal-text`'s sentence, an
+column 20, or one space past a label as long as its column or longer, so that no label touches its value (M1f
+S1f.5.6, W42: only a numbered label is that long, `class i of n` at a block's sixteen characters, which glued to its
+count until then). A row's value that runs over a line break of a text the program wrote (a `:goal-text`'s sentence, an
 obligation's `:why`) continues at the column that text starts at (M1f S1f.5.16's T1f.5.16.5). After the rows come the
 listing, the queries, the claims, and on request the forms (§ 6 to § 8).
 

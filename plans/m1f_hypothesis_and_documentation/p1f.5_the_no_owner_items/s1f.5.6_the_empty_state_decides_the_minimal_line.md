@@ -7,7 +7,7 @@
 and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Running since 2026-11-09**, on the
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default
 decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), and so are T1f.5.6.2, the rule
-([its record](#t2-record-2026-11-09)), T1f.5.6.3, the clause ([its record](#t3-record-2026-11-09)), and T1f.5.6.5, W42 filed ([its record](#t5-record-2026-11-09)).
+([its record](#t2-record-2026-11-09)), T1f.5.6.3, the clause ([its record](#t3-record-2026-11-09)), T1f.5.6.5, W42 filed ([its record](#t5-record-2026-11-09)), and T1f.5.6.6, W42 fixed ([its record](#t6-record-2026-11-09)).
 The coordinator handed the stage a fifth item the same day, S1f.5.16's Q-M1f.22, a class label glued to its
 value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)).
 **Depends on:** nothing. It touches `explore.rs` and the read-out, and none of the grammar stages do.
@@ -349,6 +349,27 @@ and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 20
 [Q-M1f.24](../open_questions.md#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own), whether
 `-H`'s glue is W42's second row or a case of its own: (a), W42's, its own witness, since the defect is one, a padded
 column with no separator, and the fix is one rule applied to both printers.
+
+### T6 record, 2026-11-09
+
+**The fix**: `read_out::padded`, the one printer of the read-out's rows, `-s`, `ein oracle`, `--trace`'s headline and
+`answer.txt`, pads a label to its column or to one past its length, whichever is wider, so a label of the column's
+width or longer is followed by one space and its value, and every other row's value stays at column 20; a value's
+further lines hang at its own column. `-H`'s form does the same after a relation's name (`ein-cli`'s `modes.rs`).
+`ein-render`'s `a_label_never_touches_its_value` holds `padded` at both layouts and every label length up to four past
+the column, and `class 100 of 277`'s numbered line. The live page's § 1 says it.
+
+**What moved**, named before the fix was kept: the two lines W42's rows hold, `    class 100 of 277 1 state` in
+`features/04_open.ein`'s `answer.txt` at `--region-limit 12` (and every class from the hundredth on, there and at the
+default limit), and `  lives-next-door-to 2 candidates, 0 dead alone` on the `-H` witness's stdout. **No golden moved**
+(`corpus_shapes`, `golden_trace`, `read_out_examples`, `read_out_reference`, `region_modes` and `wrong_answers` re-run
+unblessed on the fix, 2026-11-09): no golden holds a line whose label reaches its column, as Q-M1f.22 said.
+
+**W42's two rows flipped to `fixed`** in this commit, each `[case.fixed]` carrying `0000000`, which T1f.5.6.4 writes;
+`W42/h-long-relation`'s `now` lists its relation again, the register test's reader of `-H` reading the line. Its note's
+list of the surfaces that leave a separator is corrected: `ein --version` and `--dump-config` print one space, not two.
+Q-M1f.22's row says it is fixed, and by which task. The register reads 128 fixed, 22 open and 1 not wrong
+(`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 
 ## Acceptance
 

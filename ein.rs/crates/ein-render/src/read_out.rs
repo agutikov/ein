@@ -562,8 +562,15 @@ fn hang(value: &str, col: usize) -> String {
 /// `label` padded to `width` at `indent`, then `value`, its further lines
 /// started where it starts ([`hang`]). Private: a label reaches it only
 /// through a [`Row`].
+///
+/// One space at least separates a label from its value, at every width (M1f
+/// S1f.5.6, W42): a label as long as its column, `class 100 of 277` at a
+/// block's sixteen, was printed with none, so `class 100 of 277` and `28
+/// states` read as `class 100 of 27728 states`. Such a label's value starts
+/// one past it, and every other row's at its column.
 fn padded(indent: usize, width: usize, label: &str, value: &str) -> String {
-    let col = indent + label.chars().count().max(width);
+    let width = width.max(label.chars().count() + 1);
+    let col = indent + width;
     format!("{}{label:<width$}{}", " ".repeat(indent), hang(value, col))
 }
 
@@ -2359,6 +2366,40 @@ mod tests {
         assert_eq!(
             fit(2, &[vec!["a\nb".to_string()], vec!["c".to_string()]]),
             1
+        );
+    }
+
+    /// A label never touches its value, at every width (M1f S1f.5.6, W42):
+    /// one shorter than its column has its value at column 20, and one as
+    /// long or longer has one space after it, its value's further lines at
+    /// that value's column. Until S1f.5.6 `class 100 of 277` printed
+    /// `class 100 of 27728 states` for 28 states.
+    #[test]
+    fn a_label_never_touches_its_value() {
+        for (indent, width) in [(2, 18), (4, 16)] {
+            for n in 0..=width + 4 {
+                let label = "x".repeat(n);
+                let line = padded(indent, width, &label, "7 states");
+                let rest = &line[indent + n..];
+                assert!(
+                    rest.starts_with(' ') && rest.trim_start() == "7 states",
+                    "{line:?}"
+                );
+                let col = line.len() - "7 states".len();
+                assert_eq!(col, indent + width.max(n + 1), "{line:?}");
+            }
+        }
+        assert_eq!(
+            numbered_line(Row::Class, 100, 277, "28 states"),
+            "    class 100 of 277 28 states"
+        );
+        assert_eq!(
+            numbered_line(Row::Class, 99, 277, "28 states"),
+            "    class 99 of 277 28 states"
+        );
+        assert_eq!(
+            padded(4, 16, "class 100 of 277", "a\nb"),
+            format!("    class 100 of 277 a\n{}b", " ".repeat(21))
         );
     }
 }
