@@ -6,10 +6,14 @@
 **Status:** specified 2026-11-07 on the user's ruling of that day on
 [F13](README.md#f13-a-conclusions-variable-that-nothing-binds). The user ruled on 2026-11-08 that P1f.5 runs, and on
 2026-11-09 *"just continue with default decisions till the end of the phase"*.
-**Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.7 (`2eb483e0`): T1f.5.10.1
+**Done 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.7 (`2eb483e0`), in four commits: T1f.5.10.1
 ([its record](#t1f5101-record-2026-11-09)), every move listed, W57's four rows and W58 filed, five questions taken by
 default (Q-M1f.36 to Q-M1f.40) (`6fbcf64b`); T1f.5.10.2 ([its record](#t1f5102-record-2026-11-09)), the refusal, W57
-fixed (`bef85fe0`); T1f.5.10.3 ([its record](#t1f5103-record-2026-11-09)), the pages.
+fixed (`bef85fe0`); T1f.5.10.3 ([its record](#t1f5103-record-2026-11-09)), the pages (`7c6c3ea3`); T1f.5.10.4, the
+acceptance re-taken ([§ Acceptance re-taken](#acceptance-re-taken-2026-11-09)) and what the merge writes
+([§ For the merge](#for-the-merge)). One acceptance item, *`FireError::UnboundVar` is gone*, moved to S1f.5.18 with
+W58 (Q-M1f.37). The register on the lane reads 144 fixed, 20 open and 1 not wrong (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 **Depends on:** [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md), whose `(eq ?y ?y)` is one of the two
 spellings the refusal names, and which makes a guard bind. It lands before
 [S1f.5.9](s1f.5.9_an_empty_match_fires.md), so that a rule with `:match ()` and an unbound conclusion
@@ -270,4 +274,83 @@ as what every such program meets:
   moved to it (Q-M1f.37).
 
 W57's four `[case.fixed]` blocks carry `bef85fe0`, T1f.5.10.2's, where that commit wrote the null id. The phase README's
-F13 and stage row, `AGENTS.md` and the live read-out page are the merge's, which T1f.5.10.4's § For the merge lists.
+F13 and stage row, `AGENTS.md` and the live read-out page are the merge's ([§ For the merge](#for-the-merge)).
+
+## Acceptance re-taken (2026-11-09)
+
+Each item, and what holds it:
+
+- *A rule or hrule whose `:assert` names a variable that some way of satisfying its `:match` leaves unbound is refused at
+  load, one line per variable, naming both explicit spellings*: `ein-ir`'s
+  `from_ir::tests::a_conclusion_variable_nothing_binds_is_refused_at_load`, each shape the stage file names (a free
+  variable, an `(or …)` arm, a variable seen only under an `(absent …)`, an hrule) and five more;
+  `ein-cli`'s `cli_semantics::a_conclusion_variable_nothing_binds_is_refused_at_load`, W57's four witnesses and the
+  fixture on the eight commands that load, the same line on each; the register's four W57 rows, `fixed`, each `now` the
+  refusal; and `fuzz_properties::no_firing_meets_an_unbound_variable`, which holds what the loader accepts to the
+  compiler's plans on every input of the stream.
+- *`(rule r () :match (and (p ?x) (is-a ?y House)) :assert (q ?y))` loads and answers as today*: the unit test's list
+  of rules that load, `cli_semantics`' program that concludes `(q h1 :rule typed)`, and the rule over `(p a) (is-a h1
+  House) (is-a h2 House)`, whose `ein saturate --dump` facts and `ein solve` read-out are byte-equal, timings masked, on
+  `2eb483e0`'s build and this one (`build/s1f.5.10/acceptance-typed.ein`, 2026-11-09).
+- *No run stops on an unbound conclusion variable: `FireError::UnboundVar` is gone*: **met but for one path, which moved
+  to S1f.5.18** (Q-M1f.37, taken by default). No run stops on a conclusion variable no premise or parameter binds: the
+  loader refuses each (the fuzz property, and the cross-check against `2eb483e0`, in which every stop that moved became
+  the refusal). One path still reaches the variant: a value parameter its activator binds to a nested fact, read only
+  by a conclusion, which the compiler does not seed (W33's cause), `W58/parameter-nested-assert`, `open` and
+  S1f.5.18's, whose seed fixes it and which then retires the variant and its line; its acceptance carries the item.
+- *`./run_tests.sh` is green*: at every code commit, each body naming its log (T1f.5.10.1's and T1f.5.10.2's, every
+  step, with `--no-fail-fast` forwarded to `cargo test` so every test binary ran); T1f.5.10.3 and this record are docs
+  and the register's hashes, checked by `utils/doc_audit.py --links --check` and the register's three readers.
+
+**S1f.5.10 is done, 2026-11-09.**
+
+## For the merge
+
+S1f.5.10 ran in lane 2 (`p1f5-lane2`, after S1f.5.7, from `dc4c0bdc`), which does not edit the prose both lanes share.
+What those places should gain when the coordinator merges the branch:
+
+1. **P1f.5's README, the stage table's S1f.5.10 row**, its state: *"**done 2026-11-09**, on lane 2 in four commits
+   ([the records](s1f.5.10_a_conclusion_variable_must_be_bound.md#t1f5101-record-2026-11-09)): T1f.5.10.1, every move
+   listed, W57's four rows and W58 filed (`6fbcf64b`); T1f.5.10.2, the refusal at load, one line per variable naming
+   both spellings, W57 fixed (`bef85fe0`); T1f.5.10.3, the pages (`7c6c3ea3`); T1f.5.10.4, the acceptance re-taken.
+   [Q-M1f.36](../open_questions.md#q-m1f36--what-the-refusal-replaces-which-of-it-is-a-register-row) to Q-M1f.40 taken
+   by default; `FireError::UnboundVar`'s retirement moved to S1f.5.18 with W58 (Q-M1f.37); on the lane the register
+   reads 144 fixed, 20 open and 1 not wrong"*. The S1f.5.18 row's item cell gains *"; W58 and `FireError::UnboundVar`'s
+   retirement (Q-M1f.37)"*.
+2. **The same README's decisions table**, F13's last cell gains *"**done 2026-11-09** (W57, T1f.5.10.2)"*; and its
+   § F13 ends with *"**Done 2026-11-09** by S1f.5.10: refused at load on every command, one line per variable (W57's
+   four rows filed and fixed); a value parameter its activator binds to a nested fact, read only by a conclusion, still
+   stops the run, W58, S1f.5.18's."*
+3. **The register's counts**: S1f.5.10 files five rows (W57's four and W58) and fixes four, all in
+   `corpus/wrong_answers.toml`, which the merge carries: +4 fixed, +1 open, +5 rows. With S1f.5.7's (+14 fixed, −3
+   open, +11 rows) lane 2 adds +18 fixed, −2 open and +16 rows to `dc4c0bdc`'s register; on the lane `grep '^status'
+   corpus/wrong_answers.toml | sort | uniq -c` reads 144 fixed, 20 open, 1 not wrong (165 rows).
+4. **AGENTS.md**, after S1f.5.7's sentence: *"**S1f.5.10 ran to its end the same day** (lane 2): a rule's or an hrule's
+   `:assert` that writes a variable some way of satisfying its `:match` leaves unbound is refused at load, on every
+   command, one line per variable naming the rule, the variable and the two explicit spellings, `(is-a ?y T)` and `(eq
+   ?y ?y)` (the user's ruling of 2026-11-07 on F13; `ein_ir::from_ir`'s `refuse_unbound_conclusions`,
+   `defined_behaviour.md` § 4.13). W57's four rows, the ways such a program stopped or answered until then, filed and
+   fixed; `FireError::UnboundVar` stays for W58, a parameter its activator binds to a nested fact read only by a
+   conclusion, which S1f.5.18 fixes and with it retires the variant; `fuzz_properties` holds every plan of an accepted
+   program to the rule, `ein-ir` taking `ein-infer` as a dev-dependency; Q-M1f.36 to Q-M1f.40 defaulted"*, linking
+   this file as
+   `plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md`,
+   with the merged count.
+5. **The milestone README**: nothing; it names no stage's state.
+6. **The live read-out page, `docs/kernel/inference/read_out.md`, and its generated golden page** (S1f.5.16's, on
+   `master`): nothing. No row or number a loaded program prints moves, and no summary field's name or schema
+   (`ein-summary/2`); a program the check refuses prints the loader's line where it printed a read-out or stopped,
+   which is `defined_behaviour.md` § 4.13's, not the read-out's.
+7. **The register's schema**: no bump. Every row S1f.5.10 files uses schema /16's fields; /18 stays unused.
+8. **The id blocks**: rows W57 and W58 used, W59 to W69 unused; questions Q-M1f.36 to Q-M1f.40 used, Q-M1f.41 to
+   Q-M1f.49 unused.
+9. **Files both lanes may have touched**, which the merge should re-take rather than splice: `corpus_exits.txt` and
+   `corpus_shapes.md5` (`EIN_BLESS=1`; S1f.5.10's cells are its five witnesses', the fixture's and
+   `syntax/rule-nary-and-or`'s); the register's header paragraphs (lane 2 appends two after S1f.5.7's);
+   `corpus/corpus.toml` (five entries after W56's, and the fixture's note); `examples/README.md` (the witness count,
+   159 on the lane, and the `ein-bugs/` line's fixture); `open_questions.md`'s index table (lane 2's rows follow
+   Q-M1f.35); `ein.rs/Cargo.lock` (`ein-ir`'s new dev-dependency); `fuzz_properties.rs`' header list (item 6, and its
+   number if master adds a property); `defined_behaviour.md` (§ 4's row and a new § 4.13: **if master has a § 4.13 by
+   then, this one takes the next number**, and the one link to it, `01_grammar.md`'s
+   `#413-a-conclusions-variable-nothing-binds--m1f-s1f510`, moves with it); `01_grammar.md`'s conclusion forms; and
+   M1e2's inventory files and `open_questions.md` (F13, G-14, Q-M1e2.26).
