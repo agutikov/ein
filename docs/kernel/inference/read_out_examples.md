@@ -9,7 +9,7 @@ runs every caption again and compares the block, so the page is the read-out's g
 block is not one whole run: X4's scratch variant, whose query block is quoted. Re-write it with
 `python3 utils/read_out_examples.py` in the commit that changes what the read-out prints.
 
-**Since M1f S1f.5.16** (2026-11-09). Until then the page was M1e2's, written for the user's rulings of 2026-10-16; that
+**Since M1f S1f.5.16** (2026-11-09, `79fc14b0`). Until then the page was M1e2's, written for the user's rulings of 2026-10-16; that
 page is frozen where it was, beside [`read_out.md`'s record](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md), and no test reads it.
 
 

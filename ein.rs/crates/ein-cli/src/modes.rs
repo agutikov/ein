@@ -2,9 +2,9 @@
 //! [S1e2.1a.5](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
 //! switch: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
 //! `--single` and `-n N` each ask one question about it, answered by
-//! [`ein_infer::explore`] and printed in the read-out of
-//! [`read_out.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)
-//! by [`ein_render::read_out`]. The modes were built at S1e2.1a.9's
+//! [`ein_infer::explore`] and printed in the read-out
+//! [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines, by
+//! [`ein_render::read_out`]. The modes were built at S1e2.1a.9's
 //! T1e2.1a.9.4, and reached through a region flag until the switch.
 //!
 //! The program is loaded and solved **once**, and every `(query …)` it holds

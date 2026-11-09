@@ -75,6 +75,11 @@ docs/kernel/inference/
 ├── monotonicity.md                ← monotone and non-monotone regions
 │                                     compared: causes, detection, and how
 │                                     to solve each (M1e2 S1e2.1b.6)
+├── read_out.md                    ← what `ein solve` and `ein oracle` print:
+│                                     every row, what its numbers count, its
+│                                     summary field (M1f S1f.5.16)
+├── read_out_examples.md           ← every row in a real run, written by
+│                                     `utils/read_out_examples.py`
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,

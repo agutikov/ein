@@ -455,9 +455,10 @@ answers with **projection classes**: the models with one projection (ruling
 between two tables have one projection class per choice of table, and the
 seats inside it are hidden information. In a program with restrictions only,
 the goal has no row at ∅, so a query over R has to say *undetermined in these
-solutions*. No surface computes projection classes yet;
+solutions*. Every query block of the read-out prints them, since M1e2
+S1e2.1a.5 ([`read_out.md` § 7](read_out.md#7-queries-and-claims));
 [S1e2.1a.4](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md)
-gives the query its form.
+gave the query its form.
 
 ---
 
@@ -496,19 +497,17 @@ Normative detail on what an obligation quantifies over:
 
 ### 5.1 Today
 
-What `ein solve` prints since M1e2 S1e2.1a.5's switch, row by row in
-[`read_out.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)
-and in real runs in
-[`read_out_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md),
-which `ein-cli/tests/read_out_examples.rs` holds to the binary:
-
-| question | flag | what it prints |
-|---|---|---|
-| all of R | none | k_s and k_c, `exhausted`, ∅, both lines, components, sub-cubes, merged states, N, the static check, H and what it leaves out (§ 1.4), the route and its licences, the work; then R as one `(region …)` and each query's projection classes |
-| a line | `--maximal`, `--minimal` | the line's states, exhausted or as far as the run went. Past `--region-limit` on a program the static check flags, the states describe certifies on it: the members met with no member of R met below them on the minimal line ({∅} when ∅ ∈ R), none on the maximal line, which needs the whole cube; the other members met counted (M1e2 S1e2.2.26) |
-| a part | `-n N` | `N` states of the part asked, each certified, nothing said of the rest |
-| one state? | `--single` | the word: `Solution` (one state), `Ambiguity` (two shown), `Contradiction` (every node dead), `Open` (every alive node owes) |
-| how many? | `--count` (M1e2 T1e2.1c.4.6) | k_s and k_c by describe's route, with `exhausted`, ∅, the static check, H, the route and the work: describe's rows, and nothing listed. No state is read, so no query is answered and no claim checked, and a `claims` row says so |
+What `ein solve` prints, row by row and number by number, is
+[`read_out.md`](read_out.md) (M1f S1f.5.16), which names for every row what
+its numbers count, R, what lies around R, the run or the listing, and the
+summary field that holds the same number; every row is in a real run on
+[`read_out_examples.md`](read_out_examples.md). `ein-cli/tests/read_out_reference.rs`
+and `read_out_examples.rs` hold both pages to the binary. By question: a bare
+`ein solve` describes all of R, with k_s and k_c, the two lines and the shape;
+`--minimal` and `--maximal` list a line; `-n N` lists N states of the part asked;
+`--single` answers with a word, `Solution`, `Ambiguity`, `Contradiction` or
+`Open`; `--count` gives k_s and k_c by describe's route and reads no state; and
+`--monotone` asks about the program.
 
 Every count that is not exact says so — *a lower bound* and how far it is
 complete — and a run a budget stopped writes one `note:`. Every answer exits

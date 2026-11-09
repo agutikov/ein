@@ -1007,7 +1007,7 @@ def summary_page(p: Pages, s: dict | None) -> None:
     page = p.dir / "summary.md"
     raw = p.raw / "summary.json"
     defined = [("answer_dump.md § The run summary", "docs/kernel/inference/answer_dump.md"),
-               ("read_out.md § 8.1", "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md"),
+               ("read_out.md § 11", "docs/kernel/inference/read_out.md"),
                ("configuration.md", "docs/kernel/configuration.md")]
     lines = header("The run summary", "`--json-summary` (`ein-summary/2`), as tables", "`--json-summary FILE`",
                    defined, [raw], page)

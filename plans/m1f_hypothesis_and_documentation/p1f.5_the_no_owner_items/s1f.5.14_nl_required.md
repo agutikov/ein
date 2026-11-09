@@ -521,7 +521,9 @@ for refusing (d), which the user overrode, and it stands as this task's risk.
   findings about read-out ownership being split across three crates, and T2
   adds a fourth caller unless it lifts the shared function that
   [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) is already going to want.
-  Sequence after it, or hand it the function.
+  Sequence after it, or hand it the function. Since S1f.5.16 the read-out has one live reference,
+  [`read_out.md`](../../../docs/kernel/inference/read_out.md), held to the printer by `read_out_reference.rs`: the
+  NL answer table is a row or a form of it, written there in the commit that prints it.
 
 ## Notes
 

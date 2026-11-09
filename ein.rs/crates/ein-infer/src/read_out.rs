@@ -1,8 +1,8 @@
 //! The read-out's data: what `ein solve` and `ein oracle` print, computed
 //! once — M1e2
 //! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! third step, for the layout of
-//! [`read_out.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md).
+//! third step, for the layout
+//! [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines.
 //!
 //! [`run`] asks [`crate::explore`] the question, then reads every state it
 //! lists through **the node function every route uses**

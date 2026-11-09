@@ -240,7 +240,8 @@ agreeing on each.
 `01_grammar.md` § Query (a goal may name `eq` and `neq`, and what their facts are) and its rule section (a
 premise in any order, a conclusion checked), the glossary's `eq` and `neq` (relations of equality and
 non-equality, computed, never stored), `02_patterns.md` where it calls them guards, `defined_behaviour.md`
-where it states a guard's refusals, and `read_out.md`'s wording row. The inventory's S-18 and G-21 say what
+where it states a guard's refusals, and the live read-out reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md) (S1f.5.16), where a row's
+wording moves. The inventory's S-18 and G-21 say what
 fixed them. Q-M1e2.18 says what superseded its (ii)(a).
 
 ## Acceptance

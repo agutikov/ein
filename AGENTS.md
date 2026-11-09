@@ -483,6 +483,11 @@ constrained-reasoning research.
   that change the read-out write the live page, and M1e2's `read_out.md` stays
   the record
   ([S1f.5.16](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)).
+  **It landed on 2026-11-09**: the page is
+  [`docs/kernel/inference/read_out.md`](docs/kernel/inference/read_out.md),
+  every label the printer has is a variant of `ein_render::read_out::Row` and a
+  row of one of its tables, and a stage that changes what `ein solve` prints
+  changes the page in the same commit, or `read_out_reference.rs` fails.
   S1f.5.5's T8, the swap's prerequisite, renamed the names the parser and the
   loader make up out of the name space the same day (S1f.5.4's Q1 (a)):
   `#empty`, `#nested`, `#params`, `#query` and the generated parser's
@@ -636,11 +641,13 @@ constrained-reasoning research.
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
   it stops being true.
-  **Since M1e S1e.2.2 every one of the pages — 43 since M1e2 S1e2.1.2 added
-  `inference/answer_dump.md`, S1e2.1a.1 `inference/region_dump.md` and S1e2.1b.6
-  `inference/monotonicity.md` — is in exactly one of three
+  **Since M1e S1e.2.2 every one of the pages — 45 since M1e2 S1e2.1.2 added
+  `inference/answer_dump.md`, S1e2.1a.1 `inference/region_dump.md`, S1e2.1b.6
+  `inference/monotonicity.md` and M1f S1f.5.16 `inference/read_out.md` and its
+  examples page (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-09) — is in
+  exactly one of three
   declared states, visible from the page rather than from a plan** —
-  [README § Which pages to trust](docs/kernel/README.md): *current* (40, no
+  [README § Which pages to trust](docs/kernel/README.md): *current* (42, no
   banner), *superseded with a banner* (**3**, all of them M1 P1.5b's design —
   `inference/algorithm_layer_n.md`, `inference/lattice_diagrams.md`,
   `inference/parity_baselines.md`), and *moved to `docs/history/`* (**0**).
@@ -1107,7 +1114,7 @@ ein render program|kb FILE                                   # M1e2: the program
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
-python3 utils/read_out_examples.py                           # M1e2: the read-out's golden page, written from the binary
+python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary
 ```
 
 **Since M1e2 S1e2.1a.5 (2026-10-18) the walk has no CLI path, and since
@@ -1121,10 +1128,13 @@ carried over: `--models list|key|grid`, now over the states a run lists;
 `EIN_LEFTOVER`'s block in `ein-summary/2`; and `ein test --json-report`, now
 `ein-test-report/4`, a query row carrying its classes and, since M1e2
 S1e2.3.10, every row what the universe leaves out. The read-out's
-vocabulary is
-[`read_out.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md),
-and its golden page, written by the binary, is
-[`read_out_examples.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md).
+vocabulary is, since M1f S1f.5.16, the kernel page
+[`docs/kernel/inference/read_out.md`](docs/kernel/inference/read_out.md),
+every row `ein solve` prints and what it counts, and its golden page, written
+by the binary, is
+[`read_out_examples.md`](docs/kernel/inference/read_out_examples.md), both
+held to the printer by `ein-cli/tests/read_out_reference.rs`; M1e2's two pages
+under `plans/` are the record of the rulings of 2026-10-16.
 
 **The `EIN_*` names in that block are the ones an agent needs, not the
 set.** The shipped binary reads **two** since M1e2 S1e2.3.1 (three after

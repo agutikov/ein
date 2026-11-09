@@ -156,9 +156,10 @@ to *∅ is in R*, on the F1 probe moved into `examples/` beside its control.
 
 ### Task T1f.5.6.4 — the pages
 
-`read_out.md`'s rows for `-n N` and `--single` past the limit, its `minimal line` row (no name for {∅}),
-its summary block, and its question table's *is a line trivial?* row; `solve_interface.md` § 3.3; and the
-read-out's golden page (`utils/read_out_examples.py`). The inventory's S-16, P-14, S-17 and F1 say what
+The live read-out reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md) (S1f.5.16): its rows for `-n N` and `--single` past the
+limit, its `minimal line` row (no name for {∅}) and its summary fields, in the commit that changes the output;
+`solve_interface.md` § 3.3; and the read-out's golden page, re-written by `utils/read_out_examples.py`. M1e2's
+`read_out.md` is a record, and is not edited. The inventory's S-16, P-14, S-17 and F1 say what
 fixed them. The probe outputs under `p1e2.1b_non_monotone_programs/detector_proposal/outputs/` are a record,
 and do not change.
 

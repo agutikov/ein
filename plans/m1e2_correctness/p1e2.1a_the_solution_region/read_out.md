@@ -1,5 +1,7 @@
 # The read-out speaks R — the page diff for the vocabulary
 
+> **The record, not the reference.** Since M1f [S1f.5.16](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) (`79fc14b0`, 2026-11-09) the read-out's live vocabulary is [`docs/kernel/inference/read_out.md`](../../../docs/kernel/inference/read_out.md), held to the printer by `ein-cli/tests/read_out_reference.rs`. This page records the rulings of 2026-10-16 and what M1e2's stages amended, and is not kept current; its examples are the frozen [`read_out_examples.md`](read_out_examples.md).
+
 **Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), task T1e2.1a.5.1.
 **Status:** proposed 2026-10-16, and **ruled the same day**: the user
 answered § 11's three questions, and § 12 stands as decided. Two of the

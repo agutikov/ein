@@ -5,7 +5,7 @@ what `ein oracle` writes, and the answer blocks of `--json-summary`: every row's
 says, which kind of thing its numbers count, and the summary field that holds the same number. Its printer is
 [`ein_render::read_out`](../../../ein.rs/crates/ein-render/src/read_out.rs), whose `Row` enum is the list of labels.
 **Current since M1f [S1f.5.16](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)
-(2026-11-09).** The values are on the examples page, [`read_out_examples.md`](read_out_examples.md), every block of
+(2026-11-09, `79fc14b0`; its test since `d01c6588`).** The values are on the examples page, [`read_out_examples.md`](read_out_examples.md), every block of
 it one run of the binary, written by [`utils/read_out_examples.py`](../../../utils/read_out_examples.py) and held to
 the binary by `ein-cli/tests/read_out_examples.rs`. This page is held to the printer by
 `ein-cli/tests/read_out_reference.rs`:

@@ -391,9 +391,8 @@ cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_renderin
 command: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
 `--single` and `-n N` ask one question about it, answered by
 [`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs), held to
-the oracle by `ein-infer/tests/explore.rs`, and printed in
-[`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s
-read-out. Every answer exits 0. **Nine options retired** and stay in the
+the oracle by `ein-infer/tests/explore.rs`, and printed in the read-out
+[`inference/read_out.md`](inference/read_out.md) defines row by row. Every answer exits 0. **Nine options retired** and stay in the
 parser hidden, so a stale argv is refused, exit 2, with what replaced it
 (`ein-cli/src/solve.rs`'s `RETIRED`), and S1e2.1c.5 retired two more, `-L`
 and `-K` (§ 3.2):

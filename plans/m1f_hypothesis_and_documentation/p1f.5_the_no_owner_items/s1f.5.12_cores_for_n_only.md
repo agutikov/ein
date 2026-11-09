@@ -95,7 +95,9 @@ too.
 The cost after, beside step 1's. The pages:
 - [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s `nogoods.json` row: each member's core
   is taken after the walk, and is the core an eager run takes;
-- [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 6.2 and § 8.2's list of words;
+- the live read-out reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md) (S1f.5.16), where a row's words move, and
+  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s list of core statuses; M1e2's `read_out.md`
+  § 6.2 and § 8.2 are a record, and are not edited;
 - [`glossary.md`](../../../docs/kernel/glossary.md)'s list of the core statuses;
 - [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s note that the oracle never writes
   `not-kept`;

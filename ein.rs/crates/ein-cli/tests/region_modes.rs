@@ -12,9 +12,10 @@
 //! - the oracle's directory, which `ein render region` draws with no run
 //!   overlaid.
 //!
-//! Since T1e2.1a.5.2 the modes print the read-out of `read_out.md`, whose
-//! golden is `read_out_examples.md` (`read_out_examples.rs`); the rows here
-//! are read by label.
+//! Since T1e2.1a.5.2 the modes print the read-out
+//! `docs/kernel/inference/read_out.md` defines (since M1f S1f.5.16), whose
+//! golden is its `read_out_examples.md` (`read_out_examples.rs`); the rows
+//! here are read by label.
 
 use std::process::Command;
 

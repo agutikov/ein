@@ -30,7 +30,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.19](#q-m1f19--a-texts-line-break-on-the-read-out) | a text's line break on the read-out | **defaulted 2026-11-09 (the user's instruction): each line at the text's column, each counted against stdout's 100**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.5 |
 | [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another) | route 2's licence: *no licence* on one row, `L7 the cube` on another | **defaulted 2026-11-09 (the user's instruction): documented, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 | [Q-M1f.21](#q-m1f21--regionstoppedlayer-on-two-routes) | `region.stopped.layer` on two routes | **defaulted 2026-11-09 (the user's instruction): documented per route, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
-
+| [Q-M1f.22](#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) | a class label of sixteen characters glues to its value | **defaulted 2026-11-09 (the user's instruction): documented, not fixed here; the stage that fixes it files its row first**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -609,3 +609,23 @@ state route's *complete up to states of k candidates*, on `states (k_s)` and `mi
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) is the stage's rule, as Q-M1f.20's is: no summary field moves here. Re-opening it means
 (b), a summary change.
+
+### Q-M1f.22 — A class label of sixteen characters glues to its value
+
+**Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.4, from T3's test, whose row parser had to
+read a numbered label that fills its column. The read-out pads a block's label to sixteen characters and prints the
+value straight after it, so `class 100 of 277`, sixteen characters, is followed by no space: the uncut listing of
+`examples/features/04_open.ein` (`ein solve examples/features/04_open.ein --dump-answer DIR`, `DIR/answer.txt`,
+2026-11-09) prints `class 100 of 27728 states` for class 100 of 277, 28 states. Stdout's 100 lines never reach a
+hundredth class on the corpus, so only `answer.txt` prints it; no golden holds that file's text. A row label of
+eighteen characters or more would glue the same way at the margin; none is that long today (`commitments (k_c)` is
+seventeen).
+
+- **(a) Document it, fix it in a later stage**, which files a register row first: the line garbles a class's count of
+  states, which the user's rule makes a row before its fix.
+- **(b) Fix it here**: one space at least between a label and its value. It moves `answer.txt` on one corpus program
+  and no golden, and it needs a register row and a schema field the test can hold first.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the stage's rule: a line that misreports is shown and not fixed by this stage,
+which moves no byte of output but the item handed to it. Re-opening it means (b).

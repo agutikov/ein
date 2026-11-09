@@ -4,11 +4,12 @@
 **Was S1f.5.3**, proposed in the old P1f.5 (*Documentation, and other*), until 2026-11-08, and **S1e.5.3**, proposed
 in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other), until
 2026-08-29 ([§ The ids](README.md#the-ids)).
-**Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Running since
-2026-11-09**: T1f.5.16.1, the census, done ([its record](#t1-record-2026-11-09)); Q1 defaulted (a), and three findings,
-one of them S1f.5.2's item, which T1f.5.16.5 fixed before T2 ([its record](#t5-record-2026-11-09)): a text's line
-breaks keep the row's column, ten read-out digests moved, no answer. T1f.5.16.2, the page and the live examples, done
-([its record](#t2-record-2026-11-09)); T1f.5.16.3, the label list and the test, done ([its record](#t3-record-2026-11-09)).
+**Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Done 2026-11-09**, in
+five commits: T1f.5.16.1, the census ([its record](#t1-record-2026-11-09)), Q1 defaulted (a) and three findings;
+T1f.5.16.5, S1f.5.2's line-break item fixed before T2 ([its record](#t5-record-2026-11-09)), ten read-out digests
+moved, no answer; T1f.5.16.2, the page and the live examples ([its record](#t2-record-2026-11-09)); T1f.5.16.3, the
+label list and the test ([its record](#t3-record-2026-11-09)); T1f.5.16.4, the pointers and the record ([its
+record](#t4-record-2026-11-09)), with a fourth finding, Q-M1f.22, documented. The acceptance is re-taken [below](#acceptance-re-taken-2026-11-09).
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s swap and the non-grammar halves after it
 ([§ The order](README.md#the-order), item 8), so that the census is taken, and the examples are written, in the
 final grammar; and [S1f.5.15](s1f.5.15_rule_priority.md), done, whose `strata` row the page documents.
@@ -366,8 +367,9 @@ the user with T1's census, if it is still open then, and only T4's head edits wa
 
 ### T1 record, 2026-11-09
 
-Taken at `dc4c0bdc` on that day's release binary, by `build/s1f.5.16/census.py` (gitignored, kept with its raw runs
-under `build/s1f.5.16/runs/`): every corpus entry of the `positive`, `regression` and `stdlib` groups (351) under
+Taken at `dc4c0bdc` on that day's release binary, by `build/s1f.5.16/census.py` (gitignored, kept with its
+`census.json`; its raw runs, 1.2 GB under `build/s1f.5.16/runs/`, were deleted at the stage's end, and a run of the
+script re-takes them): every corpus entry of the `positive`, `regression` and `stdlib` groups (351) under
 describe, `--count`, `--minimal`, `--maximal`, `-n 1`, `--single`, `--maximal --single` and `--monotone`, each with
 `--json-summary` and `-s -t` (`-s` alone under `--monotone`), and under `ein oracle FILE --json-summary J -s`; the 62
 negative entries under describe alone. **3 221 runs**, the slow entries among them (`EIN_CORPUS_SLOW` gates a test,
@@ -748,6 +750,63 @@ cube's, with no query block. `natural_language_text`'s two assertions now look f
 it, each line after a break at column 25 (`sentence`), and the first also holds that no read-out line starts outside a
 row. The two programs' headers say where the second line goes. No answer, exit code, summary field or register row
 moved; `read_out_examples.md`'s blocks print no text with a line break, and did not move.
+
+### T4 record, 2026-11-09
+
+**The record.** M1e2's `read_out.md` gains one line under its title: the record, not the reference, since `79fc14b0`,
+the live vocabulary the kernel page; nothing else in it moves, and its 13 links to the frozen examples page stay.
+
+**The live pointers**, each one T1 sorted as citing the vocabulary: `AGENTS.md`'s *"The read-out's vocabulary is …"*,
+its gate block's `read_out_examples.py` line, its page-state count (45 pages, 42 current) and one sentence in its P1f.5
+passage; `configuration.md`'s *printed in the read-out*; `implementation.md`'s two module rows; `answer_dump.md` §
+The run summary, which points at the page's § 11 for the seven keys; `solution_semantics.md` § 5.1, its question
+table now a pointer that keeps its definition-level sentences, and § 3's projection sentence corrected (every query
+block prints the classes, since M1e2 S1e2.1a.5); `docs/kernel/README.md`'s page count and its user and embedder rows;
+`inference/README.md`'s tree; `utils/README.md`; `utils/review/run.py`'s summary label; the crate doc comments of
+`ein-render`'s `read_out.rs` and `dump/region_answer.rs`, `ein-infer`'s `described.rs` (its first link) and
+`read_out.rs`, `ein-cli`'s `modes.rs`, `summary.rs` (two) and `tests/region_answer.rs`, and `region_modes.rs`'s mention
+of the golden page (`read_out_examples.rs` was re-pointed at T2); P1f.20's README. The links T1 sorted as citing a
+ruling or a record stay (`git grep -nE 'p1e2\.1a_the_solution_region/read_out(_examples)?\.md' -- ein.rs/crates docs
+AGENTS.md utils`, 2026-11-09: `defined_behaviour.md`'s three, `answer_dump.md`'s § 8.2, `events.md`'s § 8.6,
+`described.rs`'s and `downset.rs`'s § 6.2, `trace/region.rs`'s § 8.4, `run.py`'s § 8.4 label, and the new pages' own
+links to the record).
+
+**The later stages' page lists** name the live page where they named M1e2's: S1f.5.6's T1f.5.6.4, S1f.5.7's
+T1f.5.7.5, S1f.5.8's T1f.5.8.3, S1f.5.12's page list, and S1f.5.14's read-out risk. S1f.20.2's disposition row
+already named the two kernel pages.
+
+**Under Q1 (a)** no head moves; § 6 of the page and the glossary name the two objects.
+
+**Found outside the brief.** (d) A block's label that fills its sixteen characters is printed with no space before its
+value: `class 100 of 277` and its *28 states* print as `class 100 of 27728 states` in
+`examples/features/04_open.ein`'s `answer.txt`, the one corpus listing that reaches a hundredth class (T1's census:
+277 classes; stdout's 100 lines never reach one). It garbles a class's count of states, so the stage that fixes it
+files a register row first;
+[Q-M1f.22](../open_questions.md#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value), defaulted:
+documented, not fixed here. `read_out_reference.rs`'s row parser reads a numbered label by its words, so it is not
+misled.
+
+### Acceptance, re-taken 2026-11-09
+
+- The page exists, current, with no banner; every label `ein solve` and `ein oracle` print is a row and every row a
+  label, in printing order: `read_out_reference::every_row_label_has_a_row_and_no_row_is_orphaned`, and
+  `every_row_is_printed_by_an_example` for the order.
+- Every row says what its numbers count and names the summary field where one holds the same number, and on every
+  example run the number is the field's: `each_row_prints_its_summary_fields_number`, 912 fields.
+- Every field of the seven keys is defined on the page, and the owners table is held to the keys a summary has:
+  `every_answer_field_of_the_summary_has_a_row`. The gaps T1 found in the other owners' pages (`region_dump.md`'s
+  `reads`, `absent_reads`, `cycles[].negative`, `paths.dead_parents`, `paths.saturations`,
+  `paths.unprinted.saturations`, `state.stale_nodes`; `configuration.md`'s `leftover.states_by_relation`) are their
+  owners', listed in T1's record.
+- No row table quotes a printed value; the values are on the examples page, written by `utils/read_out_examples.py`
+  and held by `read_out_examples.rs`, every label printed by a block but the clock rows, held by the masked run.
+- The page names a listing's `(model …)` and § 3's model as two objects (§ 6), and Q1 is (a).
+- M1e2's `read_out.md` and `read_out_examples.md` stay where they are, each with one line.
+- `AGENTS.md`, the kernel pages, the crates' doc comments and the later stage files point at the live page where they
+  cite the vocabulary.
+- No answer, exit code or summary field moved; the read-out goldens moved only at T1f.5.16.5, the ten digests of the
+  two programs whose `:goal-text` holds a line break, named first.
+- `./run_tests.sh` green at each code commit, `doc_audit.py --links --check` 0 findings, `cargo doc` green.
 
 ## Acceptance
 

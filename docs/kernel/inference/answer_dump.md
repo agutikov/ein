@@ -201,10 +201,11 @@ fixpoint of the program.
 
 ## The run summary
 
-`answer.json` is `--json-summary`'s object, `ein-summary/2`
-([`read_out.md` § 8.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)):
-`asked`, `region`, `verdict` (under `--single` only), `queries`, `claim`,
-`work`, `monotonicity`
+`answer.json` is `--json-summary`'s object, `ein-summary/2`:
+`schema`, `source`, `asked`, `region`, `verdict` (under `--single` only),
+`queries` and `claim`, each field defined by
+[`read_out.md` § 11](read_out.md#11---json-summary-the-answer-blocks) beside
+the row that prints it; `work`, `monotonicity`
 ([`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)),
 `leftover`, `root`, `config`. Every bound in `region` carries `exhausted`
 beside it, so a reader never has to know which numbers were complete.

@@ -84,7 +84,8 @@ dead one has a list.
 
 ### Task T1f.5.8.3 — the pages
 
-`region_dump.md`'s `nodes` row, `answer_dump.md`'s summary fields, and `read_out.md`'s summary block, each
+`region_dump.md`'s `nodes` row, `answer_dump.md`'s summary fields, and the live read-out reference's, [`read_out.md`](../../../docs/kernel/inference/read_out.md)
+§ 11 (S1f.5.16), each
 with the rule: `null`, the core does not exist; `[]`, the empty set. The inventory's D-14 says what fixed it.
 
 ## Acceptance

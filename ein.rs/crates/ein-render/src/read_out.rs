@@ -1,8 +1,7 @@
 //! The read-out as text: what `ein solve` and `ein oracle` print — M1e2
 //! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
-//! the layout of
-//! [`read_out.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md),
-//! from [`ein_infer::read_out::ReadOut`].
+//! the layout [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines row by row since M1f
+//! S1f.5.16, from [`ein_infer::read_out::ReadOut`]; every label is a [`Row`].
 //!
 //! [`render`] returns stdout, the stderr lines and the exit code, and prints
 //! nothing itself. Three rules shape it beyond the rows:
