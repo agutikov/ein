@@ -380,12 +380,19 @@ impl<'a> Compiler<'a> {
         // bindings and its own fresh body-var scope.
         let bodies: Vec<NodeId> = match &rule.match_ {
             None => vec![],
+            Some(p) if self.is_empty(NodeId(p.expr.0)) => vec![],
             Some(p) => self.match_disjuncts(NodeId(p.expr.0)),
         };
         let mut disjuncts: Vec<Disjunct> = Vec::new();
         if bodies.is_empty() {
-            // No `:match` → one empty disjunct, which the matcher
-            // accepts as a single vacuous match.
+            // `:match ()`, the empty conjunction, which is true (M1f S1f.5.9,
+            // the user's ruling of 2026-11-07 on F12, *"1 fire; 2 same"*) →
+            // one empty disjunct, which the matcher accepts as a single
+            // vacuous match: the plan fires once, with only its parameters
+            // bound. Until S1f.5.9 `()` reached `compile_disjunct` as a
+            // premise over the parser's synthetic `#empty` relation, which no
+            // fact holds, so the rule never fired and an hrule proposed
+            // nothing, in silence (W31).
             disjuncts.push(Disjunct {
                 steps: Span::EMPTY,
                 guards: Span::EMPTY,
@@ -401,8 +408,16 @@ impl<'a> Compiler<'a> {
         // The `:assert` clause: a top-level `(and …)` lowers to one template
         // per conjunct (A13 multi-assert). Var slots stay unbound — `fire`
         // fills them; Atom / nested slots stay literal.
+        //
+        // `:assert ()`, the empty conclusion, asserts nothing (S1f.5.9): no
+        // template, so an application derives nothing and is no firing, as one
+        // whose every conclusion holds. Until S1f.5.9 it was a template over
+        // the synthetic `#empty`, stored as `( :rule r)`, whose head joined
+        // the program's names and H (W34).
         let mut asserts: Vec<Slot> = Vec::new();
-        if let Some(p) = &rule.assert_ {
+        if let Some(p) = &rule.assert_
+            && !self.is_empty(NodeId(p.expr.0))
+        {
             for c in self.assert_conjuncts(NodeId(p.expr.0)) {
                 let slot = self.slot(c)?;
                 asserts.push(slot);
@@ -524,6 +539,13 @@ impl<'a> Compiler<'a> {
 
     fn head_is(&self, node: NodeId, name: &str) -> bool {
         matches!(self.ast.node(node), Node::SForm { .. }) && self.ast.head_name(node) == Some(name)
+    }
+
+    /// `()`: the parser's form over the synthetic [`ein_core::text::EMPTY_HEAD`],
+    /// which the grammar writes only as a whole `:match` (the empty
+    /// conjunction) or a whole `:assert` (the empty conclusion).
+    fn is_empty(&self, node: NodeId) -> bool {
+        self.head_is(node, ein_core::text::EMPTY_HEAD) && self.ast.form_args(node).is_empty()
     }
 
     fn compile_disjunct(&mut self, body: NodeId) -> Result<Disjunct, CompileError> {

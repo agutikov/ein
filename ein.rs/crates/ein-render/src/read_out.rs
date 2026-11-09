@@ -1194,8 +1194,11 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 match h.core_status.and_then(|c| c.cut_at()) {
                     Some(at) => format!(
                         "dead: {} (core search cut at its budget of {at})",
-                        h.core.join(" ")
+                        ein_infer::explain::core_text(&h.core, " ")
                     ),
+                    None if h.core_status.is_some() => {
+                        format!("dead: {}", ein_infer::explain::core_text(&h.core, " "))
+                    }
                     None => format!("dead: {}", h.core.join(" ")),
                 }
             } else {
@@ -1486,6 +1489,18 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
         Listing::False => {
             out.blank();
             if let Some(d) = r.described() {
+                // The empty set, where the core was taken and holds no fact
+                // (M1f S1f.5.9, Q-M1f.48).
+                if d.root.core.is_empty() && d.root.core_status.is_some() {
+                    out.row(
+                        "unsat core",
+                        format!(
+                            "{}, {}",
+                            ein_infer::explain::EMPTY_CORE,
+                            ein_infer::explain::EMPTY_CORE_GLOSS
+                        ),
+                    );
+                }
                 for c in &d.root.core {
                     out.row("unsat core", c);
                 }

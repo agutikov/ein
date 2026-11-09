@@ -44,6 +44,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.45](#q-m1f45--the-and-refusals-line-and-or) | the `(and)` refusal's line, and `(or)` | **defaulted 2026-11-09 (the user's instruction): a note on the parse error naming the rule and the clause, `(or)` given one too**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
 | [Q-M1f.46](#q-m1f46--a-relation-parameter-bound-to-eq-at-another-arity) | a relation parameter bound to `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load wherever a parameter can hold `eq`, read as S1f.5.18 reads relation names, premises and conclusions alike; a row per way the engine answers, W60's four**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
 | [Q-M1f.47](#q-m1f47--a-written-fact-of-eq-at-another-arity) | a written fact of `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load, beside Q-M1f.33's check; W61, this stage's**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
+| [Q-M1f.48](#q-m1f48--how-a-text-surface-writes-the-empty-core) | how a text surface writes the empty core | **defaulted 2026-11-09 (the user's instruction, on the coordinator's note): `∅` on every text surface, where a dead node's core was taken and holds no fact**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -901,3 +902,27 @@ are stored as ordinary facts (`build/s1f.5.9/case/eqfact/`, `ee3da657`).
 the loader the place that reads a written `eq` fact; (b) changes the grammar's fact production and its negation's for a
 shape no program writes, which the loader's line reaches as well; (c) leaves a fact of a relation whose facts are
 computed stored. One row, `W61/fact-eq-arity`, this stage's.
+
+### Q-M1f.48 — How a text surface writes the empty core
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2, on the
+coordinator's note of that day (S1f.5.8 landed on `master` as `c4708638`). Once `:match ()` fires, `(rule r () :match ()
+:assert (false))` makes root dead with the core `[]`, the empty set, the first in Ein (Q-M1e2.27: `[]` is a core that
+exists and holds no fact). Every JSON surface writes it `[]` beside `core_status: "within-budget"` and `refuted_by:
+["r"]`. The text surfaces were written before a core could be empty, and print a core only where it holds a fact:
+`ein solve`'s read-out prints one `unsat core` row per fact, so none; `--trace`'s N prints *Core: not kept by this
+route.*, which is false, the core having been taken; and `region.md`'s and `nodes.md`'s *why* columns and `ein render
+region`'s tooltips and table print nothing, which reads as *no core*.
+
+- **(a) `∅` on every text surface, where a dead node's core was taken and holds no fact**, the read-out's spelling of
+  the empty set already (*∅, root itself*): the read-out's `unsat core ∅, the empty set: the refutation rests on no
+  fact`, and `--trace`'s `Core: ∅, …` with the same words; `core ∅` in `nodes.md`, `core ∅ by r` in `region.md` and
+  `ein render region`'s table, `core: ∅` in its tooltips, and a minimal hole's `dead: ∅` (`explain::core_text`,
+  `EMPTY_CORE`). A core not taken prints as it did.
+- **(b) The word `none`**, or *no fact*, in the same places.
+- **(c) The read-out and the trace alone**, the dumps and the views left to print nothing.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** `∅` is the read-out's word for the empty set, so the text and
+the JSON's `[]` say one thing; `none` reads as *no core*, the very confusion Q-M1e2.27 separated `[]` from `null` to
+avoid; and (c) leaves views that read as *no core* where a core was taken. The trace's false sentence goes in the
+commit that makes the empty core reachable, so no tree prints it.

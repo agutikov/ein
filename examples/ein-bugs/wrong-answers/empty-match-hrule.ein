@@ -19,6 +19,13 @@
 ;;; The hrule proposes nothing: *no candidate: R is {∅} or empty, decided by
 ;;; root alone*, and R is {∅}, exit 0 (`ein solve FILE` and `ein oracle FILE`
 ;;; at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; An hrule's `:match ()` matches once since T1f.5.9.2 (2026-11-09), so `h`
+;;; proposes `(q b)`: H is one candidate and R is ∅ and `{(q b)}`, the answer
+;;; above by hand. The register's `now` is that answer; the section above is
+;;; the record of the one it replaced.
 
 (relation q Node) (relation p Node)
 (p a)

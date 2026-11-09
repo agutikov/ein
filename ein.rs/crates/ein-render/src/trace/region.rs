@@ -196,8 +196,16 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             lines.push(String::new());
             if let Some(why) = d.core_status.and_then(|c| c.not_kept()) {
                 lines.push(format!("Core: {why}."));
-            } else if d.core.is_empty() {
+            } else if d.core.is_empty() && d.core_status.is_none() {
                 lines.push("Core: not kept by this route.".to_string());
+            } else if d.core.is_empty() {
+                // Taken, and the empty set (M1f S1f.5.9, Q-M1f.48): until then
+                // no core was empty, and this said *not kept*.
+                lines.push(format!(
+                    "Core: {}, {}.",
+                    ein_infer::explain::EMPTY_CORE,
+                    ein_infer::explain::EMPTY_CORE_GLOSS
+                ));
             } else {
                 let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();
                 lines.push(format!("Core: {}", core.join(", ")));

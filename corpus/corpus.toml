@@ -1508,25 +1508,25 @@ note   = "M1f W30 (`W30/assert-eq-x-w`), banked by S1f.5.0 from S1f.5.7's § Con
 path   = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-false`), banked by S1f.5.0 from S1f.5.9's case (P1f.5's F12): a rule whose `:match` is `()` never fires, so its `(false)` is never concluded and ∅ is in R. Open, owned by S1f.5.9: it fires, root is dead (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-false`), banked by S1f.5.0 from S1f.5.9's case (P1f.5's F12): a rule whose `:match` is `()` never fires, so its `(false)` is never concluded and ∅ is in R. Open, owned by S1f.5.9: it fires, root is dead (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): `r` fires once, root is dead, its core `[]` and `refuted by r`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-fact`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule whose `:match` is `()` never fires, so root lacks `(q b)`. Open, owned by S1f.5.9: root holds it (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-fact`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule whose `:match` is `()` never fires, so root lacks `(q b)`. Open, owned by S1f.5.9: root holds it (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): root holds `(q b :rule r)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-activator`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule with a parameter whose `:match` is `()` never fires on its activator `(r a)`, so root lacks `(hit a)`. Open, owned by S1f.5.9: it fires once per activator (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-activator`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule with a parameter whose `:match` is `()` never fires on its activator `(r a)`, so root lacks `(hit a)`. Open, owned by S1f.5.9: it fires once per activator (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): root holds `(hit a :rule r)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-hrule`), banked by S1f.5.0 from S1f.5.9's case (F12): an hrule whose `:match` is `()` proposes nothing, so H is empty and R is {∅}. Open, owned by S1f.5.9: it proposes `(q b)` (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-hrule`), banked by S1f.5.0 from S1f.5.9's case (F12): an hrule whose `:match` is `()` proposes nothing, so H is empty and R is {∅}. Open, owned by S1f.5.9: it proposes `(q b)` (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): H is `(q b)`, R two states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-in-and.ein"
@@ -1580,7 +1580,7 @@ note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5
 path   = "examples/ein-bugs/wrong-answers/assert-empty.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts nothing, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-empty.ein"

@@ -244,6 +244,32 @@ pub enum CoreStatus {
 /// ([`CoreStatus::NotKept`]).
 pub const NOT_KEPT: &str = "not kept: the run stopped at `--region-limit`";
 
+/// How a text surface writes a core that holds no fact — M1f S1f.5.9
+/// (Q-M1f.48, taken by default on the user's instruction of 2026-11-09).
+///
+/// A contradiction that needs no fact, `(rule r () :match () :assert
+/// (false))`'s, has the empty set for its core: `[]` in every JSON surface,
+/// which Q-M1e2.27 tells from `null`, *no core*. A text surface prints a core
+/// fact by fact, so the empty set printed nothing, which reads as *no core*,
+/// and `--trace` said *not kept*; it prints `∅`, the read-out's spelling of
+/// the empty set (*∅, root itself*), where a node is dead and its core was
+/// taken ([`core_text`]). No core was empty until S1f.5.9 made `:match ()`
+/// fire.
+pub const EMPTY_CORE: &str = "∅";
+
+/// What the read-out and the trace say beside [`EMPTY_CORE`].
+pub const EMPTY_CORE_GLOSS: &str = "the empty set: the refutation rests on no fact";
+
+/// A taken core as a text surface writes it: its facts joined by `sep`, or
+/// [`EMPTY_CORE`] where it holds none.
+pub fn core_text(core: &[String], sep: &str) -> String {
+    if core.is_empty() {
+        EMPTY_CORE.to_string()
+    } else {
+        core.join(sep)
+    }
+}
+
 impl CoreStatus {
     /// The status of the core `e` names.
     pub fn of(e: &Explanation) -> CoreStatus {

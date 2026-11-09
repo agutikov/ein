@@ -79,8 +79,10 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
 /// that loads is its row fixed, and S1f.5.7 (W30) and S1f.5.9 (W34) each take
 /// their files off the list in the commit that fixes them, with
 /// `answer_dump.rs`'s copy. W30's two left the list at M1f S1f.5.7's
-/// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored.
-const DO_NOT_LOAD: [&str; 1] = ["examples/ein-bugs/wrong-answers/assert-empty.ein"];
+/// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored; and
+/// W34's at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts
+/// nothing, so no state holds the fact. Empty since.
+const DO_NOT_LOAD: [&str; 0] = [];
 
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
@@ -171,8 +173,11 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
 
 /// `nogoods.json`'s members, each with a core and its search's status, or,
 /// where the run stopped at `--region-limit`, with no core, no rules and
-/// `not-kept`: never an empty core (M1e2 S1e2.3.9). Each failure goes to
-/// `bad`.
+/// `not-kept`: never an empty core (M1e2 S1e2.3.9) but on ∅, a dead root's,
+/// whose refutation rests on no fact. A member that is not ∅ has a core
+/// naming its commitment's facts, so `[]`, the empty set, is root's alone
+/// (`empty-match-false.ein`'s, since M1f S1f.5.9 made `:match ()` fire). Each
+/// failure goes to `bad`.
 fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
     let read = |name: &str| -> Option<serde_json::Value> {
         serde_json::from_str(&std::fs::read_to_string(dir.join(name)).ok()?).ok()
@@ -187,7 +192,10 @@ fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
         let (core, status, rules) = (&m["core"], m["core_status"].as_str(), &m["refuted_by"]);
         let searched = status.is_some_and(|w| w == "within-budget" || w.starts_with("cut-"));
         let ok = match (core.as_array(), status) {
-            (Some(c), _) => !c.is_empty() && searched && rules.is_array(),
+            (Some(c), _) => {
+                let root = m["set"].as_array().is_some_and(|s| s.is_empty());
+                (!c.is_empty() || root) && searched && rules.is_array()
+            }
             (None, Some("not-kept")) => core.is_null() && rules.is_null() && stopped_at_limit,
             (None, _) => false,
         };

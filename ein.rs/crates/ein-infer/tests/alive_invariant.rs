@@ -379,19 +379,11 @@ fn every_name_of_the_program_is_a_candidate_object() {
 /// W34, `:assert ()` stored as a fact whose head is the parser's synthetic
 /// `#empty` (`@empty` until M1f T1f.5.5.8), a name no fact or rule writes,
 /// which then joins H as an object.
-/// It is the row's own wrong answer (`W34/assert-empty`), so it is named
-/// rather than failed, and held both ways: S1f.5.9 empties the list in the
-/// commit that fixes W34.
-const KNOWN_R1: [(&str, &str); 2] = [
-    (
-        "examples/ein-bugs/wrong-answers/assert-empty.ein",
-        "new-object: `\"#empty\"` in (q \"#empty\")",
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/assert-empty.ein",
-        "new-relation: `\"#empty\"` in ()",
-    ),
-];
+/// It is the row's own wrong answer (`W34/assert-empty`), so it was named
+/// rather than failed, and held both ways, until M1f S1f.5.9's T1f.5.9.2
+/// (2026-11-09) fixed W34: `:assert ()` asserts nothing, and no run reaches a
+/// name the program does not have. Empty since.
+const KNOWN_R1: [(&str, &str); 0] = [];
 
 /// **R1 and R2 — no run reaches a name the program does not have.**
 ///
@@ -473,7 +465,7 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
         r1, known,
         "R1 — a run derived a name that is neither a loaded fact's nor a rule's \
          constant: a value no rule's text predicts, which the seed cannot hold \
-         (KNOWN_R1 names W34's, open, which S1f.5.9 fixes)"
+         (KNOWN_R1 named W34's until S1f.5.9 fixed it)"
     );
     assert_eq!(
         r2,

@@ -8,7 +8,9 @@
 continue with default decisions till the end of the phase"*. **In progress 2026-11-09**, in lane 2's worktree
 (`p1f5-lane2`), lane 2's last stage, after S1f.5.7, S1f.5.10 and S1f.5.18 (`ee3da657`): T1f.5.9.1
 ([its record](#t1f591-record-2026-11-09)), every move listed, W60's four rows and W61 filed, three questions taken by
-default (Q-M1f.45 to Q-M1f.47).
+default (Q-M1f.45 to Q-M1f.47) (`b6852791`); T1f.5.9.2 ([its record](#t1f592-record-2026-11-09)), the empty conjunction
+fires and the empty conclusion asserts nothing, W31's four rows and W34 fixed, the empty core `∅` on every text surface
+(Q-M1f.48).
 **Depends on:** nothing it waits for. [S1f.5.5](s1f.5.5_the_grammar.md)'s grammar refuses `(and)`, and since its swap
 `()` parses only as a whole `:match` or `:assert`. [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) landed
 first, so a rule with `:match ()` and an unbound conclusion variable is refused at load (W57's
@@ -154,7 +156,7 @@ S1f.5.0 recorded holds (`wrong_answers.rs`, release, on `ee3da657`):
 | `W31/empty-match-activator` | root holds no `hit`; `(hit a)` a candidate, R four states |
 | `W31/empty-match-hrule` | *no candidate: R is {∅} or empty, decided by root alone*, R {∅} |
 | `W34/assert-empty` | root stores `( :rule r)`, `(q "#empty")` a candidate, R two states, the query's classes two |
-| `(rule r () :match (and) :assert (false))` | `file:3:23: unexpected `)``, repairs *Delete `)`, Delete `:assert`*, then *unexpected end of input*, exit 1 on every command (`ein test`: 2); no word of the empty conjunction |
+| `(rule r () :match (and) :assert (false))` | ``<file>:3:23: unexpected `)` ``, repairs *Delete `)`, Delete `:assert`*, then *unexpected end of input*, exit 1 on every command (`ein test`: 2); no word of the empty conjunction |
 
 `(or)` in the same place is refused the same way, and so is `(and)` in an `:assert`, a query's `:goal`, an hrule's
 `:match` and a macro's template (`build/s1f.5.9/case/and-*.ein`, `or-empty.ein`). An obligation whose `:match` is `()`
@@ -170,7 +172,7 @@ the prototype below:
 | `empty-match-activator.ein`: `(rule r (?x) :match () :assert (hit ?x))`, `(r a)` | R four states, `(hit a)` a candidate | root holds `(hit a :rule r)`; H `(p a)`, R two states |
 | `empty-match-hrule.ein`: `(hrule h () :match () :assert (q b))`, `(solve :hrules (h))` | H empty, R {∅} | H `(q b)`, R ∅ and `{(q b)}` |
 | `assert-empty.ein`: `(rule r () :match (q ?x) :assert ())` | R two states, `(q "#empty")` | root holds `(q a)` alone, H empty, R {∅}, one class |
-| `(rule r (?x) :match () :assert (q ?x))` as an hrule, `(solve :hrules (h (b) (c)))` | H empty, R {∅} | H `(q b)`, `(q c)`, R their cube, once per activator |
+| `(hrule h (?x) :match () :assert (q ?x))`, `(solve :hrules (h (b) (c)))` | H empty, R {∅} | H `(q b)`, `(q c)`, R their cube, once per activator |
 | `(rule r () :match (and) :assert (false))` | the parse error above | the same error, with a note: *rule 'r''s :match writes (and), the empty conjunction, whose one spelling is () — and takes one premise or more* |
 
 **The prototype** (`build/s1f.5.9/prototype.patch`), three parts:
@@ -252,6 +254,73 @@ program whose oracle stops where `(r eq)`'s plan is compiled, which the test hel
 load. The first run of the workspace's tests found those two (`build/s1f.5.9/t1-tests.log`), which this commit updates;
 the gate run its body names is the whole gate again. The prototype is set aside as `build/s1f.5.9/prototype.patch`;
 T1f.5.9.2 to .4 land it, a part each.
+
+## T1f.5.9.2 record (2026-11-09)
+
+**The empty conjunction** (`ein_infer::compile`, the prototype's first part): a `:match` that is `()` compiles to the one
+empty disjunct the compiler built for a rule with no `:match` (which the loader refuses), and the matcher takes a
+disjunct with no step as one vacuous match, so the plan fires once at root, or once per activator fact with its
+parameters alone bound; an hrule's plan is the same, so the rung proposes its conclusion once, or once per `:hrules`
+activator. **The empty conclusion**: an `:assert` that is `()` compiles to no template, so an application derives
+nothing and is no firing (`Saturator::apply`), and the hrule rung proposes nothing for it. No `#empty` fact is stored,
+so `#empty` is no name of the program.
+
+**The empty core, on every text surface** (the coordinator's note of 2026-11-09, S1f.5.8 having landed on `master` as
+`c4708638`; [Q-M1f.48](../open_questions.md#q-m1f48--how-a-text-surface-writes-the-empty-core), taken by default):
+`empty-match-false.ein`'s root is dead with the core `[]`, which every JSON surface on this branch writes `[]` beside
+`core_status: "within-budget"` and `refuted_by: ["r"]`. The text surfaces printed a core fact by fact, so the empty set
+printed nothing, and `--trace`'s N said *Core: not kept by this route.*, which is false. Each prints `∅` since, where a
+dead node's core was taken (`core_status` set) and holds no fact (`explain::core_text`, `EMPTY_CORE`, `EMPTY_CORE_GLOSS`):
+the read-out's `unsat core ∅, the empty set: the refutation rests on no fact` and a minimal hole's `dead: ∅`;
+`--trace`'s `Core: ∅, the empty set: the refutation rests on no fact.`; `--dump-lattice`'s `nodes.md`, `core ∅`;
+`ein oracle --dump`'s `region.md`, `core ∅ by r`; and `ein render region`'s table and tooltips, `core ∅ by r` and `core: ∅`.
+No tree printed the false sentence: the commit that makes the empty core reachable teaches the printers it.
+
+**The rows**: W31's four and W34's `fixed`, each `[case.fixed]` the null id, which the next commit writes, and each region
+restated (`register_region.rs`):
+
+| row | `now` |
+|---|---|
+| `W31/empty-match-false` | describe: root dead, R empty, `core = []`, `core_status = "within-budget"`, `refuted_by = ["r"]` (its `now` moves from `--minimal`, which takes no core, to describe, which does; its `right` states the core, the status and the rule) |
+| `W31/empty-match-fact` | `--minimal`: root's state, H `(p a)`, `(p b)`, R four states |
+| `W31/empty-match-activator` | `--minimal`: root's state, H `(p a)`, R two states |
+| `W31/empty-match-hrule` | describe: R ∅ and `{(q b)}` |
+| `W34/assert-empty` | describe: R {∅}, H empty, the query one class (`queries`, stated in its `right` too) |
+
+The register reads **153 fixed, 18 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-09). The witnesses' headers gain a section saying what replaced the answer, and their corpus notes say so.
+
+**The tests.**
+- `ein-infer`'s `rule_semantics::an_empty_match_fires_once_or_once_per_activator`: `(rule once () :match () …)` fires
+  once, `(rule each (?x) :match () …)` once per activator, its parameter alone bound; and
+  `an_empty_conclusion_and_one_named_at_empty_are_two_facts` restated: `:assert ()` is no firing and stores no `#empty`
+  fact, `(@empty)` a name's fact.
+- `ein-infer`'s `corpus_cores::a_rule_with_no_premise_refutes_root_with_the_empty_core`: describe's root and the cube's
+  root node, each core `[]`, `within-budget` and `r`. The corpus-wide test skips a dead root; the cut-search test reads
+  this one's status and rules with every other's.
+- `ein-cli`'s `cli_semantics::an_empty_match_fires_and_an_empty_conclusion_asserts_nothing`: each witness's root fixpoint
+  (`saturate --dump`), its state count on `solve` and `oracle`, H on the hrule's, and the empty core on the read-out,
+  `--trace`, `--dump-lattice`'s `nodes.md` and `ein oracle --dump`'s `region.md`.
+- `ein-infer`'s `explore.rs` holds every mode to the oracle on each witness, as on every register witness.
+- The lists W34's witness stood on are empty: `answer_round_trip.rs`' and `answer_dump.rs`' `DO_NOT_LOAD`,
+  `claim_round_trip.rs`' `DO_NOT_READ_BACK` and `alive_invariant.rs`' `KNOWN_R1`. `alive_invariant.rs`' `SEEDED` keeps
+  `b` on `empty-match-fact` and `empty-match-hrule`: a constant of the rule's `:assert`, which the loaded KB's names do
+  not hold, whether or not the rule fires.
+- `ein-cli`'s `answer_round_trip.rs`, which held that no member of N in `nogoods.json` has an empty core (M1e2
+  S1e2.3.9, a member a run past `--region-limit` did not keep), takes the empty core on ∅: a member that is not ∅ has a
+  core naming its commitment's facts (`corpus_cores.rs`), so `[]` is a dead root's alone.
+- `ein-corpus`'s `register::tests::what_refuted_by_names_is_an_answer`, which took the first row whose `right` states
+  `refuted by` for W36's, open, picks W36's by its case: `W31/empty-match-false` states its dead root's `r` too, and
+  answers it.
+
+The first run of the workspace's tests found the last two (`build/s1f.5.9/t2-tests.log`), which this commit updates.
+
+**What moved** (`build/s1f.5.9/xcheck/run_all.sh t2`, this build against `ee3da657`'s, 547 files with the five T1f.5.9.1
+banked, 205 s, `zebra2-minus-15.ein` compared alone by `compare_lean.py`): **542 are the same and five move**, W31's
+four witnesses and W34's, each as the case's row says, `empty-match-hrule`'s `saturate` unmoved. No other program of the
+five roots writes `()` as a `:match` or an `:assert`, and none has an empty core, so no other read-out moves.
+**Banked**: `corpus_shapes.md5` 98 digests over the five witnesses, none of any other program; `corpus_exits.txt`
+unmoved, every run of the five exiting 0 before and after.
 
 ## For the merge
 

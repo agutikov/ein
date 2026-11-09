@@ -1091,13 +1091,12 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
 /// `@empty` as a name (S1f.5.4's ruling) and `()` only as a whole `:match` or
 /// `:assert`.
 ///
-/// `:assert ()` stores a fact under the parser's synthetic head for `()`
-/// today, which is `W34/assert-empty`'s wrong answer, open and S1f.5.9's to
-/// fix: an empty conclusion asserts nothing. Until T1f.5.5.8 that head was
-/// `@empty`, so `written`'s `(@empty)` was the fact `empty-form` had already
-/// stored, and its firing re-derived it. The head is `#empty` since, which no
-/// program can spell, so `written` stores a fact of its own whether or not
-/// `empty-form` stores one.
+/// `:assert ()` asserts nothing since M1f S1f.5.9's T1f.5.9.2 (2026-11-09,
+/// W34): `empty-form` matches and derives nothing, and is no firing. Until
+/// then it stored a fact under the parser's synthetic head for `()`, whose
+/// name joined H; until T1f.5.5.8 that head was `@empty`, so `written`'s
+/// `(@empty)` was the fact `empty-form` had already stored, and its firing
+/// re-derived it. `written` stores its own fact either way.
 #[test]
 fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
     let text = "(relation q Node :why \"{?a} is a node\")\n(q a)\n\
@@ -1126,6 +1125,58 @@ fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
     assert!(
         !by("empty-form").contains(&written[0]),
         "`:assert ()` and `:assert (@empty)` stored one fact"
+    );
+    assert!(
+        run.firings.iter().all(|f| run.rule_of(f) != "empty-form"),
+        "`:assert ()` concludes nothing, so it is no firing"
+    );
+    assert_eq!(
+        run.facts().iter().filter(|f| f.contains("#empty")).count(),
+        0,
+        "`:assert ()` stored a fact under the synthetic head"
+    );
+}
+
+/// **An empty `:match` fires once, or once per activator fact** — M1f
+/// S1f.5.9, on the user's ruling of 2026-11-07 on P1f.5's F12 (*"1 fire; 2
+/// same"*). `()` is the empty conjunction, which is true, so a rule whose
+/// `:match` is `()` fires once at root with nothing bound, and a rule with
+/// parameters once per activator, its parameters alone bound. Until S1f.5.9
+/// `()` was a premise over the parser's synthetic `#empty`, which no fact
+/// holds, so neither fired, in silence (W31).
+#[test]
+fn an_empty_match_fires_once_or_once_per_activator() {
+    let run = saturate(
+        "(relation q Node) (relation hit Node)\n(q a)\n\
+         (rule once () :match () :assert (q b))\n\
+         (rule each (?x) :match () :assert (hit ?x))\n(each a) (each c)\n",
+    );
+    let fired = |rule: &str| {
+        run.productive()
+            .into_iter()
+            .filter(|f| run.rule_of(f) == rule)
+            .count()
+    };
+    assert_eq!(fired("once"), 1, "the empty conjunction holds once");
+    assert_eq!(fired("each"), 2, "once per activator fact");
+    assert_eq!(
+        run.derived(),
+        BTreeSet::from([
+            "(q b)".to_string(),
+            "(hit a)".to_string(),
+            "(hit c)".to_string()
+        ])
+    );
+    let each = run
+        .productive()
+        .into_iter()
+        .find(|f| run.rule_of(f) == "each")
+        .expect("fired");
+    assert_eq!(
+        run.bindings_of(each).len(),
+        1,
+        "only the parameter is bound: {:?}",
+        run.bindings_of(each)
     );
 }
 

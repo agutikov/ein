@@ -3250,3 +3250,111 @@ fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
     }
     assert!(!third.contains("?y = w"), "{third}");
 }
+
+/// **An empty `:match` fires, and an empty conclusion asserts nothing, on every
+/// command** — M1f S1f.5.9, on the user's ruling of 2026-11-07 on P1f.5's F12
+/// (*"1 fire; 2 same; 3 reject (and) while it is the same as () and `and`
+/// should have arguments"*).
+///
+/// W31's four witnesses and W34's, each on every command that answers a
+/// program: `()` is the empty conjunction, which is true, so a rule whose
+/// `:match` is `()` fires once at root, or once per activator fact, with only
+/// its parameters bound, and an hrule's proposes its conclusion likewise; and
+/// `:assert ()` concludes nothing. Until S1f.5.9 `()` was a premise over the
+/// parser's synthetic `#empty`, which no fact holds, so each rule never fired
+/// and the hrule proposed nothing, in silence (W31), and `:assert ()` stored a
+/// fact under that head, whose name joined H (W34).
+#[test]
+fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
+    let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
+    // Root's fixpoint, as `ein saturate --dump` lists it.
+    for (file, holds, lacks) in [
+        (w("empty-match-false"), &["(false :rule r)"][..], &[][..]),
+        (w("empty-match-fact"), &["(q b :rule r)", "(q a)"], &[]),
+        (w("empty-match-activator"), &["(hit a :rule r)"], &[]),
+        (w("assert-empty"), &["(q a)"], &["( :rule r)", "#empty"]),
+    ] {
+        let r = ein(&["saturate", "--dump", &file]);
+        assert_eq!(r.code, 0, "{file}:\n{}", r.err);
+        for fact in holds {
+            assert!(
+                r.out.lines().any(|l| l.trim() == *fact),
+                "{file}: no {fact}:\n{}",
+                r.out
+            );
+        }
+        for not in lacks {
+            assert!(!r.out.contains(not), "{file}: {not} is back:\n{}", r.out);
+        }
+    }
+    // R, by describe and by the oracle: the state counts.
+    for (file, states) in [
+        (w("empty-match-false"), "0"),
+        (w("empty-match-fact"), "4"),
+        (w("empty-match-activator"), "2"),
+        (w("empty-match-hrule"), "2"),
+        (w("assert-empty"), "1"),
+    ] {
+        for cmd in ["solve", "oracle"] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, 0, "ein {cmd} {file}:\n{}", r.err);
+            let line = r
+                .out
+                .lines()
+                .find(|l| l.trim_start().starts_with("states (k_s)"))
+                .unwrap_or_else(|| panic!("ein {cmd} {file}: no states line:\n{}", r.out));
+            assert_eq!(
+                line.split_whitespace().nth(2),
+                Some(states),
+                "ein {cmd} {file}: {line}"
+            );
+        }
+    }
+    // The dead root: the empty core, `r` its rule, on every text surface
+    // that prints a core (Q-M1f.48), where until S1f.5.9 none was empty.
+    let empty = format!(
+        "{}, {}",
+        ein_infer::explain::EMPTY_CORE,
+        ein_infer::explain::EMPTY_CORE_GLOSS
+    );
+    let scratch = ein_corpus::Scratch::new("ein-empty-core");
+    let dir = scratch.path();
+    let trace = dir.join("t.md").to_string_lossy().into_owned();
+    let lattice = dir.join("lattice").to_string_lossy().into_owned();
+    let oracle = dir.join("oracle").to_string_lossy().into_owned();
+    let r = ein(&[
+        "solve",
+        &w("empty-match-false"),
+        "--trace",
+        &trace,
+        "--dump-lattice",
+        &lattice,
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let row = |label: &str| -> Option<String> {
+        r.out.lines().find_map(|l| {
+            l.trim_start()
+                .strip_prefix(label)
+                .map(|v| v.trim().to_string())
+        })
+    };
+    assert_eq!(
+        row("unsat core").as_deref(),
+        Some(empty.as_str()),
+        "{}",
+        r.out
+    );
+    assert_eq!(row("refuted by").as_deref(), Some("r"), "{}", r.out);
+    let t = std::fs::read_to_string(&trace).expect("the trace");
+    assert!(t.contains(&format!("Core: {empty}.")), "{t}");
+    assert!(!t.contains("not kept by this route"), "{t}");
+    let n = std::fs::read_to_string(dir.join("lattice/nodes.md")).expect("nodes.md");
+    assert!(n.contains("| core ∅ |"), "{n}");
+    let r = ein(&["oracle", &w("empty-match-false"), "--dump", &oracle]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let md = std::fs::read_to_string(dir.join("oracle/region.md")).expect("region.md");
+    assert!(md.contains("core ∅ by r"), "{md}");
+    // The hrule proposes its conclusion: H is `(q b)`.
+    let r = ein(&["solve", "-H", &w("empty-match-hrule")]);
+    assert!(r.out.lines().any(|l| l.trim() == "(q b)"), "{}", r.out);
+}

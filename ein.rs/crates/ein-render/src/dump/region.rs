@@ -915,10 +915,10 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
         for mk in order {
             let node = &r.nodes[mk as usize];
             let mut why: Vec<String> = Vec::new();
-            if !node.core.is_empty() {
+            if !node.core.is_empty() || node.core_status.is_some() {
                 why.push(format!(
                     "core {} by {}",
-                    node.core.join(" "),
+                    ein_infer::explain::core_text(&node.core, " "),
                     node.refuted_by.join(", ")
                 ));
                 if let Some(at) = node.core_status.and_then(|c| c.cut_at()) {

@@ -2326,10 +2326,12 @@ queries   = [{ classes = 1, expect = "none" }]
             }
             .defects()
         };
+        // W36's row, open: since M1f S1f.5.9 `W31/empty-match-false`, fixed,
+        // states what its dead root's `refuted by` names too, and answers it.
         let row = reg
             .case
             .iter()
-            .find(|r| r.right.refuted_by.is_some())
+            .find(|r| r.case == "W36" && r.right.refuted_by.is_some())
             .expect("W36 states what refuted by names")
             .clone();
         assert!(defects(&row).is_empty(), "{:?}", defects(&row));
