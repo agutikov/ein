@@ -22,7 +22,7 @@
 ;;; swap, and nothing in the puzzle prefers either arrangement.
 
 (relation instance Thing Type)
-(relation seat     Person Slot :why "{1} sits in {2}")
+(relation seat     Person Slot :why "{?1} sits in {?2}")
 
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)

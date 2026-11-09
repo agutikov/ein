@@ -9,7 +9,8 @@ phase's last stage, on default decisions recorded as they are taken (the user's 
 census, done ([its record](#t1f5141-record-2026-11-10)); T2, a fact in English from its first recorded justification,
 in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)); T3 and T4,
 the three forms with nowhere to put a template decided and the page written, done
-([T3](#t1f5143-record-2026-11-10), [T4](#t1f5144-record-2026-11-10)). **Ruled and placed on 2026-11-08**
+([T3](#t1f5143-record-2026-11-10), [T4](#t1f5144-record-2026-11-10)); T5, the two checks banked, the first with 66
+findings, each fixed, done ([its record](#t1f5145-record-2026-11-10)). **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -489,6 +490,39 @@ and its division of labour, from `ir/03-ein-lang/README.md`, from `docs/kernel/R
 Both are cheap and neither is a discovery. Say that in the commit message —
 [Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
 standard cuts both ways, and a probe that comes back clean is still a result.
+
+#### T1f.5.14.5 record, 2026-11-10
+
+**Both checks are banked, and the first was not clean.** The stage file expected *0 findings over 544 templates*;
+on 2026-11-10, at `5e4ecb93`, `ein-ir/tests/template_wellformedness.rs` read 893 templates and found 66:
+
+- **58 literals `{N}` in 45 relation `:why`s over 13 files**, `"{1} is a {2}"` where `"{?1} is a {?2}"` was meant: a
+  bare `{x}` is a literal (`01_grammar.md`), so each printed as written once T2 gave a relation's `:why` a surface.
+  `examples/features/01`, `07`, `10`, `11`, `12`, `examples/ein-bugs/minimal-line-stated-obligation` and its control,
+  and under `wrong-answers/` `alt-flag-refuted-by`, `alt-flag-two-derivations`, `guard-only-first`,
+  `h-long-relation`, `or-one-key` and its twin. The check flags a literal that names a reference its form could fill
+  (a relation's digit, a rule's bound variable), and leaves every other brace literal, as the grammar has it.
+- **8 references in one rule's `:why` that name nothing it binds**: `knows-is-mutual` writes `"{?1} knows {?2}, so
+  {?2} knows {?1}."` and binds `?a` and `?b`, in `examples/ein-bugs/wrong-answers/uncovered.ein` and its `-knows`
+  twin; its `--trace` printed the braces.
+
+Each is fixed in this commit ([Q-M1f.64](../open_questions.md#q-m1f64--existing-whys-that-are-placeholders-or-name-nothing),
+defaulted): none moves an answer, so none is a register row. A rule's binding set is its parameters and the variables
+of its `:match`'s positive premises with the macros expanded (`forall` and `unknown` are `absent`), and in a top-level
+`(or …)` those every disjunct binds; a relation's references are positions within its signature.
+
+**`no_placeholder_reaches_an_output`** (`ein-cli/tests/answer_round_trip.rs`): no line of `answer.txt` or of a state
+file's facts carries `{?`, over every corpus program the per-commit tier dumps, and `corpus_cli.rs` holds every
+`--trace` run's file to the same. It came back clean once the references were fixed, which is a result too: the
+template check holds the cause, this the effect wherever a template is filled.
+
+**And the page is pinned** (T4's): `ein-cli/tests/natural_language_page.rs` holds its § 3 block to the state file
+`ein solve examples/zebra.ein --dump-answer` writes, its § 4 registers to the census's and the census's `kernel` to
+`ein_core::RESERVED`, and every question it cites to a heading of `open_questions.md`.
+
+**What moved**, named before it was blessed: `corpus_shapes.md5`, 109 digests over the 15 files the fix touched: the
+five frontend ops and `load` of each (the template's text), `plan` on 2 (a plan carries its rule's `:why`),
+`region-trace` on 8 and `states` on 9 (the sentences now filled). No R, N, H, claim or exit code moved.
 
 ### Task T1f.5.14.6 — the loader flag, default false (first)
 

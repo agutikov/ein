@@ -18,8 +18,8 @@
 ;;; relation `lives-next-door-to2`, and the register test's own reader of `-H` lost the
 ;;; relation. Right: one space at least, `lives-next-door-to 2 candidates, 0 dead alone`.
 (relation is-a T T
-  :why "{1} is a {2}")
+  :why "{?1} is a {?2}")
 (relation lives-next-door-to Person Person
-  :why "{1} lives next door to {2}")
+  :why "{?1} lives next door to {?2}")
 (is-a Ann Person) (is-a Bob Person)
 (solve :no-hypothesis (is-a))

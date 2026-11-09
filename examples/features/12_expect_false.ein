@@ -40,7 +40,7 @@
 ;;; this file demonstrates `(false)` without also being a symmetry stress test.
 
 (relation instance Thing Type)
-(relation in       Pigeon Hole :why "{1} is in {2}")
+(relation in       Pigeon Hole :why "{?1} is in {?2}")
 
 (instance P1 Pigeon) (instance P2 Pigeon) (instance P3 Pigeon)
 (instance H1 Hole)   (instance H2 Hole)

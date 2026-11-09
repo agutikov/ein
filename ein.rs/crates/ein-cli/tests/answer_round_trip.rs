@@ -43,6 +43,10 @@
 //! event (`no_core_unless_dead`). Until S1f.5.8 an owing hole, and every node that
 //! is not dead in the last three, was written `[]`.
 //!
+//! **And no unfilled template reaches it** (M1f S1f.5.14's T1f.5.14.5): no
+//! line of `answer.txt` or of a state file's facts carries `{?`
+//! ([`no_placeholder_reaches_an_output`]).
+//!
 //! **Two tiers** (M1f S1f.5.13, the user's ruling of 2026-11-08 on P-16:
 //! *"move to slow tier"*). Per commit the test dumps every entry that is
 //! neither `slow` nor `heavy_dump`, the manifest's flag for a dump of at
@@ -181,6 +185,10 @@ fn check(
             files.push((format!("owing/{:0w$}.ein", i + 1), o.node.set.to_vec()));
         }
     }
+    no_placeholder_reaches_an_output(file, &dir.join("answer.txt"), bad);
+    for (path, _) in &files {
+        no_placeholder_reaches_an_output(file, &dir.join(path), bad);
+    }
     members_of_n(file, dir, bad);
     *eager += eager_cores(file, dir, bad, held);
     held.add(no_core_unless_dead(file, dir, bad));
@@ -212,6 +220,33 @@ fn check(
         }
     }
     Some(files.len())
+}
+
+/// **No unfilled template reaches an output** — M1f S1f.5.14's T1f.5.14.5,
+/// the second of the stage's two checks: no line of `answer.txt` (the
+/// read-out, a class's `:goal-text` filled) or of a state file (each fact's
+/// English, its rule's `:why` and its relation's filled) carries `{?`, which
+/// [`ein_core::render_why`] leaves where a reference names nothing it binds.
+/// A state file re-writes the program above its facts, `:why` templates and
+/// all, so only the lines after its `── the state` marker are read. It came
+/// back clean on the corpus as it stood when it was written, which is a
+/// result too: `ein-ir/tests/template_wellformedness.rs` holds the cause, the
+/// template, and this holds the effect wherever a template is filled.
+fn no_placeholder_reaches_an_output(file: &str, path: &Path, bad: &mut Vec<String>) {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return;
+    };
+    let rendered = match text.split_once("── the state") {
+        Some((_, facts)) => facts,
+        None if path.extension().is_some_and(|x| x == "ein") => return,
+        None => &text,
+    };
+    for line in rendered.lines().filter(|l| l.contains("{?")) {
+        bad.push(format!(
+            "{file}: {} prints an unfilled template reference: {line}",
+            path.file_name().unwrap_or_default().to_string_lossy()
+        ));
+    }
 }
 
 /// `nogoods.json`'s members, each with a core, its search's status and its

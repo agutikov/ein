@@ -17,12 +17,12 @@
 ;;; `(p a)`, the activator's own support, which is the witness's right answer
 ;;; (`ein solve FILE --dump-answer DIR`, 2026-11-08).
 
-(relation seed T :why "{1} is a seed")
-(relation p    T :why "{1} is p")
-(relation p2   T :why "{1} is p2")
-(relation pp   T :why "{1} is p, read again")
-(relation w    T :why "{1} activates w")
-(relation b    T :why "{1} is b")
+(relation seed T :why "{?1} is a seed")
+(relation p    T :why "{?1} is p")
+(relation p2   T :why "{?1} is p2")
+(relation pp   T :why "{?1} is p, read again")
+(relation w    T :why "{?1} activates w")
+(relation b    T :why "{?1} is b")
 (seed a) (b a)
 (hrule g  () :match (seed ?x) :assert (p ?x) :why "guess {?x} is p")
 (hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess {?x} is p2")

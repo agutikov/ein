@@ -43,13 +43,13 @@
 ;;; `k1`. F22 re-derives what the store does not keep when the search reaches
 ;;; it, which makes `refuted by` a function of the core.
 
-(relation g1 T :why "{1} has g1")
-(relation g2 T :why "{1} has g2")
-(relation h1 T :why "{1} has h1")
-(relation h2 T :why "{1} has h2")
-(relation h3 T :why "{1} has h3")
-(relation u  T :why "{1} is used")
-(relation q  T :why "{1} is a q")
+(relation g1 T :why "{?1} has g1")
+(relation g2 T :why "{?1} has g2")
+(relation h1 T :why "{?1} has h1")
+(relation h2 T :why "{?1} has h2")
+(relation h3 T :why "{?1} has h3")
+(relation u  T :why "{?1} is used")
+(relation q  T :why "{?1} is a q")
 (g1 a) (g2 a) (h1 a) (h2 a) (h3 a)
 (rule u-long ()
   :match  (and (h1 ?x) (h2 ?x) (h3 ?x))

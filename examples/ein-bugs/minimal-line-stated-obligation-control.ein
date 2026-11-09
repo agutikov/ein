@@ -6,9 +6,9 @@
 ;;; two files printed the same row; since S1f.5.6 both print `1 state — ∅`, and
 ;;; `region.minimal.trivial` is true on both, ∅ being in R.
 (relation is-a  T T
-  :why "{1} is a {2}")
+  :why "{?1} is a {?2}")
 (relation likes Person Food
-  :why "{1} likes {2}")
+  :why "{?1} likes {?2}")
 (is-a Ann Person) (is-a Soup Food)
 (likes Ann Soup)
 (solve :no-hypothesis (is-a likes))

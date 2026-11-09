@@ -213,8 +213,18 @@ fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
     }
     if run.contains("--trace") {
         a.traces += 1;
-        if !dir.join("trace.md").is_file() {
-            a.bad.push(format!("  {path} :: {run} — no trace.md"));
+        match std::fs::read_to_string(dir.join("trace.md")) {
+            Err(_) => a.bad.push(format!("  {path} :: {run} — no trace.md")),
+            // No unfilled template reaches the trace (M1f S1f.5.14's
+            // T1f.5.14.5, `answer_round_trip.rs`' `no_placeholder_reaches_an_output`
+            // over the answer): a step's `:why` and its derived fact's, filled.
+            Ok(t) => {
+                for line in t.lines().filter(|l| l.contains("{?")) {
+                    a.bad.push(format!(
+                        "  {path} :: {run} — trace.md: an unfilled reference: {line}"
+                    ));
+                }
+            }
         }
     }
     // The walk's `--dump-states` tree went at M1e2 S1e2.1a.5; the two

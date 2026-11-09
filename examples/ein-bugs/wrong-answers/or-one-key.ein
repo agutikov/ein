@@ -22,14 +22,14 @@
 ;;; as seen, and the derivation is never recorded as an alternative. The twin
 ;;; records both and reports two facts.
 
-(relation p     T :why "{1} is p")
-(relation q     T :why "{1} is q")
-(relation hit   T :why "{1} is hit")
-(relation big   T :why "{1} is big")
-(relation big2  T :why "{1} is big2")
-(relation big3  T :why "{1} is big3")
-(relation small T :why "{1} is small")
-(relation c     T :why "{1} is c")
+(relation p     T :why "{?1} is p")
+(relation q     T :why "{?1} is q")
+(relation hit   T :why "{?1} is hit")
+(relation big   T :why "{?1} is big")
+(relation big2  T :why "{?1} is big2")
+(relation big3  T :why "{?1} is big3")
+(relation small T :why "{?1} is small")
+(relation c     T :why "{?1} is c")
 (big b0) (big2 b0) (big3 b0)
 (rule m1 () :match (and (big ?x) (big2 ?x) (big3 ?x)) :assert (p w) :why "{?x} is big, big2 and big3, so w is p")
 (rule s () :match (small ?x) :assert (q w) :why "{?x} is small, so w is q")

@@ -17,7 +17,7 @@ every fact, match, every Ein statement can be converted to NL."* The return leg,
 A string is natural-language text, written only after `:why`, `:source` and `:goal-text`
 ([`01_grammar.md`](01_grammar.md), M1f S1f.5.2), Unicode with the escapes `\n \t \r \" \\ \u{…}`. A template fills
 `{?ref}` from bindings ([`ein_core::render_why`](../../../../ein.rs/crates/ein-core/src/why.rs)) and leaves a
-reference nothing binds as written, which is why the stage's template check (T1f.5.14.5, [§ 7](#7-what-holds-this-page)) exists.
+reference nothing binds as written, which is why [§ 7](#7-what-holds-this-page)'s first check exists.
 
 | text | on | fills | printed by |
 |---|---|---|---|
@@ -90,7 +90,8 @@ is an explanation, F22 makes it canonical"*) covers both, and F22 makes them can
 deterministic, and `ein-render/tests/id_order_invariance.rs` and `jobs_invariance.rs` hold the state files (the sweep's
 `states` op) to it.
 
-A state file from `ein solve examples/zebra.ein --dump-answer DIR`, `DIR/models/01.ein` (2026-11-10, at `b761af48`):
+A state file from `ein solve examples/zebra.ein --dump-answer DIR`, `DIR/models/01.ein`, held to a run by
+`ein-cli/tests/natural_language_page.rs`:
 
 <!-- state-file: examples/zebra.ein -->
 ```lisp
@@ -163,6 +164,15 @@ in `read_out.md` or `reserved_engine_strings.md`, and never in a renderer's voca
 
 ## 7. What holds this page
 
+- `ein-ir/tests/template_wellformedness.rs` (T1f.5.14.5): every `{?ref}` in a corpus or stdlib `:why` names something
+  its form can fill — a relation's a position within its signature, a rule's or an hrule's a variable it binds (a
+  parameter, or a positive premise's, macros expanded), a macro's a parameter — and no `{x}` is a reference with its
+  `?` missing. When it was written it found 66 over 893 templates (2026-11-10), each fixed in the same commit.
+- `no_placeholder_reaches_an_output` (T1f.5.14.5, `ein-cli/tests/answer_round_trip.rs`): no line of `answer.txt` or
+  of a state file's facts, over every corpus program the per-commit tier dumps, carries `{?`; `corpus_cli.rs` holds
+  every `--trace` run's file to the same.
 - `ein-cli/tests/natural_language_text.rs` (§ 1, § 3), `ein-ir/tests/load_semantics.rs`' and
   `ein-cli/tests/config_reference.rs`' `require_why_*` tests (§ 2), and the corpus sweep's `states` op (§ 3).
-- T1f.5.14.5 banks the stage's two checks and the page's own pin.
+- `ein-cli/tests/natural_language_page.rs`: § 3's block is lines of the state file its marker's run writes, § 4's
+  four registers are the census's, the census's `kernel` is `ein_core::RESERVED`, and every question the page cites
+  is a heading of M1f's `open_questions.md`.

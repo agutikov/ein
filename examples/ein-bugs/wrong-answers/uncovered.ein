@@ -67,6 +67,6 @@
 (rule knows-is-mutual ()
   :match  (knows ?a ?b)
   :assert (knows ?b ?a)
-  :why    "{?1} knows {?2}, so {?2} knows {?1}.")
+  :why    "{?a} knows {?b}, so {?b} knows {?a}.")
 
 (query :goal (seats ?g ?c))

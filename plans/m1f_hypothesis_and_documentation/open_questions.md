@@ -69,6 +69,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.59](#q-m1f59--what-a-macros-why-renders) | what a macro's `:why` renders | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), nothing: it documents the pattern, and the rule that used it says what it meant there**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.60](#q-m1f60--a-relation-nobody-declares) | a relation nobody declares | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no slot: a derived fact reads by its reason, a stated one falls back, counted under `stdlib` or `undeclared`**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.61](#q-m1f61--a-template-per-goal-conjunct) | a template per goal conjunct | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no change**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.64](#q-m1f64--existing-whys-that-are-placeholders-or-name-nothing) | existing `:why`s that are placeholders or name nothing | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), each fixed, the references by the check's commit and the placeholders by the migration; none is a register row**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1438,3 +1439,18 @@ the fact read declares the relation.
 
 **Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a)**, as the stage file says a yes would be a
 question and not a quiet addition.
+
+### Q-M1f.64 — Existing `:why`s that are placeholders or name nothing
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.5 and T1f.5.14.7. The check found 45 relation `:why`s over 13 files
+writing `{1}` for `{?1}` (58 literals) and one rule's writing a relation's `{?1}` and `{?2}` (`uncovered.ein` and its
+twin), each printing as written; and the migration's helpers found `:why`s that are placeholders: `"a"`, `"b"`,
+`"w"`, `"u"`, `"forall"`, `"guarded"`.
+
+- **(a) Fix each**, in the commit of the check that finds it (the references) or the migration (the placeholders); the
+  check flags a literal `{x}` that names a reference its form could fill.
+- **(b) Leave them**: the mandate asks for a `:why`, not a good one.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** The user overrode the refusal of rung (d) on the
+understanding that each `:why` is honest. None is a wrong answer: a `:why` moves no R, N, H, claim or exit code, so
+none is a register row. Terse but true ones (`"{?rel} sym"`) are left.
