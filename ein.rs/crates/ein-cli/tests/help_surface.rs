@@ -44,11 +44,12 @@ const EXPECTED: [(&str, usize); 12] = [
     // explicit check the user approved on 2026-11-03, and T1e2.1c.4.6
     // `--count`, which the user ruled the same day. S1e2.1c.5 retired `-L`
     // and `-K` the same day (hidden, refused with why). M1f T1f.5.14.6 added
-    // `--require-why`, as it did to the six other commands that load a program.
+    // `--require-why`, as it did to the six other commands that load a program,
+    // and T1f.5.14.7 turned it into `--no-require-why`, the default flipped.
     ("COMMAND ein solve\n", 34),
     // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
     // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
-    // `--json-summary`, `--models`, `-p` and `-P`; and `--require-why`.
+    // `--json-summary`, `--models`, `-p` and `-P`; and `--no-require-why`.
     ("COMMAND ein oracle\n", 11),
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
@@ -57,7 +58,7 @@ const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein render constraints\n", 0),
     ("COMMAND ein render lattice\n", 3),
     // M1e2 S1e2.1.3's two doors: `--levi` and `--rule-mode`; `--since`,
-    // `--colour-by`, `--no-types`, `--no-instances`, and `--require-why`.
+    // `--colour-by`, `--no-types`, `--no-instances`, and `--no-require-why`.
     ("COMMAND ein render program\n", 2),
     ("COMMAND ein render kb\n", 5),
     // M1e2 S1e2.1a.2's `--view` over a region dump; S1e2.1a.7's `--visited`
@@ -71,8 +72,9 @@ const EXPECTED: [(&str, usize); 12] = [
 /// retired with `solve`'s at M1e2 S1e2.1a.5), the two that decide how much of
 /// a passing run to print (`-v`, `-q`), the three file-only artefact ones the
 /// stage asked for by name (`--events`, `--events-level`, `--json-summary`),
-/// and M1d S1d.4.1's `--json-report`; and M1f T1f.5.14.6's `--require-why`,
-/// which every command that loads a program takes. There is deliberately no `-n`, no line
+/// and M1d S1d.4.1's `--json-report`; and M1f T1f.5.14.7's `--no-require-why`
+/// (T1f.5.14.6's `--require-why` until the default flipped), which every
+/// command that loads a program takes. There is deliberately no `-n`, no line
 /// flag and no `--exhaustive`: a claim says what it is about, and `ein test`
 /// runs the mode that decides it, so a *missing* option is exactly the kind of
 /// thing this count exists to notice.

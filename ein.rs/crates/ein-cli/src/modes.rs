@@ -62,13 +62,13 @@ const UNSHOWN: [&str; 9] = [
 /// [`UNSHOWN`]'s flags with no value: the trace's shape and stderr's
 /// progress change nothing stdout prints. `-y` adds its own row, the spot
 /// check's, and changes no answer, so the header leaves it out as it leaves
-/// `-j` (C4). `--require-why` decides whether the program loads, and a
-/// program it lets through answers what it answers without it, so a run that
-/// prints a header prints the same one (M1f T1f.5.14.6).
+/// `-j` (C4). `--no-require-why` decides whether the program loads, and a
+/// program loads to what it loads to with it, so a run that prints a header
+/// prints the same one (M1f T1f.5.14.6, T1f.5.14.7).
 const UNSHOWN_FLAGS: [&str; 13] = [
     "-y",
     "--lattice-sanity-check",
-    "--require-why",
+    "--no-require-why",
     "--no-diagrams",
     "-G",
     "--full-kb-snapshots",

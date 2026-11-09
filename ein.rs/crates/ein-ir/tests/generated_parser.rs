@@ -173,7 +173,8 @@ fn the_end_of_input_is_where_the_text_ends() {
 /// The parser reads `:why "…"` once after a macro's body and the macro reader
 /// keeps it (`Macro::why`); until the swap the hand-written parser, the
 /// shipped one, refused it. Whether a program must write one is the loader's
-/// flag, `--require-why` (S1f.5.14).
+/// decision, required by default since S1f.5.14's T1f.5.14.7 and turned off
+/// by `--no-require-why`.
 #[test]
 fn a_macro_carries_its_why() {
     let with = "(macro owns (?p ?x) (has ?p ?x) :why \"{?p} owns {?x}\")\n(has a b)";

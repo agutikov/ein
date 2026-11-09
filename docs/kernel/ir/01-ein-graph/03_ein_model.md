@@ -418,7 +418,7 @@ desugars into form (b) at load time.
 
 #### Args grouping — resolved 2026-05-20 as a corollary of (b)
 
-Under form (b), **nothing follows the args**. The inner `(…)` group
+Under form (b), **nothing follows the args** but the `:why` every declaration carries. The inner `(…)` group
 around the argument types exists in form (a) only to disambiguate the
 args from the trailing property block; with no property block, the
 wrapper is pure noise. M1's canonical form (b) is therefore **flat**:

@@ -94,10 +94,10 @@ Which keywords a form requires, and that each appears once, stay the loader's.
 
 | form | keyword | holds | required |
 |---|---|---|---|
-| `relation` | `:why` | a string: the template that renders the relation's facts | no |
+| `relation` | `:why` | a string: the template that renders the relation's facts | at load, by default ([§ `:why`](#relation-declarator)) |
 | `rule`, `hrule` | `:match` | a premise: the LHS | yes |
 | | `:assert` | a conclusion: the RHS | yes |
-| | `:why` | a string: the template that explains a firing | no |
+| | `:why` | a string: the template that explains a firing | at load, by default |
 | a fact, negated or not | `:source` | a string: the fact is given, and where it is stated | no |
 | | `:rule`, `:using` | a rule's name and its premises: the fact is derived | no |
 | `query` | `:goal` | a premise: the pattern asked about | yes |
@@ -109,7 +109,7 @@ Which keywords a form requires, and that each appears once, stay the loader's.
 | `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags, `true` or `false` ([`configuration.md`](../../configuration.md)) | no |
 | `import` | `:symbols` | the names imported | no |
 | | `:as` | an alias | no |
-| `macro` | `:why` | a string, after the body (the user's ruling of 2026-11-08) | no |
+| `macro` | `:why` | a string, after the body (the user's ruling of 2026-11-08) | at load, by default |
 | `trace` | none; its `step` takes `:rule`, `:using`, `:derives`, `:source`, `:assumes` | one derivation step | no |
 | a term, a nested fact | none | | |
 
@@ -229,14 +229,15 @@ but references the fact's argument **slots positionally**: `{?1}` is arg 0,
 rule/goal `:why` uses letter-led var names). A relation with **no** `:why`
 renders as its raw IR s-expression `(R a b)` — there is no built-in
 relation→verb vocabulary, so untemplated relations stay in IR. Optional in
-the grammar, on a relation, a rule and an hrule alike; `--require-why` makes it
-required at load, default off (M1f T1f.5.14.6,
-[`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why-under---require-why--m1f-t1f5146)). Example:
+the grammar, on a relation, a rule, an hrule and a macro alike, and required at
+load by default since M1f S1f.5.14's T1f.5.14.7; `--no-require-why` loads a
+program without one (T1f.5.14.6, T1f.5.14.7,
+[`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)). Example:
 
 ```lisp
 (relation drink-loc Drink House :why "{?1} is drunk in {?2}")
 ;; (drink-loc Water House-1)  →  "Water is drunk in House-1"
-(relation right-of House House)            ; no :why → renders as (right-of …)
+(relation right-of House House)            ; no :why: refused at load; with --no-require-why, renders as (right-of …)
 ```
 
 A schema + implicit-assumption example (all flat forms; the property tags

@@ -54,7 +54,8 @@ fn loaded(text: &str) -> (Ast, Terms, Kb) {
 /// ternary hyperedge — every node and edge path in the unified renderer.
 const SMALL_KB: &str = concat!(
     "(is-a a Thing) (is-a b Thing) (is-a c Thing)\n",
-    "(relation r Thing Thing)\n(relation tern Thing Thing Thing)\n",
+    "(relation r Thing Thing :why \"r holds of {?1} and {?2}\")\n",
+    "(relation tern Thing Thing Thing :why \"tern holds of {?1}, {?2} and {?3}\")\n",
     "(r a b :source \"(1)\")\n(tern a b c :source \"(2)\")\n",
 );
 

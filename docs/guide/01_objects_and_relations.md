@@ -59,9 +59,11 @@ declare it once, naming the types of its slots:
   ```
 
 `nation-loc` is a relation with two slots; `is-a` (used above) is a
-built-in two-slot relation. Relations carry optional rendering text — e.g.
-`(relation nation-loc Nationality House :why "the {?1} lives in {?2}")` —
-which you'll meet when we print answers.
+built-in two-slot relation. Every relation carries its rendering text, a
+`:why` — e.g. `(relation nation-loc Nationality House :why "the {?1} lives in
+{?2}")` — which says what one of its facts reads as in English; the loader
+refuses a relation, rule or hrule without one (`--no-require-why` loads it
+anyway).
 
 ## Facts — relations applied to objects
 

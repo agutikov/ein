@@ -32,13 +32,13 @@ CJK, an emoji and every escape.
 
 ## 2. The mandate: every declaration carries a `:why`
 
-**A `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` without `:why "…"` is refused at load**, one line per form,
-when the load requires it ([`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why-under---require-why--m1f-t1f5146)).
-The grammar keeps `:why` optional; the loader decides, through
-[`ein_ir::LoadOptions::require_why`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), which `--require-why` sets on
-the seven commands that load a program ([`configuration.md` § 3.4](../../configuration.md#34-the-option-that-decides-loading)),
-default false until T1f.5.14.7, the stage's last task, turns it true once every program the corpus, the stdlib and the
-Rust suites load carries one. It decides whether a program loads and never what a loaded program answers (the user,
+**A `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` without `:why "…"` is refused at load**, one line per form
+([`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)). The grammar keeps `:why` optional; the
+loader decides, through [`ein_ir::LoadOptions::require_why`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), **true by
+default since T1f.5.14.7** (2026-11-10), once every program the corpus, the stdlib and the Rust suites load carried
+one; `--no-require-why` on the seven commands that load a program loads one without
+([`configuration.md` § 3.4](../../configuration.md#34-the-option-that-decides-loading)), as `--require-why`, default
+off, required one from T1f.5.14.6 until then. It decides whether a program loads and never what a loaded program answers (the user,
 2026-11-08: *"yes, the flag only decides loading"*). `:goal-text` and `:source` stay optional: a query's answer reads
 through its classes, and only a given has a sentence to quote.
 
@@ -57,7 +57,9 @@ s-expression.** So a `:why` says what its form says, in English:
 - a made-up name (`p`, `r1`) is said as what it is, `"p holds of {?1}"`, and never given a meaning it does not have.
 
 [`stdlib/`](../../../../stdlib/) is the house style, and lived by the rule before it was one: 77 of 77 rules
-(`ein-infer/tests/stdlib_coverage.rs`). T1f.5.14.7 migrates the corpus, every `:why` written by reading the program,
+(`ein-infer/tests/stdlib_coverage.rs`). T1f.5.14.7 migrated the corpus, the Rust suites' inline programs and the doc
+pages' code blocks, every `:why` written by reading the program (the stage file's
+[§ T1f.5.14.7 record](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5147-record-2026-11-10)),
 and `utils/nl_census.py --check` exits 1 while any program the loader reads lacks one.
 
 ## 3. A fact in English: the fallback ladder
@@ -130,9 +132,15 @@ deliverable: a total says how much, the split says who could fix it.
 
 On `examples/zebra2.ein`'s one state, 426 facts: before the migration, 5.9 % had a statement, 88.5 % a reason, and
 88.7 % rendered, the 48 fallbacks the givens of `is-a`, `bijective`, `symmetric`, `transitive`, `includes` and the two
-hierarchies (`python3 utils/nl_census.py --slow -k zebra2.ein`, 2026-11-10, at `b7108e3a`). The census, every root
-and register, is the stage file's
-[§ T1f.5.14.1 record](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5141-record-2026-11-10).
+hierarchies (`python3 utils/nl_census.py --slow -k zebra2.ein`, 2026-11-10, at `b7108e3a`). **After it, 41.5 % have a
+statement, 88.5 % a reason, and 97.4 % render** (the same command at `9c06414f`): the 11 fallbacks left are the given
+activators of `std.*` rules, `(bijective …)`, `(includes …)`, `(symmetric next-to)`, `(transitive is-a*)` and the two
+hierarchies, which no form can carry a `:why` for (§ 5). Over the corpus, 239 359 facts of 211 entries, 44.9 %
+rendered before and 94.4 % after, and 104 of the 203 entries with a fact render every one, where 20 did. The census,
+every root and register, before and after, is the stage file's
+[§ T1f.5.14.1](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5141-record-2026-11-10)
+and [§ T1f.5.14.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5147-record-2026-11-10)
+records.
 
 ## 5. Where a template has nowhere to live
 

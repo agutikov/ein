@@ -189,12 +189,18 @@ pub enum How {
     },
 }
 
-/// What a command's argv asks of the load: `--require-why`, on every command
-/// that loads a program (M1f T1f.5.14.6). A command that does not define it
-/// loads as the default does.
+/// What a command's argv asks of the load: a `:why` on every declaration, the
+/// default since M1f T1f.5.14.7, unless `--no-require-why`, on every command
+/// that loads a program (T1f.5.14.6 gave it `--require-why`, default off). A
+/// command that does not define it loads as the default does.
 pub fn load_options(m: &clap::ArgMatches) -> ein_ir::LoadOptions {
     ein_ir::LoadOptions {
-        require_why: m.try_get_one::<bool>("require-why").ok().flatten().copied() == Some(true),
+        require_why: m
+            .try_get_one::<bool>("no-require-why")
+            .ok()
+            .flatten()
+            .copied()
+            != Some(true),
     }
 }
 

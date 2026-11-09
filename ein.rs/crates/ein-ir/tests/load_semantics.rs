@@ -13,7 +13,8 @@
 //! | the 18 `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
 //! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag (M1f T1f.5.14.6) | [`require_why_refuses_each_form_without_one`] |
 //! | a macro is asked for a `:why` too, since S1f.5.5's swap made its parser the one that reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
-//! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB | [`require_why_decides_loading_only`] |
+//! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB, and since M1f T1f.5.14.7 it refuses none | [`require_why_decides_loading_only`] |
+//! | the default requires a `:why` (M1f T1f.5.14.7), and `require_why: false` loads without one | [`the_default_requires_a_why_and_false_loads_without`] |
 
 use ein_core::{Terms, shape};
 use ein_corpus::{corpus_files, golden, golden_path, repo_root};
@@ -289,9 +290,12 @@ fn load_errors_accumulate_in_pass_order() {
         // invokes it keeps the unexpanded form rather than expanding it.
         "(macro absent (?p) (rel ?p))\n(rule r () :match (absent ?a) :assert (y ?a))",
         // One loader error per pass, in the final grammar.
+        // Each form carries its `:why`, the default since M1f T1f.5.14.7, so
+        // the loader's errors are the only lines.
         "(r a b :rule x :using ((r c d)))\n(r c d :rule x :using ((r a b)))\n\
-         (rule r () :match (x ?a))\n(relation dup)\n(relation dup)\n\
-         (macro m (?a) (rel ?a))\n(macro m (?a) (other ?a))",
+         (rule r () :match (x ?a) :why \"x holds of {?a}, and with no :assert the rule concludes nothing\")\n\
+         (relation dup :why \"dup holds\")\n(relation dup :why \"dup holds\")\n\
+         (macro m (?a) (rel ?a) :why \"rel holds of {?a}\")\n(macro m (?a) (other ?a) :why \"other holds of {?a}\")",
     ];
     let mut out = String::new();
     for program in programs {
@@ -423,6 +427,27 @@ fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
     let without = "(macro owns (?p ?x) (has ?p ?x))";
     assert_eq!(load(with), Ok(()));
     assert_eq!(load(without), Err(missing("macro", "owns")));
+}
+
+/// **The default requires it** since M1f S1f.5.14's T1f.5.14.7, the user's
+/// *"then after other stages finished swith to default true"*: `load`, the
+/// entry with no options, refuses a declaration with no `:why`, and
+/// `require_why: false`, the CLI's `--no-require-why`, loads it (Q-M1f.62).
+#[test]
+fn the_default_requires_a_why_and_false_loads_without() {
+    assert!(ein_ir::LoadOptions::default().require_why);
+    let text = "(relation p T)\n(p a)";
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = ein_ir::parse(&mut ast, text, Some("default.ein")).expect("parses");
+    let refused = ein_ir::load(&mut ast, &mut terms, &forms, None)
+        .expect_err("the default refuses a relation with no :why");
+    assert!(
+        refused.0.contains("relation 'p' has no :why"),
+        "{}",
+        refused.0
+    );
+    assert!(load_text_with(text, false).is_ok());
 }
 
 /// **`require_why` decides only whether a program loads** — the user's

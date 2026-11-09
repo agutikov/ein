@@ -1139,14 +1139,15 @@ and `corpus/wrong_answers.toml`'s seven W24 rows, three of which, `_` in a
 guard, a premise that is not a form and a keyword pair in a guard, are refused
 at the parse since the swap (S1f.5.1, S1f.5.11, the paper grammar).
 
-### 4.10 A form with no `:why`, under `--require-why` — M1f T1f.5.14.6
+### 4.10 A form with no `:why` — M1f T1f.5.14.6, T1f.5.14.7
 
-`:why` is optional in the grammar, and a loader flag makes it required: the
+`:why` is optional in the grammar, and the loader makes it required: the
 user's rulings of 2026-11-08 (*":why is optional in grammar and loader has a
-flag that makes it required, start with default false"*; *"yes, the flag only
-decides loading"*). With `--require-why` on a command that loads a program
-([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)),
-or `ein_ir::LoadOptions::require_why` in the library, the loader refuses every
+flag that makes it required, start with default false so not break everything,
+then after other stages finished swith to default true"*; *"yes, the flag only
+decides loading"*). **By default since M1f S1f.5.14's T1f.5.14.7** (2026-11-10),
+on every command that loads a program and in `ein_ir::load` and its siblings
+(`ein_ir::LoadOptions::require_why`, true by default), the loader refuses every
 `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` it reads, the stdlib's
 and an imported module's included, that carries no `:why "…"`, one line per
 form,
@@ -1163,9 +1164,13 @@ Until the swap a `(macro …)` was asked for one only in a build with `ein-ir`'s
 `generated-parser` feature, the one parser that read a macro's `:why`, and the
 line read `… every relation, rule and hrule` elsewhere; the swap made the
 generated parser the only one, deleted the `cfg`, and wrote the stdlib's two
-macros, `forall` and `unknown`, their `:why`. Off, the default until
-S1f.5.14's T1f.5.14.7, nothing is refused and nothing moves. Pinned by `ein-ir/tests/load_semantics.rs`'
+macros, `forall` and `unknown`, their `:why`. `--no-require-why`
+([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)),
+or `require_why: false`, loads such a program, and nothing else moves; until
+T1f.5.14.7 that was the default, and `--require-why` turned the refusal on.
+Pinned by `ein-ir/tests/load_semantics.rs`'
 `require_why_refuses_each_form_without_one`,
+`the_default_requires_a_why_and_false_loads_without`,
 `a_macro_needs_a_why_only_where_its_parser_reads_one` and
 `require_why_decides_loading_only`, and by `ein-cli/tests/config_reference.rs`'
 `require_why_decides_loading_only`.

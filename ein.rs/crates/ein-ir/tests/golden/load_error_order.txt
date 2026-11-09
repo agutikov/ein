@@ -23,5 +23,5 @@
   <string>:2:27: unexpected `?a`: a variable
     repair: Insert `(`, Shift `?a`, Insert `)`
     repair: Insert `(`, Shift `?a`, Shift `)`, Insert `)`
-=== (r a b :rule x :using ((r c d))) ⏎ (r c d :rule x :using ((r a b))) ⏎ (rule r () :match (x ?a)) ⏎ (relation dup) ⏎ (relation dup) ⏎ (macro m (?a) (rel ?a)) ⏎ (macro m (?a) (other ?a))
+=== (r a b :rule x :using ((r c d))) ⏎ (r c d :rule x :using ((r a b))) ⏎ (rule r () :match (x ?a) :why "x holds of {?a}, and with no :assert the rule concludes nothing") ⏎ (relation dup :why "dup holds") ⏎ (relation dup :why "dup holds") ⏎ (macro m (?a) (rel ?a) :why "rel holds of {?a}") ⏎ (macro m (?a) (other ?a) :why "other holds of {?a}")
   <KBLoadError> duplicate macro 'm' at None; duplicate relation 'dup' at None; (rule r) missing :match or :assert at None; derivation cycle: (r a b) -> (r c d) -> (r a b)

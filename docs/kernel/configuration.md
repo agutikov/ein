@@ -23,9 +23,11 @@
 > **Since S1e2.2.5 (2026-11-04)** a program sets two: the user retired
 > `warn-derived-naf`, whose refutation half became *forbid*'s refusal.
 > **Since M1f T1f.5.14.6 (2026-11-08)** every command that loads a program
-> takes `--require-why`, which refuses at load a relation, rule, hrule or
-> macro (a macro since S1f.5.5's swap) with no `:why` and decides nothing
-> else (§ [3.4](#34-the-option-that-decides-loading)), so `ein solve` has 34.
+> takes one option more, which decides whether a relation, rule, hrule or
+> macro with no `:why` loads and nothing else
+> (§ [3.4](#34-the-option-that-decides-loading)), so `ein solve` has 34:
+> `--require-why` until T1f.5.14.7 (2026-11-10) turned the requirement on by
+> default, `--no-require-why` since.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -344,9 +346,9 @@ walk's, and flipped to `fixed` at the switch where R answers them
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). Under a region
 run every flag reads **no**, and so do `--jobs` (§ 3.3) and every
 presentation and artefact option: they change speed, or what is printed beside
-the answer, never the answer. `--require-why` (§ 3.4) is not a lever: it
-decides whether a program loads, and a program it lets through answers what it
-answers without it.
+the answer, never the answer. `--no-require-why` (§ 3.4) is not a lever: it
+decides whether a program loads, and a program loads to what it loads to with
+it or without it.
 
 ---
 
@@ -382,7 +384,8 @@ parallel copy. What this page states is the *shape*, read off that golden:
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
 `--no-default-features` build has 76 and no `ein kb` at all. M1f T1f.5.14.6
-added seven, `--require-why` on each command that loads a program (§ 3.4). M1e2
+added seven, `--require-why` on each command that loads a program (§ 3.4),
+which T1f.5.14.7 turned into `--no-require-why`, seven for seven. M1e2
 S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
 `--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
 cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
@@ -512,9 +515,10 @@ program to answer about.
   every `(query …)` of its file from one solve, so no artefact flag is refused
   over several queries any more; `ein test` refuses `--events` and
   `--json-summary` over a selection of more than one file.
-- **Loading** — `--require-why`, § [3.4](#34-the-option-that-decides-loading):
-  a program it refuses is a load error, and one it lets through answers
-  exactly what it answers without it.
+- **Loading** — `--no-require-why`, § [3.4](#34-the-option-that-decides-loading):
+  without it a program missing a `:why` is a load error, and with it the
+  program loads; one that carries its `:why`s answers exactly the same either
+  way.
 
 ### 3.4 The option that decides loading
 
@@ -522,18 +526,21 @@ One option, on every command that loads a program — `ein solve`, `ein
 oracle`, `ein test`, `ein saturate`, `ein render kb`, `ein render lattice` and
 `ein kb save` — and on none that only parses one (`ein render program`,
 `rules`, `rule`, `constraints`) or loads nothing (`ein render region`). It sets
-`ein_ir::LoadOptions::require_why`, which an embedder sets the same way
-(`ein_ir::load_with`, `load_query_with`, `load_file_with`; `ein_einb::OpenOptions::load`).
+`ein_ir::LoadOptions::require_why` false, which an embedder sets the same way
+(`ein_ir::load_with`, `load_query_with`, `load_file_with`; `ein_einb::OpenOptions::load`);
+`ein_ir::load` and the other entries with no options require a `:why`.
 
 | option | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|
-| `--require-why` | off | whether a program loads: on, every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` the load reads, the stdlib's and an imported module's included, that carries no `:why "…"` is refused, one line per form, `relation 'p' has no :why "…", which this load requires of every relation, rule, hrule and macro`, at the exit code the command gives every load error (1, and `ein test`'s 2). A `:why` that is not a string is refused at the parse since S1f.5.5's swap (it was none to the loader's strings-only guard until then). A `(macro …)` was asked for one only in a build with `ein-ir`'s `generated-parser` feature until the swap, the hand-written parser refusing a macro's `:why`; the swap deleted that `cfg` and wrote the stdlib's two macros theirs. A `.einb` is refused where its `.ein` is: a container re-loads its program from the text it stores. The stdlib loads under it: its 77 rules and its two macros carry a `:why`, and it declares no relation or hrule (`ein-ir/tests/load_semantics.rs`, `require_why_decides_loading_only`) | **no**: it decides whether a program loads, never what a loaded one answers — the user's ruling of 2026-11-08, *"yes, the flag only decides loading"*. A program it lets through loads to the same KB, registries, facts and indexes, and prints the same bytes; the header leaves it out | no | contract: default false until [S1f.5.14](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s T1f.5.14.7 turns it to true, once every program the corpus, the stdlib and the Rust suites load carries its `:why` |
+| `--no-require-why` | off: a `:why` is required | whether a program loads: off, the default since [S1f.5.14](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s T1f.5.14.7, every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` the load reads, the stdlib's and an imported module's included, that carries no `:why "…"` is refused, one line per form, `relation 'p' has no :why "…", which this load requires of every relation, rule, hrule and macro`, at the exit code the command gives every load error (1, and `ein test`'s 2); on, such a program loads. A `:why` that is not a string is refused at the parse since S1f.5.5's swap (it was none to the loader's strings-only guard until then). A `(macro …)` was asked for one only in a build with `ein-ir`'s `generated-parser` feature until the swap, the hand-written parser refusing a macro's `:why`; the swap deleted that `cfg` and wrote the stdlib's two macros theirs. A `.einb` is refused where its `.ein` is: a container re-loads its program from the text it stores. The stdlib loads without it: its 77 rules and its two macros carry a `:why`, and it declares no relation or hrule (`ein-ir/tests/load_semantics.rs`, `require_why_decides_loading_only`) | **no**: it decides whether a program loads, never what a loaded one answers — the user's ruling of 2026-11-08, *"yes, the flag only decides loading"*. A program that carries its `:why`s loads to the same KB, registries, facts and indexes with it and without it, and prints the same bytes; the header leaves it out | no | contract: the requirement is the default since T1f.5.14.7 (2026-11-10), when every program the corpus, the stdlib and the Rust suites load carried its `:why`; until then the option was `--require-why`, default off ([Q-M1f.62](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f62--the-option-that-loads-a-program-without-a-why-once-the-default-is-true)) |
 
 The user's rulings of 2026-11-08: *":why is optional in grammar and loader has
 a flag that makes it required, start with default false so not break
 everything, then after other stages finished swith to default true and fix
-remaining ein code"*, and *"yes, land the :why flag early"*. What it refuses
-today is S1f.5.14's migration, counted there (§ T1f.5.14.6 record).
+remaining ein code"*, and *"yes, land the :why flag early"*. What the
+requirement refused until T1f.5.14.7 wrote every missing `:why` is counted
+there (§ T1f.5.14.1 record), and `utils/nl_census.py --check` holds the
+corpus to it.
 
 ---
 
@@ -717,7 +724,7 @@ each time: **every `SolverConfig` field is `--dump-config`-printed,
   differently on an 8-core machine than on a 4-core one, through a field the
   digest compares. Jobs is an execution knob; `SolverConfig` is the semantics.
 - **`--models`** (M1d T1d.3.3.4). Presentation has no business in the digest.
-- **`--require-why`** (M1f T1f.5.14.6, § 3.4). A field would let a program
+- **`--no-require-why`** (M1f T1f.5.14.6, T1f.5.14.7, § 3.4). A field would let a program
   turn its own mandate off, and would move every shape digest in the corpus;
   it is a question about loading, which the program is the subject of.
 - **`EIN_TRAVERSAL` and `EIN_OBLIGATION_CHOICE`**, the walk's, both retired
@@ -745,7 +752,7 @@ one or the other.
 | `the_shipped_environment_set_is_what_the_page_lists` | a shipping crate reads an `EIN_*` name with no row in § 4's first class, or that class lists one nothing reads |
 | `the_sanity_flag_adds_its_row_and_nothing_else` | `:lattice-sanity-check true` moves `solve -p`'s exit code, stdout or stderr past its own `paths` row on either of two fixtures, or prints no unbounded row |
 | `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's fifteen loads, or is refused without the stage and the reason |
-| `require_why_decides_loading_only` | § 3.4 has no `--require-why` row; the option is on another set of commands than the seven that load a program; on one of them a program missing three `:why`s loads with it, is refused at another exit code or without its three lines, or does not run without it; or a corpus program carrying every `:why` prints other bytes with it |
+| `require_why_decides_loading_only` | § 3.4 has no `--no-require-why` row; the option is on another set of commands than the seven that load a program, or a command still takes `--require-why`; on one of them a program missing three `:why`s loads without the option, is refused at another exit code or without its three lines, or does not run with it; a container is not refused where its `.ein` is; or a corpus program prints other bytes with the option |
 | `the_surface_table_agrees_with_the_sections_it_summarises` | § 1's three counts are not the ones §§ 2–4 own |
 
 **Re-banking the block:**

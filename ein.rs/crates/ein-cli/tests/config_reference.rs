@@ -32,10 +32,10 @@
 //!    three-row table at the top of the page repeats three numbers the
 //!    sections below own. Two hundred lines apart inside one file is still a
 //!    parallel copy.
-//! 7. [`require_why_decides_loading_only`] — § 3.4's `--require-why` is on
-//!    the seven commands that load a program, refuses there what its row
-//!    says, and moves nothing a program it lets through prints (M1f
-//!    T1f.5.14.6).
+//! 7. [`require_why_decides_loading_only`] — § 3.4's `--no-require-why` is on
+//!    the seven commands that load a program, the default refuses there what
+//!    its row says and the option loads it, and it moves nothing a program
+//!    prints (M1f T1f.5.14.6, T1f.5.14.7).
 //!
 //! [`docs/kernel/configuration.md`]: ../../../../docs/kernel/configuration.md
 
@@ -92,7 +92,7 @@ const END: &str = "\n```\n<!-- /generated -->";
 /// A program with **no** `(config …)` head, so `--dump-config` resolves to the
 /// defaults and nothing else. Two facts, because a program with none has
 /// nothing for the loader to do and this way the run is a real solve.
-const NO_CONFIG: &str = "(relation p T)\n(p A)\n";
+const NO_CONFIG: &str = "(relation p T :why \"p holds of {?1}\")\n(p A)\n";
 
 /// `--dump-config`'s block: the header line and the indented lines under it.
 fn dump_config_block() -> String {
@@ -569,7 +569,7 @@ fn the_retired_flags_are_refused_with_why() {
     }
 }
 
-// ── `--require-why`, the loader's flag ─────────────────────────────
+// ── `--no-require-why`, the loader's flag ──────────────────────────
 
 /// A program whose relation `p`, rule `r1` and hrule `h1` carry no `:why`,
 /// and which states a claim, so that `ein test` has one to check.
@@ -578,7 +578,7 @@ const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?1} is q\")\
                       (hrule h1 () :match (q ?x) :assert (q ?x))\n(p a)\n\
                       (solve :expect (region (model (p a) (q a))))\n";
 
-/// The commands that load a program: every one takes `--require-why`.
+/// The commands that load a program: every one takes `--no-require-why`.
 const LOADING: [&[&str]; 7] = [
     &["solve"],
     &["oracle"],
@@ -589,23 +589,26 @@ const LOADING: [&[&str]; 7] = [
     &["kb", "save"],
 ];
 
-/// **`--require-why` decides whether a program loads, and nothing a loaded
-/// one answers** — M1f S1f.5.14, T1f.5.14.6, on the user's rulings of
-/// 2026-11-08 (*":why is optional in grammar and loader has a flag that makes
-/// it required, start with default false"*; *"yes, the flag only decides
-/// loading"*). Held from the outside, on every command that loads a program:
-/// the page has its row; the golden gives the option to those seven commands
-/// and no other; with it, a program missing three `:why`s is refused with one
-/// line for each, at the exit code that command gives every load error, and
-/// without it the program runs; and two corpus programs that carry every
-/// `:why`, one of them importing the stdlib, print byte for byte the same
-/// with it and without it.
+/// **A `:why` is required by default, and `--no-require-why` decides whether a
+/// program without one loads, and nothing a loaded one answers** — M1f
+/// S1f.5.14: T1f.5.14.6 gave the loader the flag, `--require-why`, default
+/// off, on the user's rulings of 2026-11-08 (*":why is optional in grammar and
+/// loader has a flag that makes it required, start with default false"*; *"yes,
+/// the flag only decides loading"*), and T1f.5.14.7 turned the default (*"then
+/// after other stages finished swith to default true"*), the option becoming
+/// `--no-require-why` (Q-M1f.62). Held from the outside, on every command that
+/// loads a program: the page has its row; the golden gives the option to those
+/// seven commands and no other; by default a program missing three `:why`s is
+/// refused with one line for each, at the exit code that command gives every
+/// load error, and with the option it runs; a container saved with the option
+/// is refused where its `.ein` is; and two corpus programs, one of them
+/// importing the stdlib, print byte for byte the same with it and without it.
 #[test]
 fn require_why_decides_loading_only() {
     let text = page();
     assert!(
-        text.contains("| `--require-why` |"),
-        "docs/kernel/configuration.md has no row for --require-why"
+        text.contains("| `--no-require-why` |"),
+        "docs/kernel/configuration.md has no row for --no-require-why"
     );
     let golden = std::fs::read_to_string(
         repo_root().join("ein.rs/crates/ein-cli/tests/golden/help_shape.txt"),
@@ -616,9 +619,13 @@ fn require_why_decides_loading_only() {
     for line in golden.lines() {
         if let Some(c) = line.strip_prefix("COMMAND ") {
             command = c.to_string();
-        } else if line.starts_with("  OPTION --require-why ") {
+        } else if line.starts_with("  OPTION --no-require-why ") {
             takes.push(command.clone());
         }
+        assert!(
+            !line.starts_with("  OPTION --require-why "),
+            "{command} still takes --require-why, retired at T1f.5.14.7"
+        );
     }
     let mut want: Vec<String> = LOADING
         .iter()
@@ -626,7 +633,7 @@ fn require_why_decides_loading_only() {
         .collect();
     want.sort();
     takes.sort();
-    assert_eq!(takes, want, "the commands that take --require-why");
+    assert_eq!(takes, want, "the commands that take --no-require-why");
 
     let run = |args: &[&str]| {
         let out = Command::new(env!("CARGO_BIN_EXE_ein"))
@@ -657,9 +664,6 @@ fn require_why_decides_loading_only() {
             args.push(&out);
         }
         let (code, _, err) = run(&args);
-        assert_eq!(code, Some(0), "{args:?} without --require-why: {err}");
-        args.insert(command.len(), "--require-why");
-        let (code, _, err) = run(&args);
         // `ein test` gives a load error 2, since its 1 means a claim is false.
         let load_error = if command == ["test"] { 2 } else { 1 };
         assert_eq!(code, Some(load_error), "{args:?}: {err}");
@@ -667,11 +671,16 @@ fn require_why_decides_loading_only() {
             err.contains(&format!("kb load error: {}", lines.join("; "))),
             "{args:?}: {err}"
         );
+        args.insert(command.len(), "--no-require-why");
+        let (code, _, err) = run(&args);
+        assert_eq!(code, Some(0), "{args:?}: {err}");
     }
     // A container re-loads its program, and is refused where its `.ein` is.
-    let (code, _, err) = run(&["solve", "--require-why", &out]);
+    let (code, _, err) = run(&["solve", &out]);
     assert_eq!(code, Some(1), "{err}");
     assert!(err.contains(&lines.join("; ")), "{err}");
+    let (code, _, err) = run(&["solve", "--no-require-why", &out]);
+    assert_eq!(code, Some(0), "{err}");
 
     for (command, file) in [
         ("solve", "examples/branching/16_lookahead_two_step_off.ein"),
@@ -691,12 +700,12 @@ fn require_why_decides_loading_only() {
                 .join("\n");
             (code, out, err)
         };
-        let without = untimed(run(&[command, file]));
-        assert_eq!(without.0, Some(0), "{command} {file}: {}", without.2);
+        let with = untimed(run(&[command, file]));
+        assert_eq!(with.0, Some(0), "{command} {file}: {}", with.2);
         assert_eq!(
-            untimed(run(&[command, "--require-why", file])),
-            without,
-            "{command} {file}: --require-why moved what a program it loads answers"
+            untimed(run(&[command, "--no-require-why", file])),
+            with,
+            "{command} {file}: --no-require-why moved what a program it loads answers"
         );
     }
 }

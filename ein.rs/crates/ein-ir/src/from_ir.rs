@@ -62,16 +62,29 @@ impl From<Overflow> for KbLoadError {
 /// under the config principle (`docs/kernel/configuration.md` § 2.5). It is
 /// not a `(config …)` field, which a program could set against itself and
 /// which the KB-shape digest renders, and not an `EIN_*` name; the CLI's
-/// `--require-why` sets it on every command that loads a program.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+/// `--no-require-why` turns it off on every command that loads a program.
+///
+/// **Required by default since S1f.5.14's T1f.5.14.7** (2026-11-10), the
+/// user's *"then after other stages finished swith to default true and fix
+/// remaining ein code"*: every program the corpus, the stdlib and the Rust
+/// suites load carries its `:why`s, so [`load`], [`load_query`] and
+/// [`load_file`] refuse one that does not; `require_why: false` loads it, as
+/// `--no-require-why` does (Q-M1f.62).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct LoadOptions {
     /// Refuse every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)`
     /// the load reads, the stdlib's and an imported module's included, that
     /// carries no `:why "…"`, one line each ([`WHY_REQUIRED_OF`]). A macro
     /// since S1f.5.5's swap (T1f.5.5.4), when the one parser became the one
     /// that reads a macro's `:why` and the stdlib's two macros got theirs.
-    /// **Default false**, until S1f.5.14's T1f.5.14.7 turns it to true.
+    /// **Default true** since S1f.5.14's T1f.5.14.7; false until then.
     pub require_why: bool,
+}
+
+impl Default for LoadOptions {
+    fn default() -> Self {
+        LoadOptions { require_why: true }
+    }
 }
 
 /// The forms [`LoadOptions::require_why`] asks for a `:why`, as its refusal

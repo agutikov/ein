@@ -593,7 +593,7 @@ on the agent's report: what the flag requires on the shipped path, the stdlib, t
   the command gives every load error (1, `ein test`'s 2):
   `relation 'p' has no :why "…", which this load requires of every relation, rule and hrule` (`… rule and hrule`
   becomes `… rule, hrule and macro` in a `generated-parser` build).
-  [`defined_behaviour.md` § 4.10](../../../docs/kernel/defined_behaviour.md#410-a-form-with-no-why-under---require-why--m1f-t1f5146)
+  [`defined_behaviour.md` § 4.10](../../../docs/kernel/defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)
   and [`configuration.md` § 3.4](../../../docs/kernel/configuration.md#34-the-option-that-decides-loading) state it.
 - **The tests.** `ein-ir/tests/load_semantics.rs`: `require_why_refuses_each_form_without_one` (each kind refused
   with its line, and loaded without the flag; the lines in pass order beside another refusal),
@@ -726,6 +726,36 @@ fixtures with a twin or a copy were given the same words.
   reason, 97.4 % rendered**, where 5.9 %, 88.5 % and 88.7 %: its eleven fallbacks are the given activators of
   `std.*` rules, `(bijective …)` five times, `(includes …)` twice, `(symmetric next-to)`, `(transitive is-a*)`,
   `(bijection-hierarchy …)` and `(typecheck-hierarchy …)`, which no form can carry a `:why` for (T3).
+
+**Part 2, the flip** (`T1f.5.14.7 — the flip`), the stage's last code commit. **A `:why` is required by default**:
+`ein_ir::LoadOptions::default()` requires one, so `ein_ir::load`, `load_query` and `load_file` refuse a declaration
+without it, and so does every command that loads a program. **`--no-require-why`** loads one anyway
+([Q-M1f.62](../open_questions.md#q-m1f62--the-option-that-loads-a-program-without-a-why-once-the-default-is-true),
+defaulted on the user's instruction of 2026-11-09): a set-true flag, as every boolean option the CLI has is, spelled
+as its negatives are (`--no-types`, `--no-instances`), on the same seven commands, replacing `--require-why`, which
+would be inert with the default true; the option count stays 78 (`help_shape.txt`). It sets `require_why` false and
+nothing else, and a container is refused where its `.ein` is and loaded with it where its `.ein` is.
+
+- **Its tests**: `load_semantics.rs`' `the_default_requires_a_why_and_false_loads_without` (new: the default refuses,
+  `false` loads); `require_why_refuses_each_form_without_one` and `a_macro_needs_a_why_only_where_its_parser_reads_one`
+  keep a program missing a `:why` on each form, with the option explicit; `require_why_decides_loading_only` sweeps
+  the corpus (refused: none); and `config_reference.rs`' `require_why_decides_loading_only`, rewritten: the page's
+  `--no-require-why` row, the seven commands and no `--require-why` left, each command refusing a program missing
+  three `:why`s by default with its three lines at its load-error code and loading it with the option, a container
+  likewise, and two corpus programs printing the same bytes with the option and without.
+- **The pages** say the default: `defined_behaviour.md` § 4.10 (its heading, and so its anchor, everywhere it is
+  linked), `configuration.md` (§ 1's note, § 2.5, § 3's counts and the loading bullet, § 3.4's row and its rationale,
+  § 5's test row), `01_grammar.md` (the `:why` paragraph, the keyword table's three `:why` rows, *required at load, by
+  default*, and the untemplated `right-of` example), `09_natural_language.md` § 2, the guide's chapter 1 (*every
+  relation carries its rendering text*), `03_ein_model.md`, and `docs/kernel/README.md`'s option note.
+- **Goldens named before they were blessed** (`EIN_BLESS=1`): `help_shape.txt`, the seven option lines;
+  `load_error_order.txt`, the header line of its fifth program, whose forms carry their `:why` so the loader's errors
+  stay its only lines (the lines themselves unchanged); three programs the suites build that part 1 missed, given
+  their `:why`s: `config_reference.rs`' `NO_CONFIG`, `region_dump.rs`' wide program and `golden_dot.rs`' `SMALL_KB`
+  (its DOT goldens unchanged), found by running the suite under the flip. `fuzz_properties`, whose seeds are the
+  corpus's programs, loads 419 of the 453 programs its sweep accepts under the default (Q-M1f.63). No R, N, H, claim, exit code or register row moved: `wrong_answers.rs` holds every row,
+  `lever_invariance.rs` every lever, and the census finds nothing missing (`python3 utils/nl_census.py --check`,
+  exit 0, 2026-11-10).
 
 ## Risks
 

@@ -69,8 +69,9 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.59](#q-m1f59--what-a-macros-why-renders) | what a macro's `:why` renders | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), nothing: it documents the pattern, and the rule that used it says what it meant there**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.60](#q-m1f60--a-relation-nobody-declares) | a relation nobody declares | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no slot: a derived fact reads by its reason, a stated one falls back, counted under `stdlib` or `undeclared`**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.61](#q-m1f61--a-template-per-goal-conjunct) | a template per goal conjunct | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no change**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
-| [Q-M1f.64](#q-m1f64--existing-whys-that-are-placeholders-or-name-nothing) | existing `:why`s that are placeholders or name nothing | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), each fixed, the references by the check's commit and the placeholders by the migration; none is a register row**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.62](#q-m1f62--the-option-that-loads-a-program-without-a-why-once-the-default-is-true) | the option that loads a program without a `:why`, once the default is true | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), `--no-require-why` replaces `--require-why`, and `LoadOptions::default()` requires**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.63](#q-m1f63--what-each-program-generator-does-about-why) | what each program generator does about `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), the engine fuzzers and synthesisers write an honest mechanical `:why` on every form, keeping their random draws; `fuzz_properties` keeps its draws**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.64](#q-m1f64--existing-whys-that-are-placeholders-or-name-nothing) | existing `:why`s that are placeholders or name nothing | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), each fixed, the references by the check's commit and the placeholders by the migration; none is a register row**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1441,6 +1442,37 @@ the fact read declares the relation.
 **Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a)**, as the stage file says a yes would be a
 question and not a quiet addition.
 
+### Q-M1f.62 — The option that loads a program without a `:why`, once the default is true
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7. The stage file asks that a program without `:why` still load once the
+default is true.
+
+- **(a) `--no-require-why`** on the seven commands, a set-true flag as `--no-types` and `--no-instances` are, replacing
+  `--require-why`; `LoadOptions::default()` requires.
+- **(b) `--require-why=false`**, a valued option.
+- **(c) Both `--require-why` and `--no-require-why`.**
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** Every boolean option the CLI has is a set-true
+flag, and a negative one is spelled `--no-…`; `--require-why` would be inert with the default true, and an inert
+option is what [Q-M1e.10](../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)
+retired. The option count stays 78.
+
+### Q-M1f.63 — What each program generator does about `:why`
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7: once the default requires a `:why`, a generator whose programs carry
+none generates programs the loader refuses.
+
+- **(a) Each emits an honest, mechanical `:why`** on every form it writes: `utils/fuzz_engine.py` (whose rules wrote
+  *"fire-N fired"*, the placeholder the stage forbids, on 40 %), `utils/region_synth.py`, `utils/guard_split.py`, the
+  Rust suites' generators (`detector.rs`, `compile_limits.rs`, `match_alloc.rs`, `imports_semantics.rs`,
+  `region_dump.rs`), and `examples/gen_zebra2_variants.py` by copying `zebra2.ein`'s; each keeps its random draws, so a
+  seed generates the program it did. `fuzz_properties`, which mutates the corpus's own programs, loads under the
+  default: its seeds carry their `:why`s, and 419 of the 453 programs its sweep accepts load (2026-11-10).
+- **(b) Every generator loads with the requirement off.**
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** It keeps each generator's question: the engine
+fuzzers' programs load under the default, and a mechanical `:why` says what the form says, its clauses in words.
+
 ### Q-M1f.64 — Existing `:why`s that are placeholders or name nothing
 
 **Raised** 2026-11-10 by S1f.5.14's T1f.5.14.5 and T1f.5.14.7. The check found 45 relation `:why`s over 13 files
@@ -1455,18 +1487,3 @@ twin), each printing as written; and the migration's helpers found `:why`s that 
 **Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** The user overrode the refusal of rung (d) on the
 understanding that each `:why` is honest. None is a wrong answer: a `:why` moves no R, N, H, claim or exit code, so
 none is a register row. Terse but true ones (`"{?rel} sym"`) are left.
-
-### Q-M1f.63 — What each program generator does about `:why`
-
-**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7.
-
-- **(a) Each emits an honest, mechanical `:why`** on every form it writes, where its question is about the engine:
-  `utils/fuzz_engine.py` (whose rules wrote *"fire-N fired"*, the placeholder the stage forbids, on 40 %),
-  `utils/region_synth.py`, `utils/guard_split.py` and `examples/gen_zebra2_variants.py` (which copies `zebra2.ein`'s);
-  and **`fuzz_properties` loads with the requirement off**, since its question is the frontend's behaviour on
-  arbitrary text, where a `:why` is one more keyword it may draw.
-- **(b) Every generator loads with the requirement off.**
-
-**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** It keeps each generator's question: the engine
-fuzzers' programs load under the default, and the frontend fuzzer's keep their random shapes. A mechanical `:why`
-says what the form says, its clauses in words, and keeps each generator's random stream as it was.

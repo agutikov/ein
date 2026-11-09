@@ -340,8 +340,9 @@ pub struct OpenOptions {
     /// question 1 while saying it answered question 2.
     pub query: usize,
     /// What the rebuilt program's load requires — M1f T1f.5.14.6. A container
-    /// re-loads its program from the text it stores, so `--require-why`
-    /// refuses a `.einb` exactly where it refuses the `.ein` it was saved from.
+    /// re-loads its program from the text it stores, so the requirement of a
+    /// `:why`, the default since T1f.5.14.7, refuses a `.einb` exactly where it
+    /// refuses the `.ein` it was saved from, and `--no-require-why` loads both.
     pub load: ein_ir::LoadOptions,
     /// The container's own name, its path as the caller was handed it, which
     /// every position in the stored program names through [`program_name`]

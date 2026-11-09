@@ -392,11 +392,17 @@ fn over_the_limit_the_oracle_refuses_and_says_why() {
 
 /// `n` candidates and no rule: every subset is in R.
 fn wide_program(dir: &Path, n: usize) -> PathBuf {
-    let mut s = String::from("(relation is-a T T)\n(relation cand T)\n(relation p T)\n");
+    let mut s = String::from(
+        "(relation is-a T T :why \"{?1} is a {?2}\")\n\
+         (relation cand T :why \"{?1} is a candidate\")\n(relation p T :why \"p holds of {?1}\")\n",
+    );
     for i in 0..n {
         s.push_str(&format!("(is-a x{i} T) (cand x{i})\n"));
     }
-    s.push_str("(hrule guess () :match (cand ?x) :assert (p ?x))\n(query :goal (cand ?x))\n");
+    s.push_str(
+        "(hrule guess () :match (cand ?x) :assert (p ?x) :why \"guess that p holds of the candidate {?x}\")\n\
+         (query :goal (cand ?x))\n",
+    );
     let path = dir.join(format!("wide-{n}.ein"));
     std::fs::write(&path, s).expect("write");
     path
