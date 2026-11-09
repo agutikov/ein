@@ -37,6 +37,10 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.38](#q-m1f38--the-refusals-line-its-separator-and-a-disjunction) | the refusal's line: its separator, and a disjunction | **defaulted 2026-11-09 (the user's instruction): ` — `, and the disjuncts that leave the variable unbound named**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
 | [Q-M1f.39](#q-m1f39--the-one-corpus-program-the-check-refuses) | the one corpus program the check refuses | **defaulted 2026-11-09 (the user's instruction): `syntax/rule-nary-and-or` rewritten, its answer unmoved**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
 | [Q-M1f.40](#q-m1f40--where-the-fuzz-property-lives-and-what-it-reads) | where the fuzz property lives, and what it reads | **defaulted 2026-11-09 (the user's instruction): `fuzz_properties`, over every plan an accepted program compiles**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.41](#q-m1f41--what-can-hold-a-fact-means-for-g-14s-derived-activator) | what *can hold a fact* means, for G-14's derived activator | **defaulted 2026-11-09 (the user's instruction): a declared relation's argument, one inside a fact pattern and one of a relation a parameter names; a marker's argument and a rule's parameter inferred from what the program passes on**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.42](#q-m1f42--a-conclusion-whose-relation-is-a-parameter) | a conclusion whose relation is a parameter | **defaulted 2026-11-09 (the user's instruction): followed into every rule of its arity whose name the program writes as an argument**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.43](#q-m1f43--planactivator_args-once-a-nested-fact-binds) | `Plan::activator_args`, once a nested fact binds | **defaulted 2026-11-09 (the user's instruction): every argument, as values, the compile key's list**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.44](#q-m1f44--what-the-load-time-check-replaces-which-of-it-is-a-register-row) | what the load-time check replaces: which of it is a register row? | **defaulted 2026-11-09 (the user's instruction): a row per way the engine answers today, W59's two**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -741,3 +745,93 @@ and a firing is `ein-infer`'s.
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** It is the stage file's place and the strongest reading of its
 property; the dev-dependency adds no edge to any shipped crate.
+
+### Q-M1f.41 — What *can hold a fact* means, for G-14's derived activator
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. The user's ruling on
+[Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b) refuses at load a program in which some rule
+could derive an activator binding a relation parameter to a fact, `g14/derived-activator-never.ein` among them, although
+no run derives one. The stage file sketches the check: *a position whose values are relation names is one that the
+program uses as a relation (a relation parameter, a `(?R …)` head, or a relation signature's name), and everything else
+can hold a fact*, and it stops if the check refuses a corpus program that answers today, or if no reading both refuses
+the two `g14` programs and keeps the corpus. The census (`build/s1f.5.18/census/`, a prototype loader over the 538
+programs of the five roots, `find examples tests stdlib corpus plans -name '*.ein'`, 2026-11-09) read three ways:
+
+- **(a) The sketch, as written.** Refuses the two `g14` programs and **32 corpus programs that answer today**:
+  `zebra.ein`, the six `zebra2` programs, `domain_elim`'s three, `features/09`, `stdlib/algebra`, `bijection`, `slots`
+  and `typing` loaded alone, and sixteen of `tests/stdlib/`. Each reaches a relation parameter through a fan-out rule
+  that reads a marker relation no rule and no signature names, `(bijective ?R)`, `(bijection-hierarchy ?isa)`,
+  `(slot-partition ?R ?isa ?sub …)`, `(adjacent-via ?S ?R1 ?V1 …)`, and passes the name on, as
+  `bijective-properties` passes `?R` to `functional`.
+- **(b) Typed by declaration, the rest inferred.** An argument of a **declared** relation holds any value of its type, a
+  fact among them (`(relation item Node)`, and `(box (a b))` under `(relation box Node)`), and so do an argument inside a
+  fact pattern, `(p (g ?x))`, and an argument of a relation a parameter names, `(?S ?x)`; every argument of `(relation
+  …)` holds a name. An argument of an **undeclared** relation, a marker such as `(bijective color-loc)`, and a rule's
+  parameter hold what the program does with them: where a variable bound there reaches a relation parameter, the
+  position holds relation names too, inferred to a fixpoint, and a fact or a conclusion that writes a fact there is
+  refused, as W24 refuses one written as a rule's activator. Refuses the two `g14` programs and no corpus program; it
+  infers 20 marker positions over 32 programs, every fan-out the sketch refuses, and checks 851 derived activators'
+  arguments at a relation position.
+- **(c) The flow from the facts**: a position holds a fact only where a fact or a conclusion puts one. Accepts
+  `derived-activator-never.ein`, against the ruling.
+
+**Defaulted 2026-11-09 (the user's instruction): (b).** It is the one reading of the three that refuses both `g14`
+programs and keeps the corpus, the stage file's condition for going on, and it is the sketch with a marker's argument
+read by what the program does with it rather than as a value. `item`'s declaration is what refuses
+`derived-activator-never.ein`: written without `(relation item Node)`, that program would load, and
+`derived-activator.ein` would be refused at its fact `(item (a b))`. Re-opening it means (a), with the 32 programs
+rewritten, or (c), against Q-M1f.1 (b).
+
+### Q-M1f.42 — A conclusion whose relation is a parameter
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. The check of Q-M1f.41 reads a conclusion's relation as written. `(?T ?x)`
+writes into whichever relation its activator names, which no load reads off the conclusion: `(rule copy (?S ?T) :match
+(?S ?x) :assert (?T ?x))` with `(copy src mirror)` and `(src (q A B))` derives `(mirror (q A B))`, and the run stops where
+`mirror`'s plan is compiled (`build/s1f.5.18/shapes/varhead-copy.ein`, `8249e872`).
+
+- **(a) Followed into every rule of the conclusion's arity whose name the program writes as an argument**, in a fact at
+  any depth, a rule's clause or the `(solve …)` form: a rule's name reaches a parameter only from a place the program
+  writes it, and H proposes no rule's name (`varhead-copy-names.ein`: H is ten candidates over the objects `A`, `B` and
+  `a`). Refuses no corpus program: no conclusion written `(?T …)` reaches a rule whose name the program writes as an
+  argument.
+- **(b) Not followed**: the compiler's refusal stays where such a plan is compiled, a stop at run where Q-M1f.1 (b) says
+  a refusal at load, which is a register row with no owner.
+- **(c) Followed through the relation names each parameter can hold**, a flow over the program's names; the precise
+  form of (a).
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is sound for every name a program writes, and moves nothing
+(c) would keep.
+
+### Q-M1f.43 — `Plan::activator_args`, once a nested fact binds
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. With W33's fix a value parameter binds to a nested fact, so `(note edge (src
+X))` and `(note edge (src Y))` compile two plans that bind two values; the compile key and the binding key already tell
+them apart (M1e2 S1e2.2.7, S1e2.2.16). `Plan::activator_args` keeps an activator's symbol arguments only (Q-M1a.8's
+asymmetry), and it is more than a label: the obligations rung's `InstanceKey` (`oblgen`), the region's owed-instance
+lookup (`region.rs`), `detector`'s `RootPlans` and its activator match, and `naf_deps`' key each read it as a plan's
+identity, beside a match's bindings, which hold no seeded register. Two plans the seed tells apart would share it.
+
+- **(a) Every argument, as values, the compile key's list**: each identity follows its plan, and the `enqueue`, `fire`
+  and `owe` events and the static checks' `[activator …]` name the nested fact, `"activator": ["(f a)"]` where they
+  printed `[]`.
+- **(b) Symbols only, and each identity keyed on the seed beside it.**
+- **(c) Symbols only, unchanged.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** One list for a plan's activator everywhere, which closes the
+asymmetry Q-M1a.8 named, and moves the narration and the labels of a program whose activator holds a nested fact only;
+(c) leaves five identities that collapse two plans the stage makes different.
+
+### Q-M1f.44 — What the load-time check replaces: which of it is a register row?
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. Q-M1f.1 (b)'s check refuses at load two ways the engine answers today: a
+derived activator binds a relation parameter to a fact, and the run stops where its plan is compiled
+(`g14/derived-activator.ein`); or no run derives it, and the program answers (`g14/derived-activator-never.ein`, 64
+states).
+
+- **(a) A row per way, each `right` the refusal**: W59's two, `derived-activator` and `derived-activator-never`, `open`
+  and S1f.5.18's, witnesses the two `g14` probes with `:why`s added, fixed by T1f.5.18.3; the stage file's refusal
+  fixtures under `examples/broken/load/` banked by T1f.5.18.3 as well.
+- **(b) No row**, the fixtures and the stage's tests holding the refusal.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is [Q-M1f.36](#q-m1f36--what-the-refusal-replaces-which-of-it-is-a-register-row)'s
+reading: a stop and a refusal are two answers, and so are an answer and a refusal.

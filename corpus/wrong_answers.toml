@@ -882,6 +882,24 @@
 # register reads **144 rows fixed, 20 open and 1 not-wrong** (`grep
 # '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
+# **W59 was filed the same day by S1f.5.18's T1f.5.18.1**, every move the
+# stage makes listed before it moves, on the user's ruling of 2026-11-08 on
+# Q-M1f.1 (*"Q1 - b"*): a program in which some rule could derive an
+# activator binding a relation parameter to a fact is refused at load, by a
+# static check, whether or not a run derives it. Two rows, one per way the
+# engine answers such a program today, each `right` the refusal (Q-M1f.44,
+# taken by default on the user's instruction of 2026-11-09, Q-M1f.36's
+# reading): `derived-activator`, root derives the activator and every command
+# stops where its plan is compiled, with W24's line; and
+# `derived-activator-never`, the same program with no fact for the rule to
+# derive it from, which answers, 64 states. Each witness is S1f.5.5's probe of
+# that name under `g14/`, `:why`s added, under
+# `examples/ein-bugs/wrong-answers/` and a corpus entry, each `wrong` and
+# `now` taken at `8249e872`, release and debug alike. W33 and W58, the stage's
+# other two, stay `open` until its T1f.5.18.2. The register reads **144 rows
+# fixed, 22 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -10439,3 +10457,80 @@ derived   = "`(act (f a))` binds `?y` to `(f a)`, so `act` fires on `(p a)` and 
 run   = "solve --minimal"
 line  = "minimal"
 error = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+# ══ W59 — an activator a rule derives can bind a relation parameter to a fact, and the program loads ══
+[[case]]
+id       = "W59/derived-activator"
+case     = "W59"
+title    = "an activator a rule derives can bind a relation parameter to a fact, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1f.1", "Q-M1f.44"]
+witness  = "examples/ein-bugs/wrong-answers/derived-activator.ein"
+status   = "open"
+open_because = "The loader refuses a relation parameter bound to a fact only where the activator is written down (W24, `validate_relation_parameters`), so a rule that derives one, `mk`'s `(r ?f)`, loads, and the run stops where `r`'s plan is compiled, with W24's backstop line; S1f.5.18's T1f.5.18.3 refuses the program at load, on the user's ruling of 2026-11-08 on Q-M1f.1 (*\"Q1 - b\"*)"
+look_at  = ["root"]
+note     = "Filed by S1f.5.18 (T1f.5.18.1, 2026-11-09), one of the two ways the engine answers a program in which a rule could derive an activator binding a relation parameter to a fact (Q-M1f.44, Q-M1f.36's reading: a stop where a refusal is right is a row). The witness is S1f.5.5's probe `g14/derived-activator.ein` (its paper grammar, Q1), `:why`s added"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 8249e872 (2026-11-09): the program loads, root fires `mk` on `(item (a b))` and derives `(r (a b))`, and the run stops where `r`'s plan is compiled, exit 1; `ein saturate --dump`, `solve --minimal` and `oracle` the same, and `ein test` an `ERROR`, exit 2"
+exit      = 1
+error     = "the relation head ?R of (?R b) at Loc(file='examples/ein-bugs/wrong-answers/derived-activator.ein', line=39, col=16) is bound to the fact (a b) — a relation is named by a symbol, not a fact."
+
+[case.right]
+reading   = "the user's ruling of 2026-11-08 on Q-M1f.1 (*\"Q1 - b\"*): a program in which some rule could derive an activator binding a relation parameter to a fact is refused at load by a static check, whether or not a run derives it"
+refused   = true
+derived   = "`r`'s parameter `?R` names a relation, `(box (?R b))`; `mk`'s `:assert` writes `(r ?f)`, so `?f` is bound to `?R`, and `(item ?f)` can bind `?f` to a fact, `item` being a declared relation, whose argument holds any value: so the program is refused at load, one line naming `mk`, `r` and `?R`, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run   = "solve"
+line  = "all"
+error = "the relation head ?R of (?R b) at Loc(file='examples/ein-bugs/wrong-answers/derived-activator.ein', line=39, col=16) is bound to the fact (a b) — a relation is named by a symbol, not a fact."
+
+[[case]]
+id       = "W59/derived-activator-never"
+case     = "W59"
+title    = "an activator a rule derives can bind a relation parameter to a fact, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1f.1", "Q-M1f.44"]
+witness  = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
+status   = "open"
+open_because = "The loader refuses a relation parameter bound to a fact only where the activator is written down (W24), and no run derives one here, so the program loads and answers; S1f.5.18's T1f.5.18.3 refuses it at load, as the user ruled on 2026-11-08 knowing it refuses this program (Q-M1f.1 (b), *\"Q1 - b\"*)"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.18 (T1f.5.18.1, 2026-11-09), one of the two ways the engine answers a program in which a rule could derive an activator binding a relation parameter to a fact (Q-M1f.44): no fact or candidate puts a fact in `item`, so no run meets the parameter bound to one. The witness is S1f.5.5's probe `g14/derived-activator-never.ein`, `:why`s added"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 8249e872 (2026-11-09): H is six candidates, `(box b)`, `(box z)`, `(hit b)`, `(hit z)`, `(item b)` and `(item z)`, and R is their cube, 64 states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 64
+exhausted = true
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 64
+k_c      = 64
+minimal  = [[]]
+maximal  = [["(box b)", "(box z)", "(hit b)", "(hit z)", "(item b)", "(item z)"]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-08 on Q-M1f.1 (*\"Q1 - b\"*), which refuses this program knowing no run derives the activator: a static check that some rule could derive an activator binding a relation parameter to a fact"
+refused   = true
+derived   = "`mk`'s `:assert` writes `(r ?f)`, `?f` is `r`'s relation parameter `?R`, and `(item ?f)` can bind `?f` to a fact, `item` being a declared relation: so the program is refused at load, as `derived-activator.ein` is, though no fact or candidate puts a fact in `item`; every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["box", "hit", "item"]
+models    = [
+  ["(box (a b))"],
+]

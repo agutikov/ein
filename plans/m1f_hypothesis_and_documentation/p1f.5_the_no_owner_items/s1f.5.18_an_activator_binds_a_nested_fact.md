@@ -1,15 +1,14 @@
 # S1f.5.18 — An activator's nested fact: a value parameter binds it, and a relation parameter is refused at load
 
 **Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
-**Estimate:** 1.5 days.
-- Half a day for W33: the parameter binds, with the corpus swept for every move.
-- Three quarters of a day for the load-time check that G-14's ruling adds, prototyped and swept first.
-- A quarter of a day for the pages and the record.
 
 **Status:** specified 2026-11-08 on the user's two rulings of that day:
 [Q-M1f.3](../open_questions.md#q-m1f3--three-wrong-answers-the-census-found-with-no-row) (file W33 and give it this
 stage) and [Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b), whose
-load-time check is the half of G-14 no grammar can see. Not started.
+load-time check is the half of G-14 no grammar can see. The user ruled on 2026-11-09 *"just continue with default
+decisions till the end of the phase"*. **Started 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.10
+(`8249e872`): T1f.5.18.1 ([its record](#t1f5181-record-2026-11-09)), every move listed, W59's two rows filed, four
+questions taken by default (Q-M1f.41 to Q-M1f.44).
 **Depends on:** [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md), which files W33 as an `open` row first.
 It is independent of the grammar stages. It touches `ein-infer/src/compile.rs`, as
 [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md) and [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md)
@@ -112,3 +111,103 @@ README's row, Q-M1f.1 and Q-M1f.3 marked built, and a sentence in `AGENTS.md`.
 - `g14/derived-activator.ein` and `g14/derived-activator-never.ein` are refused at load, one line each.
 - No corpus program that answers today is refused, unless the user has seen it and agreed.
 - `./run_tests.sh` is green.
+
+## T1f.5.18.1 record (2026-11-09)
+
+**Run on the user's instruction of 2026-11-09**, *"just continue with default decisions till the end of the phase"*:
+every decision a reviewer would call one is taken by default and is a row of [`open_questions.md`](../open_questions.md),
+Q-M1f.41 to Q-M1f.44. The stage ran in lane 2's worktree, on `p1f5-lane2` at `8249e872`, after S1f.5.7 and S1f.5.10, so
+the generated parser is the only one, a guard binds a free variable over the program's names, and the loader refuses a
+conclusion variable nothing binds.
+
+**The case, re-taken** on `8249e872`'s release and debug builds alike (`build/s1f.5.18/case/`):
+
+| program | `8249e872` |
+|---|---|
+| `W33/activator-nested-value` | root derives `(hit a)`, `(hit b)` and `(hit (f a))`, R {∅}, the query one class of three rows, exit 0 |
+| `W58/parameter-nested-assert` | every command stops at root, exit 1, `unbound var ?y in :assert — bindings: {'x': 'a'}` (`saturate`: `KeyError: "…"`) |
+| `g14/derived-activator.ein` | loads; root derives `(r (a b))`, and every command stops where `r`'s plan is compiled, exit 1, W24's line *the relation head ?R of (?R b) at Loc(…) is bound to the fact (a b) — a relation is named by a symbol, not a fact.* |
+| `g14/derived-activator-never.ein` | loads and answers, exit 0: H six candidates, R their cube, 64 states |
+
+So the case stands as the stage file has it.
+
+**The seed, prototyped** (`build/s1f.5.18/prototype.patch`, its `compile.rs` half): `compile::Compiler::bind_activator`
+seeds a parameter its activator binds to a nested fact as it seeds one bound to a name. A relation head written as such a
+parameter meets the seeded fact and is refused where it was (`head_not_a_name`), so W24's backstop holds. W33's witness
+then derives `(hit (f a))` alone, and W58's `(hit (f a))` at root, with no stop.
+
+**The load-time check, prototyped** (the patch's `from_ir.rs` half, a census behind `EIN_S1F518`). *What can hold a
+fact* is [Q-M1f.41](../open_questions.md#q-m1f41--what-can-hold-a-fact-means-for-g-14s-derived-activator), taken by
+default as (b). The census read every program of the five roots three ways (`build/s1f.5.18/census/run.sh`, 538 files):
+
+- **The stage file's sketch**, where a variable bound anywhere but a relation parameter, a `(?R …)` head or a signature's
+  name can hold a fact, refuses the two `g14` programs and **32 corpus programs that answer today**: `zebra.ein`, the six
+  `zebra2` programs, `domain_elim/ab`, `b_branch` and `b_only`, `features/09_adjacent_via_same_house`, `stdlib/algebra`,
+  `bijection`, `slots` and `typing` loaded alone, and sixteen programs of `tests/stdlib/` (`algebra/03`, `06`,
+  `bijection/01`, `02`, `03`, `06`, `slots/01`, `02`, `03`, `04`, `07`, `08`, `13`, `typing/01`, `02`, `03`). Each passes a
+  relation name on through a fan-out rule that reads a marker relation, `(bijective ?R)`, `(bijection-hierarchy ?isa)`,
+  `(typecheck-hierarchy ?isa)`, `(slot-partition ?R ?isa ?sub …)`, `(slot-spatial ?R ?S ?isa …)`, `(adjacent-via ?S ?R1
+  ?V1 …)`, `(join ?R1 ?R2 ?R3)`, `(reflexive ?R)`, `(type-hierarchy ?isR*)`.
+- **The typed reading, Q-M1f.41 (b)**: a declared relation's argument, one inside a fact pattern and one of a relation a
+  parameter names can hold a fact; every argument of `(relation …)` holds a name; a marker's argument and a rule's
+  parameter hold what the program passes on from them, inferred to a fixpoint. It infers 20 marker positions over 32
+  programs, the fan-outs above, checks 851 derived activators' arguments at a relation position, and refuses **the two
+  `g14` programs and nothing else**. No fact and no conclusion of the corpus writes a fact at an inferred position.
+- **A conclusion written `(?T …)`** ([Q-M1f.42](../open_questions.md#q-m1f42--a-conclusion-whose-relation-is-a-parameter),
+  (a)) is followed into every rule of its arity whose name the program writes as an argument; no corpus conclusion
+  reaches one, and `build/s1f.5.18/shapes/varhead-copy.ein`, a `copy` rule that writes `(?T ?x)` with `(copy src
+  mirror)` and `(src (q A B))`, is refused, where today its run stops where `mirror`'s plan is compiled.
+
+So the stage goes on: a reading refuses both `g14` programs and keeps the corpus, which is the stage file's condition.
+
+**Every program of the five roots, through both builds** (`build/s1f.5.18/xcheck/run_all.sh`, the cross-check of
+S1f.5.10 with `solve --minimal` and the event stream added: `solve --json-summary -H --dump-answer --events`, `solve
+--minimal`, `saturate --dump`, `test` and `oracle`, the exit, stdout and stderr of each, the summary, the events and every
+file the dump wrote compared, timings masked; 538 files, `zebra2-minus-15.ein` re-run alone where the comparison of ten
+in parallel ran out of memory). With the seed alone (185 s) **530 are the same and eight move**; with the check too
+(207 s), the same eight and **the two `g14` programs**:
+
+| program | what moves | why |
+|---|---|---|
+| `wrong-answers/activator-nested-value.ein` | root holds `(hit (f a))` alone; H gains `(hit a)` and `(hit b)`, which root no longer holds, so R is their cube, 4 states, the minimal line still root's; the query's class one row | W33 fixed |
+| `wrong-answers/parameter-nested-assert.ein` | every command answers, exit 0, root holding `(hit (f a))`, R two states, where it stopped | W58 fixed |
+| `ein-bugs/binding-key-both.ein`, `-swapped.ein`, `-nested-only.ein` | `(note edge (src Y))` binds `?f` to `(src Y)`, and no `(holds (src Y))` is a fact, so it derives nothing; each `:expect`, which stated the four `noted` facts the unbound `?f` derived, is refuted, exit 1 | each `:expect` stated W33's wrong answer, and T1f.5.18.2 restates it |
+| `corpus/fuzz_findings/binding-key-layout.ein`, `-swapped.ein` | the same two `noted` facts fewer at root | the same; no claim |
+| `plans/m1e2_correctness/probes/binding-key-nested-only.ein` | the same; its R, past the budget, counts other members | the same; a plan probe |
+| `g14/derived-activator.ein` | refused at load, every command | W59 |
+| `g14/derived-activator-never.ein` | refused at load, every command | W59 |
+
+W7's `[case.right]`, `W7/binding-key-layout`'s, states the twelve-fact maximal state the unbound `?f` derives (*the
+nested-fact activator alone derives every (noted ?a ?f)*), W33's wrong answer; its `now`, the `holds` facts alone, does
+not move, and T1f.5.18.2 restates its `right`, as it does `ein-infer`'s `rule_semantics` controls that state the same.
+
+**What the analyses that read activators do with the bound value** (the stage file's list): `forbid`, `monotone`, the
+static check and `invariant::program_names` each read a plan, whose seed holds the value. On every program of the sweep
+none changes its answer: no refusal moves, the static check's verdict and sites are the same on all 538, and the
+program's names are the same; on W33's witness the summary's `monotonicity.hypothesised` and `dynamic` gain `hit`, since
+H gains its two candidates. `Plan::activator_args`, which keeps an activator's symbol arguments only, is read as a plan's
+identity by four of them (`oblgen`'s `InstanceKey`, `region.rs`' owed-instance key, `detector`'s `RootPlans`, `naf_deps`'
+key), beside bindings that hold no seeded register, so two plans the seed tells apart would share one:
+[Q-M1f.43](../open_questions.md#q-m1f43--planactivator_args-once-a-nested-fact-binds), taken by default as (a), makes it
+every argument, which T1f.5.18.2 builds.
+
+**The rows** ([Q-M1f.44](../open_questions.md#q-m1f44--what-the-load-time-check-replaces-which-of-it-is-a-register-row),
+Q-M1f.36's reading): each way the engine answers a program the check refuses is a row whose `right` is the refusal,
+filed `open`, owned by S1f.5.18, each witness the `g14` probe with `:why`s added, under `examples/ein-bugs/wrong-answers/`
+with a corpus entry, each `wrong` and `now` taken at `8249e872`, release and debug alike:
+
+| row | witness | `now`, today | `right` |
+|---|---|---|---|
+| `W59/derived-activator` | `derived-activator.ein`: root derives `(r (a b))` | every command stops, exit 1, W24's compile line | refused at load |
+| `W59/derived-activator-never` | `derived-activator-never.ein`: no `item` fact | answers, 64 states, exit 0 | refused at load |
+
+W33 and W58 stay `open` until T1f.5.18.2. The register reads **144 fixed, 22 open and 1 not wrong** (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**What moves by banking**, with no engine change: `corpus_exits.txt` gains the two witnesses' four cells (`derived-activator`
+1 and 1, `-never` 0 and 0), `corpus_shapes.md5` 82 digests, 41 per witness, none of any other program moved;
+`examples/README.md` names the witnesses (159 → 161 programs under `ein-bugs/wrong-answers/`); `ein-infer`'s
+`alive_invariant` lists their two names only a nested fact or a rule writes, `b` in `(box (a b))` and `z` in `r`'s
+`:assert`; and `detector`'s count of the corpus programs the static check flags is 49 where it was 48,
+`derived-activator-never.ein`'s `r` an `activator` site. The first gate run stopped at those two tests, which this commit
+updates; the run its body names is the whole gate again, with `--no-fail-fast` forwarded to `cargo test`.

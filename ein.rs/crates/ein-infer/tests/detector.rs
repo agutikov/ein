@@ -179,8 +179,12 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // W32's `kwpair-in-macro` on 2026-11-08: its `forall` is an `absent`
     // over `q`, which a commitment can extend, an `absent` site. 48 since
     // S1f.5.5's swap the same day, which refuses `kwpair-in-macro` at the
-    // parse (S1f.5.11), so it loads here no more.
-    assert_eq!(flagged, 48, "the flagged corpus programs");
+    // parse (S1f.5.11), so it loads here no more. 49 since M1f S1f.5.18
+    // banked W59's `derived-activator-never` on 2026-11-09 (T1f.5.18.1): its
+    // `r` is an `activator` site root compiled no plan of, `mk` deriving the
+    // activator from `item`, which a commitment can change; T1f.5.18.3
+    // refuses it at load, and it loads here no more.
+    assert_eq!(flagged, 49, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

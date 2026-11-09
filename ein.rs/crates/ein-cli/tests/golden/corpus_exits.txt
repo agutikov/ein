@@ -428,6 +428,10 @@
 0    examples/ein-bugs/wrong-answers/core-search-cut-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: saturate
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: solve
+0    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: saturate
+0    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
+1    examples/ein-bugs/wrong-answers/derived-activator.ein :: saturate
+1    examples/ein-bugs/wrong-answers/derived-activator.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render rules
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: saturate

@@ -1738,6 +1738,18 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W58 (`W58/parameter-nested-assert`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09) outside its case: a value parameter its activator binds to a nested fact, read only by the `:assert`, reaches it unbound, W33's cause, and the run stops, exit 1. Open, owned by S1f.5.18, which binds the parameter (Q-M1f.37)."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W59 (`W59/derived-activator`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, so the run stops where `r`'s plan is compiled, exit 1, with W24's line. Open, owned by S1f.5.18: the program is refused at load (Q-M1f.1 (b))."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W59 (`W59/derived-activator-never`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Open, owned by S1f.5.18: the program is refused at load, as the user ruled knowing it (Q-M1f.1 (b))."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24
