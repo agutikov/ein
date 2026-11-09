@@ -58,7 +58,6 @@ pub const GROUND_SHAPE: &str = "rectangle";
 pub const HYPER_SHAPE: &str = "octagon";
 pub const EQUALITY_SHAPE: &str = "doublecircle";
 pub const VAR_SHAPE: &str = "diamond";
-pub const WILDCARD_ATTRS: &str = "shape=diamond, style=dashed";
 
 /// The rank separation of a digraph whose diamonds and octagons stand outside
 /// any cluster: a rule's overlay, and a [`Builder`](crate::builder::Builder)
@@ -149,7 +148,6 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(s) => ast.sym(s).to_string(),
         Node::Var(s) => format!("?{}", ast.sym(s)),
-        Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
         // A string is natural-language text since M1f S1f.5.5's swap, which
         // reaches this label only as a keyword's value, `:goal-text "…"` in a

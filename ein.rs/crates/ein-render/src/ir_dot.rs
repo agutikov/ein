@@ -19,8 +19,8 @@ use ein_ir::{Ast, Node, NodeId};
 
 use crate::builder::Builder;
 use crate::dot_util::{
-    EQUALITY_SHAPE, GROUND_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, WILDCARD_ATTRS, multiline,
-    quote, value_label,
+    EQUALITY_SHAPE, GROUND_SHAPE, INSTANCE_SHAPE, TYPE_SHAPE, VAR_SHAPE, multiline, quote,
+    value_label,
 };
 use crate::palette::hash_color;
 use crate::rules::{RuleMode, render_rule_form, render_rules_forms};
@@ -69,7 +69,6 @@ impl TraceView {
 fn atom_id(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Var(s) => quote(&format!("?{}", ast.sym(s))),
-        Node::Wildcard => quote("_"),
         Node::Atom(s) => quote(ast.sym(s)),
         // Every caller hands over an atom-like node, so anything else is
         // unreachable.
@@ -78,14 +77,13 @@ fn atom_id(ast: &Ast, id: NodeId) -> String {
 }
 
 fn is_atom_like(ast: &Ast, id: NodeId) -> bool {
-    matches!(ast.node(id), Node::Atom(_) | Node::Var(_) | Node::Wildcard)
+    matches!(ast.node(id), Node::Atom(_) | Node::Var(_))
 }
 
 /// Shape attrs for an atom-like arg appearing in a fact or pattern.
 fn atom_arg_attrs(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Var(_) => format!("shape={VAR_SHAPE}"),
-        Node::Wildcard => WILDCARD_ATTRS.to_string(),
         _ => format!("shape={GROUND_SHAPE}"),
     }
 }
@@ -93,7 +91,7 @@ fn atom_arg_attrs(ast: &Ast, id: NodeId) -> String {
 /// Resolve an atom-like or `SForm` value to a DOT node id.
 fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
-        Node::Atom(_) | Node::Var(_) | Node::Wildcard => atom_id(ast, id),
+        Node::Atom(_) | Node::Var(_) => atom_id(ast, id),
         Node::SForm { .. } => quote(&value_label(ast, id)),
         // A string's node was its name as the one printer prints it (M1e2
         // S1e2.3.8), until M1f S1f.5.5's swap made a string natural-language

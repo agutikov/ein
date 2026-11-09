@@ -271,8 +271,6 @@ fn unify(plan: &Plan, slots: &[Slot], args: &[Arg], binds: &mut Binds) -> bool {
     for (slot, arg) in slots.iter().zip(args) {
         let ok = match slot {
             Slot::Opaque(_) => false,
-            // A wildcard can match any argument.
-            Slot::Any => true,
             Slot::Reg(r) => {
                 let m = match binds.get(r) {
                     Some(b) => meet(b, arg),
@@ -317,7 +315,7 @@ fn instantiate(plan: &Plan, slot: &Slot, binds: &Binds) -> Option<Shape> {
         match slot {
             Slot::Reg(r) => binds.get(r).cloned().unwrap_or(Arg::Any),
             Slot::Const(v) if v.as_fact().is_none() => Arg::Val(*v),
-            Slot::Const(_) | Slot::Any | Slot::Opaque(_) => Arg::Any,
+            Slot::Const(_) | Slot::Opaque(_) => Arg::Any,
             Slot::Nested { rel, slots } => Arg::Nested(Shape {
                 rel: *rel,
                 args: plan

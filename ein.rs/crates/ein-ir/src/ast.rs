@@ -84,8 +84,9 @@ pub enum Node {
     Var(SymId),
     /// `:name` — the `:` is not stored. Only ever a [`Node::KwPair`] key.
     Keyword(SymId),
-    /// `_`.
-    Wildcard,
+    // `Wildcard`, `_`, was a node until M1f S1f.5.1's T1f.5.1.3: S1f.5.5's
+    // swap refused a bare `_` at the parse (`ein.l`'s `UNDERSCORE`, which no
+    // production of `ein.y` takes), so nothing built one.
     /// A double-quoted string, stored **unescaped**: natural-language text,
     /// the value of a `:why`, `:source` or `:goal-text` key pair and nothing
     /// else since M1f S1f.5.5's swap (S1f.5.2's ruling, `ein.y`'s `Text`).
@@ -94,7 +95,7 @@ pub enum Node {
     /// `Loc`.
     KwPair { key: NodeId, value: NodeId },
     /// `(head arg…)`. `head` is an `Atom` for every real form and may be a
-    /// `Var` or `Wildcard` inside a pattern interior (`(?rel ?a ?b)`).
+    /// `Var` inside a pattern interior (`(?rel ?a ?b)`).
     SForm { head: NodeId, args: ArgSpan },
 }
 
@@ -246,7 +247,7 @@ impl Ast {
     }
 
     /// The `Atom` head-name of a form, or `None` when the node is not a form
-    /// or its head is a `Var`/`Wildcard`.
+    /// or its head is a `Var`.
     pub fn head_name(&self, id: NodeId) -> Option<&str> {
         match self.node(id) {
             Node::SForm { head, .. } => self.atom_name(head),
@@ -277,7 +278,6 @@ impl Ast {
             (Node::Atom(x), Node::Atom(y)) => x == y,
             (Node::Var(x), Node::Var(y)) => x == y,
             (Node::Keyword(x), Node::Keyword(y)) => x == y,
-            (Node::Wildcard, Node::Wildcard) => true,
             (Node::Str(x), Node::Str(y)) => x == y,
             (Node::KwPair { key: k1, value: v1 }, Node::KwPair { key: k2, value: v2 }) => {
                 self.eq_nodes(k1, k2) && self.eq_nodes(v1, v2)
@@ -323,7 +323,6 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
         Node::Atom(s) => format!("Atom(name={})", repr_str(ast.sym(s))),
         Node::Var(s) => format!("Var(name={})", repr_str(ast.sym(s))),
         Node::Keyword(s) => format!("Keyword(name={})", repr_str(ast.sym(s))),
-        Node::Wildcard => "Wildcard()".to_string(),
         Node::Str(s) => format!("String(value={})", repr_str(ast.sym(s))),
         Node::KwPair { key, value } => format!(
             "KwPair(key={}, value={})",

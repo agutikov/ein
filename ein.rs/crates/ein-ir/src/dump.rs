@@ -64,7 +64,7 @@ pub fn dump_compact(ast: &Ast, node: NodeId) -> String {
 
 fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
     match ast.node(node) {
-        Node::Atom(_) | Node::Var(_) | Node::Wildcard => out.push_str(&atom_text(ast, node)),
+        Node::Atom(_) | Node::Var(_) => out.push_str(&atom_text(ast, node)),
         Node::Keyword(s) => {
             out.push(':');
             out.push_str(ast.sym(s));

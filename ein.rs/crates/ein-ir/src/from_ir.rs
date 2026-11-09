@@ -352,7 +352,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
             // A string is natural-language text, here a query's `:goal-text`,
             // and names nothing (M1f S1f.5.2): until T1f.5.2.3 it was
             // interned as a name, which nothing asked for.
-            Node::Str(_) | Node::Keyword(_) | Node::Wildcard => {}
+            Node::Str(_) | Node::Keyword(_) => {}
             Node::KwPair { key, value } => {
                 walk(ast, terms, key);
                 walk(ast, terms, value);
@@ -1405,16 +1405,6 @@ fn vars_under(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
     }
 }
 
-/// Is a wildcard `_` written under `node`, at any depth?
-fn wildcard_under(ast: &Ast, node: NodeId) -> bool {
-    match ast.node(node) {
-        Node::Wildcard => true,
-        Node::SForm { .. } => ast.form_args(node).iter().any(|&a| wildcard_under(ast, a)),
-        Node::KwPair { value, .. } => wildcard_under(ast, value),
-        _ => false,
-    }
-}
-
 /// Every `(absent …)` form under `node`, outermost first.
 fn absent_forms(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
     if matches!(ast.node(node), Node::SForm { .. }) {
@@ -1649,9 +1639,10 @@ fn validate_projection(
         .filter(|&n| {
             let mut vs = BTreeSet::new();
             vars_under(ast, n, &mut vs);
-            // A wildcard is a slot the `absent` introduces, as a fresh
-            // variable is (M1e2 S1e2.2.20, W20).
-            vs.iter().any(|v| !outside.contains(v)) || wildcard_under(ast, n)
+            // A wildcard was a slot the `absent` introduced, as a fresh
+            // variable is (M1e2 S1e2.2.20, W20), until S1f.5.5's swap refused
+            // a bare `_` (S1f.5.1).
+            vs.iter().any(|v| !outside.contains(v))
         })
         .collect();
     match witnesses.len() {

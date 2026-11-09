@@ -24,7 +24,8 @@
 //!
 //! **Why a `(model …)` head.** The proposed shape was a bare list of facts —
 //! `:expect ((p A H1) (p B H2))` — and it did not parse under the hand-written
-//! grammar, whose `ListHead ::= SYMBOL | VAR | WILDCARD | EQ` a list is none
+//! grammar, whose `ListHead ::= SYMBOL | VAR | WILDCARD | EQ` (`WILDCARD` a
+//! bare `_`, refused since the swap, S1f.5.1) a list is none
 //! of. Widening `ListHead` to admit a list would have changed the grammar of
 //! *every* form to buy one keyword's ergonomics, where a `SYMBOL` head cost
 //! nothing. Since M1f S1f.5.5's swap `model` is a word a position gives a
@@ -157,7 +158,6 @@ pub fn matches(ast: &Ast, fact: NodeId, pattern: NodeId) -> bool {
                     }
                 }
             }
-            Node::Wildcard => true,
             Node::SForm { head, args } => {
                 let Node::SForm {
                     head: fh,
@@ -268,7 +268,6 @@ pub fn render(ast: &Ast, node: NodeId) -> String {
         Node::Atom(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::Str(_) => unreachable!("a claim's fact holds no string (ein.y's ClaimFact)"),
         Node::Var(s) => format!("?{}", ast.sym(s)),
-        Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
         Node::KwPair { key, value } => format!("{} {}", render(ast, key), render(ast, value)),
         Node::SForm { head, args } => {

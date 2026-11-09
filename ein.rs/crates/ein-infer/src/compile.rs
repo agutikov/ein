@@ -972,10 +972,9 @@ impl<'a> Compiler<'a> {
     /// M1e2 S1e2.2.18, so `"b"` and `b` were one value, until M1f S1f.5.5's
     /// swap refused a string in a pattern (S1f.5.2's ruling); S1f.5.2's
     /// T1f.5.2.3 retired its arm.
-    /// A `Wildcard` becomes [`Slot::Any`], which matches any value and binds
-    /// nothing, at any depth of a `:match`, an `absent` and a nested pattern;
-    /// in an `:assert` it is no value, and the firing stops
-    /// ([`crate::firing::FireError::NotAFact`]).
+    /// A `Wildcard` became `Slot::Any`, which matched any value and bound
+    /// nothing, from M1e2 S1e2.2.20 until M1f S1f.5.5's swap refused a bare
+    /// `_` at the parse (S1f.5.1); S1f.5.1's T1f.5.1.3 retired both.
     /// An `SForm` becomes a nested pattern, with its head substituted from the
     /// binding when it is a bound `Var`; one whose head is a parameter the
     /// activator bound to a nested fact is refused (`head_not_a_name`).
@@ -1014,7 +1013,6 @@ impl<'a> Compiler<'a> {
                 Ok(Slot::Const(Value::sym(self.intern(&name))))
             }
             Node::Str(_) => unreachable!("a pattern holds no string (ein.y's Arg and Term)"),
-            Node::Wildcard => Ok(Slot::Any),
             Node::SForm { head, args } => {
                 let rel = match self.ast.node(head) {
                     Node::Atom(s) => {
@@ -1144,7 +1142,7 @@ impl<'a> Compiler<'a> {
             match self.slots[i] {
                 Slot::Reg(r) => out.push(self.reg_name(r)),
                 Slot::Nested { slots, .. } => self.collect_vars(slots, out),
-                Slot::Const(_) | Slot::Any | Slot::Opaque(_) => {}
+                Slot::Const(_) | Slot::Opaque(_) => {}
             }
         }
     }
@@ -1244,7 +1242,6 @@ impl<'a> Compiler<'a> {
                     self.guard_keys.push(3);
                     self.encode_node(n);
                 }
-                Slot::Any => self.guard_keys.push(4),
             }
         }
     }
@@ -1256,9 +1253,9 @@ impl<'a> Compiler<'a> {
             Node::Atom(s) => self.guard_keys.extend([0, s.0]),
             Node::Var(s) => self.guard_keys.extend([1, s.0]),
             Node::Keyword(s) => self.guard_keys.extend([2, s.0]),
-            Node::Wildcard => self.guard_keys.push(3),
             Node::Str(_) => unreachable!("a guard compares no string (ein.y's Guard and Term)"),
-            // 4 was a string's, until M1f S1f.5.2's T1f.5.2.3 retired the arm,
+            // 3 was a wildcard's, until M1f S1f.5.1's T1f.5.1.3 retired the node,
+            // 4 a string's, until M1f S1f.5.2's T1f.5.2.3 retired the arm,
             // 5 an int's, until M1f S1f.5.4 retired the kind, and 6 a range's,
             // until M1f S1f.5.3 retired the token.
             Node::KwPair { key, value } => {
@@ -1352,7 +1349,7 @@ impl<'a> Compiler<'a> {
                             // A doubly-nested pattern would need a two-level
                             // key the index does not hold; an opaque slot has
                             // no value at all.
-                            Slot::Nested { .. } | Slot::Any | Slot::Opaque(_) => continue,
+                            Slot::Nested { .. } | Slot::Opaque(_) => continue,
                         };
                         self.probes.push(Probe {
                             slot: i as u16,
@@ -1361,9 +1358,8 @@ impl<'a> Compiler<'a> {
                         });
                     }
                 }
-                // An opaque slot has no value at all, and a wildcard none to
-                // key on.
-                Slot::Any | Slot::Opaque(_) => {}
+                // An opaque slot has no value at all.
+                Slot::Opaque(_) => {}
             }
         }
         Span {
@@ -1664,7 +1660,7 @@ mod tests {
     /// unbound, so the nested premise probes on both inner slots. Until the
     /// swap the `_` was an opaque slot (`Slot::Any` since M1e2 S1e2.2.20,
     /// before that a string, and a range) that contributed no probe; with no
-    /// program able to write one, `Slot::Any` goes with T1f.5.1.3.
+    /// program able to write one, `Slot::Any` went with T1f.5.1.3.
     #[test]
     fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
         let (_, _terms, plan) = compile(
@@ -1683,11 +1679,11 @@ mod tests {
         }
     }
 
-    /// M1e2 S1e2.2.20 — a wildcard in a pattern was [`Slot::Any`], which
+    /// M1e2 S1e2.2.20 — a wildcard in a pattern was `Slot::Any`, which
     /// matched any value and bound nothing (until then an opaque slot that
     /// matched nothing, W20). Since M1f S1f.5.5's swap a bare `_` is refused
     /// at the parse, in every position (S1f.5.1), so no program reaches
-    /// `Slot::Any`, which goes with T1f.5.1.3: the program that held it is
+    /// `Slot::Any`, which went with T1f.5.1.3: the program that held it is
     /// refused at each of its four `_`, and a variable used once matches any
     /// value instead.
     #[test]

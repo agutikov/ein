@@ -85,17 +85,18 @@ pub enum Slot {
     Const(Value),
     /// A sub-pattern matched against a `Fact`-valued argument (Q40 option A).
     Nested { rel: Symbol, slots: Span },
-    /// The wildcard `_` in a pattern: it unifies with any value and binds
-    /// nothing (M1e2 S1e2.2.20, W20, Q-M1e2.13 (a)). In an `:assert` it is no
-    /// value, and the firing stops with the line
-    /// [`crate::firing::FireError::NotAFact`] prints.
-    Any,
+    // `Any`, the wildcard `_` in a pattern, unified with any value and bound
+    // nothing from M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) until M1f S1f.5.5's
+    // swap refused a bare `_` at the parse (S1f.5.1, Q-M1e2.22), and S1f.5.1's
+    // T1f.5.1.3 retired it: a premise's fact is a function of the register
+    // file since (F3's trace, W39 the one exception, a disjunction).
     /// An IR node the compiler's `slot` returned unchanged — a `KwPair` in a
     /// nested pattern, or an `SForm` whose head is a variable the activator
     /// does not bind. A `String` was one until M1e2 S1e2.2.18, and a
     /// `Wildcard` and a `Range` until S1e2.2.20, which lowered the first to
-    /// [`Self::Any`] and refused the second, and a wildcard as a relation, at
-    /// load (and M1f S1f.5.3 retired the range token). **Since S1e2.2.24** (W24, Q-M1e2.16 (1)) the loader refuses the
+    /// `Slot::Any` (retired with the node by M1f S1f.5.1) and refused the
+    /// second, and a wildcard as a relation, at load (and M1f S1f.5.3 retired
+    /// the range token). **Since S1e2.2.24** (W24, Q-M1e2.16 (1)) the loader refuses the
     /// two that were left, a keyword pair inside a pattern inside a pattern
     /// and a relation variable no parameter binds, and the compiler a
     /// parameter its activator bound to a nested fact, so no program the
@@ -217,7 +218,8 @@ pub enum GuardArgKind {
     /// "b")` never held, and the symbol it names until M1f S1f.5.5's swap
     /// refused one in a guard (S1f.5.2; T1f.5.2.3 retired the arm).
     Const(Value),
-    /// Anything else — a `Wildcard`, an `SForm`, a `KwPair` — which guard
+    /// Anything else — an `SForm`, a `KwPair` (a `Wildcard` until M1f
+    /// S1f.5.1 retired the node) — which guard
     /// resolution returns as-is, so it compares by IR-node equality: equal to
     /// no value. **Since M1e2 S1e2.2.24** (W24, Q-M1e2.16 (1), Q-M1e2.18) the
     /// loader refuses each as a guard's argument, and a variable no premise

@@ -17,9 +17,7 @@
 use ein_core::is_predicate;
 use ein_ir::{Ast, Node, NodeId};
 
-use crate::dot_util::{
-    GROUND_SHAPE, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, WILDCARD_ATTRS, quote, value_label,
-};
+use crate::dot_util::{GROUND_SHAPE, HYPER_SHAPE, POLYGON_RANKSEP, VAR_SHAPE, quote, value_label};
 use crate::palette::hash_color;
 
 const NEG_COLOUR: &str = "#d62728"; // red — negated premises / conclusions
@@ -186,9 +184,9 @@ fn home_of(homes: &[(String, Home)], label: &str) -> Option<Home> {
 // ── shapes / ids ───────────────────────────────────────────────────
 
 fn shape_attrs(nodelabel: &str) -> String {
-    if nodelabel == "_" {
-        WILDCARD_ATTRS.to_string()
-    } else if nodelabel.starts_with('?') {
+    // A `_` label was a wildcard's, drawn dashed, until M1f S1f.5.1's
+    // T1f.5.1.3 retired the node.
+    if nodelabel.starts_with('?') {
         format!("shape={VAR_SHAPE}")
     } else {
         format!("shape={GROUND_SHAPE}")

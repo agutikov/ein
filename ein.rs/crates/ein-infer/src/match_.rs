@@ -821,8 +821,6 @@ impl Matcher {
                     self.unify(terms, plan, slots, terms.facts.args_of(row))
                 }
             },
-            // The wildcard: any value, and nothing bound.
-            Slot::Any => true,
             // An IR node compared to a name or a `Fact`: no IR node is equal
             // to either.
             Slot::Opaque(_) => false,
@@ -920,8 +918,6 @@ impl Matcher {
                 // useful sense — leave it to the scan, which will reject every
                 // candidate exactly as it does today.
                 Slot::Opaque(_) => return GroundArgs::Open,
-                // Any value: no one tuple.
-                Slot::Any => return GroundArgs::Open,
             };
         }
         GroundArgs::Closed(out, ss.len())
@@ -1019,7 +1015,7 @@ fn candidates_scan(plan: &Plan, regs: &[Value], step: RelStep) -> Option<SlotKey
                 // not hold one as a value of its own.
                 (!v.is_unbound() && v.tag() != Tag::Fact).then_some(v)
             }
-            Slot::Nested { .. } | Slot::Any | Slot::Opaque(_) => None,
+            Slot::Nested { .. } | Slot::Opaque(_) => None,
         }
     };
     for (slot, i) in plan.slots(step.slots).iter().zip(0u16..) {

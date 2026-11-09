@@ -732,7 +732,6 @@ fn slot_text(ast: &Ast, terms: &Terms, plan: &Plan, regs: &[Symbol], slot: &Slot
             s.push(')');
             s
         }
-        Slot::Any => String::from("_"),
         Slot::Opaque(node) => node_repr(ast, *node),
     }
 }

@@ -20,7 +20,8 @@ name, and only a bare `_` and `?_` stay refused.
 **Not started** until the swap, which moved its refusal, fixtures and rows (below). **Running since 2026-11-09**
 ([§ T1f.5.1.3 record](#t1f513-record-2026-11-09)): T1f.5.1.3's step 1 done, F3's cause traced to a rule application's
 identity, which reaches a disjunction too, filed as `W39/or-one-key`, `open` and deferred to F22 (`728e716a`); step 2,
-`_` and `?_` held refused in every position (66 rows of the grammar's table) and on every command.
+`_` and `?_` held refused in every position (66 rows of the grammar's table) and on every command (`307021db`);
+step 3, `Slot::Any` and `Node::Wildcard` retired, no answer and no golden moving.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal is the generated parser's (bare `_` is no `NAME` and `?_` no `VAR` in
@@ -368,6 +369,71 @@ reads a program. No answer moved, and no register row.
 
 **What moved**, the table's golden and nothing else: `grammar_table.txt` gains the 66 rows' reports, 460 lines
 (`EIN_BLESS=1 cargo test -p ein-ir --test grammar_pages`), each the token's line, the note and the repair *Delete*.
+
+**Step 3, `Slot::Any` and `Node::Wildcard` retired: one commit, on step 2's (`307021db`).** Nothing the parser builds
+holds a wildcard since S1f.5.5's swap, and the node, the slot and every arm that read either are gone, each shown
+unreachable first. **No answer moved, and no golden**: the gate below reads every golden as it was.
+
+**How unreachable was shown** (T1f.5.2.3's harness). A copy of step 2's tree (`build/s1f.5.1/t3/probe/`) with a panic,
+`S1-PROBE <id>`, at each of 30 sites (`probe_patch.py`, by text): the two roots, `Ast::push` of a `Node::Wildcard`
+(the only way a node enters an `Ast`, whose arena is private) and the compiler's `Node::Wildcard => Slot::Any` (the
+only place a `Slot::Any` is made); every other arm that reads either, `eq_nodes`, `node_repr`, the dumper's compact
+form, the loader's name walk and `wildcard_under`, the claim reader's match and render, the compiler's variable walk,
+guard key (slot and node) and probes (two), the matcher's unify, ground arguments and candidate scan, the shape dump,
+the obligations rung's `bears_local`, the firing's `build_fact`, `not_a_fact` and `resolve`, the detector's and the
+saturator's NAF grounding, and `ein-render`'s `value_label`, `atom_id`, `is_atom_like`, `atom_arg_attrs`,
+`atom_id_for_value` and the `_` label of `rules.rs`' `shape_attrs`. Each probe logs its id, the thread and argv, so one
+reached inside a child `ein` would be named.
+- `cargo test --workspace --no-fail-fast` on it (`probe-tests.log`, 16 min 14 s): **950 passed, 0 failed, and no
+  probe**, over every corpus sweep, golden, fuzz property and CLI run the gate runs; no test builds a `Wildcard` by hand.
+- Every corpus file under 6 000 bytes (404) and 40 000 seeded mutants of them (`ein_corpus::mutants`, seed 0), then
+  200 000 more (seed 987654321), each parsed, drawn (`ein render program`'s, `rules`' and `constraints`' functions),
+  dumped, loaded, saturated and printed (`s1_sweep.rs`, T1f.5.2.3's `s2_sweep`): 16 317 refused at the parse, 2 646 at
+  load, 64 at compile, 21 294 saturated and 83 stopped saturating, and 81 974, 12 729, 340, 104 851 and 510, **no
+  probe and no other panic** (`sweep.txt`, `sweep2.txt`).
+
+And by construction: the generated parser makes no `Wildcard`, its `_` and `?_` being tokens no production of `ein.y`
+takes, and the macro expander and the import resolver copy only what a program wrote.
+
+**Removed.**
+- `ein-ir`: `Node::Wildcard`, and its arms in `eq_nodes`, `node_repr`, the dumper's `compact_into`, the loader's
+  `intern_program_names`, and the claim reader's match and render (`expect.rs`); `from_ir::wildcard_under`, which
+  `validate_open` read to count a `_` as a slot an `(open …)`'s `absent` introduces.
+- `ein-infer`: `Slot::Any` and its arms in the compiler (`slot`, `collect_vars`, the guard key's slot code 4 and node
+  code 3, the probe list twice), the matcher (`unify`, `ground_args`, `candidates_scan`), `shape::slot_text`,
+  `oblgen::bears_local`, the firing (`build_fact`, `not_a_fact`, `resolve`), and the detector's and the saturator's
+  NAF grounding; and in the three examples that match on a slot (`fact_grain`, `detector_draft`, `node_census`).
+- `ein-render`: `Node::Wildcard`'s arms in `value_label` and `ir_dot`'s four atom-like helpers, the public
+  `dot_util::WILDCARD_ATTRS`, the dashed diamond the shape was drawn with, and `rules.rs`' `_` label branch.
+- Every comment that described either as live says what it was and when it went. No line of code names either since
+  (`grep -rn 'Slot::Any\|Node::Wildcard' --include='*.rs' ein.rs/crates | grep -v /tests/`: 37 lines on `307021db`, 6
+  on this commit, each a comment saying what it was; 2026-11-09). The stage's 42 were taken on 2026-11-06, before
+  S1f.5.5's T5 deleted the loader's lines for a head, a guard and a premise.
+
+**Kept, and why.**
+- **`dump.rs`' `atom_text` catch-all**, which prints `_` for a head that is neither a name nor a variable: it was the
+  wildcard's arm, and by construction a macro can reach it: a body that puts a parameter in head position, called
+  with a form, makes a head that is neither (`macros.rs`' `substitute`), which a dump of the expanded program prints
+  before the loader refuses it. Not only `_`'s, so not this step's to remove.
+- **`ir_dot.rs`' `atom_id` panic** for a node that is not atom-like: the arm every other node took.
+- **The tests named for the wildcard** (`a_wildcard_in_a_rule_matches_what_a_fresh_variable_does` and its four
+  siblings): each holds the refusal and the variable written in the wildcard's place, and each doc says so since the
+  swap; only the two in `compile.rs` said *`Slot::Any` goes with T1f.5.1.3*, now *went*.
+
+**Nothing moved.** Every `.ein` under the five roots (517, `find examples tests stdlib corpus plans -name '*.ein' |
+wc -l`, 2026-11-09) through step 2's release build and this commit's (`build/s1f.5.1/t3/xcheck/`, S1f.5.2's scripts
+pointed at the two, 145 s): `solve --json-summary -H --dump-answer`, `saturate --dump` and `test`, timings masked,
+**517 of 517 the same on every command**; T12's 2 000 mutants through `saturate`, the error text included, the same
+(1 047 accepted, 767 refused with repairs, 186 without); and **the container both ways** (`einb.sh`): on the 344 that
+load, the four reads agree with each other and with `solve` of the `.ein` but `g14/derived-activator.ein`, whose four
+reads agree with each other and place its compile refusal at `<string>`, as T1f.5.4.3 and T1f.5.2.3 found. Seven
+containers' bytes differed between the two builds, each by the second it was saved in (`meta.rs`' `created_unix`, which
+the header's digest covers); saved again, all seven are the same bytes from both builds.
+
+**The gates**, each on the tree it committed: step 1, 15 min 35 s (`build/gate-s1f.5.1-T3-1.log`), 949 tests, after a
+first run stopped on `alive_invariant`'s `SEEDED`, which the commit then carried; step 2, 15 min 38 s
+(`build/gate-s1f.5.1-T3-2.log`), 950 tests, step 1's and `a_bare_underscore_names_nothing_in_every_place`; step 3,
+16 min 13 s (`build/gate-s1f.5.1-T3-3.log`), 950 tests, every golden read as it was. All green, with every static check.
 
 ### Task T1f.5.1.4 — the pages
 
