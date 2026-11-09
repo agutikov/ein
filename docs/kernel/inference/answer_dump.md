@@ -28,7 +28,7 @@ out/
   answer.json     byte-identical to --json-summary on the same run
   models/NN.ein   program + one state's facts, one per state the run reached
   owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
-  nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it, or why there is no core
+  nogoods.json    N: each minimal dead set, its core, the core's status and the rules that refuted it
   forms/F.txt     each form asked for, uncut: -H, --models key|grid, -p, -P, -f, --diff-models
 ```
 
@@ -62,15 +62,24 @@ out/
   of the user's ruling (Q-M1e2.21 (a)). `core_status` (M1e2 S1e2.2.23, W23) says
   whether the core's search was cut at its budget: `within-budget`, `cut-`
   and the caps it stopped at (`cut-environments`, `cut-rounds`,
-  `cut-facts`, joined). **A member a run past `--region-limit` met** has no
-  core to write, since past the limit the run keeps each node it met as its
-  two bits: its `core` and `refuted_by` are `null` and its `core_status` is
-  `not-kept` (M1e2 S1e2.3.9, `b6139e62`). Until S1e2.3.9 such a member was
-  written with an empty core, no rule and a `null` status, which reads as
-  *refuted by nothing*: `lattice/06_friends_tables.ein`'s 68 of 68 (`ein
-  solve FILE --dump-answer DIR`, 2026-11-06). No member is written with an
-  empty core, which `ein-cli/tests/answer_round_trip.rs` holds over every
-  corpus program it dumps.
+  `cut-facts`, joined). **Every member has its core, past `--region-limit`
+  too** (M1f S1f.5.12, the user's ruling of 2026-11-08 on P-15, (c)): the
+  run takes no core during its walk and, after it, each member's, through the
+  node function against the snapshot the walk resumed every node from, so
+  each is the core the walk takes eagerly where it visits the member
+  (`--dump-lattice`'s `nodes.json` writes that one), and a member the state
+  route reads off its maximal alive states, without visiting it, has the
+  core a first preparation of root gives it. Until S1f.5.12 a member a run
+  past the limit met was written with a `null` core and rules beside
+  `core_status: "not-kept"` (M1e2 S1e2.3.9, `b6139e62`), and before
+  S1e2.3.9 with an empty core, which reads as *refuted by nothing*:
+  `lattice/06_friends_tables.ein`'s 68 of 68 (`ein solve FILE --dump-answer
+  DIR`, 2026-11-06); and a member the state route did not visit was taken
+  through a second preparation of root, which gave 19 of `zebra2.ein`'s 366
+  another core, status or rules (2026-11-09). No member is written without
+  its core, and each is the eager one, which
+  `ein-cli/tests/answer_round_trip.rs` holds over every corpus program it
+  dumps.
 - **`forms/`** (M1e2
   [S1e2.3.3](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
   the user's ruling (a) of 2026-11-03) holds each form the run was asked

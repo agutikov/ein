@@ -873,6 +873,12 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
 /// run reports is empty. A core's status goes with it (M1e2 S1e2.2.23): a
 /// core not taken has none. Over every corpus file and register witness but the
 /// slow entries, describe on each part of `R`, `-n 2` and `--single`.
+///
+/// **And N's cores taken after the walk are the eager ones** (M1f S1f.5.12,
+/// P-15 (c)): describe asked for N's cores alone (`Cores { visited: false,
+/// nogoods: true }`, what `--dump-answer` and `--trace` ask) answers alike,
+/// gives every member of N a core, past `--region-limit` too, and gives each
+/// the core, status and rules the run that takes every core gives it.
 #[test]
 fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -885,6 +891,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let mut runs = 0usize;
     let mut holes = 0usize;
     let mut dead_holes = 0usize;
+    let mut after_walk = 0usize;
     // *Forbid* refuses every corpus program with a dead hole; these are
     // studied past the refusal, as `every_mode_at_four_jobs_is_every_mode_at_one`
     // studies one, so the holes the read-out prints a core for are read too.
@@ -925,7 +932,12 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
             let mut eager = explore::Options::new(mode);
             eager.jobs = jobs();
             let mut lazy = eager;
-            lazy.cores = false;
+            lazy.cores = ein_infer::region::Cores::READ_OUT;
+            let mut nogoods = eager;
+            nogoods.cores = ein_infer::region::Cores {
+                visited: false,
+                nogoods: true,
+            };
             let run = |o: &explore::Options| {
                 let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
                 let mut go =
@@ -964,6 +976,36 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
             if said(&strip(&a)) != said(&strip(&b)) {
                 failures.push(format!("{rel} {mode:?}: the answer differs without cores"));
             }
+            if mode.which == Which::All && mode.ask == Ask::Describe {
+                match run(&nogoods) {
+                    Ok(c) => {
+                        if said(&strip(&a)) != said(&strip(&c)) {
+                            failures.push(format!(
+                                "{rel} {mode:?}: the answer differs with N's cores alone"
+                            ));
+                        }
+                        if let (Some(x), Some(z)) = (a.described.as_ref(), c.described.as_ref()) {
+                            for (dx, dz) in x.dead.iter().zip(&z.dead) {
+                                after_walk += 1;
+                                if dz.core_status.is_none() {
+                                    failures.push(format!(
+                                        "{rel}: N's {} carries no core",
+                                        c.name(&dz.set)
+                                    ));
+                                } else if (&dz.core, dz.core_status, &dz.refuted_by)
+                                    != (&dx.core, dx.core_status, &dx.refuted_by)
+                                {
+                                    failures.push(format!(
+                                        "{rel}: N's {} has another core taken after the walk",
+                                        c.name(&dz.set)
+                                    ));
+                                }
+                            }
+                        }
+                    }
+                    Err(e) => failures.push(format!("{rel}: with N's cores alone: {e}")),
+                }
+            }
             if let (Some(x), Some(y)) = (a.described.as_ref(), b.described.as_ref()) {
                 if (&x.root.core, x.root.core_status) != (&y.root.core, y.root.core_status) {
                     failures.push(format!("{rel} {mode:?}: root's core differs"));
@@ -1000,8 +1042,11 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     // Not vacuous: the cube's dead holes are read, the ones whose core the
     // lazy run takes after the cube.
     assert!(
-        runs >= 1000 && dead_holes > 0,
-        "{runs} runs, {holes} holes, {dead_holes} dead"
+        runs >= 1000 && dead_holes > 0 && after_walk >= 100,
+        "{runs} runs, {holes} holes, {dead_holes} dead, {after_walk} members of N"
     );
-    eprintln!("{runs} runs, {holes} minimal holes, {dead_holes} dead");
+    eprintln!(
+        "{runs} runs, {holes} minimal holes, {dead_holes} dead, {after_walk} members of N \
+         taken after the walk"
+    );
 }

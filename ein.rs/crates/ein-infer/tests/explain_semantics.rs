@@ -678,9 +678,9 @@ fn each_cap_a_search_stops_at_is_named() {
 /// `within-budget`, or `cut-` and the caps in [`Cut`]'s order, which every
 /// JSON surface writes beside a core and `ein render region` reads back; and
 /// the sentence a text surface prints names the caps with the default
-/// budget's sizes, and is printed for a cut core alone. Since S1e2.3.9,
-/// `not-kept` too, beside a member of N a run past `--region-limit` printed
-/// with no core.
+/// budget's sizes, and is printed for a cut core alone. S1e2.3.9's
+/// `not-kept`, beside a member of N a run past `--region-limit` printed with
+/// no core, is no word since M1f S1f.5.12, which gives every member its core.
 #[test]
 fn a_core_status_is_one_word_read_back_as_written() {
     let mut words = Vec::new();
@@ -726,21 +726,9 @@ fn a_core_status_is_one_word_read_back_as_written() {
         .as_deref(),
         Some("cut at its budget of 64 rounds and 20 000 facts: a smaller core may exist")
     );
-    // M1e2 S1e2.3.9: a member of N a run past `--region-limit` did not keep
-    // is the ninth word, read back, and the one with a sentence in place of a
-    // core rather than a qualifier beside one.
-    let not_kept = CoreStatus::NotKept;
-    assert_eq!(not_kept.word(), "not-kept");
-    assert_eq!(CoreStatus::from_word("not-kept"), Some(not_kept));
-    assert_eq!((not_kept.qualifier(), not_kept.cut_at()), (None, None));
-    assert_eq!(
-        not_kept.not_kept(),
-        Some("not kept: the run stopped at `--region-limit`")
-    );
-    for status in [CoreStatus::WithinBudget, CoreStatus::Cut(Cut::default())] {
-        assert_eq!(status.not_kept(), None, "{status:?}");
-    }
-    for bad in ["not-taken", "not-kept-", "kept"] {
+    // M1f S1f.5.12: `not-kept`, S1e2.3.9's ninth word, is retired with the
+    // member of N it stood for, and reads back as no status.
+    for bad in ["not-kept", "not-taken", "not-kept-", "kept"] {
         assert_eq!(CoreStatus::from_word(bad), None, "{bad}");
     }
 }

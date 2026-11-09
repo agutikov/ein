@@ -88,7 +88,7 @@ no learned clause. Each node carries two **independent** bits:
 
 | bit | set when | its reason, in `region.json` |
 |---|---|---|
-| dead | the fixpoint holds a contradiction | `core` (the search's own smallest frontier), `core_status` (`within-budget`, or `cut-` and the caps the search stopped at: M1e2 S1e2.2.23; never `not-kept`, which only a run past `--region-limit` writes, in `nogoods.json`: the oracle takes every dead node's core), `refuted_by` (the rules: the rules of the last step of the core's derivation: for each fact of the contradiction the core was taken over, the first justification the store records (the primary, the alternatives, the smallest-closure arrival) whose premises the core derives, `(given)` for a fact the core holds itself; M1e2 S1e2.3.10), `absent_premises` (the `absent`s its derivation rests on) |
+| dead | the fixpoint holds a contradiction | `core` (the search's own smallest frontier), `core_status` (`within-budget`, or `cut-` and the caps the search stopped at: M1e2 S1e2.2.23; the oracle takes every dead node's core), `refuted_by` (the rules: the rules of the last step of the core's derivation: for each fact of the contradiction the core was taken over, the first justification the store records (the primary, the alternatives, the smallest-closure arrival) whose premises the core derives, `(given)` for a fact the core holds itself; M1e2 S1e2.3.10), `absent_premises` (the `absent`s its derivation rests on) |
 | owing | an obligation the program states is undischarged — read on a **dead** node too | `owes`, `owed` (each instance through its `:why`) |
 
 `status` is `R` (neither), `owing`, `dead`, or `dead+owing`. `class` is the

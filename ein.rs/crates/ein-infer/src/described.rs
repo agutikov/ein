@@ -84,16 +84,15 @@ pub struct Owing {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Dead {
     pub set: Box<[u32]>,
-    /// Its unsat core, where the route kept it.
+    /// Its unsat core, where the run took one: every member, under
+    /// [`crate::region::Cores::nogoods`], the walk's core or one taken after
+    /// the walk against its snapshot (M1f S1f.5.12).
     pub core: Vec<String>,
-    /// What the core's search established; `None` where the route took none
-    /// (the state route's members it did not saturate, whose core a reader
-    /// takes through `region::Nodes::refutation`), and
-    /// [`crate::explain::CoreStatus::NotKept`] where a run past
-    /// `--region-limit` kept none (M1e2 S1e2.3.9).
+    /// What the core's search established; `None` where the run took no
+    /// core, which no surface that prints `N` reads.
     pub core_status: Option<crate::explain::CoreStatus>,
     /// The rules whose firing produced its contradiction; empty where no
-    /// core was kept.
+    /// core was taken.
     pub refuted_by: Vec<String>,
 }
 

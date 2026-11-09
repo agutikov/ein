@@ -86,7 +86,9 @@ use crate::downset::{self, Declined, is_subset};
 use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
-use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, RootStats, fan_out, pool_of};
+use crate::region::{
+    self, Axes, Candidate, Cores, Outcome, Pool, Prepared, RootStats, fan_out, pool_of,
+};
 use crate::saturator::Snapshot;
 
 /// The largest step an exploration takes. Steps start at one node and double,
@@ -146,14 +148,15 @@ pub struct Options {
     /// no `work` count depends on it. The program's own `(config
     /// :lattice-sanity-check true)` turns it on as well (M1e2 S1e2.1c.5).
     pub sanity: bool,
-    /// Take every dead node's unsat core the run visits. `false` takes root's
-    /// and, on the cube, the minimal holes', which the read-out and the
-    /// summary print, and no other: what a run asks whose surfaces print no
-    /// other core (`--dump-answer`, `--dump-lattice`, `--events` and `--trace`
-    /// print them). M1e2 S1e2.2.21, the user's ruling of 2026-11-05,
-    /// *minimum work per question*: every core taken is the one `true` takes,
-    /// and no answer depends on it.
-    pub cores: bool,
+    /// Which dead nodes' unsat cores the run takes beyond root's and, on the
+    /// cube, the minimal holes', which the read-out and the summary print
+    /// ([`Cores`]): every one the walk visits (`--dump-lattice`, `--events`),
+    /// and after the walk each member of `N` a description holds
+    /// (`--dump-answer`, `--trace`). M1e2 S1e2.2.21 and M1f S1f.5.12, the
+    /// user's rulings of 2026-11-05 and 2026-11-08, *minimum work per
+    /// question*: every core taken is the one an eager walk takes, and no
+    /// answer depends on it.
+    pub cores: Cores,
 }
 
 impl Options {
@@ -165,7 +168,7 @@ impl Options {
             jobs: 1,
             deadline: None,
             sanity: false,
-            cores: true,
+            cores: Cores::ALL,
         }
     }
 }
@@ -562,7 +565,7 @@ impl<'a> Space<'a> {
         let flagged = !monotonicity.is_monotone();
         let mut axes = Axes::new(root, &candidates, hypothesised, false)
             .narrating(events.narration())
-            .taking_cores(opts.cores);
+            .taking_cores(opts.cores.visited);
         if flagged {
             axes = axes.checking_stale(std::sync::Arc::new(StaleCheck::of(&plans)));
         }
@@ -986,7 +989,13 @@ impl<'a> Space<'a> {
     /// the whole cube, and is not certified. Describe's, and since M1e2
     /// S1e2.2.26 (W27) every line mode's past the limit too
     /// (`certified_line`): the one rule, so the two cannot disagree.
-    fn partial_cube(&self) -> Described {
+    ///
+    /// With `nogoods`, each member of `N` met is given its core after the
+    /// walk, through the node function against the walk's snapshot (M1f
+    /// S1f.5.12, P-15 (c)): the walk keeps a node as its two bits, so a member
+    /// is taken then even where the walk took a core. Without it a member
+    /// carries none, and no surface that prints `N` reads it.
+    fn partial_cube(&mut self, nogoods: bool) -> Result<Described, SolveError> {
         // determinism-ok: sorted by size and candidates on the next line.
         let mut met: Vec<(&Box<[u32]>, &Seen)> = self.seen.iter().collect();
         met.sort_by(|a, b| (a.0.len(), a.0).cmp(&(b.0.len(), b.0)));
@@ -1040,9 +1049,56 @@ impl<'a> Space<'a> {
             .copied()
             .filter(|d| proper_subsets(d).all(|p| alive.contains(&p[..])))
             .collect();
+        // N's cores, after the walk (M1f S1f.5.12). Root's is root's node's.
+        let taken: Vec<region::Node> = if nogoods {
+            let sets: Vec<Vec<FactId>> = minimal_dead
+                .iter()
+                .filter(|d| !d.is_empty())
+                .map(|d| d.iter().map(|&b| self.facts[b as usize]).collect())
+                .collect();
+            region::cores_after(
+                self.pool.as_ref(),
+                self.root,
+                &self.snapshot,
+                self.terms,
+                self.ast,
+                &self.memo,
+                &self.axes,
+                &sets,
+            )?
+        } else {
+            Vec::new()
+        };
+        let mut taken = taken.into_iter();
         let root = self.seen.get(&[][..]);
         let node = self.root_node.clone().unwrap_or_default();
-        Described {
+        let nogoods_met: Vec<described::Dead> = minimal_dead
+            .iter()
+            .map(|d| {
+                let why = if d.is_empty() {
+                    Some(node.clone())
+                } else if nogoods {
+                    taken.next()
+                } else {
+                    None
+                };
+                match why {
+                    Some(w) => described::Dead {
+                        set: Box::from(*d),
+                        core: w.core,
+                        core_status: w.core_status,
+                        refuted_by: w.refuted_by,
+                    },
+                    None => described::Dead {
+                        set: Box::from(*d),
+                        core: Vec::new(),
+                        core_status: None,
+                        refuted_by: Vec::new(),
+                    },
+                }
+            })
+            .collect();
+        Ok(Described {
             candidates: self.candidates.clone(),
             monotonicity: self.monotonicity.clone(),
             route: Route::Cube,
@@ -1063,17 +1119,7 @@ impl<'a> Space<'a> {
             k_c: members.len() as u64,
             minimal_commitments,
             nogoods: minimal_dead.len() as u64,
-            // Each member met is its two bits here, so it carries no core,
-            // and says so (M1e2 S1e2.3.9, N6).
-            dead: minimal_dead
-                .iter()
-                .map(|d| described::Dead {
-                    set: Box::from(*d),
-                    core: Vec::new(),
-                    core_status: Some(crate::explain::CoreStatus::NotKept),
-                    refuted_by: Vec::new(),
-                })
-                .collect(),
+            dead: nogoods_met,
             dead_alone: dead.iter().filter(|d| d.len() == 1).count() as u64,
             dead_alone_set: dead.iter().filter(|d| d.len() == 1).map(|d| d[0]).collect(),
             owing_met: met.iter().any(|(_, s)| s.owes > 0),
@@ -1086,7 +1132,7 @@ impl<'a> Space<'a> {
                 facts: self.spent,
                 layers: None,
             },
-        }
+        })
     }
 }
 
@@ -1307,7 +1353,7 @@ fn describe_states(
 ) -> Result<Answer, SolveError> {
     let mut prepared = prepared;
     let root_stats = std::mem::take(&mut prepared.root);
-    let s = crate::states::compute_prepared(
+    let (s, after) = crate::states::compute_resumable(
         root,
         terms,
         ast,
@@ -1339,7 +1385,38 @@ fn describe_states(
         }
     };
     let d = crate::states::describe(&s)?;
-    let described = described::of_states(&s, &d);
+    let mut described = described::of_states(&s, &d);
+    // N's cores, after the walk (M1f S1f.5.12): the route reads `N` off its
+    // maximal alive states, so a member it did not saturate, or saturated
+    // without taking a core, is taken now, through the node function against
+    // the walk's snapshot.
+    if opts.cores.nogoods
+        && let Some(after) = after.as_ref()
+    {
+        let at: Vec<usize> = (0..described.dead.len())
+            .filter(|&i| {
+                let x = &described.dead[i];
+                x.core_status.is_none() && !x.set.is_empty()
+            })
+            .collect();
+        let sets: Vec<Vec<FactId>> = at
+            .iter()
+            .map(|&i| {
+                described.dead[i]
+                    .set
+                    .iter()
+                    .map(|&b| s.candidates[b as usize].fact)
+                    .collect()
+            })
+            .collect();
+        let taken = after.cores(root.sealed(), terms, ast, &sets)?;
+        for (i, node) in at.into_iter().zip(taken) {
+            let x = &mut described.dead[i];
+            x.core = node.core;
+            x.core_status = node.core_status;
+            x.refuted_by = node.refuted_by;
+        }
+    }
     let mut licences = vec![Licence::DeadUpward, Licence::Closure, Licence::LocalLines];
     if d.cube && !d.exhausted {
         // ∅ and ⊤ in R decide that R is the cube: L2 is what says every
@@ -1464,7 +1541,14 @@ fn flagged(
         // same line members (M1e2 S1e2.2.26, W27; Q-M1e2.19). Until then it
         // labelled every member met with its line.
         let line_past_limit = !early && !empty_in_r && opts.mode.which != Which::All;
-        let partial = (describe_all || line_past_limit).then(|| Box::new(sp.partial_cube()));
+        // Only describe prints `N`, so only describe takes its cores.
+        let partial = if describe_all || line_past_limit {
+            Some(Box::new(
+                sp.partial_cube(describe_all && opts.cores.nogoods)?,
+            ))
+        } else {
+            None
+        };
         if line_past_limit && let Some(d) = partial.as_deref() {
             let (states, minimal) = certified_line(d, opts.mode);
             found.states = states;

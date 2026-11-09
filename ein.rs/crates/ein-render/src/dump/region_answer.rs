@@ -21,7 +21,7 @@ use ein_infer::described::Described;
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Route, Stopped, Verdict, Which};
 use ein_infer::read_out::{Listed, Listing, ReadOut};
-use ein_infer::region::{Nodes, Refutation};
+use ein_infer::region::Nodes;
 use ein_ir::Ast;
 
 use super::json::{Json, dumps_indent};
@@ -355,9 +355,10 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
 
 /// A core's status, as every JSON surface writes it beside the core:
 /// `within-budget`, `cut-` and the caps its search stopped at
-/// ([`ein_infer::explain::CoreStatus::word`]), `not-kept` beside a `null`
-/// core a run past `--region-limit` did not keep (M1e2 S1e2.3.9), or `null`
-/// where no core was taken (M1e2 S1e2.2.23, W23).
+/// ([`ein_infer::explain::CoreStatus::word`]), or `null` where no core was
+/// taken (M1e2 S1e2.2.23, W23). M1e2 S1e2.3.9's `not-kept`, beside a member
+/// of N a run past `--region-limit` had kept as its two bits, retired with M1f
+/// S1f.5.12, which gives every member its core.
 pub fn core_status(c: Option<ein_infer::explain::CoreStatus>) -> Json {
     c.map_or(Json::Null, |c| Json::str(c.word()))
 }
@@ -610,48 +611,33 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
 }
 
 /// `nogoods.json`: each member of `N` a describing run met, with its unsat
-/// core and the rules that refuted it, `[]` when the run described nothing.
-/// A member the route did not saturate (the state route reads `N` off the
-/// maximal alive states) is saturated here for its core, through the node
-/// function every route uses. A member a run past `--region-limit` met, which
-/// it kept as its two bits, has a `null` core and `null` rules beside
-/// `core_status: "not-kept"`, never an empty list (M1e2 S1e2.3.9, N6).
-pub fn nogoods(r: &ReadOut, root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Json, String> {
-    let solve = |e: SolveError| e.to_string();
+/// core, the core's status and the rules that refuted it, `[]` when the run
+/// described nothing. The run takes every member's core, after its walk where
+/// the walk took none, through the node function against the walk's snapshot,
+/// past `--region-limit` too (M1f S1f.5.12, P-15 (c):
+/// `ein_infer::region::Cores::nogoods`). A member the run carries no core for
+/// was described by a run not asked for `N`'s cores, which the binary never
+/// writes: refused, never printed as a core. Until S1f.5.12 a member the state
+/// route did not saturate was saturated here, through a second preparation of
+/// root, and a member a run past the limit met was written `not-kept`.
+pub fn nogoods(r: &ReadOut) -> Result<Json, String> {
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
-    let facts = |set: &[u32]| -> Vec<FactId> {
-        set.iter().map(|&b| a.candidates[b as usize].fact).collect()
-    };
     let mut dead: Vec<Json> = Vec::new();
     if let Some(d) = r.described() {
-        let mut nodes = None;
         for x in &d.dead {
-            let why = if d.route == Route::States && x.core.is_empty() && !x.set.is_empty() {
-                if nodes.is_none() {
-                    nodes = Some(Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?);
-                }
-                nodes
-                    .as_mut()
-                    .expect("made above")
-                    .refutation(&facts(&x.set))
-                    .map_err(solve)?
-            } else {
-                Refutation {
-                    core: x.core.clone(),
-                    core_status: x.core_status,
-                    refuted_by: x.refuted_by.clone(),
-                }
-            };
-            let kept = |v: &[String]| match why.core_status {
-                Some(ein_infer::explain::CoreStatus::NotKept) => Json::Null,
-                _ => strs(v),
-            };
+            if x.core_status.is_none() {
+                return Err(format!(
+                    "N's member {} carries no core: the run was not asked for N's cores \
+                     (region::Cores::nogoods)",
+                    a.name(&x.set)
+                ));
+            }
             dead.push(Json::obj(vec![
                 ("set", set_json(&cands, &x.set)),
-                ("core", kept(&why.core)),
-                ("core_status", core_status(why.core_status)),
-                ("refuted_by", kept(&why.refuted_by)),
+                ("core", strs(&x.core)),
+                ("core_status", core_status(x.core_status)),
+                ("refuted_by", strs(&x.refuted_by)),
             ]));
         }
     }
@@ -788,11 +774,7 @@ pub fn write(
             ("path", Json::str(path)),
         ]));
     }
-    std::fs::write(
-        dir.join("nogoods.json"),
-        dumps_indent(&nogoods(r, root, terms, ast)?) + "\n",
-    )
-    .map_err(io)?;
+    std::fs::write(dir.join("nogoods.json"), dumps_indent(&nogoods(r)?) + "\n").map_err(io)?;
     let blocks = summary_blocks(r);
     let get = |k: &str| {
         blocks

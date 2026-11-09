@@ -812,6 +812,17 @@
 # 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-09).
 #
+# **`W10/second-preparation`'s reason was restated on 2026-11-09 by M1f
+# S1f.5.12** (T1f.5.12.2): `--dump-answer` and `--trace` took a member of N
+# the state route did not saturate through a second preparation of root,
+# which the row named as what decided its core; since S1f.5.12 a run takes
+# every member's core after its walk against the walk's own snapshot (the
+# user's ruling of 2026-11-08 on P-15, (c)). The member's core is the same 18
+# facts, the cap's choice whichever preparation takes it, and the row stays
+# open, F22's. No row's answer moved: 128 rows fixed, 22 open and 1
+# not-wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -3674,9 +3685,9 @@ owner    = "F22"
 question = ["Q-M1e.15", "Q-M1e2.11", "Q-M1e2.16"]
 witness  = "examples/zebra2.ein"
 status   = "open"
-open_because = "deferred to F22 (Q-M1e2.16 (2), (5), the user, 2026-11-05): --dump-answer and --trace take a member of N's core through region::Nodes::refutation after the run, and Nodes::new prepares the already-saturated root a second time. Root keeps the same derivations (388 facts, none moved, a scratch diagnostic at 94c75204), but the second pass leaves its nodes another snapshot to resume from, so a node's derivations arrive in another order and the alternatives cap, 32 kept in arrival order, keeps others: N {(nation-loc Ukrainian House-2), (smoke-loc Old_Gold House-4)}'s core is 18 facts, where the run's own preparation and a store with no cap give 17. The second preparation is what decides which derivations the cap keeps there"
+open_because = "deferred to F22 (Q-M1e2.16 (2), (5), the user, 2026-11-05): the alternatives cap, 32 kept in arrival order, decides which derivations N {(nation-loc Ukrainian House-2), (smoke-loc Old_Gold House-4)}'s core is taken over: 18 facts, (bijective color-loc) among them, where a store with no cap gives 17. Restated by M1f S1f.5.12 (T1f.5.12.2, 2026-11-09): until then --dump-answer and --trace took this member's core through region::Nodes::refutation after the run, over a second preparation of the already-saturated root, which the row named as the cause, the run's own preparation giving 17 at 94c75204. Since S1f.5.12 the run takes it after its walk against the walk's own snapshot, and at 114e8f26 that gives 18 facts too, as a fresh first preparation does: S1f.5.15's FIFO order moved the zebra2 family's cap-decided cores, this one among them, so the preparation decides nothing here and the cap decides all of it. With MAX_ALT_JUSTIFICATIONS = 1 000 000 the walk's snapshot and a first preparation both give the 17 facts `right` states (a scratch build at 114e8f26, build/s1f.5.12/s1f512_member.rs, 2026-11-09)"
 look_at  = ["answer", "trace"]
-note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from S1e2.2.23 § Notes' first note, found by that stage's corpus test: 9 of N's 366 cores differ between the run's own preparation and the second, on zebra2.ein and zebra2-obligations.ein. Every surface that prints this member's core prints the same 18 facts (nogoods.json and --trace; no route visits it), so no two commands disagree. No smaller witness was found (the stage's notes); this run, `ein solve zebra2.ein --dump-answer DIR`, costs 9.0 s in release and 10.5 s in debug (2026-11-05). Schema /10: N is 366 sets, so the row compares the one it lists"
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) from S1e2.2.23 § Notes' first note, found by that stage's corpus test: 9 of N's 366 cores differ between the run's own preparation and the second, on zebra2.ein and zebra2-obligations.ein. Every surface that prints this member's core prints the same 18 facts (nogoods.json and --trace; no route visits it), so no two commands disagree. No smaller witness was found (the stage's notes); this run, `ein solve zebra2.ein --dump-answer DIR`, costs 9.0 s in release and 10.5 s in debug (2026-11-05). Schema /10: N is 366 sets, so the row compares the one it lists. Restated by M1f S1f.5.12 (T1f.5.12.2, 2026-11-09): no surface takes a core through a second preparation since, and the row's `now` is unmoved, 18 facts"
 
 [case.wrong]
 run       = "solve"

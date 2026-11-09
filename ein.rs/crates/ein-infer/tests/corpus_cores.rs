@@ -23,22 +23,18 @@
 //! naming the two facts its rule matched): each fails the first claim, and
 //! `saturation/type-exclusivity/*`'s fail the second.
 //!
-//! **Which cores.** Every surface prints a core one of two functions takes,
-//! the node function a route saturates a node with and
-//! `region::Nodes::refutation`, which `--dump-answer` and `--trace` call for a
-//! member of N the state route did not saturate; both explain the node's
-//! contradictions the same way. So the test reads both: the oracle's cube,
-//! every dead node, where the oracle enumerates it, and describe's N, each
-//! member's core through `refutation`. Every corpus file and register witness
+//! **Which cores.** Every surface prints a core the node function takes, as
+//! the walk visits a node or, for a member of N whose core the walk did not
+//! take, after the walk against the walk's snapshot (M1f S1f.5.12,
+//! `region::Cores`). Until S1f.5.12 `--dump-answer` and `--trace` took a
+//! member of N the state route did not saturate through
+//! `region::Nodes::refutation`, over a second preparation of root, and a run
+//! past `--region-limit` printed its members with no core, `not-kept` (M1e2
+//! S1e2.3.9). So the test reads the oracle's cube, every dead node, where the
+//! oracle enumerates it, and describe's N as the run gives it, every member
+//! with its core, past the limit too. Every corpus file and register witness
 //! the loader accepts and *forbid* does not refuse; the slow entries under
 //! `EIN_CORPUS_SLOW=1`, the nightly's.
-//!
-//! **What it does not hold.** A run stopped past `--region-limit` keeps the
-//! members of N it met as their two bits, and prints each with no core and
-//! the status `not-kept` (M1e2 S1e2.3.9, P1e2.3's N6; until then with an
-//! empty core and no status): this test takes each member's core itself.
-//! [`no_core_is_printed_unqualified_from_a_cut_search`] holds that such a
-//! member carries no core and appears on a run that stopped alone.
 //!
 //! At S1e2.2.21's HEAD it fails, in either build, on 69 271 cores that name
 //! none of their commitment and 28 that derive no contradiction (the
@@ -120,7 +116,8 @@ fn jobs() -> usize {
 /// read, and how many of them the cube's ([`check`]) or cut ([`statuses`]).
 type Checked = (Vec<String>, usize, usize);
 
-/// [`statuses`]' failures and counts: cores read, cut, and not kept.
+/// [`statuses`]' failures and counts: cores read, cut, members of N a run
+/// past `--region-limit` met, and cores through two rules.
 type Statuses = (Vec<String>, usize, usize, usize, usize);
 
 /// One reported core: the commitment, as candidate facts, and the core.
@@ -182,8 +179,9 @@ fn claims(rel: &str, nodes: &mut Nodes<'_>, reported: &[Reported]) -> Option<Vec
 }
 
 /// Both claims for every core `path`'s runs report: the cube's dead nodes
-/// where the oracle enumerates it, and N's members through `refutation`, as
-/// `--dump-answer` takes them. The failures and how many cores were read, the
+/// where the oracle enumerates it, and N's members as describe gives them,
+/// which `--dump-answer` and `--trace` print. The failures and how many cores
+/// were read, the
 /// cube's among them; `None` where the program does not load, is refused, or
 /// its root is dead.
 fn check(path: &Path) -> Option<Checked> {
@@ -240,31 +238,28 @@ fn check(path: &Path) -> Option<Checked> {
     if a.root_dead {
         return None;
     }
-    let sets: Vec<Vec<FactId>> = a
+    let sets: Vec<Reported> = a
         .described
         .as_ref()
         .map(|d| {
             d.dead
                 .iter()
                 .filter(|x| !x.set.is_empty())
-                .map(|x| {
-                    x.set
+                .map(|x| Reported {
+                    set: x
+                        .set
                         .iter()
                         .map(|&b| a.candidates[b as usize].fact)
-                        .collect()
+                        .collect(),
+                    core: x.core.clone(),
                 })
                 .collect()
         })
         .unwrap_or_default();
     if !sets.is_empty() {
         let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).ok()?;
-        let mut n: Vec<Reported> = Vec::with_capacity(sets.len());
-        for set in sets {
-            let core = nodes.refutation(&set).ok()?.core;
-            n.push(Reported { set, core });
-        }
-        bad.extend(claims(&rel, &mut nodes, &n)?);
-        read += n.len();
+        bad.extend(claims(&rel, &mut nodes, &sets)?);
+        read += sets.len();
     }
     Some((bad, read, cube.len()))
 }
@@ -500,8 +495,10 @@ struct Claims {
     bad: Vec<String>,
     seen: BTreeSet<Seen>,
     cut: usize,
-    /// Members of N printed with no core, `not-kept` (M1e2 S1e2.3.9).
-    not_kept: usize,
+    /// Members of N a run past `--region-limit` met, each printed with the
+    /// core taken after the walk (M1f S1f.5.12; `not-kept` since M1e2
+    /// S1e2.3.9 until then).
+    past_limit: usize,
     /// Cores whose contradiction has a fact the core derives through two
     /// rules, where `refuted by` names the first the store records (M1e2
     /// S1e2.3.10, Q-M1e2.21 (a)).
@@ -610,14 +607,14 @@ impl Claims {
 /// preparation of root that took it: the cube's dead nodes, root's included,
 /// where the oracle enumerates it, and the dead nodes describe and
 /// `--maximal` visit, against a fresh one, as each run prepares its own; and
-/// describe's dead root and N, a member the route kept against a fresh one,
-/// and a member the state route did not saturate against the one
-/// `--dump-answer` and `--trace` take its core through, `refutation` after
-/// the run. A member a run past `--region-limit` kept as its two bits is
-/// held to carry no core, on a run that stopped there (M1e2 S1e2.3.9). The
-/// failures, how many distinct cores were read, how many of them were cut,
-/// and how many members were not kept; `None` where the program does not load
-/// or is refused.
+/// describe's dead root and N, every member against a fresh one, since the
+/// run takes each member's core during its walk or after it against the
+/// walk's snapshot, which a fresh preparation's equals (M1f S1f.5.12). A
+/// member with no core is a failure, past `--region-limit` too, where until
+/// S1f.5.12 a run printed its members `not-kept`. The failures, how many
+/// distinct cores were read, how many of them were cut, how many members of N
+/// a run past the limit met, and how many cores derive their contradiction
+/// through two rules; `None` where the program does not load or is refused.
 fn statuses(path: &Path) -> Option<Statuses> {
     let mut claims = Claims {
         rel: path
@@ -628,7 +625,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
         bad: Vec::new(),
         seen: BTreeSet::new(),
         cut: 0,
-        not_kept: 0,
+        past_limit: 0,
         two_rules: 0,
     };
     let (mut kb0, mut terms0, ast0) = loaded(path)?;
@@ -715,68 +712,49 @@ fn statuses(path: &Path) -> Option<Statuses> {
                 },
             )?;
         }
-        let mut after = Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).ok()?;
+        let stopped = matches!(a.stopped, Some(explore::Stopped::Limit { .. }));
         for x in &d.dead {
             let set: Vec<FactId> = x
                 .set
                 .iter()
                 .map(|&b| a.candidates[b as usize].fact)
                 .collect();
-            if x.core_status == Some(CoreStatus::NotKept) {
-                // Kept as its two bits by a run past `--region-limit`, and
-                // printed with no core (M1e2 S1e2.3.9): it carries none, and
-                // only a run that stopped there has one.
-                let stopped = matches!(a.stopped, Some(explore::Stopped::Limit { .. }));
-                if d.exhausted || !stopped || !x.core.is_empty() || !x.refuted_by.is_empty() {
-                    claims.bad.push(format!(
-                        "{}: N {:?} is not kept, with the core {:?} and the rules {:?}, on a run \
-                         {} --region-limit",
-                        claims.rel,
-                        set,
-                        x.core,
-                        x.refuted_by,
-                        if stopped {
-                            "stopped at"
-                        } else {
-                            "not stopped at"
-                        }
-                    ));
-                }
-                claims.not_kept += 1;
+            if x.core_status.is_none() || (x.core.is_empty() && !x.set.is_empty()) {
+                // Every member is printed with its core since M1f S1f.5.12,
+                // past `--region-limit` too.
+                claims.bad.push(format!(
+                    "{}: N {:?} carries no core ({:?}), on a run {} --region-limit",
+                    claims.rel,
+                    set,
+                    x.core_status,
+                    if stopped {
+                        "stopped at"
+                    } else {
+                        "not stopped at"
+                    }
+                ));
                 continue;
             }
-            if x.core.is_empty() && !x.set.is_empty() {
-                // What `--dump-answer` and `--trace` print for it.
-                let why = after.refutation(&set).ok()?;
-                claims.hold(
-                    &mut after,
-                    Stated {
-                        at: "N",
-                        set,
-                        core: why.core,
-                        status: why.core_status,
-                        refuted_by: why.refuted_by,
-                    },
-                )?;
-            } else {
-                claims.hold(
-                    &mut fresh,
-                    Stated {
-                        at: "N",
-                        set,
-                        core: x.core.clone(),
-                        status: x.core_status,
-                        refuted_by: x.refuted_by.clone(),
-                    },
-                )?;
+            if stopped {
+                claims.past_limit += 1;
             }
+            claims.hold(
+                &mut fresh,
+                Stated {
+                    at: "N",
+                    set,
+                    core: x.core.clone(),
+                    status: x.core_status,
+                    refuted_by: x.refuted_by.clone(),
+                },
+            )?;
         }
     }
     Some((
         claims.bad,
         claims.seen.len(),
         claims.cut,
-        claims.not_kept,
+        claims.past_limit,
         claims.two_rules,
     ))
 }
@@ -788,10 +766,10 @@ fn statuses(path: &Path) -> Option<Statuses> {
 /// Every core a surface prints, with the status printed beside it
 /// ([`stated`]): the cube's dead nodes, root's among them, `ein oracle
 /// --dump`'s; describe's dead root and N, the summary's, the read-out's and
-/// `--dump-answer`'s, a member the state route did not saturate taken
-/// through `refutation` as `--dump-answer` and `--trace` take it; and every
-/// dead node describe and `--maximal` visit, `--dump-lattice`'s and
-/// `--events`'. For each distinct one, three things:
+/// `--dump-answer`'s, every member's as the run takes it, after the walk
+/// where the walk took none (M1f S1f.5.12); and every dead node describe and
+/// `--maximal` visit, `--dump-lattice`'s and `--events`'. For each distinct
+/// one, three things:
 ///
 /// 1. **it has a status**: a surface that prints a core prints whether its
 ///    search was cut;
@@ -815,11 +793,12 @@ fn statuses(path: &Path) -> Option<Statuses> {
 /// contradiction the core derives through two rules are counted, 5 041 of
 /// 230 154 per commit (2026-11-06).
 ///
-/// **And a member of N printed with no core says why** (M1e2 S1e2.3.9, N6):
-/// its status is `not-kept`, it carries no core and no rule, and the run that
-/// printed it stopped at `--region-limit`. Until S1e2.3.9 such a member had
-/// an empty core and no status, which this test read as a core the dump
-/// took through `refutation`, as the state route's are.
+/// **And every member of N is printed with its core, past `--region-limit`
+/// too** (M1f S1f.5.12, the user's ruling of 2026-11-08 on P-15, (c)): the
+/// run takes each member's core after its walk where the walk took none, so
+/// no member carries no core and none is `not-kept`, M1e2 S1e2.3.9's word for
+/// a member a run past the limit had kept as its two bits. The members of N
+/// runs past the limit met are counted, each held as any other core.
 #[test]
 fn no_core_is_printed_unqualified_from_a_cut_search() {
     let files = files();
@@ -840,7 +819,7 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
     let mut results = results.into_inner().expect("no checker panicked");
     results.sort_by_key(|(i, _)| *i);
     let mut failures: Vec<String> = Vec::new();
-    let (mut programs, mut cores, mut cut, mut not_kept, mut two_rules) =
+    let (mut programs, mut cores, mut cut, mut past_limit, mut two_rules) =
         (0usize, 0usize, 0usize, 0usize, 0usize);
     for (_, got) in results {
         let Some((bad, n, c, k, t)) = got else {
@@ -849,7 +828,7 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
         programs += 1;
         cores += n;
         cut += c;
-        not_kept += k;
+        past_limit += k;
         two_rules += t;
         failures.extend(bad);
     }
@@ -857,12 +836,12 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
     assert!(programs >= 100, "{programs} programs read");
     // The ruling has witnesses: 5 041 per commit (2026-11-06, S1e2.3.10).
     assert!(
-        cores >= 100_000 && cut >= 10 && not_kept >= 1 && two_rules >= 100,
-        "{cores} cores, {cut} of them cut, {not_kept} members not kept, {two_rules} cores \
-         through two rules"
+        cores >= 100_000 && cut >= 10 && past_limit >= 1 && two_rules >= 100,
+        "{cores} cores, {cut} of them cut, {past_limit} members of N past the limit, \
+         {two_rules} cores through two rules"
     );
     eprintln!(
-        "{programs} programs, {cores} distinct cores, {cut} of them cut, {not_kept} members of N \
-         not kept, {two_rules} whose contradiction the core derives through two rules"
+        "{programs} programs, {cores} distinct cores, {cut} of them cut, {past_limit} members of N \
+         past --region-limit, {two_rules} whose contradiction the core derives through two rules"
     );
 }

@@ -186,12 +186,9 @@ pub struct Options {
     /// `ein oracle -T`: checked before each batch of nodes. Reaching it is
     /// [`SolveError::Deadline`], never a smaller cube.
     pub deadline: Option<Instant>,
-    /// Take every dead node's unsat core. `false` takes root's and the
-    /// minimal holes', the cores a read-out and a summary print, and no other
-    /// (`Axes::taking_cores`): what a run that prints no other asks (M1e2
-    /// S1e2.2.21, the user's ruling of 2026-11-05, *minimum work per
-    /// question*). Every core taken is the one `true` takes.
-    pub cores: bool,
+    /// Which dead nodes' unsat cores the run takes beyond root's and the
+    /// minimal holes', which it takes either way ([`Cores`]).
+    pub cores: Cores,
 }
 
 impl Default for Options {
@@ -201,9 +198,54 @@ impl Default for Options {
             keep_states: false,
             jobs: 1,
             deadline: None,
-            cores: true,
+            cores: Cores::ALL,
         }
     }
+}
+
+/// Which dead nodes' unsat cores a run takes — M1f
+/// [S1f.5.12](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md),
+/// the user's ruling of 2026-11-08 on P-15, (c).
+///
+/// A core is the one computation a node's record needs that its
+/// classification does not, an explanation search over the node's
+/// derivations, so a run takes one only where a surface prints it (M1e2
+/// S1e2.2.21, the user's ruling of 2026-11-05, *minimum work per question*).
+/// Root's is taken on every run, and on the cube the minimal holes', which the
+/// read-out and the summary print. The surfaces that print more ask two
+/// things, and they are two fields:
+///
+/// - [`Self::visited`]: every dead node the walk visits, as it visits it —
+///   `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines;
+/// - [`Self::nogoods`]: each member of `N` a description holds, taken
+///   **after the walk**, each through the node function against the snapshot
+///   the walk resumed every node from — `--dump-answer`'s `nogoods.json` and
+///   `--trace`'s *N*. A member whose core the walk took keeps it; every other
+///   is taken then, past `--region-limit` too.
+///
+/// Every core taken after the walk is the one the walk takes eagerly: the
+/// node is root's fork with the same facts, resumed from the same snapshot
+/// with the same plans, so its derivations and its search are the same
+/// (`ein-cli/tests/answer_round_trip.rs` holds it over the corpus). No answer
+/// depends on either field.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Cores {
+    pub visited: bool,
+    pub nogoods: bool,
+}
+
+impl Cores {
+    /// Every core any surface prints: the library's default.
+    pub const ALL: Cores = Cores {
+        visited: true,
+        nogoods: true,
+    };
+    /// Root's and the minimal holes' alone: what the read-out and the summary
+    /// print, and what a run no other surface reads asks.
+    pub const READ_OUT: Cores = Cores {
+        visited: false,
+        nogoods: false,
+    };
 }
 
 /// Nodes per fan-out.
@@ -385,8 +427,8 @@ pub(crate) fn compute_prepared(
     }
     let cost_root = t_root.elapsed();
 
-    let mut axes =
-        Axes::new(root, &candidates, hypothesised, opts.keep_states).taking_cores(opts.cores);
+    let mut axes = Axes::new(root, &candidates, hypothesised, opts.keep_states)
+        .taking_cores(opts.cores.visited);
     // The detector reads every node on a flagged program, and none on a
     // monotone one (`crate::detector`'s zero-work argument).
     let flagged = !monotonicity.is_monotone();
@@ -520,19 +562,41 @@ pub(crate) fn compute_prepared(
     let topology = Topology::of(n, &status);
     let cost_topology = t_topo.elapsed();
 
-    // The minimal holes' cores, which a read-out and a summary print, where
-    // the run took none: each through the node function, against the same
+    // The cores a surface prints that the walk did not take: the minimal
+    // holes', which a read-out and a summary print, and under
+    // `Cores::nogoods` N's members', which `--dump-answer` and `--trace`
+    // print (M1f S1f.5.12). Each through the node function, against the same
     // snapshot, so each is the core an eager run takes.
-    if !opts.cores {
-        let taking = probe_axes.clone().taking_cores(true);
-        for &m in &topology.minimal_holes {
-            if status[m as usize] & DEAD == 0 {
-                continue;
-            }
-            let out = node(root, &snapshot, terms, ast, &memo, &facts_of(m), &taking)?;
-            nodes[m as usize].core = out.node.core;
-            nodes[m as usize].core_status = out.node.core_status;
-            nodes[m as usize].sources = out.node.sources;
+    if !opts.cores.visited {
+        let mut after: Vec<u64> = topology
+            .minimal_holes
+            .iter()
+            .copied()
+            .filter(|&m| status[m as usize] & DEAD != 0)
+            .collect();
+        if opts.cores.nogoods {
+            after.extend(topology.nogoods.iter().copied().filter(|&m| m != 0));
+        }
+        // In the walk's order, each once.
+        after.sort_by_key(|m| (m.count_ones(), *m));
+        after.dedup();
+        let sets: Vec<Vec<FactId>> = after.iter().map(|&m| facts_of(m)).collect();
+        let outs = cores_after(
+            pool.as_ref(),
+            root,
+            &snapshot,
+            terms,
+            ast,
+            &memo,
+            &probe_axes,
+            &sets,
+        )?;
+        for (m, out) in after.into_iter().zip(outs) {
+            let at = &mut nodes[m as usize];
+            at.core = out.core;
+            at.core_status = out.core_status;
+            at.sources = out.sources;
+            at.refuted_by = out.refuted_by;
         }
     }
 
@@ -883,6 +947,19 @@ impl Axes {
         self
     }
 
+    /// The axes [`cores_after`] reads a node with: the same node, its core
+    /// taken, and nothing the walk records — no narration, no stale facts,
+    /// no state text — since the node was the walk's already, or a member of
+    /// `N` it read off others (M1f S1f.5.12).
+    pub(crate) fn after_walk(&self) -> Axes {
+        let mut a = self.clone();
+        a.cores = true;
+        a.narration = None;
+        a.stale = None;
+        a.keep_states = false;
+        a
+    }
+
     /// The same axes, reading each node's stale facts against `check` — the
     /// detector's, on a program the static check flags.
     pub(crate) fn checking_stale(mut self, check: Arc<StaleCheck>) -> Axes {
@@ -1004,6 +1081,68 @@ pub(crate) fn fan_out(
         });
     }
     Ok(outs)
+}
+
+/// The unsat cores of `sets`, each a node the walk visited without taking
+/// one or did not visit, taken **after the walk** — M1f S1f.5.12 ([`Cores`]).
+/// Each is the node function's own fork of root, resumed from the walk's
+/// `snapshot` with the walk's plans (`memo`), with a core taken and nothing
+/// narrated, so each is the core an eager walk takes; fanned out as the walk
+/// is, so `jobs` moves nothing. A set whose fixpoint is alive has none.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn cores_after(
+    pool: Option<&Pool>,
+    root: &Kb,
+    snapshot: &Snapshot,
+    terms: &mut Terms,
+    ast: &Ast,
+    memo: &SharedMemo,
+    axes: &Axes,
+    sets: &[Vec<FactId>],
+) -> Result<Vec<Node>, SolveError> {
+    if sets.is_empty() {
+        return Ok(Vec::new());
+    }
+    let taking = axes.after_walk();
+    Ok(
+        fan_out(pool, root, snapshot, terms, ast, memo, &taking, sets)?
+            .into_iter()
+            .map(|o| o.node)
+            .collect(),
+    )
+}
+
+/// What [`cores_after`] needs once a route has returned: the walk's pool, the
+/// snapshot it resumed every node from, its plans and its axes — for a route
+/// whose `N` is read off its description after the walk, the state route's
+/// (M1f S1f.5.12).
+pub(crate) struct AfterWalk {
+    pub(crate) pool: Option<Pool>,
+    pub(crate) snapshot: Snapshot,
+    pub(crate) memo: SharedMemo,
+    pub(crate) axes: Axes,
+}
+
+impl AfterWalk {
+    /// [`cores_after`] over root's sealed fixpoint, `root`.
+    pub(crate) fn cores(
+        &self,
+        root: &Kb,
+        terms: &mut Terms,
+        ast: &Ast,
+        sets: &[Vec<FactId>],
+    ) -> Result<Vec<Node>, SolveError> {
+        cores_after(
+            self.pool.as_ref(),
+            root,
+            &self.snapshot,
+            terms,
+            ast,
+            &self.memo,
+            &self.axes,
+            sets,
+        )
+    }
 }
 
 /// The node function, for a reader that needs a state itself and not its two

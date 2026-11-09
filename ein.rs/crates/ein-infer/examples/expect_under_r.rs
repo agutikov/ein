@@ -193,7 +193,7 @@ fn main() {
             keep_states: true,
             jobs,
             deadline: None,
-            cores: true,
+            cores: ein_infer::region::Cores::ALL,
         };
         let outcome = region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {});
         let Ok(Outcome::Region(r)) = outcome else {

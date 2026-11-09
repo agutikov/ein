@@ -157,7 +157,7 @@ fn lattice(
         max_visits: u64::MAX,
         jobs: opts.jobs,
         deadline: None,
-        cores: false,
+        cores: region::Cores::READ_OUT,
     };
     if monotone {
         let s = crate::states::compute_prepared(
@@ -224,7 +224,7 @@ fn lattice(
             keep_states: false,
             jobs: opts.jobs,
             deadline: None,
-            cores: false,
+            cores: region::Cores::READ_OUT,
         },
         &mut |_| {},
         &mut crate::events::Events::off(),

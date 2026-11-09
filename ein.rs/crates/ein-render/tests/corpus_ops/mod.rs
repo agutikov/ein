@@ -415,7 +415,7 @@ fn region_op(
                 .into_iter()
                 .find(|(k, _)| *k == "region")
                 .map_or(Json::Null, |(_, v)| v);
-            let nogoods = ein_render::dump::region_answer::nogoods(&r, kb, terms, ast)?;
+            let nogoods = ein_render::dump::region_answer::nogoods(&r)?;
             let v = visits.lock().expect("done").clone();
             let candidates: Vec<String> =
                 r.answer.candidates.iter().map(|c| c.text.clone()).collect();
@@ -442,7 +442,7 @@ fn region_op(
                 keep_states: false,
                 jobs,
                 deadline: None,
-                cores: true,
+                cores: ein_infer::region::Cores::ALL,
             };
             let outcome = ein_infer::region::compute(kb, terms, ast, &o, &mut |_| {})
                 .map_err(|e| e.to_string())?;

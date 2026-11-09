@@ -760,8 +760,12 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         .get_one::<f64>("max-time")
         .map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0)));
     // A claim states no core: the run takes one only where `--events` prints
-    // it (M1e2 S1e2.2.21, the user's ruling of 2026-11-05).
-    opts.cores = m.get_one::<String>("events").is_some();
+    // it, at each node visited (M1e2 S1e2.2.21, the user's ruling of
+    // 2026-11-05; M1f S1f.5.12). `ein test` prints no `N`.
+    opts.cores = ein_infer::region::Cores {
+        visited: m.get_one::<String>("events").is_some(),
+        nogoods: false,
+    };
     let config = kb.program().config.clone().unwrap_or_default();
     let file = path.display().to_string();
     let mut events = crate::solve::events_start(m, &file, &config);

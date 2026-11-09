@@ -103,7 +103,7 @@ fn main() {
         max_visits: budget,
         jobs,
         deadline: None,
-        cores: true,
+        cores: ein_infer::region::Cores::ALL,
     };
     for path in files {
         let rel = path

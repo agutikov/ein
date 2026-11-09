@@ -194,17 +194,11 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             lines.push("<details>".to_string());
             lines.push(format!("<summary>{} — dead</summary>", d.set));
             lines.push(String::new());
-            if let Some(why) = d.core_status.and_then(|c| c.not_kept()) {
-                lines.push(format!("Core: {why}."));
-            } else if d.core.is_empty() {
-                lines.push("Core: not kept by this route.".to_string());
-            } else {
-                let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();
-                lines.push(format!("Core: {}", core.join(", ")));
-                if let Some(q) = d.core_status.and_then(|c| c.qualifier()) {
-                    lines.push(String::new());
-                    lines.push(format!("Core search: {q}."));
-                }
+            let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();
+            lines.push(format!("Core: {}", core.join(", ")));
+            if let Some(q) = d.core_status.and_then(|c| c.qualifier()) {
+                lines.push(String::new());
+                lines.push(format!("Core search: {q}."));
             }
             if !d.refuted_by.is_empty() {
                 lines.push(String::new());
@@ -306,42 +300,22 @@ pub fn of_read_out(
     }
     let mut dead: Vec<DeadTrace> = Vec::new();
     if let Some(d) = r.described() {
-        // A member of N the route did not saturate (the state route reads N
-        // off the maximal alive states) is saturated here for its core.
-        let mut nodes = None;
+        // Every member's core is the run's, taken after the walk where the
+        // walk took none (M1f S1f.5.12, `region::Cores::nogoods`); a member
+        // with none was described by a run not asked for N's cores.
         for x in &d.dead {
-            let why = if d.route == ein_infer::explore::Route::States
-                && x.core.is_empty()
-                && !x.set.is_empty()
-            {
-                if nodes.is_none() {
-                    nodes = Some(
-                        ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates)
-                            .map_err(|e| e.to_string())?,
-                    );
-                }
-                let facts: Vec<ein_core::FactId> = x
-                    .set
-                    .iter()
-                    .map(|&b| a.candidates[b as usize].fact)
-                    .collect();
-                nodes
-                    .as_mut()
-                    .expect("made above")
-                    .refutation(&facts)
-                    .map_err(|e| e.to_string())?
-            } else {
-                ein_infer::region::Refutation {
-                    core: x.core.clone(),
-                    core_status: x.core_status,
-                    refuted_by: x.refuted_by.clone(),
-                }
-            };
+            if x.core_status.is_none() {
+                return Err(format!(
+                    "N's member {} carries no core: the run was not asked for N's cores \
+                     (region::Cores::nogoods)",
+                    set_name(&x.set)
+                ));
+            }
             dead.push(DeadTrace {
                 set: set_name(&x.set),
-                core: why.core,
-                core_status: why.core_status,
-                refuted_by: why.refuted_by,
+                core: x.core.clone(),
+                core_status: x.core_status,
+                refuted_by: x.refuted_by.clone(),
             });
         }
     }

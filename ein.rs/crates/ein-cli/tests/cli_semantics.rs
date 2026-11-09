@@ -2877,26 +2877,28 @@ fn a_cut_core_says_so_on_every_surface_and_an_uncut_one_does_not() {
     assert_eq!(checked.get(), 38, "the surfaces checked");
 }
 
-// ── A core the run did not keep says so — M1e2 S1e2.3.9 (N6) ─────────────
+// ── Every member of N has its core, past the limit too — M1f S1f.5.12 ─────
 
-/// **A member of N a run past `--region-limit` met is printed with no core,
-/// and says why; a run that did not stop prints each member's core** — M1e2
-/// S1e2.3.9, P1e2.3's N6. Past the limit a describing run keeps each node it
-/// met as its two bits (`Space::partial_cube`), so it has no core to print
-/// for a member of N: `nogoods.json` writes the member with a `null` core,
-/// `null` rules and `core_status: "not-kept"`, and `--trace`'s N says *Core:
-/// not kept: the run stopped at `--region-limit`.* Until S1e2.3.9 both wrote
-/// an empty core with no rule and no status, which reads as *refuted by
-/// nothing*: `lattice/06_friends_tables.ein`, 68 of 68.
+/// **Every member of N a describing run prints has its core, past
+/// `--region-limit` too, and it is the core the walk takes eagerly** — M1f
+/// S1f.5.12, the user's ruling of 2026-11-08 on P-15, (c). `--dump-answer`
+/// and `--trace` ask for N's cores, so the run takes none during its walk and
+/// a core for each member of N after it, through the node function against
+/// the walk's snapshot. Until S1f.5.12 a run past the limit printed each
+/// member it met with a `null` core and rules beside `core_status:
+/// "not-kept"`, and `--trace` said *Core: not kept: the run stopped at
+/// `--region-limit`.* (M1e2 S1e2.3.9): `lattice/06_friends_tables.ein`, 68 of
+/// 68, and `past-limit-lines.ein`, 15 of 15.
 ///
 /// `past-limit-lines.ein` (W27's witness) is the control: past the default
-/// limit its run stops with the 15 members of N met, each not kept, and with
-/// `--region-limit 17` it exhausts and prints the same 15, each with a core.
+/// limit its run stops with the 15 members of N met, and with
+/// `--region-limit 17` it exhausts and prints the same 15 with the same
+/// cores, statuses and rules, which are the cores `--dump-lattice` writes for
+/// the same sets, every node's core taken as the walk visits it.
 #[test]
-fn a_core_the_run_did_not_keep_says_so_and_no_member_of_n_has_an_empty_core() {
-    const TRACE: &str = "Core: not kept: the run stopped at `--region-limit`.";
-    let scratch = ein_corpus::Scratch::new("ein-core-not-kept");
-    let mut met: BTreeMap<bool, BTreeSet<String>> = BTreeMap::new();
+fn every_member_of_n_has_its_core_past_the_limit_too() {
+    let scratch = ein_corpus::Scratch::new("ein-core-n-after-the-walk");
+    let mut printed: BTreeMap<bool, BTreeMap<String, J>> = BTreeMap::new();
     for (i, (file, limit, stopped, members)) in [
         ("examples/lattice/06_friends_tables.ein", None, true, 68),
         (
@@ -2939,37 +2941,53 @@ fn a_core_the_run_did_not_keep_says_so_and_no_member_of_n_has_an_empty_core() {
         assert_eq!(n.len(), members, "{run}: the members of N met");
         for m in n {
             let (core, status, rules) = (&m["core"], &m["core_status"], &m["refuted_by"]);
-            if stopped {
-                assert_eq!(
-                    (core, status.as_str(), rules),
-                    (&J::Null, Some("not-kept"), &J::Null),
-                    "{run}: {} is printed with a core it did not keep",
-                    m["set"]
-                );
-            } else {
-                assert!(
-                    core.as_array().is_some_and(|c| !c.is_empty())
-                        && status == "within-budget"
-                        && rules.as_array().is_some_and(|r| !r.is_empty()),
-                    "{run}: {} has the core {core} as {status} and the rules {rules}",
-                    m["set"]
-                );
-            }
+            assert!(
+                core.as_array().is_some_and(|c| !c.is_empty())
+                    && status == "within-budget"
+                    && rules.as_array().is_some_and(|r| !r.is_empty()),
+                "{run}: {} has the core {core} as {status} and the rules {rules}",
+                m["set"]
+            );
         }
         let t = read(&trace);
         assert_eq!(
-            (t.matches(TRACE).count(), t.matches("Core: `").count()),
-            if stopped { (members, 0) } else { (0, members) },
-            "{run}: --trace's N"
+            t.matches("Core: `").count(),
+            members,
+            "{run}: --trace's N gives every member its core"
         );
-        assert!(!t.contains("not kept by this route"), "{run}: --trace");
+        assert!(!t.contains("not kept"), "{run}: --trace");
         if file.contains("past-limit-lines") {
-            met.entry(stopped)
+            printed
+                .entry(stopped)
                 .or_default()
-                .extend(n.iter().map(|m| m["set"].to_string()));
+                .extend(n.iter().map(|m| (m["set"].to_string(), m.clone())));
         }
     }
     // The control: the run that stops met every member the run that does not
-    // stop prints a core for.
-    assert_eq!(met[&true], met[&false], "past-limit-lines' N");
+    // stop prints, and prints each with the same core.
+    assert_eq!(printed[&true], printed[&false], "past-limit-lines' N");
+    // And each is the eager core: `--dump-lattice` takes every visited dead
+    // node's core as the walk visits it.
+    let lattice = scratch.join("lattice").to_string_lossy().to_string();
+    ein(&[
+        "solve",
+        "examples/ein-bugs/wrong-answers/past-limit-lines.ein",
+        "--region-limit",
+        "17",
+        "--dump-lattice",
+        &lattice,
+    ])
+    .ok();
+    let nodes = json_at(&format!("{lattice}/nodes.json"));
+    let mut eager = 0;
+    for node in nodes["nodes"].as_array().expect("nodes") {
+        let set = node["commitment"].to_string();
+        if let Some(m) = printed[&true].get(&set) {
+            eager += 1;
+            for f in ["core", "core_status", "refuted_by"] {
+                assert_eq!(m[f], node[f], "past-limit-lines: {set}'s {f}");
+            }
+        }
+    }
+    assert_eq!(eager, 15, "past-limit-lines: N's members in nodes.json");
 }

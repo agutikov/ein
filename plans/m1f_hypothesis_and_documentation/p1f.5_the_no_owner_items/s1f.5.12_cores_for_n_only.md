@@ -5,8 +5,8 @@
 
 **Status:** specified 2026-11-08 on the user's ruling of that day on P-15. **Running since 2026-11-09**, on the
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions
-till the end of the phase"*), beside the second lane's S1f.5.10: T1f.5.12.1, every ask, writer and move listed ([its
-record](#t1-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
+till the end of the phase"*), beside the second lane's S1f.5.10: T1f.5.12.1, every ask, writer and move listed (`87b7cb5a`, [its
+record](#t1-record-2026-11-09)); T1f.5.12.2, the two asks and N's cores after the walk ([its record](#t2-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
 `.einb` ([§ Task T1f.5.12.4](#task-t1f5124--the-answer-directory-of-a-einb-w43)).
 **Depends on:** nothing. It is independent of the grammar stages. [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md)'s
 four dumps each get cheaper with it, but neither stage waits for the other.
@@ -190,6 +190,64 @@ The two asks. N's cores are taken after the walk, and `not-kept` retires. A test
 status and rules for each member of N equal what one run with `--dump-lattice` writes for the same set in
 `nodes.json`, the eager core. Its `members_of_n` then holds that every member has a core, past the limit
 too.
+
+### T2 record, 2026-11-09
+
+**The two asks** are `region::Cores`, a field each of `explore::Options`, `region::Options` and `downset::Options`
+where `cores: bool` was:
+- `visited`: every dead node the walk visits takes its core as the walk visits it, today's behaviour;
+- `nogoods`: each member of N a description holds gets its core **after the walk**, through `region::cores_after`, the
+  node function's own fork of root resumed from the walk's snapshot with the walk's plans, fanned out as the walk is,
+  narrating nothing. A member the walk took a core for and kept keeps it.
+
+`Cores::ALL` is the library's default and `Cores::READ_OUT` takes root's and the minimal holes' alone, which every run
+takes. `ein solve` asks `visited` under `--dump-lattice` or `--events`, and `nogoods` under `--dump-answer` or
+`--trace` on describe alone, since only describe prints N: a line mode and `--count` take no member's core where they
+took one at every dead node. `ein oracle --dump` asks `Cores::ALL`, `ein test --events` `visited`, and a claim's check
+`READ_OUT`, as before.
+
+**Where each route takes N's cores after its walk:**
+- the cube (`region::compute_prepared`): with the minimal holes', one fan-out of the masks in the walk's order, where
+  the walk took none;
+- route 1 (`downset::compute_prepared`): each dead point, every one a member of N;
+- the state route: `states::compute_resumable` hands back the walk's pool, snapshot, plans and axes
+  (`region::AfterWalk`), and `explore::describe_states` takes each member with no core once `states::describe` has
+  read N off the maximal alive states, the members the route never visited among them ([Q-M1f.25](../open_questions.md#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores));
+- past the limit (`Space::partial_cube`): each member met, the walk keeping a node as its two bits.
+
+**`not-kept` retires** ([Q-M1f.26](../open_questions.md#q-m1f26--not-kept-retires-and-what-a-member-with-no-core-prints)):
+`CoreStatus::NotKept`, its word, `NOT_KEPT` and `not_kept()` go, and with them `trace::region`'s two sentences, *Core:
+not kept: the run stopped at `--region-limit`.* and *Core: not kept by this route.* `region_answer::nogoods` and
+`trace::region` print each member's core as the run took it and refuse a member with none, and neither prepares root
+again: the second preparation is gone from every surface.
+
+**What moved** is T1's list and nothing else. `corpus_shapes.md5`'s 5 renderings (`EIN_BLESS=1`, the manifest's diff
+read before it was kept: those 5 lines and no other); `nogoods.json` and `--trace`'s *N* on T1's 14 runs; and the
+register's `W10/second-preparation`, whose `now` is unmoved and whose `open_because` named the second preparation as
+what decided its member's core. It is restated: the walk's snapshot gives the same 18 facts at `114e8f26`, as a fresh
+first preparation does, and with the alternatives cap raised to 1 000 000 both give the 17 its `right` states (a
+scratch build, `build/s1f.5.12/s1f512_member.rs`, 2026-11-09), so the cap decides it all and the row stays open, F22's.
+The kernel pages that said `not-kept` say what replaced it in the same commit:
+[`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s `nogoods.json` paragraph and its file list,
+[`glossary.md`](../../../docs/kernel/glossary.md)'s core statuses and
+[`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s `core_status` row. The live read-out reference has
+no row whose words move.
+
+**The tests** (each run on the commit's build, release, 2026-11-09):
+- `ein-cli/tests/answer_round_trip.rs`: `members_of_n` holds every member to a core, its search's status and its rules,
+  past the limit too; and `eager_cores`, on every program the run describes within the limit, runs `ein solve FILE
+  --dump-lattice` and holds each member that run visits to the core, status and rules `nodes.json` writes for it: 917
+  members over the eight shards, each shard held to at least one.
+- `ein-infer/tests/explore.rs`'s `a_run_that_prints_no_core_takes_none_and_answers_alike` asks describe a third time,
+  with N's cores alone (`Cores { visited: false, nogoods: true }`): the same answer, every member with a core and the
+  core, status and rules the run that takes every core gives it, 1 228 members (held to at least 100).
+- `ein-cli/tests/cli_semantics.rs`' `every_member_of_n_has_its_core_past_the_limit_too`, where
+  `a_core_the_run_did_not_keep_says_so_and_no_member_of_n_has_an_empty_core` was: `lattice/06` 68 of 68 and
+  `past-limit-lines` 15 of 15 each with a core past the limit, in `nogoods.json` and `--trace`; the same 15 with the same
+  cores where `--region-limit 17` exhausts; and each the core `--dump-lattice` writes at that limit.
+- `ein-infer/tests/corpus_cores.rs` reads N as the run gives it, every member held against a fresh preparation, a
+  member with no core a failure, and counts the members past the limit where it counted `not-kept` (15 per commit).
+- `ein-infer/tests/explain_semantics.rs` holds `not-kept` read back as no status.
 
 ### Task T1f.5.12.3 — the cost after, and the pages
 

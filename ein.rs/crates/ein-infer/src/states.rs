@@ -87,7 +87,9 @@ use crate::downset::{Declined, Layer, Options};
 use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
-use crate::region::{Axes, Candidate, Cost, NodeOut, Prepared, fan_out, pool_of, prepare};
+use crate::region::{
+    AfterWalk, Axes, Candidate, Cost, NodeOut, Prepared, fan_out, pool_of, prepare,
+};
 use crate::transversal::Bits;
 
 /// Nodes per fan-out, as route 1's.
@@ -259,6 +261,23 @@ pub(crate) fn compute_prepared(
     opts: &Options,
     events: &mut Events,
 ) -> Result<StateRoute, SolveError> {
+    compute_resumable(root, terms, ast, prepared, t_root, opts, events).map(|(s, _)| s)
+}
+
+/// [`compute_prepared`], with what the node function needs after the walk
+/// ([`AfterWalk`]): the route reads `N` off its maximal alive states once it
+/// has returned (`describe`), so a caller that prints `N`'s cores takes each
+/// member's then, against the walk's snapshot (M1f S1f.5.12). `None` where
+/// the route declined before its walk.
+pub(crate) fn compute_resumable(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    prepared: Prepared,
+    t_root: Instant,
+    opts: &Options,
+    events: &mut Events,
+) -> Result<(StateRoute, Option<AfterWalk>), SolveError> {
     let Prepared {
         snapshot,
         root_dead,
@@ -295,11 +314,11 @@ pub(crate) fn compute_prepared(
     if !out.monotonicity.is_monotone() {
         out.declined = Some(Declined::NotMonotone);
         out.cost.root = t_root.elapsed();
-        return Ok(out);
+        return Ok((out, None));
     }
     let axes = Axes::new(root, &out.candidates, hypothesised, false)
         .narrating(events.narration())
-        .taking_cores(opts.cores);
+        .taking_cores(opts.cores.visited);
     let facts: Vec<FactId> = out.candidates.iter().map(|c| c.fact).collect();
     let root = root.sealed();
     out.cost.root = t_root.elapsed();
@@ -646,7 +665,15 @@ pub(crate) fn compute_prepared(
         });
     }
     out.cost.nodes = t_nodes.elapsed();
-    Ok(out)
+    Ok((
+        out,
+        Some(AfterWalk {
+            pool,
+            snapshot,
+            memo,
+            axes,
+        }),
+    ))
 }
 
 fn push_child(s: &mut State, t: u32) {

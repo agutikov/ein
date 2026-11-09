@@ -17,14 +17,22 @@
 //! `answer_dump.rs` named the two state files it could not hold
 //! (`printed_alike`), and that list is gone.
 //!
-//! **And no member of N is written with an empty core** (M1e2 S1e2.3.9,
-//! P1e2.3's N6): the same run's `nogoods.json` gives each member of N it met
-//! a core, its search's status beside it (`within-budget`, `cut-…`), or, on a
-//! run stopped past `--region-limit`, which keeps each node it met as its two
-//! bits, no core, no rules and `core_status: "not-kept"`. An empty list would
-//! read as *refuted by nothing*, and until S1e2.3.9 it was what such a run
-//! wrote: `lattice/06_friends_tables`, 68 of 68, and every program past the
-//! limit the per-commit tier dumps.
+//! **And every member of N is written with its core** (M1e2 S1e2.3.9,
+//! P1e2.3's N6; M1f S1f.5.12): the same run's `nogoods.json` gives each
+//! member of N it met a core, its search's status beside it (`within-budget`,
+//! `cut-…`) and its rules, past `--region-limit` too. An empty list would read
+//! as *refuted by nothing*, and until S1e2.3.9 it was what a run past the
+//! limit wrote; from S1e2.3.9 until S1f.5.12 such a run wrote no core, no
+//! rules and `core_status: "not-kept"`: `lattice/06_friends_tables`, 68 of
+//! 68, and every program past the limit the per-commit tier dumps.
+//!
+//! **And each is the core the walk takes eagerly** (M1f S1f.5.12, P-15 (c)):
+//! `--dump-answer` asks for N's cores, so the run takes none during its walk
+//! and each member's after it, against the walk's snapshot. On every program
+//! the run describes within the limit, each member a second run with
+//! `--dump-lattice` visits, whose walk takes every dead node's core as it
+//! goes, has the same core, status and rules in `nodes.json` as in
+//! `nogoods.json` (`eager_cores`).
 //!
 //! ```text
 //! cargo test -p ein-cli --test answer_round_trip
@@ -98,8 +106,9 @@ fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
 
 /// `ein solve FILE --dump-answer DIR`, then every state file it wrote against
 /// the run's own state: the number of files checked, or `None` where the
-/// program does not load or the run writes no state.
-fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
+/// program does not load or the run writes no state. `eager` counts the
+/// members of N held to their eager cores ([`eager_cores`]).
+fn check(file: &str, dir: &Path, bad: &mut Vec<String>, eager: &mut usize) -> Option<usize> {
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .args(["solve", file, "--dump-answer"])
         .arg(dir)
@@ -142,6 +151,7 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
         }
     }
     members_of_n(file, dir, bad);
+    *eager += eager_cores(file, dir, bad);
     let candidates = r.answer.candidates.clone();
     let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &candidates).expect("prepares");
     for (path, set) in &files {
@@ -172,10 +182,9 @@ fn check(file: &str, dir: &Path, bad: &mut Vec<String>) -> Option<usize> {
     Some(files.len())
 }
 
-/// `nogoods.json`'s members, each with a core and its search's status, or,
-/// where the run stopped at `--region-limit`, with no core, no rules and
-/// `not-kept`: never an empty core (M1e2 S1e2.3.9). Each failure goes to
-/// `bad`.
+/// `nogoods.json`'s members, each with a core, its search's status and its
+/// rules, past `--region-limit` too: never an empty core (M1e2 S1e2.3.9) and
+/// never `not-kept` (M1f S1f.5.12). Each failure goes to `bad`.
 fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
     let read = |name: &str| -> Option<serde_json::Value> {
         serde_json::from_str(&std::fs::read_to_string(dir.join(name)).ok()?).ok()
@@ -189,11 +198,7 @@ fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
     for m in nogoods.as_array().into_iter().flatten() {
         let (core, status, rules) = (&m["core"], m["core_status"].as_str(), &m["refuted_by"]);
         let searched = status.is_some_and(|w| w == "within-budget" || w.starts_with("cut-"));
-        let ok = match (core.as_array(), status) {
-            (Some(c), _) => !c.is_empty() && searched && rules.is_array(),
-            (None, Some("not-kept")) => core.is_null() && rules.is_null() && stopped_at_limit,
-            (None, _) => false,
-        };
+        let ok = core.as_array().is_some_and(|c| !c.is_empty()) && searched && rules.is_array();
         if !ok {
             bad.push(format!(
                 "{file}: nogoods.json's {} has the core {core} as {status:?} and the rules {rules}{}",
@@ -206,6 +211,64 @@ fn members_of_n(file: &str, dir: &Path, bad: &mut Vec<String>) {
             ));
         }
     }
+}
+
+/// N's cores against the eager ones (M1f S1f.5.12): where the run in `dir`
+/// described R within `--region-limit`, `ein solve FILE --dump-lattice`, whose
+/// walk takes every dead node's core as it visits it, and for each member of
+/// `nogoods.json` that run visited, its core, status and rules in `nodes.json`
+/// equal `nogoods.json`'s. A member the route reads off others and does not
+/// visit (the state route's `N`, by duality) is not compared. How many were
+/// compared.
+fn eager_cores(file: &str, dir: &Path, bad: &mut Vec<String>) -> usize {
+    let read = |path: &Path| -> Option<serde_json::Value> {
+        serde_json::from_str(&std::fs::read_to_string(path).ok()?).ok()
+    };
+    let (Some(nogoods), Some(summary)) = (
+        read(&dir.join("nogoods.json")),
+        read(&dir.join("answer.json")),
+    ) else {
+        return 0;
+    };
+    let region = &summary["region"];
+    let stopped_at_limit = region["exhausted"] == false && region["stopped"]["why"] == "limit";
+    let members = nogoods.as_array().cloned().unwrap_or_default();
+    if stopped_at_limit || members.is_empty() {
+        return 0;
+    }
+    let lattice = dir.join("lattice");
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(["solve", file, "--dump-lattice"])
+        .arg(&lattice)
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    let Some(nodes) = read(&lattice.join("nodes.json")) else {
+        bad.push(format!(
+            "{file}: --dump-lattice wrote no nodes.json (exit {:?})",
+            out.status.code()
+        ));
+        return 0;
+    };
+    let by_set: std::collections::BTreeMap<String, &serde_json::Value> =
+        members.iter().map(|m| (m["set"].to_string(), m)).collect();
+    let mut compared = 0;
+    for node in nodes["nodes"].as_array().into_iter().flatten() {
+        let Some(m) = by_set.get(&node["commitment"].to_string()) else {
+            continue;
+        };
+        compared += 1;
+        for f in ["core", "core_status", "refuted_by"] {
+            if m[f] != node[f] {
+                bad.push(format!(
+                    "{file}: N's {}: nogoods.json's {f} {} is not the eager {}",
+                    m["set"], m[f], node[f]
+                ));
+            }
+        }
+    }
+    let _ = std::fs::remove_dir_all(&lattice);
+    compared
 }
 
 /// The shards [`shard`] splits the corpus into, one test each, so the four
@@ -223,14 +286,14 @@ fn shard(k: usize) {
     let slow = include_slow();
     let list = std::env::var("EIN_ROUND_TRIP_LIST").is_ok();
     let mut bad = Vec::new();
-    let (mut programs, mut states) = (0, 0);
+    let (mut programs, mut states, mut eager) = (0, 0, 0);
     let entries = corpus();
     for (i, e) in entries.select(&[], None, slow).iter().enumerate() {
         if i % SHARDS != k {
             continue;
         }
         let dir = root.join(format!("e{i}"));
-        match check(&e.path, &dir, &mut bad) {
+        match check(&e.path, &dir, &mut bad, &mut eager) {
             Some(n) => {
                 programs += 1;
                 states += n;
@@ -245,8 +308,13 @@ fn shard(k: usize) {
         let _ = std::fs::remove_dir_all(&dir);
     }
     assert!(
-        programs > 20 && states > programs,
-        "shard {k}: {programs} programs, {states} states"
+        programs > 20 && states > programs && eager > 0,
+        "shard {k}: {programs} programs, {states} states, {eager} members of N held to their \
+         eager cores"
+    );
+    eprintln!(
+        "shard {k}: {programs} programs, {states} state files, {eager} members of N held to \
+         their eager cores"
     );
     assert!(
         bad.is_empty(),
@@ -348,7 +416,7 @@ fn the_witnesses_reload_to_their_states() {
     .iter()
     .enumerate()
     {
-        let wrote = check(file, &root.join(format!("w{i}")), &mut bad);
+        let wrote = check(file, &root.join(format!("w{i}")), &mut bad, &mut 0);
         states += wrote.unwrap_or_else(|| panic!("{file}: no state written"));
     }
     assert!(states >= 40, "{states}");

@@ -54,7 +54,9 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
-use crate::region::{Axes, Candidate, Cost, DEAD, OWING, Prepared, fan_out, pool_of, prepare};
+use crate::region::{
+    Axes, Candidate, Cores, Cost, DEAD, OWING, Prepared, cores_after, fan_out, pool_of, prepare,
+};
 
 /// Facts beyond root past which a run stops, in every mode: `2²⁰`, ruled
 /// 2026-11-03 (S1e2.1c.2's T1e2.1c.2.6). The user first ruled `2²⁴`, which a
@@ -83,9 +85,10 @@ pub struct Options {
     /// `-T`: checked before each layer, as the budget is. Reaching it is
     /// [`SolveError::Deadline`], never a smaller down-set.
     pub deadline: Option<Instant>,
-    /// Take every dead node's unsat core, as
-    /// [`crate::region::Options::cores`]: `false` takes root's alone.
-    pub cores: bool,
+    /// Which dead nodes' unsat cores the route takes beyond root's
+    /// ([`Cores`]): every one it visits, and after the walk each member of
+    /// `N` it did not take one for.
+    pub cores: Cores,
 }
 
 impl Default for Options {
@@ -95,7 +98,7 @@ impl Default for Options {
             max_visits: u64::MAX,
             jobs: 1,
             deadline: None,
-            cores: true,
+            cores: Cores::ALL,
         }
     }
 }
@@ -108,7 +111,7 @@ impl Options {
             max_visits: u64::MAX,
             jobs,
             deadline: None,
-            cores: true,
+            cores: Cores::ALL,
         }
     }
 }
@@ -354,7 +357,7 @@ pub(crate) fn compute_prepared(
     }
     let mut axes = Axes::new(root, &out.candidates, hypothesised, false)
         .narrating(events.narration())
-        .taking_cores(opts.cores);
+        .taking_cores(opts.cores.visited);
     // A flagged program reaches here only with a dead root (L0): the detector
     // reads the nodes it visits, as on every route.
     if !out.monotonicity.is_monotone() {
@@ -543,6 +546,43 @@ pub(crate) fn compute_prepared(
             class: classes.get(&o.state).copied().unwrap_or(u32::MAX),
             closure: o.closure.into_boxed_slice(),
         });
+    }
+    // N's cores, after the walk (M1f S1f.5.12): route 1 visits a set only
+    // when every subset is alive, so each dead point is a member of `N`, and
+    // where the walk took no core each is taken now, through the node
+    // function against the same snapshot, so each is the core an eager walk
+    // takes. Root's was taken on the way.
+    if opts.cores.nogoods && !opts.cores.visited {
+        let at: Vec<usize> = (0..out.points.len())
+            .filter(|&i| out.points[i].status & DEAD != 0 && !out.points[i].set.is_empty())
+            .collect();
+        let sets: Vec<Vec<FactId>> = at
+            .iter()
+            .map(|&i| {
+                out.points[i]
+                    .set
+                    .iter()
+                    .map(|&b| facts[b as usize])
+                    .collect()
+            })
+            .collect();
+        let taken = cores_after(
+            pool.as_ref(),
+            root,
+            &snapshot,
+            terms,
+            ast,
+            &memo,
+            &axes,
+            &sets,
+        )?;
+        for (i, node) in at.into_iter().zip(taken) {
+            let p = &mut out.points[i];
+            p.core = node.core;
+            p.core_status = node.core_status;
+            p.refuted_by = node.refuted_by;
+            p.sources = node.sources;
+        }
     }
     out.cost.nodes = t_nodes.elapsed();
 

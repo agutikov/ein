@@ -6720,9 +6720,9 @@ e0c12e148cc9226e       80L  examples/ein-bugs/wrong-answers/past-limit-lines.ein
 421b068fdbc51539       26L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::read-out[minimal]
 8b38284e3a181a6d       30L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::read-out[single]
 5485b5eebb7f8a59       30L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::read-out[n2]
-ca70839f31f3df05      139L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::region-trace
+66e80a34b8c801f2      169L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::region-trace
 c57c1fe711e8fcef      137L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::region-lattice
-dd0f8280e9efc4bf    25556L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[describe]
+2b5b5d50a7e57356    25631L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[describe]
 65950291b250114d    25425L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[maximal]
 e2b2a4c4a7a25929       90L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[minimal]
 a3e5dd615d7dca6a      125L  examples/ein-bugs/wrong-answers/past-limit-lines.ein::cores[single]
@@ -8256,9 +8256,9 @@ f7024eaf8ba8a2bf       85L  examples/lattice/06_friends_tables.ein::dot[kb-none]
 dce4206cdfdad39f       25L  examples/lattice/06_friends_tables.ein::read-out[minimal]
 4d657df5349adefe       30L  examples/lattice/06_friends_tables.ein::read-out[single]
 6aa39e8fba1d9c03       30L  examples/lattice/06_friends_tables.ein::read-out[n2]
-6e10f12be36e2280      509L  examples/lattice/06_friends_tables.ein::region-trace
+4a77fc5c549e62da      645L  examples/lattice/06_friends_tables.ein::region-trace
 dd40ab0fe374b0c0      312L  examples/lattice/06_friends_tables.ein::region-lattice
-70feb2f3ef11bc15    19750L  examples/lattice/06_friends_tables.ein::cores[describe]
+94509608f1617e56    20139L  examples/lattice/06_friends_tables.ein::cores[describe]
 d2231a430a46d243    19128L  examples/lattice/06_friends_tables.ein::cores[maximal]
 5c4dedac5a0dd91c       92L  examples/lattice/06_friends_tables.ein::cores[minimal]
 9eeee6c403652be4      635L  examples/lattice/06_friends_tables.ein::cores[single]
@@ -10595,7 +10595,7 @@ bcc8769ca4b7b450       37L  examples/zebra2-hints.ein::read-out[single]
 5125ba40c8bb885d       37L  examples/zebra2-hints.ein::read-out[n2]
 e6cacda51305b23d    18765L  examples/zebra2-hints.ein::region-trace
 357dcddbfe211b3d      157L  examples/zebra2-hints.ein::region-lattice
-3112efe1869eed0b     5934L  examples/zebra2-hints.ein::cores[describe]
+7692a5d429603cfb     5891L  examples/zebra2-hints.ein::cores[describe]
 846a36e8a68a8757     7204L  examples/zebra2-hints.ein::cores[maximal]
 367d4466de0e3d1f      118L  examples/zebra2-hints.ein::cores[minimal]
 9bdd958c46d152ce      296L  examples/zebra2-hints.ein::cores[single]

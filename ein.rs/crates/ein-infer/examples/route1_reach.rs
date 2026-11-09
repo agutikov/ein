@@ -100,7 +100,7 @@ fn main() {
             max_visits: budget,
             jobs,
             deadline: None,
-            cores: true,
+            cores: ein_infer::region::Cores::ALL,
         };
         let d = match downset::compute(&mut kb, &mut terms, &ast, &opts) {
             Ok(d) => d,
