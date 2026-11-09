@@ -23,8 +23,9 @@ Everything is `cargo test`.
 | reader | what it does with the manifest |
 |---|---|
 | [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
-| [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants — ten tests |
+| [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants, the `slow` and `heavy_dump` sets pinned among them |
 | [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **the class-4 claim** (M1e2 S1e2.2.21): every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the nightly (`EIN_CORPUS_SLOW=1`) |
+| [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip** (M1e2 S1e2.3.8): every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the nightly (`EIN_CORPUS_SLOW=1`), and holds `heavy_dump` to the state files it counts (M1f S1f.5.13) |
 | [`ein-render/tests/corpus_shapes.rs`](../ein.rs/crates/ein-render/tests/corpus_shapes.rs) | digests every observable surface of every corpus *file* (7 462 renderings), which is a superset of what the runs reach |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | runs the same sweep twice under a permuted id space |
 | [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the same sweep again at `--jobs N` — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts |
@@ -63,6 +64,7 @@ runs   = ["solve", "solve --maximal", "saturate", "render rules"]
 levers = ["-y"]                    # each makes one more `solve <lever>` run
 slow   = true                      # excluded from the default sweep — see § `slow`
 cost_ms = 3459                     # what its runs cost, together, measured
+heavy_dump = true                  # out of the per-commit round trip — see § `heavy_dump`
 note   = "why this entry is interesting, when it is not obvious"
 ```
 
@@ -271,6 +273,31 @@ Three decisions are worth knowing before editing the column:
   or on one within 4× of the threshold. Below that the sweep's own tolerance
   swallows it and it would be a number nobody verifies — which is exactly what
   the flag was between 2026-08-17 and S1a.9.0.
+
+## `heavy_dump`
+
+**An entry is `heavy_dump` when its describe dump writes 40 000 state files or more** (M1f S1f.5.13, the user's
+ruling of 2026-11-08 on P-16, *"move to slow tier"*). The dump is `ein solve FILE --dump-answer DIR`, which no entry
+declares and [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) runs on every
+entry, reloading each state file to its state by value; the line is `ein_corpus::manifest::HEAVY_DUMP_FILES`.
+
+- **Per commit** the round trip leaves out every entry that is `slow` or `heavy_dump`, and fails on an unflagged one
+  that writes 40 000 or more. **Under `EIN_CORPUS_SLOW=1`**, which the nightly's `deep-corpus` job sets, as
+  `./run_tests.sh --slow` and `--nightly` do, it takes every entry and fails as well on a flagged one that writes
+  fewer. `ein-corpus`'s `the_heavy_dump_set_is_exactly_these_five` pins the set per commit, and `nightly_steps.rs`
+  that the nightly sets the flag.
+- **Not `slow`**, which is a claim about the declared runs: the dump is none of them, and the four entries the ruling
+  moved declare runs that cost milliseconds, so `slow` on them would be the false claim
+  `slow_matches_the_recorded_cost` fails on.
+- **A count, not a time**, so it holds on any machine and moves only when a dump does. The line sits in the gap the
+  distribution of 2026-11-09 leaves above the six `slow` `square-*` (`EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo
+  test … -p ein-cli --release --test answer_round_trip -- --nocapture`): five entries write 64 514 to 65 214 state
+  files, then come 23 390 (the six), 11 339 (`type-exclusivity/pets`) and 4 096 or fewer.
+
+**Five entries are flagged**: `square-unique/corner-house`, `cul-de-sac` and `terminus`, `features/04_open`, and
+`features/01_not_and_absent`, which is `slow` too and carries the flag because the slow tier holds it on every entry.
+Per commit the round trip took 8.6 s where it took 55 s, and the slow tier takes 121 s in release (2026-11-09,
+[S1f.5.13's T2 record](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md#t2-record-2026-11-09)).
 
 ## Levers
 

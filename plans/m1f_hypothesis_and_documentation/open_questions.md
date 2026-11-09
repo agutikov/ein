@@ -39,6 +39,8 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.28](#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer) | is a not-dead node's core written `[]` a wrong answer? | **defaulted 2026-11-09 (the user's instruction): (a), no register row: a spelling, fixed with no answer moving**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
 | [Q-M1f.29](#q-m1f29--a-dead-roots-core-under---count) | a dead root's core under `--count` | **defaulted 2026-11-09 (the user's instruction): (a), `null`, as the question prints no core; documented**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
 | [Q-M1f.50](#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag) | where the `heavy_dump` line goes, and which entries carry the flag | **defaulted 2026-11-09 (the user's instruction): (a), 40 000 state files, in the gap above the six `slow` `square-*`; five entries flagged, `features/01_not_and_absent` among them**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.1 |
+| [Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | three more tests whose slow half no CI tier runs | **defaulted 2026-11-09 (the user's instruction): (a), recorded, not scheduled; parked for the phase's close**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
+| [Q-M1f.52](#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve) | the nightly's review bundle and the register's runs that are not a solve | **defaulted 2026-11-09 (the user's instruction): (a), reported, not fixed here; the nightly is red at `utils/review_bundle.py` since `fc53818f`**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -814,3 +816,58 @@ programs at 1.3 and 1.7 s.
 till the end of the phase"*. (a) moves what the ruling named and nothing else, and every program under 40 000 state
 files is still round-tripped per commit. Re-opening it means (b): one constant in `ein-corpus`'s `manifest.rs`, nine
 more flags in `corpus/corpus.toml`, and the set `the_heavy_dump_set_is_exactly_these_five` pins restated.
+
+### Q-M1f.51 — Three more tests whose slow half no CI tier runs
+
+**Raised** 2026-11-09 by [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s
+T1f.5.13.3, outside its brief. The stage's case was that `answer_round_trip`'s slow half ran in no CI tier, and the
+same is true of others. Eight test targets read `EIN_CORPUS_SLOW` (`grep -rln EIN_CORPUS_SLOW ein.rs/crates`,
+2026-11-09, less the three files that only name it): `corpus_cli`, `lever_invariance` and `corpus_cores` were nightly
+steps before the stage, and `answer_round_trip` is one since. Of the other four, `read_out_examples`' slow branch adds
+the page's blocks at `--region-budget 33554432`, and today's page has none. The other three have a slow half that only
+`./run_tests.sh --slow`, run by hand, reaches:
+
+| target | what `EIN_CORPUS_SLOW` adds | release, without · with the flag |
+|---|---|---:|
+| `ein-cli`'s `route_invariance` | the zebra family and the six `square-*`, at `--region-budget` 2²⁵ | 24.8 s · 857.3 s |
+| `ein-infer`'s `region` | `the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6` | 13.0 s · 37.6 s |
+| `ein-infer`'s `obligation_rung` | `the_theory_finds_what_the_hrule_finds` on `zebra2-minus-15`'s 32 states | 3.4 s · 71.0 s |
+
+Each passes at its slow depth (`build/s1f.5.13/t3_other_slow_halves.log`, 2026-11-09; run beside this stage's gate and
+the second lane's tests, so the times are under load). No wrong answer is hiding there today, but if one of the three
+started failing, nothing would notice.
+
+- **(a) Recorded, not scheduled.** The stage carries P-16's ruling, which is about one test; the three stay under
+  `--slow` until the user places them.
+- **(b) A nightly step each**, beside the round trip's in `deep-corpus`, `route_invariance`'s the largest, and a test
+  in `nightly_steps.rs` that fails on a target reading `EIN_CORPUS_SLOW` with no nightly step, so that the next one
+  cannot slip in the same way.
+
+**Defaulted 2026-11-09 (the user's instruction): (a)**, parked for the phase's close beside
+[Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it): the stage stays in its scope, and nothing it
+measured fails. Re-opening it means (b).
+
+### Q-M1f.52 — The nightly's review bundle and the register's runs that are not a solve
+
+**Raised** 2026-11-09 by [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s
+T1f.5.13.3, outside its brief, running `./run_tests.sh --nightly` on `87d18cf6` (`build/nightly-s1f.5.13.log`). Since
+`fc53818f`, where S1f.5.5's T13 filed W40 and W41 under the register's schema `/16` (a `now` that is a command's run and
+not a solve), `utils/review_bundle.py`, a step of the nightly's `deep-corpus`, exits 1, for two reasons:
+
+- its index reads `[case.wrong] verdict` unguarded (`utils/review/case.py`'s `index_page`), and a refusal has none:
+  `W41/saturate-import`, and `W43/einb-dump-answer` since `96f66c40`, so the bundle stops with a `KeyError`;
+- with that line guarded as the `right` column beside it already is (tried, and reverted), the bundle finishes and
+  seven cases fail to build, W40's six and W41's, on `case.py`'s assertion that *a register run is a solve*
+  (`build/nightly-s1f.5.13-rest.log`, 145 cases, 375 s).
+
+The gate's `review_bundle.py --smoke` builds one case and no index, so the gate stayed green. No answer is wrong: one
+nightly step is red, and on the runner every step after it in `deep-corpus` is skipped.
+
+- **(a) Reported, not fixed here**: the coordinator places it, in P1f.5, whose S1f.5.5 filed the rows, or in a stage
+  of its own.
+- **(b) Fixed here**: the index guarded, and a case page for a run that is not a solve, the command, its exit, stdout
+  and stderr against the register's; a page design of its own, under the user's rule that a review artefact carries
+  every engine artefact.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The stage's brief is the round trip, and (b)'s page is a design
+this stage does not own. Re-opening it means (b).

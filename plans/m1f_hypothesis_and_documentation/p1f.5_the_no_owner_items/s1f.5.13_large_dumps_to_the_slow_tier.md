@@ -3,12 +3,18 @@
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.13**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 
-**Status:** specified 2026-11-08 on the user's ruling of that day on P-16. **Running 2026-11-09**, on the user's
+**Status:** specified 2026-11-08 on the user's ruling of that day on P-16. **Done 2026-11-09**, on the user's
 go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions till the end
-of the phase"*), after S1f.5.8 and beside the second lane's S1f.5.9: T1f.5.13.1, the distribution and the slow tier's
-first run ([its record](#t1-record-2026-11-09)); T1f.5.13.2, the field, its checks, the selection and the nightly
-step ([its record](#t2-record-2026-11-09)). One choice was taken by default and recorded,
-[Q-M1f.50](../open_questions.md#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag).
+of the phase"*), after S1f.5.8 and beside the second lane's S1f.5.9, in three commits: T1f.5.13.1, the distribution and
+the slow tier's first run (`63245a11`, [its record](#t1-record-2026-11-09)); T1f.5.13.2, the field, its checks, the
+selection and the nightly step (`87d18cf6`, [its record](#t2-record-2026-11-09)); and T1f.5.13.3, the pages ([its
+record](#t3-record-2026-11-09)). Three choices were taken by default and recorded:
+[Q-M1f.50](../open_questions.md#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag), the line
+and the five entries;
+[Q-M1f.51](../open_questions.md#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs), three more tests whose slow
+half no CI tier runs, parked for the phase's close; and
+[Q-M1f.52](../open_questions.md#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve), the
+nightly red at `utils/review_bundle.py` since `fc53818f`, reported and not fixed here. The acceptance is re-taken [below](#acceptance-re-taken-2026-11-09).
 **Depends on:** nothing. [S1f.5.12](s1f.5.12_cores_for_n_only.md) made each of the four dumps cheaper, and
 neither stage waited for the other.
 
@@ -180,6 +186,43 @@ answer or register row.
 The nightly step and its `--nightly` mirror. [`corpus/README.md`](../../../corpus/README.md)'s fields and
 readers, `CLAUDE.md`'s gate block, and the inventory's P-16, which says what fixed it.
 
+### T3 record, 2026-11-09
+
+**The pages.** [`corpus/README.md`](../../../corpus/README.md) has a § `heavy_dump` beside § `slow`, the flag in its
+format block, and a row for `answer_round_trip` among its readers (with `manifest.rs`'s row, whose *ten tests* no
+longer counted them). `AGENTS.md` has the round trip's slow run in its gate block, a sentence in its nightly
+paragraph, and the stage in its P1f.5 account. The inventory's P-16 says what fixed it, in its table and under its
+item, which stays as taken; the phase README has P-16's row, the stage's row and § The order's item 10.
+
+**Found outside the brief:**
+- **Three more tests have a slow half no CI tier runs**: `route_invariance`, `ein-infer`'s `region` and
+  `obligation_rung`, each passing at its slow depth (857.3 s, 37.6 s and 71.0 s in release, under load, 2026-11-09,
+  `build/s1f.5.13/t3_other_slow_halves.log`). The same hole P-16's re-take found for the round trip; recorded, not
+  scheduled, and parked for the phase's close
+  ([Q-M1f.51](../open_questions.md#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs), defaulted).
+- **The nightly is red at `utils/review_bundle.py`, and has been since `fc53818f`** (S1f.5.5's T13, the same day),
+  behind a green gate, whose `--smoke` builds one case and no index. `./run_tests.sh --nightly` on `87d18cf6` ran every
+  `deep-corpus` test step green, the new one in 123.3 s, then the scratch check and `stdlib_census.py --check`, and
+  stopped at the bundle, 1 738 s in (`build/nightly-s1f.5.13.log`): its index reads `[case.wrong] verdict`, which the
+  refusals of `W41/saturate-import` and `W43/einb-dump-answer` do not carry; and with that line guarded (tried, and
+  reverted) seven cases fail to build, W40's six and W41's, on `case.py`'s *a register run is a solve*. What a review
+  page shows for a run that is not a solve is a design this stage does not own: reported, not fixed
+  ([Q-M1f.52](../open_questions.md#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve),
+  defaulted). The steps after it, run apart on the same code (`build/s1f.5.13/nightly_after_bundle.sh`,
+  `build/nightly-s1f.5.13-after-bundle.log`): `stdlib_mutants.py --check` green, 167 of 217 killed, in 42 s; the
+  bundle's link check finds four dead links, every one in pages an earlier local bundle wrote on 2026-11-06 for F1's
+  files, which `ccd1007f` deleted, so a fresh checkout has none; the fuzzer's seed 1 green in 1 507 s. The bench smoke
+  is the gate's last step, green at T2, and the second seed was not run here.
+- **The fuzz job costs about 25 minutes a seed now**: seed 1's million iterations took 1 507 s above, and ten thousand
+  take 16.8 s (`EIN_FUZZ_ITERS=10000 EIN_FUZZ_SEED=1 cargo test -p ein-ir --release --test fuzz_properties`,
+  2026-11-09, beside the million), where S1e2.3.6 measured both seeds and the bench smoke at 15 s together on
+  2026-11-03, before S1f.5.5's swap. `run_tests.sh`' header still says the fuzz and bench jobs are in `--nightly`
+  *because they are cheap*. Reported, not acted on: what a fuzz iteration costs is the parser's, Q-M1f.8's subject.
+- **`corpus/README.md` § `slow` and `corpus/corpus.toml`'s header count the `slow` entries as three and two**, where
+  `the_slow_set_is_exactly_these_fourteen` names fourteen (re-taken 2026-11-03); the section's cell count and
+  seconds are of the same earlier day. Not restated here: its numbers want `utils/corpus_cost.py`'s re-take, which is
+  not this stage's.
+
 ## Acceptance
 
 - The per-commit tier writes no dump of T state files or more, and a test fails if one appears unflagged.
@@ -187,3 +230,29 @@ readers, `CLAUDE.md`'s gate block, and the inventory's P-16, which says what fix
   `./run_tests.sh --nightly` runs the same step.
 - A flagged entry whose dump falls under T fails the slow tier.
 - `./run_tests.sh` is green, and `answer_round_trip`'s per-commit time is taken before and after.
+
+### Acceptance, re-taken 2026-11-09
+
+On the stage's last code commit, `87d18cf6`, item by item:
+
+- **The per-commit tier writes no dump of T state files or more, and a test fails if one appears unflagged.** Per
+  commit the round trip dumps 278 programs and 20 623 state files, the most `pets`' 11 339 (T2's run); its
+  `heavy_dump_flag` fails an unflagged entry that writes 40 000 or more in either tier, as `corner-house` unflagged
+  showed per commit (65 214), and `the_heavy_dump_set_is_exactly_these_five` fails on any change to the set. **Met.**
+- **The nightly round-trips every corpus program's dump, the flagged and the `slow` entries included, and
+  `./run_tests.sh --nightly` runs the same step.** `deep-corpus` runs `answer_round_trip` under `EIN_CORPUS_SLOW: "1"`,
+  which selects every entry, the five flagged and the 14 `slow` among them, 296 programs answered and 485 020 state
+  files (T1's run); `nightly_steps.rs`' diff holds `--nightly`'s copy to the workflow's, and
+  `the_round_trips_slow_half_runs_with_the_flag` the flag. The step on this code: 9 of 9 in 121.4 s (T2's run).
+  `./run_tests.sh --nightly` on this code ran it green too, 9 of 9 in 123.3 s, with every `deep-corpus` test step and
+  the scratch check after them (`build/nightly-s1f.5.13.log`); the nightly as a whole is red at a later step this
+  stage did not make ([§ T3 record](#t3-record-2026-11-09)). **Met.**
+- **A flagged entry whose dump falls under T fails the slow tier.** `syntax/equality` flagged, the slow tier failed
+  naming it, 4 096 under 40 000 (T2's mutation); a flagged entry the round trip does not answer counts as none and
+  fails the same way. **Met.**
+- **`./run_tests.sh` is green, and `answer_round_trip`'s per-commit time is taken before and after.** The gate at
+  T1f.5.13.2, 16 min 12 s (`build/gate-s1f.5.13-T2.log`), the round trip 9.99 s in it; before and after, debug,
+  alternated on a quiet machine: 55.1 s and 56.5 s, then 8.60 s and 8.67 s. **Met.**
+- **What does not move.** No answer, golden or register row: the register reads 129 fixed, 22 open and 1 not wrong
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09), unmoved by the stage. Every program is
+  still round-tripped, four of them nightly where they were per commit. **Met.**

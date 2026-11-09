@@ -657,6 +657,20 @@ constrained-reasoning research.
   (the user's ruling on D-14, Q-M1e2.27); no answer moved and no register row
   was filed (Q-M1f.28): 129 fixed, 22 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  **S1f.5.13 ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md#t1-record-2026-11-09)):
+  the round trip's four dumps of 64 514 to 65 214 state files leave the
+  per-commit tier for the nightly (the user's ruling on P-16), selected by a
+  manifest field that is a count, `heavy_dump`, held both ways by the test;
+  `deep-corpus` runs the test's slow half, which no CI tier ran before, and
+  the per-commit run takes 8.6 s where it took 55 s (debug, 2026-11-09); three
+  other tests whose slow half no CI tier runs are parked for the phase's close
+  ([Q-M1f.51](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs));
+  and **the nightly is red at `utils/review_bundle.py` since `fc53818f`**,
+  whose index and case pages assume every register run is a solve, which
+  W40's and W41's are not: reported, not fixed
+  ([Q-M1f.52](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve)).
+  No answer moved, and the register reads 129 fixed, 22 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -1137,6 +1151,7 @@ ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2
 ein solve … --count                                          # M1e2: how many, R's two counts by describe's route, no state read
 ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: every mode under every lever, + the slow pair's cells
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test answer_round_trip  # M1f S1f.5.13: every dump reloaded, + the slow and heavy_dump entries'
 ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle dump drawn, a solve run on it
 ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
@@ -1366,6 +1381,12 @@ and the nightly was red from 2026-10-17 to 11-03 behind a green gate.
 one and not the other fails `cargo test`. Its test steps run under a checked
 `TMPDIR`, as the gate's do. It took 9 min 50 s here on 2026-11-03, half of
 it `stdlib_census.py`; the runner's `deep-corpus` alone took 18 min that day.
+Since M1f S1f.5.13 `deep-corpus` also runs `answer_round_trip` under
+`EIN_CORPUS_SLOW=1`, which the per-commit tier does not set: every corpus
+program's `--dump-answer` reloaded by value, the `slow` entries' and the five
+`heavy_dump` ones' too, whose dumps write 40 000 state files or more
+([`corpus/README.md` § `heavy_dump`](corpus/README.md#heavy_dump)); 121 s in
+release on 2026-11-09. No CI tier had run that test's slow half before.
 
 A reference that cannot be a link is still fine as `` `code` ``, and that is
 the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`
