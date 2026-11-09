@@ -3,13 +3,19 @@
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.12**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 
-**Status:** specified 2026-11-08 on the user's ruling of that day on P-15. **Running since 2026-11-09**, on the
-user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions
-till the end of the phase"*), beside the second lane's S1f.5.10: T1f.5.12.1, every ask, writer and move listed (`87b7cb5a`, [its
-record](#t1-record-2026-11-09)); T1f.5.12.2, the two asks and N's cores after the walk (`0116cf65`, [its record](#t2-record-2026-11-09));
-T1f.5.12.4, W43 filed (`96f66c40`, [its record](#t4-record-2026-11-09)); T1f.5.12.5, W43 fixed ([its
-record](#t5-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
-`.einb` ([§ Task T1f.5.12.4](#task-t1f5124--the-answer-directory-of-a-einb-w43)).
+**Status:** specified 2026-11-08 on the user's ruling of that day on P-15. **Done 2026-11-09**, on the user's
+go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions till the end
+of the phase"*), beside the second lane's S1f.5.10, in five commits: T1f.5.12.1, every ask, writer and move listed
+(`87b7cb5a`, [its record](#t1-record-2026-11-09)); T1f.5.12.2, the two asks and N's cores after the walk
+(`0116cf65`, [its record](#t2-record-2026-11-09)); T1f.5.12.4, W43 filed (`96f66c40`, [its
+record](#t4-record-2026-11-09)); T1f.5.12.5, W43 fixed (`a0435da0`, [its record](#t5-record-2026-11-09)); and
+T1f.5.12.3, the cost after and the pages ([its record](#t3-record-2026-11-09)). The coordinator handed the stage a
+second item on 2026-11-09, `--dump-answer` on a `.einb` ([§ Task
+T1f.5.12.4](#task-t1f5124--the-answer-directory-of-a-einb-w43)). Three choices were taken by default and recorded:
+[Q-M1f.25](../open_questions.md#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores),
+[Q-M1f.26](../open_questions.md#q-m1f26--not-kept-retires-and-what-a-member-with-no-core-prints) and
+[Q-M1f.27](../open_questions.md#q-m1f27--what-program-a-einbs-answer-directory-writes). The acceptance is re-taken
+[below](#acceptance-re-taken-2026-11-09).
 **Depends on:** nothing. It is independent of the grammar stages. [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md)'s
 four dumps each get cheaper with it, but neither stage waits for the other.
 
@@ -265,6 +271,62 @@ The cost after, beside step 1's. The pages:
 - `CLAUDE.md`'s S1e2.3.9 paragraph;
 - the inventory's P-15, which says what fixed it.
 
+### T3 record, 2026-11-09
+
+Run last, after T1f.5.12.5, so that it writes W43's hash.
+
+**The cost after**, the same command on the stage's last build (`a0435da0`, `utils/bench_env.sh python3
+build/s1f.5.12/cost.py`, one pinned P-core, best of three, 2026-11-09), beside T1's:
+
+| program | before | after | spread after | core searches before | after | members of N printed |
+|---|---:|---:|---:|---:|---:|---:|
+| `ein-bugs/wrong-answers/past-limit-lines` | 1.19 s | 0.73 s | 0.00 s | 65 532 | 15 | 15 |
+| `features/01_not_and_absent` | 3.03 s | 3.17 s | 0.02 s | 0 | 0 | 0 |
+| `features/04_open` | 3.20 s | 3.36 s | 0.04 s | 0 | 0 | 0 |
+| `lattice/06_friends_tables` | 2.51 s | 1.94 s | 0.01 s | 65 022 | 68 | 68 |
+| `saturation/square-unique/corner-house` | 2.58 s | 2.64 s | 0.07 s | 0 | 0 | 0 |
+| `saturation/square-unique/cul-de-sac` | 2.87 s | 2.94 s | 0.02 s | 0 | 0 | 0 |
+| `saturation/square-unique/terminus` | 3.34 s | 3.40 s | 0.05 s | 0 | 0 | 0 |
+| `zebra2-minus-15` | 31.28 s | 30.07 s | 0.06 s | 1 995 | 1 495 | 1 495 |
+| `zebra2-minus-15-obligations` | 31.18 s | 30.01 s | 3.31 s | 1 995 | 1 495 | 1 495 |
+| `zebra2` | 8.88 s | 6.65 s | 0.01 s | 190 | 366 | 366 |
+| `zebra2-obligations` | 8.85 s | 6.65 s | 0.01 s | 190 | 366 | 366 |
+| `zebra` | 2.68 s | 2.73 s | 0.01 s | 225 | 458 | 458 |
+| `saturation/square-fwd/houses` | 2.27 s | 2.31 s | 0.00 s | 0 | 0 | 0 |
+
+*Core searches* count the walk's on the way in (T1's dead nodes visited) and N's after it on the way out: past the
+limit `lattice/06` and `past-limit-lines` drop from one at every dead node met to one per member printed, and save
+0.57 s and 0.46 s; the state route's programs take one per member of N where they took one at each dead extension
+plus a second preparation of root, and `zebra2` saves 2.2 s, most of it that preparation; `zebra` takes 458 after the
+walk where it took 225 in it and each member it did not saturate through the second preparation, and costs 0.05 s
+more. The five programs past the limit with no member of N, and `square-fwd/houses`, take no core either way and are 2
+to 5 % slower here; re-taken
+interleaved, base and after alternating, `features/01` is 3.02 s against 3.08 s and `features/04` 3.18 s against
+3.23 s, and a bare `ein solve features/01`, which takes no core in either build, 1.27 s against 1.29 s, the same
+share (`utils/bench_env.sh python3 build/s1f.5.12/recheck.py` and `recheck2.py`, 2026-11-09): the build, not the
+work.
+
+**One more test**, since the acceptance's first item had none: `ein-infer/tests/explore.rs`'s
+`a_run_that_prints_no_core_takes_none_and_answers_alike` watches the walk of describe asked for N's cores alone, as
+`--dump-lattice`'s watch reads it, and holds that every dead node it visits but root carries no core and no status:
+66 688 dead nodes over the corpus on 2026-11-09 (held to at least 1 000).
+
+**The pages** each output-changing commit did not already carry:
+- **T2 and T5 carried the kernel pages**: [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s
+  `nogoods.json` paragraph, its file list and its `.einb` line, [`glossary.md`](../../../docs/kernel/glossary.md)'s core
+  statuses and [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s `core_status` row. The live read-out
+  reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md), has no row whose words moved: stdout prints no
+  member of N's core and no row of a `.einb`'s dump. M1e2's `read_out.md` § 6.2 and § 8.2 are a record and are not
+  edited.
+- **AGENTS.md**: S1e2.3.9's paragraph says what retired `not-kept`, and the P1f.5 account says what the stage did.
+- **[The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md)**: P-15 says what fixed it, in
+  the summary table and under its item, which stays as it was taken; and [S1e2.3.9's
+  notes](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.9_a_core_the_run_did_not_take.md#notes),
+  whose first note put the two options P-15 ruled, say what built them.
+- **The register**: W43's `[case.fixed]` carries `a0435da0`, and its header says so.
+- **The records**: this file's status and acceptance, [the phase README](README.md)'s S1f.5.12 row, its P-15 row and
+  § The order's item 10, and [Q-M1f.25 to .27](../open_questions.md)'s rows.
+
 ### Task T1f.5.12.4 — the answer directory of a `.einb` (W43)
 
 **Handed to the stage by the coordinator on 2026-11-09**, from S1f.5.5's T1f.5.5.13, which found it and left it: `ein
@@ -349,3 +411,39 @@ The register reads **129 fixed, 22 open and 1 not wrong** (`grep '^status' corpu
 - Every such core equals the core an eager run takes, held by a test over the corpus.
 - `not-kept` is written nowhere, or only where step 1 found it still meant.
 - No answer moves, and `./run_tests.sh` is green.
+
+### Acceptance, re-taken 2026-11-09
+
+Re-taken on the stage's last build, `a0435da0`, by the sweep T1 took, every `.ein` under `examples/`, `tests/`,
+`stdlib/` and `corpus/`, 427 files and 1 766 runs (T1's 426 and W43's witness), compared with T1's at `114e8f26`
+(`python3 build/s1f.5.12/diff.py build/s1f.5.12/base.jsonl build/s1f.5.12/final.jsonl`, 2026-11-09), item by item:
+
+- **With `--dump-answer` or `--trace`, and neither `--dump-lattice` nor `--events`, a run takes no core at a dead node
+  that is not a member of N.** `ein solve` asks `Cores { visited: false, nogoods: true }` there, and on describe alone;
+  `explore.rs` holds that such a walk carries no core at any of the 66 688 dead nodes it visits but root, and the cost
+  above counts what went: `lattice/06`'s 65 022 core searches are its 68 members'. **Met.**
+- **`nogoods.json` and `--trace` give every member of N its core, status and rules, past the limit too.** Over the
+  sweep, 5 554 members, every one with a core, `within-budget` or `cut-…`, and its rules, 92 of them on runs stopped
+  at the limit; every trace's *N* prints as many cores as `nogoods.json` has members (136 runs); and
+  `answer_round_trip.rs`' `members_of_n` and `cli_semantics`' `every_member_of_n_has_its_core_past_the_limit_too` hold
+  it per commit. **Met.**
+- **Every such core equals the core an eager run takes, held by a test over the corpus.** `answer_round_trip.rs`'
+  `eager_cores` holds each member a `--dump-lattice` run visits to `nodes.json`'s core, status and rules (917 members per
+  commit), `explore.rs` holds each member of describe with N's cores alone to the run that takes every core (1 229),
+  and `cli_semantics` holds `past-limit-lines`' 15, past the limit, to the eager cores at `--region-limit 17`. A member
+  no walk visits, the state route's 58 that moved, is taken against the walk's snapshot, which gives the first
+  preparation's core ([Q-M1f.25](../open_questions.md#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores));
+  `corpus_cores.rs` holds every printed one to a fresh preparation. **Met.**
+- **`not-kept` is written nowhere.** No run of the sweep writes it, in `nogoods.json`, on stdout, on stderr or in a
+  trace; `CoreStatus::NotKept` and its sentence are gone, and the word is in the sources only in four doc comments that
+  say it retired (`grep -rn "not-kept\|NotKept\|not_kept" ein.rs/crates/*/src`, 2026-11-09). **Met.**
+- **No answer moves, and `./run_tests.sh` is green.** The sweep moves 14 runs, every one in `nogoods.json` and the
+  trace's *N* and in nothing else, T1's list to the run, and 0 findings; no exit code, stdout, stderr, summary or other
+  answer file. The 1 762 runs T1 and this sweep share are the prototype's to the byte. The gate at every code commit:
+  T2 17 min 7 s, T4 16 min 0 s, T5 16 min 34 s and T3 16 min 29 s (`build/gate-s1f.5.12-T<m>.log`). **Met.**
+- **The handed task**: W43 is filed (`96f66c40`) and fixed (`a0435da0`), held by `wrong_answers.rs` under schema `/19`,
+  and `einb_cli` holds a `.einb`'s answer directory to its source's. **Met.**
+
+The register reads 129 fixed, 22 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-09): T1f.5.12.4 filed W43 and T1f.5.12.5 fixed it, and no other row's answer moved;
+`W10/second-preparation`'s reason was restated (T1f.5.12.2).

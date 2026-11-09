@@ -839,8 +839,9 @@
 # **S1f.5.12 fixed it the same day** (T1f.5.12.5): the dump writes every
 # file from the program the container stores, so `ein solve X.einb
 # --dump-answer DIR` writes the directory `ein solve X.ein --dump-answer DIR`
-# writes. `[case.fixed]` carries the null id in the fixing commit, and the
-# stage's next commit writes the hash. The register reads **129 rows fixed, 22
+# writes. `[case.fixed]` carried the null id in the fixing commit,
+# `a0435da0`, and the stage's next commit, T1f.5.12.3, wrote the hash. The
+# register reads **129 rows fixed, 22
 # open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
 # uniq -c`, 2026-11-09).
 #
@@ -9753,7 +9754,7 @@ look_at  = ["answer"]
 note     = "Filed by S1f.5.12 (T1f.5.12.4, 2026-11-09) from S1f.5.5's T1f.5.5.13, which found it, reported it and left it (*a flag's usage refusal, which T13's brief does not name*), and the coordinator's brief of 2026-11-09, which handed it to S1f.5.12: a refusal where a run should answer is a wrong answer, W40's six rows the precedent. The row saves the witness with `ein kb save` and runs `ein solve` on the container with `--dump-answer` (schema /16's `container`); the refusal exits 2, a usage refusal the register records since schema /19, while the library answers the program, R three states. `ein solve` on the container without `--dump-answer` answers it, as `oracle`, `test`, `saturate`, the `render` views and `kb save` do. Fixed by S1f.5.12 (T1f.5.12.5, 2026-11-09): the dump writes every file from the program the container stores, resolved and import-flattened (`ein-cli`'s `common::program_text`), so the run answers the container as it answers the witness, and `einb_cli`'s `the_answer_directory_of_a_container_is_its_sources` holds the directory file for file"
 
 [case.fixed]
-commit = "0000000"
+commit = "a0435da0"
 by     = "S1f.5.12 (T1f.5.12.5): `--dump-answer` writes a container's stored program at the head of every state file, where it refused the container; the run answers the container as it answers the `.ein` (Q-M1f.27 (a), defaulted)"
 date   = "2026-11-09"
 

@@ -355,7 +355,8 @@ constrained-reasoning research.
   it met as its two bits, and `nogoods.json` wrote each member of N it met
   with an empty core, which reads as *refuted by nothing*; it writes a
   `null` core and rules beside `core_status: "not-kept"`, and `--trace`
-  says why. No run that did not stop prints an empty core
+  says why (since M1f S1f.5.12 each member gets its core after the walk, and
+  `not-kept` is retired). No run that did not stop prints an empty core
   (`ein-cli/tests/answer_round_trip.rs`), and the register is unmoved. Next
   is S1e2.3.10, then the inventory re-taken and shown to the user, and the
   close waits for the user's go-ahead.
@@ -637,6 +638,16 @@ constrained-reasoning research.
   under the register's schema `/17` and fixed: 128 fixed, 22 open and 1 not
   wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
   2026-11-09).
+  **S1f.5.12 ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md#t1-record-2026-11-09)):
+  a run's walk takes a dead node's core only where `--dump-lattice` or
+  `--events` prints it (`region::Cores`), and for `--dump-answer` and
+  `--trace` each member of N gets its core after the walk, against the walk's
+  snapshot, past `--region-limit` too, so `not-kept` is retired and no surface
+  prepares root a second time (the user's ruling on P-15, (c)); and W43, `ein
+  solve X.einb --dump-answer DIR` refused, was filed under the register's
+  schema `/19` and fixed: 129 fixed, 22 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

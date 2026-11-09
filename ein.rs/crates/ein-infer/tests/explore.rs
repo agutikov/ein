@@ -862,6 +862,24 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
     }
 }
 
+/// A dead node a walk visits, its commitment and whether it took a core.
+type DeadVisit = (Vec<String>, bool);
+
+/// The dead nodes a walk visits, each with whether it took a core, as
+/// `--dump-lattice`'s watch reads them (M1f S1f.5.12).
+struct DeadCores(std::sync::Arc<std::sync::Mutex<Vec<DeadVisit>>>);
+
+impl ein_infer::events::Watch for DeadCores {
+    fn node(&mut self, v: &ein_infer::events::Visited<'_>) {
+        if v.kind == "dead" {
+            self.0.lock().expect("one watcher").push((
+                v.commitment.to_vec(),
+                v.core_status.is_some() || !v.core.is_empty(),
+            ));
+        }
+    }
+}
+
 /// **A run that prints no core takes none, and answers alike** — M1e2
 /// S1e2.2.21, the user's ruling of 2026-11-05: a core is taken only where a
 /// surface prints one, and it moves no answer.
@@ -878,7 +896,9 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
 /// P-15 (c)): describe asked for N's cores alone (`Cores { visited: false,
 /// nogoods: true }`, what `--dump-answer` and `--trace` ask) answers alike,
 /// gives every member of N a core, past `--region-limit` too, and gives each
-/// the core, status and rules the run that takes every core gives it.
+/// the core, status and rules the run that takes every core gives it; and
+/// its walk takes none: every dead node it visits but root, which
+/// `--dump-lattice`'s watch reads, carries no core and no status.
 #[test]
 fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
@@ -892,6 +912,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let mut holes = 0usize;
     let mut dead_holes = 0usize;
     let mut after_walk = 0usize;
+    let mut walk_dead = 0usize;
     // *Forbid* refuses every corpus program with a dead hole; these are
     // studied past the refusal, as `every_mode_at_four_jobs_is_every_mode_at_one`
     // studies one, so the holes the read-out prints a core for are read too.
@@ -977,7 +998,31 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                 failures.push(format!("{rel} {mode:?}: the answer differs without cores"));
             }
             if mode.which == Which::All && mode.ask == Ask::Describe {
-                match run(&nogoods) {
+                let walked = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+                let watched = |o: &explore::Options| {
+                    let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
+                    let mut events = ein_infer::events::Events::off()
+                        .watched(Box::new(DeadCores(walked.clone())));
+                    let mut go = || {
+                        explore::run_with(&mut kb, &mut terms, &ast, o, &mut events)
+                            .map_err(|e| e.to_string())
+                    };
+                    if studying {
+                        ein_infer::forbid::studying(go)
+                    } else {
+                        go()
+                    }
+                };
+                let answered = watched(&nogoods);
+                for (commitment, taken) in walked.lock().expect("the run is done").drain(..) {
+                    walk_dead += 1;
+                    if taken && !commitment.is_empty() {
+                        failures.push(format!(
+                            "{rel}: the walk took a core at {commitment:?}, asked for N's alone"
+                        ));
+                    }
+                }
+                match answered {
                     Ok(c) => {
                         if said(&strip(&a)) != said(&strip(&c)) {
                             failures.push(format!(
@@ -1042,11 +1087,12 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     // Not vacuous: the cube's dead holes are read, the ones whose core the
     // lazy run takes after the cube.
     assert!(
-        runs >= 1000 && dead_holes > 0 && after_walk >= 100,
-        "{runs} runs, {holes} holes, {dead_holes} dead, {after_walk} members of N"
+        runs >= 1000 && dead_holes > 0 && after_walk >= 100 && walk_dead >= 1000,
+        "{runs} runs, {holes} holes, {dead_holes} dead, {after_walk} members of N, {walk_dead} \
+         dead nodes walked"
     );
     eprintln!(
         "{runs} runs, {holes} minimal holes, {dead_holes} dead, {after_walk} members of N \
-         taken after the walk"
+         taken after the walk, {walk_dead} dead nodes its walk visited with no core taken"
     );
 }
