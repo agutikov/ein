@@ -36,6 +36,8 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.25](#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores) | the state route's members of N it did not saturate: whose preparation takes their cores? | **defaulted 2026-11-09 (the user's instruction): (a), the walk's snapshot, after the walk; 58 cores move on 3 programs**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1 |
 | [Q-M1f.26](#q-m1f26--not-kept-retires-and-what-a-member-with-no-core-prints) | `not-kept` retires, and what a member with no core prints | **defaulted 2026-11-09 (the user's instruction): (a), the status goes, and a renderer refuses a member with no core**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1 |
 | [Q-M1f.27](#q-m1f27--what-program-a-einbs-answer-directory-writes) | what program a `.einb`'s answer directory writes | **defaulted 2026-11-09 (the user's instruction): (a), the program the container stores, as every view of a container reads it**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.5 |
+| [Q-M1f.28](#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer) | is a not-dead node's core written `[]` a wrong answer? | **defaulted 2026-11-09 (the user's instruction): (a), no register row: a spelling, fixed with no answer moving**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
+| [Q-M1f.29](#q-m1f29--a-dead-roots-core-under---count) | a dead root's core under `--count` | **defaulted 2026-11-09 (the user's instruction): (a), `null`, as the question prints no core; documented**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -742,3 +744,46 @@ the same (`einb_cli::the_answer_directory_of_a_container_is_its_sources`, 2026-1
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) moves no container and no view, and the state and every other file are the `.ein`'s.
 Re-opening it means (c).
+
+### Q-M1f.28 — Is a not-dead node's core written `[]` a wrong answer?
+
+**Raised** 2026-11-09 by [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1, on the
+coordinator's brief: a wrong answer, or a printer line that says something false about one, is a register row before
+it is fixed. Under the ruling the stage builds
+([Q-M1e2.27](../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)), `[]` is the empty
+set, *the empty set of facts suffices*, so a node that is not dead written `"core": []` names a core where none
+exists. The stage's re-take found it on every JSON surface that writes a node's core: the summary's owing holes,
+`region.json`, `nodes.json` and `--events`' `enter` lines.
+
+- **(a) No register row**: a spelling, fixed by the stage with no answer moving. The register holds answers that are
+  false under the definitions the user has ruled on: R, N, a dead node's core and rules, claims, exit codes,
+  refusals, and a printed line that reads as another answer (W42's count). A node that is not dead has no core to be
+  wrong about, so no row could state a `right` for it but its absence, and every object that carries the `[]`
+  carries its deadness beside it (`dead: false`, `status`, `kind`), which says there is no contradiction. The
+  inventory took D-14 as a spelling (*a surface*, *no answer moves*) and the user ruled it as one (*what do `[]` and
+  `null` mean*), and the nearest precedent, M1e2 S1e2.3.9's empty core on a member of N a run had not taken (N6,
+  *reads as refuted by nothing*), moved no row.
+- **(b) A register row**, W44, filed `open` before the fix and fixed by it, its `now` an owing hole's `[]` read off
+  the summary; the register would need a field for a hole's core, schema `/20`.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the stage's own statement (*"No answer moves, and no register row"*), which the
+user approved with the plan. Re-opening it means (b), one row filed `fixed` with the stage's commit.
+
+### Q-M1f.29 — A dead root's core under `--count`
+
+**Raised** 2026-11-09 by [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1. On a
+program whose root is dead, `ein solve FILE --count` writes `region.root: "dead"` beside `region.core: null` and
+`region.refuted_by: null`: 39 programs of the stage's sweep (2026-11-09). A bare `ein solve` writes root's core and
+rules there, and `--count`, which reads no state, prints neither on stdout; a mode writes `region.root: null` and no
+core either. Root is dead, so its core exists.
+
+- **(a) `null`, documented**: the summary is stdout's facts, and `null` is where a key does not apply; the ruling reads
+  `null` as *an object that does not exist or is not known*, and a count does not state root's core.
+  [`read_out.md` § 11](../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks) says so, from
+  T1f.5.8.2 on.
+- **(b) Root's core under every question** whose summary says root is dead: `--count`'s summary, and its stdout's
+  `unsat core` and `refuted by` rows, where a count prints no listing today.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It moves nothing, and a count's question is *how many*.
+Re-opening it means (b), which moves `--count`'s stdout on those 39 programs.
