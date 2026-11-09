@@ -5,14 +5,17 @@
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on
 [F12](README.md#f12-an-empty-match-never-fires). The user ruled on 2026-11-08 that P1f.5 runs, and on 2026-11-09 *"just
-continue with default decisions till the end of the phase"*. **In progress 2026-11-09**, in lane 2's worktree
+continue with default decisions till the end of the phase"*. **Done 2026-11-09**, in lane 2's worktree
 (`p1f5-lane2`), lane 2's last stage, after S1f.5.7, S1f.5.10 and S1f.5.18 (`ee3da657`): T1f.5.9.1
 ([its record](#t1f591-record-2026-11-09)), every move listed, W60's four rows and W61 filed, three questions taken by
 default (Q-M1f.45 to Q-M1f.47) (`b6852791`); T1f.5.9.2 ([its record](#t1f592-record-2026-11-09)), the empty conjunction
 fires and the empty conclusion asserts nothing, W31's four rows and W34 fixed, the empty core `∅` on every text surface
 (Q-M1f.48) (`2c79af6d`); T1f.5.9.3 ([its record](#t1f593-record-2026-11-09)), `(and)`'s and `(or)`'s note, the pages
 (`1210bdfd`); T1f.5.9.4 ([its record](#t1f594-record-2026-11-09)), `eq` at another arity refused at load, W60 and W61
-fixed.
+fixed (`2a8c998b`); T1f.5.9.5, the acceptance re-taken ([§ Acceptance re-taken](#acceptance-re-taken-2026-11-09)) and what
+the merge writes ([§ For the merge](#for-the-merge)). Four questions taken by default in all, Q-M1f.45 to Q-M1f.48. The
+register on the lane reads 158 fixed, 13 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+-c`, 2026-11-09).
 **Depends on:** nothing it waits for. [S1f.5.5](s1f.5.5_the_grammar.md)'s grammar refuses `(and)`, and since its swap
 `()` parses only as a whole `:match` or `:assert`. [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) landed
 first, so a rule with `:match ()` and an unbound conclusion variable is refused at load (W57's
@@ -425,7 +428,8 @@ primitives table: a macro's body is a template, refused where the rule compiles,
   loads no more.
 
 **The rows**: W60's four and W61's `fixed`, each `now` the refusal and no region (the conclusion's and the fact's
-`[case.region]` dropped, a refused `now` stating none), `[case.fixed]` the null id, which the next commit writes. The
+`[case.region]` dropped, a refused `now` stating none), `[case.fixed]` the null id, which T1f.5.9.5 wrote as
+`2a8c998b`. The
 witnesses' headers gain a section saying what replaced the answer, and their corpus notes say so. The register reads
 **158 fixed, 13 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 
@@ -447,6 +451,156 @@ states the two refusals, which parameters can hold `eq`, what loads, what they r
 [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s parameter list and its written `eq` fact say
 so.
 
+## Acceptance re-taken (2026-11-09)
+
+Each item, and what holds it:
+
+- *A rule or hrule whose `:match` is `()` fires once, or once per activator fact, on every command*: `ein-infer`'s
+  `rule_semantics::an_empty_match_fires_once_or_once_per_activator` (one firing at root, one per activator, its
+  parameter alone bound); `ein-cli`'s `cli_semantics::an_empty_match_fires_and_an_empty_conclusion_asserts_nothing`
+  (`saturate --dump`, `solve` and `oracle` on W31's witnesses, H `(q b)` on the hrule's); the register's four W31 rows,
+  `fixed`; `explore.rs`, every mode the oracle on each witness; and an hrule with `(solve :hrules (h (b) (c)))`, H `(q
+  b)`, `(q c)` (T1f.5.9.1's table, `build/s1f.5.9/case/hrule-activator-empty.ein`).
+- *`(rule r () :match () :assert (false))` makes root dead, with the core `[]` and `refuted by r`*:
+  `W31/empty-match-false`, `fixed`, its `now` `core = []`, `core_status = "within-budget"`, `refuted_by = ["r"]`;
+  `corpus_cores::a_rule_with_no_premise_refutes_root_with_the_empty_core`, describe's root and the cube's; and the text
+  surfaces' `∅` (Q-M1f.48), held by the CLI test above.
+- *`(and)` is refused at load with a line naming the rule, and `()` is the one spelling of the empty conjunction*:
+  **met at the parse**, where the grammar refuses it (S1f.5.5's swap), the parse error's note naming the rule and the
+  clause and saying `()` is the spelling (Q-M1f.45): `grammar_pages.rs`' table, seven rows in each place, banked in
+  `grammar_table.txt`; `primitive_arity.rs` holds `(and)` and `(or)` parse errors.
+- *`:assert ()` asserts nothing: W34's witness answers R {∅}, and its state files load*: `W34/assert-empty`, `fixed`,
+  R {∅} and one class; `answer_round_trip.rs`' and `answer_dump.rs`' `DO_NOT_LOAD` empty, every state file of every
+  corpus program reloading; `claim_round_trip.rs`' `DO_NOT_READ_BACK` and `alive_invariant.rs`' `KNOWN_R1` empty.
+- *The case's rows are `fixed`, and no corpus answer moves*: W31's four and W34 `fixed` (`2c79af6d`); against
+  `ee3da657` every program of the five roots but W31's and W34's witnesses and, at T1f.5.9.3, one plan probe's stderr,
+  answers as it did (`build/s1f.5.9/xcheck`, 547 files, T1f.5.9.2's and .3's records), and at T1f.5.9.4 W60's and W61's
+  five witnesses are refused, which T1f.5.9.1 banked for it.
+- *A relation parameter that can hold `eq` and heads a form of another arity is refused at load on every command, one
+  line in Ein's spelling, and W60's and W61's rows are `fixed`*: `from_ir::tests::eq_at_another_arity_is_refused_at_load`
+  and `cli_semantics::eq_at_another_arity_is_refused_at_load`, the eight commands that load; W60's four rows and W61's,
+  `fixed`. The brief's condition is met: every way a parameter reaches `eq` is a load-time check's (T1f.5.9.1's probes),
+  so no row is left open for the close.
+- *`./run_tests.sh` is green*: at every code commit, each body naming its log, with `--no-fail-fast` forwarded to `cargo
+  test` (T1f.5.9.1, 17 min 9 s; T1f.5.9.2, 16 min 48 s; T1f.5.9.3, 17 min 9 s; T1f.5.9.4, 17 min 28 s); this record is docs and the
+  register's hashes, checked by `utils/doc_audit.py --links --check` and the register's readers.
+
+**S1f.5.9 is done, 2026-11-09.**
+
 ## For the merge
 
-Written by T1f.5.9.5, at the stage's end: what the prose both lanes share should gain, and lane 2's total.
+S1f.5.9 ran in lane 2 (`p1f5-lane2`, after S1f.5.7, S1f.5.10 and S1f.5.18, from `dc4c0bdc`), lane 2's last stage, which
+does not edit the prose both lanes share. What those places should gain when the coordinator merges the branch:
+
+1. **P1f.5's README, the stage table's S1f.5.9 row**, its state: *"**done 2026-11-09**, on lane 2 in five commits
+   ([the records](s1f.5.9_an_empty_match_fires.md#t1f591-record-2026-11-09)): T1f.5.9.1, every move listed, W60's four
+   rows and W61 filed (`b6852791`); T1f.5.9.2, the empty conjunction fires and the empty conclusion asserts nothing, W31's four
+   rows and W34 fixed, the empty core `∅` on every text surface (`2c79af6d`); T1f.5.9.3, `(and)`'s and `(or)`'s note, the
+   pages (`1210bdfd`); T1f.5.9.4, `eq` at another arity refused at load, W60 and W61 fixed (`2a8c998b`); T1f.5.9.5, the acceptance
+   re-taken. [Q-M1f.45](../open_questions.md#q-m1f45--the-and-refusals-line-and-or) to Q-M1f.48 taken by default; on the
+   lane the register reads 158 fixed, 13 open and 1 not wrong"*; its estimate cell goes (the user wants none).
+2. **The same README's decisions table**, F12's last cell gains *"**done 2026-11-09** (W31, W34, T1f.5.9.2; the `(and)`
+   note, T1f.5.9.3)"*; its § F12 ends with *"**Done 2026-11-09** by S1f.5.9: an empty `:match` fires once, or once per
+   activator, in rules and hrules (W31's four rows), the empty conclusion asserts nothing (W34), `(and)` and `(or)` are
+   refused at the parse with a note naming the rule and the clause, and the first empty core, `[]`, prints `∅` on every
+   text surface (Q-M1f.48)."*; and the case table's fifth row (`:assert ()`) its last cell *"W34, **fixed 2026-11-09** by
+   S1f.5.9"*.
+3. **The register's counts**: S1f.5.9 files five rows (W60's four, W61) and fixes ten (W31's four, W34, W60's four,
+   W61): +10 fixed, −5 open, +5 rows. With S1f.5.7's, S1f.5.10's and S1f.5.18's, lane 2 adds +32 fixed, −9 open and +23
+   rows to `dc4c0bdc`'s register (126 fixed, 22 open, 1 not wrong); on the lane `grep '^status' corpus/wrong_answers.toml
+   | sort | uniq -c` reads 158 fixed, 13 open, 1 not wrong (172 rows).
+4. **AGENTS.md**, after S1f.5.18's sentence: *"**S1f.5.9 ran to its end the same day** (lane 2's last stage): an empty
+   `:match` is the empty conjunction, which is true, so a rule whose `:match` is `()` fires once at root, or once per
+   activator fact with its parameters alone bound, and an hrule's proposes its conclusion likewise (W31's four rows,
+   the user's ruling of 2026-11-07 on F12); `:assert ()` asserts nothing, so no `#empty` fact joins H (W34);
+   `(and)` and `(or)` stay refused at the parse, their error naming the rule and the clause and saying the empty
+   conjunction is `()` (Q-M1f.45); the first empty core, `[]`, on `empty-match-false`'s dead root, `refuted by r`,
+   prints `∅` on every text surface (Q-M1f.48); and the shape S1f.5.18 found, a relation parameter an activator binds
+   to `eq` heading a form of another arity, which stopped the run where the plan was compiled, is refused at load
+   wherever a parameter can hold `eq`, read as S1f.5.18's check reads relation names, with a written `(eq a)` beside it
+   (`ein_ir::from_ir`'s `refuse_eq_at_another_arity` and `refuse_eq_facts_of_another_arity`, `defined_behaviour.md` §
+   4.14; W60's four rows and W61, filed and fixed); Q-M1f.45 to Q-M1f.48 defaulted"*, linking this file as
+   `plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md`, with the merged
+   count.
+5. **The milestone README**: nothing; it names no stage's state.
+6. **The live read-out page, `docs/kernel/inference/read_out.md` (§ 11 states the `[]`/`null` rule), and its generated
+   golden page** (S1f.5.16's, on `master`), what `ein solve` prints differently since this stage:
+   - a dead root whose core is the empty set prints the row `unsat core        ∅, the empty set: the refutation rests on
+     no fact` above `refuted by` (`explain::EMPTY_CORE`, `EMPTY_CORE_GLOSS`), where a dead root's core had always named
+     a fact and printed one `unsat core` row per fact; § 11's text half should say that `∅` is the text surfaces'
+     `[]`, where the core was taken and holds no fact (Q-M1f.48);
+   - a minimal hole that is dead with an empty core prints `dead: ∅` (no corpus program reaches one);
+   - `--trace`'s N prints `Core: ∅, the empty set: the refutation rests on no fact.` for a taken empty core, where it
+     printed *Core: not kept by this route.*; master's S1f.5.12 rewrote that printer (`trace/region.rs`), so the
+     sentence goes into the branch of master's printer that prints a taken core;
+   - a rule with `:match ()` fires and `:assert ()` concludes nothing, so W31's and W34's witnesses' read-outs move as
+     their rows say; no corpus read-out besides moves;
+   - no summary field's name or schema moves (`ein-summary/2`): `region.core` is `[]` for that root, as § 11 has it.
+7. **The JSON writers that write an empty core on this branch**, for the coordinator to hold to master's
+   `region_answer::core_field` (S1f.5.8, `c4708638`): on `empty-match-false.ein` each writes root's core `[]` beside
+   `core_status: "within-budget"` and `refuted_by: ["r"]`, the one empty core the corpus has, and master's rule, *a list
+   where the node is dead and the run took its core*, keeps it `[]`. Each writes a core as a list on this branch, dead
+   or not, so each is a place `core_field` replaces:
+   - `ein_render::dump::region_answer::region`, the summary's and `answer.json`'s and `index.json`'s `region.core`
+     (root's, under a dead root) and `region.holes.minimal[].core`;
+   - `region_answer::nogoods`, `--dump-answer`'s `nogoods.json` (`kept`, `null` beside `not-kept`, which master's
+     S1f.5.12 retired);
+   - `ein_render::dump::region`'s `region.json` nodes (`ein oracle --dump`), and `dump::region_lattice`'s `nodes.json`
+     (`--dump-lattice`);
+   - `ein_infer::region::narrate_node`, the `--events` `enter` line's `core`.
+   `ein-cli/tests/cli_semantics.rs`' `an_empty_match_fires_and_an_empty_conclusion_asserts_nothing` and
+   `ein-infer/tests/corpus_cores.rs`' `a_rule_with_no_premise_refutes_root_with_the_empty_core` hold the dead root's
+   `[]` and `r`; the register's `W31/empty-match-false` holds the summary's `core = []` and `refuted_by = ["r"]`.
+8. **The register's schema**: no bump; /18 stays unused.
+9. **The id blocks**: rows W60 and W61 used, W62 to W69 unused; questions Q-M1f.45 to Q-M1f.48 used, Q-M1f.49 unused.
+10. **Code the merge must reconcile**:
+    - `ein_infer::compile::Compiler::run` reads a `:match` or an `:assert` that is `()` (`is_empty`, the synthetic
+      `#empty` head with no argument) as no premise and no conclusion.
+    - `ein_infer::explain` gains `EMPTY_CORE`, `EMPTY_CORE_GLOSS` and `core_text`; the text printers that read them
+      decide *taken* by `core_status.is_some()`, beside a dead node: `read_out.rs` (root's `unsat core` rows, a minimal
+      hole's `dead:`), `trace/region.rs` (N's `Core:`; master's S1f.5.12 rewrote this function, and on master no core is
+      `not-kept`, so the empty-set branch goes where master prints a taken core), `dump/region_lattice.rs` (`nodes.md`),
+      `dump/region.rs` (`region.md`) and `region_dot.rs` (tooltip and table). S1f.5.8 edited `dump/region.rs`,
+      `region_lattice.rs` and `region_answer.rs` on master; on a conflict, master's JSON side (`core_field`) and this
+      branch's text side are both kept.
+    - `ein_ir::grammar`'s `notes` gains `empty_connective` (the `(and)` and `(or)` note).
+    - `ein_ir::from_ir::refuse_derived_relation_activators` ends with `refuse_eq_at_another_arity`, which reads its
+      `rp`, `sites` and `written`; and `refuse_eq_facts_of_another_arity` runs after the facts pass.
+    - `ein-cli/tests/answer_round_trip.rs`' `members_of_n` lets N's ∅ carry the empty core; master's S1f.5.12 changed
+      the same function (no `not-kept`), so its arm for a list core keeps `|| root`.
+    - `ein-corpus/src/register.rs`' `what_refuted_by_names_is_an_answer` picks W36's row by its case.
+11. **Files both lanes may have touched**, which the merge should re-take rather than splice: `corpus_exits.txt` and
+    `corpus_shapes.md5` (`EIN_BLESS=1`; S1f.5.9's cells are W60's and W61's five witnesses', and the digests of those
+    five and of W31's four and W34's) and `ein-ir/tests/golden/grammar_table.txt` (`EIN_BLESS=1`; seven rows added at
+    the table's end); the register's header paragraphs (lane 2 appends three after S1f.5.18's) and its W31, W34, W60
+    and W61 rows; `corpus/corpus.toml` (five entries after W59's, and the notes of W31's and W34's); `examples/README.md`
+    (the witness count, 166 on the lane, and the line's last clause); `open_questions.md`'s index table (Q-M1f.45 to
+    Q-M1f.48 follow Q-M1f.44); `defined_behaviour.md` (§ 2.2's `#empty` sentence, § 4.3's note, § 4.13's history, and a
+    new § 4.14: **if master has a § 4.14 by then, this one takes the next number**, and its one link,
+    `01_grammar.md`'s `#414-eq-at-another-arity--m1f-s1f59`, moves with it); `01_grammar.md` (the rule section, the
+    parameter list, the written `eq` fact), `02_patterns.md`, `03_ein_model.md` § 7.1, `reserved_engine_strings.md` and
+    `answer_dump.md`; M1e2's inventory (F12), `open_questions.md` (Q-M1e2.26's F12 paragraph) and S1f.5.5's census
+    (W34); the tests `alive_invariant.rs`, `answer_round_trip.rs`, `answer_dump.rs`, `claim_round_trip.rs`,
+    `cli_semantics.rs`, `corpus_cores.rs`, `rule_semantics.rs`, `detector.rs` (the flagged count, 48 on the lane),
+    `line_modes_past_the_limit.rs`, `program_read.rs`, `grammar_pages.rs` and `ein-corpus`'s `register.rs`; and the
+    sources item 10 names.
+12. **Lane 2's total** (S1f.5.7, S1f.5.10, S1f.5.18 and S1f.5.9, from `dc4c0bdc`):
+    - **The register** on the lane: 158 fixed, 13 open and 1 not wrong, 172 rows (`grep '^status'
+      corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09), where `dc4c0bdc` read 126, 22 and 1, 149 rows: +32 fixed,
+      −9 open, +23 rows. No schema bump: every row lane 2 filed uses schema /16's fields, and /18 is unused.
+    - **The ids used**: rows W50 to W61 (S1f.5.7's W50–W56, S1f.5.10's W57–W58, S1f.5.18's W59, S1f.5.9's W60–W61),
+      W62 to W69 unused; questions Q-M1f.30 to Q-M1f.48 (S1f.5.7's .30–.35, S1f.5.10's .36–.40, S1f.5.18's .41–.44,
+      S1f.5.9's .45–.48), every one defaulted on the user's instruction of 2026-11-09, Q-M1f.49 unused.
+    - **Files the four stages say to re-take rather than splice**: the generated goldens, `corpus_exits.txt`,
+      `corpus_shapes.md5` and `grammar_table.txt` (`EIN_BLESS=1` on the merged tree); the register's header paragraphs
+      and rows; `corpus/corpus.toml`; `examples/README.md`'s witness count and its `ein-bugs/` and `features/` lines;
+      `examples/broken/load/README.md`; `open_questions.md`'s index table; `ein.rs/Cargo.lock` (`ein-ir`'s dev-dependency
+      on `ein-infer`, S1f.5.10); `defined_behaviour.md` (§ 2.2, § 3.2, § 4's table and class paragraph, § 4.1, § 4.3,
+      § 4.6, § 4.9, § 4.13 and § 4.14, numbered after master's); `01_grammar.md`, `02_patterns.md`,
+      `06_reserved_names.md`, `glossary.md`, `03_ein_model.md`, `reserved_engine_strings.md`, `answer_dump.md` and
+      `inference/implementation.md`; M1e2's inventory files, `open_questions.md` (S-18, G-21, Q-M1e2.18, Q-M1e2.26) and
+      S1f.5.5's census; `test_cli`'s held-claims count under `examples/features/`; `alive_invariant.rs`' lists and
+      `detector.rs`' flagged count (master's banked programs move both); and the tests `cli_semantics.rs`,
+      `compile_semantics.rs`, `rule_semantics.rs`, `stdlib_semantics.rs`, `refutation_under_absent.rs`,
+      `fuzz_properties.rs`, `program_read.rs`, `answer_round_trip.rs`, `answer_dump.rs`, `claim_round_trip.rs`,
+      `corpus_cores.rs`, `line_modes_past_the_limit.rs` and `grammar_pages.rs`.

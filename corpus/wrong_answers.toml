@@ -951,6 +951,32 @@
 # T1f.5.9.2. The register reads **148 rows fixed, 23 open and 1 not-wrong**
 # (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
+# **S1f.5.9's T1f.5.9.2 fixed W31's four rows and W34's the same day**: the
+# compiler reads `:match ()`, the empty conjunction, as one vacuous match, so a
+# rule fires once at root, or once per activator fact with its parameters
+# alone bound, and an hrule proposes its conclusion likewise; and `:assert ()`,
+# the empty conclusion, as no template, so it asserts nothing and no `#empty`
+# joins H (`ein_infer::compile`, F12's ruling). `W31/empty-match-false`'s root
+# is dead with the core `[]`, the first empty core in Ein, and its `now` is
+# describe's, which states the core, its status and `refuted by`. Each
+# `[case.fixed]` carried the null id in the fixing commit, `2c79af6d`, and the
+# stage's next commit, T1f.5.9.3, wrote the hash in all five. The register
+# reads **153 rows fixed, 18 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.9's T1f.5.9.4 fixed W60's four rows and W61's the same day**: the
+# loader refuses a relation parameter that can hold `eq` and heads a premise or
+# a conclusion whose arity is not 2, reading which positions can hold `eq` as
+# S1f.5.18's check reads relation names, and a written fact of `eq`, or of its
+# negation, at another arity, one line each, on every command that loads the
+# program (`ein_ir::from_ir`'s `refuse_eq_at_another_arity` and
+# `refuse_eq_facts_of_another_arity`, Q-M1f.46, Q-M1f.47). Each row's `now` is
+# the refusal and states no region. Each `[case.fixed]` carried the null id in
+# the fixing commit, `2a8c998b`, and the stage's next commit, T1f.5.9.5, wrote the
+# hash in all five. The register reads **158 rows fixed, 13 open and 1
+# not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -10644,7 +10670,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46, Q-M1f.36's reading: a stop where a refusal is right is a row). The shape is the one S1f.5.18 found and left unfiled, `ein-cli/tests/program_read.rs`' error past the load; it comes from M1e S1e.2.1's arity check and S1f.5.7's `eq`. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stopped at root with the compiler's arity line"
 
 [case.fixed]
-commit = "0000000"
+commit = "2a8c998b"
 by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
 date   = "2026-11-09"
 
@@ -10679,7 +10705,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): only a commitment holding a candidate `(p …)` derives the activator, so `ein saturate` answers root's fixpoint where describe stops, two commands disagreeing on one program; the row's `now` is describe's stop, and the corpus entry banks all three runs' exits. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where `ein saturate` answered and describe stopped"
 
 [case.fixed]
-commit = "0000000"
+commit = "2a8c998b"
 by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
 date   = "2026-11-09"
 
@@ -10714,7 +10740,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): an hrule's, under its `(solve :hrules …)` activator. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where `ein saturate` answered and describe stopped"
 
 [case.fixed]
-commit = "0000000"
+commit = "2a8c998b"
 by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
 date   = "2026-11-09"
 
@@ -10749,7 +10775,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): a conclusion's. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a :rule r)` (`ein saturate --dump`). Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stored `(eq a :rule r)` and answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "2a8c998b"
 by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
 date   = "2026-11-09"
 
@@ -10788,7 +10814,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09) beside W60, whose conclusion row stores the same fact through a parameter. `(eq)`, `(eq a a a)` and `(not (eq a))` load and are stored the same way. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a)` (`ein saturate --dump`). Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stored `(eq a)` and answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "2a8c998b"
 by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a written fact of `eq`, or of its negation, at any arity but 2, one line per fact (`ein_ir::from_ir`'s `refuse_eq_facts_of_another_arity`, Q-M1f.47)"
 date   = "2026-11-09"
 
