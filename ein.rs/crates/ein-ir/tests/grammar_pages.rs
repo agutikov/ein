@@ -27,7 +27,10 @@
 //!   a value goes, S1f.5.1's after them (T1f.5.1.3): a bare `_` and `?_` in
 //!   each place of S1f.5.1's table and wherever a name or a variable goes, and
 //!   S1f.5.11's last (T1f.5.11.2): a keyword each form does not take, one row
-//!   a form, and a keyword pair in each place in a term.
+//!   a form, and a keyword pair in each place in a term. S1f.5.9's follow
+//!   (T1f.5.9.3): `(and)` and `(or)`, which the grammar refused already, each
+//!   with the note naming the rule and the clause that the ruling on F12 asks
+//!   for, in each place a connective is written.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -1788,6 +1791,38 @@ const TABLE: &[Row] = &[
         &[],
         "(trace (step s1 :derives (q a :k v)))",
     ),
+    // ── S1f.5.9's empty connective: `and` and `or` take one argument or more ──
+    row(
+        "a rule's :match, the empty conjunction",
+        &[],
+        "(rule r () :match (and) :assert (hit a))",
+    ),
+    row(
+        "an hrule's :match, the empty conjunction",
+        &[],
+        "(hrule h () :match (and) :assert (hit a))",
+    ),
+    row(
+        "a rule's :assert, the empty conclusion",
+        &[],
+        "(rule r () :match (p ?x) :assert (and))",
+    ),
+    row(
+        "a conjunction inside a premise",
+        &[],
+        "(rule r () :match (and (p ?x) (and)) :assert (hit ?x))",
+    ),
+    row(
+        "a rule's :match, the empty disjunction",
+        &[],
+        "(rule r () :match (or) :assert (hit a))",
+    ),
+    row(
+        "a query's :goal",
+        &[],
+        "(relation p T) (p a) (query :goal (and))",
+    ),
+    row("a macro's template", &[], "(macro m (?x) (and))"),
 ];
 
 /// A row's program: a rule row's declarations before it.

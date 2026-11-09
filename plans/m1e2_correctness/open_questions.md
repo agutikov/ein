@@ -2645,8 +2645,11 @@ default"*).
 **F12, the same reading, ruled the same day.** An empty `:match` is the empty conjunction, true, so a rule or
 an hrule with `:match ()` fires, once or once per activator, where today it never does; `(and)` stays
 refused, since `and` takes a conjunct (the user: *"1 fire; 2 same; 3 reject (and) while it is the same as ()
-and `and` should have arguments"*). **Not built**:
-[S1f.5.9](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md).
+and `and` should have arguments"*). **Built 2026-11-09** by
+[S1f.5.9](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md): an
+empty `:match` fires once, or once per activator, in rules and hrules (W31, T1f.5.9.2), the empty conclusion asserts
+nothing (W34), and `(and)`'s parse error names the rule and the clause and says the empty conjunction is `()`
+(T1f.5.9.3).
 
 **F13, where the reading stops, ruled the same day.** A conclusion's variable that no premise or parameter
 binds, `(rule r () :match (p ?x) :assert (q ?y))`, logically concludes `(q y)` of every name. The user asked

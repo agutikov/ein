@@ -39,8 +39,19 @@ compiler, where a macro's body does.
 | `not` | 1 | the **grammar** — `Connective ::= '(' 'not' Pattern ')'` in a premise, `Conclusion ::= '(' 'not' Pattern ')'` in a conclusion: one pattern, and no keyword after it |
 | `eq` / `neq` | 2 | the **grammar** — `Guard ::= '(' 'eq' Term Term ')' \| '(' 'neq' Term Term ')'` |
 | `absent` | 1 | the **grammar** — `'(' 'absent' Premise ')'` |
-| `and` / `or` | 1+ | the **grammar** — `Premises ::= Premise \| Premises Premise`, so `(and)` is a parse error and `(and X)` is legal, if degenerate |
+| `and` / `or` | 1+ | the **grammar** — `Premises ::= Premise \| Premises Premise`, so `(and)` and `(or)` are parse errors, each with a note naming the rule and the clause (M1f S1f.5.9), and `(and X)` is legal, if degenerate; the empty conjunction is `:match ()`, below |
 | `false` | 0 | the **grammar** in a conclusion, `'(' 'false' ')'`; as a premise's head `false` is a position word, a pattern over the relation `false` |
+
+**The empty conjunction is `()`**, written as a whole `:match`, and it is
+true: the rule fires once, or once per activator fact, and an hrule proposes
+its conclusion likewise (M1f
+[S1f.5.9](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md), the user's
+ruling of 2026-11-07 on F12). `()` as a whole `:assert` is the empty
+conclusion, which asserts nothing. `(and)` means what `()` means, and is
+refused, since `and` takes a premise; `()` is no premise inside another, the
+grammar writing it only as a whole clause. Until S1f.5.9 `()` was a premise
+over the parser's synthetic `#empty`, which no fact holds, so the rule never
+fired (W31), and `:assert ()` stored a fact under that head (W34).
 
 **Since M1f S1f.5.5's swap** (2026-11-09) each row is a production of
 [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), the grammar

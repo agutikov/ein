@@ -10,7 +10,7 @@ continue with default decisions till the end of the phase"*. **In progress 2026-
 ([its record](#t1f591-record-2026-11-09)), every move listed, W60's four rows and W61 filed, three questions taken by
 default (Q-M1f.45 to Q-M1f.47) (`b6852791`); T1f.5.9.2 ([its record](#t1f592-record-2026-11-09)), the empty conjunction
 fires and the empty conclusion asserts nothing, W31's four rows and W34 fixed, the empty core `∅` on every text surface
-(Q-M1f.48).
+(Q-M1f.48) (`2c79af6d`); T1f.5.9.3 ([its record](#t1f593-record-2026-11-09)), `(and)`'s and `(or)`'s note, the pages.
 **Depends on:** nothing it waits for. [S1f.5.5](s1f.5.5_the_grammar.md)'s grammar refuses `(and)`, and since its swap
 `()` parses only as a whole `:match` or `:assert`. [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) landed
 first, so a rule with `:match ()` and an unbound conclusion variable is refused at load (W57's
@@ -321,6 +321,56 @@ four witnesses and W34's, each as the case's row says, `empty-match-hrule`'s `sa
 five roots writes `()` as a `:match` or an `:assert`, and none has an empty core, so no other read-out moves.
 **Banked**: `corpus_shapes.md5` 98 digests over the five witnesses, none of any other program; `corpus_exits.txt`
 unmoved, every run of the five exiting 0 before and after.
+
+## T1f.5.9.3 record (2026-11-09)
+
+**The refusal** ([Q-M1f.45](../open_questions.md#q-m1f45--the-and-refusals-line-and-or), taken by default). `(and)` was
+refused at the parse already, `ein.y`'s `Premises` and `Conclusions` taking one or more, before the loader reads the
+rule, so the line the stage file asks for is the parse error's: `ein_ir::grammar`'s notes gain one where the error meets
+the `)` of `(and)` or `(or)`, naming the rule or the form and the clause it is written in, as S1f.5.1's `_` and S1f.5.2's
+string carry theirs:
+
+```text
+<file>:3:23: unexpected `)`
+  note: rule 'r''s :match writes (and), the empty conjunction, whose one spelling is () — and takes one premise or more
+  repair: Delete `)`, Delete `:assert`
+```
+
+As a whole `:assert` it is *the empty conclusion, whose one spelling is ()*, *and takes one conclusion or more*; inside
+another connective, where `()` is no premise, it says only that `and` takes one premise (or conclusion) or more; in a
+query's `:goal`, a macro's template or another form, one argument or more; and `(or)` gets *or takes one disjunct or
+more*, reading no meaning into the empty disjunction. The grammar is unchanged.
+
+**The grammar's table** (`ein-ir/tests/grammar_pages.rs`, `tests/golden/grammar_table.txt`) gains seven rows, a section
+for S1f.5.9: `(and)` as a rule's `:match`, an hrule's `:match`, a rule's `:assert` and a premise inside a conjunction;
+`(or)` as a rule's `:match`; and `(and)` as a query's `:goal` and a macro's template; each refused at the parse with its
+note, and no other row moves (`EIN_BLESS=1`, 2026-11-09).
+
+**What moved** (`build/s1f.5.9/xcheck/run_all.sh t3`, this build against `ee3da657`'s, 547 files, 208 s,
+`zebra2-minus-15.ein` compared alone): 541 the same and six moving, T1f.5.9.2's five witnesses as they moved there and
+`s1f.5.5_parser_probe/programs/refused/rules.ein`, whose `(rule r1 () :match (and) …)` parse error gains the note on
+every command's stderr, its exit and stdout unmoved. No corpus program writes `(and)` or `(or)`.
+
+**The pages.** No current kernel page describes an empty `:match` as reading nothing, `:assert ()` as storing a fact,
+`#empty` as a value a run reaches, or `(and)`'s refusal as saying nothing of the empty conjunction:
+
+- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s rule section: an empty `:match` is the empty
+  conjunction, true, fires once or once per activator, an hrule's likewise; `()` its one spelling, `(and)` and `(or)`
+  refused with a note; `:assert ()` asserts nothing; and the dead root's core `[]`.
+- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md): the primitives' table's `and` / `or` row, and a
+  paragraph on the empty conjunction.
+- [`03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md) § 7.1 and its table: two of `()`'s three
+  places have engine semantics; `()` as a value, Q28's question, is a parse error.
+- [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md),
+  [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 2.2 and
+  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md): no run reaches a value `#empty` since W34;
+  `defined_behaviour.md` § 4.13: the rule whose `:match` was empty fires since.
+- The inventory's [F12](../../m1e2_correctness/inventory_2026-11-06_no_owner.md), the census's
+  [W34 finding](s1f.5.5_census.md#findings-outside-the-grammar) and
+  [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations)'s F12 paragraph say what
+  fixed them.
+
+W31's four and W34's `[case.fixed]` blocks carry ``2c79af6d``, T1f.5.9.2's, where that commit wrote the null id.
 
 ## For the merge
 

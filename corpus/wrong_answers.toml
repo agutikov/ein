@@ -8496,7 +8496,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed, it is the first program whose dead root has the empty core, `[]` (Q-M1e2.27), which `ein-infer/tests/corpus_cores.rs` holds then. Fixed by T1f.5.9.2 (2026-11-09): `r` fires once at root and concludes `(false)`, so root is dead and R is empty; root's core is `[]`, the first empty core in Ein, and `refuted by` names `r`. The row's `now` is describe's, which takes root's core; `--minimal`, its `wrong`'s run, takes none (minimum work per question)"
 
 [case.fixed]
-commit = "0000000"
+commit = "2c79af6d"
 by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
 date   = "2026-11-09"
 
@@ -8555,7 +8555,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed by T1f.5.9.2 (2026-11-09): `r` fires once at root, so root holds `(q b :rule r)` beside `(q a)`; H is `(p a)` and `(p b)`, R their cube, and the minimal line root's state"
 
 [case.fixed]
-commit = "0000000"
+commit = "2c79af6d"
 by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
 date   = "2026-11-09"
 
@@ -8610,7 +8610,7 @@ look_at  = ["root", "events fire", "summary"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed by T1f.5.9.2 (2026-11-09): `r` fires once on its activator `(r a)`, so root holds `(hit a :rule r)`; H is `(p a)`, R two states, and the minimal line root's state"
 
 [case.fixed]
-commit = "0000000"
+commit = "2c79af6d"
 by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
 date   = "2026-11-09"
 
@@ -8665,7 +8665,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12 (*\"2 same\"*). Fixed by T1f.5.9.2 (2026-11-09): the hrule's empty `:match` matches once, so it proposes `(q b)`: H is one candidate and R is ∅ and `{(q b)}`; `ein saturate` unmoved, an hrule playing no part in a saturation"
 
 [case.fixed]
-commit = "0000000"
+commit = "2c79af6d"
 by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
 date   = "2026-11-09"
 
@@ -9044,7 +9044,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/assert_empty.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. P1f.5's F12 table said `:assert ()` *loads, adds nothing*, which the census found false (S1f.5.0 corrected the row, and added it to S1f.5.9's case); the paper grammar's default 7 keeps `:assert ()` as the empty conclusion, so the fix is the engine's. The query's classes are two today and one right. Fixed by T1f.5.9.2 (2026-11-09): `:assert ()` compiles to no template, so `r` concludes nothing, `#empty` is no name of the program, H is empty and R {∅}, the query one class; the state file loads, so `answer_round_trip.rs`' and `answer_dump.rs`' `DO_NOT_LOAD`, `claim_round_trip.rs`' `DO_NOT_READ_BACK` and `alive_invariant.rs`' `KNOWN_R1` are empty"
 
 [case.fixed]
-commit = "0000000"
+commit = "2c79af6d"
 by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
 date   = "2026-11-09"
 

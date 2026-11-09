@@ -370,10 +370,16 @@ Candidates:
   hole notation.
 
 Parked at [M1 Q28](../../../../plans/open_questions.md#q28--empty-parens--node-semantics).
-The grammar currently parses `()` as a placeholder atom `#empty`
+The grammar parses `()` as a form over a placeholder head `#empty`
 (see [the grammar](../03-ein-lang/00_ebnf.md)), a name no program can
-write (`@empty` until M1f S1f.5.5's T1f.5.5.8, 2026-11-08);
-no engine semantics are attached.
+write (`@empty` until M1f S1f.5.5's T1f.5.5.8, 2026-11-08), and since
+S1f.5.5's swap only in three places: a whole `:match`, a whole `:assert`
+and an empty name list. **Two of them have engine semantics since M1f
+[S1f.5.9](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)**
+(the user's ruling of 2026-11-07 on F12): `:match ()` is the empty
+conjunction, which is true, so the rule fires once, or once per activator;
+and `:assert ()` is the empty conclusion, which asserts nothing. `()` as a
+value, the question Q28 parks, is a parse error.
 
 ### 7.2 Relation declaration shape — body form and args grouping
 
@@ -464,7 +470,7 @@ implementation phase (P1.2b):
 | claim                                | open                                                          |
 |--------------------------------------|---------------------------------------------------------------|
 | `(rule …)` can produce `(rule …)`     | F5 (rules-as-data); P1.3 matcher needs an extension           |
-| `()` empty paren has engine semantics | Q28 — no decision; grammar parses `#empty` as a no-op atom    |
+| `()` empty paren has engine semantics | Q28 — no decision for a value, which is a parse error; a whole `:match ()` is the empty conjunction and `:assert ()` the empty conclusion since M1f S1f.5.9 |
 | relation-args flat (no inner group)   | §7.2 resolved; grammar/example migration owned by P1.3 R10 |
 | declaration body form (a) is sugar    | Q27 — form (b) ships in M1; form (a) reserved as future sugar |
 

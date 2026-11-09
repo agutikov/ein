@@ -596,6 +596,7 @@
 ## 81. a query's claim (was: expect-or-empty)
     (query :goal (p ?x) :expect (or))
 <row>:1:32: unexpected `)`
+  note: the query's :expect writes (or) — or takes one disjunct or more
   repair: Insert `(`, Insert `model`, Insert `)`
   repair: Insert `(`, Insert `model`, Shift `)`, Insert `)`
   repair: Insert `(`, Insert `model`, Shift `)`, Shift `)`, Insert `)`
@@ -1992,4 +1993,73 @@
   repair: Insert a name, Delete `:k`
   repair: Insert `(`, Delete `:k`
   repair: Delete `:k`, Delete `v`
+
+## 289. a rule's :match, the empty conjunction (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and) :assert (hit a))
+<row>:3:23: unexpected `)`
+  note: rule 'r''s :match writes (and), the empty conjunction, whose one spelling is () — and takes one premise or more
+  repair: Delete `)`, Delete `:assert`
+<row>:3:41: unexpected end of input
+  repair: Insert `)`
+
+## 290. an hrule's :match, the empty conjunction (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (and) :assert (hit a))
+<row>:3:24: unexpected `)`
+  note: hrule 'h''s :match writes (and), the empty conjunction, whose one spelling is () — and takes one premise or more
+  repair: Delete `)`, Delete `:assert`
+<row>:3:42: unexpected end of input
+  repair: Insert `)`
+
+## 291. a rule's :assert, the empty conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (and))
+<row>:3:38: unexpected `)`
+  note: rule 'r''s :assert writes (and), the empty conclusion, whose one spelling is () — and takes one conclusion or more
+  repair: Insert `(`, Insert a name, Insert `)`
+  repair: Insert `(`, Insert a variable, Insert `)`
+  repair: Insert `(`, Insert a variable, Shift `)`, Insert `)`
+  and 3 more repairs
+
+## 292. a conjunction inside a premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (and)) :assert (hit ?x))
+<row>:3:35: unexpected `)`
+  note: rule 'r''s :match writes (and) — and takes one premise or more
+  repair: Delete `)`, Delete `)`, Delete `:assert`
+  repair: Insert `(`, Insert a variable, Insert `)`
+  repair: Insert `(`, Insert a name, Insert `)`
+  and 6 more repairs
+<row>:3:55: unexpected end of input
+  repair: Insert `)`, Insert `)`
+
+## 293. a rule's :match, the empty disjunction (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (or) :assert (hit a))
+<row>:3:22: unexpected `)`
+  note: rule 'r''s :match writes (or) — or takes one disjunct or more
+  repair: Delete `)`, Delete `:assert`
+<row>:3:40: unexpected end of input
+  repair: Insert `)`
+
+## 294. a query's :goal (was: —)
+    (relation p T) (p a) (query :goal (and))
+<row>:1:39: unexpected `)`
+  note: the query's :goal writes (and) — and takes one argument or more
+  repair: Insert `(`, Insert a variable, Insert `)`
+  repair: Insert `(`, Insert a name, Insert `)`
+  repair: Insert `(`, Insert a variable, Shift `)`, Insert `)`
+  and 3 more repairs
+
+## 295. a macro's template (was: —)
+    (macro m (?x) (and))
+<row>:1:19: unexpected `)`
+  note: macro 'm''s template writes (and) — and takes one argument or more
+  repair: Insert a variable
 

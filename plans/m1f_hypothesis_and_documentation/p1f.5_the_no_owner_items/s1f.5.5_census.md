@@ -186,7 +186,9 @@ is in `build/s1f.5.5/probes/` and its output below is today's binary at `ec004a4
   ())` over `(q a)`: `saturate --dump` lists the derived `( :rule r)`, and `solve` answers two states,
   the second `(model (q "@empty") (q a))`, the synthetic head having become one of the program's names.
   [S1f.5.9's case table](s1f.5.9_an_empty_match_fires.md#the-case) says it *loads, adds nothing*. The
-  final grammar keeps `:assert ()` as the empty conclusion, so the fix is the engine's.
+  final grammar keeps `:assert ()` as the empty conclusion, so the fix is the engine's. **Fixed 2026-11-09** by
+  [S1f.5.9](s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2 (W34, filed by S1f.5.0): an empty conclusion compiles to no
+  template and asserts nothing, so the program answers R {∅} and its state files load.
 - **`(absent ())` holds.** `(rule rr () :match (and (p ?x) (absent ())) :assert (hit ?x))` derives
   `(hit a)` and `(hit b)`. Under F12's reading `()` is true and its absence never holds. The final
   grammar refuses `()` anywhere but a whole `:match`, so this one goes with the grammar.

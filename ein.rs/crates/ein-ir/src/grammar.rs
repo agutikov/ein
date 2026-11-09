@@ -400,6 +400,7 @@ fn notes(
                  program, one lattice"
             ));
         }
+        Some(")") => out.extend(empty_connective(lexer, at)),
         _ if found.starts_with(':') && top_form(lexer, at) == Some("config") => {
             if let Some((flag, stage, why)) = RETIRED.iter().find(|(f, _, _)| *f == &found[1..]) {
                 out.push(format!(
@@ -410,6 +411,76 @@ fn notes(
         _ => {}
     }
     out
+}
+
+/// `(and)` and `(or)`, which the grammar refuses, `and` and `or` each taking
+/// one premise or more (M1f S1f.5.9, the user's ruling of 2026-11-07 on F12:
+/// *"reject (and) while it is the same as () and `and` should have
+/// arguments"*): where the `)` closes one, the note names the rule and the
+/// clause it is written in, and says that the empty conjunction a `:match`
+/// holds, or the empty conclusion an `:assert` holds, is written `()`.
+fn empty_connective(
+    lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
+    at: &lrlex::DefaultLexeme<u32>,
+) -> Option<String> {
+    let before: Vec<&str> = lexer
+        .iter()
+        .flatten()
+        .take_while(|l| l.span().start() < at.span().start())
+        .map(|l| lexer.span_str(l.span()))
+        .collect();
+    let [.., "(", word] = before.as_slice() else {
+        return None;
+    };
+    let word = *word;
+    if word != "and" && word != "or" {
+        return None;
+    }
+    // The top-level form, the name a rule binds, and the clause written at
+    // its own depth last.
+    let (mut depth, mut head, mut name, mut clause) = (0usize, None, None, None);
+    for (i, &t) in before.iter().enumerate() {
+        match t {
+            "(" => {
+                depth += 1;
+                if depth == 1 {
+                    head = before.get(i + 1).copied();
+                    name = before.get(i + 2).copied();
+                    clause = None;
+                }
+            }
+            ")" => depth = depth.saturating_sub(1),
+            _ if depth == 1 && t.starts_with(':') => clause = Some(t),
+            _ => {}
+        }
+    }
+    let place = match (head, name, clause) {
+        (Some(h @ ("rule" | "hrule")), Some(n), Some(c)) => format!("{h} '{n}''s {c}"),
+        (Some(h @ ("query" | "solve")), _, Some(c)) => format!("the {h}'s {c}"),
+        (Some("macro"), Some(n), _) => format!("macro '{n}''s template"),
+        _ => "this form".to_string(),
+    };
+    // `()` stands for the whole clause only: `(and)` written as the clause's
+    // value, not inside another connective.
+    let whole = matches!(before.as_slice(), [.., c, "(", _] if Some(*c) == clause);
+    Some(match (word, head, clause, whole) {
+        ("and", Some("rule" | "hrule"), Some(":match"), true) => format!(
+            "{place} writes (and), the empty conjunction, whose one spelling is () — and takes \
+             one premise or more"
+        ),
+        ("and", Some("rule" | "hrule"), Some(":assert"), true) => format!(
+            "{place} writes (and), the empty conclusion, whose one spelling is () — and takes \
+             one conclusion or more"
+        ),
+        ("and", Some("rule" | "hrule"), Some(":match"), false) => {
+            format!("{place} writes (and) — and takes one premise or more")
+        }
+        ("and", Some("rule" | "hrule"), Some(":assert"), false) => {
+            format!("{place} writes (and) — and takes one conclusion or more")
+        }
+        ("and", ..) => format!("{place} writes (and) — and takes one argument or more"),
+        _ => format!("{place} writes (or) — or takes one disjunct or more"),
+    })
 }
 
 /// The head of the top-level form the lexeme `at` stands in, as written:

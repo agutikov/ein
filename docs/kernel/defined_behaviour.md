@@ -194,7 +194,9 @@ canonical decimal, until M1f S1f.5.4), so the text loads back to the same value
 (`grammar::the_printers_symbol_is_the_lexers`, `answer_round_trip.rs`). Since
 M1f S1f.5.5's swap a name a program writes always lexes as one, a string being
 natural-language text and no value (S1f.5.2, § 4.12), so a name printed quoted is
-one the loader made up, `"#empty"`, which does not load back (W34's). Until then
+one the loader made up, which does not load back: `"#empty"` was one, which a run
+reached through `:assert ()` until M1f S1f.5.9 made the empty conclusion assert
+nothing (W34), and no run reaches one since. Until then
 the DOT labels printed a nested fact as its `repr` and a name as its raw text.
 The `repr`:
 
@@ -1246,9 +1248,9 @@ variable where a firing reached it (W57): root's firing stopped every command,
 exit 1, with § 4's `KeyError` line (`ein solve` printing the message alone); a
 firing only a commitment made stopped `ein solve` and `ein oracle` while `ein
 saturate` and `ein solve --minimal` answered; an hrule's template proposed
-nothing, in silence; and a rule that never fired, its `:match` empty, its
-activator never written or its `(absent …)` never holding, loaded and
-answered. **Nothing reaches § 4's retired `KeyError` line since M1f
+nothing, in silence; and a rule that never fired, its `:match` empty (which
+fires since M1f S1f.5.9), its activator never written or its `(absent …)` never
+holding, loaded and answered. **Nothing reaches § 4's retired `KeyError` line since M1f
 S1f.5.18**: the one input S1f.5.10 left, a value parameter its activator binds
 to a nested fact, read only by a conclusion, which the compiler did not seed
 (W33's cause), is bound since (`W58`, Q-M1f.37), and the line and

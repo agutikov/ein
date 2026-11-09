@@ -444,6 +444,25 @@ A relation-polymorphic rule with no matching application facts never
 fires — the parameters are the gate. A non-generic rule needs no
 application fact.
 
+**An empty `:match` is the empty conjunction, which is true** (M1f
+[S1f.5.9](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md), the user's
+ruling of 2026-11-07 on P1f.5's F12: *"1 fire; 2 same; 3 reject (and) while
+it is the same as () and `and` should have arguments"*). `:match ()` holds
+once: a rule fires once at root, or once per activator fact with only its
+parameters bound, `(rule r (?x) :match () :assert (hit ?x))` with `(r a)`
+concluding `(hit a)`, and an hrule's proposes its conclusion likewise. `()`
+is its one spelling: `and` and `or` take one premise or more, so `(and)` and
+`(or)` are parse errors, each with a note naming the rule and the clause it is
+written in and, for `(and)` as a whole `:match` or `:assert`, saying `()` is
+the spelling (Q-M1f.45). **`:assert ()`, the empty conclusion, asserts
+nothing**: an application derives nothing and is no firing, as one whose every
+conclusion holds. A rule whose `:match` is `()` and whose conclusion is
+`(false)` makes root dead, its refutation resting on no fact, so root's core is
+`[]`, the empty set, which the text surfaces print `∅` (Q-M1f.48). Until S1f.5.9 `()` was read as a premise over the parser's
+synthetic `#empty`, which no fact holds, so such a rule never fired and such an
+hrule proposed nothing, in silence (W31), and `:assert ()` stored a fact under
+that head, whose name joined H (W34).
+
 **An activator binds each parameter to its argument, any value**: a name, or a
 nested fact, `(act (f a))` binding `?y` to `(f a)`, which the rule's patterns
 match and its conclusions write as they would a name (M1f
