@@ -59,7 +59,10 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.48](#q-m1f48--how-a-text-surface-writes-the-empty-core) | how a text surface writes the empty core | **defaulted 2026-11-09 (the user's instruction, on the coordinator's note): `∅` on every text surface, where a dead node's core was taken and holds no fact**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2 |
 | [Q-M1f.50](#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag) | where the `heavy_dump` line goes, and which entries carry the flag | **defaulted 2026-11-09 (the user's instruction): (a), 40 000 state files, in the gap above the six `slow` `square-*`; five entries flagged, `features/01_not_and_absent` among them**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.1 |
 | [Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | three more tests whose slow half no CI tier runs | **defaulted 2026-11-09 (the user's instruction): (a), recorded, not scheduled; parked for the phase's close**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
-| [Q-M1f.52](#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve) | the nightly's review bundle and the register's runs that are not a solve | **defaulted 2026-11-09 (the user's instruction): (a), reported, not fixed here; the nightly is red at `utils/review_bundle.py` since `fc53818f`**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
+| [Q-M1f.52](#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve) | the nightly's review bundle and the register's runs that are not a solve | **defaulted 2026-11-09 (the user's instruction): (a), reported, not fixed here; the nightly is red at `utils/review_bundle.py` since `fc53818f`**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3. **Re-opened the same day as (b)**, taken by default on the user's instruction of 2026-11-09: placed as a stage of its own, [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
+| [Q-M1f.53](#q-m1f53--how-the-per-commit-gate-catches-a-register-row-the-bundle-cannot-read) | how the per-commit gate catches a register row the bundle cannot read | **defaulted 2026-11-09 (the user's instruction): (b), the smoke builds a command case and reads every register row with no run**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
+| [Q-M1f.54](#q-m1f54--the-2026-11-06-inventorys-evidence-in-buildreview) | the 2026-11-06 inventory's evidence in `build/review/` | **defaulted 2026-11-09 (the user's instruction): (b), moved intact to `build/inventory-2026-11-06/`, and `build/review/` rebuilt**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
+| [Q-M1f.55](#q-m1f55--a-container-on-a-solves-now) | a `container` on a solve's `now` | **defaulted 2026-11-09 (the user's instruction): (a), the case page runs the container, as `wrong_answers.rs` does**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1281,3 +1284,66 @@ nightly step is red, and on the runner every step after it in `deep-corpus` is s
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** The stage's brief is the round trip, and (b)'s page is a design
 this stage does not own. Re-opening it means (b).
+
+**Re-opened the same day as (b), taken by default on the user's instruction of 2026-11-09.** The coordinator placed it
+as a stage of its own, [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md),
+after S1f.5.13 and the merge of the second lane (T1f.5.M, `a90c452b`) and before S1f.5.14: the index guarded, and a
+register case whose run is not a solve given a case page of its own, which shows the command as run, its exit, its
+stdout and stderr in full, the register's `wrong`, `now` and `right` beside it, and every artefact the run writes,
+linked and drawn where the engine draws one. The merge brought two more rows the index cannot read,
+`W55/goal-neq-free` and `W56/goal-absent`, whose `[case.wrong]` is `ein saturate`'s refusal beside a solve's `now`.
+
+### Q-M1f.53 — How the per-commit gate catches a register row the bundle cannot read
+
+**Raised** 2026-11-09 by [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md),
+on the coordinator's brief: *make the per-commit gate catch this class of break*. The gate's `review_bundle.py
+--smoke` builds `W2/forced-2` and one program, so its index read one row shape, a walk's verdict; the whole bundle,
+the nightly's, is the only run that read W40's to W56's.
+
+- **(a) The smoke builds a command case** beside its solve case, `W40/kb-save` or `W41/saturate-import`, so the index
+  reads a refusal and a command's run. It catches today's shapes, and a shape the next stage files waits for the
+  nightly again.
+- **(b) (a), and every register row read with no run**: the index's register cells, each case page's § 1 table, its
+  fixed callout and its checklist, written from `corpus/wrong_answers.toml` alone for all of its rows, each row named
+  where one fails. A row shape the bundle cannot read fails the commit that files it. It runs no engine, so it costs
+  milliseconds.
+
+**Defaulted 2026-11-09 (the user's instruction): (b).** It is (a) and the class besides, at no measurable cost.
+Re-opening it means dropping the register pass from `cmd_smoke`.
+
+### Q-M1f.54 — The 2026-11-06 inventory's evidence in `build/review/`
+
+**Raised** 2026-11-09 by [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md).
+The coordinator's brief allows `build/review/`, which is gitignored, to be cleared and rebuilt, so that the four dead
+links S1f.5.13 found there go. Those four are in pages the
+[no-owner inventory](../m1e2_correctness/inventory_2026-11-06_no_owner.md) wrote there on 2026-11-06 for F1's two
+files, which `ccd1007f` deleted. The same directory holds the rest of that evidence, which the inventory's text names
+(`build/review/items/<id>.md`): `items/`, `commands/`, `programs/`, `.state/` and its two driver scripts,
+`build_open_items.py` and `gen_no_owner.py`, which are in no commit.
+
+- **(a) Clear it**, as the brief allows: the evidence and the two scripts are gone.
+- **(b) Move the evidence aside intact**, to `build/inventory-2026-11-06/`, at the same depth, so its relative links
+  resolve as before, then clear `build/review/` and rebuild it. The nightly's local link check then reads what a fresh
+  checkout's does, the bundle alone.
+- **(c) Delete F1's three pages** and leave the rest where it is: the link check keeps reading the inventory's pages
+  with the bundle's.
+
+**Defaulted 2026-11-09 (the user's instruction): (b).** Nothing is lost, and the link check reads the bundle alone.
+The inventory is a record and is not edited; [P1f.5's README](p1f.5_the_no_owner_items/README.md) names the new place
+where it names the evidence. The two scripts name `build/review` in their defaults, so re-running one writes there
+again.
+
+### Q-M1f.55 — A `container` on a solve's `now`
+
+**Raised** 2026-11-09 by [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md).
+`W43/einb-dump-answer`'s `now` is a solve with `container = true` (schema `/16`'s field, on a solve since `/19`):
+`wrong_answers.rs` saves the witness with `ein kb save` and runs `ein solve` on the `.einb`. The case page ran it on
+the `.ein`, and said *this build re-ran it*.
+
+- **(a) Run the container**, as `wrong_answers.rs` does: the case page saves the witness first, shows that step, and
+  every invocation of the run reads the `.einb`, the program page showing the witness's source as the program the
+  container stores.
+- **(b) Run the `.ein`**, and say so on the page.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The page then shows the run the register holds, and every
+command the run drives takes a container since S1f.5.5's T13 and S1f.5.12's W43.
