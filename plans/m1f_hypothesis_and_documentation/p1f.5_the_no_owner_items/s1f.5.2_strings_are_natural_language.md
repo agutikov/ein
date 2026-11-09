@@ -15,10 +15,11 @@ it was 2.5.
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
 ([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
-**In progress since 2026-11-09**, on the generated parser: T1f.5.2.5 done, W38 filed and fixed ([its
-record](#t1f525-record-2026-11-09)); T1f.5.2.2 done, the ruling held in every place and the text on every surface
-([its record](#t1f522-record-2026-11-09)); T1f.5.2.3 done, no string a value anywhere in the engine, each arm
-shown unreachable first, no answer and no golden moved ([its record](#t1f523-record-2026-11-09)); T1f.5.2.4 next.
+**Done 2026-11-09**, on the generated parser, in four commits: T1f.5.2.5, W38 filed and fixed (`90774a44`, [its
+record](#t1f525-record-2026-11-09)); T1f.5.2.2, the ruling held in every place and the text on every surface
+(`bbab388a`, [its record](#t1f522-record-2026-11-09)); T1f.5.2.3, no string a value anywhere in the engine, each arm
+shown unreachable first, no answer and no golden moved (`422f61a7`, [its record](#t1f523-record-2026-11-09)); and
+T1f.5.2.4, the pages ([its record](#t1f524-record-2026-11-09)). [§ Acceptance](#acceptance) holds.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal and the escapes are the generated parser's (`STRING` only after `:why`,
@@ -423,6 +424,50 @@ After the swap, beside S1f.5.5's T7.
 `defined_behaviour.md` (the lines at 407 and 547, and the refusal), `glossary.md`,
 `examples/README.md`, and the docs that show a quoted value. Q-M1e2.20 and S1e2.2.18's
 default each say what overrode them. `docs/history/` is a record, and does not change.
+
+### T1f.5.2.4 record, 2026-11-09
+
+**One commit, on `422f61a7`** (T1f.5.2.3), pages only. Each sentence that described a string as a value, or the
+escapes as minimal, says what it was and what it is since S1f.5.2; a record, a dated note and a quotation of an
+engine line are left as written, a quotation getting a bracket that says what the line no longer reaches. S1f.5.5's
+T7 keeps the grammar pages' prose: what this commit restates there is only the string.
+
+**Restated.**
+- `00_ebnf.md`: § 1's head line, where a non-ASCII character may appear (*a string (`TEXT`) or a comment*; names
+  ASCII forever), and **fact 4**, which said unescaping is *minimal* and `"\d"` is `d`: a string is the value of
+  `:why`, `:source` or `:goal-text` alone, holds any character as itself, reads `\n \t \r \" \\` and `\u{…}` naming a
+  Unicode scalar value, and refuses any other escape at its opening quote with a note per escape (T1f.5.2.5, W38),
+  with what it was until the swap.
+- `01_grammar.md`: the `STRING` row, *natural-language text, and nothing else since M1f S1f.5.5's swap*, `(p "1")`
+  refused and `(p 1)` the fact, and the fact's and the rule's string as it was until then (S1e2.2.16, S1e2.2.18,
+  W18); a premise's and a guard's values. `02_patterns.md`: the same two.
+- `defined_behaviour.md`: § 2.2's printer (a name printed quoted is one the loader made up, `"#empty"`, and its test
+  is `grammar::`'s since the swap, where it named `lex::`); § 3.2's W16 history (*were one value … until*); § 4's
+  firing line, whose *string* and *int* are no value, and its *concludes foo* row (an atom or a variable, through a
+  macro); § 4.6's activator (*a name binds a name*); § 4.9's premise row, a string a parse error; and **a new
+  § 4.12**, the refusal of a string as a value or a name, of a variable in a fact, and of an escape a string does not
+  read, each message as the parser prints it, and what each was. T1f.5.2.2 restated § 4.9's two guard rows with the
+  engine line.
+- `glossary.md`'s **Atom**: a string is no atom. `inference/README.md`'s alive-set names and `answer_dump.md`'s
+  printer, each *until M1f S1f.5.5's swap*. `examples/README.md`'s W18 and W28 families: each witness refused at
+  the parse since the swap, at its string.
+- [Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for): **built 2026-11-09**, with
+  G-6 ruled and what S1f.5.2 added; its index row. S1e2.2.18's default fix: **overridden 2026-11-06** by Q-M1e2.23,
+  built at the swap and retired by T1f.5.2.3. Q-M1e2.20 already said what overtook it (T1f.5.4.4: *a string is a
+  value no fact holds (S1f.5.2)*).
+- AGENTS.md, one sentence: S1f.5.2 ran to its end, W38, the table, the Unicode test and no string a value.
+
+**What a page still says about a string as a value, each on purpose** (`grep -rn -i "string" docs/kernel docs/api
+docs/guide`, 2026-11-09): a dated record (§ 3.2's W16 history, § 3.3's *A string, 2026-11-04* note, § 4's W18
+paragraph, `answer_dump.md`'s S1e2.3.8 history), a quotation of an engine line (§ 4's firing line, deleted at T5),
+`repr`'s `str` (§ 2.2, Python's word for a name's text), the grammar snippets' `<STRING>` after `:why`, `:source` and
+`:goal-text`, which T7 rewrites with the rest of `01_grammar.md`'s prose, and the three pages under a superseded
+banner.
+
+**Tests that read an edited page**, run on this tree: `ein-ir`'s `grammar_pages` (`00_ebnf.md`, 5 passed),
+`ein-cli`'s `answer_dump` (`answer_dump.md`, 8 passed) and `world_anchors` (`examples/README.md`, 2 passed); no
+page the register's or the configuration's tests read is edited. `utils/doc_audit.py --links --check` over the tree:
+0 findings.
 
 ### Task T1f.5.2.5 — an escape that names no character (W38)
 

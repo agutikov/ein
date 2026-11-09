@@ -572,6 +572,15 @@ constrained-reasoning research.
   defaulted): 118 fixed, 21 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09). Its T1f.5.4.4
   restated every page that described an `INT` token or an int value as live.
+  **S1f.5.2 ran to its end the same day**: a `\u{…}` that names no character
+  is refused at the parse (W38), the grammar's table refuses a string in every
+  place a value goes, `tests/text/01_unicode.ein` and
+  `ein-cli/tests/natural_language_text.rs` hold natural-language text byte for
+  byte on every surface that carries it, and no string is a value anywhere in
+  the engine
+  ([S1f.5.2](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)):
+  119 fixed, 21 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   T7 follows the language stages' remaining halves.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is

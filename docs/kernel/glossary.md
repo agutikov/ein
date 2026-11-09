@@ -24,6 +24,10 @@ three names, and `(p 1)` and `(p 01)` two facts; Ein has no numbers
 ([Q-M1e2.24](../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)),
 and the int value kind went with S1f.5.4's T1f.5.4.3 (2026-11-09). See
 [`ir/01-ein-graph/03_ein_model.md` §2](ir/01-ein-graph/03_ein_model.md).
+**A string is no atom** since the same swap (S1f.5.2's ruling, the user's of
+2026-11-06): a string is natural-language text, the value of `:why`, `:source`
+or `:goal-text`, and `"Red"` where a name goes is a parse error. An atom is
+ASCII, forever; the text is any Unicode.
 
 ### Object
 A graph node *named by an atom* and representing a concrete entity in

@@ -37,7 +37,9 @@ separate scanner pass.
 ## §1 Lexical grammar
 
 Terminals, over the character stream. Every one is ASCII-anchored: a
-non-ASCII character can appear only inside a `STRING` or a comment.
+non-ASCII character can appear only inside a string (`TEXT`) or a comment.
+Names are ASCII, forever (the user, 2026-11-07); a string is natural-language
+text, and any Unicode (fact 4).
 
 <!-- generated: ein.l -->
 ```text
@@ -144,11 +146,25 @@ Four terminal facts that are load-bearing and easy to lose:
    read, was tried before `INT`: in a fact it stored the name `1..5`, as a
    keyword's value it was dropped, and in a rule the loader refused it (M1e2
    S1e2.2.20).
-4. **`STRING` takes a raw newline but not an escaped one.** `[^"\\]` accepts
-   `#xA`; `'\\' ( Char - #xA )` refuses it: a backslash escapes any
-   character but a newline. Unescaping
-   is *minimal*: `\n` `\t` `\r` map, every other `\X` is `X`, and there is no
-   `\xNN`, no `\uNNNN`, no octal — so `"\d"` is `d`.
+4. **A string is natural-language text, with five escapes and `\u{…}`**
+   (M1f [S1f.5.2](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md),
+   on the user's rulings of 2026-11-06,
+   [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
+   `TEXT` is the value of `:why`, `:source` or `:goal-text` and nothing else
+   (`ein.y`'s `Text`): written anywhere a value goes it is a parse error at the
+   string, with a note saying so, and the name written bare is what it meant.
+   It holds any character but `"` and `\` as itself, a raw newline among them,
+   and reads `\n` `\t` `\r` `\"` `\\` and `\u{…}`, one to six hex digits
+   naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF (`\u{1F993}`
+   is 🦓). Any other escape, `\x41`, `\u0416`, `\u{}`, and a `\u{…}` that names
+   no character, `\u{110000}` or a surrogate, make the string a `BADESCAPE`,
+   refused at its opening quote with a note per escape naming it and its line
+   and column (T1f.5.2.5, W38). A backslash and a newline are no escape: the
+   string is a `BAD` there. **Until S1f.5.5's swap** unescaping was minimal,
+   `\n` `\t` `\r` mapped and every other `\X` was `X`, so `"\d"` was `d` and
+   `"\u{1F993}"` was `u{1F993}`; and a string was also a fact's argument, the
+   name it spells (M1e2 S1e2.2.16), and a rule's (S1e2.2.18). Until T1f.5.2.5
+   a `\u{…}` whose digits named no character read as U+FFFD, in silence.
 
 ## §2 Phrase grammar
 

@@ -120,8 +120,11 @@ as the int. The one printer writes every state, and the list is gone.
 **It loads to the state** (M1e2 S1e2.3.8, P1e2.3's N5). Each fact is written
 by the one printer (`ein_core::text`, `Terms::display`), which prints a value
 as text the loader reads back to the same value: a name bare only where it
-lexes as one `SYMBOL` (`House-1`, `neqw`), and quoted everywhere else (`"x
-y"`, `"not"`, `"?x"`, `"Åsa"`), a nested fact `(rel …)`; since M1f S1f.5.5's
+lexes as one `SYMBOL` (`House-1`, `neqw`), and quoted everywhere else, a
+nested fact `(rel …)`; until M1f S1f.5.5's swap a program could write a name
+that printed quoted (`"x y"`, `"not"`, `"?x"`, `"Åsa"`), and since it a string
+is natural-language text and no value (S1f.5.2), so the quoted case is a name
+the loader made up, `"#empty"`, which does not load back (W34's); since M1f S1f.5.5's
 swap `1`, `07` and `1..5` are names that print bare, and since S1f.5.4 there is
 no int, which printed bare. So loading `models/NN.ein` gives that state's facts **by value**:
 `ein-cli/tests/answer_round_trip.rs` reloads every state file `ein solve

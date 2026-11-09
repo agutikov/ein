@@ -179,7 +179,10 @@ DOT label, it is printed as Ein text since M1e2 S1e2.3.8 (`ein_core::text`): a
 name bare where it lexes as one `SYMBOL` and quoted in `"` elsewhere, `\\` `\"`
 `\n` `\t` `\r` escaped, a nested fact as `(rel …)` (and an integer as its
 canonical decimal, until M1f S1f.5.4), so the text loads back to the same value
-(`lex::the_printers_symbol_is_the_lexers`, `answer_round_trip.rs`). Until then
+(`grammar::the_printers_symbol_is_the_lexers`, `answer_round_trip.rs`). Since
+M1f S1f.5.5's swap a name a program writes always lexes as one, a string being
+natural-language text and no value (S1f.5.2, § 4.12), so a name printed quoted is
+one the loader made up, `"#empty"`, which does not load back (W34's). Until then
 the DOT labels printed a nested fact as its `repr` and a name as its raw text.
 The `repr`:
 
@@ -314,8 +317,9 @@ skipped no activator (W16;
 `examples/ein-bugs/activator-text-int-and-string.ein` and its swapped twin,
 `rule_semantics.rs::an_int_and_a_string_with_one_text_are_two_activators`).
 `compile.rs` called it *the one collision* and kept it. A string and an atom
-with one text are one value, a symbol, so they are one key, as they are one
-fact. A name reaches both halves, since it binds its
+with one text were one value, a symbol, so they were one key, as they were one
+fact, until M1f S1f.5.5's swap made a string natural-language text, no value
+(S1f.5.2, § 4.12). A name reaches both halves, since it binds its
 parameter, as an integer did until M1f S1f.5.4; a nested **`Fact`** binds nothing and reaches the activator half
 alone. Two activators differing only in a nested `Fact` compile to plans equal
 in every field but that list, so the second application concludes what the
@@ -544,10 +548,13 @@ them, in three forms:
   retired the token, § 4.8; a keyword pair inside a nested conclusion until
   S1e2.2.24, § 4.9; no program reaches the line since M1f S1f.5.5's T5
   deleted it, the grammar's `Term` holding a name, a variable or a fact, and
-  the *int* it lists is no value since S1f.5.4);
+  the *string* and the *int* it lists are no value since S1f.5.5's swap,
+  S1f.5.2's and S1f.5.4's rulings);
 - `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
-  a fact (relation argument …), or an (and …) of facts` (an atom, a
-  variable, a string where a fact belongs);
+  a fact (relation argument …), or an (and …) of facts` (an atom or a
+  variable where a fact belongs, through a macro whose body is a bare
+  parameter since M1f S1f.5.5's swap; a string too until the swap, which
+  refuses one there, § 4.12);
 - `rule 's': its :assert writes (?x a b), whose relation ?x its activator
   does not bind — a relation written as a variable is one of the rule's
   parameters, which its activator binds to a name`, which no program the
@@ -833,8 +840,9 @@ which S1f.5.4's T1f.5.4.3 retired with the int kind (2026-11-09), were:
 The first was pinned by `examples/broken/load/relation_parameter_int.ein`,
 the second by `ein-infer/tests/compile_semantics.rs`'s
 `a_relation_parameter_a_rule_binds_to_a_number_is_refused`. An activator of
-the wrong arity activates nothing and is not checked; a string or a range
-binds a name, and a nested fact binds no parameter: since M1e2 S1e2.2.24 one
+the wrong arity activates nothing and is not checked; a name binds a name (a
+string did too until M1f S1f.5.5's swap refused one, § 4.12, and a range until
+S1f.5.3 retired the token), and a nested fact binds no parameter: since M1e2 S1e2.2.24 one
 where a parameter names a relation is refused in both places too, as
 *binds it to the fact (a b)* (§ 4.9). Until then it was read as no binding,
 and the relation it would name matched nothing, in silence.
@@ -963,7 +971,7 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 | `_` as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
 | a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one) |
 | a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name` |
-| a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
+| a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string (a parse error since M1f S1f.5.5's swap, § 4.12) | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 | a keyword pair inside a pattern inside a pattern, in either clause | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
@@ -1053,6 +1061,35 @@ unbound one always has. A relation's `:why` names its slots by position,
 `{?1}`, and is not read. Pinned by `ein-ir/tests/load_semantics.rs`'
 `a_template_naming_a_variable_no_reference_reaches_is_refused` and
 `ein-core`'s `why` unit tests.
+
+### 4.12 A string is natural-language text, and an escape names a character — M1f S1f.5.2
+
+A string is the value of `:why`, `:source` or `:goal-text` and nothing else,
+on the user's ruling of 2026-11-06
+([Q-M1e2.23](../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)),
+which M1f S1f.5.5's swap built into the grammar (2026-11-09, `ein.y`'s `Text`).
+Written anywhere a value or a name goes it is a parse error at the string, and
+a variable written in a fact at the variable (G-6), on every command that reads
+a program; exit 1 (`ein test`: 2):
+
+| input | message |
+|---|---|
+| a string as a value or a name: `(p "1")`, `(rule r () :match (p "a") …)`, `(relation "p" T)`, `(config :lattice-sanity-check "true")` | `<file>:<l>:<c>: unexpected `"1"`: a string`, then `note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare` |
+| a variable in a fact: `(r ?x)` | `<file>:<l>:<c>: unexpected `?x`: a variable` |
+| an escape a string does not read: `\x41`, `\u0416`, `\u{}`, `\u{110000}`, `\u{D800}` | `<file>:<l>:<c>: unexpected `"…"`: a string with an unknown escape`, at the opening quote, then one `note: \u{110000}, at <l>:<c>, is no escape a string reads: a string's escapes are \n, \t, \r, \", \\ and \u{…}, one to six hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF` per escape |
+
+Each is followed by the error's ranked repairs (§ 1). A string reads `\n` `\t`
+`\r` `\"` `\\` and `\u{…}`, and holds any other character as itself, a raw
+newline and any Unicode among them
+([`00_ebnf.md` § 1](ir/03-ein-lang/00_ebnf.md#1-lexical-grammar), fact 4). Until
+the swap a string was also the name it spells wherever a value went (M1e2
+S1e2.2.16 in a fact, S1e2.2.18 in a rule), a variable in a fact the name `?x`,
+and an unknown escape lost its backslash in silence; until S1f.5.2's T1f.5.2.5
+a `\u{…}` naming no character read as U+FFFD (W38). Pinned by `ein-ir`'s
+grammar table (`grammar_pages.rs`, a row per place), `generated_parser.rs`'
+`a_strings_escapes_are_the_rulings`, and `ein-cli/tests/cli_semantics.rs`'
+`a_string_is_natural_language_and_no_value`; the text a program writes reaches
+every surface that carries it byte for byte (`natural_language_text.rs`).
 
 ## 5. The CLI surface
 

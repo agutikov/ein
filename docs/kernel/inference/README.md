@@ -243,8 +243,9 @@ is reported as — is
 [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally).
 In short: [`ein_infer::invariant::program_names`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
 reads the program's names at load (the facts' arguments at any depth, the
-rules' `:match` and `:assert` constants, a string among them as the symbol it
-names since M1e2 S1e2.2.18), and `hypgen::candidate_objects`
+rules' `:match` and `:assert` constants; a string among them as the symbol it
+named from M1e2 S1e2.2.18 until M1f S1f.5.5's swap, which refuses one there),
+and `hypgen::candidate_objects`
 seeds the blind enumerator's objects with them;
 `ein-infer/tests/alive_invariant.rs` names the corpus programs with a name the
 KB's names index does not hold — 46 names on 25 programs (2026-11-04), among

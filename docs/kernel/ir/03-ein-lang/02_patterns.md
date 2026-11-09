@@ -54,8 +54,8 @@ compiler enforce well-formedness against the rules below.
 
 **A premise is a form** — a pattern, a guard, an `(absent …)`, or an
 `(and …)` or `(or …)` of premises. An atom (a run of digits among them, an
-integer until M1f S1f.5.4), a variable, `_` or a string written where a
-premise goes is **refused at load** since M1e2
+integer until M1f S1f.5.4), a variable, `_` or a string (at the parse since
+M1f S1f.5.5's swap, S1f.5.2) written where a premise goes is **refused at load** since M1e2
 S1e2.2.24 (W24, [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
 until then the compiler dropped it in silence, so `:match _` fired with no
 premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. A keyword pair
@@ -134,8 +134,9 @@ registry — `eq` and `neq`, and nothing else."*
 | `(neq ?a ?b)`   | 2     | the bindings resolve to distinct values | matcher `Guard` opcode |
 
 **A guard's argument is a value**: a variable a premise before the guard
-binds (or a rule's parameter), a name or a string; a run of digits is a
-name, an integer until M1f S1f.5.4. A guard is
+binds (or a rule's parameter), or a name; a run of digits is a name, an
+integer until M1f S1f.5.4, and a string was a name too, the one it spells, until
+M1f S1f.5.5's swap refused a string there (S1f.5.2). A guard is
 judged where it is written. `_`, a form, a keyword pair, or a variable no
 premise before it binds is **refused at load** (since M1e2 S1e2.2.24, W24;
 [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
