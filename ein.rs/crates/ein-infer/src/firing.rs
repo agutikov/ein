@@ -129,6 +129,56 @@ pub fn build_fact(
     Ok(terms.intern_fact(rel, &args)?)
 }
 
+/// Build one conclusion as the KB takes it: the fact it states, or for an
+/// `eq` / `neq` conclusion what its definition makes of it.
+///
+/// `eq` and `neq` are relations whose facts are computed and never stored
+/// (M1f S1f.5.7, the user's ruling of 2026-11-07 on G-21), so a rule that
+/// concludes one is checked: one that holds, `(neq a b)`, adds nothing, and is
+/// `None`; one that does not, `(neq a a)` or `(eq a w)`, cannot hold, and is
+/// `(false)`, so its state is a contradiction, explained as one a rule
+/// concluding `(false)` is — its core the premises the firing matched, and
+/// `refuted by` the rule. Until S1f.5.7 the conclusion was stored as an
+/// ordinary fact, so a false one sat in the KB while a guard computed the
+/// opposite, and killed nothing (W30).
+pub fn build_conclusion(
+    terms: &mut Terms,
+    ast: &Ast,
+    plan: &Plan,
+    env: Env<'_>,
+    template: Slot,
+) -> Result<Option<FactId>, FireError> {
+    if let Some((eq, x, y)) = computed(terms, plan, template) {
+        let x = resolve(terms, ast, plan, env, x)?;
+        let y = resolve(terms, ast, plan, env, y)?;
+        if (x == y) == eq {
+            return Ok(None);
+        }
+        let r#false = terms.kernel.r#false;
+        return Ok(Some(terms.intern_fact(r#false, &[])?));
+    }
+    build_fact(terms, ast, plan, env, template).map(Some)
+}
+
+/// A conclusion of a relation whose facts are computed: `(eq x y)`, `(neq x
+/// y)`, and `(not P)` over one of them, which is the other (Q-M1f.31) —
+/// whether it is `eq` the template states, and the two sides.
+pub fn computed(terms: &Terms, plan: &Plan, template: Slot) -> Option<(bool, Slot, Slot)> {
+    let Slot::Nested { rel, slots } = template else {
+        return None;
+    };
+    let k = &terms.kernel;
+    if rel == k.not && slots.len() == 1 {
+        let (eq, x, y) = computed(terms, plan, plan.slots[slots.start as usize])?;
+        return Some((!eq, x, y));
+    }
+    if (rel == k.eq || rel == k.neq) && slots.len() == 2 {
+        let at = slots.start as usize;
+        return Some((rel == k.eq, plan.slots[at], plan.slots[at + 1]));
+    }
+    None
+}
+
 /// The line a conclusion no fact can hold stops the run with, in Ein's
 /// spelling: the rule, and the slot as the program writes it. `within` is the
 /// relation whose argument it is, or `None` for a top-level conclusion.
@@ -228,7 +278,10 @@ pub fn fire(
     let prov = new_prov(terms, plan, env, bindings.clone(), absent, universal);
     let mut derived: Vec<FactId> = Vec::with_capacity(plan.asserts.len());
     for i in 0..plan.asserts.len() {
-        let id = build_fact(terms, ast, plan, env, plan.asserts[i])?;
+        // A true `eq` / `neq` conclusion adds nothing (M1f S1f.5.7, G-21).
+        let Some(id) = build_conclusion(terms, ast, plan, env, plan.asserts[i])? else {
+            continue;
+        };
         let (rel, args) = terms.facts.get(id);
         let args = args.to_vec();
         // Dedup is by `(relation, args)`, so an already-known conclusion is
@@ -236,6 +289,11 @@ pub fn fire(
         // records every fact.
         let added = kb.add_and_index_fact(terms, rel, &args, Some(prov))?;
         derived.push(added.id());
+    }
+    if derived.is_empty() {
+        // Every conclusion an `eq` / `neq` that holds: no firing (the
+        // saturator does not reach here with one, `Saturator::apply`).
+        return Ok(None);
     }
     Ok(Some(Firing {
         rule: plan.rule,

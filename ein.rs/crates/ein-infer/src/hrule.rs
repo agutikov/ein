@@ -121,6 +121,12 @@ impl Hrules {
             if !matches!(template, Slot::Nested { .. }) {
                 continue;
             }
+            // An `eq` / `neq` instance is no hypothesis: a commitment states a
+            // fact a state stores, and a state stores neither, whose facts are
+            // computed (M1f S1f.5.7, Q-M1e2.26; Q-M1f.32, taken by default).
+            if crate::firing::computed(s.terms, plan, template).is_some() {
+                continue;
+            }
             debug_assert!(
                 !reads_negation(plan, s.terms),
                 "an hrule reads `not`, which hypgen's kill cache writes \

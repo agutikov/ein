@@ -127,7 +127,9 @@ fn refuting_conclusion(plan: &Plan, terms: &Terms) -> Option<&'static str> {
         let Slot::Nested { rel, .. } = slot else {
             continue;
         };
-        if *rel == terms.kernel.r#false {
+        // An `eq` / `neq` conclusion, or `(not …)` over one, is `(false)`
+        // where it does not hold (M1f S1f.5.7, G-21, `firing::build_conclusion`).
+        if *rel == terms.kernel.r#false || crate::firing::computed(terms, plan, *slot).is_some() {
             // Direct ⊥ outranks a negative: it is the stronger claim, and the
             // message's advice differs.
             return Some("(false)");

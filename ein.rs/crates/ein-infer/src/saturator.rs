@@ -37,7 +37,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::compile::{CompileError, SharedMemo};
 use crate::engine::Engine;
 use crate::events::{self, Events};
-use crate::firing::{BindingKey, Env, FireError, Firing, build_fact, fire};
+use crate::firing::{BindingKey, Env, FireError, Firing, build_conclusion, fire};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 
@@ -741,7 +741,19 @@ impl Saturator {
         // several). Cheap — a pure walk over each template.
         let mut tentative = Vec::with_capacity(plan.asserts.len());
         for i in 0..plan.asserts.len() {
-            tentative.push(build_fact(s.terms, s.ast, &plan, env, plan.asserts[i])?);
+            // A true `eq` / `neq` conclusion adds nothing, and a false one is
+            // `(false)` (M1f S1f.5.7, G-21).
+            if let Some(f) = build_conclusion(s.terms, s.ast, &plan, env, plan.asserts[i])? {
+                tentative.push(f);
+            }
+        }
+        if tentative.is_empty() {
+            // Every conclusion is an `eq` / `neq` that holds: the application
+            // concludes nothing, as one with no `:assert` does, and is no
+            // firing — a firing derives at least one fact, which the trace
+            // and the event stream read as its primary conclusion.
+            self.engine.fired.insert(key);
+            return Ok(None);
         }
         let all_known = tentative.iter().all(|&f| s.kb.contains(f));
 

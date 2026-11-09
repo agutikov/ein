@@ -167,12 +167,9 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
 /// is named rather than checked, and each must still fail to load, every
 /// state file of its run and for that reason alone: S1f.5.7 (W30) and S1f.5.9
 /// (W34) take their files off the list in the commit that fixes them, with
-/// `answer_round_trip.rs`' copy.
-const DO_NOT_LOAD: [&str; 3] = [
-    "examples/ein-bugs/wrong-answers/assert-empty.ein",
-    "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
-    "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein",
-];
+/// `answer_round_trip.rs`' copy. W30's two left the list at M1f S1f.5.7's
+/// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored.
+const DO_NOT_LOAD: [&str; 1] = ["examples/ein-bugs/wrong-answers/assert-empty.ein"];
 
 /// The programs the per-commit checks run on, with a question each: all of R
 /// on a program with a dead set and on an owing root, a line, a part, the

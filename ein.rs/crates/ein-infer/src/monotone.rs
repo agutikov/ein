@@ -659,9 +659,17 @@ pub fn reads_of(plan: &Plan, terms: &Terms) -> Vec<(Rel, u32)> {
 
 /// Every relation `plan`'s `:assert` writes, `(false)` included — every
 /// conclusion, not only the first (A13 multi-assert).
+///
+/// An `eq` or `neq` conclusion, or `(not …)` over one, writes `(false)` or
+/// nothing: a state stores neither relation, and a false one is a
+/// contradiction (M1f S1f.5.7, G-21, `firing::build_conclusion`).
 pub fn writes_of(plan: &Plan, terms: &Terms) -> Vec<Rel> {
     let mut out = Vec::new();
     for slot in plan.asserts.iter() {
+        if crate::firing::computed(terms, plan, *slot).is_some() {
+            out.push(Rel::pos(terms.kernel.r#false));
+            continue;
+        }
         let Slot::Nested { rel, slots } = slot else {
             continue;
         };

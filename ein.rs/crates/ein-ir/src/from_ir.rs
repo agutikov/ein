@@ -1920,6 +1920,37 @@ fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Resul
     };
     let prov: ProvId = terms.provs.push(prov);
 
+    // **A fact of `eq`, or the negation of one, is checked, never stored**
+    // (M1f S1f.5.7): `eq` and `neq` are relations whose facts are computed,
+    // and no fact changes them (the user's ruling of 2026-11-07 on
+    // Q-M1e2.26). One that holds adds nothing; one that does not is
+    // `(false)`, written where it is, as a rule's false conclusion of one is
+    // (G-21) — read as a conclusion with no premise (Q-M1f.31 and Q-M1f.33,
+    // taken by default on the user's instruction of 2026-11-09). Until then it
+    // was an ordinary fact, which no guard reads (W50, W51). `(neq …)` is no
+    // fact the grammar takes.
+    let mut head_name = head_name;
+    let mut args = args;
+    let computed: Option<(bool, Vec<NodeId>)> = match head_name.as_str() {
+        "eq" => Some((true, args.clone())),
+        "not" => args
+            .iter()
+            .find(|&&a| !matches!(ast.node(a), Node::KwPair { .. }))
+            .filter(|&&a| ast.head_name(a) == Some("eq"))
+            .map(|&a| (false, ast.form_args(a).to_vec())),
+        _ => None,
+    };
+    if let Some((eq, sides)) = computed {
+        let values = fact_args(ast, terms, &sides)?;
+        if values.len() == 2 {
+            if (values[0] == values[1]) == eq {
+                return Ok(());
+            }
+            head_name = "false".to_string();
+            args.retain(|&a| matches!(ast.node(a), Node::KwPair { .. }));
+        }
+    }
+
     // Undeclared relations are auto-created open-world, unless the head is a
     // built-in predicate: predicates dispatch at the matcher level and are not
     // relations, so vivifying one would put a phantom entry in the registry.

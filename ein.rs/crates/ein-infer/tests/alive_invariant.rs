@@ -132,7 +132,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `assert-eq-x-w.ein`, `w` in a concluded `neq` or `eq`, which makes `(p w)`
 /// a candidate; and W31's `empty-match-fact.ein` and `empty-match-hrule.ein`,
 /// `b` in a conclusion no firing reaches. Each owning stage says whether its
-/// fix moves its line.
+/// fix moves its line: S1f.5.7's (T1f.5.7.4) moves neither of W30's, `w`
+/// being a constant of the rule's `:assert`, a name of the program though the
+/// conclusion is checked and never stored.
 ///
 /// Two of the witnesses M1f S1f.5.7 banked on 2026-11-09 (T1f.5.7.1) stand
 /// here: W52's `relvar-eq-assert.ein`, `w` in a conclusion whose relation a

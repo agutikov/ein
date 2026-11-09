@@ -78,12 +78,9 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
 /// named rather than checked, and each must still fail: a state file here
 /// that loads is its row fixed, and S1f.5.7 (W30) and S1f.5.9 (W34) each take
 /// their files off the list in the commit that fixes them, with
-/// `answer_dump.rs`'s copy.
-const DO_NOT_LOAD: [&str; 3] = [
-    "examples/ein-bugs/wrong-answers/assert-empty.ein",
-    "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
-    "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein",
-];
+/// `answer_dump.rs`'s copy. W30's two left the list at M1f S1f.5.7's
+/// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored.
+const DO_NOT_LOAD: [&str; 1] = ["examples/ein-bugs/wrong-answers/assert-empty.ein"];
 
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {

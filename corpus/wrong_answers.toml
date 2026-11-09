@@ -821,6 +821,16 @@
 # reads **131 rows fixed, 27 open and 1 not-wrong** (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
+# **S1f.5.7's T1f.5.7.4 fixed W30's three, W50's, W51's last two, W52's
+# second and W53's the same day** (G-21): a conclusion of `eq` or `neq`, or
+# of `(not (eq …))`, is checked, never stored, a false one `(false)` derived
+# by its rule from the premises it matched; a written fact of `eq` is a
+# conclusion with no premise (Q-M1f.33); an hrule's instance of either is no
+# hypothesis (Q-M1f.32). W30's two `neq` witnesses' state files load since,
+# and leave `DO_NOT_LOAD`. The register reads **139 rows fixed, 19 open and
+# 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+# -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -7285,7 +7295,7 @@ look_at  = ["root", "summary"]
 note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 on S-18 and Q-M1e2.26, *a nested fact as a guard's argument: answered* (*\"yes, keep that default\"*), supersedes Q-M1e2.18 (i)(a), so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05). Fixed again by T1f.5.7.3 (2026-11-09), to its restated right: the program loads, `(f a)` the nested fact it spells, and root holds `(hit-eq (f a))`, `(hit-neq a)`, `(hit-neq b)` and `(hit-neq 1)`"
 
 [case.fixed]
-commit = "0000000"
+commit = "6841faff"
 by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
 date   = "2026-11-09"
 
@@ -7340,7 +7350,7 @@ look_at  = ["root", "summary"]
 note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 (Q-M1e2.26, *premises should follow the same rule*) supersedes Q-M1e2.18 (ii)(a), whose option (b), moving the guard after its binders, the reading contains, so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05). Fixed again by T1f.5.7.3 (2026-11-09), to its restated right: the program loads, each guard judged after `(p ?x)`, and root holds `(hit-eq a)`, `(hit-neq b)`, `(hit-neq 1)` and `(hit-neq (f a))`"
 
 [case.fixed]
-commit = "0000000"
+commit = "6841faff"
 by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
 date   = "2026-11-09"
 
@@ -8199,10 +8209,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein"
-status   = "open"
-open_because = "A rule's conclusion is stored as a fact whatever its relation, so a concluded `neq` sits in the KB while a guard computes `neq` from its definition, and nothing checks it: the false `(neq w w)` at `{(p w)}` kills nothing. S1f.5.7's T1f.5.7.4 checks a concluded `eq` or `neq` against its definition and never stores it (Q-M1e2.26, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from the inventory of 2026-11-06's G-21, its probe `assert_neq.ein`, the program unchanged, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `neq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(neq w a :rule r)` and `{(p w)}` holds `(neq w a)` and `(neq w w)` (`ein solve --dump-answer`'s state files). Neither state file loads, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. S1f.5.7 § Conclusions gave this row's right as *R 2 states*; at `{(p w)}` the rule concludes the false `(neq w w)`, so under the same ruling R is {∅}, as the row's right states: a finding of S1f.5.0, put to the user"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from the inventory of 2026-11-06's G-21, its probe `assert_neq.ein`, the program unchanged, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `neq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(neq w a :rule r)` and `{(p w)}` holds `(neq w a)` and `(neq w w)` (`ein solve --dump-answer`'s state files). Neither state file loads, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. S1f.5.7 § Conclusions gave this row's right as *R 2 states*; at `{(p w)}` the rule concludes the false `(neq w w)`, so under the same ruling R is {∅}, as the row's right states: a finding of S1f.5.0, put to the user. Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): at root `(neq w a)` holds and adds nothing, and at `{(p w)}` `(neq w w)` is `(false)`, so that state is dead and R is {∅}; the state file loads"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8217,10 +8231,10 @@ models    = [["(neq w a)", "(p a)"], ["(neq w a)", "(neq w w)", "(p a)", "(p w)"
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(p w)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored, and a rule's conclusion of one is checked: a true one adds nothing, a false one makes its state a contradiction"
@@ -8235,11 +8249,10 @@ derived   = "At root `r` concludes `(neq w a)`, which holds, so it adds nothing.
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
+k         = 1
 relations = ["p"]
 models    = [
   ["(p a)"],
-  ["(p a)", "(p w)"],
 ]
 
 [[case]]
@@ -8251,10 +8264,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein"
-status   = "open"
-open_because = "A rule's conclusion is stored as a fact whatever its relation, so the false `(neq a a)` sits in root's KB and kills nothing. S1f.5.7's T1f.5.7.4 checks a concluded `eq` or `neq` against its definition and never stores it (Q-M1e2.26, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(neq a a :rule r)` (`ein saturate --dump`). Root's state file does not load, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(neq a a :rule r)` (`ein saturate --dump`). Root's state file does not load, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): `(neq a a)` is `(false)`, derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`; the state file is gone with R"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8269,10 +8286,11 @@ models    = [["(neq a a)", "(p a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored, and a rule's conclusion of one is checked: a true one adds nothing, a false one makes its state a contradiction"
@@ -8285,11 +8303,10 @@ derived   = "At root `r` concludes `(neq a a)`, which is false, so root is a con
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 1
+k         = 0
+empty     = "dead"
 relations = []
-models    = [
-  [],
-]
+models    = []
 
 [[case]]
 id       = "W30/assert-eq-x-w"
@@ -8300,10 +8317,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/assert-eq-x-w.ein"
-status   = "open"
-open_because = "A rule's conclusion is stored as a fact whatever its relation, so the false `(eq a w)` sits in root's KB and kills nothing. S1f.5.7's T1f.5.7.4 checks a concluded `eq` or `neq` against its definition and never stores it (Q-M1e2.26, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w :rule r)` and `{(p w)}` also `(eq w w)` (`ein solve --dump-answer`'s state files, which load)"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w :rule r)` and `{(p w)}` also `(eq w w)` (`ein solve --dump-answer`'s state files, which load). Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): `(eq a w)` is `(false)`, derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8318,10 +8339,11 @@ models    = [["(eq a w)", "(p a)"], ["(eq a w)", "(eq w w)", "(p a)", "(p w)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p w)"]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored, and a rule's conclusion of one is checked: a true one adds nothing, a false one makes its state a contradiction"
@@ -8334,13 +8356,10 @@ derived   = "At root `r` concludes `(eq a w)`, which is false: two different nam
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
+k         = 0
+empty     = "dead"
 relations = ["p"]
-models    = [
-  ["(p a)"],
-  ["(p a)", "(p w)"],
-]
-
+models    = []
 
 # ══ W31 — a rule or hrule whose `:match` is `()` never fires ══
 [[case]]
@@ -9607,10 +9626,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26", "Q-M1f.33"]
 witness  = "examples/ein-bugs/wrong-answers/fact-eq-false.ein"
-status   = "open"
-open_because = "The loader stores a fact of `eq` as an ordinary fact, which no guard reads, so the false `(eq a w)` kills nothing. S1f.5.7's T1f.5.7.4 checks a written `eq` fact as a conclusion with no premise, and never stores it (Q-M1e2.26, G-21; Q-M1f.33, taken by default)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no fact, rule or commitment changes `eq` or `neq`) and G-21. `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w)` (`ein saturate --dump`). `(eq a a)`, the true one, is stored too, and moves no state's `(model …)`; `eq_neq_conclusions.rs` holds that it is not stored. `(neq …)` is no fact the grammar takes"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no fact, rule or commitment changes `eq` or `neq`) and G-21. `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w)` (`ein saturate --dump`). `(eq a a)`, the true one, is stored too, and moves no state's `(model …)`; `eq_neq_conclusions.rs` holds that it is not stored. `(neq …)` is no fact the grammar takes. Fixed by T1f.5.7.4 (2026-11-09): the written `(eq a w)` is `(false)`, given where it stands, so root is dead, `refuted by (given)`, and `w` is no name of the program"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9625,10 +9648,11 @@ models    = [["(p a)"], ["(p a)", "(p w)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p w)"]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07, read by Q-M1f.33 (taken by default on the user's instruction of 2026-11-09): a fact is a conclusion with no premise, so a written fact of `eq` is checked as a rule's conclusion of one is: a true one adds nothing, a false one makes root a contradiction"
@@ -9641,12 +9665,10 @@ derived   = "`a` and `w` are two names, so `(eq a w)` is false, and root is a co
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
-relations = ["p"]
-models    = [
-  ["(p a)"],
-  ["(p a)", "(p w)"],
-]
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
 
 # ══ W51 — `(not (eq …))` is a stored negation, not `(neq …)` ══
 [[case]]
@@ -9663,7 +9685,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). A goal `(not (eq ?x ?y))` is the same compile: it has no row today. `hit` has candidates today and none once root derives its two facts. Fixed by T1f.5.7.3 (2026-11-09): the premise is `(neq ?x ?y)`, the rule fires on `(a, b)` and `(b, a)`, and R is {∅}"
 
 [case.fixed]
-commit = "0000000"
+commit = "6841faff"
 by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
 date   = "2026-11-09"
 
@@ -9713,10 +9735,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26", "Q-M1f.31", "Q-M1f.33"]
 witness  = "examples/ein-bugs/wrong-answers/not-eq-fact.ein"
-status   = "open"
-open_because = "The loader stores a written `(not (eq a a))` as a negation, which no contradiction pairs, so it kills nothing. S1f.5.7's T1f.5.7.4 reads it as `(neq a a)` and checks it as a conclusion with no premise (Q-M1f.31, Q-M1f.33, taken by default)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a))` (`ein saturate --dump`)"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a))` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): the written `(not (eq a a))` is `(neq a a)`, false, so `(false)` stands in its place and root is dead"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9731,10 +9757,11 @@ models    = [["(p a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07, read by Q-M1f.31 and Q-M1f.33 (taken by default on the user's instruction of 2026-11-09): `(not (eq x y))` is `(neq x y)`, and a written one is checked as a conclusion with no premise"
@@ -9747,11 +9774,10 @@ derived   = "`(not (eq a a))` is `(neq a a)`, which is false, so root is a contr
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 1
+k         = 0
+empty     = "dead"
 relations = []
-models    = [
-  [],
-]
+models    = []
 
 [[case]]
 id       = "W51/not-eq-assert"
@@ -9762,10 +9788,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26", "Q-M1f.31"]
 witness  = "examples/ein-bugs/wrong-answers/not-eq-assert.ein"
-status   = "open"
-open_because = "A rule's conclusion `(not (eq ?x ?x))` is stored as a negation, which no contradiction pairs, so the false one at root kills nothing. S1f.5.7's T1f.5.7.4 reads it as `(neq ?x ?x)` and checks it, as W30's (Q-M1f.31, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a) :rule r)` (`ein saturate --dump`)"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a) :rule r)` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): `(not (eq a a))` is `(neq a a)`, `(false)` derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9780,10 +9810,11 @@ models    = [["(p a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07, read by Q-M1f.31 (taken by default on the user's instruction of 2026-11-09): `(not (eq x y))` is `(neq x y)`, and a rule's conclusion of one is checked"
@@ -9796,11 +9827,10 @@ derived   = "At root `r` concludes `(not (eq a a))`, which is `(neq a a)`, false
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 1
+k         = 0
+empty     = "dead"
 relations = []
-models    = [
-  [],
-]
+models    = []
 
 # ══ W52 — a rule parameter its activator binds to `eq` names a relation of stored facts ══
 [[case]]
@@ -9817,7 +9847,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). `neq` is never a name, so no activator binds a parameter to it. Fixed by T1f.5.7.3 (2026-11-09): under `(r eq)` the premise is the `eq` guard, and root holds `(hit a a)` and `(hit b b)`"
 
 [case.fixed]
-commit = "0000000"
+commit = "6841faff"
 by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
 date   = "2026-11-09"
 
@@ -9870,10 +9900,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein"
-status   = "open"
-open_because = "A conclusion whose relation a parameter binds to `eq` is stored as a fact, as W30's are, so the false `(eq a w)` kills nothing. S1f.5.7's T1f.5.7.4 checks it as W30's (G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21): `W30/assert-eq-x-w` with its conclusion's relation written as a parameter. By value: root holds `(eq a w :rule r)` (`ein saturate --dump`)"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21): `W30/assert-eq-x-w` with its conclusion's relation written as a parameter. By value: root holds `(eq a w :rule r)` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): under `(r eq)` the conclusion `(eq a w)` is `(false)`, derived by `r` from `(p a)`, so root is dead"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9888,10 +9922,11 @@ models    = [["(p a)"], ["(p a)", "(p w)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p w)"]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` is the relation of equality wherever it is written, and a rule's conclusion of it is checked"
@@ -9904,12 +9939,10 @@ derived   = "Under `(r eq)` the conclusion is `(eq ?x w)`: at root `r` concludes
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
+k         = 0
+empty     = "dead"
 relations = ["p"]
-models    = [
-  ["(p a)"],
-  ["(p a)", "(p w)"],
-]
+models    = []
 
 # ══ W53 — an hrule's `eq` or `neq` instance is a hypothesis, and a commitment stores it ══
 [[case]]
@@ -9921,10 +9954,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26", "Q-M1f.32"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-eq.ein"
-status   = "open"
-open_because = "The hrule rung proposes every instance of an hrule's conclusion, `(eq …)` among them, and a commitment stores it, the false `(eq a b)` too. S1f.5.7's T1f.5.7.4 proposes none: a state stores no `eq` or `neq` (Q-M1f.32, taken by default)"
+status   = "fixed"
 look_at  = ["answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no commitment changes `eq` or `neq`). The same hrule concluding `neq` proposes the four `neq` facts, whose state files do not load, a fact line `(neq …)` being a parse error; the witness is the `eq` one, whose files load (`answer_round_trip.rs`), and the fix covers both (`firing::computed`)"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no commitment changes `eq` or `neq`). The same hrule concluding `neq` proposes the four `neq` facts, whose state files do not load, a fact line `(neq …)` being a parse error; the witness is the `eq` one, whose files load (`answer_round_trip.rs`), and the fix covers both (`firing::computed`). Fixed by T1f.5.7.4 (2026-11-09): the hrule proposes no `eq` instance, so H is empty and R is {∅}"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9938,10 +9975,10 @@ closes    = ["eq"]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 16
-k_c      = 16
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(eq a a)", "(eq a b)", "(eq b a)", "(eq b b)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "Q-M1e2.26, the user's ruling of 2026-11-07, read by Q-M1f.32 (taken by default on the user's instruction of 2026-11-09): a commitment states facts a state stores, and a state stores no `eq` or `neq`, so an hrule's instance of either is no hypothesis"
@@ -9954,25 +9991,10 @@ derived   = "The hrule proposes nothing, so H is empty and R is {∅}"
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 16
-relations = ["eq"]
+k         = 1
+relations = []
 models    = [
   [],
-  ["(eq a a)"],
-  ["(eq a a)", "(eq a b)"],
-  ["(eq a a)", "(eq a b)", "(eq b a)"],
-  ["(eq a a)", "(eq a b)", "(eq b a)", "(eq b b)"],
-  ["(eq a a)", "(eq a b)", "(eq b b)"],
-  ["(eq a a)", "(eq b a)"],
-  ["(eq a a)", "(eq b a)", "(eq b b)"],
-  ["(eq a a)", "(eq b b)"],
-  ["(eq a b)"],
-  ["(eq a b)", "(eq b a)"],
-  ["(eq a b)", "(eq b a)", "(eq b b)"],
-  ["(eq a b)", "(eq b b)"],
-  ["(eq b a)"],
-  ["(eq b a)", "(eq b b)"],
-  ["(eq b b)"],
 ]
 
 # ══ W54 — a query's class prints a pattern inside a pattern as written ══

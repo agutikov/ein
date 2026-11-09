@@ -16,7 +16,8 @@
 continue with default decisions till the end of the phase"*): T1f.5.7.1 done ([its record](#t1f571-record-2026-11-09)),
 every move listed, ten rows filed (W50 to W55) and W24's two restated, five questions taken by default (Q-M1f.30 to
 Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal (`e5ae6946`); T1f.5.7.3 done
-([its record](#t1f573-record-2026-11-09)), premises.
+([its record](#t1f573-record-2026-11-09)), premises (`6841faff`); T1f.5.7.4 done ([its
+record](#t1f574-record-2026-11-09)), conclusions.
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -431,3 +432,30 @@ the same, 2026-11-09). Banked: `corpus_exits.txt` W24's four cells 1 → 0 and t
 digests of the four witnesses moved, 42 added for W24's two, which load, and 41 for the fixture, none of any other
 program; the register's region blocks for the four, `register_region.rs`'s re-bank. The register reads **131 fixed, 27
 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+## T1f.5.7.4 record (2026-11-09)
+
+**Conclusions** (G-21): a conclusion of `eq` or `neq`, or of `(not (eq …))`, is checked against its definition, never
+stored (`firing::build_conclusion`, `firing::computed`): one that holds adds nothing, and one that does not is
+`(false)`, derived by the rule from the premises its firing matched, so its state is dead, explained as a rule
+concluding `(false)` is, its core those premises and `refuted by` the rule. An application whose every conclusion holds
+derives nothing and is no firing (`Saturator::apply`), as a rule with no `:assert`; the lookahead probes the same
+conclusions (`lookahead::dies_immediately`), and the static readers count such a conclusion as one that may write
+`(false)` (`monotone::writes_of`, `naf_deps`), which moves no corpus program's flag. **A written fact** of `eq` or `(not
+(eq …))` is a conclusion with no premise (Q-M1f.33): a true one is not stored, a false one is `(false)`, written where
+it stands. **An hrule's** `eq` or `neq` instance is no hypothesis (Q-M1f.32).
+
+**Moved**, every one a row: W30's three, `W30/assert-neq-w-x` R {∅} with `{(p w)}` dead, `W30/assert-neq-x-x` and
+`W30/assert-eq-x-w` root dead, core `(p a)`, `refuted by r`; `W50/fact-eq-false` and `W51/not-eq-fact` root dead,
+`refuted by (given)`; `W51/not-eq-assert` and `W52/relvar-eq-assert` root dead, core `(p a)`, `refuted by r`;
+`W53/hrule-eq` H empty, R {∅}. The oracle agrees on each (`explore.rs`). The state files of W30's two `neq` witnesses
+load, so `answer_round_trip.rs`' and `answer_dump.rs`' `DO_NOT_LOAD` name W34's alone, and `claim_round_trip.rs`'
+`DO_NOT_READ_BACK` lets `hrule-eq` go. `alive_invariant.rs`' `SEEDED` is unmoved: `w` stays a name of the program on
+W30's two and `relvar-eq-assert`, a constant a rule's `:assert` writes, and `fact-eq-false`'s `w`, written in a fact
+that is no longer stored, was never a seed (`(eq a w)` is a top-level fact). Two tests in `rule_semantics.rs` hold
+it: a conclusion checked, never stored, with the false one's `(false)` the rule's from its premises, and a written fact.
+Against `dc4c0bdc`'s build every program but these and T1f.5.7.2's and .3's is the same (`build/s1f.5.7/xcheck`, 532
+files, 513 the same, 2026-11-09), the inventory's `assert_neq.ein` among the moved, `W30/assert-neq-w-x`'s program. Banked:
+`corpus_shapes.md5` 147 digests of the eight witnesses, none of any other program, and no exit code; the eight rows'
+region blocks. The register reads **139 fixed, 19 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml |
+sort | uniq -c`, 2026-11-09).

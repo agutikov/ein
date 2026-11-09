@@ -33,12 +33,9 @@ use ein_ir::{Ast, load, parse};
 /// `hrule-eq` joined it on 2026-11-09 (M1f S1f.5.7's T1f.5.7.1): its
 /// commitments state `(eq …)` facts, which its region prints, and a region
 /// claim names no relation the program does not declare, nor, since
-/// T1f.5.7.2, `eq` or `neq`, which a state never stores; T1f.5.7.4 takes it
-/// off when the hrule proposes no `eq` instance.
-const DO_NOT_READ_BACK: [&str; 2] = [
-    "examples/ein-bugs/wrong-answers/assert-empty.ein",
-    "examples/ein-bugs/wrong-answers/hrule-eq.ein",
-];
+/// T1f.5.7.2, `eq` or `neq`, which a state never stores; T1f.5.7.4 took it
+/// off the same day, the hrule proposing no `eq` instance since.
+const DO_NOT_READ_BACK: [&str; 1] = ["examples/ein-bugs/wrong-answers/assert-empty.ein"];
 
 fn loaded(src: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Ast)> {
     let mut ast = Ast::new();

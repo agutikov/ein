@@ -44,7 +44,7 @@ use std::sync::Arc;
 use ein_core::{FactId, Kb, Terms, Value};
 
 use crate::compile::CompileError;
-use crate::firing::{Env, build_fact};
+use crate::firing::{Env, build_conclusion};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Span, Step};
 use crate::saturator::Session;
@@ -124,7 +124,10 @@ impl Lookahead {
                             };
                             // Defensive: a malformed assert template never
                             // kills a candidate.
-                            let Ok(f) = build_fact(s.terms, s.ast, plan, env, template) else {
+                            // A true `eq` / `neq` conclusion adds nothing, and
+                            // a false one is `(false)` (M1f S1f.5.7, G-21).
+                            let Ok(Some(f)) = build_conclusion(s.terms, s.ast, plan, env, template)
+                            else {
                                 continue;
                             };
                             if is_contradiction(s.kb, s.terms, f, h) {

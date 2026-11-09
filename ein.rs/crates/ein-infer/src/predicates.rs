@@ -15,7 +15,8 @@
 //! every value, and `(neq x y)` for every two different values, computed and
 //! never stored, so no fact, rule or commitment changes them. A guard binds a
 //! variable nothing else binds — `eq` to the other side, and `neq`, or `eq`
-//! with both sides free, over [`domain`], the program's names.
+//! with both sides free, over [`domain`], the program's names — and a
+//! conclusion of one is checked, never stored (`firing::build_conclusion`).
 
 use ein_core::terms::Terms;
 use ein_core::{Kb, Symbol, Value};

@@ -1271,3 +1271,97 @@ fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
         BTreeSet::from([&"(in eq a a)".to_string(), &"(in eq b b)".to_string()])
     );
 }
+
+/// **A rule's `eq` or `neq` conclusion is checked, never stored** (the user's
+/// G-21 of 2026-11-07, M1f S1f.5.7): one that holds adds nothing, and one that
+/// does not is `(false)`, derived by the rule from the premises it matched.
+/// Until S1f.5.7 each was stored as an ordinary fact (W30), so a false one sat
+/// in the KB while a guard computed the opposite.
+#[test]
+fn an_eq_or_neq_conclusion_is_checked_never_stored() {
+    let holds = saturate(
+        r#"
+        (relation p T) (relation hit T)
+        (p a) (p b)
+        (rule apart () :match (and (p ?x) (p ?y) (neq ?x ?y)) :assert (and (neq ?x ?y) (hit ?x)))
+        (rule same () :match (p ?x) :assert (eq ?x ?x))
+        "#,
+    );
+    let facts = holds.facts();
+    assert!(
+        !facts
+            .iter()
+            .any(|f| f.starts_with("(eq ") || f.starts_with("(neq ")),
+        "a true conclusion adds nothing: {facts:?}"
+    );
+    assert!(facts.contains("(hit a)") && facts.contains("(hit b)"));
+    assert!(!facts.contains("(false)"));
+    // A firing whose only conclusion holds derives nothing, and is no firing.
+    assert!(
+        !holds.firings.iter().any(|f| holds.rule_of(f) == "same"),
+        "{:?}",
+        holds
+            .firings
+            .iter()
+            .map(|f| holds.rule_of(f))
+            .collect::<Vec<_>>()
+    );
+
+    for (conclusion, premise) in [
+        ("(neq ?x ?x)", "(p a)"),
+        ("(eq ?x w)", "(p a)"),
+        ("(not (eq ?x ?x))", "(p a)"),
+    ] {
+        let run = saturate(&format!(
+            "(relation p T)\n(p a)\n(rule r () :match (p ?x) :assert {conclusion})\n"
+        ));
+        let falses: Vec<&Firing> = run
+            .productive()
+            .into_iter()
+            .filter(|f| run.conclusions_of(f) == ["(false)"])
+            .collect();
+        assert_eq!(falses.len(), 1, "{conclusion}: one firing derives (false)");
+        assert_eq!(run.rule_of(falses[0]), "r");
+        let premises: Vec<String> = falses[0]
+            .premises
+            .iter()
+            .map(|&p| sexpr(&run.terms, p))
+            .collect();
+        assert_eq!(
+            premises,
+            [premise],
+            "{conclusion}: its premises are the match's"
+        );
+        assert!(
+            !run.facts().iter().any(|f| f.starts_with("(eq ")
+                || f.starts_with("(neq ")
+                || f.starts_with("(not (eq ")),
+            "{conclusion}: nothing of eq is stored"
+        );
+    }
+}
+
+/// **A written fact of `eq`, or the negation of one, is a conclusion with no
+/// premise** (Q-M1f.33 and Q-M1f.31, taken by default on the user's
+/// instruction of 2026-11-09): a true one is not stored, and a false one is
+/// `(false)`, written where it stands. Until S1f.5.7 each was stored (W50,
+/// W51).
+#[test]
+fn a_written_eq_fact_is_checked_never_stored() {
+    for (fact, dead) in [
+        ("(eq a a)", false),
+        ("(not (eq a b))", false),
+        ("(eq a w)", true),
+        ("(not (eq a a))", true),
+    ] {
+        let run = saturate(&format!("(relation p T)\n(p a)\n{fact}\n"));
+        let facts = run.facts();
+        assert!(
+            !facts
+                .iter()
+                .any(|f| f.starts_with("(eq ") || f.starts_with("(not (eq ")),
+            "{fact}: not stored: {facts:?}"
+        );
+        assert_eq!(facts.contains("(false)"), dead, "{fact}: {facts:?}");
+    }
+}
