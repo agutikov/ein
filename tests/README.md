@@ -49,6 +49,20 @@ Every claim here holds. Their false twins, and the claims a route cannot
 check, are `ein-infer/tests/claim_semantics.rs`. Corpus group `positive`,
 runs `test` and `saturate`.
 
+## `text/` — natural-language text
+
+M1f [S1f.5.2](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)
+(T1f.5.2.2). A string is natural-language text, written only after `:why`,
+`:source` and `:goal-text`, and it is Unicode with reasonable escapes (the
+user, 2026-11-06). `01_unicode.ein` writes each of the three with Cyrillic,
+CJK, an emoji and every escape a string reads, `\n \t \r \" \\` and `\u{…}`,
+and one `:source` with a raw newline; its claim is about facts, which the text
+does not move. `ein-cli/tests/natural_language_text.rs` holds the text byte for
+byte on every surface that carries it: the read-out and `answer.txt`,
+`--trace`, `ein saturate --dump`, a `--dump-answer` state file, `ein render
+program` and a `.einb`. Corpus group `positive`, runs `test`, `solve` and
+`saturate`.
+
 ## `stdlib/` — the stdlib conformance corpus
 
 M1c [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus).

@@ -20,6 +20,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **defaulted 2026-11-09 (the user's instruction): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
 | [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **defaulted 2026-11-09 (the user's instruction): the section stays, written empty, and a file that holds an int is refused; no format bump**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
 | [Q-M1f.11](#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) | a template reference to a variable no reference can name | **defaulted 2026-11-09 (the user's instruction): the loader refuses it, one line a reference**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5 |
+| [Q-M1f.12](#q-m1f12--which-surfaces-carry-natural-language-text) | which surfaces carry natural-language text | **defaulted 2026-11-09 (the user's instruction): those that carried it before the swap, each held byte for byte; none added**; [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -364,3 +365,25 @@ text `b}`. No corpus program writes such a variable.
 till the end of the phase"*. (a) is what S1f.5.5's T9 review recommended and S1f.5.4's task wrote down: a refusal at
 load says so where (b) prints a wrong sentence in silence, and (c) is the user's to rule. It moves no corpus answer.
 Re-opening it means (b), or (c) if the name rule changes.
+
+### Q-M1f.12 — Which surfaces carry natural-language text
+
+**Raised** 2026-11-09 by [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2,
+from S1f.5.5's T9 review (its § *Unicode on every surface that carries it*), which said *which surfaces should carry
+the text, and the test that holds each byte for byte, is S1f.5.2's T1f.5.2.2*. A string is natural-language text,
+written only after `:why`, `:source` and `:goal-text` (Q-M1e2.23). Before and since the swap, on the T9 probe:
+the read-out and `answer.txt` print a query's `:goal-text` filled; `--trace` a rule's `:why` filled at each firing
+and a premise's `:source`; `ein saturate --dump` each `:source` and each `:goal-text`; a `--dump-answer` state file
+all three, the program re-written; `ein render program` a `:goal-text`; and a `.einb` all three. `ein render rules`,
+`kb`, `constraints` and `lattice`, `--events`, `summary.json` and `answer.json` carry none.
+
+- **(a) The surfaces that carry it today, each held byte for byte, and none added.**
+- **(b) Add the text where a reader might want it**: a relation's `:why` in the read-out, a rule's `:why` in `ein
+  render rules`, a `:goal-text` sentence in `summary.json`, the event stream. Each is a new surface and a schema or
+  golden move.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) moves nothing a user sees, which the stage's acceptance asks of it, and the ruling
+asks that a program *can* emit Unicode text, which (a) holds on every surface that emits any;
+`ein-cli/tests/natural_language_text.rs` holds it. Re-opening it means (b), surface by surface; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md),
+which makes `:why` required, is where a reader of the text is most likely to ask for one.

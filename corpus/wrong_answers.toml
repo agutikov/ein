@@ -731,10 +731,19 @@
 # a `:goal-text` writing one printed `�` (schema /15). One row,
 # `W38/escape-past-unicode`, `fixed`: `ein.l`'s `TEXT` reads a `\u{…}` only
 # where it names a Unicode scalar value, so the string is refused at the
-# parse, as an unknown escape is. Its `[case.fixed]` carries the null id in
-# the fixing commit, and the stage's next commit writes the hash. The
-# register reads **119 rows fixed, 21 open and 1 not-wrong** (`grep '^status'
-# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+# parse, as an unknown escape is. Its `[case.fixed]` carried the null id in
+# the fixing commit, `90774a44`, and the stage's next commit, T1f.5.2.2,
+# wrote the hash. The register reads **119 rows fixed, 21 open and 1
+# not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-09).
+#
+# **S1f.5.2's T1f.5.2.2 restated two W24 rows the same day**, no status
+# moving: the loader's guard line said *a guard compares two values, each a
+# variable a premise before it binds, a name, a string or an integer*, and
+# since S1f.5.5's swap a program can write neither a string nor an integer
+# there, so it says *… binds or a name*. `W24/form-in-guard`'s and
+# `W24/guard-before-binder`'s `now` record the new line, the first's `right`
+# the new sentence, and both keep their fix.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -7174,7 +7183,7 @@ question = ["Q-M1e2.16", "Q-M1e2.18"]
 witness  = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
 status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved"
 
 [case.fixed]
 commit = "3ab9a231"
@@ -7194,12 +7203,12 @@ models    = [["(q a)"]]
 [case.right]
 reading   = "Q-M1e2.18 (i)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
 refused   = true
-derived   = "A guard compares two values, each a variable a premise before it binds, a name, a string or an integer, and a form is none of them. So both guards are refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+derived   = "A guard compares two values, each a variable a premise before it binds or a name, and a form is neither. So both guards are refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
 
 [case.now]
 run     = "solve --minimal"
 line    = "all"
-refused = "kb load error: rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer; rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer"
+refused = "kb load error: rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name; rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name"
 
 [[case]]
 id       = "W24/guard-before-binder"
@@ -7212,7 +7221,7 @@ question = ["Q-M1e2.16", "Q-M1e2.18"]
 witness  = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
 status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build"
+note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved"
 
 [case.fixed]
 commit = "3ab9a231"
@@ -7237,7 +7246,7 @@ derived   = "A guard is judged where it is written, and compares the values the 
 [case.now]
 run     = "solve --minimal"
 line    = "all"
-refused = "kb load error: rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer; rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer"
+refused = "kb load error: rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name; rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name"
 
 [[case]]
 id       = "W24/kwpair-in-guard"
@@ -9005,7 +9014,7 @@ look_at  = ["answer"]
 note     = "Filed and fixed by S1f.5.2 (T1f.5.2.5, 2026-11-09), from S1f.5.5's T4 record (*a `\\u{…}` beyond Unicode's range still reads as U+FFFD (`build_ast.rs`' `unescape`), which no file writes; refusing it is S1f.5.2's after the swap*). The witness is that finding's shape in a query's `:goal-text`, which the read-out prints: `\\u{110000}`, one past 10FFFF, and `\\u{D800}`, a surrogate. No other corpus program writes one (`grep -rnoE '\\\\u\\{[0-9A-Fa-f]+\\}' --include='*.ein' examples tests stdlib corpus plans`, 2026-11-09: the witness alone writes a `\\u{…}` at all). Its twin is the refusal, so no file. Fixed by T1f.5.2.5: `ein.l`'s `TEXT` reads `\\u{…}` only where its digits name a Unicode scalar value, so the string is a `BADESCAPE` token, refused at the parse at its opening quote, with a note naming each escape it does not read and where"
 
 [case.fixed]
-commit = "0000000"
+commit = "90774a44"
 by     = "S1f.5.2 (T1f.5.2.5), on S1f.5.2's ruling (Q-M1e2.23, the user, 2026-11-06: *\"strings literals are unicode with reasonable escape symbols\"*): `ein.l`'s `TEXT` reads a `\\u{…}` only where its one to six hex digits name a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF, so any other is refused at the parse, as an unknown escape is"
 date   = "2026-11-09"
 

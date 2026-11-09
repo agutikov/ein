@@ -231,6 +231,18 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "rende
 note   = "M1e S1e.3.1 — the `Solution` arm's **mixed regime**, measured: one discharged model beside one open state, so `verdict.k` is 1 and `stats.solution_nodes` is 2. `finalise` defined that partition and its own comment said no corpus entry reached it; this one does. It is `CO-M2`'s witness — the table printed the search's node count in that arm until S1e.3.4, so this file would have read `solutions (k) 2` beside `verdict Solution`."
 
 [[entry]]
+path   = "examples/features/14_unicode_text.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render program"]
+note   = "M1f S1f.5.2 (T1f.5.2.2) — natural-language text in Russian, one of the two examples the user asked for (2026-11-06): a three-house puzzle whose `:why`, `:source` and `:goal-text` are Russian and whose names stay ASCII. Two rules solve it by saturation; R is {∅}, and the solve form's claim holds."
+
+[[entry]]
+path   = "examples/features/15_unicode_escapes.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render program"]
+note   = "M1f S1f.5.2 (T1f.5.2.2) — a string's escapes (`\\n \\t \\r \\\" \\\\` and `\\u{…}`) and text in other scripts, the second of the two examples the user asked for (2026-11-06). The read-out prints the `:goal-text` over two lines, `--trace` the rule's `:why` with its emoji, `saturate --dump` each `:source` with its escapes written back."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
@@ -2327,6 +2339,12 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 # renderers draw and no puzzle contains. The manifest digests them under
 # every view and every op. They are syntax probes rather than puzzles — several declare no relation and would
 # not solve — so the runs are the two that read the forms.
+
+[[entry]]
+path   = "tests/text/01_unicode.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate"]
+note   = "M1f S1f.5.2 (T1f.5.2.2) — natural-language text in the three keywords that take a string, each with Cyrillic, CJK, an emoji and every escape a string reads, and a `:source` with a raw newline. `ein-cli/tests/natural_language_text.rs` holds the text byte for byte on every surface that carries it; the claim is about facts, which the text does not move."
 
 [[entry]]
 path   = "tests/region/01_states.ein"

@@ -1,0 +1,35 @@
+;;; NATURAL-LANGUAGE TEXT — Unicode and every escape, in the three keywords that
+;;; take a string. M1f S1f.5.2 (T1f.5.2.2).
+;;;
+;;; A string is natural-language text, written only after `:why`, `:source` and
+;;; `:goal-text` (the user, 2026-11-06, Q-M1e2.23), and it is Unicode with
+;;; reasonable escapes: *"strings literals are unicode with reasonable escape
+;;; symbols, so potentially ein program can emit unicode text, use it in test"*.
+;;; Names stay ASCII: `Ann`, `H1`, `lives`. Each of the three keywords below holds
+;;; Cyrillic, CJK, an emoji and every escape a string reads — `\n`, `\t`, `\r`,
+;;; `\"`, `\\` and `\u{…}` — and a raw newline needs none.
+;;;
+;;; `ein-cli/tests/natural_language_text.rs` holds the text byte for byte on
+;;; every surface that carries it: the read-out's sentence and `answer.txt`,
+;;; `--trace`, `ein saturate --dump`, a `--dump-answer` state file, `ein render
+;;; program` and a `.einb`. The claim below is about facts, which hold as they
+;;; would with no text at all: the text changes no answer.
+;;;
+;;; R is {∅}: root derives `(housed Ann)` and `(housed Bob)`, and the solve form
+;;; leaves nothing to guess.
+
+(relation lives T T :why "Жилец {?1} живёт в доме {?2} — «日本語», 🦓")
+(relation housed T :why "{?1} 有房子 ✅")
+
+(lives Ann H1 :source "Условие (1): Анна живёт в первом доме 🏠\n二行目\tタブ\r\"引用\" \\ \u{1F993}")
+(lives Bob H2 :source "条件 (2): ボブは二番目の家に住んでいる
+— сырая новая строка")
+
+(rule settle () :match (lives ?p ?h) :assert (housed ?p)
+  :why "{?p} 有房子, потому что живёт в {?h} 🦓\nвторая\tстрока\r\"цитата\" \\ \u{416}\u{443}\u{43A}")
+
+(query :goal (housed ?who)
+  :goal-text "Жилец {?who} — 住所 🦓\nстрока\tтаб\r\"цитата\" \\ \u{1F993}"
+  :expect (model (housed Ann) (housed Bob)))
+
+(solve :no-hypothesis (lives housed))

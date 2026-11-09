@@ -721,6 +721,18 @@
 0    examples/features/13_mixed_solution_and_open.ein :: saturate --dump
 0    examples/features/13_mixed_solution_and_open.ein :: solve
 0    examples/features/13_mixed_solution_and_open.ein :: test
+0    examples/features/14_unicode_text.ein :: render program
+0    examples/features/14_unicode_text.ein :: render rules
+0    examples/features/14_unicode_text.ein :: saturate
+0    examples/features/14_unicode_text.ein :: saturate --dump
+0    examples/features/14_unicode_text.ein :: solve
+0    examples/features/14_unicode_text.ein :: test
+0    examples/features/15_unicode_escapes.ein :: render program
+0    examples/features/15_unicode_escapes.ein :: render rules
+0    examples/features/15_unicode_escapes.ein :: saturate
+0    examples/features/15_unicode_escapes.ein :: saturate --dump
+0    examples/features/15_unicode_escapes.ein :: solve
+0    examples/features/15_unicode_escapes.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules
@@ -1379,3 +1391,6 @@
 0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: saturate
 0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: solve
 0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: test
+0    tests/text/01_unicode.ein :: saturate
+0    tests/text/01_unicode.ein :: solve
+0    tests/text/01_unicode.ein :: test

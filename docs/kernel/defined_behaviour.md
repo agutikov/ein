@@ -961,8 +961,8 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 | input | message |
 |---|---|
 | `_` as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
-| a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer` (`the keyword pair :k a` for one) |
-| a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer` |
+| a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one) |
+| a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name` |
 | a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 | a keyword pair inside a pattern inside a pattern, in either clause | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |

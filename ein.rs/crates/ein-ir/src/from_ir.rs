@@ -1161,7 +1161,7 @@ fn refuse_no_fact_holds(
     const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
                            (neq a b), an (absent …), or an (and …) or (or …) of premises";
     const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                         binds, a name, a string or an integer";
+                         binds or a name";
     for f in walk.out {
         errors.push(match f {
             Found::FreeHead(form, h) => format!(
@@ -2004,7 +2004,7 @@ mod tests {
     #[test]
     fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                             binds, a name, a string or an integer";
+                             binds or a name";
         const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
                             parameter its activator binds";
         let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) (relation tag T T)\n\

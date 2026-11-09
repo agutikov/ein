@@ -975,3 +975,337 @@
 <row>:1:8: unexpected `a?x`: a token that is not a name
   repair: Insert a name, Delete `a?x`
 
+## 141. a fact's argument (was: —)
+    (relation p T) (p "1")
+<row>:1:19: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+  repair: Insert `:source`
+
+## 142. a fact's argument (was: —)
+    (relation p T) (p "a")
+<row>:1:19: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+  repair: Insert `:source`
+
+## 143. a fact's argument (was: —)
+    (relation p T) (p "Жук")
+<row>:1:19: unexpected `"Жук"`: a string
+  note: "Жук" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"Жук"`
+  repair: Insert `:source`
+
+## 144. a nested fact's argument (was: —)
+    (relation p T) (p (q "a"))
+<row>:1:22: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 145. a stored negation's argument (was: —)
+    (relation p T) (not (p "a"))
+<row>:1:24: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 146. a fact's argument (was: —)
+    (relation is-a T T) (is-a "x" T)
+<row>:1:27: unexpected `"x"`: a string
+  note: "x" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"x"`
+
+## 147. an activator's argument (was: —)
+    (relation link T) (rule chase (?r) :match (link ?x) :assert (?r ?x)) (chase "link")
+<row>:1:77: unexpected `"link"`: a string
+  note: "link" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"link"`
+  repair: Insert `:source`
+
+## 148. a fact's :rule (was: —)
+    (relation p T) (p a :rule "r")
+<row>:1:27: unexpected `"r"`: a string
+  note: "r" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"r"`
+  repair: Insert a name, Insert `:source`
+
+## 149. a fact's :using (was: —)
+    (relation p T) (p a :rule r :using ((q "b")))
+<row>:1:40: unexpected `"b"`: a string
+  note: "b" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"b"`
+
+## 150. a fact's argument (was: —)
+    (relation r T) (r ?x)
+<row>:1:19: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 151. a nested fact's argument (was: —)
+    (relation p T) (p (q ?x))
+<row>:1:22: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 152. a stored negation's argument (was: —)
+    (relation p T) (not (p ?x))
+<row>:1:24: unexpected `?x`: a variable
+  repair: Delete `?x`
+
+## 153. a relation's name (was: —)
+    (relation "p" T)
+<row>:1:11: unexpected `"p"`: a string
+  note: "p" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"p"`
+
+## 154. a relation's signature (was: —)
+    (relation p "T")
+<row>:1:13: unexpected `"T"`: a string
+  note: "T" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"T"`
+  repair: Insert `:why`
+
+## 155. a rule's name (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule "r" () :match (p ?x) :assert (q ?x))
+<row>:3:7: unexpected `"r"`: a string
+  note: "r" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"r"`
+
+## 156. a rule's parameters (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r ("x") :match (p ?x) :assert (q ?x))
+<row>:3:10: unexpected `"x"`: a string
+  note: "x" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"x"`
+
+## 157. a premise's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match ("p" ?x) :assert (q ?x))
+<row>:3:20: unexpected `"p"`: a string
+  note: "p" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"p"`
+
+## 158. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p "1") :assert (q a))
+<row>:3:22: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+
+## 159. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (box (p "a")) :assert (q a))
+<row>:3:27: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 160. a guard's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (eq ?x "a")) :assert (q ?x))
+<row>:3:38: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"a"`
+  repair: Insert a variable, Delete `"a"`
+
+## 161. a guard's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (neq ?x "1")) :assert (q ?x))
+<row>:3:39: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"1"`
+  repair: Insert a variable, Delete `"1"`
+
+## 162. an absent's premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (absent (p "a")) :assert (q a))
+<row>:3:30: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 163. a stored negation's premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (not (p "a")) :assert (q a))
+<row>:3:27: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 164. a conclusion's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert ("q" ?x))
+<row>:3:35: unexpected `"q"`: a string
+  note: "q" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"q"`
+
+## 165. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (and (q ?x) (not (p "a"))))
+<row>:3:54: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 166. an open conclusion's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (open "q"))
+<row>:3:40: unexpected `"q"`: a string
+  note: "q" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"q"`
+
+## 167. an hrule's premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule g () :match (p "a") :assert (q a))
+<row>:3:23: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 168. an hrule's conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule g () :match (p ?x) :assert (q "a"))
+<row>:3:38: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 169. a rule's keyword (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (q ?x) :priority "5")
+<row>:3:41: unexpected `:priority`: a keyword this form does not take
+  repair: Insert `:why`, Delete `:priority`
+  repair: Delete `:priority`, Delete `"5"`
+
+## 170. a query's goal (was: —)
+    (relation p T) (p a) (query :goal (p "a"))
+<row>:1:38: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 171. a query's :over (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :over "all")
+<row>:1:48: unexpected `"all"`: a string
+  note: "all" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"all"`
+  repair: Insert a name, Insert `:goal-text`
+
+## 172. a claim's fact's argument (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :expect (model (p "1")))
+<row>:1:60: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+
+## 173. a claim's neq (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :expect (model (neq "a" b)))
+<row>:1:62: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"a"`
+  repair: Delete `"a"`, Shift `b`, Insert a name
+
+## 174. a region claim's fact (was: —)
+    (relation p T) (p a) (solve :expect (region (model (p "a"))))
+<row>:1:55: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 175. a solve's relation list (was: —)
+    (relation p T) (solve :no-hypothesis ("p"))
+<row>:1:39: unexpected `"p"`: a string
+  note: "p" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"p"`
+
+## 176. a solve's relation list (was: —)
+    (relation p T) (solve :hypothesis-relations ("p"))
+<row>:1:46: unexpected `"p"`: a string
+  note: "p" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"p"`
+
+## 177. a solve's hrules (was: —)
+    (solve :hrules ("g"))
+<row>:1:17: unexpected `"g"`: a string
+  note: "g" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"g"`
+
+## 178. a solve's hrules (was: —)
+    (solve :hrules (g ("a")))
+<row>:1:20: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"a"`
+
+## 179. a config flag's value (was: —)
+    (config :lattice-sanity-check "true")
+<row>:1:31: unexpected `"true"`: a string
+  note: "true" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert `false`, Delete `"true"`
+  repair: Insert `true`, Delete `"true"`
+
+## 180. a macro's name (was: —)
+    (macro "m" (?a) (p ?a))
+<row>:1:8: unexpected `"m"`: a string
+  note: "m" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"m"`
+
+## 181. a macro's parameters (was: —)
+    (macro m ("a") (p ?a))
+<row>:1:11: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a variable, Delete `"a"`
+
+## 182. a macro's body (was: —)
+    (macro m (?a) (p ?a "b"))
+<row>:1:21: unexpected `"b"`: a string
+  note: "b" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"b"`
+
+## 183. an import's module (was: —)
+    (import "std.macro")
+<row>:1:9: unexpected `"std.macro"`: a string
+  note: "std.macro" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"std.macro"`
+
+## 184. an import's symbols (was: —)
+    (import std.macro :symbols ("forall"))
+<row>:1:29: unexpected `"forall"`: a string
+  note: "forall" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"forall"`
+
+## 185. a trace step's name (was: —)
+    (trace (step "s1" :rule r))
+<row>:1:14: unexpected `"s1"`: a string
+  note: "s1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Insert a name, Delete `"s1"`
+  repair: Insert a name, Insert `:source`
+  repair: Delete `"s1"`, Delete `:rule`
+
+## 186. a trace step's :derives (was: —)
+    (trace (step s1 :derives (p "a")))
+<row>:1:29: unexpected `"a"`: a string
+  note: "a" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"a"`
+
+## 187. a fact's keyword (was: —)
+    (relation p T) (p a :why "text")
+<row>:1:21: unexpected `:why`
+  repair: Insert `:source`, Delete `:why`
+  repair: Delete `:why`, Delete `"text"`
+
+## 188. a relation's keyword (was: —)
+    (relation p T :source "text")
+<row>:1:15: unexpected `:source`
+  repair: Insert `:why`, Delete `:source`
+  repair: Delete `:source`, Delete `"text"`
+
+## 189. a query's keyword (was: —)
+    (relation p T) (query :goal (p ?x) :why "text")
+<row>:1:36: unexpected `:why`
+  repair: Insert `:goal-text`, Delete `:why`
+  repair: Delete `:why`, Delete `"text"`
+

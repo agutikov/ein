@@ -1,0 +1,57 @@
+;;; Ein — feature demo: natural-language text in Russian.
+;;;
+;;; M1f S1f.5.2 (T1f.5.2.2). A string is natural-language text, written only
+;;; after `:why`, `:source` and `:goal-text`, and it is Unicode: the user,
+;;; 2026-11-06, *"potentially ein program can emit unicode text … dont force
+;;; using it in examples but place a couple of examples just to show that
+;;; option"*. This is one of the two. Names stay ASCII forever (`Anna`, `H1`,
+;;; `lives`); the Russian is in the text, which the read-out and `--trace` print
+;;; with the bindings filled.
+;;;
+;;; ── The puzzle ─────────────────────────────────────────────────────────────
+;;;
+;;; Anna, Boris and Vera live in three houses, one each. Anna lives in the
+;;; first; Boris does not live in the third. Who lives where?
+;;;
+;;; Two rules solve it by saturation alone: a house where one person lives is
+;;; no other person's (`taken`), and a person who lives in neither of two houses
+;;; lives in the third (`last-house`). Anna's house is taken from Boris and
+;;; Vera; Boris, out of the first and the third, lives in the second; so the
+;;; second is taken from Vera, who lives in the third.
+;;;
+;;; ── What the engine prints ────────────────────────────────────────────────
+;;;
+;;; `ein solve examples/features/14_unicode_text.ein` describes R, one state,
+;;; and the query's sentence for each person, *“Anna живёт в доме H1”* and the
+;;; two others, a name printed as the program writes it; `--trace T` writes each
+;;; firing's `:why`, *Boris не живёт ни в H1, ни в H3, значит живёт в H2*,
+;;; beside the `:source` of the given facts it rests on. The claim on
+;;; `(solve …)` holds (`ein test`, exit 0).
+
+(relation person Person :why "{?1} — жилец")
+(relation house House :why "{?1} — дом")
+(relation lives Person House :why "{?1} живёт в доме {?2}")
+
+(person Anna) (person Boris) (person Vera)
+(house H1) (house H2) (house H3)
+
+(lives Anna H1 :source "Условие 1: Анна живёт в первом доме.")
+(not (lives Boris H3) :source "Условие 2: Борис не живёт в третьем доме.")
+
+(rule taken ()
+  :match (and (lives ?p ?h) (person ?q) (neq ?p ?q))
+  :assert (not (lives ?q ?h))
+  :why "В доме {?h} живёт {?p}, значит {?q} там не живёт")
+
+(rule last-house ()
+  :match (and (person ?p) (house ?a) (house ?b) (house ?c)
+              (neq ?a ?b) (neq ?a ?c) (neq ?b ?c)
+              (not (lives ?p ?a)) (not (lives ?p ?b)))
+  :assert (lives ?p ?c)
+  :why "{?p} не живёт ни в {?a}, ни в {?b}, значит живёт в {?c}")
+
+(query :goal (lives ?p ?h) :goal-text "{?p} живёт в доме {?h}")
+
+(solve
+  :no-hypothesis (person house lives)
+  :expect (region (model (lives Anna H1) (lives Boris H2) (lives Vera H3))))

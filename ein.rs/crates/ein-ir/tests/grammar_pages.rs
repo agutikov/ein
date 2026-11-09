@@ -1190,6 +1190,206 @@ const TABLE: &[Row] = &[
     ),
     row("an import's alias", &[], "(import std.macro :as a?x)"),
     row("a macro's name", &[], "(macro a?x (?a) (p ?a))"),
+    // ── S1f.5.2's strings: a string is natural-language text, and no value ──
+    // The user, 2026-11-06 (Q-M1e2.23): a string is written only after `:why`,
+    // `:source` or `:goal-text`, *"(p "1") has to be refused"*; and G-6, ruled
+    // the same day: a variable in a fact is refused. Until the swap a string
+    // anywhere else was the name it spells (`(p "a")` was `(p a)`, M1e2
+    // S1e2.2.16 and S1e2.2.18), and a variable in a fact the name `?x`, printed
+    // `"?x"`. Each is refused at the parse, a string with S1f.5.2's note; the
+    // rows above that write a string (a form's head, an import's alias, an
+    // `absent`'s premise, a conclusion's argument, a conclusion's `:source`,
+    // an `:expect`, a claim's fact, a config flag's value) hold it in their
+    // places. The three keywords' text loads and reaches every surface that
+    // carries it, which `ein-cli/tests/natural_language_text.rs` holds, and
+    // every command refuses `(p "1")` with one line and the note, which
+    // `ein-cli/tests/cli_semantics.rs`' `a_string_is_natural_language_and_no_value`
+    // holds.
+    row("a fact's argument", &[], "(relation p T) (p \"1\")"),
+    row("a fact's argument", &[], "(relation p T) (p \"a\")"),
+    row("a fact's argument", &[], "(relation p T) (p \"Жук\")"),
+    row(
+        "a nested fact's argument",
+        &[],
+        "(relation p T) (p (q \"a\"))",
+    ),
+    row(
+        "a stored negation's argument",
+        &[],
+        "(relation p T) (not (p \"a\"))",
+    ),
+    row(
+        "a fact's argument",
+        &[],
+        "(relation is-a T T) (is-a \"x\" T)",
+    ),
+    row(
+        "an activator's argument",
+        &[],
+        "(relation link T) (rule chase (?r) :match (link ?x) :assert (?r ?x)) (chase \"link\")",
+    ),
+    row("a fact's :rule", &[], "(relation p T) (p a :rule \"r\")"),
+    row(
+        "a fact's :using",
+        &[],
+        "(relation p T) (p a :rule r :using ((q \"b\")))",
+    ),
+    row("a fact's argument", &[], "(relation r T) (r ?x)"),
+    row("a nested fact's argument", &[], "(relation p T) (p (q ?x))"),
+    row(
+        "a stored negation's argument",
+        &[],
+        "(relation p T) (not (p ?x))",
+    ),
+    row("a relation's name", &[], "(relation \"p\" T)"),
+    row("a relation's signature", &[], "(relation p \"T\")"),
+    row(
+        "a rule's name",
+        &[],
+        "(rule \"r\" () :match (p ?x) :assert (q ?x))",
+    ),
+    row(
+        "a rule's parameters",
+        &[],
+        "(rule r (\"x\") :match (p ?x) :assert (q ?x))",
+    ),
+    row(
+        "a premise's relation",
+        &[],
+        "(rule r () :match (\"p\" ?x) :assert (q ?x))",
+    ),
+    row(
+        "a premise's argument",
+        &[],
+        "(rule r () :match (p \"1\") :assert (q a))",
+    ),
+    row(
+        "a premise's argument",
+        &[],
+        "(rule r () :match (box (p \"a\")) :assert (q a))",
+    ),
+    row(
+        "a guard's argument",
+        &[],
+        "(rule r () :match (and (p ?x) (eq ?x \"a\")) :assert (q ?x))",
+    ),
+    row(
+        "a guard's argument",
+        &[],
+        "(rule r () :match (and (p ?x) (neq ?x \"1\")) :assert (q ?x))",
+    ),
+    row(
+        "an absent's premise's argument",
+        &[],
+        "(rule r () :match (absent (p \"a\")) :assert (q a))",
+    ),
+    row(
+        "a stored negation's premise",
+        &[],
+        "(rule r () :match (not (p \"a\")) :assert (q a))",
+    ),
+    row(
+        "a conclusion's relation",
+        &[],
+        "(rule r () :match (p ?x) :assert (\"q\" ?x))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (p ?x) :assert (and (q ?x) (not (p \"a\"))))",
+    ),
+    row(
+        "an open conclusion's relation",
+        &[],
+        "(rule r () :match (p ?x) :assert (open \"q\"))",
+    ),
+    row(
+        "an hrule's premise",
+        &[],
+        "(hrule g () :match (p \"a\") :assert (q a))",
+    ),
+    row(
+        "an hrule's conclusion",
+        &[],
+        "(hrule g () :match (p ?x) :assert (q \"a\"))",
+    ),
+    row(
+        "a rule's keyword",
+        &[],
+        "(rule r () :match (p ?x) :assert (q ?x) :priority \"5\")",
+    ),
+    row(
+        "a query's goal",
+        &[],
+        "(relation p T) (p a) (query :goal (p \"a\"))",
+    ),
+    row(
+        "a query's :over",
+        &[],
+        "(relation p T) (p a) (query :goal (p ?x) :over \"all\")",
+    ),
+    row(
+        "a claim's fact's argument",
+        &[],
+        "(relation p T) (p a) (query :goal (p ?x) :expect (model (p \"1\")))",
+    ),
+    row(
+        "a claim's neq",
+        &[],
+        "(relation p T) (p a) (query :goal (p ?x) :expect (model (neq \"a\" b)))",
+    ),
+    row(
+        "a region claim's fact",
+        &[],
+        "(relation p T) (p a) (solve :expect (region (model (p \"a\"))))",
+    ),
+    row(
+        "a solve's relation list",
+        &[],
+        "(relation p T) (solve :no-hypothesis (\"p\"))",
+    ),
+    row(
+        "a solve's relation list",
+        &[],
+        "(relation p T) (solve :hypothesis-relations (\"p\"))",
+    ),
+    row("a solve's hrules", &[], "(solve :hrules (\"g\"))"),
+    row("a solve's hrules", &[], "(solve :hrules (g (\"a\")))"),
+    row(
+        "a config flag's value",
+        &[],
+        "(config :lattice-sanity-check \"true\")",
+    ),
+    row("a macro's name", &[], "(macro \"m\" (?a) (p ?a))"),
+    row("a macro's parameters", &[], "(macro m (\"a\") (p ?a))"),
+    row("a macro's body", &[], "(macro m (?a) (p ?a \"b\"))"),
+    row("an import's module", &[], "(import \"std.macro\")"),
+    row(
+        "an import's symbols",
+        &[],
+        "(import std.macro :symbols (\"forall\"))",
+    ),
+    row("a trace step's name", &[], "(trace (step \"s1\" :rule r))"),
+    row(
+        "a trace step's :derives",
+        &[],
+        "(trace (step s1 :derives (p \"a\")))",
+    ),
+    row(
+        "a fact's keyword",
+        &[],
+        "(relation p T) (p a :why \"text\")",
+    ),
+    row(
+        "a relation's keyword",
+        &[],
+        "(relation p T :source \"text\")",
+    ),
+    row(
+        "a query's keyword",
+        &[],
+        "(relation p T) (query :goal (p ?x) :why \"text\")",
+    ),
 ];
 
 /// A row's program: a rule row's declarations before it.

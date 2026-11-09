@@ -971,6 +971,69 @@ fn a_range_is_the_name_it_spells() {
     }
 }
 
+/// **A string is natural-language text, and no value** — M1f S1f.5.2, on the
+/// user's rulings of 2026-11-06 (Q-M1e2.23: *"I think we should allow use
+/// strings only for NL - :why, :source, and other places where NL text or NL
+/// text template with variables lives"*; *"(p "1") has to be refused"*) and
+/// G-6 (a variable in a fact is refused).
+///
+/// Every command that reads a program refuses a string written as a value,
+/// `(p "1")` first, with one line at the string, `FILE:L:C: unexpected `"1"`:
+/// a string`, and S1f.5.2's note under it; and a variable in a fact, `(r ?x)`,
+/// at the variable. Until S1f.5.5's swap `(p "1")` was the fact `(p 1)` (M1e2
+/// S1e2.2.16) and `(r ?x)` held the name `?x`, printed `"?x"`. The same shapes
+/// in every other place a value goes are rows of the grammar's table
+/// (`ein-ir/tests/grammar_pages.rs`), and the three keywords' text loads and
+/// reaches every surface that carries it
+/// (`ein-cli/tests/natural_language_text.rs`).
+#[test]
+fn a_string_is_natural_language_and_no_value() {
+    let scratch = ein_corpus::Scratch::new("ein-strings-are-text");
+    let note = "a string is natural-language text, written only after :why, :source or \
+                :goal-text: write a name bare";
+    let pre = "(relation p T :why \"{?1} is a p\")\n(relation r T)\n";
+    for (form, col, what, noted) in [
+        ("(p \"1\")", 4, "unexpected `\"1\"`: a string", true),
+        ("(p \"a\")", 4, "unexpected `\"a\"`: a string", true),
+        ("(p (q \"x y\"))", 7, "unexpected `\"x y\"`: a string", true),
+        (
+            "(rule s () :match (p \"1\") :assert (r a))",
+            22,
+            "unexpected `\"1\"`: a string",
+            true,
+        ),
+        (
+            "(query :goal (p \"1\"))",
+            17,
+            "unexpected `\"1\"`: a string",
+            true,
+        ),
+        ("(r ?x)", 4, "unexpected `?x`: a variable", false),
+    ] {
+        let file = scratch.path().join("refused.ein");
+        std::fs::write(&file, format!("{pre}{form}\n")).expect("the program is written");
+        let file = file.to_string_lossy();
+        let want = format!("{file}:3:{col}: {what}");
+        let quoted = what.split('`').nth(1).expect("the token");
+        let want_note = format!("  note: {quoted} is a string, and {note}");
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} on {form}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l == want),
+                "ein {cmd} on {form}: no line {want:?}:\n{}",
+                r.err
+            );
+            assert_eq!(
+                r.err.lines().any(|l| l == want_note),
+                noted,
+                "ein {cmd} on {form}: the note {want_note:?}:\n{}",
+                r.err
+            );
+        }
+    }
+}
+
 /// **A run of digits is a name in every place a name goes** — M1f S1f.5.4's
 /// T1f.5.4.3, on the user's rulings of 2026-11-06 (*"digits are not numbers,
 /// digits are plain names … (p 1) and (p 01) are VERY DIFFERENT facts"*) and
@@ -1076,7 +1139,7 @@ fn a_run_of_digits_is_a_name_in_every_place() {
 #[test]
 fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
     const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                         binds, a name, a string or an integer";
+                         binds or a name";
     let at_the_parse: [(&str, &[&str]); 3] = [
         (
             "wild-in-guard",

@@ -16,7 +16,8 @@ it was 2.5.
 **Status:** specified 2026-11-06 on the user's ruling of that day
 ([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
 **In progress since 2026-11-09**, on the generated parser: T1f.5.2.5 done, W38 filed and fixed ([its
-record](#t1f525-record-2026-11-09)); T1f.5.2.2, T1f.5.2.3 and T1f.5.2.4 next.
+record](#t1f525-record-2026-11-09)); T1f.5.2.2 done, the ruling held in every place and the text on every surface
+([its record](#t1f522-record-2026-11-09)); T1f.5.2.3 and T1f.5.2.4 next.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal and the escapes are the generated parser's (`STRING` only after `:why`,
@@ -230,6 +231,97 @@ The refusal, the escapes, the printer, the fixtures and the register rows **move
 2026-11-08** ([T1f.5.5.4](s1f.5.5_the_grammar.md#task-t1f554--the-swap)). What is left, after the swap: a test per
 position, a string refused in each and `(p "1")` by name, as rows of the grammar's table S1f.5.5's T5 builds; then
 the Unicode test and the two examples, as [§ What it changes](#what-it-changes) says.
+
+**Named before it moves, 2026-11-09** (`cargo test --workspace --no-fail-fast` on the change, unblessed, 949 tests,
+three failing, `build/s1f.5.2/t2-discover.log`, and the grammar's table, run alone first):
+- `ein-ir/tests/golden/grammar_table.txt`: 49 rows appended after the 141 S1f.5.4 left, so none renumbers;
+- `ein-cli/tests/golden/corpus_exits.txt`: the three new programs' 15 cells, each exit 0;
+- `ein-render/tests/golden/corpus_shapes.md5`: the three new programs' rows, and the rows of the two W24 witnesses
+  whose views print the guard line (`form-in-guard`, `guard-before-binder`), which is restated (below);
+- `ein-cli/tests/test_cli.rs`' `a_query_with_no_expectation_is_never_solved`, which counts the claims `ein test
+  examples/features` holds: 4 → 6, the two examples;
+- `corpus/wrong_answers.toml`: `W24/form-in-guard`'s and `W24/guard-before-binder`'s `now` (the guard line) and the
+  first's `right`, restated with no status moving, and W38's `[case.fixed]`, which names `90774a44`;
+- `defined_behaviour.md` § 4.9's two rows that quote the guard line.
+No answer of any program moves.
+
+### T1f.5.2.2 record, 2026-11-09
+
+**One commit, on `90774a44`** (T1f.5.2.5). The ruling is held in every place a value goes, and the text it keeps is
+held on every surface that carries it.
+
+**The grammar's table** (`ein-ir/tests/grammar_pages.rs`), 49 rows at its end (141 → 190; `cargo test -p ein-ir
+--test grammar_pages`, 2026-11-09), each refused at the parse at the place it names: a string as a fact's argument,
+`(p "1")`, `(p "a")` and `(p "Жук")` first, a nested fact's, a stored negation's, an `is-a` fact's, an activator's
+(`(chase "link")`), a fact's `:rule` and `:using`; a variable in a fact, nested or negated (G-6); a string as a
+relation's name or signature, a rule's name or parameter, a premise's relation or argument, a pattern inside a
+premise, a guard's argument (`eq`, `neq`), an `absent`'s or a stored negation's premise, a conclusion's relation or
+argument, an `(open …)`'s relation, an hrule's premise and conclusion; a query's goal and `:over`, a claim's fact
+and `neq`, a region claim's fact, a solve's relation lists and `:hrules`, a config flag's value; a macro's name,
+parameters and body, an import's module and symbols, a trace step's name and `:derives`; and a text keyword where its
+form takes none (`:why` on a fact or a query, `:source` on a relation), refused at the keyword. `:priority "5"` is
+refused at `:priority`, which no rule takes since S1f.5.15. Eight rows above them already wrote a string (a form's
+head, an import's alias, an `absent`'s premise, a conclusion's argument and `:source`, `:expect`, a claim's fact, a
+config flag's value).
+
+**Every command, `(p "1")` by name** (`cli_semantics::a_string_is_natural_language_and_no_value`): `ein saturate`,
+`solve` and `oracle` exit 1 and `ein test` 2 on `(p "1")`, `(p "a")`, `(p (q "x y"))`, a rule's `:match (p "1")` and
+a query's goal `(p "1")`, each with the line at the string, *unexpected `"1"`: a string*, and S1f.5.2's note; and on
+`(r ?x)`, at the variable, with no note.
+
+**The guard line, restated** (the coordinator's brief: *"…a name, a string or an integer". It is now false twice
+over*). `from_ir`'s `GUARD` says *a guard compares two values, each a variable a premise before it binds or a name*,
+a program writing neither a string nor an integer there since the swap. Its two tests (`from_ir`'s and
+`cli_semantics`' `a_rule_shape_that_reads_nothing_is_refused_at_load`), `defined_behaviour.md` § 4.9's two rows,
+and the register's `W24/form-in-guard` (`now`, `right`) and `W24/guard-before-binder` (`now`) say it, each row's
+note saying why and keeping its fix, as T4 restated its 23 rows; the register's header says so.
+
+**Unicode, held byte for byte** (`ein-cli/tests/natural_language_text.rs`, seven tests). `tests/text/01_unicode.ein`
+writes a relation's and a rule's `:why`, two `:source`s and a `:goal-text`, each with Cyrillic, CJK and an emoji, the
+five escapes and `\u{…}`, one `:source` with a raw newline; its claim holds. The test holds: the parser reads the six
+texts as written; the read-out and `answer.txt` print the `:goal-text` filled for each row, `“…”`; `--trace` prints
+the rule's `:why` filled at each firing and each premise's `:source`; `ein saturate --dump` each `:source` and the
+`:goal-text` quoted (`ein_core::text::quote`); a state file writes all six quoted and reads back to them; `ein render
+program` draws the `:goal-text` in the query's label; and `ein solve` of a `.einb` prints what `ein solve` of the
+`.ein` does. Which surfaces carry a text is what they did before the swap, none added
+([Q-M1f.12](../open_questions.md#q-m1f12--which-surfaces-carry-natural-language-text), defaulted).
+`tests/README.md` has a `text/` section.
+
+**The two examples**, each with a corpus entry and a clause in `examples/README.md`'s `features/` line, and no other
+example changed: `examples/features/14_unicode_text.ein`, a three-house puzzle whose `:why`, `:source` and
+`:goal-text` are Russian, solved by two rules in saturation, R {∅} and its solve claim held (*“Anna живёт в доме
+H1”*); and `examples/features/15_unicode_escapes.ein`, the escapes and text in Spanish, Japanese and Greek, the
+`:goal-text` printed over two lines with 👋 and 🌍, its query claim held. `ein test examples/features` holds six
+claims, where it held four (`test_cli`'s count, restated).
+
+**The register's id.** W38's `[case.fixed]` names `90774a44`, where T1f.5.2.5 left the null id, and the header's
+paragraph says so. The register reads **119 rows fixed, 21 open and 1 not-wrong** (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**What moved, as named above, and nothing else.** `grammar_table.txt` (`EIN_BLESS=1 cargo test -p ein-ir --test
+grammar_pages`), `corpus_exits.txt` (the three programs' 15 cells, `-p ein-cli --test corpus_cli
+every_cell_reproduces`) and `corpus_shapes.md5` (123 new rows, 41 a program, and 14 moved, the two W24 witnesses'
+views of their load error, `-p ein-render --test corpus_shapes`). Every `.ein` under the five roots (515, `find
+examples tests stdlib corpus plans -name '*.ein' | wc -l`, 2026-11-09) through `90774a44`'s release build and this
+commit's (`build/s1f.5.2/xcheck/`), on `solve --json-summary -H --dump-answer`, `saturate --dump` and `test`, and
+T12's 2 000 mutants through `saturate`, timings masked (91 s, 2026-11-09): **513 programs the same on every
+command**, and the two W24 witnesses, whose stderr differs by the guard line alone on each of the three; and 1 993
+mutants the same (1 047 accepted, 767 refused with repairs, 179 without) and seven, each a mutant of a W24 witness,
+differing by the guard line alone. The release binary moved nothing else: the three new programs answer alike on
+both, the build of `90774a44` reading every text as this one does.
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end of
+the phase"*):
+- **The surfaces that carry text are today's**, held byte for byte, none added (Q-M1f.12 (a)).
+- **The guard line's restatement**, *each a variable a premise before it binds or a name*: it drops the two kinds no
+  program can write and adds nothing a later stage has not ruled (whether a fact is a guard's value is S1f.5.7's).
+- **The test program under `tests/text/`**, a third directory beside `region/` and `stdlib/`, since it tests the
+  language and not a stdlib rule; and **every escape in each of the three keywords**, `\r` among them, which the
+  read-out and the trace print as the character, as they print any text.
+
+**The gate.** On this commit, 15 min 52 s (`build/gate-s1f.5.2-T2.log`), green: 949 tests and every static check,
+T1f.5.2.5's 941 and eight: `cli_semantics`' one and `natural_language_text`'s seven; the table's 49 rows are rows of
+one test.
 
 ### Task T1f.5.2.3 — what only a string used
 

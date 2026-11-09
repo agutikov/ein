@@ -1,0 +1,45 @@
+;;; Ein — feature demo: a string's escapes, and text in other scripts.
+;;;
+;;; M1f S1f.5.2 (T1f.5.2.2), the second of the two examples the user asked for
+;;; (2026-11-06: *"strings literals are unicode with reasonable escape symbols
+;;; … place a couple of examples just to show that option"*); the first,
+;;; `14_unicode_text.ein`, writes Russian. A string is natural-language text,
+;;; written only after `:why`, `:source` and `:goal-text`. It holds any Unicode
+;;; character as itself, and reads these escapes:
+;;;
+;;;   \n  a newline        \t  a tab        \r  a carriage return
+;;;   \"  a double quote   \\  a backslash
+;;;   \u{…}  one to six hex digits naming a Unicode scalar value, for a
+;;;          character awkward to type: \u{1F993} is 🦓, \u{3B1} is α
+;;;
+;;; Any other escape is refused at the parse, `\x41` and `Ж` among them, and
+;;; so is a `\u{…}` that names no character, one past 10FFFF or a surrogate
+;;; (W38). A raw newline in a string is a newline and needs no escape. Names
+;;; stay ASCII forever: the greetings below are text, and the people are `Ana`,
+;;; `Kenji` and `Nikos`.
+;;;
+;;; ── What the engine prints ────────────────────────────────────────────────
+;;;
+;;; `ein solve examples/features/15_unicode_escapes.ein` prints, for each
+;;; person, the query's sentence over two lines, the `\n` a line break and
+;;; `\u{1F44B}` the waving hand 👋; `ein saturate --dump` prints each fact's
+;;; `:source` quoted, every escape written back as one, and `--trace T` the
+;;; rule's `:why` at each firing. The claim on `(query …)` holds (`ein test`,
+;;; exit 0).
+
+(relation speaks Person Language :why "{?1} speaks {?2}")
+(relation greets Person Language :why "{?1} greets in {?2}")
+
+(speaks Ana Spanish :source "Ana: «¡Hola!» — \"hola\" is Spanish for hello")
+(speaks Kenji Japanese :source "Kenji: 「こんにちは」\tkonnichiwa")
+(speaks Nikos Greek :source "Nikos: «Γειά σου» — \u{3B3}\u{3B5}\u{3B9}\u{3AC}, a raw
+second line, and a backslash: \\")
+
+(rule greet () :match (speaks ?p ?l) :assert (greets ?p ?l)
+  :why "{?p} speaks {?l}, so {?p} greets in {?l} \u{1F44B}")
+
+(query :goal (greets ?p ?l)
+  :goal-text "{?p} says hello in {?l}\n\t\u{1F44B} \u{1F30D}"
+  :expect (model (greets Ana Spanish) (greets Kenji Japanese) (greets Nikos Greek)))
+
+(solve :no-hypothesis (speaks greets))
