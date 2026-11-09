@@ -161,7 +161,8 @@ pub(super) fn var(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
 }
 
 /// A string, stored unescaped. The lexer let through only the escapes
-/// S1f.5.2 names: `\n \t \r \" \\` and `\u{…}`.
+/// S1f.5.2 names: `\n \t \r \" \\` and `\u{…}` naming a Unicode scalar
+/// value. A token recovery inserted has no text, and is the empty string.
 pub(super) fn text(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
     let l = lexeme(t);
     let at = loc(p, l);
@@ -172,8 +173,11 @@ pub(super) fn text(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
     b.ast.push(Node::Str(s), at)
 }
 
-/// A string's body with its escapes read. `\u{…}` beyond Unicode's range is
-/// U+FFFD here; refusing it with a line is S1f.5.2's, at the swap.
+/// A string's body with its escapes read: the body of a `TEXT` token, whose
+/// rule in `ein.l` admits no other escape and no `\u{…}` that names no
+/// character. Until S1f.5.2's T1f.5.2.5 (W38) `TEXT` admitted one to six hex
+/// digits of any value, and one past 10FFFF or a surrogate read as U+FFFD
+/// here, in silence; the token is `BADESCAPE` since, refused at the parse.
 fn unescape(body: &str) -> String {
     let mut out = String::with_capacity(body.len());
     let mut it = body.chars();
@@ -186,17 +190,65 @@ fn unescape(body: &str) -> String {
             Some('n') => out.push('\n'),
             Some('t') => out.push('\t'),
             Some('r') => out.push('\r'),
+            Some(c @ ('"' | '\\')) => out.push(c),
             Some('u') => {
                 let hex: String = it.by_ref().skip(1).take_while(|&h| h != '}').collect();
                 out.push(
                     u32::from_str_radix(&hex, 16)
                         .ok()
                         .and_then(char::from_u32)
-                        .unwrap_or('\u{FFFD}'),
+                        .expect("ein.l's TEXT admits a \\u{…} only where it names a character"),
                 );
             }
-            Some(other) => out.push(other),
-            None => out.push('\\'),
+            other => unreachable!("ein.l's TEXT admits no escape \\{other:?}"),
+        }
+    }
+    out
+}
+
+/// The escapes a string's body writes that `TEXT` does not read, each with
+/// its byte offset in the body: `\` and the character after it, or, after
+/// `\u`, the braces and the hex digits inside them (`\u{110000}`, `\u{}`).
+/// What a `BADESCAPE` token's note names (T1f.5.2.5).
+pub(super) fn bad_escapes(body: &str) -> Vec<(usize, String)> {
+    let mut out = Vec::new();
+    let mut it = body.char_indices().peekable();
+    while let Some((at, c)) = it.next() {
+        if c != '\\' {
+            continue;
+        }
+        let Some((_, e)) = it.next() else {
+            out.push((at, "\\".to_string()));
+            break;
+        };
+        match e {
+            'n' | 't' | 'r' | '"' | '\\' => {}
+            'u' if it.peek().map(|&(_, b)| b) == Some('{') => {
+                it.next();
+                let mut hex = String::new();
+                while let Some(&(_, h)) = it.peek() {
+                    if !h.is_ascii_hexdigit() {
+                        break;
+                    }
+                    hex.push(h);
+                    it.next();
+                }
+                let closed = it.peek().map(|&(_, b)| b) == Some('}');
+                if closed {
+                    it.next();
+                }
+                let names_a_character = closed
+                    && (1..=6).contains(&hex.len())
+                    && u32::from_str_radix(&hex, 16)
+                        .ok()
+                        .and_then(char::from_u32)
+                        .is_some();
+                if !names_a_character {
+                    let close = if closed { "}" } else { "" };
+                    out.push((at, format!("\\u{{{hex}{close}")));
+                }
+            }
+            e => out.push((at, format!("\\{e}"))),
         }
     }
     out

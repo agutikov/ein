@@ -1582,6 +1582,12 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W37 (`W37/template-var-star`), banked by S1f.5.5 from its T9 review's § 11: a template reference could not name the variable `?n*`, so the query's `:goal-text` printed *“{?n*} is a q”* where *“a is a q”* is right, and the rule's `:why` likewise on `--trace`, as the stdlib's three `{?isR*}` templates did. Fixed by S1f.5.4 (T1f.5.4.5, 2026-11-09): a reference reads the name rule's characters up to the first `}`."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/escape-past-unicode.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W38 (`W38/escape-past-unicode`), filed and fixed by S1f.5.2's T1f.5.2.5 (2026-11-09) from S1f.5.5's T4 record: a `:goal-text` writing `\\u{110000}`, one past the last code point, and `\\u{D800}`, a surrogate. Until the fix the parser read each as U+FFFD, so the program loaded and the read-out printed *“a � �”*, exit 0, in silence. Right, S1f.5.2's ruling (the user, 2026-11-06, *\"reasonable escape symbols\"*): `\\u{…}` names a character, and any other escape is refused; since the fix both runs exit 1, refused at the parse with the file, line and column and a note naming each escape and where it is."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

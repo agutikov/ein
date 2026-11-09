@@ -1,0 +1,37 @@
+;;; A `\u{…}` escape that names no character reads as U+FFFD, in silence —
+;;; M1f **W38**, register row `W38/escape-past-unicode`
+;;; (`corpus/wrong_answers.toml`), filed and fixed by S1f.5.2's T1f.5.2.5
+;;; (2026-11-09), from S1f.5.5's T4 record (*a `\u{…}` beyond Unicode's range
+;;; still reads as U+FFFD*).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(q a)` and a query over `q` whose `:goal-text` writes two `\u{…}`
+;;; escapes that name no character: `\u{110000}`, one past the last code point,
+;;; 10FFFF, and `\u{D800}`, a surrogate, which is a code point and no character.
+;;; S1f.5.2's ruling (the user, 2026-11-06: *"strings literals are unicode with
+;;; reasonable escape symbols"*) gives a string the escapes `\n \t \r \" \\` and
+;;; `\u{…}`, one to six hex digits naming that code point, and refuses any other
+;;; (the stage's § What it changes, *The escapes*).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Neither escape names a character a string can hold, so neither is an escape
+;;; the ruling gives, and the string is refused where it is written: every
+;;; command that reads the program exits 1 (`ein test`: 2), at the parse, with
+;;; the file, line and column, as an unknown escape such as `\q` is.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The right answer, since S1f.5.2's T1f.5.2.5 (2026-11-09): `ein.l`'s `TEXT`
+;;; reads `\u{…}` only where its digits name a Unicode scalar value, 0 to 10FFFF
+;;; outside D800 to DFFF, so the string is a `BADESCAPE` token, refused at the
+;;; parse at its opening quote, with a note naming each escape it does not read
+;;; and where. Until then the token was a `TEXT` and the parser's unescape read
+;;; each escape as U+FFFD: the program loaded, R was {∅}, and the read-out
+;;; printed the sentence *“a � �”*, exit 0, with no word of either escape.
+(relation q T :why "{?1} is a q")
+
+(q a :source "the witness's one fact")
+
+(query :goal (q ?x) :goal-text "{?x} \u{110000} \u{D800}")

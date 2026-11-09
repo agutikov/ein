@@ -108,8 +108,13 @@ _ <AFTER_WORD>"UNDERSCORE"
 \?[A-Za-z0-9_.\-$%^*+=<>!&@~\/'`\[\]{}]+ <AFTER_WORD>"VAR"
 :[A-Za-z0-9_.\-$%^*+=<>!&@~\/'`\[\]{}]+ <AFTER_WORD>"KEYWORD"
 // A string: any Unicode, the escapes \n \t \r \" \\ and \u{…} (S1f.5.2).
+// \u{…} is one to six hex digits naming a Unicode scalar value: 0 to 10FFFF
+// and not a surrogate, D800 to DFFF, which names no character (T1f.5.2.5,
+// W38). The six alternatives are the values of one to six significant
+// digits, each after the leading zeros that keep it within six; the fourth
+// leaves out D800 to DFFF.
 // Any other escape is BADESCAPE; a string glued to what follows, BADTEXT.
-"([^"\\]|\\[ntr"\\]|\\u\{[0-9A-Fa-f]{1,6}\})*" <AFTER_WORD>"TEXT"
+"([^"\\]|\\[ntr"\\]|\\u\{(0{0,5}[0-9A-Fa-f]|0{0,4}[1-9A-Fa-f][0-9A-Fa-f]|0{0,3}[1-9A-Fa-f][0-9A-Fa-f]{2}|0{0,2}([1-9A-Ca-cEeFf][0-9A-Fa-f]{3}|[Dd][0-7][0-9A-Fa-f]{2})|0?[1-9A-Fa-f][0-9A-Fa-f]{4}|10[0-9A-Fa-f]{4})\})*" <AFTER_WORD>"TEXT"
 "([^"\\]|\\[^\n])*" <AFTER_WORD>"BADESCAPE"
 "([^"\\]|\\[^\n])*"[^\s();\x1c-\x1f]+ <AFTER_WORD>"BADTEXT"
 // Everything else up to a separator. `#` ends a token only where `#|`

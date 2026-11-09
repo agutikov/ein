@@ -725,6 +725,17 @@
 # The register reads **118 rows fixed, 21 open and 1 not-wrong** (`grep
 # '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
+# **S1f.5.2's T1f.5.2.5 filed W38 and fixed it in the same commit**, on
+# 2026-11-09, from S1f.5.5's T4 record: a `\u{…}` escape whose digits name
+# no character, one past 10FFFF or a surrogate, read as U+FFFD in silence, so
+# a `:goal-text` writing one printed `�` (schema /15). One row,
+# `W38/escape-past-unicode`, `fixed`: `ein.l`'s `TEXT` reads a `\u{…}` only
+# where it names a Unicode scalar value, so the string is refused at the
+# parse, as an unknown escape is. Its `[case.fixed]` carries the null id in
+# the fixing commit, and the stage's next commit writes the hash. The
+# register reads **119 rows fixed, 21 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -8978,6 +8989,46 @@ models    = [
   [],
 ]
 goal_text = ["a is a q"]
+
+# ══ W38 — a `\u{…}` escape that names no character reads as U+FFFD, in silence ══
+[[case]]
+id       = "W38/escape-past-unicode"
+case     = "W38"
+title    = "a `\\u{…}` escape that names no character reads as U+FFFD, in silence"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.5.2"
+question = ["Q-M1e2.23"]
+witness  = "examples/ein-bugs/wrong-answers/escape-past-unicode.ein"
+status   = "fixed"
+look_at  = ["answer"]
+note     = "Filed and fixed by S1f.5.2 (T1f.5.2.5, 2026-11-09), from S1f.5.5's T4 record (*a `\\u{…}` beyond Unicode's range still reads as U+FFFD (`build_ast.rs`' `unescape`), which no file writes; refusing it is S1f.5.2's after the swap*). The witness is that finding's shape in a query's `:goal-text`, which the read-out prints: `\\u{110000}`, one past 10FFFF, and `\\u{D800}`, a surrogate. No other corpus program writes one (`grep -rnoE '\\\\u\\{[0-9A-Fa-f]+\\}' --include='*.ein' examples tests stdlib corpus plans`, 2026-11-09: the witness alone writes a `\\u{…}` at all). Its twin is the refusal, so no file. Fixed by T1f.5.2.5: `ein.l`'s `TEXT` reads `\\u{…}` only where its digits name a Unicode scalar value, so the string is a `BADESCAPE` token, refused at the parse at its opening quote, with a note naming each escape it does not read and where"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.2 (T1f.5.2.5), on S1f.5.2's ruling (Q-M1e2.23, the user, 2026-11-06: *\"strings literals are unicode with reasonable escape symbols\"*): `ein.l`'s `TEXT` reads a `\\u{…}` only where its one to six hex digits name a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF, so any other is refused at the parse, as an unknown escape is"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 3de122a4 (2026-11-09): the program loads, root holds `(q a)`, H is empty and R is {∅}, the query one class of one row, `?x = a`, whose sentence is printed *“a � �”*, each escape read as U+FFFD, exit 0, with no word of either; `ein saturate` and `ein oracle` load it the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q a)"]]
+goal_text = ["a \ufffd \ufffd"]
+
+[case.right]
+reading   = "Q-M1e2.23, the user's ruling of 2026-11-06: a string is natural-language text with reasonable escapes, `\\u{…}` naming that code point, and any other escape refused (S1f.5.2's § What it changes, *The escapes*)"
+refused   = true
+derived   = "Neither `\\u{110000}` nor `\\u{D800}` names a character a string can hold, so neither is an escape the ruling gives, and the string is refused where it is written, at the parse, with the file, line and column, as `\\q` is: every command that reads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "examples/ein-bugs/wrong-answers/escape-past-unicode.ein:37:32: unexpected `\"{?x} \\u{110000} \\u{D800}\"`: a string with an unknown escape"
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

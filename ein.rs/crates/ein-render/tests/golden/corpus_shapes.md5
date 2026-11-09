@@ -3526,6 +3526,7 @@ f0935abef6dfe752       75L  examples/ein-bugs/wrong-answers/empty-match-hrule.ei
 38db3efedab99979       71L  examples/ein-bugs/wrong-answers/empty-match-hrule.ein::cores[single]
 96bc848b5737d8f8       72L  examples/ein-bugs/wrong-answers/empty-match-hrule.ein::cores[n2]
 3a77f9e7206eebfb      154L  examples/ein-bugs/wrong-answers/empty-match-hrule.ein::oracle
+ad907a8a305890a2        4L  examples/ein-bugs/wrong-answers/escape-past-unicode.ein::ir[parse]
 ed1312c1e8d96a72       33L  examples/ein-bugs/wrong-answers/f07-fpoff.ein::load
 624fe32525bbb794       12L  examples/ein-bugs/wrong-answers/f07-fpoff.ein::saturate
 b28517893909ce43       16L  examples/ein-bugs/wrong-answers/f07-fpoff.ein::plan

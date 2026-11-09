@@ -201,6 +201,7 @@
   ok (1 form(s))
 === "(a \"h\\di\")"
   <string>:1:4: unexpected `"h\di"`: a string with an unknown escape
+    note: \d, at 1:6, is no escape a string reads: a string's escapes are \n, \t, \r, \", \\ and \u{…}, one to six hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF
     repair: Delete `"h\di"`
 === "(a \"a\nb\")"
   <string>:1:4: unexpected `"a\nb"`: a string

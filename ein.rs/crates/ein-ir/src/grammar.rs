@@ -323,7 +323,7 @@ fn report(
                     line,
                     col,
                     what,
-                    notes: notes(lexer, l, found),
+                    notes: notes(lexer, lines, l, found),
                     repairs: ranked.iter().take(REPAIRS_SHOWN).cloned().collect(),
                     more_repairs: ranked.len().saturating_sub(REPAIRS_SHOWN),
                 }
@@ -350,10 +350,13 @@ fn rule_name(tok: u32) -> Option<&'static str> {
 
 /// What a ruling of this phase says about the token an error found, beyond
 /// the token itself: the review stop's item 3 (S1f.5.1's and S1f.5.2's
-/// sentences) and the paper grammar's default 5 (the loader's two lines a
-/// keyword's position no longer reaches).
+/// sentences), the paper grammar's default 5 (the loader's two lines a
+/// keyword's position no longer reaches), and, on a string with an escape
+/// it does not read, each such escape and where it is (S1f.5.2's escapes,
+/// T1f.5.2.5).
 fn notes(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
+    lines: &b::Lines,
     at: &lrlex::DefaultLexeme<u32>,
     found: &str,
 ) -> Vec<String> {
@@ -368,6 +371,21 @@ fn notes(
              :source or :goal-text: write a name bare",
             cut_at_40(found)
         )),
+        Some("BADESCAPE") => {
+            let body = found
+                .strip_prefix('"')
+                .and_then(|f| f.strip_suffix('"'))
+                .unwrap_or("");
+            for (offset, escape) in b::bad_escapes(body) {
+                let (line, col) = lines.line_col(at.span().start() + 1 + offset);
+                out.push(format!(
+                    "{}, at {line}:{col}, is no escape a string reads: a string's escapes are \
+                     \\n, \\t, \\r, \\\", \\\\ and \\u{{…}}, one to six hex digits naming a \
+                     Unicode scalar value, 0 to 10FFFF and not D800 to DFFF",
+                    cut_at_40(&escape)
+                ));
+            }
+        }
         Some(k) if LATTICE_KEYWORDS.contains(&k) && top_form(lexer, at) == Some("query") => {
             out.push(format!(
                 "{k} chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one \

@@ -9,6 +9,7 @@
 //! | no name the loader makes up is a name a program can write (T1f.5.5.8) | [`no_name_the_loader_makes_up_is_a_name`] |
 //! | a program at the nesting limit parses and goes through the dumper, macro expansion and the loader on a test thread; one past it is refused with a line (F10) | [`the_nesting_limit`] |
 //! | `ein.l`'s one skip rule and its start condition give the parser the tokens T4's `ein.l` did (T1f.5.5.12) | [`the_lexer_gives_the_tokens_t4s_did`] |
+//! | a string's escapes are S1f.5.2's ruling's, and a `\u{…}` reads exactly the Unicode scalar values (T1f.5.2.5, W38) | [`a_strings_escapes_are_the_rulings`] |
 //!
 //! Until the swap this file also held the generated parser to the
 //! hand-written one, tree for tree on every corpus file both accepted, and
@@ -180,6 +181,110 @@ fn a_macro_carries_its_why() {
             "{refused}"
         );
     }
+}
+
+/// A relation's `:why` with `body` between its quotes: the text the parser
+/// stores, or the report it refuses the program with.
+fn why_text(body: &str) -> Result<String, grammar::ParseError> {
+    let program = format!("(relation q T :why \"{body}\")");
+    let mut ast = Ast::new();
+    let forms = grammar::parse(&mut ast, &program, None)?;
+    let text = ast
+        .form_args(forms[0])
+        .iter()
+        .find_map(|&a| match ast.node(a) {
+            ein_ir::Node::KwPair { value, .. } => match ast.node(value) {
+                ein_ir::Node::Str(s) => Some(ast.sym(s).to_string()),
+                _ => None,
+            },
+            _ => None,
+        })
+        .expect("a :why");
+    Ok(text)
+}
+
+/// **A string's escapes are the ruling's, and a `\u{…}` reads exactly the
+/// Unicode scalar values** (S1f.5.2's T1f.5.2.5, W38).
+///
+/// S1f.5.2's ruling (the user, 2026-11-06: *"strings literals are unicode with
+/// reasonable escape symbols"*) gives a string `\n \t \r \" \\` and `\u{…}`, one
+/// to six hex digits naming that code point, and refuses any other escape at
+/// the parse. A code point that names no character, one past 10FFFF or a
+/// surrogate (D800 to DFFF), is no escape either: until T1f.5.2.5 `ein.l`'s
+/// `TEXT` took any six digits and the parser read such an escape as U+FFFD,
+/// in silence. Held over every boundary of the scalar values in every width
+/// from its shortest to seven digits, in both cases, and over every 257th
+/// value up to 11FFFF in its shortest and its six-digit spelling: each reads as
+/// its character where it names one in six digits or fewer, and is refused
+/// otherwise, with a note naming the escape and its column.
+#[test]
+fn a_strings_escapes_are_the_rulings() {
+    for (escape, read) in [
+        ("\\n", "\n"),
+        ("\\t", "\t"),
+        ("\\r", "\r"),
+        ("\\\"", "\""),
+        ("\\\\", "\\"),
+        ("Жук 日本 🦓 ⟹", "Жук 日本 🦓 ⟹"),
+        ("a\nb", "a\nb"),
+        ("\\u{1F993}\\u{416}", "🦓Ж"),
+    ] {
+        assert_eq!(why_text(escape).expect(escape), read, "{escape}");
+    }
+    for (body, escape) in [
+        ("\\q", "\\q"),
+        ("\\0", "\\0"),
+        ("\\x41", "\\x"),
+        ("\\u0416", "\\u"),
+        ("\\u{}", "\\u{}"),
+        ("\\u{41", "\\u{41"),
+        ("\\u{0000041}", "\\u{0000041}"),
+        ("\\u{110000}", "\\u{110000}"),
+        ("\\u{D800}", "\\u{D800}"),
+    ] {
+        let report = why_text(body).expect_err(body).to_string();
+        let note = format!("note: {escape}, at 1:21, is no escape a string reads: ");
+        assert!(report.contains(&note), "{body}:\n{report}");
+    }
+
+    let mut values: Vec<u32> = vec![
+        0, 1, 0x7F, 0x80, 0xFF, 0x7FF, 0x800, 0xFFF, 0x1000, 0xD7FF, 0xD800, 0xDBFF, 0xDC00,
+        0xDFFF, 0xE000, 0xFFFD, 0xFFFF, 0x1_0000, 0xF_FFFF, 0x10_0000, 0x10_FFFF, 0x11_0000,
+        0x1F_FFFF, 0xFF_FFFF,
+    ];
+    let boundaries = values.len();
+    values.extend((0..=0x11_FFFFu32).step_by(257));
+    let (mut read, mut refused) = (0, 0);
+    for (i, &v) in values.iter().enumerate() {
+        let shortest = format!("{v:X}").len();
+        let widths: Vec<usize> = if i < boundaries {
+            (shortest..=7).collect()
+        } else {
+            vec![shortest, 6.max(shortest)]
+        };
+        for width in widths {
+            for hex in [format!("{v:0width$X}"), format!("{v:0width$x}")] {
+                let body = format!("\\u{{{hex}}}");
+                match (char::from_u32(v).filter(|_| width <= 6), why_text(&body)) {
+                    (Some(c), Ok(text)) => {
+                        assert_eq!(text, c.to_string(), "{body}");
+                        read += 1;
+                    }
+                    (None, Err(e)) => {
+                        let note = format!("note: {body}, at 1:21, is no escape a string reads");
+                        assert!(e.to_string().contains(&note), "{body}:\n{e}");
+                        refused += 1;
+                    }
+                    (Some(_), Err(e)) => panic!("{body} names a character, refused:\n{e}"),
+                    (None, Ok(text)) => panic!("{body} names none, read as {text:?}"),
+                }
+            }
+        }
+    }
+    assert!(
+        read > 15_000 && refused > 1_000,
+        "{read} read, {refused} refused"
+    );
 }
 
 /// **No name the loader makes up is a name a program can write** (T1f.5.5.8,

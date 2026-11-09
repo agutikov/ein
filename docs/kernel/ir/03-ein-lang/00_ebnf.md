@@ -95,7 +95,7 @@ WRITEBACK    ::= [<](forced\-positive|monotonic\-unconditional|lookahead\-dies\-
 NAME         ::= [A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a name" */
 VAR          ::= \?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a variable" */
 KEYWORD      ::= :[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a keyword this form does not take" */
-TEXT         ::= "([^"\\]|\\[ntr"\\]|\\u\{[0-9A-Fa-f]{1,6}\})*"    /* then AFTER_WORD; "a string" */
+TEXT         ::= "([^"\\]|\\[ntr"\\]|\\u\{(0{0,5}[0-9A-Fa-f]|0{0,4}[1-9A-Fa-f][0-9A-Fa-f]|0{0,3}[1-9A-Fa-f][0-9A-Fa-f]{2}|0{0,2}([1-9A-Ca-cEeFf][0-9A-Fa-f]{3}|[Dd][0-7][0-9A-Fa-f]{2})|0?[1-9A-Fa-f][0-9A-Fa-f]{4}|10[0-9A-Fa-f]{4})\})*"    /* then AFTER_WORD; "a string" */
 BADESCAPE    ::= "([^"\\]|\\[^\n])*"    /* then AFTER_WORD; "a string with an unknown escape" */
 BADTEXT      ::= "([^"\\]|\\[^\n])*"[^\s();\x1c-\x1f]+    /* then AFTER_WORD; "a string glued to what follows" */
 BAD          ::= ([^\s();#\x1c-\x1f]|#[^|\s();\x1c-\x1f])+    /* then AFTER_WORD; "a token that is not a name" */

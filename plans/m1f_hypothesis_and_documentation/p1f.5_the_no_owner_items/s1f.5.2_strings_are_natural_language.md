@@ -15,7 +15,8 @@ it was 2.5.
 
 **Status:** specified 2026-11-06 on the user's ruling of that day
 ([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
-**Not started.** No engine code, test, golden or fixture has moved.
+**In progress since 2026-11-09**, on the generated parser: T1f.5.2.5 done, W38 filed and fixed ([its
+record](#t1f525-record-2026-11-09)); T1f.5.2.2, T1f.5.2.3 and T1f.5.2.4 next.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal and the escapes are the generated parser's (`STRING` only after `:why`,
@@ -244,6 +245,92 @@ After the swap, beside S1f.5.5's T7.
 `defined_behaviour.md` (the lines at 407 and 547, and the refusal), `glossary.md`,
 `examples/README.md`, and the docs that show a quoted value. Q-M1e2.20 and S1e2.2.18's
 default each say what overrode them. `docs/history/` is a record, and does not change.
+
+### Task T1f.5.2.5 — an escape that names no character (W38)
+
+**Added 2026-11-09**, from S1f.5.5's [T4 record](s1f.5.5_the_grammar.md#t4-record-2026-11-09): *a `\u{…}` beyond
+Unicode's range still reads as U+FFFD (`build_ast.rs`' `unescape`), which no file writes; refusing it is S1f.5.2's
+after the swap*. The grammar's `TEXT` took one to six hex digits of any value, so `\u{110000}`, one past 10FFFF, and
+`\u{D800}`, a surrogate, which is a code point and no character, loaded, and the parser read each as U+FFFD in
+silence. [§ The escapes](#what-it-changes) gives `\u{…}` the meaning *that code point* and refuses any other escape;
+a value no character has is neither. **Run first of the stage's remaining tasks**, so that the Unicode test
+(T1f.5.2.2) holds the escapes as they end.
+
+**A wrong answer, so a register row first.** A `:goal-text` writing one printed `�` in the read-out, a sentence the
+register's schema /15 records (W37's precedent: the user filed a template that printed wrong as a row before it was
+fixed). `W38/escape-past-unicode` is filed and fixed in the same commit, as W13 and W24's ruling rows were, its
+`wrong` taken on `3de122a4`.
+
+**The fix.** `ein.l`'s `TEXT` reads a `\u{…}` only where its digits name a Unicode scalar value, 0 to 10FFFF and not
+D800 to DFFF, in one to six digits; any other is the `BADESCAPE` token, refused at the parse at the string's opening
+quote, as an unknown escape is. A `BADESCAPE` gains a note per escape it does not read, naming the escape and its own
+line and column, with the escapes a string reads. `unescape`'s U+FFFD fallback and its arms for an unknown escape
+become an `expect` and an `unreachable!` naming `TEXT` (Q-M1f.9's convention).
+
+**Named before it moves, 2026-11-09** (`cargo test --workspace --no-fail-fast` on the change, unblessed, 941 tests,
+four failing, `build/s1f.5.2/t5-discover.log`):
+- `ein-ir/tests/golden/grammar_decisions.txt`: the one row that writes an unknown escape, `(a "h\di")`, gains its
+  note;
+- `docs/kernel/ir/03-ein-lang/00_ebnf.md`'s lexical block, `TEXT`'s line, which `grammar_pages` writes from `ein.l`;
+- `ein-cli/tests/golden/corpus_exits.txt`: the witness's two cells, `solve` and `saturate`, each exit 1;
+- `ein-render/tests/golden/corpus_shapes.md5`: the witness's one row, `ir[parse]`;
+- `corpus/wrong_answers.toml`: W38's row, `fixed`, with the null id.
+No answer of any other program, and no other golden.
+
+### T1f.5.2.5 record, 2026-11-09
+
+**One commit, on `3de122a4`** (S1f.5.4 done). W38 is filed and fixed: a `\u{…}` that names no character is refused
+at the parse.
+
+**The token.** `ein.l`'s `TEXT` reads `\u{` then one of six alternatives then `}`: the values of one to six
+significant hex digits, each after the leading zeros that keep it within six, the four-digit one leaving out D800 to
+DFFF. So `\u{0}` to `\u{D7FF}`, `\u{E000}` to `\u{10FFFF}` and the same values zero-padded to six digits read as
+their character, and `\u{110000}`, `\u{D800}` to `\u{DFFF}`, `\u{0000041}` and `\u{}` make the string a `BADESCAPE`,
+refused at its opening quote, *unexpected `"…"`: a string with an unknown escape*. The error gains a note per escape
+the string does not read (`grammar::notes`, through `build_ast::bad_escapes`), with the escape's own line and column:
+*`\u{110000}, at 37:38, is no escape a string reads: a string's escapes are \n, \t, \r, \", \\ and \u{…}, one to six
+hex digits naming a Unicode scalar value, 0 to 10FFFF and not D800 to DFFF`*; an unknown escape gets the same note
+(`\d`, `\q`). `unescape`'s U+FFFD fallback is an `expect` and its arms for any other escape an `unreachable!`, each
+naming `TEXT`; the lexer gives every other input the tokens it gave (`the_lexer_gives_the_tokens_t4s_did`, which
+derives its reference from the shipped `ein.l`, passes over its 21 083 inputs).
+
+**The test.** `generated_parser::a_strings_escapes_are_the_rulings`: the five escapes and raw Unicode read as
+themselves, nine escapes the ruling does not give are refused with their note, and every boundary of the scalar
+values (0, 7F, 7FF, D7FF, D800, DFFF, E000, FFFF, 10FFFF, 110000, FFFFFF and their neighbours) in every width from
+its shortest to seven digits, both cases, with every 257th value up to 11FFFF in its shortest and its six-digit
+spelling, each read as its character exactly where `char::from_u32` names one in six digits or fewer and refused with
+its note otherwise: 17 432 read and 1 130 refused (`cargo test -p ein-ir --test generated_parser
+a_strings_escapes_are_the_rulings`, 2026-11-09).
+
+**The register.** `W38/escape-past-unicode`, class `read-out`, owned by this stage, `fixed`: its `wrong`, taken on
+`3de122a4`'s release build, R {∅} and the sentence *“a � �”*, exit 0; its `right` and `now` the parse refusal. Its
+`[case.fixed]` carries the null id, `0000000`, and the stage's next commit writes the hash. The witness,
+`examples/ein-bugs/wrong-answers/escape-past-unicode.ein`, has a corpus entry (`regression`, `solve` and `saturate`)
+and a clause in `examples/README.md`'s `ein-bugs/wrong-answers/` line, which counts 138 programs (`ls
+examples/ein-bugs/wrong-answers/*.ein | wc -l`, 2026-11-09). The register reads **119 rows fixed, 21 open and 1
+not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**What moved, as named above, and nothing else.** The four goldens (`EIN_BLESS=1 cargo test -p ein-ir --test
+grammar_decisions --test grammar_pages`, `-p ein-cli --test corpus_cli every_cell_reproduces`, `-p ein-render --test
+corpus_shapes`). Every `.ein` under the five roots (512, `find examples tests stdlib corpus plans -name '*.ein' | wc
+-l`, 2026-11-09) through `3de122a4`'s release build and this commit's (`build/s1f.5.2/xcheck/`, T1f.5.4.3's scripts
+pointed at the two, 91 s): `solve --json-summary -H --dump-answer`, `saturate --dump` and `test`, exit codes, stdout,
+stderr, the summary and every file the dump wrote compared, timings masked, **511 the same on every command**, and
+the witness, which loaded and is refused; and T12's 2 000 seeded mutants through `saturate`, the error text included,
+the same (1 047 accepted, 767 refused with repairs, 186 without). No corpus program but the witness writes a `\u{…}`.
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end of
+the phase"*):
+- **Refused at the token**, in `ein.l`'s `TEXT`, where the stage's escapes table puts the escapes (*`\u{…}` or a
+  refused escape in the token*), rather than by a check after the parse: the generated grammar page states exactly
+  the strings that parse.
+- **A register row, filed and fixed in one commit**, since the read-out printed a sentence the program did not write
+  (W37's precedent), and no stage owned the fix but this one.
+- **A note on every `BADESCAPE`**, naming each escape and where it is, which moves `grammar_decisions.txt`'s one
+  unknown-escape row: the token's description says *unknown escape* and the note says which.
+
+**The gate.** On this commit, 15 min 51 s (`build/gate-s1f.5.2-T5.log`), green: 941 tests and every static check,
+T1f.5.4.5's 940 and `a_strings_escapes_are_the_rulings`.
 
 ## Acceptance
 
