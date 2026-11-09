@@ -30,6 +30,13 @@
 ;;; named by a symbol, not a fact.*, on every command (`ein solve FILE` at
 ;;; `8249e872`, release and debug alike). Without `(item (a b))` it answers:
 ;;; `derived-activator-never.ein`, W59's other row.
+;;;
+;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.18.3, 2026-11-09): every command
+;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
+;;; test`: 2), in either build, where it stopped where `r`'s plan was compiled, W24's line. The register's `now` is that
+;;; refusal; the section above is the record of the answer it replaced.
 
 (relation box Node :why "{?1} is in the box")
 (relation hit Node :why "{?1} is hit")

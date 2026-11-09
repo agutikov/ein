@@ -1,0 +1,1 @@
+rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact

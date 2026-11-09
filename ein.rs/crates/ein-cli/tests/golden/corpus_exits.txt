@@ -157,6 +157,12 @@
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
+0    examples/broken/load/derived_activator.ein :: render rules
+1    examples/broken/load/derived_activator.ein :: saturate
+1    examples/broken/load/derived_activator.ein :: solve
+0    examples/broken/load/derived_activator_never.ein :: render rules
+1    examples/broken/load/derived_activator_never.ein :: saturate
+1    examples/broken/load/derived_activator_never.ein :: solve
 1    examples/broken/load/expect_omits_the_goal.ein :: render rules
 1    examples/broken/load/expect_omits_the_goal.ein :: saturate
 1    examples/broken/load/expect_omits_the_goal.ein :: solve
@@ -428,8 +434,8 @@
 0    examples/ein-bugs/wrong-answers/core-search-cut-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: saturate
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: solve
-0    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: saturate
-0    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
+1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: saturate
+1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
 1    examples/ein-bugs/wrong-answers/derived-activator.ein :: saturate
 1    examples/ein-bugs/wrong-answers/derived-activator.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints

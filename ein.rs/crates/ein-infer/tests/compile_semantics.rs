@@ -540,7 +540,9 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
 // ── A relation named by a fact — M1e2 S1e2.2.4, S1e2.2.24 ──────────
 
 /// **A relation parameter bound to a nested fact is refused, wherever the
-/// binding is made** — M1e2 S1e2.2.24 (W24, Q-M1e2.18 (iv)).
+/// binding is made** — M1e2 S1e2.2.24 (W24, Q-M1e2.18 (iv)); where a rule
+/// derives the binding, at load since M1f S1f.5.18 (Q-M1f.1 (b)), and by the
+/// compiler behind it.
 ///
 /// `mirror` names the relation it matches and asserts by its parameter. Until
 /// M1f S1f.5.5's swap this test held the integer case too, S1e2.2.4's (Q-M1e.21's
@@ -563,31 +565,55 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     digits.saturate();
     assert_eq!(digits.facts_under("3"), ["(3 A B)", "(3 B A)"]);
 
-    // A nested fact, derived the same way, binds no parameter, so it names no
-    // relation either — M1e2 S1e2.2.24 (W24, Q-M1e2.18 (iv)). Until then the
-    // top-level premise stopped compilation with the unbound-head line in the
-    // Python IR's spelling, and a pattern inside a pattern matched nothing.
+    // A nested fact, derived the same way, names no relation either — M1e2
+    // S1e2.2.24 (W24, Q-M1e2.18 (iv)). Until then the top-level premise
+    // stopped compilation with the unbound-head line in the Python IR's
+    // spelling, and a pattern inside a pattern matched nothing. Since M1f
+    // S1f.5.18 the loader refuses the program (Q-M1f.1 (b)): `src` is a marker
+    // whose argument `make` passes to `mirror`'s relation parameter, so the fact
+    // `(src (q A B))` writes a fact where a relation is named (Q-M1f.41). Until
+    // then it loaded and the run stopped where `mirror`'s plan was compiled.
     for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
         let rule = format!("(rule mirror (?R) :match {pattern} :assert (hit a))");
-        let mut l = load_text(&format!(
+        let err = load_error(&format!(
             "(relation q T T) (relation hit T) (relation box T)\n(q A B) (src (q A B))\n\
              (rule make () :match (src ?f) :assert (mirror ?f))\n{rule}"
         ));
-        let mut events = Events::off();
-        let mut s = Session {
-            kb: &mut l.kb,
-            terms: &mut l.terms,
-            ast: &l.ast,
-            events: &mut events,
-            memo: SharedMemo::default(),
-        };
-        let mut sat = Saturator::new(&mut s).expect("nothing is refused before `make` fires");
-        let err = sat
-            .saturate(&mut s, None, &mut |_| {})
-            .expect_err("`mirror` is refused for the derived (mirror (q A B))")
-            .to_string();
+        assert_eq!(
+            err,
+            "the fact (src (q A B)) writes (q A B) as ?f of (src ?f), which rule 'make' passes \
+             to rule 'mirror''s parameter ?R, which names a relation — a relation is named by a \
+             symbol, not a fact",
+            "{pattern}"
+        );
+    }
+    // The compiler's refusal stays behind the loader's, for a caller that hands
+    // it such an activator: no program the loader accepts reaches it.
+    for pattern in ["(?R ?a ?b)", "(box (?R ?a ?b))"] {
+        let mut l = load_text(&format!(
+            "(relation q T T) (relation hit T) (relation box T)\n(q A B)\n\
+             (rule mirror (?R) :match {pattern} :assert (hit a))"
+        ));
+        let rule =
+            l.kb.program()
+                .rules
+                .values()
+                .next()
+                .expect("mirror")
+                .clone();
+        let qab =
+            l.kb.facts()
+                .find(|&f| sexpr(&l.terms, f) == "(q A B)")
+                .expect("(q A B)");
+        let activator = l
+            .terms
+            .intern_fact(rule.name, &[ein_core::Value::fact(qab)])
+            .expect("room");
+        let err = ein_infer::compile_rule(&l.ast, &mut l.terms, &rule, Some(activator))
+            .expect_err("a relation head bound to a fact")
+            .0;
         assert!(
-            err.contains("the relation head ?R of (?R ?a ?b) at Loc(")
+            err.contains("the relation head ?R of ")
                 && err.contains(
                     "is bound to the fact (q A B) — a relation is named by a symbol, not a fact."
                 ),

@@ -239,23 +239,25 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 fn a_containers_positions_name_its_stored_program() {
     let scratch = Scratch::new("ein-program-read");
     let dir = scratch.path();
-    // G-14's residue (S1f.5.5's parser probe): a relation parameter that an
-    // activator a rule derives binds to a nested fact, refused when the
-    // activator's plan is compiled, at the first firing.
+    // An error past the load that names a position: a pattern whose relation
+    // a parameter binds to `eq`, written with one argument, refused when the
+    // activator's plan is compiled, at the first firing (M1e S1e.2.1's arity
+    // check, M1f S1f.5.7's `eq`). Until M1f S1f.5.18 this test wrote G-14's
+    // residue, a relation parameter an activator a rule derives binds to a
+    // nested fact, which the loader refuses since (W59), so `kb save` does too.
     std::fs::write(
         dir.join("g.ein"),
-        "(relation box Node) (relation hit Node) (relation item Node)\n\
-         (box (a b))\n\
-         (rule r (?R) :match (box (?R b)) :assert (hit z))\n\
-         (rule mk () :match (item ?f) :assert (r ?f))\n\
-         (item (a b))\n\
+        "(relation p Node) (relation hit Node)\n\
+         (p a)\n\
+         (rule r (?R) :match (?R ?x) :assert (hit ?x))\n\
+         (r eq)\n\
          (query :goal (hit ?x))\n",
     )
     .expect("written");
     assert_eq!(ein_in(dir, &["kb", "save", "g.ein", "g.einb"]).code, 0);
     let plain = ein_in(dir, &["saturate", "g.ein"]);
     assert!(
-        plain.stderr.contains("Loc(file='g.ein', line=3, col=27)"),
+        plain.stderr.contains("Loc(file='g.ein', line=3, col=22)"),
         "{}",
         plain.stderr
     );

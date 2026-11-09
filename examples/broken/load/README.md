@@ -101,9 +101,9 @@ compiler intern the integer's text as a relation's name: a name the program
 does not have, which no rule's text predicts and so no candidate can hold. The
 user ruled on 2026-10-16 that rules cannot assert new names, and the loader
 refuses the activator where it is written down — a fact, as here, or a literal
-in an `:assert`. One a rule derives through a variable is refused by the
-compiler, and has no fixture here because it loads
-(`ein-infer/tests/compile_semantics.rs`;
+in an `:assert`. One a rule derives through a variable was refused by the
+compiler, and had no fixture here because it loaded, until M1f S1f.5.18 refused
+it at load (below; `ein-infer/tests/compile_semantics.rs`;
 [`defined_behaviour.md` § 4.6](../../../docs/kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
 
 A nested fact in that place is refused the same way since M1e2 S1e2.2.24
@@ -111,7 +111,23 @@ A nested fact in that place is refused the same way since M1e2 S1e2.2.24
 is none (*… binds it to the fact (a b) — a relation is named by a symbol, not
 a fact*). Its witness is
 [`ein-bugs/wrong-answers/nested-fact-activator.ein`](../../ein-bugs/wrong-answers/nested-fact-activator.ein),
-and the derived one is the compiler's, beside the integer's.
+and the derived one was the compiler's, beside the integer's, until M1f
+S1f.5.18 (below).
+
+## A derived activator that binds a relation parameter to a fact — M1f S1f.5.18
+
+`derived_activator.ein` and `derived_activator_never.ein` are S1f.5.5's two
+`g14` probes: a rule, `mk`, derives `r`'s activator `(r ?f)` from `item`'s
+argument, and `r`'s parameter names a relation. `item` is declared, so its
+argument holds any value, a fact among them, and the loader refuses the program
+whether or not a fact puts one there (the user's ruling of 2026-11-08 on
+Q-M1f.1 (b)), one line naming the deriving rule, the activated rule and the
+parameter. Until S1f.5.18 the first stopped where `r`'s plan was compiled, the
+compiler's `CompileError` the section above names, and the second answered, 64
+states; each is a row of the register, W59
+([`defined_behaviour.md` § 4.9](../../../docs/kernel/defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+A marker's argument, `(bijective ?R)`, passes a relation name on and loads: the
+loader reads what the program does with it (Q-M1f.41).
 
 ## Two from `../compile/` — M1e2 S1e2.2.24
 

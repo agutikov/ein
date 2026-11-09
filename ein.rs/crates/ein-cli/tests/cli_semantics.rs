@@ -1595,6 +1595,71 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     assert!(r.out.contains("(hit (f a) :rule act)"), "{}", r.out);
 }
 
+/// **A rule that could derive an activator binding a relation parameter to a
+/// fact is refused at load, by every command, with one line** — M1f S1f.5.18,
+/// on the user's ruling of 2026-11-08 on Q-M1f.1 (b).
+///
+/// The two `g14` programs, as refusal fixtures under `examples/broken/load/`
+/// and as W59's witnesses, each on every command that loads a program: exit 1
+/// (`ein test`: 2) and the loader's line, naming the deriving rule, the
+/// activated rule and the parameter. Until S1f.5.18 the first stopped every
+/// command where `r`'s plan was compiled, with the compiler's *the relation
+/// head ?R of (?R b) … is bound to the fact (a b)*, and the second answered.
+/// What loads: the zebra2 fan-out and the stdlib's, which pass a relation's
+/// name on through a rule's parameter and through a marker.
+#[test]
+fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
+    let want = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s \
+                parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an \
+                argument of the declared relation item — a relation is named by a symbol, not a \
+                fact";
+    let scratch = ein_corpus::Scratch::new("ein-derived-activator");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    for file in [
+        "examples/broken/load/derived_activator.ein",
+        "examples/broken/load/derived_activator_never.ein",
+        "examples/ein-bugs/wrong-answers/derived-activator.ein",
+        "examples/ein-bugs/wrong-answers/derived-activator-never.ein",
+    ] {
+        for (args, code) in [
+            (vec!["saturate", "--dump", file], 1),
+            (vec!["solve", file], 1),
+            (vec!["solve", "--minimal", file], 1),
+            (vec!["oracle", file], 1),
+            (vec!["test", file], 2),
+            (vec!["render", "lattice", file], 1),
+            (vec!["render", "kb", file], 1),
+            (vec!["kb", "save", file, &einb], 1),
+        ] {
+            let r = ein(&args);
+            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l.trim() == want),
+                "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            assert!(
+                !r.err.contains("is bound to the fact"),
+                "the compiler's line is back:\n{}",
+                r.err
+            );
+        }
+    }
+    // What loads: zebra2's `co-located-fanout`, whose `?R1` a rule's relation
+    // parameter binds, and the stdlib's `bijective-setup` and `typecheck-setup`,
+    // which read the markers `(bijective ?R)` and `(typecheck-hierarchy ?isa)`.
+    for (args, code) in [
+        (vec!["saturate", "examples/zebra2.ein"], 0),
+        (
+            vec!["test", "tests/stdlib/bijection/01_setup_and_negatives.ein"],
+            0,
+        ),
+    ] {
+        let r = ein(&args);
+        assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+    }
+}
+
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.

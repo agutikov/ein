@@ -141,10 +141,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// parameter binds to `eq`, as W30's `assert-eq-x-w.ein`'s; and W54's
 /// `goal-nested-var.ein`, `a` and `b` inside its stored negations.
 ///
-/// Both witnesses M1f S1f.5.18 banked on 2026-11-09 (T1f.5.18.1) stand here,
-/// W59's `derived-activator.ein` and `derived-activator-never.ein`: `b`, inside
-/// the nested fact `(box (a b))`, and `z`, a constant of rule `r`'s `:assert`.
-/// T1f.5.18.3 refuses both programs at load, so neither loads here since.
+/// Both witnesses M1f S1f.5.18 banked on 2026-11-09 (T1f.5.18.1) stood here
+/// until T1f.5.18.3 refused both programs at load the same day, so neither
+/// loads here since: W59's `derived-activator.ein` and
+/// `derived-activator-never.ein`, `b`, inside the nested fact `(box (a b))`,
+/// and `z`, a constant of rule `r`'s `:assert`.
 ///
 /// **Left at M1f S1f.5.5's swap (T1f.5.5.4)**, each refused at the parse since
 /// and so loading here no more: `broken/compile/eq_arity_high.ein`'s `A` and
@@ -154,7 +155,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
 /// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
 /// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
-const SEEDED: [(&str, &[&str]); 32] = [
+const SEEDED: [(&str, &[&str]); 30] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -182,14 +183,6 @@ const SEEDED: [(&str, &[&str]); 32] = [
     (
         "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
         &["`w`, asserted by rule `r`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/derived-activator-never.ein",
-        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/derived-activator.ein",
-        &["`b`, in (box (a b))", "`z`, asserted by rule `r`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/empty-match-fact.ein",

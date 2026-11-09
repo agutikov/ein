@@ -272,3 +272,78 @@ register reads **146 fixed, 20 open and 1 not wrong** (`grep '^status' corpus/wr
 **Banked**: `corpus_exits.txt` two cells 1 → 0, W58's `solve` and `saturate`; `corpus_shapes.md5` 137 digests moved over
 the six programs above (`activator-all-nested` 14, `binding-key-both` 26, `-nested-only` 28, `-swapped` 26, W33's witness
 21, W58's 22), none of any other program.
+
+## T1f.5.18.3 record (2026-11-09)
+
+**The check** (`ein_ir::from_ir`'s `refuse_derived_relation_activators`, after W24's `validate_relation_parameters`),
+Q-M1f.1 (b) read as [Q-M1f.41](../open_questions.md#q-m1f41--what-can-hold-a-fact-means-for-g-14s-derived-activator)
+(b) and [Q-M1f.42](../open_questions.md#q-m1f42--a-conclusion-whose-relation-is-a-parameter) (a):
+
+- **Positions that hold relation names**: a rule's, an hrule's or an obligation's parameter that heads a form in it, and
+  every argument of `(relation …)`. To a fixpoint, a marker's argument (a relation no `(relation …)` declares) and a
+  rule's own parameter join them where a variable bound there reaches one through a conclusion: `bijective-properties`
+  passes `(bijective ?R)`'s `?R` to `functional`'s `?R`, so `(bijective, 0)` holds relation names.
+- **Sites**: every argument each top-level conclusion of a rule, an hrule or an obligation writes at such a position, a
+  conclusion `(not P)` read as `P`; one written `(?T …)` writes into every rule of its arity whose name the program
+  writes as an argument (a fact at any depth, a rule's clause, the `(solve …)` form).
+- **Refused**, one line per site, `; `-joined with the loader's others, exit 1 (`ein test`: 2) on every command that
+  loads: a variable that some disjunct of the deriving rule's `:match` binds only where a fact can stand, an argument of
+  a declared relation, one inside a fact pattern, or one of a relation a parameter names; a fact a conclusion writes at
+  an inferred position; and a fact a fact writes there (one at a rule's own parameter is W24's line, above).
+
+```text
+rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can
+bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact
+the fact (src (q A B)) writes (q A B) as ?f of (src ?f), which rule 'make' passes to rule 'mirror''s parameter ?R, which
+names a relation — a relation is named by a symbol, not a fact
+```
+
+The compiler's refusal (`head_not_a_name`) stays, the backstop behind both loader checks; no program the loader accepts
+reaches it, and a direct caller of `compile_rule` with such an activator does.
+
+**The fixtures**: `examples/broken/load/derived_activator.ein` and `derived_activator_never.ein`, S1f.5.5's two `g14`
+probes with `:why`s added, each with its `.expected`, the line above, and a corpus entry (`load-negative`, `solve`,
+`saturate`, `render rules`); `examples/broken/load/README.md` gains their section.
+
+**The tests.**
+- `ein-ir`'s `from_ir::tests::a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`: the line
+  for each shape, a variable from a declared relation's argument (both `g14` programs), from inside a fact pattern, from
+  a relation a parameter names, and through an hrule; a fact, a conclusion's literal fact and a conclusion's variable
+  written at a marker's inferred position; a fact written as the activator of a rule whose parameter passes it on; a
+  conclusion `(?T ?x)` into a rule whose name the program writes; and an `(or …)` one arm of which binds the variable where
+  a name is held. What loads: a signature's name, `(relation ?f ?a)`; zebra2's shape, a rule's relation parameter passed
+  on by a fan-out of the same rule's activators, `(co q a q b)`; a marker written with names that passes them on; an
+  `eq` guard; and a value parameter bound to a fact through a derived activator.
+- `ein-cli`'s `cli_semantics::a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`: the two
+  fixtures and W59's two witnesses on the eight commands that load, the exit and the line, with no compile line on
+  stderr; and `examples/zebra2.ein` and `tests/stdlib/bijection/01_setup_and_negatives.ein`, which load and answer.
+- `ein-infer`'s `compile_semantics::a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused`: the derived
+  activator it held to the compiler's line, `make`'s `(mirror ?f)` over `(src (q A B))`, is refused at load, `src` a
+  marker whose argument `make` passes on, with the fact line above; and the compiler's line stays, held by a direct
+  `compile_rule` call with the activator `(mirror (q A B))`.
+
+**What moved** (`build/s1f.5.18/xcheck/run_all.sh t3`, this build against `8249e872`'s, 542 files with the four this stage
+banked, 527 the same, `zebra2-minus-15.ein` re-run alone): T1f.5.18.2's nine; W59's two witnesses and the two `g14`
+probes under `plans/`, each refused at load, every command, where the first stopped where `r`'s plan was compiled and
+the second answered; and the two new fixtures, refused, which `8249e872`'s build loads. No other program moves: the
+check refuses nothing else in the five roots.
+
+**Two programs written in Rust tests** were refused, which the sweep of the five roots could not see and the first gate
+run found (`build/gate-s1f.5.18-T3-first.log`): `ein-cli`'s `program_read::a_containers_positions_name_its_stored_program`
+wrote G-14's residue as the error past the load whose position a container names, and now writes another, a pattern
+whose relation a parameter binds to `eq` written with one argument, `(rule r (?R) :match (?R ?x) …)` under `(r eq)`,
+which the compiler refuses at the first firing (M1e S1e.2.1's arity check, M1f S1f.5.7's `eq`); and `ein-infer`'s
+`stdlib_semantics::a_rule_that_derives_its_own_activator_still_reaches_a_fixpoint` declared `(relation mark T)` for a
+marker that passes `a`'s relation name back to `a`, which the typed reading refuses, a declared argument holding any
+value (Q-M1f.41): the declaration is dropped, so `mark` is a marker as the stdlib's `bijective` is, and the loop closes
+as it did.
+
+**The register**: W59's two rows `fixed`, each `now` the refusal and no region, `[case.fixed]` the null id, which the next
+commit writes; W33's and W58's carry `2901cac1`, T1f.5.18.2's. The witnesses' headers gain a section saying what
+replaced the answer, and their corpus notes say so. The register reads **148 fixed, 18 open and 1 not wrong** (`grep
+'^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**Banked**: `corpus_exits.txt` gains the fixtures' six cells (`solve` and `saturate` 1, `render rules` 0) and moves
+`derived-activator-never.ein`'s two, 0 → 1; `corpus_shapes.md5` removes 56 digests and adds 54: each witness loses the 21
+renderings a loaded program draws and changes 7, and each fixture adds 20, none of any other program; `alive_invariant`
+drops the two witnesses' names, which load no more, and `detector` counts 48 flagged programs again.

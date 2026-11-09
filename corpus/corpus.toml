@@ -1742,13 +1742,13 @@ note   = "M1f W58 (`W58/parameter-nested-assert`), filed by S1f.5.10's T1f.5.10.
 path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W59 (`W59/derived-activator`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, so the run stops where `r`'s plan is compiled, exit 1, with W24's line. Open, owned by S1f.5.18: the program is refused at load (Q-M1f.1 (b))."
+note   = "M1f W59 (`W59/derived-activator`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, so the run stops where `r`'s plan is compiled, exit 1, with W24's line. Fixed by S1f.5.18's T1f.5.18.3 (2026-11-09): refused at load, every command, one line naming `mk`, `r` and `?R` (Q-M1f.1 (b))"
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W59 (`W59/derived-activator-never`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Open, owned by S1f.5.18: the program is refused at load, as the user ruled knowing it (Q-M1f.1 (b))."
+note   = "M1f W59 (`W59/derived-activator-never`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Fixed by S1f.5.18's T1f.5.18.3 (2026-11-09): refused at load with `derived-activator.ein`'s line, as the user ruled knowing it (Q-M1f.1 (b))"
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
@@ -2104,6 +2104,18 @@ note   = "The fourth route, which the finding did not name — `:as` takes the s
 path   = "examples/broken/load/relation_duplicate.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/derived_activator.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "G-14's derived activator (M1f S1f.5.18, Q-M1f.1 (b)): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. Until S1f.5.18 every command stopped where `r`'s plan was compiled, W24's `CompileError`; refused at load since, one line naming `mk`, `r` and `?R` (W59)."
+
+[[entry]]
+path   = "examples/broken/load/derived_activator_never.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`derived_activator.ein` without `(item (a b))`, so no run derives the activator: it answered, 64 states, until M1f S1f.5.18 refused it at load with the same line, on the user's ruling of 2026-11-08 on Q-M1f.1 (b), which chose the refusal knowing it (W59)."
 
 [[entry]]
 path   = "examples/broken/load/unbound_head.ein"

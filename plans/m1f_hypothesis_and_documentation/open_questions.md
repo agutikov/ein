@@ -779,8 +779,9 @@ programs of the five roots, `find examples tests stdlib corpus plans -name '*.ei
 programs and keeps the corpus, the stage file's condition for going on, and it is the sketch with a marker's argument
 read by what the program does with it rather than as a value. `item`'s declaration is what refuses
 `derived-activator-never.ein`: written without `(relation item Node)`, that program would load, and
-`derived-activator.ein` would be refused at its fact `(item (a b))`. Re-opening it means (a), with the 32 programs
-rewritten, or (c), against Q-M1f.1 (b).
+`derived-activator.ein` would be refused at its fact `(item (a b))`. A program that declares its marker, `(relation
+mark T)`, is refused for it: one test program in Rust did, and dropped the declaration (S1f.5.18's T1f.5.18.3).
+Re-opening it means (a), with the 32 programs rewritten, or (c), against Q-M1f.1 (b).
 
 ### Q-M1f.42 — A conclusion whose relation is a parameter
 

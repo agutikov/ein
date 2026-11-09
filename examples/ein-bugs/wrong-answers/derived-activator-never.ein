@@ -27,6 +27,13 @@
 ;;; cube, 64 states, the minimal line {∅} (`ein solve FILE` at `8249e872`,
 ;;; release and debug alike). A commitment to `(item b)` derives `(r b)`, a
 ;;; name, which binds `?R` as a relation parameter is bound.
+;;;
+;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.18.3, 2026-11-09): every command
+;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
+;;; test`: 2), in either build, where it answered, 64 states. The register's `now` is that
+;;; refusal; the section above is the record of the answer it replaced.
 
 (relation box Node :why "{?1} is in the box")
 (relation hit Node :why "{?1} is hit")
