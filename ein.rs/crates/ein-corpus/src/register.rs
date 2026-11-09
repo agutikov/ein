@@ -922,7 +922,10 @@ pub struct Right {
     /// listing them — schema `/11` (M1e2 S1e2.2.26, W27): a line mode past
     /// `--region-limit` lists the line members it certifies, [`Self::k`] of
     /// them, which make no verdict, so a right that states `others` states
-    /// `k` and `exhausted = false` and no verdict. Compared with
+    /// `k` and `exhausted` and no verdict, and `exhausted = false` where it
+    /// meets a member it does not list. A minimal question where ∅ is in R
+    /// is decided at root, past the limit too (M1f S1f.5.6), so it meets
+    /// none: `others = 0` and `exhausted = true`. Compared with
     /// [`Now::others`].
     #[serde(default)]
     pub others: Option<u64>,
@@ -1023,12 +1026,16 @@ impl Register {
             {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
             }
-            if r.right.others.is_some()
-                && (r.right.verdict.is_some() || r.right.exhausted != Some(false))
+            // Since M1f S1f.5.6 a line decided at root meets no member it does
+            // not list, and is exhausted: `others = 0`.
+            if let Some(o) = r.right.others
+                && (r.right.verdict.is_some()
+                    || r.right.exhausted.is_none()
+                    || (o > 0 && r.right.exhausted != Some(false)))
             {
                 out.push(at(
-                    "a right that states `others` is a line past the limit: no verdict, and \
-                     exhausted = false"
+                    "a right that states `others` is a line mode's: no verdict, `exhausted` \
+                     stated, and false where it meets a member it does not list"
                         .to_string(),
                 ));
             }
@@ -2179,15 +2186,23 @@ queries   = [{ classes = 1, expect = "none" }]
 
     /// **Schema /11** (M1e2 S1e2.2.26, W27): the members a line mode past the
     /// limit meets and does not list are compared where `right` states them,
-    /// and such a right states `k`, `exhausted = false` and no verdict.
+    /// and such a right states `k`, `exhausted = false` and no verdict; since
+    /// M1f S1f.5.6 a minimal line decided at root meets none, `others = 0`,
+    /// and is exhausted.
     #[test]
     fn a_line_past_the_limit_counts_what_it_does_not_list() {
         let reg = register();
         let row = reg
             .case
             .iter()
-            .find(|r| r.right.others.is_some())
-            .expect("W27's rows state the members met and not listed")
+            .find(|r| r.right.others.is_some_and(|o| o > 0))
+            .expect("W27's maximal rows state the members met and not listed")
+            .clone();
+        let decided = reg
+            .case
+            .iter()
+            .find(|r| r.right.others == Some(0))
+            .expect("W27's minimal rows are decided at root (M1f S1f.5.6)")
             .clone();
         let defects = |r: &Row| {
             Register {
@@ -2223,6 +2238,13 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
         let mut r = row;
         r.right.exhausted = Some(true);
+        assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
+        // A line decided at root meets none, and is exhausted (M1f S1f.5.6);
+        // it still makes no verdict.
+        assert!(defects(&decided).is_empty(), "{:?}", defects(&decided));
+        assert_eq!(decided.right.exhausted, Some(true));
+        let mut r = decided;
+        r.right.verdict = Some("Solution".to_string());
         assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
     }
 

@@ -49,7 +49,10 @@
 //! and since M1e2 S1e2.2.26 (W27) a line mode answers from the same
 //! description, so it certifies what describe certifies and no more. A
 //! program whose root is dead is decided by route 1 in one saturation (L0,
-//! L1).
+//! L1). **Since M1f S1f.5.6 a minimal question where ∅ is in `R` is decided
+//! at root on every route**, a flagged program's within the limit or past it
+//! (`Space::empty_state`): ∅ is below every commitment, so the minimal line
+//! is {∅}, on the user's ruling of 2026-11-07 on S-16.
 //!
 //! ### Describe's route — a decision taken without a ruling
 //!
@@ -554,6 +557,7 @@ impl<'a> Space<'a> {
             memo,
             plans,
             root: root_stats,
+            root_owes: _,
         } = prepared;
         let flagged = !monotonicity.is_monotone();
         let mut axes = Axes::new(root, &candidates, hypothesised, false)
@@ -816,6 +820,49 @@ impl<'a> Space<'a> {
             licences,
             exhausted: true,
             verdict: (mode.ask == Ask::Single).then_some(Verdict::Contradiction),
+            ..Found::default()
+        })
+    }
+
+    /// **The ∅ rule** (M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16,
+    /// *"b, use the ∅ rule in both"*): the minimal line is the members of `R`
+    /// with no smaller member, and ∅ is below every commitment, so where ∅ is
+    /// in `R` the minimal line is {∅} and no other state is on it. Whether ∅
+    /// is in `R` is root's fixpoint alone, so every minimal question is
+    /// decided by root's node, one saturation, on every program, monotone or
+    /// not, within `--region-limit` or past it; no licence about the program
+    /// is used. Root's node is computed for what the read-out prints of it,
+    /// its closure and its stale facts; it is root's fixpoint, so it is in
+    /// `R` exactly when root is alive and owes nothing, and a node that says
+    /// otherwise is an engine defect, refused.
+    fn empty_state(&mut self, ask: Ask) -> Result<Found, SolveError> {
+        let root = match self.eval(&[Box::default()])? {
+            Ok(mut v) => v.pop().expect("one node"),
+            Err(stop) => {
+                return Ok(Found {
+                    licences: vec![Licence::TheCube],
+                    stopped: Some(stop),
+                    ..Found::default()
+                });
+            }
+        };
+        if !root.in_r() {
+            return Err(SolveError::Unsupported(
+                "root's node is not in R, and root's fixpoint is alive and owes nothing — an \
+                 engine defect; run `ein oracle` on this program"
+                    .to_string(),
+            ));
+        }
+        Ok(Found {
+            licences: vec![Licence::TheCube],
+            states: vec![State {
+                set: Box::default(),
+                closure: root.closure,
+            }],
+            minimal: vec![(Box::default(), 0)],
+            exhausted: true,
+            verdict: (ask == Ask::Single).then_some(Verdict::Solution),
+            members: 1,
             ..Found::default()
         })
     }
@@ -1370,20 +1417,28 @@ fn flagged(
         (Which::All | Which::Minimal, Ask::Find(_) | Ask::Single)
     );
     let within = n <= opts.limit as usize && n < 64;
-    if early || !within {
+    // The ∅ rule (M1f S1f.5.6): a minimal question, under any ask, where ∅
+    // is in `R` — root is alive here, so where it owes nothing — is decided
+    // by root's node, within the limit or past it (`Space::empty_state`).
+    let empty_in_r = opts.mode.which == Which::Minimal && prepared.root_owes == 0;
+    if early || !within || empty_in_r {
         // Layer order, stopping when the question is decided. Past the limit
         // a question that needs the whole cube stays undecided. The cube is
         // bounded by the limit, so the facts budget does not apply.
         let mut sp = Space::open(root, terms, ast, prepared, opts, events);
         sp.budget = u64::MAX;
-        let which = if early { opts.mode.which } else { Which::All };
-        let ask = if early {
-            opts.mode.ask
+        let mut found = if empty_in_r {
+            sp.empty_state(opts.mode.ask)?
         } else {
-            Ask::Find(u64::MAX)
+            let which = if early { opts.mode.which } else { Which::All };
+            let ask = if early {
+                opts.mode.ask
+            } else {
+                Ask::Find(u64::MAX)
+            };
+            sp.cube_in_order(which, ask, opts.limit.min(63))?
         };
-        let mut found = sp.cube_in_order(which, ask, opts.limit.min(63))?;
-        if !early {
+        if !early && !empty_in_r {
             // Members of `R` found, the members met in layer order up to the
             // limit: the lines are the whole cube's, and only what describe
             // certifies of them is a line member (below).
@@ -1408,7 +1463,7 @@ fn flagged(
         // describe's partial description, by its rule, so the two certify the
         // same line members (M1e2 S1e2.2.26, W27; Q-M1e2.19). Until then it
         // labelled every member met with its line.
-        let line_past_limit = !early && opts.mode.which != Which::All;
+        let line_past_limit = !early && !empty_in_r && opts.mode.which != Which::All;
         let partial = (describe_all || line_past_limit).then(|| Box::new(sp.partial_cube()));
         if line_past_limit && let Some(d) = partial.as_deref() {
             let (states, minimal) = certified_line(d, opts.mode);

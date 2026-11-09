@@ -31,6 +31,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another) | route 2's licence: *no licence* on one row, `L7 the cube` on another | **defaulted 2026-11-09 (the user's instruction): documented, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 | [Q-M1f.21](#q-m1f21--regionstoppedlayer-on-two-routes) | `region.stopped.layer` on two routes | **defaulted 2026-11-09 (the user's instruction): documented per route, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 | [Q-M1f.22](#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) | a class label of sixteen characters glues to its value | **defaulted 2026-11-09 (the user's instruction): documented, not fixed here; the stage that fixes it files its row first**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
+| [Q-M1f.23](#q-m1f23--what-the-route-row-names-where-root-decides-a-flagged-programs-minimal-line) | what the `route` row names where root decides a flagged program's minimal line | **defaulted 2026-11-09 (the user's instruction): (a), the cube and `L7 the cube`, as `-n 1` printed; no new licence**; [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.2 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -629,3 +630,29 @@ seventeen).
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) is the stage's rule: a line that misreports is shown and not fixed by this stage,
 which moves no byte of output but the item handed to it. Re-opening it means (b).
+
+### Q-M1f.23 — What the `route` row names where root decides a flagged program's minimal line
+
+**Raised** 2026-11-09 by [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s
+T1f.5.6.2. On a program the static check flags, a minimal question where ∅ is in R is decided by root's node, one
+saturation (the user's ruling of 2026-11-07 on S-16, (b)). The rule is the minimal line's definition, ∅ being below
+every commitment, and no theorem about the program, so it fits none of
+[`solve_interface.md`](../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3.1's licences, which each
+hold for a class of program. On a monotone program the same stop has always printed
+`the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed`
+(`ein_infer::tree`'s `minimal`), and on a flagged one `--minimal -n 1` stopped at root before the rule, printing
+`2, the cube — L7 the cube`. It misstates no answer.
+
+- **(a) The cube and `L7 the cube`**, as `-n 1` printed: the route is the cube in layer order, and its first layer,
+  root, decides the line. The read-out's `exhausted` or `decided` row says the line is all of it. Nothing new in the
+  vocabulary, and a reader of `L7` alone is not told why one node sufficed.
+- **(b) A new licence**, `L8 ∅ is below every commitment` say, on every route, monotone or flagged, so the row names
+  the reason: a label added to the vocabulary, `region.licences` on every minimal run where ∅ is in R (the 211
+  corpus programs of T1's census), and every golden that prints a minimal run's `route` row.
+- **(c) No licence named**: the row says `2, the cube — decided at root`, which a monotone program's run would not say.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) moves no `route` row the rule does not already move, and the read-out's `minimal line`
+row on the live page says why the line is decided ([`read_out.md`](../../docs/kernel/inference/read_out.md) § 3).
+Re-opening it means (b), which is [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another)'s
+neighbour: both ask what a route row's licence list is for.

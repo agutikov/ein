@@ -779,6 +779,19 @@
 # not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-09).
 #
+# **W27's two minimal rows were restated on 2026-11-09 by M1f S1f.5.6**
+# (T1f.5.6.2), on the user's ruling of 2026-11-07 on S-16, (b), *"use the ∅
+# rule in both"*: ∅ is below every commitment, so where ∅ is in R the minimal
+# line is {∅}, decided by root's node, one saturation, on a flagged program
+# past `--region-limit` too. `W27/past-limit-lines-minimal` and
+# `W27/fifo-gap-limit-1-minimal` state `exhausted = true` and `others = 0` in
+# their `right` and their `now`, where they stated `false` and 2 and 1, and
+# schema /11's rule reads a right that states `others` as a line mode's: no
+# verdict, and `exhausted = false` where it meets a member it does not list.
+# Both stay fixed: their states were right before and are now, and only what
+# the run certifies of them moved. The register still reads **126 rows fixed,
+# 22 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -7579,24 +7592,24 @@ minimal  = [[]]
 maximal  = []
 
 [case.right]
-derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past --region-limit on a flagged program `--minimal` certifies what describe certifies, a member met with no member of R met below it, {∅} when ∅ is in R, and counts the other members met, which --dump-answer writes. ∅ is in R here, so the line is {∅}, the oracle's (`ein oracle FILE --region-limit 17`: R three states, minimal line {∅}), and the other two members met are counted, not listed"
+derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past --region-limit on a flagged program `--minimal` certifies what describe certifies, a member met with no member of R met below it, {∅} when ∅ is in R, and counts the other members met, which --dump-answer writes. ∅ is in R here, so the line is {∅}, the oracle's (`ein oracle FILE --region-limit 17`: R three states, minimal line {∅}), and the other two members met are counted, not listed. Restated by M1f S1f.5.6 (T1f.5.6.2, 2026-11-09) on the user's ruling of 2026-11-07 on S-16, (b), *\"use the ∅ rule in both\"*: ∅ is below every commitment, so where ∅ is in R the minimal line is {∅}, decided by root's node, one saturation, past the limit too; the run is exhausted and meets no other member (`exhausted = false` and `others = 2` until then)"
 k         = 1
-exhausted = false
-others    = 2
+exhausted = true
+others    = 0
 closes    = ["meal", "seats"]
 models    = [[]]
 
 [case.now]
 run       = "solve --minimal"
 line      = "minimal"
-exhausted = false
+exhausted = true
 k         = 1
 relations = ["meal", "seats"]
 outside   = ["is-a"]
 models    = [
   [],
 ]
-others    = 2
+others    = 0
 
 [[case]]
 id       = "W27/past-limit-lines-maximal"
@@ -7690,24 +7703,24 @@ minimal  = [[]]
 maximal  = [["(a one)", "(b one)"]]
 
 [case.right]
-derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past the limit `--minimal` certifies what describe certifies at the same limit, {∅}, ∅ being in R, and counts {(a one)} met, which `ein oracle FILE` puts on neither line"
+derived   = "Q-M1e2.19 (2), the user's ruling of 2026-11-05: past the limit `--minimal` certifies what describe certifies at the same limit, {∅}, ∅ being in R, and counts {(a one)} met, which `ein oracle FILE` puts on neither line. Restated by M1f S1f.5.6 (T1f.5.6.2, 2026-11-09) on the user's ruling of 2026-11-07 on S-16, (b), *\"use the ∅ rule in both\"*: ∅ is in R, so the minimal line is {∅}, decided by root's node, one saturation, at any limit; the run is exhausted and meets {(a one)} no more (`exhausted = false` and `others = 1` until then)"
 k         = 1
-exhausted = false
-others    = 1
+exhausted = true
+others    = 0
 closes    = ["a", "b"]
 models    = [[]]
 
 [case.now]
 run       = "solve --minimal --region-limit 1"
 line      = "minimal"
-exhausted = false
+exhausted = true
 k         = 1
 relations = ["a", "b"]
 outside   = ["p", "q"]
 models    = [
   [],
 ]
-others    = 1
+others    = 0
 
 [[case]]
 id       = "W27/fifo-gap-limit-1-maximal"

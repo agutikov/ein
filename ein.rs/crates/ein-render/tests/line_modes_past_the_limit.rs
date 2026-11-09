@@ -24,6 +24,14 @@
 //! - **to the oracle**, where its R is known (17 candidates or fewer): every
 //!   state a mode labels on a line is on the oracle's line.
 //!
+//! **Since M1f S1f.5.6 a minimal question stops at root where ∅ is in R**
+//! (the user's ruling of 2026-11-07 on S-16, *"b, use the ∅ rule in both"*):
+//! ∅ is below every commitment, so the minimal line is {∅}, and `--minimal`,
+//! `--minimal -n N` and `--minimal --single` each list ∅ alone, decided,
+//! after one saturation, at every limit. Until then `-n N` and `--single`
+//! were left out of the row check, and past the limit `--single` said *not
+//! decided* and `-n 2` a lower bound where describe certified {∅}.
+//!
 //! ```text
 //! cargo test -p ein-render --test line_modes_past_the_limit
 //! ```
@@ -195,6 +203,7 @@ fn oracle_line(r: &Region, which: Which) -> BTreeSet<u64> {
 fn past_the_limit_a_line_mode_certifies_what_describe_does() {
     let mut failures: Vec<String> = Vec::new();
     let (mut programs, mut runs, mut labelled_off_describe) = (0usize, 0usize, 0usize);
+    let mut empty_ruled = 0usize;
     for path in corpus_and_register() {
         let rel = path
             .strip_prefix(repo_root())
@@ -241,11 +250,61 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
                 continue;
             }
             let met: BTreeSet<Key> = d.states.iter().map(key).collect();
+            let empty_in_r = described.root.in_r();
             for mode in LINE_MODES {
                 let line = line_of(mode.which);
                 let (r, out, summary) = read(&path, mode, limit);
                 runs += 1;
                 let tag = tag(mode);
+                // The ∅ rule (M1f S1f.5.6): where describe says ∅ is in R,
+                // every minimal question lists ∅ alone, the state describe
+                // certifies, decided after one saturation, and its row says
+                // so.
+                if mode.which == Which::Minimal && empty_in_r {
+                    empty_ruled += 1;
+                    let listed: Vec<Key> = r.listed().map(|(_, s)| key(s)).collect();
+                    let root: Vec<Key> = d
+                        .listed()
+                        .map(|(_, s)| s)
+                        .filter(|s| s.rep.is_empty())
+                        .map(key)
+                        .collect();
+                    let a = &r.answer;
+                    let decided = if mode.ask == Ask::Single {
+                        a.verdict == Some(explore::Verdict::Solution)
+                    } else {
+                        a.exhausted
+                    };
+                    if listed != root
+                        || !decided
+                        || a.stopped.is_some()
+                        || a.saturations != 1
+                        || r.states.len() != 1
+                    {
+                        failures.push(format!(
+                            "{tag}: ∅ is in R, and the run lists {} states, decided {decided}, \
+                             stopped {:?}, after {} saturations, {} met",
+                            listed.len(),
+                            a.stopped,
+                            a.saturations,
+                            r.states.len()
+                        ));
+                    }
+                    let want = if mode.ask == Ask::Single {
+                        ("verdict", "Solution — the minimal line is one state")
+                    } else {
+                        ("minimal line", "1 state — all of them")
+                    };
+                    if row(&out, want.0).as_deref() != Some(want.1) {
+                        failures.push(format!(
+                            "{tag}: the {} row reads {:?}, not {:?}",
+                            want.0,
+                            row(&out, want.0),
+                            want.1
+                        ));
+                    }
+                    continue;
+                }
                 // What describe certifies on this line, and what the mode lists.
                 let on_line = |s: &ein_infer::read_out::Listed| match mode.which {
                     Which::Minimal => s.minimal,
@@ -382,9 +441,17 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
         failures.len(),
         failures.join("\n")
     );
-    eprintln!("{programs} flagged programs, {runs} line-mode runs past the limit");
+    eprintln!(
+        "{programs} flagged programs, {runs} line-mode runs past the limit, {empty_ruled} of them \
+         a minimal question where ∅ is in R"
+    );
     // Coverage, so a sweep that reached nothing cannot pass: 29 flagged
     // programs and 800 line-mode runs past the limit on 2026-11-05.
     assert!(programs >= 25, "{programs} flagged programs");
     assert!(runs >= 700, "{runs} line-mode runs past the limit");
+    // The ∅ rule reached: 324 of the 800 on 2026-11-09 (M1f S1f.5.6).
+    assert!(
+        empty_ruled >= 300,
+        "{empty_ruled} minimal runs where ∅ is in R"
+    );
 }

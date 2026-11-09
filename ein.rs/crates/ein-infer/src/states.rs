@@ -268,6 +268,7 @@ pub(crate) fn compute_prepared(
         memo,
         plans: _,
         root: _,
+        root_owes: _,
     } = prepared;
     let n = candidates.len();
     let mut out = StateRoute {

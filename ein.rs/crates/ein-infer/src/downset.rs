@@ -329,6 +329,7 @@ pub(crate) fn compute_prepared(
         memo,
         plans,
         root: _,
+        root_owes: _,
     } = prepared;
     let mut out = DownSet {
         candidates,

@@ -574,6 +574,16 @@ fn every_mode_is_the_oracle() {
                 .entry(if l5 { "tree" } else { "other" })
                 .or_default() += 1;
             failures.extend(against(&rel, &r, &a, false));
+            failures.extend(empty_rule(&rel, &r, mode, &a));
+            if mode.which == Which::Minimal && r.in_r(0) {
+                *counted
+                    .entry(if monotone {
+                        "∅ rule, monotone"
+                    } else {
+                        "∅ rule, flagged"
+                    })
+                    .or_default() += 1;
+            }
             // C3: a budget that stops many runs on the way. The cube is
             // bounded by the limit and not by the budget, so a flagged
             // program answers as above.
@@ -582,6 +592,7 @@ fn every_mode_is_the_oracle() {
                 let (b, _) = ask(&path, &opts);
                 stopped += usize::from(b.stopped.is_some());
                 failures.extend(against(&rel, &r, &b, true));
+                failures.extend(empty_rule(&rel, &r, mode, &b));
                 match mode.ask {
                     Ask::Describe if mode.which == Which::All => described[1] = Some(said(&b)),
                     Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
@@ -606,6 +617,14 @@ fn every_mode_is_the_oracle() {
         "{counted:?}"
     );
     assert!(refused >= 10, "{refused} refused");
+    // The ∅ rule held on both routes: 835 monotone cells and 80 flagged ones,
+    // the five minimal cells of each of 16 flagged programs, on 2026-11-09
+    // (M1f S1f.5.6).
+    assert!(
+        counted.get("∅ rule, monotone").copied().unwrap_or(0) >= 800
+            && counted.get("∅ rule, flagged").copied().unwrap_or(0) >= 75,
+        "{counted:?}"
+    );
     // L5 is used, not only licensed: the obligation tree answered real cells,
     // 168 of them on 2026-11-03.
     assert!(
@@ -613,6 +632,37 @@ fn every_mode_is_the_oracle() {
         "{counted:?}"
     );
     eprintln!("{counted:?}");
+}
+
+/// **The ∅ rule** — M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16,
+/// *"b, use the ∅ rule in both"*: the minimal line is the members of `R` with
+/// no smaller member, and ∅ is below every commitment, so where ∅ is in `R`
+/// every minimal question, under every ask, answers {∅}, decided, after one
+/// saturation, on every route, monotone or flagged. *Minimum work per
+/// question*, held where the corpus can break it: until S1f.5.6 a flagged
+/// program walked its cube on, 2, 4 or 8 saturations within the limit and
+/// 2^16 past it.
+fn empty_rule(rel: &str, r: &Region, mode: Mode, a: &Answer) -> Vec<String> {
+    if mode.which != Which::Minimal || !r.in_r(0) {
+        return Vec::new();
+    }
+    let decided = if mode.ask == Ask::Single {
+        a.verdict == Some(Verdict::Solution)
+    } else {
+        a.exhausted
+    };
+    let only_root = a.states.len() == 1 && a.states[0].set.is_empty();
+    if a.saturations == 1 && only_root && decided && a.stopped.is_none() {
+        Vec::new()
+    } else {
+        vec![format!(
+            "{rel} {mode:?}: ∅ is in R, and the run listed {} states (∅ alone: {only_root}), \
+             decided {decided}, stopped {:?}, after {} saturations",
+            a.states.len(),
+            a.stopped,
+            a.saturations
+        )]
+    }
 }
 
 /// **C4**: one job and four give the same answer, the same work and the same

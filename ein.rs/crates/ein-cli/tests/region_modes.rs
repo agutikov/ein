@@ -1260,3 +1260,69 @@ fn one_verdict_on_every_corpus_program() {
         "no flagged program carries a solve claim: the `ein test` half reads nothing"
     );
 }
+
+/// The W27 witness: a flagged program of 17 candidates, past the default
+/// `--region-limit`, whose R the oracle gives at 17 (three states, minimal line
+/// {∅}).
+const PAST: &str = "examples/ein-bugs/wrong-answers/past-limit-lines.ein";
+
+/// **Where ∅ is in R, every minimal question stops at root, and says only ∅** —
+/// M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16, *"b, use the ∅ rule
+/// in both"*: ∅ is below every commitment, so where it is in R the minimal
+/// line is {∅}, decided after one saturation, on any program and at any
+/// limit. The three rows of the stage's table, through the binary, on the W27
+/// witness past the limit, where describe certifies {∅} and until S1f.5.6
+/// `--single` said *not decided*, `-n N` *as asked* or a lower bound, and
+/// `--minimal` *exhausted no*, each after 2^16 saturations but `-n 1`.
+#[test]
+fn where_empty_is_in_r_every_minimal_question_stops_at_root() {
+    let d = ein(&["solve", PAST]);
+    assert_eq!(d.code, 0, "{}", d.err);
+    assert_eq!(
+        line(&d.out, "∅"),
+        "in R — root is alive and owes nothing",
+        "{}",
+        d.out
+    );
+    assert!(
+        line(&d.out, "exhausted").starts_with("no — not monotone"),
+        "{}",
+        d.out
+    );
+    let line_rows = [
+        ("minimal line", "1 state — all of them"),
+        ("exhausted", "yes — this is all of the minimal line"),
+    ];
+    let single_rows = [
+        ("verdict", "Solution — the minimal line is one state"),
+        ("decided", "yes — the minimal line holds no other state"),
+    ];
+    for (args, rows) in [
+        (&["--minimal", "-n", "1"][..], line_rows),
+        (&["--minimal", "-n", "2"][..], line_rows),
+        (&["--minimal", "--single"][..], single_rows),
+        (&["--minimal"][..], line_rows),
+    ] {
+        let mut argv = vec!["solve", PAST];
+        argv.extend_from_slice(args);
+        let r = ein(&argv);
+        let tag = args.join(" ");
+        assert_eq!(r.code, 0, "{tag}: {}", r.err);
+        // Decided, so no `note: … partial` on stderr.
+        assert!(r.err.is_empty(), "{tag}: {}", r.err);
+        for (k, v) in rows {
+            assert_eq!(line(&r.out, k), v, "{tag}:\n{}", r.out);
+        }
+        assert_eq!(
+            line(&r.out, "work"),
+            "1 saturation · 0 facts beyond root",
+            "{tag}"
+        );
+        assert_eq!(r.out.matches(";; state ").count(), 1, "{tag}:\n{}", r.out);
+        assert!(
+            r.out.contains(";; state 1 of 1 — ∅, root itself · minimal"),
+            "{tag}:\n{}",
+            r.out
+        );
+    }
+}

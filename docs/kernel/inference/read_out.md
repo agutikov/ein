@@ -119,9 +119,9 @@ and nowhere else.
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
 | `asked` | every run, first | the question: which part of R, and every state on it, N of them (`-n N`), or whether it is one (`--single`) | — | `asked.n` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
-| `verdict` | `--single` | the word, `Solution`, `Ambiguity`, `Contradiction` or `Open`, and why; *not decided* when the run stopped first | R | `verdict.word` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe), [X7](read_out_examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) |
+| `verdict` | `--single` | the word, `Solution`, `Ambiguity`, `Contradiction` or `Open`, and why; *not decided* when the run stopped first. On the minimal line where ∅ is in R, `Solution` after one saturation, on every program and at every limit (M1f S1f.5.6) | R | `verdict.word` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe), [X7](read_out_examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) |
 | `states of R` | `-n N` over all of R | how many states are listed, and whether they are all of R, as many as asked, or a lower bound | R | — | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X11](read_out_examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
-| `minimal line` | `--minimal`, alone or with `-n N` | as `states of R`, of the minimal line; past `--region-limit` on a flagged program, describe's `minimal line` row, from the same description | R | — | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
+| `minimal line` | `--minimal`, alone or with `-n N` | as `states of R`, of the minimal line: where ∅ is in R, ∅ alone and all of the line, after one saturation, on every program and at every limit (M1f S1f.5.6); otherwise, past `--region-limit` on a flagged program, describe's `minimal line` row, from the same description | R | — | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `maximal line` | `--maximal`, alone or with `-n N` | as `minimal line`, of the maximal line | R | — | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit), [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) |
 | `decided` | `--single` | whether the word is certified: the part is empty, it holds no other state, or two states settle it; *no* and why when the budget or the limit stopped the run | the run | `region.stopped.spent`, `region.stopped.projected`, `region.stopped.n`, `region.stopped.limit` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
 | `exhausted` | every other mode | whether the states listed are all of the part asked; *no* when stopped as asked, at the budget, past the limit, or at `--max-time` | the run | `region.exhausted`, `region.stopped.spent`, `region.stopped.projected`, `region.stopped.n`, `region.stopped.limit` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
@@ -135,6 +135,13 @@ and nowhere else.
 A mode's count row counts the states the run lists: the summary's `region.states` whose `listed` is true. Past the
 limit a line mode meets members it does not list, so its row is describe's, read off the same description, and the
 other members met are counted on the listing's last line (M1e2 S1e2.2.26, W27).
+
+**Where ∅ is in R, every minimal question stops at root** (M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16): ∅
+is below every commitment, so the minimal line is {∅}, and whether ∅ is in R is root's fixpoint alone. `--minimal`,
+`--minimal -n N` and `--minimal --single` list ∅ alone, decided, after one saturation, on a monotone program and a
+flagged one, within `--region-limit` and past it; on a flagged program the route row still names the cube, whose
+first node decides the line. The run reads one node, so the warning's `status` is not known and its `state` counts
+one node.
 
 ---
 

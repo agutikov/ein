@@ -6,7 +6,8 @@
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-16, which closes P-14 with it,
 and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Running since 2026-11-09**, on the
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default
-decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)).
+decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), and so is T1f.5.6.2, the rule
+([its record](#t2-record-2026-11-09)).
 The coordinator handed the stage a fifth item the same day, S1f.5.16's Q-M1f.22, a class label glued to its
 value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)).
 **Depends on:** nothing. It touches `explore.rs` and the read-out, and none of the grammar stages do.
@@ -212,6 +213,44 @@ The check in `flagged`, and three tests:
   `past-limit-lines.ein`.
 
 The register's two rows are restated in the same commit, and `ein-cli/tests/wrong_answers.rs` holds them.
+
+### T2 record, 2026-11-09
+
+**The rule** is `Space::empty_state` in [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs), which
+`flagged` takes before the layer walk and before the whole cube, for `Which::Minimal` under every ask, wherever root's
+fixpoint owes nothing: root is alive there, a dead root having taken route 1 already. **Whether ∅ is in R is read off
+root's fixpoint**, the obligations' tally `region::prepare_with` already took and threw away, now kept as
+`Prepared::root_owes`, so a program whose ∅ is not in R takes exactly the route it took before, the whole cube
+included, with no node computed twice. Where ∅ is in R, root's node is computed once, for what the read-out prints of
+it (its closure, its stale facts, its narration), and the answer is {∅}, exhausted, `Solution` under `--single`;
+root's node is root's fixpoint, so a node that disagrees is an engine defect, refused with a line that names `ein
+oracle`. The monotone routes are untouched: `tree::minimal` has stopped there since M1e2 S1e2.1c.4.
+
+**What moved** is T1's list for the rule and nothing else: `corpus_shapes.md5`'s 46 renderings, `read-out[minimal]`
+and `cores[minimal]` of the 23 (`EIN_BLESS=1`, the manifest's diff read before it was kept); X9's `--minimal` block of
+the examples page and its prose; and the register's two W27 minimal rows, restated with schema `/11`'s rule as T1
+said. The live page, [`read_out.md`](../../../docs/kernel/inference/read_out.md) § 3, says it in the same commit: the
+`verdict` and mode `minimal line` rows, and a paragraph under the table.
+
+**The tests**, the three the task names:
+- `ein-render/tests/line_modes_past_the_limit.rs` holds every minimal question past the limit, `-n 1`, `-n 2`,
+  `--single` and `--minimal` alike, where describe at the same limit says ∅ is in R, to ∅ alone, decided, after one
+  saturation, its row `1 state — all of them` or `Solution — the minimal line is one state`: 324 of its 800 runs on
+  2026-11-09, held to at least 300.
+- `ein-infer/tests/explore.rs`'s `every_mode_is_the_oracle` holds every minimal cell, five per program, on every
+  program whose oracle has ∅ in R, to the same, on every route and at the C3 budget too (`empty_rule`): 835 monotone
+  cells and 80 flagged, the five of each of 16 flagged programs, on 2026-11-09, held to at least 800 and 75.
+- `ein-cli/tests/region_modes.rs`'s `where_empty_is_in_r_every_minimal_question_stops_at_root` holds the words table's
+  three rows, `-n 1` and `-n 2` among them, through the binary on `past-limit-lines.ein` past the default limit, and
+  that nothing is written to stderr.
+
+**One choice, taken by default** on the user's instruction of 2026-11-09:
+[Q-M1f.23](../open_questions.md#q-m1f23--what-the-route-row-names-where-root-decides-a-flagged-programs-minimal-line),
+what the `route` row names where root decides a flagged program's minimal line: (a), the cube and `L7 the cube`, as
+`-n 1` printed there before the rule, rather than a new licence. A second consequence is no choice, being the rule's
+own: a run that reads one node does not read the cube, so within the limit the warning's `status` row says `not
+known` on the 16 programs where the walk had read the whole cube and given its reading (T1's record), and names the
+two commands that read it.
 
 ### Task T1f.5.6.3 — the clause (S-17, F1)
 

@@ -27,7 +27,7 @@ page is frozen where it was, beside [`read_out.md`'s record](../../../plans/m1e2
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
-| [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe, `--minimal` and `--maximal`; `--count` |
+| [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe and `--maximal`; `--minimal` decided at root, ∅ being in R; `--count` |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
@@ -1075,8 +1075,9 @@ stderr: note: examples/lattice/06_friends_tables.ein: partial — the question n
 exit 0
 ```
 
-**`--minimal`** on the same program certifies what describe certifies, from the same description: ∅, the minimal
-line, and the other 20 members met counted. Its line row is describe's.
+**`--minimal`** on the same program stops at root: ∅ is in R, so the minimal line is {∅} and no other state can be
+on it, decided after one saturation though the program is flagged and past the limit (M1f S1f.5.6). Until then it
+walked the cube to the limit, certified what describe certifies, and counted the other 20 members met.
 
 `ein solve --minimal examples/lattice/06_friends_tables.ein`
 
@@ -1084,29 +1085,25 @@ line, and the other 20 members met counted. Its line row is describe's.
 solve · --minimal examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
   asked             the minimal line — every state on it
-  minimal line      1 state — ∅
-  exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
+  minimal line      1 state — all of them
+  exhausted         yes — this is all of the minimal line
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
     site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
     status          not known — the cube is 2^19 nodes, past --region-limit 16
-    state           no stale fact in the 65 299 nodes the run computed
-    paths           not checked — the read-out prints no state of two commitments or more; its 21 members met would cost up to 104 saturations
+    state           no stale fact in the 1 node the run computed
+    paths           no state the read-out prints has an alive parent to check
   universe          19 candidates
   route             2, the cube — L7 the cube
-  work              65 299 saturations · 455 247 facts beyond root
+  work              1 saturation · 0 facts beyond root
 
-  ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
   ;; state 1 of 1 — ∅, root itself · minimal
   (model)
-  ;; 20 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
 
   query             (sits ?p ?s)
   over              the 1 state listed — 1 state → 1 projection class  (a lower bound)
-    class 1 of 1    1 state — the goal has no row: undetermined here
+    class 1 of 1    1 state (1) — the goal has no row: undetermined here
   as :expect        not printed: these classes are over the states listed, and the query asks about all of R
-
-stderr: note: examples/lattice/06_friends_tables.ein: partial — the question needs 2^19 saturations, past --region-limit 16
 
 exit 0
 ```

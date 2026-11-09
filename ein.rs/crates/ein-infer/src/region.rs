@@ -369,6 +369,7 @@ pub(crate) fn compute_prepared(
         memo,
         plans,
         root: root_stats,
+        root_owes: _,
     } = prepared;
     let n = candidates.len();
 
@@ -622,6 +623,10 @@ pub(crate) struct Prepared {
     pub plans: Vec<Arc<Plan>>,
     /// What root's saturation and the universe's pass counted.
     pub root: RootStats,
+    /// The instances root's fixpoint owes, its obligations' tally: with
+    /// [`Self::root_dead`], whether ∅ is in `R`, which decides the minimal
+    /// line on any program (M1f S1f.5.6, `crate::explore`'s `flagged`).
+    pub root_owes: usize,
 }
 
 /// Saturate `root`, a **freshly loaded** program, and return the firings
@@ -750,7 +755,7 @@ pub(crate) fn prepare_with(
     // The static check, over root's plans. Root's tally is what compiles the
     // obligation plans; a node can only compile one root lacks through an
     // activator a commitment derives, and that is a site of its own.
-    crate::obligations::tally(root, terms, ast, &memo, events)?;
+    let root_owes = crate::obligations::tally(root, terms, ast, &memo, events)?.total();
     let hypothesised: FxHashSet<_> = candidates
         .iter()
         .map(|c| terms.facts.get(c.fact).0)
@@ -818,6 +823,7 @@ pub(crate) fn prepare_with(
         memo,
         plans,
         root: root_stats,
+        root_owes,
     })
 }
 
