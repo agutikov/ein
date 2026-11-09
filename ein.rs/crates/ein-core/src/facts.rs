@@ -1,7 +1,7 @@
 //! The fact store — interned rows, and the number every proposition gets.
 //!
-//! A fact's identity is its relation name and its argument tuple — names, ints
-//! and nested facts — and nothing else. Here a proposition is a `u32`
+//! A fact's identity is its relation name and its argument tuple — names and
+//! nested facts — and nothing else. Here a proposition is a `u32`
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §4):
 //!
 //! | question | answer |
@@ -269,7 +269,7 @@ fn hash_row(rel: Symbol, args: &[Value]) -> u64 {
 mod tests {
     use super::*;
     use crate::intern::Interner;
-    use crate::value::{IntPool, Value};
+    use crate::value::Value;
 
     fn v(n: u32) -> Value {
         Value::sym(Symbol(n))
@@ -371,12 +371,11 @@ mod tests {
     fn a_zebra_sized_store_fits_the_memory_budget() {
         // design/03 §4: 381 facts of mean arity ≈ 2.2 is ~8 KB, contiguous.
         let mut interner = Interner::new();
-        let mut ints = IntPool::new();
         let mut s = FactStore::new();
         let rel = interner.intern("co-located").expect("room");
         for i in 0..381u32 {
             let a = Value::sym(interner.intern(&format!("House-{i}")).expect("room"));
-            let b = Value::int(ints.intern(&i.to_string()).expect("room"));
+            let b = Value::sym(interner.intern(&i.to_string()).expect("room"));
             // 2 args for four facts in five, 3 for the fifth — mean 2.2.
             if i % 5 == 4 {
                 s.intern(rel, &[a, b, a]).expect("room");

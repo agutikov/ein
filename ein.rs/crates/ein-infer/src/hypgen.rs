@@ -1001,7 +1001,7 @@ fn coerce_relation_names(s: &Session<'_>, value: ein_ir::NodeId) -> (FxHashSet<S
 /// `"most-constrained"` returns `0.0`, so the sort falls through to the
 /// content tiebreakers and the S1.5a.1a determinism property is preserved.
 /// `"popularity"` is `rel_w · |extent(R)| + obj_w · Σ |names[arg].as_arg|` over
-/// **string** args only — a nested fact or an int has no name to index by and
+/// **string** args only — a nested fact has no name to index by and
 /// contributes nothing.
 ///
 /// The two reserved modes and the unknown-mode case return an error with a

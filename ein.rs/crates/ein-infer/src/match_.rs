@@ -823,8 +823,8 @@ impl Matcher {
             },
             // The wildcard: any value, and nothing bound.
             Slot::Any => true,
-            // An IR node compared to a name, an integer or a `Fact`: no IR
-            // node is equal to any of them.
+            // An IR node compared to a name or a `Fact`: no IR node is equal
+            // to either.
             Slot::Opaque(_) => false,
         }
     }
@@ -875,7 +875,7 @@ impl Matcher {
         match (a.kind, b.kind) {
             // Two raw nodes compare structurally.
             (Node, Node) => ast.eq_nodes(a.node, b.node),
-            // A node is never equal to a name, an integer or a `Fact`…
+            // A node is never equal to a name or a `Fact`…
             (Node, _) | (_, Node) => false,
             _ => match (value(a), value(b)) {
                 (Some(x), Some(y)) => x == y,

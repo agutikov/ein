@@ -23,8 +23,9 @@ use std::sync::OnceLock;
 
 /// How many distinct ids one interned space can hold.
 ///
-/// [`crate::Value`] packs a 2-bit tag beside a 30-bit payload, so a symbol, an
-/// int-pool entry and a fact all share the same ceiling. The check exists so
+/// [`crate::Value`] packs a 2-bit tag beside a 30-bit payload, so a symbol and
+/// a fact share the same ceiling (and an int-pool entry did, until M1f
+/// S1f.5.4 retired the int kind). The check exists so
 /// that hitting it is an error somebody can read rather than a silent wrap
 /// into another value's identity.
 ///
@@ -67,7 +68,8 @@ pub(crate) fn arena_room(len: usize, more: usize, which: Overflow) -> Result<(),
 
 /// Why an id could not be assigned.
 ///
-/// Three of the seven are the 30-bit payload filling up and three more are an
+/// Two of the six are the 30-bit payload filling up (three of seven until M1f
+/// S1f.5.4 retired the integer pool's) and three more are an
 /// arena or a field beside it. A puzzle that reaches one is a research
 /// finding, not a crash — so it is a [`Result`] at every site that assigns an
 /// id or writes an offset, and not a panic. **That was a claim rather than a
@@ -79,7 +81,6 @@ pub(crate) fn arena_room(len: usize, more: usize, which: Overflow) -> Result<(),
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Overflow {
     Symbols,
-    Ints,
     Facts,
     /// The text arena passed [`ARENA_CAPACITY`], so a span start would wrap.
     SymbolText,
@@ -106,7 +107,6 @@ impl std::fmt::Display for Overflow {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let what = match self {
             Overflow::Symbols => "distinct symbols",
-            Overflow::Ints => "distinct integer literals",
             Overflow::Facts => "distinct facts",
             Overflow::SymbolText => {
                 return write!(

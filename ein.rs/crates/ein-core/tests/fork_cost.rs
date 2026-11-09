@@ -73,7 +73,7 @@ fn kb_with(n: u32) -> (Terms, Kb) {
     for i in 0..n {
         let args: Vec<Value> = vec![
             terms.value_text(&format!("Person-{i}")).expect("room"),
-            terms.value_int(&i.to_string()).expect("room"),
+            terms.value_text(&i.to_string()).expect("room"),
         ];
         kb.add_and_index_fact(&mut terms, rel, &args, None)
             .expect("room");
@@ -119,7 +119,7 @@ fn deep_fork_costs(n: u32) -> (Vec<usize>, usize) {
     for i in 0..10u32 {
         let args = vec![
             terms.value_text(&format!("Branch-{i}")).expect("room"),
-            terms.value_int(&i.to_string()).expect("room"),
+            terms.value_text(&i.to_string()).expect("room"),
         ];
         current
             .add_and_index_fact(&mut terms, rel, &args, None)

@@ -70,7 +70,6 @@ fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
             out.push_str(ast.sym(s));
         }
         Node::Str(s) => out.push_str(&escape_string_literal(ast.sym(s))),
-        Node::Int(s) => out.push_str(ast.sym(s)),
         Node::KwPair { key, value } => {
             compact_into(ast, key, out);
             out.push(' ');

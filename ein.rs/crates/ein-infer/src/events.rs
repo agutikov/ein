@@ -478,8 +478,8 @@ pub fn sexpr(terms: &Terms, id: FactId) -> String {
     terms.fact_text(id)
 }
 
-/// One argument as the one printer prints it ([`Terms::display`]): a name,
-/// an int, or the s-expression of a nested fact.
+/// One argument as the one printer prints it ([`Terms::display`]): a name
+/// or the s-expression of a nested fact.
 pub fn sexpr_value(terms: &Terms, v: Value) -> String {
     terms.display(v)
 }

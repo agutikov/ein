@@ -128,7 +128,8 @@ pub struct NafRef {
 pub enum NafArg {
     /// The query ranged free here.
     Free,
-    /// A name or a number: a bound variable, an `Atom`'s name, an `Int`.
+    /// A name: a bound variable, an `Atom`'s name (a run of digits among
+    /// them, since M1f S1f.5.4 retired the `Int`).
     Value(Value),
     /// A nested pattern, rendered as a `(relation, (args…))` tuple — so it
     /// can be partly free, and cannot collapse into a [`Value`].

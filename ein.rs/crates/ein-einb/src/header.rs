@@ -38,6 +38,10 @@ pub const ALIGN: usize = 8;
 pub enum Kind {
     Meta = 1,
     Symbols = 2,
+    /// The integer table: empty in every file written since M1f S1f.5.4,
+    /// which retired the int kind, and refused when it is not
+    /// ([`crate::EinbError::Int`]). It stays a section, written and required,
+    /// so the layout is the one every 1.x reader and file has.
     Ints = 3,
     Facts = 4,
     Present = 5,

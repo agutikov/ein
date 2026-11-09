@@ -28,11 +28,11 @@
 
 use rustc_hash::FxHashMap;
 
-pub use ein_core::repr::canonical_int;
 use ein_core::repr::repr_str;
 
-/// An interned string: an atom name, a variable name, a string body, or the
-/// canonical decimal text of an integer.
+/// An interned string: an atom name, a variable name or a string body (and
+/// the canonical decimal text of an integer, until M1f S1f.5.4 retired the
+/// int: since S1f.5.5's swap a run of digits is an atom name, as written).
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct SymId(pub u32);
 
@@ -88,10 +88,6 @@ pub enum Node {
     Wildcard,
     /// A double-quoted string, stored **unescaped**.
     Str(SymId),
-    /// An integer, stored as its *canonical decimal text* — `007` and `7`
-    /// intern to the same symbol, and the width is unbounded
-    /// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
-    Int(SymId),
     /// `:key value`. `key` is a [`Node::Keyword`] node so it keeps its own
     /// `Loc`.
     KwPair { key: NodeId, value: NodeId },
@@ -281,7 +277,6 @@ impl Ast {
             (Node::Keyword(x), Node::Keyword(y)) => x == y,
             (Node::Wildcard, Node::Wildcard) => true,
             (Node::Str(x), Node::Str(y)) => x == y,
-            (Node::Int(x), Node::Int(y)) => x == y,
             (Node::KwPair { key: k1, value: v1 }, Node::KwPair { key: k2, value: v2 }) => {
                 self.eq_nodes(k1, k2) && self.eq_nodes(v1, v2)
             }
@@ -328,8 +323,6 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
         Node::Keyword(s) => format!("Keyword(name={})", repr_str(ast.sym(s))),
         Node::Wildcard => "Wildcard()".to_string(),
         Node::Str(s) => format!("String(value={})", repr_str(ast.sym(s))),
-        // `Int` carries an *integer*, so it prints unquoted.
-        Node::Int(s) => format!("Int(value={})", ast.sym(s)),
         Node::KwPair { key, value } => format!(
             "KwPair(key={}, value={})",
             node_repr(ast, key),

@@ -870,3 +870,108 @@
   repair: Insert `false`, Delete `TRUE`
   repair: Insert `true`, Delete `TRUE`
 
+## 123. a fact's argument (was: —)
+    (relation p T) (p a?x)
+<row>:1:19: unexpected `a?x`: a token that is not a name
+  repair: Delete `a?x`
+
+## 124. a fact's argument (was: —)
+    (relation p T) (p Жук)
+<row>:1:19: unexpected `Жук`: a token that is not a name
+  repair: Delete `Жук`
+
+## 125. a fact's relation (was: —)
+    (a?x b)
+<row>:1:2: unexpected `a?x`: a token that is not a name
+  repair: Delete `a?x`
+
+## 126. a nested fact's argument (was: —)
+    (relation p T) (p (q a:b))
+<row>:1:22: unexpected `a:b`: a token that is not a name
+  repair: Delete `a:b`
+
+## 127. a stored negation's argument (was: —)
+    (not (p a,b))
+<row>:1:9: unexpected `a,b`: a token that is not a name
+  repair: Delete `a,b`
+
+## 128. a relation's name (was: —)
+    (relation a?x T)
+<row>:1:11: unexpected `a?x`: a token that is not a name
+  repair: Delete `a?x`
+
+## 129. a relation's signature (was: —)
+    (relation p a:b)
+<row>:1:13: unexpected `a:b`: a token that is not a name
+  repair: Delete `a:b`
+
+## 130. a rule's name (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule a?x () :match (p ?x) :assert (q ?x))
+<row>:3:7: unexpected `a?x`: a token that is not a name
+  repair: Insert a name, Delete `a?x`
+
+## 131. a premise's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (a?x ?y) :assert (q ?y))
+<row>:3:20: unexpected `a?x`: a token that is not a name
+  repair: Delete `a?x`
+
+## 132. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p a?x) :assert (q a))
+<row>:3:22: unexpected `a?x`: a token that is not a name
+  repair: Delete `a?x`
+
+## 133. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x?y) :assert (q ?x))
+<row>:3:22: unexpected `?x?y`: a token that is not a name
+  repair: Delete `?x?y`
+
+## 134. a guard's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (neq ?x a#b)) :assert (q ?x))
+<row>:3:39: unexpected `a#b`: a token that is not a name
+  repair: Insert a name, Delete `a#b`
+  repair: Insert a variable, Delete `a#b`
+
+## 135. an absent's premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (absent (p a|b)) :assert (q a))
+<row>:3:30: unexpected `a|b`: a token that is not a name
+  repair: Delete `a|b`
+
+## 136. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (q a,b))
+<row>:3:37: unexpected `a,b`: a token that is not a name
+  repair: Delete `a,b`
+
+## 137. a claim's fact's argument (was: —)
+    (relation p T) (p a) (query :goal (p ?x) :expect (model (p "a"b)))
+<row>:1:60: unexpected `"a"b`: a string glued to what follows
+  repair: Delete `"a"b`
+
+## 138. a solve's relation list (was: —)
+    (relation p T) (solve :no-hypothesis (a\b))
+<row>:1:39: unexpected `a\b`: a token that is not a name
+  repair: Delete `a\b`
+
+## 139. an import's alias (was: —)
+    (import std.macro :as a?x)
+<row>:1:23: unexpected `a?x`: a token that is not a name
+  repair: Insert a name, Delete `a?x`
+
+## 140. a macro's name (was: —)
+    (macro a?x (?a) (p ?a))
+<row>:1:8: unexpected `a?x`: a token that is not a name
+  repair: Insert a name, Delete `a?x`
+

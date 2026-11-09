@@ -21,7 +21,7 @@
 //! exists precisely so a test need not.
 
 use ein_core::{
-    BitSet, FactId, IntId, Justifications, Kb, Prov, ProvKind, Symbol, Tag, Terms, Value,
+    BitSet, FactId, Justifications, Kb, Prov, ProvKind, Symbol, Tag, Terms, Value,
     build_derivation_dag, shape, unsat_core, walk_premises, walks::is_frontier,
 };
 use ein_corpus::{Scratch, corpus_files, repo_root};
@@ -811,7 +811,7 @@ fn editing_a_module_takes_effect_without_a_rebuild() {
 
 /// A `Terms` whose id space is a permutation of `after`'s.
 ///
-/// Reverse assignment order for names and integer literals, a run of junk
+/// Reverse assignment order for names, a run of junk
 /// facts ahead of everything so `FactId` 0 is not special, and the facts
 /// themselves re-interned in reverse *within each nesting depth* — depth-blind
 /// would be illegal, since `(not (R a b))` cannot be interned before the fact
@@ -827,11 +827,6 @@ fn permuted(after: &Terms) -> Terms {
     for i in (0..after.syms.len()).rev() {
         terms
             .intern_text(after.syms.text(Symbol(i as u32)))
-            .expect("room");
-    }
-    for i in (0..after.ints.len()).rev() {
-        terms
-            .value_int(after.ints.text(IntId(i as u32)))
             .expect("room");
     }
 
@@ -858,10 +853,6 @@ fn permuted(after: &Terms) -> Terms {
                     Tag::Sym => {
                         let text = after.syms.text(Symbol(v.payload())).to_string();
                         terms.value_text(&text).expect("room")
-                    }
-                    Tag::Int => {
-                        let text = after.ints.text(IntId(v.payload())).to_string();
-                        terms.value_int(&text).expect("room")
                     }
                     Tag::Fact => Value::fact(moved[v.payload() as usize].expect("a lower depth")),
                 })

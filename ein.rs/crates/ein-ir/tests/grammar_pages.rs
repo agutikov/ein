@@ -20,7 +20,9 @@
 //!   are, and [`the_lines_the_grammar_does_not_cover_are_still_reached`] holds
 //!   a program reaching each. The four language stages add their positions as
 //!   rows after this task: S1f.5.1's `_`, S1f.5.2's string, S1f.5.4's names
-//!   and S1f.5.11's keywords, each in every place.
+//!   and S1f.5.11's keywords, each in every place. S1f.5.4's are in, at the
+//!   table's end (T1f.5.4.3): a token that is no name, in every place a name
+//!   goes, where until the swap it loaded split or was refused at a character.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -1120,6 +1122,74 @@ const TABLE: &[Row] = &[
         &["config-bool"],
         "(config :lattice-sanity-check TRUE)",
     ),
+    // ── S1f.5.4's names: a token that is no name, where a name goes ──
+    // The name rule (the user, 2026-11-07, on F2 and F8): a name is a run of
+    // ASCII letters, digits, connectors and decorators up to a separator, and
+    // `?` and `:` only in front of a variable and a keyword. So a token that
+    // runs on past one of those, or holds a character no name has, is no name
+    // in any place one goes. Until the swap `a?x` loaded as `a` and `?x`, `"a"b`
+    // as a string and a name, and `a:b`, `a,b` and `Жук` were refused at the
+    // character. A run of digits in each place is a name, which
+    // `ein-cli/tests/cli_semantics.rs`' `a_run_of_digits_is_a_name_in_every_place`
+    // holds.
+    row("a fact's argument", &[], "(relation p T) (p a?x)"),
+    row("a fact's argument", &[], "(relation p T) (p Жук)"),
+    row("a fact's relation", &[], "(a?x b)"),
+    row(
+        "a nested fact's argument",
+        &[],
+        "(relation p T) (p (q a:b))",
+    ),
+    row("a stored negation's argument", &[], "(not (p a,b))"),
+    row("a relation's name", &[], "(relation a?x T)"),
+    row("a relation's signature", &[], "(relation p a:b)"),
+    row(
+        "a rule's name",
+        &[],
+        "(rule a?x () :match (p ?x) :assert (q ?x))",
+    ),
+    row(
+        "a premise's relation",
+        &[],
+        "(rule r () :match (a?x ?y) :assert (q ?y))",
+    ),
+    row(
+        "a premise's argument",
+        &[],
+        "(rule r () :match (p a?x) :assert (q a))",
+    ),
+    row(
+        "a premise's argument",
+        &[],
+        "(rule r () :match (p ?x?y) :assert (q ?x))",
+    ),
+    row(
+        "a guard's argument",
+        &[],
+        "(rule r () :match (and (p ?x) (neq ?x a#b)) :assert (q ?x))",
+    ),
+    row(
+        "an absent's premise's argument",
+        &[],
+        "(rule r () :match (absent (p a|b)) :assert (q a))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (p ?x) :assert (q a,b))",
+    ),
+    row(
+        "a claim's fact's argument",
+        &[],
+        "(relation p T) (p a) (query :goal (p ?x) :expect (model (p \"a\"b)))",
+    ),
+    row(
+        "a solve's relation list",
+        &[],
+        "(relation p T) (solve :no-hypothesis (a\\b))",
+    ),
+    row("an import's alias", &[], "(import std.macro :as a?x)"),
+    row("a macro's name", &[], "(macro a?x (?a) (p ?a))"),
 ];
 
 /// A row's program: a rule row's declarations before it.

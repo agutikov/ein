@@ -55,7 +55,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use ein_core::{FactId, IntId, Kb, NafArg, NafRef, Prov, Symbol, Tag, Terms, Value};
+use ein_core::{FactId, Kb, NafArg, NafRef, Prov, Symbol, Tag, Terms, Value};
 use ein_corpus::repo_root;
 use ein_infer::compile::SharedMemo;
 use ein_infer::events::{Events, sexpr};
@@ -1025,10 +1025,6 @@ fn permuted(after: &Terms, seed: i64) -> Terms {
         .map(|i| after.syms.text(Symbol(i as u32)).to_string())
         .collect();
     rng.shuffle(&mut names);
-    let mut ints: Vec<String> = (0..after.ints.len())
-        .map(|i| after.ints.text(IntId(i as u32)).to_string())
-        .collect();
-    rng.shuffle(&mut ints);
     let mut terms = Terms::new();
     let junk = terms.intern_text("@id-order-probe").expect("room");
     for k in 0..7 {
@@ -1037,9 +1033,6 @@ fn permuted(after: &Terms, seed: i64) -> Terms {
     }
     for name in &names {
         terms.intern_text(name).expect("room");
-    }
-    for text in &ints {
-        terms.value_int(text).expect("room");
     }
     let n = after.facts.len();
     let mut depth = vec![0usize; n];
@@ -1080,10 +1073,6 @@ fn remap(after: &Terms, terms: &mut Terms, moved: &FxHashMap<u32, FactId>, v: Va
         Tag::Sym => {
             let text = after.syms.text(Symbol(v.payload())).to_string();
             terms.value_text(&text).expect("room")
-        }
-        Tag::Int => {
-            let text = after.ints.text(IntId(v.payload())).to_string();
-            terms.value_int(&text).expect("room")
         }
         Tag::Fact => Value::fact(moved[&v.payload()]),
     }

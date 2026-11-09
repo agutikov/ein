@@ -14,7 +14,8 @@
 //! ## What is in a file
 //!
 //! `META` (what it was made from), `SYMBOLS` / `INTS` / `FACTS` (the interned
-//! tables, in id order), `PRESENT` (which of those facts this KB believes, in
+//! tables, in id order; `INTS` empty since M1f S1f.5.4, below), `PRESENT`
+//! (which of those facts this KB believes, in
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
 //! and optionally `NOGOODS`, `SOLUTIONS`, since format 1.1 (M1e2
@@ -22,6 +23,17 @@
 //! arrival, which a full alternatives list keeps beside it), and since format
 //! 1.2 (M1e2 S1e2.2.21) `UNIVERSAL` (the facts each derivation's universals
 //! read, which a core follows).
+//!
+//! **`INTS` is empty, and a file whose `INTS` is not is refused** (M1f
+//! S1f.5.4). Ein has no int since S1f.5.5's swap, which made a run of digits a
+//! name, so the int pool and its id space are gone. The section stays in the
+//! layout, written empty and required, so that no layout changed and no
+//! version moved (design/10 §4 bumps the major on a layout change): a 1.x
+//! reader opens what this writer writes, and this reader opens what a 1.x
+//! writer wrote for a program with no int, which was every program a corpus
+//! file is. A file written from a program with one holds an `INTS` entry and
+//! values tagged `0b01`, and each is refused, [`EinbError::Int`], never read
+//! as a name or a fact.
 //!
 //! ## What is not a section
 //!
@@ -43,7 +55,7 @@
 //!
 //! ## Ids across the boundary
 //!
-//! `Symbol` / `IntId` / `FactId` / `ProvId` are process-local. Each space is
+//! `Symbol` / `FactId` / `ProvId` are process-local. Each space is
 //! stored in id order and re-interned on open, which yields a translation
 //! table per space; every other section is remapped through them in one linear
 //! pass, and the pass is skipped when the tables come back the identity —
@@ -139,6 +151,10 @@ pub enum EinbError {
     /// The file disagrees with itself: re-interning entry *i* did not yield
     /// the id the file says it has.
     NotInjective(&'static str),
+    /// The file holds an integer — an `INTS` entry or a value with an int's
+    /// tag bits — which a 1.x writer wrote for a program with an int before
+    /// M1f S1f.5.4 retired the kind. There is no value to read it as.
+    Int,
 }
 
 impl std::fmt::Display for EinbError {
@@ -163,6 +179,11 @@ impl std::fmt::Display for EinbError {
             EinbError::NotInjective(what) => {
                 write!(f, ".einb {what} table does not re-intern to its own ids")
             }
+            EinbError::Int => write!(
+                f,
+                ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
+                 digits is a name): save it again from its .ein"
+            ),
         }
     }
 }
@@ -215,7 +236,7 @@ pub fn save_to_vec(
         w.into_vec()
     }));
     bodies.push((Kind::Symbols, sections::write_symbols(terms)));
-    bodies.push((Kind::Ints, sections::write_ints(terms)));
+    bodies.push((Kind::Ints, sections::write_ints()));
     bodies.push((Kind::Facts, sections::write_facts(terms)));
     bodies.push((Kind::Present, sections::write_present(kb)));
     bodies.push((Kind::Prov, sections::write_prov(kb, terms)));
@@ -393,7 +414,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
 
     let mut maps = tables::Maps::default();
     sections::read_symbols(want(Kind::Symbols, "SYMBOLS")?, terms, &mut maps)?;
-    sections::read_ints(want(Kind::Ints, "INTS")?, terms, &mut maps)?;
+    sections::read_ints(want(Kind::Ints, "INTS")?)?;
     sections::read_facts(want(Kind::Facts, "FACTS")?, terms, &mut maps)?;
     let remapped = !maps.identity();
 

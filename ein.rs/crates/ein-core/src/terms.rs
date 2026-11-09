@@ -1,9 +1,11 @@
-//! `Terms` — the three intern tables that decide what exists.
+//! `Terms` — the two intern tables that decide what exists.
 //!
-//! Symbols, integers and facts are interned together because they are asked
-//! together: a fact's argument is a `Value` whose tag says which of the three
-//! tables to read, and rendering or ordering one needs all three
+//! Symbols and facts are interned together because they are asked together:
+//! a fact's argument is a `Value` whose tag says which of the two tables to
+//! read, and rendering or ordering one needs both
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §§2–4).
+//! There was a third, the integer pool, until M1f S1f.5.4 retired the int
+//! kind: since S1f.5.5's swap a run of digits is a name.
 //!
 //! No entity carries a back-pointer to these tables: an accessor takes
 //! `&Terms` (and, where belief matters, `&Kb`) explicitly, so an entity shared
@@ -18,7 +20,7 @@ use crate::intern::{Interner, Overflow, Symbol};
 use crate::prov::ProvArena;
 use crate::repr::ReprValue;
 use crate::text;
-use crate::value::{IntId, IntPool, Tag, Value};
+use crate::value::{Tag, Value};
 use std::cmp::Ordering;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering as Atomics};
@@ -89,7 +91,7 @@ impl<T: Default> Table<T> {
     /// `false` means a worker's view is still alive. That is a bug in the
     /// fan-out rather than a condition to recover from — the alternative is a
     /// table that has silently stopped growing — so the caller panics; this
-    /// returns rather than panicking so the message can name all three tables
+    /// returns rather than panicking so the message can name both tables
     /// at once.
     fn reclaim(&mut self) -> bool {
         let Table::Shared(t) = self else {
@@ -111,7 +113,7 @@ impl<T: Default> Table<T> {
 
 #[derive(Debug)]
 pub struct Terms {
-    /// The three intern tables, each [`Table::Own`] until a fanned-out layer
+    /// The two intern tables, each [`Table::Own`] until a fanned-out layer
     /// lends it ([`Terms::share`]) and [`Table::Own`] again when the layer
     /// takes it back.
     ///
@@ -122,7 +124,6 @@ pub struct Terms {
     /// measured and `ein-infer/tests/interning.rs` keeps: nothing interns a
     /// name during a search.
     pub syms: Table<Interner>,
-    pub ints: Table<IntPool>,
     pub facts: Table<FactStore>,
     /// Derivation records. Global for the same reason the fact store is —
     /// see [`crate::prov`] — except for the fork region, which is **not**
@@ -354,7 +355,6 @@ impl Terms {
         };
         Terms {
             syms: Table::Own(syms),
-            ints: Table::Own(IntPool::new()),
             facts: Table::Own(FactStore::new()),
             provs: ProvArena::new(),
             kernel,
@@ -364,7 +364,7 @@ impl Terms {
 
     // ── Sharing ────────────────────────────────────────────────────
 
-    /// A worker's view of these tables: the same three interners, lent, and a
+    /// A worker's view of these tables: the same two interners, lent, and a
     /// **record region of its own**.
     ///
     /// This is the whole of what
@@ -373,8 +373,8 @@ impl Terms {
     /// [shared_state.md §4](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses)'s
     /// four decisions in one type:
     ///
-    /// - the **interner and the integer pool** are shared by `&`, because they
-    ///   do not grow during a search — 0 of the 90 corpus files that solve;
+    /// - the **interner** is shared by `&`, because it does not grow during a
+    ///   search — 0 of the 90 corpus files that solve;
     /// - the **fact store** is shared by `&` too, because a search assigns 41
     ///   to 417 ids against 5.8–26 M borrow-returning reads, and *per
     ///   entering* four of six workloads assign none at all. A worker that
@@ -390,12 +390,11 @@ impl Terms {
     /// that the tables are [`Table::Shared`], not a borrow. Reads see the
     /// tables as they stood when they were lent, which is the same thing as
     /// saying they see them as they are: nothing may write them meanwhile.
-    /// Lend the three intern tables out, so [`Terms::worker`] can hand a view
+    /// Lend the two intern tables out, so [`Terms::worker`] can hand a view
     /// to each worker. Idempotent, and the point at which this `Terms` stops
     /// being able to intern.
     pub fn share(&mut self) {
         self.syms.share();
-        self.ints.share();
         self.facts.share();
     }
 
@@ -418,7 +417,7 @@ impl Terms {
     /// where the assertion above would be a *second* panic and would abort the
     /// process with the original message lost.
     pub fn try_reclaim(&mut self) -> bool {
-        self.syms.reclaim() & self.ints.reclaim() & self.facts.reclaim()
+        self.syms.reclaim() & self.facts.reclaim()
     }
 
     /// Lend the tables for the duration of a fan-out, and take them back when
@@ -463,7 +462,6 @@ impl Terms {
     pub fn worker(&self) -> Terms {
         Terms {
             syms: self.syms.holder(),
-            ints: self.ints.holder(),
             facts: self.facts.holder(),
             provs: self.provs.share(),
             kernel: self.kernel,
@@ -502,19 +500,6 @@ impl Terms {
         self.value_text(&format!("?{name}"))
     }
 
-    /// An integer literal, at any width. `text` need not be canonical.
-    pub fn value_int(&mut self, text: &str) -> Result<Value, Overflow> {
-        Ok(Value::int(self.intern_int(text)?))
-    }
-
-    /// See [`Terms::intern_text`] for what a shared view can and cannot do.
-    pub fn intern_int(&mut self, text: &str) -> Result<IntId, Overflow> {
-        match self.ints.own_mut() {
-            Some(ints) => ints.intern(text),
-            None => self.ints.get(text).map_or_else(|| self.refuse(), Ok),
-        }
-    }
-
     /// See [`Terms::intern_text`] for what a shared view can and cannot do.
     ///
     /// This is the one that matters: a fork *derives* propositions, and the
@@ -543,10 +528,6 @@ impl Terms {
         self.syms.text(sym)
     }
 
-    pub fn int_text(&self, id: IntId) -> &str {
-        self.ints.text(id)
-    }
-
     pub fn fact(&self, id: FactId) -> (Symbol, &[Value]) {
         self.facts.get(id)
     }
@@ -558,19 +539,17 @@ impl Terms {
     // ── Ordering ───────────────────────────────────────────────────
 
     /// Order two values by content: a name by its text ([`Interner::rank`]),
-    /// an int numerically, a fact as [`Self::cmp_fact_semantic`] orders it,
-    /// and a mixed pair by tag, `Int < Sym < Fact`
-    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2).
+    /// a fact as [`Self::cmp_fact_semantic`] orders it, and a mixed pair by
+    /// tag, `Sym < Fact`
+    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2,
+    /// whose `Int < Sym < Fact` lost its first member with the int kind, M1f
+    /// S1f.5.4).
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
         match (a.tag(), b.tag()) {
             (Tag::Sym, Tag::Sym) => self
                 .syms
                 .rank(a.as_sym().expect("tagged Sym"))
                 .cmp(&self.syms.rank(b.as_sym().expect("tagged Sym"))),
-            (Tag::Int, Tag::Int) => self.ints.cmp_value(
-                a.as_int().expect("tagged Int"),
-                b.as_int().expect("tagged Int"),
-            ),
             (Tag::Fact, Tag::Fact) => self.cmp_fact_semantic(
                 a.as_fact().expect("tagged Fact"),
                 b.as_fact().expect("tagged Fact"),
@@ -608,7 +587,6 @@ impl Terms {
     pub fn repr_value(&self, v: Value) -> ReprValue {
         match v.tag() {
             Tag::Sym => ReprValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
-            Tag::Int => ReprValue::Int(self.int_text(v.as_int().expect("tagged Int")).to_string()),
             Tag::Fact => self.repr_fact(v.as_fact().expect("tagged Fact")),
         }
     }
@@ -636,15 +614,14 @@ impl Terms {
 
     /// A value as Ein text the loader reads back to the same value — **the
     /// one printer** ([`crate::text`]): a name bare where it lexes as itself
-    /// and quoted elsewhere, an int as its canonical decimal text, and a
-    /// `Fact` as [`Terms::fact_text`]. Every surface that prints a value
-    /// prints it through here (M1e2 S1e2.3.8). Until then a name printed as
-    /// its raw text, so the int `1` and the name `"1"` printed alike, and a
-    /// `Fact` as its `repr`.
+    /// and quoted elsewhere, and a `Fact` as [`Terms::fact_text`]. Every
+    /// surface that prints a value prints it through here (M1e2 S1e2.3.8).
+    /// Until then a name printed as its raw text, so the int `1` and the name
+    /// `"1"` printed alike, and a `Fact` as its `repr`; since M1f S1f.5.5's
+    /// swap there is no int, and `1` and `01` are two names that print apart.
     pub fn display(&self, v: Value) -> String {
         match v.tag() {
             Tag::Sym => text::symbol(self.sym(v.as_sym().expect("tagged Sym"))).into_owned(),
-            Tag::Int => self.int_text(v.as_int().expect("tagged Int")).to_string(),
             Tag::Fact => self.fact_text(v.as_fact().expect("tagged Fact")),
         }
     }
@@ -689,14 +666,15 @@ impl Drop for Lent<'_> {
     }
 }
 
-/// `Int < Sym < Fact` — design/02 §5 H2's recommendation, which is *not* the
-/// raw tag order (`Sym` is tag 0 because it is the overwhelmingly common
-/// shape and the cheapest thing to leave untagged in a debugger).
+/// `Sym < Fact` — design/02 §5 H2's recommendation, `Int < Sym < Fact`,
+/// without the int (M1f S1f.5.4). The raw tag order agrees now, but an
+/// observable order is not left to an encoding (`Sym` is tag 0 because it is
+/// the overwhelmingly common shape and the cheapest thing to leave untagged in
+/// a debugger).
 fn tag_order(tag: Tag) -> u8 {
     match tag {
-        Tag::Int => 0,
-        Tag::Sym => 1,
-        Tag::Fact => 2,
+        Tag::Sym => 0,
+        Tag::Fact => 1,
     }
 }
 
@@ -715,7 +693,6 @@ mod tests {
         assert_send_sync::<Terms>();
         assert_send_sync::<crate::Interner>();
         assert_send_sync::<crate::FactStore>();
-        assert_send_sync::<crate::IntPool>();
     }
 
     #[test]
@@ -732,25 +709,29 @@ mod tests {
             t.value_var("x").expect("room"),
             t.value_text("?x").expect("room")
         );
-        // An int is *not* the atom that spells it.
+        // A run of digits is a name like any other (M1f S1f.5.4), and `07`
+        // is another one.
         assert_ne!(
-            t.value_int("7").expect("room"),
-            t.value_text("7").expect("room")
+            t.value_text("7").expect("room"),
+            t.value_text("07").expect("room")
         );
     }
 
     #[test]
-    fn semantic_order_sorts_names_by_text_and_numbers_numerically() {
+    fn semantic_order_sorts_names_by_text() {
         let mut t = Terms::new();
         let zebra = t.value_text("zebra").expect("room");
         let apple = t.value_text("apple").expect("room");
-        let two = t.value_int("2").expect("room");
-        let ten = t.value_int("10").expect("room");
+        let two = t.value_text("2").expect("room");
+        let ten = t.value_text("10").expect("room");
         assert_eq!(t.cmp_semantic(apple, zebra), Ordering::Less);
-        // Numeric, not lexicographic — "10" < "2" as text.
-        assert_eq!(t.cmp_semantic(two, ten), Ordering::Less);
-        // Mixed: Int < Sym (design/02 §5 H2).
-        assert_eq!(t.cmp_semantic(ten, apple), Ordering::Less);
+        // A run of digits is a name (M1f S1f.5.4), so it sorts as text:
+        // "10" < "2", as `(p 10)` lists before `(p 2)`.
+        assert_eq!(t.cmp_semantic(ten, two), Ordering::Less);
+        // Mixed: Sym < Fact (design/02 §5 H2, without the int).
+        let rel = t.intern_text("p").expect("room");
+        let fact = t.value_fact(rel, &[apple]).expect("room");
+        assert_eq!(t.cmp_semantic(zebra, fact), Ordering::Less);
         // Identity order would have put `zebra` first — it was interned first.
         assert_eq!(zebra.cmp_identity(apple), Ordering::Less);
     }
@@ -772,17 +753,17 @@ mod tests {
     }
 
     #[test]
-    fn display_of_each_of_the_three_shapes() {
+    fn display_of_each_of_the_two_shapes() {
         let mut t = Terms::new();
         let s = t.value_text("House-1").expect("room");
-        let i = t.value_int("007").expect("room");
+        let i = t.value_text("007").expect("room");
         let rel = t.intern_text("co-located").expect("room");
         let nested = t.value_fact(rel, &[s, i]).expect("room");
         assert_eq!(t.display(s), "House-1");
-        assert_eq!(t.display(i), "7");
-        assert_eq!(t.display(nested), "(co-located House-1 7)");
+        assert_eq!(t.display(i), "007");
+        assert_eq!(t.display(nested), "(co-located House-1 007)");
         // Since S1f.5.5's swap a run of digits is a name (S1f.5.4's ruling),
-        // which prints bare, and no program writes an int.
+        // which prints bare and as written, and there is no int.
         let one = t.value_text("1").expect("room");
         assert_eq!(t.display(one), "1", "the name 1 prints as written");
         let zero_one = t.value_text("01").expect("room");

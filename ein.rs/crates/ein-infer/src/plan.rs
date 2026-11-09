@@ -81,7 +81,7 @@ pub const MAX_REGS: usize = 256;
 pub enum Slot {
     /// A free variable: bind on first encounter, compare afterwards.
     Reg(Reg),
-    /// An `Atom` / `Int` literal, or a parameter the activator bound.
+    /// An `Atom` literal, or a parameter the activator bound.
     Const(Value),
     /// A sub-pattern matched against a `Fact`-valued argument (Q40 option A).
     Nested { rel: Symbol, slots: Span },
@@ -103,7 +103,7 @@ pub enum Slot {
     /// pair at a conclusion's top level still stops the firing.
     ///
     /// The unifier compares it to the argument by equality, and no IR node is
-    /// ever equal to a name, an integer or a `Fact`, so an opaque slot **never
+    /// ever equal to a name or a `Fact`, so an opaque slot **never
     /// matches**. It is kept (rather than collapsed to a "never" marker)
     /// because it is what the plan-shape diff prints.
     Opaque(NodeId),
@@ -211,9 +211,10 @@ pub enum GuardArgKind {
     /// guard's variable is bound where the guard is judged; until then
     /// `(and (neq ?x a) (p ?x))` fired for `a` too.
     Reg(Reg),
-    /// An `Atom` or a `String` (resolving to the symbol it names, as the
-    /// loader holds it in a fact) or an `Int` (to its value). A string was a
-    /// [`Self::Node`] until M1e2 S1e2.2.18, so `(eq ?x "b")` never held.
+    /// An `Atom` or a `String`, resolving to the symbol it names, as the
+    /// loader holds it in a fact (and an `Int`, to its value, until M1f
+    /// S1f.5.4 retired the kind). A string was a [`Self::Node`] until M1e2
+    /// S1e2.2.18, so `(eq ?x "b")` never held.
     Const(Value),
     /// Anything else — a `Wildcard`, an `SForm`, a `KwPair` — which guard
     /// resolution returns as-is, so it compares by IR-node equality: equal to
@@ -307,8 +308,9 @@ pub struct Plan {
     /// `fire` and `owe` events print and the static checks print as a label.
     /// Until then it was the binding key's, and an `int` beside a nested
     /// `Fact` in one position lost a derivation (Q-M1e.16, M1e2's W7). It is
-    /// empty for an activator whose every argument is an int or a nested
-    /// fact, so it does not say whether a plan *has* an activator, which is
+    /// empty for an activator whose every argument is a nested fact (or an
+    /// int, until M1f S1f.5.4 retired the kind), so it does not say whether a
+    /// plan *has* an activator, which is
     /// whether its rule has parameters: *forbid* read it so until M1e2
     /// S1e2.2.16, and a refutation resting on such an activator loaded (W16).
     pub activator_args: Box<[Symbol]>,

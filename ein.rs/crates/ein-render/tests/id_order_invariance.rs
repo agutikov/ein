@@ -61,15 +61,17 @@ mod corpus_ops;
 use std::path::PathBuf;
 
 use corpus_ops::{Op, ops, run};
-use ein_core::{FactId, IntId, Symbol, Tag, Terms, Value};
+use ein_core::{FactId, Symbol, Tag, Terms, Value};
 use ein_corpus::{corpus_files, ein_files_under, repo_root};
 use ein_infer::mt19937::Mt19937;
 use rustc_hash::FxHashMap;
 
 /// A `Terms` whose id space is a permutation of `after`'s.
 ///
-/// Every name `after` holds is interned again in shuffled order, every integer
-/// literal likewise, and every **fact** is re-interned in an order shuffled
+/// Every name `after` holds is interned again in shuffled order (every integer
+/// literal was too, until M1f S1f.5.4 retired the int: a shuffle of the empty
+/// pool drew nothing, so the stream is the one it was), and every **fact** is
+/// re-interned in an order shuffled
 /// within its nesting depth — depth-blind would be wrong, since
 /// `(not (color-loc Red House-1))` cannot be interned before the fact it
 /// wraps, and a uniform offset would be no permutation at all: `FactId`s that
@@ -88,10 +90,6 @@ fn permuted(after: &Terms, seed: i64) -> Terms {
         .map(|i| after.syms.text(Symbol(i as u32)).to_string())
         .collect();
     rng.shuffle(&mut names);
-    let mut ints: Vec<String> = (0..after.ints.len())
-        .map(|i| after.ints.text(IntId(i as u32)).to_string())
-        .collect();
-    rng.shuffle(&mut ints);
 
     let mut terms = Terms::new();
     let junk = terms.intern_text("@id-order-probe").expect("room");
@@ -101,9 +99,6 @@ fn permuted(after: &Terms, seed: i64) -> Terms {
     }
     for name in &names {
         terms.intern_text(name).expect("room");
-    }
-    for text in &ints {
-        terms.value_int(text).expect("room");
     }
 
     // Facts, by nesting depth so a wrapper never precedes what it wraps, and
@@ -155,10 +150,6 @@ fn remap(after: &Terms, terms: &mut Terms, moved: &FxHashMap<u32, FactId>, v: Va
         Tag::Sym => {
             let text = after.syms.text(Symbol(v.payload())).to_string();
             terms.value_text(&text).expect("room")
-        }
-        Tag::Int => {
-            let text = after.ints.text(IntId(v.payload())).to_string();
-            terms.value_int(&text).expect("room")
         }
         Tag::Fact => Value::fact(moved[&v.payload()]),
     }

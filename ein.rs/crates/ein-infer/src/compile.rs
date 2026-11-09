@@ -370,7 +370,7 @@ impl<'a> Compiler<'a> {
 
         // The `:assert` clause: a top-level `(and …)` lowers to one template
         // per conjunct (A13 multi-assert). Var slots stay unbound — `fire`
-        // fills them; Atom / Int / nested slots stay literal.
+        // fills them; Atom / nested slots stay literal.
         let mut asserts: Vec<Slot> = Vec::new();
         if let Some(p) = &rule.assert_ {
             for c in self.assert_conjuncts(NodeId(p.expr.0)) {
@@ -401,7 +401,7 @@ impl<'a> Compiler<'a> {
 
     /// Bind the rule's parameters from the activator, positionally.
     ///
-    /// Only name and integer arguments bind — a nested-`Fact` argument leaves
+    /// Only name arguments bind — a nested-`Fact` argument leaves
     /// its parameter free, which is why a seed can be shorter than the
     /// parameter list. The seed is what `slot` substitutes from and what
     /// `split_naf` seeds every guard's scope with.
@@ -549,8 +549,8 @@ impl<'a> Compiler<'a> {
             // path leaves authoring tools tolerant.
             Node::KwPair { .. } => return Ok(()),
             Node::SForm { .. } => {}
-            // A premise that is not a form — an atom, a variable, `_`, an
-            // integer, a string. The loader refuses each in a rule since
+            // A premise that is not a form — an atom, a variable, `_`, a
+            // string. The loader refuses each in a rule since
             // M1e2 S1e2.2.24 (W24, Q-M1e2.16 (1)), so no program it accepts
             // reaches this arm. Until then one did, and the premise was
             // dropped in silence: `:match _` fired with no premise at all,
@@ -767,41 +767,31 @@ impl<'a> Compiler<'a> {
         ))
     }
 
-    /// M1e2 S1e2.2.4 — a relation head written as a parameter, bound by the
-    /// activator to a value that is not a symbol: an integer, whose decimal
-    /// text this compiler would intern as a relation's name. That is a name
-    /// the program does not have, which no rule's text predicts and so no
-    /// candidate can hold (Q-M1e.21, ruled (b): rules cannot assert new
-    /// names). The loader refuses the activators it can read, a fact or a
-    /// literal in an `:assert`; this is the one a rule derives through a
-    /// variable, which only a run binds.
+    /// M1e2 S1e2.2.24 (W24, the user's ruling of 2026-11-05 on Q-M1e2.18
+    /// (iv)) — a relation head written as a parameter, bound by the activator
+    /// to a value that is not a name: a nested `Fact`, which binds no
+    /// parameter, so the relation head named no relation. Until then the
+    /// top-level premise stopped compilation with the unbound-head line in the
+    /// Python IR's spelling, and a pattern inside a pattern was an opaque slot
+    /// that matched nothing, in silence. The loader refuses the activators it
+    /// can read, a fact or a literal in an `:assert`; this is the one a rule
+    /// derives through a variable, which only a run binds.
     ///
-    /// **A nested fact** since M1e2 S1e2.2.24 (W24, the user's ruling of
-    /// 2026-11-05 on Q-M1e2.18 (iv)): a nested `Fact` binds no parameter, so a
-    /// relation head written as one the activator bound to a fact named no
-    /// relation. Until then the top-level premise stopped compilation with the
-    /// unbound-head line in the Python IR's spelling, and a pattern inside a
-    /// pattern was an opaque slot that matched nothing, in silence. The loader
-    /// refuses the activators it can read, as it does an integer.
+    /// **An integer** was the other such value from M1e2 S1e2.2.4 until M1f
+    /// S1f.5.4 retired the int kind: this compiler would have interned its
+    /// decimal text as a relation's name, a name the program does not have
+    /// (Q-M1e.21 (b)), and it was refused here with its own line. Since
+    /// S1f.5.5's swap a run of digits is a name, which binds like any other,
+    /// so a value is a name or a fact and this is a fact.
     fn head_not_a_name(&self, node: NodeId, head: NodeId, v: Value) -> CompileError {
-        if v.as_fact().is_some() {
-            return CompileError(format!(
-                "the relation head {} of {} at {} is bound to the fact {} — a \
-                 relation is named by a symbol, not a fact.",
-                ein_ir::dump_compact(self.ast, head),
-                ein_ir::dump_compact(self.ast, node),
-                ein_ir::loc_repr(self.ast, self.ast.loc(node)),
-                crate::events::sexpr_value(self.terms, v),
-            ));
-        }
+        debug_assert!(v.as_fact().is_some(), "a value that is no name is a fact");
         CompileError(format!(
-            "the relation head {} of {} at {} is bound to the integer {} — a \
-             relation is named by a symbol, not a number, and a rule cannot \
-             assert a name the program does not have.",
+            "the relation head {} of {} at {} is bound to the fact {} — a \
+             relation is named by a symbol, not a fact.",
             ein_ir::dump_compact(self.ast, head),
             ein_ir::dump_compact(self.ast, node),
             ein_ir::loc_repr(self.ast, self.ast.loc(node)),
-            self.terms.display(v),
+            crate::events::sexpr_value(self.terms, v),
         ))
     }
 
@@ -1021,12 +1011,6 @@ impl<'a> Compiler<'a> {
                 let name = self.ast.sym(s).to_string();
                 Ok(Slot::Const(Value::sym(self.intern(&name))))
             }
-            Node::Int(s) => {
-                let text = self.ast.sym(s).to_string();
-                Ok(Slot::Const(
-                    self.terms.value_int(&text).expect("room for an int"),
-                ))
-            }
             Node::Wildcard => Ok(Slot::Any),
             Node::SForm { head, args } => {
                 let rel = match self.ast.node(head) {
@@ -1087,10 +1071,6 @@ impl<'a> Compiler<'a> {
             Node::Atom(s) | Node::Str(s) => {
                 let name = self.ast.sym(s).to_string();
                 GuardArgKind::Const(Value::sym(self.intern(&name)))
-            }
-            Node::Int(s) => {
-                let text = self.ast.sym(s).to_string();
-                GuardArgKind::Const(self.terms.value_int(&text).expect("room for an int"))
             }
             // `_`, a form or a keyword pair, compared by IR-node equality.
             // The loader refuses each as a guard's argument since M1e2
@@ -1272,8 +1252,8 @@ impl<'a> Compiler<'a> {
             Node::Keyword(s) => self.guard_keys.extend([2, s.0]),
             Node::Wildcard => self.guard_keys.push(3),
             Node::Str(s) => self.guard_keys.extend([4, s.0]),
-            Node::Int(s) => self.guard_keys.extend([5, s.0]),
-            // 6 was a range's, until M1f S1f.5.3 retired the token.
+            // 5 was an int's, until M1f S1f.5.4 retired the kind, and 6 a
+            // range's, until M1f S1f.5.3 retired the token.
             Node::KwPair { key, value } => {
                 self.guard_keys.push(7);
                 self.encode_node(key);

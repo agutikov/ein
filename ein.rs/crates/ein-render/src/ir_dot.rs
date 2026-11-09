@@ -95,10 +95,9 @@ fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(_) | Node::Var(_) | Node::Wildcard => atom_id(ast, id),
         // A string's node is its name as the one printer prints it (M1e2
-        // S1e2.3.8), so `"1"` is not the int `1`'s node and `"x y"` reads as
+        // S1e2.3.8), so `"1"` is the name `1`'s node and `"x y"` reads as
         // one value.
         Node::Str(s) => quote(&ein_core::text::symbol(ast.sym(s))),
-        Node::Int(s) => quote(ast.sym(s)),
         Node::SForm { .. } => quote(&value_label(ast, id)),
         Node::Keyword(_) | Node::KwPair { .. } => {
             panic!("cannot use as DOT node id")

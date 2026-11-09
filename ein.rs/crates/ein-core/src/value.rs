@@ -1,40 +1,47 @@
-//! `Value` — a fact argument in 4 bytes, and the integer pool behind one of
-//! its three shapes.
+//! `Value` — a fact argument in 4 bytes.
 //!
-//! A fact argument is a name, an int or a nested fact, and unifying two of
-//! them starts by asking which. Here the discriminant is two bits
+//! A fact argument is a name or a nested fact, and unifying two of them
+//! starts by asking which. Here the discriminant is two bits
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3):
 //!
 //! ```text
 //! [tag:2][payload:30]
-//!   Sym  → a Symbol   — every textual arg
-//!   Int  → an IntId   — an entry in the int pool
-//!   Fact → a FactId   — a nested relational node
+//!   Sym  → a Symbol   — every textual arg (0b00)
+//!   Fact → a FactId   — a nested relational node (0b10)
 //! ```
+//!
+//! **`0b01` is no value.** It was the tag of an int, an entry in an integer
+//! pool, until M1f S1f.5.4 retired the kind: since S1f.5.5's swap a run of
+//! digits is a name (Q-M1e2.24, the user's ruling of 2026-11-06: *"digits are
+//! not numbers, digits are plain names"*), so nothing built one. The two other
+//! tags keep their bits, so a `.einb` stores a value as it did, and the one
+//! reader of stored bits, [`Value::from_bits`], refuses `0b01` rather than
+//! reading it as something else. `0b11` is [`Value::UNBOUND`]'s.
 //!
 //! **Ordering trap.** A `Value`'s numeric order is (tag, then assignment
 //! order) — identity order, not semantic order — so this type deliberately has
 //! no `Ord`. Identity containers ask for [`Value::cmp_identity`] by name;
 //! observable sorts go through `Terms::cmp_semantic`, which reads the
-//! interner's rank table and the int pool's values. Two comparators, two
-//! names, and no way to reach for the wrong one by writing `.sort()`.
+//! interner's rank table. Two comparators, two names, and no way to reach for
+//! the wrong one by writing `.sort()`.
 
 use crate::facts::FactId;
-use crate::intern::{CAPACITY, Overflow, Symbol};
-use crate::repr::canonical_int;
-use rustc_hash::FxHashMap;
+use crate::intern::{CAPACITY, Symbol};
 use std::cmp::Ordering;
 
 const PAYLOAD_BITS: u32 = 30;
 const PAYLOAD_MASK: u32 = (1 << PAYLOAD_BITS) - 1;
 
-/// Which of the three shapes a [`Value`] holds.
+/// Which of the two shapes a [`Value`] holds. The numbers are the tag bits,
+/// and `1`, an int's until M1f S1f.5.4, is no shape (the module docs).
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum Tag {
     Sym = 0,
-    Int = 1,
     Fact = 2,
 }
+
+/// The tag bits an int had, which no value has had since M1f S1f.5.4.
+const RETIRED_INT: u32 = 1;
 
 /// A fact argument. 4 bytes, `Copy`, no `Ord` — see the module docs.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -43,10 +50,6 @@ pub struct Value(u32);
 impl Value {
     pub fn sym(sym: Symbol) -> Value {
         Value::pack(Tag::Sym, sym.0)
-    }
-
-    pub fn int(id: IntId) -> Value {
-        Value::pack(Tag::Int, id.0)
     }
 
     /// A nested relational node — `(not (color-loc Red House-1))` is a fact
@@ -64,8 +67,8 @@ impl Value {
     /// The shape this value names.
     ///
     /// **Not defined on `UNBOUND`**, which is why the sentinel is checked
-    /// rather than named: [`Tag`] has three members and the sentinel is the
-    /// fourth bit pattern, so any answer here would be a lie. Ask
+    /// rather than named: [`Tag`] has two members and the sentinel is a bit
+    /// pattern neither has, so any answer here would be a lie. Ask
     /// [`Value::is_unbound`] first — every caller that can see a register
     /// value does, and the assertion is what keeps that true (M1e `CO-M3`).
     pub fn tag(self) -> Tag {
@@ -73,9 +76,12 @@ impl Value {
             !self.is_unbound(),
             "Value::tag on the UNBOUND sentinel — ask is_unbound() first"
         );
+        debug_assert!(
+            self.0 >> PAYLOAD_BITS != RETIRED_INT,
+            "a value with an int's tag bits, which no constructor builds and from_bits refuses"
+        );
         match self.0 >> PAYLOAD_BITS {
             0 => Tag::Sym,
-            1 => Tag::Int,
             _ => Tag::Fact,
         }
     }
@@ -97,16 +103,16 @@ impl Value {
     /// from a number nobody interned names an id that may not exist, which is
     /// why the container checks every payload against its table before it
     /// trusts one.
-    pub fn from_bits(bits: u32) -> Value {
-        Value(bits)
+    ///
+    /// **`None` for an int's tag bits** (M1f S1f.5.4): a `.einb` written
+    /// before the int kind was retired may hold one, and there is no value it
+    /// could be read as, so the container refuses the file instead.
+    pub fn from_bits(bits: u32) -> Option<Value> {
+        (bits >> PAYLOAD_BITS != RETIRED_INT).then_some(Value(bits))
     }
 
     pub fn as_sym(self) -> Option<Symbol> {
         (!self.is_unbound() && self.tag() == Tag::Sym).then(|| Symbol(self.payload()))
-    }
-
-    pub fn as_int(self) -> Option<IntId> {
-        (!self.is_unbound() && self.tag() == Tag::Int).then(|| IntId(self.payload()))
     }
 
     /// The `FactId` this value names — **`None` for the sentinel**.
@@ -126,17 +132,17 @@ impl Value {
     /// doing anyway: the discipline was a convention, and the next caller is
     /// the one it fails.
     ///
-    /// `as_sym` and `as_int` are guarded for the same reason, though the
-    /// sentinel could never have passed their tag test: they would have asked
-    /// [`Value::tag`], which is not defined on it.
+    /// `as_sym` is guarded for the same reason, though the sentinel could
+    /// never have passed its tag test: it would have asked [`Value::tag`],
+    /// which is not defined on it.
     pub fn as_fact(self) -> Option<FactId> {
         (!self.is_unbound() && self.tag() == Tag::Fact).then(|| FactId(self.payload()))
     }
 
     /// The register file's "nothing bound here yet" sentinel — S1a.3.2.
     ///
-    /// It is not a fourth shape: the two tag bits have four states and
-    /// [`Tag`] uses three, so `0b11` is a bit pattern `Value::pack` can
+    /// It is not a third shape: the two tag bits have four states and
+    /// [`Tag`] uses two, so `0b11` is a bit pattern `Value::pack` can
     /// never produce. `regs[r] == Value::UNBOUND` is therefore one integer
     /// compare, and a real value cannot forge it.
     ///
@@ -154,7 +160,7 @@ impl Value {
     /// Correct wherever any total order would do — a `state_key`'s sorted
     /// vector, a no-good clause's canonical form
     /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §6)
-    /// — and wrong everywhere a name or a number is what the reader sees.
+    /// — and wrong everywhere a name is what the reader sees.
     pub fn cmp_identity(self, other: Value) -> Ordering {
         self.0.cmp(&other.0)
     }
@@ -163,111 +169,6 @@ impl Value {
 impl std::fmt::Debug for Value {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}#{}", self.tag(), self.payload())
-    }
-}
-
-/// An entry in the integer pool.
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub struct IntId(pub u32);
-
-/// Integer literals, canonicalised and pooled.
-///
-/// The grammar's `INT: /-?[0-9]+/` accepts any width, so an integer cannot be
-/// inlined into a 30-bit payload and cannot be parsed into an `i64` without
-/// rejecting literals that load. The pool stores the **canonical decimal
-/// form** ([`canonical_int`]), so `007` and `7` and `-0`/`0` collapse into one
-/// entry, plus an `Option<i64>` fast field for the overwhelmingly common case.
-///
-/// Two integers are equal iff their pool ids are.
-#[derive(Default, Debug)]
-pub struct IntPool {
-    texts: Vec<String>,
-    fast: Vec<Option<i64>>,
-    lookup: FxHashMap<Box<str>, IntId>,
-}
-
-impl IntPool {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Pool `text` — any decimal literal, canonical or not.
-    pub fn intern(&mut self, text: &str) -> Result<IntId, Overflow> {
-        let canonical = canonical_int(text);
-        if let Some(&id) = self.lookup.get(canonical.as_str()) {
-            return Ok(id);
-        }
-        if self.texts.len() as u32 >= CAPACITY {
-            return Err(Overflow::Ints);
-        }
-        let id = IntId(self.texts.len() as u32);
-        self.fast.push(canonical.parse::<i64>().ok());
-        self.lookup.insert(canonical.as_str().into(), id);
-        self.texts.push(canonical);
-        Ok(id)
-    }
-
-    /// The [`IntId`] `text` already has, if any — [`IntPool::intern`] without
-    /// the `&mut`, for a reader that may not grow the pool.
-    pub fn get(&self, text: &str) -> Option<IntId> {
-        self.lookup.get(canonical_int(text).as_str()).copied()
-    }
-
-    /// The canonical decimal text — what `str(v)` prints for this integer,
-    /// which is what provenance bindings and the dumper's `_compact` render.
-    pub fn text(&self, id: IntId) -> &str {
-        &self.texts[id.0 as usize]
-    }
-
-    /// The value, when it fits an `i64`. `None` means "wider than 64 bits",
-    /// not "not a number".
-    pub fn value(&self, id: IntId) -> Option<i64> {
-        self.fast[id.0 as usize]
-    }
-
-    pub fn len(&self) -> usize {
-        self.texts.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.texts.is_empty()
-    }
-
-    /// Numeric order over two pooled integers, at any width.
-    pub fn cmp_value(&self, a: IntId, b: IntId) -> Ordering {
-        match (self.value(a), self.value(b)) {
-            (Some(x), Some(y)) => x.cmp(&y),
-            _ => cmp_decimal(self.text(a), self.text(b)),
-        }
-    }
-}
-
-/// Compare two **canonical** decimal literals numerically.
-///
-/// Canonical means: no leading zeros, no `-0`, and a `-` only on a non-zero
-/// value — so magnitude is digit count first, then a plain byte compare.
-fn cmp_decimal(a: &str, b: &str) -> Ordering {
-    let (a_neg, a_digits) = split_sign(a);
-    let (b_neg, b_digits) = split_sign(b);
-    match (a_neg, b_neg) {
-        (false, true) => Ordering::Greater,
-        (true, false) => Ordering::Less,
-        (false, false) => a_digits
-            .len()
-            .cmp(&b_digits.len())
-            .then_with(|| a_digits.cmp(b_digits)),
-        // Both negative: the larger magnitude is the smaller number.
-        (true, true) => b_digits
-            .len()
-            .cmp(&a_digits.len())
-            .then_with(|| b_digits.cmp(a_digits)),
-    }
-}
-
-fn split_sign(text: &str) -> (bool, &str) {
-    match text.strip_prefix('-') {
-        Some(rest) => (true, rest),
-        None => (false, text),
     }
 }
 
@@ -282,24 +183,45 @@ mod tests {
     }
 
     #[test]
-    fn the_three_shapes_round_trip_through_the_tag() {
+    fn the_two_shapes_round_trip_through_the_tag() {
         let s = Value::sym(Symbol(7));
-        let i = Value::int(IntId(7));
         let f = Value::fact(FactId(7));
         assert_eq!(s.as_sym(), Some(Symbol(7)));
-        assert_eq!(s.as_int(), None);
-        assert_eq!(i.as_int(), Some(IntId(7)));
+        assert_eq!(s.as_fact(), None);
         assert_eq!(f.as_fact(), Some(FactId(7)));
-        // Same payload, three different values — the tag is identity too.
-        assert_ne!(s, i);
-        assert_ne!(i, f);
+        assert_eq!(f.as_sym(), None);
+        // Same payload, two different values — the tag is identity too.
+        assert_ne!(s, f);
+    }
+
+    /// **An int's tag bits are no value** — M1f S1f.5.4. `from_bits` is the
+    /// one way in for stored bits, and it reads every word `bits` gives back
+    /// and refuses a word tagged `0b01`, an int's until the kind was retired,
+    /// whatever its payload: a `.einb` written before may hold one.
+    #[test]
+    fn an_ints_tag_bits_are_no_value() {
+        for v in [
+            Value::sym(Symbol(0)),
+            Value::sym(Symbol(CAPACITY - 1)),
+            Value::fact(FactId(0)),
+            Value::fact(FactId(CAPACITY - 1)),
+            Value::UNBOUND,
+        ] {
+            assert_eq!(Value::from_bits(v.bits()), Some(v));
+        }
+        for payload in [0, 1, 7, CAPACITY - 1] {
+            assert_eq!(
+                Value::from_bits(RETIRED_INT << PAYLOAD_BITS | payload),
+                None
+            );
+        }
     }
 
     #[test]
     fn the_unbound_sentinel_is_not_a_value() {
-        // `pack` only ever emits tags 0..2, so the all-ones word is
+        // `pack` only ever emits tags 0 and 2, so the all-ones word is
         // unreachable from every (tag, payload) pair.
-        for tag in [Tag::Sym, Tag::Int, Tag::Fact] {
+        for tag in [Tag::Sym, Tag::Fact] {
             assert_ne!(Value::pack(tag, CAPACITY - 1), Value::UNBOUND);
         }
         assert!(Value::UNBOUND.is_unbound());
@@ -319,7 +241,6 @@ mod tests {
     fn the_sentinel_names_no_fact() {
         assert_eq!(Value::UNBOUND.as_fact(), None);
         assert_eq!(Value::UNBOUND.as_sym(), None);
-        assert_eq!(Value::UNBOUND.as_int(), None);
         // …and the real value with that payload still does.
         let top = FactId(CAPACITY - 1);
         assert_eq!(Value::fact(top).as_fact(), Some(top));
@@ -333,65 +254,5 @@ mod tests {
         assert_eq!(v.as_sym(), Some(top));
         assert_eq!(v.tag(), Tag::Sym);
         assert_eq!(Value::fact(FactId(CAPACITY - 1)).tag(), Tag::Fact);
-    }
-
-    #[test]
-    fn the_pool_canonicalises_exactly_as_int_then_str_does() {
-        let mut p = IntPool::new();
-        let seven = p.intern("7").expect("room");
-        assert_eq!(p.intern("007").expect("room"), seven);
-        assert_eq!(p.intern("0007").expect("room"), seven);
-        let zero = p.intern("0").expect("room");
-        assert_eq!(p.intern("-0").expect("room"), zero);
-        assert_eq!(p.intern("-000").expect("room"), zero);
-        assert_eq!(p.text(zero), "0");
-        assert_ne!(p.intern("-7").expect("room"), seven);
-        assert_eq!(p.len(), 3);
-    }
-
-    #[test]
-    fn a_literal_wider_than_i64_pools_without_overflowing() {
-        let mut p = IntPool::new();
-        let big = p.intern("00123456789012345678901234567890").expect("room");
-        assert_eq!(p.text(big), "123456789012345678901234567890");
-        assert_eq!(p.value(big), None);
-        assert_eq!(
-            p.intern("123456789012345678901234567890").expect("room"),
-            big
-        );
-        let small = p.intern("42").expect("room");
-        assert_eq!(p.value(small), Some(42));
-    }
-
-    #[test]
-    fn numeric_order_holds_at_any_width() {
-        let mut p = IntPool::new();
-        let mut ids: Vec<_> = [
-            "0",
-            "-1",
-            "10",
-            "9",
-            "-10",
-            "-9",
-            "99999999999999999999999999",
-            "-99999999999999999999999999",
-        ]
-        .iter()
-        .map(|t| (*t, p.intern(t).expect("room")))
-        .collect();
-        ids.sort_by(|a, b| p.cmp_value(a.1, b.1));
-        assert_eq!(
-            ids.iter().map(|(t, _)| *t).collect::<Vec<_>>(),
-            [
-                "-99999999999999999999999999",
-                "-10",
-                "-9",
-                "-1",
-                "0",
-                "9",
-                "10",
-                "99999999999999999999999999",
-            ]
-        );
     }
 }

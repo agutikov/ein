@@ -253,7 +253,7 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
             let loc = ast.loc(template);
             ast.push(Node::KwPair { key, value }, loc)
         }
-        // Atom / Wildcard / Int / Str / Keyword are leaves.
+        // Atom / Wildcard / Str / Keyword are leaves.
         _ => template,
     }
 }

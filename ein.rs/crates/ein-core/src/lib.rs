@@ -52,7 +52,7 @@ pub use terms::{
     Kernel, Kernel as KernelSymbols, Lent, PREDICATES, RESERVED, STRUCTURAL, Table, Terms,
     is_predicate, is_reserved,
 };
-pub use value::{IntId, IntPool, Tag, Value};
+pub use value::{Tag, Value};
 pub use walks::{
     DerivationDag, Justifications, build_derivation_dag, detect_provenance_cycles, unsat_core,
     walk_premises,

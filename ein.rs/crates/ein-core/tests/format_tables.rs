@@ -7,7 +7,7 @@
 //!
 //! | table | rows | what it covers |
 //! |---|---:|---|
-//! | `repr_values.txt` | 35 | every value shape reachable from a fact argument |
+//! | `repr_values.txt` | 37 | every value shape reachable from a fact argument |
 //! | `repr_escapes.txt` | 1 500+ | every code point where the printability classification turns over, plus all of U+0000–U+02FF and U+2000–U+20FF |
 //! | `float_format.txt` | 2 584 | 136 seeded doubles × 19 format specs |
 //!
@@ -24,10 +24,6 @@ use ein_corpus::{golden, golden_path};
 
 fn s(x: &str) -> ReprValue {
     ReprValue::Str(x.to_string())
-}
-
-fn i(x: &str) -> ReprValue {
-    ReprValue::Int(x.to_string())
 }
 
 /// Every value shape reachable from a fact argument.
@@ -56,9 +52,10 @@ fn value_corpus() -> Vec<ReprValue> {
         "House-1",
         "__closed__",
     ];
-    // Canonical decimal text only — `ReprValue::Int` carries what
-    // `canonical_int` produced, so `-0` is `0` before it ever gets here.
-    let ints = [
+    // Runs of digits, which were `ReprValue::Int`'s rows, printed bare, until
+    // M1f S1f.5.4 retired the int kind: since S1f.5.5's swap each is a name,
+    // a `str`, whatever its width, and quoted like one.
+    let digits = [
         "0",
         "7",
         "-7",
@@ -68,12 +65,12 @@ fn value_corpus() -> Vec<ReprValue> {
 
     let mut out: Vec<ReprValue> = Vec::new();
     out.extend(strings.iter().map(|x| s(x)));
-    out.extend(ints.iter().map(|x| i(x)));
+    out.extend(digits.iter().map(|x| s(x)));
     // Tuples of every arity that renders differently: `()`, `(a,)`, `(a, b)`.
     out.push(ReprValue::Tuple(vec![]));
     out.push(ReprValue::Tuple(vec![s("a")]));
-    out.push(ReprValue::Tuple(vec![i("-7")]));
-    out.push(ReprValue::Tuple(vec![s("a"), i("2"), s("it's")]));
+    out.push(ReprValue::Tuple(vec![s("-7")]));
+    out.push(ReprValue::Tuple(vec![s("a"), s("2"), s("it's")]));
     out.push(ReprValue::Tuple(vec![
         ReprValue::Tuple(vec![s("a")]),
         ReprValue::Tuple(vec![]),
@@ -94,7 +91,7 @@ fn value_corpus() -> Vec<ReprValue> {
     });
     out.push(ReprValue::Fact {
         relation_name: "quote'd".into(),
-        args: vec![i("1"), inner, s("x")],
+        args: vec![s("1"), inner, s("x")],
     });
     out.push(ReprValue::Tuple(vec![ReprValue::Fact {
         relation_name: "n".into(),
@@ -107,7 +104,8 @@ fn value_corpus() -> Vec<ReprValue> {
 ///
 /// Quote choice (a `'` and no `"` in the string flips the quote to `"`), the
 /// escape table, the one-tuple's trailing comma, a nested `Fact`, an arity-0
-/// relation, and integers wider than an `i64` — 35 shapes, one row each.
+/// relation, and names of digits wider than an `i64` (integers, printed bare,
+/// until M1f S1f.5.4) — 37 shapes, one row each.
 #[test]
 fn repr_of_every_reachable_value_shape() {
     let corpus = value_corpus();

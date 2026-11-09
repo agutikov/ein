@@ -229,8 +229,8 @@ pub fn load_query_with(
     for &form in &facts {
         ingest_fact(ast, terms, &mut kb, form)?;
     }
-    // A rule parameter that names a relation, bound to an integer by an
-    // activator the program writes down (M1e2 S1e2.2.4).
+    // A rule parameter that names a relation, bound to a nested fact by an
+    // activator the program writes down (M1e2 S1e2.2.4, S1e2.2.24).
     validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
 
     // Every query block, in source order — plural since M1c S1c.1.2, because a
@@ -325,19 +325,18 @@ pub fn load_query_with(
 /// exact leaf set instead would be a second opinion about which leaves it
 /// reads, kept in a different file.
 ///
-/// What it does not close is a *seeded* head — `(?rel ?a ?b)` where `?rel`
-/// binds to an integer, whose decimal text the compiler would intern as a
-/// symbol. Since M1e2 S1e2.2.4 that is refused rather than measured:
-/// `validate_relation_parameters` where the activator is written down, and
-/// the compiler where a rule derives it.
+/// A *seeded* head — `(?rel ?a ?b)` — names the relation its activator binds,
+/// which is a name the program has or a nested fact, refused
+/// (`validate_relation_parameters` where the activator is written down, the
+/// compiler where a rule derives it). Until M1f S1f.5.4 it could also bind an
+/// integer, whose decimal text the compiler would have interned as a symbol,
+/// refused the same way since M1e2 S1e2.2.4; since S1f.5.5's swap a run of
+/// digits is a name, interned here like any other.
 fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     fn walk(ast: &Ast, terms: &mut Terms, node: NodeId) {
         match ast.node(node) {
             Node::Atom(s) | Node::Var(s) | Node::Str(s) => {
                 let _ = terms.intern_text(ast.sym(s));
-            }
-            Node::Int(s) => {
-                let _ = terms.value_int(ast.sym(s));
             }
             Node::Keyword(_) | Node::Wildcard => {}
             Node::KwPair { key, value } => {
@@ -568,13 +567,12 @@ fn string_value(ast: &Ast, node: Option<NodeId>) -> Option<&str> {
     }
 }
 
-/// Stringify an `Atom` / `String` / `Int` / `Var` for use as a fact
+/// Stringify an `Atom` / `String` / `Var` for use as a fact
 /// argument. Anything else (a `Wildcard`, a keyword, a nested form) answers
 /// `None`.
 fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Value>, Overflow> {
     Ok(Some(match ast.node(node) {
         Node::Atom(s) | Node::Str(s) => terms.value_text(ast.sym(s))?,
-        Node::Int(s) => terms.value_int(ast.sym(s))?,
         Node::Var(s) => terms.value_var(ast.sym(s))?,
         _ => return Ok(None),
     }))
@@ -1157,20 +1155,20 @@ fn refuse_no_fact_holds(
 ///
 /// `(rule mirror (?R) :match (q ?a ?b) :assert (?R ?b ?a))` names the relation
 /// it matches and asserts by its parameter, and the activator binds it:
-/// `(mirror q)` asserts `q` facts. An activator that binds it to an
-/// **integer**, `(mirror 3)`, would have the compiler name a relation by the
-/// integer's decimal text — a name the program does not have, which no rule's
-/// text predicts, so the candidates cannot hold it. The user ruled on
-/// 2026-10-16 that rules cannot assert new names (Q-M1e.21 (b)), and every
-/// other name a rule can introduce is one of the program's
-/// (`ein_infer::invariant::rule_constants`), so this one is refused.
+/// `(mirror q)` asserts `q` facts. An activator that binds it to a **nested
+/// fact**, `(mirror (p a))`, names no relation: a nested fact binds no
+/// parameter (M1e2 S1e2.2.24, W24, Q-M1e2.18 (iv)), so it is refused.
 ///
 /// **Here, where the activator is written down**: a fact, or a literal in a
 /// rule's `:assert`. An activator a rule derives through a variable is known
 /// only to a run, and the compiler refuses it when it binds one
 /// (`ein_infer::compile`). An activator of the wrong arity activates nothing
-/// (`activators_for`'s filter), so it is not checked; a string binds a
-/// name, and a nested fact binds nothing.
+/// (`activators_for`'s filter), so it is not checked. Until M1f S1f.5.4 an
+/// activator could also bind an **integer**, `(mirror 3)`, which would have
+/// had the compiler name a relation by the integer's decimal text, a name the
+/// program does not have (Q-M1e.21 (b): rules cannot assert new names), and
+/// was refused here since M1e2 S1e2.2.4; since S1f.5.5's swap `3` is a name
+/// of the program and `(mirror 3)` names the relation `3`.
 fn validate_relation_parameters(
     ast: &Ast,
     terms: &Terms,
@@ -1244,20 +1242,6 @@ fn validate_relation_parameters(
                     terms.sym(param),
                     crate::dump::dump_compact(ast, form),
                     crate::dump::dump_compact(ast, args[i]),
-                ));
-            }
-            if let Node::Int(v) = ast.node(args[i]) {
-                // The integer's own position: a top-level form's is not kept
-                // through import resolution, and the integer is what is wrong.
-                errors.push(format!(
-                    "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
-                     integer {} at {} — a relation is named by a symbol, not a number, and a \
-                     rule cannot assert a name the program does not have",
-                    terms.sym(*rule),
-                    terms.sym(param),
-                    crate::dump::dump_compact(ast, form),
-                    ast.sym(v),
-                    loc_repr(ast, ast.loc(args[i])),
                 ));
             }
         }

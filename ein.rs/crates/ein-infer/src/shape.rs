@@ -9,8 +9,9 @@
 //! Two rules make the text stable, and they are the same two the KB shape
 //! settled on:
 //!
-//! - **Values are rendered with `repr`**, so the atom `7` prints as `'7'` and
-//!   the integer `7` as `7`, and a slot that changed shape cannot hide.
+//! - **Values are rendered with `repr`**, so the name `7` prints as `'7'`
+//!   (and the integer `7` printed as `7`, until M1f S1f.5.4 retired the int),
+//!   and a slot that changed shape cannot hide.
 //! - **Sets are rendered sorted** — `watched`, `scope` and a step's shared
 //!   variables are sets, whose iteration order is not reproducible even run
 //!   to run.

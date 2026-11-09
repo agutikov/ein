@@ -265,7 +265,8 @@ fn a_nested_positive_pairs_through_structural_identity() {
 fn a_malformed_negation_is_tolerated_rather_than_crashing() {
     let (_ast, mut terms, mut kb) = kb_of("(relation r T T)\n(r A B :source \"(1)\")\n");
     let not = terms.kernel.not;
-    let five = Value::int(terms.intern_int("5").expect("room"));
+    // `5` is a name since M1f S1f.5.4 (an int until then): either way, no fact.
+    let five = terms.value_text("5").expect("room");
     let malformed = terms.intern_fact(not, &[five]).expect("room");
     kb.add_and_index_fact(&mut terms, not, &[five], None)
         .expect("room");

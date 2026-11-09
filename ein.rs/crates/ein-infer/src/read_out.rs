@@ -870,7 +870,7 @@ fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
                     .map(|(_, v)| v.clone())
                     .unwrap_or_else(|| format!("?{name}"))
             }
-            Node::Atom(s) | Node::Int(s) => ast.sym(s).to_string(),
+            Node::Atom(s) => ast.sym(s).to_string(),
             _ => ein_ir::dump::dump_compact(ast, *a),
         })
         .collect();

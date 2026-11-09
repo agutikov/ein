@@ -1537,7 +1537,6 @@ fn order_key(terms: &Terms, id: FactId) -> String {
         .map(|&a| match a.tag() {
             ein_core::Tag::Fact => order_key(terms, a.as_fact().expect("tagged Fact")),
             ein_core::Tag::Sym => terms.sym(a.as_sym().expect("tagged Sym")).to_string(),
-            ein_core::Tag::Int => terms.int_text(a.as_int().expect("tagged Int")).to_string(),
         })
         .collect();
     if inner.is_empty() {

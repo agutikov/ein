@@ -1537,8 +1537,8 @@ fn collect_refs(plan: &Plan, g: &NafGuard, span: Span, regs: &[Value], out: &mut
 /// A sub-plan-local variable grounds to `Free` even when the parent has a
 /// value for the same name, because the negative-provenance walk uses the
 /// projected environment — which is the same restriction the query itself ran
-/// under. A `Fact`-valued binding also grounds to `Free`: only a name or an
-/// integer is kept.
+/// under. A `Fact`-valued binding also grounds to `Free`: only a name is
+/// kept.
 fn ground(plan: &Plan, g: &NafGuard, slot: &Slot, regs: &[Value]) -> NafArg {
     match slot {
         Slot::Reg(r) => match g.scope_of[*r as usize] {

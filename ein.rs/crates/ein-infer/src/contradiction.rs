@@ -87,7 +87,7 @@ pub fn detect(kb: &Kb, terms: &Terms) -> Vec<Contradiction> {
     }
     for negative in kb.facts_of(terms.kernel.not) {
         // Q40 / R9's widening: the inner of a `(not …)` is expected to be a
-        // fact. A string or an int leaves no positive proposition to match
+        // fact. A name leaves no positive proposition to match
         // against — the loader and matcher never produce that shape, but it is
         // tolerated rather than asserted.
         let Some(inner) = terms.facts.args(negative).first().and_then(|v| v.as_fact()) else {

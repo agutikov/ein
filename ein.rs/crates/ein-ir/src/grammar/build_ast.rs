@@ -16,7 +16,8 @@
 //! a name, `Atom("01")` and not `Int(1)` (Q-M1e2.24, S1f.5.4's ruling), so the
 //! generated parser builds no `Int` at all, since `:priority`, whose value was
 //! the one place digits stayed one, is not in the grammar (the user,
-//! 2026-11-08: S1f.5.15 deletes it before the swap); and a fact's `:using`
+//! 2026-11-08: S1f.5.15 deletes it before the swap), and since M1f S1f.5.4's
+//! T1f.5.4.3 the tree has no `Int` node to build; and a fact's `:using`
 //! lists its premises under the synthetic head `#list`, where the hand-written
 //! parser took the list's first element as its head, which the loader then
 //! dropped (the paper grammar's default 2). A macro's `:why`, which the

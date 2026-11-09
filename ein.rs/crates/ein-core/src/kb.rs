@@ -2215,7 +2215,7 @@ mod tests {
         let co_located = sym(&mut terms, "co-located");
         let not = terms.kernel.not;
         let norwegian = terms.value_text("Norwegian").expect("room");
-        let one = terms.value_int("1").expect("room");
+        let one = terms.value_text("1").expect("room");
         let inner = terms
             .value_fact(co_located, &[norwegian, one])
             .expect("room");

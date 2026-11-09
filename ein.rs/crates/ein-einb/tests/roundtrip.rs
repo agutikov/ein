@@ -43,7 +43,7 @@ fn crowded() -> Terms {
     for i in 0..37 {
         let rel = terms.intern_text(&format!("crowd-{i}")).expect("room");
         let arg = terms.intern_text(&format!("other-{i}")).expect("room");
-        terms.intern_int(&format!("{}", 1_000 + i)).expect("room");
+        terms.intern_text(&format!("{}", 1_000 + i)).expect("room");
         terms
             .intern_fact(rel, &[ein_core::Value::sym(arg)])
             .expect("room");
@@ -109,9 +109,7 @@ fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
         // tables are the bare kernel prefix — `examples/syntax/config.ein` is
         // one: a `(config …)` block and nothing else — still re-interns to its
         // own ids and takes the fast path honestly.
-        let bare = terms.syms.len() == Terms::new().syms.len()
-            && terms.ints.is_empty()
-            && terms.facts.is_empty();
+        let bare = terms.syms.len() == Terms::new().syms.len() && terms.facts.is_empty();
         assert_eq!(
             opened.remapped,
             !bare,

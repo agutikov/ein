@@ -21,16 +21,12 @@
 
 use ein_core::{FactId, Tag, Terms, Value};
 
-/// One argument of a [`FactRef`]: a string, an integer as its canonical
-/// decimal text, or a nested fact.
-///
-/// `Str` and `Int` are distinct because the serialiser treats them
-/// differently — an integer is written bare, a string is written bare only if
-/// it is atom-safe.
+/// One argument of a [`FactRef`]: a name or a nested fact (and an integer as
+/// its canonical decimal text, until M1f S1f.5.4 retired the int kind: a run
+/// of digits is a name since S1f.5.5's swap).
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum RefArg {
     Str(String),
-    Int(String),
     Fact(FactRef),
 }
 
@@ -55,14 +51,13 @@ impl FactRef {
     /// The readable `rel(a, b, …)` label — `dot_util.fact_label` over this
     /// shape, recursing into nested references. A name prints as the one
     /// printer prints it (M1e2 S1e2.3.8): bare where it lexes as itself, else
-    /// quoted, so `holds("x y")` is one argument and `holds("1")` no int.
+    /// quoted, so `holds("x y")` is one argument and `holds(1)` a name.
     pub fn label(&self) -> String {
         let parts: Vec<String> = self
             .args
             .iter()
             .map(|a| match a {
                 RefArg::Str(s) => ein_core::text::symbol(s).into_owned(),
-                RefArg::Int(i) => i.clone(),
                 RefArg::Fact(f) => f.label(),
             })
             .collect();
@@ -87,7 +82,6 @@ pub fn fact_ref(terms: &Terms, f: FactId) -> FactRef {
 fn ref_arg(terms: &Terms, v: Value) -> RefArg {
     match v.tag() {
         Tag::Sym => RefArg::Str(terms.sym(v.as_sym().expect("tagged Sym")).to_string()),
-        Tag::Int => RefArg::Int(terms.int_text(v.as_int().expect("tagged Int")).to_string()),
         Tag::Fact => RefArg::Fact(fact_ref(terms, v.as_fact().expect("tagged Fact"))),
     }
 }

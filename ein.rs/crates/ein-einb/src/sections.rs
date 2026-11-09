@@ -32,6 +32,11 @@ use crate::{EinbError, Result};
 const MAX_NAF_DEPTH: u32 = 64;
 
 // ── SYMBOLS / INTS ─────────────────────────────────────────────────
+//
+// `INTS` is a string table like `SYMBOLS`, and since M1f S1f.5.4 an empty one:
+// Ein has no int (a run of digits is a name since S1f.5.5's swap), and the
+// section stays in the layout so that a file reads as it did, in either
+// direction, with no format bump (`crate` § What is in a file).
 
 /// A string table: `count`, the blob length, `count + 1` prefix-sum offsets,
 /// then the blob.
@@ -94,21 +99,21 @@ pub fn read_symbols(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<(
     Ok(())
 }
 
-pub fn write_ints(terms: &Terms) -> Vec<u8> {
-    // The canonical decimal text is the whole entry: `IntPool::intern`
-    // re-derives the `Option<i64>` fast field from it, and re-deriving is what
-    // makes a stored pool provably the pool that text produces.
-    write_strings(terms.ints.len(), |i| {
-        terms.ints.text(ein_core::IntId(i as u32))
-    })
+/// The empty integer table every file carries since M1f S1f.5.4: the bytes
+/// the int pool's table had when it held nothing, which it did for every
+/// program since S1f.5.5's swap.
+pub fn write_ints() -> Vec<u8> {
+    write_strings(0, |_| unreachable!("an empty table has no entry"))
 }
 
-pub fn read_ints(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<()> {
-    let (offsets, blob) = read_strings(body)?;
-    maps.int = Vec::with_capacity(offsets.len().saturating_sub(1));
-    for i in 0..offsets.len() - 1 {
-        maps.int
-            .push(terms.intern_int(nth_str(&offsets, blob, i)?)?);
+/// Refuse a file whose integer table holds an entry — one written before M1f
+/// S1f.5.4 from a program with an int — rather than read it as anything else.
+/// An empty table is what every writer since writes, and what one before
+/// wrote for a program with none.
+pub fn read_ints(body: &[u8]) -> Result<()> {
+    let (offsets, _) = read_strings(body)?;
+    if offsets.len() > 1 {
+        return Err(EinbError::Int);
     }
     Ok(())
 }
@@ -178,8 +183,8 @@ pub fn read_facts(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<()>
             // whatever this process's store had room for, and comparing one
             // against a count of file entries would call a perfectly ordinary
             // nested fact a forward reference in every crowded interner.
-            let stored = Value::from_bits(bits);
-            if bits != Value::UNBOUND.bits()
+            let stored = Value::from_bits(bits).ok_or(EinbError::Int)?;
+            if !stored.is_unbound()
                 && stored.tag() == ein_core::Tag::Fact
                 && stored.payload() as usize >= i
             {

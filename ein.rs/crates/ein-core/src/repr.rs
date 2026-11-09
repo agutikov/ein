@@ -1,5 +1,6 @@
-//! `repr` — the textual form of a value, for the four shapes a fact argument
-//! can take: `str`, `int`, `tuple` and `Fact`.
+//! `repr` — the textual form of a value, for the three shapes a fact argument
+//! can take: `str`, `tuple` and `Fact` (and `int` until M1f S1f.5.4 retired
+//! the int kind: since S1f.5.5's swap a run of digits is a name, a `str`).
 //!
 //! The canonical state key sorts by it, the explanation tie-breaks order by
 //! it and the DOT labels print it
@@ -14,15 +15,10 @@
 //!   `Zl` `Zp` `Zs`, ASCII space excepted (`printable.rs`) — is `\xNN` below
 //!   U+0100, `\uNNNN` below U+10000 and `\UNNNNNNNN` above, lower-case hex;
 //!   every other character is written as itself.
-//! - **int** — canonical decimal text ([`canonical_int`]).
 //! - **tuple** — `(a, b)`, items separated by `, `; one item is `(a,)` and
 //!   none is `()`.
 //! - **Fact** — `Fact(relation_name='p', args=('A',))`: the relation name as
 //!   a `str` and the args as a tuple, a nested fact recursively.
-//!
-//! Ints are carried as their **canonical decimal text**, not as an `i64`:
-//! `INT: /-?[0-9]+/` accepts any width, so a fixed-width parse would reject
-//! literals that load.
 
 use crate::printable::is_printable;
 
@@ -33,8 +29,6 @@ use crate::printable::is_printable;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ReprValue {
     Str(String),
-    /// Canonical decimal text, sign included.
-    Int(String),
     Tuple(Vec<ReprValue>),
     Fact {
         relation_name: String,
@@ -52,7 +46,6 @@ pub fn repr(value: &ReprValue) -> String {
 fn write_repr(out: &mut String, value: &ReprValue) {
     match value {
         ReprValue::Str(s) => out.push_str(&repr_str(s)),
-        ReprValue::Int(i) => out.push_str(i),
         ReprValue::Tuple(items) => {
             out.push('(');
             for (i, item) in items.iter().enumerate() {
@@ -124,32 +117,6 @@ pub fn repr_str(s: &str) -> String {
     out
 }
 
-/// Canonical decimal text for an integer literal: leading zeros dropped, and
-/// a `-` only in front of a non-zero value.
-///
-/// `007` → `7`, `-007` → `-7`, `-0` → `0`. Done on the digits rather than
-/// through an integer type because `INT: /-?[0-9]+/` accepts any width; an
-/// `i64` parse would reject literals that load.
-///
-/// Lives here rather than beside the lexer because it is the text
-/// [`ReprValue::Int`] carries, and because
-/// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)'s int pool
-/// stores exactly this form
-/// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
-pub fn canonical_int(text: &str) -> String {
-    let (neg, digits) = match text.strip_prefix('-') {
-        Some(rest) => (true, rest),
-        None => (false, text),
-    };
-    let trimmed = digits.trim_start_matches('0');
-    let body = if trimmed.is_empty() { "0" } else { trimmed };
-    if neg && body != "0" {
-        format!("-{body}")
-    } else {
-        body.to_string()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -178,37 +145,13 @@ mod tests {
     }
 
     #[test]
-    fn canonical_int_drops_leading_zeros_and_the_sign_of_zero() {
-        for (input, want) in [
-            ("0", "0"),
-            ("007", "7"),
-            ("-0", "0"),
-            ("-007", "-7"),
-            ("-000", "0"),
-            ("12", "12"),
-            ("-12", "-12"),
-            // Wider than i64 — the case that rules out parsing to an integer.
-            (
-                "123456789012345678901234567890",
-                "123456789012345678901234567890",
-            ),
-            (
-                "00123456789012345678901234567890",
-                "123456789012345678901234567890",
-            ),
-        ] {
-            assert_eq!(canonical_int(input), want, "canonical_int({input:?})");
-        }
-    }
-
-    #[test]
     fn a_one_tuple_keeps_its_comma() {
         assert_eq!(repr(&ReprValue::Tuple(vec![])), "()");
         assert_eq!(repr(&ReprValue::Tuple(vec![s("a")])), "('a',)");
         assert_eq!(repr(&ReprValue::Tuple(vec![s("a"), s("b")])), "('a', 'b')");
         assert_eq!(
-            repr(&ReprValue::Tuple(vec![ReprValue::Int("-7".into()), s("b")])),
-            "(-7, 'b')"
+            repr(&ReprValue::Tuple(vec![s("-7"), s("b")])),
+            "('-7', 'b')"
         );
     }
 

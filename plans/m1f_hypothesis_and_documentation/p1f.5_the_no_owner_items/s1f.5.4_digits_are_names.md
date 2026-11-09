@@ -37,6 +37,12 @@ guard this page plans (§ What it changes, step 1's tables, T1f.5.4.3 and the ac
 to guard: at the swap no program writes `:priority`, and retiring the int kind moves no rule order. If S1f.5.15
 ends in a written refusal, the production comes back, and the guard with it. The sentences below are left as the
 plan stood.
+**Run after the swap on 2026-11-09**, on the coordinator's brief of that day and the user's instruction *"just
+continue with default decisions till the end of the phase"*, in the order T1f.5.4.3, T1f.5.4.5, T1f.5.4.4, one
+commit each. **T1f.5.4.3 done 2026-11-09** ([its record](#t1f543-record-2026-11-09)): the int kind is gone, each
+path shown unreachable first (30 probes, the whole suite and 240 000 mutants, none reached by a program), no answer
+or register row moved, and `.einb`'s `INTS` section kept empty with no format bump
+([Q-M1f.10](../open_questions.md#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone), defaulted).
 **Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), done, so that `1..5` was gone first. Its remaining tasks
 run after [S1f.5.5](s1f.5.5_the_grammar.md)'s swap.
 
@@ -174,6 +180,129 @@ moves in it: after the swap no program yields an int but `:priority`'s count. **
 here**: the grammar's `b::count` and `from_ir.rs`' `priority` match read the digits as a count with no int value
 behind it (`Rule::priority` needs a count that is not a value), so `:priority 110` still orders the rule and puts
 no name in the program, and every rule list `saturate --dump` prints is unmoved.
+
+**Named before it moves, 2026-11-09** (the brief's rule: a golden moves only where this page names it first).
+Two test files move with the kind, and nothing a program answers:
+- `ein-core/tests/golden/repr_values.txt`, the `repr` format's table of every value shape reachable from a fact
+  argument: its eight rows that held a `ReprValue::Int` (`0`, `7`, `-7`, the two wide literals, `(-7,)`, `('a', 2,
+  "it's")` and `Fact(… args=(1, …))`) print the same digits as names, quoted (`'7'`, `('-7',)`), since
+  `ReprValue::Int` goes and a run of digits is a `str`. The row count, 37, is unmoved.
+- `ein-ir/tests/golden/grammar_table.txt` grows by this stage's rows, appended after the 123 T5 banked so that no
+  row renumbers: a token that is no name (`a?x`, `?x?y`, `a:b`, `a,b`, `a#b`, `a|b`, `a\b`, `"a"b`, `Жук`) in each
+  place a name goes, refused at the parse (§ The method's rows, P1f.5's order item 8).
+
+### T1f.5.4.3 record, 2026-11-09
+
+**One commit, on `edb096af`** (S1f.5.5's T6). The int kind is gone: `Value` has two shapes, a name and a nested
+fact, and nothing in the engine reads a run of digits as a number. **No answer moved**, and no register row; the two
+test goldens named above moved as named (below, *Nothing moved*).
+
+**How unreachable was shown.** A copy of `edb096af` (`git archive`, `build/s1f.5.4/t3/probe/`) with a panic,
+`T3-PROBE <id>`, at each of 30 sites, every path only an int used (`build/s1f.5.4/t3/probe_patch.py` places them by
+their text): the roots every int came from (`Value::int`, `Value::tag`'s int arm, `IntPool::intern` and `get`,
+`Terms::value_int`, `intern_int` and `int_text`, `.einb`'s `Maps::value` int arm and its `INTS` entries) and every
+arm that read one (`cmp_semantic`, `repr_value`, `display`, `tag_order`; `Node::Int` in `eq_nodes`, `node_repr`,
+`dump`, `expect::render`, `intern_program_names`, `atomic_value`, the relation-parameter line, the compiler's slot,
+guard, guard key and integer line, `read_out`, `dot_util`, `ir_dot`; `Tag::Int` in `invariant`, `region`, the trace's
+`RefArg`). Each probe also logs its id, the thread (libtest names it after the test) and the process's argv, so one
+reached inside a child `ein` would be named (`build/s1f.5.4/t3/hits.log`).
+- `cargo test --workspace --no-fail-fast` on it (`build/s1f.5.4/t3/probe-tests.log`, 16 min 21 s): 919 passed and
+  19 failed, every failure a probe, and **every probe in a test binary, none in an `ein` process**: 17 Rust tests
+  that build an int by hand (`ein-core`'s nine unit tests of the pool, the tag, `Terms`, the fact store and the
+  participation index; `fork_cost`'s two; `values_semantics`' two; `ein-einb`'s `tables` unit test; `roundtrip`'s
+  two, whose crowded interner held 37 ints; `search_semantics`' `(not 5)`), and `corruption`'s two fuzzers, whose
+  damaged bytes the reader decoded as a value tagged `0b01`, an int. No corpus sweep, golden, fuzz property or CLI
+  run reached one.
+- Every corpus file under 6 000 bytes (398) and 40 000 seeded mutants of them (`ein_corpus::mutants`, seed 0), then
+  200 000 more (seed 987654321), each parsed, loaded, saturated and printed, every fact through the one printer and
+  the program through `dump_canonical` (`t3_sweep`, an example in the copy, `build/s1f.5.4/t3/t3_sweep.rs`): 16 308
+  refused at the parse, 2 671 at load, 82 at compile, 21 238 saturated and 99 stopped saturating, and 81 452,
+  12 999, 352, 105 126 and 469, **no probe and no other panic** (`sweep.txt`, `sweep2.txt`), T5's counts on the same
+  inputs.
+
+And by construction: the generated parser builds no `Int` (S1f.5.5's T4 and T5), so the loader never interned one,
+and the only other way in was a `.einb`'s bytes.
+
+**Removed.**
+- `ein-core`: `Tag::Int`, `Value::int` and `as_int`, `IntId`, `IntPool` with `cmp_value`; `Terms::ints`,
+  `value_int`, `intern_int` and `int_text`, and the int arms of `cmp_semantic`, `repr_value`, `display` and
+  `tag_order` (`Sym < Fact`, design/02 §5 H2's order without its first member); `Overflow::Ints`; `ReprValue::Int`
+  and `canonical_int`, with `ein-ir`'s re-export.
+- `ein-ir`: `Node::Int` and its arms in `eq_nodes`, `node_repr`, `dump`, `expect::render`, `intern_program_names`
+  and `atomic_value`, and the loader's line *its parameter ?p names a relation, and … binds it to the integer …*
+  (`defined_behaviour.md` § 4.10's row, T1f.5.4.4's).
+- `ein-infer`: the compiler's two `Node::Int` arms (a slot, a guard's argument), the guard key's code 5, and
+  `head_not_a_name`'s integer line, *the relation head … is bound to the integer …* (§ 4.10's second row), so a value
+  that is not a name is a fact there; the `Tag::Int` arms of `invariant::walk_value` and `region`'s order key, and
+  `read_out`'s goal term.
+- `ein-render`: `RefArg::Int` and the `Node::Int` arms of `dot_util::value_label` and `ir_dot`.
+- `ein-einb`: `Maps::int` and its id space. `INTS` is written empty and an entry in it is refused, as is a value
+  tagged `0b01`, with `EinbError::Int`: *.einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of
+  digits is a name): save it again from its .ein*.
+- Every Rust test that built an int by hand builds the name of the same digits, and the comments that described an
+  int as a live value say what it was (a record where they name the stage that changed it).
+
+**Kept, and why.**
+- **`.einb`'s `INTS` section**, written empty and required, so no layout changed and no version moved: a 1.x reader
+  opens what this writer writes, and this reader opens what a 1.x writer wrote for a program with no int.
+  [Q-M1f.10](../open_questions.md#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) (a), taken by default on
+  the user's instruction of 2026-11-09; the stage's *with its format version bumped* was (b).
+- **`Tag`'s numbers**, `Sym = 0` and `Fact = 2`, so every stored value keeps its bits; `0b01` is no value,
+  `Value::from_bits` refuses it, and `Value::tag` asserts it in a debug build.
+- **What only looks like an int**: `ein_core::parse_int` (CLI options), `Json::Int` and `BigInt` (the JSON writer's
+  numbers, counts and ids), and `config::FieldKind::Int` (a `(config …)` field's kind, the retired seeds'). None is a
+  value a program writes.
+- **The guard refusal's sentence**, *a guard compares two values, each a variable a premise before it binds, a
+  name, a string or an integer* (`from_ir`'s `GUARD`). `W24/form-in-guard` and `W24/guard-before-binder` record it as
+  their `refused` line, so restating it moves two register rows, which this commit may not. It names no int a
+  program can write; S1f.5.2's string arms leave the same sentence, and it is restated there.
+- **The `:priority` guard** this page planned has nothing to guard: S1f.5.15 removed the keyword from every program
+  and the grammar refuses it (the dated note above), so no program yields a count, and every rule list `saturate
+  --dump` prints is unmoved (*Nothing moved*).
+
+**The ruling, held in every place** (P1f.5's order item 8):
+- `cli_semantics`' `a_run_of_digits_is_a_name_in_every_place`: one program writes a run of digits in a fact's
+  argument and relation, a nested fact, a stored negation, a declaration's name and signature, a rule's name, a
+  premise's relation and argument, a guard, an `absent`, a conclusion and a claim; `ein saturate --dump` prints each
+  as written and keeps `1` and `01`, `7`, `-7` and `07` apart, the rule `1` fires on `(p 1)` and not `(p 01)`, and a
+  claim naming `(q a 1)` where the state holds `(q a 01)` is refuted (`ein test` exit 1).
+- `grammar_pages`' table, 18 rows at its end (123 → 141): a token that is no name in each place one goes.
+- `values_semantics`' `a_run_of_digits_is_a_name_as_written`, where the int pool's canonicalisation test was: every
+  literal that test generated, 361 distinct texts of 391 (the test asserts it), is a name of its own text that
+  prints as written.
+- `ein-core`'s `value` tests: `an_ints_tag_bits_are_no_value`; `ein-einb`'s `tables` test and `invalidation`'s
+  `a_file_that_holds_an_integer_is_refused`, which builds both shapes of an old file (an `INTS` entry; a value
+  tagged `0b01`) on one this writer wrote, its digest good, and holds the refusal and its sentence; the file as
+  written opens with `(p 7)` and `(p 07)` two facts.
+
+**Nothing moved.** Every `.ein` under the five roots (511, `find examples tests stdlib corpus plans -name '*.ein' |
+wc -l`, 2026-11-09) through `edb096af`'s release build and this commit's (`build/s1f.5.4/t3/xcheck/`, T5's
+scripts pointed at the two, 140 s): `solve --json-summary -H --dump-answer`, `saturate --dump` and `test`, exit
+codes, stdout, stderr, the summary and every file the dump wrote compared, timings masked, **511 of 511 the same on
+every command**, so R, N, H, every claim and every rule list `saturate --dump` prints are unmoved; and T12's 2 000
+seeded mutants through `saturate`, the error text included, the same (1 047 accepted, 767 refused with repairs,
+186 without). **The container in both directions** (`einb.sh`): each file `ein kb save`d by each binary and each
+container read by both with `solve`: on the 339 that load, the four reads agree with each other and with `solve` of
+the `.ein`, but one, S1f.5.5's probe `g14/derived-activator.ein`, whose compile refusal names its place as
+`<string>` and the stored text's line, in all four reads alike, which is how a container's re-parsed program has
+always placed one; the other 171 do not load, and neither build saves them. The goldens: `repr_values.txt` and
+`grammar_table.txt`, as named above, and no other.
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end
+of the phase"*), each the agent's recommendation:
+- **The `INTS` section kept, empty, with no format bump** (Q-M1f.10 (a), above).
+- **The guard sentence left** for S1f.5.2 (above), where restating it would move two register rows.
+- **`repr_values.txt`'s int rows kept as names**, not deleted: each shape stays in the table, a run of digits a
+  `str` of any width, which is the ruling in the `repr` format.
+- **The tests that held an int's case keep their names** (`activators_differing_only_by_an_int_argument_both_fire`
+  and its two siblings in `rule_semantics`, cited by name in `firing.rs` and in M1e's record): their programs are
+  unchanged and now hold the case for names, which a dated paragraph above them says.
+
+**The gate.** On this commit, 15 min 48 s (`build/gate-s1f.5.4-T3.log`), green: 937 tests and every static check,
+where T6's ran 938 in 15 min 46 s: four went (`value.rs`' three of the int pool, `repr.rs`' `canonical_int`) and
+three came (`an_ints_tag_bits_are_no_value`, `a_run_of_digits_is_a_name_in_every_place`,
+`a_file_that_holds_an_integer_is_refused`); `values_semantics`' pool test became the name test, and the 18 table rows
+are rows of one test.
 
 ### Task T1f.5.4.4 — the pages
 

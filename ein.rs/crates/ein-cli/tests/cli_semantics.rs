@@ -971,6 +971,90 @@ fn a_range_is_the_name_it_spells() {
     }
 }
 
+/// **A run of digits is a name in every place a name goes** — M1f S1f.5.4's
+/// T1f.5.4.3, on the user's rulings of 2026-11-06 (*"digits are not numbers,
+/// digits are plain names … (p 1) and (p 01) are VERY DIFFERENT facts"*) and
+/// 2026-11-07 (F8: a label is a name like any other).
+///
+/// One program writes a run of digits in each place: a fact's argument and
+/// its relation, a nested fact, a stored negation, a declaration's name and
+/// its signature, a rule's name, a premise's relation and argument, a guard's
+/// argument, an `absent`'s, a conclusion's argument, and a claim's fact.
+/// `ein saturate --dump` prints each as written and holds each pair apart:
+/// `1` and `01`, `7` and `-7` and `07` are five names, the rule `1` fires on
+/// `(p 1)` and not on `(p 01)`, the guard `(neq ?x 1)` lets `01` through and
+/// `(absent (n 7))` holds beside `(n 01)`. A claim that names `1` where the
+/// state holds `01` is refuted, and `ein test` exits 1; naming `01` it holds.
+/// Until the swap `(p 1) (p 01)` stored one fact, the int `1`; since
+/// T1f.5.4.3 there is no int kind to read a run of digits as. A token that is
+/// no name, in the same places, is refused at the parse: the grammar's table
+/// (`ein-ir/tests/grammar_pages.rs`).
+#[test]
+fn a_run_of_digits_is_a_name_in_every_place() {
+    let scratch = ein_corpus::Scratch::new("ein-digits-are-names");
+    let program = "(relation p T) (relation n T) (relation q T T)\n\
+                   (relation 1 T) (relation 01 T)\n\
+                   (relation r 1 01)\n\
+                   (p 1) (p 01) (p -7) (p 7)\n\
+                   (1 a) (01 a)\n\
+                   (p (q 1 01))\n\
+                   (not (n 1)) (n 01)\n\
+                   (rule 1 () :match (p 1) :assert (n a))\n\
+                   (rule 01 () :match (1 ?x) :assert (q ?x 01))\n\
+                   (rule g () :match (and (p ?x) (neq ?x 1) (neq ?x 7)) :assert (q g ?x))\n\
+                   (rule b () :match (absent (n 7)) :assert (q b 07))\n\
+                   (solve :no-hypothesis (p n q 1 01 r))\n";
+    let file = scratch.path().join("digits.ein");
+    std::fs::write(&file, program).expect("the program is written");
+    let file = file.to_string_lossy();
+    let r = ein(&["saturate", "--dump", &file]);
+    assert_eq!(r.code, 0, "ein saturate --dump:\n{}", r.err);
+    for line in [
+        // A declaration's name and its signature.
+        "(relation 1 T)\n",
+        "(relation 01 T)\n",
+        "(relation r 1 01)\n",
+        // A fact's argument: four names, not two ints.
+        "  (p 1)\n",
+        "  (p 01)\n",
+        "  (p -7)\n",
+        "  (p 7)\n",
+        // A fact's relation, a nested fact, a stored negation beside its twin.
+        "  (1 a)\n",
+        "  (01 a)\n",
+        "  (p (q 1 01))\n",
+        "  (not (n 1))\n",
+        "  (n 01)\n",
+        // A rule's name.
+        ";;   1  :params ()",
+        ";;   01  :params ()",
+        // A premise's argument, `(p 1)` and not `(p 01)`, and relation.
+        "  (n a :rule 1)\n",
+        "  (q a 01 :rule 01)\n",
+        // A guard's argument: `1` and `7` are left out, `01` and `-7` are not.
+        "  (q g 01 :rule g)\n",
+        "  (q g -7 :rule g)\n",
+        // An absent's argument, and a conclusion's.
+        "  (q b 07 :rule b)\n",
+    ] {
+        assert!(r.out.contains(line), "no line {line:?}:\n{}", r.out);
+    }
+    for line in ["(q g 1 ", "(q g 7 ", "(n a :rule 01)", "(q 1 01 :rule 01)"] {
+        assert!(!r.out.contains(line), "a line {line:?}:\n{}", r.out);
+    }
+    // A claim's fact: `(q a 01)` is the state's, `(q a 1)` is no fact of it.
+    for (claim, code) in [("(model (q a 01))", 0), ("(model (q a 1))", 1)] {
+        let file = scratch.path().join(format!("claim{code}.ein"));
+        std::fs::write(
+            &file,
+            format!("{program}(query :goal (q a ?x) :expect {claim})\n"),
+        )
+        .expect("the program is written");
+        let r = ein(&["test", &file.to_string_lossy()]);
+        assert_eq!(r.code, code, "ein test on {claim}:\n{}{}", r.out, r.err);
+    }
+}
+
 /// **A rule shape that reads nothing is refused** — M1e2 S1e2.2.24 (W24), on
 /// the user's rulings of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18), and since M1f
 /// S1f.5.5's swap at the parse wherever the grammar states the place.

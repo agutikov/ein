@@ -10,9 +10,9 @@
 //! the write sites.
 //!
 //! It does not have to, because of what this file measures: **the symbol table
-//! and the integer pool do not grow during the search.** An engine that never
-//! grows a table can share it by `&`, with no lock at all and no change to a
-//! single reader.
+//! does not grow during the search** (nor did the integer pool, until M1f
+//! S1f.5.4 retired it with the int kind). An engine that never grows a table
+//! can share it by `&`, with no lock at all and no change to a single reader.
 //!
 //! That was not true when the question was first asked (2026-08-22). **Four
 //! names arrived after root saturation, on 24 of the 90 corpus files that
@@ -97,7 +97,7 @@ fn the_search_interns_no_names() {
             skipped += 1;
             continue;
         }
-        let (syms, ints) = (terms.syms.len(), terms.ints.len());
+        let syms = terms.syms.len();
         if explore::run(&mut kb, &mut terms, &ast, &options()).is_err() {
             skipped += 1;
             continue;
@@ -108,13 +108,6 @@ fn the_search_interns_no_names() {
                 .map(|i| terms.syms.text(ein_core::Symbol(i as u32)))
                 .collect();
             grew.push(format!("{} interned {names:?}", rel.display()));
-        }
-        if terms.ints.len() != ints {
-            grew.push(format!(
-                "{} interned {} integer literal(s)",
-                rel.display(),
-                terms.ints.len() - ints
-            ));
         }
     }
 

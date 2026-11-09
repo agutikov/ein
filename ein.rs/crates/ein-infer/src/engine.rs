@@ -235,8 +235,8 @@ impl Engine {
     /// built: two plans sharing `(rule, activator)` have one register layout.
     ///
     /// A register layout is a function of the rule and of *which* parameters
-    /// the activator bound, and an `int` binds its parameter where a nested
-    /// `Fact` does not. Until M1e2 S1e2.2.7 the activator id interned the
+    /// the activator bound, and a name binds its parameter where a nested
+    /// `Fact` does not (as an `int` did, until M1f S1f.5.4 retired the kind). Until M1e2 S1e2.2.7 the activator id interned the
     /// **symbol** arguments, so `(r a 1)` and `(r a (f X))` shared an id and
     /// disagreed here: M1e
     /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)

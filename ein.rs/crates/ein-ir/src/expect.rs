@@ -259,12 +259,11 @@ pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> ExpectFact<'a> {
 /// is what keeps the two honest.
 pub fn render(ast: &Ast, node: NodeId) -> String {
     match ast.node(node) {
-        // `Node::Int` holds its canonical decimal and `Node::Str` its text
-        // unescaped. An atom, a string and a range are each the name they
-        // spell once loaded, so each prints as the one printer prints that
-        // name (M1e2 S1e2.3.8): bare where it lexes as itself, else quoted,
-        // which is what `Terms::display` prints for the interned value.
-        Node::Int(s) => ast.sym(s).to_string(),
+        // `Node::Str` holds its text unescaped. An atom and a string are
+        // each the name they spell once loaded, so each prints as the one
+        // printer prints that name (M1e2 S1e2.3.8): bare where it lexes as
+        // itself, else quoted, which is what `Terms::display` prints for the
+        // interned value.
         Node::Atom(s) | Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Wildcard => "_".to_string(),

@@ -1,25 +1,26 @@
-//! S1a.2.1's acceptance — one ordering, one canonical form and one rendering
-//! the data model has to get exactly right, each checked against a statement
-//! of it written out separately.
+//! S1a.2.1's acceptance — one ordering and one rendering the data model has
+//! to get exactly right, each checked against a statement of it written out
+//! separately.
 //!
-//! The interner's rank table replaces every sort by name with a `u32` sort,
-//! and the int pool canonicalises every literal. Unit tests can only check the
-//! cases somebody thought of; these check a generated corpus against a
-//! **specification of the behaviour**:
+//! The interner's rank table replaces every sort by name with a `u32` sort.
+//! Unit tests can only check the cases somebody thought of; this checks a
+//! generated corpus against a **specification of the behaviour**:
 //!
 //! - names sort in code-point order, and so does Rust's `Ord` on `String` —
 //!   UTF-8 preserves code-point order — so the reference is
 //!   `Vec<String>::sort`, computed here rather than fetched.
-//! - a literal's canonical text is "strip the leading zeros, and `-0` is
-//!   `0`", which is nine lines of Rust that share no implementation with
-//!   `IntPool`.
 //! - `display` of a nested `Fact` has no such short specification, so the six
 //!   shapes the test builds are checked in as strings.
 //!
-//! The generated corpora are ~900 names and ~400 literals, because their job
-//! is to reach the neighbourhoods a hand-written case would miss.
+//! The generated corpus is ~900 names, because its job is to reach the
+//! neighbourhoods a hand-written case would miss. A third, ~400 integer
+//! literals each canonicalised by the int pool against nine lines of Rust that
+//! shared no code with it, went with the pool when M1f S1f.5.4 retired the int
+//! kind: since S1f.5.5's swap a run of digits is a name, kept as written, so
+//! `7`, `07` and `007` are three names
+//! ([`a_run_of_digits_is_a_name_as_written`]).
 
-use ein_core::{IntPool, Interner, Symbol, Terms};
+use ein_core::{Interner, Symbol, Terms};
 
 /// A deterministic xorshift, so the corpus is the same on every run and on
 /// every machine — a test that fails only sometimes is not a gate.
@@ -138,10 +139,16 @@ fn the_rank_table_orders_names_by_code_point() {
     );
 }
 
+/// **A run of digits is a name, as written** — M1f S1f.5.4, on the user's
+/// ruling of 2026-11-06 (*"digits are not numbers, digits are plain names
+/// … (p 1) and (p 01) are VERY DIFFERENT facts"*).
+///
+/// Every literal the int pool's test canonicalised until the kind was retired
+/// — widths either side of an `i64`, leading zeros, both signs, the two
+/// spellings of zero — is a name here: interned as its own text, distinct
+/// from every other spelling, and printed as written.
 #[test]
-fn the_int_pool_canonicalises_every_literal() {
-    // Widths either side of i64, leading zeros, both signs, and the two
-    // spellings of zero.
+fn a_run_of_digits_is_a_name_as_written() {
     let mut literals: Vec<String> = Vec::new();
     let mut rng = Rng(0xfeed_face_dead_beef);
     for digits in [1usize, 2, 5, 18, 19, 20, 39, 80] {
@@ -167,31 +174,32 @@ fn the_int_pool_canonicalises_every_literal() {
     ] {
         literals.push(fixed.to_string());
     }
+    literals.sort();
+    literals.dedup();
+    assert_eq!(
+        literals.len(),
+        361,
+        "the generator's 391 literals, as distinct texts"
+    );
 
-    let mut pool = IntPool::new();
+    let mut t = Terms::new();
+    let values: Vec<_> = literals
+        .iter()
+        .map(|l| t.value_text(l).expect("room"))
+        .collect();
     let mut bad = Vec::new();
-    // Two literals have the same canonical text iff they are the same
-    // integer, so the reference also tells us which pool ids must coincide.
-    let mut by_canonical: std::collections::HashMap<String, ein_core::IntId> =
-        std::collections::HashMap::new();
-    for literal in &literals {
-        let id = pool.intern(literal).expect("room");
-        let want = canonical(literal);
-        if pool.text(id) != want {
-            bad.push(format!(
-                "{literal:?}: canonical is {want:?}, pool {:?}",
-                pool.text(id)
-            ));
+    for (literal, v) in literals.iter().zip(&values) {
+        if t.display(*v) != *literal {
+            bad.push(format!("{literal:?} prints as {:?}", t.display(*v)));
         }
-        match by_canonical.get(&want) {
-            Some(&first) if first != id => {
-                bad.push(format!("{literal:?} pooled as {id:?}, expected {first:?}"))
-            }
-            Some(_) => {}
-            None => {
-                by_canonical.insert(want, id);
-            }
-        }
+    }
+    let distinct: std::collections::HashSet<_> = values.iter().collect();
+    if distinct.len() != literals.len() {
+        bad.push(format!(
+            "{} spellings are {} names",
+            literals.len(),
+            distinct.len()
+        ));
     }
     assert!(
         bad.is_empty(),
@@ -200,29 +208,6 @@ fn the_int_pool_canonicalises_every_literal() {
         literals.len(),
         bad.join("\n")
     );
-    assert_eq!(pool.len(), by_canonical.len());
-}
-
-/// The canonical text of a decimal literal, written out rather than fetched.
-///
-/// The whole rule on this input class: strip the sign, strip the leading
-/// zeros, and a value of zero has no sign. Nine lines,
-/// sharing no code with [`IntPool`] — which is what makes the comparison a
-/// comparison.
-fn canonical(literal: &str) -> String {
-    let (negative, digits) = match literal.strip_prefix('-') {
-        Some(rest) => (true, rest),
-        None => (false, literal),
-    };
-    let stripped = digits.trim_start_matches('0');
-    if stripped.is_empty() {
-        return "0".to_string();
-    }
-    if negative {
-        format!("-{stripped}")
-    } else {
-        stripped.to_string()
-    }
 }
 
 /// **`Terms::display` renders each of the six value shapes that reach a
@@ -233,10 +218,12 @@ fn canonical(literal: &str) -> String {
 /// `Fact(relation_name=…, args=(…))`, and a name its raw text, so `it's`
 /// printed bare and could not be read back.
 ///
-/// What each shape is for: an atom (bare), an atom with an apostrophe (no
-/// `SYMBOL`, so quoted), a leading-zero int, a negative int wider than an
-/// `i64`, a nested fact, and a fact nested inside a fact — the last being the
-/// only place the recursion is visible.
+/// What each shape is for: an atom (bare), an atom with an apostrophe (bare
+/// since S1f.5.5's swap), a name of digits with leading zeros and a negative
+/// one wider than an `i64` (each an int until M1f S1f.5.4, printed in its
+/// canonical decimal; a name since, printed as written), a nested fact, and a
+/// fact nested inside a fact — the last being the only place the recursion is
+/// visible.
 #[test]
 fn display_renders_every_value_shape() {
     let mut t = Terms::new();
@@ -244,9 +231,9 @@ fn display_renders_every_value_shape() {
     let hypothesis = t.intern_text("hypothesis").expect("room");
     let norwegian = t.value_text("Norwegian").expect("room");
     let quote = t.value_text("it's").expect("room");
-    let seven = t.value_int("007").expect("room");
+    let seven = t.value_text("007").expect("room");
     let big = t
-        .value_int("-00123456789012345678901234567890")
+        .value_text("-00123456789012345678901234567890")
         .expect("room");
     let inner = t.value_fact(co_located, &[norwegian, seven]).expect("room");
     let outer = t
@@ -259,12 +246,12 @@ fn display_renders_every_value_shape() {
         // `'` is a name character since S1f.5.5's swap (the name rule), so
         // `it's` prints bare and reads back as itself.
         (quote, "it's"),
-        (seven, "7"),
-        (big, "-123456789012345678901234567890"),
-        (inner, "(co-located Norwegian 7)"),
+        (seven, "007"),
+        (big, "-00123456789012345678901234567890"),
+        (inner, "(co-located Norwegian 007)"),
         (
             outer,
-            "(hypothesis (co-located Norwegian 7) it's -123456789012345678901234567890)",
+            "(hypothesis (co-located Norwegian 007) it's -00123456789012345678901234567890)",
         ),
     ] {
         let got = t.display(v);

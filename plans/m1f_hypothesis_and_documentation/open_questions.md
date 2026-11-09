@@ -18,6 +18,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **ruled 2026-11-08, (b)**: never bound; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 |
 | [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) | the parser's remaining cost: within grmtools, or past it? | **defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12 |
 | [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **defaulted 2026-11-09 (the user's instruction): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
+| [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **defaulted 2026-11-09 (the user's instruction): the section stays, written empty, and a file that holds an int is refused; no format bump**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -317,3 +318,28 @@ decisions till the end of the phase"*. (a) is the agent's recommendation: no pro
 and 240 000 mutants with a panic at each, the record), a panic is louder than a load error for the one caller that
 can, and (b) would keep 55 error arms for a shape nothing builds. Re-opening it means (b), at any later stage.
 
+### Q-M1f.10 — The `.einb` `INTS` section, once the int kind is gone
+
+**Raised** 2026-11-09 by [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3
+([§ T1f.5.4.3 record](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#t1f543-record-2026-11-09)), which retired
+`Value`'s int tag, the int pool and its id space. A `.einb` 1.2 file carries an `INTS` section (kind 3, a string
+table, required by every 1.x reader) and stores a value as its 32 bits, the int's tag `0b01`. The stage file planned
+the section retired *with its format version bumped*, and the brief asked that the format's rule be followed if the
+layout changes and that an old file holding an int be refused cleanly, never misread. design/10 §4: the major bumps
+on any layout change, and a minor bump only adds a section.
+
+- **(a) Keep the section in the layout, written empty, and refuse a file that holds an int**: an `INTS` entry or a
+  value tagged `0b01`, with its own sentence, `EinbError::Int`. Nothing about the layout changes, so no version
+  moves: a 1.x reader opens what this writer writes (the empty table is the bytes the empty pool wrote), this reader
+  opens what a 1.x writer wrote for a program with no int, and a file from a program with one is refused.
+- **(b) Drop the section and bump the major to 2.0**: every 1.x file is refused with the version line, a file with
+  no int among them; `ein --version`'s `container einb/1.2`, `docs/install.md`'s transcript and the reader's two
+  `head.minor` checks move with it.
+- **(c) Drop the section under a minor bump, 1.3**: a 1.2 reader refuses a 1.3 file for its missing `INTS`, which
+  breaks the rule that a minor bump is additive.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default
+decisions till the end of the phase"*. (a) is the agent's recommendation: the plan's bump assumed the section had to
+go, and (a) keeps its bytes so that nothing needs one; it moves no golden and no output (`ein-einb/tests/invalidation.rs`'
+`a_file_that_holds_an_integer_is_refused` builds both shapes of an old file and holds the refusal), and the next
+major bump, whenever one is made, can drop the section. Re-opening it means (b).

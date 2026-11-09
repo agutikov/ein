@@ -38,12 +38,15 @@
 //! `negative-only.ein` are the two shapes on which a name missing from it cost
 //! a model (M1e2's W15).
 //!
-//! What a rule could still introduce that no static set predicts is a relation
+//! What a rule could introduce that no static set predicts was a relation
 //! head written as a parameter and bound to an **integer**, whose decimal text
-//! the compiler would intern as a name. It is refused: by the loader where the
-//! activator is written down (`examples/broken/load/relation_parameter_int.ein`),
-//! by the compiler where a rule derives it. So the invariant is a property of
-//! the engine and a refusal, not a precondition on the rule library.
+//! the compiler would have interned as a name. It was refused, by the loader
+//! where the activator is written down (`examples/broken/load/relation_parameter_int.ein`,
+//! retired at M1f S1f.5.5's swap) and by the compiler where a rule derives it,
+//! until M1f S1f.5.4 retired the int kind: a run of digits is a name of the
+//! program since the swap. A relation head bound to a nested fact is refused
+//! the same two ways. So the invariant is a property of the engine and a
+//! refusal, not a precondition on the rule library.
 //!
 //! This is not F5's typed form, which would make a violation unrepresentable.
 //! It is the cheap one: two set memberships per fact, against a baseline taken
@@ -141,7 +144,6 @@ impl Breach {
 fn walk_value(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
     match v.tag() {
         ein_core::value::Tag::Sym => out(v.as_sym().expect("tagged Sym")),
-        ein_core::value::Tag::Int => {}
         ein_core::value::Tag::Fact => {
             let f = v.as_fact().expect("tagged Fact");
             let (rel, args) = terms.facts.get(f);
@@ -198,8 +200,9 @@ impl RuleConstant {
 /// A **variable** leaf contributes nothing: a variable is bound by the match,
 /// or by the activator, so it can only carry a value a fact already holds.
 /// The one exception is a relation head written as a parameter, which the
-/// compiler names by the bound value's text: an integer there is refused, at
-/// load or at compile, so it introduces nothing either. A **head** contributes
+/// compiler names by the bound value's text: a name of the program, or a
+/// nested fact, refused at load or at compile (an integer was too, until M1f
+/// S1f.5.4 retired the kind), so it introduces nothing either. A **head** contributes
 /// nothing here: a relation a rule names is the registry's business
 /// ([`Universe::of`] reads it off `relation_names`).
 pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {

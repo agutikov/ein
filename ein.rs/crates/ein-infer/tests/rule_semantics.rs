@@ -577,10 +577,11 @@ fn eq_admits_exactly_the_bindings_neq_rejects() {
 /// environment, so the question "is `Red` a name to look up, or a value?" has a
 /// real answer, and getting it wrong is not loud: an implementation that
 /// resolved `Red` as an unbound *variable* would compare against "nothing" and
-/// silently admit nothing, or everything. The fixture pins both leaf kinds an
-/// `Atom` and an `Int` land as — a name and a number — and each rule is given a
-/// non-matching companion fact so that "fires for the right one" and "fires for
-/// everything" are distinguishable.
+/// silently admit nothing, or everything. The fixture pins an `Atom` of
+/// letters and one of digits, each a name (`5` was an `Int`, a number, until
+/// M1f S1f.5.4 retired the kind: since S1f.5.5's swap a run of digits is a
+/// name), and each rule is given a non-matching companion fact so that "fires
+/// for the right one" and "fires for everything" are distinguishable.
 #[test]
 fn a_guard_argument_may_be_a_literal() {
     let run = saturate(
@@ -594,7 +595,7 @@ fn a_guard_argument_may_be_a_literal() {
         (rule five ()
           :match  (and (n ?k) (eq ?k 5))
           :assert (is-five ?k)
-          :why    "{?k} is the integer 5")
+          :why    "{?k} is the name 5")
         (color Red) (color Green)
         (n 5) (n 6)
         "#,
@@ -602,9 +603,9 @@ fn a_guard_argument_may_be_a_literal() {
     assert_eq!(
         run.derived(),
         BTreeSet::from(["(is-red Red)".to_string(), "(is-five 5)".to_string()]),
-        "an atom literal compares against the bound name and an int literal \
-         against the bound number — neither is resolved as a variable, and \
-         neither matches the companion fact"
+        "a literal of letters and one of digits each compare against the bound \
+         name — neither is resolved as a variable, and neither matches the \
+         companion fact"
     );
 }
 
@@ -685,6 +686,12 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
 // cost a derivation (Q-M1e.16, M1e2's W7). Since S1e2.2.7 the middle row is
 // the compile key's list, so every plan has a space of its own. The three
 // tests below are the three shapes, held under the key as it is now.
+//
+// Since M1f S1f.5.4 retired the int kind (a run of digits is a name since
+// S1f.5.5's swap), the `int` the tests below name is a name of digits: their
+// programs are unchanged, and a name binds a parameter and seeds a register
+// as the int did, so each holds its case for names, the register row's
+// "ints" being symbols.
 
 /// **Two activators differing only in an `int` argument both fire** — which is
 /// what `defined_behaviour.md` §3.2 said they could not do, and the probe that

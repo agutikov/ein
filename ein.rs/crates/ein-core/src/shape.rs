@@ -11,8 +11,9 @@
 //!
 //! - **Facts are named by their position** in the fact list, so the very first
 //!   disagreement a diff can show is a fact-order one.
-//! - **Values are rendered with `repr`**, so `7` the integer and `7` the atom
-//!   cannot collide, and every map is emitted in a sorted order rather than
+//! - **Values are rendered with `repr`**, so a name and a nested fact cannot
+//!   collide (nor could `7` the integer and `7` the atom, until M1f S1f.5.4
+//!   retired the int), and every map is emitted in a sorted order rather than
 //!   its own, so the text does not move when an insertion order does.
 
 use crate::entities::NameCategory;

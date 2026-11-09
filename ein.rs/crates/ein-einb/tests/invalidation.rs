@@ -10,7 +10,9 @@
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
-use ein_einb::{Freshness, KbState, Meta, OpenOptions, SaveOptions, Source, save_to_vec};
+use ein_einb::{
+    EinbError, Freshness, KbState, Meta, OpenOptions, SaveOptions, Source, save_to_vec,
+};
 use ein_ir::{Ast, parse};
 
 struct Fixture {
@@ -167,4 +169,154 @@ fn not_looking_at_the_sources_is_not_evidence_that_they_moved() {
         ein_einb::open_bytes(&f.bytes, &mut terms, &OpenOptions::default()).expect("opens");
     assert_eq!(opened.freshness, Freshness::Fresh);
     assert_eq!(opened.kb.n_facts(), f.saturated_facts);
+}
+
+/// The sections of a file this writer wrote, in its order: each kind and its
+/// bytes. The writer's own layout, read back through the public header and
+/// section-table readers.
+fn sections_of(bytes: &[u8]) -> Vec<(u32, Vec<u8>)> {
+    let mut r = ein_einb::wire::Reader::new(bytes);
+    let head = ein_einb::header::Header::read(&mut r).expect("a header");
+    (0..head.n_sections)
+        .map(|_| {
+            let e = ein_einb::header::Entry::read(&mut r).expect("an entry");
+            let (off, len) = (e.off as usize, e.len as usize);
+            (e.kind, bytes[off..off + len].to_vec())
+        })
+        .collect()
+}
+
+/// A file of `sections`, laid out as `save_to_vec` lays one out — the header,
+/// the section table, each body aligned — and digested, so that the reader's
+/// default path, which checks the digest, is the one a refusal is on.
+fn file_of(sections: &[(u32, Vec<u8>)]) -> Vec<u8> {
+    use ein_einb::header::{ALIGN, ENTRY_LEN, Entry, HEADER_LEN, Header};
+    use ein_einb::wire::Writer;
+    let mut table = Writer::new();
+    let mut body = Writer::new();
+    let start = HEADER_LEN + sections.len() * ENTRY_LEN;
+    for (kind, bytes) in sections {
+        body.align(ALIGN);
+        Entry {
+            kind: *kind,
+            flags: 0,
+            off: (start + body.len()) as u64,
+            len: bytes.len() as u64,
+            raw_len: bytes.len() as u64,
+        }
+        .write(&mut table);
+        body.bytes(bytes);
+    }
+    body.align(ALIGN);
+    let mut after = table.into_vec();
+    after.extend_from_slice(body.as_slice());
+    let mut out = Writer::new();
+    Header {
+        major: ein_einb::FORMAT_MAJOR,
+        minor: ein_einb::FORMAT_MINOR,
+        flags: 0,
+        n_sections: sections.len() as u32,
+        digest: *blake3::hash(&after).as_bytes(),
+    }
+    .write(&mut out);
+    out.bytes(&after);
+    out.into_vec()
+}
+
+/// **A file that holds an integer is refused, never misread** — M1f S1f.5.4.
+///
+/// Ein has had no int since the kind was retired: a run of digits is a name
+/// since S1f.5.5's swap, and `INTS` is written empty. A file a writer before
+/// then wrote from a program with an int holds two things no file since does:
+/// an `INTS` entry, and a value tagged `0b01` in `FACTS`. Each is built here
+/// on a file this writer wrote, at its layout and with its digest good, and
+/// each is refused with [`EinbError::Int`]'s sentence, where reading it as a
+/// name or a fact would have been a wrong answer. The file as written opens,
+/// and a name of digits in it is a name.
+#[test]
+fn a_file_that_holds_an_integer_is_refused() {
+    let text = "(relation p T)\n(p 7)\n(p 07)\n";
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, text, Some("<digits>")).expect("parses");
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
+    let bytes =
+        save_to_vec(&kb, &terms, &mut ast, &forms, None, &SaveOptions::default()).expect("saves");
+
+    let mut fresh = Terms::new();
+    let opened = ein_einb::open_bytes(&bytes, &mut fresh, &OpenOptions::default())
+        .expect("the file as written opens");
+    let p = fresh.intern_text("p").expect("room");
+    let mut stored: Vec<String> = opened.kb.facts_of(p).map(|f| fresh.fact_text(f)).collect();
+    stored.sort();
+    assert_eq!(stored, ["(p 07)", "(p 7)"], "`7` and `07` are two names");
+
+    let sections = sections_of(&bytes);
+    let ints = ein_einb::Kind::Ints as u32;
+    let facts = ein_einb::Kind::Facts as u32;
+    let empty = sections
+        .iter()
+        .find(|(k, _)| *k == ints)
+        .expect("an INTS section");
+    assert_eq!(
+        empty.1,
+        [0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "INTS is the empty table: no entry, no text, one offset, padded"
+    );
+
+    // An `INTS` entry: the table a 1.x writer wrote for a pool holding `7`.
+    let mut one = ein_einb::wire::Writer::new();
+    for word in [1u32, 1, 0, 1] {
+        one.u32(word);
+    }
+    one.bytes(b"7");
+    one.align(ein_einb::header::ALIGN);
+    let with_entry: Vec<(u32, Vec<u8>)> = sections
+        .iter()
+        .map(|(k, b)| {
+            (
+                *k,
+                if *k == ints {
+                    one.as_slice().to_vec()
+                } else {
+                    b.clone()
+                },
+            )
+        })
+        .collect();
+
+    // A value tagged `0b01` in `FACTS`: the first argument of the first row,
+    // its two tag bits an int's (`n_rows`, `n_args`, the 12-byte rows, then
+    // the argument arena).
+    let with_tag: Vec<(u32, Vec<u8>)> = sections
+        .iter()
+        .map(|(k, b)| {
+            let mut b = b.clone();
+            if *k == facts {
+                let n_rows = u32::from_le_bytes(b[0..4].try_into().expect("four bytes")) as usize;
+                let at = 8 + 12 * n_rows;
+                let word = u32::from_le_bytes(b[at..at + 4].try_into().expect("four bytes"));
+                b[at..at + 4].copy_from_slice(&((word & !(3 << 30)) | 1 << 30).to_le_bytes());
+            }
+            (*k, b)
+        })
+        .collect();
+
+    for (what, sections) in [
+        ("an INTS entry", with_entry),
+        ("a value tagged 0b01", with_tag),
+    ] {
+        let file = file_of(&sections);
+        let mut terms = Terms::new();
+        match ein_einb::open_bytes(&file, &mut terms, &OpenOptions::default()) {
+            Err(e @ EinbError::Int) => assert_eq!(
+                e.to_string(),
+                ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
+                 digits is a name): save it again from its .ein",
+                "{what}"
+            ),
+            Err(e) => panic!("{what}: refused for another reason: {e}"),
+            Ok(_) => panic!("{what}: opened"),
+        }
+    }
 }

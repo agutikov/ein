@@ -28,9 +28,10 @@
 //!
 //! Until S1e2.2.4, R1 found `Ann` and `G` and R2 found `Ann`, because the
 //! baseline was the facts'. A name R1 or R2 found now would be one no rule's
-//! text predicts — the residue `interning.rs` names, a relation head written as
-//! a parameter and bound to an integer — and the test that sweeps for it is
-//! [`no_run_reaches_a_name_the_program_does_not_have`].
+//! text predicts — the residue `interning.rs` named, a relation head written
+//! as a parameter and bound to an integer, until M1f S1f.5.4 retired the int
+//! kind (a run of digits is a name since S1f.5.5's swap) — and the test that
+//! sweeps for it is [`no_run_reaches_a_name_the_program_does_not_have`].
 
 use ein_core::{FactId, Kb, Terms};
 use ein_corpus::{corpus_files, repo_root};

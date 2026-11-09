@@ -154,7 +154,6 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
         // The name a string is, as the one printer prints it (M1e2
         // S1e2.3.8): `"1"` and `"x y"` quoted, `"Red"` bare as `Red`.
         Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
-        Node::Int(s) => ast.sym(s).to_string(),
         Node::SForm { head, args } => {
             let inner: Vec<String> = ast
                 .args(args)
