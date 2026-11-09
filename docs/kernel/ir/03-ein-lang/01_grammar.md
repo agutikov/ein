@@ -529,6 +529,23 @@ conclusion holds derives nothing and is no firing. An hrule's instance of either
 is no hypothesis (Q-M1f.32). Until S1f.5.7 each was stored as an ordinary fact,
 so a false one sat in the KB while a guard computed the opposite (W30).
 
+**Every variable a conclusion writes is bound** on every way the `:match` can
+hold (M1f
+[S1f.5.10](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md),
+the user's ruling of 2026-11-07 on F13): by a parameter, which the activator
+binds; by a relation premise, at any depth of its arguments; or by an `eq` or
+`neq` guard, which binds a variable nothing else binds over the program's
+names. A variable seen only inside an `(absent …)`, a `forall` or an `unknown`
+is not bound outside it, `()` binds nothing, and a top-level `(or …)` must
+bind it in every disjunct. An hrule's `:assert` is held to the same rule. A
+rule or an hrule that writes one nothing binds is refused at load, one line
+per variable naming the two explicit spellings of what the implicit form could
+mean: a premise such as `(is-a ?y T)`, *every object of a type*, or `(eq ?y
+?y)`, *every name of the program*
+([`defined_behaviour.md` § 4.13](../../defined_behaviour.md#413-a-conclusions-variable-nothing-binds--m1f-s1f510)).
+Until S1f.5.10 it loaded, and the run stopped where a firing reached the
+variable, or answered where none did (W57).
+
 `(false)` is stored — a contradiction survives any extension, so a dead state
 stays dead — and `open` is not, because openness exists to be *destroyed* by
 an extension and a stored one would survive its own discharge. It is a tally

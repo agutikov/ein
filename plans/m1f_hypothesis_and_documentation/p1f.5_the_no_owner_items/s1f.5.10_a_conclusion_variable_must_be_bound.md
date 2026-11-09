@@ -9,7 +9,7 @@
 **Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.7 (`2eb483e0`): T1f.5.10.1
 ([its record](#t1f5101-record-2026-11-09)), every move listed, W57's four rows and W58 filed, five questions taken by
 default (Q-M1f.36 to Q-M1f.40) (`6fbcf64b`); T1f.5.10.2 ([its record](#t1f5102-record-2026-11-09)), the refusal, W57
-fixed.
+fixed (`bef85fe0`); T1f.5.10.3 ([its record](#t1f5103-record-2026-11-09)), the pages.
 **Depends on:** [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md), whose `(eq ?y ?y)` is one of the two
 spellings the refusal names, and which makes a guard bind. It lands before
 [S1f.5.9](s1f.5.9_an_empty_match_fires.md), so that a rule with `:match ()` and an unbound conclusion
@@ -249,3 +249,25 @@ witnesses'; `corpus_shapes.md5` 152 digests removed and 47 added, the five refus
 renderings a loaded program draws and changing 7, and `rule-nary-and-or`'s 12 IR and rule views, none of any other
 program. The register reads **144 fixed, 20 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
 uniq -c`, 2026-11-09).
+
+## T1f.5.10.3 record (2026-11-09)
+
+**The pages.** No current kernel page describes a conclusion's variable that nothing binds as loading, or the run's stop
+as what every such program meets:
+
+- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4's row says what still reaches the `KeyError`
+  line, a parameter its activator binds to a nested fact (W58, until S1f.5.18), and a new
+  [§ 4.13](../../../docs/kernel/defined_behaviour.md#413-a-conclusions-variable-nothing-binds--m1f-s1f510) states the
+  refusal: the line and its disjunction form, what binds, what it replaced (W57), and what pins it.
+- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s *Conclusion forms in `:assert`*: every variable
+  a conclusion writes is bound, on every way the `:match` can hold, an hrule's too, and what the refusal names.
+- The inventory's [F13](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) and
+  [G-14](../../m1e2_correctness/inventory_2026-11-06.md) say what did it, G-14's derived activator left to S1f.5.18;
+  and Q-M1e2.26's F13 paragraph ([`open_questions.md`](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations))
+  says it is built.
+- [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)'s stage file gains W58: its seed fixes W58 with W33, and it
+  retires `FireError::UnboundVar`, its line, and `fuzz_properties`' parameter exception, the acceptance item S1f.5.10
+  moved to it (Q-M1f.37).
+
+W57's four `[case.fixed]` blocks carry `bef85fe0`, T1f.5.10.2's, where that commit wrote the null id. The phase README's
+F13 and stage row, `AGENTS.md` and the live read-out page are the merge's, which T1f.5.10.4's § For the merge lists.

@@ -877,7 +877,8 @@
 # command that loads the program (`ein_ir::from_ir`'s
 # `refuse_unbound_conclusions`). Each row's `now` is the refusal and states no
 # region. W58 stays `open`, S1f.5.18's. Each `[case.fixed]` carried the null
-# id in the fixing commit, and the stage's next commit wrote the hash. The
+# id in the fixing commit, `bef85fe0`, and the stage's next commit, T1f.5.10.3,
+# wrote the hash in all four. The
 # register reads **144 rows fixed, 20 open and 1 not-wrong** (`grep
 # '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
@@ -10274,7 +10275,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): root fires the rule, and every command stops. The same stop is reached through an `(or …)` whose arm leaves the variable unbound (`examples/ein-bugs/unbound-assert-var.ein`, the fuzzer's of 2026-08-20), a variable read only inside an `(absent …)`, an `unknown` or a `forall`, and one nested in a conclusion's argument. A stop is no answer, and the ruling's is a refusal (Q-M1f.36: a stop where a refusal is right is a row, as W18's stops were). Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "bef85fe0"
 by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
 date   = "2026-11-09"
 
@@ -10309,7 +10310,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): root never fires the rule and a commitment holding a candidate `(s …)` does. The row's `now` is describe's stop, since a run that stops states no region; its `wrong` is the answer `--minimal` gives, the corpus entry banking both exits. Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "bef85fe0"
 by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
 date   = "2026-11-09"
 
@@ -10345,7 +10346,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): an hrule's template, which no run stops on. Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "bef85fe0"
 by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
 date   = "2026-11-09"
 
@@ -10381,7 +10382,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): a rule that never fires, its `:match` empty, `W31/empty-match-*`'s shape (S1f.5.9's). An activator never written reads the same (`examples/syntax/rule-nary-and-or.ein`, the one corpus program the check refuses, rewritten by T1f.5.10.2), and so does an `(absent …)` that never holds. Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
 
 [case.fixed]
-commit = "0000000"
+commit = "bef85fe0"
 by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
 date   = "2026-11-09"
 

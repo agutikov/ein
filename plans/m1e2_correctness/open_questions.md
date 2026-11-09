@@ -2652,8 +2652,11 @@ and `and` should have arguments"*). **Not built**:
 binds, `(rule r () :match (p ?x) :assert (q ?y))`, logically concludes `(q y)` of every name. The user asked
 its value; the agent found almost none, and the meaning stays writable explicitly, with a typed premise or
 `(eq ?y ?y)`. So the implicit form is refused at load, a restriction with a reason: it forbids nothing that
-can be meant, and catches a likely typo. The user: *"yes, file F13 with the refusal"*. **Not built**:
-[S1f.5.10](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md).
+can be meant, and catches a likely typo. The user: *"yes, file F13 with the refusal"*. **Built 2026-11-09**
+by [S1f.5.10](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s
+T1f.5.10.2: every command refuses the implicit form at load, one line per variable naming both spellings, and W57's
+four rows, the ways it stopped or answered until then, are fixed; a parameter its activator binds to a nested fact,
+read only by a conclusion, still stops the run (W58), which S1f.5.18 fixes.
 
 **Built 2026-11-09** by [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md),
 in four commits: the relations in a goal (T1f.5.7.2), premises (T1f.5.7.3) and conclusions (T1f.5.7.4), W30's three,

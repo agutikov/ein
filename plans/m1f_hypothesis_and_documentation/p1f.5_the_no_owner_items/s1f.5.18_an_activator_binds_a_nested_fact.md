@@ -60,6 +60,7 @@ too, although no node derives the activator. The user chose (b) over (a) knowing
   activator's values (W16, S1e2.2.16), so two activators that differ only in a nested fact compile two
   plans. Every analysis that reads activators gets the bound value: `forbid`, `monotone`, the static check
   and `invariant::program_names`. The stage lists any that changes its answer before it lands.
+- **W58, and `FireError::UnboundVar` retired** (added by S1f.5.10 on 2026-11-09, [Q-M1f.37](../open_questions.md#q-m1f37--fireerrorunboundvars-last-path-w33s-cause), taken by default). W33's cause has a second symptom: a value parameter its activator binds to a nested fact, read only by the `:assert`, reaches the conclusion unbound, and the run stops with `FireError::UnboundVar`'s `KeyError: "unbound var ?y in :assert — bindings: {…}"` (`W58/parameter-nested-assert`, `open` and this stage's). Since S1f.5.10's load-time check it is the one path to that line, so the seed above fixes W58 too, and this stage retires the variant and its line (`firing.rs`, `common.rs`, `defined_behaviour.md` § 4's row and § 4.13) and `fuzz_properties`' parameter exception in `no_firing_meets_an_unbound_variable`. S1f.5.10's acceptance item *`FireError::UnboundVar` is gone* is this stage's.
 - **The relation half stays refused.** A relation parameter bound to a nested fact is refused where the plan
   is compiled, as W24 made it. Since that refusal can now come only from a derived activator, the run-time
   line remains as the backstop behind the load-time check below.
@@ -89,7 +90,7 @@ is listed: W33's witness turning right, and any program the check refuses, with 
 
 ### Task T1f.5.18.2 — W33 fixed
 
-The seed, W33's row `fixed` in the same commit, and a test in `ein-infer` beside W24's that holds a value
+The seed, W33's and W58's rows `fixed` in the same commit, `FireError::UnboundVar` retired, and a test in `ein-infer` beside W24's that holds a value
 parameter bound to a nested fact, in a single activator and in a derived one. `./run_tests.sh` green.
 
 ### Task T1f.5.18.3 — the load-time check
@@ -107,6 +108,7 @@ README's row, Q-M1f.1 and Q-M1f.3 marked built, and a sentence in `AGENTS.md`.
 ## Acceptance
 
 - `activator_nested_value`'s witness derives `(hit (f a))` only, and W33's row is `fixed`.
+- `parameter-nested-assert`'s witness derives `(hit (f a))`, W58's row is `fixed`, and no run stops on an unbound conclusion variable: `FireError::UnboundVar` is gone (S1f.5.10's, moved here by Q-M1f.37).
 - `g14/derived-activator.ein` and `g14/derived-activator-never.ein` are refused at load, one line each.
 - No corpus program that answers today is refused, unless the user has seen it and agreed.
 - `./run_tests.sh` is green.

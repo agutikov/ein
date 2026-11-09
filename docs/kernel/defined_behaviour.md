@@ -541,7 +541,7 @@ names the failure's class, and exiting non-zero:
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` (`ein saturate` printed `error: <path> not found` until M1f T1f.5.5.13) | 1 |
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
-| unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
+| a value parameter its activator binds to a nested fact, read only by a conclusion (`W58`, until S1f.5.18): since M1f S1f.5.10 the one input that reaches the line, a conclusion variable no premise or parameter binds being refused at load (§ 4.13); until then any such variable, at the first firing that met it | `KeyError: "unbound var ?y in :assert — bindings: {…}"` | 1 |
 | a conclusion no fact can hold: since M1f S1f.5.5's swap only a macro's body that is a bare parameter, called in an `:assert`, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
@@ -1153,6 +1153,47 @@ grammar table (`grammar_pages.rs`, a row per place), `generated_parser.rs`'
 `a_strings_escapes_are_the_rulings`, and `ein-cli/tests/cli_semantics.rs`'
 `a_string_is_natural_language_and_no_value`; the text a program writes reaches
 every surface that carries it byte for byte (`natural_language_text.rs`).
+
+### 4.13 A conclusion's variable nothing binds — M1f S1f.5.10
+
+A rule's or an hrule's `:assert` that writes a variable some way of satisfying
+its `:match` leaves unbound is refused at load, on the user's ruling of
+2026-11-07 on P1f.5's F13 (*"yes, file F13 with the refusal"*), one line per
+variable, in the order the `:assert` writes them, `; `-joined with every other
+loader error, in ein's own words; exit 1 (`ein test`: 2), on every command that
+loads the program (`saturate`, every `solve` mode, `oracle`, `test`, `render
+lattice`, `render kb`, `kb save`):
+
+| input | message |
+|---|---|
+| a variable no premise or parameter binds | `<rule\|hrule> '<r>': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)` |
+| one that some disjuncts of a top-level `(or …)` bind and others do not | `… writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1 ?v3) — …`, the disjuncts that leave it unbound `or`-joined |
+
+A variable is bound, on each way the `:match` can hold, by a **parameter**,
+which the activator binds; by a **relation premise**, at any depth of its
+arguments, a stored `(not P)` among them; or by an **`eq` or `neq` guard**,
+which binds a variable nothing else binds over the program's names (M1f
+S1f.5.7). One seen only inside an `(absent …)` is not bound outside it, and
+`forall` and `unknown` expand to one; `()` binds nothing; a top-level `(or …)`
+is one way per disjunct. The line's two spellings say what the implicit form
+could mean, *every object of a type* and *every name of the program*, each
+written out. An obligation's `(open ?R)` names a relation, which § 4.2 checks.
+
+**Until S1f.5.10** the loader did not check it, and the run found the
+variable where a firing reached it (W57): root's firing stopped every command,
+exit 1, with § 4's `KeyError` line (`ein solve` printing the message alone); a
+firing only a commitment made stopped `ein solve` and `ein oracle` while `ein
+saturate` and `ein solve --minimal` answered; an hrule's template proposed
+nothing, in silence; and a rule that never fired, its `:match` empty, its
+activator never written or its `(absent …)` never holding, loaded and
+answered. **What still reaches § 4's line** is a value parameter its
+activator binds to a nested fact, read only by a conclusion, which the
+compiler does not seed (W33's cause); S1f.5.18 binds it and retires the line
+(`W58`, Q-M1f.37). Pinned by `ein-ir`'s `from_ir.rs`
+`a_conclusion_variable_nothing_binds_is_refused_at_load`, `ein-cli`'s
+`cli_semantics.rs` test of the same name, `fuzz_properties`'
+`no_firing_meets_an_unbound_variable`, `examples/ein-bugs/unbound-assert-var.ein`
+and `corpus/wrong_answers.toml`'s four W57 rows.
 
 ## 5. The CLI surface
 
