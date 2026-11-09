@@ -8,7 +8,7 @@ in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--doc
 2026-11-09**: T1f.5.16.1, the census, done ([its record](#t1-record-2026-11-09)); Q1 defaulted (a), and three findings,
 one of them S1f.5.2's item, which T1f.5.16.5 fixed before T2 ([its record](#t5-record-2026-11-09)): a text's line
 breaks keep the row's column, ten read-out digests moved, no answer. T1f.5.16.2, the page and the live examples, done
-([its record](#t2-record-2026-11-09)).
+([its record](#t2-record-2026-11-09)); T1f.5.16.3, the label list and the test, done ([its record](#t3-record-2026-11-09)).
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s swap and the non-grammar halves after it
 ([§ The order](README.md#the-order), item 8), so that the census is taken, and the examples are written, in the
 final grammar; and [S1f.5.15](s1f.5.15_rule_priority.md), done, whose `strata` row the page documents.
@@ -660,6 +660,48 @@ No output moved: the generator wrote no block the binary does not print, and `re
 - **Mutation-checked**, as `gate_steps.rs` was. Each of these fails one test: a label added to the printer, a
   row deleted from the page, a summary field renamed, and a row's field pointed at the wrong number. Each is tried
   and reverted, and the record says so.
+
+### T3 record, 2026-11-09
+
+**The label list** is `ein_render::read_out::Row`, declared by a `rows!` macro that writes each variant with its label
+and its layout and `Row::ALL` beside them, so no label exists outside the list: 56 variants, the 45 literal labels,
+the three computed ones (`StatesOfR`; `Query` and `Class`, numbered where they print by `Row::numbered`; `Decided`),
+the second `…` (`MoreSites` and `MoreStale` share the label), `-s`'s `Wall`, `-t`'s five `Timing*` rows and
+`TheCube`. `Row::TABLES` is the page's eleven tables by marker, each in printing order. `Out::row` and `sub_row` take
+a `Row`; a continuation is `Out::more` and `more_text`, under no label; `line` is the one public printer of a row,
+which `ein-cli` uses for `wall`; `modes.rs`'s `timing` and `oracle.rs`'s `the cube` take their labels from `Row`. No
+string reaches a label but through a variant (`padded` is private). No byte of output moved: every read-out golden,
+`corpus_shapes.md5`'s 1 890 `read-out[…]` and `oracle` lines (`grep -c`, 2026-11-09) and the examples page's 40 blocks among them, is unmoved
+in the gate below.
+
+**The test**, `ein-cli/tests/read_out_reference.rs`, the spec's four, sharing one run of each example block with
+`--json-summary` (23 s, release, 2026-11-09):
+
+1. `every_row_label_has_a_row_and_no_row_is_orphaned`: each marked table is its `Row::TABLES` entry, label for label
+   (a numbered row by its pattern, `query i of n`), and every `Row` is in a table.
+2. `every_row_is_printed_by_an_example`: every label but the clock rows' is printed at its layout by a block of the
+   examples page, each block's rows in their tables' order (a row's place never goes back but to its table's first
+   row, the next query's); the clock rows by `ein solve examples/lattice/02_genuine_3set_death.ein -s -t`, its times
+   masked to `…` and compared with the page's marked block, and `-t`'s `route` saturations held to `work.saturations`.
+3. `every_answer_field_of_the_summary_has_a_row`: every leaf path of the seven keys over the examples' summaries (a
+   binding row's variable read as `?var`) is named by a row's summary column or the fields table, every path the page
+   names is in a summary, and the owners table names exactly the summary's top-level keys.
+4. `each_row_prints_its_summary_fields_number`: 912 row fields on the 40 runs (2026-11-09), each by its JSON type: an
+   integer, or an array's length, among the row's counts (a zero may print as a word); each string of a list, or a
+   string, in the row; a flag as *yes* or *no*.
+
+**Mutation-checked**, each tried on the tree of this commit and reverted, `cargo test --release -p ein-cli --test
+read_out_reference` (2026-11-09):
+
+| mutant | fails |
+|---|---|
+| a label added to the printer: a variant `Extra` printed under `asked` | test 1, *`Extra` is in no table* |
+| a row deleted from the page: `merged` out of the `describe` table | tests 1, 3 and 4 |
+| a summary field renamed: `region.nogoods` written `nogood` | test 3, *`region.nogood` is named nowhere*, *the page names `region.nogoods`, which no example's summary has* |
+| a row's field pointed at the wrong number: `states (k_s)`'s cell `region.k_c` | test 4, on `05_mini_zebra.ein` (8) and `merged_states.ein` (16), and test 3 |
+
+`read_out::each_count_is_printed_once_and_is_the_summarys` stays: it holds `k_s` and `k_c` on its own cells, which
+test 4 now holds with every other row on the examples'.
 
 ### Task T1f.5.16.4 — the pointers, and the record
 

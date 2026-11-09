@@ -19,6 +19,7 @@ use ein_core::Terms;
 use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
+use ein_render::read_out::Row;
 
 /// The mode the flags ask for.
 pub fn mode_of(m: &ArgMatches) -> Mode {
@@ -534,7 +535,13 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     print!("{}", text.stdout);
     if m.get_flag("stats") {
         println!();
-        println!("  {:<18}{:.1} ms", "wall", checked.wall.as_secs_f64() * 1e3);
+        println!(
+            "{}",
+            ein_render::read_out::line(
+                Row::Wall,
+                format!("{:.1} ms", checked.wall.as_secs_f64() * 1e3)
+            )
+        );
     }
     for l in &text.stderr {
         eprintln!("{l}");
@@ -1246,10 +1253,14 @@ fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
     let ms = |d: Duration| format!("{:.2} ms", d.as_secs_f64() * 1e3);
     println!();
     println!("timing");
-    for (what, d, note) in [
-        ("load", load, "parse, imports, the program".to_string()),
+    for (row, d, note) in [
         (
-            "route",
+            Row::TimingLoad,
+            load,
+            "parse, imports, the program".to_string(),
+        ),
+        (
+            Row::TimingRoute,
             route,
             format!(
                 "root, H and every node visited: {} saturation{}",
@@ -1258,7 +1269,7 @@ fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
             ),
         ),
         (
-            "read-out",
+            Row::TimingReadOut,
             read,
             if r.answer.mode.ask == Ask::Count {
                 "none: --count reads no state and answers no query".to_string()
@@ -1266,11 +1277,15 @@ fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
                 "each listed state's model, the queries".to_string()
             },
         ),
-        ("print", print, "the text".to_string()),
+        (Row::TimingPrint, print, "the text".to_string()),
     ] {
-        println!("  {what:<10}{:>12}   {note}", ms(d));
+        println!("  {:<10}{:>12}   {note}", row.label(), ms(d));
     }
-    println!("  {:<10}{:>12}", "total", ms(load + run + print));
+    println!(
+        "  {:<10}{:>12}",
+        Row::TimingTotal.label(),
+        ms(load + run + print)
+    );
 }
 
 /// `answer.txt`: the read-out with no listing cut — where stdout's cut says
@@ -1323,9 +1338,11 @@ pub fn print(
     if stats {
         println!();
         println!(
-            "  {:<18}{:.1} ms",
-            "wall",
-            r.answer.wall.as_secs_f64() * 1e3
+            "{}",
+            ein_render::read_out::line(
+                Row::Wall,
+                format!("{:.1} ms", r.answer.wall.as_secs_f64() * 1e3)
+            )
         );
     }
     for l in &text.stderr {

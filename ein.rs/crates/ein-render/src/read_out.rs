@@ -38,6 +38,306 @@ pub const RULE: &str = "──────────────────�
 /// The most lines stdout's listings print together.
 pub const LIST_LINES: usize = 100;
 
+/// Where a row is printed.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Layout {
+    /// At two spaces, its value at column 20.
+    Row,
+    /// A block's row, at four spaces, its value at column 20.
+    Block,
+    /// `-t`'s table, under its line `timing`: the phase at two spaces padded
+    /// to ten, the time right-aligned in twelve, then what the phase did.
+    Timing,
+    /// A line of its own at the left margin: `ein oracle`'s `the cube`.
+    Line,
+}
+
+/// Declares [`Row`]: each variant with its label and its layout, and
+/// [`Row::ALL`], every variant, so that no label can be added without being
+/// in the list.
+macro_rules! rows {
+    ($($(#[$doc:meta])* $v:ident => $label:literal, $layout:ident;)*) => {
+        /// **Every label the read-out prints**, `ein solve`'s and `ein
+        /// oracle`'s, `-s`'s and `-t`'s — M1f S1f.5.16's T1f.5.16.3. A row is
+        /// printed only through one ([`line()`], and the read-out's private
+        /// printers), so a label the reference page,
+        /// `docs/kernel/inference/read_out.md`, lacks cannot be printed
+        /// without being here, and `ein-cli/tests/read_out_reference.rs`
+        /// holds every one to a row of the page's [`Row::TABLES`] table, both
+        /// ways and in printing order. Two rows share a label, `…`, and two
+        /// are numbered where they print ([`Row::numbered`]).
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        pub enum Row {
+            $($(#[$doc])* $v,)*
+        }
+
+        impl Row {
+            /// Every row, in declaration order.
+            pub const ALL: &'static [Row] = &[$(Row::$v),*];
+
+            /// The label as printed; a numbered row's first word.
+            pub const fn label(self) -> &'static str {
+                match self {
+                    $(Row::$v => $label,)*
+                }
+            }
+
+            /// Where it is printed.
+            pub const fn layout(self) -> Layout {
+                match self {
+                    $(Row::$v => Layout::$layout,)*
+                }
+            }
+        }
+    };
+}
+
+rows! {
+    /// The question.
+    Asked => "asked", Row;
+    /// R's size in states.
+    StatesKs => "states (k_s)", Row;
+    /// R's size in commitments.
+    CommitmentsKc => "commitments (k_c)", Row;
+    /// Whether the run classified every commitment, or listed all of the
+    /// part asked.
+    Exhausted => "exhausted", Row;
+    /// Which kind of empty R is.
+    Empty => "empty", Row;
+    /// Where root, ∅, stands.
+    Root => "∅", Row;
+    /// The minimal line, described or listed.
+    MinimalLine => "minimal line", Row;
+    /// The maximal line, described or listed.
+    MaximalLine => "maximal line", Row;
+    /// `-n N`'s count of the states of R it lists.
+    StatesOfR => "states of R", Row;
+    /// `--single`'s word.
+    Verdict => "verdict", Row;
+    /// Whether `--single`'s word is certified.
+    Decided => "decided", Row;
+    /// R's components.
+    Components => "components", Row;
+    /// R's maximal sub-cubes.
+    SubCubes => "sub-cubes", Row;
+    /// The states more than one commitment reaches.
+    Merged => "merged", Row;
+    /// The minimal dead sets.
+    N => "N", Row;
+    /// The minimal discharging sets.
+    E => "E", Row;
+    /// The static check, and the warning's block under it.
+    Lattice => "lattice", Row;
+    /// `--monotone`'s answer.
+    Monotone => "monotone", Row;
+    /// The rules' negative cycles.
+    Strata => "strata", Row;
+    /// A minimal hole of the cube.
+    MinimalHole => "minimal hole", Block;
+    /// H, the universe.
+    Universe => "universe", Row;
+    /// The route, and its licences.
+    Route => "route", Row;
+    /// What the run cost.
+    Work => "work", Row;
+    /// What a node is taken to be on a flagged program.
+    Assumes => "assumes", Block;
+    /// A site of the static check.
+    Site => "site", Block;
+    /// The sites past [`WARNING_ROWS`].
+    MoreSites => "…", Block;
+    /// A cycle through an `absent` over D.
+    Cycle => "cycle", Block;
+    /// An order finding.
+    Order => "order", Block;
+    /// `--monotone`'s word on the cube's half.
+    Bit => "bit", Block;
+    /// Whether a site bit on the cube.
+    Status => "status", Block;
+    /// The stale facts of the nodes the run computed.
+    State => "state", Block;
+    /// A node holding a stale fact.
+    Stale => "stale", Block;
+    /// The stale nodes past [`WARNING_ROWS`].
+    MoreStale => "…", Block;
+    /// The parent-path spot check.
+    Paths => "paths", Block;
+    /// A cycle of the rules' dependency graph through an `absent`.
+    NegativeCycle => "negative cycle", Block;
+    /// A relation H leaves out.
+    Outside => "outside", Block;
+    /// A type the blind enumerator binds as an object.
+    Types => "types", Block;
+    /// A fact of root's core.
+    UnsatCore => "unsat core", Row;
+    /// A cut core search.
+    CoreSearch => "core search", Row;
+    /// A core fact's `:source`.
+    Source => "source", Row;
+    /// The rules of the core's last step.
+    RefutedBy => "refuted by", Row;
+    /// A node of the owing frontier.
+    Owing => "owing", Row;
+    /// A query's goal: `query`, or `query i of n`.
+    Query => "query", Row;
+    /// The set a query's classes are over.
+    Over => "over", Row;
+    /// A projection class: `class i of n`.
+    Class => "class", Block;
+    /// The claim that states the classes.
+    AsExpect => "as :expect", Row;
+    /// A query's own claim, checked.
+    Expect => ":expect", Row;
+    /// The program's `(solve … :expect …)`, checked.
+    SolveExpect => "(solve :expect)", Row;
+    /// `--count`'s claims, none checked.
+    Claims => "claims", Row;
+    /// `-s`: the wall clock.
+    Wall => "wall", Row;
+    /// `-t`: the load.
+    TimingLoad => "load", Timing;
+    /// `-t`: the route.
+    TimingRoute => "route", Timing;
+    /// `-t`: the read-out.
+    TimingReadOut => "read-out", Timing;
+    /// `-t`: the print.
+    TimingPrint => "print", Timing;
+    /// `-t`: the sum.
+    TimingTotal => "total", Timing;
+    /// `ein oracle`'s line on the cube.
+    TheCube => "the cube", Line;
+}
+
+impl Row {
+    /// The label as the page writes it: a numbered row by its pattern.
+    pub fn patterns(self) -> Vec<String> {
+        match self {
+            Row::Query => vec!["query".to_string(), "query i of n".to_string()],
+            Row::Class => vec!["class i of n".to_string()],
+            r => vec![r.label().to_string()],
+        }
+    }
+
+    /// The label of the `i`-th of `n`: `query` where the program has one
+    /// query and `query i of n` where it has several; `class i of n` always.
+    pub fn numbered(self, i: usize, n: usize) -> String {
+        match self {
+            Row::Query if n <= 1 => self.label().to_string(),
+            r => format!("{} {i} of {n}", r.label()),
+        }
+    }
+
+    /// **The reference page's row tables**, by their marker
+    /// (`<!-- rows: NAME -->`), each in printing order: a bare `ein solve`
+    /// with `--count` and `ein oracle`, a mode, `--monotone`, the three
+    /// blocks, why R is empty, the queries, the claims, `-s` and `-t`, and
+    /// `ein oracle`'s line.
+    pub const TABLES: &'static [(&'static str, &'static [Row])] = &[
+        (
+            "describe",
+            &[
+                Row::Asked,
+                Row::StatesKs,
+                Row::CommitmentsKc,
+                Row::Exhausted,
+                Row::Empty,
+                Row::Root,
+                Row::MinimalLine,
+                Row::MaximalLine,
+                Row::Components,
+                Row::SubCubes,
+                Row::Merged,
+                Row::N,
+                Row::E,
+                Row::Lattice,
+                Row::Strata,
+                Row::MinimalHole,
+                Row::Universe,
+                Row::Route,
+                Row::Work,
+            ],
+        ),
+        (
+            "mode",
+            &[
+                Row::Asked,
+                Row::Verdict,
+                Row::StatesOfR,
+                Row::MinimalLine,
+                Row::MaximalLine,
+                Row::Decided,
+                Row::Exhausted,
+                Row::Lattice,
+                Row::Strata,
+                Row::Universe,
+                Row::Route,
+                Row::Work,
+            ],
+        ),
+        (
+            "monotone",
+            &[
+                Row::Asked,
+                Row::Monotone,
+                Row::Universe,
+                Row::Route,
+                Row::Work,
+            ],
+        ),
+        (
+            "lattice",
+            &[
+                Row::Assumes,
+                Row::Site,
+                Row::MoreSites,
+                Row::Cycle,
+                Row::Order,
+                Row::Bit,
+                Row::Status,
+                Row::State,
+                Row::Stale,
+                Row::MoreStale,
+                Row::Paths,
+            ],
+        ),
+        ("strata", &[Row::NegativeCycle]),
+        ("universe", &[Row::Outside, Row::Types]),
+        (
+            "empty",
+            &[
+                Row::UnsatCore,
+                Row::CoreSearch,
+                Row::Source,
+                Row::RefutedBy,
+                Row::Owing,
+            ],
+        ),
+        (
+            "queries",
+            &[
+                Row::Query,
+                Row::Over,
+                Row::Class,
+                Row::AsExpect,
+                Row::Expect,
+            ],
+        ),
+        ("claims", &[Row::SolveExpect, Row::Claims]),
+        (
+            "clock",
+            &[
+                Row::Wall,
+                Row::TimingLoad,
+                Row::TimingRoute,
+                Row::TimingReadOut,
+                Row::TimingPrint,
+                Row::TimingTotal,
+            ],
+        ),
+        ("oracle", &[Row::TheCube]),
+    ];
+}
+
 /// What `ein solve`'s cut lines name as the writer of the rest.
 const DUMP_FLAG: &str = "--dump-answer DIR";
 
@@ -179,8 +479,15 @@ impl Out {
         self.text.push('\n');
     }
 
-    fn row(&mut self, label: &str, value: impl AsRef<str>) {
-        let l = row_text(label, value);
+    /// A row: `r`'s label, then its value at column 20.
+    fn row(&mut self, r: Row, value: impl AsRef<str>) {
+        let l = line(r, value);
+        self.line(l);
+    }
+
+    /// A row's continuation: a value at column 20 under no label.
+    fn more(&mut self, value: impl AsRef<str>) {
+        let l = more_text(value);
         self.line(l);
     }
 
@@ -253,9 +560,39 @@ fn hang(value: &str, col: usize) -> String {
     lines.join(&format!("\n{pad}"))
 }
 
-fn row_text(label: &str, value: impl AsRef<str>) -> String {
-    let col = 2 + label.chars().count().max(18);
-    format!("  {label:<18}{}", hang(value.as_ref(), col))
+/// `label` padded to `width` at `indent`, then `value`, its further lines
+/// started where it starts ([`hang`]). Private: a label reaches it only
+/// through a [`Row`].
+fn padded(indent: usize, width: usize, label: &str, value: &str) -> String {
+    let col = indent + label.chars().count().max(width);
+    format!("{}{label:<width$}{}", " ".repeat(indent), hang(value, col))
+}
+
+/// `r` printed with `value`, at its layout: a row at two spaces, a block's
+/// row at four, each value at column 20. `ein-cli` prints `-s`'s `wall` row
+/// through it.
+pub fn line(r: Row, value: impl AsRef<str>) -> String {
+    match r.layout() {
+        Layout::Row => padded(2, 18, r.label(), value.as_ref()),
+        Layout::Block => padded(4, 16, r.label(), value.as_ref()),
+        Layout::Timing | Layout::Line => {
+            unreachable!("{r:?} has its own layout, printed by `ein-cli`")
+        }
+    }
+}
+
+/// A numbered row, `query 2 of 3` or `class 1 of 4`, at `r`'s layout.
+fn numbered_line(r: Row, i: usize, n: usize, value: impl AsRef<str>) -> String {
+    let label = r.numbered(i, n);
+    match r.layout() {
+        Layout::Block => padded(4, 16, &label, value.as_ref()),
+        _ => padded(2, 18, &label, value.as_ref()),
+    }
+}
+
+/// A row's continuation: `value` at column 20, under no label.
+fn more_text(value: impl AsRef<str>) -> String {
+    padded(2, 18, "", value.as_ref())
 }
 
 fn which_words(w: Which) -> &'static str {
@@ -306,7 +643,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
     };
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
-    out.row("asked", asked);
+    out.row(Row::Asked, asked);
 
     match r.described() {
         Some(d) => describe_rows(&mut out, r, d, o),
@@ -332,9 +669,9 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
             Outcome::Failed => "FAILED",
             Outcome::NotChecked => "NOT CHECKED",
         };
-        out.row("(solve :expect)", label);
+        out.row(Row::SolveExpect, label);
         for l in &claim.lines {
-            out.row("", l);
+            out.more(l);
         }
         let why = claim.lines.first().cloned().unwrap_or_default();
         match claim.outcome {
@@ -390,13 +727,13 @@ fn lattice_block(
 ) {
     if m.is_monotone() {
         out.row(
-            "lattice",
+            Row::Lattice,
             "monotone (the static check) — R is convex: no hole",
         );
         // `-y` (M1e2 S1e2.1c.5): the spot check, unbounded, held to the
         // theorem — a path that differed would have been the run's error.
         if let Some(p) = spot {
-            out.line(sub_row("paths", paths_text(p)));
+            out.line(sub_row(Row::Paths, paths_text(p)));
         }
         strata_block(out, m);
         return;
@@ -408,7 +745,7 @@ fn lattice_block(
         None => "holes not known: the cube was not enumerated".to_string(),
     };
     out.row(
-        "lattice",
+        Row::Lattice,
         format!(
             "not monotone: {} (the static check) — {h}",
             plural(m.sites.len() as u64, "site", "sites")
@@ -439,7 +776,7 @@ fn strata_block(out: &mut Out, m: &Monotonicity) {
         return;
     }
     out.row(
-        "strata",
+        Row::Strata,
         format!(
             "not stratifiable: {} through an absent — root's fixpoint may depend on the \
              boundary's admission order, and need not be unique",
@@ -447,7 +784,7 @@ fn strata_block(out: &mut Out, m: &Monotonicity) {
         ),
     );
     for c in &m.negative_cycles {
-        out.line(sub_row("negative cycle", c.stratum_text()));
+        out.line(sub_row(Row::NegativeCycle, c.stratum_text()));
     }
 }
 
@@ -458,10 +795,11 @@ fn strata_block(out: &mut Out, m: &Monotonicity) {
 /// proposal's § 0, approved 2026-11-03).
 pub const WARNING_ROWS: usize = 4;
 
-/// A row under the `lattice` row, at the hole rows' indent.
-fn sub_row(label: &str, value: impl AsRef<str>) -> String {
-    let col = 4 + label.chars().count().max(16);
-    format!("    {label:<16}{}", hang(value.as_ref(), col))
+/// A row of a block: under `lattice`, `strata` or `universe`, at the hole
+/// rows' indent.
+fn sub_row(r: Row, value: impl AsRef<str>) -> String {
+    debug_assert_eq!(r.layout(), Layout::Block, "{r:?} is no block's row");
+    line(r, value)
 }
 
 /// What the universe leaves out, as one sentence — M1e2 S1e2.2.8 (W6), the
@@ -499,7 +837,7 @@ pub fn outside_text(outside: &[Outside]) -> Option<String> {
 /// out: every question prints it, since every question is over the same H.
 fn outside_row(out: &mut Out, outside: &[Outside]) {
     if let Some(t) = outside_text(outside) {
-        out.line(sub_row("outside", t));
+        out.line(sub_row(Row::Outside, t));
     }
 }
 
@@ -531,7 +869,7 @@ pub fn types_text(t: &TypesAsObjects) -> Option<String> {
 /// same H.
 fn types_row(out: &mut Out, t: &TypesAsObjects) {
     if let Some(text) = types_text(t) {
-        out.line(sub_row("types", text));
+        out.line(sub_row(Row::Types, text));
     }
 }
 
@@ -540,12 +878,12 @@ fn types_row(out: &mut Out, t: &TypesAsObjects) {
 /// `order` — what `ein solve --monotone` prints, and every flagged read-out's
 /// `lattice` block.
 pub fn static_rows(m: &Monotonicity, uncut: bool, hint: &str) -> Vec<String> {
-    let mut out = vec![sub_row("assumes", ASSUMES)];
+    let mut out = vec![sub_row(Row::Assumes, ASSUMES)];
     let stakes = &m.detector.stakes;
     for (i, s) in stakes.iter().enumerate() {
         if i == WARNING_ROWS && !uncut {
             out.push(sub_row(
-                "…",
+                Row::MoreSites,
                 format!(
                     "{} more sites: {hint} writes every one",
                     group((stakes.len() - WARNING_ROWS) as u64)
@@ -553,13 +891,13 @@ pub fn static_rows(m: &Monotonicity, uncut: bool, hint: &str) -> Vec<String> {
             ));
             break;
         }
-        out.push(sub_row("site", s.text()));
+        out.push(sub_row(Row::Site, s.text()));
     }
     for c in &m.detector.cycles {
-        out.push(sub_row("cycle", c.text()));
+        out.push(sub_row(Row::Cycle, c.text()));
     }
     for o in ein_infer::detector::order_texts(&m.detector.order) {
-        out.push(sub_row("order", o));
+        out.push(sub_row(Row::Order, o));
     }
     out
 }
@@ -567,15 +905,15 @@ pub fn static_rows(m: &Monotonicity, uncut: bool, hint: &str) -> Vec<String> {
 /// The dynamic rows: `status`, `state` and its `stale` rows, `paths`.
 pub fn dynamic_rows(w: &Warning, uncut: bool, hint: &str) -> Vec<String> {
     let mut out = Vec::new();
-    out.push(sub_row("status", status_text(&w.status)));
+    out.push(sub_row(Row::Status, status_text(&w.status)));
     let st = &w.state;
-    out.push(sub_row("state", state_text(st)));
+    out.push(sub_row(Row::State, state_text(st)));
     if !st.stale.is_empty() {
         let k = st.stale.len() as u64;
         for (i, s) in st.stale.iter().enumerate() {
             if i == WARNING_ROWS && !uncut {
                 out.push(sub_row(
-                    "…",
+                    Row::MoreStale,
                     format!(
                         "{} more: {hint} writes them",
                         group(k - WARNING_ROWS as u64)
@@ -584,7 +922,7 @@ pub fn dynamic_rows(w: &Warning, uncut: bool, hint: &str) -> Vec<String> {
                 break;
             }
             out.push(sub_row(
-                "stale",
+                Row::Stale,
                 format!(
                     "{}, {}: {}",
                     s.node,
@@ -595,7 +933,7 @@ pub fn dynamic_rows(w: &Warning, uncut: bool, hint: &str) -> Vec<String> {
         }
     }
     if let Some(p) = &w.paths {
-        out.push(sub_row("paths", paths_text(p)));
+        out.push(sub_row(Row::Paths, paths_text(p)));
     }
     out
 }
@@ -790,19 +1128,19 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
     out.row(
-        "asked",
+        Row::Asked,
         "is the program monotone? — the static check, on root's fixpoint",
     );
     let m = &c.monotonicity;
     if m.is_monotone() {
         out.row(
-            "monotone",
+            Row::Monotone,
             "yes — no site: dead and discharged are upward-closed, so R has no hole and its two \
              lines describe it",
         );
     } else {
         out.row(
-            "monotone",
+            Row::Monotone,
             format!("no — {}", plural(m.sites.len() as u64, "site", "sites")),
         );
         for l in static_rows(m, o.uncut, out.hint) {
@@ -825,16 +1163,16 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
                 group(1u64 << n)
             )
         };
-        out.line(sub_row("bit", bit));
+        out.line(sub_row(Row::Bit, bit));
     }
-    out.row("universe", plural(c.n as u64, "candidate", "candidates"));
+    out.row(Row::Universe, plural(c.n as u64, "candidate", "candidates"));
     outside_row(&mut out, &c.root.outside);
     types_row(&mut out, &c.root.types_as_objects);
     out.row(
-        "route",
+        Row::Route,
         "none — a question about the program: root's fixpoint, then the static check",
     );
-    out.row("work", "1 saturation, root's · 0 facts beyond root");
+    out.row(Row::Work, "1 saturation, root's · 0 facts beyond root");
     Text {
         stdout: out.text,
         stderr: out.stderr,
@@ -857,11 +1195,7 @@ fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
     let mut notes: Vec<String> = Vec::new();
     for (qi, q) in r.queries.iter().enumerate() {
         let Some(claim) = &q.claim else { continue };
-        let label = if n_q > 1 {
-            format!("query {} of {n_q}", qi + 1)
-        } else {
-            "query".to_string()
-        };
+        let label = Row::Query.numbered(qi + 1, n_q);
         let why = claim.lines.first().cloned().unwrap_or_default();
         notes.push(format!(
             "note: {}: {label} :expect NOT CHECKED — {why}",
@@ -891,7 +1225,7 @@ fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
     let k = notes.len() as u64;
     out.blank();
     out.row(
-        "claims",
+        Row::Claims,
         format!(
             "not checked — {}, {}: --count reads no state, so it checks no claim; a bare `ein \
              solve FILE` checks {}",
@@ -1037,14 +1371,14 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     } else {
         "   (a lower bound: the run stopped before R was exhausted)".to_string()
     };
-    out.row("states (k_s)", format!("{}{lb}", group(k_s)));
+    out.row(Row::StatesKs, format!("{}{lb}", group(k_s)));
     // R itself is decided when it is the whole cube; only its states are not.
     let decided = sp.is_some_and(|p| p.cube);
     let lb_c = if decided { "" } else { lb.as_str() };
-    out.row("commitments (k_c)", format!("{}{lb_c}", group(d.k_c)));
+    out.row(Row::CommitmentsKc, format!("{}{lb_c}", group(d.k_c)));
     match (&a.stopped, d.exhausted) {
         (_, true) => out.row(
-            "exhausted",
+            Row::Exhausted,
             "yes — every commitment is classified: this is all of R",
         ),
         (Some(Stopped::Budget { spent, projected }), false) if sp.is_some() => {
@@ -1061,14 +1395,14 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             );
             if p.cube {
                 out.row(
-                    "exhausted",
+                    Row::Exhausted,
                     format!(
                         "no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube (L1, \
                          L2), and only its states are not all counted. The {why}"
                     ),
                 );
             } else {
-                out.row("exhausted", format!("no — the {why}"));
+                out.row(Row::Exhausted, format!("no — the {why}"));
             }
             partial_note(
                 out,
@@ -1085,7 +1419,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 .stopped_before
                 .unwrap_or((d.complete_up_to.map_or(0, |l| l + 1), 0));
             out.row(
-                "exhausted",
+                Row::Exhausted,
                 format!(
                     "no — route 1 stopped before layer {layer}: its {} commitments project {} \
                      facts on top of the {} spent, past --region-budget {}",
@@ -1106,7 +1440,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         }
         (Some(Stopped::Limit { n, limit }), false) => {
             out.row(
-                "exhausted",
+                Row::Exhausted,
                 format!(
                     "no — not monotone, and the question needs the whole cube: 2^{n}, past \
                      --region-limit {limit}"
@@ -1119,29 +1453,29 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             );
         }
         (_, false) => {
-            out.row("exhausted", "no — --max-time");
+            out.row(Row::Exhausted, "no — --max-time");
         }
     }
     let root = &d.root;
     if k_s == 0 && d.exhausted {
         if !d.any_alive {
             out.row(
-                "empty",
+                Row::Empty,
                 "every node is dead — root's own fixpoint derives (false)",
             );
         } else {
             out.row(
-                "empty",
+                Row::Empty,
                 "every alive node owes — no commitment pays every debt",
             );
         }
     } else if root.in_r() {
-        out.row("∅", "in R — root is alive and owes nothing");
+        out.row(Row::Root, "in R — root is alive and owes nothing");
     } else if !root.alive {
-        out.row("∅", "dead — root's own fixpoint derives (false)");
+        out.row(Row::Root, "dead — root's own fixpoint derives (false)");
     } else {
         out.row(
-            "∅",
+            Row::Root,
             format!(
                 "not in R — root owes {}",
                 plural(root.owes as u64, "instance", "instances")
@@ -1150,8 +1484,8 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     }
 
     if !count && (k_s > 0 || !d.exhausted) {
-        out.row("minimal line", minimal_line(d));
-        out.row("maximal line", maximal_line(d));
+        out.row(Row::MinimalLine, minimal_line(d));
+        out.row(Row::MaximalLine, maximal_line(d));
         match &d.shape {
             Some(shape) => {
                 let c = &shape.components;
@@ -1165,24 +1499,24 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 } else {
                     String::new()
                 };
-                out.row("components", format!("{}{note}", group(c.len() as u64)));
+                out.row(Row::Components, format!("{}{note}", group(c.len() as u64)));
                 match &shape.subcubes {
-                    Some(dims) => out.row("sub-cubes", subcube_text(dims)),
-                    None => out.row("sub-cubes", "not known: past the interval search's bound"),
+                    Some(dims) => out.row(Row::SubCubes, subcube_text(dims)),
+                    None => out.row(Row::SubCubes, "not known: past the interval search's bound"),
                 }
                 let merged: Vec<&ein_infer::described::State> =
                     d.states.iter().filter(|s| s.commitments > 1).collect();
                 if !d.exhausted {
-                    out.row("merged", "not known: the run did not meet every state");
+                    out.row(Row::Merged, "not known: the run did not meet every state");
                 } else if merged.is_empty() {
                     out.row(
-                        "merged",
+                        Row::Merged,
                         "none — every state is reached by one commitment, so k_c = k_s",
                     );
                 } else {
                     let g: u64 = merged.iter().map(|s| s.generators.len() as u64).sum();
                     out.row(
-                        "merged",
+                        Row::Merged,
                         format!(
                             "{} reached by more than one commitment, with {} minimal",
                             plural(merged.len() as u64, "state", "states"),
@@ -1191,21 +1525,21 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                     );
                 }
                 out.row(
-                    "N",
+                    Row::N,
                     plural(d.nogoods, "minimal dead set", "minimal dead sets"),
                 );
                 if let Some(e) = shape.discharging {
                     out.row(
-                        "E",
+                        Row::E,
                         plural(e, "minimal discharging set", "minimal discharging sets"),
                     );
                 }
             }
             None => {
-                out.row("components", "not known: R was not exhausted");
-                out.row("sub-cubes", "not known");
+                out.row(Row::Components, "not known: R was not exhausted");
+                out.row(Row::SubCubes, "not known");
                 out.row(
-                    "N",
+                    Row::N,
                     match (sp, d.complete_up_to) {
                         (Some(p), _) if p.nogoods_known => {
                             "0 minimal dead sets — ⊤ is alive, so no node is dead".to_string()
@@ -1253,19 +1587,19 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 format!("owes {}", h.owes)
             };
             out.row(
-                "  minimal hole",
+                Row::MinimalHole,
                 format!("{} — {what}", name(&cands, &h.set)),
             );
         }
     }
     if n == 0 {
         out.row(
-            "universe",
+            Row::Universe,
             "no candidate: R is {∅} or empty, decided by root alone",
         );
     } else if dead_alone_known(d) {
         out.row(
-            "universe",
+            Row::Universe,
             format!(
                 "{}, {} dead alone",
                 plural(n, "candidate", "candidates"),
@@ -1274,7 +1608,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         );
     } else {
         out.row(
-            "universe",
+            Row::Universe,
             format!(
                 "{}, dead alone not known: the run stopped before it visited each alone",
                 plural(n, "candidate", "candidates")
@@ -1298,9 +1632,9 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             "2, the cube — no licence: the static check flags the program".to_string()
         }
     };
-    out.row("route", route);
+    out.row(Row::Route, route);
     out.row(
-        "work",
+        Row::Work,
         work_text(d.work.saturations, d.work.facts, d.work.layers),
     );
 }
@@ -1351,17 +1685,17 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     // not list (M1e2 S1e2.2.26).
     let k = r.listed().count() as u64;
     let label = match a.mode.which {
-        Which::All => "states of R",
-        Which::Minimal => "minimal line",
-        Which::Maximal => "maximal line",
+        Which::All => Row::StatesOfR,
+        Which::Minimal => Row::MinimalLine,
+        Which::Maximal => Row::MaximalLine,
     };
     if a.mode.ask == Ask::Single {
         match a.verdict {
             Some(Verdict::Solution) => {
-                out.row("verdict", format!("Solution — {line} is one state"))
+                out.row(Row::Verdict, format!("Solution — {line} is one state"))
             }
             Some(Verdict::Ambiguity) => out.row(
-                "verdict",
+                Row::Verdict,
                 format!("Ambiguity — {line} holds two states or more; two of them below"),
             ),
             Some(v @ (Verdict::Contradiction | Verdict::Open)) => {
@@ -1370,9 +1704,9 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 } else {
                     "R is empty: every alive node owes"
                 };
-                out.row("verdict", format!("{} — {why}", v.word()));
+                out.row(Row::Verdict, format!("{} — {why}", v.word()));
             }
-            None => out.row("verdict", "not decided — the run stopped first"),
+            None => out.row(Row::Verdict, "not decided — the run stopped first"),
         }
     } else if let Some(d) = a.partial.as_deref() {
         // A line mode past `--region-limit` on a flagged program says what
@@ -1404,7 +1738,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     }
     match &a.stopped {
         None if a.mode.ask == Ask::Single => out.row(
-            "decided",
+            Row::Decided,
             if matches!(a.verdict, Some(Verdict::Contradiction | Verdict::Open)) {
                 format!("yes — {line} is empty")
             } else if a.exhausted {
@@ -1413,17 +1747,17 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 format!("yes — two states settle it; the rest of {line} was not visited")
             },
         ),
-        None if a.exhausted => out.row("exhausted", format!("yes — this is all of {line}")),
+        None if a.exhausted => out.row(Row::Exhausted, format!("yes — this is all of {line}")),
         None => out.row(
-            "exhausted",
+            Row::Exhausted,
             "no — stopped as asked; each state shown is certified, nothing is said of the rest",
         ),
         Some(Stopped::Budget { spent, projected }) => {
             out.row(
                 if a.mode.ask == Ask::Single {
-                    "decided"
+                    Row::Decided
                 } else {
-                    "exhausted"
+                    Row::Exhausted
                 },
                 format!(
                     "no — stopped at --region-budget {}: {} facts spent, the next step projects {}",
@@ -1437,9 +1771,9 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         Some(Stopped::Limit { n, limit }) => {
             out.row(
                 if a.mode.ask == Ask::Single {
-                    "decided"
+                    Row::Decided
                 } else {
-                    "exhausted"
+                    Row::Exhausted
                 },
                 format!(
                     "no — not monotone, and the question needs the whole cube: 2^{n}, past \
@@ -1452,7 +1786,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 format!("the question needs 2^{n} saturations, past --region-limit {limit}"),
             );
         }
-        Some(Stopped::Deadline) => out.row("exhausted", "no — --max-time"),
+        Some(Stopped::Deadline) => out.row(Row::Exhausted, "no — --max-time"),
     }
     // A dead root leaves no node of R, so no hole (L0).
     let holes = if a
@@ -1470,11 +1804,14 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         r.spot.as_ref(),
         holes,
     );
-    out.row("universe", plural(a.n() as u64, "candidate", "candidates"));
+    out.row(
+        Row::Universe,
+        plural(a.n() as u64, "candidate", "candidates"),
+    );
     outside_row(out, &a.root.outside);
     types_row(out, &a.root.types_as_objects);
     out.row(
-        "route",
+        Row::Route,
         format!(
             "{} — {}",
             match a.route {
@@ -1488,7 +1825,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
             licences(&a.licences)
         ),
     );
-    out.row("work", work_text(a.saturations, a.facts, None));
+    out.row(Row::Work, work_text(a.saturations, a.facts, None));
 }
 
 fn on_lines(s: &Listed) -> &'static str {
@@ -1538,16 +1875,16 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             out.blank();
             if let Some(d) = r.described() {
                 for c in &d.root.core {
-                    out.row("unsat core", c);
+                    out.row(Row::UnsatCore, c);
                 }
                 if let Some(q) = d.root.core_status.and_then(|c| c.qualifier()) {
-                    out.row("core search", q);
+                    out.row(Row::CoreSearch, q);
                 }
                 for c in &d.root.sources {
-                    out.row("source", c);
+                    out.row(Row::Source, c);
                 }
                 if !d.root.refuted_by.is_empty() {
-                    out.row("refuted by", d.root.refuted_by.join(", "));
+                    out.row(Row::RefutedBy, d.root.refuted_by.join(", "));
                 }
             }
             out.blank();
@@ -1557,7 +1894,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             out.blank();
             for f in frontier {
                 out.row(
-                    "owing",
+                    Row::Owing,
                     format!(
                         "{} — owes {}",
                         name(cands, &f.node.set),
@@ -1565,7 +1902,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
                     ),
                 );
                 for w in &f.node.owed {
-                    out.row("", format!("  {w}"));
+                    out.more(format!("  {w}"));
                 }
             }
             out.blank();
@@ -1782,29 +2119,25 @@ fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
     let mut code = 0;
     let n_q = r.queries.len();
     for (qi, q) in r.queries.iter().enumerate() {
-        let label = if n_q > 1 {
-            format!("query {} of {n_q}", qi + 1)
-        } else {
-            "query".to_string()
-        };
-        query_block(out, r, q, &label);
+        let label = Row::Query.numbered(qi + 1, n_q);
+        query_block(out, r, q, qi + 1, n_q);
         let Some(claim) = &q.claim else {
             continue;
         };
         let why = claim.lines.first().cloned().unwrap_or_default();
         match claim.outcome {
-            Outcome::Held => out.row(":expect", "holds"),
+            Outcome::Held => out.row(Row::Expect, "holds"),
             Outcome::Failed => {
-                out.row(":expect", format!("FAILED — {why}"));
+                out.row(Row::Expect, format!("FAILED — {why}"));
                 for l in claim.lines.iter().skip(1) {
-                    out.row("", l);
+                    out.more(l);
                 }
                 out.stderr
                     .push(format!("{}: {label} :expect FAILED — {why}", o.file));
                 code = 1;
             }
             Outcome::NotChecked => {
-                out.row(":expect", format!("NOT CHECKED — {why}"));
+                out.row(Row::Expect, format!("NOT CHECKED — {why}"));
                 out.stderr.push(format!(
                     "note: {}: {label} :expect NOT CHECKED — {why}",
                     o.file
@@ -1817,7 +2150,7 @@ fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
 
 /// One query's block: its goal, the set it is over, its classes, and the
 /// `:expect` that states them.
-fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
+fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
     let a = &r.answer;
     let k = r.states.len() as u64;
     let over = match (r.described(), q.over) {
@@ -1835,21 +2168,21 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
     };
     {
         out.blank();
-        out.row(label, &q.goal);
+        out.line(numbered_line(Row::Query, qi, n_q, &q.goal));
         if q.classes.is_empty() && q.exact {
             let empty = if r.states.is_empty() {
                 "R is empty: no state to answer from"
             } else {
                 "it holds no state"
             };
-            out.row("over", format!("{over} — {empty}"));
-            out.row("as :expect", "(false)");
+            out.row(Row::Over, format!("{over} — {empty}"));
+            out.row(Row::AsExpect, "(false)");
             return;
         }
         let n_states = q.classes.iter().map(|c| c.states.len()).sum::<usize>() as u64;
         let tail = if q.exact { "" } else { "  (a lower bound)" };
         out.row(
-            "over",
+            Row::Over,
             format!(
                 "{over} — {} → {}{tail}",
                 plural(n_states, "state", "states"),
@@ -1872,7 +2205,6 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
             if c.states.len() > 12 {
                 which.push("…".to_string());
             }
-            let head = format!("class {} of {}", ci + 1, q.classes.len());
             // State numbers point into the listing, so only a complete
             // listing gets them: one that is all of the part the run asked,
             // whether or not that part is the set the query is about.
@@ -1887,45 +2219,44 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
                 plural(c.states.len() as u64, "state", "states")
             };
             if c.rows.is_empty() {
-                b.push(row_text(
-                    &format!("  {head}"),
+                b.push(numbered_line(
+                    Row::Class,
+                    ci + 1,
+                    q.classes.len(),
                     format!("{where_} — the goal has no row: undetermined here"),
                 ));
                 blocks.push(b);
                 continue;
             }
-            b.push(row_text(&format!("  {head}"), where_));
+            b.push(numbered_line(Row::Class, ci + 1, q.classes.len(), where_));
             for (ri, row) in c.rows.iter().enumerate() {
                 let bound: Vec<String> = row.iter().map(|(k, v)| format!("?{k} = {v}")).collect();
                 if bound.is_empty() {
-                    b.push(row_text("", "  the goal holds: it has no variable"));
+                    b.push(more_text("  the goal holds: it has no variable"));
                 } else {
-                    b.push(row_text("", format!("  {}", bound.join(" · "))));
+                    b.push(more_text(format!("  {}", bound.join(" · "))));
                 }
                 if let Some(t) = c.rendered.get(ri) {
-                    b.push(row_text("", format!("    “{t}”")));
+                    b.push(more_text(format!("    “{t}”")));
                 }
             }
             blocks.push(b);
         }
         let shown = out.blocks(&blocks);
         if shown < q.classes.len() {
-            out.row(
-                "",
-                format!(
-                    "… {}: {} writes them to DIR/answer.txt",
-                    plural(
-                        (q.classes.len() - shown) as u64,
-                        "more class",
-                        "more classes"
-                    ),
-                    out.hint
+            out.more(format!(
+                "… {}: {} writes them to DIR/answer.txt",
+                plural(
+                    (q.classes.len() - shown) as u64,
+                    "more class",
+                    "more classes"
                 ),
-            );
+                out.hint
+            ));
         }
         if !q.as_asked {
             out.row(
-                "as :expect",
+                Row::AsExpect,
                 format!(
                     "not printed: these classes are over the states listed, and the query asks \
                      about {}",
@@ -1936,7 +2267,7 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
         }
         if !q.exact {
             out.row(
-                "as :expect",
+                Row::AsExpect,
                 "not printed: these classes are a lower bound, and the claim would say they are all",
             );
             return;
@@ -1949,7 +2280,7 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
                 format!(", which {} writes", out.hint)
             };
             out.row(
-                "as :expect",
+                Row::AsExpect,
                 format!(
                     "not printed: stdout lists part of the classes; it is in DIR/answer.txt{by}"
                 ),
@@ -1980,7 +2311,7 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
         // A one-line claim is no longer than the note that would replace it.
         if lines.len() > out.left().max(1) {
             out.row(
-                "as :expect",
+                Row::AsExpect,
                 format!(
                     "{}, past what is left of stdout's {LIST_LINES}: {} writes it to \
                      DIR/answer.txt",
@@ -1992,7 +2323,11 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
         }
         out.listed += lines.len();
         for (li, l) in lines.iter().enumerate() {
-            out.row(if li == 0 { "as :expect" } else { "" }, l);
+            if li == 0 {
+                out.row(Row::AsExpect, l);
+            } else {
+                out.more(l);
+            }
         }
     }
 }
@@ -2013,11 +2348,11 @@ mod tests {
         assert_eq!(split_breaks("one line"), ["one line"]);
         assert_eq!(hang("x", 20), "x");
         assert_eq!(
-            row_text("", "    “a\nb”"),
+            more_text("    “a\nb”"),
             format!("{}    “a\n{}b”", " ".repeat(20), " ".repeat(25))
         );
         assert_eq!(
-            sub_row("site", "a\r\nb"),
+            sub_row(Row::Site, "a\r\nb"),
             format!("    site            a\n{}b", " ".repeat(20))
         );
         // The listing counts the lines a block prints, not its entries.

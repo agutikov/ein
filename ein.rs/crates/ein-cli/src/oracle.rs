@@ -161,8 +161,9 @@ pub fn run(m: &ArgMatches) -> i32 {
     // What only the cube can say: whether the static verdict held on it.
     println!();
     println!(
-        "the cube   {} dead node{} with an alive superset · {} discharged node{} with an \
-         owing superset{}",
+        "{}   {} dead node{} with an alive superset · {} discharged node{} with an owing \
+         superset{}",
+        ein_render::read_out::Row::TheCube.label(),
         violations.0,
         if violations.0 == 1 { "" } else { "s" },
         violations.1,
