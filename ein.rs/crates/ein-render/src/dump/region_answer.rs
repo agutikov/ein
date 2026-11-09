@@ -248,7 +248,9 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
                 ),
                 ("commitments", Json::int(d.minimal_commitments.len() as i64)),
                 ("least", least.map_or(Json::Null, |l| Json::int(l as i64))),
-                ("trivial", Json::Bool(d.root.in_r() && !d.owing_met)),
+                // ∅ is in R, so the line is {∅} (M1f S1f.5.6, S-17 and F1):
+                // the row's `1 state — ∅`, read off the same bit.
+                ("trivial", Json::Bool(d.root.in_r())),
             ]),
         ),
         (

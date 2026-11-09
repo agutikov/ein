@@ -597,6 +597,18 @@ runs   = ["solve", "test"]
 note   = "M1e S1e.3.3 — the control for the entry above: the same rules and constraints plus `(seen Z)`, one fact over a relation nothing else mentions, which does nothing but put `Z` in a fact at root. Its R is four states, `{(q A Z), (q B Z)}` the maximal. Until M1e2 S1e2.2.4 seeded the candidates with a rule's constants, that one fact was the difference between this R and the twin's {∅}, which is what made `ST-M1` a measurement; since then the two describe one R (`ein-infer/tests/alive_invariant.rs`)."
 
 [[entry]]
+path   = "examples/ein-bugs/minimal-line-stated-obligation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.5.6 — the M1e2 no-owner inventory's F1 probe (2026-11-06), moved here from the inventory's findings beside its control: a program that states `(total-owed likes is-a)` and whose root discharges it, so R is {∅}. Describe's minimal-line row read `1 state — ∅, the trivial line: no obligation is stated` here and on the control alike, reading whether a node the run met owes and not what the program states; the user ruled S-17 and F1 (a) on 2026-11-07, *drop the clause*, and both read `1 state — ∅`, with `region.minimal.trivial` true on both (`ein-cli/tests/region_modes.rs`)."
+
+[[entry]]
+path   = "examples/ein-bugs/minimal-line-stated-obligation-control.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.5.6 — the F1 probe's control: the same program with the obligation and its import deleted, which states none. It printed the same row as the probe, which was true here and false there; since S1f.5.6 both print `1 state — ∅`."
+
+[[entry]]
 path   = "examples/ein-bugs/complete-records-stale.ein"
 group  = "regression"
 runs   = ["solve"]

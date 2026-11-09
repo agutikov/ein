@@ -1326,3 +1326,76 @@ fn where_empty_is_in_r_every_minimal_question_stops_at_root() {
         );
     }
 }
+
+/// **The minimal-line row says no clause beside ∅** — M1f S1f.5.6, the user's
+/// ruling of 2026-11-07 on S-17 and F1, *"a, drop the clause"*. Until then
+/// describe's row read `1 state — ∅, the trivial line: no obligation is
+/// stated` wherever no node the run met owed, whatever the program states:
+/// on the `tests/stdlib/` programs that state an obligation their root
+/// discharges, on the F1 probe and on its control alike, and on
+/// `past-limit-lines` at `--region-limit 1` but not at `2`. Where ∅ is in R
+/// the row reads `1 state — ∅` on every program and at every limit, the `∅`
+/// row above it saying why, and `region.minimal.trivial` reads *∅ is in R*.
+#[test]
+fn the_minimal_line_row_names_empty_and_no_clause() {
+    let dir = scratch("minimal-line-row");
+    let mut cases: Vec<(String, Vec<&str>)> = [
+        "tests/stdlib/algebra/24_total_owed_satisfied.ein",
+        "tests/stdlib/algebra/26_surjective_owed_satisfied.ein",
+        "tests/stdlib/bijection/06_blind_enumeration.ein",
+        "tests/stdlib/closure/02_closed_and_satisfied.ein",
+        "tests/stdlib/slots/01_partition.ein",
+        "tests/stdlib/slots/08_spatial_adjacent.ein",
+        "tests/stdlib/slots/10_owed_room_satisfied.ein",
+        "tests/stdlib/slots/12_owed_fill_satisfied.ein",
+        "examples/ein-bugs/minimal-line-stated-obligation.ein",
+        "examples/ein-bugs/minimal-line-stated-obligation-control.ein",
+    ]
+    .into_iter()
+    .map(|f| (f.to_string(), Vec::new()))
+    .collect();
+    cases.push((PAST.to_string(), vec!["--region-limit", "1"]));
+    cases.push((PAST.to_string(), vec!["--region-limit", "2"]));
+    for (i, (file, extra)) in cases.iter().enumerate() {
+        let json = dir.join(format!("s{i}.json"));
+        let json = json.to_str().expect("utf-8");
+        let mut argv = vec!["solve", file.as_str()];
+        argv.extend(extra.iter().copied());
+        argv.extend(["--json-summary", json]);
+        let r = ein(&argv);
+        let tag = format!("{file} {}", extra.join(" "));
+        assert_eq!(r.code, 0, "{tag}: {}", r.err);
+        assert_eq!(
+            line(&r.out, "∅"),
+            "in R — root is alive and owes nothing",
+            "{tag}:\n{}",
+            r.out
+        );
+        assert_eq!(
+            line(&r.out, "minimal line"),
+            "1 state — ∅",
+            "{tag}:\n{}",
+            r.out
+        );
+        let s: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(json).expect("a summary"))
+                .expect("the summary parses");
+        assert_eq!(s["region"]["root"], "in-r", "{tag}");
+        assert_eq!(s["region"]["minimal"]["trivial"], true, "{tag}");
+    }
+    // Where ∅ is not in R the field is false: R empty, every alive node owing.
+    let json = dir.join("owing.json");
+    let json = json.to_str().expect("utf-8");
+    let r = ein(&[
+        "solve",
+        "tests/stdlib/closure/03_closed_and_owing.ein",
+        "--json-summary",
+        json,
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let s: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(json).expect("a summary"))
+            .expect("the summary parses");
+    assert_ne!(s["region"]["root"], "in-r");
+    assert_eq!(s["region"]["minimal"]["trivial"], false);
+}

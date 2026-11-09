@@ -1243,12 +1243,12 @@ fn minimal_line(d: &Described) -> String {
     let root = &d.root;
     let sp = d.states_partial;
     let n_min = d.states.iter().filter(|s| s.minimal).count() as u64;
+    // Where ∅ is in R the line is {∅}, and the `∅` row above says why: root
+    // is alive and owes nothing. No clause beside it: *no obligation is
+    // stated* read whether a node the run met owes, not what the program
+    // states (M1f S1f.5.6, S-17 and F1, the user's ruling of 2026-11-07).
     let min_note = if root.in_r() {
-        if d.owing_met {
-            " — ∅".to_string()
-        } else {
-            " — ∅, the trivial line: no obligation is stated".to_string()
-        }
+        " — ∅".to_string()
     } else if d.exhausted {
         let smallest = d
             .minimal_commitments

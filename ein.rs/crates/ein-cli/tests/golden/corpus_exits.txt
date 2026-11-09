@@ -360,6 +360,10 @@
 1    examples/ein-bugs/int-goal-binding.ein :: render rules
 0    examples/ein-bugs/int-goal-binding.ein :: saturate
 0    examples/ein-bugs/int-goal-binding.ein :: solve
+0    examples/ein-bugs/minimal-line-stated-obligation-control.ein :: saturate
+0    examples/ein-bugs/minimal-line-stated-obligation-control.ein :: solve
+0    examples/ein-bugs/minimal-line-stated-obligation.ein :: saturate
+0    examples/ein-bugs/minimal-line-stated-obligation.ein :: solve
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve
 0    examples/ein-bugs/naf-upward-closure.ein :: saturate
 1    examples/ein-bugs/naf-upward-closure.ein :: solve

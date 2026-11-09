@@ -6,8 +6,8 @@
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-16, which closes P-14 with it,
 and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Running since 2026-11-09**, on the
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default
-decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), and so is T1f.5.6.2, the rule
-([its record](#t2-record-2026-11-09)).
+decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), so are T1f.5.6.2, the rule
+([its record](#t2-record-2026-11-09)), and T1f.5.6.3, the clause ([its record](#t3-record-2026-11-09)).
 The coordinator handed the stage a fifth item the same day, S1f.5.16's Q-M1f.22, a class label glued to its
 value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)).
 **Depends on:** nothing. It touches `explore.rs` and the read-out, and none of the grammar stages do.
@@ -105,7 +105,7 @@ program states:
 | program | states an obligation | the row today |
 |---|---|---|
 | 8 `tests/stdlib/` programs, among them `algebra/24_total_owed_satisfied` | yes, and root discharges it | `1 state — ∅, the trivial line: no obligation is stated` |
-| the inventory's [F1 probe](../../m1e2_correctness/inventory_2026-11-06/findings/F1_trivial_line_stated_obligation.ein) | yes, `(total-owed likes is-a)` | the same |
+| the inventory's F1 probe, [`examples/ein-bugs/minimal-line-stated-obligation.ein`](../../../examples/ein-bugs/minimal-line-stated-obligation.ein) since T1f.5.6.3 | yes, `(total-owed likes is-a)` | the same |
 | its control, the same program without that line | no | the same |
 | `past-limit-lines` at `--region-limit 1` | yes | the same |
 | `past-limit-lines` at `--region-limit 2` | yes | `1 state — ∅` |
@@ -196,7 +196,8 @@ class**. No exit code moves.
 - **T1f.5.6.3, the clause.** `corpus_shapes.md5`: `read-out[describe]` and `region-trace` of 198 programs, and
   `cores[describe]` of the 7 whose `minimal.trivial` turns true, 403 renderings. The two trace goldens that print the
   clause, `ein-render/tests/golden/trace_ambiguous.md` and `trace_unconditional.md`. Five describe blocks of
-  `read_out_examples.md` (X1, X2's describe and `-y`, X3 and X11).
+  `read_out_examples.md` (X1, X2's describe and `-y`, X3 and X11); ten in fact, as T3 found when it wrote the page
+  ([its record](#t3-record-2026-11-09)), the test's failure having listed the first.
 - **Nothing else.** `corpus_cli`, `wrong_answers` (whose W27 rows answer the restated `right`), `explore`,
   `region_modes`, `lever_invariance` and every other test pass unchanged on the prototype.
 
@@ -257,6 +258,34 @@ two commands that read it.
 `minimal_line` in the read-out and `minimal.trivial` in the summary, as above, in their own commit. A test
 in `ein-cli/tests/region_modes.rs` holds the five rows of the case to `1 state — ∅`, and the summary's field
 to *∅ is in R*, on the F1 probe moved into `examples/` beside its control.
+
+### T3 record, 2026-11-09
+
+**The clause** is gone from `minimal_line` in [`read_out.rs`](../../../ein.rs/crates/ein-render/src/read_out.rs):
+where ∅ is in R the row reads `1 state — ∅` on every program and at every limit, and the `∅` row above it says why.
+**`region.minimal.trivial`** in [`region_answer.rs`](../../../ein.rs/crates/ein-render/src/dump/region_answer.rs)
+reads `root.in_r()`, so the field and the row agree. `Described::owing_met`, the bit both read, stays: it is a fact
+about the description, and `ein-infer/tests/obligation_reports.rs` reads it. The maximal line's `⊤, the trivial line: no
+restriction bites`, printed only on an exhausted run where no node is dead, is true and stays.
+
+**What moved** is T1's list for the clause, with one count corrected: `corpus_shapes.md5`'s 403 renderings,
+`read-out[describe]` and `region-trace` of 198 programs and `cores[describe]` of the 7 whose `trivial` turned true; the
+two trace goldens; and on the examples page **ten** blocks, not T1's five, its test having listed the first of them:
+X1, X2's describe and `-y`, X3, X11, X12, X13, X14, X15 and X17's `ein oracle` on `lattice/02`, each the row's clause
+and nothing else, with X1's prose, which called the line *trivial* because the program states no obligation. The live
+page's describe `minimal line` row and its `region.minimal.trivial` field say what each reads now.
+
+**The F1 probe and its control moved** from the inventory's findings to
+[`examples/ein-bugs/minimal-line-stated-obligation.ein`](../../../examples/ein-bugs/minimal-line-stated-obligation.ein)
+and its `-control`, each with a `:why` on its two relations and a header, so `--require-why` loads them; the inventory's
+link and its re-take script follow them. Each is a corpus entry (`solve`, `saturate`): the exit table's four new
+cells (`corpus_exits.txt`, `EIN_BLESS=1`) and 82 new renderings of `corpus_shapes.md5`, every one new and none moved.
+
+**The test** is `ein-cli/tests/region_modes.rs`'s `the_minimal_line_row_names_empty_and_no_clause`: the case's five
+rows, the eight `tests/stdlib/` programs, the probe, its control and `past-limit-lines` at `--region-limit 1` and `2`,
+each held to `∅  in R — root is alive and owes nothing`, `minimal line  1 state — ∅`, `region.root = "in-r"` and
+`region.minimal.trivial = true`; and `tests/stdlib/closure/03_closed_and_owing.ein`, whose R is empty and owing, to
+`trivial = false`.
 
 ### Task T1f.5.6.4 — the pages
 

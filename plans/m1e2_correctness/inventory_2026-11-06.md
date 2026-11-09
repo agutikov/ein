@@ -29,7 +29,7 @@ Both ran with `--test-threads=1` and their own `--target-dir`, on 2026-11-06.
 - **Why.** The row reads whether a node it met owes (`read_out.rs`'s `minimal_line`, `owing_met`), not whether the program states an obligation.
 - **What names it already.** [S1e2.2.26 § Notes](p1e2.2_wrong_answers/s1e2.2.26_line_modes_past_the_limit.md#notes) names this sentence only on a run stopped past `--region-limit` (S-17 here). Its words, *"which on a partial run is not the same as the program stating none"*, leave complete runs out.
 - **Where.** The 8 programs are all under `tests/stdlib/` (`sweep_lines.py`): `algebra/24` and `/26`, `bijection/06`, `closure/02`, `slots/01`, `/08`, `/10` and `/12`.
-- **The probe.** [`findings/F1_trivial_line_stated_obligation.ein`](inventory_2026-11-06/findings/F1_trivial_line_stated_obligation.ein) prints the same row as its [control](inventory_2026-11-06/findings/F1_trivial_line_stated_obligation_control.ein), which states no obligation.
+- **The probe.** `findings/F1_trivial_line_stated_obligation.ein` prints the same row as its control, which states no obligation. Both moved to `examples/` on 2026-11-09, when M1f S1f.5.6 fixed F1: [`minimal-line-stated-obligation.ein`](../../examples/ein-bugs/minimal-line-stated-obligation.ein) and its [control](../../examples/ein-bugs/minimal-line-stated-obligation-control.ein), each with a `:why` on its relations and no other change.
 - **What it changes.** No answer is wrong: R and its lines are right. The sentence's reason is false, and the summary's `minimal.trivial` is `true` on the same runs, read off the same bit. Owner: none.
 
 **Live items, by class.** § A has one row for each item, fixed or live.
@@ -562,7 +562,7 @@ Taken under `build/m1e2_inventory_2026-11-06/`. Kept in the repository:
   - `unused_param` (D-9), `where_t3_example` (D-15), `empty_arg` (S-1);
   - `var_in_fact` (G-6), `assert_never_fires` (G-14), `assert_neq` (G-21), `assert_and_kw` (G-22).
   - Five of them are S1e2.2.22's and S1e2.2.24's notes' programs, copied from `build/` with a header added.
-- **The finding**: [`findings/`](inventory_2026-11-06/findings/) holds F1 and its control.
+- **The finding**: `findings/` held F1 and its control, which M1f S1f.5.6 moved to `examples/` on 2026-11-09: [`minimal-line-stated-obligation.ein`](../../examples/ein-bugs/minimal-line-stated-obligation.ein) and its [control](../../examples/ein-bugs/minimal-line-stated-obligation-control.ein).
 
 **Not kept in the repository.** The JSON sweeps (`corpus_describe.json`, `region_census.json`, `corpus_cores.json`, `corpus_modes.json`, `corpus_lines.json`, `corpus_classes.json`) and the answer dumps under `retake/` were deleted once this was committed, because the scripts re-take them. The run logs stay under `build/m1e2_inventory_2026-11-06/`: `register_tests.log`, `retake_items.log`, `s16_sweep.log`, each sweep's own log, and `retake/<id>/`'s stdout and stderr.
 

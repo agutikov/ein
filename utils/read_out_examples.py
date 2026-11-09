@@ -127,8 +127,8 @@ add("""---
 add("""## X1 — `branching/05_mini_zebra.ein`: everything at once
 
 [`region_examples.md`]("""+PLAN+"""/region_examples.md)'s E1. Two people, two drinks and two pets; the clues put Alice
-with the tea and the cat, and Bob is open. Every row of the default read-out is here. ∅ is in R because the program
-states no obligation, so the minimal line is the trivial {∅}. The maximal state is reached by four commitments, three
+with the tea and the cat, and Bob is open. Every row of the default read-out is here. ∅ is in R, root being alive and
+owing nothing (the program states no obligation), so the minimal line is {∅}. The maximal state is reached by four commitments, three
 of them minimal, and that is the one `(merged …)`. The query asks who drinks the coffee and which pet they keep: on
 four of the five states the goal has no row, and that class is `(model)`. H leaves `is-a` out, and the `outside` row
 says what R holds of it.

@@ -40,8 +40,8 @@ page is frozen where it was, beside [`read_out.md`'s record](../../../plans/m1e2
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
 [`region_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)'s E1. Two people, two drinks and two pets; the clues put Alice
-with the tea and the cat, and Bob is open. Every row of the default read-out is here. ∅ is in R because the program
-states no obligation, so the minimal line is the trivial {∅}. The maximal state is reached by four commitments, three
+with the tea and the cat, and Bob is open. Every row of the default read-out is here. ∅ is in R, root being alive and
+owing nothing (the program states no obligation), so the minimal line is {∅}. The maximal state is reached by four commitments, three
 of them minimal, and that is the one `(merged …)`. The query asks who drinks the coffee and which pet they keep: on
 four of the five states the goal has no row, and that class is `(model)`. H leaves `is-a` out, and the `outside` row
 says what R holds of it.
@@ -56,7 +56,7 @@ solve · examples/branching/05_mini_zebra.ein
   commitments (k_c) 8
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      1 state
   components        1
   sub-cubes         1, of dimension 3
@@ -132,7 +132,7 @@ solve · examples/lattice/02_genuine_3set_death.ein
   commitments (k_c) 7
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      3 states
   components        1
   sub-cubes         3, each of dimension 2
@@ -373,7 +373,7 @@ solve · examples/lattice/02_genuine_3set_death.ein
   commitments (k_c) 7
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      3 states
   components        1
   sub-cubes         3, each of dimension 2
@@ -429,7 +429,7 @@ solve · examples/features/11_expect_ambiguity.ein
   commitments (k_c) 7
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      2 states
   components        1
   sub-cubes         2, each of dimension 2
@@ -1451,7 +1451,7 @@ solve · examples/saturation/square-bwd/floors.ein
   commitments (k_c) 1 048 576
   exhausted         no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube (L1, L2), and only its states are not all counted. The state route stopped before the states of 9 candidates: their 16 853 extensions project 185 383 facts on top of the 994 197 spent, past --region-budget 1048576
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      1 state — ⊤, every candidate: no node is dead, the trivial line, certified by one saturation
   components        1
   sub-cubes         1, of dimension 20
@@ -1608,7 +1608,7 @@ solve · tests/region/03_merged_or.ein
   commitments (k_c) 8
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      1 state — ⊤, the trivial line: no restriction bites
   components        1
   sub-cubes         1, of dimension 3
@@ -1693,7 +1693,7 @@ solve · examples/saturation/type-exclusivity/colors.ein
   commitments (k_c) 169
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      9 states
   components        1
   sub-cubes         9, 4 of dimension 6, 4 of dimension 5, 1 of dimension 4
@@ -1833,7 +1833,7 @@ solve · examples/features/07_unstratifiable.ein
   commitments (k_c) 2
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      1 state — ⊤, the trivial line: no restriction bites
   components        1
   sub-cubes         1, of dimension 1
@@ -1904,7 +1904,7 @@ solve · examples/features/01_not_and_absent.ein
   commitments (k_c) 64 655   (a lower bound: the run stopped before R was exhausted)
   exhausted         no — not monotone, and the question needs the whole cube: 2^35, past --region-limit 16
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      not known — without a licence it needs the whole cube
   components        not known: R was not exhausted
   sub-cubes         not known
@@ -2179,7 +2179,7 @@ oracle · examples/lattice/02_genuine_3set_death.ein
   commitments (k_c) 7
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      3 states
   components        1
   sub-cubes         3, each of dimension 2

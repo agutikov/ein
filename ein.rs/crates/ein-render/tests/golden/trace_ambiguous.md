@@ -6,7 +6,7 @@
   commitments (k_c) 7
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  minimal line      1 state — ∅
   maximal line      2 states
   components        1
   sub-cubes         2, each of dimension 2

@@ -137,8 +137,9 @@ RUNS: list[tuple[str, list[str], str | None]] = [
     ("G-20b", ["solve", "plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.10_probes/two-rules-reordered.ein"], r"core|refuted"),
     ("G-21", ["saturate", f"{I06}/assert_neq.ein", "--dump"], r"^\s+\((neq|p) "),
     ("G-22", ["saturate", f"{I06}/assert_and_kw.ein", "--dump"], r"^\s+\((p|hit) "),
-    ("F1", ["solve", "plans/m1e2_correctness/inventory_2026-11-06/findings/F1_trivial_line_stated_obligation.ein"], r"minimal line|∅"),
-    ("F1c", ["solve", "plans/m1e2_correctness/inventory_2026-11-06/findings/F1_trivial_line_stated_obligation_control.ein"], r"minimal line|∅"),
+    # Moved to examples/ by M1f S1f.5.6 (2026-11-09), with a `:why` on each relation.
+    ("F1", ["solve", "examples/ein-bugs/minimal-line-stated-obligation.ein"], r"minimal line|∅"),
+    ("F1c", ["solve", "examples/ein-bugs/minimal-line-stated-obligation-control.ein"], r"minimal line|∅"),
     ("F1d", ["solve", "tests/stdlib/algebra/24_total_owed_satisfied.ein"], r"minimal line|∅"),
 ]
 
