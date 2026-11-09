@@ -7,7 +7,8 @@
 *"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); **running since 2026-11-10**, the
 phase's last stage, on default decisions recorded as they are taken (the user's instruction of 2026-11-09): T1, the
 census, done ([its record](#t1f5141-record-2026-11-10)); T2, a fact in English from its first recorded justification,
-in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)). **Ruled and placed on 2026-11-08**
+in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)); T3, the three forms with
+nowhere to put a template decided, done ([its record](#t1f5143-record-2026-11-10)). **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -405,6 +406,23 @@ Three forms have no slot. Decide each, and write the decision down:
   which is why the answer table renders the conjuncts through their
   *relations* instead. Whether a per-conjunct template is wanted is a language
   question; if the answer is yes it is a `Q-M1e.<n>`, not a quiet addition.
+
+#### T1f.5.14.3 record, 2026-11-10
+
+Each of the three decided by default on the user's instruction of 2026-11-09, and written where the definition lives,
+§ 5 of the page T4 writes:
+
+- **A macro's `:why`** ([Q-M1f.59](../open_questions.md#q-m1f59--what-a-macros-why-renders), (a)): required like the
+  others since S1f.5.5's swap gave a macro one, and rendered nowhere. A macro is expanded at load and no fact's
+  justification names one; the rule whose `:match` used it has a `:why` that says what the pattern meant there, and a
+  state file re-writes the macro's with the program.
+- **An auto-vivified relation** ([Q-M1f.60](../open_questions.md#q-m1f60--a-relation-nobody-declares), (a)): no slot.
+  A fact of one that a rule derived reads by its reason, since T2; one the program states falls back to its
+  s-expression, and the census counts it under `stdlib` (an activator of a `std.*` rule, `(bijective color-loc)`) or
+  `undeclared`: 1 095 of them on the corpus before the migration, `zebra2`'s eleven (§ T1's record).
+- **A goal's conjuncts** ([Q-M1f.61](../open_questions.md#q-m1f61--a-template-per-goal-conjunct), (a)): no
+  per-conjunct template, which would be a language change; each conjunct's fact reads by its relation's `:why` where a
+  surface prints it.
 
 ### Task T1f.5.14.4 — The mandate, and where it binds
 

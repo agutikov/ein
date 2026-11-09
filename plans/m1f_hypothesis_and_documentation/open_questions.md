@@ -66,6 +66,9 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.56](#q-m1f56--what-the-nl-census-counts-which-fact-set-and-which-registers) | what the NL census counts: which fact set, and which registers | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every fact of every state file, and four registers, puzzle, stdlib, kernel and undeclared**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.57](#q-m1f57--which-fixtures-get-a-why) | which fixtures get a `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every file the loader reads, on the form's last line in a refused fixture; a file refused at the parse and the records under `plans/` and `docs/history/` are left**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.58](#q-m1f58--where-a-fact-is-rendered-in-english-and-what-it-reads-from) | where a fact is rendered in English, and what it reads from | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), a state file's comments and `--trace`'s *Derives* line, from the fact's first recorded justification; stdout does not move**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.59](#q-m1f59--what-a-macros-why-renders) | what a macro's `:why` renders | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), nothing: it documents the pattern, and the rule that used it says what it meant there**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.60](#q-m1f60--a-relation-nobody-declares) | a relation nobody declares | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no slot: a derived fact reads by its reason, a stated one falls back, counted under `stdlib` or `undeclared`**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.61](#q-m1f61--a-template-per-goal-conjunct) | a template per goal conjunct | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), no change**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1403,3 +1406,35 @@ is pasted from.
 no read-out byte; (b) is a form nobody asked for and the stage's minimum-work rule leaves it out; (c) breaks what a
 claim is. *First recorded* is the stage file's own pick, and the user's ruling of 2026-11-08 on cores (*"core is an
 explanation, F22 makes it canonical"*) covers it.
+
+### Q-M1f.59 — What a macro's `:why` renders
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.3. S1f.5.5's T3 gave a macro an optional `:why`, and since the swap
+`--require-why` asks for it. A macro is expanded at load, and no fact's justification names one.
+
+- **(a) Nothing**: it documents the pattern for a reader of the program, and a state file re-writes it with the program.
+- **(b) The rule's reason**: fill the macro's `:why` into the reason of a fact whose rule's `:match` used it.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** The rule that used the macro has a `:why` of its
+own that says what the pattern meant there; (b) is a second reason for one fact.
+
+### Q-M1f.60 — A relation nobody declares
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.3: an auto-vivified relation has no form to carry a `:why`.
+
+- **(a) No slot**: a fact of one that a rule derived reads by its reason; one the program states falls back to its
+  s-expression, and the census counts it under `stdlib` or `undeclared`.
+- **(b) A declaration-less template**, a new form that templates a relation without declaring it.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** (b) is a language change; a program that wants
+the fact read declares the relation.
+
+### Q-M1f.61 — A template per goal conjunct
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.3: `:goal-text` is one string for the whole query.
+
+- **(a) No change**: each conjunct's fact reads by its relation's `:why` where a surface prints it.
+- **(b) A per-conjunct template**, a language change.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a)**, as the stage file says a yes would be a
+question and not a quiet addition.
