@@ -753,6 +753,20 @@ constrained-reasoning research.
   since S1e2.1.5, is drawn; and the merged tree's first nightly is green in
   every job and step, 81 min 54 s (`./run_tests.sh --nightly`, 2026-11-09),
   the register unmoved.
+  **S1f.5.14, the phase's last stage, ran to its end on 2026-11-10**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5141-record-2026-11-10),
+  Q-M1f.56 to .64 defaulted): a fact reads as English in a `--dump-answer`
+  state file and in `--trace`, from its first recorded justification, at no
+  measurable cost; [`09_natural_language.md`](docs/kernel/ir/03-ein-lang/09_natural_language.md)
+  states the texts, the ladder and whose words are whose, and
+  `utils/nl_census.py` measures it, the corpus's answers 44.9 % rendered
+  before the migration and 94.4 % after, `zebra2`'s state 88.7 % and 97.4 %
+  (2026-11-10); the template check found 66 references printed as written,
+  each fixed; every missing `:why` was written (995 in the corpus, 903 in the
+  Rust suites, 32 in the doc pages), and since `4b231abd` the loader requires
+  one by default, `--no-require-why` loading a program without; the register
+  unmoved, 161 fixed, 13 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

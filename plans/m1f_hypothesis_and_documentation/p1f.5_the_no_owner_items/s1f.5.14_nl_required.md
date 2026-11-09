@@ -3,15 +3,7 @@
 **Phase:** [P1f.5](README.md) (The no-owner items, then NL and `:priority`)
 **Was S1f.5.5**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 4 days
-**Status:** specified 2026-08-28; **T1f.5.14.6, the loader flag, done 2026-11-08, ahead of the phase** (the user:
-*"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); **running since 2026-11-10**, the
-phase's last stage, on default decisions recorded as they are taken (the user's instruction of 2026-11-09): T1, the
-census, done ([its record](#t1f5141-record-2026-11-10)); T2, a fact in English from its first recorded justification,
-in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)); T3 and T4,
-the three forms with nowhere to put a template decided and the page written, done
-([T3](#t1f5143-record-2026-11-10), [T4](#t1f5144-record-2026-11-10)); T5, the two checks banked, the first with 66
-findings, each fixed, done ([its record](#t1f5145-record-2026-11-10)); T7's part 1, every missing `:why` written,
-done ([its record](#t1f5147-record-2026-11-10)). **Ruled and placed on 2026-11-08**
+**Status:** **done 2026-11-10**, the phase's last stage, in eight commits on default decisions recorded as they were taken (the user's instruction of 2026-11-09; Q-M1f.56 to .64): T1, the census ([its record](#t1f5141-record-2026-11-10), `3be8316e`); T2, a fact in English from its first recorded justification ([its record](#t1f5142-record-2026-11-10), `b761af48`); T3, the three forms with nowhere to put a template ([its record](#t1f5143-record-2026-11-10), `183ce323`); T4, the page ([its record](#t1f5144-record-2026-11-10), `5e4ecb93`); T5, the two checks ([its record](#t1f5145-record-2026-11-10), `8cb46017`); T6, the loader flag, 2026-11-08, ahead of the phase ([its record](#t1f5146-record-2026-11-08)); and T7, every missing `:why` written (`9c06414f`) and the flip (`4b231abd`) ([its record](#t1f5147-record-2026-11-10)); the acceptance re-taken item by item ([below](#acceptance-re-taken-2026-11-10)). Specified 2026-08-28. **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -230,6 +222,37 @@ re-derive the meaning of.
 - No number in the page is one this stage counted by hand and nothing
   re-counts — [Q-M1e.4](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all).
 
+#### Acceptance re-taken, 2026-11-10
+
+Each item of § Acceptance, against the tree at the flip, `4b231abd`:
+
+- **One census, re-takable — met.** `utils/nl_census.py` (`3be8316e`), the thirty-second script (`ls utils/*.py
+  utils/*.sh | wc -l`, 2026-11-10): per corpus entry the facts in its answer (every state file's, Q-M1f.56), those that
+  render from a text, the fallbacks and the register each is in (puzzle, stdlib, kernel, undeclared); one number per
+  entry and one for the corpus, with the entries that render every fact. Re-taken before the migration and after it
+  (§ T1's and § T7's records).
+- **One page — met.** [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+  (`5e4ecb93`): the four registers (§ 4), the four provenance kinds and what renders each (§ 3), the fallback ladder
+  (§ 3), and the boundary between the domain's words and the engine's (§ 6), beside `reserved_engine_strings.md`,
+  which points at it. Linked from `01_grammar.md`'s `:why` paragraph and from `docs/kernel/README.md`; pinned by
+  `ein-cli/tests/natural_language_page.rs`.
+- **Fact-level rendering ships — met** (`b761af48`). `zebra2`'s state moved from 5.9 % of its facts with a statement
+  and 88.7 % rendered to 41.5 % and 97.4 % (`python3 utils/nl_census.py --slow -k zebra2.ein`, 2026-11-10), the numbers
+  the census prints and the page § 4 states; the corpus from 44.9 % to 94.4 %.
+- **Two mechanical checks in `cargo test` — met** (`8cb46017`): `ein-ir/tests/template_wellformedness.rs`, which
+  found 66 where the stage expected 0, each fixed, and `no_placeholder_reaches_an_output` in
+  `ein-cli/tests/answer_round_trip.rs`, with `corpus_cli.rs` holding every `--trace` run's file.
+- ~~**A scoped mandate**~~ — overruled 2026-11-08; the mandate binds every program the loader reads by default.
+- **The flag — met 2026-11-08** (T6), and **turned at the flip**: `--no-require-why` since, a test holding both
+  (`load_semantics.rs`, `config_reference.rs`).
+- **The flip — met** (`4b231abd`): the default is true, and every program under `examples/`, `tests/`, `corpus/` and
+  `stdlib/` that loads at all loads with it (`python3 utils/nl_census.py --check`, exit 0: 341 of 341, none refused,
+  2026-11-10), and so does every inline program of the Rust suites (the gate, ``build/gate-s1f.5.14-T7b.log``). No R, N, H, claim or exit code
+  moved, and every register row holds (`ein-cli/tests/wrong_answers.rs`); every golden the `:why`s moved was named in
+  the commit that moved it (§ T7's record).
+- **No number counted by hand and re-counted by nothing — met.** Every number in the page carries the command that
+  re-takes it and its date or commit, or the test that pins it.
+
 ## Tasks
 
 *The order since the user's ruling of 2026-11-08 (§ Status): T6, the flag, first; then T1 to T5; then T7, the
@@ -286,7 +309,8 @@ leaves as they are, and the rest, 259 files and 995 forms, are T7's.
 **The answer, re-taken** (`python3 utils/nl_census.py --slow`, 2026-11-10, at `b7108e3a`): 405 entries with a `solve`
 run, 211 of them answered with a state file (194 have none: a refusal, exit 1, on 131, and an empty or owing R on
 63), 12 934 states and 239 359 facts. **0.9 % of the facts have a statement, 44.7 % a reason, 44.9 % render**; 20
-entries render every fact, and the mean entry renders 33.3 %. The fallbacks by register:
+of the 203 entries with a fact render every one, and the mean of those renders 34.6 % (this record said 33.3 %, the
+mean over all 211 with the 8 whose states hold no fact counted as 0, until the census printed its own per-entry line). The fallbacks by register:
 
 | register | facts | fallback |
 |---|---:|---:|

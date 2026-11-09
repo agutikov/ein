@@ -491,7 +491,7 @@ by its head:
 
 | head | role |
 |---|---|
-| `relation` | declare a typed relation + signature, optionally a `:why` rendering template |
+| `relation` | declare a typed relation + signature and its `:why` rendering template (required at load by default since M1f S1f.5.14) |
 | `rule` / `hrule` | inference / hypothesis rule (`:match` → `:assert`, with `:why`) |
 | `query` | what to ask — `:goal` variables and a `:goal-text` template |
 | `config` | engine knobs |
