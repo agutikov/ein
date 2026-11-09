@@ -14,16 +14,16 @@ wrappers).
 
 | Element | Example | Scope |
 |---------|---------|-------|
-| Declarator heads (head position only) | `relation` `rule` `hrule` `query` `solve` `config` `trace` | `keyword.control.declarator` |
+| Declarator heads (head position only) | `relation` `rule` `hrule` `macro` `query` `solve` `config` `trace` `import` | `keyword.control.declarator` |
 | Declared name | the `symmetric` in `(rule symmetric …)`, the `color-loc` in `(relation color-loc …)` | `entity.name.function` / `entity.name.type` |
 | Rule-body / ⊥ primitives (head only) | `not` `and` `or` `absent` `false` `open` `forall` | `keyword.control.primitive` |
 | Computed predicates (head only) | `eq` `neq` | `keyword.operator.predicate` |
-| Equality head | `=` in `(= a b)` | `keyword.operator.equality` |
-| `:keyword`s | `:match` `:assert` `:why` `:priority` `:source` `:rule` `:using` `:goal` `:hrules` … | `entity.other.attribute-name` |
-| Variables | `?rel` `?h_other` `?R*` | `variable.parameter` |
-| Wildcard | `_` | `variable.language.wildcard` |
+| Equality head | `=` in `(= a b)`, a name since M1f S1f.5.5's swap, coloured by convention | `keyword.operator.equality` |
+| `:keyword`s | `:match` `:assert` `:why` `:source` `:rule` `:using` `:goal` `:hrules` … (`:` and a run of name characters; each form takes a fixed set, and the parser refuses any other) | `entity.other.attribute-name` |
+| Variables | `?rel` `?h_other` `?R*` `?_x` `?a.b` (`?` and a run of name characters) | `variable.parameter` |
+| A bare `_` or `?_` | `_`, `?_`: no production takes either since M1f S1f.5.5's swap (S1f.5.1) | `invalid.illegal.underscore` (was the wildcard's `variable.language.wildcard` until the swap) |
 | Strings (+ `{?var}` interpolation) | `"{?rel} is symmetric."` | `string.quoted.double` (+ `variable.other.interpolation`) |
-| Numbers | `42` | `constant.numeric.integer` (no range: M1f S1f.5.3 retired the token) |
+| Numbers | none: a run of digits is a name since M1f S1f.5.5's swap (S1f.5.4's name rule), and Ein has no numbers | (`constant.numeric.integer` until the swap; no range since M1f S1f.5.3 retired the token) |
 | Comments | `; line`, `#\| block \|#` | `comment.line` / `comment.block` |
 
 Declarators / primitives / predicates are highlighted **only in head
@@ -33,6 +33,14 @@ position** (first atom after `(`), so a fact or relation that merely
 `ontology` / `facts` / `reasoning` / `rules` are **deliberately not**
 keywords — they parse as ordinary fact heads now, and render as plain
 atoms.
+
+**Names follow the name rule** since M1f S1f.5.5's swap (2026-11-09,
+S1f.5.4's ruling): a name or a variable is a run of ASCII name characters,
+letters, digits and `` _ . - $ % ^ * + = < > ! & @ ~ / ' ` [ ] { } ``, so a
+head is a reserved word only where a space or a paren follows it, as the
+lexer reads it: `(rule-x …)`, `(not-a …)` and `(neq-1 …)` are facts, and
+their heads stay plain. Until T1f.5.5.7 a head ended at a word boundary, `\b`, so the
+`rule` of `(rule-x …)` was coloured.
 
 ## It's a highlighter, not a parser
 
@@ -57,14 +65,10 @@ the test will keep you honest.
 
 ### Known, intentional omissions
 
-- **`macro`** — forward-reserved for P1.8 S1.5.9;
-  until it lands it lexes as an ordinary symbol, so it is **not** yet a
-  declarator here. Add it to the `declarator-other` alternation when the
-  macro form ships.
-- **`trace` sub-events** (`step`, `branch-open`, `contradiction`, …) —
-  engine-emitted internals (`reserved_engine_strings.md`), not part of
-  the authoring surface; `(trace …)` itself is highlighted, its body is
-  left plain.
+- **`trace` events** (`step`) — engine-emitted internals, not part of the
+  authoring surface; `(trace …)` itself is highlighted, its body is left
+  plain. A trace holds `step` events alone since M1f S1f.5.5's swap, which
+  refused `branch-open`, `contradiction` and the rest.
 
 ## Install
 

@@ -17,7 +17,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **ruled 2026-11-08, (b)**: never bound; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 |
 | [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) | the parser's remaining cost: within grmtools, or past it? | **defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12 |
-| [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **defaulted 2026-11-09 (the user's instruction): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
+| [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **ruled 2026-11-09, (a)** (*"ok, keep (a), continue"*; defaulted the same day): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics, which no `ein` command reaches; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
 | [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **defaulted 2026-11-09 (the user's instruction): the section stays, written empty, and a file that holds an int is refused; no format bump**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
 | [Q-M1f.11](#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) | a template reference to a variable no reference can name | **defaulted 2026-11-09 (the user's instruction): the loader refuses it, one line a reference**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5 |
 | [Q-M1f.12](#q-m1f12--which-surfaces-carry-natural-language-text) | which surfaces carry natural-language text | **defaulted 2026-11-09 (the user's instruction): those that carried it before the swap, each held byte for byte; none added**; [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2 |
@@ -324,6 +324,12 @@ API (`docs/api/rust.md`) and an `Ast` can be built by hand, past the grammar:
 decisions till the end of the phase"*. (a) is the agent's recommendation: no program reaches any of them (940 tests
 and 240 000 mutants with a panic at each, the record), a panic is louder than a load error for the one caller that
 can, and (b) would keep 55 error arms for a shape nothing builds. Re-opening it means (b), at any later stage.
+
+**Ruled 2026-11-09: (a).** The user, after the coordinator's demo that a hand-built `Ast` panics through the library
+while no `ein` command reaches the panic: *"ok, keep (a), continue"*. The binary cannot reach these panics: every path
+into the loader goes through the parser, a `.einb`'s stored text included, and the lines a macro reaches stayed loader
+errors (the coordinator's 13 macro and top-level probes, 2026-11-09, each a parse error, a load error or a clean
+load). It is a contract of the library's API alone.
 
 ### Q-M1f.10 — The `.einb` `INTS` section, once the int kind is gone
 

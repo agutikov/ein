@@ -177,8 +177,14 @@ fn comparable(stdout: &str) -> String {
             .iter()
             .enumerate()
             .map(|(i, w)| {
-                let timed = words.get(i + 1).is_some_and(|n| *n == "ms");
-                let number = w.trim_start_matches("Δ=").parse::<f64>().is_ok();
+                let timed = words
+                    .get(i + 1)
+                    .is_some_and(|n| matches!(*n, "ms" | "s" | "s)"));
+                let number = w
+                    .trim_start_matches("Δ=")
+                    .trim_start_matches('(')
+                    .parse::<f64>()
+                    .is_ok();
                 if timed && number { "#" } else { w }
             })
             .collect();

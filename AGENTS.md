@@ -617,7 +617,11 @@ constrained-reasoning research.
   ([Q-M1f.15](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f15--where-does-a-position-in-a-containers-stored-program-point),
   defaulted); and an end-of-input error is placed where the text ends: 126
   fixed, 22 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml |
-  sort | uniq -c`, 2026-11-09). T7 follows.
+  sort | uniq -c`, 2026-11-09). **S1f.5.5 closed the same day** with T7, the
+  grammar pages' prose restated to the generated grammar (`00_ebnf.md`'s § 3
+  gone, `defined_behaviour.md` § 1 rewritten, the editor grammar under the name
+  rule), its acceptance re-taken item by item
+  ([§ Acceptance re-taken](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#acceptance-re-taken-2026-11-09)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -866,7 +870,9 @@ constrained-reasoning research.
   derivation and reach the same answer; `EIN_NARRATION_STRICT=1` turns the cut
   off). The six that ship are `ein-core`
   (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
-  (lex → parse → macros → imports → load), `ein-infer` (compile → match →
+  (the parser grmtools generates from `src/ein.l` and `ein.y` → macros →
+  imports → load; the hand-written `lex.rs` and `parse.rs` until M1f S1f.5.5's
+  swap), `ein-infer` (compile → match →
   saturate → the NAF boundary → the routes over R, `explore` (the walk's
   hypothesis loop until M1e2 S1e2.1c.5 deleted it); and since M1e S1e.3.3
   `invariant.rs`, the **M1 alive-set invariant** — *no rule asserts a name

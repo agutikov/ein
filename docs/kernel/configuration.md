@@ -471,8 +471,13 @@ program to answer about.
   render kb`'s six, which draw a file and solve nothing, and `ein render
   region`'s three, which draw an `ein oracle --dump` directory (`--view`) with
   a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
-  `--answer`) and load nothing. stdout and stderr only; a `--diff-models` file that does not parse
-  is a usage error, exit 2, before the run. **Six of them are forms printed
+  `--answer`) and load nothing. stdout and stderr only. A `--diff-models` file keeps its line
+  format, `;` comments, an optional `closes` line and `model` lines, and its facts are read by
+  the parser and compared by value since M1f S1f.5.5's T1f.5.5.6, so a fact may span lines and
+  carry a comment, and `(p  a)` matches `(p a)`; a file whose facts do not parse is a usage
+  error, exit 2, before the run, with every error the parser's recovery reaches and its line
+  and column (until then a line that started with `(` was compared as text, and an unclosed one
+  matched nothing, in silence). **Six of them are forms printed
   after the read-out, and share its 100 lines** (M1e2
   [S1e2.3.3](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
   the user's ruling (a) of 2026-11-03): `-H`, `--models key|grid`, `-p`,

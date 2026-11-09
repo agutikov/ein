@@ -11,7 +11,10 @@
     "sync with docs/kernel/ir/03-ein-lang/06_reserved_names.md (declarators)",
     "and ein_core::STRUCTURAL / ein_infer::predicates::names() (rule-body",
     "primitives + computed predicates). ein-cli/tests/cli_semantics.rs",
-    "re-derives each list from this file and fails on drift."
+    "re-derives each list from this file and fails on drift. Since M1f S1f.5.5's",
+    "swap (2026-11-09) names follow the name rule (S1f.5.4): a name or a variable",
+    "is a run of ASCII name characters, digits among them, so there is no number",
+    "scope, a head ends at a space or a paren, and a bare _ or ?_ is invalid."
   ],
   "patterns": [{ "include": "#expression" }],
   "repository": {
@@ -27,10 +30,9 @@
         { "include": "#equality-form" },
         { "include": "#paren" },
         { "include": "#keyword" },
-        { "include": "#number" },
         { "include": "#boolean" },
-        { "include": "#variable" },
-        { "include": "#wildcard" }
+        { "include": "#wildcard" },
+        { "include": "#variable" }
       ]
     },
 
@@ -69,7 +71,7 @@
 
     "declarator-relation": {
       "comment": "(relation R A B …) — head + relation-type name. Closed declarator set; see 06_reserved_names.md.",
-      "begin": "(\\()\\s*(relation)\\b\\s*([A-Za-z][A-Za-z0-9_*-]*)?",
+      "begin": "(\\()\\s*(relation)(?=[\\s()])\\s*([A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+)?",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.declarator.ein" },
@@ -82,7 +84,7 @@
 
     "declarator-rule": {
       "comment": "(rule N …) / (hrule N …) / (macro N …) — head + declared name.",
-      "begin": "(\\()\\s*(rule|hrule|macro)\\b\\s*([A-Za-z][A-Za-z0-9_*-]*)?",
+      "begin": "(\\()\\s*(rule|hrule|macro)(?=[\\s()])\\s*([A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+)?",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.declarator.ein" },
@@ -95,7 +97,7 @@
 
     "declarator-other": {
       "comment": "(query …) / (solve …) / (config …) / (trace …) / (import …) — declarators with no defined-name capture.",
-      "begin": "(\\()\\s*(query|solve|config|trace|import)\\b",
+      "begin": "(\\()\\s*(query|solve|config|trace|import)(?=[\\s()])",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.declarator.ein" }
@@ -107,7 +109,7 @@
 
     "primitive-form": {
       "comment": "Rule-body / ⊥ structural primitives plus the `open` verdict atom, head position only (primitives.STRUCTURAL + RESERVED). `forall`/`unknown` are stdlib macros since P1.8 S1.5.9, not primitives; the macro spelled `open` was renamed `unknown` in M1d P1d.2 so the word could be the KB-level verdict.",
-      "begin": "(\\()\\s*(and|or|not|absent|false|open)\\b",
+      "begin": "(\\()\\s*(and|or|not|absent|false|open)(?=[\\s()])",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.primitive.ein" }
@@ -119,7 +121,7 @@
 
     "predicate-form": {
       "comment": "Computed predicates, head position only (predicates.names()).",
-      "begin": "(\\()\\s*(eq|neq)\\b",
+      "begin": "(\\()\\s*(eq|neq)(?=[\\s()])",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.operator.predicate.ein" }
@@ -130,7 +132,7 @@
     },
 
     "equality-form": {
-      "comment": "(= a b …) — the reserved `=` equality head.",
+      "comment": "(= a b …) — the `=` head, a name since M1f S1f.5.5's swap (S1f.5.4's name rule), coloured as the equality relation it is by convention.",
       "begin": "(\\()\\s*(=)(?=[\\s)])",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
@@ -151,37 +153,27 @@
     },
 
     "keyword": {
-      "comment": "Any :keyword (KEYWORD terminal). Covers :match :assert :why :priority :source :rule :using :mode :goal :hrules :hypothesis-relations and all solver-config flags.",
+      "comment": "Any :keyword (KEYWORD terminal): `:` and a run of name characters. Each form takes a fixed set since M1f S1f.5.5's swap (S1f.5.11) and the parser refuses any other; every one is coloured.",
       "name": "entity.other.attribute-name.ein",
-      "match": ":[a-z][A-Za-z0-9_-]*"
-    },
-
-    "number": {
-      "patterns": [
-        {
-          "comment": "INT. Lookbehind keeps the trailing digits of symbols like House-1 / House_3 from being mis-lexed as numbers.",
-          "name": "constant.numeric.integer.ein",
-          "match": "(?<![\\w.-])-?[0-9]+"
-        }
-      ]
+      "match": ":[A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+"
     },
 
     "boolean": {
       "comment": "Bare true / false config values (the primitive `(false)` head is handled by #primitive-form before this is reached).",
       "name": "constant.language.boolean.ein",
-      "match": "\\b(?:true|false)\\b"
+      "match": "(?<![A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}?:])(?:true|false)(?![A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}])"
     },
 
     "variable": {
-      "comment": "?var pattern variable (VAR terminal), including a trailing-* relation variable like ?R*.",
+      "comment": "?var pattern variable (VAR terminal): `?` and a run of name characters (the name rule, M1f S1f.5.4), so ?R*, ?_x and ?a.b are variables.",
       "name": "variable.parameter.ein",
-      "match": "\\?[A-Za-z][A-Za-z0-9_*-]*"
+      "match": "\\?[A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}]+"
     },
 
     "wildcard": {
-      "comment": "Bare _ wildcard (WILDCARD terminal). House_1's internal _ is inside a symbol token and never reaches here.",
-      "name": "variable.language.wildcard.ein",
-      "match": "(?<![A-Za-z0-9_*?-])_(?![A-Za-z0-9_*-])"
+      "comment": "A bare _ or ?_ (UNDERSCORE, VARUNDERSCORE): no production takes either since M1f S1f.5.5's swap (S1f.5.1's ruling), so each is marked invalid. A _ inside a name (House_1, ?_x, __closed__) is part of the name and never reaches here.",
+      "name": "invalid.illegal.underscore.ein",
+      "match": "(?<![A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}?])\\??_(?![A-Za-z0-9_.\\-$%^*+=<>!&@~/'`\\[\\]{}])"
     }
   }
 }

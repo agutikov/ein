@@ -181,7 +181,7 @@ debt is the **leak list** below, where the two layers still interpenetrate.
 
 | seam node | modules | state |
 |---|---|---|
-| ein-lang → typed IR | [`ein-ir`](../../ein.rs/crates/ein-ir/src/) (`lex.rs`, `parse.rs`, `ast.rs`, `macros.rs`) | **clean** — the frontend reads no engine state |
+| ein-lang → typed IR | [`ein-ir`](../../ein.rs/crates/ein-ir/src/) (`ein.l`, `ein.y` and `grammar.rs`, the parser grmtools generates, where it was `lex.rs` and `parse.rs` until M1f S1f.5.5's swap; `ast.rs`, `macros.rs`) | **clean** — the frontend reads no engine state |
 | typed IR → KB (ground atoms) | [`ein-ir/from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), [`ein-core/kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs), `ein-core/entities.rs`, [`ein-core/prov.rs`](../../ein.rs/crates/ein-core/src/prov.rs) | **leaks L2** — the ground-atom store carries worlds-layer state; provenance now also carries a firing's *negative* dependence (the boundary queries, S1.21.8 — **L6** half) |
 | monotone closure (Datalog-ish) | [`ein-infer/compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), [`match_.rs`](../../ein.rs/crates/ein-infer/src/match_.rs), [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs), [`engine.rs`](../../ein.rs/crates/ein-infer/src/engine.rs), `firing.rs`, [`contradiction.rs`](../../ein.rs/crates/ein-infer/src/contradiction.rs), `predicates.rs`, `plan.rs` | **clean since S1.21.8** — `Plan::steps` is the purely positive residue compilation leaves after lifting the guards out; the closure runs to quiescence consulting no negation (**L1** closed) |
 | the NAF boundary itself | [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs) (`admit_from_boundary` / `first_failing` / `negative_premises`), the guard lift in [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs) + [`NafGuard`](../../ein.rs/crates/ein-infer/src/plan.rs), [`Matcher::holds`](../../ein.rs/crates/ein-infer/src/match_.rs) | **new, clean (S1.21.8)** — the one place `(absent …)` is answered, and only against a positive fixpoint, asked of the KB at quiescence directly |
@@ -380,8 +380,13 @@ shrug: the two docs were individually accurate and a reader of both concluded
 the lexer's eleven had become **twelve** when `open` joined the other one —
 which it must never do, because `(open ?R)` is an ordinary fact head. (The
 lexer's set did become twelve at M1e2 S1e2.1a.4, with the `solve` declarator.)
-`lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine` holds
-the list, the four-name intersection, and that `open` lexes as a `SYMBOL`.
+`lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine` held
+the list, the four-name intersection, and that `open` lexed as a `SYMBOL`,
+until M1f S1f.5.5's swap. Since, the twelve are `ein_ir::grammar::RESERVED_WORDS`,
+tokens of `ein.l`, which `ein_core::text::LEXER_KEYWORDS` mirrors for the
+printer (`grammar::tests::the_reserved_words_are_the_printers` holds the
+two to one list), and `open` is a position word, a token of its own and a name
+wherever a name goes, so `(open ?R)` is still an ordinary fact head.
 
 The test: ask whether an edit to one side would be *wrong* not to make to the
 other. If yes, it is one artifact — unify it, or make a test say so. If no, the

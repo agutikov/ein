@@ -244,7 +244,8 @@ explicit audience banner.
 - Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)
-  — the complete grammar, in EBNF.
+  — the complete grammar, `ein.l` and `ein.y` as the parser is generated from
+  them (a hand-written EBNF until M1f S1f.5.5's swap).
 - Source of truth for the KB: [`ein-core`](../../ein.rs/crates/ein-core/src/).
 - **Defined behaviour**: [`defined_behaviour.md`](defined_behaviour.md) — the
   thirteen diagnostics, orderings and error strings the engine defines, stated

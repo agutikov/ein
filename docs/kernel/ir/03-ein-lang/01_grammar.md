@@ -1,12 +1,17 @@
 # Grammar — lexical rules and top-level forms
 
 > **Source of truth for syntax: [`00_ebnf.md`](00_ebnf.md)** — the complete
-> grammar, in EBNF. This document explains intent and structure; that one is
-> what parses.
+> grammar, `ein.l` and `ein.y` as the parser is generated from them (a
+> hand-written EBNF until M1f S1f.5.5's swap). This document explains intent
+> and structure; that one is what parses.
 >
-> The engine parses by recursive descent — an implementation, not a
-> specification — so the grammar is stated there rather than left to the
-> parser.
+> The engine parses with the parser grmtools generates from
+> [`ein-ir/src/ein.l` and `ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y),
+> and `00_ebnf.md`'s two blocks are those files, written from them by a test
+> that fails when they differ (M1f S1f.5.5, 2026-11-09). Until S1f.5.5's swap
+> the engine parsed by recursive descent, an implementation and not a
+> specification, and the grammar was stated there by hand rather than left to
+> the parser.
 
 This was [`docs/ir.md` §1 + §2](../../README.md) before the kernel-
 documentation split.
@@ -17,12 +22,12 @@ documentation split.
 
 | terminal   | regex                          | examples                                | role                                              |
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
-| `SYMBOL`   | `[A-Za-z][A-Za-z0-9_*-]*`      | `has-color`, `next-to`, `House-1`, `is-a*` | atoms; list heads in patterns; rule / type / step names. `*` in tail is a character with no Kleene/multiplicative meaning (S1.5.8c.2 — supports the transitive-closure naming convention `R*`). |
-| `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
+| `NAME`     | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | atoms; a pattern's or a fact's relation; rule / type / step names. **The name rule** (M1f [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md), the user's ruling of 2026-11-06): a run of ASCII name characters, ASCII forever, each printed as written and reloading to itself, so `7` and `07` are two names; no character has a meaning of its own, `*` among them (the transitive-closure convention `R*`, S1.5.8c.2). A reserved word is never a name and a position word is one wherever a name goes ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 1); a token ends only at a space, a paren, a comment or the end of input, so `a?x`, `a,b` and `Жук` are each one token that is not a name, refused (fact 5). Until S1f.5.5's swap this row was `SYMBOL`, `[A-Za-z][A-Za-z0-9_*-]*`, a letter first, a run of digits an `INT` and `=` a reserved head |
+| `VAR`      | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | pattern variables — bound by `:match`, reused in `:assert`: `?` and a name's characters. Until the swap `\?[A-Za-z][A-Za-z0-9_*-]*` |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:match`, `:rule`, `:source`             | a form's clause markers, each **always** followed by its value. **Each form takes a fixed set** ([§ 2's table](#the-keywords-each-form-takes)), each keyword a token of the forms that take it, and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact (M1f [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), the user's ruling of 2026-11-07, [Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)). Until S1f.5.5's swap a keyword was one token for every form: only `query`, `solve` and `config` refused one they did not know, and every other form, and every term, dropped one in silence (D-15, G-15, G-22; W32's seven rows); S1f.5.11's T1f.5.11.2 retired the compiler's and the macro expander's drops |
 | `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, Q-M1e2.13 (a)); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (Q-M1e2.14 (c), S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
 | `INT`      | —                              | —                                        | **none since M1f S1f.5.5's swap**: a run of digits is a `NAME` like any other (S1f.5.4's ruling, the user's of 2026-11-06), so `7`, `07` and `-7` are three names, each printed as written, and a fact of one is never a fact of another. Until the swap `INT`, `-?[0-9]+`, lexed *integer atoms*, `007` and `7` one value; `:priority 10`, the one keyword that took one, went with S1f.5.15. The int value kind went with [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 (2026-11-09): a value is a name or a nested fact |
-| `STRING`   | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else since M1f S1f.5.5's swap** (S1f.5.2's ruling, the user's of 2026-11-06, [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)): the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, which the read-out, `--trace`, `saturate --dump`, a state file and `render program` carry byte for byte (`ein-cli/tests/natural_language_text.rs`). Written anywhere else, a fact's or a rule's argument, a name, a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact. A `\u{…}` names a Unicode scalar value ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 4). **Until the swap** a string was also a **fact's argument**, top-level or nested, the name its body spells: `"foo"` and `foo` were one value (M1e2 S1e2.2.16, 2026-11-04); and in a **rule** the symbol it names at any depth, a name of the program as that atom is (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04), where until then the rule compiler did not lower one (W18) |
+| `TEXT`     | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else since M1f S1f.5.5's swap**, where this row was `STRING` (S1f.5.2's ruling, the user's of 2026-11-06, [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)): the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, which the read-out, `--trace`, `saturate --dump`, a state file and `render program` carry byte for byte (`ein-cli/tests/natural_language_text.rs`). Written anywhere else, a fact's or a rule's argument, a name, a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact. A `\u{…}` names a Unicode scalar value ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 4). **Until the swap** a string was also a **fact's argument**, top-level or nested, the name its body spells: `"foo"` and `foo` were one value (M1e2 S1e2.2.16, 2026-11-04); and in a **rule** the symbol it names at any depth, a name of the program as that atom is (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04), where until then the rule compiler did not lower one (W18) |
 
 **There is no `RANGE`**, and no number of any kind: Ein has no numbers and no
 ranges, and none is planned (the user, 2026-11-06,
@@ -37,10 +42,13 @@ it stored the name `1..5`, as a keyword's value it was dropped, and in a rule
 the loader refused it (M1e2 S1e2.2.20, Q-M1e2.13 (a)).
 
 The regexes above are the readable form.
-[`00_ebnf.md` §1](00_ebnf.md#1-lexical-grammar) is the exact one, including
-the three lookaheads this table cannot show: `SYMBOL`'s reserved-word
-exclusion, `WILDCARD`'s (until S1f.5.5's swap, which made a bare `_` a
-token no production takes), and `STRING`'s refusal of an escaped newline.
+[`00_ebnf.md` §1](00_ebnf.md#1-lexical-grammar) is the exact one, `ein.l` as
+the lexer reads it: every token's rule, the order that settles a tie between
+a reserved word and `NAME`, and the start condition that ends a token at a
+separator. Until S1f.5.5's swap it stated three lookaheads this table could
+not show: `SYMBOL`'s reserved-word exclusion, `WILDCARD`'s, and `STRING`'s
+refusal of an escaped newline; the first two are a tie and a token no
+production takes since, and the third is a `BAD` token.
 
 **Comments** — SMT-LIB-compatible: `; line` to end of line, `#| block |#`
 non-nesting.
@@ -68,8 +76,8 @@ key on it).
 | `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:over …] [:expect …])`; several per file |
 | `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect …])`; at most one per file |
 | `config` | solver knobs | `(config [:lattice-sanity-check true\|false] [:record-alternative-justifications true\|false])` |
-| `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace <step\|branch-open\|…>*)` |
-| *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:source "…"] [:rule <name> :using (…)])` |
+| `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace (step …)*)` |
+| *anything else* | **a fact** | `(not <fact> …)` · generic `(<NAME> <args>* [:source "…"] [:rule <name> :using (<fact>+)])` |
 
 #### The keywords each form takes
 
@@ -147,7 +155,7 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 
 ```lisp
 (relation <name> [<T1> <T2> ...]         ; signature: zero or more type atoms
-  [:why <STRING>])                        ; the one keyword a relation takes
+  [:why "<text>"])                        ; the one keyword a relation takes
 ```
 
 `relation` declares a relation-type node + its arg-type signature
@@ -155,20 +163,26 @@ for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
 derivation is an ordinary `rule`; `a-priori` removed in S1.7.6). The loader
 auto-stores each declaration as an ordinary fact `(relation R T1 T2 …)` so
 rules can introspect signatures via a `(relation ?R ?A ?B)` pattern in
-`:match`. Because of that, `relation` is **not** SYMBOL-excluded, so the
-malformed wrapped-arg form `(relation R (T1 T2))` parses but is rejected at
-LOAD time (not parse time).
+`:match`. Because of that, `relation` is a position word, a name wherever a
+name goes, `(relation ?R ?A ?B)` a pattern; as a form's head it is the
+declarator, `Relation ::= '(' 'relation' DeclName Names RelationClauses ')'`,
+so the malformed wrapped-arg form `(relation R (T1 T2))` is a parse error
+since M1f S1f.5.5's swap. Until then `relation` was not `SYMBOL`-excluded, so
+that form parsed as a fact and the loader rejected it.
 
 **Arity — name + *zero or more* type atoms.** The grammar is
-`relation_decl: "(" "relation" SYMBOL SYMBOL* kw_pair* ")"`
-([`00_ebnf.md`](00_ebnf.md)), and the
-loader requires exactly the same. So `(relation adult Person)` is a legal
-**unary** declaration and `(relation opaque)` a legal **bare** one —
-a relation node with no declared arg types. Only the *name* is mandatory;
-`(relation)` is rejected at load. The wrapped-arg form
-`(relation R (T1 T2))` stays rejected too (P1.3 R10) — the loader checks
-that every arg after the name is a type atom or a kw-pair, so the inner
-group cannot pass itself off as a bare declaration.
+`Relation ::= '(' 'relation' DeclName Names RelationClauses ')'`, its clauses
+`:why` alone ([`00_ebnf.md` § 2](00_ebnf.md#2-phrase-grammar)), and the loader
+reads what it parsed. So `(relation adult Person)` is a legal **unary**
+declaration and `(relation opaque)` a legal **bare** one — a relation node
+with no declared arg types. Only the *name* is mandatory: `(relation)` and
+the wrapped-arg form `(relation R (T1 T2))` are parse errors (P1.3 R10), the
+second because a type is a name. **Until M1f S1f.5.5's swap** the
+hand-written grammar was `relation_decl: "(" "relation" SYMBOL SYMBOL*
+kw_pair* ")"`, and the loader refused `(relation)` and checked that every
+argument after the name was a type atom or a keyword pair, so the inner group
+could not pass itself off as a bare declaration (S1f.5.5's T5 deleted both
+lines, the grammar stating each).
 
 A bare declaration is **not a hypothesis target**: signature *presence* is
 the kernel's "declared domain relation" signal (the table below), and an
@@ -303,26 +317,28 @@ A fact is any top-level form whose head is **not** a declarator. Three
 shapes:
 
 ```lisp
-(= <expr> <expr> [:source <STRING>])      ; equality            (reserved head `=`)
-(not <expr> [:source <STRING>])           ; negative            (reserved head `not`, arity 1)
-(<name> <arg>* [:source <STRING>])        ; relation instance / enumeration / property tag
+(not <fact> [:source "<text>"])           ; negative            (reserved head `not`, one fact)
+(<name> <arg>* [:source "<text>"])        ; relation instance / enumeration / property tag / equality
 ```
 
 | kind | example | semantics |
 |---|---|---|
 | **relation instance** | `(co-located Englishman Red :source "(2)")` | a relation holds between specific entities |
-| **equality**          | `(= (color House-1) Red :source "(?)")` | equational form (reserved `=`) |
+| **equality**          | `(= Red Colour-1 :source "(?)")` | a fact of the relation `=`, a name since M1f S1f.5.5's swap; until then `=` was a reserved head taking two expressions, `(= (color House-1) Red)` among them |
 | **negative**          | `(not (drinks Spaniard Coffee) :source "(?)")` | the wrapped fact does *not* hold |
 
-`=` and `not` are **shape-pinned reserved heads** (wrong arity is a parse
-error). `and` / `or` / `neq` are kernel meta-primitives that belong inside
+`not` is a **shape-pinned reserved head**: `NotFact ::= '(' 'not'
+NestedFact FactClauses ')'`, one fact, so a wrong arity is a parse error
+(`=` was one too, two arguments, until M1f S1f.5.5's swap made it a name,
+S1f.5.4's ruling, so `(= a b c)` is a fact). `and` / `or` / `neq` are kernel
+meta-primitives that belong inside
 `:match` premises (a guard is a premise, `(neq ?a ?c)`, since Q32 dropped the
 `:where` clause), never a top-level fact head — and the
 declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
-heads either (they're SYMBOL-excluded). Everything else — `instance`,
-`type`, `symmetric`, `co-located`, `lives-in`, … — is an ordinary generic
-`(SYMBOL value*)` fact, open-world: introduce a relation by declaring it
-with `(relation …)` and asserting it.
+heads either (each is a reserved word, never a name). Everything else —
+`instance`, `type`, `symmetric`, `co-located`, `lives-in`, … — is an
+ordinary generic `(NAME value*)` fact, open-world: introduce a relation by
+declaring it with `(relation …)` and asserting it.
 
 The origin of each fact follows the
 [annotation rule](#where-a-fact-came-from--its-provenance-annotation): a
@@ -355,8 +371,8 @@ annotated with `:rule` (which rule fired) + `:using` (which premises it
 consumed) instead of `:source` — so they read back as derivations:
 
 ```lisp
-(<name> <arg>* :rule <RuleName> :using (<premise-id>+))
-(not <expr>    :rule <RuleName> :using (<premise-id>+))
+(<name> <arg>* :rule <RuleName> :using (<premise-fact>+))
+(not <fact>    :rule <RuleName> :using (<premise-fact>+))
 ```
 
 A hand-authored puzzle has none; they appear in engine dumps, which
@@ -365,21 +381,22 @@ provenance, the provenance *is* the origin, and no further annotation is
 needed to reproduce it. Example derived facts:
 
 ```lisp
-(co-located Blue House-2 :rule square-fwd :using (c10 c15))
-(not (co-located Norwegian House-2) :rule type-exclusivity :using (c10))
+(co-located Blue House-2 :rule square-fwd :using ((co-located Ivory House-1) (right-of House-2 House-1)))
+(not (co-located Norwegian House-2) :rule type-exclusivity :using ((co-located Norwegian House-1)))
 ```
 
-> **`:using` IR round-trip caveat (M1):** the current grammar accepts
-> `:using (atom-id-1 atom-id-2 ...)` but parses it to a shape that
-> doesn't directly match the data model's `(rel, args)` premise ids.
-> The compact-form `:using ((rel a b) (rel c d))` is what the data
-> model uses internally but is *rejected* by the current grammar (a
-> kw-pair value must be a headed list). Both forms wait on a P1.1
-> grammar tweak or a `:id <atom>` annotation system — see
-> S1.2.3 T1.2.3.4.
-> Until then, rule-kind provenance is populated by the engine
-> programmatically via `Provenance.from_rule(...)`, which works
-> end-to-end — only the IR text round-trip is deferred.
+> **`:using` is a list of facts** since M1f S1f.5.5's swap (2026-11-09,
+> the paper grammar's default 2): `FactClause ::= ':using' '(' NestedFacts
+> ')'`, the data model's `(rel, args)` premise ids, each fact resolved by the
+> loader to the premise the derivation record names. **Until the swap** the
+> hand-written grammar took `:using (atom-id-1 atom-id-2 ...)`, a list whose
+> first element the loader read as a head and dropped, and rejected the
+> compact form `:using ((rel a b) (rel c d))`, a keyword's value having to
+> be a headed list; both waited on a P1.1 grammar tweak or a `:id <atom>`
+> annotation system (S1.2.3 T1.2.3.4), and rule-kind provenance was populated
+> by the engine programmatically alone. The engine's dumps still write
+> `:rule` with no `:using` (`ein saturate --dump`), or the provenance as a
+> comment (a `--dump-answer` state file).
 
 ### Rules
 
@@ -387,7 +404,7 @@ needed to reproduce it. Example derived facts:
 (rule <name> (<param-vars>*)      ; parameter list — mandatory, `()` for non-generic
   :match <pattern>                ; LHS — structural pattern (see 02_patterns.md)
   :assert <conclusion>            ; RHS — what to derive
-  :why <STRING>)                  ; reason template for trace
+  :why "<text>")                  ; reason template for trace
 ```
 
 A rule is a top-level `(rule …)` form (a hypothesis-generation rule is the
@@ -694,7 +711,7 @@ every corpus region it prints back as its own claim.
 ```lisp
 (query
   :goal <expr>                             ; what to find / verify
-  [:goal-text <STRING>]                    ; NL headline template (optional)
+  [:goal-text "<text>"]                    ; NL headline template (optional)
   [:over all|minimal|maximal]              ; which states (M1e2)
   [:expect <expectation>])                 ; what the answer should be (M1c)
 ```
@@ -838,17 +855,22 @@ template renders the *headline result* from the goal bindings.
 ```lisp
 (trace
   (step <id> :rule <name>                  ; engine derivation step
-             :using (<premise-ids>)
-             :derives <expr>
-             [:source <ref> | :assumes <expr>])
-  (branch-open <id> :on <expr>             ; open a hypothesis-driven split
-                    :choices (<sub-ids>))
-  (branch-close <id> :choose <sub-id>)     ; commit to a branch
-  (contradiction <id> :using (<step-ids>)  ; record a contradiction
-                      :assumption <step-id>)
-  (symmetry-class <id> :over (<entities>)  ; mark engine-arbitrary choices
-                       :note <STRING>))
+             :using (<premise-ids>)        ;   or (and <id>+)
+             :derives <fact>
+             [:source "<text>" | :assumes <fact>]))
 ```
+
+A trace holds `step` events alone since M1f S1f.5.5's swap (2026-11-09, the
+paper grammar's default 8): `Step ::= '(' 'step' Name StepClauses ')'`, its
+keywords `:rule`, `:using`, `:derives`, `:source` and `:assumes` (S1f.5.11's
+list). **Until the swap** the block above also showed four events the
+hand-written grammar kept for the renderer
+([Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism)),
+which no `.ein` file wrote and nothing in the engine emitted: `(branch-open
+<id> :on <expr> :choices (<sub-ids>))`, `(branch-close <id> :choose
+<sub-id>)`, `(contradiction <id> :using (<step-ids>) :assumption <step-id>)`
+and `(symmetry-class <id> :over (<entities>) :note <STRING>)`. Each is a
+parse error since, at its head, a name where a trace wants `step`.
 
 Per [Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism),
 `(trace …)` is the **same IR** as input — same parser, same AST,

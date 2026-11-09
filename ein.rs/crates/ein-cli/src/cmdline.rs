@@ -630,8 +630,9 @@ fn solve_command() -> Command {
                 .value_name("FILE")
                 .help(
                     "after the read-out, compare the states it showed with the \
-                     models FILE lists ('closes R …', then 'model' and one fact per \
-                     line): what matches, what is missing, what is spurious and \
+                     models FILE lists ('closes R …', then 'model' and its facts, read as a \
+                     program's, so a fact may span lines and carry a comment): \
+                     what matches, what is missing, what is spurious and \
                      what is one fact off, in what the read-out left of stdout's \
                      100 lines. --dump-answer DIR writes it uncut, over every \
                      listed state, as DIR/forms/diff-models.txt",

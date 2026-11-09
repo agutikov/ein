@@ -30,7 +30,11 @@ estimate](s1f.5.5_census.md#the-estimate-re-taken)), and 8.5 before that.
 - Half a day for `--diff-models`, which reads its file through the parser (S-15, T6). Unchanged.
 - A day and a quarter for the pages (T7). Unchanged; each language stage keeps its own pages.
 
-**Status:** specified 2026-11-06 on the user's instruction of that day; extended 2026-11-07 with the
+**Status: Done, 2026-11-09**, in the commits `49e9fed6` (steps 1 and 2), `54715b5f` (T3), `d7df861d` (T8), `f18651fe`
+(T9), `b7561e93` and `9e54d3a8` (T10), `556da0b2` and `977829bf` (T11), `8c3fe86e` (T4, the swap), `77589255` (T12),
+`3a9207ae` (T5), `edb096af` (T6), `fc53818f` (T13) and T7's, the last; § Acceptance is re-taken item by item
+([§ Acceptance re-taken](#acceptance-re-taken-2026-11-09)).
+Specified 2026-11-06 on the user's instruction of that day; extended 2026-11-07 with the
 user's name rule and instruction to generate the parser
 ([Q-M1e2.25](../../m1e2_correctness/open_questions.md#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it)).
 **Steps 1 and 2 done on 2026-11-08, on the user's go-ahead of that day; stopped there, to show the user
@@ -91,14 +95,16 @@ lrlex's shape leaves is parked for the phase's close
 the grammar's table, 123 refusals the grammar took over; 55 refusal lines the grammar covers are deleted, each shown
 unreachable first, and the 12 the census counted the grammar's that a macro's body or a pattern's argument still
 reaches are kept, each held by a test; the two dead trace functions are gone; nothing a user sees moved
-([Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind), defaulted).
+([Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind), defaulted; ruled (a) by the user,
+2026-11-09).
 **T6, `--diff-models` by value (S-15), done the same day** ([§ T6 record](#t6-record-2026-11-09)): a model's facts
 are read by the generated parser and printed by the one printer, so `(p  a)`, `( p a )` and `(p a) ; the fact`
 match `(p a)`, and a file whose facts do not parse is refused before the run, exit 2, with every error and its line
 and column; no answer or register row moved. **T13, every command reads a program the same way, added by the
 coordinator and done the same day** ([§ T13 record](#t13-record-2026-11-09)): one read path, W40's six rows and W41 filed
 and fixed under the register's schema `/16`, 126 fixed, 22 open and 1 not wrong; a non-UTF-8 file refused in Ein's words
-at each command's exit; a container's stored program named; an end-of-input error at the text's end. T7 runs next.
+at each command's exit; a container's stored program named; an end-of-input error at the text's end. **T7, the pages,
+done the same day** ([§ T7 record](#t7-record-2026-11-09)), and **the stage closed**.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1802,7 +1808,7 @@ program wrote, into the positions a template has.
   premise can be compiles to a step.
 
 Where the types need it, each is replaced by an `expect`, an `unreachable!` or an `assert!` that names the
-production of `ein.y` that states the shape (taken by default; Q-M1f.9).
+production of `ein.y` that states the shape (taken by default; Q-M1f.9, ruled (a) by the user, 2026-11-09).
 
 **Kept, the 12 the census counted the grammar's that are still reached**, each by a program the grammar accepts,
 banked in `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached` and
@@ -1871,7 +1877,8 @@ of the phase"*), each the agent's recommendation:
   naming the grammar, where it got a load error (`examples/broken/load/README.md` called those lines *defence in
   depth* for such a caller), and `expect::parse`, `expect::fact`, `from_ir::config_from_kw_pairs` and
   `imports`' `symbol_list` cannot fail. A decision a reviewer would name, so
-  [Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind) records it.
+  [Q-M1f.9](../open_questions.md#q-m1f9--what-a-deleted-loader-line-leaves-behind) records it (ruled (a) by the user,
+  2026-11-09).
 - **The table's outcomes are a golden**, `grammar_table.txt`, as `grammar_decisions.txt` is, so a stage adding a row
   blesses it; the rows, the deleted ids and the check between them are in the test.
 - **The CLI's tests of the same shapes stay** (above), and **`Over::parse`'s non-name arm and `step_to_ir` go**
@@ -2107,6 +2114,93 @@ them `program_read`'s three and `generated_parser`'s end-of-input test.
 stage's own pages land beside these, one at a time: S1f.5.4's T1f.5.4.4, S1f.5.1's T1f.5.1.4, S1f.5.2's
 T1f.5.2.4 and S1f.5.11's T1f.5.11.3. `docs/history/` is a record, and does not change.
 
+### T7 record, 2026-11-09
+
+**One commit, on `fc53818f`** (T13). The pages the task lists, the items the four language stages left to it, the
+register's T13 ids, the help text of `--diff-models`, and the user's ruling on Q-M1f.9; no engine code but the help.
+Each sentence that described the hand-written parser, its tokens or its quirks as live says what it was and what it is
+since the swap; a record, a dated note and a quotation of an engine line are left as written.
+
+**Restated.**
+- **`00_ebnf.md`**: retitled *The ein-lang grammar: `ein.l` and `ein.y`*; the header (the blocks are the grammar the
+  engine parses with, written by `grammar_pages.rs`, the prose restated to them); the notation (lrlex rules and Yacc
+  productions as grmtools reads them, where it was W3C EBNF); § 1's lead (longest match, the earlier rule on a tie) and
+  its facts, kept at their numbers, which other pages cite: fact 1, a reserved word a token only as a whole word, by
+  longest match and rule order, the position words names wherever a name goes, `neq-1`, `rule-x` and `rule.x` names,
+  which overrides Q-M1e2.17 (i)(a); fact 3, no `RANGE` and no `INT`; and a new fact 5, *a token ends at a separator*
+  (`AFTER_WORD`), with the name rule's characters, `a?x`, `?x?y`, `a,b`, `Жук` and `"a"b` one token refused; § 2's
+  trailing note (`NotFact` takes a fact's clauses, a `(not …)` in a rule none; each form's keywords its own
+  productions); **§ 3 gone**, its heading kept as *§3 (gone)* saying what it described and that §2 is a plain grammar
+  over §1's tokens, LR(1) by Pager's method, a conflict failing the build; § 4, what the grammar leaves to the loader
+  and the compiler (a form's keywords written once, what a claim names, arity and types, unbound variables, a macro's
+  body, the kernel's names), and its quoted message format; § 5, the tests that pin the grammar
+  (`grammar_pages`, `grammar_decisions`' 78 cases, `grep -c '^=== '
+  ein.rs/crates/ein-ir/tests/golden/grammar_decisions.txt`, 2026-11-09, the keyword test's 53 460 parses and 348,
+  `generated_parser`, `fuzz_properties`), the hand-written grammar's coverage census and five unexercised trace
+  productions kept as a dated record; § 6, M2's GBNF from `ein.l` and `ein.y`.
+- **`01_grammar.md`**: the header; the terminal table's `SYMBOL` and `VAR` rows (`NAME` and `VAR` under the name
+  rule), `STRING` named `TEXT`, and the paragraph on the lookaheads; § 2's `trace` and fact shapes; the relation
+  declarator (`relation` a position word, the wrapped form a parse error, and S1f.5.11's leftovers, `relation_decl …
+  kw_pair*` and *every arg after the name is a type atom or a kw-pair*, as records); the facts section (`not`
+  shape-pinned, `=` a name since the swap, the declarators reserved words, `(NAME value*)`); the derived facts'
+  `:using`, a list of facts since the swap, and the round-trip caveat restated; `"<text>"` for `<STRING>` in the rule,
+  query and relation blocks; and § Trace, `step` alone since the swap, the four other events a record (S1f.5.11's
+  leftover).
+- **`02_patterns.md`**: *where a malformed primitive is caught*, each row a production of `ein.y` (`not`, `eq`/`neq`,
+  `absent`, `and`/`or`, `false`), the compiler's arity lines kept for a macro's body; the ✓ marks of `=` and `is-a`
+  dropped, `=` a name; *`=` is a fact head, not a unifier*.
+- **`defined_behaviour.md`**: **§ 1** rewritten: a report's shape (every error, notes, three ranked repairs, the cut,
+  exit 1 or 2), and § 1.1 to § 1.4 restated to what is defined since the swap, each with what it was: the end of input
+  where the text ends (T13), no context block, the column the token's, no grammar ambiguity and a lexer tie to the
+  earlier rule; § 1.5's count re-taken, 17 of 31 load fixtures not ending `at None` (`grep -L 'at None'
+  examples/broken/load/*.expected`, 2026-11-09). **§ 4**'s firing line (S1f.5.4's and S1f.5.2's note): the table row
+  says only a macro's bare-parameter body reaches it, the deleted line is marked a record, and the test sentence says
+  five shapes and the macro reach. **§ 4.9**: a lead saying which three shapes the grammar refuses at the parse and
+  which the loader keeps. § 4.8 needed nothing past S1f.5.1's restatement.
+- **`02-data-model/03_implementation.md`**: the parser's row (`ein.l`, `ein.y`, `grammar.rs`), `text.rs`'s, and
+  `terms.rs`' note on the lexer's twelve words. **AGENTS.md**'s `ein-ir` line. **M2's S2.2.3**: what its generator
+  reads since the swap. **`configuration.md`**: the `--diff-models` sentence, by value and spanning lines (T6), and
+  the help: *'model' and its facts, read as a program's, so a fact may span lines and carry a comment* (S1f.5.2's
+  and T6's leftover), `help_shape.txt`'s one line moving. **Q-M1e2.17**: (i)(a) overridden on 2026-11-07 by the name
+  rule and built at the swap, (ii)(a) standing; its index row. **The editor grammar**, `utils/vscode-ein/`: names,
+  variables and keywords as runs of the name rule's characters, a head a declarator only before a space or a paren,
+  no number scope, a bare `_` or `?_` `invalid.illegal`, and the README to match (`cli_semantics`' four grammar tests
+  pass).
+- **Beyond the list, each describing the hand-written parser as live** (`grep -rn 'SYMBOL\b\|lex\.rs\|parse\.rs\|recursive
+  descent' docs/kernel`, 2026-11-09): `architecture.md`'s seam table and its `LEXER_KEYWORDS` paragraph,
+  `architecture_and_algorithms.md`'s pipeline line, `answer_dump.md`'s printer, `03_ein_model.md`'s two relation
+  sentences, `06_reserved_names.md`'s four, and the kernel and `03-ein-lang` READMEs' *in EBNF*.
+- **The register's ids**: W40's six and W41's `[case.fixed]` name `fc53818f`, and the header says so.
+- **Q-M1f.9, ruled by the user on 2026-11-09**, relayed by the coordinator: *"ok, keep (a), continue"*; its index row,
+  its section (the binary cannot reach the panics, every path into the loader going through the parser, a `.einb`'s
+  stored text included, the coordinator's 13 probes), § T5 record and the phase README's row.
+
+**Left as written, each on purpose**: `08_self_describing.md`'s quotation of the reserved-names page and its *EBNF
+in EBNF* idea, the identifiers `doc_audit.py --identifiers` reports unresolved on the edited pages, each in a sentence
+saying it went (`lex::tests::…`, `parse::death_position`), and the three pages under a superseded banner. S1f.5.2's
+note that `value_label` might quote a text is a code change no page asks for, and is not taken. `docs/history/` is a
+record, and does not change.
+
+**Run, the fifth check** (AGENTS.md § Keeping this true), each on this commit's build, 2026-11-09: the report examples
+of `defined_behaviour.md` § 1 (`(p a?x) (q "1")`, `(relation r T`, the long line, `(y";"{`), § 1.5's `grep`; `00_ebnf.md`
+§ 5's `grep -c`; `01_grammar.md`'s wrapped relation, `(= a b c)` and a derived fact with `:using ((…))`; `02_patterns.md`'s
+`(neq ?a)`, `(and)` and the macro whose body is a two-premise `absent`; `06_reserved_names.md`'s `(query)`. Each prints
+what its page says.
+
+**Tests that read an edited page or the help**, run on this tree before the gate: `ein-ir`'s `grammar_pages`
+(`00_ebnf.md`), `ein-cli`'s `help_surface` (blessed, `help_shape.txt`), `config_reference`, `cli_semantics` (the
+editor grammar), `world_anchors`, `primitive_arity`, `guide_transcripts`, `answer_dump`, and `ein-corpus`' register
+tests. `utils/doc_audit.py --links --check` over the tree: 0 findings.
+
+**A flake in T13's test, fixed here.** T7's first gate run stopped at `program_read`'s container comparison: `ein
+test` prints its wall time, `(0.01 s)`, which T13's gate read as `(0.00 s)` twice by chance
+(`build/gate-s1f.5.5-T7-first.log`, 2 min 57 s, 156 tests and one failure). The comparison masks a number before `s`
+and `s)` as before `ms` since, in `program_read.rs` and in `wrong_answers.rs`' same comparison for the register's
+container rows; five runs of the first green, and the register's.
+
+**The gate.** On this commit, 15 min 39 s (`build/gate-s1f.5.5-T7.log`), green: 956 tests and every static check, the
+help golden blessed (`EIN_BLESS=1 cargo test -p ein-cli --test help_surface`).
+
 ## Acceptance
 
 - `ein.l` and `ein.y` are the grammar: each position has its own production, and no `Value` is shared between a
@@ -2161,6 +2255,36 @@ T1f.5.2.4 and S1f.5.11's T1f.5.11.3. `docs/history/` is a record, and does not c
   fact does not parse, with the line and column (S-15).
 - No corpus answer moved outside T9's list.
 - `./run_tests.sh` is green.
+
+### Acceptance re-taken, 2026-11-09
+
+On T7's commit, each item by the test or command that holds it; every test named ran green in T7's gate
+(`build/gate-s1f.5.5-T7.log`), and every command was run on that commit's build the same day.
+
+| item | held by | re-taken |
+|---|---|---|
+| `ein.l` and `ein.y` are the grammar, each position its own production, no `Value` shared | `ein-ir/src/ein.y` (`FactArg`, `Arg`, `Term`, `ClaimFact`, `TemplateItem`, each form's clause production) and `grammar_pages::the_pages_grammar_blocks_are_the_parsers` | holds: `00_ebnf.md` § 2 prints the productions |
+| `00_ebnf.md`'s blocks generated, the gate failing on a difference | `grammar_pages::the_pages_grammar_blocks_are_the_parsers`, `every_token_the_phrase_block_writes_the_lexical_block_defines` | holds |
+| a conflict fails the build | `ein-ir/build.rs` (`CTParserBuilder`, *the grammar does not build*) | holds: the build is green, so `ein.y` has none |
+| every error recovery reaches, line and column, the repairs standing for the tokens expected (the review stop's item 6), three and a count, a cut saying where | `grammar_pages::every_row_of_the_grammars_table_is_refused_at_the_parse` (`grammar_table.txt`), `grammar_decisions::the_parse_negative_fixtures_reproduce_their_message` (thirty `.expected`), `generated_parser::a_report_cut_at_the_budget_says_so` | holds |
+| the same report every run, on every machine (F11) | `generated_parser::a_report_is_the_same_twice`, `fuzz_properties` | holds |
+| a file with a parse error refused, no repaired program loaded | `ein_ir::grammar::parse` returns no forms on an error; `corpus_cli::every_cell_reproduces_its_exit_code` (each parse-negative cell exits 1) | holds |
+| a file that parses pays nothing for recovery | `lrpar` starts CPCT+ only at a token it cannot shift, so a parse with no error runs none; the corpus's parse cost is lexing ([§ T12 record](#t12-record-2026-11-09)) | holds, by construction |
+| every shape this review refused, refused with file, line and column; `a?x`, `?x?y`, `"a"b` not split | the grammar's table (123 rows and the language stages' since), `grammar_decisions`; `ein saturate` on each of the three, one token refused each (2026-11-09) | holds |
+| nesting past the limit refused on every command, no input aborts the parser | `generated_parser::the_nesting_limit`, `fuzz_properties` | holds |
+| the name rule (S1f.5.4) | `grammar_decisions`, `cli_semantics::a_range_is_the_name_it_spells`, `grammar::tests::the_printers_symbol_is_the_lexers`, `answer_round_trip` | holds |
+| where the paper grammar says more (`_x`, `rule-x`, `neq-1`, `=`, `(1 a)`, a keyword `:` and a run) | `grammar_decisions`, `a_keyword_is_a_whole_word_in_every_place` (348 `-1` parses read the name); `ein saturate` on `(neq-1 a)`, `(rule.x A)`, `(= a b c)`, `(1 a)`, `(relation 1 T)` (2026-11-09) | holds |
+| the final grammar: no `:priority`; every form that carries a template takes `:why` | `ein-corpus`' `no_corpus_program_writes_a_priority`, the grammar's table (`:priority` refused as a keyword a rule does not take), `generated_parser::a_macro_carries_its_why` | holds |
+| a bare `_` (S1f.5.1) | `cli_semantics::a_bare_underscore_names_nothing_in_every_place`, the table's 66 rows | holds |
+| strings (S1f.5.2) | the table's rows, `natural_language_text.rs`, `generated_parser::a_strings_escapes_are_the_rulings`, `answer_round_trip` | holds |
+| closed keywords (S1f.5.11) | the table's 33 rows, `fuzz_properties::no_accepted_program_carries_a_keyword_its_form_does_not_list` | holds |
+| the loader's internal names no name | `generated_parser::no_name_the_loader_makes_up_is_a_name` | holds |
+| every difference attributed before the old parser went | [the attribution](s1f.5.5_attribution.md), [§ T9 record](#t9-record-2026-11-08) | holds, a record |
+| `lex.rs` and `parse.rs` gone, the swap moving exactly T9's list | `ls ein.rs/crates/ein-ir/src` (no `lex.rs`, no `parse.rs`), [§ T4 record](#t4-record-2026-11-09)'s cross-check | holds |
+| W29's six, W32's seven and W35 `fixed`; every restated row answers its `right` | `wrong_answers::every_row_answers_what_the_register_records`, `ein-corpus`' `the_register_is_well_formed` | holds: 126 fixed, 22 open, 1 not wrong (`grep '^status' corpus/wrong_answers.toml \| sort \| uniq -c`) |
+| `--diff-models` by value, a file that does not parse refused with line and column | `region_modes::diff_models_reads_a_models_facts_as_ein` | holds |
+| no corpus answer moved outside T9's list | the cross-checks of T4, T12, T5 and T13 (`build/s1f.5.5/t4/xcheck/`, `t12/xcheck/`, `t5/xcheck/`, `t13/xcheck/`), each moving only what its record names | holds |
+| `./run_tests.sh` green | `build/gate-s1f.5.5-T7.log` | holds |
 
 ## Notes
 

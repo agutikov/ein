@@ -774,8 +774,8 @@
 # `now` can read its witness through a `.einb` (`container`), and then
 # answers what the same run answers on the witness; and a recorded answer
 # can be a command's (`by = "command"`, with `refused`). Each `[case.fixed]`
-# carried the null id in the fixing commit, and the stage's next commit
-# wrote the hash. The register reads **126 rows fixed, 22 open and 1
+# carried the null id in the fixing commit, `fc53818f`, and the stage's next
+# commit, T1f.5.5.7, wrote the hash in all seven. The register reads **126 rows fixed, 22 open and 1
 # not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-09).
 #
@@ -9230,7 +9230,7 @@ look_at  = ["root"]
 note     = "Filed and fixed by S1f.5.5 (T1f.5.5.13, 2026-11-09), from the coordinator's finding of that day, *`ein saturate X.einb` does not read a `.einb`*, pre-existing (T9's base build answers the same). AGENTS.md: *every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes*; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` did (`common::load_any_or_exit`), and six did not: `saturate`, which read the path with `read_text_or_crash`, the four `render` views that parse a program and never load it (`parse_or_exit`), and `kb save`. A row per command, one witness: the run saves the witness with `ein kb save` first and reads the container (schema /16). Since the fix a parse-only view reads the program the container stores, resolved and import-flattened (`ein_einb::program_of`), so on a program that imports, `render program` and `render rules` of the container draw its imports' forms too; this witness imports nothing, and each view's drawing is the `.ein`'s"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
 date   = "2026-11-09"
 
@@ -9274,7 +9274,7 @@ look_at  = ["root"]
 note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
 date   = "2026-11-09"
 
@@ -9318,7 +9318,7 @@ look_at  = ["root"]
 note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
 date   = "2026-11-09"
 
@@ -9362,7 +9362,7 @@ look_at  = ["root"]
 note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
 date   = "2026-11-09"
 
@@ -9406,7 +9406,7 @@ look_at  = ["root"]
 note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
 date   = "2026-11-09"
 
@@ -9450,7 +9450,7 @@ look_at  = ["root"]
 note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
 date   = "2026-11-09"
 
@@ -9494,7 +9494,7 @@ look_at  = ["root"]
 note     = "Filed and fixed by S1f.5.5 (T1f.5.5.13, 2026-11-09), from S1f.5.1's finding: `ein saturate` loaded a program with `ein_ir::load_with(…, None, …)`, no base directory, so a file-relative `(import …)` was refused with the import resolver's *file-relative import needs a base directory* line, while `solve`, `oracle` and `test` loaded against the file's directory. Its source said it resolved against the working directory, which it did not, and `examples/broken/load/README.md` called the line *not expressible as a file*. The witness imports `q` from `saturate-import-mod.ein` beside it, the first corpus program a file-relative import is not refused on"
 
 [case.fixed]
-commit = "0000000"
+commit = "fc53818f"
 by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command loads a program through one path, `ein-cli`'s `common::load_held`, against the file's own directory"
 date   = "2026-11-09"
 

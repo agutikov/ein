@@ -103,7 +103,7 @@ copy does.
 
 ```text
   ein-lang (.ein)                       ── IR layer ──
-        │  parse  (ein-ir: lex + recursive descent → Ast)
+        │  parse  (ein-ir: the parser generated from ein.l / ein.y → Ast)
         ▼
   Kb  ──────────────────────────────────────────────────────  ── data model ──
    relations · rules · hrules · facts(ontology|fact|reasoning)

@@ -27,98 +27,106 @@ consequences of that framing are worth being explicit about:
 
 ## 1. Parse and load diagnostics
 
-A parse error is `{file}:{line}:{col}: unexpected input`, followed by a
-context block: the source line, then a caret under the offending column.
-
-### 1.1 EOF reports `-1:-1`
-
-An input that ends while the parser still wants more reports line `-1`,
-column `-1`, and its context block renders the **last** line of the file with
-the caret one character past its end.
+**A refused file reports every error recovery reaches**, in file order, one
+line each, `{file}:{line}:{col}: unexpected X`, where `X` is the token as
+written and, where the token has a name, the name after it (`a name`, `a
+variable`, `a keyword this form does not take`, `a token that is not a
+name`); a character no token starts with is `no token starts with X`. Under
+each error come its notes, where a ruling says more than the token does (a
+bare `_`, a string as a value, a query's lattice keyword, a retired
+`(config …)` flag), then at most three ranked repairs, `repair: Insert `)``
+or `repair: Delete `a?x``, and `and n more repairs`; a report cut at the
+recovery budget, 30 000 steps, ends with a line saying where it stopped.
+Every command exits 1 on one (`ein test`: 2, the file an `ERROR` row), and no
+repaired program is loaded. Positions are 1-based, lines split at `\n` and
+columns counted in characters (`ein_ir::grammar`, M1f S1f.5.5's swap,
+2026-11-09).
 
 ```text
-$ ein solve /tmp/t.ein          # file is: (relation r T
-/tmp/t.ein:-1:-1: unexpected input
-(relation r T
-             ^
+$ ein solve t.ein               # file is: (p a?x) (q "1")
+t.ein:1:4: unexpected `a?x`: a token that is not a name
+  repair: Delete `a?x`
+t.ein:1:12: unexpected `"1"`: a string
+  note: "1" is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"1"`
+  repair: Insert `:source`
 ```
 
-*Why.* An EOF error has no position, and the context block is built as if it
-sat on the file's **last character**: the text before the caret is everything
-up to that character, and the text after it is the character itself while the
-file is under 40 characters — each cut at the nearest newline, which renders
-as the tail of the file. It is a bad message and it is the one every
-`examples/broken/` fixture is baselined against.
+**Until the swap** a parse error was one line, `{file}:{line}:{col}:
+unexpected input`, and a context block, the source line and a caret, from the
+hand-written parser, which stopped at the first error; § 1.1 to § 1.3 were
+that block's quirks, and § 1.4 its parser's. Each went at the swap, the
+stage's default ([S1f.5.5 § The error
+text](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#the-error-text),
 [Q-M1a.3](../history/m1a_rust/open_questions.md#q-m1a3--parse-error-messages)
-option (c) — improve it — is still open.
+option (c)), and each section says what it was.
 
-### 1.2 The context window is ±40 characters, applied before the line is trimmed
+### 1.1 The end of input is where the text ends
 
-The block is built by taking 40 characters either side of the error position
-and *then* cutting to the current line. An error past column 40 therefore
-renders a **truncated** source line, with no ellipsis marking the cut:
-
-```text
-$ ein solve long.ein             # (relation aaa…60 a's… T){
-long.ein:1:74: unexpected input
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa T){
-                                        ^
-```
-
-The line begins `(relation`, and the block does not.
-
-### 1.3 The reported column is the first position with no pending whitespace-or-comment match
-
-This is the strangest one, and it was found by a fuzzer rather than by
-reading. The reported position is not where the grammar first fails; it is
-the first position at or after that point where the scanner has no *pending*
-whitespace-or-comment match.
+An input that ends while a form is open reports the position past its last
+character: the line after a final newline, column 1.
 
 ```text
-(y";"{      → 1:6   ·  the `{`
-(y";"{?     → 1:7   ·  the `?`
+$ ein solve t.ein               # file is: (relation r T and a newline
+t.ein:2:1: unexpected end of input
+  repair: Insert `)`
 ```
 
-The two inputs fail at the same place. They report different ones because the
-`;` **inside the string literal** matched the comment rule `;[^\n]*`, whose
-end is one character further along, and a pending match holds the error back
-until the scanner walks past it.
+Since M1f S1f.5.5's T1f.5.5.13 (2026-11-09): `lrpar` makes its end-of-input
+token at the end of the last token, and the report said `1:14` for the file
+above until then, wherever a newline, a space or a comment followed
+(`generated_parser::the_end_of_input_is_where_the_text_ends`). **Until the
+swap** it reported line `-1`, column `-1`, and a context block rendering the
+file's last line with the caret one past its end, which every
+`examples/broken/` fixture was baselined against.
 
-*How.* Whitespace and comments are matched at **every** position the scanner
-passes — including inside a string, and including positions no grammar rule
-is looking at — and each match is pending until the scan walks past its end.
-The reported position is the first one, at or after the failure, at which no
-match that started there or earlier ends more than one character further on.
-`ein-ir`'s `parse::death_position` computes exactly this rather than reporting
-the true failure point.
+### 1.2 There is no context block
 
-### 1.4 Ambiguity resolves to the earlier alternative
+The report names the position and the token, and prints no source line.
+**Until the swap** the block took 40 characters either side of the error
+position and *then* cut to the current line, so an error past column 40
+rendered a truncated line with no ellipsis: `(relation aaa…60 a's… T){`
+showed `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa T){` and a caret under the `{`,
+the line's `(relation` cut. The same file reports `long.ein:1:74: unexpected
+`{`: a name` since: `{` is a name character (S1f.5.4), and a name where a
+form's `)` goes is the error.
 
-Where the grammar admits two parses, the one written first in the grammar
-wins — and `relation` is written before the generic-fact alternative, and is
-a `SYMBOL` too. So the same word reads two ways depending on what follows it:
+### 1.3 The reported column is the token's
 
-```lisp
-(relation R A B)   ; a DECLARATION of R
-(relation)         ; a FACT of relation
-```
+An error is placed at the start of the token the parse could not take, or of
+the character no token starts with. **Until the swap** it was the first
+position at or after the failure with no *pending* whitespace-or-comment
+match: whitespace and comments were matched at every position the scanner
+passed, inside a string too, so `(y";"{` reported `1:6` and `(y";"{?`
+`1:7`, the `;` in the string a comment one character longer
+(`parse::death_position`, which went with `parse.rs`). Both report `1:2`
+since, at `y"`, one token that is not a name: a token ends only at a space, a
+paren, a comment or the end of input ([`00_ebnf.md`
+§ 1](ir/03-ein-lang/00_ebnf.md#1-lexical-grammar), fact 5).
 
-The second is not the ambiguity resolving the other way; it is the only parse,
-because a declaration needs a name.
+### 1.4 No ambiguity, and a tie goes to the earlier rule
 
-**A reserved word is a keyword only as a whole word** (M1e2 S1e2.2.22,
-2026-11-05, the user's ruling on
-[Q-M1e2.17](../../plans/m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end)).
-`SYMBOL`'s reserved-word exclusion is a negative lookahead with a **word
-boundary**, which is why `rulex` is a legal symbol at all where `rule-x` is a
-parse error ([`00_ebnf.md` §1](ir/03-ein-lang/00_ebnf.md)), and a literal ends
-at the same boundary, so `(rulex (?a) :match (q ?a) :assert (q ?a))` is a
-fact named `rulex`, as `(rulex A)` is. Until that stage a literal matched as a
-prefix, and the first was a rule named `x`: the earlier alternative won the
-same six letters, and a name that starts with a keyword was read as the
-keyword and the rest of the name wherever the rest fitted, `(neqw ?x)` in a
-rule the guard `(neq w ?x)` (W22). A trace word a word character follows,
-`(trace (stepx …))`, is a parse error since, a trace holding only events.
+`ein.y` has no conflict: the parser's tables are built from it at build time
+and a conflict fails the build, so no input has two parses. The lexer's one
+choice is between two rules that match the same length, where the rule
+written first wins: each reserved word and keyword is written before `NAME`
+and `KEYWORD`, so `neq` is the token `'neq'` and `neqw`, the longer match, a
+`NAME` ([`00_ebnf.md` § 1](ir/03-ein-lang/00_ebnf.md#1-lexical-grammar),
+fact 1). `(relation R A B)` is a declaration and `(relation)` a parse error,
+a declaration needing a name.
+
+**Until the swap** the grammar had alternatives the parser tried in order,
+the one written first winning: `relation` was written before the generic
+fact and was a `SYMBOL` too, so `(relation)` was a fact of `relation`. From
+M1e2 S1e2.2.22 (2026-11-05, the user's ruling on
+[Q-M1e2.17](../../plans/m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end))
+a reserved word was a keyword only as a whole word, `SYMBOL`'s exclusion a
+lookahead with a word boundary, so `rulex` was a symbol where `rule-x` was a
+parse error; until then a literal matched as a prefix, and
+`(rulex (?a) :match (q ?a) :assert (q ?a))` was a rule named `x` and
+`(neqw ?x)` in a rule the guard `(neq w ?x)` (W22). Since the swap `rule-x`
+is a name too, the name rule's `-` a name character, which overrides
+Q-M1e2.17 (i)(a).
 
 ### 1.5 Loader messages about a top-level form end in `at None`
 
@@ -129,13 +137,17 @@ Every error the loader raises interpolates the form's source location, and a
 unknown relation `foo` at None
 ```
 
-**Most `examples/broken/load/` fixtures** have a message that ends this way —
-`grep -L 'at None' examples/broken/load/*.expected` names the ones that do
-not, and on 2026-08-31 that was **11 of 41**. They are the ones whose error is
-raised somewhere that *has* a location, or nowhere that has one at all:
-`macro_arity_mismatch` (inside macro expansion, on a nested node — it prints a
-real `Loc(file=…, line=6, col=20)`), the two `config_*`, the two `import_*`,
-`unimported_std_macro`, `derivation_cycle`, and the four `expect_*` M1c added.
+**Fourteen of the 31 `examples/broken/load/` fixtures** have a message that
+ends this way, and `grep -L 'at None' examples/broken/load/*.expected` names
+the seventeen that do not (2026-11-09): the error is raised somewhere that
+*has* a location, or nowhere that has one at all — `macro_arity_mismatch`
+(inside macro expansion, on a nested node — it prints a real `Loc(file=…,
+line=6, col=20)`), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
+the two `import_*` that name no module found, the two `expect_*` M1c added,
+the solve, query and region claims' five, and the four `reserved_open_*`,
+whose import of `reserved_open_direct.ein` is refused at its parse since M1f
+S1f.5.5's swap. On 2026-08-31 it was 11 of 41; the swap moved twenty-one of
+them to `examples/broken/`, each refused at the parse since.
 
 *Why.* [Q-M1a.6](../history/m1a_rust/open_questions.md#q-m1a6--at-none-in-loader-messages)
 — a genuine usability bug, kept deliberately so that fixing it is one
@@ -530,7 +542,7 @@ names the failure's class, and exiting non-zero:
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
-| a conclusion no fact can hold: an `:assert` that is not a fact (an argument that is a keyword pair or a wildcard at the conclusion's top level until M1f S1f.5.5's swap refused each at the parse) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
+| a conclusion no fact can hold: since M1f S1f.5.5's swap only a macro's body that is a bare parameter, called in an `:assert`, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
@@ -554,9 +566,10 @@ Python class, the Python IR's class names, and no word of which rule. It is
 one line from every command now, the rule and the slot as the program writes
 them, in three forms:
 
-- `rule 's': its :assert writes _ as an argument of tag, and no fact can
-  hold it — an argument is a name, a string, an int, a variable its :match
-  binds, or a fact (relation argument …)` (a wildcard `_`, a keyword pair such
+- *A record since S1f.5.5's T5:* `rule 's': its :assert writes _ as an
+  argument of tag, and no fact can hold it — an argument is a name, a string,
+  an int, a variable its :match binds, or a fact (relation argument …)` (a
+  wildcard `_`, a keyword pair such
   as `:source "x"`, at the conclusion's top level; a range until M1e2
   S1e2.2.20, which refused one in a rule at load, and M1f S1f.5.3, which
   retired the token, § 4.8; a keyword pair inside a nested conclusion until
@@ -579,10 +592,13 @@ them, in three forms:
 The run still stops at the rule's first firing, exit 1, so a rule that never
 fires is never checked; an hrule's template that builds no fact still
 proposes nothing, in silence. `ein-cli/tests/cli_semantics.rs`'s
-`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the four
-shapes under `ein saturate` and `ein solve` (eight until M1e2 S1e2.2.20, the
-range among them, and seven until S1e2.2.24, a nested keyword pair and the
-two relation variables among them). A **string** reached this line
+`a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` holds the five
+shapes that reached the first line until M1f S1f.5.5's swap, each a parse
+error since, under `ein saturate` and `ein solve` (four shapes until the swap,
+eight until M1e2 S1e2.2.20, the range among them, and seven until S1e2.2.24,
+a nested keyword pair and the two relation variables among them), and
+`ein-infer`'s `compile_semantics::the_compile_and_firing_lines_a_macro_still_reaches`
+the second, which a macro still reaches. A **string** reached this line
 until the same stage, which lowered a string in a rule as the loader lowers
 one in a fact, the symbol it names (M1e2's W18;
 [`01_grammar.md`'s `STRING` row](ir/03-ein-lang/01_grammar.md)).
@@ -985,6 +1001,16 @@ spelling, which no `_` reaches since. A variable head no parameter binds,
 `(?r a)`, still did until S1e2.2.24, which refuses it at load (§ 4.9).
 
 ### 4.9 A rule shape that reads nothing — M1e2 S1e2.2.24
+
+**Since M1f S1f.5.5's swap** (2026-11-09) the grammar refuses three of the
+shapes below at the parse, with the file, line and column, wherever a program
+writes them: `_` (S1f.5.1), a keyword pair inside a term (S1f.5.11), and a
+premise that is not a form (`ein.y`'s `Premise`). The loader's lines stay for
+the rest, which the grammar cannot see (a form as a guard's argument is a
+`Term`, and which variables a premise binds is the loader's), and for a
+premise that is not a form where a macro's body puts it, `(macro id (?x) ?x)`
+called as `(id foo)`, which S1f.5.5's T5 kept
+(`grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`).
 
 Each shape below loaded until 2026-11-05 and read nothing, in silence: no
 fact could make it hold, or it held whatever the facts. On the user's rulings

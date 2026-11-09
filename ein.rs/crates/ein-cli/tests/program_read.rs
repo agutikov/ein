@@ -87,7 +87,9 @@ fn argv<'a>(
 /// What two runs of one command are compared on: the path each was handed
 /// aside, which a header or a label echoes, and the lines that say what the
 /// run read and how long it took (`saturate`'s `input:`, its size, `parse:`,
-/// `kb load:` or `open:`), each number a line times masked.
+/// `kb load:` or `open:`), each number a line times masked: one before `ms`,
+/// and `ein test`'s `(0.01 s)`, which T1f.5.5.13's first gate read as the
+/// same twice by chance and T7's did not.
 fn comparable(text: &str, path: &str) -> String {
     let mut out = Vec::new();
     for line in text.replace(path, "{FILE}").lines() {
@@ -106,8 +108,10 @@ fn comparable(text: &str, path: &str) -> String {
             .iter()
             .enumerate()
             .map(|(i, w)| {
-                let timed = words.get(i + 1).is_some_and(|n| *n == "ms");
-                if timed && w.parse::<f64>().is_ok() {
+                let timed = words
+                    .get(i + 1)
+                    .is_some_and(|n| matches!(*n, "ms" | "s" | "s)"));
+                if timed && w.trim_start_matches('(').parse::<f64>().is_ok() {
                     "#"
                 } else {
                     w

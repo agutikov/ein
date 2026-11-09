@@ -220,8 +220,9 @@ nodes too). That is what makes the property-tag idiom un-mysterious: it is
 not special syntax, it is a one-slot relational node.
 
 **De jure, too.** A unary *declaration* `(relation adult Person)` parses
-and loads, as does the bare `(relation opaque)` — the grammar takes name +
-`SYMBOL*` — see
+and loads, as does the bare `(relation opaque)` — the grammar takes a name
+and zero or more names (`Relation ::= '(' 'relation' DeclName Names …`;
+`SYMBOL*` until M1f S1f.5.5's swap) — see
 [`../03-ein-lang/01_grammar.md` §relation declarator](../03-ein-lang/01_grammar.md).
 The property tags above simply don't bother: they are auto-vivified
 open-world relations, since the same atom is usually also a *rule* name.
@@ -421,9 +422,10 @@ wrapper is pure noise. M1's canonical form (b) is therefore **flat**:
 (relation R (T1 T2))            ;; rejected — inner group is empty noise
 ```
 
-Tokens disambiguate without the wrapper: `R` and `Ti` lex as SYMBOL;
-any trailing `:kw value` pairs lex as KEYWORD; a `(...)` trailing
-group only appears under form (a) when properties are bundled.
+Tokens disambiguate without the wrapper: `R` and `Ti` lex as `NAME`
+(`SYMBOL` until M1f S1f.5.5's swap); a trailing keyword is `:why`, the one
+a relation takes; and the wrapped form is a parse error since the swap, a type
+being a name.
 
 The grammar/parser flattening + example/doc migration is owned by
 `P1.3 S1.3.0 R10`.

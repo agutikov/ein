@@ -30,22 +30,33 @@ was dropped by the compiler, in silence, until S1f.5.5's swap refused it;
 S1f.5.11's T1f.5.11.2 retired the drop.
 
 **Where a malformed primitive is caught** is one of two places, and the split
-is not stylistic:
+is not stylistic: the grammar, where a rule writes the primitive, and the
+compiler, where a macro's body does.
 
 | primitive | arity | refused by |
 |---|---|---|
-| `not` | 1 | the **grammar** — `NotForm ::= '(' 'not' Value KwPair* ')'` |
-| `neq` | 2 | the **grammar** — `NeqForm ::= '(' 'neq' Value Value ')'` |
-| `and` / `or` | 1+ | the **grammar** — `Value+`, so `(and)` is a parse error and `(and X)` is legal, if degenerate |
-| `eq` | 2 | the **compiler**, with a positioned `CompileError` — M1e [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal), which is where the whole class was checked ([Q-M1e.18](../../../history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments)) |
-| `absent` | 1 | same |
-| `false` | 0+ | nothing — extra args are ignored by design, `(false)` being a verdict and not a query |
+| `not` | 1 | the **grammar** — `Connective ::= '(' 'not' Pattern ')'` in a premise, `Conclusion ::= '(' 'not' Pattern ')'` in a conclusion: one pattern, and no keyword after it |
+| `eq` / `neq` | 2 | the **grammar** — `Guard ::= '(' 'eq' Term Term ')' \| '(' 'neq' Term Term ')'` |
+| `absent` | 1 | the **grammar** — `'(' 'absent' Premise ')'` |
+| `and` / `or` | 1+ | the **grammar** — `Premises ::= Premise \| Premises Premise`, so `(and)` is a parse error and `(and X)` is legal, if degenerate |
+| `false` | 0 | the **grammar** in a conclusion, `'(' 'false' ')'`; as a premise's head `false` is a position word, a pattern over the relation `false` |
 
-`eq` and `absent` are plain `SYMBOL`s so a rule can pattern-match on them;
-that is why the grammar has no production to pin, and why the check moved to
-the one place that reads the form. Relation patterns (`(?r ?a ?b)`,
-`(co-located ?a ?b)`) stay generic at the grammar level; the loader and
-compiler enforce well-formedness against the rules below.
+**Since M1f S1f.5.5's swap** (2026-11-09) each row is a production of
+[`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), the grammar
+[`00_ebnf.md` § 2](00_ebnf.md#2-phrase-grammar) prints. A macro's body is a
+`Template`, which takes any head at any arity, so `(macro two (?a ?b) (absent
+?a ?b))` reaches the compiler, whose arity lines for `eq` and `absent` stay,
+each with a positioned `CompileError` (M1e
+[S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),
+[Q-M1e.18](../../../history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments);
+`compile_semantics::the_compile_and_firing_lines_a_macro_still_reaches`).
+**Until the swap** the hand-written grammar pinned `not` (`NotForm ::= '('
+'not' Value KwPair* ')'`), `neq` (`NeqForm`) and `and` / `or` (`Value+`),
+and `eq` and `absent` were plain `SYMBOL`s a rule could pattern-match on,
+checked by the compiler alone; `false` took any arguments, ignored by design.
+Relation patterns (`(?r ?a ?b)`, `(co-located ?a ?b)`) stay generic at the
+grammar level; the loader and compiler enforce well-formedness against the
+rules below.
 
 | construct                | example                                | reserved? | meaning                                         |
 |--------------------------|----------------------------------------|-----------|-------------------------------------------------|
@@ -58,9 +69,9 @@ compiler enforce well-formedness against the rules below.
 | **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
-| **equality fact**        | `(= ?a ?b)`                             | ✓ EQ     | matches a **stored** `(= …)` fact — see below     |
+| equality fact            | `(= ?a ?b)`                             | —         | matches a **stored** `(= …)` fact — see below; `=` is a name since M1f S1f.5.5's swap (S1f.5.4's name rule), and this row's mark was ✓ EQ, the hand-written grammar's reserved head, until then |
 | **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the two registered predicates: compare the bindings |
-| **membership check**     | `(is-a ?a ?T)`                          | ✓ RELATION | ordinary relation pattern                      |
+| membership check         | `(is-a ?a ?T)`                          | —         | ordinary relation pattern; this row's mark was ✓ RELATION until M1f S1f.5.5's swap, though no production was ever `is-a`'s |
 | ~~`:where` filter~~      | `:where (transitive ?r) (neq ?a ?b)`    | —         | **refused at the parse** since M1f S1f.5.5's swap, as every keyword a rule does not take and every keyword pair inside a term is (S1f.5.11, Q-M1e2.28): write each guard as a premise beside the patterns, `(and (?r ?a ?b) (?r ?b ?c) (neq ?a ?c))`. This row read *type / inequality / structural-predicate filters*; Q32 (2026-05-20) dropped `:where` for the positional premise, and the compiler dropped a pair written anyway, in silence, until the swap; S1f.5.11's T1f.5.11.2 retired the drop |
 | relation-property tag    | `(transitive ?r)`                       | —         | an ordinary premise matching a stored property fact, a join and not a test; this row wrote it `:where (transitive ?r)` until S1f.5.11 |
 
@@ -77,8 +88,8 @@ pair anywhere in a premise is refused at the parse** since M1f S1f.5.5's swap
 one inside a pattern inside a pattern, `(box (a b :k v))`, matched nothing
 until S1e2.2.24 refused it at load.
 
-The ✓-marked heads have dedicated grammar rules with fixed arities, so
-`(neq ?a)` is a parse error. **A misspelled relation is not**: `instance` has
+The ✓-marked heads, and `eq`, `neq` and `absent`, have productions with
+fixed arities, so `(neq ?a)` is a parse error (the table above). **A misspelled relation is not**: `instance` has
 not been a grammar-reserved head since S1.7.6, so `(instnce ?a ?T)` is a
 perfectly good generic pattern over a relation that auto-vivifies, and a rule
 containing it loads, compiles and never fires. Measured, M1e S1e.2.2: exit 0,
@@ -93,12 +104,14 @@ whole stdlib.
 
 ### `=` is a fact head, not a unifier
 
-The ✓ on the equality row marks a **grammar** rule, not an engine step, and
-the distinction catches people out because the two spellings look
-interchangeable and are not:
+`=` is a name like any other since M1f S1f.5.5's swap (S1f.5.4's name
+rule): `(= a b c)` is a fact of the relation `=`, and until the swap the
+equality row's ✓ marked a reserved head of the hand-written grammar, two
+arguments and a `:source`, not an engine step. The distinction catches
+people out because the two spellings look interchangeable and are not:
 
-- **`(= ?a ?b)`** is an ordinary relation pattern whose head happens to be the
-  reserved `=`. It matches the `(= …)` *facts the KB holds* — including ones a
+- **`(= ?a ?b)`** is an ordinary relation pattern whose head happens to be
+  `=`. It matches the `(= …)` *facts the KB holds* — including ones a
   rule derived, since `:assert (= ?a ?a)` is a legal conclusion — and nothing
   else. A rule `:match (and (p ?a ?b) (= ?a ?b))` does **not** fire on
   `(p x x)`; it fires once `(= x x)` is in the KB.

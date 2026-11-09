@@ -52,10 +52,11 @@ Each top-level form is classified by its **head**: a head in the table
 below is a declarator (`trace` is the engine-emitted sibling); **any other
 head is a fact** — "detect facts by *not* being reserved" (the author's
 design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / `query` /
-`solve` / `config` / `trace` / `macro` / `import` are SYMBOL-excluded, so a malformed declarator — e.g.
-`(query)` with no kw-pairs — is a *parse* error; `relation` is the one
-exception, kept a plain SYMBOL so rules can pattern-match
-`(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
+`solve` / `config` / `trace` / `macro` / `import` are reserved words, never a name, so a malformed
+declarator — e.g. `(query)` with no clause — is a *parse* error; `relation` is a position word, a
+name wherever a name goes so rules can pattern-match `(relation ?R ?A ?B)`, and its malformed
+form is a parse error too since M1f S1f.5.5's swap, where the loader rejected it until then,
+`relation` having been a plain `SYMBOL`),
 and the loader
 ([`ein_ir::from_ir`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs)) routes by the
 same set.
@@ -89,9 +90,9 @@ program uses and never binds
 ([Q-M1f.7](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders)
 (b)); an import's `:as` takes the same guard since then. The engine's three
 writeback rule names are refused wherever a program writes them
-([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The SYMBOL-excluded keywords
-(`not` / `and` / `or` / `neq` / the declarators) can't be written as a declared
-name at all (parse error). The guard is about *binding* a name; a **fact** may
+([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The twelve reserved words
+(`not` / `and` / `or` / `neq` / the declarators but `relation`) can't be written as a declared
+name at all (parse error; *`SYMBOL`-excluded* until M1f S1f.5.5's swap). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `unknown` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
 ([`stdlib/macro.ein`](../../../../stdlib/macro.ein)). The macro that *was*
@@ -127,14 +128,18 @@ lexer's set is twelve since M1e2 S1e2.1a.4, with the `solve` declarator.)
 | | the question it answers | membership | how it fails |
 |---|---|---|---|
 | `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` (the two dunders since M1f T1f.5.5.11) | a **load** error, at the declaration |
-| `ein-ir`'s `LEXER_KEYWORDS` — [`00_ebnf.md`](00_ebnf.md) | what may not **lex** as a `SYMBOL`? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever the word appears |
+| `ein_ir::grammar::RESERVED_WORDS` — [`00_ebnf.md`](00_ebnf.md) (`ein-ir`'s `LEXER_KEYWORDS` until M1f S1f.5.5's swap, the printer's `ein_core::text::LEXER_KEYWORDS` since) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever a name goes |
 
 Four names are in both and neither set contains the other. **`open` and
-`relation` are the two that decide it**: both must lex as ordinary `SYMBOL`s,
-because `(open ?R)` is a fact head the loader routes and `(relation ?R ?A ?B)`
-is a pattern rules match. `lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine`
-holds the twelve, the four-name intersection, and both of those. They were
-eleven until M1e2 S1e2.1a.4 added `solve`.
+`relation` are the two that decide it**: both must read as names, because
+`(open ?R)` is a fact head the loader routes and `(relation ?R ?A ?B)` is a
+pattern rules match; since M1f S1f.5.5's swap each is a position word, a token
+of its own that `ein.y` takes wherever a name goes.
+`grammar::tests::the_reserved_words_are_the_printers` holds the twelve and
+that no position word is one `NAME`;
+`lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine` held the
+twelve, the four-name intersection, and that both lexed as `SYMBOL`s, until the
+swap. They were eleven until M1e2 S1e2.1a.4 added `solve`.
 
 ### A bare `_` and `?_` — reserved, and written nowhere (M1f S1f.5.1)
 
@@ -318,7 +323,8 @@ no-op, which stopped being survivable when a keyword could carry a *test*.
 
 - **`model`** — the head of an `:expect` value, and *not* reserved. It is read
   structurally in that one position and nowhere else, so a relation, rule or
-  atom called `model` is unaffected and needs no SYMBOL exclusion. That is
+  atom called `model` is unaffected and needs no exclusion (a position word
+  since M1f S1f.5.5's swap, a name wherever a name goes). That is
   most of why the shape is `(model …)` rather than a new form: the grammar
   did not have to learn anything
   ([`01_grammar.md` § Query](01_grammar.md#query)).
