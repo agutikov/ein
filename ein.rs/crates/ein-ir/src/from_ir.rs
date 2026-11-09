@@ -578,8 +578,11 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
                 // A query's claim lists its goal's instances, and `eq` and
                 // `neq` are relations a goal may ask about (M1f S1f.5.7,
                 // Q-M1e2.26): their facts are computed, so no declaration or
-                // fact makes them one, and the check below is the goal's.
+                // fact makes them one, and the check below is the goal's. So
+                // is an `(absent …)` the goal writes, whose instance a class
+                // lists beside the rest (S1f.5.7's T1f.5.7.6, W56, Q-M1f.35).
                 let known = is_predicate(fact.relation)
+                    || fact.relation == "absent"
                     || terms
                         .syms
                         .get(fact.relation)

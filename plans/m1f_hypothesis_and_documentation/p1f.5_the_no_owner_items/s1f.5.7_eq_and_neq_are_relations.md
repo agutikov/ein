@@ -18,7 +18,8 @@ every move listed, ten rows filed (W50 to W55) and W24's two restated, five ques
 Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal (`e5ae6946`); T1f.5.7.3 done
 ([its record](#t1f573-record-2026-11-09)), premises (`6841faff`); T1f.5.7.4 done ([its
 record](#t1f574-record-2026-11-09)), conclusions (`31a68fdf`); T1f.5.7.5 done ([its
-record](#t1f575-record-2026-11-09)), the pages, and W56 filed.
+record](#t1f575-record-2026-11-09)), the pages, and W56 filed (`c35135c9`); T1f.5.7.6 done ([its
+record](#t1f576-record-2026-11-09)), a goal's `(absent …)` judged.
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -494,6 +495,17 @@ and `verdict::goal_bindings` never judges it, and a claim listing the class's `(
 `examples/ein-bugs/wrong-answers/goal-absent.ein`, `now` the claim's refusal at `31a68fdf`. No corpus goal writes an
 `(absent …)`, `forall` or `unknown` (a scan of every `:goal` in the five roots, 2026-11-09). The register reads **139
 fixed, 20 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+## T1f.5.7.6 record (2026-11-09)
+
+**A goal's `(absent …)` is judged** (W56, Q-M1f.35): `verdict::goal_bindings` judges each guard lifted out of the
+goal's plan against the state, as the boundary judges a rule's, so a row the state refutes is none; and a query's claim
+may list a goal's `(absent …)` instance, as it lists a guard's (`from_ir::validate_queries`). `W56/goal-absent` answers
+its right: one row, `?y = a`, and the claim holds, exit 0. `verdict::tests::a_goals_absent_is_judged` holds the guard
+at the top level, alone, and in a `forall`'s nested shape. Against `dc4c0bdc`'s build only the stage's programs move,
+the new witness among them (`build/s1f.5.7/xcheck`, 533 files, 513 the same, 2026-11-09). Banked: `corpus_exits.txt`
+the witness's two cells 1 → 0, `corpus_shapes.md5` its 7 digests moved and 21 added, and its region block. The register reads **140 fixed, 19 open and 1 not
+wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 
 ## For the merge
 

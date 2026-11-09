@@ -839,6 +839,12 @@
 # fixed, 20 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
 # | sort | uniq -c`, 2026-11-09).
 #
+# **S1f.5.7's T1f.5.7.6 fixed W56 the same day**: the goal's evaluation
+# judges each guard lifted out of the goal's plan against the state, and a
+# query's claim may list a goal's `(absent …)` instance. The register reads
+# **140 rows fixed, 19 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -10175,10 +10181,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1f.35"]
 witness  = "examples/ein-bugs/wrong-answers/goal-absent.ein"
-status   = "open"
-open_because = "The goal is compiled as a rule's `:match` is, its top-level `(absent …)` lifted out of the plan for the closure/world boundary to judge, and the goal's evaluation (`verdict::goal_bindings`) never judges it, so `?y = b` is a row though `(q b)` holds; and the loader refuses a query's claim naming `absent`, which no declaration makes a relation. S1f.5.7's T1f.5.7.6 judges each lifted guard against the state and lets a claim list a goal's `(absent …)` instance, as it lists a guard's (Q-M1f.35)"
+status   = "fixed"
 look_at  = ["summary"]
-note     = "Filed by S1f.5.7 (T1f.5.7.5, 2026-11-09), outside its case: found where the stage's test of a goal's empty row (`cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`) wrote `(query :goal (absent (q ?x)))`, which answered one row over a state that holds a `q`. No corpus goal writes an `(absent …)`, `forall` or `unknown` (S1f.5.7's scan of every `:goal`, 2026-11-09). With no claim the read-out answers two rows and suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`, which the loader refuses"
+note     = "Filed by S1f.5.7 (T1f.5.7.5, 2026-11-09), outside its case: found where the stage's test of a goal's empty row (`cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`) wrote `(query :goal (absent (q ?x)))`, which answered one row over a state that holds a `q`. No corpus goal writes an `(absent …)`, `forall` or `unknown` (S1f.5.7's scan of every `:goal`, 2026-11-09). With no claim the read-out answers two rows and suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`, which the loader refuses. Fixed by T1f.5.7.6 (2026-11-09): `goal_bindings` judges the goal's lifted guard, so the one row is `?y = a`, and the claim loads and holds, exit 0"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.6): a goal's lifted `(absent …)` is judged against the state, and a query's claim may list its instance (Q-M1f.35)"
+date   = "2026-11-09"
 
 [case.wrong]
 run     = "saturate"
@@ -10186,6 +10196,14 @@ by      = "command"
 why     = "`ein saturate` and `ein solve` on the witness, release and debug, at 6841faff (2026-11-09): refused at load, *:expect names absent, which no declaration or fact makes a relation*, exit 1; with no claim, `ein solve` answers the goal's one class with two rows, `?y = a` and `?y = b`"
 exit    = 1
 refused = "kb load error: :expect names absent, which no declaration or fact makes a relation"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
 
 [case.right]
 reading   = "`(absent P)` is negation as failure, judged against the state (`absent_semantics.md`), in a goal as in a rule's premise, and a query's class is the goal's instances under its rows (`region_language.md` § 5), an `(absent …)`'s among them, which a claim may list as it lists a guard's (Q-M1f.35)"
@@ -10195,6 +10213,12 @@ exhausted = true
 derived   = "R is root's state alone. The goal's one row is `?y = a`, `(q b)` refuting `?y = b`; its class is `(absent (q a))` and `(p a)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
 
 [case.now]
-run     = "solve"
-line    = "all"
-refused = "kb load error: :expect names absent, which no declaration or fact makes a relation"
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
