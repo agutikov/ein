@@ -7,7 +7,8 @@ in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--doc
 **Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Running since
 2026-11-09**: T1f.5.16.1, the census, done ([its record](#t1-record-2026-11-09)); Q1 defaulted (a), and three findings,
 one of them S1f.5.2's item, which T1f.5.16.5 fixed before T2 ([its record](#t5-record-2026-11-09)): a text's line
-breaks keep the row's column, ten read-out digests moved, no answer.
+breaks keep the row's column, ten read-out digests moved, no answer. T1f.5.16.2, the page and the live examples, done
+([its record](#t2-record-2026-11-09)).
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s swap and the non-grammar halves after it
 ([§ The order](README.md#the-order), item 8), so that the census is taken, and the examples are written, in the
 final grammar; and [S1f.5.15](s1f.5.15_rule_priority.md), done, whose `strata` row the page documents.
@@ -618,6 +619,39 @@ T4 has no head to edit.
   extended to `ein oracle`.
 - M1e2's `read_out_examples.md` frozen with its banner.
 - No output moves.
+
+### T2 record, 2026-11-09
+
+**The page**, [`docs/kernel/inference/read_out.md`](../../../docs/kernel/inference/read_out.md), current and with no
+banner, written from T1's census in the spec's twelve sections. Its row tables are marked, `<!-- rows: NAME -->`, one
+per printer section: `describe` (a bare `ein solve`, `--count`'s subset and `ein oracle`), `mode`, `monotone`,
+`lattice`, `strata`, `universe`, `empty` (why R is empty), `queries`, `claims`, `clock` (`-s` and `-t`) and `oracle`
+(`the cube`). Each row has the spec's six columns, and no row table quotes a printed value. A **kind** of `—` marks a
+row that counts nothing (`asked`, a verdict on a claim). The **summary** column names the field whose number the row
+prints, in a path notation the page defines: `[]` every element, `[k]` the element paired with the k-th row of that
+label, `[q]` the query a row is under, `[i]` a numbered row's own number less one. The fields no row prints as itself
+(a word field, a state's listing fields, `stopped.layer` per route) are a marked table of their own, § 11.2, and the
+owners of the other five keys a third, § 11.1. § 6 names the two objects called *model* (Q1 (a), Q-M1f.18), and
+`glossary.md`'s Model entry says the same where it said the read-out prints *the recorded KB*. Findings (a) and (b)
+are stated where their rows are (`route`, § 11.2's `region.licences` and `region.stopped.layer`). The clock rows'
+masked run is a marked block in § 9, for T3's test to compare.
+
+**The live examples**, [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md),
+written by `utils/read_out_examples.py`, re-pointed: 41 blocks, 40 of them whole runs, where M1e2's page had 32 and 31. X1 to
+X13 keep their numbers, headings and anchors, their prose re-voiced as reference and its plan links re-pointed; X2
+gains `--monotone` and `-y`; four new sections print every label no block printed: X14
+(`features/07_unstratifiable.ein`, describe and `--monotone`: `cycle`, `order`, `stale`, `strata`, `negative cycle`,
+`monotone`, `bit`), X15 (`features/01_not_and_absent.ein`: `…` past four stale nodes), X16
+(`ein-bugs/zebra2-bad.ein` and `ein-bugs/wrong-answers/core-search-cut.ein`: `source`, `core search`) and X17 (two
+`ein oracle` runs: `the cube`). `read_out_examples.rs` reads the live page, and its caption parser takes `ein oracle`:
+it checks the 40, holds that one is an oracle's, and passed in 21 s (release, 2026-11-09). The `…` past four sites
+is printed by no corpus program (T1's census), so the label `…` is held by the stale rows' `…`, which shares it.
+
+**M1e2's `read_out_examples.md` is frozen**: one banner line under its title, *frozen at `f1a71ec4`*, the commit
+before this one, where `read_out_examples.rs` last held it; nothing else in it moved, so its 23 inbound links from
+M1e2's records still cite what they saw.
+
+No output moved: the generator wrote no block the binary does not print, and `read_out_examples.rs` holds each.
 
 ### Task T1f.5.16.3 — the label list, and the test
 

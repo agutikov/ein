@@ -390,10 +390,13 @@ replaced by **discharged**.
 The **positive** part of a solution's state **minus the positive part of the
 initial KB** — the KB as loaded, before the first saturation. So a model
 carries no `(not …)`, nothing the file stated and nothing the loader wrote:
-it is what the puzzle did not say and the solution established. Distinct from
-the recorded KB, which is what the read-out currently prints. A query sees a
-model's **projection**; models with one projection form a **projection
-class**.
+it is what the puzzle did not say and the solution established. `ein solve
+-P` prints it. Distinct from a listing's `(model …)`, the region language's
+claim form, which holds a state's facts over the candidates' relations,
+root's included: the word names two objects, and
+[`inference/read_out.md` § 6](inference/read_out.md#6-the-listing) says which
+surface prints which (M1f S1f.5.16, Q-M1f.18). A query sees a model's
+**projection**; models with one projection form a **projection class**.
 
 ### Obligation
 A rule that asserts the verdict atom `(open ?R)` while a witness is

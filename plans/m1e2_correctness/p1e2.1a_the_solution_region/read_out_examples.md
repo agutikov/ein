@@ -1,5 +1,7 @@
 # The read-out in real runs — the examples for T1e2.1a.5.1
 
+> **Frozen at `f1a71ec4`** (M1f [S1f.5.16](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md), 2026-11-09): no test reads this page since, and its blocks are what the binary printed then. The live golden page is [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md), written by the same script beside the read-out reference.
+
 **Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), tasks T1e2.1a.5.1 and
 T1e2.1a.5.2. The page diff these illustrate is [`read_out.md`](read_out.md).
 **Status:** written 2026-10-16 for the user to read with the page diff,
