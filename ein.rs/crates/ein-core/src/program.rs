@@ -57,6 +57,15 @@ pub struct Program {
     /// The `(solve …)` block, at most one — the lattice every query asks about.
     pub solve: Option<Solve>,
     pub config: Option<SolverConfig>,
+    /// **The program's names, sorted by text**: what a variable no premise
+    /// binds ranges over in an `eq` or `neq` guard (M1f S1f.5.7, on the
+    /// user's ruling of 2026-11-07 on Q-M1e2.26). It is `ein-infer`'s
+    /// `invariant::program_names`, the list H's candidates are built from,
+    /// and the same in every state of the program (the M1 alive-set
+    /// invariant), so it is computed once, by the first guard that needs it
+    /// (`ein_infer::predicates::domain`), and shared by every fork. A load
+    /// that changes the registries ([`crate::Kb::program_mut`]) clears it.
+    pub domain: std::sync::OnceLock<Box<[crate::Value]>>,
 }
 
 impl Program {

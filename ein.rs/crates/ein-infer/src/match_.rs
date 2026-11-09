@@ -594,7 +594,7 @@ impl Matcher {
     /// still counts towards the ordinal.
     fn walk(&mut self, c: Ctx<'_>, w: Walk, f: Emit<'_>) -> ControlFlow<()> {
         ein_core::counters::bump(|c| c.walk += 1);
-        let (terms, ast, plan) = (c.terms, c.ast, c.plan);
+        let plan = c.plan;
         let (steps, i, ordinal, skip) = (w.steps, w.i, w.ordinal, w.skip);
         if i == steps.len() {
             self.last_ordinal = ordinal;
@@ -612,13 +612,7 @@ impl Matcher {
         }
         match plan.steps(steps)[i] {
             Step::Rel(step) => self.rel_step(c, w, step, f),
-            Step::Guard { pred, args } => {
-                if self.guard_holds(terms, ast, plan, pred, args) {
-                    self.walk(c, w.at(i + 1, ordinal), f)
-                } else {
-                    ControlFlow::Continue(())
-                }
-            }
+            Step::Guard { pred, args } => self.guard(c, w.at(i + 1, ordinal), pred, args, f),
             Step::Absent { sub } => {
                 // Negation as failure *inside a negative query* — a `forall`'s
                 // `(absent (and G (absent B)))`. It runs in this same binding
@@ -829,13 +823,35 @@ impl Matcher {
 
     // ── Guards ─────────────────────────────────────────────────────
 
-    /// Evaluate `eq` / `neq` against the current bindings.
+    /// An `eq` / `neq` guard: a relation whose facts are computed, never
+    /// stored (M1f S1f.5.7, the user's ruling of 2026-11-07 on Q-M1e2.26).
     ///
-    /// The arguments are raw IR nodes resolved at *runtime* — see
-    /// [`crate::plan::GuardArg`] — and an unbound variable resolves to a null
-    /// that is equal to another unbound one and to nothing else. That is not a
-    /// curiosity: `(eq ?a ?b)` on two unbound variables passes.
-    fn guard_holds(&self, terms: &Terms, ast: &Ast, plan: &Plan, pred: Pred, args: Span) -> bool {
+    /// With both sides bound it is a test. A side that is a variable nothing
+    /// bound is **bound by the guard**, as a relation premise binds it:
+    ///
+    /// - `eq` binds it to the other side's value, and with both sides free
+    ///   gives every name of the program paired with itself;
+    /// - `neq` gives every name of the program but the other side's value, and
+    ///   with both sides free every ordered pair of two different names.
+    ///
+    /// "The program's names" is [`crate::predicates::domain`]. The compiler
+    /// puts a guard after the relation premise that binds its variable, where
+    /// one does ([`crate::compile`]'s `Seq`), so a variable is free here only
+    /// where nothing in the conjunction binds it.
+    ///
+    /// Until S1f.5.7 an unbound variable resolved to a null, equal to another
+    /// unbound one and to nothing else, so `(eq ?a ?b)` on two unbound
+    /// variables passed, `(neq w ?y)` held with nothing bound, and `(eq w ?y)`
+    /// never did.
+    fn guard(
+        &mut self,
+        c: Ctx<'_>,
+        next: Walk,
+        pred: Pred,
+        args: Span,
+        f: Emit<'_>,
+    ) -> ControlFlow<()> {
+        let plan = c.plan;
         let args = plan.guard_args(args);
         // **Unreachable by construction since M1e S1e.2.1** — `Compiler::premise`
         // refuses any arity but [`Pred::arity`] before a `Step::Guard` is ever
@@ -852,36 +868,87 @@ impl Matcher {
             pred.as_str(),
             args.len()
         );
-        let equal = self.resolved_eq(ast, &args[0], &args[1]);
-        let _ = terms;
-        match pred {
-            Pred::Eq => equal,
-            Pred::Neq => !equal,
+        let side = |m: &Matcher, g: &crate::plan::GuardArg| -> Result<Value, Reg> {
+            match g.kind {
+                GuardArgKind::Const(v) => Ok(v),
+                GuardArgKind::Reg(r) => {
+                    let v = m.regs[r as usize];
+                    if v.is_unbound() { Err(r) } else { Ok(v) }
+                }
+            }
+        };
+        let eq = pred == Pred::Eq;
+        match (side(self, &args[0]), side(self, &args[1])) {
+            (Ok(x), Ok(y)) => {
+                if (x == y) == eq {
+                    self.walk(c, next, f)
+                } else {
+                    ControlFlow::Continue(())
+                }
+            }
+            (Err(r), Ok(v)) | (Ok(v), Err(r)) => {
+                if eq {
+                    return self.bind_and_walk(c, next, &[r], v, f);
+                }
+                let domain = crate::predicates::domain(c.kb, c.terms, c.ast);
+                for &d in domain {
+                    if d != v {
+                        self.bind_and_walk(c, next, &[r], d, f)?;
+                    }
+                }
+                ControlFlow::Continue(())
+            }
+            (Err(r), Err(q)) => {
+                let domain = crate::predicates::domain(c.kb, c.terms, c.ast);
+                if eq || r == q {
+                    // `(neq ?x ?x)` holds of no value.
+                    if !eq {
+                        return ControlFlow::Continue(());
+                    }
+                    for &d in domain {
+                        self.bind_and_walk(c, next, &[r, q], d, f)?;
+                    }
+                    return ControlFlow::Continue(());
+                }
+                for &d in domain {
+                    let mark = self.trail.len();
+                    self.bind(r, d);
+                    for &e in domain {
+                        if e != d {
+                            self.bind_and_walk(c, next, &[q], e, f)?;
+                        }
+                    }
+                    self.unwind(mark);
+                }
+                ControlFlow::Continue(())
+            }
         }
     }
 
-    fn resolved_eq(&self, ast: &Ast, a: &crate::plan::GuardArg, b: &crate::plan::GuardArg) -> bool {
-        use GuardArgKind::*;
-        let value = |g: &crate::plan::GuardArg| match g.kind {
-            Const(v) => Some(v),
-            Reg(r) => {
-                let v = self.regs[r as usize];
-                (!v.is_unbound()).then_some(v)
+    /// Bind every register of `regs` to `v`, walk on, and unbind them.
+    fn bind_and_walk(
+        &mut self,
+        c: Ctx<'_>,
+        next: Walk,
+        regs: &[Reg],
+        v: Value,
+        f: Emit<'_>,
+    ) -> ControlFlow<()> {
+        let mark = self.trail.len();
+        for &r in regs {
+            if self.regs[r as usize].is_unbound() {
+                self.bind(r, v);
             }
-            Node => None,
-        };
-        match (a.kind, b.kind) {
-            // Two raw nodes compare structurally.
-            (Node, Node) => ast.eq_nodes(a.node, b.node),
-            // A node is never equal to a name or a `Fact`…
-            (Node, _) | (_, Node) => false,
-            _ => match (value(a), value(b)) {
-                (Some(x), Some(y)) => x == y,
-                // …and `None == None` is how two unbound variables compare.
-                (None, None) => true,
-                _ => false,
-            },
         }
+        let out = self.walk(c, next, f);
+        self.unwind(mark);
+        out
+    }
+
+    /// One binding, on the trail as a relation premise's is.
+    fn bind(&mut self, r: Reg, v: Value) {
+        self.regs[r as usize] = v;
+        self.trail.push(r);
     }
 
     // ── Candidates ─────────────────────────────────────────────────
@@ -1230,31 +1297,51 @@ mod tests {
         );
     }
 
-    /// A `neq` on two variables neither premise bound resolves both to the
-    /// same null, and two nulls are equal, so the guard *fails*. Surprising,
-    /// and kept.
+    /// **A `neq` on two variables nothing binds ranges over the program's
+    /// names** (M1f S1f.5.7, the user's ruling of 2026-11-07 on Q-M1e2.26):
+    /// every ordered pair of two different names, `Thing`, `a` and `one` here,
+    /// so six matches of the one `(a ?x)`. A direct caller of `compile_rule`
+    /// that binds no parameter reaches it: `?p` and `?q` are parameters, which
+    /// the loader takes as bound, and the plan is compiled with no activator.
     ///
-    /// **No program the loader accepts reaches it since M1e2 S1e2.2.24** (W24,
-    /// Q-M1e2.18 (ii)): a guard on a variable no premise before it binds is
-    /// refused at load, so `(neq ?p ?q)` with `?p` and `?q` free, this test's
-    /// program until then, no longer loads. The policy is the matcher's still,
-    /// and a direct caller of `compile_rule` that binds no parameter reaches
-    /// it: here `?p` and `?q` are parameters, which the loader takes as bound,
-    /// and the plan is compiled with no activator.
+    /// It was `two_unbound_guard_arguments_compare_equal` until S1f.5.7: an
+    /// unbound variable resolved to a null, two nulls were equal, and the
+    /// guard *failed*, so nothing matched. The loader refused a guard on a
+    /// variable no premise before it binds from M1e2 S1e2.2.24 (W24, Q-M1e2.18
+    /// (ii)) to S1f.5.7, which is why this test compiled the plan by hand.
     #[test]
-    fn two_unbound_guard_arguments_compare_equal() {
+    fn two_free_guard_arguments_range_over_the_programs_names() {
         let (ast, terms, kb, plan) = setup(
             "(relation a Thing)\n\
              (rule r (?p ?q)\n  :match (and (a ?x) (neq ?p ?q))\n  :assert (a ?x))\n\
              (a one)\n",
         );
         let mut matcher = Matcher::new();
-        let mut n = 0;
-        matcher.run(&kb, &terms, &ast, &plan, &mut |_| {
-            n += 1;
+        let mut pairs: Vec<(String, String)> = Vec::new();
+        matcher.run(&kb, &terms, &ast, &plan, &mut |m| {
+            let b: Vec<(Symbol, Value)> = m.bindings().collect();
+            let get = |n: &str| {
+                b.iter()
+                    .find(|(k, _)| terms.sym(*k) == n)
+                    .map(|(_, v)| terms.display(*v))
+                    .expect("bound")
+            };
+            pairs.push((get("p"), get("q")));
             ControlFlow::Continue(())
         });
-        assert_eq!(n, 0, "`neq` on two `None`s is false, so nothing matches");
+        pairs.sort();
+        let want: Vec<(String, String)> = [
+            ("Thing", "a"),
+            ("Thing", "one"),
+            ("a", "Thing"),
+            ("a", "one"),
+            ("one", "Thing"),
+            ("one", "a"),
+        ]
+        .iter()
+        .map(|&(p, q)| (p.to_string(), q.to_string()))
+        .collect();
+        assert_eq!(pairs, want, "every ordered pair of two different names");
     }
 
     /// `run_seeded` puts the seeded fact at *its* step's position, so a

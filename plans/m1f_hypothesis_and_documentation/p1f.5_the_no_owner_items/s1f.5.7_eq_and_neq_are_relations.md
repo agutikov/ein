@@ -15,7 +15,7 @@
 **Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), on the user's instruction of that day (*"just
 continue with default decisions till the end of the phase"*): T1f.5.7.1 done ([its record](#t1f571-record-2026-11-09)),
 every move listed, ten rows filed (W50 to W55) and W24's two restated, five questions taken by default (Q-M1f.30 to
-Q-M1f.34).
+Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal.
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -359,3 +359,44 @@ facts, which no region claim may name, until T1f.5.7.4; the register's well-form
 (W24's, W30's), `answer_round_trip.rs` and `answer_dump.rs`, whose `DO_NOT_LOAD` names W30's two `neq` witnesses, the
 W24 refusal's tests (`cli_semantics`, `from_ir`'s unit test), the matcher's null-guard test, and the banked exits.
 Each is a task's below.
+
+## T1f.5.7.2 record (2026-11-09)
+
+**`eq` and `neq` in a goal.** The goal is compiled as a rule's `:match` is, so what changed is the compiler and the
+matcher, which a premise reaches too: since this task a rule the loader accepts reaches them as well, and none until
+T1f.5.7.3 lets the loader take a guard before its binder.
+
+- **The matcher** (`match_::Matcher::guard`): a guard whose sides are bound is a test; a side that is a variable nothing
+  bound is bound by the guard, `eq` to the other side's value (a name only the query writes, or a nested fact, among
+  them) and with both sides free to every name paired with itself, `neq` to every name but the other side and with both
+  free to every ordered pair of two different names, `(neq ?x ?x)` to none. Until then an unbound variable was a null,
+  equal to another unbound one and to nothing else.
+- **The domain** (`predicates::domain`): `invariant::program_names`, sorted by text, taken once per program and kept on
+  it (`Program::domain`, cleared by `Kb::program_mut`), the same in every state by the M1 alive-set invariant.
+- **Where a guard goes** (`compile`'s `Seq`): a guard whose variable a relation premise of its conjunction binds waits
+  for it, and is a test after it; one whose variable nothing in the conjunction binds binds it where it is written, as
+  a relation premise does, an `(absent …)` after it reading it (Q-M1f.34). Every guard of every program the loader took
+  until now has its variables bound where written, so no plan the corpus compiles moved (the cross-check below).
+- **A guard's argument** (`GuardArgKind`): a variable, a name, or a fact that holds no variable, which the compiler
+  reads as the nested fact it spells, interned at load (`from_ir::intern_guard_facts`); `GuardArgKind::Node`, an IR node
+  compared by node equality, is gone. A form that holds a variable is refused in a query's goal at load, *query: its
+  :goal writes (neq ?x (f ?y)), and the form (f ?y) holds a variable — …* (Q-M1f.30), and by the compiler otherwise.
+- **The claim** (`from_ir::validate_queries`): a query's `:expect` may name `eq` and `neq`; a region claim that names
+  either is refused, *(solve … :expect …) names neq, which a state never stores — eq and neq are computed from their
+  definition, so a region claim, which lists a state's facts, holds neither* (the stage file's default, taken).
+- **The classes** (`read_out::ground`): a class substitutes its rows at every depth (W54).
+- **The wording** (`ein-render`'s query block): *the goal holds: it has no variable* is printed only for a goal with no
+  variable; a goal whose every variable is an `(absent …)`'s own, which binds none, prints *the goal holds: it binds no
+  variable*.
+
+**Moved**, every one a row or the case's, and nothing else, by the cross-check of every program against `dc4c0bdc`'s
+build (`build/s1f.5.7/xcheck`, 531 files, 526 the same, 2026-11-09): W54's row and W55's two fixed, their witnesses'
+exits 1 → 0; `goal_guard.ein`, the inventory's probe, answers three rows; and the new fixture. `examples/features/16_eq_neq_goal.ein` carries a query per row of the case, nine
+claims, which `ein test` holds (`test_cli`'s count of held claims under `examples/features/`, 6 → 15).
+Banked: `corpus_exits.txt` four cells 1 → 0 (W54's and W55's witnesses) and the fixture's four; `corpus_shapes.md5` 15
+digests of those three witnesses moved, 23 added for `goal-neq-free`, which loads, and 41 for the fixture, none of any
+other program. `predicates::tests::eq_and_neq_are_their_definition_over_the_programs_names` holds the two to their definition over a
+program's names, each of 32 goals, every argument a name of the program, a name only the query writes, or a variable,
+free or shared; `match_::tests::two_free_guard_arguments_range_over_the_programs_names` replaces the null's test. The
+register reads **127 fixed, 31 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-09).

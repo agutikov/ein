@@ -803,6 +803,15 @@
 # and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
 # -c`, 2026-11-09).
 #
+# **S1f.5.7's T1f.5.7.2 fixed W54's row and W55's two the same day**: a
+# guard binds a variable nothing else binds, `eq` to the other side and `neq`
+# over the program's names, and waits for the premise that binds it where
+# one does; a query's claim may name `eq` or `neq`; and a class substitutes
+# its rows at every depth. Each `[case.fixed]` carried the null id in the
+# fixing commit, and the stage's next commit wrote the hash. The register
+# reads **127 rows fixed, 31 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -9928,10 +9937,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/goal-nested-var.ein"
-status   = "open"
-open_because = "A class grounds a goal conjunct's arguments one level deep and prints a pattern inside it as written, so the two rows of `(not (p ?x))` give one fact with `?x` in it and the claim is FAILED. S1f.5.7's T1f.5.7.2 substitutes the rows at every depth"
+status   = "fixed"
 look_at  = ["answer", "summary"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09), found where a goal `(not (eq ?x ?y))`, which S1f.5.7 answers, printed its class; outside the stage's case, and S1f.5.7's to fix since its goals reach it. No corpus goal writes a variable inside a pattern (S1f.5.7's cross-check of every program, `build/s1f.5.7/xcheck`, 2026-11-09). The read-out's `as :expect` printed `(model (not (p ?x)))`, which does not load"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09), found where a goal `(not (eq ?x ?y))`, which S1f.5.7 answers, printed its class; outside the stage's case, and S1f.5.7's to fix since its goals reach it. No corpus goal writes a variable inside a pattern (S1f.5.7's cross-check of every program, `build/s1f.5.7/xcheck`, 2026-11-09). The read-out's `as :expect` printed `(model (not (p ?x)))`, which does not load. Fixed by T1f.5.7.2 (2026-11-09): a class substitutes its rows at every depth, so the class is `(not (p a))` and `(not (p b))`, the claim holds, and the read-out suggests it, exit 0"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9967,7 +9980,7 @@ relations = []
 models    = [
   [],
 ]
-queries   = [{ classes = 1, expect = "failed" }]
+queries   = [{ classes = 1, expect = "held" }]
 
 # ══ W55 — a goal's `eq` or `neq` judges an unbound variable as a null, and a claim naming either is refused ══
 [[case]]
@@ -9979,10 +9992,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/goal-neq-free.ein"
-status   = "open"
-open_because = "The loader refuses a query's claim that names `neq`, no declaration or fact making it a relation, and the matcher judges the goal's unbound `?y` as a null, so the goal holds with nothing bound. S1f.5.7's T1f.5.7.2 answers the goal, a row per name of the program but `w`, and loads the claim"
+status   = "fixed"
 look_at  = ["summary"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its case, the inventory of 2026-11-06's S-18: its probe `goal_guard.ein` with the claim the right answer states. Without the claim the read-out says *the goal holds: it has no variable* and suggests `(model (neq w ?y))`, which does not parse (`goal_guard_claim.ein`)"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its case, the inventory of 2026-11-06's S-18: its probe `goal_guard.ein` with the claim the right answer states. Without the claim the read-out says *the goal holds: it has no variable* and suggests `(model (neq w ?y))`, which does not parse (`goal_guard_claim.ein`). Fixed by T1f.5.7.2 (2026-11-09): the claim loads, `neq` being a relation a goal may ask about, and the goal's rows are `?y = Node`, `?y = a` and `?y = p`, so the claim holds, exit 0"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
+date   = "2026-11-09"
 
 [case.wrong]
 run     = "saturate"
@@ -9990,6 +10007,14 @@ by      = "command"
 why     = "`ein saturate` and `ein solve` on the witness, release and debug, at dc4c0bdc (2026-11-09): refused at load, *:expect names neq, which no declaration or fact makes a relation*, once per fact of the claim, exit 1; with no claim, `ein solve` answers the goal's one class with one row that binds nothing, *the goal holds: it has no variable*"
 exit    = 1
 refused = "kb load error: :expect names neq, which no declaration or fact makes a relation; :expect names neq, which no declaration or fact makes a relation; :expect names neq, which no declaration or fact makes a relation"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
 
 [case.right]
 reading   = "Q-M1e2.26, the user's ruling of 2026-11-07: `eq` and `neq` are relations, a query over them is answered, not refused, and `(neq w ?y)` answers every name of the program but `w`"
@@ -9999,9 +10024,14 @@ exhausted = true
 derived   = "R is {∅}. The goal's rows are `?y = Node`, `?y = a` and `?y = p`, the program's names but `w`, which is only the query's; its class is `(neq w Node)`, `(neq w a)` and `(neq w p)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
 
 [case.now]
-run     = "solve"
-line    = "all"
-refused = "kb load error: :expect names neq, which no declaration or fact makes a relation; :expect names neq, which no declaration or fact makes a relation; :expect names neq, which no declaration or fact makes a relation"
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
 
 [[case]]
 id       = "W55/goal-guard-before-binder"
@@ -10012,10 +10042,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein"
-status   = "open"
-open_because = "The matcher judges a goal's guard where it is written, comparing `a` with the unbound `?y` as with a null, so `(neq a ?y)` holds before `(p ?y)` binds `?y` to `a`. S1f.5.7's T1f.5.7.2 judges it after the premise that binds its variable"
+status   = "fixed"
 look_at  = ["summary"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, on the user's ruling of 2026-11-07 (Q-M1e2.26: a conjunction means the same in any order of its conjuncts). A rule's premise in that order is `W24/guard-before-binder`, refused at load since M1e2 S1e2.2.24; a goal's never was"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, on the user's ruling of 2026-11-07 (Q-M1e2.26: a conjunction means the same in any order of its conjuncts). A rule's premise in that order is `W24/guard-before-binder`, refused at load since M1e2 S1e2.2.24; a goal's never was. Fixed by T1f.5.7.2 (2026-11-09): the guard waits for `(p ?y)`, so `(neq a a)` is judged and fails, the goal has no row, and the claim `(model)` holds, exit 0"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -10051,4 +10085,5 @@ relations = []
 models    = [
   [],
 ]
-queries   = [{ classes = 1, expect = "failed" }]
+queries   = [{ classes = 1, expect = "held" }]
+

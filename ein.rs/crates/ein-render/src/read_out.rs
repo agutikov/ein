@@ -1847,7 +1847,20 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
             for (ri, row) in c.rows.iter().enumerate() {
                 let bound: Vec<String> = row.iter().map(|(k, v)| format!("?{k} = {v}")).collect();
                 if bound.is_empty() {
-                    b.push(row_text("", "  the goal holds: it has no variable"));
+                    // A goal with a variable binds it in every row it has, an
+                    // `eq` or `neq` guard included since M1f S1f.5.7, unless
+                    // the variable is an `(absent …)`'s own; until then a
+                    // guard's free variable bound nothing, and `(neq w ?y)`'s
+                    // one row said it had no variable. A name holds no `?`
+                    // (`ein.l`'s name rule), so the goal's text tells.
+                    b.push(row_text(
+                        "",
+                        if q.goal.contains('?') {
+                            "  the goal holds: it binds no variable"
+                        } else {
+                            "  the goal holds: it has no variable"
+                        },
+                    ));
                 } else {
                     b.push(row_text("", format!("  {}", bound.join(" · "))));
                 }

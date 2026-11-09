@@ -243,6 +243,12 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "rende
 note   = "M1f S1f.5.2 (T1f.5.2.2) — a string's escapes (`\\n \\t \\r \\\" \\\\` and `\\u{…}`) and text in other scripts, the second of the two examples the user asked for (2026-11-06). The read-out prints the `:goal-text` over two lines, `--trace` the rule's `:why` with its emoji, `saturate --dump` each `:source` with its escapes written back."
 
 [[entry]]
+path   = "examples/features/16_eq_neq_goal.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render program"]
+note   = "M1f S1f.5.7 (T1f.5.7.2) — `eq` and `neq` are relations, asked about in a goal (the user's ruling of 2026-11-07, Q-M1e2.26): one query per row of the stage's case, each with the claim that states its one class. A guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, a conjunction means the same in any order, and a claim naming `eq` or `neq` loads; `ein test` holds the nine."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]

@@ -206,28 +206,30 @@ pub struct GuardArg {
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum GuardArgKind {
-    /// A `Var`: its bound value, or "unbound" — which guard resolution's
-    /// lenient policy treats as a null, equal only to another unbound value.
-    /// Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii)) the loader refuses a guard on
-    /// a variable no premise before it binds, so in a program it accepts a
-    /// guard's variable is bound where the guard is judged; until then
-    /// `(and (neq ?x a) (p ?x))` fired for `a` too.
+    /// A `Var`: its bound value where the guard is judged, or, where nothing
+    /// before it bound it, a variable the guard binds — to the other side's
+    /// value for `eq`, over the program's names for `neq` and for `eq` whose
+    /// other side is free too (M1f S1f.5.7, Q-M1e2.26: `eq` and `neq` are
+    /// relations). Until then an unbound one was a null, equal only to another
+    /// unbound value, so `(eq ?a ?b)` on two unbound variables passed, and
+    /// from M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii)) to S1f.5.7 the loader refused
+    /// a guard on a variable no premise before it binds; until then `(and
+    /// (neq ?x a) (p ?x))` fired for `a` too.
     Reg(Reg),
-    /// An `Atom`, resolving to the symbol it names, as the loader holds it in
-    /// a fact (and an `Int`, to its value, until M1f S1f.5.4 retired the
-    /// kind). A string was a [`Self::Node`] until M1e2 S1e2.2.18, so `(eq ?x
-    /// "b")` never held, and the symbol it names until M1f S1f.5.5's swap
-    /// refused one in a guard (S1f.5.2; T1f.5.2.3 retired the arm).
+    /// A name, the symbol it names, as the loader holds it in a fact (and an
+    /// `Int`, its value, until M1f S1f.5.4 retired the kind); and since M1f
+    /// S1f.5.7 a fact that holds no variable, the nested fact it spells (the
+    /// user's ruling of 2026-11-07 on `W24/form-in-guard`). A string was a
+    /// node until M1e2 S1e2.2.18, so `(eq ?x "b")` never held, and the symbol
+    /// it names until M1f S1f.5.5's swap refused one in a guard (S1f.5.2;
+    /// T1f.5.2.3 retired the arm).
     Const(Value),
-    /// Anything else — an `SForm` (a `Wildcard` until M1f S1f.5.1 retired the
-    /// node, and a `KwPair` until M1f S1f.5.5's swap refused one inside a
-    /// term, S1f.5.11) — which guard
-    /// resolution returns as-is, so it compares by IR-node equality: equal to
-    /// no value. **Since M1e2 S1e2.2.24** (W24, Q-M1e2.16 (1), Q-M1e2.18) the
-    /// loader refuses each as a guard's argument, and a variable no premise
-    /// before the guard binds, so no program it accepts reaches this; until
-    /// then `(eq ?x _)` never held and `(neq ?x (f a))` always did.
-    Node,
+    // `Node` was a third kind until M1f S1f.5.7: anything else (an `SForm`, a
+    // `Wildcard` until M1f S1f.5.1, a `KwPair` until S1f.5.5's swap), compared
+    // by IR-node equality and so equal to no value; the loader refused each
+    // as a guard's argument from M1e2 S1e2.2.24 (W24, Q-M1e2.18 (i), (iii)).
+    // A form that holds no variable is a `Const` since, and one that holds a
+    // variable is refused (Q-M1f.30).
 }
 
 /// A top-level `(absent …)` lifted out of a disjunct — S1.21.8.

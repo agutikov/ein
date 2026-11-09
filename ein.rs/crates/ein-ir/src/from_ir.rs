@@ -390,6 +390,36 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     }
     for root in roots {
         walk(ast, terms, root);
+        let _ = intern_guard_facts(ast, terms, root);
+    }
+}
+
+/// Intern every fact an `eq` or `neq` guard compares, `(f a)` in `(neq ?x (f
+/// a))`, for the same reason [`intern_program_names`] interns names: the
+/// compiler reads it as a value (M1f S1f.5.7, the user's ruling of 2026-11-07
+/// on `W24/form-in-guard`), and must not intern it for the first time during
+/// a search. A form that holds a variable is refused (Q-M1f.30), and holds
+/// none of these.
+fn intern_guard_facts(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<(), Overflow> {
+    match ast.node(node) {
+        Node::KwPair { value, .. } => intern_guard_facts(ast, terms, value),
+        Node::SForm { args, .. } => {
+            let args = ast.args(args).to_vec();
+            if matches!(ast.head_name(node), Some("eq") | Some("neq")) {
+                for &a in &args {
+                    let mut vars = Vec::new();
+                    walk_pattern(ast, a, &mut vars, &mut Vec::new());
+                    if matches!(ast.node(a), Node::SForm { .. }) && vars.is_empty() {
+                        fact_args(ast, terms, &[a])?;
+                    }
+                }
+            }
+            for a in args {
+                intern_guard_facts(ast, terms, a)?;
+            }
+            Ok(())
+        }
+        _ => Ok(()),
     }
 }
 
@@ -431,6 +461,22 @@ fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
     for model in models {
         for &f in &model.facts {
             let fact = crate::expect::fact(ast, f);
+            // `eq` and `neq` are relations whose facts are computed and never
+            // stored (M1f S1f.5.7, Q-M1e2.26), and a region claim lists a
+            // state's stored facts, so one that lists either can never hold
+            // (S1f.5.7's default, taken on the user's instruction of
+            // 2026-11-09).
+            if is_predicate(fact.relation) {
+                if reported.insert(fact.relation.to_string()) {
+                    errors.push(format!(
+                        "(solve … :expect …) names {}, which a state never stores — eq and neq \
+                         are computed from their definition, so a region claim, which lists a \
+                         state's facts, holds neither",
+                        fact.relation
+                    ));
+                }
+                continue;
+            }
             let known = terms
                 .syms
                 .get(fact.relation)
@@ -442,6 +488,40 @@ fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
                 ));
             }
         }
+    }
+}
+
+/// A query's `:goal` that writes an `eq` or `neq` guard over a form holding a
+/// variable, refused as a rule's is ([`refuse_no_fact_holds`], Q-M1f.30): one
+/// line per form, in Ein's spelling.
+fn refuse_guard_patterns(ast: &Ast, node: NodeId, errors: &mut Vec<String>) {
+    let Node::SForm { args, .. } = ast.node(node) else {
+        return;
+    };
+    let args = ast.args(args).to_vec();
+    if matches!(ast.head_name(node), Some("eq") | Some("neq")) {
+        let mut seen: Vec<String> = Vec::new();
+        for &a in &args {
+            let mut vars = Vec::new();
+            walk_pattern(ast, a, &mut vars, &mut Vec::new());
+            let text = crate::dump::dump_compact(ast, a);
+            if matches!(ast.node(a), Node::SForm { .. })
+                && !vars.is_empty()
+                && !seen.contains(&text)
+            {
+                errors.push(format!(
+                    "query: its :goal writes {}, and the form {text} holds a variable — a guard \
+                     compares two values, each a variable, a name, or a fact that holds no \
+                     variable",
+                    crate::dump::dump_compact(ast, node),
+                ));
+                seen.push(text);
+            }
+        }
+        return;
+    }
+    for a in args {
+        refuse_guard_patterns(ast, a, errors);
     }
 }
 
@@ -476,6 +556,9 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
             }
             refuse_unreachable_references("query", ":goal-text", text, &vars, errors);
         }
+        if let Some(goal) = query_keyword(ast, query, "goal") {
+            refuse_guard_patterns(ast, goal, errors);
+        }
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
         {
@@ -492,10 +575,15 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
         for model in expectation.models() {
             for &f in &model.facts {
                 let fact = crate::expect::fact(ast, f);
-                let known = terms
-                    .syms
-                    .get(fact.relation)
-                    .is_some_and(|sym| kb.program().relations.get(sym).is_some());
+                // A query's claim lists its goal's instances, and `eq` and
+                // `neq` are relations a goal may ask about (M1f S1f.5.7,
+                // Q-M1e2.26): their facts are computed, so no declaration or
+                // fact makes them one, and the check below is the goal's.
+                let known = is_predicate(fact.relation)
+                    || terms
+                        .syms
+                        .get(fact.relation)
+                        .is_some_and(|sym| kb.program().relations.get(sym).is_some());
                 if !known {
                     errors.push(format!(
                         ":expect names {}, which no declaration or fact makes a relation",
