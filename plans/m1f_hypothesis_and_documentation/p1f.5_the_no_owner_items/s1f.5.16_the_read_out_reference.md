@@ -4,8 +4,9 @@
 **Was S1f.5.3**, proposed in the old P1f.5 (*Documentation, and other*), until 2026-11-08, and **S1e.5.3**, proposed
 in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other), until
 2026-08-29 ([§ The ids](README.md#the-ids)).
-**Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Not started.** No
-engine code, test, golden or page has moved.
+**Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Running since
+2026-11-09**: T1f.5.16.1, the census, done ([its record](#t1-record-2026-11-09)); Q1 defaulted (a), and three findings,
+one of them S1f.5.2's item, which T1f.5.16.5 fixes before T2. No engine code, test, golden or page has moved yet.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s swap and the non-grammar halves after it
 ([§ The order](README.md#the-order), item 8), so that the census is taken, and the examples are written, in the
 final grammar; and [S1f.5.15](s1f.5.15_rule_priority.md), done, whose `strata` row the page documents.
@@ -361,6 +362,252 @@ the user with T1's census, if it is still open then, and only T4's head edits wa
 - **The record**: the census and the raw runs under `build/s1f.5.16/` (gitignored), the tables in a § T1 record
   of this file, and Q1 put to the user if it is still open.
 
+### T1 record, 2026-11-09
+
+Taken at `dc4c0bdc` on that day's release binary, by `build/s1f.5.16/census.py` (gitignored, kept with its raw runs
+under `build/s1f.5.16/runs/`): every corpus entry of the `positive`, `regression` and `stdlib` groups (351) under
+describe, `--count`, `--minimal`, `--maximal`, `-n 1`, `--single`, `--maximal --single` and `--monotone`, each with
+`--json-summary` and `-s -t` (`-s` alone under `--monotone`), and under `ein oracle FILE --json-summary J -s`; the 62
+negative entries under describe alone. **3 221 runs**, the slow entries among them (`EIN_CORPUS_SLOW` gates a test,
+not a binary run), in 31 s at twelve jobs. 292 programs answer under every `ein solve` question and 59 are refused at
+load or by *forbid* (exit 1, under each); `--monotone` answers 294; `ein oracle` answers 255 and refuses 37 past
+`--region-limit` (exit 2). No run exited 0 with a row-shaped line the source scan does not name.
+
+**From the code.** The scan of `read_out.rs` for the first argument of `row`, `sub_row` and `row_text` finds the
+spec's 45 literal labels and four computed ones (the mode's count row, one of `states of R`, `minimal line` and
+`maximal line`; `query` or `query i of n`; `class i of n`; `decided` in place of `exhausted`), and two that are not
+labels: `""`, a row's continuation (a claim's further lines, an owed instance under `owing`, a class's binding rows
+and its `:goal-text` sentences, a cut class's `…` line, `as :expect`'s further lines), and `"  {head}"`, the class
+row. Printed outside it: `-s`'s `wall` (`modes.rs`, twice: a question and `--monotone`), `-t`'s `timing` table
+(`modes.rs`'s `timing`, five rows: `load`, `route`, `read-out`, `print`, `total`, in its own `  {:<10}` layout) and
+`ein oracle`'s `the cube` line (`oracle.rs`, at column 0). Lines that are not rows: the header and its rule; the
+listing (`(region …)`, `(merged …)`, a member's `(model …)`, `(false)`, `(region (owing …))`) and its comments
+(`;; state i of k — …`, `;; state i is reached by …`, `;; R as one (region …) is n lines, past stdout's 100 …`,
+`;; not shown: …`, `;; … n more states: …`, `;; the line members this run certified …`, `;; n other members met are
+not certified on a line …`); each form's head after the read-out (`H — the universe: …`, `models — the determining key
+of …`, `models — …, each as a grid`, `── state i of k ──` and `final-state facts (…; n facts):` under `-p`, `-P` and
+`-f`, `--diff-models`' head); and stderr (below).
+
+**Every label, by the runs that print it** (a run counted once per label; `ein solve -y`'s `paths` under a monotone
+`lattice` row is a lever and not in the sweep):
+
+| label | runs that print it, by question | first program |
+|---|---|---|
+| `wall` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292, --monotone 294, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `asked` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292, --monotone 294, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `universe` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292, --monotone 294, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `work` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292, --monotone 294, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `route` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292, --monotone 294, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `lattice` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `-t print` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `-t load` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `-t read-out` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `-t total` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `-t route` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `exhausted` | describe 292, --count 292, --minimal 292, --maximal 292, -n 1 292, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `query, query i of n` | describe 201, --minimal 201, --maximal 201, -n 1 201, --single 201, --maximal --single 201, oracle 167 | `examples/branching/01_saturate_only.ein` |
+| `as :expect` | describe 201, --minimal 201, --maximal 201, -n 1 201, --single 201, --maximal --single 201, oracle 167 | `examples/branching/01_saturate_only.ein` |
+| `over` | describe 201, --minimal 201, --maximal 201, -n 1 201, --single 201, --maximal --single 201, oracle 167 | `examples/branching/01_saturate_only.ein` |
+| `class i of n` | describe 156, --minimal 156, --maximal 149, -n 1 156, --single 156, --maximal --single 149, oracle 126 | `examples/branching/01_saturate_only.ein` |
+| `states (k_s)` | describe 292, --count 292, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `commitments (k_c)` | describe 292, --count 292, oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `maximal line` | describe 233, --maximal 292, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `minimal line` | describe 233, --minimal 292, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `∅` | describe 233, --count 233, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `verdict` | --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `decided` | --single 292, --maximal --single 292 | `examples/branching/01_saturate_only.ein` |
+| `components` | describe 233, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `sub-cubes` | describe 233, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `N` | describe 233, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `merged` | describe 224, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `monotone` | --monotone 294 | `examples/branching/01_saturate_only.ein` |
+| `states of R` | -n 1 292 | `examples/branching/01_saturate_only.ein` |
+| `outside` | describe 32, --count 32, --minimal 32, --maximal 32, -n 1 32, --single 32, --maximal --single 32, --monotone 32, oracle 22 | `examples/branching/05_mini_zebra.ein` |
+| `the cube` | oracle 255 | `examples/branching/01_saturate_only.ein` |
+| `site` | describe 29, --count 29, --minimal 29, --maximal 29, -n 1 29, --single 29, --maximal --single 29, --monotone 29, oracle 22 | `examples/features/01_not_and_absent.ein` |
+| `assumes` | describe 29, --count 29, --minimal 29, --maximal 29, -n 1 29, --single 29, --maximal --single 29, --monotone 29, oracle 22 | `examples/features/01_not_and_absent.ein` |
+| `status` | describe 29, --count 29, --minimal 29, --maximal 29, -n 1 29, --single 29, --maximal --single 29, oracle 22 | `examples/features/01_not_and_absent.ein` |
+| `state` | describe 29, --count 29, --minimal 29, --maximal 29, -n 1 29, --single 29, --maximal --single 29, oracle 22 | `examples/features/01_not_and_absent.ein` |
+| `paths` | describe 29, --count 29, --minimal 29, --maximal 29, -n 1 29, --single 29, --maximal --single 29, oracle 22 | `examples/features/01_not_and_absent.ein` |
+| `E` | describe 21, oracle 203 | `examples/branching/01_saturate_only.ein` |
+| `empty` | describe 59, --count 59, oracle 52 | `examples/ein-bugs/zebra2-bad.ein` |
+| `claims` | --count 105 | `examples/branching/15_lookahead_two_step_on.ein` |
+| `types` | describe 10, --count 10, --minimal 10, --maximal 10, -n 1 10, --single 10, --maximal --single 10, --monotone 11, oracle 4 | `examples/branching/02_one_dead_one_alive.ein` |
+| `refuted by` | describe 39, oracle 32 | `examples/ein-bugs/zebra2-bad.ein` |
+| `unsat core` | describe 39, oracle 32 | `examples/ein-bugs/zebra2-bad.ein` |
+| `stale` | describe 11, --count 11, --minimal 11, --maximal 11, --single 3, --maximal --single 11, oracle 6 | `examples/features/01_not_and_absent.ein` |
+| `:expect` | describe 7, --minimal 7, --maximal 7, -n 1 7, --single 7, --maximal --single 7, oracle 7 | `examples/features/11_expect_ambiguity.ein` |
+| `negative cycle` | describe 6, --count 6, --minimal 6, --maximal 6, -n 1 6, --single 6, --maximal --single 6, oracle 6 | `examples/features/07_unstratifiable.ein` |
+| `strata` | describe 6, --count 6, --minimal 6, --maximal 6, -n 1 6, --single 6, --maximal --single 6, oracle 6 | `examples/features/07_unstratifiable.ein` |
+| `owing` | describe 20, oracle 20 | `examples/ein-bugs/wrong-answers/owed-two-step.ein` |
+| `order` | describe 4, --count 4, --minimal 4, --maximal 4, -n 1 4, --single 4, --maximal --single 4, --monotone 4, oracle 4 | `examples/features/07_unstratifiable.ein` |
+| `bit` | --monotone 29 | `examples/features/01_not_and_absent.ein` |
+| `cycle` | describe 3, --count 3, --minimal 3, --maximal 3, -n 1 3, --single 3, --maximal --single 3, --monotone 3, oracle 3 | `examples/features/07_unstratifiable.ein` |
+| `…` | describe 5, --count 5, --minimal 5, --maximal 5, --maximal --single 5 | `examples/features/01_not_and_absent.ein` |
+| `minimal hole` | describe 6, oracle 6 | `examples/lattice/04_obligation_trigger_hole.ein` |
+| `source` | describe 3, oracle 1 | `examples/ein-bugs/zebra2-bad.ein` |
+| `core search` | describe 1, oracle 1 | `examples/ein-bugs/wrong-answers/core-search-cut.ein` |
+
+Every label the scan names is printed by some run but `paths` under `-y`, which the examples page will print. The
+census runs print `states of R` under `-n 1` only (`--single` prints `verdict`), and route 1's `exhausted` reason
+(*route 1 stopped before layer L*) under none: describe takes route 1 only on a flagged program whose root is dead
+([`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s § Describe's route), which reads root alone and
+never meets the budget.
+
+**Per question, the rows and their kinds.** Describe and `ein oracle`: `asked`; R's counts (`states (k_s)`,
+`commitments (k_c)`), `exhausted`; `∅` or `empty`; R's lines and shape (`minimal line`, `maximal line`,
+`components`, `sub-cubes`, `merged`); around R, `N`, `E` (route 2 only), `lattice` and its block, `strata` and its
+`negative cycle`s, `minimal hole`, `universe` with `outside` and `types`; the run's `route` and `work`; then the
+listing, the queries, the claims, and `ein oracle`'s `the cube`. `--count`: describe's rows without the lines, the shape, `N`,
+`E` and the holes, then a `claims` row where the program states a claim. A mode (`--minimal`,
+`--maximal`, `-n N`): `asked`, its count row (the states listed), `exhausted`, then `lattice`, `universe`, `route`,
+`work`; `--single`: `verdict` for the count row and `decided` for `exhausted`. `--monotone`: `asked`, `monotone` and
+the warning's static rows with `bit`, `universe`, `route`, `work`. Of the kinds: R is the counts, `∅` and `empty`, the
+lines and the shape, a mode's count row and `verdict`; around R is `N`, `E`, `lattice` and its block, `strata`,
+`minimal hole`, `universe`, `the cube`; the run is `exhausted`'s and `decided`'s reasons, `route`, `work`, `wall` and
+`timing`; the listing is its comments, `class i of n`, the `…` lines and `as :expect`'s *not printed*.
+
+**One label, one number, on every run.** Each numeric row was held to the summary field the draft mapping names
+(the integer printed, or an array's length, or each string of a list; a zero may print as a word, *none*, *in R*,
+*no hole*): `states (k_s)` `region.k_s`; `commitments (k_c)` `region.k_c`; `exhausted` `region.exhausted` and
+`region.stopped`'s numbers; `∅` `region.root_owes`; `minimal line` `region.minimal.states`; `maximal line`
+`region.maximal.states`; `components`, `sub-cubes` the lengths of `region.components` and `region.subcubes`;
+`merged` `region.merged.states` and `.minimal`; `N` `region.nogoods`; `E` `region.discharging`; `lattice`
+`monotonicity.sites`' length and `region.holes.count`; `universe` `region.universe.candidates` and `.dead_alone`
+(`root.hypgen.emitted` under `--monotone`, whose `region` is `null`); `route` `region.licences`; `work` the `work`
+block; `verdict` `verdict.word`; `unsat core`, `owing` and `minimal hole` the k-th element of `region.core`,
+`region.frontier[].owes` and `region.holes.minimal[].owes`; `refuted by` `region.refuted_by`; `query` the goal,
+`over` the classes' count and `class i of n` its states; `outside`, `types`, `status`, `state` and `paths` their
+`root.hypgen` and `monotonicity` fields; a mode's count row the `region.states` whose `listed` is true; `-t`'s
+`route` saturations `work.saturations`. **346 of the checks differ, in three kinds, and none is a row printing
+another number than its field**:
+
+- 313 are `route` on route 2 (describe 29, `--count` 29, `ein oracle` 255): the row says *no licence*, and
+  `region.licences` is `["L7 the cube"]`. Finding (a) below.
+- 31 are `region.stopped`'s `n` printed as the exponent of `2^n` (the census's tokeniser read `2^118` as `2` and `118`
+  joined), and its `layer` on the state route: `floors.ein`'s `layer` is 10 where the row says *the states of 9
+  candidates*. The first is the census's; the second is finding (b).
+- 2 are `paths` on `lattice/08_absent_witness_hole.ein`, whose *path-dependent* sentence prints the parents and no
+  count of printed states: the row's number is `monotonicity.paths.parents` alone where a path differs.
+
+**The words two surfaces use for a number**, each checked:
+
+- *saturations*: `work`'s and `-t`'s `route` row are one number on all 2 044 runs that print both, `-t` printing it
+  without digit groups. The `bit` row's *2^n = x saturations* and `paths`' *would cost up to x saturations* are their
+  own numbers, each said by its row.
+- *model*: a listing's `(model …)` is a state's facts over the candidates' relations (`ein_infer::read_out::Listed`'s
+  `model`, the summary's `region.states[].facts`); `-P` prints [`solution_semantics.md` §
+  3](../../../docs/kernel/inference/solution_semantics.md#3-model)'s model, under the head *final-state facts (beyond the
+  program as loaded, (not …) omitted …)*; and `-t`'s `read-out` row, *each listed state's model*, means the listing's.
+  Two objects, one word: [Q1](#q1--q-m1e7s-read-out-half), below.
+- *states*: `states (k_s)` counts R's; a mode's count row the states listed; `over`'s *n states* the states its classes
+  are over; `asked`'s *N states of R (-n N)* the request; a comment's *state i of k* the listing.
+- *commitments*: `commitments (k_c)` is R's; `minimal line`'s *from m commitments* is `region.minimal.commitments`;
+  `merged`'s *with m minimal* and a comment's *c commitments, g minimal* count one state's; `exhausted`'s *its n
+  commitments* (route 1) and *their n extensions* (the state route) are `region.stopped.commitments`.
+- *candidates*: `universe`'s n is H's; *the least guess is l candidates* is `region.minimal.least`; *complete up to …
+  of L candidates* a size; a comment's *k candidates* a state's closure.
+- *holes*: `lattice`'s count, `region.holes.count` and `monotonicity.status.holes` agree on all 66 runs that hold the
+  last two (22 each under describe, `--count` and `ein oracle`).
+- *members*: a listing's *other members met* and `over`'s *the n members met* are members of R a run met, one object.
+- *layers*: `work`'s, route 1's *layer L* and the state route's `stopped.layer`: finding (b).
+- Digit groups: every count but four prints them. `-t`'s `route` row, `the cube`'s two counts and a state's
+  *2^n* exponent print plain digits, and `--region-budget` is echoed as typed.
+
+**Every difference with `read_out.md`**, each disposed of. None is a wrong answer.
+
+| `read_out.md` | the code | disposition |
+|---|---|---|
+| § 4 `route`: *licence L1, dead is upward-closed* | `L1 dead is upward-closed` (`Licence::label`) | the prose fell behind; the page quotes no value |
+| § 4 and § 6.1 name `unsat core`, `refuted by`, `core search` | and `source`: each fact of root's core with its `:source`, `(fact) :source "…"` (3 programs) | the prose fell behind; the page has the row |
+| § 4 has no `paths` under a monotone `lattice` | `-y` prints it there since M1e2 S1e2.1c.5 | the prose fell behind |
+| § 4 `E`, *cube only* | route 2: describe on a flagged program (21 runs) and `ein oracle` | one statement; the page says route 2 |
+| § 6.2, a partial route-1 run | no CLI run reaches it (above); the branch stands | the page states it, and that no corpus run prints it |
+| § 8.1 `route: "1"\|"2"` | `"1"`, `"2"`, `"states"`, `"tree"` | the prose fell behind |
+| § 8.1 `over: all\|listed` | `all`, `minimal`, `maximal`, `listed` | the prose fell behind |
+| § 8.1 names neither `schema` nor `source` | both, on every summary | the prose fell behind |
+| § 8.1 `expect: null` (until the switch) | `null`, or `{outcome, lines}` | the prose fell behind |
+| § 8.1 `stopped: {why, …}` | `budget`: `spent`, `projected`, `layer`, `commitments`; `limit`: `n`, `limit` | elided; the page defines each |
+| § 8.6 `-s`: *the wall clock per phase, and route 1's per-layer table* | `-s` one `wall` row; `-t` the per-phase `timing` table; the per-layer lines are `-v`'s and `--layer-progress`'s, on stderr | the prose fell behind |
+| § 8.6 `ein oracle`: *every hole row* | at most four, as describe (§ 6.3 says so) | the prose fell behind |
+| § 8.6 `ein oracle`: *today's `the cube` line* | `the cube   n dead nodes with an alive superset · m discharged nodes with an owing superset`, then whether the static verdict held; *contradicted* exits 1 | unspecified; the page states it |
+| no mention of `-t` | five rows | the page has them |
+| [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model): *No surface computes projection classes yet* | every query block prints them since M1e2 S1e2.1a.5 | a kernel sentence the read-out disproved; T4 corrects it |
+
+**Findings: a line that says something false or ambiguous.** None misstates an answer, so none is a register row;
+each is P1e2.3's class (*a surface that misreports*), shown and not fixed here, as the method says:
+
+- **(a) Route 2's licence, in two words.** Describe's and `ein oracle`'s `route` row on route 2 says *no licence*
+  (`2, the cube — no licence: the static check flags the program`, `… asked for by name`), where the summary's
+  `region.licences` and a mode's `route` row on the same route name `L7 the cube` (every mode run on route 2 prints
+  `2, the cube — L7 the cube`), the licence [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)'s
+  table calls *always*. [Q-M1f.20](../open_questions.md#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another),
+  defaulted: documented, not moved.
+- **(b) `stopped.layer` in two units.** On route 1 it is the commitment size the route stopped before; on the state
+  route it is the route's layer, a state's size plus one (`saturation/square-bwd/floors.ein`: `layer` 10, *the states
+  of 9 candidates*), and the state route's *complete up to states of k candidates* is held by no field
+  (`complete_up_to` is `null`). [Q-M1f.21](../open_questions.md#q-m1f21--regionstoppedlayer-on-two-routes),
+  defaulted: documented per route, not moved.
+- **(c) A text's line breaks** (S1f.5.2's item, handed to this stage): a `:goal-text` holding `\n` or `\r`, and an
+  obligation's `:why` under `owing`, print raw, so the text's further lines start at column 0, outside every row, and
+  a class block counts each sentence as one of stdout's 100 lines however many it prints
+  (`examples/features/15_unicode_escapes.ein`, `tests/text/01_unicode.ein`). It is the read-out's own printing
+  (`read_out.rs`'s `row_text`, the class block's `“{t}”`, the `owing` rows), so it is fixed, at
+  [T1f.5.16.5](#task-t1f5165--a-texts-line-breaks-keep-the-rows-column):
+  [Q-M1f.19](../open_questions.md#q-m1f19--a-texts-line-break-on-the-read-out), defaulted. `--trace` prints no
+  `:goal-text`: it prints a rule's `:why` and a premise's `:source` as markdown paragraphs, where a line break is a soft
+  break, and that is the trace's printer and not the read-out's (the page's *not its subject*). `ein saturate --dump`
+  and a state file quote every text (`ein_core::text::quote`), and the `source` row is quoted too.
+
+**The summary's seven keys.** Every leaf path over the 3 221 runs: `schema`, `source`; `asked.{which, ask, n}`;
+`region.{k_s, k_c, exhausted, complete_up_to, root, root_owes, empty, nogoods, discharging, route, licences,
+components, subcubes, core, core_status, refuted_by}`, `region.stopped.{why, spent, projected, layer, commitments, n,
+limit}`, `region.minimal.{states, commitments, least, trivial}`, `region.maximal.{states, trivial}`,
+`region.merged.{states, minimal}`, `region.holes.count`, `region.holes.minimal[].{set, dead, core, core_status, owes}`,
+`region.universe.{candidates, dead_alone}`, `region.states[].{facts, closure, from, minimal_generators, commitments,
+lines, listed}`, `region.frontier[].{facts, set, owes, owed}`; `verdict.{word, which}`; `queries[].{goal, over, exact}`,
+`queries[].classes[].{facts, states}`, `queries[].classes[].rows[]`, a map from each goal variable to its value, and
+`queries[].expect.{outcome, lines}`; `claim.{outcome, lines}`. Against § 8.1: `schema`, `source`, `stopped`'s
+members, `route`'s and `over`'s other values and `expect`'s shape are new, as the table says; nothing § 8.1 names is
+gone. **The other five keys' owners**: `work` and `root` are [`answer_dump.md` § The run
+summary](../../../docs/kernel/inference/answer_dump.md#the-run-summary)'s, held field by field by
+`answer_dump::every_summary_counter_is_defined_on_this_page`; `config` is
+[`configuration.md`](../../../docs/kernel/configuration.md)'s defaults block, held by `config_reference`; `leftover`
+is `configuration.md`'s `EIN_LEFTOVER` row, which names `taken` and `states` and not `states_by_relation`;
+`monotonicity` is [`region_dump.md` §
+Monotonicity](../../../docs/kernel/inference/region_dump.md#monotonicity--the-static-check)'s, which names the block's
+keys (`concludes`, `at_stake`, `assumes`, `cycles`, `order`, `status`, `state`, `paths`) and not these leaves:
+`reads` and `absent_reads`' `dynamic_monotone` and `dynamic_non_monotone`, `cycles[].negative`, `paths.dead_parents`,
+`paths.saturations`, `paths.unprinted.saturations` and `state.stale_nodes`. Those gaps are their owners', listed here
+and left there.
+
+**The inbound references**, sorted.
+
+- *Cite the vocabulary*, re-pointed at T4: `AGENTS.md`'s *"The read-out's vocabulary is …"* and its examples page;
+  `configuration.md`'s *printed in `read_out.md`'s read-out*; `implementation.md`'s two module rows (`read_out.rs`,
+  `described.rs`); `solution_semantics.md` § 5.1; `answer_dump.md` § The run summary's § 8.1; the crate doc comments of
+  `ein-render`'s `read_out.rs` and `dump/region_answer.rs`, `ein-infer`'s `described.rs` (its first link) and
+  `read_out.rs`, `ein-cli`'s `modes.rs`, `summary.rs` (two) and `tests/region_answer.rs`, and `read_out_examples.rs`'s
+  and `region_modes.rs`'s mentions of the golden page; `utils/README.md`; `utils/review/run.py`'s § 8.1 label;
+  [P1f.20](../p1f.20_docs_refactor/README.md)'s README and
+  [S1f.20.2](../p1f.20_docs_refactor/s1f.20.2_the_disposition_table.md); the later stages' page lists (S1f.5.6,
+  S1f.5.7, S1f.5.8, S1f.5.12, S1f.5.14).
+- *Cite a ruling or a record*, kept: `defined_behaviour.md`'s three § 9 links (the exit-code ruling); `answer_dump.md`'s
+  § 8.2 (where `ein-answer/2` was decided); `events.md`'s § 8.6 (where the `region` event was); `described.rs`'s §
+  6.2 and `downset.rs`'s § 6.2 (the certification argument); `trace/region.rs`'s § 8.4 (the trace's design, not the
+  page's subject); `utils/review/run.py`'s § 8.4 label; S1f.5.15's record; and the 23 links in M1e2's records.
+
+**The label list's form: the enum** (the spec's default). Four labels are computed, but each is one of a closed set:
+the mode's count row is one of three literals, `decided` is a literal chosen in place of `exhausted`, and `query i of
+n` and `class i of n` carry their numbers at the print site. So `ein_render::read_out::Row` has a variant for each,
+the two numbered ones printed through one function that adds the numbers; a scan would miss all four. Taken by
+default on the user's instruction of 2026-11-09.
+
+**Q1: (a), document it.** Taken by default on the user's instruction of 2026-11-09
+([Q-M1f.18](../open_questions.md#q-m1f18--which-object-the-word-model-names-on-the-read-out)): the page names a
+listing's `(model …)` and § 3's model as two objects and says which surface prints which; nothing printed moves, and
+T4 has no head to edit.
+
 ### Task T1f.5.16.2 — the page, and the live examples
 
 - `docs/kernel/inference/read_out.md`, written from the census, as [§ The page](#the-page-docskernelinferenceread_outmd)
@@ -388,6 +635,26 @@ the user with T1's census, if it is still open then, and only T4's head edits wa
   passage.
 - `python3 utils/doc_audit.py --links --check` reports 0 findings, `RUSTDOCFLAGS="-D warnings" cargo doc` is
   green, and so is `./run_tests.sh`.
+
+### Task T1f.5.16.5 — a text's line breaks keep the row's column
+
+Added 2026-11-09 by T1's census, for the item S1f.5.2 handed this stage (finding (c),
+[Q-M1f.19](../open_questions.md#q-m1f19--a-texts-line-break-on-the-read-out), defaulted (a)). It runs after T1 and
+before T2, so that the examples are written by the fixed printer.
+
+- **The printer.** A row's value that holds a line break (`\r\n`, `\n`, `\r`, or Unicode's other mandatory breaks:
+  U+000B, U+000C, U+0085, U+2028, U+2029) prints each further line at the column the value's first character is
+  printed at, past its indent and an opening `“`, so a `:goal-text`'s sentence and an obligation's `:why` under
+  `owing` stay inside their row. A class block counts every line it prints against stdout's 100, so the cut and the
+  forms after it see the lines the screen shows.
+- **The goldens it moves, named before they move**: `natural_language_text`'s
+  `the_read_out_prints_the_goal_text_as_written` and `a_container_holds_the_texts`, which look for the sentence as one
+  run of characters; `corpus_shapes.md5`'s `read-out[describe]`, `[maximal]`, `[minimal]`, `[single]` and `[n2]` and
+  `oracle` lines of `examples/features/15_unicode_escapes.ein` and `tests/text/01_unicode.ein`, the two corpus programs
+  whose `:goal-text` holds a line break (`git grep -n 'goal-text' -- '*.ein'`, 2026-11-09); and no other. No answer,
+  exit code or summary field moves, and the register is unmoved: no answer is misstated.
+- **The pages**: the two programs' headers, and `natural_language_text.rs`'s table, say how the read-out prints a text
+  with a line break.
 
 ## Acceptance
 

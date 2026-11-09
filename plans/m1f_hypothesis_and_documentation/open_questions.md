@@ -26,6 +26,10 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.15](#q-m1f15--where-does-a-position-in-a-containers-stored-program-point) | where does a position in a container's stored program point? | **defaulted 2026-11-09 (the user's instruction): it names the container, `<program stored in x.einb>`, and the stored text's line; a source position needs a format change, not made**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
 | [Q-M1f.16](#q-m1f16--which-of-the-reads-defects-are-register-rows) | which of the read's defects are register rows? | **defaulted 2026-11-09 (the user's instruction): each refusal of a program another command answers (W40's six, W41); the lines and exits of a file every command refuses are held by a test**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
 | [Q-M1f.17](#q-m1f17--what-a-view-that-never-loads-reads-from-a-container) | what a view that never loads reads from a container | **defaulted 2026-11-09 (the user's instruction): the program it stores, resolved and import-flattened**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
+| [Q-M1f.18](#q-m1f18--which-object-the-word-model-names-on-the-read-out) | which object the word *model* names on the read-out (Q-M1e.7's read-out half) | **defaulted 2026-11-09 (the user's instruction): (a), document both objects; nothing printed moves**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
+| [Q-M1f.19](#q-m1f19--a-texts-line-break-on-the-read-out) | a text's line break on the read-out | **defaulted 2026-11-09 (the user's instruction): each line at the text's column, each counted against stdout's 100**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.5 |
+| [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another) | route 2's licence: *no licence* on one row, `L7 the cube` on another | **defaulted 2026-11-09 (the user's instruction): documented, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
+| [Q-M1f.21](#q-m1f21--regionstoppedlayer-on-two-routes) | `region.stopped.layer` on two routes | **defaulted 2026-11-09 (the user's instruction): documented per route, not moved**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -525,3 +529,83 @@ the imported forms in place of each `(import …)`.
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) is the agent's recommendation: it answers, and what it draws is the program the file
 holds. `program_read` holds each view's drawing of a container to the `.ein`'s on a program with no import.
+
+### Q-M1f.18 — Which object the word *model* names on the read-out
+
+**Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, as its Q1: M1e's
+[Q-M1e.7](../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+ruled that a state's model, [`solution_semantics.md` § 3](../../docs/kernel/inference/solution_semantics.md#3-model)'s
+*positive part minus the positive initial KB*, is printed by `ein solve` and `--json-summary` *"under that name"*, and
+gave that half to this stage. Today a listing's `(model …)` is the region language's claim form, a state's facts over the
+candidates' relations (`region.states[].facts` in the summary); § 3's model is what `-P` prints, under *final-state
+facts (beyond the program as loaded, (not …) omitted …)*; and `-t`'s `read-out` row says *each listed state's model* of
+the first.
+
+- **(a) Document it**: the page names the two objects apart and says which surface prints which; nothing printed moves.
+- **(b)** (a), and the heads move: `-P`'s head names § 3's model, and `-t`'s row says *each listed state*.
+- **(c)** (b), and each state's model is a summary field, printed under that name.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the stage's default and the agent's recommendation: the claim form's name belongs to
+the language, whose grammar is final since S1f.5.5's T3, and printing *model* over § 3's object on the screen that holds
+`(model …)` blocks of another set would make SE-M1's collision worse. Re-opening it means (b) or (c), each moving `-P`'s
+head and the goldens that hold it.
+
+### Q-M1f.19 — A text's line break on the read-out
+
+**Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, from an item S1f.5.2 handed it. A
+`:goal-text` filled for a class's row, and an obligation's `:why` under an `owing` row, print their characters raw:
+a `\n` or `\r` in one starts the text's next line at column 0, outside every row, and a class block counts each
+sentence as one of stdout's 100 lines however many it prints (`examples/features/15_unicode_escapes.ein`,
+`tests/text/01_unicode.ein`). `ein saturate --dump`, a state file and the `source` row quote every text
+(`ein_core::text::quote`), and `--trace` prints no `:goal-text`.
+
+- **(a) Each line at the text's column**: every line break the text holds (`\r\n`, `\n`, `\r`, and Unicode's other
+  mandatory breaks) starts a new line at the column the text's first character is printed at, and each is a line of
+  the 100. The example's sentence still prints over two lines, as its header says.
+- **(b) Escape it**: print a line break as the two characters `\n`, as the quoting surfaces do, so each sentence is one
+  line; the example's header, and S1f.5.2's record, would no longer hold.
+- **(c) Leave it.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: the text is natural language the program wrote for a
+reader (Q-M1e2.23), its line break is the writer's, and the read-out's job is to keep it inside its row. Fixed at
+T1f.5.16.5; re-opening it means (b).
+
+### Q-M1f.20 — Route 2's licence: *no licence* on one row, `L7 the cube` on another
+
+**Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, its census. On route 2, describe's and
+`ein oracle`'s `route` row says *no licence* (`2, the cube — no licence: the static check flags the program`, `…:
+asked for by name`), where `--json-summary`'s `region.licences` is `["L7 the cube"]` and a mode's `route` row on the
+same route prints `2, the cube — L7 the cube` (313 runs of 3 221, `build/s1f.5.16/census.py`, 2026-11-09).
+[`solve_interface.md`](../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)'s licence table lists L7 as
+the licence that holds always. It misstates no answer.
+
+- **(a) Document it, move nothing**: the page says describe's *no licence* means no licence that lets the route skip a
+  node, and that the summary and a mode name the cube's own, L7.
+- **(b) Describe's row names L7** as a mode's does, keeping its reason: `2, the cube — L7 the cube: the static check
+  flags the program`. It moves the `route` row of every describe and `ein oracle` read-out on route 2, and their goldens.
+- **(c) The summary drops L7**, so a licence is only one that skips; a mode's row then names none.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the stage's rule: a line that misreports is shown and not fixed by this stage, which
+moves no byte of output. Re-opening it means (b) or (c), a P1e2.3-class fix.
+
+### Q-M1f.21 — `region.stopped.layer` on two routes
+
+**Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, its census. When a budget stops a
+description, `region.stopped.layer` is, on route 1, the commitment size the route stopped before (the row's *route 1
+stopped before layer L*); on the state route it is the route's own layer, a state's size plus one
+(`examples/saturation/square-bwd/floors.ein`: `layer` 10, where the row says *the states of 9 candidates*). And the
+state route's *complete up to states of k candidates*, on `states (k_s)` and `minimal line`, is held by no field:
+`region.complete_up_to` is route 1's and `null` there. It misstates no answer.
+
+- **(a) Document it per route, move nothing**: the page defines `stopped.layer` on each route and says the state route's
+  *k* is `stopped.layer − 2`.
+- **(b) One unit**: the state route writes the size it stopped before, and `complete_up_to` its *k*, moving the summary
+  of every partial state-route run (16 corpus runs, the six `square-*` cubes and the `zebra2-minus-15` pair).
+- **(c) A field per route.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the stage's rule, as Q-M1f.20's is: no summary field moves here. Re-opening it means
+(b), a summary change.
