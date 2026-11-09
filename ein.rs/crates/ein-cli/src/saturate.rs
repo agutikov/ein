@@ -663,7 +663,11 @@ fn firing_text(terms: &Terms, f: &Firing) -> String {
 // ── Main ────────────────────────────────────────────────────────
 
 fn ms(t: Instant) -> String {
-    format_spec(t.elapsed().as_secs_f64() * 1000.0, "8.2f")
+    ms_of(t.elapsed())
+}
+
+fn ms_of(d: std::time::Duration) -> String {
+    format_spec(d.as_secs_f64() * 1000.0, "8.2f")
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -675,23 +679,32 @@ fn bench(
     load: &ein_ir::LoadOptions,
     open_log: impl FnOnce(Option<&SolverConfig>) -> Events,
 ) -> Result<(), String> {
-    let src = crate::common::read_text_or_crash(path);
+    // The one read every command makes of a program (M1f S1f.5.5,
+    // T1f.5.5.13): a `.einb` is opened, and a text is loaded against its own
+    // directory, so a file-relative `(import …)` resolves as `solve` resolves
+    // it. Until then this command read text only and loaded it with no base
+    // directory, refusing both (W40, W41).
+    let held = crate::common::read_program(path)?;
     println!("input:   {}", path.display());
-    println!("         {} chars", src.chars().count());
+    println!("         {}", held.size_line());
 
     let mut ast = Ast::new();
-    let t = Instant::now();
-    let forms = ein_ir::parse(&mut ast, &src, path.to_str()).map_err(|e| e.to_string())?;
-    println!("parse:    {} ms  ({} top-level forms)", ms(t), forms.len());
-
-    // No `base_dir`: `saturate` calls `from_ir(forms)` bare, so a
-    // file-relative `(import …)` resolves against the *working directory*
-    // here where `solve` resolves it against the puzzle's own.
     let mut terms = Terms::new();
-    let t = Instant::now();
-    let mut kb = ein_ir::load_with(&mut ast, &mut terms, &forms, None, load)
-        .map_err(|e| format!("kb load error: {e}"))?;
-    println!("kb load:  {} ms", ms(t));
+    let loaded = crate::common::load_held(&mut ast, &mut terms, path, held, 0, load)?;
+    let n_forms = loaded.forms.len();
+    let mut kb = loaded.kb;
+    match loaded.how {
+        crate::common::How::Text { parse, load } => {
+            println!("parse:    {} ms  ({n_forms} top-level forms)", ms_of(parse));
+            println!("kb load:  {} ms", ms_of(load));
+        }
+        crate::common::How::Container { open, .. } => {
+            println!(
+                "open:     {} ms  ({n_forms} top-level forms stored)",
+                ms_of(open)
+            );
+        }
+    }
 
     // The log opens here — after the kb exists, before anything is compiled or
     // fired, and carrying the KB's *own* config, since `saturate` has no CLI
@@ -820,10 +833,6 @@ pub fn main(argv: &[String]) -> i32 {
         .get_matches_from(std::iter::once("ein saturate".to_string()).chain(argv.iter().cloned()));
     let file = m.get_one::<String>("file").expect("required").clone();
     let target = Path::new(&file);
-    if !target.exists() {
-        eprintln!("error: {file} not found");
-        return 1;
-    }
     let events_path = m.get_one::<String>("events").cloned();
     let level = match m.get_one::<String>("events-level").map(String::as_str) {
         Some("verbose") => Level::Verbose,

@@ -322,7 +322,10 @@ fn every_row_states_its_witness_s_region() {
         // S1e2.2.20 (W20, a wildcard relation in a rule), the binary's line
         // the loader's, at the parse since M1f S1f.5.3 (W20's range, until
         // S1f.5.4), the parser's, or by *forbid*.
-        if let Some(want) = &row.now.refused {
+        // A command's refusal or error (schema /16, M1f T1f.5.5.13) is the
+        // command's own: the library answers the witness, and the row states
+        // its region, as an answering row does.
+        if let Some(want) = row.now.refused.as_ref().filter(|_| !row.now.is_command()) {
             if let Some(e) = refusal(&row.witness) {
                 if *want != e {
                     bad.push(format!(
@@ -355,7 +358,7 @@ fn every_row_states_its_witness_s_region() {
         // the run compiles before it saturates does not compile, with a
         // compile error (M1e2 S1e2.2.22, `W22/kw-or-in-obligation`: an
         // obligation's guard read as a nested `(or …)`).
-        if row.now.error.is_some() {
+        if row.now.error.is_some() && !row.now.is_command() {
             let describe = Mode {
                 which: Which::All,
                 ask: Ask::Describe,

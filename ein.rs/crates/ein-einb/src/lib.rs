@@ -343,6 +343,11 @@ pub struct OpenOptions {
     /// re-loads its program from the text it stores, so `--require-why`
     /// refuses a `.einb` exactly where it refuses the `.ein` it was saved from.
     pub load: ein_ir::LoadOptions,
+    /// The container's own name, its path as the caller was handed it, which
+    /// every position in the stored program names through [`program_name`]
+    /// (M1f S1f.5.5, T1f.5.5.13). [`open`] fills it from its path; `None` is a
+    /// container read from bytes with no name.
+    pub name: Option<String>,
 }
 
 impl Default for OpenOptions {
@@ -353,7 +358,28 @@ impl Default for OpenOptions {
             engine: engine_version().to_string(),
             query: 0,
             load: ein_ir::LoadOptions::default(),
+            name: None,
         }
+    }
+}
+
+/// The name a container's stored program is parsed under, and so the file
+/// every position in it names: `<program stored in x.einb>`, or `<program
+/// stored in a .einb>` for a container read from bytes with no name (M1f
+/// S1f.5.5, T1f.5.5.13, [Q-M1f.15]).
+///
+/// A line and column of it are the stored text's, the resolved and
+/// import-flattened program [`ein_ir::dump_canonical`] wrote, and not the
+/// source's: the container keeps no source position past the provenance
+/// table's, by design/10's measurement (`sections::program_section`). The
+/// name says which text the position is in, in brackets as `<string>` is,
+/// since no file holds it.
+///
+/// [Q-M1f.15]: ../../../../plans/m1f_hypothesis_and_documentation/open_questions.md
+pub fn program_name(container: Option<&str>) -> String {
+    match container {
+        Some(path) => format!("<program stored in {path}>"),
+        None => "<program stored in a .einb>".to_string(),
     }
 }
 
@@ -363,6 +389,10 @@ pub struct Opened {
     /// The AST the program was rebuilt into. The KB's `ExprRef`s index it, so
     /// it has to outlive the KB.
     pub ast: Ast,
+    /// The stored program's top-level forms in [`Self::ast`]: the resolved,
+    /// import-flattened program, which is what a caller that re-saves the
+    /// container hands [`save`] (M1f S1f.5.5, T1f.5.5.13).
+    pub forms: Vec<NodeId>,
     pub meta: Meta,
     pub freshness: Freshness,
     /// True when the file's derived sections were dropped and the KB is the
@@ -431,7 +461,9 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         terms,
         &mut maps,
     )?;
-    let loaded = sections::load_program(&program, &mut ast, terms, opts.query, &opts.load)?;
+    let name = program_name(opts.name.as_deref());
+    let (loaded, forms) =
+        sections::load_program(&program, &mut ast, terms, opts.query, &opts.load, &name)?;
 
     // A file written before format 1.2 carries no record's universals (M1e2
     // S1e2.2.21), which a core follows on root's derivations as on a node's:
@@ -442,6 +474,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         return Ok(Opened {
             kb: loaded,
             ast,
+            forms,
             meta,
             freshness,
             derived_dropped: true,
@@ -477,6 +510,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     Ok(Opened {
         kb,
         ast,
+        forms,
         meta,
         freshness,
         derived_dropped: false,
@@ -524,9 +558,58 @@ pub fn section_sizes(bytes: &[u8]) -> Result<Vec<(Kind, u64)>> {
     Ok(out)
 }
 
+/// The program a container stores, as text, without opening its KB: what a
+/// command that parses a program and never loads it reads from a `.einb`
+/// (`ein render rules`, `constraints`, `program`), M1f S1f.5.5, T1f.5.5.13.
+///
+/// The header and, with `verify_digest`, the digest are checked as
+/// [`open_bytes`] checks them, so a damaged file is refused here as it is
+/// there. The text is the resolved, import-flattened program
+/// [`ein_ir::dump_canonical`] wrote; parse it under [`program_name`].
+pub fn program_of(bytes: &[u8], verify_digest: bool) -> Result<String> {
+    let mut r = Reader::new(bytes);
+    let head = Header::read(&mut r)?;
+    if head.flags != 0 {
+        return Err(EinbError::Malformed("unknown header flags"));
+    }
+    let after_header = bytes.get(HEADER_LEN..).ok_or(EinbError::Truncated)?;
+    if verify_digest && blake3::hash(after_header).as_bytes() != &head.digest {
+        return Err(EinbError::Digest);
+    }
+    for _ in 0..head.n_sections {
+        let e = Entry::read(&mut r)?;
+        if Kind::from_u32(e.kind) != Some(Kind::Program) {
+            continue;
+        }
+        if e.flags != 0 || e.len != e.raw_len {
+            return Err(EinbError::Compressed);
+        }
+        let (off, len) = (e.off as usize, e.len as usize);
+        let end = off.checked_add(len).ok_or(EinbError::Truncated)?;
+        let body = bytes.get(off..end).ok_or(EinbError::Truncated)?;
+        let mut scratch = Ast::new();
+        let program =
+            sections::read_program_names(body, &mut scratch, &mut tables::Maps::default())?;
+        return Ok(program.text().to_string());
+    }
+    Err(EinbError::MissingSection("PROGRAM"))
+}
+
 /// [`open_bytes`], from a path, through an 8-byte-aligned buffer so the
-/// zero-copy casts are the path taken.
+/// zero-copy casts are the path taken. The path names the stored program
+/// ([`OpenOptions::name`]) where the caller left it unnamed.
 pub fn open(path: &Path, terms: &mut Terms, opts: &OpenOptions) -> Result<Opened> {
     let bytes = cast::Aligned::read(path)?;
-    open_bytes(bytes.as_slice(), terms, opts)
+    if opts.name.is_some() {
+        return open_bytes(bytes.as_slice(), terms, opts);
+    }
+    let named = OpenOptions {
+        sources: opts.sources.clone(),
+        verify_digest: opts.verify_digest,
+        engine: opts.engine.clone(),
+        query: opts.query,
+        load: opts.load,
+        name: Some(path.display().to_string()),
+    };
+    open_bytes(bytes.as_slice(), terms, &named)
 }

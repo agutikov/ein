@@ -1182,10 +1182,13 @@ pub fn parse_expected(text: &str, file: &str) -> Result<Expected, ExpectedError>
         }
     }
     // Each model's text, every other line blank, so that a parse error's
-    // line and column are the file's.
+    // line and column are the file's; it ends with the model's last line, so
+    // that a model's facts end where the next `model` line begins, and the
+    // end of its input is there (M1f S1f.5.5, T1f.5.5.13).
     let mut refused: Vec<ein_ir::ParseError> = Vec::new();
     for seg in &segments {
-        let mut masked: Vec<&str> = vec![""; lines.len()];
+        let end = seg.last().map_or(0, |&i| i + 1);
+        let mut masked: Vec<&str> = vec![""; end];
         for &i in seg {
             masked[i] = lines[i];
         }
@@ -1520,7 +1523,7 @@ mod diff_tests {
             .to_string();
         assert!(
             unclosed.contains("<want>:2:5: unexpected end of input")
-                && unclosed.contains("<want>:4:5: unexpected end of input"),
+                && unclosed.contains("<want>:5:1: unexpected end of input"),
             "every model's report: {unclosed}"
         );
     }

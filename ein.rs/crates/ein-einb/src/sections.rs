@@ -631,7 +631,14 @@ pub fn program_section(
 /// The program section, read but not yet loaded.
 pub struct ProgramSection<'a> {
     text: &'a str,
-    root: Option<String>,
+}
+
+impl ProgramSection<'_> {
+    /// The stored text: the resolved, import-flattened program as
+    /// [`ein_ir::dump_canonical`] wrote it.
+    pub fn text(&self) -> &str {
+        self.text
+    }
 }
 
 /// The file-name table, interned into a fresh `Ast`, and the text set aside.
@@ -650,38 +657,40 @@ pub fn read_program_names<'a>(
     let mut r = Reader::new(body);
     let n_files = r.count(4)?;
     maps.file = Vec::with_capacity(n_files);
-    let mut root: Option<String> = None;
-    for i in 0..n_files {
-        let name = r.str()?;
-        if i == 0 {
-            root = Some(name.to_string());
-        }
-        maps.file.push(ast.intern_file(Some(name)).0);
+    for _ in 0..n_files {
+        maps.file.push(ast.intern_file(Some(r.str()?)).0);
     }
-    Ok(ProgramSection {
-        text: r.str()?,
-        root,
-    })
+    Ok(ProgramSection { text: r.str()? })
 }
 
-/// Parse the stored text and rebuild the registries from it.
+/// Parse the stored text and rebuild the registries from it, returning the
+/// stored program's top-level forms beside the `Kb`.
 ///
 /// The returned `Kb` is the loader's own output — the program *and* the source
 /// facts it declares. A fresh file's reader throws the facts away and installs
 /// the ones the file stored; a reader that has decided not to believe the
 /// derived sections keeps this one, because re-loading `PROGRAM` is exactly
 /// what reading the `.ein` would have done (design/10 §4).
+///
+/// The text is parsed under `name`, [`crate::program_name`]'s, so every
+/// position in it, a parse error's or a rule's `Loc` in a compile error, says
+/// it is a line of the program the container stores (M1f S1f.5.5,
+/// T1f.5.5.13). It was the first file name the provenance table holds, or
+/// `<string>` where that table is empty, which is the common case, until
+/// then: a line of the stored text under the source's name, or under no name.
 pub fn load_program(
     section: &ProgramSection<'_>,
     ast: &mut Ast,
     terms: &mut Terms,
     query: usize,
     load: &ein_ir::LoadOptions,
-) -> Result<Kb> {
-    let forms = ein_ir::parse(ast, section.text, section.root.as_deref())
+    name: &str,
+) -> Result<(Kb, Vec<NodeId>)> {
+    let forms = ein_ir::parse(ast, section.text, Some(name))
         .map_err(|e| EinbError::Program(e.to_string()))?;
-    ein_ir::load_query_with(ast, terms, &forms, None, query, load)
-        .map_err(|e| EinbError::Program(e.0))
+    let kb = ein_ir::load_query_with(ast, terms, &forms, None, query, load)
+        .map_err(|e| EinbError::Program(e.0))?;
+    Ok((kb, forms))
 }
 
 // ── NOGOODS ────────────────────────────────────────────────────────

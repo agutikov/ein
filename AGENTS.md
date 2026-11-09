@@ -603,7 +603,21 @@ constrained-reasoning research.
   ([S1f.5.11](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)):
   the register unmoved, 119 fixed, 22 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
-  T7 follows the language stages' remaining halves.
+  **T13 (the same day) made every command read a program the same way**: one
+  path, `ein-cli`'s `common::read_program`, tells a `.einb` from text by its
+  first bytes and loads a text against its own directory, so `ein saturate`,
+  the four `render` views that parse and `ein kb save` take a `.einb` (W40,
+  six rows) and `saturate` a file-relative import (W41), both filed and fixed
+  under the register's schema `/16` (a `now` can be a command's run that is
+  not a solve); a file that is not UTF-8 is refused with one line in Ein's
+  words, `<file>:<line>:<col>: byte 0x.. is not UTF-8 …`, at each command's
+  load-error exit (`ein test`'s 2, where the read's `process::exit` stopped
+  its selection); a container's stored program names itself, `<program stored
+  in x.einb>`
+  ([Q-M1f.15](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f15--where-does-a-position-in-a-containers-stored-program-point),
+  defaulted); and an end-of-input error is placed where the text ends: 126
+  fixed, 22 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml |
+  sort | uniq -c`, 2026-11-09). T7 follows.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

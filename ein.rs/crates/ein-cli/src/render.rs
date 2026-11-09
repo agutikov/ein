@@ -11,7 +11,7 @@ use ein_core::Terms;
 use ein_ir::Ast;
 use ein_render::{RuleMode, render_constraints, render_rule_form, render_rules_forms};
 
-use crate::common::{load_any_or_exit, parse_or_exit, rule_forms};
+use crate::common::{load_program, parse_program, rule_forms};
 
 /// stdout with the trailing newline every `render` body writes after the DOT.
 fn emit(dot: &str) {
@@ -20,7 +20,7 @@ fn emit(dot: &str) {
 
 pub fn cmd_rules(file: &str, mode: RuleMode) -> i32 {
     let mut ast = Ast::new();
-    let Some(forms) = parse_or_exit(&mut ast, Path::new(file)) else {
+    let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
     };
     let rules = rule_forms(&ast, &forms);
@@ -34,7 +34,7 @@ pub fn cmd_rules(file: &str, mode: RuleMode) -> i32 {
 
 pub fn cmd_rule(file: &str, name: &str, mode: RuleMode) -> i32 {
     let mut ast = Ast::new();
-    let Some(forms) = parse_or_exit(&mut ast, Path::new(file)) else {
+    let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
     };
     for r in rule_forms(&ast, &forms) {
@@ -52,7 +52,7 @@ pub fn cmd_rule(file: &str, name: &str, mode: RuleMode) -> i32 {
 
 pub fn cmd_constraints(file: &str) -> i32 {
     let mut ast = Ast::new();
-    let Some(forms) = parse_or_exit(&mut ast, Path::new(file)) else {
+    let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
     };
     emit(&render_constraints(&ast, &forms, "constraints"));
@@ -73,7 +73,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let Some(mut kb) = load_any_or_exit(&mut ast, &mut terms, Path::new(file), load) else {
+    let Some(mut kb) = load_program(&mut ast, &mut terms, Path::new(file), load) else {
         return 1;
     };
     let visits = Arc::new(Mutex::new(Visits::default()));
@@ -115,7 +115,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
 /// Imports are not resolved: the stdlib's forms would drown the program's own.
 pub fn cmd_program(file: &str, mode: RuleMode, levi: bool) -> i32 {
     let mut ast = Ast::new();
-    let Some(forms) = parse_or_exit(&mut ast, Path::new(file)) else {
+    let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
     };
     let opts = ein_render::DotOpts {
@@ -180,7 +180,7 @@ fn loaded_and_saturated(
     file: &str,
     load: &ein_ir::LoadOptions,
 ) -> Option<ein_core::Kb> {
-    let mut kb = load_any_or_exit(ast, terms, Path::new(file), load)?;
+    let mut kb = load_program(ast, terms, Path::new(file), load)?;
     if let Err(e) = ein_infer::saturate_events(ast, terms, &mut kb) {
         eprintln!("{file}: {e}");
         return None;

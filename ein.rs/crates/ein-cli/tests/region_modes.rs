@@ -315,7 +315,7 @@ fn diff_models_reads_a_models_facts_as_ein() {
     assert!(
         r.err
             .lines()
-            .any(|l| l == format!("{b}:3:5: unexpected end of input")),
+            .any(|l| l == format!("{b}:4:1: unexpected end of input")),
         "{}",
         r.err
     );

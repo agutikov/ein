@@ -4,7 +4,8 @@
 //! `"solve -e"` reads as `ein solve <file> -e` and `"render rules"` as
 //! `ein render rules <file>`. That keeps the manifest readable while staying
 //! mechanical — the only two shapes are "subcommand takes the file first" and
-//! `render`, whose view name comes before it.
+//! `render` and `kb`, whose view or verb comes before it (`kb save <file>
+//! <out>`, since M1f T1f.5.5.13's register rows, schema /16).
 //!
 //! Two substitutions happen here:
 //!
@@ -30,8 +31,8 @@ pub fn argv(run: &str, file: &str, out: &Path) -> Vec<String> {
         .map(|t| t.replace("{out}", &out))
         .collect();
     let mut argv: Vec<String> = Vec::with_capacity(toks.len() + 3);
-    if toks.first().map(String::as_str) == Some("render") {
-        // `render <view> <file> [flags…]`
+    if matches!(toks.first().map(String::as_str), Some("render" | "kb")) {
+        // `render <view> <file> [flags…]`, `kb save <file> <out>`
         argv.push(toks[0].clone());
         if let Some(view) = toks.get(1) {
             argv.push(view.clone());
@@ -90,6 +91,14 @@ mod tests {
     #[test]
     fn render_puts_the_view_before_the_file() {
         assert_eq!(v("render rules"), ["render", "rules", "examples/x.ein"]);
+    }
+
+    #[test]
+    fn kb_puts_the_verb_before_the_file() {
+        assert_eq!(
+            v("kb save {out}/w.einb"),
+            ["kb", "save", "examples/x.ein", "/o/w.einb"]
+        );
     }
 
     #[test]

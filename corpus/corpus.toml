@@ -1612,6 +1612,24 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W39 (`W39/or-one-key`'s twin), filed by S1f.5.1's T1f.5.1.3: the witness with `w` written as two rules, whose root core is `(c x) (small s0)`."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
+note   = "M1f W40 (`W40/saturate`, `/render-rules`, `/render-rule`, `/render-constraints`, `/render-program`, `/kb-save`), filed and fixed by S1f.5.5's T1f.5.5.13 (2026-11-09): six commands read a program path as UTF-8 text and refused the `.einb` `ein kb save` writes from this file, exit 1, which `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered. The register's rows save it and run each command on the container (schema /16); since the fix every command answers the container as it answers this file."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/saturate-import.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W41 (`W41/saturate-import`), filed and fixed by S1f.5.5's T1f.5.5.13 (2026-11-09) from S1f.5.1's finding: a file-relative `(import saturate-import-mod :symbols (q))`, which `ein saturate` refused at load (*file-relative import needs a base directory*) while `ein solve` resolved it. Since the fix every command loads a program against its own directory, and both runs answer, root holding `(q m)` and `(r m)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/saturate-import-mod.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W41's module: `saturate-import.ein` imports `q` from it by its file-relative name. A program of its own too, one relation and no fact."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

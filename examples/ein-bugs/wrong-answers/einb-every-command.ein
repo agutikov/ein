@@ -1,0 +1,42 @@
+;;; A command that takes a program refuses its `.einb` — M1f **W40**, register
+;;; rows `W40/saturate`, `W40/render-rules`, `W40/render-rule`,
+;;; `W40/render-constraints`, `W40/render-program` and `W40/kb-save`
+;;; (`corpus/wrong_answers.toml`), filed and fixed by S1f.5.5's T1f.5.5.13
+;;; (2026-11-09).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and one rule, `step`, which concludes `(q a)` from it, so
+;;; that `ein saturate` fires something and `ein render rules` and `ein render
+;;; rule --name step` have a rule to draw. R is {∅}: root holds `(p a)` and
+;;; `(q a)`, and nothing is a candidate.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; AGENTS.md: *every command that takes a `.ein` path takes a `.einb` too,
+;;; dispatching on the magic bytes*, and the user's rule is one tool,
+;;; consistent answers: no two commands may disagree. So the container `ein kb
+;;; save` writes from this file is answered by every command that takes a
+;;; program, each as it answers this file: `saturate --dump` the same KB, each
+;;; `render` view the same drawing, and `kb save` a container again. The
+;;; register's rows run each command on the container (schema /16) and hold its
+;;; stdout to the same run's on this file.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The right answer, since S1f.5.5's T1f.5.5.13 (2026-11-09): every command
+;;; reads a program through one path, `ein-cli`'s `common::read_program`, which
+;;; tells a container from text by its first bytes. Until then `ein saturate`,
+;;; the four `render` views that parse a program and `ein kb save` read the path
+;;; as UTF-8 text, so each refused the container, exit 1, with
+;;; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'`, while
+;;; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered it.
+
+(relation p T :why "{?1} is a p")
+(relation q T :why "{?1} is a q")
+
+(p a)
+
+(rule step () :match (p ?x) :assert (q ?x) :why "{?x} is a p, so {?x} is a q")
+
+(query :goal (q ?x))

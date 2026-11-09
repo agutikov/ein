@@ -57,6 +57,15 @@
 //! projection class, in the order printed. The summary carries the rows and
 //! not the sentences, so they are read off stdout, as `-H`'s relations are.
 //!
+//! **Since M1f S1f.5.5 (T1f.5.5.13) a `now` can be a command's run that is
+//! not a solve** (schema /16, W40, W41): it writes no summary, and its answer
+//! is a refusal, an error or that it answered, exit 0 with nothing on stderr.
+//! A `container` row saves the witness with `ein kb save` first and runs on
+//! the `.einb`; one that answered prints what the same run prints on the
+//! witness itself, every number a line times masked and the lines that say
+//! what the run read aside. `{FILE}` in a recorded line is the path the run
+//! was handed.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -77,6 +86,9 @@ use serde_json::Value as J;
 
 /// What one run left behind: its exit code, stdout, stderr, and the summary.
 struct Got {
+    /// The path the run was handed: the witness, or the container saved from
+    /// it (schema /16).
+    file: String,
     code: i32,
     stdout: String,
     stderr: String,
@@ -86,9 +98,37 @@ struct Got {
 }
 
 fn run(row: &Row, dir: &Path) -> Got {
-    let mut argv = plan::argv(&row.now.run, &row.witness, dir);
-    // `-H` lists H, whose relations are what a state's `(model …)` names.
-    argv.push("-H".to_string());
+    // A container row (schema /16) reads the witness saved as a `.einb`.
+    let file = if row.now.container {
+        let stem = Path::new(&row.witness)
+            .file_stem()
+            .expect("a witness is a file")
+            .to_string_lossy()
+            .into_owned();
+        let einb = dir.join(format!("{stem}.einb"));
+        let saved = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(["kb", "save", &row.witness])
+            .arg(&einb)
+            .current_dir(repo_root())
+            .output()
+            .unwrap_or_else(|e| panic!("{}: kb save: {e}", row.id));
+        assert!(
+            saved.status.success(),
+            "{}: `ein kb save {}` failed: {}",
+            row.id,
+            row.witness,
+            String::from_utf8_lossy(&saved.stderr)
+        );
+        einb.display().to_string()
+    } else {
+        row.witness.clone()
+    };
+    let mut argv = plan::argv(&row.now.run, &file, dir);
+    // `-H` lists H, whose relations are what a state's `(model …)` names; a
+    // command's run (schema /16) lists no state.
+    if !row.now.is_command() {
+        argv.push("-H".to_string());
+    }
     // A dead node's core is the answer directory's (M1e2 S1e2.2.19, W19).
     let answer = dir.join("answer");
     if row.now.nogoods.is_some() {
@@ -107,12 +147,89 @@ fn run(row: &Row, dir: &Path) -> Got {
         .ok()
         .map(|s| serde_json::from_str(&s).expect("nogoods.json parses"));
     Got {
+        file,
         code: out.status.code().unwrap_or(-1),
         stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
         stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
         summary,
         nogoods,
     }
+}
+
+/// A command's stdout as two runs of it are compared (schema /16): the lines
+/// that say what the run read (`input:`, its size, `parse:`, `kb load:`,
+/// `open:`) aside, every number a line times (`… ms`) masked, and runs of
+/// spaces one, since a masked number's width is the format's.
+fn comparable(stdout: &str) -> String {
+    let mut out = Vec::new();
+    for line in stdout.lines() {
+        let t = line.trim_start();
+        let size = t.ends_with(" chars") || t.ends_with(" bytes, a .einb container");
+        if ["input:", "parse:", "kb load:", "open:"]
+            .iter()
+            .any(|p| t.starts_with(p))
+            || (size && t.starts_with(|c: char| c.is_ascii_digit()))
+        {
+            continue;
+        }
+        let words: Vec<&str> = line.split_whitespace().collect();
+        let masked: Vec<&str> = words
+            .iter()
+            .enumerate()
+            .map(|(i, w)| {
+                let timed = words.get(i + 1).is_some_and(|n| *n == "ms");
+                let number = w.trim_start_matches("Δ=").parse::<f64>().is_ok();
+                if timed && number { "#" } else { w }
+            })
+            .collect();
+        out.push(masked.join(" "));
+    }
+    out.join("\n")
+}
+
+/// What a command's `now` answers when it answered (schema /16): exit 0, an
+/// empty stderr, and with `container` the same run's stdout on the witness.
+fn answered(row: &Row, dir: &Path, got: &Got) -> Vec<String> {
+    let mut d = Vec::new();
+    if got.code != 0 {
+        d.push(format!(
+            "exit: recorded 0, the command answers, got {} — stderr: {}",
+            got.code,
+            got.stderr.lines().next().unwrap_or("<empty>")
+        ));
+        return d;
+    }
+    if !got.stderr.trim().is_empty() {
+        d.push(format!(
+            "the command answered and wrote stderr: {}",
+            got.stderr
+        ));
+    }
+    if row.now.container {
+        let there = dir.join("witness");
+        std::fs::create_dir_all(&there).expect("scratch dir");
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(plan::argv(&row.now.run, &row.witness, &there))
+            .current_dir(repo_root())
+            .output()
+            .unwrap_or_else(|e| panic!("{}: {}: {e}", row.id, row.witness));
+        let want = comparable(&String::from_utf8_lossy(&out.stdout));
+        let have = comparable(&got.stdout);
+        if want != have {
+            let at = want
+                .lines()
+                .zip(have.lines())
+                .position(|(a, b)| a != b)
+                .map_or_else(
+                    || "their lengths".to_string(),
+                    |i| format!("line {}", i + 1),
+                );
+            d.push(format!(
+                "the container's stdout is not the witness's ({at} differs)"
+            ));
+        }
+    }
+    d
 }
 
 /// `nogoods.json`'s sets and cores, sorted as the register compares them.
@@ -319,6 +436,8 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     Ok(Now {
         run: row.now.run.clone(),
         line,
+        container: row.now.container,
+        answered: false,
         refused: None,
         error: None,
         exhausted: region["exhausted"] == true,
@@ -451,6 +570,8 @@ fn every_row_answers_what_the_register_records() {
             (None, None) => None,
         };
         let diffs = if let Some((field, what, want)) = ended {
+            // `{FILE}` is the path the run was handed (schema /16).
+            let want = &want.replace("{FILE}", &got.file);
             let mut d = Vec::new();
             if got.code != 1 {
                 d.push(format!("exit: recorded 1, {what}, got {}", got.code));
@@ -462,6 +583,9 @@ fn every_row_answers_what_the_register_records() {
                 d.push(format!("{what} wrote a summary"));
             }
             d
+        } else if row.now.is_command() {
+            // A command's run that answered (schema /16, W40, W41).
+            answered(row, &dir, &got)
         } else if got.code != i32::from(row.now.refutes()) {
             // A refuted claim exits 1 (schema /12, W28); every other answer 0.
             vec![format!(

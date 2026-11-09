@@ -1,0 +1,5 @@
+;;; The module `saturate-import.ein` imports `q` from, by its file-relative
+;;; name — M1f **W41** (`corpus/wrong_answers.toml`), S1f.5.5's T1f.5.5.13
+;;; (2026-11-09). A program of its own as well: one relation, and no fact.
+
+(relation q T :why "{?1} is a q")

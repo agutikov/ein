@@ -106,7 +106,7 @@
   repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a name, Insert `)`
   and 6 more repairs
-<string>:18:18: unexpected end of input
+<string>:19:1: unexpected end of input
   repair: Insert `)`, Insert `)`
 === ";; Should fail: a bare atom is not a form. Every top-level form is a\n;; parenthesised list `(...)`; post-P1.7c the head need not be a reserved\n;; wrapper (any non-declarator head is a fact), but a lone atom is not a list.\nNorwegian\n"
   refused <string>:4:1: unexpected `Norwegian`: a name
@@ -130,7 +130,7 @@
 <string>:18:3: unexpected `:assert`
   repair: Delete `:assert`
   repair: Insert `)`
-<string>:18:18: unexpected end of input
+<string>:19:1: unexpected end of input
   repair: Insert `)`
 === "; M1e S1e.2.1 — a built-in predicate above its arity.\n;\n; The half of `CO-H1`'s class that is worse than the panic, and the half the\n; review could not have guessed from the one instance it had: this file used\n; to **load, compile, fire and exit 0**. `guard_holds` read `args[0]` and\n; `args[1]` and dropped the rest, so a three-way equality was silently\n; evaluated as a two-way one — a wrong answer with a success exit code, where\n; the panic is at least loud.\n;\n; `A` and `B` are distinct, so a reader of this rule expects it not to fire.\n; Before S1e.2.1 it fired.\n(relation p T)\n(relation q T)\n\n(rule three-way-equality ()\n  :match  (and (p ?x) (eq ?x A B))\n  :assert (q ?x))\n"
   refused <string>:16:32: unexpected `B`: a name

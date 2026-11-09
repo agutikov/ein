@@ -236,8 +236,12 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let mut runs: Vec<(String, String, i32)> = Vec::new();
     for row in &register().case {
         // A refused row (M1e2 S1e2.2.5) writes no state, nor one whose run
-        // ends in an error (S1e2.2.18): `wrong_answers.rs` holds both.
-        if row.status.starts_with("merged:") || row.now.refused.is_some() || row.now.error.is_some()
+        // ends in an error (S1e2.2.18), nor a command's that is not a solve
+        // (schema /16, M1f T1f.5.5.13): `wrong_answers.rs` holds all three.
+        if row.status.starts_with("merged:")
+            || row.now.refused.is_some()
+            || row.now.error.is_some()
+            || row.now.is_command()
         {
             continue;
         }

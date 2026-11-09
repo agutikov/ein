@@ -759,6 +759,26 @@
 # open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
 # uniq -c`, 2026-11-09).
 #
+# **W40 and W41 were filed and fixed the same day by S1f.5.5's T1f.5.5.13**,
+# every command reading a program the same way, on the user's rule that no
+# two commands may disagree: a command that refuses a program another answers
+# is a wrong answer. W40, six rows, one per command that refused a `.einb`
+# another command answered: `ein saturate`, `ein render rules`, `rule`,
+# `constraints` and `program`, and `ein kb save` read the path as UTF-8 text
+# and exited 1 with `UnicodeDecodeError: …` on a container `ein solve`,
+# `oracle`, `test`, `render lattice` and `render kb` answered. W41, one row:
+# `ein saturate` loaded a program with no base directory, so it refused a
+# file-relative `(import …)` that `solve`, `oracle` and `test` resolved.
+# **Schema /16**: a `now` can be a command's run that is not a solve, which
+# writes no summary, and answers with a refusal, an error or `answered`; a
+# `now` can read its witness through a `.einb` (`container`), and then
+# answers what the same run answers on the witness; and a recorded answer
+# can be a command's (`by = "command"`, with `refused`). Each `[case.fixed]`
+# carried the null id in the fixing commit, and the stage's next commit
+# wrote the hash. The register reads **126 rows fixed, 22 open and 1
+# not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -779,8 +799,9 @@
 #              (schema /9), how many members of R hold a stale fact
 #              (schema /10), how many it met and does not list (schema
 #              /11), a claim's outcome and each query's classes (schema
-#              /12), what `refuted by` names (schema /14), and the
-#              sentences a query's `:goal-text` prints (schema /15).
+#              /12), what `refuted by` names (schema /14), the
+#              sentences a query's `:goal-text` prints (schema /15), and
+#              whether a command's run answers (schema /16).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
 #   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
@@ -820,8 +841,22 @@
 #
 #   [case.now] — the region run that asks the row's question, and what it
 #     answers, in `ein-summary/2`'s terms (M1e2 S1e2.1a.5):
-#     run       a corpus run name, `solve`, `solve --maximal` or `solve --minimal`
-#     line      all | minimal | maximal — which part of R its states are
+#     run       a corpus run name, `solve`, `solve --maximal` or `solve --minimal`;
+#               or since schema /16 (M1f S1f.5.5, T1f.5.5.13) a command's run
+#               that is not a solve, `saturate --dump`, `render rules`, `kb save
+#               {out}/again.einb`, which writes no summary: its answer is a
+#               `refused` or an `error` line, or `answered`, and it states
+#               nothing else below
+#     line      all | minimal | maximal — which part of R its states are; not
+#               stated on a command's run (schema /16)
+#     container (schema /16) `true`: the run reads the witness saved as a
+#               `.einb`, `ein kb save WITNESS DIR/<stem>.einb` first; `{FILE}`
+#               in a `refused` or `error` line is the path the run was handed
+#     answered  (schema /16) `true`: a command's run answered, exit 0 with
+#               nothing on stderr, and with `container` its stdout is the same
+#               run's on the witness, every number a line times masked and the
+#               lines that say what the run read (`input:`, its size,
+#               `parse:`, `kb load:`, `open:`) aside (W40, W41)
 #     refused   (schema /4, M1e2 S1e2.2.5) the run refuses the program: exit 1,
 #               and this is its stderr's first line; nothing below is stated.
 #               *Forbid*'s refusal, or since M1e2 S1e2.2.20 the loader's
@@ -897,6 +932,11 @@
 #     since the switch the record of it, not run
 #     by        walk (the default) | region — a recorded answer a region run
 #               gave, with `why` saying how it was taken (W13's `wrong`, S1e2.1a.7)
+#               | command (schema /16) — a command's run that is not a solve,
+#               with `why`, whose answer is its `refused` or `error` line
+#     container (schema /16) the run read the witness saved as a `.einb`
+#     refused   (schema /16) the command refused the program: `exit` is 1 and
+#               this is its stderr's first line (W41's `wrong`)
 #     witness   (control, twin) another file; default: the row's witness
 #     run       a corpus run name — `ein <run>` with the file elided, so
 #               `"solve -e -L"` is `ein solve <witness> -e -L`
@@ -951,7 +991,10 @@
 #     `claim` and `queries` (schema /12, M1e2 S1e2.3.8) are the outcome the
 #     program's claims come to and each query's count of projection classes,
 #     compared by value (W28). `refuted_by` (schema /14, M1f S1f.5.15) is the
-#     rules root's `refuted by` should name, in order (W36).
+#     rules root's `refuted by` should name, in order (W36). `answered = true`
+#     (schema /16, M1f S1f.5.5) says the answer is that a command answers the
+#     program, as another command does, and states no refusal, verdict or `k`
+#     (W40, W41).
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
@@ -999,7 +1042,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/15"
+schema = "ein-wrong-answers/16"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -9171,3 +9214,309 @@ relations = ["co-located", "is-a"]
 models    = [
   ["(co-located Blue H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
 ]
+
+# ══ W40 — a command that takes a program refuses its `.einb`: `ein saturate --dump` ══
+[[case]]
+id       = "W40/saturate"
+case     = "W40"
+title    = "a command that takes a program refuses its `.einb`, which another command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed and fixed by S1f.5.5 (T1f.5.5.13, 2026-11-09), from the coordinator's finding of that day, *`ein saturate X.einb` does not read a `.einb`*, pre-existing (T9's base build answers the same). AGENTS.md: *every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes*; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` did (`common::load_any_or_exit`), and six did not: `saturate`, which read the path with `read_text_or_crash`, the four `render` views that parse a program and never load it (`parse_or_exit`), and `kb save`. A row per command, one witness: the run saves the witness with `ein kb save` first and reads the container (schema /16). Since the fix a parse-only view reads the program the container stores, resolved and import-flattened (`ein_einb::program_of`), so on a program that imports, `render program` and `render rules` of the container draw its imports' forms too; this witness imports nothing, and each view's drawing is the `.ein`'s"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+container = true
+why       = "`ein kb save` the witness, then `ein saturate --dump` on the container, release, at 06433b60 (2026-11-09): exit 1, the path read as UTF-8 text; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered the same container, exit 0; `{FILE}` is the container's path"
+exit      = 1
+error     = "UnicodeDecodeError: 'utf-8' codec can't decode bytes in '{FILE}'"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "AGENTS.md: every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes; and the user's rule, one tool, consistent answers: `ein saturate --dump` answers the container, exit 0, as it answers the witness, which `ein solve` answers with R = {∅}, root holding `(p a)` and `(q a)`"
+
+[case.now]
+run       = "saturate --dump"
+container = true
+answered  = true
+
+# ══ W40 — a command that takes a program refuses its `.einb`: `ein render rules` ══
+[[case]]
+id       = "W40/render-rules"
+case     = "W40"
+title    = "a command that takes a program refuses its `.einb`, which another command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "render rules"
+by        = "command"
+container = true
+why       = "`ein kb save` the witness, then `ein render rules` on the container, release, at 06433b60 (2026-11-09): exit 1, the path read as UTF-8 text; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered the same container, exit 0; `{FILE}` is the container's path"
+exit      = 1
+error     = "UnicodeDecodeError: 'utf-8' codec can't decode bytes in '{FILE}'"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "AGENTS.md: every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes; and the user's rule, one tool, consistent answers: `ein render rules` answers the container, exit 0, as it answers the witness, which `ein solve` answers with R = {∅}, root holding `(p a)` and `(q a)`"
+
+[case.now]
+run       = "render rules"
+container = true
+answered  = true
+
+# ══ W40 — a command that takes a program refuses its `.einb`: `ein render rule --name step` ══
+[[case]]
+id       = "W40/render-rule"
+case     = "W40"
+title    = "a command that takes a program refuses its `.einb`, which another command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "render rule --name step"
+by        = "command"
+container = true
+why       = "`ein kb save` the witness, then `ein render rule --name step` on the container, release, at 06433b60 (2026-11-09): exit 1, the path read as UTF-8 text; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered the same container, exit 0; `{FILE}` is the container's path"
+exit      = 1
+error     = "UnicodeDecodeError: 'utf-8' codec can't decode bytes in '{FILE}'"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "AGENTS.md: every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes; and the user's rule, one tool, consistent answers: `ein render rule --name step` answers the container, exit 0, as it answers the witness, which `ein solve` answers with R = {∅}, root holding `(p a)` and `(q a)`"
+
+[case.now]
+run       = "render rule --name step"
+container = true
+answered  = true
+
+# ══ W40 — a command that takes a program refuses its `.einb`: `ein render constraints` ══
+[[case]]
+id       = "W40/render-constraints"
+case     = "W40"
+title    = "a command that takes a program refuses its `.einb`, which another command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "render constraints"
+by        = "command"
+container = true
+why       = "`ein kb save` the witness, then `ein render constraints` on the container, release, at 06433b60 (2026-11-09): exit 1, the path read as UTF-8 text; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered the same container, exit 0; `{FILE}` is the container's path"
+exit      = 1
+error     = "UnicodeDecodeError: 'utf-8' codec can't decode bytes in '{FILE}'"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "AGENTS.md: every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes; and the user's rule, one tool, consistent answers: `ein render constraints` answers the container, exit 0, as it answers the witness, which `ein solve` answers with R = {∅}, root holding `(p a)` and `(q a)`"
+
+[case.now]
+run       = "render constraints"
+container = true
+answered  = true
+
+# ══ W40 — a command that takes a program refuses its `.einb`: `ein render program` ══
+[[case]]
+id       = "W40/render-program"
+case     = "W40"
+title    = "a command that takes a program refuses its `.einb`, which another command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "render program"
+by        = "command"
+container = true
+why       = "`ein kb save` the witness, then `ein render program` on the container, release, at 06433b60 (2026-11-09): exit 1, the path read as UTF-8 text; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered the same container, exit 0; `{FILE}` is the container's path"
+exit      = 1
+error     = "UnicodeDecodeError: 'utf-8' codec can't decode bytes in '{FILE}'"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "AGENTS.md: every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes; and the user's rule, one tool, consistent answers: `ein render program` answers the container, exit 0, as it answers the witness, which `ein solve` answers with R = {∅}, root holding `(p a)` and `(q a)`"
+
+[case.now]
+run       = "render program"
+container = true
+answered  = true
+
+# ══ W40 — a command that takes a program refuses its `.einb`: `ein kb save … again.einb` ══
+[[case]]
+id       = "W40/kb-save"
+case     = "W40"
+title    = "a command that takes a program refuses its `.einb`, which another command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/einb-every-command.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "The same witness and defect as `W40/saturate`'s note says, through this row's command: it read the path as UTF-8 text and refused the container, which `ein solve` answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command reads a program through one path, `ein-cli`'s `common::read_program`, which tells a `.einb` container from UTF-8 text by its first bytes, so each command that takes a program answers a container as it answers the `.ein` it was saved from"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "kb save {out}/again.einb"
+by        = "command"
+container = true
+why       = "`ein kb save` the witness, then `ein kb save … again.einb` on the container, release, at 06433b60 (2026-11-09): exit 1, the path read as UTF-8 text; `ein solve`, `oracle`, `test`, `render lattice` and `render kb` answered the same container, exit 0; `{FILE}` is the container's path"
+exit      = 1
+error     = "UnicodeDecodeError: 'utf-8' codec can't decode bytes in '{FILE}'"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "AGENTS.md: every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes; and the user's rule, one tool, consistent answers: `ein kb save … again.einb` answers the container, exit 0, as it answers the witness, which `ein solve` answers with R = {∅}, root holding `(p a)` and `(q a)`"
+
+[case.now]
+run       = "kb save {out}/again.einb"
+container = true
+answered  = true
+
+# ══ W41 — `ein saturate` resolves no file-relative import ══
+[[case]]
+id       = "W41/saturate-import"
+case     = "W41"
+title    = "`ein saturate` resolves no file-relative import, which `ein solve` resolves"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.5"
+question = ["S1f.5.5 T1f.5.5.13"]
+witness  = "examples/ein-bugs/wrong-answers/saturate-import.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed and fixed by S1f.5.5 (T1f.5.5.13, 2026-11-09), from S1f.5.1's finding: `ein saturate` loaded a program with `ein_ir::load_with(…, None, …)`, no base directory, so a file-relative `(import …)` was refused with the import resolver's *file-relative import needs a base directory* line, while `solve`, `oracle` and `test` loaded against the file's directory. Its source said it resolved against the working directory, which it did not, and `examples/broken/load/README.md` called the line *not expressible as a file*. The witness imports `q` from `saturate-import-mod.ein` beside it, the first corpus program a file-relative import is not refused on"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.5 (T1f.5.5.13), on the user's rule that no two commands may disagree: every command loads a program through one path, `ein-cli`'s `common::load_held`, against the file's own directory"
+date   = "2026-11-09"
+
+[case.wrong]
+run     = "saturate"
+by      = "command"
+why     = "`ein saturate` on the witness, release, at 06433b60 (2026-11-09): exit 1, refused at load; `ein solve`, `oracle` and `test` answered it, exit 0"
+exit    = 1
+refused = "kb load error: (import saturate-import-mod) — file-relative import needs a base directory (load from a file path) at None"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+answered = true
+derived  = "a file-relative `(import …)` resolves against the importing file's directory, and the user's rule, one tool, consistent answers: `ein saturate` loads the witness as `ein solve` does and answers it, exit 0; `ein solve` answers R = {∅}, root holding `(q m)` and `(r m)`"
+
+[case.now]
+run      = "saturate"
+answered = true

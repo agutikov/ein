@@ -53,7 +53,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     let mut terms = Terms::new();
     let load_opts = crate::common::load_options(m);
     let Some(mut kb) =
-        crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(&file), &load_opts)
+        crate::common::load_program(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
         return 1;
     };

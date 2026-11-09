@@ -89,8 +89,16 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// lines, which the summary does not carry) where `right` states them
 /// ([`Right::goal_text`]), W37's: a template reference that names a variable
 /// with a character other than a letter, a digit, `_` or `-` is printed as
-/// written.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/15";
+/// written. `/16` since M1f S1f.5.5 (T1f.5.5.13, 2026-11-09): a `now` can be
+/// a **command's** run, any `ein` run that is not a solve ([`Now::is_command`]),
+/// which writes no summary: its answer is a refusal or an error, as a solve's
+/// can be, or that it answered ([`Now::answered`], [`Right::answered`]), exit 0
+/// with nothing on stderr; a `now` can read the witness through a `.einb`
+/// ([`Now::container`]), saved by `ein kb save` first, and then answers what the
+/// same run answers on the witness; and a recorded answer can be a command's
+/// ([`Answer::by`] `command`, with [`Answer::refused`]), W40's and W41's: one
+/// command refused a program another answered.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/16";
 
 /// What a claim's check came to, as the summary spells it (schema /12):
 /// `none` where the program states no such claim.
@@ -117,8 +125,10 @@ pub const EMPTY_KINDS: [&str; 2] = ["no-alive", "all-owe"];
 pub const STATUSES: [&str; 3] = ["open", "fixed", "not-wrong"];
 
 /// What gave a recorded [`Answer`]: the walk, which no command has run since
-/// M1e2 S1e2.1a.5's switch, or a region run (W13's `wrong`, M1e2 S1e2.1a.7).
-pub const ANSWERED_BY: [&str; 2] = ["walk", "region"];
+/// M1e2 S1e2.1a.5's switch, a region run (W13's `wrong`, M1e2 S1e2.1a.7), or
+/// since schema /16 a command's run that is not a solve (W40's and W41's
+/// `wrong`, M1f T1f.5.5.13).
+pub const ANSWERED_BY: [&str; 3] = ["walk", "region", "command"];
 
 /// The verdict words, as `--json-summary`'s `verdict.type` spells them.
 pub const VERDICTS: [&str; 4] = ["Solution", "Ambiguity", "Contradiction", "Open"];
@@ -343,10 +353,26 @@ impl Row {
 #[serde(deny_unknown_fields)]
 pub struct Now {
     /// A corpus run name: the mode that asks the row's question, `solve
-    /// --maximal` for a model-set row.
+    /// --maximal` for a model-set row; or since schema /16 a command's run
+    /// that is not a solve, `saturate --dump` or `render rules`
+    /// ([`Self::is_command`]).
     pub run: String,
-    /// One of [`LINES`]: which part of R its states are.
+    /// One of [`LINES`]: which part of R its states are. Empty on a
+    /// command's run (schema /16), which lists no state.
+    #[serde(default)]
     pub line: String,
+    /// The run reads the witness through a `.einb` (schema /16, M1f
+    /// T1f.5.5.13, W40): `ein kb save WITNESS DIR/<stem>.einb` first, then
+    /// the run on the container.
+    #[serde(default)]
+    pub container: bool,
+    /// A command's run answered (schema /16, W40, W41): exit 0, with nothing
+    /// on stderr, and with [`Self::container`] its stdout is the same run's on
+    /// the witness, every number a line times masked and the lines that say
+    /// what the run read (`input:`, its size, `parse:`, `kb load:`, `open:`)
+    /// aside. A command's `now` is a refusal, an error or this.
+    #[serde(default)]
+    pub answered: bool,
     /// The run refuses the program — M1e2 S1e2.2.5, *forbid*: exit 1, and
     /// this is the first line of its stderr. A refused run lists nothing, so
     /// the fields below keep their defaults.
@@ -497,6 +523,13 @@ pub fn sorted_nogoods(n: &[Nogood]) -> Vec<Nogood> {
 }
 
 impl Now {
+    /// Is the run a command's that is not a solve (schema /16)? Then it writes
+    /// no summary, and its answer is a refusal, an error or
+    /// [`Self::answered`].
+    pub fn is_command(&self) -> bool {
+        !self.run.starts_with("solve")
+    }
+
     /// The verdict word its states make: `Solution` for one, `Ambiguity` for
     /// more, and for none `Contradiction` or `Open` by the kind of empty R.
     pub fn verdict(&self) -> &'static str {
@@ -533,6 +566,34 @@ impl Now {
                 }
             ));
             return out;
+        }
+        // A command's answer (schema /16) is that it answered: no verdict,
+        // `k` or model, which its run does not write.
+        match (right.answered, self.answered) {
+            (true, true) => return out,
+            (true, false) => {
+                out.push(format!(
+                    "right: the command answers, now: {}",
+                    if self.refused.is_some() {
+                        "a refusal"
+                    } else {
+                        "no answer"
+                    }
+                ));
+                return out;
+            }
+            (false, true) => {
+                out.push(format!(
+                    "right: {}, now: the command answers",
+                    if right.refused {
+                        "a refusal"
+                    } else {
+                        "a solve's answer"
+                    }
+                ));
+                return out;
+            }
+            (false, false) => {}
         }
         // A refusal is the whole answer: it states no verdict, `k` or model.
         match (right.refused, self.refused.is_some()) {
@@ -705,9 +766,19 @@ pub struct Answer {
     /// A corpus run name ([`crate::plan::argv`]).
     pub run: String,
     /// One of [`ANSWERED_BY`]; the walk when absent. A region run's
-    /// [`Self::why`] says how it was taken.
+    /// [`Self::why`] says how it was taken, and so does a command's (schema
+    /// /16), whose [`Self::run`] is not a solve.
     #[serde(default)]
     pub by: Option<String>,
+    /// The run read the witness through a `.einb`, as [`Now::container`]
+    /// (schema /16). A record.
+    #[serde(default)]
+    pub container: bool,
+    /// The run refused the program (schema /16, a command's): `exit` is 1 and
+    /// this is the first line of its stderr, and `verdict`, `k` and
+    /// `exhausted` are not stated. A record (W41's `wrong`).
+    #[serde(default)]
+    pub refused: Option<String>,
     /// `NAME=value`, set for the run.
     #[serde(default)]
     pub env: Vec<String>,
@@ -819,6 +890,12 @@ pub struct Right {
     /// A refusal states no verdict, `k` or model.
     #[serde(default)]
     pub refused: bool,
+    /// The answer is that a command's run **answers** (schema /16, M1f
+    /// T1f.5.5.13, W40, W41): a program another command answers is answered
+    /// by this one too, exit 0, which [`Now::answered`] records. It states no
+    /// verdict, `k` or model.
+    #[serde(default)]
+    pub answered: bool,
     #[serde(default)]
     pub verdict: Option<String>,
     #[serde(default)]
@@ -941,6 +1018,7 @@ impl Register {
             // right states `k` and the members it does not list instead.
             if r.status == "fixed"
                 && !r.right.refused
+                && !r.right.answered
                 && (r.right.k.is_none() || (r.right.verdict.is_none() && r.right.others.is_none()))
             {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
@@ -1026,7 +1104,9 @@ impl Register {
             {
                 out.push(at("a refused [now] lists nothing".to_string()));
             }
-            if r.now.refused.is_some() && r.region.is_some() {
+            // A command's refusal is its own (schema /16): the library answers
+            // the witness, whose region the row states.
+            if r.now.refused.is_some() && r.region.is_some() && !r.now.is_command() {
                 out.push(at(
                     "a refused [now] has no [case.region]: the library refuses it too".to_string(),
                 ));
@@ -1043,7 +1123,7 @@ impl Register {
                 {
                     out.push(at("an error [now] lists nothing".to_string()));
                 }
-                if r.region.is_some() {
+                if r.region.is_some() && !r.now.is_command() {
                     out.push(at(
                         "an error [now] has no [case.region]: the library stops too".to_string(),
                     ));
@@ -1054,11 +1134,66 @@ impl Register {
                     "`open_because` is stated exactly when the row is open".to_string()
                 ));
             }
-            if !r.now.run.starts_with("solve") {
-                out.push(at(format!(
-                    "[now] run {:?} is not a solve — the register reads --json-summary",
-                    r.now.run
-                )));
+            // A command's run (schema /16) writes no summary: its `now` is a
+            // refusal, an error or that it answered, and states nothing a
+            // summary would.
+            if r.now.is_command() {
+                let ends = [
+                    r.now.refused.is_some(),
+                    r.now.error.is_some(),
+                    r.now.answered,
+                ]
+                .into_iter()
+                .filter(|b| *b)
+                .count();
+                if ends != 1 {
+                    out.push(at(format!(
+                        "[now] run {:?} is a command's (schema /16): its answer is exactly one of \
+                         a refusal, an error or `answered`",
+                        r.now.run
+                    )));
+                }
+                if !r.now.line.is_empty()
+                    || r.now.k != 0
+                    || r.now.exhausted
+                    || r.now.empty.is_some()
+                    || !r.now.models.is_empty()
+                    || !r.now.relations.is_empty()
+                    || !r.now.outside.is_empty()
+                    || r.now.core.is_some()
+                    || r.now.nogoods.is_some()
+                    || r.now.nogoods_listed
+                    || r.now.core_status.is_some()
+                    || r.now.stale.is_some()
+                    || r.now.others.is_some()
+                    || r.now.claim.is_some()
+                    || r.now.queries.is_some()
+                    || r.now.refuted_by.is_some()
+                    || r.now.goal_text.is_some()
+                {
+                    out.push(at(
+                        "a command's [now] (schema /16) writes no summary, and states nothing one \
+                         would"
+                            .to_string(),
+                    ));
+                }
+                if !r.right.refused && !r.right.answered {
+                    out.push(at(
+                        "a command's [right] (schema /16) is a refusal or `answered`".to_string(),
+                    ));
+                }
+            } else if r.now.answered || r.right.answered {
+                out.push(at(
+                    "`answered` is a command's (schema /16): a solve's answer is its summary"
+                        .to_string(),
+                ));
+            }
+            if r.right.answered
+                && (r.right.refused || r.right.verdict.is_some() || r.right.k.is_some())
+            {
+                out.push(at(
+                    "an `answered` [right] states no refusal, verdict or k".to_string()
+                ));
             }
             if !recorded(r.now.core.is_some(), r.right.core.is_some()) {
                 out.push(at(
@@ -1117,7 +1252,7 @@ impl Register {
                     "[now] nogoods are sorted: each set and core, and the list by set".to_string(),
                 ));
             }
-            if !LINES.contains(&r.now.line.as_str()) {
+            if !r.now.is_command() && !LINES.contains(&r.now.line.as_str()) {
                 out.push(at(format!(
                     "[now] line {:?} is not one of {LINES:?}",
                     r.now.line
@@ -1194,13 +1329,33 @@ impl Register {
             }
             for (label, a) in r.answers() {
                 let at = |m: String| format!("{} [{label}]: {m}", r.id);
-                if !a.run.starts_with("solve") {
+                let command = a.by.as_deref() == Some("command");
+                if command == a.run.starts_with("solve") {
                     out.push(at(format!(
-                        "run {:?} is not a solve — the register reads --json-summary",
+                        "run {:?}: a recorded run is a solve, or a command's that is not one \
+                         with `by = \"command\"` (schema /16)",
                         a.run
                     )));
                 }
-                if a.error.is_some() {
+                if command && a.error.is_none() && a.refused.is_none() {
+                    out.push(at(
+                        "a command's recorded answer (schema /16) is its refusal or its error"
+                            .to_string(),
+                    ));
+                }
+                if a.refused.is_some() {
+                    if !command || a.error.is_some() {
+                        out.push(at(
+                            "a recorded refusal is a command's (schema /16), and not an error too"
+                                .to_string(),
+                        ));
+                    }
+                    if a.exit != 1 || !a.verdict.is_empty() || a.k != 0 || a.exhausted {
+                        out.push(at(
+                            "a recorded refusal exits 1 and states no verdict or k".to_string()
+                        ));
+                    }
+                } else if a.error.is_some() {
                     // A run that ended in an error before it answered (M1e2
                     // S1e2.2.18).
                     if a.exit != 1
@@ -1241,10 +1396,11 @@ impl Register {
                 }
                 match a.by.as_deref() {
                     None | Some("walk") => {}
-                    Some("region") if a.why.is_none() => out.push(at(
-                        "an answer a region run gave says how it was taken (`why`)".to_string(),
+                    Some("region" | "command") if a.why.is_none() => out.push(at(
+                        "an answer a region or a command's run gave says how it was taken (`why`)"
+                            .to_string(),
                     )),
-                    Some("region") => {}
+                    Some("region" | "command") => {}
                     Some(b) => out.push(at(format!("by {b:?} is not one of {ANSWERED_BY:?}"))),
                 }
                 if label != "wrong" && a.id_order.is_some() {
@@ -1278,8 +1434,10 @@ impl Register {
             }
             match &r.region {
                 // A refused row states no region (M1e2 S1e2.2.5), nor one
-                // whose run ends in an error (S1e2.2.18): checked above.
-                None if r.now.refused.is_some() || r.now.error.is_some() => {}
+                // whose run ends in an error (S1e2.2.18): checked above. A
+                // command's row states its witness's (schema /16).
+                None if (r.now.refused.is_some() || r.now.error.is_some())
+                    && !r.now.is_command() => {}
                 None => out.push(format!("{}: no [case.region]", r.id)),
                 Some(g) => {
                     if !ROUTES.contains(&g.route.as_str()) {
@@ -1855,6 +2013,8 @@ queries   = [{ classes = 1, expect = "none" }]
         r.now = Now {
             run: "solve --minimal".to_string(),
             line: "minimal".to_string(),
+            container: false,
+            answered: false,
             refused: None,
             error: Some("a line".to_string()),
             exhausted: false,

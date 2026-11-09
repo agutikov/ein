@@ -18,8 +18,6 @@ use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::events::{Events, Level};
 use ein_ir::Ast;
 
-use crate::common::read_text_or_crash;
-
 /// The nine options the switch retired (`solve_interface.md` § 2.1), each with
 /// the sentence its refusal prints: what replaces it. They stay in the parser,
 /// hidden, so that this is what a stale argv gets.
@@ -235,7 +233,10 @@ pub(crate) fn resolve_jobs(n: i64) -> usize {
 /// is a defect, and it is written into the file rather than swallowed.
 pub(crate) fn inlined_program(file: &str) -> String {
     let path = Path::new(file);
-    let text = read_text_or_crash(path);
+    let text = match crate::common::read_text(path) {
+        Ok(t) => t,
+        Err(e) => return format!(";; (the source could not be read for inlining: {e})\n"),
+    };
     let mut ast = Ast::new();
     let forms = match ein_ir::parse(&mut ast, &text, path.to_str()) {
         Ok(f) => f,

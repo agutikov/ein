@@ -23,6 +23,9 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.12](#q-m1f12--which-surfaces-carry-natural-language-text) | which surfaces carry natural-language text | **defaulted 2026-11-09 (the user's instruction): those that carried it before the swap, each held byte for byte; none added**; [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2 |
 | [Q-M1f.13](#q-m1f13--f3s-cause-reaches-a-disjunction-whose-row-is-it) | F3's cause reaches a disjunction: whose row is it? | **defaulted 2026-11-09 (the user's instruction): W39, `open`, deferred to F22, as W25 is**; [S1f.5.1](p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s T1f.5.1.3 |
 | [Q-M1f.14](#q-m1f14--which-keyword-pair-arms-go-once-no-term-holds-one) | which keyword-pair arms go, once no term holds one? | **defaulted 2026-11-09 (the user's instruction): the drops, the validator's skips and the renderers' arms; the walkers that descend into a pair's value stay**; [S1f.5.11](p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s T1f.5.11.2 |
+| [Q-M1f.15](#q-m1f15--where-does-a-position-in-a-containers-stored-program-point) | where does a position in a container's stored program point? | **defaulted 2026-11-09 (the user's instruction): it names the container, `<program stored in x.einb>`, and the stored text's line; a source position needs a format change, not made**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
+| [Q-M1f.16](#q-m1f16--which-of-the-reads-defects-are-register-rows) | which of the read's defects are register rows? | **defaulted 2026-11-09 (the user's instruction): each refusal of a program another command answers (W40's six, W41); the lines and exits of a file every command refuses are held by a test**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
+| [Q-M1f.17](#q-m1f17--what-a-view-that-never-loads-reads-from-a-container) | what a view that never loads reads from a container | **defaulted 2026-11-09 (the user's instruction): the program it stores, resolved and import-flattened**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -445,3 +448,74 @@ term as something to drop or label, which is what the acceptance names (*nothing
 expander drops a keyword pair*), and leaves the walks correct for a library caller that hands one a whole form,
 where (b) would make each a panic and retire nothing the ruling names. No answer moves either way. Re-opening it
 means (b).
+
+### Q-M1f.15 — Where does a position in a container's stored program point?
+
+**Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13, the coordinator's
+item 4: a `.einb` whose stored program fails to compile at its first firing, S1f.5.5's parser probe
+`g14/derived-activator.ein` saved by `ein kb save`, reports the rule at `Loc(file='<string>', line=9, col=27)`, where
+the `.ein` reports `line=5`. A container stores its program as canonical text, the resolved and import-flattened form
+list `dump_canonical` writes, and re-parses it on open; every position of the rebuilt `Ast` is the stored text's. The
+text was parsed under the first file name the provenance table holds, which is empty on that program and most others,
+so `<string>`, or, where it is not, under the source's name with the stored text's line. design/10 chose text over the
+AST's arenas on a measurement: `zebra2`'s 3 024 nodes and as many `Loc`s are past 60 KB against a 64 KB budget for the
+whole file, the canonical text 11 KB (`ein_einb::sections::program_section`).
+
+- **(a) Name the container.** The stored text is parsed under `<program stored in x.einb>`, the path the command was
+  handed, so a position says which text it is in, in brackets as `<string>` is since no file holds it, and its line is
+  that text's. No format change.
+- **(b) Store each node's source position**, a new optional section and a minor bump (einb 1.3), so a compile error in
+  a container names the source's line. A second encoding beside the text, which design/10 measured against, and the
+  `--version` line and the container's size goldens move.
+- **(c) Leave it**: `<string>` and the stored line.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: it makes the position true, a line of the program the
+container stores, under a name that says so, at no cost to the format, and only an error reaches it (a run that
+answers prints no position, which is why `ein solve x.einb` is byte-identical to `ein solve x.ein`). The source's line
+is (b), which re-opens design/10's size measurement. `program_read::a_containers_positions_name_its_stored_program`
+holds (a).
+
+### Q-M1f.16 — Which of the read's defects are register rows?
+
+**Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13. The brief files the
+coordinator's items 1 and 2 as rows, on the user's rule that a command refusing a program another answers is a wrong
+answer. The task's survey (`06433b60`'s release build, every command on a `.ein`, its `.einb`, a file-relative import
+and a file that is not UTF-8) found item 1's defect on five more commands, `render rules`, `rule`, `constraints` and
+`program`, which parse a program and never load it, and `kb save`; and three defects that are no refusal of an answered
+program: the non-UTF-8 line was Python's on every command, its `process::exit(1)` stopped `ein test`'s whole selection,
+exit 1, a refuted claim's code, where a load error there is counted and exits 2, and an end-of-input error was placed at
+the last token's end.
+
+- **(a) A row per refusal of a program another command answers**: W40, one row per command that refused a `.einb`
+  (`saturate`, the four `render` views, `kb save`), and W41, `saturate`'s import; the rest held by tests
+  (`program_read`, `generated_parser::the_end_of_input_is_where_the_text_ends`), since every command refuses those
+  files before and after, and a non-UTF-8 witness cannot be a corpus entry, whose readers take every `.ein` as text.
+- **(b) Also a row for `ein test`'s stopped selection**, its witness a non-UTF-8 file under `corpus/fuzz_findings/`,
+  which every reader of that directory would have to skip.
+- **(c) Only the brief's two rows**, `saturate`'s, the other five commands fixed with no row.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: it files exactly what the user's rule calls a wrong
+answer, each command a row, and holds the rest per commit. Re-opening it means (b).
+
+### Q-M1f.17 — What a view that never loads reads from a container
+
+**Raised** 2026-11-09 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13. `ein render rules`,
+`rule`, `constraints` and `program` parse a program and never load it, so `examples/broken/` draws. A container holds no
+source: its program is the resolved, import-flattened text `ein kb save` wrote, and on a program that imports, it holds
+the imported forms in place of each `(import …)`.
+
+- **(a) The program it stores**, parsed under its name (Q-M1f.15): on a program that imports nothing each view draws
+  what it draws for the `.ein`, and on one that imports, the imports' forms too. Measured over the corpus (T1f.5.5.13's
+  cross-check, 2026-11-09): the three views differ on the 106 programs that import and load, and on 51 of them `render
+  rules` finds the imports' rules where the `.ein`'s own forms have none, exit 0 for 1; every other command answers a
+  container as it answers the `.ein`.
+- **(b) Refuse it**, saying the source is wanted, as `solve --dump-answer` refuses a container, exit 2: a command
+  refusing what another answers, which the user's rule makes a wrong answer.
+- **(c) The recorded source**, re-read where it still exists and hashes the same: another file than the one the
+  command was handed.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: it answers, and what it draws is the program the file
+holds. `program_read` holds each view's drawing of a container to the `.ein`'s on a program with no import.

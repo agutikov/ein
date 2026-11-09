@@ -526,13 +526,23 @@ names the failure's class, and exiting non-zero:
 
 | input | last line | exit |
 |---|---|---|
-| missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 |
+| missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` (`ein saturate` printed `error: <path> not found` until M1f T1f.5.5.13) | 1 |
+| an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
 | unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
 | a conclusion no fact can hold: an `:assert` that is not a fact (an argument that is a keyword pair or a wildcard at the conclusion's top level until M1f S1f.5.5's swap refused each at the parse) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 `KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
+
+**Every command reads a program through one path since M1f S1f.5.5's
+T1f.5.5.13** (2026-11-09, `ein-cli`'s `common::read_program`), so a file that
+cannot be read, or is not UTF-8, is refused with the same line by `solve`,
+`saturate`, `oracle`, `test`, each `render` view and `kb save`, at each
+command's load-error exit. Until then the read exited the process on either,
+exit 1, so `ein test` stopped its whole selection at the first such file and
+reported a refuted claim's code; it counts the file an `ERROR` and goes on
+since (`ein-cli/tests/program_read.rs`).
 
 **A conclusion no fact can hold names no class since 2026-11-04** (M1e2
 [S1e2.2.18](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md)).

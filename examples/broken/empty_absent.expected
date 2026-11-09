@@ -3,5 +3,5 @@
 {FILE}:18:3: unexpected `:assert`
   repair: Delete `:assert`
   repair: Insert `)`
-{FILE}:18:18: unexpected end of input
+{FILE}:19:1: unexpected end of input
   repair: Insert `)`

@@ -306,7 +306,15 @@ fn report(
                 cut = p.recovery_cut();
                 steps = p.recovery_steps();
                 let l = p.lexeme();
-                let (line, col) = lines.line_col(l.span().start());
+                // The end of the input is where the text ends: `lrpar` makes
+                // its end-of-input lexeme at the end of the last token, so
+                // `(p a` and a newline reported `1:5` where the input ends at
+                // `2:1` (M1f S1f.5.5, T1f.5.5.13).
+                let at = match token_display(l.tok_id()) {
+                    None => text.len(),
+                    Some(_) => l.span().start(),
+                };
+                let (line, col) = lines.line_col(at);
                 let found = lexer.span_str(l.span());
                 let what = match token_display(l.tok_id()) {
                     None => "unexpected end of input".to_string(),

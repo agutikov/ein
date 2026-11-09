@@ -203,14 +203,21 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let Some(dir) = dump.as_deref() {
         // Every state file starts with the program's source, which a
         // container does not carry. `--count` writes none.
-        if !counting
-            && crate::common::looks_like_einb(&crate::common::read_bytes_or_crash(Path::new(&file)))
-        {
-            eprintln!(
-                "error: --dump-answer {dir}: a .einb container carries no program source, and \
-                 every file the answer directory holds starts with it — run it on the .ein"
-            );
-            return 2;
+        if !counting {
+            match crate::common::read_program(Path::new(&file)) {
+                Ok(crate::common::Held::Container(_)) => {
+                    eprintln!(
+                        "error: --dump-answer {dir}: a .einb container carries no program source, and \
+                         every file the answer directory holds starts with it — run it on the .ein"
+                    );
+                    return 2;
+                }
+                Ok(crate::common::Held::Text(_)) => {}
+                Err(e) => {
+                    eprintln!("{e}");
+                    return 1;
+                }
+            }
         }
         if let Err(e) = std::fs::create_dir_all(dir) {
             crate::solve::artefact_failed("dump-answer", dir, e);
@@ -259,7 +266,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     let t_load = Instant::now();
     let load_opts = crate::common::load_options(m);
     let Some(mut kb) =
-        crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(&file), &load_opts)
+        crate::common::load_program(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
         return 1;
     };
@@ -492,7 +499,7 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     let mut terms = Terms::new();
     let load_opts = crate::common::load_options(m);
     let Some(mut kb) =
-        crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(file), &load_opts)
+        crate::common::load_program(&mut ast, &mut terms, Path::new(file), &load_opts)
     else {
         return 1;
     };

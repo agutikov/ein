@@ -421,6 +421,11 @@
 0    examples/ein-bugs/wrong-answers/core-search-cut-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: saturate
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: solve
+0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints
+0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render rules
+0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: saturate
+0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: solve
 0    examples/ein-bugs/wrong-answers/empty-match-activator.ein :: saturate
 0    examples/ein-bugs/wrong-answers/empty-match-activator.ein :: solve
 0    examples/ein-bugs/wrong-answers/empty-match-fact.ein :: saturate
@@ -579,6 +584,11 @@
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --region-limit 8
 0    examples/ein-bugs/wrong-answers/range-in-match.ein :: saturate
 0    examples/ein-bugs/wrong-answers/range-in-match.ein :: solve
+0    examples/ein-bugs/wrong-answers/saturate-import-mod.ein :: saturate
+0    examples/ein-bugs/wrong-answers/saturate-import-mod.ein :: solve
+0    examples/ein-bugs/wrong-answers/saturate-import.ein :: saturate
+0    examples/ein-bugs/wrong-answers/saturate-import.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/saturate-import.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
 1    examples/ein-bugs/wrong-answers/str-in-absent.ein :: saturate

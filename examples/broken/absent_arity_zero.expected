@@ -3,5 +3,5 @@
   repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a name, Insert `)`
   and 6 more repairs
-{FILE}:18:18: unexpected end of input
+{FILE}:19:1: unexpected end of input
   repair: Insert `)`, Insert `)`

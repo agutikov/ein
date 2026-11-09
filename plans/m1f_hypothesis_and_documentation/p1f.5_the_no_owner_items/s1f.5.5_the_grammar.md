@@ -95,7 +95,10 @@ reaches are kept, each held by a test; the two dead trace functions are gone; no
 **T6, `--diff-models` by value (S-15), done the same day** ([§ T6 record](#t6-record-2026-11-09)): a model's facts
 are read by the generated parser and printed by the one printer, so `(p  a)`, `( p a )` and `(p a) ; the fact`
 match `(p a)`, and a file whose facts do not parse is refused before the run, exit 2, with every error and its line
-and column; no answer or register row moved. T7 runs next.
+and column; no answer or register row moved. **T13, every command reads a program the same way, added by the
+coordinator and done the same day** ([§ T13 record](#t13-record-2026-11-09)): one read path, W40's six rows and W41 filed
+and fixed under the register's schema `/16`, 126 fixed, 22 open and 1 not wrong; a non-UTF-8 file refused in Ein's words
+at each command's exit; a container's stored program named; an end-of-input error at the text's end. T7 runs next.
 **Depends on:** the user's choice of generator and rulings on what each position holds, all given. Its steps 1
 and 2 ran first. Of the language stages only [S1f.5.3](s1f.5.3_range_retired.md) ran on the hand-written parser,
 and it is done (2026-11-08); since the re-plan the swap waits for no other stage.
@@ -1945,6 +1948,154 @@ that sentence.
 
 **The gate.** On this commit, 15 min 46 s (`build/gate-s1f.5.5-T6.log`), green: 938 tests, T5's 936 and the two
 above, and every static check.
+
+### Task T1f.5.5.13 — every command reads a program the same way
+
+**Added on 2026-11-09 by the coordinator**, before T7, from its findings and the stages' of that day, each re-taken on
+`06433b60`'s release build (`build/s1f.5.5/t13/before/ein`):
+
+1. **`ein saturate X.einb` does not read a `.einb`** (the coordinator's). It exits 1 with `UnicodeDecodeError: 'utf-8'
+   codec can't decode bytes in '<file>'` (`ein-cli/src/common.rs`' `read_text_or_crash`), where `ein solve X.einb`
+   answers; AGENTS.md says every command that takes a `.ein` path takes a `.einb` too, dispatching on the magic bytes.
+   Pre-existing: T9's base build does the same.
+2. **`ein saturate` resolves no file-relative import** (S1f.5.1's). It loads with no base directory, so `(import mod)`
+   is refused, *file-relative import needs a base directory*, where `solve`, `oracle` and `test` resolve it.
+   `saturate.rs`' comment said it resolves against the working directory, and `examples/broken/load/README.md` called
+   the line *not expressible as a file*.
+3. **The non-UTF-8 line is Python's spelling** (the coordinator's), not Ein's. Ein has no Python heritage to keep, and
+   it is restated in Ein's words on every command.
+4. **A `.einb` whose stored program fails to compile reports the error at `<string>`** and the stored text's line, not
+   the source's (the coordinator's, on S1f.5.5's parser probe `g14/derived-activator.ein`). Pre-existing.
+5. **A parse error at end of input reports the end of the last token** (T5's): `(p a` and a newline says `1:5`, where
+   the input ends at `2:1`. Fixed if it is the parser's position, its `grammar_decisions` and `.expected` moves named
+   first.
+
+**The fix.** One code path reads a program from a path, a text or a `.einb`, with a base directory, and every command
+that takes one uses it: `saturate`, `solve`, `oracle`, `test`, each `render` view, `kb save`, and any other. A test holds
+every command to it: each accepts the same `.ein`, the same `.einb` and a program with a file-relative import, and
+refuses a file that is not UTF-8 with the same line.
+
+**The register.** The user's rule is *one tool, consistent answers*: no two commands may disagree, so a command that
+refuses a program another command answers is a wrong answer. Items 1 and 2 are register rows, the next ids after W39,
+each witness under `examples/ein-bugs/wrong-answers/` with a corpus entry, filed and fixed in this commit
+(`[case.fixed]` the null id, the next commit writing it), as W38 and W37 were; where the schema cannot state a
+command's refusal it is extended, `/16`, in the header.
+
+**What may move.** No answer of an existing program on the commands that already read it. Each golden, `.expected` or
+`corpus_exits` cell that moves is named before it moves, and the release builds before and after are cross-checked
+over every corpus program on every command and T12's 2 000 mutants, as the earlier tasks were.
+
+### T13 record, 2026-11-09
+
+**One commit, on `06433b60`** (S1f.5.11's T1f.5.11.3). One read path, five findings closed, W40 and W41 filed and fixed,
+the register's schema `/16`. Nothing moved on a program a command already read, beyond item 5's positions and W41's
+lines, each named below.
+
+**The one path.** `ein-cli`'s `common.rs`: `read_program` reads the bytes and tells a `.einb` from text by its first
+eight (`looks_like_einb`, unchanged), and returns the line a command prints where it cannot, never exiting;
+`load_held` loads either, a text parsed under its path and loaded with `path.parent()` as its base, a container
+opened; `parse_held` parses either without loading, a container's stored program read by `ein_einb::program_of`
+(header and digest checked as on open). Every command that takes a program goes through them: `solve` (both routes,
+and `--dump-answer`'s inlining, which reads the source through `read_text`), `saturate`, `oracle`, `test`, `render
+rules`, `rule`, `constraints`, `program`, `lattice` and `kb` (`--since` too), and `kb save`. `read_text_or_crash`,
+`read_bytes_or_crash`, `parse_or_exit` and `load_any_or_exit` are gone, and so is `saturate`'s own `error: X not found`
+pre-check.
+- **Item 1, W40.** `saturate`, the four views that parse and `kb save` read the path as text and refused a container
+  with `UnicodeDecodeError`, exit 1, where `solve`, `oracle`, `test`, `render lattice` and `render kb` answered it
+  (`06433b60`'s release build, every command on a `.ein`, its `.einb`, a file-relative import and a non-UTF-8 file,
+  `build/s1f.5.5/t13/exp/`). Six commands, not one: the survey found item 1 on five more. Since: `saturate` prints
+  `N bytes, a .einb container` and one `open:` line where a text prints `N chars`, `parse:` and `kb load:`; a parse-only
+  view draws the stored program; `kb save` of a container saves it again, its recorded sources and its state carried
+  (a `Solved` one `Saturated`, this command writing no `SOLUTIONS`, and `Loaded` where its derived state was not
+  believed), `Opened` carrying the stored program's forms for it.
+- **Item 2, W41.** `saturate` called `load_with(…, None, …)`; it loads through `load_held` since. Its source comment
+  said it resolved against the working directory, which it did not; `examples/broken/load/README.md`'s *not
+  expressible as a file* is true on every command since, and says so.
+- **Item 3.** A file that is neither UTF-8 nor a container is refused with `<file>:<line>:<col>: byte 0x<hh> is not
+  UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, lines and columns as a parse
+  error counts them; `defined_behaviour.md` § 4's table has the row. The read returned the line and no longer exits, so
+  each command takes its load-error exit: 1, and for `ein test` an `ERROR` row and 2, where the `process::exit(1)` had
+  stopped the whole selection at the file and exited with a refuted claim's code (`ein test bad.ein w.ein` checked
+  nothing after `bad.ein`). The other read lines, `FileNotFoundError: [Errno 2] …` and its siblings, are the spelling
+  `defined_behaviour.md` § 4 parks for the user (S1e2.2.18 § Notes) and stay; `saturate` prints them since, where it
+  printed `error: X not found`.
+- **Item 4.** A container's stored program is parsed under `ein_einb::program_name`'s `<program stored in x.einb>`,
+  the path the command was handed (`OpenOptions::name`, filled by `ein_einb::open` from its path), so `solve g.einb` on
+  the parser probe's `g14/derived-activator.ein` says `Loc(file='<program stored in g.einb>', line=9, col=27)`. It
+  parsed under the first name of the provenance file table, empty on that program, so `<string>`, and where the table
+  was not empty the source's name with the stored text's line. The source's line needs each node's position stored, a
+  format change design/10 measured against
+  ([Q-M1f.15](../open_questions.md#q-m1f15--where-does-a-position-in-a-containers-stored-program-point), defaulted).
+- **Item 5.** It is the parser's position: `lrpar` makes its end-of-input lexeme at the end of the last token.
+  `grammar.rs`' report places an end-of-input error at `text.len()` since, so `(p a` and a newline say `2:1`. A
+  `--diff-models` model's text ends at its last line, so a model's facts end where the next `model` line begins and the
+  end of its input is there, not at the file's. **Named before it moved**, by the suites
+  (`build/s1f.5.5/t13/discovery.log`, `cargo test --workspace --no-fail-fast` on the change, 2026-11-09): the two
+  `.expected` whose report ends at the end of input, `examples/broken/absent_arity_zero` and `empty_absent` (`18:18` →
+  `19:1`), and `fuzz_seeds.txt`'s same two lines; `corpus_shapes.md5`'s `ir[parse]` rows of those two and of
+  `kwpair-in-assert.ein`, whose second error is the end of input; `models.rs`' unit test (`<want>:4:5` → `<want>:5:1`)
+  and `region_modes`' `diff_models_reads_a_models_facts_as_ein` (`3:5` → `4:1`). `grammar_decisions.txt` and
+  `grammar_table.txt` do not move: none of their inputs has text after the last token. Held by
+  `generated_parser::the_end_of_input_is_where_the_text_ends`.
+
+**The register, schema `/16`** (`ein-corpus`'s `register.rs`, `wrong_answers.rs`, `register_region.rs`,
+`answer_dump.rs`). A `now` can be a command's run that is not a solve (`Now::is_command`): it writes no summary, its
+`line` is unstated, and its answer is exactly one of `refused`, `error` and `answered` (exit 0, nothing on stderr);
+`container` saves the witness with `ein kb save` first, and an `answered` container run prints the same run's stdout on
+the witness, the read's own lines aside and timings masked; `{FILE}` in a recorded line is the path the run was handed.
+A `right` can be `answered`; a recorded answer can be a command's (`by = "command"`, with `refused`). `plan::argv` puts
+`kb`'s verb before the file, as `render`'s view. A command's refusal is its own, so its row states the witness's region,
+which `register_region` recomputes. **W40**, six rows, one witness
+(`examples/ein-bugs/wrong-answers/einb-every-command.ein`): `W40/saturate`, `/render-rules`, `/render-rule`,
+`/render-constraints`, `/render-program` and `/kb-save`. **W41**, one row, `W41/saturate-import`, its witness
+`saturate-import.ein` importing `q` from `saturate-import-mod.ein` beside it, the first corpus program whose
+file-relative import loads. Each `fixed`, its `[case.fixed]` the null id, `0000000`, which the next commit writes; each
+`wrong` the pre-fix line at `06433b60`. The register reads **126 rows fixed, 22 open and 1 not-wrong** (`grep
+'^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09). Three corpus entries; `corpus_exits.txt` grows by
+their ten cells and `corpus_shapes.md5` by 123 rows; `examples/README.md` catalogues them.
+
+**The test**, `ein-cli/tests/program_read.rs`: every command (`saturate --dump`, `solve`, `solve --maximal`, `oracle`,
+`test`, each `render` view, `kb save`) answers the same `.ein`, its `.einb`, its stdout the `.ein`'s, and a program
+with a file-relative import run from another directory; refuses a non-UTF-8 file with the same line at its load-error
+exit; `ein test` goes on past it; and a container's compile error names its stored program.
+
+**The cross-check** (`build/s1f.5.5/t13/xcheck/`, `one.sh` and `mutant.sh`, 2026-11-09): `06433b60`'s release build
+and this commit's over the 520 `.ein` under the five roots (`find examples tests stdlib corpus plans -name '*.ein'`),
+on `solve --json-summary -H --dump-answer`, `saturate --dump`, `test`, `oracle`, the five `render` views and `kb save`,
+exit codes, stdout, stderr, the summary and the dump compared, timings and the read's own lines masked (3 min 37 s).
+**509 the same on every command; 11 move, each named**: the four whose report ends at the end of input (the two
+`.expected` fixtures, `kwpair-in-assert.ein` and `plans/m1e2_correctness/inventory_2026-11-06/probes/assert_and_kw.ein`,
+every command's stderr); six `broken/load/` fixtures that import by a file-relative name (`import_cycle`,
+`import_cycle_b`, `import_relative_not_found` and the three `reserved_open_*` importers), whose `saturate` reports the
+import's own error since, as `solve` does, where it reported *needs a base directory*; and W41's witness. Then this
+commit's build on each `.einb` `kb save` wrote, every command but `--dump-answer`, held to the `.ein`: identical on every
+program a container was written for, but in the three views that parse and never load, on the 106 that import (`(import
+…)` in each), which draw the forms the container stores, the imports' among them, and on 51 of those `render rules`
+finds rules where the `.ein`'s own forms have none, exit 0 for 1
+([Q-M1f.17](../open_questions.md#q-m1f17--what-a-view-that-never-loads-reads-from-a-container), defaulted); and the
+parser probe's `g14` program, whose compile error names the stored program (item 4). **T12's 2 000 mutants** through
+both builds' `saturate`: 1 823 the same (1 047 accepted, 722 refused with repairs, 54 without), 177 moved, each named
+(`eof_check.py` beside them): 149 an end-of-input line at the end of the text, and 28 mutants of the import fixtures
+whose file-relative import resolves against their own directory since. One more line moves and no answer: `saturate`
+prints its `parse:` timing with `kb load:` once the program has loaded, so a program refused at load prints neither.
+
+**Taken by default on the user's instruction of 2026-11-09**
+(*"just continue with default decisions till the end of the phase"*), each the agent's recommendation:
+- **A position in a container's stored program names the container** (Q-M1f.15 (a)).
+- **The register's rows are the refusals of an answered program**: W40's six, one per command the survey found, and
+  W41; the non-UTF-8 line, `ein test`'s stopped selection and the end-of-input position are held by tests, every
+  command refusing those files before and after, and a non-UTF-8 witness being no corpus file
+  ([Q-M1f.16](../open_questions.md#q-m1f16--which-of-the-reads-defects-are-register-rows)).
+- **A view that never loads reads a container's stored program** (Q-M1f.17 (a)).
+- **Schema `/16`** as above, the smallest that states a command's refusal and its answer; and `{FILE}` for a path a
+  recorded line names.
+- **The non-UTF-8 line's wording and position**, a parse error's `file:line:col:` shape, since it is refused where it
+  is read.
+- **`--dump-answer` still refuses a container** (exit 2, *carries no program source*): a flag's usage refusal, which
+  T13's brief does not name; reported, not changed.
+
+**The gate.** On this commit, 16 min 5 s (`build/gate-s1f.5.5-T13.log`), green: 956 tests and every static check, among
+them `program_read`'s three and `generated_parser`'s end-of-input test.
 
 ### Task T1f.5.5.7 — the pages
 

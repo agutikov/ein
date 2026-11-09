@@ -146,6 +146,28 @@ fn a_report_cut_at_the_budget_says_so() {
     }
 }
 
+/// **The end of the input is where the text ends** (M1f S1f.5.5,
+/// T1f.5.5.13): an input that stops while a form is open is refused at its
+/// last character's end, whatever whitespace or comment follows the last
+/// token. `lrpar` makes its end-of-input lexeme at the end of the last token,
+/// which the report used until then, so `(p a` and a newline said `1:5`.
+#[test]
+fn the_end_of_input_is_where_the_text_ends() {
+    for (text, at) in [
+        ("(p a", (1, 5)),
+        ("(p a\n", (2, 1)),
+        ("(p a ; a comment", (1, 17)),
+        ("(p a\n\n;; trailing\n\n", (5, 1)),
+        ("(p a)\n(q\n  b\n", (4, 1)),
+        ("(relation r T", (1, 14)),
+    ] {
+        let r = grammar::parse(&mut Ast::new(), text, None).expect_err("an open form");
+        let last = r.errors.last().expect("an error");
+        assert_eq!(last.what, "unexpected end of input", "{text:?}:\n{r}");
+        assert_eq!((last.line, last.col), at, "{text:?}:\n{r}");
+    }
+}
+
 /// **A macro carries its `:why`**, as a relation and a rule do: the user's
 /// ruling of 2026-11-08, that every form an NL template can go on takes one.
 /// The parser reads `:why "…"` once after a macro's body and the macro reader

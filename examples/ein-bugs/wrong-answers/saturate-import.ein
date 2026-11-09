@@ -1,0 +1,37 @@
+;;; `ein saturate` resolves no file-relative import — M1f **W41**, register row
+;;; `W41/saturate-import` (`corpus/wrong_answers.toml`), filed and fixed by
+;;; S1f.5.5's T1f.5.5.13 (2026-11-09), from S1f.5.1's finding.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A file-relative import of `q` from `saturate-import-mod.ein`, beside this
+;;; file, which declares it; one fact over it, `(q m)`, and one rule from it:
+;;; R is {∅}, root holding `(q m)` and `(r m)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A file-relative `(import …)` resolves against the importing file's own
+;;; directory (`01_grammar.md` § Imports), and the user's rule is one tool,
+;;; consistent answers: `ein saturate` loads this program as `ein solve` does,
+;;; and answers it, exit 0.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The right answer, since S1f.5.5's T1f.5.5.13 (2026-11-09): every command
+;;; loads a program through one path, against the file's own directory. Until
+;;; then `ein saturate` loaded it with no base directory, so it refused this
+;;; file, exit 1, with `kb load error: (import saturate-import-mod) —
+;;; file-relative import needs a base directory (load from a file path) at
+;;; None`, while `ein solve`, `oracle` and `test` answered it; its source said
+;;; it resolved against the working directory, and
+;;; `examples/broken/load/README.md` called the line not expressible as a file.
+
+(import saturate-import-mod :symbols (q))
+
+(relation r T :why "{?1} is an r")
+
+(q m)
+
+(rule lift () :match (q ?x) :assert (r ?x) :why "{?x} is a q, so {?x} is an r")
+
+(query :goal (r ?x))
