@@ -333,7 +333,15 @@ NestedFact FactClauses ')'`, one fact, so a wrong arity is a parse error
 S1f.5.4's ruling, so `(= a b c)` is a fact). `and` / `or` / `neq` are kernel
 meta-primitives that belong inside
 `:match` premises (a guard is a premise, `(neq ?a ?c)`, since Q32 dropped the
-`:where` clause), never a top-level fact head — and the
+`:where` clause), never a top-level fact head. **`eq` and `neq` are relations
+whose facts are computed** since M1f
+[S1f.5.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (below,
+[§ Premise order around a guard](#premise-order-around-a-guard)), so no fact
+changes them: `(neq …)` is no fact the grammar takes, and a written `(eq a b)`,
+or `(not (eq a b))`, is checked as a conclusion with no premise, a true one not
+stored and a false one `(false)`, written where it stands (Q-M1f.33, Q-M1f.31),
+and one at any other arity, `(eq a)`, is refused at load since M1f S1f.5.9 (W61);
+until S1f.5.7 each was stored as an ordinary fact, which no guard read — and the
 declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
 heads either (each is a reserved word, never a name). Everything else —
 `instance`, `type`, `symmetric`, `co-located`, `lives-in`, … — is an
@@ -437,6 +445,43 @@ A relation-polymorphic rule with no matching application facts never
 fires — the parameters are the gate. A non-generic rule needs no
 application fact.
 
+**An empty `:match` is the empty conjunction, which is true** (M1f
+[S1f.5.9](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md), the user's
+ruling of 2026-11-07 on P1f.5's F12: *"1 fire; 2 same; 3 reject (and) while
+it is the same as () and `and` should have arguments"*). `:match ()` holds
+once: a rule fires once at root, or once per activator fact with only its
+parameters bound, `(rule r (?x) :match () :assert (hit ?x))` with `(r a)`
+concluding `(hit a)`, and an hrule's proposes its conclusion likewise. `()`
+is its one spelling: `and` and `or` take one premise or more, so `(and)` and
+`(or)` are parse errors, each with a note naming the rule and the clause it is
+written in and, for `(and)` as a whole `:match` or `:assert`, saying `()` is
+the spelling (Q-M1f.45). **`:assert ()`, the empty conclusion, asserts
+nothing**: an application derives nothing and is no firing, as one whose every
+conclusion holds. A rule whose `:match` is `()` and whose conclusion is
+`(false)` makes root dead, its refutation resting on no fact, so root's core is
+`[]`, the empty set, which the text surfaces print `∅` (Q-M1f.48). Until S1f.5.9 `()` was read as a premise over the parser's
+synthetic `#empty`, which no fact holds, so such a rule never fired and such an
+hrule proposed nothing, in silence (W31), and `:assert ()` stored a fact under
+that head, whose name joined H (W34).
+
+**An activator binds each parameter to its argument, any value**: a name, or a
+nested fact, `(act (f a))` binding `?y` to `(f a)`, which the rule's patterns
+match and its conclusions write as they would a name (M1f
+[S1f.5.18](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md), the user's
+ruling of 2026-11-08 on S1f.5.5's census; until then a nested fact bound
+nothing, and its parameter matched every value, W33). A parameter that names a
+relation, `?rel` above, binds a name: one its activator binds to a fact is
+refused at load, where the activator is written down and, since S1f.5.18, where
+a rule could derive it, which the loader reads off the program
+([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+One that can be bound to `eq`, the relation of equality between two values,
+heads premises and conclusions of two arguments: one of another arity, `(?R
+?x)` under `(r eq)`, is `(eq ?x)`, which the grammar refuses where it is
+written, and is refused at load since M1f S1f.5.9, read the same way
+([`defined_behaviour.md` § 4.14](../../defined_behaviour.md#414-eq-at-another-arity--m1f-s1f59));
+until then the run stopped where the plan was compiled, or the conclusion
+stored `(eq a)` (W60).
+
 Concrete: the rule
 
 ```lisp
@@ -476,7 +521,9 @@ the compiler itself sees only `absent` + nested patterns, and lifts
 each *top-level* one out of the match plan (below).
 
 **What a premise may be.** A premise is a form: a fact pattern, a guard
-(`eq`, `neq`), an `(absent …)`, or an `(and …)` or `(or …)` of premises. A
+(`eq`, `neq`, the relations of equality and non-equality, which `(not (eq a
+b))` and a pattern whose relation a parameter binds to `eq` are too, since M1f
+S1f.5.7), an `(absent …)`, or an `(and …)` or `(or …)` of premises. A
 pattern's relation is a name, or one of the rule's parameters, which its
 activator binds to a name; its arguments are values, variables or patterns
 (and `_` until M1f S1f.5.5's swap refused a bare `_`, S1f.5.1). Since M1e2
@@ -490,7 +537,8 @@ the parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2); a relation written as 
 or inside a pattern, in a `:match` or an `:assert`; a keyword pair inside a
 pattern inside a pattern (at the parse since M1f S1f.5.5's swap, which
 refuses a keyword pair anywhere in a term, S1f.5.11); and an activator that
-binds a relation parameter to a nested fact. Until then each read nothing, in silence: a premise that is
+binds a relation parameter to a nested fact, written down, or, since M1f
+S1f.5.18, one a rule could derive (Q-M1f.1 (b)). Until then each read nothing, in silence: a premise that is
 not a form was dropped, so the rule fired as if it were not written, and the
 rest matched nothing, where the same relation variable at the top level
 stopped compilation in the Python IR's spelling. A keyword pair at a
@@ -508,6 +556,34 @@ than facts, and neither is stored as one:
 |---|---|---|
 | `(false)` | direct ⊥ — this branch is contradictory | S1.5.8c |
 | `(open)` / `(open ?R)` | this state is **unfinished**: it owes a witness, and `(open ?R)` names the relation whose extent is incomplete | M1d S1d.2.3 |
+
+**A conclusion of `eq` or `neq`** — `(neq ?x ?y)`, `(eq ?x w)`, `(not (eq ?x
+?y))`, or a pattern whose relation a parameter binds to `eq` — **is checked
+against its definition, never stored** (M1f
+[S1f.5.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md), the user's G-21
+of 2026-11-07): one that holds adds nothing, and one that does not is `(false)`,
+derived by the rule from the premises its firing matched, so its state is dead,
+its core those premises and `refuted by` the rule. A firing whose every
+conclusion holds derives nothing and is no firing. An hrule's instance of either
+is no hypothesis (Q-M1f.32). Until S1f.5.7 each was stored as an ordinary fact,
+so a false one sat in the KB while a guard computed the opposite (W30).
+
+**Every variable a conclusion writes is bound** on every way the `:match` can
+hold (M1f
+[S1f.5.10](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md),
+the user's ruling of 2026-11-07 on F13): by a parameter, which the activator
+binds; by a relation premise, at any depth of its arguments; or by an `eq` or
+`neq` guard, which binds a variable nothing else binds over the program's
+names. A variable seen only inside an `(absent …)`, a `forall` or an `unknown`
+is not bound outside it, `()` binds nothing, and a top-level `(or …)` must
+bind it in every disjunct. An hrule's `:assert` is held to the same rule. A
+rule or an hrule that writes one nothing binds is refused at load, one line
+per variable naming the two explicit spellings of what the implicit form could
+mean: a premise such as `(is-a ?y T)`, *every object of a type*, or `(eq ?y
+?y)`, *every name of the program*
+([`defined_behaviour.md` § 4.13](../../defined_behaviour.md#413-a-conclusions-variable-nothing-binds--m1f-s1f510)).
+Until S1f.5.10 it loaded, and the run stopped where a firing reached the
+variable, or answered where none did (W57).
 
 `(false)` is stored — a contradiction survives any extension, so a dead state
 stays dead — and `open` is not, because openness exists to be *destroyed* by
@@ -609,17 +685,31 @@ and the boundary projects the completed bindings back down to that set
 and no less. Write the binding premise **before** the guard when you
 mean "for this `?x`".
 
-A **guard**, `(eq a b)` or `(neq a b)`, is judged where it is written, on
-values: a variable a premise before it binds (the rule's parameters count),
-a name (a run of digits is a name, an integer until M1f S1f.5.4; a string
-was one too, the name it spells, until M1f S1f.5.5's swap refused one there,
-S1f.5.2). Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii))
-`(and (neq ?x a) (p ?x))`, a guard on a variable no premise before it binds,
-is refused at load, naming the variable, as is a form or a keyword pair as a
-guard's argument (and `_`, at the parse since M1f S1f.5.5's swap, S1f.5.1); until then the unbound `?x` compared as a null, so
-that rule fired for every `?x`, `a` included, in silence. Under an
-`(absent …)`, the enclosing premises before it bind, as they scope the
-`absent` itself.
+A **guard**, `(eq a b)` or `(neq a b)`, is a premise over the relations of
+equality and non-equality (M1f
+[S1f.5.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md), the user's ruling
+of 2026-11-07 on Q-M1e2.26): `(eq x x)` for every value, and `(neq x y)` for
+every two different values, computed and never stored. Its arguments are
+values: a variable, a name (a run of digits is a name, an integer until M1f
+S1f.5.4), or a fact that holds no variable, `(f a)`, the nested fact it spells
+as in `(p (f a))`; a form that holds a variable is refused at load (Q-M1f.30),
+and `_` and a keyword pair at the parse. **A premise means the same in any
+order of its conjuncts**: a guard whose variable a relation premise of its
+conjunction binds waits for that premise and is a test after it, so `(and
+(neq ?x a) (p ?x))` is `(and (p ?x) (neq ?x a))`. A variable **nothing** in
+the conjunction binds is bound by the guard, where it is written, as a relation
+premise binds it: `eq` binds it to the other side's value, and `neq`, or `eq`
+with both sides free, ranges it over **the program's names**, every constant a
+fact writes in an argument, at any depth, and every constant of a rule's
+`:match` or `:assert` (Q-M1e2.9 (a), `invariant::program_names`), the list H's
+candidates are built from; a name only a query writes is none of them. An
+`(absent …)` after such a guard reads its variable, and one before it does not
+(Q-M1f.34). Under an `(absent …)`, the enclosing premises before it bind, as
+they scope the `absent` itself. From M1e2 S1e2.2.24 (W24, Q-M1e2.18 (i) and
+(ii)) until S1f.5.7 the loader refused a form as a guard's argument and a guard
+on a variable no premise before it binds; until S1e2.2.24 the unbound variable
+compared as a null, so `(and (neq ?x a) (p ?x))` fired for every `?x`, `a`
+included, in silence.
 
 ### Solve
 
@@ -782,8 +872,25 @@ extent of `(not (pet-loc …))`, and a listed `(not …)` is checked for presenc
 like any other fact — and `(or …)` compares model **sets**, never sequences,
 because the order a search finds models in is not observable.
 
+**A goal may ask about `eq` and `neq`** (M1f
+[S1f.5.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)), the relations
+of equality and non-equality: a guard in a goal reads as it does in a premise,
+so `(query :goal (neq w ?y))` answers a row for each name of the program but
+`w`, `(eq w ?y)` answers `?y = w`, `(neq a b)` holds and `(eq a b)` has no
+row, and a class lists the guard's instances beside the goal's other atoms,
+`(model (neq w a) (p a))`. A claim may name either, and naming one closes it
+over the class, which holds the goal's instances only. *the goal holds: it
+has no variable* is printed only for a goal with no variable; one whose every
+variable is an `(absent …)`'s own prints *the goal holds: it binds no
+variable*. Until S1f.5.7 a guard's free variable bound nothing, `(neq w ?y)`
+holding with no row bound, and a claim naming `eq` or `neq` was refused at
+load. A region claim, `(solve … :expect (region …))`, lists a state's stored
+facts, and a state stores neither, so one that names `eq` or `neq` is refused
+at load.
+
 The value is checked at *load*: an expectation that is not one of the three
-shapes, that names a relation no declaration or fact makes, that omits the
+shapes, that names a relation no declaration or fact makes (`eq` and `neq`
+excepted, above), that omits the
 goal's relations, or that contains a `?var` (an expectation is an answer, not
 a pattern) is a load error. `examples/features/10_expect.ein` is the worked
 fixture and `examples/broken/load/expect_*.ein` are the four refusals.

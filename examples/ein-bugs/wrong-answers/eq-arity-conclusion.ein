@@ -1,0 +1,43 @@
+;;; A relation parameter its activator binds to `eq` heads a conclusion of one
+;;; argument, and root stores `(eq a)` — M1f **W60**, register row
+;;; `W60/eq-arity-conclusion` (`corpus/wrong_answers.toml`), filed by S1f.5.9
+;;; (T1f.5.9.1, 2026-11-09), `open` and owned by S1f.5.9.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule `r` whose parameter `?R` heads its conclusion, `(?R ?x)`, and its
+;;; activator `(r eq)`: for every `p`, `r` concludes `(eq ?x)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `eq` is the relation of equality, between exactly two values, whose facts
+;;; are computed and never stored (M1f S1f.5.7, Q-M1e2.26, G-21), and the
+;;; grammar refuses `(eq ?x)` as a conclusion. Written through the parameter
+;;; and an activator the program states, it is refused at load, as the same
+;;; parameter heading a premise is (`eq-arity-premise.ein`), and every
+;;; command that loads the program exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads and root stores `(eq a :rule r)`, a fact of `eq` at one
+;;; argument (`ein saturate FILE --dump`), no conclusion checked; `eq` holds
+;;; no candidate, so a state's `(model …)` does not name it, and R is two
+;;; states, ∅ and `{(p z)}`, exit 0 (`ein solve FILE` and `ein oracle FILE`
+;;; at `ee3da657`, release and debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.9.4, 2026-11-09): every command
+;;; that loads it exits 1 with one line, naming `r`, `?R`, the form and `(r eq)` (`ein test`: 2), in either
+;;; build, where root stored `(eq a)`. The register's `now` is that refusal; the section
+;;; above is the record of the answer it replaced.
+
+(relation p Node :why "{?1} is a p")
+(p a)
+(hit z)
+(rule r (?R)
+  :match (p ?x)
+  :assert (?R ?x)
+  :why "{?x} is a p, so it stands in {?R}")
+(r eq)
+(query :goal (p ?x))

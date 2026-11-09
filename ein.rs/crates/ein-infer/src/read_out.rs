@@ -851,18 +851,19 @@ fn conjuncts(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
     vec![goal]
 }
 
-/// A conjunct with a row's bindings substituted.
+/// A conjunct with a row's bindings substituted, at any depth: `(not (eq ?x
+/// ?y))` and `(p (f ?x))` print their instances. Until M1f S1f.5.7 a pattern
+/// inside a pattern printed as written, so two rows gave one fact with its
+/// variables in it, a class no claim could state (W54).
 fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
-    let Node::SForm { head, args } = ast.node(conj) else {
+    let Node::SForm { head, .. } = ast.node(conj) else {
         return None;
     };
-    let Node::Atom(rel) = ast.node(head) else {
+    let Node::Atom(_) = ast.node(head) else {
         return None;
     };
-    let out: Vec<String> = ast
-        .args(args)
-        .iter()
-        .map(|a| match ast.node(*a) {
+    fn term(ast: &Ast, node: NodeId, b: &[(String, String)]) -> String {
+        match ast.node(node) {
             Node::Var(s) => {
                 let name = ast.sym(s);
                 b.iter()
@@ -871,14 +872,15 @@ fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
                     .unwrap_or_else(|| format!("?{name}"))
             }
             Node::Atom(s) => ast.sym(s).to_string(),
-            _ => ein_ir::dump::dump_compact(ast, *a),
-        })
-        .collect();
-    Some(if out.is_empty() {
-        format!("({})", ast.sym(rel))
-    } else {
-        format!("({} {})", ast.sym(rel), out.join(" "))
-    })
+            Node::SForm { head, args } => {
+                let mut out = vec![term(ast, head, b)];
+                out.extend(ast.args(args).iter().map(|&a| term(ast, a, b)));
+                format!("({})", out.join(" "))
+            }
+            _ => ein_ir::dump::dump_compact(ast, node),
+        }
+    }
+    Some(term(ast, conj, b))
 }
 
 /// The projection classes of `per_state`, one goal's rows per state.

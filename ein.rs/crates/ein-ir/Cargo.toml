@@ -39,3 +39,7 @@ sha2.workspace = true
 # engine's own dependency budget is unaffected.
 ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true
+# `fuzz_properties`' `no_firing_meets_an_unbound_variable` compiles the plans of
+# what the loader accepts (M1f S1f.5.10, Q-M1f.40). A dev-dependency only, as
+# `ein-infer` takes `ein-render`: no shipped crate gains an edge.
+ein-infer = { path = "../ein-infer", default-features = false }

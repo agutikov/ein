@@ -58,7 +58,7 @@ impl<'a> Env<'a> {
 #[derive(Clone, Debug)]
 pub struct Firing {
     pub rule: Symbol,
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
     pub bindings: Box<[(Symbol, Value)]>,
     pub derived: Box<[FactId]>,
     pub premises: Box<[FactId]>,
@@ -66,12 +66,20 @@ pub struct Firing {
 }
 
 /// What stops a firing that should never have been attempted.
+///
+/// **`UnboundVar` was a third variant until M1f S1f.5.18**, *unbound var
+/// ?{name} in :assert — bindings: …*, which `ein saturate` printed as
+/// `KeyError: "…"`: a conclusion read a register its match left unbound. Its
+/// doc called it an invariant the matcher guaranteed, and the loader did not
+/// check it, so a run met it at whichever node first fired such a rule, until
+/// S1f.5.10 refused at load a conclusion variable no premise or parameter binds
+/// (F13, W57). One path was left, a parameter its activator bound to a nested
+/// fact, which the compiler did not seed (W33's cause), read only by a
+/// conclusion (`W58/parameter-nested-assert`); S1f.5.18 seeds it and retired
+/// the variant (Q-M1f.37). What holds it since is `resolve`'s assertion,
+/// and `ein-ir`'s `fuzz_properties::no_firing_meets_an_unbound_variable`.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FireError {
-    /// `unbound var ?{name} in :assert — bindings: …`. The matcher guarantees
-    /// no unbound var reaches an `:assert` template, so this is an invariant
-    /// violation rather than a rejected input — which is why it is loud.
-    UnboundVar(String),
     /// A conclusion no fact can hold: a top-level `:assert` that is not a
     /// fact, or an argument that is not a value — a relation written as a
     /// variable the activator does not bind (a keyword pair, a range and a
@@ -89,7 +97,7 @@ pub enum FireError {
 impl std::fmt::Display for FireError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FireError::UnboundVar(m) | FireError::NotAFact(m) => f.write_str(m),
+            FireError::NotAFact(m) => f.write_str(m),
             FireError::Overflow(o) => write!(f, "{o}"),
         }
     }
@@ -127,6 +135,56 @@ pub fn build_fact(
         args.push(resolve(terms, ast, plan, env, slot)?);
     }
     Ok(terms.intern_fact(rel, &args)?)
+}
+
+/// Build one conclusion as the KB takes it: the fact it states, or for an
+/// `eq` / `neq` conclusion what its definition makes of it.
+///
+/// `eq` and `neq` are relations whose facts are computed and never stored
+/// (M1f S1f.5.7, the user's ruling of 2026-11-07 on G-21), so a rule that
+/// concludes one is checked: one that holds, `(neq a b)`, adds nothing, and is
+/// `None`; one that does not, `(neq a a)` or `(eq a w)`, cannot hold, and is
+/// `(false)`, so its state is a contradiction, explained as one a rule
+/// concluding `(false)` is — its core the premises the firing matched, and
+/// `refuted by` the rule. Until S1f.5.7 the conclusion was stored as an
+/// ordinary fact, so a false one sat in the KB while a guard computed the
+/// opposite, and killed nothing (W30).
+pub fn build_conclusion(
+    terms: &mut Terms,
+    ast: &Ast,
+    plan: &Plan,
+    env: Env<'_>,
+    template: Slot,
+) -> Result<Option<FactId>, FireError> {
+    if let Some((eq, x, y)) = computed(terms, plan, template) {
+        let x = resolve(terms, ast, plan, env, x)?;
+        let y = resolve(terms, ast, plan, env, y)?;
+        if (x == y) == eq {
+            return Ok(None);
+        }
+        let r#false = terms.kernel.r#false;
+        return Ok(Some(terms.intern_fact(r#false, &[])?));
+    }
+    build_fact(terms, ast, plan, env, template).map(Some)
+}
+
+/// A conclusion of a relation whose facts are computed: `(eq x y)`, `(neq x
+/// y)`, and `(not P)` over one of them, which is the other (Q-M1f.31) —
+/// whether it is `eq` the template states, and the two sides.
+pub fn computed(terms: &Terms, plan: &Plan, template: Slot) -> Option<(bool, Slot, Slot)> {
+    let Slot::Nested { rel, slots } = template else {
+        return None;
+    };
+    let k = &terms.kernel;
+    if rel == k.not && slots.len() == 1 {
+        let (eq, x, y) = computed(terms, plan, plan.slots[slots.start as usize])?;
+        return Some((!eq, x, y));
+    }
+    if (rel == k.eq || rel == k.neq) && slots.len() == 2 {
+        let at = slots.start as usize;
+        return Some((rel == k.eq, plan.slots[at], plan.slots[at + 1]));
+    }
+    None
 }
 
 /// The line a conclusion no fact can hold stops the run with, in Ein's
@@ -189,13 +247,20 @@ fn resolve(
         Slot::Const(v) => Ok(v),
         Slot::Reg(r) => {
             let v = env.regs[r as usize];
-            if v.is_unbound() {
-                return Err(FireError::UnboundVar(format!(
-                    "unbound var ?{} in :assert — bindings: {}",
-                    terms.sym(plan.reg_names[r as usize]),
-                    env.dict_repr(terms, plan)
-                )));
-            }
+            // No conclusion reads a register its match and its activator leave
+            // unbound: the loader refuses a conclusion variable no premise or
+            // parameter binds (M1f S1f.5.10, `from_ir::refuse_unbound_conclusions`),
+            // and the compiler seeds every parameter from its activator, a
+            // nested fact too (S1f.5.18, `compile::Compiler::bind_activator`),
+            // which retired `FireError::UnboundVar` and its `KeyError` line.
+            assert!(
+                !v.is_unbound(),
+                "rule '{}' concludes ?{} unbound — bindings: {}; the loader binds every \
+                 conclusion variable and the compiler seeds every parameter",
+                terms.sym(plan.rule),
+                terms.sym(plan.reg_names[r as usize]),
+                env.dict_repr(terms, plan)
+            );
             Ok(v)
         }
         Slot::Nested { .. } => Ok(Value::fact(build_fact(terms, ast, plan, env, slot)?)),
@@ -228,7 +293,10 @@ pub fn fire(
     let prov = new_prov(terms, plan, env, bindings.clone(), absent, universal);
     let mut derived: Vec<FactId> = Vec::with_capacity(plan.asserts.len());
     for i in 0..plan.asserts.len() {
-        let id = build_fact(terms, ast, plan, env, plan.asserts[i])?;
+        // A true `eq` / `neq` conclusion adds nothing (M1f S1f.5.7, G-21).
+        let Some(id) = build_conclusion(terms, ast, plan, env, plan.asserts[i])? else {
+            continue;
+        };
         let (rel, args) = terms.facts.get(id);
         let args = args.to_vec();
         // Dedup is by `(relation, args)`, so an already-known conclusion is
@@ -236,6 +304,11 @@ pub fn fire(
         // records every fact.
         let added = kb.add_and_index_fact(terms, rel, &args, Some(prov))?;
         derived.push(added.id());
+    }
+    if derived.is_empty() {
+        // Every conclusion an `eq` / `neq` that holds: no firing (the
+        // saturator does not reach here with one, `Saturator::apply`).
+        return Ok(None);
     }
     Ok(Some(Firing {
         rule: plan.rule,
@@ -411,31 +484,48 @@ mod tests {
         assert!(!prov.bindings.is_empty());
     }
 
-    /// The matcher guarantees no unbound var reaches an `:assert`, so one that
-    /// does is an invariant violation — and it says so, bindings included.
+    /// A conclusion writes a parameter its activator binds to a nested fact,
+    /// as one bound to a name: M1f S1f.5.18 (W58). Until then the compiler did
+    /// not seed the parameter, and the conclusion read an unbound register,
+    /// which stopped the run with `FireError::UnboundVar`'s *unbound var ?never
+    /// in :assert — bindings: {'x': 'thing1'}*, the line this test held, the
+    /// plan compiled with no activator; since S1f.5.18 that variant is gone,
+    /// and no driver compiles a rule with parameters but from an activator.
     #[test]
-    fn an_unbound_assert_var_quotes_the_bindings() {
-        let (ast, mut terms, _kb, plan) = setup(
-            "(relation a Thing)\n(relation b A B)\n\
-             (rule r ()\n  :match (a ?x)\n  :assert (b ?x ?never))\n",
+    fn a_parameter_bound_to_a_nested_fact_is_concluded() {
+        let src = "(relation a Thing)\n(relation b A B)\n\
+                   (rule r (?then)\n  :match (a ?x)\n  :assert (b ?x ?then))\n\
+                   (a thing1)\n(r (f thing2))\n";
+        let mut ast = ein_ir::Ast::new();
+        let mut terms = Terms::new();
+        let forms = ein_ir::parse(&mut ast, src, Some("<test>")).expect("parses");
+        let kb = ein_ir::from_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let rule = kb.program().rules.values().next().expect("a rule").clone();
+        let activator = crate::activators_for(&kb, &terms, &rule)[0];
+        let plan = crate::compile_rule(&ast, &mut terms, &rule, activator).expect("compiles");
+        assert_eq!(
+            plan.activator_args
+                .iter()
+                .map(|&v| terms.display(v))
+                .collect::<Vec<_>>(),
+            ["(f thing2)"],
+            "the activator's every argument"
         );
-        let mut regs = vec![Value::UNBOUND; plan.n_regs as usize];
-        let x = plan
-            .reg_names
-            .iter()
-            .position(|&s| terms.sym(s) == "x")
-            .expect("?x");
-        regs[x] = terms.value_text("thing1").expect("room");
+        let mut matcher = crate::Matcher::new();
+        let mut envs: Vec<(Vec<Value>, Vec<Reg>)> = Vec::new();
+        matcher.run(&kb, &terms, &ast, &plan, &mut |m| {
+            envs.push((m.regs().to_vec(), Vec::new()));
+            std::ops::ControlFlow::Continue(())
+        });
+        assert_eq!(envs.len(), 1, "one match, of (a thing1)");
+        let (regs, trail) = &envs[0];
         let env = Env {
-            regs: &regs,
-            trail: &[x as Reg],
+            regs,
+            trail,
             premises: &[],
         };
-        let err = build_fact(&mut terms, &ast, &plan, env, plan.asserts[0]).expect_err("unbound");
-        assert_eq!(
-            err.to_string(),
-            "unbound var ?never in :assert — bindings: {'x': 'thing1'}"
-        );
+        let fact = build_fact(&mut terms, &ast, &plan, env, plan.asserts[0]).expect("a fact");
+        assert_eq!(terms.fact_text(fact), "(b thing1 (f thing2))");
     }
 
     /// The key is the register file, and it is the set of bindings by another

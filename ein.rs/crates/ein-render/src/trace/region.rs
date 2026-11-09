@@ -194,11 +194,22 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             lines.push("<details>".to_string());
             lines.push(format!("<summary>{} — dead</summary>", d.set));
             lines.push(String::new());
-            let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();
-            lines.push(format!("Core: {}", core.join(", ")));
-            if let Some(q) = d.core_status.and_then(|c| c.qualifier()) {
-                lines.push(String::new());
-                lines.push(format!("Core search: {q}."));
+            if d.core.is_empty() {
+                // Taken, and the empty set (M1f S1f.5.9, Q-M1f.48): every member
+                // of N carries its core since S1f.5.12, and none was empty until
+                // S1f.5.9 made `:match ()` fire.
+                lines.push(format!(
+                    "Core: {}, {}.",
+                    ein_infer::explain::EMPTY_CORE,
+                    ein_infer::explain::EMPTY_CORE_GLOSS
+                ));
+            } else {
+                let core: Vec<String> = d.core.iter().map(|c| format!("`{c}`")).collect();
+                lines.push(format!("Core: {}", core.join(", ")));
+                if let Some(q) = d.core_status.and_then(|c| c.qualifier()) {
+                    lines.push(String::new());
+                    lines.push(format!("Core search: {q}."));
+                }
             }
             if !d.refuted_by.is_empty() {
                 lines.push(String::new());

@@ -1241,7 +1241,9 @@ fn one_verdict_on_every_corpus_program() {
             "examples/ein-bugs/query-goal-free-head.ein",
             "examples/features/02_star_in_identifiers.ein"
         ],
-        "the programs whose read-out errs, and so has no lattice block to compare"
+        "the programs whose read-out errs, and so has no lattice block to compare \
+         (`W57/assert-var-under-commitment` was a third from M1f S1f.5.10's T1f.5.10.1, its \
+         `--monotone` answering where its read-out stopped, until T1f.5.10.2 refused it at load)"
     );
     let (checked, flagged, refused) = (
         checked.into_inner(),

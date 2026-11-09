@@ -805,7 +805,7 @@ pub(crate) struct SiteText {
     label: String,
     rule: Symbol,
     rule_text: String,
-    activator: Box<[Symbol]>,
+    activator: Box<[Value]>,
     /// `rule [activator …]`: what the status row names.
     name: String,
 }
@@ -830,7 +830,7 @@ pub(crate) fn site_texts(m: &Monotonicity, terms: &Terms) -> Vec<SiteText> {
 /// Root's plans, as `(rule, activator)`: a plan a node compiles is one not
 /// here.
 pub(crate) struct RootPlans {
-    pairs: FxHashSet<(Symbol, Box<[Symbol]>)>,
+    pairs: FxHashSet<(Symbol, Box<[Value]>)>,
     rules: FxHashSet<Symbol>,
 }
 
@@ -1082,16 +1082,10 @@ fn owing_sites(
             // `total-owed` activator a plan of `serves` derives).
             let mut seeds: Vec<FactId> = kbs[1]
                 .rule_apps_by_rule(o.rule)
-                .filter(|&f| {
-                    let args: Vec<Symbol> = terms
-                        .facts
-                        .get(f)
-                        .1
-                        .iter()
-                        .filter_map(|v| v.as_sym())
-                        .collect();
-                    *args == *o.activator
-                })
+                // The activator's every argument, a nested fact among them
+                // (M1f S1f.5.18, Q-M1f.43): until then the owed instance kept
+                // its symbol arguments only, and so did this match.
+                .filter(|&f| *terms.facts.get(f).1 == *o.activator)
                 .collect();
             if seeds.is_empty() {
                 seeds = kbs[1].rule_apps_by_rule(o.rule).collect();

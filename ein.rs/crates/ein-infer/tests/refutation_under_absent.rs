@@ -78,7 +78,9 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// writes, `x`, in D⁺ and not in D.
 /// Since M1f S1f.5.5's swap the int twin's activator is the name `1`, a run
 /// of digits being a name (S1f.5.4's ruling), so its line names it,
-/// `[activator 1]`, as the symbol control's names `a`.
+/// `[activator 1]`, as the symbol control's names `a`. Since M1f S1f.5.18
+/// the nested twin's names its fact, `[activator (box a)]`, where it named
+/// none: `Plan::activator_args` keeps every argument (Q-M1f.43).
 /// `features/05` and `/12`, `direct` too, close
 /// the relation their refutations read and load. The set is exact because
 /// both directions are findings: a new row is a program written with the
@@ -87,7 +89,7 @@ const REFUSED: &str = "\
 examples/branching/13_lookahead_naf_world.ein::rule 'self-block': concludes (false) from (absent \u{2026}) over cand, a relation a commitment can still extend
 examples/branching/14_lookahead_unjudgeable.ein::rule 'premature-signoff': concludes (false) from (absent \u{2026}) over signed, a relation a commitment can still extend
 examples/ein-bugs/activator-all-int.ein::rule 'alarm' [activator 1]: concludes (false) from its activator, which rule 'watch' derives resting on (absent \u{2026}) over checked, a relation a commitment can still extend
-examples/ein-bugs/activator-all-nested.ein::rule 'alarm': concludes (false) from its activator, which rule 'watch' derives resting on (absent \u{2026}) over checked, a relation a commitment can still extend
+examples/ein-bugs/activator-all-nested.ein::rule 'alarm' [activator (box a)]: concludes (false) from its activator, which rule 'watch' derives resting on (absent \u{2026}) over checked, a relation a commitment can still extend
 examples/ein-bugs/activator-all-symbol.ein::rule 'alarm' [activator a]: concludes (false) from its activator, which rule 'watch' derives resting on (absent \u{2026}) over checked, a relation a commitment can still extend
 examples/ein-bugs/alive-empty-interlayer.ein::rule 'totality': concludes (false) from (absent \u{2026}) over p, a relation a commitment can still extend
 examples/ein-bugs/d3-unsat-core.ein::rule 'fire-0' [activator T]: concludes (not \u{2026}) from r1, which rule 'fire-1' derives resting on (absent \u{2026}) over (not r1), a relation a commitment can still extend

@@ -66,6 +66,18 @@ a `:where` guard, which Q32 dropped in 2026-05, is refused at the parse since
 M1f S1f.5.11. Three families (T1/T2/T3) by what the LHS quantifies
 over. See [`ir/01-ein-graph/02_rules.md`](ir/01-ein-graph/02_rules.md).
 
+### `eq`, `neq`
+The relations of **equality** and **non-equality**, since M1f
+[S1f.5.7](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (the user's ruling of
+2026-11-07, Q-M1e2.26): `(eq x x)` for every value and `(neq x y)` for every
+two different values, **computed, never stored**, so no fact, rule or
+commitment changes them. Written in a goal or a premise each is a guard, which
+binds a variable nothing else binds, over the program's names where it must; a
+conclusion of either is checked, a false one `(false)`; `(not (eq x y))` is
+`(neq x y)`. Until S1f.5.7 they were two computed predicates that bound
+nothing, and a conclusion of either was stored as a fact. See
+[`ir/03-ein-lang/01_grammar.md`](ir/03-ein-lang/01_grammar.md).
+
 ### Hyperedge
 An edge with arity ≠ 2 — connects three or more participants. DOT
 has no native hyperedges; we encode them Levi-bipartite (one octagon

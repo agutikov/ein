@@ -251,6 +251,18 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "rende
 note   = "M1f S1f.5.2 (T1f.5.2.2) — a string's escapes (`\\n \\t \\r \\\" \\\\` and `\\u{…}`) and text in other scripts, the second of the two examples the user asked for (2026-11-06). The read-out prints the `:goal-text` over two lines, `--trace` the rule's `:why` with its emoji, `saturate --dump` each `:source` with its escapes written back."
 
 [[entry]]
+path   = "examples/features/16_eq_neq_goal.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render program"]
+note   = "M1f S1f.5.7 (T1f.5.7.2) — `eq` and `neq` are relations, asked about in a goal (the user's ruling of 2026-11-07, Q-M1e2.26): one query per row of the stage's case, each with the claim that states its one class. A guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, a conjunction means the same in any order, and a claim naming `eq` or `neq` loads; `ein test` holds the nine."
+
+[[entry]]
+path   = "examples/features/17_eq_neq_premise.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render program"]
+note   = "M1f S1f.5.7 (T1f.5.7.3) — `eq` and `neq` in a rule's premise, in any order (the user's ruling of 2026-11-07, Q-M1e2.26): a guard before the premise that binds its variable, a fact as a guard's argument, and a guard whose variable no premise binds, ranging over the program's names; `(solve :hypothesis-relations ())` keeps R root's state, and `ein test` holds the four claims about it."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
@@ -683,7 +695,7 @@ note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query g
 path   = "examples/ein-bugs/unbound-assert-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "Reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. The run is refused, exit 1, with the message double-quoted; the engine printed it unquoted until this fixture."
+note   = "Reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. Refused at load since M1f S1f.5.10 (F13), exit 1, one line per variable naming the disjunct that leaves it unbound; until then the run stopped at its first firing, exit 1, `KeyError: \"unbound var ?v1 in :assert — bindings: {…}\"`, the message double-quoted since this fixture."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-relation-head.ein"
@@ -731,19 +743,19 @@ note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): `defined_behaviour.md` § 3.2's
 path   = "examples/ein-bugs/binding-key-nested-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, the two and each with `(holds 2)`, which `:expect` states."
+note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, the two and each with `(holds 2)`, which `:expect` states. Since M1f S1f.5.18 (T1f.5.18.2, 2026-11-09) the nested fact binds `?f` (W33), to `(src Y)`, which no fact or candidate `holds`, so the rule derives nothing and no state holds a `noted` fact, which a query's `:expect` states, the region's naming `holds` alone; the `noted` facts above were W33's wrong answer."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-both.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's witness (`W7/binding-key-layout`, Q-M1e.16), promoted from `corpus/fuzz_findings/binding-key-layout.ein` by S1e2.2.7: an int and a nested fact in one activator position. The binding key interned only an activator's symbol arguments, so the two plans shared a space with two register layouts, and `(noted 1 3)` was lost in every state in a release build, while a debug build aborted in `check_layout`. Fixed by S1e2.2.7 (2026-11-04): the key interns every argument, as the compile cache's does. R is two states with the nested-only control's `noted` facts, which `:expect` states, in either build. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, which `:expect` states; unscoped, H was 21 candidates and R past the budget."
+note   = "M1e2 W7's witness (`W7/binding-key-layout`, Q-M1e.16), promoted from `corpus/fuzz_findings/binding-key-layout.ein` by S1e2.2.7: an int and a nested fact in one activator position. The binding key interned only an activator's symbol arguments, so the two plans shared a space with two register layouts, and `(noted 1 3)` was lost in every state in a release build, while a debug build aborted in `check_layout`. Fixed by S1e2.2.7 (2026-11-04): the key interns every argument, as the compile cache's does. R is two states with the nested-only control's `noted` facts, which `:expect` states, in either build. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, which `:expect` states; unscoped, H was 21 candidates and R past the budget. Since M1f S1f.5.18 (T1f.5.18.2, 2026-11-09) the nested fact binds `?f` (W33), to `(src Y)`, so its plan derives nothing and every state holds the int-only control's two `noted` facts, which `:expect` states; W7's `right` is restated to them."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-swapped.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both. Since M1f S1f.5.5's swap scoped as its twin (S1f.5.4's proposal A): R four states, the same `:expect`."
+note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both. Since M1f S1f.5.5's swap scoped as its twin (S1f.5.4's proposal A): R four states, the same `:expect`. Since M1f S1f.5.18 (T1f.5.18.2, 2026-11-09) the nested fact binds `?f` (W33), so every state holds the int-only control's two `noted` facts in either order, the same `:expect`."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-text-int-and-string.ein"
@@ -1519,25 +1531,25 @@ note   = "M1f W30 (`W30/assert-eq-x-w`), banked by S1f.5.0 from S1f.5.7's § Con
 path   = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-false`), banked by S1f.5.0 from S1f.5.9's case (P1f.5's F12): a rule whose `:match` is `()` never fires, so its `(false)` is never concluded and ∅ is in R. Open, owned by S1f.5.9: it fires, root is dead (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-false`), banked by S1f.5.0 from S1f.5.9's case (P1f.5's F12): a rule whose `:match` is `()` never fires, so its `(false)` is never concluded and ∅ is in R. Open, owned by S1f.5.9: it fires, root is dead (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): `r` fires once, root is dead, its core `[]` and `refuted by r`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-fact`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule whose `:match` is `()` never fires, so root lacks `(q b)`. Open, owned by S1f.5.9: root holds it (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-fact`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule whose `:match` is `()` never fires, so root lacks `(q b)`. Open, owned by S1f.5.9: root holds it (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): root holds `(q b :rule r)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-activator`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule with a parameter whose `:match` is `()` never fires on its activator `(r a)`, so root lacks `(hit a)`. Open, owned by S1f.5.9: it fires once per activator (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-activator`), banked by S1f.5.0 from S1f.5.9's case (F12): a rule with a parameter whose `:match` is `()` never fires on its activator `(r a)`, so root lacks `(hit a)`. Open, owned by S1f.5.9: it fires once per activator (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): root holds `(hit a :rule r)`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W31 (`W31/empty-match-hrule`), banked by S1f.5.0 from S1f.5.9's case (F12): an hrule whose `:match` is `()` proposes nothing, so H is empty and R is {∅}. Open, owned by S1f.5.9: it proposes `(q b)` (F12's ruling)."
+note   = "M1f W31 (`W31/empty-match-hrule`), banked by S1f.5.0 from S1f.5.9's case (F12): an hrule whose `:match` is `()` proposes nothing, so H is empty and R is {∅}. Open, owned by S1f.5.9: it proposes `(q b)` (F12's ruling). Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): H is `(q b)`, R two states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/where-in-and.ein"
@@ -1585,13 +1597,13 @@ note   = "M1f W32 (`W32/kwpair-in-macro`), banked by S1f.5.0 from S1f.5.11's cas
 path   = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5's census (its probe `activator_nested_value.ein`): the activator `(act (f a))` binds the value parameter `?y` to nothing, so `act` derives `(hit a)`, `(hit b)` and `(hit (f a))`. Open, owned by S1f.5.18: `(hit (f a))` only (the user's ruling on the census, 2026-11-08)."
+note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5's census (its probe `activator_nested_value.ein`): the activator `(act (f a))` bound the value parameter `?y` to nothing, so `act` derived `(hit a)`, `(hit b)` and `(hit (f a))`. Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09): `(hit (f a))` only (the user's ruling on the census, 2026-11-08), and H gains `(hit a)` and `(hit b)`, R four states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-empty.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+note   = "M1f W34 (`W34/assert-empty`), banked by S1f.5.0 from S1f.5.5's census (its probe `assert_empty.ein`): `:assert ()` stores a fact named `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), which joins H, so R is two states. Open, owned by S1f.5.9: an empty conclusion asserts nothing (F12). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts nothing, R {∅}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/absent-empty.ein"
@@ -1664,6 +1676,144 @@ path   = "examples/ein-bugs/wrong-answers/einb-dump-answer.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W43 (`W43/einb-dump-answer`), filed by S1f.5.12's T1f.5.12.4 (2026-11-09): `ein solve --dump-answer DIR` refused the `.einb` `ein kb save` writes from this file, exit 2 (*carries no program source*), which the same run on this file answers and every other command reads. R is three states, ∅, {(p a)} and {(p b)}, and N one member, refuted by `clash`. The register's row saves it and runs the dump on the container."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/fact-eq-false.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W50 (`W50/fact-eq-false`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a written `(eq a w)` is stored, which no guard reads, and R is two states. Open, owned by S1f.5.7: a fact of `eq` is checked as a conclusion with no premise, so root is dead (Q-M1e2.26, G-21, Q-M1f.33)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-eq-premise.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W51 (`W51/not-eq-premise`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a premise `(not (eq ?x ?y))` matches only stored negations, so the rule never fires. Open, owned by S1f.5.7: it is `(neq ?x ?y)` (Q-M1f.31)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-eq-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W51 (`W51/not-eq-fact`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a written `(not (eq a a))` is stored, and kills nothing. Open, owned by S1f.5.7: it is the false `(neq a a)`, so root is dead (Q-M1f.31, Q-M1f.33)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-eq-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W51 (`W51/not-eq-assert`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a rule's conclusion `(not (eq ?x ?x))` is stored, and kills nothing. Open, owned by S1f.5.7: it is `(neq ?x ?x)`, checked as W30's are (Q-M1f.31, G-21)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/relvar-eq-premise.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W52 (`W52/relvar-eq-premise`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a premise whose relation a parameter binds to `eq` scans stored `eq` facts, so the rule never fires. Open, owned by S1f.5.7: it is the `eq` guard (Q-M1e2.26)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W52 (`W52/relvar-eq-assert`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: `W30/assert-eq-x-w`'s conclusion with its relation a parameter bound to `eq`, stored as a fact. Open, owned by S1f.5.7: checked as W30's (G-21)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-eq.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W53 (`W53/hrule-eq`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: an hrule concluding `(eq ?x ?y)` proposes four `eq` hypotheses, each a stored fact under its commitment, `(eq a b)` among them, and R is sixteen states. Open, owned by S1f.5.7: an `eq` or `neq` instance is no hypothesis (Q-M1f.32)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-nested-var.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W54 (`W54/goal-nested-var`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a query's class grounds a goal conjunct one level deep, so `(not (p ?x))`'s two rows print one fact with `?x` in it, and the claim stating the two instances is FAILED. Open, owned by S1f.5.7: the rows are substituted at every depth."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-neq-free.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W55 (`W55/goal-neq-free`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its case, the inventory's S-18 (`goal_guard.ein`) with the claim its right answer states: refused at load, the claim naming `neq`. Open, owned by S1f.5.7: the goal answers a row per name of the program but `w`, and the claim loads and holds (Q-M1e2.26)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W55 (`W55/goal-guard-before-binder`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a goal's `(neq a ?y)` written before `(p ?y)` is judged on a null and holds, so the class is `(model (neq a a) (p a))` and the claim `(model)` is FAILED. Open, owned by S1f.5.7: a conjunction means the same in any order (Q-M1e2.26)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W56 (`W56/goal-absent`), filed by S1f.5.7's T1f.5.7.5 (2026-11-09) outside its case: a goal's `(absent (q ?y))` is never judged, so `?y = b` is a row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance is refused at load. Open, owned by S1f.5.7 (Q-M1f.35): T1f.5.7.6 judges the goal's lifted guards and lets the claim load, which then holds."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-var-stops.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W57 (`W57/assert-var-stops`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule root fires, so every command stops at the firing, exit 1, with `unbound var ?y in :assert — bindings: {'x': 'a'}`. Open, owned by S1f.5.10: the program is refused at load (F13)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "solve --minimal", "saturate"]
+note   = "M1f W57 (`W57/assert-var-under-commitment`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule only a commitment fires, so `saturate` and `solve --minimal` answer, exit 0, where describe stops, exit 1, the three runs banking the disagreement. Open, owned by S1f.5.10: the program is refused at load on every command (F13)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-assert-var.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W57 (`W57/hrule-assert-var`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): an hrule's template writes a variable no premise binds, builds no fact, and proposes nothing, in silence: H empty, R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W57 (`W57/assert-var-never-fires`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable nothing binds, in a rule whose `:match` is `()`, which never fires (F12), so the program loads and answers R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13), before S1f.5.9 makes an empty `:match` fire."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W58 (`W58/parameter-nested-assert`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09) outside its case: a value parameter its activator binds to a nested fact, read only by the `:assert`, reached it unbound, W33's cause, and the run stopped, exit 1. Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09), which binds the parameter: root holds `(hit (f a))`, every command answering, exit 0 (Q-M1f.37)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W59 (`W59/derived-activator`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, so the run stops where `r`'s plan is compiled, exit 1, with W24's line. Fixed by S1f.5.18's T1f.5.18.3 (2026-11-09): refused at load, every command, one line naming `mk`, `r` and `?R` (Q-M1f.1 (b))"
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W59 (`W59/derived-activator-never`), filed by S1f.5.18's T1f.5.18.1 (2026-11-09): `derived-activator.ein` with no `item` fact, so no run derives the activator and the program answers, 64 states. Fixed by S1f.5.18's T1f.5.18.3 (2026-11-09): refused at load with `derived-activator.ein`'s line, as the user ruled knowing it (Q-M1f.1 (b))"
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W60 (`W60/eq-arity-premise`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09), the shape S1f.5.18 found: a relation parameter its activator binds to `eq`, `(r eq)`, heads a premise of one argument, `(?R ?x)`, so every command stops at root where the plan is compiled, exit 1, with the compiler's arity line. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "solve --minimal", "saturate"]
+note   = "M1f W60 (`W60/eq-arity-under-commitment`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): the same premise under an activator a rule derives from `(mark eq)` only where a commitment holds a `p`, so `saturate` answers, exit 0, where `solve` and `solve --minimal` stop, exit 1, the three runs banking the disagreement. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line (Q-M1f.46)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-arity-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W60 (`W60/eq-arity-hrule`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): an hrule's parameter its `(solve :hrules (h (eq)))` activator binds to `eq` heads a premise of one argument, so `saturate` answers, exit 0, where `solve` stops before reading a state, exit 1. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line (Q-M1f.46)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W60 (`W60/eq-arity-conclusion`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): a relation parameter its activator binds to `eq` heads a conclusion of one argument, so root stores `(eq a :rule r)` and the program answers, R two states. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/fact-eq-arity.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W61 (`W61/fact-eq-arity`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09) beside W60: a written fact of `eq` at one argument, `(eq a)`, is stored as an ordinary fact, the check of a written `eq` fact (Q-M1f.33) reading two arguments only, and the program answers, R two states. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
@@ -2019,6 +2169,18 @@ note   = "The fourth route, which the finding did not name — `:as` takes the s
 path   = "examples/broken/load/relation_duplicate.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
+
+[[entry]]
+path   = "examples/broken/load/derived_activator.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "G-14's derived activator (M1f S1f.5.18, Q-M1f.1 (b)): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. Until S1f.5.18 every command stopped where `r`'s plan was compiled, W24's `CompileError`; refused at load since, one line naming `mk`, `r` and `?R` (W59)."
+
+[[entry]]
+path   = "examples/broken/load/derived_activator_never.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "`derived_activator.ein` without `(item (a b))`, so no run derives the activator: it answered, 64 states, until M1f S1f.5.18 refused it at load with the same line, on the user's ruling of 2026-11-08 on Q-M1f.1 (b), which chose the refusal knowing it (W59)."
 
 [[entry]]
 path   = "examples/broken/load/unbound_head.ein"

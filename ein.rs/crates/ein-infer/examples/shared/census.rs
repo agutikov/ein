@@ -13,7 +13,7 @@
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use ein_core::{FactId, Kb, Symbol, Terms};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_corpus::repo_root;
 use ein_infer::compile::SharedMemo;
 use ein_infer::events::Events;
@@ -157,8 +157,14 @@ pub fn refutes(plan: &Plan, terms: &Terms) -> Option<&'static str> {
 }
 
 /// `rule[a b]`.
-pub fn named(terms: &Terms, rule: Symbol, act: &[Symbol]) -> String {
-    let a: Vec<&str> = act.iter().map(|&s| terms.sym(s)).collect();
+pub fn named(terms: &Terms, rule: Symbol, act: &[Value]) -> String {
+    let a: Vec<String> = act
+        .iter()
+        .map(|&v| match v.as_sym() {
+            Some(s) => terms.sym(s).to_string(),
+            None => terms.display(v),
+        })
+        .collect();
     format!("{}[{}]", terms.sym(rule), a.join(" "))
 }
 

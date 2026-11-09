@@ -1,0 +1,54 @@
+;;; An activator a rule derives binds a relation parameter to a fact, and the
+;;; run stops where its plan is compiled — M1f **W59**, register row
+;;; `W59/derived-activator` (`corpus/wrong_answers.toml`), filed by S1f.5.18
+;;; (T1f.5.18.1, 2026-11-09), `open` and owned by S1f.5.18, on the user's
+;;; ruling of 2026-11-08 on Q-M1f.1 (*"Q1 - b"*). The program is S1f.5.5's
+;;; probe `g14/derived-activator.ein`, `:why`s added.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule `r` whose parameter `?R` names a relation, `(box (?R b))`, and a
+;;; rule `mk` that derives `r`'s activator from `item`'s argument, `(r ?f)`.
+;;; `item` is a declared relation, so its argument holds any value, a fact
+;;; among them, and `(item (a b))` is one: `mk` derives `(r (a b))`, which
+;;; binds `?R` to the fact `(a b)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The ruling (Q-M1f.1 (b)): a program in which some rule could derive an
+;;; activator binding a relation parameter to a fact is refused at load, by a
+;;; static check, whether or not a run derives it. `mk` writes `(r ?f)`, `?f`
+;;; is `r`'s relation parameter `?R`, and `(item ?f)` can bind `?f` to a fact,
+;;; so every command that loads the program exits 1 with the loader's line
+;;; (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, root fires `mk` and derives `(r (a b))`, and the run
+;;; stops where `r`'s plan is compiled, exit 1, with W24's line, *the relation
+;;; head ?R of (?R b) at Loc(…) is bound to the fact (a b) — a relation is
+;;; named by a symbol, not a fact.*, on every command (`ein solve FILE` at
+;;; `8249e872`, release and debug alike). Without `(item (a b))` it answers:
+;;; `derived-activator-never.ein`, W59's other row.
+;;;
+;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.18.3, 2026-11-09): every command
+;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
+;;; test`: 2), in either build, where it stopped where `r`'s plan was compiled, W24's line. The register's `now` is that
+;;; refusal; the section above is the record of the answer it replaced.
+
+(relation box Node :why "{?1} is in the box")
+(relation hit Node :why "{?1} is hit")
+(relation item Node :why "{?1} is an item")
+(box (a b))
+(rule r (?R)
+  :match (box (?R b))
+  :assert (hit z)
+  :why "a box holds a {?R} of b")
+(rule mk ()
+  :match (item ?f)
+  :assert (r ?f)
+  :why "{?f} is an item, so r is asked of it")
+(item (a b))
+(query :goal (hit ?x))

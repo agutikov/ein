@@ -27,6 +27,13 @@
 ;;; the stored fact is written as a line `()`, a parse error, so
 ;;; `answer_round_trip.rs` and `answer_dump.rs` name this file until S1f.5.9
 ;;; fixes W34.
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; `:assert ()` asserts nothing since T1f.5.9.2 (2026-11-09): `r` matches `(q
+;;; a)` and derives nothing, H is empty and R {∅}, the query one class, and
+;;; the state files load, the answer above by hand. The register's `now` is
+;;; that answer; the section above is the record of the one it replaced.
 
 ;; An empty conclusion: F12's fifth row says it adds nothing.
 (relation q Node)

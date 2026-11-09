@@ -37,7 +37,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::compile::{CompileError, SharedMemo};
 use crate::engine::Engine;
 use crate::events::{self, Events};
-use crate::firing::{BindingKey, Env, FireError, Firing, build_fact, fire};
+use crate::firing::{BindingKey, Env, FireError, Firing, build_conclusion, fire};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 
@@ -741,7 +741,19 @@ impl Saturator {
         // several). Cheap — a pure walk over each template.
         let mut tentative = Vec::with_capacity(plan.asserts.len());
         for i in 0..plan.asserts.len() {
-            tentative.push(build_fact(s.terms, s.ast, &plan, env, plan.asserts[i])?);
+            // A true `eq` / `neq` conclusion adds nothing, and a false one is
+            // `(false)` (M1f S1f.5.7, G-21).
+            if let Some(f) = build_conclusion(s.terms, s.ast, &plan, env, plan.asserts[i])? {
+                tentative.push(f);
+            }
+        }
+        if tentative.is_empty() {
+            // Every conclusion is an `eq` / `neq` that holds: the application
+            // concludes nothing, as one with no `:assert` does, and is no
+            // firing — a firing derives at least one fact, which the trace
+            // and the event stream read as its primary conclusion.
+            self.engine.fired.insert(key);
+            return Ok(None);
         }
         let all_known = tentative.iter().all(|&f| s.kb.contains(f));
 
@@ -1032,7 +1044,7 @@ impl Saturator {
                 terms.sym(plan.rule).to_string(),
                 plan.activator_args
                     .iter()
-                    .map(|&x| ein_core::text::symbol(terms.sym(x)).into_owned())
+                    .map(|&x| terms.display(x))
                     .collect::<Vec<_>>(),
                 m.bindings()
                     .map(|(k, v)| (terms.sym(k).to_string(), events::sexpr_value(terms, v)))
@@ -1502,7 +1514,7 @@ impl Saturator {
             let (a_sym, b_sym) = (s.terms.kernel.mirror_a, s.terms.kernel.mirror_b);
             return Ok(Some(Firing {
                 rule: self.sym_sym,
-                activator: Box::new([rel]),
+                activator: Box::new([Value::sym(rel)]),
                 bindings: Box::new([(a_sym, a), (b_sym, b)]),
                 derived: Box::new([stored]),
                 premises: Box::new([src]),
@@ -1570,7 +1582,7 @@ fn emit_fire(s: &mut Session<'_>, firing: &Firing) {
     let activator: Vec<String> = firing
         .activator
         .iter()
-        .map(|&x| ein_core::text::symbol(s.terms.sym(x)).into_owned())
+        .map(|&x| s.terms.display(x))
         .collect();
     let bindings = events::binding_pairs(s.terms, &firing.bindings);
     let premises = events::sexpr_facts(s.terms, &firing.premises);

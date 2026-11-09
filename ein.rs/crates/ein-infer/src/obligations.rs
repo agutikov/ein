@@ -70,8 +70,9 @@ use crate::plan::{Plan, Slot};
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Owed {
     pub rule: Symbol,
-    /// `plan.activator_args` — the parameters the activator fact bound.
-    pub activator: Box<[Symbol]>,
+    /// `plan.activator_args` — the activator fact's every argument, each the
+    /// value it binds its parameter to.
+    pub activator: Box<[Value]>,
     /// The relation whose extent is incomplete: `(open ?R)`'s argument,
     /// substituted per activator. `None` is the bare `(open)`, which counts
     /// and reports but does not attribute.
@@ -251,11 +252,7 @@ fn narrate(instances: &[Owed], terms: &Terms, events: &mut Events) {
     }
     for i in instances {
         let rule = terms.sym(i.rule).to_string();
-        let activator: Vec<String> = i
-            .activator
-            .iter()
-            .map(|&x| ein_core::text::symbol(terms.sym(x)).into_owned())
-            .collect();
+        let activator: Vec<String> = i.activator.iter().map(|&x| terms.display(x)).collect();
         let relation = i.relation.map(|r| terms.sym(r).to_string());
         let bindings = events::binding_pairs(terms, &i.bindings);
         events.emit("owe", |l| {

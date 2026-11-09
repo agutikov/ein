@@ -390,6 +390,7 @@ dependencies = [
  "cfgrammar",
  "ein-core",
  "ein-corpus",
+ "ein-infer",
  "include_dir",
  "lrlex",
  "lrpar",

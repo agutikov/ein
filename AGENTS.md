@@ -357,7 +357,8 @@ constrained-reasoning research.
   `null` core and rules beside `core_status: "not-kept"`, and `--trace`
   says why (since M1f S1f.5.12 each member gets its core after the walk, and
   `not-kept` is retired). No run that did not stop prints an empty core
-  (`ein-cli/tests/answer_round_trip.rs`), and the register is unmoved. Next
+  (`ein-cli/tests/answer_round_trip.rs`; since M1f S1f.5.9 but ∅'s, whose
+  refutation rests on no fact), and the register is unmoved. Next
   is S1e2.3.10, then the inventory re-taken and shown to the user, and the
   close waits for the user's go-ahead.
   S1e2.3.10 started the same day: N8 is fixed, every row of `ein test
@@ -671,6 +672,72 @@ constrained-reasoning research.
   W40's and W41's are not: reported, not fixed
   ([Q-M1f.52](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve)).
   No answer moved, and the register reads 129 fixed, 22 open and 1 not wrong.
+  **The second lane, `p1f5-lane2`, ran four stages the same day**, beside
+  S1f.5.6, S1f.5.12, S1f.5.8 and S1f.5.13, from `dc4c0bdc`, and was merged
+  into master after them (T1f.5.M.1); each stage's count was the lane's, so
+  the register's is given once, merged, at the end. **S1f.5.7** ([its
+  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#t1f571-record-2026-11-09)):
+  `eq` and `neq` are the relations of equality and non-equality, computed and
+  never stored (the user's ruling of 2026-11-07, Q-M1e2.26, and G-21). In a
+  goal and a premise a guard binds a variable nothing else binds, `eq` to the
+  other side and `neq` over the program's names
+  (`ein_infer::predicates::domain`), and waits for the relation premise that
+  binds it, so a premise means the same in any order of its conjuncts; a
+  conclusion of either, a written `(eq …)` fact and `(not (eq …))` are
+  checked, a false one `(false)`; a query's claim may name either. W30's
+  three, W24's two restated rows and W50 to W56's eleven fixed, Q-M1f.30 to
+  Q-M1f.35 defaulted. **S1f.5.10** ([its
+  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md#t1f5101-record-2026-11-09)):
+  a rule's or an hrule's `:assert` that writes a variable some way of
+  satisfying its `:match` leaves unbound is refused at load, on every command,
+  one line per variable naming the rule, the variable and the two explicit
+  spellings, `(is-a ?y T)` and `(eq ?y ?y)` (the user's ruling of 2026-11-07
+  on F13; `ein_ir::from_ir`'s `refuse_unbound_conclusions`,
+  `defined_behaviour.md` § 4.13). W57's four rows, the ways such a program
+  stopped or answered until then, filed and fixed; `FireError::UnboundVar`
+  stayed for W58, a parameter its activator binds to a nested fact read only
+  by a conclusion, which S1f.5.18 fixed, retiring the variant;
+  `fuzz_properties` holds every plan of an accepted program to the rule,
+  `ein-ir` taking `ein-infer` as a dev-dependency; Q-M1f.36 to Q-M1f.40
+  defaulted. **S1f.5.18** ([its
+  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md#t1f5181-record-2026-11-09)):
+  an activator binds a parameter to a nested fact as to a name (W33, the
+  user's ruling of 2026-11-08 on S1f.5.5's census), so a value parameter
+  matches and concludes the fact, and the last path to
+  `FireError::UnboundVar`, a parameter read only by a conclusion (W58), is
+  gone with the variant and its `KeyError` line (Q-M1f.37);
+  `Plan::activator_args` is every argument, as values (Q-M1f.43); and the
+  loader refuses a program in which a rule could derive an activator binding a
+  relation parameter to a fact, whether or not a run derives it (Q-M1f.1 (b),
+  `ein_ir::from_ir`'s `refuse_derived_relation_activators`,
+  `defined_behaviour.md` § 4.9), reading which positions hold relation names
+  off the program: a declared relation's argument can hold a fact, and a
+  marker's argument holds what a rule passes on from it (Q-M1f.41), so the
+  stdlib's fan-outs load; W59's two rows, the `g14` programs, filed and fixed;
+  Q-M1f.41 to Q-M1f.44 defaulted. **S1f.5.9**, the lane's last ([its
+  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md#t1f591-record-2026-11-09)):
+  an empty `:match` is the empty conjunction, which is true, so a rule whose
+  `:match` is `()` fires once at root, or once per activator fact with its
+  parameters alone bound, and an hrule's proposes its conclusion likewise
+  (W31's four rows, the user's ruling of 2026-11-07 on F12); `:assert ()`
+  asserts nothing, so no `#empty` fact joins H (W34); `(and)` and `(or)` stay
+  refused at the parse, their error naming the rule and the clause and saying
+  the empty conjunction is `()` (Q-M1f.45); the first empty core, `[]`, on
+  `empty-match-false`'s dead root, `refuted by r`, prints `∅` on every text
+  surface (Q-M1f.48), and S1f.5.8's `core_field` writes it `[]` on every JSON
+  surface; and the shape S1f.5.18 found, a relation parameter an activator
+  binds to `eq` heading a form of another arity, which stopped the run where
+  the plan was compiled, is refused at load wherever a parameter can hold
+  `eq`, read as S1f.5.18's check reads relation names, with a written `(eq a)`
+  beside it (`ein_ir::from_ir`'s `refuse_eq_at_another_arity` and
+  `refuse_eq_facts_of_another_arity`, `defined_behaviour.md` § 4.14; W60's
+  four rows and W61, filed and fixed); Q-M1f.45 to Q-M1f.48 defaulted. **The
+  merge** ([P1f.5 § The
+  order](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-order),
+  item 10) moved no answer and no register row: lane 2's 23 rows, W50 to W61,
+  follow W43's, the goldens were re-taken rather than spliced, and the
+  register reads 161 fixed, 13 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -1,0 +1,36 @@
+;;; An hrule's `eq` instance is proposed as a hypothesis, and a commitment
+;;; stores it — M1f **W53**, register row `W53/hrule-eq`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.1, 2026-11-09)
+;;; from its step 1's probes, `open` and owned by S1f.5.7, on the user's
+;;; ruling of 2026-11-07 (Q-M1e2.26: no commitment changes `eq` or `neq`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two facts `(p a)` and `(p b)`, and an hrule proposing `(eq ?x ?y)` for
+;;; every two `p` facts, which the `(solve …)` block names.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A commitment states facts a state stores, and a state stores no `eq`,
+;;; whose facts are computed: an hrule's `eq` or `neq` instance is no
+;;; hypothesis (Q-M1f.32, taken by default on the user's instruction of
+;;; 2026-11-09). H is empty, and R is {∅}.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The hrule proposes `(eq a a)`, `(eq a b)`, `(eq b a)` and `(eq b b)`, each
+;;; committed as a stored fact, the false `(eq a b)` among them, so R is
+;;; sixteen states, exit 0 (`ein solve FILE` and `ein oracle FILE` at
+;;; `dc4c0bdc`, release and debug alike). The same hrule concluding `neq`
+;;; proposes the four `neq` facts, whose state files do not load, a fact line
+;;; `(neq …)` being a parse error; this witness is the `eq` one so that its
+;;; state files load (`answer_round_trip.rs`).
+
+(relation p Node :why "{?1} is a node")
+(p a)
+(p b)
+(hrule h ()
+  :match (and (p ?x) (p ?y))
+  :assert (eq ?x ?y)
+  :why "suppose {?x} and {?y} are one")
+(solve :hrules (h))

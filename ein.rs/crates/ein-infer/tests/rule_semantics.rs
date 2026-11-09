@@ -189,9 +189,11 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
 /// invisible in the happy case — the rule concludes `(all-beaten Alice)`
 /// whether or not `?q` leaked — so the claim is pinned from both sides: the
 /// firing's bindings, which `--events` prints verbatim, name `?p` and nothing
-/// else; and a rule that puts `?q` in its head is refused at fire time with a
-/// message that names `?q` as unbound *while showing `?p` bound*. A leaked
-/// binding would satisfy that head instead of failing.
+/// else; and a rule that puts `?q` in its head is refused, naming `?q` as the
+/// variable no premise binds. A leaked binding would satisfy that head
+/// instead. **Since M1f S1f.5.10 the refusal is the loader's** (F13): until
+/// then the rule loaded and its first firing stopped the run with a message
+/// that named `?q` unbound while showing `?p` bound.
 #[test]
 fn the_forall_bound_variable_does_not_escape_the_guard() {
     let tournament = |head: &str| {
@@ -230,13 +232,14 @@ fn the_forall_bound_variable_does_not_escape_the_guard() {
         ),
     };
     assert!(
-        err.contains("unbound var ?q in :assert"),
-        "the head's ?q should be reported unbound, got: {err}"
+        err.contains(
+            "rule 'all-beaten': its :assert writes ?q, which no premise or parameter binds"
+        ),
+        "the head's ?q should be refused at load as a variable no premise binds, got: {err}"
     );
     assert!(
-        err.contains("'p': 'Alice'"),
-        "the message should show the outer environment that *was* built, so \
-         the reader can see ?p present and ?q missing, got: {err}"
+        !err.contains("writes ?p"),
+        "?p is bound by the outer premise, so only ?q is named, got: {err}"
     );
 }
 
@@ -744,10 +747,10 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
 /// redundant firing — where until then they shared one key and it was never
 /// enqueued, the collision §3.2 was reaching for.
 ///
-/// A nested `Fact` binds no parameter, so it reaches `values` not at all; it
-/// reaches the activator half now that the half is the compile key's every
-/// argument. The same fixture is run four ways and only the *kind* of the
-/// second argument varies:
+/// Since M1f S1f.5.18 (W33) a nested `Fact` binds its parameter as a name
+/// does, so it reaches `values` as well as the activator half, which is the
+/// compile key's every argument. The same fixture is run four ways and only
+/// the *kind* of the second argument varies:
 ///
 /// | second argument | plans | firings | productive |
 /// |---|---:|---:|---:|
@@ -756,13 +759,13 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
 /// | two symbols | 2 | 2 | 1 |
 /// | two ints | 2 | 2 | 1 |
 ///
-/// **And nothing changes but a duplicate.** `activator` reaches the compiler
-/// at exactly one site — `Compiler::run` passes it to `bind_activator` and
-/// nowhere else — and `bind_activator` skips a `Fact` argument outright, so
-/// the two plans are equal in every field of [`Plan`] but their activator
-/// list. The second application derives what the first derived, which is why
-/// the derived set is the same in all four cells and one firing in each is
-/// productive. Q-M1e.16's second fix, the layout in the key, would have kept
+/// **And nothing changes but a duplicate.** The rule reads `?f` nowhere, so
+/// whatever value each plan's seed binds it to, the second application
+/// derives what the first derived, which is why the derived set is the same
+/// in all four cells and one firing in each is productive. Until M1f S1f.5.18
+/// `bind_activator` skipped a `Fact` argument outright, so the two plans were
+/// equal in every field of [`Plan`] but their activator list; since, each
+/// seed holds its own fact (W33), and the cells count as they did. Q-M1e.16's second fix, the layout in the key, would have kept
 /// this collapse; the first, which S1e2.2.7 took, gives each plan its space.
 /// The shape the collapse's key cost a derivation on is the next test.
 #[test]
@@ -818,7 +821,9 @@ fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
 /// **An `int` in the position another activator gives a nested `Fact` loses
 /// no derivation, in either order and in either build** — M1e2 S1e2.2.7's
 /// regression for the latent bug behind `Q-M1a.8`, which until then this test
-/// pinned as a defect.
+/// pinned as a defect. The `int` is the name `1` since M1f S1f.5.4, and since
+/// M1f S1f.5.18 (W33) the nested `Fact` binds `?f` too, so each plan derives
+/// its own `(noted ?a ?f)`, and the two together their union.
 ///
 /// Both activators drop their second argument from `plan.activator_args`, and
 /// until S1e2.2.7 that list was the binding key's activator half, so the two
@@ -851,30 +856,32 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
               :assert (noted ?a ?f)
               :why    "note")
             (edge 1 2) (edge 2 3)
-            (holds 1)  (holds 3)
+            (holds 1)  (holds 3)  (holds (src Y))
             {activators}
             "#
         )
     };
     // The controls: one plan each, no layout to disagree with. The nested-fact
-    // activator derives the four conclusions the rule has, the int one the two
-    // with `?f` = 1.
-    let whole = BTreeSet::from([
-        "(noted 1 1)".to_string(),
-        "(noted 1 3)".to_string(),
-        "(noted 2 1)".to_string(),
-        "(noted 2 3)".to_string(),
+    // activator derives the two with `?f` = `(src Y)`, the name one the two
+    // with `?f` = 1. Until M1f S1f.5.18 the nested fact bound nothing, `?f`
+    // was `(holds ?f)`'s to bind, and the nested-fact activator derived every
+    // `(noted ?a ?f)`, which this control stated (W33).
+    let nested = BTreeSet::from([
+        "(noted 1 (src Y))".to_string(),
+        "(noted 2 (src Y))".to_string(),
     ]);
+    let name = BTreeSet::from(["(noted 1 1)".to_string(), "(noted 2 1)".to_string()]);
     assert_eq!(
         saturate(&program("(note edge (src Y))")).derived(),
-        whole,
-        "the nested-fact activator alone derives every (noted ?a ?f)"
+        nested,
+        "the nested-fact activator alone derives the two with ?f = (src Y)"
     );
     assert_eq!(
         saturate(&program("(note edge 1)")).derived(),
-        BTreeSet::from(["(noted 1 1)".to_string(), "(noted 2 1)".to_string()]),
-        "the int activator alone derives the two with ?f = 1"
+        name,
+        "the name activator alone derives the two with ?f = 1"
     );
+    let whole: BTreeSet<String> = nested.union(&name).cloned().collect();
 
     // Both, in both orders: a rule set with one more activator concludes the
     // union, and the order two facts are written in changes nothing.
@@ -1084,13 +1091,12 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
 /// `@empty` as a name (S1f.5.4's ruling) and `()` only as a whole `:match` or
 /// `:assert`.
 ///
-/// `:assert ()` stores a fact under the parser's synthetic head for `()`
-/// today, which is `W34/assert-empty`'s wrong answer, open and S1f.5.9's to
-/// fix: an empty conclusion asserts nothing. Until T1f.5.5.8 that head was
-/// `@empty`, so `written`'s `(@empty)` was the fact `empty-form` had already
-/// stored, and its firing re-derived it. The head is `#empty` since, which no
-/// program can spell, so `written` stores a fact of its own whether or not
-/// `empty-form` stores one.
+/// `:assert ()` asserts nothing since M1f S1f.5.9's T1f.5.9.2 (2026-11-09,
+/// W34): `empty-form` matches and derives nothing, and is no firing. Until
+/// then it stored a fact under the parser's synthetic head for `()`, whose
+/// name joined H; until T1f.5.5.8 that head was `@empty`, so `written`'s
+/// `(@empty)` was the fact `empty-form` had already stored, and its firing
+/// re-derived it. `written` stores its own fact either way.
 #[test]
 fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
     let text = "(relation q Node :why \"{?a} is a node\")\n(q a)\n\
@@ -1120,4 +1126,300 @@ fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
         !by("empty-form").contains(&written[0]),
         "`:assert ()` and `:assert (@empty)` stored one fact"
     );
+    assert!(
+        run.firings.iter().all(|f| run.rule_of(f) != "empty-form"),
+        "`:assert ()` concludes nothing, so it is no firing"
+    );
+    assert_eq!(
+        run.facts().iter().filter(|f| f.contains("#empty")).count(),
+        0,
+        "`:assert ()` stored a fact under the synthetic head"
+    );
+}
+
+/// **An empty `:match` fires once, or once per activator fact** — M1f
+/// S1f.5.9, on the user's ruling of 2026-11-07 on P1f.5's F12 (*"1 fire; 2
+/// same"*). `()` is the empty conjunction, which is true, so a rule whose
+/// `:match` is `()` fires once at root with nothing bound, and a rule with
+/// parameters once per activator, its parameters alone bound. Until S1f.5.9
+/// `()` was a premise over the parser's synthetic `#empty`, which no fact
+/// holds, so neither fired, in silence (W31).
+#[test]
+fn an_empty_match_fires_once_or_once_per_activator() {
+    let run = saturate(
+        "(relation q Node) (relation hit Node)\n(q a)\n\
+         (rule once () :match () :assert (q b))\n\
+         (rule each (?x) :match () :assert (hit ?x))\n(each a) (each c)\n",
+    );
+    let fired = |rule: &str| {
+        run.productive()
+            .into_iter()
+            .filter(|f| run.rule_of(f) == rule)
+            .count()
+    };
+    assert_eq!(fired("once"), 1, "the empty conjunction holds once");
+    assert_eq!(fired("each"), 2, "once per activator fact");
+    assert_eq!(
+        run.derived(),
+        BTreeSet::from([
+            "(q b)".to_string(),
+            "(hit a)".to_string(),
+            "(hit c)".to_string()
+        ])
+    );
+    let each = run
+        .productive()
+        .into_iter()
+        .find(|f| run.rule_of(f) == "each")
+        .expect("fired");
+    assert_eq!(
+        run.bindings_of(each).len(),
+        1,
+        "only the parameter is bound: {:?}",
+        run.bindings_of(each)
+    );
+}
+
+// ── `eq` and `neq` are relations (M1f S1f.5.7) ─────────────────────────────
+//
+// The user's ruling of 2026-11-07 on Q-M1e2.26: `eq` and `neq` are the
+// relations of equality and of non-equality, computed and never stored, and a
+// premise follows the reading a goal does.
+
+/// **A premise means the same in any order of its conjuncts.** A guard written
+/// before the relation premise that binds its variable waits for it, so each
+/// pair of rules below derives one set of facts. Until S1f.5.7 the loader
+/// refused the first of each pair (W24, Q-M1e2.18 (ii)(a)), and before M1e2
+/// S1e2.2.24 the guard compared the unbound variable as a null, so `eq-first`
+/// never fired and `neq-first` fired for `a` too.
+#[test]
+fn a_premise_means_the_same_in_any_order_of_its_conjuncts() {
+    let run = saturate(
+        r#"
+        (relation p T) (relation e1 T) (relation e2 T) (relation n1 T) (relation n2 T)
+        (p a) (p b) (p (f a))
+        (rule eq-first () :match (and (eq ?x a) (p ?x)) :assert (e1 ?x))
+        (rule eq-last () :match (and (p ?x) (eq ?x a)) :assert (e2 ?x))
+        (rule neq-first () :match (and (neq ?x a) (p ?x)) :assert (n1 ?x))
+        (rule neq-last () :match (and (p ?x) (neq ?x a)) :assert (n2 ?x))
+        "#,
+    );
+    let of = |rel: &str| -> BTreeSet<String> {
+        run.derived()
+            .iter()
+            .filter_map(|f| f.strip_prefix(&format!("({rel} ")))
+            .map(|rest| rest[..rest.len() - 1].to_string())
+            .collect()
+    };
+    assert_eq!(of("e1"), BTreeSet::from(["a".to_string()]));
+    assert_eq!(of("e1"), of("e2"), "eq, either order");
+    assert_eq!(
+        of("n1"),
+        BTreeSet::from(["(f a)".to_string(), "b".to_string()])
+    );
+    assert_eq!(of("n1"), of("n2"), "neq, either order");
+}
+
+/// **A guard's variable nothing binds ranges over the program's names**: every
+/// constant a fact writes in an argument, at any depth, and every constant of
+/// a rule's `:match` or `:assert` (Q-M1e2.9 (a)), `(relation …)`'s names among
+/// them. `eq` binds it to the other side, and `neq` to every name but it.
+#[test]
+fn a_guards_free_variable_ranges_over_the_programs_names() {
+    let run = saturate(
+        r#"
+        (relation q T) (relation same T T) (relation apart T T)
+        (q b) (q (box c))
+        (rule pair-same () :match (and (q ?y) (eq ?x ?y)) :assert (same ?x ?y))
+        (rule pair-apart () :match (and (q ?y) (neq ?x ?y)) :assert (apart ?x ?y))
+        "#,
+    );
+    let derived = run.derived();
+    let of = |rel: &str| -> BTreeSet<String> {
+        derived
+            .iter()
+            .filter(|f| f.starts_with(&format!("({rel} ")))
+            .cloned()
+            .collect()
+    };
+    // `eq` binds `?x` to `?y`'s value, a name or a nested fact.
+    assert_eq!(
+        of("same"),
+        BTreeSet::from([
+            "(same (box c) (box c))".to_string(),
+            "(same b b)".to_string()
+        ])
+    );
+    // `neq` ranges over the names: `T`, `apart`, `b`, `c`, `q` and `same`
+    // (each `(relation …)` is a stored fact), not the nested fact `(box c)`,
+    // and not a rule's name.
+    let names = ["T", "apart", "b", "c", "q", "same"];
+    let mut want: BTreeSet<String> = BTreeSet::new();
+    for x in names {
+        if x != "b" {
+            want.insert(format!("(apart {x} b)"));
+        }
+        want.insert(format!("(apart {x} (box c))"));
+    }
+    assert_eq!(of("apart"), want);
+}
+
+/// **A guard that binds its variable binds it where it is written**, as a
+/// relation premise in its place would (Q-M1f.34, taken by default on the
+/// user's instruction of 2026-11-09): an `(absent …)` after it reads the
+/// variable, and one before it does not, which is the order rule an `(absent
+/// …)` already has (S1.21.8). Here `(neq ?x a)` before `(absent (q ?x))` is
+/// *every name but `a` with no `q`*, and after it *every name but `a`, if there
+/// is no `q` at all*, which there is.
+#[test]
+fn a_binding_guard_binds_where_it_is_written() {
+    let run = saturate(
+        r#"
+        (relation p T) (relation q T) (relation first T) (relation last T)
+        (p a) (p b) (q b)
+        (rule guard-first () :match (and (neq ?x a) (absent (q ?x))) :assert (first ?x))
+        (rule guard-last () :match (and (absent (q ?x)) (neq ?x a)) :assert (last ?x))
+        "#,
+    );
+    let derived = run.derived();
+    let first: BTreeSet<&str> = derived
+        .iter()
+        .filter_map(|f| f.strip_prefix("(first "))
+        .map(|r| r.trim_end_matches(')'))
+        .collect();
+    assert_eq!(
+        first,
+        BTreeSet::from(["T", "first", "last", "p", "q"]),
+        "every name of the program but `a`, and `b`, which has a `q`"
+    );
+    assert!(
+        !derived.iter().any(|f| f.starts_with("(last ")),
+        "`(absent (q ?x))` with nothing bound asks whether there is no `q` at all: {derived:?}"
+    );
+}
+
+/// **`(not (eq ?x ?y))` is `(neq ?x ?y)`, and a relation its activator binds
+/// to `eq` is `eq`** (Q-M1f.31, taken by default on the user's instruction of
+/// 2026-11-09; Q-M1e2.26). Until S1f.5.7 each was a pattern over stored
+/// facts, which no state holds, and neither rule fired (W51, W52).
+#[test]
+fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
+    let run = saturate(
+        r#"
+        (relation p T) (relation apart T T) (relation in T T T)
+        (p a) (p b)
+        (rule not-eq () :match (and (p ?x) (p ?y) (not (eq ?x ?y))) :assert (apart ?x ?y))
+        (rule within (?R) :match (and (p ?x) (p ?y) (?R ?x ?y)) :assert (in ?R ?x ?y))
+        (within eq)
+        "#,
+    );
+    let derived = run.derived();
+    assert!(
+        derived.contains("(apart a b)") && derived.contains("(apart b a)"),
+        "{derived:?}"
+    );
+    assert!(
+        !derived
+            .iter()
+            .any(|f| f == "(apart a a)" || f == "(apart b b)")
+    );
+    let within: BTreeSet<&String> = derived.iter().filter(|f| f.starts_with("(in ")).collect();
+    assert_eq!(
+        within,
+        BTreeSet::from([&"(in eq a a)".to_string(), &"(in eq b b)".to_string()])
+    );
+}
+
+/// **A rule's `eq` or `neq` conclusion is checked, never stored** (the user's
+/// G-21 of 2026-11-07, M1f S1f.5.7): one that holds adds nothing, and one that
+/// does not is `(false)`, derived by the rule from the premises it matched.
+/// Until S1f.5.7 each was stored as an ordinary fact (W30), so a false one sat
+/// in the KB while a guard computed the opposite.
+#[test]
+fn an_eq_or_neq_conclusion_is_checked_never_stored() {
+    let holds = saturate(
+        r#"
+        (relation p T) (relation hit T)
+        (p a) (p b)
+        (rule apart () :match (and (p ?x) (p ?y) (neq ?x ?y)) :assert (and (neq ?x ?y) (hit ?x)))
+        (rule same () :match (p ?x) :assert (eq ?x ?x))
+        "#,
+    );
+    let facts = holds.facts();
+    assert!(
+        !facts
+            .iter()
+            .any(|f| f.starts_with("(eq ") || f.starts_with("(neq ")),
+        "a true conclusion adds nothing: {facts:?}"
+    );
+    assert!(facts.contains("(hit a)") && facts.contains("(hit b)"));
+    assert!(!facts.contains("(false)"));
+    // A firing whose only conclusion holds derives nothing, and is no firing.
+    assert!(
+        !holds.firings.iter().any(|f| holds.rule_of(f) == "same"),
+        "{:?}",
+        holds
+            .firings
+            .iter()
+            .map(|f| holds.rule_of(f))
+            .collect::<Vec<_>>()
+    );
+
+    for (conclusion, premise) in [
+        ("(neq ?x ?x)", "(p a)"),
+        ("(eq ?x w)", "(p a)"),
+        ("(not (eq ?x ?x))", "(p a)"),
+    ] {
+        let run = saturate(&format!(
+            "(relation p T)\n(p a)\n(rule r () :match (p ?x) :assert {conclusion})\n"
+        ));
+        let falses: Vec<&Firing> = run
+            .productive()
+            .into_iter()
+            .filter(|f| run.conclusions_of(f) == ["(false)"])
+            .collect();
+        assert_eq!(falses.len(), 1, "{conclusion}: one firing derives (false)");
+        assert_eq!(run.rule_of(falses[0]), "r");
+        let premises: Vec<String> = falses[0]
+            .premises
+            .iter()
+            .map(|&p| sexpr(&run.terms, p))
+            .collect();
+        assert_eq!(
+            premises,
+            [premise],
+            "{conclusion}: its premises are the match's"
+        );
+        assert!(
+            !run.facts().iter().any(|f| f.starts_with("(eq ")
+                || f.starts_with("(neq ")
+                || f.starts_with("(not (eq ")),
+            "{conclusion}: nothing of eq is stored"
+        );
+    }
+}
+
+/// **A written fact of `eq`, or the negation of one, is a conclusion with no
+/// premise** (Q-M1f.33 and Q-M1f.31, taken by default on the user's
+/// instruction of 2026-11-09): a true one is not stored, and a false one is
+/// `(false)`, written where it stands. Until S1f.5.7 each was stored (W50,
+/// W51).
+#[test]
+fn a_written_eq_fact_is_checked_never_stored() {
+    for (fact, dead) in [
+        ("(eq a a)", false),
+        ("(not (eq a b))", false),
+        ("(eq a w)", true),
+        ("(not (eq a a))", true),
+    ] {
+        let run = saturate(&format!("(relation p T)\n(p a)\n{fact}\n"));
+        let facts = run.facts();
+        assert!(
+            !facts
+                .iter()
+                .any(|f| f.starts_with("(eq ") || f.starts_with("(not (eq ")),
+            "{fact}: not stored: {facts:?}"
+        );
+        assert_eq!(facts.contains("(false)"), dead, "{fact}: {facts:?}");
+    }
 }

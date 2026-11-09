@@ -26,6 +26,11 @@
 //! 5. **No accepted program carries a keyword its form does not list** (M1f
 //!    S1f.5.11, T1f.5.11.2): each keyword pair an accepted program holds is a
 //!    form's own, on the form's list, and no term or nested fact holds one.
+//! 6. **No firing meets an unbound variable** (M1f S1f.5.10, P1f.5's F13):
+//!    every plan the compiler builds for an accepted program's rules and
+//!    hrules reads, in each conclusion, only registers each disjunct binds,
+//!    so a loader that lets one through shows here. It compiles with
+//!    `ein-infer`, a dev-dependency since S1f.5.10.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
@@ -605,5 +610,143 @@ fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
     assert!(
         pairs >= accepted / 4,
         "{pairs} keyword pairs in {accepted} accepted programs, so the property is barely tested"
+    );
+}
+
+/// The first conclusion variable a plan of `text`'s rules or hrules reads
+/// that one of its disjuncts leaves unbound, as `rule 'r': ?y`; `None` where
+/// `text` does not load, or every plan binds what its conclusions read.
+///
+/// A disjunct binds the activator's seed (the registers before the first free
+/// variable's, `ein_infer::plan`'s register spaces), every register a relation
+/// premise's slots hold at any depth, and every register an `eq` or `neq`
+/// guard reads, which it binds where nothing else does (M1f S1f.5.7). An
+/// `(absent …)`, lifted or nested, binds nothing outside it. A rule with
+/// parameters is compiled only from an activator, which seeds every one, a
+/// nested fact too since S1f.5.18, so a conclusion reads a parameter as a
+/// constant of the plan; one no activator activates compiles no plan. **A
+/// parameter was excepted until S1f.5.18**, which seeded a nested fact (W33's
+/// cause; W58 was the stop it made where only the conclusion read the
+/// parameter), and until then the plan of a rule with parameters and no
+/// activator was compiled here with none, its parameters unbound.
+fn unbound_conclusion(text: &str) -> Option<String> {
+    use ein_infer::plan::{GuardArgKind, Plan, Slot, Step};
+    fn regs(plan: &Plan, slot: Slot, out: &mut Vec<u16>) {
+        match slot {
+            Slot::Reg(r) => out.push(r),
+            Slot::Nested { slots, .. } => {
+                for &s in plan.slots(slots) {
+                    regs(plan, s, out);
+                }
+            }
+            Slot::Const(_) | Slot::Opaque(_) => {}
+        }
+    }
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, text, None).ok()?;
+    let mut terms = ein_core::Terms::new();
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).ok()?;
+    let program = kb.program();
+    let rules: Vec<ein_core::Rule> = program
+        .rules
+        .values()
+        .chain(program.hrules.values())
+        .cloned()
+        .collect();
+    for rule in &rules {
+        for activator in ein_infer::activators_for(&kb, &terms, rule) {
+            // A plan the compiler refuses is its own diagnosed outcome.
+            let Ok(plan) = ein_infer::compile_rule(&ast, &mut terms, rule, activator) else {
+                continue;
+            };
+            let mut read: Vec<u16> = Vec::new();
+            for &slot in plan.asserts.iter() {
+                regs(&plan, slot, &mut read);
+            }
+            for d in plan.disjuncts.iter() {
+                let mut bound: Vec<u16> = (0..plan.seed.len() as u16).collect();
+                for step in plan.steps(d.steps) {
+                    match *step {
+                        Step::Rel(r) => {
+                            for &s in plan.slots(r.slots) {
+                                regs(&plan, s, &mut bound);
+                            }
+                        }
+                        Step::Guard { args, .. } => {
+                            for a in plan.guard_args(args) {
+                                if let GuardArgKind::Reg(r) = a.kind {
+                                    bound.push(r);
+                                }
+                            }
+                        }
+                        Step::Absent { .. } => {}
+                    }
+                }
+                for &r in &read {
+                    let name = plan.reg_names[r as usize];
+                    if !bound.contains(&r) {
+                        return Some(format!(
+                            "rule '{}': ?{}",
+                            terms.sym(rule.name),
+                            terms.sym(name)
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    None
+}
+
+/// **No firing meets an unbound variable** (M1f S1f.5.10, P1f.5's F13).
+///
+/// The loader refuses a rule or an hrule whose conclusion writes a variable
+/// some way of satisfying its `:match` leaves unbound (the user's ruling of
+/// 2026-11-07, *"yes, file F13 with the refusal"*). So, for every generated
+/// program the loader accepts, every plan the compiler builds for its rules
+/// and hrules reads, in each conclusion, only registers each disjunct binds
+/// ([`unbound_conclusion`]). A firing builds its conclusion from the registers
+/// a match through one disjunct bound, so this holds every firing at once: an
+/// hrule's, whose template built no fact and proposed nothing in silence
+/// until S1f.5.10, and a rule's that no state fires among them. It holds the
+/// loader's reading of what binds to the compiler's (Q-M1f.40, taken by
+/// default on the user's instruction of 2026-11-09). Until S1f.5.10 the loader
+/// did not check it, and the run stopped at the first firing that met one,
+/// `ein_infer::firing::FireError::UnboundVar`.
+///
+/// The programs of the stream the loader refuses with the line are counted,
+/// as are those it accepts, so a stream that reached neither would say so.
+#[test]
+fn no_firing_meets_an_unbound_variable() {
+    let (iters, seed) = budget();
+    let mut rng = Rng(seed | 1);
+    let seeds = seeds();
+    let (mut loaded, mut refused) = (0usize, 0usize);
+    for i in 0..iters {
+        let text = generated(&seeds, &mut rng);
+        let mut ast = Ast::new();
+        let Ok(forms) = parse(&mut ast, &text, None) else {
+            continue;
+        };
+        match ein_ir::load(&mut ast, &mut ein_core::Terms::new(), &forms, None) {
+            Ok(_) => loaded += 1,
+            Err(e) if e.0.contains("which no premise or parameter binds") => refused += 1,
+            Err(_) => continue,
+        }
+        if let Some(why) = unbound_conclusion(&text) {
+            let small = minimise(&text, |t| unbound_conclusion(t).is_some());
+            panic!(
+                "iteration {i} (EIN_FUZZ_SEED={seed}): {why} reaches a conclusion unbound; \
+                 minimised:\n---\n{small}\n---"
+            );
+        }
+    }
+    eprintln!(
+        "fuzz: {loaded} programs loaded, every conclusion bound; {refused} refused for a \
+         conclusion variable nothing binds"
+    );
+    assert!(
+        loaded >= iters / 20,
+        "only {loaded} of {iters} programs loaded, so the property is barely tested"
     );
 }

@@ -132,7 +132,20 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `assert-eq-x-w.ein`, `w` in a concluded `neq` or `eq`, which makes `(p w)`
 /// a candidate; and W31's `empty-match-fact.ein` and `empty-match-hrule.ein`,
 /// `b` in a conclusion no firing reaches. Each owning stage says whether its
-/// fix moves its line.
+/// fix moves its line: S1f.5.7's (T1f.5.7.4) moves neither of W30's, `w`
+/// being a constant of the rule's `:assert`, a name of the program though the
+/// conclusion is checked and never stored.
+///
+/// Two of the witnesses M1f S1f.5.7 banked on 2026-11-09 (T1f.5.7.1) stand
+/// here: W52's `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
+/// parameter binds to `eq`, as W30's `assert-eq-x-w.ein`'s; and W54's
+/// `goal-nested-var.ein`, `a` and `b` inside its stored negations.
+///
+/// Both witnesses M1f S1f.5.18 banked on 2026-11-09 (T1f.5.18.1) stood here
+/// until T1f.5.18.3 refused both programs at load the same day, so neither
+/// loads here since: W59's `derived-activator.ein` and
+/// `derived-activator-never.ein`, `b`, inside the nested fact `(box (a b))`,
+/// and `z`, a constant of rule `r`'s `:assert`.
 ///
 /// **Left at M1f S1f.5.5's swap (T1f.5.5.4)**, each refused at the parse since
 /// and so loading here no more: `broken/compile/eq_arity_high.ein`'s `A` and
@@ -142,7 +155,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
 /// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
 /// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
-const SEEDED: [(&str, &[&str]); 28] = [
+const SEEDED: [(&str, &[&str]); 30] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -184,6 +197,10 @@ const SEEDED: [(&str, &[&str]); 28] = [
         &["`Z`, asserted by rule `spawn`"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/goal-nested-var.ein",
+        &["`a`, in (not (p a))", "`b`, in (not (p b))"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/match-only.ein",
         &["`Z`, matched by rule `reach-z`"],
     ),
@@ -210,6 +227,10 @@ const SEEDED: [(&str, &[&str]); 28] = [
     (
         "examples/ein-bugs/wrong-answers/range-in-match.ein",
         &["`1..3`, matched by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein",
+        &["`w`, asserted by rule `r`"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",
@@ -358,19 +379,11 @@ fn every_name_of_the_program_is_a_candidate_object() {
 /// W34, `:assert ()` stored as a fact whose head is the parser's synthetic
 /// `#empty` (`@empty` until M1f T1f.5.5.8), a name no fact or rule writes,
 /// which then joins H as an object.
-/// It is the row's own wrong answer (`W34/assert-empty`), so it is named
-/// rather than failed, and held both ways: S1f.5.9 empties the list in the
-/// commit that fixes W34.
-const KNOWN_R1: [(&str, &str); 2] = [
-    (
-        "examples/ein-bugs/wrong-answers/assert-empty.ein",
-        "new-object: `\"#empty\"` in (q \"#empty\")",
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/assert-empty.ein",
-        "new-relation: `\"#empty\"` in ()",
-    ),
-];
+/// It is the row's own wrong answer (`W34/assert-empty`), so it was named
+/// rather than failed, and held both ways, until M1f S1f.5.9's T1f.5.9.2
+/// (2026-11-09) fixed W34: `:assert ()` asserts nothing, and no run reaches a
+/// name the program does not have. Empty since.
+const KNOWN_R1: [(&str, &str); 0] = [];
 
 /// **R1 and R2 — no run reaches a name the program does not have.**
 ///
@@ -452,7 +465,7 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
         r1, known,
         "R1 — a run derived a name that is neither a loaded fact's nor a rule's \
          constant: a value no rule's text predicts, which the seed cannot hold \
-         (KNOWN_R1 names W34's, open, which S1f.5.9 fixes)"
+         (KNOWN_R1 named W34's until S1f.5.9 fixed it)"
     );
     assert_eq!(
         r2,

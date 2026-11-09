@@ -134,7 +134,8 @@ swap), and quoted everywhere else, a
 nested fact `(rel …)`; until M1f S1f.5.5's swap a program could write a name
 that printed quoted (`"x y"`, `"not"`, `"?x"`, `"Åsa"`), and since it a string
 is natural-language text and no value (S1f.5.2), so the quoted case is a name
-the loader made up, `"#empty"`, which does not load back (W34's); since M1f S1f.5.5's
+the loader made up, which does not load back, `"#empty"` the one a run reached, through
+`:assert ()`, until M1f S1f.5.9 made the empty conclusion assert nothing (W34); since M1f S1f.5.5's
 swap `1`, `07` and `1..5` are names that print bare, and since S1f.5.4 there is
 no int, which printed bare. So loading `models/NN.ein` gives that state's facts **by value**:
 `ein-cli/tests/answer_round_trip.rs` reloads every state file `ein solve

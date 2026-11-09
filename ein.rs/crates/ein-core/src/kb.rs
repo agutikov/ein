@@ -856,7 +856,11 @@ impl Kb {
     /// Panics once the program is shared, which is precisely when mutating it
     /// would be a bug: every fork and snapshot holds the same `Arc`.
     pub fn program_mut(&mut self) -> &mut Program {
-        Arc::get_mut(&mut self.program).expect("the program is shared — load is over")
+        let program =
+            Arc::get_mut(&mut self.program).expect("the program is shared — load is over");
+        // What it computed from the registries may not hold once they change.
+        program.domain.take();
+        program
     }
 
     // ── Layers ─────────────────────────────────────────────────────

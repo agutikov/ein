@@ -30,7 +30,7 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use ein_core::{FactId, Kb, Symbol, Terms};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_infer::compile::SharedMemo;
 use ein_infer::events::Events;
 use ein_infer::monotone::{Site, SiteKind};
@@ -98,7 +98,7 @@ pub struct SiteText {
     pub label: String,
     pub rule: Symbol,
     pub rule_text: String,
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
     pub text: String,
 }
 
@@ -132,7 +132,10 @@ impl RootPlans {
             let act = p
                 .activator_args
                 .iter()
-                .map(|&a| terms.sym(a).to_string())
+                .map(|&a| match a.as_sym() {
+                    Some(s) => terms.sym(s).to_string(),
+                    None => terms.display(a),
+                })
                 .collect();
             pairs.insert((rule.clone(), act));
             rules.insert(rule);
@@ -281,7 +284,10 @@ pub fn owing(
                 let act: Vec<String> = o
                     .activator
                     .iter()
-                    .map(|&a| terms.sym(a).to_string())
+                    .map(|&a| match a.as_sym() {
+                        Some(s) => terms.sym(s).to_string(),
+                        None => terms.display(a),
+                    })
                     .collect();
                 let triggers: Vec<&SiteText> = sites
                     .iter()

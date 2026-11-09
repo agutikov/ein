@@ -20,6 +20,13 @@
 ;;; `hit`, `(hit a)` is a candidate, and R is four states, exit 0 (`ein solve
 ;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
 ;;; release and debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; `:match ()` is the empty conjunction since T1f.5.9.2 (2026-11-09), so `r`
+;;; fires once on its activator: root holds `(hit a :rule r)`, H is `(p a)`,
+;;; and R two states, the answer above by hand. The register's `now` is that
+;;; answer; the section above is the record of the one it replaced.
 
 (relation q Node) (relation p Node) (relation hit Node)
 (q a)

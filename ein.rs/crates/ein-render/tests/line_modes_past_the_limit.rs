@@ -196,6 +196,16 @@ fn oracle_line(r: &Region, which: Which) -> BTreeSet<u64> {
     masks.iter().map(|&m| r.nodes[m as usize].class).collect()
 }
 
+/// **The flagged programs whose oracle stops**, each the witness of an open
+/// register row, so named rather than failed, and held both ways: a program
+/// here whose oracle answers is its row fixed. M1f S1f.5.9's T1f.5.9.1 banked
+/// W60's `eq-arity-under-commitment` (2026-11-09), whose `r` is an `activator`
+/// site, so the static check flags it, and whose activator, `(r eq)`, only a
+/// commitment derives, where its plan is compiled and the run stops; its
+/// T1f.5.9.4 refused the program at load the same day, and took it off the
+/// list. Empty since.
+const ORACLE_STOPS: [&str; 0] = [];
+
 /// **Every line mode past the limit certifies what describe certifies**, the
 /// same states, lines and row, and labels no state on a line the oracle does
 /// not put it on.
@@ -228,10 +238,13 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
                 jobs: jobs(),
                 ..region::Options::default()
             };
+            let stops = ORACLE_STOPS.contains(&rel.as_str());
             match region::compute(&mut kb, &mut terms, &ast, &o, &mut |_| {}) {
-                Ok(Outcome::Region(r)) => Some(r),
+                Ok(Outcome::Region(r)) if !stops => Some(r),
+                Ok(_) if stops => panic!("{rel}: ORACLE_STOPS names it, and the oracle answers"),
                 // *Forbid* refuses it, and every mode with it.
                 Err(ein_infer::SolveError::Refused(_)) => continue,
+                Err(ein_infer::SolveError::Saturate(_)) if stops => continue,
                 other => panic!("{rel}: the oracle: {:?}", other.err()),
             }
         } else {

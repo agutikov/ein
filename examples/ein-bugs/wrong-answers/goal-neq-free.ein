@@ -1,0 +1,32 @@
+;;; A goal's `neq` with a free variable holds with nothing bound, and a claim
+;;; naming `neq` is refused — M1f **W55**, register row `W55/goal-neq-free`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.1, 2026-11-09)
+;;; from its case (the inventory of 2026-11-06's S-18, its probe
+;;; `goal_guard.ein` with the claim its answer states), `open` and owned by
+;;; S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and a query whose goal is `(neq w ?y)`, with the claim
+;;; that its one class is the three facts below.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `neq` is the relation of non-equality, and a variable no premise binds
+;;; ranges over the program's names: `Node` and `p`, which `(relation p Node)`
+;;; stores, and `a`; `w` is only the query's. The goal has a row per name but
+;;; `w`, `?y = Node`, `?y = a` and `?y = p`, its class is `(neq w Node)`,
+;;; `(neq w a)` and `(neq w p)`, and the claim holds: exit 0.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The loader refuses the claim, *:expect names neq, which no declaration or
+;;; fact makes a relation*, exit 1 (`ein solve FILE` at `dc4c0bdc`, release and
+;;; debug alike). With no claim the goal holds with nothing bound, the guard
+;;; comparing `w` with an unbound `?y` as with a null, and the read-out says
+;;; *the goal holds: it has no variable*, suggesting `(model (neq w ?y))`.
+
+(relation p Node :why "{?1} is a node")
+(p a)
+(query :goal (neq w ?y)
+  :expect (model (neq w Node) (neq w a) (neq w p)))

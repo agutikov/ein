@@ -95,7 +95,20 @@ pub fn goal_bindings(
     };
     let mut rows: Vec<Vec<(Symbol, Value)>> = Vec::new();
     let mut matcher = crate::match_::Matcher::new();
+    let mut judge = crate::match_::Matcher::new();
     matcher.run(kb, terms, ast, &plan, &mut |m| {
+        // A top-level `(absent …)` is lifted out of the plan, as a rule's is,
+        // for the boundary to judge, and a goal has no boundary: it is judged
+        // here, against the state, which is a fixpoint. It holds where its
+        // query has no match (M1f S1f.5.7's T1f.5.7.6, W56; until then it was
+        // never judged, so `(and (p ?y) (absent (q ?y)))` answered `?y = b`
+        // beside `(q b)`).
+        if m.guards()
+            .iter()
+            .any(|g| judge.holds(kb, terms, ast, &plan, g, m.regs()))
+        {
+            return std::ops::ControlFlow::Continue(());
+        }
         // The last binding of a repeated name wins, and the row keeps
         // first-bind order, which is what the trace and the table print.
         let mut row: Vec<(Symbol, Value)> = Vec::new();
@@ -142,4 +155,60 @@ pub fn goal_plan_error(
         loc: None,
     };
     crate::compile::compile_rule(ast, terms, &rule, None).err()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ein_ir::{from_ir::load, parse};
+
+    /// **A goal's `(absent …)` is judged** (M1f S1f.5.7's T1f.5.7.6, W56): the
+    /// lifted guard holds where its query has no match in the state, so a row
+    /// whose `(q ?y)` the state holds is no row; a `forall`'s nested shape is
+    /// judged the same way. Until then the goal's evaluation never judged it,
+    /// and `?y = b` was a row beside `(q b)`.
+    #[test]
+    fn a_goals_absent_is_judged() {
+        let rows = |goal: &str| -> Vec<String> {
+            let mut ast = Ast::new();
+            let mut terms = Terms::new();
+            let src = format!(
+                "(relation p T) (relation q T) (relation r T T)\n(p a) (p b) (q b) (r a a)\n\
+                 (query :goal {goal})\n"
+            );
+            let forms = parse(&mut ast, &src, Some("<test>")).expect("parses");
+            let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+            let mut out: Vec<String> = goal_bindings(&ast, &mut terms, &kb, None)
+                .into_iter()
+                .map(|row| {
+                    row.iter()
+                        .map(|(k, v)| format!("{}={}", terms.sym(*k), terms.display(*v)))
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                })
+                .collect();
+            out.sort();
+            out
+        };
+        assert_eq!(rows("(and (p ?y) (absent (q ?y)))"), ["y=a"]);
+        assert_eq!(rows("(absent (q ?x))"), Vec::<String>::new(), "a q exists");
+        assert_eq!(
+            rows("(absent (p c))"),
+            [""],
+            "no (p c): one row, binding nothing"
+        );
+        // Every `r` out of `?y` goes to `?y`: `a` has one, to itself, and `b`
+        // none, which holds vacuously.
+        assert_eq!(
+            rows("(and (p ?y) (absent (and (r ?y ?z) (neq ?y ?z))))"),
+            ["y=a", "y=b"]
+        );
+        // A `forall`'s shape, a nested `(absent …)`: is every other `p` one
+        // with an `r` to itself? For `a` the other is `b`, which has none; for
+        // `b` it is `a`, which has `(r a a)`.
+        assert_eq!(
+            rows("(and (p ?y) (absent (and (p ?z) (neq ?y ?z) (absent (r ?z ?z)))))"),
+            ["y=b"]
+        );
+    }
 }

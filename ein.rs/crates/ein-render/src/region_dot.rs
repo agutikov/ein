@@ -388,8 +388,11 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
 
     // The tooltip: everything the node's reason is.
     let mut tip: Vec<String> = vec![format!("{} — {}", doc.name(m), status_word(node.status))];
-    if !node.core.is_empty() {
-        tip.push(format!("core: {}", node.core.join(" ")));
+    if !node.core.is_empty() || node.core_status.is_some() {
+        tip.push(format!(
+            "core: {}",
+            ein_infer::explain::core_text(&node.core, " ")
+        ));
         if let Some(q) = node.core_status.and_then(|c| c.qualifier()) {
             tip.push(format!("core search: {q}"));
         }
@@ -1312,10 +1315,10 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
                 status.push(format!("**spurious** ({w})"));
             }
             let mut why = Vec::new();
-            if !node.core.is_empty() {
+            if !node.core.is_empty() || node.core_status.is_some() {
                 why.push(format!(
                     "core {} by {}",
-                    node.core.join(" "),
+                    ein_infer::explain::core_text(&node.core, " "),
                     node.refuted_by.join(", ")
                 ));
                 if let Some(at) = node.core_status.and_then(|c| c.cut_at()) {

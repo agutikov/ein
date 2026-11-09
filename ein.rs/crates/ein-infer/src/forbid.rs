@@ -68,7 +68,7 @@
 use std::cell::Cell;
 use std::sync::Arc;
 
-use ein_core::{Kb, Rule, Symbol, Terms};
+use ein_core::{Kb, Rule, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
 
 use crate::monotone::{self, Monotonicity, Rel};
@@ -151,7 +151,7 @@ pub struct Refusal {
     /// The activator's arguments, as [`Plan::activator_args`] has them; empty
     /// for a rule without parameters, and for [`Cause::Parameter`], which is
     /// about the rule rather than one plan.
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
     pub concludes: Concludes,
     pub cause: Cause,
 }
@@ -164,11 +164,7 @@ impl Refusal {
         let act = if self.activator.is_empty() {
             String::new()
         } else {
-            let a: Vec<std::borrow::Cow<'_, str>> = self
-                .activator
-                .iter()
-                .map(|&s| ein_core::text::symbol(terms.sym(s)))
-                .collect();
+            let a: Vec<String> = self.activator.iter().map(|&v| terms.display(v)).collect();
             format!(" [activator {}]", a.join(" "))
         };
         let concl = self.concludes.as_str();
@@ -705,9 +701,11 @@ fn heads(ast: &Ast, terms: &Terms, node: NodeId, out: &mut Vec<Rel>) {
 
 /// Element-wise by text, a prefix first — `monotone`'s order for the same
 /// records.
-fn cmp_args(terms: &Terms, a: &[Symbol], b: &[Symbol]) -> std::cmp::Ordering {
+fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
-        let o = terms.syms.cmp_text(*x, *y);
+        // By content: a name by its text, as until M1f S1f.5.18 kept the
+        // names alone, and a nested fact after every name (Q-M1f.43).
+        let o = terms.cmp_semantic(*x, *y);
         if o != std::cmp::Ordering::Equal {
             return o;
         }

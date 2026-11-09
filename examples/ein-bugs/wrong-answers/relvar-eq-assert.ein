@@ -1,0 +1,31 @@
+;;; A conclusion whose relation is a parameter its activator binds to `eq` is
+;;; stored as a fact — M1f **W52**, register row `W52/relvar-eq-assert`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.1, 2026-11-09)
+;;; from its step 1's probes, `open` and owned by S1f.5.7, on the user's
+;;; ruling of 2026-11-07 (Q-M1e2.26, G-21).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and a rule concluding `(?R ?x w)` from `(p ?x)`,
+;;; activated by `(r eq)`: `W30/assert-eq-x-w`'s conclusion, its relation
+;;; written as a parameter.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Under `(r eq)` the conclusion is `(eq ?x w)`, checked as `W30/assert-eq-x-w`'s
+;;; is (G-21): at root `r` concludes `(eq a w)`, which is false, so root is a
+;;; contradiction: its core is `(p a)` and `refuted by` names `r`. R is empty.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The conclusion is stored: root holds `(eq a w :rule r)` (`ein saturate
+;;; FILE --dump`), and R is two states, ∅ and `{(p w)}`, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `dc4c0bdc`, release and debug alike).
+
+(relation p Node :why "{?1} is a node")
+(p a)
+(rule r (?R)
+  :match (p ?x)
+  :assert (?R ?x w)
+  :why "{?x} and w are in the relation {?R}")
+(r eq)

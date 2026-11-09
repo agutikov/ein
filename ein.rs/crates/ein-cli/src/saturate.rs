@@ -618,11 +618,7 @@ fn step_limit_message(max_steps: i64, done: usize, terms: &Terms, last: Option<&
 /// already held.
 fn firing_text(terms: &Terms, f: &Firing) -> String {
     let mut activation = vec![terms.sym(f.rule).to_string()];
-    activation.extend(
-        f.activator
-            .iter()
-            .map(|&a| ein_core::text::symbol(terms.sym(a)).into_owned()),
-    );
+    activation.extend(f.activator.iter().map(|&a| terms.display(a)));
     let bindings: Vec<String> = f
         .bindings
         .iter()

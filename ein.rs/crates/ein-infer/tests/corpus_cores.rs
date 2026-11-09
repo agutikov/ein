@@ -845,3 +845,51 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
          past --region-limit, {two_rules} whose contradiction the core derives through two rules"
     );
 }
+
+// ── A rule with no premise: the empty core — M1f S1f.5.9 ────────────────────
+
+/// **A rule with no premise refutes root with the empty core** — M1f S1f.5.9
+/// (W31), on the user's ruling of 2026-11-07 on P1f.5's F12: `:match ()` is
+/// the empty conjunction, true, so `(rule r () :match () :assert (false))`
+/// fires once at root and root is dead. Its refutation rests on no fact, so
+/// its core is `[]`, the empty set (Q-M1e2.27), the first in Ein, taken
+/// inside the budget, and `refuted by` names `r`, on describe and on the cube
+/// alike. [`every_core_names_its_commitment_and_derives_its_contradiction`]
+/// skips a dead root, and [`no_core_is_printed_unqualified_from_a_cut_search`]
+/// holds its status and rules with every other's; this test holds the core
+/// itself. Until S1f.5.9 the rule never fired and root was alive.
+#[test]
+fn a_rule_with_no_premise_refutes_root_with_the_empty_core() {
+    let path = repo_root().join("examples/ein-bugs/wrong-answers/empty-match-false.ein");
+    let (mut kb, mut terms, ast) = loaded(&path).expect("the witness loads");
+    let opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    let a = explore::run(&mut kb, &mut terms, &ast, &opts).expect("it answers");
+    assert!(a.root_dead, "root is dead");
+    let root = &a.described.as_ref().expect("describe").root;
+    assert!(!root.alive);
+    assert_eq!(
+        root.core,
+        Vec::<String>::new(),
+        "root's core is the empty set"
+    );
+    assert_eq!(root.core_status, Some(CoreStatus::WithinBudget));
+    assert_eq!(root.refuted_by, ["r"]);
+    // The cube: the oracle's root node says the same.
+    let (mut kb, mut terms, ast) = loaded(&path).expect("the witness loads");
+    let Ok(Outcome::Region(r)) = region::compute(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &region::Options::default(),
+        &mut |_| {},
+    ) else {
+        panic!("the oracle answers");
+    };
+    assert!(r.root_dead);
+    assert_eq!(r.nodes[0].core, Vec::<String>::new());
+    assert_eq!(r.nodes[0].core_status, Some(CoreStatus::WithinBudget));
+    assert_eq!(r.nodes[0].refuted_by, ["r"]);
+}

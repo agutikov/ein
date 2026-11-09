@@ -92,7 +92,7 @@ no listing: it reads no state.
 | `E` | describe on route 2, and `ein oracle` | the minimal discharging sets, which only the cube computes | around R | `region.discharging` | [X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `lattice` | every run but `--monotone` | the static check's verdict; on a flagged program its sites, and the holes the cube shows or that they are not known; then the block of § 5.1 | around R | `monotonicity.sites`, `region.holes.count` | [X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole), [X14](read_out_examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 | `strata` | when the rules' dependency graph has a cycle through an `absent` | how many such cycles; a diagnostic, not a refusal: root's fixpoint may depend on the boundary's order. The block of § 5.2 names each | around R | — | [X14](read_out_examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
-| `minimal hole` | describe on route 2 and `ein oracle`, when the cube shows a hole; at the block's indent, up to four | a minimal hole, and why it is out: dead, with its core, or what it owes | around R | `region.holes.minimal[k].owes`, `region.holes.minimal[k].core` | [X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
+| `minimal hole` | describe on route 2 and `ein oracle`, when the cube shows a hole; at the block's indent, up to four | a minimal hole, and why it is out: dead, with its core (`dead: ∅` where the core holds no fact), or what it owes | around R | `region.holes.minimal[k].owes`, `region.holes.minimal[k].core` | [X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `universe` | every run | H's size in candidates and how many are dead alone, or that the run did not visit each alone; *no candidate* when H is empty, which decides R by root alone. The block of § 5.3 under it | around R | `region.universe.candidates`, `region.universe.dead_alone` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `route` | every run | the route that answered, and the licences it used. On route 2 describe and `ein oracle` say *no licence* and why, where the summary and a mode's row name `L7 the cube` ([Q-M1f.20](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another)) | the run | — | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `work` | every run | saturations, facts beyond root, and the route's layers: what the run cost, each counter defined in [`answer_dump.md` § The run summary](answer_dump.md#the-run-summary). No lever but a speed lever moves it, and the wall clock is `-s`'s | the run | `work.saturations`, `work.facts`, `work.layers` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once) |
@@ -244,12 +244,20 @@ defaulted to documenting both).
 <!-- rows: empty -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `unsat core` | R empty of the dead kind: one per fact of root's core | a fact root's contradiction rests on | around R | `region.core[k]` | [X7](read_out_examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead), [X16](read_out_examples.md#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) |
+| `unsat core` | R empty of the dead kind: one per fact of root's core, or one, `∅, the empty set: the refutation rests on no fact`, where the core holds no fact | a fact root's contradiction rests on, or that it rests on none | around R | `region.core[k]` | [X7](read_out_examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead), [X16](read_out_examples.md#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) |
 | `core search` | under the core, where its search was cut at its budget | the cap the search stopped at, and that a smaller core may exist | the run | — | [X16](read_out_examples.md#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) |
 | `source` | per fact of the core with a `:source` | the fact and its `:source`, quoted | around R | — | [X16](read_out_examples.md#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) |
 | `refuted by` | under the core | for each fact of the contradiction, the rule of the step the core's derivation takes, `(given)` for a fact the core holds | around R | `region.refuted_by` | [X7](read_out_examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead), [X16](read_out_examples.md#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) |
 | `owing` | R empty of the owing kind: one per node of the frontier | the node and how many instances it owes, each instance on a line under it through its rule's `:why` | around R | `region.frontier[k].owes`, `region.frontier[k].set` | [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) |
 <!-- /rows -->
+
+**A dead root's core where the contradiction rests on no fact, or on a computed one.** A rule whose `:match` is `()`
+fires at root (M1f [S1f.5.9](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)), so `(rule r () :match () :assert (false))` refutes root with the
+empty set for its core: one `unsat core` row, `∅`, the text surfaces' spelling of the summary's `[]` (§ 11), then
+`refuted by  r`. A false conclusion of `eq` or `neq` (M1f [S1f.5.7](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md): computed and never stored) is
+`(false)` derived by its rule, so root's `empty` row reads *every node is dead — root's own fixpoint derives (false)*,
+`unsat core` lists the premises the firing matched and `refuted by` names the rule; a written false `(eq a w)` is a
+conclusion with no premise, `unsat core  (false)` and `refuted by  (given)`.
 
 ---
 
@@ -263,8 +271,8 @@ all of R by default, or over the states listed where the run asked another quest
 |---|---|---|---|---|---|
 | `query`, `query i of n` | per `(query …)`, after the listing; numbered where the program has several | the goal | — | `queries[k].goal` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 | `over` | under each query | the set the classes are over, how many states it holds, and how many projection classes they fall into; *a lower bound* where they are | R | `queries[k].classes` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
-| `class i of n` | per class, while stdout's lines last, at the block's indent | how many states give it, and which by their numbers in the listing when that is complete; then each binding row, sorted, with the `:goal-text` sentence filled for it; *undetermined here* where the goal has no row | R | `queries[q].classes[i].states` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X4](read_out_examples.md#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) |
-| `as :expect` | under the classes | the claim that states exactly these classes, to paste into the query; or *not printed*, and why: a lower bound, the states listed, a cut, or past what is left of the 100 lines | the listing | — | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
+| `class i of n` | per class, while stdout's lines last, at the block's indent | how many states give it, and which by their numbers in the listing when that is complete; then each binding row, sorted, with the `:goal-text` sentence filled for it, a variable an `eq` or `neq` guard binds among them; *the goal holds: it has no variable* where the goal has none, and *the goal holds: it binds no variable* where each of its variables is an `(absent …)`'s own; *undetermined here* where the goal has no row | R | `queries[q].classes[i].states` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X4](read_out_examples.md#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) |
+| `as :expect` | under the classes | the claim that states exactly these classes, to paste into the query, each class the goal's instances under its rows, substituted at every depth, an `eq`, `neq` or `(absent …)` instance among them; or *not printed*, and why: a lower bound, the states listed, a cut, or past what is left of the 100 lines | the listing | — | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `:expect` | under a query that states a claim | the claim checked against the classes: holds, FAILED and why, or NOT CHECKED and why | — | — | [X3](read_out_examples.md#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) |
 <!-- /rows -->
 
@@ -367,8 +375,11 @@ node's core and rules are lists, and a node that is not dead, whose core does no
 `region.holes.minimal[].core` is a dead hole's list and an owing hole's `null`. Under `--count` and a mode they are
 `null` on a dead root too, since the question prints no core
 ([Q-M1f.29](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f29--a-dead-roots-core-under---count)).
-`[]` would be a core that holds no fact, *the empty set suffices*, which no corpus program reaches (S1f.5.9). Until
-S1f.5.8 an owing hole's core was written `[]`; `region.json`, `nodes.json` and `--events`' `enter` lines, which follow
+`[]` is a core that holds no fact, *the empty set suffices*: since M1f [S1f.5.9](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md) a rule whose `:match` is
+`()` fires, and `examples/ein-bugs/wrong-answers/empty-match-false.ein`'s dead root writes `core: []` and
+`refuted_by: ["r"]` on every JSON surface, where every text surface prints `∅`
+([Q-M1f.48](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f48--how-a-text-surface-writes-the-empty-core)).
+Until S1f.5.8 an owing hole's core was written `[]`; `region.json`, `nodes.json` and `--events`' `enter` lines, which follow
 the same rule, wrote `[]` on every node that is not dead.
 
 ### 11.1 Which page owns which key

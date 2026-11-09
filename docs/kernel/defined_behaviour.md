@@ -194,7 +194,9 @@ canonical decimal, until M1f S1f.5.4), so the text loads back to the same value
 (`grammar::the_printers_symbol_is_the_lexers`, `answer_round_trip.rs`). Since
 M1f S1f.5.5's swap a name a program writes always lexes as one, a string being
 natural-language text and no value (S1f.5.2, § 4.12), so a name printed quoted is
-one the loader made up, `"#empty"`, which does not load back (W34's). Until then
+one the loader made up, which does not load back: `"#empty"` was one, which a run
+reached through `:assert ()` until M1f S1f.5.9 made the empty conclusion assert
+nothing (W34), and no run reaches one since. Until then
 the DOT labels printed a nested fact as its `repr` and a name as its raw text.
 The `repr`:
 
@@ -319,7 +321,7 @@ one activator:
 |---|---|
 | the compile cache key | **every** argument, as a value |
 | the identity's activator half | the same list: **every** argument |
-| the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — every name (and every integer, until M1f S1f.5.4 retired the int) |
+| the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — **every** argument since M1f S1f.5.18, a nested fact as a name; every name (and every integer, until M1f S1f.5.4 retired the int) until then |
 
 So two activators of one rule that differ in **any** argument have different
 identities, and both fire. **"Differ" is by value since M1e2 S1e2.2.16**
@@ -336,17 +338,27 @@ skipped no activator (W16;
 with one text were one value, a symbol, so they were one key, as they were one
 fact, until M1f S1f.5.5's swap made a string natural-language text, no value
 (S1f.5.2, § 4.12). A name reaches both halves, since it binds its
-parameter, as an integer did until M1f S1f.5.4; a nested **`Fact`** binds nothing and reaches the activator half
-alone. Two activators differing only in a nested `Fact` compile to plans equal
-in every field but that list, so the second application concludes what the
-first did: a **redundant** firing, one more firing and nothing derived
-differently
+parameter, as an integer did until M1f S1f.5.4, and so does a nested
+**`Fact`** since M1f [S1f.5.18](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)
+(2026-11-09, W33, the user's ruling of 2026-11-08 on S1f.5.5's census): an
+activator binds a parameter to its argument whatever value it is, so `(act (f
+a))` binds `?y` to `(f a)` and `(p ?y)` matches `(p (f a))` alone
+(`compile_semantics.rs::a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound`).
+Until then a nested `Fact` bound nothing and reached the activator half alone:
+its parameter was a free variable of the plan, so the rule fired on every `p`
+(W33), and a conclusion that alone read the parameter stopped the run with
+§ 4's retired `KeyError` (W58). Two activators differing only in a nested `Fact`
+compiled to plans equal in every field but that list, and a rule that reads the
+parameter nowhere still concludes the same from each: a **redundant** firing,
+one more firing and nothing derived differently
 (`rule_semantics.rs::activators_differing_only_by_a_nested_fact_argument_both_fire`).
+`Plan::activator_args`, what an event and a static check's label print, is the
+same every argument since S1f.5.18 (Q-M1f.43), where it kept the names alone.
 
 **Why the activator half is the whole list.** A plan's register layout is a
 function of the rule and of *which* parameters its activator bound, and a
-name binds its parameter where a nested `Fact` does not, as an integer did
-until M1f S1f.5.4. While the
+name bound its parameter where a nested `Fact` did not until M1f S1f.5.18, as
+an integer did until M1f S1f.5.4. While the
 activator half kept the symbols alone, an integer in the position another
 activator gives a nested `Fact` put two plans with two *register layouts* in
 one identity space — `?f` is register 1 in one and register 3 in the other —
@@ -381,7 +393,17 @@ $ ein saturate examples/ein-bugs/binding-key-both.ein --dump    # since, either 
   (noted 2 1 :rule note)
   (noted 1 3 :rule note)          ← lost above, silently
   (noted 2 3 :rule note)
+
+$ ein saturate examples/ein-bugs/binding-key-both.ein --dump    # since M1f S1f.5.18
+  (noted 1 1 :rule note)
+  (noted 2 1 :rule note)
 ```
+
+The last is W33's fix and not a lost derivation: `(note edge (src Y))` binds `?f`
+to `(src Y)`, which no fact `holds`, so it derives nothing, where until then `?f`
+was `(holds ?f)`'s to bind and the `Fact` activator derived every `(noted ?a
+?f)`, which the second block shows; the `int` (a name since S1f.5.4)
+activator's two are the whole answer.
 
 Adding an activator **removed** a conclusion, swapping the two lines put it
 back, and `Engine::check_layout`, which asserts the invariant under
@@ -394,7 +416,9 @@ have not parted again.
 **Where it is held.** The program is the corpus family
 `examples/ein-bugs/binding-key-{both,swapped,int-only,nested-only}.ein`: both
 activators in either order, and each alone. Each file's `:expect` states
-every state's `noted` facts, so `ein test` checks them in the corpus sweep,
+every state's `noted` facts (restated by M1f S1f.5.18, whose `:expect` stated
+W33's wrong answer, and `nested-only`'s by a query, no model naming `noted`
+since), so `ein test` checks them in the corpus sweep,
 which runs a debug build, and the order-swap pair answers alike.
 `rule_semantics.rs::an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`
 states the same in-process, in both profiles. No other corpus program has an
@@ -541,11 +565,17 @@ names the failure's class, and exiting non-zero:
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` (`ein saturate` printed `error: <path> not found` until M1f T1f.5.5.13) | 1 |
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
 | a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
-| unbound variable in `:assert` | `KeyError: "unbound var ?v1 in :assert — bindings: {…}"` | 1 |
 | a conclusion no fact can hold: since M1f S1f.5.5's swap only a macro's body that is a bare parameter, called in an `:assert`, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
-`KeyError`'s message is printed as its `repr` (§2.2), quotes and all.
+**`KeyError` left the table at M1f
+[S1f.5.18](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)** (2026-11-09, Q-M1f.37):
+`KeyError: "unbound var ?y in :assert — bindings: {…}"`, exit 1, its message
+printed as its `repr` (§2.2), quotes and all, where a conclusion read a variable
+its match left unbound. Since M1f S1f.5.10 a conclusion variable no premise or
+parameter binds is refused at load (§ 4.13), and since S1f.5.18 a parameter its
+activator binds to a nested fact is bound (§ 3.2, W33 and W58), so no input
+reaches it, and `ein_infer::firing::FireError::UnboundVar` is gone.
 
 **Every command reads a program through one path since M1f S1f.5.5's
 T1f.5.5.13** (2026-11-09, `ein-cli`'s `common::read_program`), so a file that
@@ -621,9 +651,10 @@ firings*](#5-the-cli-surface).
 
 The class names are the strongest candidate on this page for deliberate
 change. Two changed in M1e2: the step limit's row left the table (S1e2.3.7),
-and `TypeError` gave way to the rule's own words (S1e2.2.18). The three left,
-`FileNotFoundError`, `ein.inference.compile.CompileError` and `KeyError`, are
-Python's spellings that a command prints; that is parked for the user in
+and `TypeError` gave way to the rule's own words (S1e2.2.18). The two left,
+`FileNotFoundError` and `ein.inference.compile.CompileError`, are Python's
+spellings that a command prints (`KeyError` a third until M1f S1f.5.18 retired
+its line); that is parked for the user in
 [S1e2.2.18 § Notes](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md#notes),
 beside S1e2.3.7's note on the ones no command prints.
 
@@ -645,8 +676,10 @@ Five arrived on 2026-08-23 with
 | `(owing …)` beside states of R | `` (region …) — `(owing …)` says R is empty, and the region lists states `` | 1 |
 | a `(merged …)` whose `<to>` is not a listed state | `(merged …) — its state is not one the region lists` | 1 |
 | a claim naming a relation the program does not have | `(solve … :expect …) names <r>, which no declaration or fact makes a relation` | 1 |
+| a claim naming `eq` or `neq` (M1f S1f.5.7) | `(solve … :expect …) names <r>, which a state never stores — eq and neq are computed from their definition, so a region claim, which lists a state's facts, holds neither` | 1 |
 | `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | a parse error at the first token that is not † | 1 |
-| `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
+| `:expect` naming a relation the program does not have (`eq` and `neq`, which a goal may ask about, excepted since M1f S1f.5.7) | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
+| a `:goal` whose `eq` or `neq` compares a form that holds a variable (M1f S1f.5.7, Q-M1f.30) | `query: its :goal writes (neq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
 | a `?var` or `_` inside an `:expect` | a parse error at the variable, or at the `_` with S1f.5.1's note † | 1 |
 
@@ -755,6 +788,12 @@ arity is checked by whatever reads them. `neq` is pinned and its wrong arities
 have always been a positioned **parse** error; `false` is unpinned and needs no
 row, being silent in a `:match` at every arity, which is what a reader expects.
 That leaves `eq` and `absent`, one row each, at every arity but their own.
+
+**Since M1f S1f.5.9 only a macro's body reaches the `eq` row.** Through a
+relation parameter its activator binds to `eq`, `(?R ?x)` under `(r eq)`, the
+row was reached where the plan was compiled, at root or only under a commitment
+or an hrule's `(solve :hrules …)` activator (W60); the loader refuses that since
+(§ 4.14).
 
 Four fixtures pin them in
 [`examples/broken/compile/`](../../examples/broken/compile/README.md) —
@@ -872,10 +911,13 @@ the second by `ein-infer/tests/compile_semantics.rs`'s
 `a_relation_parameter_a_rule_binds_to_a_number_is_refused`. An activator of
 the wrong arity activates nothing and is not checked; a name binds a name (a
 string did too until M1f S1f.5.5's swap refused one, § 4.12, and a range until
-S1f.5.3 retired the token), and a nested fact binds no parameter: since M1e2 S1e2.2.24 one
-where a parameter names a relation is refused in both places too, as
-*binds it to the fact (a b)* (§ 4.9). Until then it was read as no binding,
-and the relation it would name matched nothing, in silence.
+S1f.5.3 retired the token), and a nested fact binds its parameter since M1f
+S1f.5.18 (§ 3.2), as it bound none until then. Where the parameter names a
+relation it names none, and since M1e2 S1e2.2.24 that is refused in both places
+too, as *binds it to the fact (a b)* (§ 4.9): at load where the activator is
+written down, and since M1f S1f.5.18 where a rule could derive it, the
+compiler's line the backstop behind both. Until S1e2.2.24 it was read as no
+binding, and the relation it would name matched nothing, in silence.
 
 ### 4.7 A refutation resting on an `absent` a commitment can fill — M1e2 S1e2.2.5
 
@@ -1024,18 +1066,52 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 | input | message |
 |---|---|
 | `_` as a guard's argument (a parse error since M1f S1f.5.5's swap, § 4.8) | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
-| a form or a keyword pair as a guard's argument (the keyword pair a parse error since M1f S1f.5.5's swap, S1f.5.11) | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one, until the swap) |
-| a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name` |
+| a form that holds a variable as a guard's argument (since M1f S1f.5.7, Q-M1f.30; every form, and a keyword pair, until then, the keyword pair a parse error since M1f S1f.5.5's swap, S1f.5.11) | `… writes (eq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` (`… and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` until S1f.5.7) |
+| ~~a guard on a variable no premise before it binds~~ — **loads since M1f S1f.5.7** (the user's ruling of 2026-11-07, Q-M1e2.26): the guard waits for the premise that binds it, or binds it over the program's names | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name`, until S1f.5.7 |
 | a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string (`_` and a string a parse error since M1f S1f.5.5's swap, § 4.8 and § 4.12) | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 | a keyword pair inside a pattern inside a pattern, in either clause (a parse error since M1f S1f.5.5's swap, S1f.5.11, which refuses a keyword pair anywhere in a term) | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
-| the same activator, derived by a rule through a variable | `the relation head ?<p> of <form> at <loc> is bound to the fact (a b) — a relation is named by a symbol, not a fact.` (a `CompileError`, § 4's second row, as § 4.6's integer) |
+| the same activator, which a rule could derive through a variable (since M1f S1f.5.18, below) | `rule '<d>': its :assert writes (r ?f), whose ?f is rule '<r>''s parameter ?<p>, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact` (`… as an argument of (g ?f)` inside a fact pattern, `… of the relation ?S names` under a parameter's relation; `hrule '<d>'` for an hrule; `… where its :match holds through <arm>` where some disjuncts of an `(or …)` bind it where a name is held) |
+| a fact, or a literal fact in an `:assert`, written where a relation name is passed on (since M1f S1f.5.18, below) | `the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' passes to rule '<r>''s parameter ?<p>, which names a relation — a relation is named by a symbol, not a fact` (`rule '<d>': its :assert writes (marker (a b)), whose (a b) is ?m of …` for the literal) |
 
-A guard's variable counts as bound by the rule's parameters and by the
-variables of the positive patterns written before it; under an `(absent …)`,
-by those the enclosing premises bound before it and the `absent`'s own
-earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
+**A derived activator is refused at load since M1f
+[S1f.5.18](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)** (2026-11-09,
+`from_ir::refuse_derived_relation_activators`), on the user's ruling of
+2026-11-08 on Q-M1f.1 (b): a program in which some rule could derive an activator
+binding a relation parameter to a fact is refused, whether or not a run derives
+it. *Could* is read off the program (Q-M1f.41, taken by default on the user's
+instruction of 2026-11-09). A rule's parameter that heads a form holds relation
+names, and so does every argument of `(relation …)`; an argument of a
+**declared** relation holds any value of its type, a fact among them, as does an
+argument inside a fact pattern and one of a relation a parameter names; and an
+argument of an **undeclared** relation, a marker such as `(bijective
+color-loc)`, or a rule's own parameter holds relation names where the program
+passes a variable bound there on to a position that does, to a fixpoint, so the
+stdlib's fan-outs load and a fact written there is refused. A conclusion written
+`(?T …)` is read as writing into every rule of its arity whose name the program
+writes as an argument (Q-M1f.42). Until S1f.5.18 such a program loaded: where a
+run derived the activator it stopped where the plan was compiled, with the
+compiler's line, `the relation head ?<p> of <form> at <loc> is bound to the fact
+(a b) — a relation is named by a symbol, not a fact.` (a `CompileError`, § 4's
+second row, as § 4.6's integer), and where none did it answered (W59's two
+rows). That line stays, the backstop behind both loader checks, which no program
+the loader accepts reaches and a direct caller of `compile_rule` does. Pinned by
+`ein-ir`'s `from_ir.rs`
+`a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load`,
+`ein-cli/tests/cli_semantics.rs`'s test of the same name, `compile_semantics.rs`'
+`a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused`,
+`examples/broken/load/derived_activator.ein` and `derived_activator_never.ein`,
+and the register's two W59 rows.
+
+Since M1f S1f.5.7 a guard's variable needs no binder before it: a premise
+means the same in any order of its conjuncts, so a guard waits for the relation
+premise that binds its variable, and binds one nothing binds, `eq` to the other
+side and `neq` over the program's names (§ 01_grammar.md's *Premise order
+around a guard*). From S1e2.2.24 until then a guard's variable counted as bound
+by the rule's parameters and by the variables of the positive patterns written
+before it; under an `(absent …)`, by those the enclosing premises bound before
+it and the `absent`'s own earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
 pattern's top level or as a premise of an `(and …)`, which the compiler
 dropped (Q32); `_` as a pattern's argument; `_` and a keyword pair at a
 conclusion's top level, which stopped the firing with § 4's line. Each is a
@@ -1147,6 +1223,89 @@ grammar table (`grammar_pages.rs`, a row per place), `generated_parser.rs`'
 `a_strings_escapes_are_the_rulings`, and `ein-cli/tests/cli_semantics.rs`'
 `a_string_is_natural_language_and_no_value`; the text a program writes reaches
 every surface that carries it byte for byte (`natural_language_text.rs`).
+
+### 4.13 A conclusion's variable nothing binds — M1f S1f.5.10
+
+A rule's or an hrule's `:assert` that writes a variable some way of satisfying
+its `:match` leaves unbound is refused at load, on the user's ruling of
+2026-11-07 on P1f.5's F13 (*"yes, file F13 with the refusal"*), one line per
+variable, in the order the `:assert` writes them, `; `-joined with every other
+loader error, in ein's own words; exit 1 (`ein test`: 2), on every command that
+loads the program (`saturate`, every `solve` mode, `oracle`, `test`, `render
+lattice`, `render kb`, `kb save`):
+
+| input | message |
+|---|---|
+| a variable no premise or parameter binds | `<rule\|hrule> '<r>': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)` |
+| one that some disjuncts of a top-level `(or …)` bind and others do not | `… writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1 ?v3) — …`, the disjuncts that leave it unbound `or`-joined |
+
+A variable is bound, on each way the `:match` can hold, by a **parameter**,
+which the activator binds; by a **relation premise**, at any depth of its
+arguments, a stored `(not P)` among them; or by an **`eq` or `neq` guard**,
+which binds a variable nothing else binds over the program's names (M1f
+S1f.5.7). One seen only inside an `(absent …)` is not bound outside it, and
+`forall` and `unknown` expand to one; `()` binds nothing; a top-level `(or …)`
+is one way per disjunct. The line's two spellings say what the implicit form
+could mean, *every object of a type* and *every name of the program*, each
+written out. An obligation's `(open ?R)` names a relation, which § 4.2 checks.
+
+**Until S1f.5.10** the loader did not check it, and the run found the
+variable where a firing reached it (W57): root's firing stopped every command,
+exit 1, with § 4's `KeyError` line (`ein solve` printing the message alone); a
+firing only a commitment made stopped `ein solve` and `ein oracle` while `ein
+saturate` and `ein solve --minimal` answered; an hrule's template proposed
+nothing, in silence; and a rule that never fired, its `:match` empty (which
+fires since M1f S1f.5.9), its activator never written or its `(absent …)` never
+holding, loaded and answered. **Nothing reaches § 4's retired `KeyError` line since M1f
+S1f.5.18**: the one input S1f.5.10 left, a value parameter its activator binds
+to a nested fact, read only by a conclusion, which the compiler did not seed
+(W33's cause), is bound since (`W58`, Q-M1f.37), and the line and
+`FireError::UnboundVar` are gone. Pinned by `ein-ir`'s `from_ir.rs`
+`a_conclusion_variable_nothing_binds_is_refused_at_load`, `ein-cli`'s
+`cli_semantics.rs` test of the same name, `fuzz_properties`'
+`no_firing_meets_an_unbound_variable`, `examples/ein-bugs/unbound-assert-var.ein`
+and `corpus/wrong_answers.toml`'s four W57 rows.
+
+### 4.14 `eq` at another arity — M1f S1f.5.9
+
+`eq` is the relation of equality, between exactly two values (M1f S1f.5.7, the
+user's ruling of 2026-11-07 on Q-M1e2.26), and the grammar refuses `(eq ?x)`
+where a premise or a conclusion is written. Two ways around the grammar are
+refused at load since M1f
+[S1f.5.9](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.4,
+on the coordinator's brief and taken by default on the user's instruction of
+2026-11-09 (Q-M1f.46, Q-M1f.47), one line each, `; `-joined with every other
+loader error, exit 1 (`ein test`: 2), on every command that loads the program:
+
+| input | message |
+|---|---|
+| a rule's or an hrule's relation parameter that can be bound to `eq`, heading a premise (at any depth of `and`, `or`, `not` and `absent`) or a top-level conclusion whose arity is not 2 | `<rule\|hrule> '<r>': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values`; where a rule derives the activator, `… and ?R can be bound to eq by <where eq comes from> — eq is the relation of equality, which holds between exactly two values` |
+| a written fact of `eq`, or of `(not (eq …))`, at any arity but 2 | `the fact (eq a) writes eq with 1 argument — eq is the relation of equality, which holds between exactly two values` |
+
+**Which parameters can hold `eq`** is read as § 4.9's check reads relation
+names (S1f.5.18, Q-M1f.41): a position that holds relation names can hold
+`eq` where a fact, a conclusion or a `(solve :hrules …)` activator writes `eq`
+there, or a `(relation …)` declaration's signature writes it as a type; or
+where a conclusion writes a variable that its `:match` binds, in some
+disjunct, only at positions that can, or only with an `eq` or `neq` guard
+while the program writes `eq` as a name; to a fixpoint. `<where eq comes from>`
+names the first such source and each conclusion it passes through: *the fact
+(mark eq), through rule 'mk''s conclusion (r ?f)*, *rule 'mk''s conclusion (r
+eq)*, or *an eq or neq guard of rule 'mk', over the program's names, eq among
+them, through its conclusion (r ?f)*. A parameter heading a pattern inside a
+pattern's argument fills a value, `(p (eq a))`, and is not read; nor is a
+declared relation of another arity, `(?R ?x)` under `(r q)` with `q` binary,
+which matches nothing, as `(q ?x)` written directly does, matching being
+arity-coupled. `neq` is no name a program can write, so no parameter holds it.
+
+**Until S1f.5.9** (W60's four rows, W61's): the premise loaded and the run
+stopped where the activator's plan was compiled, § 4.3's line in the Python
+IR's spelling, at root on every command, or under a commitment, or at an
+hrule's activator, where `ein saturate` answered and `ein solve` stopped; the
+conclusion stored `(eq a :rule r)`; and the written fact stored `(eq a)`,
+Q-M1f.33's check reading two arguments only. Pinned by `ein-ir`'s `from_ir.rs`
+`eq_at_another_arity_is_refused_at_load`, `ein-cli`'s `cli_semantics.rs`
+test of the same name, and `corpus/wrong_answers.toml`'s W60 and W61 rows.
 
 ## 5. The CLI surface
 

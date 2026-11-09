@@ -1,0 +1,30 @@
+;;; A goal's guard written before the premise that binds its variable is
+;;; judged on a null — M1f **W55**, register row
+;;; `W55/goal-guard-before-binder` (`corpus/wrong_answers.toml`), filed by
+;;; S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, `open` and owned by
+;;; S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26: a conjunction means
+;;; the same in any order of its conjuncts).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and a query whose goal is `(and (neq a ?y) (p ?y))`, with
+;;; the claim that its one class is empty.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The goal is `(and (p ?y) (neq a ?y))`: `(p ?y)` binds `?y` to `a`, and
+;;; `(neq a a)` is false, so the goal has no row, its class is `(model)`, and
+;;; the claim holds: exit 0.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The guard is judged where it is written, comparing `a` with an unbound
+;;; `?y` as with a null, which differs, so it holds, and `(p ?y)` then binds
+;;; `?y` to `a`: one row, `?y = a`, the class `(model (neq a a) (p a))`, and
+;;; the claim is FAILED, exit 1 (`ein solve FILE` at `dc4c0bdc`, release and
+;;; debug alike).
+
+(relation p Node :why "{?1} is a node")
+(p a)
+(query :goal (and (neq a ?y) (p ?y))
+  :expect (model))

@@ -1,0 +1,46 @@
+;;; A relation parameter its activator binds to `eq` heads a premise of one
+;;; argument, and the run stops where the plan is compiled — M1f **W60**,
+;;; register row `W60/eq-arity-premise` (`corpus/wrong_answers.toml`), filed
+;;; by S1f.5.9 (T1f.5.9.1, 2026-11-09), `open` and owned by S1f.5.9. The
+;;; shape is the one S1f.5.18 found and left unfiled, `program_read.rs`' error
+;;; past the load.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule `r` whose parameter `?R` heads the premise `(?R ?x)`, and its
+;;; activator `(r eq)`, which binds `?R` to `eq`. `eq` is the relation of
+;;; equality, between exactly two values (M1f S1f.5.7, Q-M1e2.26), so the
+;;; premise is `(eq ?x)`, which the grammar refuses wherever it is written.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(eq ?x)` written in the `:match` is a parse error. Written through the
+;;; parameter, the activator the program states binds it, so the loader sees
+;;; it: the program is refused at load, one line naming `r`, `?R`, the form
+;;; and the activator, and every command that loads it exits 1 (`ein test`:
+;;; 2). A run that stops is no answer (Q-M1f.36's reading).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, and every command stops at root where `(r eq)`'s plan
+;;; is compiled, exit 1, with the compiler's line in the Python IR's
+;;; spelling, *`(eq …)` takes exactly 2 arguments and was given 1:
+;;; SForm(head=Var(name='R'), …) at Loc(…)*, M1e S1e.2.1's arity check
+;;; (`ein solve FILE` at `ee3da657`, release and debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.9.4, 2026-11-09): every command
+;;; that loads it exits 1 with one line, naming `r`, `?R`, the form and `(r eq)` (`ein test`: 2), in either
+;;; build, where every command stopped where the plan was compiled. The register's `now` is that refusal; the section
+;;; above is the record of the answer it replaced.
+
+(relation p Node :why "{?1} is a p")
+(relation hit Node :why "{?1} is hit")
+(p a)
+(rule r (?R)
+  :match (?R ?x)
+  :assert (hit ?x)
+  :why "{?x} stands in {?R}, so it is hit")
+(r eq)
+(query :goal (hit ?x))

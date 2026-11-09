@@ -163,7 +163,7 @@ pub fn firing_to_json(terms: &Terms, firing: &Firing) -> Json {
                 firing
                     .activator
                     .iter()
-                    .map(|s| Json::str(ein_core::text::symbol(terms.sym(*s))))
+                    .map(|&v| Json::str(terms.display(v)))
                     .collect(),
             ),
         ),

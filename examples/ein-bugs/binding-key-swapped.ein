@@ -28,6 +28,19 @@
 ;;; 1 2)` and `(noted 2 2)`; `ein oracle` gives the same R. The point stands:
 ;;; root's `noted` facts are the same in either activator order, and `Y` is a
 ;;; candidate.
+;;;
+;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;;
+;;; An activator binds a parameter to a nested fact as to a name (W33, the
+;;; user's ruling of 2026-11-08 on S1f.5.5's census, fixed by S1f.5.18's
+;;; T1f.5.18.2 on 2026-11-09). `(note edge (src Y))` binds `?f` to `(src Y)`,
+;;; and no `(holds (src Y))` is a fact or a candidate, so that plan derives
+;;; nothing; `(note edge 1)` binds `?f` to `1` and derives `(noted 1 1)` and
+;;; `(noted 2 1)`. Every state holds those two and no other `noted` fact, in
+;;; either activator order. The `:expect` below stated the four, and the two
+;;; more each candidate added, that the unbound `?f` derived, W33's wrong
+;;; answer, until that commit restated it. The two plans bind `?f` in their
+;;; seeds now, so their register layouts are one.
 
 (relation edge  Node Node)
 (relation holds Node)
@@ -53,17 +66,10 @@
   ;; their complete extent, root's facts included.
   :expect (region
             ;; state 1 of 4 — ∅, root itself · minimal
-            (model (holds 1) (holds 3)
-                   (noted 1 1) (noted 1 3) (noted 2 1) (noted 2 3))
+            (model (holds 1) (holds 3) (noted 1 1) (noted 2 1))
             ;; state 2 of 4 — 1 candidate · from {(holds 2)}
-            (model (holds 1) (holds 2) (holds 3)
-                   (noted 1 1) (noted 1 2) (noted 1 3) (noted 2 1)
-                   (noted 2 2) (noted 2 3))
+            (model (holds 1) (holds 2) (holds 3) (noted 1 1) (noted 2 1))
             ;; state 3 of 4 — 1 candidate · from {(holds Y)}
-            (model (holds 1) (holds 3) (holds Y)
-                   (noted 1 1) (noted 1 3) (noted 1 Y) (noted 2 1)
-                   (noted 2 3) (noted 2 Y))
+            (model (holds 1) (holds 3) (holds Y) (noted 1 1) (noted 2 1))
             ;; state 4 of 4 — 2 candidates · maximal · from {(holds 2), (holds Y)}
-            (model (holds 1) (holds 2) (holds 3) (holds Y)
-                   (noted 1 1) (noted 1 2) (noted 1 3) (noted 1 Y)
-                   (noted 2 1) (noted 2 2) (noted 2 3) (noted 2 Y))))
+            (model (holds 1) (holds 2) (holds 3) (holds Y) (noted 1 1) (noted 2 1))))

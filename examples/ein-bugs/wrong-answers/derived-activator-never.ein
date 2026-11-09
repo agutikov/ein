@@ -1,0 +1,50 @@
+;;; A rule that could derive an activator binding a relation parameter to a
+;;; fact loads and answers, since no run derives it — M1f **W59**, register
+;;; row `W59/derived-activator-never` (`corpus/wrong_answers.toml`), filed by
+;;; S1f.5.18 (T1f.5.18.1, 2026-11-09), `open` and owned by S1f.5.18, on the
+;;; user's ruling of 2026-11-08 on Q-M1f.1 (*"Q1 - b"*), which chose the
+;;; refusal knowing it refuses this program. It is S1f.5.5's probe
+;;; `g14/derived-activator-never.ein`, `:why`s added.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `derived-activator.ein` without `(item (a b))`: `mk` derives `r`'s
+;;; activator `(r ?f)` from `item`'s argument, a declared relation's, which can
+;;; hold a fact, and `?f` is `r`'s parameter `?R`, which names a relation. No
+;;; fact and no candidate puts a fact in `item`, so no run derives one.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The ruling (Q-M1f.1 (b)): some rule *could* derive an activator binding a
+;;; relation parameter to a fact, which a static check sees at load, so the
+;;; program is refused, as `derived-activator.ein` is: every command that
+;;; loads it exits 1 with the loader's line (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads and answers, exit 0: H is six candidates, `(box b)`,
+;;; `(box z)`, `(hit b)`, `(hit z)`, `(item b)` and `(item z)`, and R is their
+;;; cube, 64 states, the minimal line {∅} (`ein solve FILE` at `8249e872`,
+;;; release and debug alike). A commitment to `(item b)` derives `(r b)`, a
+;;; name, which binds `?R` as a relation parameter is bound.
+;;;
+;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.18.3, 2026-11-09): every command
+;;; that loads it exits 1 with one line naming `mk`, `r` and `?R` (`ein
+;;; test`: 2), in either build, where it answered, 64 states. The register's `now` is that
+;;; refusal; the section above is the record of the answer it replaced.
+
+(relation box Node :why "{?1} is in the box")
+(relation hit Node :why "{?1} is hit")
+(relation item Node :why "{?1} is an item")
+(box (a b))
+(rule r (?R)
+  :match (box (?R b))
+  :assert (hit z)
+  :why "a box holds a {?R} of b")
+(rule mk ()
+  :match (item ?f)
+  :assert (r ?f)
+  :why "{?f} is an item, so r is asked of it")
+(query :goal (hit ?x))

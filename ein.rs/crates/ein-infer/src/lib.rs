@@ -77,7 +77,9 @@ pub use explain::{
     Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
     smallest_contradiction_frontier,
 };
-pub use firing::{ActivatorId, BindingKey, Env, FireError, Firing, build_fact, fire};
+pub use firing::{
+    ActivatorId, BindingKey, Env, FireError, Firing, build_conclusion, build_fact, fire,
+};
 pub use hrule::Hrules;
 pub use hypgen::{
     CLOSED, Drop, HypGenStats, ScoreError, Skip, candidate_objects, complete, consistent, generate,

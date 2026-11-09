@@ -11,8 +11,9 @@ documentation split.
 
 ## Closure
 
-The pattern language is **positive conjunctive** + two computed predicates,
-`eq` and `neq`, each written as a premise, `(neq ?a ?c)`. (The rewrite-DSL +
+The pattern language is **positive conjunctive** + two computed relations,
+`eq` and `neq`, each written as a premise, `(neq ?a ?c)` (two computed
+predicates that bound nothing until M1f S1f.5.7, § Predicate registry). (The rewrite-DSL +
 named-predicate fallback of
 [Q4](../../../../plans/open_questions.md#q4--rule-presentation-language)
 chose the first half; the *named structural predicate* registry the second
@@ -38,8 +39,19 @@ compiler, where a macro's body does.
 | `not` | 1 | the **grammar** — `Connective ::= '(' 'not' Pattern ')'` in a premise, `Conclusion ::= '(' 'not' Pattern ')'` in a conclusion: one pattern, and no keyword after it |
 | `eq` / `neq` | 2 | the **grammar** — `Guard ::= '(' 'eq' Term Term ')' \| '(' 'neq' Term Term ')'` |
 | `absent` | 1 | the **grammar** — `'(' 'absent' Premise ')'` |
-| `and` / `or` | 1+ | the **grammar** — `Premises ::= Premise \| Premises Premise`, so `(and)` is a parse error and `(and X)` is legal, if degenerate |
+| `and` / `or` | 1+ | the **grammar** — `Premises ::= Premise \| Premises Premise`, so `(and)` and `(or)` are parse errors, each with a note naming the rule and the clause (M1f S1f.5.9), and `(and X)` is legal, if degenerate; the empty conjunction is `:match ()`, below |
 | `false` | 0 | the **grammar** in a conclusion, `'(' 'false' ')'`; as a premise's head `false` is a position word, a pattern over the relation `false` |
+
+**The empty conjunction is `()`**, written as a whole `:match`, and it is
+true: the rule fires once, or once per activator fact, and an hrule proposes
+its conclusion likewise (M1f
+[S1f.5.9](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md), the user's
+ruling of 2026-11-07 on F12). `()` as a whole `:assert` is the empty
+conclusion, which asserts nothing. `(and)` means what `()` means, and is
+refused, since `and` takes a premise; `()` is no premise inside another, the
+grammar writing it only as a whole clause. Until S1f.5.9 `()` was a premise
+over the parser's synthetic `#empty`, which no fact holds, so the rule never
+fired (W31), and `:assert ()` stored a fact under that head (W34).
 
 **Since M1f S1f.5.5's swap** (2026-11-09) each row is a production of
 [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), the grammar
@@ -70,7 +82,7 @@ rules below.
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
 | equality fact            | `(= ?a ?b)`                             | —         | matches a **stored** `(= …)` fact — see below; `=` is a name since M1f S1f.5.5's swap (S1f.5.4's name rule), and this row's mark was ✓ EQ, the hand-written grammar's reserved head, until then |
-| **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the two registered predicates: compare the bindings |
+| **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the relations of equality and non-equality, computed and never stored: a test where both sides are bound, and a binding where one is free (since M1f S1f.5.7; until then two predicates that compared the bindings and bound nothing) |
 | membership check         | `(is-a ?a ?T)`                          | —         | ordinary relation pattern; this row's mark was ✓ RELATION until M1f S1f.5.5's swap, though no production was ever `is-a`'s |
 | ~~`:where` filter~~      | `:where (transitive ?r) (neq ?a ?b)`    | —         | **refused at the parse** since M1f S1f.5.5's swap, as every keyword a rule does not take and every keyword pair inside a term is (S1f.5.11, Q-M1e2.28): write each guard as a premise beside the patterns, `(and (?r ?a ?b) (?r ?b ?c) (neq ?a ?c))`. This row read *type / inequality / structural-predicate filters*; Q32 (2026-05-20) dropped `:where` for the positional premise, and the compiler dropped a pair written anyway, in silence, until the swap; S1f.5.11's T1f.5.11.2 retired the drop |
 | relation-property tag    | `(transitive ?r)`                       | —         | an ordinary premise matching a stored property fact, a join and not a test; this row wrote it `:where (transitive ?r)` until S1f.5.11 |
@@ -157,22 +169,33 @@ registry — `eq` and `neq`, and nothing else."*
 
 | predicate       | arity | meaning                                | engine site |
 |-----------------|:-----:|----------------------------------------|-------------|
-| `(eq ?a ?b)`    | 2     | the bindings resolve to the same value | matcher `Guard` opcode |
-| `(neq ?a ?b)`   | 2     | the bindings resolve to distinct values | matcher `Guard` opcode |
+| `(eq ?a ?b)`    | 2     | the two values are one; a free side is bound to the other | matcher `Guard` opcode |
+| `(neq ?a ?b)`   | 2     | the two values differ; a free side ranges over the program's names but the other | matcher `Guard` opcode |
 
-**A guard's argument is a value**: a variable a premise before the guard
-binds (or a rule's parameter), or a name; a run of digits is a name, an
-integer until M1f S1f.5.4, and a string was a name too, the one it spells, until
-M1f S1f.5.5's swap refused a string there (S1f.5.2). A guard is
-judged where it is written. `_` and a keyword pair (each at the parse since
-M1f S1f.5.5's swap, S1f.5.1 and S1f.5.11), a form, or a variable no
-premise before it binds is **refused at load** (since M1e2 S1e2.2.24, W24;
-[`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
-Until then each read nothing: a raw node was equal to no value and an
-unbound variable compared as a null, so `(eq ?x (f a))` never held, even
-where `?x` was the fact `(f a)`, and `(and (neq ?x a) (p ?x))` fired for
-`a`. A range was refused there too, from S1e2.2.20, until M1f S1f.5.3
-retired the token: `1..3` is a parse error since.
+**`eq` and `neq` are relations** since M1f
+[S1f.5.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md), on the user's
+ruling of 2026-11-07 (Q-M1e2.26): `(eq x x)` for every value, `(neq x y)` for
+every two different values, computed and never stored, in a goal, a premise
+and a conclusion alike. **A guard's argument is a value**: a variable, a name
+(a run of digits is a name, an integer until M1f S1f.5.4), or a fact that holds
+no variable, `(f a)`, as in `(p (f a))`. A form that holds a variable is
+**refused at load** (Q-M1f.30), and `_` and a keyword pair at the parse (M1f
+S1f.5.5's swap, S1f.5.1 and S1f.5.11). A premise means the same in any order
+of its conjuncts: a guard waits for the relation premise that binds its
+variable, and one whose variable nothing in its conjunction binds binds it —
+`eq` to the other side, `neq` (and `eq` with both sides free) over the
+program's names, the list H's candidates are built from (Q-M1e2.9 (a)); an
+`(absent …)` after it reads that variable (Q-M1f.34). `(not (eq ?a ?b))` is
+`(neq ?a ?b)` (Q-M1f.31). A conclusion of either is checked against its
+definition: a true one adds nothing, a false one is `(false)`. **From M1e2
+S1e2.2.24 to S1f.5.7** (W24) the loader refused a form as a guard's argument
+and a guard on a variable no premise before it binds
+([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)),
+and **until S1e2.2.24** each read nothing: a raw node was equal to no value
+and an unbound variable compared as a null, so `(eq ?x (f a))` never held,
+even where `?x` was the fact `(f a)`, and `(and (neq ?x a) (p ?x))` fired for
+`a`. A range was refused there too, from S1e2.2.20, until M1f S1f.5.3 retired
+the token: `1..3` is a parse error since.
 
 Q33 caps it there for a stated reason: *a predicate's truth is **computed**
 from the bindings, where a relation's truth is **data***. Ein has no numbers

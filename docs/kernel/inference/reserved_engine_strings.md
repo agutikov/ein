@@ -110,9 +110,13 @@ could have written `(p (@empty))` and loaded the fact `(p ())`.
 | `#list` | `@list` | a fact's `:using` list, in the generated parser's tree | the list, with no head |
 | `#query` | `<query>` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |
 
-`(q "#empty")` is a value a run can reach only through `W34/assert-empty`,
-open and S1f.5.9's: `:assert ()` stores a fact under `#empty`, which then
-joins H.
+No run reaches a value `#empty` since M1f
+[S1f.5.9](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s
+T1f.5.9.2 (2026-11-09): `:match ()` is the empty conjunction, which fires once,
+and `:assert ()` the empty conclusion, which asserts nothing, each compiled
+without the synthetic head. Until then `()` was a premise over `#empty`, which
+no fact holds, so the rule never fired (W31), and `:assert ()` stored a fact
+under `#empty`, which joined H as `(q "#empty")` (`W34/assert-empty`).
 
 ## Engine entry + verdict
 

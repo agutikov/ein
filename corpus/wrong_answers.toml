@@ -845,6 +845,221 @@
 # open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
 # uniq -c`, 2026-11-09).
 #
+# **The paragraphs from W50's to W61's were written on the second lane,
+# `p1f5-lane2`**, which forked from master at `dc4c0bdc`, whose register W41's
+# paragraph above ends with (126 rows fixed, 22 open and 1 not-wrong), and ran
+# S1f.5.7, S1f.5.10, S1f.5.18 and S1f.5.9 while master ran S1f.5.6, S1f.5.12
+# and the stages after them. Each count those paragraphs state is the lane's
+# register, which held neither W42's two rows nor W43's, three rows fixed on
+# master; the merge's paragraph after them states the merged count.
+#
+# **W50 to W55 were filed the same day by S1f.5.7's T1f.5.7.1**, every move
+# the stage makes listed before it moves, on the user's ruling of 2026-11-07
+# (Q-M1e2.26: `eq` and `neq` are relations, computed and never stored, in
+# every place a relation can be written) and G-21, read by Q-M1f.31 to
+# Q-M1f.33 where the stage file is silent (taken by default on the user's
+# instruction of 2026-11-09). W50, one row: a written `(eq a w)` is stored.
+# W51, three rows: `(not (eq …))` is a stored negation, so a premise never
+# matches and a fact or a conclusion kills nothing. W52, two rows: a rule
+# parameter its activator binds to `eq` names a relation of stored facts.
+# W53, one row: an hrule's `eq` instance is a hypothesis a commitment
+# stores. W54, one row, outside the case: a query's class prints a pattern
+# inside a pattern with its variables in it. W55, two rows, the case's goals:
+# a goal's guard judges an unbound variable as a null, and a claim naming
+# `neq` is refused. Each witness is under `examples/ein-bugs/wrong-answers/`
+# and a corpus entry, each `wrong` and `now` taken at `dc4c0bdc`, release
+# and debug alike, and each row is owned by S1f.5.7. **W24's
+# `guard-before-binder` and `form-in-guard` were restated the same commit**,
+# as S1f.5.7's stage file says: the user's ruling of 2026-11-07 answers both
+# shapes, a guard before its binder and a nested fact as a guard's argument,
+# so each row's `right` is the loaded answer, and each is `open` and owned by
+# S1f.5.7 until its T1f.5.7.3. The register reads **124 rows fixed, 34 open
+# and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+# -c`, 2026-11-09).
+#
+# **S1f.5.7's T1f.5.7.2 fixed W54's row and W55's two the same day**: a
+# guard binds a variable nothing else binds, `eq` to the other side and `neq`
+# over the program's names, and waits for the premise that binds it where
+# one does; a query's claim may name `eq` or `neq`; and a class substitutes
+# its rows at every depth. Each `[case.fixed]` carried the null id in the
+# fixing commit, and the stage's next commit wrote the hash. The register
+# reads **127 rows fixed, 31 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.7's T1f.5.7.3 fixed W24's two restated rows, `W51/not-eq-premise`
+# and `W52/relvar-eq-premise` the same day**: a premise follows the reading a
+# goal does, so the loader takes a guard before its binder and a fact that
+# holds no variable as a guard's argument, and the compiler reads `eq`
+# wherever it is written, `(not (eq …))` as `(neq …)`. W24's two keep
+# S1e2.2.24's fix as the record (`3ab9a231`) in their notes. The register
+# reads **131 rows fixed, 27 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.7's T1f.5.7.4 fixed W30's three, W50's, W51's last two, W52's
+# second and W53's the same day** (G-21): a conclusion of `eq` or `neq`, or
+# of `(not (eq …))`, is checked, never stored, a false one `(false)` derived
+# by its rule from the premises it matched; a written fact of `eq` is a
+# conclusion with no premise (Q-M1f.33); an hrule's instance of either is no
+# hypothesis (Q-M1f.32). W30's two `neq` witnesses' state files load since,
+# and leave `DO_NOT_LOAD`. The register reads **139 rows fixed, 19 open and
+# 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+# -c`, 2026-11-09).
+#
+# **W56 was filed the same day by S1f.5.7's T1f.5.7.5**, outside its case
+# (Q-M1f.35, taken by default): a goal's top-level `(absent …)` is lifted
+# out of its plan, as a rule's is, and the goal's evaluation never judges
+# it, and a claim that lists its instance is refused. One row, `open` and
+# owned by S1f.5.7, whose T1f.5.7.6 fixes it. The register reads **139 rows
+# fixed, 20 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.7's T1f.5.7.6 fixed W56 the same day**: the goal's evaluation
+# judges each guard lifted out of the goal's plan against the state, and a
+# query's claim may list a goal's `(absent …)` instance. The register reads
+# **140 rows fixed, 19 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **W57 and W58 were filed the same day by S1f.5.10's T1f.5.10.1**, every
+# move the stage makes listed before it moves, on the user's ruling of
+# 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the refusal"*): a
+# conclusion's every variable is bound on every way its `:match` can hold,
+# and a rule or an hrule that writes one nothing binds is refused at load.
+# W57, four rows, one per way the engine answers such a program today, each
+# `right` the refusal: `assert-var-stops`, root fires the rule and every
+# command stops at the firing, *unbound var ?y in :assert — bindings: {'x':
+# 'a'}*, which is no answer (an error is never a refusal, W18's precedent);
+# `assert-var-under-commitment`, only a commitment fires it, so `ein
+# saturate` and `ein solve --minimal` answer, exit 0, where describe and
+# `ein oracle` stop; `hrule-assert-var`, an hrule's template that builds no
+# fact proposes nothing, in silence; and `assert-var-never-fires`, a rule
+# that never fires, an empty `:match` (F12), loads and answers. Each is
+# owned by S1f.5.10 (Q-M1f.36, taken by default on the user's instruction
+# of 2026-11-09). W58, one row, outside the case: a value parameter its
+# activator binds to a nested fact, read only by the conclusion, reaches it
+# unbound and stops the run, W33's cause, which a loader cannot see, since a
+# parameter is bound by its activator; `open` and owned by S1f.5.18
+# (Q-M1f.37). Each witness is under `examples/ein-bugs/wrong-answers/` and a
+# corpus entry, each `wrong` and `now` taken at `2eb483e0`, release and debug
+# alike. The register reads **140 rows fixed, 24 open and 1 not-wrong**
+# (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.10's T1f.5.10.2 fixed W57's four rows the same day**: the loader
+# reads a rule's or an hrule's `:match` as the compiler does, one way per
+# disjunct of a top-level `(or …)`, and refuses each `:assert` variable some
+# way leaves unbound, one line per variable naming the rule, the variable and
+# the two explicit spellings, `(is-a ?y T)` and `(eq ?y ?y)`, on every
+# command that loads the program (`ein_ir::from_ir`'s
+# `refuse_unbound_conclusions`). Each row's `now` is the refusal and states no
+# region. W58 stays `open`, S1f.5.18's. Each `[case.fixed]` carried the null
+# id in the fixing commit, `bef85fe0`, and the stage's next commit, T1f.5.10.3,
+# wrote the hash in all four. The
+# register reads **144 rows fixed, 20 open and 1 not-wrong** (`grep
+# '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **W59 was filed the same day by S1f.5.18's T1f.5.18.1**, every move the
+# stage makes listed before it moves, on the user's ruling of 2026-11-08 on
+# Q-M1f.1 (*"Q1 - b"*): a program in which some rule could derive an
+# activator binding a relation parameter to a fact is refused at load, by a
+# static check, whether or not a run derives it. Two rows, one per way the
+# engine answers such a program today, each `right` the refusal (Q-M1f.44,
+# taken by default on the user's instruction of 2026-11-09, Q-M1f.36's
+# reading): `derived-activator`, root derives the activator and every command
+# stops where its plan is compiled, with W24's line; and
+# `derived-activator-never`, the same program with no fact for the rule to
+# derive it from, which answers, 64 states. Each witness is S1f.5.5's probe of
+# that name under `g14/`, `:why`s added, under
+# `examples/ein-bugs/wrong-answers/` and a corpus entry, each `wrong` and
+# `now` taken at `8249e872`, release and debug alike. W33 and W58, the stage's
+# other two, stay `open` until its T1f.5.18.2. The register reads **144 rows
+# fixed, 22 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.18's T1f.5.18.2 fixed W33 and W58 the same day**: the compiler
+# seeds a parameter its activator binds to a nested fact as it seeds one bound
+# to a name (`compile::Compiler::bind_activator`), so W33's witness concludes
+# `(hit (f a))` alone and W58's answers, root holding `(hit (f a))`, where it
+# stopped; with it `FireError::UnboundVar` and its `KeyError` line are retired
+# (Q-M1f.37). Each `[case.fixed]` carries the null id in the fixing commit and
+# the hash from the stage's next. Two fixed rows are restated, no answer of
+# theirs moving: `W7/binding-key-layout`'s `right`, which stated the `noted`
+# facts the unbound `?f` derived, W33's wrong answer, and now states the two
+# `(note edge 1)` derives, as the witness's `:expect` does; and
+# `W16/activator-all-nested`'s `now`, whose refusal names `alarm`'s activator,
+# `[activator (box a)]`, `Plan::activator_args` keeping every argument since
+# (Q-M1f.43). The register reads **146 rows fixed, 20 open and 1 not-wrong**
+# (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.18's T1f.5.18.3 fixed W59's two rows the same day**: the loader
+# refuses a program in which a rule could derive an activator binding a
+# relation parameter to a fact (`ein_ir::from_ir`'s
+# `refuse_derived_relation_activators`, Q-M1f.1 (b)), reading which positions
+# hold relation names off the program (Q-M1f.41), one line per site naming the
+# deriving rule, the activated rule and the parameter, on every command that
+# loads it. Each row's `now` is the refusal and states no region. The
+# register reads **148 rows fixed, 18 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **W60 and W61 were filed the same day by S1f.5.9's T1f.5.9.1**, every move
+# the stage makes listed before it moves. W60 is the shape S1f.5.18 found and
+# left unfiled: a relation parameter an activator binds to `eq`, the relation
+# of equality between exactly two values (S1f.5.7), heads a form of another
+# arity, `(?R ?x)`, which the grammar refuses as `(eq ?x)` where it is
+# written. Four rows, one per way the engine answers such a program today,
+# each `right` the refusal at load (Q-M1f.46, taken by default on the user's
+# instruction of 2026-11-09, Q-M1f.36's reading): `eq-arity-premise`, a
+# premise under a written activator, every command stopping at root where the
+# plan is compiled, with the compiler's arity line; `eq-arity-under-commitment`,
+# the same under an activator a rule derives only where a commitment holds a
+# fact, `saturate` answering where `solve` stops; `eq-arity-hrule`, an
+# hrule's premise under its `(solve :hrules …)` activator, `saturate`
+# answering where `solve` stops; and `eq-arity-conclusion`, a conclusion,
+# root storing `(eq a)`. The same pattern through a declared relation of
+# another arity is no row: it matches nothing, as the pattern written
+# directly does, matching being arity-coupled. W61, one row, was found beside
+# it: `fact-eq-arity`, a written fact `(eq a)` stored as an ordinary fact, the
+# check of a written `eq` fact (Q-M1f.33) reading two arguments only
+# (Q-M1f.47, taken by default). Each witness is under
+# `examples/ein-bugs/wrong-answers/` with a corpus entry, each `wrong` and
+# `now` taken at `ee3da657`, release and debug alike, and each row is `open`
+# and owned by S1f.5.9. W31's four rows and W34's stay `open` until its
+# T1f.5.9.2. The register reads **148 rows fixed, 23 open and 1 not-wrong**
+# (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.9's T1f.5.9.2 fixed W31's four rows and W34's the same day**: the
+# compiler reads `:match ()`, the empty conjunction, as one vacuous match, so a
+# rule fires once at root, or once per activator fact with its parameters
+# alone bound, and an hrule proposes its conclusion likewise; and `:assert ()`,
+# the empty conclusion, as no template, so it asserts nothing and no `#empty`
+# joins H (`ein_infer::compile`, F12's ruling). `W31/empty-match-false`'s root
+# is dead with the core `[]`, the first empty core in Ein, and its `now` is
+# describe's, which states the core, its status and `refuted by`. Each
+# `[case.fixed]` carried the null id in the fixing commit, `2c79af6d`, and the
+# stage's next commit, T1f.5.9.3, wrote the hash in all five. The register
+# reads **153 rows fixed, 18 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
+# **S1f.5.9's T1f.5.9.4 fixed W60's four rows and W61's the same day**: the
+# loader refuses a relation parameter that can hold `eq` and heads a premise or
+# a conclusion whose arity is not 2, reading which positions can hold `eq` as
+# S1f.5.18's check reads relation names, and a written fact of `eq`, or of its
+# negation, at another arity, one line each, on every command that loads the
+# program (`ein_ir::from_ir`'s `refuse_eq_at_another_arity` and
+# `refuse_eq_facts_of_another_arity`, Q-M1f.46, Q-M1f.47). Each row's `now` is
+# the refusal and states no region. Each `[case.fixed]` carried the null id in
+# the fixing commit, `2a8c998b`, and the stage's next commit, T1f.5.9.5, wrote the
+# hash in all five. The register reads **158 rows fixed, 13 open and 1
+# not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-09).
+#
+# **The second lane was merged into master on 2026-11-09 (T1f.5.M.1)**: its
+# 23 rows, W50 to W61, follow W43's in the file, and each row either side
+# restated keeps that side's text, since no row was restated by both. The
+# merge moved no row's status or answer and no schema: every row the lane
+# filed uses schema /16's fields, the register is schema /19, master's, and
+# /18, which was kept for the lane, is unused. The register reads **161 rows
+# fixed, 13 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -2875,8 +3090,8 @@ verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["holds", "noted"]
-models    = [["(holds 1)", "(holds 2)", "(holds 3)", "(holds Y)", "(noted 1 1)", "(noted 1 2)", "(noted 1 3)", "(noted 1 Y)", "(noted 2 1)", "(noted 2 2)", "(noted 2 3)", "(noted 2 Y)"]]
-derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts. Since S1e2.2.7 the witness's two states hold the four and the six, as the swapped twin's and binding-key-nested-only.ein's do, in a release and a debug build alike (`ein solve FILE --dump-answer DIR` in every mode, `ein oracle`; build/s1e2.2.7/). Restated at S1f.5.5's swap (T1f.5.5.4, 2026-11-09), S1f.5.4's proposal A (accepted 2026-11-08): a run of digits is a name, so `1`, `2` and `3` are candidate objects and unscoped H is 21 candidates whose R passes the budget; the witness's solve holds `edge` and `noted` out, so H is (holds 2) and (holds Y), R four states, ∅, {(holds 2)}, {(holds Y)} and both, the maximal, and `ein oracle` the same, whose maximal state holds the eight (noted ?a ?f) over the four holds"
+models    = [["(holds 1)", "(holds 2)", "(holds 3)", "(holds Y)", "(noted 1 1)", "(noted 2 1)"]]
+derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts. Since S1e2.2.7 the witness's two states hold the four and the six, as the swapped twin's and binding-key-nested-only.ein's do, in a release and a debug build alike (`ein solve FILE --dump-answer DIR` in every mode, `ein oracle`; build/s1e2.2.7/). Restated at S1f.5.5's swap (T1f.5.5.4, 2026-11-09), S1f.5.4's proposal A (accepted 2026-11-08): a run of digits is a name, so `1`, `2` and `3` are candidate objects and unscoped H is 21 candidates whose R passes the budget; the witness's solve holds `edge` and `noted` out, so H is (holds 2) and (holds Y), R four states, ∅, {(holds 2)}, {(holds Y)} and both, the maximal, and `ein oracle` the same, whose maximal state held the eight (noted ?a ?f) over the four holds. **Restated by M1f S1f.5.18 (T1f.5.18.2, 2026-11-09)**, W33's fix: everything above about the `noted` facts read the nested-fact activator as binding nothing, so that `?f` was `(holds ?f)`'s to bind and *the nested-fact activator alone derives every (noted ?a ?f)*, which is W33's wrong answer. An activator binds a parameter to a nested fact as to a name (the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*), so `(note edge (src Y))` binds `?f` to `(src Y)`, which no fact or candidate `holds`, and derives nothing, and `(note edge 1)` derives `(noted 1 1)` and `(noted 2 1)`: a saturator that loses nothing concludes their union, those two, in every state, in either activator order (`ein solve FILE --dump-answer DIR`, release and debug, 2026-11-09). The region's lines, over `holds`, are unmoved"
 
 [case.review]
 verdict = "confirmed"
@@ -5030,7 +5245,7 @@ question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/activator-all-nested.ein"
 status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "W16's second shape with (item (box a)): a nested fact binds no parameter, so each plan in the chain matches over every item, here the one. The control is activator-all-symbol.ein, refused. Fixed by T1e2.2.16.2, as W16/activator-all-int"
+note     = "W16's second shape with (item (box a)): a nested fact bound no parameter, so each plan in the chain matched over every item, here the one; since M1f S1f.5.18 it binds its parameter (W33), and the chain reaches the same one. The control is activator-all-symbol.ein, refused. Restated by M1f S1f.5.18 (T1f.5.18.2, 2026-11-09): the refusal names `alarm`'s activator, `[activator (box a)]`, as the int twin's names `1` and the control's `a`, where it named none, `Plan::activator_args` keeping every argument since (Q-M1f.43). Fixed by T1e2.2.16.2, as W16/activator-all-int"
 
 [case.fixed]
 commit = "3257488f"
@@ -5054,7 +5269,7 @@ derived   = "a refusal, as W16/activator-all-int's and the symbol control's: `al
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'alarm': concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'alarm' [activator (box a)]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ W17 — *forbid* misses a refutation whose activator chain first appears at a node ══
 [[case]]
@@ -7317,17 +7532,17 @@ case     = "W24"
 title    = "a rule shape that reads nothing, in silence"
 class    = "model set"
 settings = "default"
-owner    = "S1e2.2.24"
-question = ["Q-M1e2.16", "Q-M1e2.18"]
+owner    = "S1f.5.7"
+question = ["Q-M1e2.16", "Q-M1e2.18", "Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
 status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved"
+note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 on S-18 and Q-M1e2.26, *a nested fact as a guard's argument: answered* (*\"yes, keep that default\"*), supersedes Q-M1e2.18 (i)(a), so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05). Fixed again by T1f.5.7.3 (2026-11-09), to its restated right: the program loads, `(f a)` the nested fact it spells, and root holds `(hit-eq (f a))`, `(hit-neq a)`, `(hit-neq b)` and `(hit-neq 1)`"
 
 [case.fixed]
-commit = "3ab9a231"
-by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a form as a guard's argument (Q-M1e2.18 (i)(a))"
-date   = "2026-11-05"
+commit = "6841faff"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -7339,15 +7554,32 @@ exhausted = true
 closes    = ["f", "hit-eq", "q"]
 models    = [["(q a)"]]
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 256
+k_c      = 256
+minimal  = [[]]
+maximal  = [["(f 1)", "(f a)", "(f b)", "(hit-eq 1)", "(hit-eq a)", "(hit-eq b)", "(q 1)", "(q b)"]]
+
 [case.right]
-reading   = "Q-M1e2.18 (i)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
-refused   = true
-derived   = "A guard compares two values, each a variable a premise before it binds or a name, and a form is neither. So both guards are refused at load, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 on S-18 and its *a nested fact as a guard's argument: answered*, which supersedes Q-M1e2.18 (i)(a): `eq` and `neq` are relations, and a nested fact is a value, as it is in `(p (f a))`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["f", "hit-eq", "hit-neq", "q"]
+models    = [["(hit-eq (f a))", "(hit-neq 1)", "(hit-neq a)", "(hit-neq b)", "(q a)"]]
+derived   = "The program loads. `e` fires on `(p (f a))` alone, so root holds `(hit-eq (f a))`, and `n` on `a`, `b` and `1`, so it holds `(hit-neq a)`, `(hit-neq b)` and `(hit-neq 1)`. Its minimal line is root's state, {∅}"
 
 [case.now]
-run     = "solve --minimal"
-line    = "all"
-refused = "kb load error: rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name; rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name"
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["f", "hit-eq", "q"]
+models    = [
+  ["(hit-eq (f a))", "(q a)"],
+]
 
 [[case]]
 id       = "W24/guard-before-binder"
@@ -7355,17 +7587,17 @@ case     = "W24"
 title    = "a rule shape that reads nothing, in silence"
 class    = "model set"
 settings = "default"
-owner    = "S1e2.2.24"
-question = ["Q-M1e2.16", "Q-M1e2.18"]
+owner    = "S1f.5.7"
+question = ["Q-M1e2.16", "Q-M1e2.18", "Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
 status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved"
+note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 (Q-M1e2.26, *premises should follow the same rule*) supersedes Q-M1e2.18 (ii)(a), whose option (b), moving the guard after its binders, the reading contains, so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05). Fixed again by T1f.5.7.3 (2026-11-09), to its restated right: the program loads, each guard judged after `(p ?x)`, and root holds `(hit-eq a)`, `(hit-neq b)`, `(hit-neq 1)` and `(hit-neq (f a))`"
 
 [case.fixed]
-commit = "3ab9a231"
-by     = "S1e2.2.24 (T1e2.2.24.2): the loader refuses a guard on a variable no premise before it binds, naming the variable (Q-M1e2.18 (ii)(a))"
-date   = "2026-11-05"
+commit = "6841faff"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -7377,15 +7609,32 @@ exhausted = true
 closes    = ["f", "hit-eq", "q"]
 models    = [["(q a)"]]
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 256
+k_c      = 256
+minimal  = [[]]
+maximal  = [["(f 1)", "(f a)", "(f b)", "(hit-eq 1)", "(hit-eq b)", "(hit-neq a)", "(q 1)", "(q b)"]]
+
 [case.right]
-reading   = "Q-M1e2.18 (ii)(a), the user's ruling of 2026-11-05: refused at load, as a range and a head `_` are (Q-M1e2.13 (a), Q-M1e2.14 (c)) and as Q-M1e2.16 (1) refused W24's first three"
-refused   = true
-derived   = "A guard is judged where it is written, and compares the values the premises before it bind; `?x` is bound by `(p ?x)`, after it. So both guards are refused at load, naming `?x`, with a line in Ein's spelling naming the rule and the clause: every command that loads the program exits 1 (`ein test`: 2)"
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 (*premises should follow the same rule*), which supersedes Q-M1e2.18 (ii)(a): a rule's `:match` means the same in any order of its conjuncts, and a guard's variable nothing else binds ranges over the program's names"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["f", "hit-eq", "hit-neq", "q"]
+models    = [["(hit-eq a)", "(hit-neq (f a))", "(hit-neq 1)", "(hit-neq b)", "(q a)"]]
+derived   = "The program loads, each guard judged after `(p ?x)`. `e` fires on `a` alone, so root holds `(hit-eq a)`, and `n` on `b`, `1` and `(f a)`, so it holds `(hit-neq b)`, `(hit-neq 1)` and `(hit-neq (f a))`. Its minimal line is root's state, {∅}"
 
 [case.now]
-run     = "solve --minimal"
-line    = "all"
-refused = "kb load error: rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name; rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name"
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["f", "hit-eq", "hit-neq", "q"]
+models    = [
+  ["(hit-eq a)", "(hit-neq (f a))", "(hit-neq 1)", "(hit-neq b)", "(q a)"],
+]
 
 [[case]]
 id       = "W24/kwpair-in-guard"
@@ -8205,10 +8454,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein"
-status   = "open"
-open_because = "A rule's conclusion is stored as a fact whatever its relation, so a concluded `neq` sits in the KB while a guard computes `neq` from its definition, and nothing checks it: the false `(neq w w)` at `{(p w)}` kills nothing. S1f.5.7's T1f.5.7.4 checks a concluded `eq` or `neq` against its definition and never stores it (Q-M1e2.26, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from the inventory of 2026-11-06's G-21, its probe `assert_neq.ein`, the program unchanged, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `neq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(neq w a :rule r)` and `{(p w)}` holds `(neq w a)` and `(neq w w)` (`ein solve --dump-answer`'s state files). Neither state file loads, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. S1f.5.7 § Conclusions gave this row's right as *R 2 states*; at `{(p w)}` the rule concludes the false `(neq w w)`, so under the same ruling R is {∅}, as the row's right states: a finding of S1f.5.0, put to the user"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from the inventory of 2026-11-06's G-21, its probe `assert_neq.ein`, the program unchanged, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `neq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(neq w a :rule r)` and `{(p w)}` holds `(neq w a)` and `(neq w w)` (`ein solve --dump-answer`'s state files). Neither state file loads, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. S1f.5.7 § Conclusions gave this row's right as *R 2 states*; at `{(p w)}` the rule concludes the false `(neq w w)`, so under the same ruling R is {∅}, as the row's right states: a finding of S1f.5.0, put to the user. Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): at root `(neq w a)` holds and adds nothing, and at `{(p w)}` `(neq w w)` is `(false)`, so that state is dead and R is {∅}; the state file loads"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8223,10 +8476,10 @@ models    = [["(neq w a)", "(p a)"], ["(neq w a)", "(neq w w)", "(p a)", "(p w)"
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(p w)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored, and a rule's conclusion of one is checked: a true one adds nothing, a false one makes its state a contradiction"
@@ -8241,11 +8494,10 @@ derived   = "At root `r` concludes `(neq w a)`, which holds, so it adds nothing.
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
+k         = 1
 relations = ["p"]
 models    = [
   ["(p a)"],
-  ["(p a)", "(p w)"],
 ]
 
 [[case]]
@@ -8257,10 +8509,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein"
-status   = "open"
-open_because = "A rule's conclusion is stored as a fact whatever its relation, so the false `(neq a a)` sits in root's KB and kills nothing. S1f.5.7's T1f.5.7.4 checks a concluded `eq` or `neq` against its definition and never stores it (Q-M1e2.26, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(neq a a :rule r)` (`ein saturate --dump`). Root's state file does not load, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(neq a a :rule r)` (`ein saturate --dump`). Root's state file does not load, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): `(neq a a)` is `(false)`, derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`; the state file is gone with R"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8275,10 +8531,11 @@ models    = [["(neq a a)", "(p a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
-minimal  = [[]]
-maximal  = [[]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored, and a rule's conclusion of one is checked: a true one adds nothing, a false one makes its state a contradiction"
@@ -8291,11 +8548,10 @@ derived   = "At root `r` concludes `(neq a a)`, which is false, so root is a con
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 1
+k         = 0
+empty     = "dead"
 relations = []
-models    = [
-  [],
-]
+models    = []
 
 [[case]]
 id       = "W30/assert-eq-x-w"
@@ -8306,10 +8562,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/assert-eq-x-w.ein"
-status   = "open"
-open_because = "A rule's conclusion is stored as a fact whatever its relation, so the false `(eq a w)` sits in root's KB and kills nothing. S1f.5.7's T1f.5.7.4 checks a concluded `eq` or `neq` against its definition and never stores it (Q-M1e2.26, G-21)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w :rule r)` and `{(p w)}` also `(eq w w)` (`ein solve --dump-answer`'s state files, which load)"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w :rule r)` and `{(p w)}` also `(eq w w)` (`ein solve --dump-answer`'s state files, which load). Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): `(eq a w)` is `(false)`, derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8324,10 +8584,11 @@ models    = [["(eq a w)", "(p a)"], ["(eq a w)", "(eq w w)", "(p a)", "(p w)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p w)"]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` and `neq` are relations whose facts are fixed by name identity, computed and never stored, and a rule's conclusion of one is checked: a true one adds nothing, a false one makes its state a contradiction"
@@ -8340,13 +8601,10 @@ derived   = "At root `r` concludes `(eq a w)`, which is false: two different nam
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
+k         = 0
+empty     = "dead"
 relations = ["p"]
-models    = [
-  ["(p a)"],
-  ["(p a)", "(p w)"],
-]
-
+models    = []
 
 # ══ W31 — a rule or hrule whose `:match` is `()` never fires ══
 [[case]]
@@ -8358,10 +8616,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["P1f.5 F12"]
 witness  = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
-status   = "open"
-open_because = "The rule compiler builds no plan step for an empty `:match`, and a plan with no step never fires, in silence; S1f.5.9 compiles it to a plan with no premise that fires once at root, or once per activator fact (F12's ruling)"
+status   = "fixed"
 look_at  = ["root", "events fire", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed, it is the first program whose dead root has the empty core, `[]` (Q-M1e2.27), which `ein-infer/tests/corpus_cores.rs` holds then"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed, it is the first program whose dead root has the empty core, `[]` (Q-M1e2.27), which `ein-infer/tests/corpus_cores.rs` holds then. Fixed by T1f.5.9.2 (2026-11-09): `r` fires once at root and concludes `(false)`, so root is dead and R is empty; root's core is `[]`, the first empty core in Ein, and `refuted by` names `r`. The row's `now` is describe's, which takes root's core; `--minimal`, its `wrong`'s run, takes none (minimum work per question)"
+
+[case.fixed]
+commit = "2c79af6d"
+by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -8376,10 +8638,11 @@ models    = [[]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p a)"]]
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
 
 [case.right]
 reading   = "P1f.5's F12, the user's ruling of 2026-11-07: an empty `:match` is the empty conjunction, true, so a rule or hrule whose `:match` is `()` fires once, or once per activator fact"
@@ -8387,16 +8650,21 @@ verdict   = "Contradiction"
 k         = 0
 exhausted = true
 derived   = "`r` fires once at root and concludes `(false)`, so root is dead and R is empty: no minimal line. Root's core is `[]`, the empty set (Q-M1e2.27), and `refuted by` names `r`"
+core      = []
+refuted_by = ["r"]
+core_status = "within-budget"
 
 [case.now]
-run       = "solve --minimal"
-line      = "minimal"
+run       = "solve"
+line      = "all"
 exhausted = true
-k         = 1
+k         = 0
+empty     = "dead"
 relations = ["p"]
-models    = [
-  [],
-]
+models    = []
+core      = []
+refuted_by = ["r"]
+core_status = "within-budget"
 
 [[case]]
 id       = "W31/empty-match-fact"
@@ -8407,10 +8675,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["P1f.5 F12"]
 witness  = "examples/ein-bugs/wrong-answers/empty-match-fact.ein"
-status   = "open"
-open_because = "The rule compiler builds no plan step for an empty `:match`, and a plan with no step never fires, in silence; S1f.5.9 compiles it to a plan with no premise that fires once at root, or once per activator fact (F12's ruling)"
+status   = "fixed"
 look_at  = ["root", "events fire", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed by T1f.5.9.2 (2026-11-09): `r` fires once at root, so root holds `(q b :rule r)` beside `(q a)`; H is `(p a)` and `(p b)`, R their cube, and the minimal line root's state"
+
+[case.fixed]
+commit = "2c79af6d"
+by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -8425,10 +8697,10 @@ models    = [["(q a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 8
-k_c      = 8
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [["(p a)", "(p b)", "(q b)"]]
+maximal  = [["(p a)", "(p b)"]]
 
 [case.right]
 reading   = "P1f.5's F12, the user's ruling of 2026-11-07: an empty `:match` is the empty conjunction, true, so a rule or hrule whose `:match` is `()` fires once, or once per activator fact"
@@ -8444,9 +8716,9 @@ run       = "solve --minimal"
 line      = "minimal"
 exhausted = true
 k         = 1
-relations = ["p", "q"]
+relations = ["p"]
 models    = [
-  ["(q a)"],
+  [],
 ]
 
 [[case]]
@@ -8458,10 +8730,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["P1f.5 F12"]
 witness  = "examples/ein-bugs/wrong-answers/empty-match-activator.ein"
-status   = "open"
-open_because = "The rule compiler builds no plan step for an empty `:match`, and a plan with no step never fires, in silence; S1f.5.9 compiles it to a plan with no premise that fires once at root, or once per activator fact (F12's ruling)"
+status   = "fixed"
 look_at  = ["root", "events fire", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12. Fixed by T1f.5.9.2 (2026-11-09): `r` fires once on its activator `(r a)`, so root holds `(hit a :rule r)`; H is `(p a)`, R two states, and the minimal line root's state"
+
+[case.fixed]
+commit = "2c79af6d"
+by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -8476,10 +8752,10 @@ models    = [[]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 4
-k_c      = 4
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [["(hit a)", "(p a)"]]
+maximal  = [["(p a)"]]
 
 [case.right]
 reading   = "P1f.5's F12, the user's ruling of 2026-11-07: an empty `:match` is the empty conjunction, true, so a rule or hrule whose `:match` is `()` fires once, or once per activator fact"
@@ -8495,7 +8771,7 @@ run       = "solve --minimal"
 line      = "minimal"
 exhausted = true
 k         = 1
-relations = ["hit", "p"]
+relations = ["p"]
 models    = [
   [],
 ]
@@ -8509,10 +8785,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["P1f.5 F12"]
 witness  = "examples/ein-bugs/wrong-answers/empty-match-hrule.ein"
-status   = "open"
-open_because = "An hrule is compiled as a rule is, so an empty `:match` builds no plan step and the hrule rung proposes nothing: *no candidate*, in silence; S1f.5.9 makes it propose its conclusion once, or once per activator (F12's ruling)"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12 (*\"2 same\"*)"
+note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.9's case, on the user's ruling of 2026-11-07 on P1f.5's F12 (*\"2 same\"*). Fixed by T1f.5.9.2 (2026-11-09): the hrule's empty `:match` matches once, so it proposes `(q b)`: H is one candidate and R is ∅ and `{(q b)}`; `ein saturate` unmoved, an hrule playing no part in a saturation"
+
+[case.fixed]
+commit = "2c79af6d"
+by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8527,10 +8807,10 @@ models    = [[]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(q b)"]]
 
 [case.right]
 reading   = "P1f.5's F12, the user's ruling of 2026-11-07: an empty `:match` is the empty conjunction, true, so a rule or hrule whose `:match` is `()` fires once, or once per activator fact"
@@ -8545,12 +8825,12 @@ derived   = "The hrule's empty `:match` fires once, as `:match (p ?x)` would, so
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 1
-relations = []
+k         = 2
+relations = ["q"]
 models    = [
   [],
+  ["(q b)"],
 ]
-
 
 # ══ W32 — a keyword pair in a term is dropped in silence, so a rule fires without its `:where` or a goal is answered without its pair ══
 [[case]]
@@ -8828,10 +9108,14 @@ settings = "default"
 owner    = "S1f.5.18"
 question = ["Q-M1e2.18", "S1f.5.5 census"]
 witness  = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
-status   = "open"
-open_because = "The compiler seeds a rule's parameters from its activator and skips a nested fact (*a nested Fact does not bind*), so `?y` stays free and `act` fires on every `p`, with no line; W24 (Q-M1e2.18 (iv)) refused the same activator only where the parameter names a relation. S1f.5.18 binds the parameter to the nested fact as to any other value (the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+status   = "fixed"
 look_at  = ["root", "events fire", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/activator_nested_value.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. `hit` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(hit a)`, `(hit b)` and `(hit (f a))` (`ein saturate --dump`), and the query's one class lists all three rows. The same holds of `()` and `(and …)` as the activator's argument, which the final grammar refuses (the census)"
+note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/activator_nested_value.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. `hit` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(hit a)`, `(hit b)` and `(hit (f a))` (`ein saturate --dump`), and the query's one class lists all three rows. The same holds of `()` and `(and …)` as the activator's argument, which the final grammar refuses (the census). Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09): `(act (f a))` binds `?y` to `(f a)`, so `act` matches `(p (f a))` alone and root holds `(hit (f a))` and no other `hit`; H gains `(hit a)` and `(hit b)`, which root no longer holds, so R is their cube, four states, its minimal line root's state, in either build"
+
+[case.fixed]
+commit = "2901cac1"
+by     = "S1f.5.18 (T1f.5.18.2): `compile::Compiler::bind_activator` seeds a parameter its activator binds to a nested fact as it seeds one bound to a name, so the plan matches and concludes the value (W33's cause gone)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -8846,10 +9130,10 @@ models    = [["(hit (f a))", "(hit a)", "(hit b)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(hit a)", "(hit b)"]]
 
 [case.right]
 reading   = "an activator binds a rule's parameter to its argument, a nested fact a value as any other (the census's default, the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
@@ -8865,9 +9149,9 @@ run       = "solve --minimal"
 line      = "minimal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["hit"]
 models    = [
-  [],
+  ["(hit (f a))"],
 ]
 
 # ══ W34 — `:assert ()` stores a fact named `#empty`, which joins H ══
@@ -8880,10 +9164,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["P1f.5 F12", "S1f.5.5 census"]
 witness  = "examples/ein-bugs/wrong-answers/assert-empty.ein"
-status   = "open"
-open_because = "The rule compiler lowers an empty conclusion as a fact whose head is the parser's synthetic `#empty` (`@empty` until S1f.5.5's T1f.5.5.8), stored at root as `( :rule r)`, and the list of the program's names then reads `#empty`, so `(q \"#empty\")` is a candidate and R gains a state; S1f.5.9 makes an empty conclusion assert nothing (F12's ruling, and the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/assert_empty.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. P1f.5's F12 table said `:assert ()` *loads, adds nothing*, which the census found false (S1f.5.0 corrected the row, and added it to S1f.5.9's case); the paper grammar's default 7 keeps `:assert ()` as the empty conclusion, so the fix is the engine's. The query's classes are two today and one right"
+note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/assert_empty.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. P1f.5's F12 table said `:assert ()` *loads, adds nothing*, which the census found false (S1f.5.0 corrected the row, and added it to S1f.5.9's case); the paper grammar's default 7 keeps `:assert ()` as the empty conclusion, so the fix is the engine's. The query's classes are two today and one right. Fixed by T1f.5.9.2 (2026-11-09): `:assert ()` compiles to no template, so `r` concludes nothing, `#empty` is no name of the program, H is empty and R {∅}, the query one class; the state file loads, so `answer_round_trip.rs`' and `answer_dump.rs`' `DO_NOT_LOAD`, `claim_round_trip.rs`' `DO_NOT_READ_BACK` and `alive_invariant.rs`' `KNOWN_R1` are empty"
+
+[case.fixed]
+commit = "2c79af6d"
+by     = "S1f.5.9 (T1f.5.9.2): a `:match` that is `()`, the empty conjunction, compiles to one empty disjunct, which the matcher takes as one vacuous match, so a rule fires once at root, or once per activator fact, and an hrule proposes its conclusion likewise; an `:assert` that is `()` compiles to no template and asserts nothing (`ein_infer::compile`, F12's ruling)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8898,10 +9186,10 @@ models    = [["(q a)"], ["(q \"@empty\")", "(q a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(q \"#empty\")"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "P1f.5's F12, the user's ruling of 2026-11-07, its fifth row: an empty conclusion asserts nothing"
@@ -8911,17 +9199,18 @@ exhausted = true
 closes    = ["q"]
 models    = [["(q a)"]]
 derived   = "`r` fires on `(q a)` and concludes nothing, so root holds `(q a)` alone, no name is added, nothing is a candidate, and R is {∅}, one state"
+queries   = [{ classes = 1, expect = "none" }]
 
 [case.now]
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
-relations = ["q"]
+k         = 1
+relations = []
 models    = [
-  ["(q \"#empty\")", "(q a)"],
-  ["(q a)"],
+  [],
 ]
+queries   = [{ classes = 1, expect = "none" }]
 
 # ══ W35 — `(absent ())` loads, and holds ══
 [[case]]
@@ -9796,3 +10085,1048 @@ models    = [
   ["(p b)"],
 ]
 nogoods   = [{ set = ["(p a)", "(p b)"], core = ["(p a)", "(p b)"] }]
+
+# ══ W50 — a written `eq` fact is stored, not checked against its definition ══
+[[case]]
+id       = "W50/fact-eq-false"
+case     = "W50"
+title    = "a written `eq` fact is stored, not checked against its definition"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26", "Q-M1f.33"]
+witness  = "examples/ein-bugs/wrong-answers/fact-eq-false.ein"
+status   = "fixed"
+look_at  = ["root", "answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no fact, rule or commitment changes `eq` or `neq`) and G-21. `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w)` (`ein saturate --dump`). `(eq a a)`, the true one, is stored too, and moves no state's `(model …)`; `eq_neq_conclusions.rs` holds that it is not stored. `(neq …)` is no fact the grammar takes. Fixed by T1f.5.7.4 (2026-11-09): the written `(eq a w)` is `(false)`, given where it stands, so root is dead, `refuted by (given)`, and `w` is no name of the program"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at dc4c0bdc (2026-11-09): root holds `(eq a w)`, `w` is a name of the program, so `(p w)` is a candidate, and R is two states, ∅ and `{(p w)}`, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p"]
+models    = [["(p a)"], ["(p a)", "(p w)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07, read by Q-M1f.33 (taken by default on the user's instruction of 2026-11-09): a fact is a conclusion with no premise, so a written fact of `eq` is checked as a rule's conclusion of one is: a true one adds nothing, a false one makes root a contradiction"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+derived   = "`a` and `w` are two names, so `(eq a w)` is false, and root is a contradiction: `(false)` written where it stands, `refuted by` `(given)`. R is empty. Nothing is stored, so `w` is in no fact and no name of the program, and H is empty"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
+
+# ══ W51 — `(not (eq …))` is a stored negation, not `(neq …)` ══
+[[case]]
+id       = "W51/not-eq-premise"
+case     = "W51"
+title    = "`(not (eq …))` is a stored negation, not `(neq …)`"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26", "Q-M1f.31"]
+witness  = "examples/ein-bugs/wrong-answers/not-eq-premise.ein"
+status   = "fixed"
+look_at  = ["root", "answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). A goal `(not (eq ?x ?y))` is the same compile: it has no row today. `hit` has candidates today and none once root derives its two facts. Fixed by T1f.5.7.3 (2026-11-09): the premise is `(neq ?x ?y)`, the rule fires on `(a, b)` and `(b, a)`, and R is {∅}"
+
+[case.fixed]
+commit = "6841faff"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at dc4c0bdc (2026-11-09): the rule never fires, root holds no `hit`, H is `(hit a b)` and `(hit b a)`, and R is four states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["hit"]
+models    = [[], ["(hit a b)"], ["(hit b a)"], ["(hit a b)", "(hit b a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07, read by Q-M1f.31 (taken by default on the user's instruction of 2026-11-09): `eq`'s facts are computed, and so is the negation of one, so `(not (eq x y))` is `(neq x y)`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit a b)", "(hit b a)"]]
+derived   = "The rule fires on `(a, b)` and `(b, a)`, so root holds `(hit a b)` and `(hit b a)`, and the blind enumerator proposes no `hit` fact root does not hold: H is empty, and R is {∅}"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W51/not-eq-fact"
+case     = "W51"
+title    = "`(not (eq …))` is a stored negation, not `(neq …)`"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26", "Q-M1f.31", "Q-M1f.33"]
+witness  = "examples/ein-bugs/wrong-answers/not-eq-fact.ein"
+status   = "fixed"
+look_at  = ["root", "answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a))` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): the written `(not (eq a a))` is `(neq a a)`, false, so `(false)` stands in its place and root is dead"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at dc4c0bdc (2026-11-09): root holds `(not (eq a a))`, H is empty and R is {∅}, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [["(p a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07, read by Q-M1f.31 and Q-M1f.33 (taken by default on the user's instruction of 2026-11-09): `(not (eq x y))` is `(neq x y)`, and a written one is checked as a conclusion with no premise"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+derived   = "`(not (eq a a))` is `(neq a a)`, which is false, so root is a contradiction: `(false)` written where it stands, `refuted by` `(given)`. R is empty"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
+
+[[case]]
+id       = "W51/not-eq-assert"
+case     = "W51"
+title    = "`(not (eq …))` is a stored negation, not `(neq …)`"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26", "Q-M1f.31"]
+witness  = "examples/ein-bugs/wrong-answers/not-eq-assert.ein"
+status   = "fixed"
+look_at  = ["root", "answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a) :rule r)` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): `(not (eq a a))` is `(neq a a)`, `(false)` derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at dc4c0bdc (2026-11-09): root holds `(not (eq a a))`, derived by `r`, H is empty and R is {∅}, exit 0; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [["(p a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07, read by Q-M1f.31 (taken by default on the user's instruction of 2026-11-09): `(not (eq x y))` is `(neq x y)`, and a rule's conclusion of one is checked"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+derived   = "At root `r` concludes `(not (eq a a))`, which is `(neq a a)`, false, so root is a contradiction, explained as `(false)` is: its core is `(p a)` and `refuted by` names `r`. R is empty"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
+
+# ══ W52 — a rule parameter its activator binds to `eq` names a relation of stored facts ══
+[[case]]
+id       = "W52/relvar-eq-premise"
+case     = "W52"
+title    = "a rule parameter its activator binds to `eq` names a relation of stored facts"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26"]
+witness  = "examples/ein-bugs/wrong-answers/relvar-eq-premise.ein"
+status   = "fixed"
+look_at  = ["root", "answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). `neq` is never a name, so no activator binds a parameter to it. Fixed by T1f.5.7.3 (2026-11-09): under `(r eq)` the premise is the `eq` guard, and root holds `(hit a a)` and `(hit b b)`"
+
+[case.fixed]
+commit = "6841faff"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at dc4c0bdc (2026-11-09): the rule never fires, root holds no `hit`, H is `(hit a b)` and `(hit b a)`, and R is four states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["hit"]
+models    = [[], ["(hit a b)"], ["(hit b a)"], ["(hit a b)", "(hit b a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(hit a b)", "(hit b a)"]]
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07: `eq` is the relation of equality wherever it is written, a relation a parameter names among them"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit a a)", "(hit b b)"], ["(hit a a)", "(hit a b)", "(hit b b)"], ["(hit a a)", "(hit b a)", "(hit b b)"], ["(hit a a)", "(hit a b)", "(hit b a)", "(hit b b)"]]
+derived   = "Under `(r eq)` the third premise is `(eq ?x ?y)`: the rule fires on `(a, a)` and `(b, b)`, so root holds `(hit a a)` and `(hit b b)`. H is `(hit a b)` and `(hit b a)`, which no rule refutes, so R is four states, each holding root's two"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 4
+relations = ["hit"]
+models    = [
+  ["(hit a a)", "(hit a b)", "(hit b a)", "(hit b b)"],
+  ["(hit a a)", "(hit a b)", "(hit b b)"],
+  ["(hit a a)", "(hit b a)", "(hit b b)"],
+  ["(hit a a)", "(hit b b)"],
+]
+
+[[case]]
+id       = "W52/relvar-eq-assert"
+case     = "W52"
+title    = "a rule parameter its activator binds to `eq` names a relation of stored facts"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26"]
+witness  = "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein"
+status   = "fixed"
+look_at  = ["root", "answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21): `W30/assert-eq-x-w` with its conclusion's relation written as a parameter. By value: root holds `(eq a w :rule r)` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): under `(r eq)` the conclusion `(eq a w)` is `(false)`, derived by `r` from `(p a)`, so root is dead"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at dc4c0bdc (2026-11-09): root holds `(eq a w)`, derived by `r`, and R is two states, ∅ and `{(p w)}`, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p"]
+models    = [["(p a)"], ["(p a)", "(p w)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07: `eq` is the relation of equality wherever it is written, and a rule's conclusion of it is checked"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+derived   = "Under `(r eq)` the conclusion is `(eq ?x w)`: at root `r` concludes `(eq a w)`, which is false, so root is a contradiction: its core is `(p a)` and `refuted by` names `r`. R is empty"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["p"]
+models    = []
+
+# ══ W53 — an hrule's `eq` or `neq` instance is a hypothesis, and a commitment stores it ══
+[[case]]
+id       = "W53/hrule-eq"
+case     = "W53"
+title    = "an hrule's `eq` or `neq` instance is a hypothesis, and a commitment stores it"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26", "Q-M1f.32"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-eq.ein"
+status   = "fixed"
+look_at  = ["answer"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no commitment changes `eq` or `neq`). The same hrule concluding `neq` proposes the four `neq` facts, whose state files do not load, a fact line `(neq …)` being a parse error; the witness is the `eq` one, whose files load (`answer_round_trip.rs`), and the fix covers both (`firing::computed`). Fixed by T1f.5.7.4 (2026-11-09): the hrule proposes no `eq` instance, so H is empty and R is {∅}"
+
+[case.fixed]
+commit = "31a68fdf"
+by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at dc4c0bdc (2026-11-09): H is `(eq a a)`, `(eq a b)`, `(eq b a)` and `(eq b b)`, each a stored fact under its commitment, and R is sixteen states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 16
+exhausted = true
+closes    = ["eq"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07, read by Q-M1f.32 (taken by default on the user's instruction of 2026-11-09): a commitment states facts a state stores, and a state stores no `eq` or `neq`, so an hrule's instance of either is no hypothesis"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "The hrule proposes nothing, so H is empty and R is {∅}"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+# ══ W54 — a query's class prints a pattern inside a pattern as written ══
+[[case]]
+id       = "W54/goal-nested-var"
+case     = "W54"
+title    = "a query's class prints a pattern inside a pattern as written, its variables in it"
+class    = "claim"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26"]
+witness  = "examples/ein-bugs/wrong-answers/goal-nested-var.ein"
+status   = "fixed"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09), found where a goal `(not (eq ?x ?y))`, which S1f.5.7 answers, printed its class; outside the stage's case, and S1f.5.7's to fix since its goals reach it. No corpus goal writes a variable inside a pattern (S1f.5.7's cross-check of every program, `build/s1f.5.7/xcheck`, 2026-11-09). The read-out's `as :expect` printed `(model (not (p ?x)))`, which does not load. Fixed by T1f.5.7.2 (2026-11-09): a class substitutes its rows at every depth, so the class is `(not (p a))` and `(not (p b))`, the claim holds, and the read-out suggests it, exit 0"
+
+[case.fixed]
+commit = "e5ae6946"
+by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at dc4c0bdc (2026-11-09): R {∅}; the query's one class has two rows, `?x = a` and `?x = b`, and one fact, `(not (p ?x))`, so the claim is FAILED and the run exits 1"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "failed" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "`region_language.md` § 5: a query's class is the goal's instances under its rows"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "held" }]
+derived   = "The class is `(not (p a))` and `(not (p b))`, so the claim holds, exit 0"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "held" }]
+
+# ══ W55 — a goal's `eq` or `neq` judges an unbound variable as a null, and a claim naming either is refused ══
+[[case]]
+id       = "W55/goal-neq-free"
+case     = "W55"
+title    = "a goal's `eq` or `neq` judges an unbound variable as a null, and a claim naming either is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26"]
+witness  = "examples/ein-bugs/wrong-answers/goal-neq-free.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its case, the inventory of 2026-11-06's S-18: its probe `goal_guard.ein` with the claim the right answer states. Without the claim the read-out says *the goal holds: it has no variable* and suggests `(model (neq w ?y))`, which does not parse (`goal_guard_claim.ein`). Fixed by T1f.5.7.2 (2026-11-09): the claim loads, `neq` being a relation a goal may ask about, and the goal's rows are `?y = Node`, `?y = a` and `?y = p`, so the claim holds, exit 0"
+
+[case.fixed]
+commit = "e5ae6946"
+by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
+date   = "2026-11-09"
+
+[case.wrong]
+run     = "saturate"
+by      = "command"
+why     = "`ein saturate` and `ein solve` on the witness, release and debug, at dc4c0bdc (2026-11-09): refused at load, *:expect names neq, which no declaration or fact makes a relation*, once per fact of the claim, exit 1; with no claim, `ein solve` answers the goal's one class with one row that binds nothing, *the goal holds: it has no variable*"
+exit    = 1
+refused = "kb load error: :expect names neq, which no declaration or fact makes a relation; :expect names neq, which no declaration or fact makes a relation; :expect names neq, which no declaration or fact makes a relation"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07: `eq` and `neq` are relations, a query over them is answered, not refused, and `(neq w ?y)` answers every name of the program but `w`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "R is {∅}. The goal's rows are `?y = Node`, `?y = a` and `?y = p`, the program's names but `w`, which is only the query's; its class is `(neq w Node)`, `(neq w a)` and `(neq w p)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W55/goal-guard-before-binder"
+case     = "W55"
+title    = "a goal's `eq` or `neq` judges an unbound variable as a null, and a claim naming either is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1e2.26"]
+witness  = "examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, on the user's ruling of 2026-11-07 (Q-M1e2.26: a conjunction means the same in any order of its conjuncts). A rule's premise in that order is `W24/guard-before-binder`, refused at load since M1e2 S1e2.2.24; a goal's never was. Fixed by T1f.5.7.2 (2026-11-09): the guard waits for `(p ?y)`, so `(neq a a)` is judged and fails, the goal has no row, and the claim `(model)` holds, exit 0"
+
+[case.fixed]
+commit = "e5ae6946"
+by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at dc4c0bdc (2026-11-09): R {∅}; the goal's one row is `?y = a`, its class `(model (neq a a) (p a))`, so the claim is FAILED, exit 1"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "failed" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07: a conjunction means the same in any order of its conjuncts"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "held" }]
+derived   = "The goal is `(and (p ?y) (neq a ?y))`: `?y = a`, and `(neq a a)` is false, so it has no row; its class is `(model)`, and the claim holds, exit 0"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "held" }]
+
+# ══ W56 — a goal's `(absent …)` is not judged, and a claim that lists its instance is refused ══
+[[case]]
+id       = "W56/goal-absent"
+case     = "W56"
+title    = "a goal's `(absent …)` is not judged, and a claim that lists its instance is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1f.35"]
+witness  = "examples/ein-bugs/wrong-answers/goal-absent.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.5.7 (T1f.5.7.5, 2026-11-09), outside its case: found where the stage's test of a goal's empty row (`cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`) wrote `(query :goal (absent (q ?x)))`, which answered one row over a state that holds a `q`. No corpus goal writes an `(absent …)`, `forall` or `unknown` (S1f.5.7's scan of every `:goal`, 2026-11-09). With no claim the read-out answers two rows and suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`, which the loader refuses. Fixed by T1f.5.7.6 (2026-11-09): `goal_bindings` judges the goal's lifted guard, so the one row is `?y = a`, and the claim loads and holds, exit 0"
+
+[case.fixed]
+commit = "607c5d88"
+by     = "S1f.5.7 (T1f.5.7.6): a goal's lifted `(absent …)` is judged against the state, and a query's claim may list its instance (Q-M1f.35)"
+date   = "2026-11-09"
+
+[case.wrong]
+run     = "saturate"
+by      = "command"
+why     = "`ein saturate` and `ein solve` on the witness, release and debug, at 6841faff (2026-11-09): refused at load, *:expect names absent, which no declaration or fact makes a relation*, exit 1; with no claim, `ein solve` answers the goal's one class with two rows, `?y = a` and `?y = b`"
+exit    = 1
+refused = "kb load error: :expect names absent, which no declaration or fact makes a relation"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "`(absent P)` is negation as failure, judged against the state (`absent_semantics.md`), in a goal as in a rule's premise, and a query's class is the goal's instances under its rows (`region_language.md` § 5), an `(absent …)`'s among them, which a claim may list as it lists a guard's (Q-M1f.35)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "R is root's state alone. The goal's one row is `?y = a`, `(q b)` refuting `?y = b`; its class is `(absent (q a))` and `(p a)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+
+# ══ W57 — a conclusion's variable that no premise binds loads, and is found only where a firing reaches it ══
+[[case]]
+id       = "W57/assert-var-stops"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/assert-var-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): root fires the rule, and every command stops. The same stop is reached through an `(or …)` whose arm leaves the variable unbound (`examples/ein-bugs/unbound-assert-var.ein`, the fuzzer's of 2026-08-20), a variable read only inside an `(absent …)`, an `unknown` or a `forall`, and one nested in a conclusion's argument. A stop is no answer, and the ruling's is a refusal (Q-M1f.36: a stop where a refusal is right is a row, as W18's stops were). Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "bef85fe0"
+by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 2eb483e0 (2026-11-09): the program loads, root fires `r` on `(p a)`, and the run stops, exit 1; `ein saturate --dump`, `solve --minimal` and `oracle` the same, `saturate` quoting the line as `KeyError: \"…\"`, and `ein test` an `ERROR`, exit 2"
+exit      = 1
+error     = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*): every variable of a rule's or an hrule's `:assert` is bound on every way its `:match` can hold, by a parameter, a premise or an `eq` / `neq` guard, and a rule that writes one nothing binds is refused at load"
+refused   = true
+derived   = "`?y` is written by `r`'s `:assert` and bound by no premise or parameter, so `r` is refused at load, one line naming the rule, the variable and the two explicit spellings, `(is-a ?y T)` and `(eq ?y ?y)`: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+
+[[case]]
+id       = "W57/assert-var-under-commitment"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): root never fires the rule and a commitment holding a candidate `(s …)` does. The row's `now` is describe's stop, since a run that stops states no region; its `wrong` is the answer `--minimal` gives, the corpus entry banking both exits. Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "bef85fe0"
+by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve --minimal` on the witness, release and debug, at 2eb483e0 (2026-11-09): the minimal line is root's state alone, {∅}, H two candidates, `(q a)` and `(s a)`, exit 0, with no word of `?y`; `ein saturate --dump` answers root's fixpoint, exit 0; `ein solve` (describe) and `ein oracle` stop at a commitment that fires `r`, exit 1, with `unbound var ?y in :assert — bindings: {'x': 'a'}`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*): every variable of a rule's or an hrule's `:assert` is bound on every way its `:match` can hold, whether or not any state fires it, and a rule that writes one nothing binds is refused at load"
+refused   = true
+derived   = "`?y` is written by `r`'s `:assert` and bound by no premise or parameter, so `r` is refused at load, whatever fires it: every command that loads the program exits 1 with the one line (`ein test`: 2), and no command answers it"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+
+[[case]]
+id       = "W57/hrule-assert-var"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-assert-var.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): an hrule's template, which no run stops on. Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "bef85fe0"
+by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 2eb483e0 (2026-11-09): H is empty and R is {∅}, exit 0, with no word of `?y`; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*), which S1f.5.10's stage file holds an hrule's `:assert` to as it holds a rule's"
+refused   = true
+derived   = "`?y` is written by `h`'s `:assert` and bound by no premise or parameter, so `h` is refused at load: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: hrule 'h': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+
+[[case]]
+id       = "W57/assert-var-never-fires"
+case     = "W57"
+title    = "a conclusion's variable that no premise binds loads, and is found only where a firing reaches it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.10"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), one of the four ways the engine answers a program with a conclusion variable nothing binds, the stage's step 1 (`build/s1f.5.10/shapes`, 2026-11-09): a rule that never fires, its `:match` empty, `W31/empty-match-*`'s shape (S1f.5.9's). An activator never written reads the same (`examples/syntax/rule-nary-and-or.ein`, the one corpus program the check refuses, rewritten by T1f.5.10.2), and so does an `(absent …)` that never holds. Fixed by T1f.5.10.2 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build"
+
+[case.fixed]
+commit = "bef85fe0"
+by     = "S1f.5.10 (T1f.5.10.2): the loader refuses a rule or an hrule whose `:assert` writes a variable some way of satisfying its `:match` leaves unbound, one line per variable naming the two explicit spellings (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, F13)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 2eb483e0 (2026-11-09): `r` never fires, H is empty and R is {∅}, exit 0, with no word of `?y`; every mode and `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.right]
+reading   = "the user's ruling of 2026-11-07 on P1f.5's F13 (*\"yes, file F13 with the refusal\"*): every variable of a rule's `:assert` is bound on every way its `:match` can hold, and `()` binds nothing"
+refused   = true
+derived   = "`?y` is written by `r`'s `:assert`, and an empty `:match` binds nothing, so `r` is refused at load, whether or not it fires: every command that loads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)"
+
+# ══ W58 — a value parameter its activator binds to a nested fact, read only by the conclusion, stops the run ══
+[[case]]
+id       = "W58/parameter-nested-assert"
+case     = "W58"
+title    = "a value parameter its activator binds to a nested fact, read only by the conclusion, stops the run"
+class    = "model set"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1f.37", "S1f.5.5 census"]
+witness  = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), outside its case: its step 1 (`build/s1f.5.10/shapes`, 2026-11-09) found the one shape that still reaches `FireError::UnboundVar` once the loader checks a conclusion's variables. W33's witness reads the parameter in its `:match` too, so `act` fires on every `p`; this one reads it only in the `:assert`, so the run stops. Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09): `(act (f a))` binds `?y` to `(f a)`, so `act` fires on `(p a)` and root holds `(hit (f a))`, every command answering, exit 0; H is `(hit a)`, so R is two states, its minimal line root's state, in either build"
+
+[case.fixed]
+commit = "2901cac1"
+by     = "S1f.5.18 (T1f.5.18.2): `compile::Compiler::bind_activator` seeds a parameter its activator binds to a nested fact as it seeds one bound to a name, so the plan matches and concludes the value (W33's cause gone); with it `FireError::UnboundVar` and its `KeyError` line are retired (Q-M1f.37), since no conclusion reads a register its match and its activator leave unbound"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "region"
+why       = "`ein solve --minimal` on the witness, release and debug, at 2eb483e0 (2026-11-09): the program loads, root fires `act` on `(p a)` with `?y` unbound, and the run stops, exit 1; every command the same"
+exit      = 1
+error     = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(hit a)"]]
+
+[case.right]
+reading   = "an activator binds a rule's parameter to its argument, a nested fact a value as any other (W33's right, the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["hit"]
+models    = [["(hit (f a))"]]
+derived   = "`(act (f a))` binds `?y` to `(f a)`, so `act` fires on `(p a)` and root holds `(hit (f a))`: the minimal line is root's state. It is the twin's answer, the rule written `(rule act () :match (p ?x) :assert (hit (f a)))` (`ein solve --minimal` at 2eb483e0, release)"
+
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  ["(hit (f a))"],
+]
+
+# ══ W59 — an activator a rule derives can bind a relation parameter to a fact, and the program loads ══
+[[case]]
+id       = "W59/derived-activator"
+case     = "W59"
+title    = "an activator a rule derives can bind a relation parameter to a fact, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1f.1", "Q-M1f.44"]
+witness  = "examples/ein-bugs/wrong-answers/derived-activator.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.18 (T1f.5.18.1, 2026-11-09), one of the two ways the engine answers a program in which a rule could derive an activator binding a relation parameter to a fact (Q-M1f.44, Q-M1f.36's reading: a stop where a refusal is right is a row). The witness is S1f.5.5's probe `g14/derived-activator.ein` (its paper grammar, Q1), `:why`s added. Fixed by T1f.5.18.3 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stopped with W24's compile line"
+
+[case.fixed]
+commit = "52d45b11"
+by     = "S1f.5.18 (T1f.5.18.3): the loader refuses a program in which a rule could derive an activator binding a relation parameter to a fact, one line per site naming the deriving rule, the activated rule and the parameter (`ein_ir::from_ir`'s `refuse_derived_relation_activators`, Q-M1f.1 (b), Q-M1f.41)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 8249e872 (2026-11-09): the program loads, root fires `mk` on `(item (a b))` and derives `(r (a b))`, and the run stops where `r`'s plan is compiled, exit 1; `ein saturate --dump`, `solve --minimal` and `oracle` the same, and `ein test` an `ERROR`, exit 2"
+exit      = 1
+error     = "the relation head ?R of (?R b) at Loc(file='examples/ein-bugs/wrong-answers/derived-activator.ein', line=39, col=16) is bound to the fact (a b) — a relation is named by a symbol, not a fact."
+
+[case.right]
+reading   = "the user's ruling of 2026-11-08 on Q-M1f.1 (*\"Q1 - b\"*): a program in which some rule could derive an activator binding a relation parameter to a fact is refused at load by a static check, whether or not a run derives it"
+refused   = true
+derived   = "`r`'s parameter `?R` names a relation, `(box (?R b))`; `mk`'s `:assert` writes `(r ?f)`, so `?f` is bound to `?R`, and `(item ?f)` can bind `?f` to a fact, `item` being a declared relation, whose argument holds any value: so the program is refused at load, one line naming `mk`, `r` and `?R`, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact"
+
+[[case]]
+id       = "W59/derived-activator-never"
+case     = "W59"
+title    = "an activator a rule derives can bind a relation parameter to a fact, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.18"
+question = ["Q-M1f.1", "Q-M1f.44"]
+witness  = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.18 (T1f.5.18.1, 2026-11-09), one of the two ways the engine answers a program in which a rule could derive an activator binding a relation parameter to a fact (Q-M1f.44): no fact or candidate puts a fact in `item`, so no run meets the parameter bound to one. The witness is S1f.5.5's probe `g14/derived-activator-never.ein`, `:why`s added. Fixed by T1f.5.18.3 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, `derived-activator`'s, in either build, where it answered 64 states"
+
+[case.fixed]
+commit = "52d45b11"
+by     = "S1f.5.18 (T1f.5.18.3): the loader refuses a program in which a rule could derive an activator binding a relation parameter to a fact, one line per site naming the deriving rule, the activated rule and the parameter (`ein_ir::from_ir`'s `refuse_derived_relation_activators`, Q-M1f.1 (b), Q-M1f.41)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at 8249e872 (2026-11-09): H is six candidates, `(box b)`, `(box z)`, `(hit b)`, `(hit z)`, `(item b)` and `(item z)`, and R is their cube, 64 states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 64
+exhausted = true
+
+[case.right]
+reading   = "the user's ruling of 2026-11-08 on Q-M1f.1 (*\"Q1 - b\"*), which refuses this program knowing no run derives the activator: a static check that some rule could derive an activator binding a relation parameter to a fact"
+refused   = true
+derived   = "`mk`'s `:assert` writes `(r ?f)`, `?f` is `r`'s relation parameter `?R`, and `(item ?f)` can bind `?f` to a fact, `item` being a declared relation: so the program is refused at load, as `derived-activator.ein` is, though no fact or candidate puts a fact in `item`; every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact"
+
+# ══ W60 — a relation parameter an activator binds to `eq` heads a form of another arity, and the program loads ══
+[[case]]
+id       = "W60/eq-arity-premise"
+case     = "W60"
+title    = "a relation parameter an activator binds to `eq` heads a form of another arity, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.9"
+question = ["Q-M1e2.26", "Q-M1f.46"]
+witness  = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46, Q-M1f.36's reading: a stop where a refusal is right is a row). The shape is the one S1f.5.18 found and left unfiled, `ein-cli/tests/program_read.rs`' error past the load; it comes from M1e S1e.2.1's arity check and S1f.5.7's `eq`. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stopped at root with the compiler's arity line"
+
+[case.fixed]
+commit = "2a8c998b"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ee3da657 (2026-11-09): the program loads, and the run stops at root where `(r eq)`'s plan is compiled, exit 1, with the compiler's line in the Python IR's spelling; `ein saturate --dump`, `solve --minimal` and `oracle` the same"
+exit      = 1
+error     = "`(eq …)` takes exactly 2 arguments and was given 1: SForm(head=Var(name='R'), args=(Var(name='x'),)) at Loc(file='examples/ein-bugs/wrong-answers/eq-arity-premise.ein', line=35, col=11) — a built-in predicate compares exactly two values, so write one guard per pair."
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 (`eq` is the relation of equality, between two values), and Q-M1f.1 (b)'s reading, which S1f.5.18 built (a program a static check can see is refused at load): a relation parameter an activator can bind to `eq` that heads a form of another arity is refused at load"
+refused   = true
+derived   = "`r`'s parameter `?R` heads `(?R ?x)`, one argument, and the fact `(r eq)` binds it to `eq`, so the premise is `(eq ?x)`, which the grammar refuses where it is written: the loader refuses the program with one line naming `r`, `?R`, the form and the activator, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
+
+[[case]]
+id       = "W60/eq-arity-under-commitment"
+case     = "W60"
+title    = "a relation parameter an activator binds to `eq` heads a form of another arity, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.9"
+question = ["Q-M1e2.26", "Q-M1f.46"]
+witness  = "examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): only a commitment holding a candidate `(p …)` derives the activator, so `ein saturate` answers root's fixpoint where describe stops, two commands disagreeing on one program; the row's `now` is describe's stop, and the corpus entry banks all three runs' exits. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where `ein saturate` answered and describe stopped"
+
+[case.fixed]
+commit = "2a8c998b"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ee3da657 (2026-11-09): the program loads, root derives no activator, and the run stops at the first commitment that derives `(r eq)`, where its plan is compiled, exit 1, with the compiler's line; `solve --minimal` and `ein oracle` the same, while `ein saturate --dump` answers root's fixpoint, exit 0, with no word of `eq`"
+exit      = 1
+error     = "`(eq …)` takes exactly 2 arguments and was given 1: SForm(head=Var(name='R'), args=(Var(name='x'),)) at Loc(file='examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein', line=36, col=11) — a built-in predicate compares exactly two values, so write one guard per pair."
+
+[case.right]
+reading   = "Q-M1e2.26 and Q-M1f.1 (b)'s reading, as `W60/eq-arity-premise`'s: refused at load, whether or not a state derives the activator, as S1f.5.18 refuses a derived activator that can bind a relation parameter to a fact"
+refused   = true
+derived   = "`mk` writes `(r ?f)` with `?f` bound at `mark`'s argument, which `(mark eq)` writes `eq` at, so `?R` can hold `eq`, and `(?R ?x)` is then `(eq ?x)`: the program is refused at load, one line naming `r`, `?R`, the form, `(mark eq)` and `mk`, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and ?R can be bound to eq by the fact (mark eq), through rule 'mk''s conclusion (r ?f) — eq is the relation of equality, which holds between exactly two values"
+
+[[case]]
+id       = "W60/eq-arity-hrule"
+case     = "W60"
+title    = "a relation parameter an activator binds to `eq` heads a form of another arity, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.9"
+question = ["Q-M1e2.26", "Q-M1f.46"]
+witness  = "examples/ein-bugs/wrong-answers/eq-arity-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): an hrule's, under its `(solve :hrules …)` activator. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where `ein saturate` answered and describe stopped"
+
+[case.fixed]
+commit = "2a8c998b"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release and debug, at ee3da657 (2026-11-09): the program loads, and the run stops where the hrule's plan is compiled, before any state is read, exit 1, with the compiler's line; `solve --minimal` and `ein oracle` the same, while `ein saturate --dump` answers root's fixpoint, exit 0, the hrule playing no part in a saturation"
+exit      = 1
+error     = "ein.inference.compile.CompileError: `(eq …)` takes exactly 2 arguments and was given 1: SForm(head=Var(name='R'), args=(Var(name='x'),)) at Loc(file='examples/ein-bugs/wrong-answers/eq-arity-hrule.ein', line=30, col=11) — a built-in predicate compares exactly two values, so write one guard per pair."
+
+[case.right]
+reading   = "Q-M1e2.26 and Q-M1f.1 (b)'s reading, as `W60/eq-arity-premise`'s"
+refused   = true
+derived   = "`h`'s parameter `?R` heads `(?R ?x)`, one argument, and `(solve :hrules (h (eq)))` binds it to `eq`: the program is refused at load, one line naming `h`, `?R`, the form and the solve form, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve :hrules (h (eq))) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
+
+[[case]]
+id       = "W60/eq-arity-conclusion"
+case     = "W60"
+title    = "a relation parameter an activator binds to `eq` heads a form of another arity, and the program loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.9"
+question = ["Q-M1e2.26", "Q-M1f.46"]
+witness  = "examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): a conclusion's. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a :rule r)` (`ein saturate --dump`). Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stored `(eq a :rule r)` and answered"
+
+[case.fixed]
+commit = "2a8c998b"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at ee3da657 (2026-11-09): root stores `(eq a :rule r)`, H is `(p z)` and R is two states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p"]
+models    = [["(p a)"], ["(p a)", "(p z)"]]
+
+[case.right]
+reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07 (`eq` is the relation of equality, between two values, computed and never stored), and Q-M1f.1 (b)'s reading, as `W60/eq-arity-premise`'s"
+refused   = true
+derived   = "`r`'s parameter `?R` heads its conclusion `(?R ?x)`, one argument, and `(r eq)` binds it to `eq`, so the conclusion is `(eq ?x)`, which the grammar refuses where it is written: the program is refused at load, one line naming `r`, `?R`, the form and the activator, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
+
+# ══ W61 — a written fact of `eq` at another arity is stored ══
+[[case]]
+id       = "W61/fact-eq-arity"
+case     = "W61"
+title    = "a written fact of `eq` at another arity is stored"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.9"
+question = ["Q-M1e2.26", "Q-M1f.33", "Q-M1f.47"]
+witness  = "examples/ein-bugs/wrong-answers/fact-eq-arity.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09) beside W60, whose conclusion row stores the same fact through a parameter. `(eq)`, `(eq a a a)` and `(not (eq a))` load and are stored the same way. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a)` (`ein saturate --dump`). Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stored `(eq a)` and answered"
+
+[case.fixed]
+commit = "2a8c998b"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a written fact of `eq`, or of its negation, at any arity but 2, one line per fact (`ein_ir::from_ir`'s `refuse_eq_facts_of_another_arity`, Q-M1f.47)"
+date   = "2026-11-09"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` and `ein saturate --dump` on the witness, release and debug, at ee3da657 (2026-11-09): root stores `(eq a)`, H is `(p z)` and R is two states, exit 0; every mode and `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p"]
+models    = [["(p a)"], ["(p a)", "(p z)"]]
+
+[case.right]
+reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 (`eq` is the relation of equality, between two values, computed and never stored), and Q-M1f.33's reading of a written fact of `eq` as a conclusion with no premise, which the grammar refuses as `(eq ?x)`"
+refused   = true
+derived   = "`(eq a)` writes `eq` with one argument, which is no fact of equality, true or false: the program is refused at load, one line naming the fact, and every command that loads it exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: the fact (eq a) writes eq with 1 argument — eq is the relation of equality, which holds between exactly two values"

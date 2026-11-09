@@ -157,13 +157,13 @@ pub fn markdown(v: &Visits, inputs: &Inputs<'_>) -> String {
     ];
     let row = |i: usize, n: &VisitedNode| -> String {
         let why = match n.kind {
-            "dead" if !n.core.is_empty() => match n.core_status.and_then(|c| c.cut_at()) {
-                Some(at) => format!(
-                    "core {} (core search cut at its budget of {at})",
-                    n.core.join(", ")
-                ),
-                None => format!("core {}", n.core.join(", ")),
-            },
+            "dead" if !n.core.is_empty() || n.core_status.is_some() => {
+                let core = ein_infer::explain::core_text(&n.core, ", ");
+                match n.core_status.and_then(|c| c.cut_at()) {
+                    Some(at) => format!("core {core} (core search cut at its budget of {at})"),
+                    None => format!("core {core}"),
+                }
+            }
             "owing" => format!("owes {}", n.owed.join("; ")),
             _ => String::new(),
         };

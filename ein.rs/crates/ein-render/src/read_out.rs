@@ -1585,8 +1585,11 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 match h.core_status.and_then(|c| c.cut_at()) {
                     Some(at) => format!(
                         "dead: {} (core search cut at its budget of {at})",
-                        h.core.join(" ")
+                        ein_infer::explain::core_text(&h.core, " ")
                     ),
+                    None if h.core_status.is_some() => {
+                        format!("dead: {}", ein_infer::explain::core_text(&h.core, " "))
+                    }
                     None => format!("dead: {}", h.core.join(" ")),
                 }
             } else {
@@ -1880,6 +1883,18 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
         Listing::False => {
             out.blank();
             if let Some(d) = r.described() {
+                // The empty set, where the core was taken and holds no fact
+                // (M1f S1f.5.9, Q-M1f.48).
+                if d.root.core.is_empty() && d.root.core_status.is_some() {
+                    out.row(
+                        Row::UnsatCore,
+                        format!(
+                            "{}, {}",
+                            ein_infer::explain::EMPTY_CORE,
+                            ein_infer::explain::EMPTY_CORE_GLOSS
+                        ),
+                    );
+                }
                 for c in &d.root.core {
                     out.row(Row::UnsatCore, c);
                 }
@@ -2238,7 +2253,17 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
             for (ri, row) in c.rows.iter().enumerate() {
                 let bound: Vec<String> = row.iter().map(|(k, v)| format!("?{k} = {v}")).collect();
                 if bound.is_empty() {
-                    b.push(more_text("  the goal holds: it has no variable"));
+                    // A goal with a variable binds it in every row it has, an
+                    // `eq` or `neq` guard included since M1f S1f.5.7, unless
+                    // the variable is an `(absent …)`'s own; until then a
+                    // guard's free variable bound nothing, and `(neq w ?y)`'s
+                    // one row said it had no variable. A name holds no `?`
+                    // (`ein.l`'s name rule), so the goal's text tells.
+                    b.push(more_text(if q.goal.contains('?') {
+                        "  the goal holds: it binds no variable"
+                    } else {
+                        "  the goal holds: it has no variable"
+                    }));
                 } else {
                     b.push(more_text(format!("  {}", bound.join(" · "))));
                 }

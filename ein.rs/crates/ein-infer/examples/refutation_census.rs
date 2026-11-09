@@ -44,7 +44,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
 
 use census::{located, named, refutes};
-use ein_core::{Symbol, Terms};
+use ein_core::{Symbol, Terms, Value};
 use ein_infer::hypgen::eligible_relations;
 use ein_infer::monotone::{self, Rel, SiteKind};
 use ein_infer::naf_deps::compute_naf_map;
@@ -211,7 +211,7 @@ fn main() {
             continue;
         }
 
-        let rows = |v: &[(Symbol, Box<[Symbol]>, &'static str, String)]| -> Vec<String> {
+        let rows = |v: &[(Symbol, Box<[Value]>, &'static str, String)]| -> Vec<String> {
             let mut out: Vec<String> = v
                 .iter()
                 .map(|(r, a, c, w)| {

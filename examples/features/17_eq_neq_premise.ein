@@ -1,0 +1,54 @@
+;;; Ein — feature demo: `eq` and `neq` in a rule's premise, in any order.
+;;;
+;;; M1f S1f.5.7 (T1f.5.7.3), on the user's ruling of 2026-11-07 (Q-M1e2.26):
+;;; a premise follows the reading a goal does. A rule's `:match` is a
+;;; conjunction, and its meaning does not depend on the order of its
+;;; conjuncts: `(and (neq ?x a) (p ?x))` means what `(and (p ?x) (neq ?x a))`
+;;; means, the guard judged once `(p ?x)` has bound `?x`. A guard whose
+;;; variable no premise binds at all ranges over the program's names, every
+;;; constant a fact writes in an argument, at any depth, and every constant
+;;; of a rule's `:match` or `:assert` (Q-M1e2.9 (a)): here `Node`, `a`, `b`,
+;;; `hit-eq`, `hit-form`, `hit-neq`, `p` and `sibling`, which each `(relation
+;;; …)` stores as a fact, and no rule's name and no `f`, a nested fact's
+;;; relation. A fact that holds no variable, `(f a)`, is a value, as it is in
+;;; `(p (f a))`.
+;;;
+;;; Until S1f.5.7 the loader refused each of the first three rules, a guard
+;;; before the premise that binds its variable and a form as a guard's
+;;; argument (M1e2 S1e2.2.24, W24); before that, each guard compared an unbound
+;;; variable as a null and a form as an IR node, so `e` never fired and `n`
+;;; fired for `a` too.
+;;;
+;;; `(solve :hypothesis-relations ())` leaves H empty, so R is root alone and
+;;; each claim is about root's fixpoint.
+;;;
+;;; ── What the engine prints ────────────────────────────────────────────────
+;;;
+;;; `ein solve examples/features/17_eq_neq_premise.ein` prints R, root's one
+;;; state, and each query's class; every claim holds, and `ein test` exits 0.
+
+(relation p Node :why "{?1} is a node")
+(relation hit-eq Node :why "{?1} is a")
+(relation hit-neq Node :why "{?1} is not a")
+(relation hit-form Node :why "{?1} is the fact (f a)")
+(relation sibling Node Node :why "{?1} is a name of the program other than {?2}")
+
+(p a) (p b) (p (f a))
+
+(rule e () :match (and (eq ?x a) (p ?x)) :assert (hit-eq ?x)
+  :why "{?x} is a node, and it is a")
+(rule n () :match (and (neq ?x a) (p ?x)) :assert (hit-neq ?x)
+  :why "{?x} is a node, and it is not a")
+(rule form () :match (and (p ?x) (eq ?x (f a))) :assert (hit-form ?x)
+  :why "{?x} is a node, and it is the fact (f a)")
+(rule apart () :match (and (neq ?y b) (eq ?x b)) :assert (sibling ?x ?y)
+  :why "{?y} is a name of the program, and not {?x}")
+
+(solve :hypothesis-relations ())
+
+(query :goal (hit-eq ?x) :expect (model (hit-eq a)))
+(query :goal (hit-neq ?x) :expect (model (hit-neq (f a)) (hit-neq b)))
+(query :goal (hit-form ?x) :expect (model (hit-form (f a))))
+(query :goal (sibling b ?y)
+  :expect (model (sibling b Node) (sibling b a) (sibling b hit-eq) (sibling b hit-form)
+                 (sibling b hit-neq) (sibling b p) (sibling b sibling)))

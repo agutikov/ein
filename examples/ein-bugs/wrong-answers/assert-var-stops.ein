@@ -1,0 +1,38 @@
+;;; A conclusion's variable that no premise binds stops the run at the rule's
+;;; first firing — M1f **W57**, register row `W57/assert-var-stops`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.10 (T1f.5.10.1,
+;;; 2026-11-09), `open` and owned by S1f.5.10, on the user's ruling of
+;;; 2026-11-07 on P1f.5's F13 (*"yes, file F13 with the refusal"*).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, and a rule whose `:assert` writes `?y`, which its
+;;; `:match` never binds: read literally, *if some p holds, every name is a
+;;; q*.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The ruling: a conclusion's every variable is bound on every way its
+;;; `:match` can hold, by a parameter, a premise or an `eq` / `neq` guard,
+;;; and a rule that writes one nothing binds is refused at load, with a line
+;;; naming the two explicit spellings of what it could mean: a premise such
+;;; as `(is-a ?y T)`, every object of a type, or `(eq ?y ?y)`, every name of
+;;; the program. Every command that loads the program exits 1 with that line
+;;; (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads, and root fires `r` on `(p a)`: every command that
+;;; saturates root stops there, exit 1 (`ein test`: 2, an `ERROR`), with the
+;;; Python implementation's spelling, `unbound var ?y in :assert — bindings:
+;;; {'x': 'a'}` (`ein saturate` quotes it as a `KeyError`), at `2eb483e0`,
+;;; release and debug alike. A stop is no answer, and the ruling's answer is
+;;; a refusal at load.
+
+(relation p Node :why "{?1} is a node")
+(relation q Node :why "{?1} is a q")
+(p a)
+(rule r ()
+  :match (p ?x)
+  :assert (q ?y)
+  :why "{?x} is a p")

@@ -157,6 +157,12 @@
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
+0    examples/broken/load/derived_activator.ein :: render rules
+1    examples/broken/load/derived_activator.ein :: saturate
+1    examples/broken/load/derived_activator.ein :: solve
+0    examples/broken/load/derived_activator_never.ein :: render rules
+1    examples/broken/load/derived_activator_never.ein :: saturate
+1    examples/broken/load/derived_activator_never.ein :: solve
 1    examples/broken/load/expect_omits_the_goal.ein :: render rules
 1    examples/broken/load/expect_omits_the_goal.ein :: saturate
 1    examples/broken/load/expect_omits_the_goal.ein :: solve
@@ -399,6 +405,13 @@
 0    examples/ein-bugs/wrong-answers/assert-neq-w-x.ein :: solve
 0    examples/ein-bugs/wrong-answers/assert-neq-x-x.ein :: saturate
 0    examples/ein-bugs/wrong-answers/assert-neq-x-x.ein :: solve
+1    examples/ein-bugs/wrong-answers/assert-var-never-fires.ein :: saturate
+1    examples/ein-bugs/wrong-answers/assert-var-never-fires.ein :: solve
+1    examples/ein-bugs/wrong-answers/assert-var-stops.ein :: saturate
+1    examples/ein-bugs/wrong-answers/assert-var-stops.ein :: solve
+1    examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein :: saturate
+1    examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein :: solve
+1    examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein :: solve --minimal
 1    examples/ein-bugs/wrong-answers/bare-premise.ein :: saturate
 1    examples/ein-bugs/wrong-answers/bare-premise.ein :: solve
 1    examples/ein-bugs/wrong-answers/claim-int-name-solve.ein :: saturate
@@ -425,6 +438,10 @@
 0    examples/ein-bugs/wrong-answers/core-search-cut-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: saturate
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: solve
+1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: saturate
+1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
+1    examples/ein-bugs/wrong-answers/derived-activator.ein :: saturate
+1    examples/ein-bugs/wrong-answers/derived-activator.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: saturate
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints
@@ -440,11 +457,24 @@
 0    examples/ein-bugs/wrong-answers/empty-match-false.ein :: solve
 0    examples/ein-bugs/wrong-answers/empty-match-hrule.ein :: saturate
 0    examples/ein-bugs/wrong-answers/empty-match-hrule.ein :: solve
+1    examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein :: saturate
+1    examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein :: solve
+1    examples/ein-bugs/wrong-answers/eq-arity-hrule.ein :: saturate
+1    examples/ein-bugs/wrong-answers/eq-arity-hrule.ein :: solve
+1    examples/ein-bugs/wrong-answers/eq-arity-premise.ein :: saturate
+1    examples/ein-bugs/wrong-answers/eq-arity-premise.ein :: solve
+1    examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein :: saturate
+1    examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein :: solve
+1    examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein :: solve --minimal
 1    examples/ein-bugs/wrong-answers/escape-past-unicode.ein :: saturate
 1    examples/ein-bugs/wrong-answers/escape-past-unicode.ein :: solve
 0    examples/ein-bugs/wrong-answers/f07-fpoff.ein :: solve
 0    examples/ein-bugs/wrong-answers/f07-rules-swapped.ein :: saturate
 0    examples/ein-bugs/wrong-answers/f07-rules-swapped.ein :: solve
+1    examples/ein-bugs/wrong-answers/fact-eq-arity.ein :: saturate
+1    examples/ein-bugs/wrong-answers/fact-eq-arity.ein :: solve
+0    examples/ein-bugs/wrong-answers/fact-eq-false.ein :: saturate
+0    examples/ein-bugs/wrong-answers/fact-eq-false.ein :: solve
 0    examples/ein-bugs/wrong-answers/forall-core-elim.ein :: saturate
 0    examples/ein-bugs/wrong-answers/forall-core-elim.ein :: solve
 0    examples/ein-bugs/wrong-answers/forall-core-false.ein :: saturate
@@ -468,18 +498,30 @@
 0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2.ein :: solve
-1    examples/ein-bugs/wrong-answers/form-in-guard.ein :: saturate
-1    examples/ein-bugs/wrong-answers/form-in-guard.ein :: solve
+0    examples/ein-bugs/wrong-answers/form-in-guard.ein :: saturate
+0    examples/ein-bugs/wrong-answers/form-in-guard.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-default.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein :: solve
-1    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: saturate
-1    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: solve
+0    examples/ein-bugs/wrong-answers/goal-absent.ein :: saturate
+0    examples/ein-bugs/wrong-answers/goal-absent.ein :: solve
+0    examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein :: saturate
+0    examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein :: solve
+0    examples/ein-bugs/wrong-answers/goal-neq-free.ein :: saturate
+0    examples/ein-bugs/wrong-answers/goal-neq-free.ein :: solve
+0    examples/ein-bugs/wrong-answers/goal-nested-var.ein :: saturate
+0    examples/ein-bugs/wrong-answers/goal-nested-var.ein :: solve
+0    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: saturate
+0    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: saturate
 0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: saturate
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve -H
+1    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: saturate
+1    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: solve
+0    examples/ein-bugs/wrong-answers/hrule-eq.ein :: saturate
+0    examples/ein-bugs/wrong-answers/hrule-eq.ein :: solve
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein :: solve
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert.ein :: saturate
@@ -557,6 +599,12 @@
 1    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: solve
 1    examples/ein-bugs/wrong-answers/nested-unbound-head.ein :: saturate
 1    examples/ein-bugs/wrong-answers/nested-unbound-head.ein :: solve
+0    examples/ein-bugs/wrong-answers/not-eq-assert.ein :: saturate
+0    examples/ein-bugs/wrong-answers/not-eq-assert.ein :: solve
+0    examples/ein-bugs/wrong-answers/not-eq-fact.ein :: saturate
+0    examples/ein-bugs/wrong-answers/not-eq-fact.ein :: solve
+0    examples/ein-bugs/wrong-answers/not-eq-premise.ein :: saturate
+0    examples/ein-bugs/wrong-answers/not-eq-premise.ein :: solve
 0    examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein :: saturate
 0    examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein :: solve
 0    examples/ein-bugs/wrong-answers/oblig-derived-activator.ein :: saturate
@@ -586,12 +634,18 @@
 0    examples/ein-bugs/wrong-answers/pair-core-root-given.ein :: solve
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: saturate
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: solve
+0    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: saturate
+0    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: solve
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: saturate
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --maximal --region-limit 8
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --minimal --region-limit 8
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --region-limit 8
 0    examples/ein-bugs/wrong-answers/range-in-match.ein :: saturate
 0    examples/ein-bugs/wrong-answers/range-in-match.ein :: solve
+0    examples/ein-bugs/wrong-answers/relvar-eq-assert.ein :: saturate
+0    examples/ein-bugs/wrong-answers/relvar-eq-assert.ein :: solve
+0    examples/ein-bugs/wrong-answers/relvar-eq-premise.ein :: saturate
+0    examples/ein-bugs/wrong-answers/relvar-eq-premise.ein :: solve
 0    examples/ein-bugs/wrong-answers/saturate-import-mod.ein :: saturate
 0    examples/ein-bugs/wrong-answers/saturate-import-mod.ein :: solve
 0    examples/ein-bugs/wrong-answers/saturate-import.ein :: saturate
@@ -755,6 +809,14 @@
 0    examples/features/15_unicode_escapes.ein :: saturate --dump
 0    examples/features/15_unicode_escapes.ein :: solve
 0    examples/features/15_unicode_escapes.ein :: test
+0    examples/features/16_eq_neq_goal.ein :: render program
+0    examples/features/16_eq_neq_goal.ein :: saturate
+0    examples/features/16_eq_neq_goal.ein :: solve
+0    examples/features/16_eq_neq_goal.ein :: test
+0    examples/features/17_eq_neq_premise.ein :: render program
+0    examples/features/17_eq_neq_premise.ein :: saturate
+0    examples/features/17_eq_neq_premise.ein :: solve
+0    examples/features/17_eq_neq_premise.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

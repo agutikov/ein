@@ -1,0 +1,39 @@
+;;; A value parameter its activator binds to a nested fact, read only by the
+;;; rule's conclusion, stops the run — M1f **W58**, register row
+;;; `W58/parameter-nested-assert` (`corpus/wrong_answers.toml`), filed by
+;;; S1f.5.10 (T1f.5.10.1, 2026-11-09) outside its case, `open` and owned by
+;;; S1f.5.18, whose W33 it shares a cause with.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, a rule `act` whose parameter `?y` only its `:assert`
+;;; reads, and the activator `(act (f a))`, which binds `?y` to the nested
+;;; fact `(f a)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An activator binds a rule's parameter to its argument, a nested fact a
+;;; value as any other (the user's ruling of 2026-11-08 on S1f.5.5's census,
+;;; *"Q3 - as recommended"*, which W33 records): `act` fires on `(p a)` with
+;;; `?y = (f a)`, so root holds `(hit (f a))`, and the minimal line is
+;;; root's state.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The compiler seeds a parameter from its activator and skips a nested
+;;; fact (*a nested Fact does not bind*, W33's cause), so `?y` reaches the
+;;; conclusion unbound and the run stops at root, exit 1, with `unbound var
+;;; ?y in :assert — bindings: {'x': 'a'}`, on every command (`ein solve
+;;; FILE` at `2eb483e0`, release and debug alike). The loader cannot refuse
+;;; it: a parameter is bound by its activator, and S1f.5.10's check holds a
+;;; conclusion's variables to that, so it is the one path that still reaches
+;;; the stop after S1f.5.10.
+
+(relation p Node :why "{?1} is a node")
+(relation hit Node :why "{?1} is hit")
+(p a)
+(rule act (?y)
+  :match (p ?x)
+  :assert (hit ?y)
+  :why "{?y} is hit, since {?x} is a p")
+(act (f a))

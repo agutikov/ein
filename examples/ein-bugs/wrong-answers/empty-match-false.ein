@@ -19,6 +19,14 @@
 ;;; alive, ∅ is in R and R is two states, ∅ and `{(p a)}`, exit 0 (`ein solve
 ;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
 ;;; release and debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; `:match ()` is the empty conjunction since T1f.5.9.2 (2026-11-09), so `r`
+;;; fires once at root and concludes `(false)`: root is dead and R is empty,
+;;; root's core `[]`, the first empty core in Ein, printed `∅`, and `refuted
+;;; by` `r`, the answer above by hand. The register's `now` is that answer;
+;;; the section above is the record of the one it replaced.
 
 (relation q Node) (relation p Node)
 (q a)

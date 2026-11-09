@@ -46,6 +46,11 @@ impl std::fmt::Display for CompileError {
 
 impl std::error::Error for CompileError {}
 
+/// What a guard compares, as the loader's line and the compiler's say it
+/// (M1f S1f.5.7, Q-M1f.30).
+pub const GUARD_VALUES: &str = "a guard compares two values, each a variable, a name, or a fact \
+                                that holds no variable";
+
 // ── Activators ─────────────────────────────────────────────────────
 
 /// The activator facts authorising `rule` to apply — `Engine._activators_for`.
@@ -304,10 +309,6 @@ struct Compiler<'a> {
     // The plan's register space, seeds first.
     plan_space: Space,
     seed: Vec<(Symbol, Value)>,
-    // The parameters the activator bound to a nested `Fact`, which binds none:
-    // what a relation head written as one of them is refused with (M1e2
-    // S1e2.2.24, W24, Q-M1e2.18 (iv)).
-    fact_bound: Vec<(Symbol, Value)>,
     // The guard sub-plan currently being compiled, with the scope it projects.
     sub: Option<Space>,
     sub_scope: FxHashSet<Symbol>,
@@ -317,6 +318,35 @@ struct Compiler<'a> {
     // `split_naf`'s `bound` — the variables of the *positive* premises seen so
     // far, seeded with the rule's parameters. A guard's scope is a snapshot.
     bound: FxHashSet<Symbol>,
+    // The conjunctions being compiled, innermost last: what each has bound so
+    // far, what its relation premises bind, and the `eq` / `neq` guards
+    // waiting for one of those (M1f S1f.5.7, [`Seq`]).
+    seqs: Vec<Seq>,
+}
+
+/// One conjunction being compiled — a disjunct's body, or an `(absent …)`'s —
+/// and where its `eq` / `neq` guards go (M1f S1f.5.7, on the user's ruling of
+/// 2026-11-07 on Q-M1e2.26: a premise means the same in any order of its
+/// conjuncts).
+///
+/// A guard whose every variable is bound where it is written is a test there,
+/// which is every guard of every program the loader accepted until S1f.5.7. One
+/// with a variable a **relation premise of the same conjunction** binds waits
+/// until that premise has, and is a test after it: `(and (neq ?x a) (p ?x))`
+/// is `(and (p ?x) (neq ?x a))`. One with a variable **nothing** in the
+/// conjunction binds binds it where it is written, ranging over the program's
+/// names (the matcher's guard step), and counts as binding it from there on, as
+/// a relation premise does — for an `(absent …)` after it among them.
+#[derive(Default)]
+struct Seq {
+    /// Bound before the next premise: the parameters, the scope an `(absent
+    /// …)` projects, and what this conjunction's premises bound so far.
+    bound: FxHashSet<Symbol>,
+    /// What a relation premise of this conjunction binds, anywhere in it.
+    later: FxHashSet<Symbol>,
+    /// Guards waiting for a relation premise, in the order written, each with
+    /// its variables.
+    pending: Vec<(Step, Vec<Symbol>)>,
 }
 
 impl<'a> Compiler<'a> {
@@ -333,11 +363,11 @@ impl<'a> Compiler<'a> {
             guard_keys: Vec::new(),
             plan_space: Space::default(),
             seed: Vec::new(),
-            fact_bound: Vec::new(),
             sub: None,
             sub_scope: FxHashSet::default(),
             known: FxHashSet::default(),
             bound: FxHashSet::default(),
+            seqs: Vec::new(),
         }
     }
 
@@ -350,12 +380,19 @@ impl<'a> Compiler<'a> {
         // bindings and its own fresh body-var scope.
         let bodies: Vec<NodeId> = match &rule.match_ {
             None => vec![],
+            Some(p) if self.is_empty(NodeId(p.expr.0)) => vec![],
             Some(p) => self.match_disjuncts(NodeId(p.expr.0)),
         };
         let mut disjuncts: Vec<Disjunct> = Vec::new();
         if bodies.is_empty() {
-            // No `:match` → one empty disjunct, which the matcher
-            // accepts as a single vacuous match.
+            // `:match ()`, the empty conjunction, which is true (M1f S1f.5.9,
+            // the user's ruling of 2026-11-07 on F12, *"1 fire; 2 same"*) →
+            // one empty disjunct, which the matcher accepts as a single
+            // vacuous match: the plan fires once, with only its parameters
+            // bound. Until S1f.5.9 `()` reached `compile_disjunct` as a
+            // premise over the parser's synthetic `#empty` relation, which no
+            // fact holds, so the rule never fired and an hrule proposed
+            // nothing, in silence (W31).
             disjuncts.push(Disjunct {
                 steps: Span::EMPTY,
                 guards: Span::EMPTY,
@@ -371,8 +408,16 @@ impl<'a> Compiler<'a> {
         // The `:assert` clause: a top-level `(and …)` lowers to one template
         // per conjunct (A13 multi-assert). Var slots stay unbound — `fire`
         // fills them; Atom / nested slots stay literal.
+        //
+        // `:assert ()`, the empty conclusion, asserts nothing (S1f.5.9): no
+        // template, so an application derives nothing and is no firing, as one
+        // whose every conclusion holds. Until S1f.5.9 it was a template over
+        // the synthetic `#empty`, stored as `( :rule r)`, whose head joined
+        // the program's names and H (W34).
         let mut asserts: Vec<Slot> = Vec::new();
-        if let Some(p) = &rule.assert_ {
+        if let Some(p) = &rule.assert_
+            && !self.is_empty(NodeId(p.expr.0))
+        {
             for c in self.assert_conjuncts(NodeId(p.expr.0)) {
                 let slot = self.slot(c)?;
                 asserts.push(slot);
@@ -399,17 +444,29 @@ impl<'a> Compiler<'a> {
         })
     }
 
-    /// Bind the rule's parameters from the activator, positionally.
+    /// Bind the rule's parameters from the activator, positionally, and
+    /// return its every argument, the compile key's list
+    /// ([`Plan::activator_args`]).
     ///
-    /// Only name arguments bind — a nested-`Fact` argument leaves
-    /// its parameter free, which is why a seed can be shorter than the
-    /// parameter list. The seed is what `slot` substitutes from and what
-    /// `split_naf` seeds every guard's scope with.
+    /// Every argument binds its parameter, a name or a nested fact alike: a
+    /// nested fact is a value, which a pattern matches and a conclusion
+    /// writes. The seed is what `slot` substitutes from and what `split_naf`
+    /// seeds every guard's scope with, and a relation head written as a
+    /// parameter the activator binds to a fact meets the fact there and is
+    /// refused (`head_not_a_name`).
+    ///
+    /// **Until M1f S1f.5.18 a nested fact bound nothing** (*a nested Fact does
+    /// not bind*), so a seed could be shorter than the parameter list and the
+    /// parameter was a free variable of the plan: `(act (f a))` over `(p a)
+    /// (p b) (p (f a))` fired `(p ?y)` on every `p` (W33), and a conclusion
+    /// that alone read it stopped the run with `FireError::UnboundVar`'s
+    /// `KeyError` (W58), which S1f.5.18 retired with it. The user's ruling of
+    /// 2026-11-08 on S1f.5.5's census (*"Q3 - as recommended"*).
     fn bind_activator(
         &mut self,
         rule: &Rule,
         activator: Option<FactId>,
-    ) -> Result<Box<[Symbol]>, CompileError> {
+    ) -> Result<Box<[Value]>, CompileError> {
         let Some(fact) = activator else {
             return Ok(Box::new([]));
         };
@@ -443,12 +500,6 @@ impl<'a> Compiler<'a> {
             )));
         }
         for (&p, &a) in rule.params.iter().zip(args.iter()) {
-            if a.as_fact().is_some() {
-                // A nested Fact does not bind; a relation head written as
-                // this parameter is refused (`head_not_a_name`).
-                self.fact_bound.push((p, a));
-                continue;
-            }
             match self.plan_space.get(p) {
                 // A repeated parameter name keeps the first position and
                 // takes the last value.
@@ -459,11 +510,7 @@ impl<'a> Compiler<'a> {
                 }
             }
         }
-        Ok(args
-            .iter()
-            .filter_map(|a| a.as_sym())
-            .collect::<Vec<_>>()
-            .into_boxed_slice())
+        Ok(args.into_boxed_slice())
     }
 
     // ── Disjuncts and conjuncts ────────────────────────────────────
@@ -494,12 +541,23 @@ impl<'a> Compiler<'a> {
         matches!(self.ast.node(node), Node::SForm { .. }) && self.ast.head_name(node) == Some(name)
     }
 
+    /// `()`: the parser's form over the synthetic [`ein_core::text::EMPTY_HEAD`],
+    /// which the grammar writes only as a whole `:match` (the empty
+    /// conjunction) or a whole `:assert` (the empty conclusion).
+    fn is_empty(&self, node: NodeId) -> bool {
+        self.head_is(node, ein_core::text::EMPTY_HEAD) && self.ast.form_args(node).is_empty()
+    }
+
     fn compile_disjunct(&mut self, body: NodeId) -> Result<Disjunct, CompileError> {
         self.known.clear();
         self.bound = self.seed.iter().map(|(name, _)| *name).collect();
         let guards_start = self.guards.len() as u32;
         let mut steps: Vec<Step> = Vec::new();
-        self.premise(body, true, &mut steps)?;
+        let bound: FxHashSet<Symbol> = self.seed.iter().map(|(name, _)| *name).collect();
+        self.open_seq(body, bound);
+        let compiled = self.premise(body, true, &mut steps);
+        self.close_seq(&mut steps);
+        compiled?;
         let n_premises = steps.iter().filter(|s| matches!(s, Step::Rel(_))).count() as u16;
         let span = self.push_steps(steps);
         let guards = Span {
@@ -637,7 +695,15 @@ impl<'a> Compiler<'a> {
         // on `args[0..2]` with the tail dropped. `neq` never showed either,
         // because the grammar shape-pins `NeqForm` and `eq` is an ordinary
         // `GenericList` — which is the rule, not the coincidence.
-        if let Some(pred) = head_name.as_deref().and_then(predicates::get) {
+        //
+        // Since M1f S1f.5.7 `eq` is the relation wherever it is written, so a
+        // pattern whose relation is a parameter its activator binds to `eq`,
+        // `(?R ?x ?y)` under `(r eq)`, is this guard, and `(not (eq a b))`,
+        // the stored negation of a fact whose truth is computed, is `(neq a
+        // b)` (Q-M1f.31, taken by default on the user's instruction of
+        // 2026-11-09). Until then each was an ordinary pattern over stored
+        // facts, which no state holds, and matched nothing (W51, W52).
+        if let Some((pred, args)) = self.guard_form(node) {
             if args.len() != pred.arity() {
                 return Err(self.bad_arity(
                     node,
@@ -648,17 +714,41 @@ impl<'a> Compiler<'a> {
                 ));
             }
             let start = self.guard_args.len() as u32;
-            for arg in args {
-                let ga = self.guard_arg(arg)?;
+            for &arg in &args {
+                let ga = self.guard_arg(node, arg)?;
                 self.guard_args.push(ga);
             }
-            out.push(Step::Guard {
+            let step = Step::Guard {
                 pred,
                 args: Span {
                     start,
                     len: self.guard_args.len() as u32 - start,
                 },
-            });
+            };
+            // Where it goes is [`Seq`]'s: here, or after the relation premise
+            // that binds its variable (M1f S1f.5.7).
+            let mut vars: Vec<Symbol> = Vec::new();
+            for &arg in &args {
+                if let Node::Var(s) = self.ast.node(arg) {
+                    let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
+                    if !vars.contains(&name) {
+                        vars.push(name);
+                    }
+                }
+            }
+            match self.seqs.last_mut() {
+                Some(q)
+                    if vars
+                        .iter()
+                        .any(|v| q.later.contains(v) && !q.bound.contains(v)) =>
+                {
+                    q.pending.push((step, vars));
+                }
+                _ => {
+                    out.push(step);
+                    self.bind_guard_vars(&vars);
+                }
+            }
             return Ok(());
         }
 
@@ -682,7 +772,17 @@ impl<'a> Compiler<'a> {
             // closure, and the boundary evaluates it as one unit, in the
             // enclosing sub-plan's binding environment.
             let mut sub: Vec<Step> = Vec::new();
-            self.premise(body, false, &mut sub)?;
+            // What the enclosing conjunction has bound where this is written is
+            // bound in it, and what it binds stays in it.
+            let bound = self
+                .seqs
+                .last()
+                .map(|q| q.bound.clone())
+                .unwrap_or_default();
+            self.open_seq(body, bound);
+            let compiled = self.premise(body, false, &mut sub);
+            self.close_seq(&mut sub);
+            compiled?;
             assert!(!sub.is_empty(), "{}", self.empty_sub_plan(node));
             let span = self.push_steps(sub);
             out.push(Step::Absent { sub: span });
@@ -713,7 +813,9 @@ impl<'a> Compiler<'a> {
         self.sub = Some(Space::default());
 
         let mut sub: Vec<Step> = Vec::new();
+        self.open_seq(body, self.bound.clone());
         let compiled = self.premise(body, false, &mut sub);
+        self.close_seq(&mut sub);
         let space = self.sub.take().expect("the sub-space is still mine");
         self.sub_scope.clear();
         compiled?;
@@ -771,8 +873,11 @@ impl<'a> Compiler<'a> {
 
     /// M1e2 S1e2.2.24 (W24, the user's ruling of 2026-11-05 on Q-M1e2.18
     /// (iv)) — a relation head written as a parameter, bound by the activator
-    /// to a value that is not a name: a nested `Fact`, which binds no
-    /// parameter, so the relation head named no relation. Until then the
+    /// to a value that is not a name: a nested `Fact`, which names no
+    /// relation. Since M1f S1f.5.18 the parameter is seeded with the fact, as
+    /// a value parameter is, and the head meets it there; until then a nested
+    /// fact bound nothing and this line read it from a list of its own. Until
+    /// S1e2.2.24 the
     /// top-level premise stopped compilation with the unbound-head line in the
     /// Python IR's spelling, and a pattern inside a pattern was an opaque slot
     /// that matched nothing, in silence. The loader refuses the activators it
@@ -795,14 +900,6 @@ impl<'a> Compiler<'a> {
             ein_ir::loc_repr(self.ast, self.ast.loc(node)),
             crate::events::sexpr_value(self.terms, v),
         ))
-    }
-
-    /// The nested fact the activator bound a parameter to, if it did.
-    fn fact_value(&self, name: Symbol) -> Option<Value> {
-        self.fact_bound
-            .iter()
-            .find(|(n, _)| *n == name)
-            .map(|(_, v)| *v)
     }
 
     /// What an `(absent …)` whose sub-plan compiled to no steps would be.
@@ -861,14 +958,11 @@ impl<'a> Compiler<'a> {
                     // activator.
                     //
                     // Since M1e2 S1e2.2.24 (W24) the loader refuses a head
-                    // variable no parameter binds, and a parameter bound to a
-                    // nested fact is refused just below, so no program the
-                    // loader accepts reaches the last arm: a direct caller of
-                    // `compile_rule` with no activator does.
-                    None if self.fact_value(name).is_some() => {
-                        let v = self.fact_value(name).expect("checked");
-                        return Err(self.head_not_a_name(node, head, v));
-                    }
+                    // variable no parameter binds, and since M1f S1f.5.18 a
+                    // parameter bound to a nested fact is seeded with it and
+                    // refused just above, so no program the loader accepts
+                    // reaches this arm: a direct caller of `compile_rule` with
+                    // no activator does.
                     None => {
                         return Err(CompileError(format!(
                             "unbound relation head ?{} in a premise of `{}` — \
@@ -945,7 +1039,7 @@ impl<'a> Compiler<'a> {
         // `(absent …)` sub-plan pollutes `known_vars` (so a later premise
         // becomes a `Join`) but is not in scope for anything.
         if self.sub.is_none() {
-            self.bound.extend(vars);
+            self.bound.extend(vars.iter().copied());
         }
 
         let probe = self.probes_for(slots);
@@ -956,7 +1050,144 @@ impl<'a> Compiler<'a> {
             probe,
             shared,
         }));
+        // The guards that waited for these variables go right after it.
+        if let Some(q) = self.seqs.last_mut() {
+            q.bound.extend(vars.iter().copied());
+        }
+        self.flush_ready(out);
         Ok(())
+    }
+
+    // ── Where a guard goes (M1f S1f.5.7) ───────────────────────────
+
+    /// `node` as an `eq` / `neq` guard, with the arguments it compares, or
+    /// `None` for a premise that is not one: `(eq a b)` and `(neq a b)`, a
+    /// pattern whose relation is a parameter its activator binds to `eq`, and
+    /// `(not P)` over any of these, which is the other predicate over the same
+    /// arguments (Q-M1f.31).
+    fn guard_form(&mut self, node: NodeId) -> Option<(predicates::Pred, Vec<NodeId>)> {
+        let Node::SForm { head, args } = self.ast.node(node) else {
+            return None;
+        };
+        let args = self.ast.args(args).to_vec();
+        let name: Option<String> = match self.ast.node(head) {
+            Node::Atom(s) => Some(self.ast.sym(s).to_string()),
+            Node::Var(s) => {
+                let var = self.terms.intern_text(self.ast.sym(s)).expect("room");
+                self.seed_value(var)
+                    .and_then(|v| v.as_sym())
+                    .map(|v| self.terms.sym(v).to_string())
+            }
+            _ => None,
+        };
+        match name.as_deref() {
+            Some("not") if args.len() == 1 => {
+                let (pred, inner) = self.guard_form(args[0])?;
+                let other = match pred {
+                    predicates::Pred::Eq => predicates::Pred::Neq,
+                    predicates::Pred::Neq => predicates::Pred::Eq,
+                };
+                Some((other, inner))
+            }
+            Some(h) => predicates::get(h).map(|p| (p, args)),
+            None => None,
+        }
+    }
+
+    /// Open a conjunction: `bound` is what is bound where it starts.
+    fn open_seq(&mut self, body: NodeId, bound: FxHashSet<Symbol>) {
+        let mut later = FxHashSet::default();
+        self.relation_vars(body, &mut later);
+        self.seqs.push(Seq {
+            bound,
+            later,
+            pending: Vec::new(),
+        });
+    }
+
+    /// Close the innermost conjunction. A guard still waiting has nothing
+    /// left to wait for — every variable it waited on is one a relation
+    /// premise of the conjunction binds, so none is left when the premises
+    /// are — but a compile error part-way leaves some, and they go last.
+    fn close_seq(&mut self, out: &mut Vec<Step>) {
+        let q = self.seqs.pop().expect("a conjunction is open");
+        out.extend(q.pending.into_iter().map(|(step, _)| step));
+    }
+
+    /// Emit, in the order written, every waiting guard whose variables a
+    /// relation premise has now bound; each binds the rest of its variables.
+    fn flush_ready(&mut self, out: &mut Vec<Step>) {
+        loop {
+            let Some(q) = self.seqs.last_mut() else {
+                return;
+            };
+            let at = q.pending.iter().position(|(_, vars)| {
+                vars.iter()
+                    .all(|v| !q.later.contains(v) || q.bound.contains(v))
+            });
+            let Some(at) = at else {
+                return;
+            };
+            let (step, vars) = q.pending.remove(at);
+            out.push(step);
+            self.bind_guard_vars(&vars);
+        }
+    }
+
+    /// A guard emitted: its variables are bound from here on, in the
+    /// conjunction and, at a disjunct's top level, for an `(absent …)`'s scope.
+    fn bind_guard_vars(&mut self, vars: &[Symbol]) {
+        if let Some(q) = self.seqs.last_mut() {
+            q.bound.extend(vars.iter().copied());
+        }
+        if self.sub.is_none() {
+            self.bound.extend(vars.iter().copied());
+        }
+    }
+
+    /// The variables a **relation premise** of the conjunction `node` binds:
+    /// a pattern's, `(not P)`'s included, through `(and …)`, and not an
+    /// `(absent …)`'s, a guard's or a nested `(or …)`'s (which the compiler
+    /// refuses).
+    fn relation_vars(&mut self, node: NodeId, out: &mut FxHashSet<Symbol>) {
+        let Node::SForm { head, args } = self.ast.node(node) else {
+            return;
+        };
+        let head_name = match self.ast.node(head) {
+            Node::Atom(s) => Some(self.ast.sym(s).to_string()),
+            _ => None,
+        };
+        if self.guard_form(node).is_some() {
+            return;
+        }
+        match head_name.as_deref() {
+            Some("and") => {
+                for a in self.ast.args(args).to_vec() {
+                    self.relation_vars(a, out);
+                }
+            }
+            Some("absent") | Some("or") => {}
+            _ => {
+                for a in self.ast.args(args).to_vec() {
+                    self.vars_of(a, out);
+                }
+            }
+        }
+    }
+
+    fn vars_of(&mut self, node: NodeId, out: &mut FxHashSet<Symbol>) {
+        match self.ast.node(node) {
+            Node::Var(s) => {
+                let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
+                out.insert(name);
+            }
+            Node::SForm { args, .. } => {
+                for a in self.ast.args(args).to_vec() {
+                    self.vars_of(a, out);
+                }
+            }
+            _ => {}
+        }
     }
 
     // ── Slots ──────────────────────────────────────────────────────
@@ -1025,7 +1256,7 @@ impl<'a> Compiler<'a> {
                     }
                     Node::Var(s) => {
                         let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
-                        match self.seed_value(name).or_else(|| self.fact_value(name)) {
+                        match self.seed_value(name) {
                             Some(v) if v.as_sym().is_none() => {
                                 return Err(self.head_not_a_name(node, head, v));
                             }
@@ -1071,28 +1302,83 @@ impl<'a> Compiler<'a> {
         }
     }
 
-    fn guard_arg(&mut self, node: NodeId) -> Result<GuardArg, CompileError> {
+    /// One argument of the guard `guard`, as the matcher reads it.
+    ///
+    /// A variable is its register, bound where the guard is judged or bound by
+    /// it ([`Seq`]); a name is the symbol it names, as in `slot`; and a fact
+    /// that holds no variable is the nested fact it spells, a value as it is in
+    /// `(p (f a))` (M1f S1f.5.7, the user's ruling of 2026-11-07 on
+    /// `W24/form-in-guard`). The loader interns every such fact a guard writes
+    /// (`from_ir::intern_program_names`), so this finds it under a lent table
+    /// too.
+    ///
+    /// **A form that holds a variable is refused**, at load in a rule
+    /// (`from_ir::refuse_no_fact_holds`) and here in a goal: it is a pattern,
+    /// and the value a match would build from it may be one no store holds,
+    /// which no register can be bound to (Q-M1f.30, taken by default on the
+    /// user's instruction of 2026-11-09). Until S1f.5.7 every form was
+    /// compared as a raw IR node, equal to no value, and the loader refused
+    /// each in a rule since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (i)); a string was
+    /// a node too until M1e2 S1e2.2.18, and `_` and a keyword pair until M1f
+    /// S1f.5.5's swap refused both at the parse (S1f.5.1, S1f.5.11).
+    fn guard_arg(&mut self, guard: NodeId, node: NodeId) -> Result<GuardArg, CompileError> {
         let kind = match self.ast.node(node) {
             Node::Var(s) => {
                 let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
                 GuardArgKind::Reg(self.var_reg(name)?)
             }
-            // A name is the symbol it names, as in `slot`. A string was too,
-            // from M1e2 S1e2.2.18 to M1f S1f.5.5's swap, which refused one
-            // here (S1f.5.2; T1f.5.2.3 retired the arm).
             Node::Atom(s) => {
                 let name = self.ast.sym(s).to_string();
                 GuardArgKind::Const(Value::sym(self.intern(&name)))
             }
             Node::Str(_) => unreachable!("a guard compares no string (ein.y's Guard and Term)"),
-            // A form, compared by IR-node equality. The loader refuses one
-            // as a guard's argument since M1e2 S1e2.2.24 (W24, Q-M1e2.16 (1),
-            // Q-M1e2.18 (i), (iii)), so no program it accepts reaches this
-            // arm. `_` and a keyword pair reached it too until M1f S1f.5.5's
-            // swap, which refuses both there at the parse (S1f.5.1, S1f.5.11).
-            _ => GuardArgKind::Node,
+            Node::SForm { .. } => match self.ground_value(node) {
+                Some(v) => GuardArgKind::Const(v),
+                None => {
+                    return Err(CompileError(format!(
+                        "the guard {} compares the form {}, which holds a variable — {}",
+                        ein_ir::dump_compact(self.ast, guard),
+                        ein_ir::dump_compact(self.ast, node),
+                        GUARD_VALUES
+                    )));
+                }
+            },
+            Node::KwPair { .. } | Node::Keyword(_) => {
+                unreachable!("a guard compares no keyword (ein.y's Guard and Term)")
+            }
         };
         Ok(GuardArg { kind, node })
+    }
+
+    /// The value a form that holds no variable spells: the nested fact, as the
+    /// loader interns it in a fact (`from_ir::fact_args`). `None` for a form
+    /// with a variable in it, at any depth.
+    fn ground_value(&mut self, node: NodeId) -> Option<Value> {
+        match self.ast.node(node) {
+            Node::Atom(s) => {
+                let name = self.ast.sym(s).to_string();
+                Some(Value::sym(self.intern(&name)))
+            }
+            Node::SForm { head, args } => {
+                let rel = match self.ast.node(head) {
+                    Node::Atom(s) => {
+                        let name = self.ast.sym(s).to_string();
+                        self.intern(&name)
+                    }
+                    _ => return None,
+                };
+                let mut values = Vec::new();
+                for a in self.ast.args(args).to_vec() {
+                    values.push(self.ground_value(a)?);
+                }
+                Some(
+                    self.terms
+                        .value_fact(rel, &values)
+                        .expect("the loader interns every fact a guard writes"),
+                )
+            }
+            _ => None,
+        }
     }
 
     // ── Registers ──────────────────────────────────────────────────

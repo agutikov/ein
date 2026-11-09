@@ -1,0 +1,33 @@
+;;; A premise `(not (eq …))` matches stored negations, not `neq` — M1f
+;;; **W51**, register row `W51/not-eq-premise` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, `open`
+;;; and owned by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two facts `(p a)` and `(p b)`, and a rule concluding `(hit ?x ?y)` from two
+;;; `p` facts whose arguments are not equal, written `(not (eq ?x ?y))`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(not (eq ?x ?y))` is `(neq ?x ?y)` (Q-M1f.31, taken by default on the
+;;; user's instruction of 2026-11-09): the rule fires on `(a, b)` and `(b, a)`,
+;;; so root holds `(hit a b)` and `(hit b a)`. Those are the only `hit` facts
+;;; the blind enumerator would propose over `p`'s objects that root does not
+;;; already hold — none — so H is empty and R is {∅}.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The premise is a pattern over the relation `not`, which no state holds a
+;;; `(not (eq …))` fact of: the rule never fires, root holds no `hit`, H is
+;;; `(hit a b)` and `(hit b a)`, and R is four states, exit 0 (`ein solve
+;;; FILE` and `ein oracle FILE` at `dc4c0bdc`, release and debug alike).
+
+(relation p Node :why "{?1} is a node")
+(relation hit Node Node :why "{?1} and {?2} are two nodes")
+(p a)
+(p b)
+(rule r ()
+  :match (and (p ?x) (p ?y) (not (eq ?x ?y)))
+  :assert (hit ?x ?y)
+  :why "{?x} and {?y} are nodes, and not the same")

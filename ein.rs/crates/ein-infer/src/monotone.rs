@@ -105,7 +105,7 @@
 
 use std::sync::Arc;
 
-use ein_core::{Kb, Symbol, Terms};
+use ein_core::{Kb, Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
 
 use crate::compile::SharedMemo;
@@ -231,7 +231,7 @@ pub struct Site {
     pub rule: Symbol,
     /// The activator's arguments, as [`Plan::activator_args`] has them; empty
     /// for an activator site, which is about the rule rather than one plan.
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
     pub kind: SiteKind,
     pub relation: Rel,
     /// The `absent` depth of the read: 0 for a top-level premise.
@@ -245,11 +245,7 @@ impl Site {
         let act = if self.activator.is_empty() {
             String::new()
         } else {
-            let names: Vec<std::borrow::Cow<'_, str>> = self
-                .activator
-                .iter()
-                .map(|&a| ein_core::text::symbol(terms.sym(a)))
-                .collect();
+            let names: Vec<String> = self.activator.iter().map(|&a| terms.display(a)).collect();
             format!(" [activator {}]", names.join(" "))
         };
         match self.kind {
@@ -274,7 +270,7 @@ impl Site {
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AbsentRead {
     pub rule: Symbol,
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
     pub kind: PlanKind,
     pub relation: Rel,
     pub depth: u32,
@@ -659,9 +655,17 @@ pub fn reads_of(plan: &Plan, terms: &Terms) -> Vec<(Rel, u32)> {
 
 /// Every relation `plan`'s `:assert` writes, `(false)` included — every
 /// conclusion, not only the first (A13 multi-assert).
+///
+/// An `eq` or `neq` conclusion, or `(not …)` over one, writes `(false)` or
+/// nothing: a state stores neither relation, and a false one is a
+/// contradiction (M1f S1f.5.7, G-21, `firing::build_conclusion`).
 pub fn writes_of(plan: &Plan, terms: &Terms) -> Vec<Rel> {
     let mut out = Vec::new();
     for slot in plan.asserts.iter() {
+        if crate::firing::computed(terms, plan, *slot).is_some() {
+            out.push(Rel::pos(terms.kernel.r#false));
+            continue;
+        }
         let Slot::Nested { rel, slots } = slot else {
             continue;
         };
@@ -684,9 +688,11 @@ pub fn writes_of(plan: &Plan, terms: &Terms) -> Vec<Rel> {
 
 /// Element-wise by text, a prefix first — `naf_deps`'s order for the same
 /// records.
-fn cmp_args(terms: &Terms, a: &[Symbol], b: &[Symbol]) -> std::cmp::Ordering {
+fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
-        let o = terms.syms.cmp_text(*x, *y);
+        // By content: a name by its text, as until M1f S1f.5.18 kept the
+        // names alone, and a nested fact after every name (Q-M1f.43).
+        let o = terms.cmp_semantic(*x, *y);
         if o != std::cmp::Ordering::Equal {
             return o;
         }

@@ -1284,14 +1284,21 @@ fn a_run_of_digits_is_a_name_in_every_place() {
 /// line in Ein's spelling. Since the swap three are the grammar's, each a
 /// parse error at the place with the file, line and column (`_` as a guard's
 /// argument and as a premise, S1f.5.1; `foo` as a premise, the paper
-/// grammar's; a keyword pair as a guard's argument, S1f.5.11), and the other
-/// four, which a context-free grammar does not see, keep the loader's line. A
+/// grammar's; a keyword pair as a guard's argument, S1f.5.11), and two,
+/// which a context-free grammar does not see, keep the loader's line. A
 /// parameter a rule binds to a nested fact through a variable is the
 /// compiler's (`ein-infer/tests/compile_semantics.rs`).
+///
+/// **Since M1f S1f.5.7 (T1f.5.7.3) two of the seven load**, on the user's
+/// ruling of 2026-11-07 on Q-M1e2.26: `form-in-guard`, a fact that holds no
+/// variable as a guard's argument, which is a value, and
+/// `guard-before-binder`, a guard written before the premise that binds its
+/// variable, which waits for it. A form that holds a variable stays refused
+/// (Q-M1f.30), with its own line.
 #[test]
 fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
-    const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                         binds or a name";
+    const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
+                         that holds no variable";
     let at_the_parse: [(&str, &[&str]); 3] = [
         (
             "wild-in-guard",
@@ -1329,26 +1336,12 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             }
         }
     }
-    let at_load: [(&str, String); 4] = [
+    let at_load: [(&str, String); 2] = [
         (
             "nested-unbound-head",
             "rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter \
              binds — a relation is named by a name or by a parameter its activator binds"
                 .to_string(),
-        ),
-        (
-            "form-in-guard",
-            format!(
-                "rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — {GUARD}; \
-                 rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — {GUARD}"
-            ),
-        ),
-        (
-            "guard-before-binder",
-            format!(
-                "rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — {GUARD}; \
-                 rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — {GUARD}"
-            ),
         ),
         (
             "nested-fact-activator",
@@ -1371,6 +1364,53 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             for python in ["CompileError", "Wildcard()", "SForm", "Fact("] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
             }
+        }
+    }
+    // Since S1f.5.7 the two shapes its ruling answers load, on every command.
+    for name in ["form-in-guard", "guard-before-binder"] {
+        let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
+        for cmd in ["saturate", "solve", "oracle"] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, 0, "ein {cmd} {file}:\n{}", r.err);
+        }
+    }
+    // A form that holds a variable stays refused (Q-M1f.30), in a rule and in
+    // a query's goal, one line per form.
+    let scratch = ein_corpus::Scratch::new("ein-guard-pattern");
+    for (src, want) in [
+        (
+            "(rule e () :match (and (p ?x) (q ?y) (eq ?x (f ?y))) :assert (hit ?x))",
+            format!(
+                "kb load error: rule 'e': its :match writes (eq ?x (f ?y)), and the form (f ?y) \
+                 holds a variable — {GUARD}"
+            ),
+        ),
+        (
+            "(query :goal (and (q ?y) (neq ?x (f ?y))))",
+            format!(
+                "kb load error: query: its :goal writes (neq ?x (f ?y)), and the form (f ?y) \
+                 holds a variable — {GUARD}"
+            ),
+        ),
+    ] {
+        let file = scratch.path().join("pattern.ein");
+        std::fs::write(
+            &file,
+            format!(
+                "(relation p Node) (relation q Node) (relation f Node) (relation hit Node)\n\
+                 (p a) (q a)\n{src}\n"
+            ),
+        )
+        .expect("the program is written");
+        let file = file.to_string_lossy();
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} {src}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().rfind(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} {src}"
+            );
         }
     }
     // The `:assert` shapes the test above held at the firing, and the
@@ -1427,6 +1467,196 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
                 "ein {cmd} on :assert {assert}"
             );
         }
+    }
+}
+
+/// **A conclusion's variable nothing binds is refused at load, by every
+/// command, with one line** — M1f S1f.5.10, on the user's ruling of 2026-11-07
+/// on P1f.5's F13 (*"yes, file F13 with the refusal"*).
+///
+/// W57's four witnesses and the regression fixture, each on every command that
+/// loads a program: exit 1 (`ein test`: 2), and the loader's line, one per
+/// variable, naming the rule, the variable and the two explicit spellings, in
+/// Ein's words. Until S1f.5.10 the first and the fixture stopped every command
+/// at root's firing, *unbound var ?y in :assert — bindings: {'x': 'a'}*; the
+/// second stopped `solve` and `oracle` while `saturate` and `solve --minimal`
+/// answered; and the third and the fourth answered on every command. What
+/// loads: a variable a typed premise, an `eq` guard or a parameter binds. And
+/// W58's witness, a parameter its activator binds to a nested fact, which
+/// stopped the run with the same line until S1f.5.18 seeded the parameter
+/// (Q-M1f.37), answers on every command.
+#[test]
+fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
+    let line = |head: &str, name: &str, var: &str, place: &str| {
+        format!(
+            "{head} '{name}': its :assert writes ?{var}, which no premise or parameter \
+             binds{place} — to conclude it of every object of a type, bind it with a premise \
+             such as (is-a ?{var} T), or of every name of the program with (eq ?{var} ?{var})"
+        )
+    };
+    let refused: [(&str, String); 5] = [
+        (
+            "examples/ein-bugs/wrong-answers/assert-var-stops.ein",
+            line("rule", "r", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein",
+            line("rule", "r", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/hrule-assert-var.ein",
+            line("hrule", "h", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein",
+            line("rule", "r", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/unbound-assert-var.ein",
+            format!(
+                "{}; {}",
+                line(
+                    "rule",
+                    "fire-3",
+                    "v0",
+                    " where its :match holds through (r1 ?v1 ?v3)"
+                ),
+                line(
+                    "rule",
+                    "fire-3",
+                    "v1",
+                    " where its :match holds through (r0 ?v0 ?v2)"
+                )
+            ),
+        ),
+    ];
+    let scratch = ein_corpus::Scratch::new("ein-unbound-conclusion");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    for (file, want) in &refused {
+        let want = format!("kb load error: {want}");
+        for (args, code) in [
+            (vec!["saturate", "--dump", file], 1),
+            (vec!["solve", file], 1),
+            (vec!["solve", "--minimal", file], 1),
+            (vec!["oracle", file], 1),
+            (vec!["test", file], 2),
+            (vec!["render", "lattice", file], 1),
+            (vec!["render", "kb", file], 1),
+            (vec!["kb", "save", file, &einb], 1),
+        ] {
+            let r = ein(&args);
+            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l.trim() == want),
+                "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            for python in ["KeyError", "bindings: {", "unbound var"] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
+    // What loads: a variable a typed premise, an `eq` guard or a parameter
+    // binds — the acceptance's typed premise among them.
+    let ok = scratch.path().join("ok.ein");
+    std::fs::write(
+        &ok,
+        "(relation p Node) (relation q Node) (relation is-a Node Node)\n\
+         (p a) (is-a h1 House)\n\
+         (rule typed () :match (and (p ?x) (is-a ?y House)) :assert (q ?y))\n\
+         (rule every () :match (and (p ?x) (eq ?y ?y)) :assert (q ?y))\n\
+         (rule param (?y) :match (p ?x) :assert (q ?y))\n(param b)\n",
+    )
+    .expect("writes");
+    let r = ein(&["saturate", "--dump", &ok.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    // `typed` concludes `(q h1)`; `every`, every name of the program, `House`
+    // and `b` among them, `b` the parameter's too.
+    for fact in ["(q h1 :rule typed)", "(q b :rule", "(q House :rule every)"] {
+        assert!(r.out.contains(fact), "no {fact}:\n{}", r.out);
+    }
+    // W58: the one path S1f.5.10 left, a parameter its activator binds to a
+    // nested fact, which the compiler did not seed (W33's cause) until
+    // S1f.5.18; every command answers since, root holding `(hit (f a))`.
+    let w58 = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein";
+    for args in [
+        vec!["saturate", "--dump", w58],
+        vec!["solve", w58],
+        vec!["solve", "--minimal", w58],
+        vec!["oracle", w58],
+    ] {
+        let r = ein(&args);
+        assert_eq!(r.code, 0, "ein {args:?}:\n{}", r.err);
+        for python in ["KeyError", "bindings: {", "unbound var"] {
+            assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+        }
+    }
+    let r = ein(&["saturate", "--dump", w58]);
+    assert!(r.out.contains("(hit (f a) :rule act)"), "{}", r.out);
+}
+
+/// **A rule that could derive an activator binding a relation parameter to a
+/// fact is refused at load, by every command, with one line** — M1f S1f.5.18,
+/// on the user's ruling of 2026-11-08 on Q-M1f.1 (b).
+///
+/// The two `g14` programs, as refusal fixtures under `examples/broken/load/`
+/// and as W59's witnesses, each on every command that loads a program: exit 1
+/// (`ein test`: 2) and the loader's line, naming the deriving rule, the
+/// activated rule and the parameter. Until S1f.5.18 the first stopped every
+/// command where `r`'s plan was compiled, with the compiler's *the relation
+/// head ?R of (?R b) … is bound to the fact (a b)*, and the second answered.
+/// What loads: the zebra2 fan-out and the stdlib's, which pass a relation's
+/// name on through a rule's parameter and through a marker.
+#[test]
+fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
+    let want = "kb load error: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s \
+                parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an \
+                argument of the declared relation item — a relation is named by a symbol, not a \
+                fact";
+    let scratch = ein_corpus::Scratch::new("ein-derived-activator");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    for file in [
+        "examples/broken/load/derived_activator.ein",
+        "examples/broken/load/derived_activator_never.ein",
+        "examples/ein-bugs/wrong-answers/derived-activator.ein",
+        "examples/ein-bugs/wrong-answers/derived-activator-never.ein",
+    ] {
+        for (args, code) in [
+            (vec!["saturate", "--dump", file], 1),
+            (vec!["solve", file], 1),
+            (vec!["solve", "--minimal", file], 1),
+            (vec!["oracle", file], 1),
+            (vec!["test", file], 2),
+            (vec!["render", "lattice", file], 1),
+            (vec!["render", "kb", file], 1),
+            (vec!["kb", "save", file, &einb], 1),
+        ] {
+            let r = ein(&args);
+            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l.trim() == want),
+                "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            assert!(
+                !r.err.contains("is bound to the fact"),
+                "the compiler's line is back:\n{}",
+                r.err
+            );
+        }
+    }
+    // What loads: zebra2's `co-located-fanout`, whose `?R1` a rule's relation
+    // parameter binds, and the stdlib's `bijective-setup` and `typecheck-setup`,
+    // which read the markers `(bijective ?R)` and `(typecheck-hierarchy ?isa)`.
+    for (args, code) in [
+        (vec!["saturate", "examples/zebra2.ein"], 0),
+        (
+            vec!["test", "tests/stdlib/bijection/01_setup_and_negatives.ein"],
+            0,
+        ),
+    ] {
+        let r = ein(&args);
+        assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
     }
 }
 
@@ -2990,4 +3220,254 @@ fn every_member_of_n_has_its_core_past_the_limit_too() {
         }
     }
     assert_eq!(eager, 15, "past-limit-lines: N's members in nodes.json");
+}
+
+/// **A goal's empty row says whether the goal has a variable** — M1f S1f.5.7
+/// (S-18): *the goal holds: it has no variable* is printed only for a goal
+/// with no variable, `(neq a b)`; a goal whose every variable is an `(absent
+/// …)`'s own binds none, and says so; and a goal whose guard has a free
+/// variable prints a row per value, where it printed *it has no variable*
+/// until S1f.5.7.
+#[test]
+fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
+    let scratch = ein_corpus::Scratch::new("ein-goal-row");
+    let file = scratch.path().join("goal.ein");
+    std::fs::write(
+        &file,
+        "(relation p Node) (relation q Node)\n(p a)\n\
+         (query :goal (neq a b))\n\
+         (query :goal (absent (q ?x)))\n\
+         (query :goal (neq w ?y))\n",
+    )
+    .expect("the program is written");
+    let r = ein(&["solve", &file.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let block = |i: usize| -> String {
+        let start = r
+            .out
+            .find(&format!("query {i} of 3"))
+            .expect("the query's block");
+        let rest = &r.out[start..];
+        let end = rest[1..].find("query ").map_or(rest.len(), |e| e + 1);
+        rest[..end].to_string()
+    };
+    assert!(
+        block(1).contains("the goal holds: it has no variable"),
+        "{}",
+        block(1)
+    );
+    assert!(
+        block(2).contains("the goal holds: it binds no variable"),
+        "{}",
+        block(2)
+    );
+    let third = block(3);
+    assert!(!third.contains("the goal holds"), "{third}");
+    for name in ["Node", "a", "p", "q"] {
+        assert!(third.contains(&format!("?y = {name}")), "{third}");
+    }
+    assert!(!third.contains("?y = w"), "{third}");
+}
+
+/// **An empty `:match` fires, and an empty conclusion asserts nothing, on every
+/// command** — M1f S1f.5.9, on the user's ruling of 2026-11-07 on P1f.5's F12
+/// (*"1 fire; 2 same; 3 reject (and) while it is the same as () and `and`
+/// should have arguments"*).
+///
+/// W31's four witnesses and W34's, each on every command that answers a
+/// program: `()` is the empty conjunction, which is true, so a rule whose
+/// `:match` is `()` fires once at root, or once per activator fact, with only
+/// its parameters bound, and an hrule's proposes its conclusion likewise; and
+/// `:assert ()` concludes nothing. Until S1f.5.9 `()` was a premise over the
+/// parser's synthetic `#empty`, which no fact holds, so each rule never fired
+/// and the hrule proposed nothing, in silence (W31), and `:assert ()` stored a
+/// fact under that head, whose name joined H (W34).
+#[test]
+fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
+    let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
+    // Root's fixpoint, as `ein saturate --dump` lists it.
+    for (file, holds, lacks) in [
+        (w("empty-match-false"), &["(false :rule r)"][..], &[][..]),
+        (w("empty-match-fact"), &["(q b :rule r)", "(q a)"], &[]),
+        (w("empty-match-activator"), &["(hit a :rule r)"], &[]),
+        (w("assert-empty"), &["(q a)"], &["( :rule r)", "#empty"]),
+    ] {
+        let r = ein(&["saturate", "--dump", &file]);
+        assert_eq!(r.code, 0, "{file}:\n{}", r.err);
+        for fact in holds {
+            assert!(
+                r.out.lines().any(|l| l.trim() == *fact),
+                "{file}: no {fact}:\n{}",
+                r.out
+            );
+        }
+        for not in lacks {
+            assert!(!r.out.contains(not), "{file}: {not} is back:\n{}", r.out);
+        }
+    }
+    // R, by describe and by the oracle: the state counts.
+    for (file, states) in [
+        (w("empty-match-false"), "0"),
+        (w("empty-match-fact"), "4"),
+        (w("empty-match-activator"), "2"),
+        (w("empty-match-hrule"), "2"),
+        (w("assert-empty"), "1"),
+    ] {
+        for cmd in ["solve", "oracle"] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, 0, "ein {cmd} {file}:\n{}", r.err);
+            let line = r
+                .out
+                .lines()
+                .find(|l| l.trim_start().starts_with("states (k_s)"))
+                .unwrap_or_else(|| panic!("ein {cmd} {file}: no states line:\n{}", r.out));
+            assert_eq!(
+                line.split_whitespace().nth(2),
+                Some(states),
+                "ein {cmd} {file}: {line}"
+            );
+        }
+    }
+    // The dead root: the empty core, `r` its rule, on every text surface
+    // that prints a core (Q-M1f.48), where until S1f.5.9 none was empty.
+    let empty = format!(
+        "{}, {}",
+        ein_infer::explain::EMPTY_CORE,
+        ein_infer::explain::EMPTY_CORE_GLOSS
+    );
+    let scratch = ein_corpus::Scratch::new("ein-empty-core");
+    let dir = scratch.path();
+    let trace = dir.join("t.md").to_string_lossy().into_owned();
+    let lattice = dir.join("lattice").to_string_lossy().into_owned();
+    let oracle = dir.join("oracle").to_string_lossy().into_owned();
+    let r = ein(&[
+        "solve",
+        &w("empty-match-false"),
+        "--trace",
+        &trace,
+        "--dump-lattice",
+        &lattice,
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let row = |label: &str| -> Option<String> {
+        r.out.lines().find_map(|l| {
+            l.trim_start()
+                .strip_prefix(label)
+                .map(|v| v.trim().to_string())
+        })
+    };
+    assert_eq!(
+        row("unsat core").as_deref(),
+        Some(empty.as_str()),
+        "{}",
+        r.out
+    );
+    assert_eq!(row("refuted by").as_deref(), Some("r"), "{}", r.out);
+    let t = std::fs::read_to_string(&trace).expect("the trace");
+    assert!(t.contains(&format!("Core: {empty}.")), "{t}");
+    assert!(!t.contains("not kept by this route"), "{t}");
+    let n = std::fs::read_to_string(dir.join("lattice/nodes.md")).expect("nodes.md");
+    assert!(n.contains("| core ∅ |"), "{n}");
+    let r = ein(&["oracle", &w("empty-match-false"), "--dump", &oracle]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let md = std::fs::read_to_string(dir.join("oracle/region.md")).expect("region.md");
+    assert!(md.contains("core ∅ by r"), "{md}");
+    // The hrule proposes its conclusion: H is `(q b)`.
+    let r = ein(&["solve", "-H", &w("empty-match-hrule")]);
+    assert!(r.out.lines().any(|l| l.trim() == "(q b)"), "{}", r.out);
+}
+
+/// **A relation parameter that can hold `eq` and heads a form of another arity
+/// is refused at load, by every command, with one line** — M1f S1f.5.9's
+/// T1f.5.9.4, the shape S1f.5.18 found (Q-M1f.46), and a written fact of `eq`
+/// at another arity beside it (Q-M1f.47).
+///
+/// W60's four witnesses and W61's, each on every command that loads a program:
+/// exit 1 (`ein test`: 2), and the loader's line in Ein's words, where until
+/// S1f.5.9 the first stopped every command where the plan was compiled, with
+/// the compiler's arity line in the Python IR's spelling; the second and the
+/// third stopped `ein solve` while `ein saturate` answered; and the fourth and
+/// W61's stored a fact of `eq` at one argument. What loads: the same parameter
+/// heading a form of two arguments, `eq`'s guard (S1f.5.7), and a declared
+/// relation of another arity, which matches nothing, as the pattern written
+/// directly does.
+#[test]
+fn eq_at_another_arity_is_refused_at_load() {
+    let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
+    let tail = "— eq is the relation of equality, which holds between exactly two values";
+    let refused: [(String, String); 5] = [
+        (
+            w("eq-arity-premise"),
+            format!(
+                "rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r \
+                 eq) binds ?R to eq {tail}"
+            ),
+        ),
+        (
+            w("eq-arity-under-commitment"),
+            format!(
+                "rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and ?R can be \
+                 bound to eq by the fact (mark eq), through rule 'mk''s conclusion (r ?f) {tail}"
+            ),
+        ),
+        (
+            w("eq-arity-hrule"),
+            format!(
+                "hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve \
+                 :hrules (h (eq))) binds ?R to eq {tail}"
+            ),
+        ),
+        (
+            w("eq-arity-conclusion"),
+            format!(
+                "rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r \
+                 eq) binds ?R to eq {tail}"
+            ),
+        ),
+        (
+            w("fact-eq-arity"),
+            format!("the fact (eq a) writes eq with 1 argument {tail}"),
+        ),
+    ];
+    let scratch = ein_corpus::Scratch::new("ein-eq-arity");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    for (file, want) in &refused {
+        let want = format!("kb load error: {want}");
+        for (args, code) in [
+            (vec!["saturate", "--dump", file.as_str()], 1),
+            (vec!["solve", file], 1),
+            (vec!["solve", "--minimal", file], 1),
+            (vec!["oracle", file], 1),
+            (vec!["test", file], 2),
+            (vec!["render", "lattice", file], 1),
+            (vec!["render", "kb", file], 1),
+            (vec!["kb", "save", file, &einb], 1),
+        ] {
+            let r = ein(&args);
+            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l.trim() == want),
+                "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            for python in ["CompileError", "SForm(", "takes exactly"] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
+    // What loads: two arguments, the guard; and a declared binary relation
+    // under the same one-argument pattern, which matches nothing.
+    let ok = scratch.path().join("ok.ein");
+    std::fs::write(
+        &ok,
+        "(relation p Node) (relation q Node Node) (relation hit Node)\n\
+         (p a) (q a b)\n\
+         (rule two (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x))\n(two eq)\n\
+         (rule one (?R) :match (?R ?x) :assert (hit ?x))\n(one q)\n",
+    )
+    .expect("writes");
+    let r = ein(&["saturate", "--dump", &ok.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.out.contains("(hit a :rule two)"), "{}", r.out);
+    assert!(!r.out.contains(":rule one"), "{}", r.out);
 }

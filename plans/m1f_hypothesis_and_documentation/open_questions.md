@@ -9,9 +9,9 @@ M1f was created on 2026-08-29 by moving two phases out of
 
 | id | question | state |
 |---|---|---|
-| [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md) |
+| [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md); **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41) |
 | [Q-M1f.2](#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) | the 55 files the grammar refuses that today's parser accepts | **ruled 2026-11-08, (a)**; S1f.5.5 |
-| [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; [S1f.5.0](p1f.5_the_no_owner_items/s1f.5.0_the_known_wrong_answers_filed.md) files W33–W35 |
+| [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; [S1f.5.0](p1f.5_the_no_owner_items/s1f.5.0_the_known_wrong_answers_filed.md) files W33–W35; W33 **fixed 2026-11-09** by S1f.5.18 (T1f.5.18.2), W34 by S1f.5.9 (T1f.5.9.2) and W35 by S1f.5.5's swap (`8c3fe86e`) |
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
 | [Q-M1f.5](#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core) | the alternatives flag moves `refuted by` beside an unmoved core | **ruled 2026-11-08, (a)**: W36, open, owned by F22; S1f.5.15 files it |
 | [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not) | the derived agenda holds the cores; the FIFO boundary does not | **ruled 2026-11-08, (a)** (re-ruled the same day from (b)): plain FIFO, a core is an explanation, F22 makes it canonical; [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) |
@@ -38,9 +38,29 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.27](#q-m1f27--what-program-a-einbs-answer-directory-writes) | what program a `.einb`'s answer directory writes | **defaulted 2026-11-09 (the user's instruction): (a), the program the container stores, as every view of a container reads it**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.5 |
 | [Q-M1f.28](#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer) | is a not-dead node's core written `[]` a wrong answer? | **defaulted 2026-11-09 (the user's instruction): (a), no register row: a spelling, fixed with no answer moving**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
 | [Q-M1f.29](#q-m1f29--a-dead-roots-core-under---count) | a dead root's core under `--count` | **defaulted 2026-11-09 (the user's instruction): (a), `null`, as the question prints no core; documented**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
+| [Q-M1f.30](#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument) | a form that holds a variable, as a guard's argument | **defaulted 2026-11-09 (the user's instruction): refused at load, in a rule and in a goal; a fact that holds no variable is answered**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.31](#q-m1f31--not-eq-x-y-a-stored-negation-or-neq-x-y) | `(not (eq x y))`: a stored negation, or `(neq x y)`? | **defaulted 2026-11-09 (the user's instruction): `(neq x y)`, in every place**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.32](#q-m1f32--an-hrules-eq-or-neq-instance) | an hrule's `eq` or `neq` instance | **defaulted 2026-11-09 (the user's instruction): no hypothesis**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.33](#q-m1f33--a-written-fact-of-eq) | a written fact of `eq` | **defaulted 2026-11-09 (the user's instruction): a conclusion with no premise, checked, never stored**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.34](#q-m1f34--where-a-guards-free-variable-is-bound-beside-an-absent) | where a guard's free variable is bound, beside an `(absent …)` | **defaulted 2026-11-09 (the user's instruction): where it is written, as a relation premise binds**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.35](#q-m1f35--a-goals-absent--whose-row-is-it) | a goal's `(absent …)`: whose row is it? | **defaulted 2026-11-09 (the user's instruction): S1f.5.7's, filed (W56) and fixed in a task of its own**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.5 |
+| [Q-M1f.36](#q-m1f36--what-the-refusal-replaces-which-of-it-is-a-register-row) | what the refusal replaces: which of it is a register row? | **defaulted 2026-11-09 (the user's instruction): a row per way the engine answers today, W57's four**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.37](#q-m1f37--fireerrorunboundvars-last-path-w33s-cause) | `FireError::UnboundVar`'s last path: W33's cause | **defaulted 2026-11-09 (the user's instruction): it stays until S1f.5.18, which retires it; W58 filed, S1f.5.18's**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.38](#q-m1f38--the-refusals-line-its-separator-and-a-disjunction) | the refusal's line: its separator, and a disjunction | **defaulted 2026-11-09 (the user's instruction): ` — `, and the disjuncts that leave the variable unbound named**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.39](#q-m1f39--the-one-corpus-program-the-check-refuses) | the one corpus program the check refuses | **defaulted 2026-11-09 (the user's instruction): `syntax/rule-nary-and-or` rewritten, its answer unmoved**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.40](#q-m1f40--where-the-fuzz-property-lives-and-what-it-reads) | where the fuzz property lives, and what it reads | **defaulted 2026-11-09 (the user's instruction): `fuzz_properties`, over every plan an accepted program compiles**; [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s T1f.5.10.1 |
+| [Q-M1f.41](#q-m1f41--what-can-hold-a-fact-means-for-g-14s-derived-activator) | what *can hold a fact* means, for G-14's derived activator | **defaulted 2026-11-09 (the user's instruction): a declared relation's argument, one inside a fact pattern and one of a relation a parameter names; a marker's argument and a rule's parameter inferred from what the program passes on**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.42](#q-m1f42--a-conclusion-whose-relation-is-a-parameter) | a conclusion whose relation is a parameter | **defaulted 2026-11-09 (the user's instruction): followed into every rule of its arity whose name the program writes as an argument**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.43](#q-m1f43--planactivator_args-once-a-nested-fact-binds) | `Plan::activator_args`, once a nested fact binds | **defaulted 2026-11-09 (the user's instruction): every argument, as values, the compile key's list**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.44](#q-m1f44--what-the-load-time-check-replaces-which-of-it-is-a-register-row) | what the load-time check replaces: which of it is a register row? | **defaulted 2026-11-09 (the user's instruction): a row per way the engine answers today, W59's two**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.45](#q-m1f45--the-and-refusals-line-and-or) | the `(and)` refusal's line, and `(or)` | **defaulted 2026-11-09 (the user's instruction): a note on the parse error naming the rule and the clause, `(or)` given one too**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
+| [Q-M1f.46](#q-m1f46--a-relation-parameter-bound-to-eq-at-another-arity) | a relation parameter bound to `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load wherever a parameter can hold `eq`, read as S1f.5.18 reads relation names, premises and conclusions alike; a row per way the engine answers, W60's four**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
+| [Q-M1f.47](#q-m1f47--a-written-fact-of-eq-at-another-arity) | a written fact of `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load, beside Q-M1f.33's check; W61, this stage's**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
+| [Q-M1f.48](#q-m1f48--how-a-text-surface-writes-the-empty-core) | how a text surface writes the empty core | **defaulted 2026-11-09 (the user's instruction, on the coordinator's note): `∅` on every text surface, where a dead node's core was taken and holds no fact**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2 |
 | [Q-M1f.50](#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag) | where the `heavy_dump` line goes, and which entries carry the flag | **defaulted 2026-11-09 (the user's instruction): (a), 40 000 state files, in the gap above the six `slow` `square-*`; five entries flagged, `features/01_not_and_absent` among them**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.1 |
 | [Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | three more tests whose slow half no CI tier runs | **defaulted 2026-11-09 (the user's instruction): (a), recorded, not scheduled; parked for the phase's close**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
 | [Q-M1f.52](#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve) | the nightly's review bundle and the register's runs that are not a solve | **defaulted 2026-11-09 (the user's instruction): (a), reported, not fixed here; the nightly is red at `utils/review_bundle.py` since `fc53818f`**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
+
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -73,6 +93,10 @@ where compiled; (b) as (a), and the derived shape refused at load by a static ch
 [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s, which stops and shows the
 user any corpus program it would refuse.
 
+**Built 2026-11-09** by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s
+T1f.5.18.3: both `g14` programs are refused at load, one line each, and no corpus program that answers is (W59's two
+rows).
+
 ### Q-M1f.2 — The 55 files the grammar refuses that today's parser accepts
 
 **Raised** 2026-11-08 by S1f.5.5's step 2
@@ -99,6 +123,10 @@ binds as any value does; W34 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_em
 case table it corrects; W35 by S1f.5.5, whose grammar refuses `(absent ())`.
 
 **Ruled 2026-11-08, as recommended.** The user: *"Q3 - as recommended"*.
+
+W33 **fixed 2026-11-09** by S1f.5.18's T1f.5.18.2: an activator binds a parameter to a nested fact as to a name. W34
+the same day by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2, `:assert ()` asserting
+nothing, and W35 by S1f.5.5's swap (`8c3fe86e`), `(absent ())` refused at the parse.
 
 ### Q-M1f.4 — Removing `:priority` moves the facts of cores on seven corpus programs
 
@@ -790,6 +818,388 @@ core either. Root is dead, so its core exists.
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** It moves nothing, and a count's question is *how many*.
 Re-opening it means (b), which moves `--count`'s stdout on those 39 programs.
+
+### Q-M1f.30 — A form that holds a variable, as a guard's argument
+
+**Raised** 2026-11-09 by [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1. The user
+ruled a nested fact answered as a guard's argument (`W24/form-in-guard`, *"yes, keep that default"*): `(eq ?x (f a))`
+compares `?x` with the value `(f a)`, as `(p (f a))` holds it. A form with a variable in it, `(eq ?x (f ?y))`, is a
+pattern, and the ruling's witness writes none. `eq` binds a variable nothing else binds to the other side's value, so
+with `?x` free and `?y` bound it would bind `?x` to `(f v)`, a value a match builds and no store may hold: the matcher
+reads the fact store and cannot add to it, and a register holds only a value the store holds.
+
+- **(a) Refused at load**, in a rule and in a query's goal, one line per form in Ein's spelling: *… and the form (f ?y)
+  holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable*. The
+  same question written as a premise, `(p (f ?y))`, is answered.
+- **(b) Answered where the store holds the value**: a form whose variables are bound is looked up, and `eq` binds a
+  free side to it only when found. A row would go missing where it is not, in silence.
+- **(c) Answered in full**, the matcher allowed to intern a fact it builds: a change to the fact store's lending rule
+  (`Terms`, P1a.7's *nothing interns during a search*).
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) keeps Q-M1e2.18 (i)(a)'s refusal for the one shape the 2026-11-07 ruling did not
+answer, and moves no program: no corpus file writes a form in a guard. (b) answers wrongly where it cannot answer, and
+(c) is a change to the interner's contract outside the stage. `cli_semantics` and `from_ir`'s unit tests hold (a).
+
+### Q-M1f.31 — `(not (eq x y))`: a stored negation, or `(neq x y)`?
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. The grammar takes `(not (eq a b))` wherever a stored negation goes: a
+top-level fact, a premise, a conclusion, a goal and a claim. Until S1f.5.7 each was the relation `not` over the fact
+`(eq a b)`: a premise matched a stored `(not (eq …))` and nothing else, so it never fired, and a fact or a conclusion
+was stored, `(not (eq a a))` too, and killed nothing (W51). `(not (neq …))` is a parse error, `neq` being no name.
+
+- **(a) It is `(neq x y)`**, in every place: `eq`'s facts are computed, and so is the negation of one. A premise and a
+  goal are the `neq` guard, a conclusion is checked as `neq`'s (G-21), a written one is a fact of `neq` (Q-M1f.33),
+  and an hrule's is no hypothesis (Q-M1f.32).
+- **(b) A stored negation**, as until S1f.5.7, with the pair check extended so a stored `(not (eq a a))` is a
+  contradiction; a premise still matches only stored ones.
+- **(c) Refused at load**, with a line naming `(neq …)`.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is the ruling read where it reads: `eq` and `neq` are
+relations of equality and non-equality wherever a relation can be written, and `(not P)` over a relation whose truth
+is computed is computed. (b) keeps one relation with two readings, the defect G-21 named, and (c) is a restriction
+with no logical reason, which the user asked for none of (2026-11-07, G-21). W51's three rows hold (a).
+
+### Q-M1f.32 — An hrule's `eq` or `neq` instance
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. An hrule's `:assert` takes an `eq` or `neq` conclusion, and the hrule
+rung proposed every instance as a hypothesis, which a commitment stored, `(eq a b)` among them (W53).
+
+- **(a) No hypothesis**: a commitment states facts a state stores, and a state stores neither relation, so the rung
+  proposes no instance of either.
+- **(b) A hypothesis checked as a conclusion**: a true one a commitment that adds nothing, a false one a candidate dead
+  alone, which joins N.
+- **(c) Refused at load.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** A commitment that adds nothing, or only `(false)`, is no
+hypothesis about the program's facts; (b) would put a state in R twice over and a member in N that no fact explains,
+and (c) is a restriction the user asked for none of. `W53/hrule-eq` holds (a).
+
+### Q-M1f.33 — A written fact of `eq`
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. A top-level fact's relation may be `eq` (`ein.y`'s `FactHead`), so `(eq
+a w)` loaded, and was stored as an ordinary fact, which no guard reads (W50). `(neq …)` is no fact the grammar takes.
+
+- **(a) A conclusion with no premise**: a true one is not stored, and a false one is `(false)`, written where it
+  stands, so root is a contradiction, `refuted by` `(given)`, as a rule's false conclusion is (G-21).
+- **(b) Refused at load.**
+- **(c) Stored, as until S1f.5.7.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** A fact is a rule with no premise, and G-21 says what a rule's
+false conclusion of `eq` is; (b) is a restriction the user asked for none of, and (c) is the defect, a fact changing a
+relation whose facts are fixed. The grammar's asymmetry, `(eq …)` a fact and `(neq …)` none, stays the grammar's: no
+program writes either, and S1f.5.5's grammar is the phase's final one. `W50/fact-eq-false` and `W51/not-eq-fact` hold
+(a).
+
+### Q-M1f.34 — Where a guard's free variable is bound, beside an `(absent …)`
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. A premise means the same in any order of its conjuncts (the user's ruling
+of 2026-11-07), and an `(absent …)` reads the variables the premises before it bind (S1.21.8): `(and (absent (q ?x))
+(p ?x))` asks whether there is no `q` at all. A guard whose variable nothing in its conjunction binds, `(neq ?x a)`
+with no `(p ?x)`, binds it, ranging over the program's names, so where it binds decides what an `(absent …)` beside it
+reads.
+
+- **(a) Where it is written**, as a relation premise binds: `(and (neq ?x a) (absent (q ?x)))` is *the names other than
+  `a` with no `q`*, and `(and (absent (q ?x)) (neq ?x a))` *the names other than `a`, if there is no `q` at all*. A
+  guard whose variable a relation premise of the conjunction binds waits for it, whatever the order.
+- **(b) Before every `(absent …)`**, so the two read alike: the guard moved, as (a) moves it after a binder.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It reads a binding guard as the relation it is, a premise that
+binds, so the order rule an `(absent …)` already has is the only one; (b) would make a guard bind past an `(absent …)`
+that a relation premise in its place would not. `ein-infer/tests/rule_semantics.rs`'
+`a_binding_guard_binds_where_it_is_written` (T1f.5.7.3) holds both orders.
+
+### Q-M1f.35 — A goal's `(absent …)`: whose row is it?
+
+**Raised** 2026-11-09 by [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.5,
+outside its case. The stage's test of a goal's empty row wrote `(query :goal (absent (q ?x)))` and found the goal
+answered with a `q` in the state. A goal is compiled as a rule's `:match` is, its top-level `(absent …)` lifted out of
+the plan for the closure/world boundary to judge, and `verdict::goal_bindings`, which reads the goal's rows, never
+judges it: `(and (p ?y) (absent (q ?y)))` over `(p a) (p b) (q b)` answers `?y = b`. And a claim cannot list the
+class, `(absent (q a))` being no relation's fact to the loader, as `(neq w a)` was not until T1f.5.7.2. No corpus goal
+writes an `(absent …)`, `forall` or `unknown`. The register's `W56/goal-absent` holds it.
+
+- **(a) S1f.5.7 fixes it**, in a task of its own after the pages (T1f.5.7.6): `goal_bindings` judges each lifted guard
+  against the state, as the boundary does a rule's, and a query's claim may list a goal's `(absent …)` instance, as it
+  lists a guard's. The stage rewrote the goal's evaluation, and the fix moves no corpus program.
+- **(b) The row is filed `open` and deferred** to a stage that owns goals, which P1f.5 has none of.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is the goal evaluation the stage changed, the class the
+stage's own guards made claimable, and a deferred row would have no owner to wait on. `W56/goal-absent` is filed `open`
+by T1f.5.7.5 and fixed by T1f.5.7.6.
+
+### Q-M1f.36 — What the refusal replaces: which of it is a register row?
+
+**Raised** 2026-11-09 by [S1f.5.10](p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md)'s
+T1f.5.10.1. The stage refuses at load a rule or an hrule whose conclusion writes a variable nothing binds (the user's
+ruling of 2026-11-07 on F13). Its step 1 (`build/s1f.5.10/shapes`, `2eb483e0`'s release and debug builds) found four
+ways the engine answers such a program today: root fires the rule, and every command stops at the firing, exit 1,
+*unbound var ?y in :assert — bindings: {'x': 'a'}* (`ein test`: 2, an `ERROR`); only a commitment fires it, and `ein
+saturate` and `ein solve --minimal` answer, exit 0, where describe and `ein oracle` stop; an hrule's template builds no
+fact, and proposes nothing, in silence; and a rule that never fires, an empty `:match` (F12) among them, loads and
+answers. The stage file says its fixture, `examples/ein-bugs/unbound-assert-var.ein`, *needs no register row, since it is
+a regression fixture, not a wrong answer*.
+
+- **(a) A row per way, each `right` the refusal**: W57's four, `assert-var-stops`, `assert-var-under-commitment`,
+  `hrule-assert-var` and `assert-var-never-fires`, `open` and S1f.5.10's, fixed by its T1f.5.10.2. The fixture stays no
+  row: its program is the first row's shape, reached through an `(or …)` arm.
+- **(b) Only the three that answer**: no exit code moves on a stop, 1 → 1 and `ein test`'s 2 → 2, only its line.
+- **(c) No row**, as the stage file says, the fixture and the stage's tests holding the refusal.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The register compares a run that stops (`now.error`) and one
+refused at load (`now.refused`) as two answers (`ein_corpus::register::Now::against`: *an error is no answer at all, so
+it is never the right one*), and W18 filed its stops as rows; the second way is the user's rule that no two commands may
+disagree; and S1f.5.7 filed every move it made. Re-opening it means (b).
+
+### Q-M1f.37 — `FireError::UnboundVar`'s last path: W33's cause
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1, outside its case. Once the loader checks a conclusion's variables, one
+shape still reaches `ein_infer::firing::FireError::UnboundVar`: a value parameter its activator binds to a nested fact,
+read only by the `:assert`. The compiler seeds a parameter from its activator and skips a nested fact (*a nested Fact
+does not bind*), W33's cause, so the parameter reaches the conclusion unbound and the run stops, exit 1. The loader
+cannot refuse it, since a parameter is bound by its activator, and the user ruled on 2026-11-08 that a nested fact binds
+a value parameter as any other value (S1f.5.5's census, *"Q3 - as recommended"*), which is
+[S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s, the next stage on lane 2. The stage
+file's acceptance says *`FireError::UnboundVar` is gone*.
+
+- **(a) It stays until S1f.5.18**, its doc naming the one path, and S1f.5.18 retires it with W33's fix. The shape is a
+  wrong answer, a program the ruling answers that stops, so it is a row, `W58/parameter-nested-assert`, `open` and
+  owned by S1f.5.18, and that acceptance item moves to S1f.5.18.
+- **(b) S1f.5.10 binds the parameter** itself, which is W33's fix and S1f.5.18's step 1, sweep and review.
+- **(c) A loader refusal** of a parameter read only by a conclusion, which would refuse a program the ruling answers.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It keeps each fix with the stage that owns its cause, in the order
+the coordinator set (S1f.5.10, then S1f.5.18), and loses nothing: the stop's line is unchanged until S1f.5.18, and W58
+holds it. Re-opening it means (b).
+
+### Q-M1f.38 — The refusal's line: its separator, and a disjunction
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. The stage file's line reads *rule 'r': its :assert writes ?y, which no
+premise or parameter binds; to conclude it of every object of a type, bind it with a premise such as (is-a ?y T), or of
+every name of the program with (eq ?y ?y)*. The loader joins several lines with `; ` on one stderr line
+(`KbLoadError`), and its other lines separate the finding from the advice with ` — `. And where a top-level `(or …)` is
+one way per disjunct, some disjuncts may bind the variable and others not (`unbound-assert-var.ein`).
+
+- **(a) ` — ` for the stage file's `;`**, and where some disjuncts bind the variable, the line names those that do not:
+  *rule 'fire-3': its :assert writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1
+  ?v3) — to conclude it …*.
+- **(b) The stage file's text verbatim**, its `;` read as a line's end by anyone splitting the loader's report.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The line is the stage file's in every word but the separator, as
+every loader line is one finding, ` — `, and what to write; and a reader of `unbound-assert-var.ein`'s line can see which
+arm to fix.
+
+### Q-M1f.39 — The one corpus program the check refuses
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. Its cross-check of every program of the five roots through `2eb483e0`'s
+build and the prototype's (`build/s1f.5.10/xcheck`, 533 files) moved two: the stage's fixture, and
+`examples/syntax/rule-nary-and-or.ein`, one of the eighteen node-kind fixtures, a parametrised rule with a top-level
+`(or …)` over disjuncts of two arities whose `:assert`, `(quad ?d ?c ?b ?a)`, writes `?c` and `?d`, which the second
+disjunct, `(?rel ?a ?b)`, leaves unbound. No activator is written, so the rule never fires, and the program answers R
+{∅} on every command; the check refuses it.
+
+- **(a) Rewritten**: its `:assert` concludes `(quad ?b ?a ?b ?a)`, which both disjuncts bind. It keeps its node kinds and
+  its answer, R {∅}, and its digests move.
+- **(b) Moved to `examples/broken/load/`**, a load-negative fixture whose `.expected` is the refusal.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** A node-kind fixture exists for the shapes it draws, which a
+rewrite keeps, as S1f.5.5's swap rewrote four `syntax/` fixtures (T1f.5.5.4); the refusal's shapes are W57's witnesses
+and the stage's tests. Re-opening it means (b).
+
+### Q-M1f.40 — Where the fuzz property lives, and what it reads
+
+**Raised** 2026-11-09 by S1f.5.10's T1f.5.10.1. The stage file says *`fuzz_properties` gains the property that no firing
+meets an unbound variable*. `fuzz_properties` is `ein-ir`'s, the frontend fuzzer the nightly runs a million times a seed,
+and a firing is `ein-infer`'s.
+
+- **(a) In `fuzz_properties`, over the plans**: `ein-ir` takes `ein-infer` as a dev-dependency, as `ein-infer` takes
+  `ein-render`, and for every generated program the loader accepts, every plan the compiler builds for its rules and
+  hrules reads, in each conclusion, only registers each disjunct binds, a parameter excepted until S1f.5.18 (W58). It
+  is every firing at once, an hrule's and a rule's that never fires among them, and it holds the loader's reading of
+  what binds to the compiler's.
+- **(b) In `fuzz_properties`, by firing**: each accepted program saturated at root, and no stop; it reaches no hrule and
+  no rule that root does not fire.
+- **(c) In `utils/fuzz_engine.py`**, the engine fuzzer, as a line no run prints; not in the gate or the nightly.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is the stage file's place and the strongest reading of its
+property; the dev-dependency adds no edge to any shipped crate.
+
+### Q-M1f.41 — What *can hold a fact* means, for G-14's derived activator
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. The user's ruling on
+[Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b) refuses at load a program in which some rule
+could derive an activator binding a relation parameter to a fact, `g14/derived-activator-never.ein` among them, although
+no run derives one. The stage file sketches the check: *a position whose values are relation names is one that the
+program uses as a relation (a relation parameter, a `(?R …)` head, or a relation signature's name), and everything else
+can hold a fact*, and it stops if the check refuses a corpus program that answers today, or if no reading both refuses
+the two `g14` programs and keeps the corpus. The census (`build/s1f.5.18/census/`, a prototype loader over the 538
+programs of the five roots, `find examples tests stdlib corpus plans -name '*.ein'`, 2026-11-09) read three ways:
+
+- **(a) The sketch, as written.** Refuses the two `g14` programs and **32 corpus programs that answer today**:
+  `zebra.ein`, the six `zebra2` programs, `domain_elim`'s three, `features/09`, `stdlib/algebra`, `bijection`, `slots`
+  and `typing` loaded alone, and sixteen of `tests/stdlib/`. Each reaches a relation parameter through a fan-out rule
+  that reads a marker relation no rule and no signature names, `(bijective ?R)`, `(bijection-hierarchy ?isa)`,
+  `(slot-partition ?R ?isa ?sub …)`, `(adjacent-via ?S ?R1 ?V1 …)`, and passes the name on, as
+  `bijective-properties` passes `?R` to `functional`.
+- **(b) Typed by declaration, the rest inferred.** An argument of a **declared** relation holds any value of its type, a
+  fact among them (`(relation item Node)`, and `(box (a b))` under `(relation box Node)`), and so do an argument inside a
+  fact pattern, `(p (g ?x))`, and an argument of a relation a parameter names, `(?S ?x)`; every argument of `(relation
+  …)` holds a name. An argument of an **undeclared** relation, a marker such as `(bijective color-loc)`, and a rule's
+  parameter hold what the program does with them: where a variable bound there reaches a relation parameter, the
+  position holds relation names too, inferred to a fixpoint, and a fact or a conclusion that writes a fact there is
+  refused, as W24 refuses one written as a rule's activator. Refuses the two `g14` programs and no corpus program; it
+  infers 20 marker positions over 32 programs, every fan-out the sketch refuses, and checks 851 derived activators'
+  arguments at a relation position.
+- **(c) The flow from the facts**: a position holds a fact only where a fact or a conclusion puts one. Accepts
+  `derived-activator-never.ein`, against the ruling.
+
+**Defaulted 2026-11-09 (the user's instruction): (b).** It is the one reading of the three that refuses both `g14`
+programs and keeps the corpus, the stage file's condition for going on, and it is the sketch with a marker's argument
+read by what the program does with it rather than as a value. `item`'s declaration is what refuses
+`derived-activator-never.ein`: written without `(relation item Node)`, that program would load, and
+`derived-activator.ein` would be refused at its fact `(item (a b))`. A program that declares its marker, `(relation
+mark T)`, is refused for it: one test program in Rust did, and dropped the declaration (S1f.5.18's T1f.5.18.3).
+Re-opening it means (a), with the 32 programs rewritten, or (c), against Q-M1f.1 (b).
+
+### Q-M1f.42 — A conclusion whose relation is a parameter
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. The check of Q-M1f.41 reads a conclusion's relation as written. `(?T ?x)`
+writes into whichever relation its activator names, which no load reads off the conclusion: `(rule copy (?S ?T) :match
+(?S ?x) :assert (?T ?x))` with `(copy src mirror)` and `(src (q A B))` derives `(mirror (q A B))`, and the run stops where
+`mirror`'s plan is compiled (`build/s1f.5.18/shapes/varhead-copy.ein`, `8249e872`).
+
+- **(a) Followed into every rule of the conclusion's arity whose name the program writes as an argument**, in a fact at
+  any depth, a rule's clause or the `(solve …)` form: a rule's name reaches a parameter only from a place the program
+  writes it, and H proposes no rule's name (`varhead-copy-names.ein`: H is ten candidates over the objects `A`, `B` and
+  `a`). Refuses no corpus program: no conclusion written `(?T …)` reaches a rule whose name the program writes as an
+  argument.
+- **(b) Not followed**: the compiler's refusal stays where such a plan is compiled, a stop at run where Q-M1f.1 (b) says
+  a refusal at load, which is a register row with no owner.
+- **(c) Followed through the relation names each parameter can hold**, a flow over the program's names; the precise
+  form of (a).
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is sound for every name a program writes, and moves nothing
+(c) would keep.
+
+### Q-M1f.43 — `Plan::activator_args`, once a nested fact binds
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. With W33's fix a value parameter binds to a nested fact, so `(note edge (src
+X))` and `(note edge (src Y))` compile two plans that bind two values; the compile key and the binding key already tell
+them apart (M1e2 S1e2.2.7, S1e2.2.16). `Plan::activator_args` keeps an activator's symbol arguments only (Q-M1a.8's
+asymmetry), and it is more than a label: the obligations rung's `InstanceKey` (`oblgen`), the region's owed-instance
+lookup (`region.rs`), `detector`'s `RootPlans` and its activator match, and `naf_deps`' key each read it as a plan's
+identity, beside a match's bindings, which hold no seeded register. Two plans the seed tells apart would share it.
+
+- **(a) Every argument, as values, the compile key's list**: each identity follows its plan, and the `enqueue`, `fire`
+  and `owe` events and the static checks' `[activator …]` name the nested fact, `"activator": ["(f a)"]` where they
+  printed `[]`.
+- **(b) Symbols only, and each identity keyed on the seed beside it.**
+- **(c) Symbols only, unchanged.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** One list for a plan's activator everywhere, which closes the
+asymmetry Q-M1a.8 named, and moves the narration and the labels of a program whose activator holds a nested fact only;
+(c) leaves five identities that collapse two plans the stage makes different.
+
+### Q-M1f.44 — What the load-time check replaces: which of it is a register row?
+
+**Raised** 2026-11-09 by [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1. Q-M1f.1 (b)'s check refuses at load two ways the engine answers today: a
+derived activator binds a relation parameter to a fact, and the run stops where its plan is compiled
+(`g14/derived-activator.ein`); or no run derives it, and the program answers (`g14/derived-activator-never.ein`, 64
+states).
+
+- **(a) A row per way, each `right` the refusal**: W59's two, `derived-activator` and `derived-activator-never`, `open`
+  and S1f.5.18's, witnesses the two `g14` probes with `:why`s added, fixed by T1f.5.18.3; the stage file's refusal
+  fixtures under `examples/broken/load/` banked by T1f.5.18.3 as well.
+- **(b) No row**, the fixtures and the stage's tests holding the refusal.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is [Q-M1f.36](#q-m1f36--what-the-refusal-replaces-which-of-it-is-a-register-row)'s
+reading: a stop and a refusal are two answers, and so are an answer and a refusal.
+
+### Q-M1f.45 — The `(and)` refusal's line, and `(or)`
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1. The user ruled on F12 that `(and)` stays refused, `and` taking
+arguments and `()` being the one spelling of the empty conjunction, and the stage file asks for a line that says so,
+naming the rule and the clause. Since S1f.5.5's swap the grammar refuses `(and)` (`ein.y`'s `Premises` and
+`Conclusions` take one or more), before the loader reads the rule, with *unexpected `)`* and its repairs; `(or)` is
+refused the same way, and the ruling says nothing of it.
+
+- **(a) A note on the parse error** (`ein_ir::grammar`'s notes, as S1f.5.1's `_` and S1f.5.2's string carry one),
+  naming the rule or the form and the clause, `rule 'r''s :match writes (and), the empty conjunction, whose one
+  spelling is () — and takes one premise or more`; `(or)` gets one too, `or takes one disjunct or more`, which reads
+  no meaning into the empty disjunction.
+- **(b) The same for `(and)` alone**, `(or)` keeping the bare parse error.
+- **(c) A loader line**, the grammar accepting `(and)` again so the loader can name the rule.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The grammar is the phase's final one and refuses the shape
+already, so the line is the parse error's, and a note is how that error says what a ruling says (S1f.5.1, S1f.5.2);
+(b) leaves the twin shape unexplained; (c) undoes a refusal the grammar holds.
+
+### Q-M1f.46 — A relation parameter bound to `eq` at another arity
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1, from the shape S1f.5.18 found and left unfiled: `(rule r (?R)
+:match (?R ?x) …)` with `(r eq)` loads, and the run stops where the activator's plan is compiled, M1e S1e.2.1's arity
+check (`eq` is the relation of equality between two values, S1f.5.7). The stage's probes (`build/s1f.5.9/case/`,
+`ee3da657`) find four ways the engine answers it: a written activator stops every command at root; an activator a
+rule derives only under a commitment stops `ein solve` where `ein saturate` answers; an hrule's `(solve :hrules (h
+(eq)))` activator stops `ein solve` where `ein saturate` answers; and a conclusion `(?R ?x)` stores `(eq a)`. The same
+pattern through a declared relation of another arity, `(r q)` with `q` binary, matches nothing and loads, as `(q ?x)`
+written directly does, matching being arity-coupled.
+
+- **(a) Refused at load wherever a parameter can hold `eq`**, read as S1f.5.18's check reads relation names
+  (`refuse_derived_relation_activators`): a position that holds relation names can hold `eq` where a fact, a
+  conclusion or a `(solve :hrules …)` activator writes it there, where a conclusion writes a variable its `:match`
+  binds only at positions that can, or only with an `eq` or `neq` guard while `eq` is a name the program writes, to a
+  fixpoint; each premise or conclusion such a parameter heads whose arity is not 2 is one line. A row per way the
+  engine answers today, W60's four (Q-M1f.36's reading); the declared relation of another arity no row.
+- **(b) Refused at load where the activator is written down** (`(r eq)`, `(solve :hrules (h (eq)))`), and a derived
+  activator left `open`, owned by the P1f.5 close, a stop at run.
+- **(c) Answered**: `(eq ?x)` matches nothing and concludes nothing.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** S1f.5.18's ruling (Q-M1f.1 (b)) refuses a derived activator
+a static check can see, whether or not a run derives it, and this check is that one's, over the same flow; (b) keeps a
+pair of commands disagreeing on the commitment and hrule witnesses, which the user's *one tool, consistent answers*
+forbids; and (c) gives `eq` a reading at one argument that the grammar refuses where `(eq ?x)` is written.
+
+### Q-M1f.47 — A written fact of `eq` at another arity
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1, beside Q-M1f.46. A top-level fact may be headed `eq` (`ein.y`'s
+`FactHead`), and Q-M1f.33 reads a written fact of `eq`, or of `(not (eq …))`, as a conclusion with no premise, checked
+and never stored; but the check reads two arguments only, so `(eq a)`, `(eq)`, `(eq a a a)` and `(not (eq a))` load and
+are stored as ordinary facts (`build/s1f.5.9/case/eqfact/`, `ee3da657`).
+
+- **(a) Refused at load**, one line per fact, beside Q-M1f.33's check (`from_ir::ingest_fact`), as the grammar refuses
+  `(eq ?x)` as a premise and a conclusion; a nested `(box (eq a))` stays a value, as `(box (eq a b))` is.
+- **(b) Refused at the parse**, `FactHead` taking `eq` with two arguments only.
+- **(c) Stored, as today**, left `open` and owned by the P1f.5 close.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is W60's conclusion row written as a fact, and Q-M1f.33 made
+the loader the place that reads a written `eq` fact; (b) changes the grammar's fact production and its negation's for a
+shape no program writes, which the loader's line reaches as well; (c) leaves a fact of a relation whose facts are
+computed stored. One row, `W61/fact-eq-arity`, this stage's.
+
+### Q-M1f.48 — How a text surface writes the empty core
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2, on the
+coordinator's note of that day (S1f.5.8 landed on `master` as `c4708638`). Once `:match ()` fires, `(rule r () :match ()
+:assert (false))` makes root dead with the core `[]`, the empty set, the first in Ein (Q-M1e2.27: `[]` is a core that
+exists and holds no fact). Every JSON surface writes it `[]` beside `core_status: "within-budget"` and `refuted_by:
+["r"]`. The text surfaces were written before a core could be empty, and print a core only where it holds a fact:
+`ein solve`'s read-out prints one `unsat core` row per fact, so none; `--trace`'s N prints *Core: not kept by this
+route.*, which is false, the core having been taken; and `region.md`'s and `nodes.md`'s *why* columns and `ein render
+region`'s tooltips and table print nothing, which reads as *no core*.
+
+- **(a) `∅` on every text surface, where a dead node's core was taken and holds no fact**, the read-out's spelling of
+  the empty set already (*∅, root itself*): the read-out's `unsat core ∅, the empty set: the refutation rests on no
+  fact`, and `--trace`'s `Core: ∅, …` with the same words; `core ∅` in `nodes.md`, `core ∅ by r` in `region.md` and
+  `ein render region`'s table, `core: ∅` in its tooltips, and a minimal hole's `dead: ∅` (`explain::core_text`,
+  `EMPTY_CORE`). A core not taken prints as it did.
+- **(b) The word `none`**, or *no fact*, in the same places.
+- **(c) The read-out and the trace alone**, the dumps and the views left to print nothing.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** `∅` is the read-out's word for the empty set, so the text and
+the JSON's `[]` say one thing; `none` reads as *no core*, the very confusion Q-M1e2.27 separated `[]` from `null` to
+avoid; and (c) leaves views that read as *no core* where a core was taken. The trace's false sentence goes in the
+commit that makes the empty core reachable, so no tree prints it.
 
 ### Q-M1f.50 — Where the `heavy_dump` line goes, and which entries carry the flag
 

@@ -121,6 +121,12 @@ impl Hrules {
             if !matches!(template, Slot::Nested { .. }) {
                 continue;
             }
+            // An `eq` / `neq` instance is no hypothesis: a commitment states a
+            // fact a state stores, and a state stores neither, whose facts are
+            // computed (M1f S1f.5.7, Q-M1e2.26; Q-M1f.32, taken by default).
+            if crate::firing::computed(s.terms, plan, template).is_some() {
+                continue;
+            }
             debug_assert!(
                 !reads_negation(plan, s.terms),
                 "an hrule reads `not`, which hypgen's kill cache writes \
@@ -139,10 +145,15 @@ impl Hrules {
                 };
                 match build_fact(s.terms, s.ast, plan, env, template) {
                     Ok(fact) => f(s, fact)?,
-                    // `UnboundVar` / `NotAFact` — a malformed template yields
-                    // no candidate. An `Overflow` is not that, but it is
-                    // unreachable here for the same reason it is elsewhere:
-                    // the interner holds 2^30 rows.
+                    // `NotAFact` — a malformed template yields no candidate.
+                    // No template reads a variable nothing binds since M1f
+                    // S1f.5.10: the loader refuses one no premise or
+                    // parameter binds, and S1f.5.18 retired the error it
+                    // stopped with, `FireError::UnboundVar`. Until S1f.5.10 a
+                    // template that wrote one proposed nothing, in silence
+                    // (`W57/hrule-assert-var`). An `Overflow` is not that,
+                    // but it is unreachable here for the same reason it is
+                    // elsewhere: the interner holds 2^30 rows.
                     Err(_) => continue,
                 }
             }
