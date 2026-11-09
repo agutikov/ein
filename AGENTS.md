@@ -1034,8 +1034,9 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **thirty-one scripts** (`ls utils/*.py utils/*.sh | wc -l`,
-  2026-11-08), **all but one driving `ein.rs`**.
+- **`utils/`** — **thirty-two scripts** (`ls utils/*.py utils/*.sh | wc -l`,
+  2026-11-10; the thirty-second, `nl_census.py`, is M1f S1f.5.14's: how much of
+  what Ein answers reads as English), **all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
   wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,

@@ -63,6 +63,8 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.53](#q-m1f53--how-the-per-commit-gate-catches-a-register-row-the-bundle-cannot-read) | how the per-commit gate catches a register row the bundle cannot read | **defaulted 2026-11-09 (the user's instruction): (b), the smoke builds a command case and reads every register row with no run**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
 | [Q-M1f.54](#q-m1f54--the-2026-11-06-inventorys-evidence-in-buildreview) | the 2026-11-06 inventory's evidence in `build/review/` | **defaulted 2026-11-09 (the user's instruction): (b), moved intact to `build/inventory-2026-11-06/`, and `build/review/` rebuilt**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
 | [Q-M1f.55](#q-m1f55--a-container-on-a-solves-now) | a `container` on a solve's `now` | **defaulted 2026-11-09 (the user's instruction): (a), the case page runs the container, as `wrong_answers.rs` does**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
+| [Q-M1f.56](#q-m1f56--what-the-nl-census-counts-which-fact-set-and-which-registers) | what the NL census counts: which fact set, and which registers | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every fact of every state file, and four registers, puzzle, stdlib, kernel and undeclared**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.57](#q-m1f57--which-fixtures-get-a-why) | which fixtures get a `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every file the loader reads, on the form's last line in a refused fixture; a file refused at the parse and the records under `plans/` and `docs/history/` are left**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1353,3 +1355,32 @@ the `.ein`, and said *this build re-ran it*.
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** The page then shows the run the register holds, and every
 command the run drives takes a container since S1f.5.5's T13 and S1f.5.12's W43.
+
+### Q-M1f.56 — What the NL census counts: which fact set, and which registers
+
+**Raised** 2026-11-10 by [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md)'s T1f.5.14.1. The stage file
+names `--json-summary`'s `verdict.solutions[i].facts`, which M1e2's switch removed, and three registers (puzzle,
+stdlib-derived, kernel), where its acceptance asks for "the four registers".
+
+- **(a) The whole state**: every fact of every state file `ein solve FILE --dump-answer DIR` writes, root's facts
+  included, the set [Q-M1e.7](../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+  is about; and four registers, the stage's three and **undeclared** (a relation written or derived and never
+  declared, and no rule's), the small set T1f.5.14.3 says the census prints.
+- **(b) The listed projection**: `region.states[i].facts`, the facts over H's relations the read-out prints (25 on
+  `zebra2`), every one of them a puzzle relation's.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** It is the set the stage's 444-fact number was
+about, and (b) has no register to split. `utils/nl_census.py`'s docstring states it.
+
+### Q-M1f.57 — Which fixtures get a `:why`
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.7.
+
+- **(a) Every file the loader reads**, a fixture refused at load among them, each `:why` on its form's last line so no
+  line or column a refusal prints moves; a fixture refused at the parse is left as it is, since the parse refusal
+  stops before the loader reads a `:why`; and the `.ein` files under `plans/` and `docs/history/`, records no test
+  loads, are left too.
+- **(b) Every `.ein` file**, those refused at the parse and the records included.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** A `:why` in a file refused at the parse is
+read by nothing and moves the positions its refusal prints; a record is not edited.

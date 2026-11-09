@@ -4,7 +4,9 @@
 **Was S1f.5.5**, until 2026-11-08, when P1e2.5's thirteen stages joined the phase ahead of it ([§ The ids](README.md#the-ids)).
 **Estimate:** 4 days
 **Status:** specified 2026-08-28; **T1f.5.14.6, the loader flag, done 2026-11-08, ahead of the phase** (the user:
-*"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); the rest not started. **Ruled and placed on 2026-11-08**
+*"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); **running since 2026-11-10**, the
+phase's last stage, on default decisions recorded as they are taken (the user's instruction of 2026-11-09): T1, the
+census, done ([its record](#t1f5141-record-2026-11-10)). **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -253,6 +255,48 @@ them"* is.
 [TE-L4](../../../docs/history/m1e_review_processing/README.md#the-findings), a `--check` wired to no gate is a check
 nobody runs, so the gate is T5's cargo test and this is the measurement it is
 a yes/no of.
+
+#### T1f.5.14.1 record, 2026-11-10
+
+**The census is `utils/nl_census.py`**, the thirty-second script, in two halves, both running the binary
+(`$EIN_BIN` or `--bin`). The fact set and the registers are
+[Q-M1f.56](../open_questions.md#q-m1f56--what-the-nl-census-counts-which-fact-set-and-which-registers), taken by
+default on the user's instruction of 2026-11-09: the stage file named `--json-summary`'s `verdict.solutions[i].facts`,
+which M1e2's switch removed, so the census reads every fact of every state file `ein solve FILE --dump-answer DIR`
+writes, the whole state the 444-fact number was about; and its registers are the stage's three and **undeclared**, a
+relation written or derived and never declared, and no rule's, the small set § T3 says the census prints. Each
+fact's provenance is read off its state-file comment and its templates off the program the file re-writes above it,
+so the numbers are the same before T2 ships the English and after.
+
+**The flag, re-taken** (`python3 utils/nl_census.py --flag-only`, 2026-11-10, at `b7108e3a`): of the 454 `.ein` files
+under the four roots, 341 load and 113 do not load either way (`examples/broken/`, the parse-refused witnesses, the
+fuzz findings refused at the parse); with a `:why` required, **238 are refused** (207 of `examples/`' 260 that load,
+24 of `tests/`' 67, 7 of `corpus/`' 7) and none of `stdlib/`' 7, naming **726 relations, 166 rules and 64 hrules**,
+and no macro. On 2026-11-08 it was 274 of 339, 806, 198 and 68: S1f.5.5's swap moved 25 refusal fixtures to
+`examples/broken/`, where they do not load, and the lane merged since added files. Lexically (the T6 scan, every
+top-level form, refused files included, over the four roots and `docs/`) 313 of 455 files lack one on 866 relations, 216 rules, 67 hrules and 5
+macros; 53 of those files are refused at the parse, which [Q-M1f.57](../open_questions.md#q-m1f57--which-fixtures-get-a-why)
+leaves as they are, and the rest, 259 files and 995 forms, are T7's.
+
+**The answer, re-taken** (`python3 utils/nl_census.py --slow`, 2026-11-10, at `b7108e3a`): 405 entries with a `solve`
+run, 211 of them answered with a state file (194 have none: a refusal, exit 1, on 131, and an empty or owing R on
+63), 12 934 states and 239 359 facts. **0.9 % of the facts have a statement, 44.7 % a reason, 44.9 % render**; 20
+entries render every fact, and the mean entry renders 33.3 %. The fallbacks by register:
+
+| register | facts | fallback |
+|---|---:|---:|
+| puzzle | 146 941 | 130 650 |
+| stdlib | 5 275 | 555 |
+| kernel | 86 377 | 35 |
+| undeclared | 766 | 540 |
+
+The puzzle's fallbacks are its untemplated declarations, `is-a` (78 361) and `co-located` (30 703) the most, which a
+`:why` on each declaration moves; the kernel's are few because a `not` is derived, and reads by its rule's reason;
+the stdlib's and the undeclared ones are given activators, `(bijective color-loc)`, `(symmetric next-to)`, which no
+declaration can reach (§ T3). On `examples/zebra2.ein`'s one state, 426 facts: **5.9 % have a statement** (the
+stage's 5 %, re-taken), 88.5 % a reason, 88.7 % render, and its 48 fallbacks are 37 `is-a`, 5 `bijective`, 2
+`includes` and one each of `symmetric`, `transitive`, `bijection-hierarchy` and `typecheck-hierarchy`. On
+`examples/zebra.ein`'s, 606 facts: 20.5 %, 92.7 % and 99.0 %.
 
 ### Task T1f.5.14.2 — Fact-level rendering from provenance
 
