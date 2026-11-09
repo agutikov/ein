@@ -298,13 +298,19 @@ impl Drop for Modules {
 fn declaration(decl: &str, name: &str) -> String {
     let body = match decl {
         "rule" | "hrule" => {
-            format!("({decl} {name} ()\n  :match (p ?x)\n  :assert (q ?x)\n  :why \"d\")")
+            format!(
+                "({decl} {name} ()\n  :match (p ?x)\n  :assert (q ?x)\n  :why \"p holds of {{?x}}, so q is taken to hold of {{?x}}\")"
+            )
         }
-        "relation" => format!("(relation {name} T)"),
-        "macro" => format!("(macro {name} (?x) (p ?x))"),
+        "relation" => format!(
+            "(relation {name} T :why \"the relation this module declares holds of {{?1}}\")"
+        ),
+        "macro" => format!("(macro {name} (?x) (p ?x) :why \"p holds of {{?x}}\")"),
         other => unreachable!("{other}"),
     };
-    format!("(relation p T)\n(relation q T)\n{body}\n")
+    format!(
+        "(relation p T :why \"p holds of {{?1}}\")\n(relation q T :why \"q holds of {{?1}}\")\n{body}\n"
+    )
 }
 
 /// **A declarator may not bind a reserved name, by whichever route it

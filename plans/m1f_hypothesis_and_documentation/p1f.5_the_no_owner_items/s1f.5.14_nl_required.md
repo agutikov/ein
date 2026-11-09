@@ -10,7 +10,8 @@ census, done ([its record](#t1f5141-record-2026-11-10)); T2, a fact in English f
 in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)); T3 and T4,
 the three forms with nowhere to put a template decided and the page written, done
 ([T3](#t1f5143-record-2026-11-10), [T4](#t1f5144-record-2026-11-10)); T5, the two checks banked, the first with 66
-findings, each fixed, done ([its record](#t1f5145-record-2026-11-10)). **Ruled and placed on 2026-11-08**
+findings, each fixed, done ([its record](#t1f5145-record-2026-11-10)); T7's part 1, every missing `:why` written,
+done ([its record](#t1f5147-record-2026-11-10)). **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -661,6 +662,70 @@ per rule and relation and moves with what this task writes. Every golden it move
 
 **Each `:why` says what its form says.** None is a placeholder such as *"rule fired"*: that is § T4's argument
 for refusing (d), which the user overrode, and it stands as this task's risk.
+
+#### T1f.5.14.7 record, 2026-11-10
+
+**Part 1, every missing `:why` written** (`T1f.5.14.7 — part 1`), with the requirement still off, so the commit moves
+only what the texts move. Each `:why` was written by reading its program — its header, its facts, its rules, its
+query — by helpers each given a disjoint set of files and the stage's rules (each says what its form says in English;
+a relation's positional, a rule's over what it binds; a made-up name said structurally, `"p holds of {?1}"`, and given
+no meaning it does not have; never a placeholder; strings natural language only), working on copies; every file they
+touched was reviewed here, held to `whycheck` (the T5 check's rules, lexically) and loaded with `--require-why`, and
+fixtures with a twin or a copy were given the same words.
+
+| where | relation | rule | hrule | macro | files |
+|---|---:|---:|---:|---:|---:|
+| `examples/` | 673 | 154 | 58 | 3 | 228 |
+| `tests/` | 62 | 10 | 6 | 0 | 24 |
+| `corpus/` | 19 | 9 | 1 | 0 | 7 |
+| the Rust suites' inline programs | 605 | 245 | 40 | 13 | 43 |
+| the doc pages' code blocks | 32 forms | | | | 9 |
+| **all** | 1 359 | 418 | 105 | 16 | |
+
+- **Line-locked** ([Q-M1f.57](../open_questions.md#q-m1f57--which-fixtures-get-a-why)): under `examples/ein-bugs/` and
+  `examples/broken/`, and every file refused at load, each `:why` sits on its form's last line, so no line or column a
+  refusal or a register row prints moves; each refused fixture is refused with the line it was before, and with
+  `--require-why` with no other. A file refused at the parse is left (53, 156 forms), and so are the records under
+  `plans/` and `docs/history/`. In the Rust suites a program the parse refuses, or one only parsed, is left; a program
+  a test expects refused for another reason got its `:why`s, so its refusal stays the only line.
+- **Placeholders replaced** (Q-M1f.64): six in the corpus, `"a"`, `"b"` (`broken/load/hrule_duplicate_name`), `"w"`
+  (`macro_arity_mismatch`), `"u"` (`unimported_std_macro`), `"forall"` (`syntax/rule-forall-and-not`), `"guarded"`
+  (`syntax/rule-guards`); and 74 in the Rust suites' loaded programs, single letters and bare words (`"g"`, `"note"`,
+  `"sib"`, `"fn"`, `"first"` …, `naf_semantics.rs` and `explain_semantics.rs` the most), with a relation's `{?a}` that
+  should have been `{?1}` (`rule_semantics.rs`). Placeholders in programs nothing loads (the grammar's round-trip
+  fixtures) are left. Terse but true ones (`"{?rel} sym"`) are left.
+- **Comments made false and fixed**: `zebra2.ein`'s *relations with no `:why` render as their raw IR s-expression*,
+  and its four generated variants (`examples/gen_zebra2_variants.py --check`, up to date).
+- **Copies made the same**: `corpus/fuzz_findings/{d3-unsat-core,fork-delta-order,unsat-core-id-space,binding-key-layout*}`
+  read as their `examples/ein-bugs/` siblings; `naf-nowb` as `naf-upward-closure`; the `kw-*` twins as their witnesses,
+  but for the renamed name. The fuzz findings' notes (`corpus/fuzz_findings/*.md`) quote the program the fuzzer
+  generated then, and are left as that record.
+- **Generators** ([Q-M1f.63](../open_questions.md#q-m1f63--what-each-program-generator-does-about-why)):
+  `utils/fuzz_engine.py` writes a `:why` on every form, a rule's its clauses in words (*"fire-3 concludes … from …"*),
+  where it wrote *"fire-N fired"*, the placeholder the stage forbids, on 40 % of rules, keeping the random draw so a
+  seed generates the program it did, and its minimiser no longer drops a conjunction inside a string;
+  `utils/region_synth.py` writes its four relations' (its examples under `examples/lattice/synth/` regenerate
+  byte for byte, `--check`); `utils/guard_split.py` its cells' relations, marks and candidate hrules, each cell it
+  kept loading with `--require-why`; the Rust suites' generators (`detector.rs`, `compile_limits.rs`' wide rule,
+  `match_alloc.rs`' chain, `imports_semantics.rs`' declaration) likewise. `fuzz_properties` keeps its draws.
+- **Goldens moved, named before they were blessed** (`EIN_BLESS=1`): `corpus_shapes.md5` (the frontend ops, `load`,
+  `plan`, `region-trace` and `states` digests of every migrated file); `zebra2.golden` (four relation lines);
+  `fuzz_seeds.txt` (the six corpus fuzz findings' parses); four trace goldens, each *Derives* line of a templated
+  relation gaining its statement (`trace_ambiguous`, `trace_one-hypothesis`, `trace_two-level`, `trace_unconditional`);
+  one assertion, `explain_semantics.rs`' FIFO test's two parse columns (`4:56` → `4:85`, `5:56` → `5:86`), where a
+  `:why` sits before the `:priority` the test refuses; and `model_set_report.rs`' fixture prefix, which read
+  `branching/06`'s untemplated declaration. `ein-ir/tests/load_semantics.rs`' corpus sweep, whose floor asked that
+  the flag both refuse a program and let one through, now asks that it refuse none, as the T6 record said it would.
+  No R, N, H, claim, exit code or register row moved.
+- **The census after** (`python3 utils/nl_census.py --slow`, 2026-11-10, on this commit's tree): with a `:why`
+  required the loader refuses **none** of the 341 loadable programs. Over the same 211 answered entries and 239 359
+  facts, **54.4 % have a statement, 45.6 % a reason, 94.4 % render**, where 0.9 %, 44.7 % and 44.9 % did; 104 of the
+  203 entries with a fact render every one, where 20 did, and the mean entry 87.9 %, where 34.6 %. The fallbacks:
+  puzzle 12 239 (11 677 of them `type-exclusivity`, a puzzle rule's activator the program states and cannot
+  declare), stdlib 555, kernel 33, undeclared 540. **`zebra2`'s state**, 426 facts: **41.5 % statement, 88.5 %
+  reason, 97.4 % rendered**, where 5.9 %, 88.5 % and 88.7 %: its eleven fallbacks are the given activators of
+  `std.*` rules, `(bijective …)` five times, `(includes …)` twice, `(symmetric next-to)`, `(transitive is-a*)`,
+  `(bijection-hierarchy …)` and `(typecheck-hierarchy …)`, which no form can carry a `:why` for (T3).
 
 ## Risks
 

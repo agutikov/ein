@@ -153,7 +153,7 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
         format!(
             r#"
             (import std.macro :symbols (forall))
-            (relation player T) (relation beats T T) (relation undefeated T)
+            (relation player T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}") (relation undefeated T :why "{{?1}} is undefeated")
             (rule lone-undefeated ()
               :match  (and (player ?p)
                            (forall ?q (and (player ?q) (neq ?p ?q))
@@ -200,7 +200,7 @@ fn the_forall_bound_variable_does_not_escape_the_guard() {
         format!(
             r#"
             (import std.macro :symbols (forall))
-            (relation player T) (relation beats T T) (relation all-beaten T T)
+            (relation player T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}") (relation all-beaten T T :why "{{?1}} has beaten every other player")
             (rule all-beaten ()
               :match  (and (player ?p)
                            (forall ?q (and (player ?q) (neq ?p ?q))
@@ -262,11 +262,11 @@ fn a_forall_whose_bound_var_is_absent_from_its_guard_still_compiles() {
         format!(
             r#"
             (import std.macro :symbols (forall))
-            (relation player T) (relation whatever T) (relation oops T)
+            (relation player T :why "{{?1}} is a player") (relation whatever T :why "whatever holds of {{?1}}") (relation oops T :why "oops: bad-rule's malformed forall held")
             (rule bad-rule ()
               :match  (forall ?v (player ?other) (whatever ?v))
               :assert (oops)
-              :why    "?v is not bound by (player ?other)")
+              :why    "its malformed forall over player and whatever holds, so oops holds")
             (player Alice)
             {extra}
             "#
@@ -304,7 +304,7 @@ fn a_forall_whose_bound_var_is_absent_from_its_guard_still_compiles() {
 fn a_repeated_variable_is_an_equality_constraint() {
     let run = saturate(
         r#"
-        (relation r T T) (relation self-loop T)
+        (relation r T T :why "r holds of {?1} and {?2}") (relation self-loop T :why "{?1} has a self-loop")
         (rule self (?rel)
           :match  (?rel ?a ?a)
           :assert (self-loop ?a)
@@ -346,11 +346,11 @@ fn not_in_a_premise_is_stored_negation_not_negation_as_failure() {
     let see_neg = |evidence: &str| {
         format!(
             r#"
-            (relation r T T) (relation other T T) (relation saw-neg T T)
+            (relation r T T :why "r holds of {{?1}} and {{?2}}") (relation other T T :why "other holds of {{?1}} and {{?2}}") (relation saw-neg T T :why "a stored negation of other was seen for {{?1}} and {{?2}}")
             (rule see-neg (?rl)
               :match  (and (?rl ?a ?b) (not (other ?a ?b)))
               :assert (saw-neg ?a ?b)
-              :why    "a stored negative was seen")
+              :why    "{{?rl}} holds of {{?a}} and {{?b}} and other is stored false of them, so a negation was seen")
             (see-neg r)
             (r X Y)
             {evidence}
@@ -391,7 +391,7 @@ fn not_in_a_premise_is_stored_negation_not_negation_as_failure() {
 fn a_nested_pattern_binds_inside_the_nested_fact() {
     let run = saturate(
         r#"
-        (relation co-located T T) (relation hypothesis T) (relation caught T T)
+        (relation co-located T T :why "{?1} and {?2} are co-located") (relation hypothesis T :why "{?1} is a hypothesis") (relation caught T T :why "the trap caught {?1} and {?2}")
         (rule trap ()
           :match  (hypothesis (co-located ?a ?b))
           :assert (caught ?a ?b)
@@ -436,7 +436,7 @@ fn a_parameterised_rule_may_multi_assert() {
           :match  (and (?rel ?a ?x) (slot ?y) (neq ?x ?y))
           :assert (and (?rel ?a ?x) (not (?rel ?a ?y)))
           :why    "{?a} is {?x} via {?rel}, so not {?y}")
-        (relation color-loc Color House) (relation slot T)
+        (relation color-loc Color House :why "{?2} is painted {?1}") (relation slot T :why "{?1} is a slot")
         (place-and-exclude color-loc)
         (color-loc Red House-1)
         (slot House-2)
@@ -478,7 +478,7 @@ fn a_parameterised_rule_may_multi_assert() {
 fn every_disjunct_emits_every_template() {
     let run = saturate(
         r#"
-        (relation a T) (relation b T) (relation p T) (relation q T)
+        (relation a T :why "a holds of {?1}") (relation b T :why "b holds of {?1}") (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}")
         (rule x ()
           :match  (or (a ?n) (b ?n))
           :assert (and (p ?n) (q ?n))
@@ -536,7 +536,7 @@ fn every_disjunct_emits_every_template() {
 fn eq_admits_exactly_the_bindings_neq_rejects() {
     let run = saturate(
         r#"
-        (relation p T) (relation q T) (relation same T T) (relation diff T T)
+        (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}") (relation same T T :why "{?1} and {?2} are the same") (relation diff T T :why "{?1} and {?2} differ")
         (rule same-pair ()
           :match  (and (p ?a) (q ?b) (eq ?a ?b))
           :assert (same ?a ?b)
@@ -589,8 +589,8 @@ fn eq_admits_exactly_the_bindings_neq_rejects() {
 fn a_guard_argument_may_be_a_literal() {
     let run = saturate(
         r#"
-        (relation color T) (relation is-red T)
-        (relation n T) (relation is-five T)
+        (relation color T :why "{?1} is a colour") (relation is-red T :why "{?1} is red")
+        (relation n T :why "n holds of {?1}") (relation is-five T :why "{?1} is five")
         (rule red ()
           :match  (and (color ?x) (eq ?x Red))
           :assert (is-red ?x)
@@ -636,7 +636,7 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
               :assert (?q ?a ?b)
               :why    "{{?p}} implies {{?q}}"
 )
-            (relation co-located T T) (relation next-to T T) (relation right-of T T)
+            (relation co-located T T :why "{{?1}} and {{?2}} are co-located") (relation next-to T T :why "{{?1}} is next to {{?2}}") (relation right-of T T :why "{{?1}} is right of {{?2}}")
             {activator}
             (right-of A B)
             "#
@@ -710,8 +710,8 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
 fn activators_differing_only_by_an_int_argument_both_fire() {
     let run = saturate(
         r#"
-        (relation edge   Node Node)
-        (relation tagged Node Label)
+        (relation edge   Node Node :why "there is an edge from {?1} to {?2}")
+        (relation tagged Node Label :why "{?1} is tagged {?2}")
         (rule tag (?R ?n)
           :match  (?R ?a ?b)
           :assert (tagged ?a ?n)
@@ -773,12 +773,12 @@ fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
     let program = |activators: &str| {
         format!(
             r#"
-            (relation edge  Node Node)
-            (relation noted Node)
+            (relation edge  Node Node :why "there is an edge from {{?1}} to {{?2}}")
+            (relation noted Node :why "{{?1}} is noted")
             (rule note (?R ?f)
               :match  (?R ?a ?b)
               :assert (noted ?a)
-              :why    "note")
+              :why    "{{?R}} holds of {{?a}} and {{?b}}, so {{?a}} is noted")
             (edge A B)
             {activators}
             "#
@@ -848,13 +848,13 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
     let program = |activators: &str| {
         format!(
             r#"
-            (relation edge  Node Node)
-            (relation holds Node)
-            (relation noted Node Node)
+            (relation edge  Node Node :why "there is an edge from {{?1}} to {{?2}}")
+            (relation holds Node :why "{{?1}} holds")
+            (relation noted Node Node :why "{{?1}} is noted with {{?2}}")
             (rule note (?R ?f)
               :match  (and (?R ?a ?b) (holds ?f))
               :assert (noted ?a ?f)
-              :why    "note")
+              :why    "{{?R}} holds of {{?a}} and {{?b}} and {{?f}} holds, so {{?a}} is noted with {{?f}}")
             (edge 1 2) (edge 2 3)
             (holds 1)  (holds 3)  (holds (src Y))
             {activators}
@@ -920,13 +920,13 @@ fn an_int_and_a_string_with_one_text_are_two_activators() {
     let program = |holds: &str, activators: &str| {
         format!(
             r#"
-            (relation edge  Node Node)
-            (relation holds Node)
-            (relation noted Node Node)
+            (relation edge  Node Node :why "there is an edge from {{?1}} to {{?2}}")
+            (relation holds Node :why "{{?1}} holds")
+            (relation noted Node Node :why "{{?1}} is noted with {{?2}}")
             (rule note (?R ?f)
               :match  (and (?R ?a ?b) (holds ?f))
               :assert (noted ?a ?f)
-              :why    "note")
+              :why    "{{?R}} holds of {{?a}} and {{?b}} and {{?f}} holds, so {{?a}} is noted with {{?f}}")
             (edge 1 2) (edge 2 3)
             (holds 1)  {holds}
             {activators}
@@ -998,11 +998,11 @@ fn a_string_in_a_rule_means_what_it_means_in_a_fact() {
         let s = |text: &str| format!("{q}{text}{q}");
         format!(
             r#"
-            (relation holds Node) (relation hit Node) (relation tag Node Node)
+            (relation holds Node :why "{{?1}} holds") (relation hit Node :why "hit holds of {{?1}}") (relation tag Node Node :why "{{?1}} is tagged {{?2}}")
             (holds 1) (holds a) (holds {b})
-            (rule s () :match (holds {one}) :assert (hit s))
-            (rule t () :match (holds b)   :assert (hit t))
-            (rule l () :match (holds ?x) :assert (and (tag ?x {lbl}) (tag ?x (hit {lbl}))))
+            (rule s () :match (holds {one}) :assert (hit s) :why "1 holds, so hit holds of s")
+            (rule t () :match (holds b)   :assert (hit t) :why "b holds, so hit holds of t")
+            (rule l () :match (holds ?x) :assert (and (tag ?x {lbl}) (tag ?x (hit {lbl}))) :why "{{?x}} holds, so {{?x}} is tagged lbl and (hit lbl)")
             "#,
             b = s("b"),
             one = s("1"),
@@ -1065,10 +1065,10 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
         "{refused}"
     );
     let fresh = saturate(
-        "(relation holds T) (relation pair T T) (relation hit T)
+        "(relation holds T :why \"{?1} holds\") (relation pair T T :why \"{?1} and {?2} are a pair\") (relation hit T :why \"hit holds of {?1}\")
          (holds a) (pair a b) (pair c d)
-         (rule w () :match (holds ?x) :assert (hit w))
-         (rule v () :match (pair ?x ?y) :assert (hit v))",
+         (rule w () :match (holds ?x) :assert (hit w) :why \"{?x} holds, so hit holds of w\")
+         (rule v () :match (pair ?x ?y) :assert (hit v) :why \"{?x} and {?y} are a pair, so hit holds of v\")",
     );
     assert_eq!(
         fresh.derived(),
@@ -1099,9 +1099,9 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
 /// re-derived it. `written` stores its own fact either way.
 #[test]
 fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
-    let text = "(relation q Node :why \"{?a} is a node\")\n(q a)\n\
-         (rule empty-form () :match (q ?x) :assert () :why \"nothing, for {?x}\")\n\
-         (rule written () :match (q ?x) :assert (@empty) :why \"@empty, for {?x}\")\n";
+    let text = "(relation q Node :why \"q holds of {?1}\")\n(q a)\n\
+         (rule empty-form () :match (q ?x) :assert () :why \"q holds of {?x}, and the empty conclusion asserts nothing\")\n\
+         (rule written () :match (q ?x) :assert (@empty) :why \"q holds of {?x}, so @empty holds\")\n";
     let mut ast = Ast::new();
     let forms =
         ein_ir::grammar::parse(&mut ast, text, Some("<fixture>")).expect("the generated parser");
@@ -1147,9 +1147,9 @@ fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
 #[test]
 fn an_empty_match_fires_once_or_once_per_activator() {
     let run = saturate(
-        "(relation q Node) (relation hit Node)\n(q a)\n\
-         (rule once () :match () :assert (q b))\n\
-         (rule each (?x) :match () :assert (hit ?x))\n(each a) (each c)\n",
+        "(relation q Node :why \"q holds of {?1}\") (relation hit Node :why \"hit holds of {?1}\")\n(q a)\n\
+         (rule once () :match () :assert (q b) :why \"with nothing to match, q holds of b\")\n\
+         (rule each (?x) :match () :assert (hit ?x) :why \"each names {?x}, so hit holds of {?x}\")\n(each a) (each c)\n",
     );
     let fired = |rule: &str| {
         run.productive()
@@ -1196,12 +1196,12 @@ fn an_empty_match_fires_once_or_once_per_activator() {
 fn a_premise_means_the_same_in_any_order_of_its_conjuncts() {
     let run = saturate(
         r#"
-        (relation p T) (relation e1 T) (relation e2 T) (relation n1 T) (relation n2 T)
+        (relation p T :why "p holds of {?1}") (relation e1 T :why "e1 holds of {?1}") (relation e2 T :why "e2 holds of {?1}") (relation n1 T :why "n1 holds of {?1}") (relation n2 T :why "n2 holds of {?1}")
         (p a) (p b) (p (f a))
-        (rule eq-first () :match (and (eq ?x a) (p ?x)) :assert (e1 ?x))
-        (rule eq-last () :match (and (p ?x) (eq ?x a)) :assert (e2 ?x))
-        (rule neq-first () :match (and (neq ?x a) (p ?x)) :assert (n1 ?x))
-        (rule neq-last () :match (and (p ?x) (neq ?x a)) :assert (n2 ?x))
+        (rule eq-first () :match (and (eq ?x a) (p ?x)) :assert (e1 ?x) :why "{?x} is a and p holds of it, so e1 holds of {?x}")
+        (rule eq-last () :match (and (p ?x) (eq ?x a)) :assert (e2 ?x) :why "p holds of {?x}, which is a, so e2 holds of {?x}")
+        (rule neq-first () :match (and (neq ?x a) (p ?x)) :assert (n1 ?x) :why "{?x} is not a and p holds of it, so n1 holds of {?x}")
+        (rule neq-last () :match (and (p ?x) (neq ?x a)) :assert (n2 ?x) :why "p holds of {?x}, which is not a, so n2 holds of {?x}")
         "#,
     );
     let of = |rel: &str| -> BTreeSet<String> {
@@ -1228,10 +1228,10 @@ fn a_premise_means_the_same_in_any_order_of_its_conjuncts() {
 fn a_guards_free_variable_ranges_over_the_programs_names() {
     let run = saturate(
         r#"
-        (relation q T) (relation same T T) (relation apart T T)
+        (relation q T :why "q holds of {?1}") (relation same T T :why "{?1} and {?2} are the same") (relation apart T T :why "{?1} and {?2} are apart")
         (q b) (q (box c))
-        (rule pair-same () :match (and (q ?y) (eq ?x ?y)) :assert (same ?x ?y))
-        (rule pair-apart () :match (and (q ?y) (neq ?x ?y)) :assert (apart ?x ?y))
+        (rule pair-same () :match (and (q ?y) (eq ?x ?y)) :assert (same ?x ?y) :why "q holds of {?y} and {?x} equals it, so they are the same")
+        (rule pair-apart () :match (and (q ?y) (neq ?x ?y)) :assert (apart ?x ?y) :why "q holds of {?y} and {?x} is any other name, so they are apart")
         "#,
     );
     let derived = run.derived();
@@ -1275,10 +1275,10 @@ fn a_guards_free_variable_ranges_over_the_programs_names() {
 fn a_binding_guard_binds_where_it_is_written() {
     let run = saturate(
         r#"
-        (relation p T) (relation q T) (relation first T) (relation last T)
+        (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}") (relation first T :why "first holds of {?1}") (relation last T :why "last holds of {?1}")
         (p a) (p b) (q b)
-        (rule guard-first () :match (and (neq ?x a) (absent (q ?x))) :assert (first ?x))
-        (rule guard-last () :match (and (absent (q ?x)) (neq ?x a)) :assert (last ?x))
+        (rule guard-first () :match (and (neq ?x a) (absent (q ?x))) :assert (first ?x) :why "{?x} is not a and q does not hold of it, so first holds of {?x}")
+        (rule guard-last () :match (and (absent (q ?x)) (neq ?x a)) :assert (last ?x) :why "q holds of nothing and {?x} is not a, so last holds of {?x}")
         "#,
     );
     let derived = run.derived();
@@ -1306,10 +1306,10 @@ fn a_binding_guard_binds_where_it_is_written() {
 fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
     let run = saturate(
         r#"
-        (relation p T) (relation apart T T) (relation in T T T)
+        (relation p T :why "p holds of {?1}") (relation apart T T :why "{?1} and {?2} are apart") (relation in T T T :why "{?1} holds of {?2} and {?3}")
         (p a) (p b)
-        (rule not-eq () :match (and (p ?x) (p ?y) (not (eq ?x ?y))) :assert (apart ?x ?y))
-        (rule within (?R) :match (and (p ?x) (p ?y) (?R ?x ?y)) :assert (in ?R ?x ?y))
+        (rule not-eq () :match (and (p ?x) (p ?y) (not (eq ?x ?y))) :assert (apart ?x ?y) :why "p holds of {?x} and of {?y}, which are not equal, so they are apart")
+        (rule within (?R) :match (and (p ?x) (p ?y) (?R ?x ?y)) :assert (in ?R ?x ?y) :why "p holds of {?x} and of {?y}, and {?R} holds of them, so in records it")
         (within eq)
         "#,
     );
@@ -1339,10 +1339,10 @@ fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
 fn an_eq_or_neq_conclusion_is_checked_never_stored() {
     let holds = saturate(
         r#"
-        (relation p T) (relation hit T)
+        (relation p T :why "p holds of {?1}") (relation hit T :why "hit holds of {?1}")
         (p a) (p b)
-        (rule apart () :match (and (p ?x) (p ?y) (neq ?x ?y)) :assert (and (neq ?x ?y) (hit ?x)))
-        (rule same () :match (p ?x) :assert (eq ?x ?x))
+        (rule apart () :match (and (p ?x) (p ?y) (neq ?x ?y)) :assert (and (neq ?x ?y) (hit ?x)) :why "p holds of {?x} and of {?y}, which differ, so hit holds of {?x}")
+        (rule same () :match (p ?x) :assert (eq ?x ?x) :why "p holds of {?x}, so {?x} equals itself")
         "#,
     );
     let facts = holds.facts();
@@ -1371,7 +1371,7 @@ fn an_eq_or_neq_conclusion_is_checked_never_stored() {
         ("(not (eq ?x ?x))", "(p a)"),
     ] {
         let run = saturate(&format!(
-            "(relation p T)\n(p a)\n(rule r () :match (p ?x) :assert {conclusion})\n"
+            "(relation p T :why \"p holds of {{?1}}\")\n(p a)\n(rule r () :match (p ?x) :assert {conclusion} :why \"p holds of {{?x}}, so {conclusion} with ?x = {{?x}}, which cannot hold\")\n"
         ));
         let falses: Vec<&Firing> = run
             .productive()
@@ -1412,7 +1412,9 @@ fn a_written_eq_fact_is_checked_never_stored() {
         ("(eq a w)", true),
         ("(not (eq a a))", true),
     ] {
-        let run = saturate(&format!("(relation p T)\n(p a)\n{fact}\n"));
+        let run = saturate(&format!(
+            "(relation p T :why \"p holds of {{?1}}\")\n(p a)\n{fact}\n"
+        ));
         let facts = run.facts();
         assert!(
             !facts

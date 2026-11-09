@@ -36,7 +36,7 @@
 ;;; that answer; the section above is the record of the one it replaced.
 
 ;; An empty conclusion: F12's fifth row says it adds nothing.
-(relation q Node)
+(relation q Node :why "q holds of {?1}")
 (q a)
-(rule r () :match (q ?x) :assert ())
+(rule r () :match (q ?x) :assert () :why "q holds of {?x}, and the empty conclusion asserts nothing")
 (query :goal (q ?x))

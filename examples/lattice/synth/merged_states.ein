@@ -20,10 +20,10 @@
 ;;; region-spec: {"name":"merged_states","about":"Q-M1e2.7 (e): saturation moves nodes. A brings B and C brings D, so a\ncommitment and its closure are one state; R is everything holding A or C\nand not both, so its minimal line {A}, {C} is two transient nodes whose\nsaturation lands on {A,B} and {C,D}.","candidates":"ABCDE","implies":[["A","B"],["C","D"]],"R":[["A","ABDE"],["C","BCDE"]],"owing":[["","BDE"]]}
 ;;; region-status: oRoRRxRxoRoRRxRxoRoRRxRxoRoRRxRx
 
-(relation h T)
-(relation slot T)
-(relation world T)
-(relation need T T)
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)

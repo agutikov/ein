@@ -106,8 +106,8 @@
   :assert (false)
   :why    "{?R} not functional")
 
-(relation is-a       T T)
-(relation co-located Color House)
+(relation is-a       T T         :why "{?1} is a {?2}")
+(relation co-located Color House :why "{?1} is co-located with {?2}")
 
 (symmetric         co-located)
 (transitive        co-located)

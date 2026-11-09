@@ -30,10 +30,10 @@
 ;;; explains a contradiction's sides together, and N's core is `(p a) (q a)`,
 ;;; in either build.
 
-(relation p T) (relation q T)
+(relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}")
 
 (p a)
 
-(hrule g () :match (p ?x) :assert (q ?x))
+(hrule g () :match (p ?x) :assert (q ?x) :why "p holds of {?x}: guess that q holds of {?x} too")
 
-(rule neg () :match (q ?x) :assert (not (p ?x)))
+(rule neg () :match (q ?x) :assert (not (p ?x)) :why "q holds of {?x}, so p does not hold of {?x}")

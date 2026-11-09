@@ -52,8 +52,8 @@ fn saturated(text: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Vec<Arc<Plan>
 #[test]
 fn an_absent_read_is_a_stratum_and_a_self_read_is_a_negative_cycle() {
     let (kb, terms, plans) = saturated(
-        "(relation p T) (relation q T) (p a)
-         (rule g () :match (and (p ?x) (absent (q ?x))) :assert (q ?x))",
+        "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (p a)
+         (rule g () :match (and (p ?x) (absent (q ?x))) :assert (q ?x) :why \"p holds of {?x} and q does not, so q holds of {?x}\")",
         None,
     )
     .expect("saturates");
@@ -63,9 +63,9 @@ fn an_absent_read_is_a_stratum_and_a_self_read_is_a_negative_cycle() {
     assert!(g.cycles[0].odd);
 
     let (kb, terms, plans) = saturated(
-        "(relation p T) (relation q T) (relation r T) (relation s T) (p a)
-         (rule one () :match (p ?x) :assert (s ?x))
-         (rule g () :match (and (s ?x) (absent (q ?x))) :assert (r ?x))",
+        "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (relation s T :why \"s holds of {?1}\") (p a)
+         (rule one () :match (p ?x) :assert (s ?x) :why \"p holds of {?x}, so s holds of {?x}\")
+         (rule g () :match (and (s ?x) (absent (q ?x))) :assert (r ?x) :why \"s holds of {?x} and q does not, so r holds of {?x}\")",
         None,
     )
     .expect("saturates");

@@ -23,7 +23,7 @@
   :assert (not ?h)
   :why    "Assumed {?h}; contradicted. Therefore (not {?h}).")
 
-(relation next-to T T)
+(relation next-to T T :why "{?1} is next to {?2}")
 
 (hypothesis (next-to X Y))
 (contradiction-under (next-to X Y))

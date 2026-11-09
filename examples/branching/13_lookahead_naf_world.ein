@@ -50,9 +50,9 @@
 ;; reads relations, not matches. Deleting the rule keeps R, three states (M1e2
 ;; S1e2.4.1 § 2.1), and leaves a file about nothing.
 
-(relation ok      T)
-(relation blessed T)
-(relation cand    T)
+(relation ok      T :why "{?1} is ok")
+(relation blessed T :why "{?1} is blessed")
+(relation cand    T :why "{?1} is a candidate")
 
 (rule promote ()
   :match  (and (ok ?x) (blessed ?x))

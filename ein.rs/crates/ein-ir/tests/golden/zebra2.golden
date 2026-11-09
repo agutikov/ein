@@ -113,9 +113,9 @@
   :assert (?R ?a ?b)
   :why "guess: ({?R} {?a} {?b})?")
 
-(relation is-a T T)
+(relation is-a T T :why "{?1} is a {?2}")
 
-(relation is-a* T T)
+(relation is-a* T T :why "{?1} is a {?2} (transitively)")
 
 (relation color-loc Color House :why "{?2} is painted {?1}")
 
@@ -127,9 +127,9 @@
 
 (relation pet-loc Pet House :why "the {?1} is kept in {?2}")
 
-(relation right-of House House)
+(relation right-of House House :why "{?1} is immediately right of {?2}")
 
-(relation next-to House House)
+(relation next-to House House :why "{?1} is next to {?2}")
 
 (includes is-a is-a*)
 

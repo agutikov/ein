@@ -28,6 +28,6 @@
 ;;; answer above by hand. The register's `now` is that answer; the section
 ;;; above is the record of the one it replaced.
 
-(relation q Node) (relation p Node)
+(relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}")
 (q a)
-(rule r () :match () :assert (q b))
+(rule r () :match () :assert (q b) :why "the rule has no premise, so q holds of b")

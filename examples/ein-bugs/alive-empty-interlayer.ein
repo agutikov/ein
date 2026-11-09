@@ -43,9 +43,9 @@
 ;; claim went. Deleting `totality` keeps those four states and is monotone
 ;; (M1e2 S1e2.4.1 § 2.1).
 
-(relation is-a T T)
-(relation p T)
-(relation bad T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation p T :why "p holds of {?1}")
+(relation bad T :why "{?1} is bad")
 
 (is-a A T) (is-a B T) (is-a Z T)
 
@@ -55,21 +55,21 @@
 ;; and it survives into the layer as an entering. Z sorts last, so its
 ;; entering is the layer's last and the two survivors are entered against a
 ;; root that has not grown yet.
-(rule taint () :match (p Z)   :assert (bad Z))
-(rule kill  () :match (bad Z) :assert (false))
+(rule taint () :match (p Z)   :assert (bad Z) :why "p holds of Z, so Z is bad")
+(rule kill  () :match (bad Z) :assert (false) :why "Z is bad, which cannot be")
 
 ;; Once Z is refuted, nothing may have p — ONE step from any (p ?x), which is
 ;; what empties `alive` on the recompute.
 (rule mutex ()
   :match  (and (not (p Z)) (p ?x))
-  :assert (false))
+  :assert (false) :why "p is false of Z, so it may hold of nothing, yet it holds of {?x}")
 
 ;; Totality as a saturation refutation: something must have p. Dormant at
 ;; phase 1 (no negative yet) and dormant in every fork entered before the
 ;; writeback landed — so the two live branches are genuinely alive.
 (rule totality ()
   :match  (and (not (p Z)) (absent (p A)) (absent (p B)))
-  :assert (false))
+  :assert (false) :why "p is false of Z and holds of neither A nor B, yet something must have p")
 
 (query
   :goal   (p ?x))

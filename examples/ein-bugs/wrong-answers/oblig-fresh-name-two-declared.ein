@@ -11,9 +11,9 @@
 ;;; twelve candidates, and R is twelve states, `(likes Ann Bob)` and `(likes
 ;;; Bob Ann)` free, which the `:expect` below states and its witness answers.
 
-(relation person T)
-(relation food   T)
-(relation likes  T T)
+(relation person T :why "{?1} is a person")
+(relation food   T :why "{?1} is a food")
+(relation likes  T T :why "{?1} likes {?2}")
 
 (person Ann)
 (person Bob)

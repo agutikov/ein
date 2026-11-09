@@ -4,6 +4,6 @@
 ;; owe, so a region that also lists states of R contradicts itself, and the
 ;; loader says so before anything runs.
 
-(relation p T)
+(relation p T :why "p holds of {?1}")
 (p A)
 (solve :expect (region (model (p A)) (owing (model))))

@@ -23,6 +23,6 @@
 ;;; parse error, so `answer_round_trip.rs` and `answer_dump.rs` name this file
 ;;; until S1f.5.7 fixes W30.
 
-(relation p Node)
+(relation p Node :why "p holds of {?1}")
 (p a)
-(rule r () :match (p ?x) :assert (neq ?x ?x))
+(rule r () :match (p ?x) :assert (neq ?x ?x) :why "p holds of {?x}, so {?x} differs from itself, which cannot be")

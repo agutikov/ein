@@ -392,7 +392,7 @@ sugar over the canonical form (b).
 (relation is-a (A B) (transitive asymmetric sibling-exclusive))
 
 ;; (b) declaration + separate property-application facts (M1 form)
-(relation is-a T T)
+(relation is-a T T :why "{?1} is a {?2}")
 (transitive        is-a)
 (asymmetric        is-a)
 (sibling-exclusive is-a)

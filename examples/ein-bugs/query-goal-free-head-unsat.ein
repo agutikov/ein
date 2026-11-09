@@ -16,7 +16,7 @@
 
 (rule boom ()
   :match  (is-a ?x T)
-  :assert (false))
+  :assert (false) :why "{?x} is a T, which nothing may be")
 
 (query
   :goal (?R a b))

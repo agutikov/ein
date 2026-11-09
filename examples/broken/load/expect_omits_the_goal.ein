@@ -5,8 +5,8 @@
 ;; …))`. Until the switch this was M1c's rule 1, *the goal's relations are
 ;; mandatory*, and the same file was refused for naming `q` and not `p`.
 
-(relation p Thing Place)
-(relation q Thing Place)
+(relation p Thing Place :why "p holds of {?1} and {?2}")
+(relation q Thing Place :why "q holds of {?1} and {?2}")
 (p A H1)
 (q A H1)
 (query :goal (p A ?h) :expect (model (q A H1)))

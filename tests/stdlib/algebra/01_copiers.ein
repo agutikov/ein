@@ -36,15 +36,15 @@
 
 (import std.algebra :symbols (converse imply1 imply2-fwd imply2-reverse includes))
 
-(relation instance    Thing Type)
+(relation instance    Thing Type  :why "{?1} is a {?2}")
 (relation p           Node Node  :why "{?1} points at {?2}")
-(relation p-conv      Node Node)   ; = p°, by `converse`
-(relation p-rev       Node Node)   ; = p°, by `imply2-reverse` — the same body
-(relation p-fwd       Node Node)   ; ⊇ p, by `imply2-fwd`
-(relation p-inc       Node Node)   ; ⊇ p, by `includes` — the same body
-(relation p-untouched Node Node)   ; an operand of nothing: the scope claim
-(relation marked      Node)        ; 1-arg, for `imply1`
-(relation flagged     Node)
+(relation p-conv      Node Node  :why "{?1} is pointed at by {?2} (the converse of p)")   ; = p°, by `converse`
+(relation p-rev       Node Node  :why "{?1} is pointed at by {?2} (p reversed)")   ; = p°, by `imply2-reverse` — the same body
+(relation p-fwd       Node Node  :why "{?1} points at {?2} (p copied forward)")   ; ⊇ p, by `imply2-fwd`
+(relation p-inc       Node Node  :why "{?1} points at {?2} (p included)")   ; ⊇ p, by `includes` — the same body
+(relation p-untouched Node Node  :why "{?1} points at {?2}, untouched by any copier")   ; an operand of nothing: the scope claim
+(relation marked      Node  :why "{?1} is marked")        ; 1-arg, for `imply1`
+(relation flagged     Node  :why "{?1} is flagged")
 
 (instance A Node) (instance B Node)
 

@@ -17,7 +17,7 @@
 
 (import std.algebra :symbols (connex))
 
-(relation instance Thing Type)
+(relation instance Thing Type :why "{?1} is a {?2}")
 (relation lt       Node Node :why "{?1} comes before {?2}")
 
 (instance A Node) (instance B Node) (instance C Node)

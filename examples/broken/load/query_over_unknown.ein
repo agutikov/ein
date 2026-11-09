@@ -2,6 +2,6 @@
 ;; `all` (the default), `minimal` or `maximal`, and nothing else. A component,
 ;; or any other subset, is not a value (`region_language.md` § 9, question 6).
 
-(relation p Thing Place)
+(relation p Thing Place :why "p holds of {?1} and {?2}")
 (p A H1)
 (query :goal (p A ?h) :over best :expect (model (p A H1)))

@@ -33,13 +33,13 @@
 ;;; `(absent (x a))`, which no site reads, and no rule on its derivation is
 ;;; an activator site.
 
-(relation seed T) (relation p T) (relation p2 T) (relation q2 T) (relation x T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q2 T :why "q2 holds of {?1}") (relation x T :why "x holds of {?1}")
 
 (seed a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
 
-(rule mk2 ()    :match (p2 ?x) :assert (q2 ?x))
-(rule q2  (?n)  :match (seed ?n) :assert (x ?n))
-(rule chk ()    :match (and (p ?y) (absent (x ?y))) :assert (false))
+(rule mk2 ()    :match (p2 ?x) :assert (q2 ?x) :why "p2 holds of {?x}, so q2 holds of {?x}, switching rule q2 on for it")
+(rule q2  (?n)  :match (seed ?n) :assert (x ?n) :why "q2 holds of the seed {?n}, so x holds of it")
+(rule chk ()    :match (and (p ?y) (absent (x ?y))) :assert (false) :why "p holds of {?y} and x does not, which cannot be")

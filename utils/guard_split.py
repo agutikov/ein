@@ -156,6 +156,12 @@ def atom_text(a: Atom) -> str:
     return ser(atom_form(a))
 
 
+def why_of(words: str, arity: int) -> str:
+    """A relation's `:why` naming each of its `arity` places, as a string token."""
+    places = " and ".join(f"{{?{j + 1}}}" for j in range(arity))
+    return f'"{words} {places}"' if arity else f'"{words} nothing"'
+
+
 def key_label(label: str) -> Key:
     if label == "(not ?)":
         raise Unsupported("a wildcard negative `(not ?x)` is a site")
@@ -316,22 +322,27 @@ class Split:
             form, _ = self.prog.rule_form(rule)
             arity = len(form[2])
             if rule not in declared and arity:
-                out.append(["relation", rule] + ["T"] * arity)
+                # Every declaration carries a `:why` since M1f S1f.5.14's
+                # T1f.5.14.7 (Q-M1f.63): what the form says, mechanically.
+                out.append(["relation", rule] + ["T"] * arity + [":why", why_of(f"rule {rule} is switched on for", arity)])
             args_all = self.given_activators(rule) + sorted(
                 args for (neg, rel), args in act_present if rel == rule)
             for args in args_all:
                 out.append(self.rewritten(self.copy(rule, args)))
-        out.append(["relation", "gs-world", "T"])
+        out.append(["relation", "gs-world", "T", ":why", '"{?1} is the cell\'s world"'])
         out.append(["gs-world", "W"])
-        out.append(["relation", "gs-need", "T", "T"])
+        out.append(["relation", "gs-need", "T", "T", ":why", '"the guess owes {?1}, which {?2} pays"'])
         for key in sorted(self.all_keys()):
             arity = self.arity(key)
-            out.append(["relation", gs_name(key)] + ["T"] * arity)
+            what = f"(not {key[1]})" if key[0] else key[1]
+            out.append(["relation", gs_name(key)] + ["T"] * arity
+                       + [":why", why_of(f"{what}, as given or as the guess calls it present, holds of", arity)])
             for a in sorted(gs.get(key, ())):
                 out.append([gs_name(key)] + list(a[1]))
         if hrules:
             for i, c in enumerate(self.prog.candidates, 1):
-                out.append(["hrule", f"gs-cand-{i}", [], ":match", ["gs-world", "W"], ":assert", parse(c)[0]])
+                out.append(["hrule", f"gs-cand-{i}", [], ":match", ["gs-world", "W"], ":assert", parse(c)[0],
+                            ":why", f'"guess the candidate {c}"'])
         return out + extra
 
     def rewritten(self, form: list) -> list:
@@ -426,11 +437,12 @@ def consistency(guards: list[Atom], gamma: int) -> list[list]:
     rule derives from the guard fact: an obligation's witness has to be a
     positive fact with a variable of its own, and a guard can be a stored
     negative."""
-    out: list[list] = [["relation", "gs-seen", "T"]]
+    out: list[list] = [["relation", "gs-seen", "T", ":why", '"the guessed fact marked {?1} is seen"']]
     for i, a in enumerate(guards):
         if gamma >> i & 1:
             out.append(["gs-need", f"K{i}", f"M{i}"])
-            out.append(["rule", f"gs-mark-{i}", [], ":match", atom_form(a), ":assert", ["gs-seen", f"M{i}"]])
+            out.append(["rule", f"gs-mark-{i}", [], ":match", atom_form(a), ":assert", ["gs-seen", f"M{i}"],
+                        ":why", f'"{atom_text(a)} holds, so its marker M{i} is seen"'])
             out.append(["rule", f"gs-owe-{i}", [], ":match",
                         ["and", ["gs-world", "?w"],
                          ["absent", ["and", ["gs-need", f"K{i}", "?k"], ["gs-seen", "?k"]]]],

@@ -27,6 +27,6 @@
 ;;; boundary `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on
 ;;; Q-M1e2.17), and the program answers its twin's R.
 
-(relation p Node) (relation box Node)
+(relation p Node :why "p holds of {?1}") (relation box Node :why "{?1} is in a box")
 (p a)
 (box (neqw a))

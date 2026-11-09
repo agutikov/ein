@@ -29,6 +29,6 @@
 ;;; `(neq w a)` is a parse error, so `answer_round_trip.rs` and
 ;;; `answer_dump.rs` name this file until S1f.5.7 fixes W30.
 
-(relation p Node)
+(relation p Node :why "p holds of {?1}")
 (p a)
-(rule r () :match (p ?x) :assert (neq w ?x))
+(rule r () :match (p ?x) :assert (neq w ?x) :why "p holds of {?x}, so w and {?x} differ")

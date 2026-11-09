@@ -32,7 +32,7 @@
 ;;; binds it to the fact (a b) — a relation is named by a symbol, not a
 ;;; fact*.
 
-(relation box Node) (relation c Node) (relation hit Node) (relation a Node) (relation rel Node) (relation item Node)
+(relation box Node :why "{?1} is in a box") (relation c Node :why "c holds of {?1}") (relation hit Node :why "{?1} is hit") (relation a Node :why "a holds of {?1}") (relation rel Node :why "rel holds of {?1}") (relation item Node :why "{?1} is an item")
 (box (a b)) (box (c (a b))) (not (a b)) (rel a) (item i)
-(rule r (?R) :match (box (?R b)) :assert (hit z))
+(rule r (?R) :match (box (?R b)) :assert (hit z) :why "({?R} b) is in a box, so z is hit")
 (r (a b))

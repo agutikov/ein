@@ -29,6 +29,6 @@
 ;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 
-(relation p Node) (relation neqw Node) (relation hit Node)
+(relation p Node :why "p holds of {?1}") (relation neqw Node :why "neqw holds of {?1}") (relation hit Node :why "{?1} is a hit")
 (p a) (neqw b)
-(rule r () :match (and (p ?x) (absent (neqw ?x))) :assert (hit ?x))
+(rule r () :match (and (p ?x) (absent (neqw ?x))) :assert (hit ?x) :why "p holds of {?x} and neqw does not, so {?x} is a hit")

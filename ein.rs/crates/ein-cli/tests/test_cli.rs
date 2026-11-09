@@ -84,7 +84,8 @@ impl Drop for Dir {
 
 /// The facts every program here is about, with the lattice they are asked
 /// over: nothing guessed, so R is root alone.
-const FACTS: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n";
+const FACTS: &str =
+    "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(p A H1)\n(p B H2)\n";
 /// A region claim that holds — R is one state, both facts — and one that does
 /// not. One `(solve …)` per file since M1e2 S1e2.1a.4, and since S1e2.1a.5 a
 /// claim about the state is the region claim's.
@@ -93,7 +94,7 @@ const TRUE_CLAIM: &str = "(solve :no-hypothesis (p) :expect (region (model (p A 
 const FALSE_CLAIM: &str = "(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H3))))\n\
                            (query :goal (p A ?h))\n";
 /// The same lattice with no claim, for files whose claims are queries'.
-const BODY: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n(solve :no-hypothesis (p))\n";
+const BODY: &str = "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(p A H1)\n(p B H2)\n(solve :no-hypothesis (p))\n";
 /// A query's claim lists its projection classes: `(p A ?h)` has one, `(p A H1)`.
 const TRUE_QUERY: &str = "(query :goal (p A ?h) :expect (model (p A H1)))\n";
 const FALSE_QUERY: &str = "(query :goal (p A ?h) :expect (model (p A H2)))\n";
@@ -157,7 +158,7 @@ fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
     let f = d.file(
         "mirror.ein",
         "(import std.algebra :symbols (symmetric))\n\
-         (relation p Thing Thing)\n(symmetric p)\n(p A B)\n\
+         (relation p Thing Thing :why \"p holds of {?1} and {?2}\")\n(symmetric p)\n(p A B)\n\
          (solve :no-hypothesis (p) :expect (region (model (p A B))))\n\
          (query :goal (p A ?h))\n",
     );

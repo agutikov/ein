@@ -26,6 +26,6 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation r T T)
+(relation r T T :why "r holds of {?1} and {?2}")
 (= a b)
 (= (color House-1) Red)

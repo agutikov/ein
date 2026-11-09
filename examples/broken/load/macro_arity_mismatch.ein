@@ -2,5 +2,5 @@
 ;; only fixture here whose message carries a real `Loc` — the error is
 ;; raised inside macro expansion, on a nested (located) node.
 
-(macro m (?a ?b) (rel ?a ?b))
-(rule x () :match (m ?p) :assert (y ?p) :why "w")
+(macro m (?a ?b) (rel ?a ?b) :why "rel holds of {?a} and {?b}")
+(rule x () :match (m ?p) :assert (y ?p) :why "m holds of {?p}, so y holds of {?p}")

@@ -22,16 +22,16 @@
 ;;; body never names; the loader accepts that silently (S1e2.2.12 § Notes).
 
 ;;; case 6710 (seed 20260820) — utils/fuzz_engine.py
-(relation r0 T T)
-(relation r1 T T)
-(relation is-a T T)
+(relation r0 T T :why "r0 holds of {?1} and {?2}")
+(relation r1 T T :why "r1 holds of {?1} and {?2}")
+(relation is-a T T :why "{?1} is a {?2}")
 (is-a o2 T)
 (is-a o3 T)
 (r0 o2 o3)
 (rule fire-0 (?P)
   :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))
-  :assert (not (r1 ?v0 ?v0)))
+  :assert (not (r1 ?v0 ?v0)) :why "r1 holds of {?v0} and {?v1} and r0 of {?v1} and {?v0}, so r1 does not hold of {?v0} and {?v0}")
 (fire-0 T)
 (rule fire-1 ()
   :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))
-  :assert (r1 ?v2 ?v2))
+  :assert (r1 ?v2 ?v2) :why "r0 holds of the T {?v0} and {?v1}, r1 of {?v2} and {?v3}, and r1 of o3 and {?v1} is not known false, so r1 holds of {?v2} and {?v2}")

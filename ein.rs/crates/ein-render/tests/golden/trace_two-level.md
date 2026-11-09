@@ -18,7 +18,7 @@
 
 Premises: `co-located(Red, H1)` — from (1)
 
-Derives `co-located(H1, Red)`.
+Derives `co-located(H1, Red)` — H1 is co-located with Red
 
 <dot>
 
@@ -168,7 +168,7 @@ Derives `not(co-located(H3, H2))`.
 
 Premises: `co-located(H1, Red)`
 
-Derives `co-located(Red, H1)`.
+Derives `co-located(Red, H1)` — Red is co-located with H1
 
 <dot>
 
@@ -182,7 +182,7 @@ Assuming **(co-located Blue H2), (co-located Green H3), (co-located H2 Blue), (c
 
 Premises: `co-located(Blue, H2)`
 
-Derives `co-located(H2, Blue)`.
+Derives `co-located(H2, Blue)` — H2 is co-located with Blue
 
 <dot>
 
@@ -192,7 +192,7 @@ Derives `co-located(H2, Blue)`.
 
 Premises: `co-located(Green, H3)`
 
-Derives `co-located(H3, Green)`.
+Derives `co-located(H3, Green)` — H3 is co-located with Green
 
 <dot>
 
@@ -202,7 +202,7 @@ Derives `co-located(H3, Green)`.
 
 Premises: `co-located(H2, Blue)`
 
-Derives `co-located(Blue, H2)`.
+Derives `co-located(Blue, H2)` — Blue is co-located with H2
 
 <dot>
 
@@ -212,7 +212,7 @@ Derives `co-located(Blue, H2)`.
 
 Premises: `co-located(H3, Green)`
 
-Derives `co-located(Green, H3)`.
+Derives `co-located(Green, H3)` — Green is co-located with H3
 
 <dot>
 
@@ -226,7 +226,7 @@ Assuming **(co-located Blue H3), (co-located Green H2), (co-located H2 Green), (
 
 Premises: `co-located(Blue, H3)`
 
-Derives `co-located(H3, Blue)`.
+Derives `co-located(H3, Blue)` — H3 is co-located with Blue
 
 <dot>
 
@@ -236,7 +236,7 @@ Derives `co-located(H3, Blue)`.
 
 Premises: `co-located(Green, H2)`
 
-Derives `co-located(H2, Green)`.
+Derives `co-located(H2, Green)` — H2 is co-located with Green
 
 <dot>
 
@@ -246,7 +246,7 @@ Derives `co-located(H2, Green)`.
 
 Premises: `co-located(H2, Green)`
 
-Derives `co-located(Green, H2)`.
+Derives `co-located(Green, H2)` — Green is co-located with H2
 
 <dot>
 
@@ -256,6 +256,6 @@ Derives `co-located(Green, H2)`.
 
 Premises: `co-located(H3, Blue)`
 
-Derives `co-located(Blue, H3)`.
+Derives `co-located(Blue, H3)` — Blue is co-located with H3
 
 <dot>

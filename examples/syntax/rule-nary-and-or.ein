@@ -17,4 +17,5 @@
 
 (rule n (?rel)
   :match  (or (quad ?a ?b ?c ?d) (?rel ?a ?b))
-  :assert (quad ?b ?a ?b ?a))
+  :assert (quad ?b ?a ?b ?a)
+  :why    "quad holds of {?a} {?b} and two more, or {?rel} of {?a} and {?b}, so quad holds of {?b} {?a} {?b} {?a}")

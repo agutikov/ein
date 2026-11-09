@@ -31,12 +31,12 @@
 ;;;
 ;;; (plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md § 12).
 
-(relation thing T)
-(relation a T)
-(relation b T)
-(relation p T)
-(relation q T)
-(relation z T)
+(relation thing T :why "{?1} is a thing")
+(relation a T :why "a holds of {?1}")
+(relation b T :why "b holds of {?1}")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
+(relation z T :why "z holds of {?1}")
 
 (thing one)
 (a one)

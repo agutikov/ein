@@ -42,9 +42,9 @@
 
 (import std.algebra :symbols (total-owed))
 
-(relation is-a  T T)
-(relation seats Guest Chair)
-(relation meal  Diner Food)
+(relation is-a  T T :why "{?1} is a {?2}")
+(relation seats Guest Chair :why "{?1} sits on {?2}")
+(relation meal  Diner Food :why "{?1} has {?2} as a meal")
 
 (is-a Ann Guest) (is-a Soup Food)
 (is-a C1 Chair)  (is-a C2 Chair)  (is-a C3 Chair)  (is-a C4 Chair)
@@ -68,7 +68,7 @@
 
 (total-owed meal is-a)
 
-(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f))
+(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why "guess that guest {?g} sits on chair {?c}")
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f) :why "guess that guest {?g} has food {?f} as a meal")
 
 (query :goal (meal ?g ?f))

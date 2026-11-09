@@ -71,10 +71,10 @@
   :assert (?R ?x)
   :why    "guess: is {?x} {?R}?")
 
-(relation is-a T T)
-(relation h1   T)
-(relation h2   T)
-(relation h3   T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation h1   T   :why "h1 holds of {?1}")
+(relation h2   T   :why "h2 holds of {?1}")
+(relation h3   T   :why "h3 holds of {?1}")
 
 (is-a Item T)
 (is-a X    Item)

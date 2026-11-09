@@ -14,12 +14,12 @@
 ;;; compiled; since S1e2.2.17's fix *forbid* follows the chain, and they are
 ;;; refused as this is.
 
-(relation seed T) (relation p T) (relation p2 T) (relation q T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q T :why "q holds of {?1}")
 
 (seed a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
 
-(rule mk () :match (and (p ?x) (absent (p2 ?x))) :assert (q ?x))
-(rule q  (?n) :match (seed ?n) :assert (false))
+(rule mk () :match (and (p ?x) (absent (p2 ?x))) :assert (q ?x) :why "p holds of {?x} and p2 does not, so q holds of {?x}, switching rule q on for it")
+(rule q  (?n) :match (seed ?n) :assert (false) :why "q holds of the seed {?n}, which cannot be")

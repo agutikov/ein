@@ -9,6 +9,6 @@
 ;;; is refused at load, so the witness's right answer is that refusal, and
 ;;; this is the answer of the program written out, which loads.
 
-(relation holds Node) (relation hit Node)
+(relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
 (holds a)
-(rule w () :match (or (holds a) (hit a)) :assert (hit w))
+(rule w () :match (or (holds a) (hit a)) :assert (hit w) :why "a holds or a is hit, so w is hit")

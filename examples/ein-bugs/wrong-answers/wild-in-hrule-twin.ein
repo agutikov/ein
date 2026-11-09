@@ -4,6 +4,6 @@
 ;;; one: the hrule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein
 ;;; solve FILE` at `c73a0796`, release and debug).
 
-(relation holds Node Node) (relation tag Node)
+(relation holds Node Node :why "{?1} holds {?2}") (relation tag Node :why "{?1} is tagged")
 (holds a b)
-(hrule h () :match (holds ?x ?any) :assert (tag ?x))
+(hrule h () :match (holds ?x ?any) :assert (tag ?x) :why "{?x} holds {?any}: guess that {?x} is tagged")

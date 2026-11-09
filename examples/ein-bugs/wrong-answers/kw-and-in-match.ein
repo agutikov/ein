@@ -29,6 +29,6 @@
 ;;; the boundary `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on
 ;;; Q-M1e2.17), and the program answers its twin's R.
 
-(relation p Node) (relation andz Node) (relation hit Node)
+(relation p Node :why "p holds of {?1}") (relation andz Node :why "andz holds of {?1}") (relation hit Node :why "{?1} is a hit")
 (p a) (andz b)
-(rule r () :match (andz ?x) :assert (hit ?x))
+(rule r () :match (andz ?x) :assert (hit ?x) :why "andz holds of {?x}, so {?x} is a hit")

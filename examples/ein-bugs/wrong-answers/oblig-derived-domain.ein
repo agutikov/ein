@@ -30,10 +30,10 @@
 ;;; this file answers its control's R, which the `:expect` below states. The
 ;;; register row `W14/oblig-derived-domain` is fixed.
 
-(relation person T)
-(relation food   T)
-(relation dish   T)
-(relation likes  T T)
+(relation person T :why "{?1} is a person")
+(relation food   T :why "{?1} is a food")
+(relation dish   T :why "{?1} is a dish")
+(relation likes  T T :why "{?1} likes {?2}")
 
 (person Ann)
 (food Soup)

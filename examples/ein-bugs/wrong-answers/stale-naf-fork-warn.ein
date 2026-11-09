@@ -24,14 +24,14 @@
 ;;; Re-taken at M1e2 S1e2.2.6 (2026-11-04): refused at the same commands as
 ;;; `stale-naf-fork.ein`, with the same line, and `ein saturate` still runs.
 
-(relation thing T)
-(relation p T)
-(relation q T)
+(relation thing T :why "{?1} is a thing")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
 (thing one)
 (rule derive-p ()
   :match  (and (thing ?x) (absent (q ?x)))
-  :assert (p ?x))
+  :assert (p ?x) :why "{?x} is a thing and no q fact holds of it, so p holds of {?x}")
 (rule p-and-q-clash ()
   :match  (and (p ?x) (q ?x))
-  :assert (false))
+  :assert (false) :why "both p and q hold of {?x}, which cannot be")
 (query :goal (q ?x))

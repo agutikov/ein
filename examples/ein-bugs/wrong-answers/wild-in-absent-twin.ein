@@ -5,7 +5,7 @@
 ;;; fires, and R is `∅` and `{(hit a)}` (`ein solve FILE` at `c73a0796`,
 ;;; release and debug).
 
-(relation holds Node) (relation hit Node)
+(relation holds Node :why "{?1} holds") (relation hit Node :why "{?1} is hit")
 (holds a)
-(rule z () :match (absent (holds ?any)) :assert (hit z))
+(rule z () :match (absent (holds ?any)) :assert (hit z) :why "nothing holds, so z is hit")
 (solve :no-hypothesis (holds))

@@ -5,6 +5,6 @@
 ;;; right one, the name read back (`ein solve FILE` at `35186bc0`, release and
 ;;; debug).
 
-(relation person Node) (relation rrelationship Node Node)
+(relation person Node :why "{?1} is a person") (relation rrelationship Node Node :why "{?1} has an rrelationship with {?2}")
 (person alice) (person bob)
 (rrelationship alice bob)

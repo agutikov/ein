@@ -30,10 +30,10 @@
 ;;; region-spec: {"name":"three_components","about":"The user's shape of 2026-10-15: R in three separate components — one\nmonotone (a 2-dimensional sub-cube over C), one with a one-node hole (as\nein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each\ncomponent is picked by one of C, F, G, which exclude each other; a node\nholding none of them owes one.","candidates":"ABCDEFG","R":[["C","CDE"],["F","ABF"],["G","ABDG"]],"holes":[["AF","AF"],["AG","ABG"]],"owing":[["","ABDE"]]}
 ;;; region-status: ooooRxxxooooRxxxooooRxxxooooRxxxRxRRxxxxxxxxxxxxxxxxxxxxxxxxxxxxRxRxxxxxRRRRxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-(relation h T)
-(relation slot T)
-(relation world T)
-(relation need T T)
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E) (slot F) (slot G)

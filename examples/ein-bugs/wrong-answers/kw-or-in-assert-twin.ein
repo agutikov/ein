@@ -4,7 +4,7 @@
 ;;; Its answer is the witness's right one, the name read back (`ein solve
 ;;; FILE` at `35186bc0`, release and debug).
 
-(relation p Node) (relation oorz Node)
+(relation p Node :why "p holds of {?1}") (relation oorz Node :why "oorz holds of {?1}")
 (p a)
-(rule r () :match (p ?x) :assert (oorz ?x))
+(rule r () :match (p ?x) :assert (oorz ?x) :why "p holds of {?x}, so oorz holds of {?x}")
 (query :goal (oorz ?y))

@@ -27,8 +27,8 @@
   :assert (co-located ?a ?x)
   :why    "square ({?R}, bwd).")
 
-(relation before-of T T)
-(relation co-located T T)
+(relation before-of T T :why "{?1} is before {?2}")
+(relation co-located T T :why "{?1} and {?2} are at the same moment")
 (square-bwd before-of)
 
 (before-of TuesdayMeeting MondayMeeting :source "(1)")

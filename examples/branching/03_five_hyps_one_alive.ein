@@ -45,12 +45,12 @@
   :assert (false)
   :why    "{?R} not functional")
 
-(relation is-a       T T)
+(relation is-a       T T :why "{?1} is a {?2}")
 ;; S1.7.23 — `co-located` relates a Color to a House; the typed
 ;; signature lets hypgen's name-free candidate set exclude the type
 ;; atoms (`Color`/`House`/`T`) so only leaf instances are guessed
 ;; (no kernel `is-a` read; signature is object-selection metadata).
-(relation co-located Color House)
+(relation co-located Color House :why "{?1} is co-located with {?2}")
 
 (symmetric         co-located)
 (transitive        co-located)

@@ -24,8 +24,8 @@
   :assert (?q ?a ?b)
   :why    "{?p} implies {?q}.")
 
-(relation parent-of T T)
-(relation ancestor-of T T)
+(relation parent-of T T :why "{?1} is a parent of {?2}")
+(relation ancestor-of T T :why "{?1} is an ancestor of {?2}")
 (implies parent-of ancestor-of)
 
 (parent-of Anne Bob :source "demo")

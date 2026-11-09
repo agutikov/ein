@@ -77,9 +77,9 @@
 ;;; the read-out's dead-hole line is held on (`forbid::studying`). Its
 ;;; `(solve :expect (region …))`, which stated that R, went with it.
 
-(relation is-a T T)
-(relation p T)
-(relation q T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation p T :why "{?1} has p")
+(relation q T :why "{?1} has q")
 
 (is-a A T)
 

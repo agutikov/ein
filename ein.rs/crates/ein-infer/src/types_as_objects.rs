@@ -132,14 +132,16 @@ mod tests {
             .types_as_objects
     }
 
-    const TYPES: &str = "(relation is-a T T)\n(__closed__ is-a)\n\
+    const TYPES: &str = "(relation is-a T T :why \"{?1} is a {?2}\")\n(__closed__ is-a)\n\
         (is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)\n";
 
     /// C1's shape: a relation over `T` admits `Color` and `House`, which are
     /// on the right of an `is-a`, and the blind enumerator proposes them.
     #[test]
     fn an_untyped_signature_binds_the_types_as_objects() {
-        let src = format!("{TYPES}(relation co-located T T)\n(query :goal (co-located Blue ?h))");
+        let src = format!(
+            "{TYPES}(relation co-located T T :why \"{{?1}} and {{?2}} are co-located\")\n(query :goal (co-located Blue ?h))"
+        );
         let t = named(&src);
         assert_eq!(t.objects, ["Color", "House"]);
         assert_eq!(t.relations, ["co-located"]);
@@ -152,8 +154,9 @@ mod tests {
     /// object, so nothing is named.
     #[test]
     fn a_signature_naming_the_types_keeps_them_out() {
-        let src =
-            format!("{TYPES}(relation co-located Color House)\n(query :goal (co-located Blue ?h))");
+        let src = format!(
+            "{TYPES}(relation co-located Color House :why \"{{?1}} and {{?2}} are co-located\")\n(query :goal (co-located Blue ?h))"
+        );
         assert!(named(&src).is_empty());
     }
 
@@ -162,8 +165,8 @@ mod tests {
     #[test]
     fn a_rung_the_program_typed_names_nothing() {
         let src = format!(
-            "{TYPES}(relation co-located T T)\n\
-             (hrule guess () :match (is-a ?c Color) :assert (co-located ?c House))\n\
+            "{TYPES}(relation co-located T T :why \"{{?1}} and {{?2}} are co-located\")\n\
+             (hrule guess () :match (is-a ?c Color) :assert (co-located ?c House) :why \"guess that {{?c}}, a Color, and House are co-located\")\n\
              (query :goal (co-located Blue ?h))"
         );
         assert!(named(&src).is_empty());

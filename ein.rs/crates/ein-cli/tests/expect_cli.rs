@@ -69,7 +69,8 @@ impl Fixture {
     }
 }
 
-const BODY: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n";
+const BODY: &str =
+    "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(p A H1)\n(p B H2)\n";
 
 // ── The corpus fixture, which must hold ────────────────────────────
 

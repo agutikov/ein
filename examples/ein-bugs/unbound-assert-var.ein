@@ -38,4 +38,4 @@
 
 (rule fire-3 ()
   :match  (or (r1 ?v1 ?v3) (r0 ?v0 ?v2))
-  :assert (not (r1 ?v0 ?v1)))
+  :assert (not (r1 ?v0 ?v1)) :why "r1 holds of ?v1 and ?v3, or r0 of ?v0 and ?v2, so r1 does not hold of ?v0 and ?v1")

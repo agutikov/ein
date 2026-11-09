@@ -43,9 +43,9 @@
   :assert (false)
   :why    "{?R} not functional")
 
-(relation is-a       T T)
-(relation co-located T T)
-(relation next-to    T T)
+(relation is-a       T T :why "{?1} is a {?2}")
+(relation co-located T T :why "{?1} is co-located with {?2}")
+(relation next-to    T T :why "{?1} is next to {?2}")
 
 (symmetric         co-located)
 (transitive        co-located)

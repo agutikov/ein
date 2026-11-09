@@ -5,7 +5,7 @@
 ;;; has on a query. The program is tests/stdlib/algebra/09_irreflexive_violated.ein's.
 
 (import std.algebra :symbols (irreflexive))
-(relation loops Node Node)
+(relation loops Node Node :why "{?1} loops to {?2}")
 (irreflexive loops)
 (loops A B)
 (loops A A)

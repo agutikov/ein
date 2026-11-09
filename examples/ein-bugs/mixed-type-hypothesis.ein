@@ -31,8 +31,8 @@
 ;;; which uses it for a second thing: `Ann` is a name only the compiler ever
 ;;; sees.
 
-(relation slotval T T)
-(relation seat    T T)
+(relation slotval T T :why "slot {?1} has the value {?2}")
+(relation seat    T T :why "{?1} sits at {?2}")
 
 ;; The two bindings. `?v` matches the int 1 from one and the symbol `left`
 ;; from the other, and both reach `alive` as candidate `seat` facts.

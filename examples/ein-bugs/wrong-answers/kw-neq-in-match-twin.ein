@@ -4,6 +4,6 @@
 ;;; does. Its answer is the witness's right one, the name read back (`ein
 ;;; solve FILE` at `35186bc0`, release and debug).
 
-(relation p Node) (relation nneqw Node) (relation hit Node)
+(relation p Node :why "p holds of {?1}") (relation nneqw Node :why "nneqw holds of {?1}") (relation hit Node :why "{?1} is hit")
 (p a) (nneqw b)
-(rule r () :match (nneqw ?x) :assert (hit ?x))
+(rule r () :match (nneqw ?x) :assert (hit ?x) :why "nneqw holds of {?x}, so {?x} is hit")

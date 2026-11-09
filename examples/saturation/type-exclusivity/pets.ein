@@ -25,11 +25,11 @@
   :assert (not (?R ?a ?b))
   :why    "{?a} and {?b} are distinct members of {?T} — exclusive under {?R}.")
 
-(relation is-a T T)
+(relation is-a T T :why "{?1} is a {?2}")
 (is-a Dog Pet)
 (is-a Cat Pet)
 (is-a Bird Pet)
-(relation co-located T T)
+(relation co-located T T :why "{?1} and {?2} share a slot")
 (type-exclusivity co-located)
 
 (query :goal (not (co-located Dog Cat)))

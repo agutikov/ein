@@ -167,7 +167,7 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
 #[test]
 fn mutual_negation_is_detected_whatever_either_sides_origin() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(relation sits Person Seat)\n(relation is-a Thing Thing)\n\
+        "(relation sits Person Seat :why \"{?1} sits in seat {?2}\")\n(relation is-a Thing Thing :why \"{?1} is a {?2}\")\n\
          (is-a A Person) (is-a B Person)\n\
          (rule one-per-seat ()\n\
          \x20 :match  (and (sits ?p1 ?s) (is-a ?p2 Person) (neq ?p1 ?p2))\n\
@@ -213,7 +213,7 @@ fn mutual_negation_is_detected_whatever_either_sides_origin() {
 fn every_pair_is_reported_not_only_the_first() {
     let (terms, kb) = {
         let (_ast, terms, kb) = kb_of(
-            "(relation r T T)\n\
+            "(relation r T T :why \"r holds of {?1} and {?2}\")\n\
              (r A B) (not (r A B))\n(r C D) (not (r C D))\n(r E F) (not (r E F))\n",
         );
         (terms, kb)
@@ -240,7 +240,7 @@ fn every_pair_is_reported_not_only_the_first() {
 #[test]
 fn a_nested_positive_pairs_through_structural_identity() {
     let (_ast, terms, kb) = kb_of(
-        "(relation hypothesis T)\n(relation co-located T T)\n\
+        "(relation hypothesis T :why \"{?1} is hypothesised\")\n(relation co-located T T :why \"{?1} is co-located with {?2}\")\n\
          (hypothesis (co-located Norwegian House-2))\n\
          (not (hypothesis (co-located Norwegian House-2)))\n",
     );
@@ -263,7 +263,8 @@ fn a_nested_positive_pairs_through_structural_identity() {
 /// reading is a decision (Q40 / R9) rather than an accident.
 #[test]
 fn a_malformed_negation_is_tolerated_rather_than_crashing() {
-    let (_ast, mut terms, mut kb) = kb_of("(relation r T T)\n(r A B :source \"(1)\")\n");
+    let (_ast, mut terms, mut kb) =
+        kb_of("(relation r T T :why \"r holds of {?1} and {?2}\")\n(r A B :source \"(1)\")\n");
     let not = terms.kernel.not;
     // `5` is a name since M1f S1f.5.4 (an int until then): either way, no fact.
     let five = terms.value_text("5").expect("room");
@@ -288,7 +289,7 @@ fn a_malformed_negation_is_tolerated_rather_than_crashing() {
 #[test]
 fn witness_is_the_positive_for_a_pair_and_the_false_fact_for_a_direct() {
     let (_ast, terms, kb) = kb_of(
-        "(relation r T T)\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
+        "(relation r T T :why \"r holds of {?1} and {?2}\")\n(r A B :source \"(1)\")\n(not (r A B) :source \"(2)\")\n\
          (false :source \"(3)\")\n",
     );
     let found = detect(&kb, &terms);
@@ -328,9 +329,9 @@ fn witness_is_the_positive_for_a_pair_and_the_false_fact_for_a_direct() {
 #[test]
 fn fail_fast_agrees_with_the_post_hoc_scan_over_a_real_saturation() {
     let (ast, mut terms, mut kb) = kb_of(
-        "(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 → x\")\n\
-         (rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 → ¬x\")\n\
-         (relation h1 T) (relation h2 T) (relation x T)\n(is-a a T)\n(h1 a) (h2 a)\n",
+        "(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 holds of {?x}, so x holds of {?x}\")\n\
+         (rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 holds of {?x}, so x does not\")\n\
+         (relation h1 T :why \"h1 holds of {?1}\") (relation h2 T :why \"h2 holds of {?1}\") (relation x T :why \"x holds of {?1}\")\n(is-a a T)\n(h1 a) (h2 a)\n",
     );
     let (first_incremental, first_scan) = in_session(&ast, &mut terms, &mut kb, |s| {
         let mut sat = Saturator::new(s).expect("compiles");
@@ -535,7 +536,7 @@ fn dies(src: &str, rel: &str, args: &[&str]) -> bool {
 #[test]
 fn a_rule_that_negates_the_candidate_itself_kills_it() {
     let src = "(rule deny (?R)\n  :match (?R ?a ?b) :assert (not (?R ?a ?b))\n\
-               \x20 :why \"deny\")\n(relation r T T)\n(deny r)\n";
+               \x20 :why \"{?R} holds of {?a} and {?b}, so it does not\")\n(relation r T T :why \"r holds of {?1} and {?2}\")\n(deny r)\n";
     let (ast, mut terms, mut kb) = kb_of(src);
     saturate(&ast, &mut terms, &mut kb);
     let h = fact(&mut terms, "r", &["A", "B"]);
@@ -557,10 +558,10 @@ fn a_rule_that_negates_the_candidate_itself_kills_it() {
 #[test]
 fn a_derived_negative_kills_against_a_positive_of_any_origin() {
     let src = "(rule deny ()\n  :match (cand ?x) :assert (not (r ?x))\n\
-               \x20 :why \"deny\")\n\
+               \x20 :why \"cand holds of {?x}, so r does not\")\n\
                (rule make-r ()\n  :match (seed ?x) :assert (r ?x)\n\
-               \x20 :why \"derive\")\n\
-               (relation cand T)\n(relation r T)\n(relation seed T)\n\
+               \x20 :why \"seed holds of {?x}, so r holds of {?x}\")\n\
+               (relation cand T :why \"cand holds of {?1}\")\n(relation r T :why \"r holds of {?1}\")\n(relation seed T :why \"seed holds of {?1}\")\n\
                (r A :source \"given\")\n(seed C :source \"(1)\")\n";
 
     // The two positives really do have different origins.
@@ -588,7 +589,7 @@ fn a_derived_negative_kills_against_a_positive_of_any_origin() {
 /// found.
 #[test]
 fn a_kb_with_no_rules_never_kills() {
-    let src = "(relation co-located T T)\n";
+    let src = "(relation co-located T T :why \"{?1} is co-located with {?2}\")\n";
     let (_ast, _terms, kb) = kb_of(src);
     assert!(
         kb.program().rules.is_empty(),
@@ -609,19 +610,19 @@ fn a_kb_with_no_rules_never_kills() {
 /// flips with it.
 fn two_derivations(join_first: bool) -> String {
     let join = "(rule join ()\n  :match (and (A ?o) (B ?o)) :assert (X ?o)\n\
-                \x20 :why \"join\")\n";
+                \x20 :why \"A and B both hold of {?o}, so X holds of {?o}\")\n";
     let chain = "(rule chain ()\n  :match (C ?o) :assert (X ?o)\n\
-                 \x20 :why \"chain\")\n";
+                 \x20 :why \"C holds of {?o}, so X holds of {?o}\")\n";
     let (first, second) = if join_first {
         (join, chain)
     } else {
         (chain, join)
     };
     format!(
-        "(relation A T)\n(relation B T)\n(relation C T)\n(relation X T)\n(relation Y T)\n\
+        "(relation A T :why \"A holds of {{?1}}\")\n(relation B T :why \"B holds of {{?1}}\")\n(relation C T :why \"C holds of {{?1}}\")\n(relation X T :why \"X holds of {{?1}}\")\n(relation Y T :why \"Y holds of {{?1}}\")\n\
          {first}{second}\
          (rule clash ()\n  :match (and (X ?o) (Y ?o)) :assert (false)\n\
-         \x20 :why \"clash\")\n\
+         \x20 :why \"X and Y both hold of {{?o}}, which cannot be\")\n\
          (A a :source \"(A)\")\n(B a :source \"(B)\")\n(C a :source \"(C)\")\n\
          (Y a :source \"(Y)\")\n"
     )
@@ -633,8 +634,8 @@ const FUNCTIONAL: &str = "\
 (rule functional (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
   :assert (false)
-  :why    \"fn\")
-(relation R T T)
+  :why    \"{?R} is functional, yet gives {?a} both {?b} and {?c}\")
+(relation R T T :why \"R holds of {?1} and {?2}\")
 (functional R)
 (R x One :source \"(1)\")
 (R x Two :source \"(2)\")
@@ -811,7 +812,7 @@ fn turning_alternative_recording_off_restores_the_primary_only_frontier() {
 
 /// Two declared relations over two objects — the blind enumerator proposes
 /// both unless a query keyword narrows it.
-const TWO_REL: &str = "(relation co-located T T)\n(relation likes T T)\n\
+const TWO_REL: &str = "(relation co-located T T :why \"{?1} is co-located with {?2}\")\n(relation likes T T :why \"{?1} likes {?2}\")\n\
                        (is-a Thing T)\n(is-a A Thing) (is-a B Thing)\n";
 
 /// The candidates one `generate` call emits, plus its stats.
@@ -919,7 +920,8 @@ fn no_hypothesis_overrides_the_whitelist() {
 #[test]
 fn solution_node_needs_both_halves() {
     // Two objects and a binary relation — the enumerator has candidates.
-    let (ast, mut terms, mut kb) = kb_of("(relation r T T)\n(is-a a T) (is-a b T)\n");
+    let (ast, mut terms, mut kb) =
+        kb_of("(relation r T T :why \"r holds of {?1} and {?2}\")\n(is-a a T) (is-a b T)\n");
     let (consistent, complete, node) = in_session(&ast, &mut terms, &mut kb, |s| {
         (
             ein_infer::consistent(s.kb, s.terms),

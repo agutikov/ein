@@ -11,8 +11,8 @@
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 (import std.algebra :symbols (total-owed surjective-owed))
-(relation is-a   T T)
-(relation seats  Guest Chair)
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation seats  Guest Chair :why "{?1} sits on {?2}")
 (is-a Zed Guest) (is-a Bob Guest)
 (is-a C1 Chair)  (is-a C2 Chair)
 (total-owed      seats is-a)

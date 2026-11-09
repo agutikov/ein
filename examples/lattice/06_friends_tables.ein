@@ -38,13 +38,13 @@
 
 (import std.algebra :symbols (functional injective))
 
-(relation is-a      T T)
-(relation member    Friend Group)
-(relation at        Seat Table)
-(relation fits      Group Table)
-(relation sits      Friend Seat)
-(relation faces-ac  Seat)
-(relation avoids-ac Friend)
+(relation is-a      T T          :why "{?1} is a {?2}")
+(relation member    Friend Group :why "{?1} is a member of {?2}")
+(relation at        Seat Table   :why "seat {?1} is at table {?2}")
+(relation fits      Group Table  :why "group {?1} fits at table {?2}")
+(relation sits      Friend Seat  :why "{?1} sits in seat {?2}")
+(relation faces-ac  Seat         :why "seat {?1} faces the air-conditioner")
+(relation avoids-ac Friend       :why "{?1} will not sit facing the air-conditioner")
 
 (is-a Ann Friend) (is-a Bob Friend)
 (is-a Cat Friend) (is-a Dan Friend) (is-a Eve Friend)
@@ -84,6 +84,7 @@
 
 (hrule seat ()
   :match  (and (member ?p ?g) (fits ?g ?t) (at ?s ?t))
-  :assert (sits ?p ?s))
+  :assert (sits ?p ?s)
+  :why    "guess that {?p} sits in seat {?s}, at table {?t}, which {?p}'s group {?g} fits")
 
 (query :goal (sits ?p ?s))

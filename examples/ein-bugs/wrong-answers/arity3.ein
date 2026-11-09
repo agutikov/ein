@@ -34,9 +34,9 @@
 ;;; row is fixed.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
-(relation is-a T T)
-(relation r3 T T T)
-(relation r2 T T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation r3 T T T :why "r3 holds of {?1}, {?2} and {?3}")
+(relation r2 T T :why "r2 holds of {?1} and {?2}")
 (is-a A T) (is-a B T)
 (solve :no-hypothesis (is-a))
 (query :goal (r3 ?x ?y ?z))

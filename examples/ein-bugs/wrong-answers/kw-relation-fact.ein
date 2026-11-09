@@ -27,6 +27,6 @@
 ;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 
-(relation person Node) (relation relationship Node Node)
+(relation person Node :why "{?1} is a person") (relation relationship Node Node :why "{?1} has a relationship with {?2}")
 (person alice) (person bob)
 (relationship alice bob)

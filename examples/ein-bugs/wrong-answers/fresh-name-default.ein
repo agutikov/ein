@@ -34,8 +34,8 @@
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 
-(relation p T T)
-(relation q T T)
+(relation p T T :why "p holds of {?1} and {?2}")
+(relation q T T :why "q holds of {?1} and {?2}")
 
 (p A B)
 

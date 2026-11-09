@@ -31,9 +31,9 @@
 ;;; under different universes; under (C) over (A) R is `{∅}`, whose state is
 ;;; `(q one)` here and `(p one)` there (`node_census.md` § 7.2, § 9).
 
-(relation thing Thing)
-(relation p Thing)
-(relation q Thing)
+(relation thing Thing :why "{?1} is a thing")
+(relation p Thing :why "{?1} is p")
+(relation q Thing :why "{?1} is q")
 
 (rule derive-q ()
   :match  (and (thing ?x) (absent (p ?x)))

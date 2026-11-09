@@ -18,8 +18,8 @@
 
 (import std.algebra :symbols (total-owed surjective-owed functional injective))
 
-(relation is-a   T T)
-(relation seats  Guest Chair)
+(relation is-a   T T         :why "{?1} is a {?2}")
+(relation seats  Guest Chair :why "{?1} is seated at {?2}")
 
 (is-a Ann Guest) (is-a Bob Guest)
 (is-a C1 Chair)  (is-a C2 Chair)

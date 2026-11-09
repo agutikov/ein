@@ -6,7 +6,7 @@
 ;;
 ;; Expected (load error): see solve_twice.expected.
 
-(relation p Thing Place)
+(relation p Thing Place :why "p holds of {?1} and {?2}")
 (p A H1)
 (solve :no-hypothesis (p))
 (solve :no-hypothesis (p))

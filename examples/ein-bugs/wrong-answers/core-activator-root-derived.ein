@@ -11,13 +11,13 @@
 ;;; file's two readings, and not under *one only a node derives*, which the
 ;;; user ruled on 2026-11-04; S1e2.2.19's fix left this core where it was.
 
-(relation seed T) (relation start T) (relation p T) (relation p2 T) (relation r2 T)
+(relation seed T :why "{?1} is a seed") (relation start T :why "start holds of {?1}") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation r2 T :why "r2 holds of {?1}, which activates rule r2 for {?1}")
 
 (seed a)
 (start a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
 
-(rule mk0 () :match (start ?x) :assert (r2 ?x))
-(rule r2 (?k) :match (p ?k) :assert (false))
+(rule mk0 () :match (start ?x) :assert (r2 ?x) :why "start holds of {?x}, so r2 holds of {?x}")
+(rule r2 (?k) :match (p ?k) :assert (false) :why "rule r2 is activated for {?k} and p holds of it, which cannot be")

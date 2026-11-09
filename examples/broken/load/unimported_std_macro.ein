@@ -4,6 +4,6 @@
 
 (rule undefeated (?Player)
   :match (and (player ?p) (forall ?q (player ?q) (beats ?p ?q)))
-  :assert (ok ?p) :why "u")
-(relation player T T)
-(relation beats T T)
+  :assert (ok ?p) :why "{?p} is a player who beats every player, so {?p} is ok")
+(relation player T T :why "player holds of {?1} and {?2}")
+(relation beats T T :why "{?1} beats {?2}")

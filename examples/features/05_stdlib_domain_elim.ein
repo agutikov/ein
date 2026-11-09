@@ -31,8 +31,8 @@
 (import std.elim :symbols (typecheck-arg-0 typecheck-arg-1
                            domain-elimination no-room-left))
 
-(relation color-of House Color)
-(relation is-a    T T)
+(relation color-of House Color :why "{?1} is painted {?2}")
+(relation is-a    T T           :why "{?1} is a {?2}")
 
 ;; ── Property facts: color-of is a bijection between House and Color
 ;; ── (positional projection encoding: (functional R i j)).

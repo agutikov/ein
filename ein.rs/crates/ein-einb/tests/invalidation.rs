@@ -235,7 +235,7 @@ fn file_of(sections: &[(u32, Vec<u8>)]) -> Vec<u8> {
 /// and a name of digits in it is a name.
 #[test]
 fn a_file_that_holds_an_integer_is_refused() {
-    let text = "(relation p T)\n(p 7)\n(p 07)\n";
+    let text = "(relation p T :why \"p holds of {?1}\")\n(p 7)\n(p 07)\n";
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, text, Some("<digits>")).expect("parses");

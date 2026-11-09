@@ -8,24 +8,27 @@
 ;;; `:over all` is false, and under `ein solve --minimal` it is not checked:
 ;;; the run did not ask for the maximal line.
 
-(relation instance Thing Type)
-(relation seat     Person Slot)
+(relation instance Thing Type :why "{?1} is a {?2}")
+(relation seat     Person Slot :why "{?1} sits in {?2}")
 
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)
 
 (rule one-seat-each (?R)
   :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-  :assert (false))
+  :assert (false)
+  :why    "under {?R}, {?a} has both {?b} and {?c}, but each may have only one")
 (rule one-person-each (?R)
   :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-  :assert (false))
+  :assert (false)
+  :why    "under {?R}, both {?a} and {?b} have {?c}, but only one of them may")
 (one-seat-each   seat)
 (one-person-each seat)
 
 (hrule guess (?p ?s)
   :match  (instance ?p Person)
-  :assert (seat ?p ?s))
+  :assert (seat ?p ?s)
+  :why    "guess that {?p} sits in {?s}")
 
 (solve
   :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))

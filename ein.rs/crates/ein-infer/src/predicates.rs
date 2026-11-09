@@ -138,7 +138,7 @@ mod tests {
     #[test]
     fn eq_and_neq_are_their_definition_over_the_programs_names() {
         use ein_ir::{Ast, from_ir::load_query, parse};
-        const PROGRAM: &str = "(relation p Node)\n(p a)\n(p b)\n";
+        const PROGRAM: &str = "(relation p Node :why \"p holds of {?1}\")\n(p a)\n(p b)\n";
         let sides = ["a", "w", "?x", "?y"];
         let mut goals: Vec<String> = Vec::new();
         for pred in ["eq", "neq"] {

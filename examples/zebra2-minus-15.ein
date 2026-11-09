@@ -360,19 +360,19 @@
   :why    "guess: ({?R} {?a} {?b})?")
 
 ;; ──── Relation signatures ──────────────────────────────────
-;; The `*-loc` relations carry a `:why` render template — a positional
+;; Every relation carries a `:why` render template — a positional
 ;; `{?1}`/`{?2}` string (arg 0 / arg 1) used to translate a fact into text
-;; in the `ein solve` table's "rendered query facts" column. Relations with
-;; no `:why` (is-a, right-of, next-to) render as their raw IR s-expression.
-(relation is-a         T T)
-(relation is-a*        T T)
+;; in the `ein solve` table's "rendered query facts" column. A relation with
+;; no `:why` would render as its raw IR s-expression.
+(relation is-a         T T               :why "{?1} is a {?2}")
+(relation is-a*        T T               :why "{?1} is a {?2} (transitively)")
 (relation color-loc    Color       House :why "{?2} is painted {?1}")
 (relation nation-loc   Nationality House :why "the {?1} lives in {?2}")
 (relation drink-loc    Drink       House :why "{?1} is drunk in {?2}")
 (relation smoke-loc    Cigarette   House :why "{?1} is smoked in {?2}")
 (relation pet-loc      Pet         House :why "the {?1} is kept in {?2}")
-(relation right-of     House House)
-(relation next-to      House House)
+(relation right-of     House House       :why "{?1} is immediately right of {?2}")
+(relation next-to      House House       :why "{?1} is next to {?2}")
 
 ;; ──── is-a* = transitive closure of is-a ────────────────────
 ;; (includes is-a is-a*): every direct is-a edge lifts to is-a*.

@@ -59,7 +59,7 @@
 ;; scope rule judges by exhaustion, and both nodes are models — `Ambiguity`.
 (total-owed likes is-a)
 
-(hrule pick () :match (is-a ?p Person) :assert (choice ?p))
+(hrule pick () :match (is-a ?p Person) :assert (choice ?p) :why "suppose {?p} is the one chosen")
 
 (rule feeds ()
   :match  (choice Ann)
@@ -69,7 +69,8 @@
 ;; Exactly one choice, so a single commitment is already complete.
 (rule mutex ()
   :match  (and (choice Ann) (choice Bob))
-  :assert (false))
+  :assert (false)
+  :why    "Ann and Bob are both chosen, but only one may be")
 
 (solve
   ;; The blind rung would propose `is-a` and `likes` facts of its own; the

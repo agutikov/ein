@@ -1763,7 +1763,7 @@ mod tests {
     /// `7` and `07`, and a name from a nested fact.
     #[test]
     fn plan_key_is_the_activators_values() {
-        let src = "(relation edge A B)\n(rule walk (?R ?N)\n  :match (?R ?a ?b)\n  :assert (?R ?b ?a))\n\
+        let src = "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n(rule walk (?R ?N)\n  :match (?R ?a ?b)\n  :assert (?R ?b ?a) :why \"{?R} holds of {?a} and {?b}, so {?R} holds of {?b} and {?a}\")\n\
                    (walk edge 7)\n(walk edge 07)\n(walk edge seven)\n(walk edge seven)\n\
                    (walk edge (edge A B))\n";
         let mut ast = Ast::new();
@@ -1787,8 +1787,7 @@ mod tests {
                 ["edge", "seven"]
             ]
         );
-        let no_params =
-            "(relation edge A B)\n(rule turn ()\n  :match (edge ?a ?b)\n  :assert (edge ?b ?a))\n";
+        let no_params = "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n(rule turn ()\n  :match (edge ?a ?b)\n  :assert (edge ?b ?a) :why \"there is an edge from {?a} to {?b}, so there is one from {?b} to {?a}\")\n";
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let forms = parse(&mut ast, no_params, Some("<test>")).expect("parses");
@@ -1810,8 +1809,8 @@ mod tests {
     #[test]
     fn the_seed_takes_the_first_registers_in_binding_order() {
         let (_, terms, plan) = compile(
-            "(relation edge A B)\n\
-             (rule walk (?R ?T)\n  :match (?R ?a ?b)\n  :assert (?T ?a ?b))\n\
+            "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n\
+             (rule walk (?R ?T)\n  :match (?R ?a ?b)\n  :assert (?T ?a ?b) :why \"{?R} holds of {?a} and {?b}, so {?T} holds of {?a} and {?b}\")\n\
              (walk edge edge)\n",
         );
         let seeded: Vec<&str> = plan.seed.iter().map(|(name, _)| terms.sym(*name)).collect();
@@ -1834,10 +1833,10 @@ mod tests {
     /// end, so the distinction has to survive as the projection.
     #[test]
     fn a_guards_scope_decides_which_question_it_asks() {
-        let before = "(relation a Thing)\n(relation block Thing)\n\
-             (rule r ()\n  :match (and (absent (block ?x)) (a ?x))\n  :assert (a ?x))\n";
-        let after = "(relation a Thing)\n(relation block Thing)\n\
-             (rule r ()\n  :match (and (a ?x) (absent (block ?x)))\n  :assert (a ?x))\n";
+        let before = "(relation a Thing :why \"a holds of {?1}\")\n(relation block Thing :why \"there is a block for {?1}\")\n\
+             (rule r ()\n  :match (and (absent (block ?x)) (a ?x))\n  :assert (a ?x) :why \"a holds of {?x} and there is no block at all, so a holds of {?x}\")\n";
+        let after = "(relation a Thing :why \"a holds of {?1}\")\n(relation block Thing :why \"there is a block for {?1}\")\n\
+             (rule r ()\n  :match (and (a ?x) (absent (block ?x)))\n  :assert (a ?x) :why \"a holds of {?x} and there is no block for {?x}, so a holds of {?x}\")\n";
 
         let (_, terms, plan) = compile(before);
         let g = &plan.guards[0];
@@ -1870,10 +1869,10 @@ mod tests {
     #[test]
     fn a_parameter_under_a_guard_resolves_through_the_seed() {
         let (_, terms, plan) = compile(
-            "(relation p A B)\n\
+            "(relation p A B :why \"p holds of {?1} and {?2}\")\n\
              (rule r (?K)\n\
              \x20 :match (and (p ?a ?b) (absent (and (p ?a ?y) (neq ?y ?K))))\n\
-             \x20 :assert (p ?b ?a))\n\
+             \x20 :assert (p ?b ?a) :why \"p holds of {?a} and {?b}, and of {?a} with no second but {?K}, so p holds of {?b} and {?a}\")\n\
              (r sentinel)\n",
         );
         let g = &plan.guards[0];
@@ -1907,8 +1906,8 @@ mod tests {
     #[test]
     fn the_probe_list_is_the_candidates_scan_narrowed() {
         let (_, terms, plan) = compile(
-            "(relation p A B C)\n(relation q A)\n\
-             (rule r ()\n  :match (and (q ?a) (p ?a marker ?c))\n  :assert (q ?c))\n",
+            "(relation p A B C :why \"p holds of {?1}, {?2} and {?3}\")\n(relation q A :why \"q holds of {?1}\")\n\
+             (rule r ()\n  :match (and (q ?a) (p ?a marker ?c))\n  :assert (q ?c) :why \"q holds of {?a} and p of {?a}, marker and {?c}, so q holds of {?c}\")\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         let Step::Rel(second) = steps[1] else {
@@ -1930,8 +1929,8 @@ mod tests {
     #[test]
     fn a_nested_pattern_probes_one_level_in() {
         let (_, _terms, plan) = compile(
-            "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes ?a ?b))\n  :assert (likes ?b ?a))\n",
+            "(relation likes A B :why \"{?1} likes {?2}\")\n\
+             (rule r ()\n  :match (not (likes ?a ?b))\n  :assert (likes ?b ?a) :why \"{?a} does not like {?b}, so {?b} likes {?a}\")\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         let Step::Rel(first) = steps[0] else {
@@ -1960,8 +1959,8 @@ mod tests {
     #[test]
     fn a_nested_pattern_with_no_keyable_slot_has_no_probe() {
         let (_, _terms, plan) = compile(
-            "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes ?any ?b))\n  :assert (likes ?b ?b))\n",
+            "(relation likes A B :why \"{?1} likes {?2}\")\n\
+             (rule r ()\n  :match (not (likes ?any ?b))\n  :assert (likes ?b ?b) :why \"{?any} does not like {?b}, so {?b} likes {?b}\")\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         let Step::Rel(first) = steps[0] else {
@@ -1997,8 +1996,8 @@ mod tests {
             "{refused}"
         );
         let (_, terms, plan) = compile(
-            "(relation likes A B)\n\
-             (rule r ()\n  :match (and (likes ?u ?b) (likes ?b ?v) (likes ?w ?z))\n  :assert (likes ?b ?b))\n",
+            "(relation likes A B :why \"{?1} likes {?2}\")\n\
+             (rule r ()\n  :match (and (likes ?u ?b) (likes ?b ?v) (likes ?w ?z))\n  :assert (likes ?b ?b) :why \"{?u} likes {?b}, {?b} likes {?v} and {?w} likes {?z}, so {?b} likes {?b}\")\n",
         );
         let mut names: Vec<&str> = plan.reg_names.iter().map(|&s| terms.sym(s)).collect();
         names.sort_unstable();
@@ -2030,8 +2029,8 @@ mod tests {
             "{refused}"
         );
         let (_, mut terms, plan) = compile(
-            "(relation likes A B)\n\
-             (rule r ()\n  :match (not (likes lit ?b))\n  :assert (likes ?b lit))\n",
+            "(relation likes A B :why \"{?1} likes {?2}\")\n\
+             (rule r ()\n  :match (not (likes lit ?b))\n  :assert (likes ?b lit) :why \"lit does not like {?b}, so {?b} likes lit\")\n",
         );
         let lit = Value::sym(terms.intern_text("lit").expect("room"));
         let steps = plan.steps(plan.disjuncts[0].steps);
@@ -2059,8 +2058,8 @@ mod tests {
     #[test]
     fn a_guards_variables_leak_into_the_scan_join_labelling() {
         let (_, terms, plan) = compile(
-            "(relation a Thing)\n(relation b Thing)\n(relation block Thing)\n\
-             (rule r ()\n  :match (and (a ?p) (absent (block ?q)) (b ?q))\n  :assert (b ?p))\n",
+            "(relation a Thing :why \"a holds of {?1}\")\n(relation b Thing :why \"b holds of {?1}\")\n(relation block Thing :why \"there is a block for {?1}\")\n\
+             (rule r ()\n  :match (and (a ?p) (absent (block ?q)) (b ?q))\n  :assert (b ?p) :why \"a holds of {?p}, b of {?q}, and there is no block at all, so b holds of {?p}\")\n",
         );
         let steps = plan.steps(plan.disjuncts[0].steps);
         assert_eq!(
@@ -2093,11 +2092,11 @@ mod tests {
     #[test]
     fn each_disjunct_carries_its_own_guards() {
         let (_, terms, plan) = compile(
-            "(relation a Thing)\n(relation block Thing)\n(relation other Thing)\n\
+            "(relation a Thing :why \"a holds of {?1}\")\n(relation block Thing :why \"there is a block for {?1}\")\n(relation other Thing :why \"other holds of {?1}\")\n\
              (rule r ()\n\
              \x20 :match (or (and (a ?x) (absent (block ?x)))\n\
              \x20             (and (a ?x) (absent (other ?x))))\n\
-             \x20 :assert (a ?x))\n",
+             \x20 :assert (a ?x) :why \"a holds of {?x}, and there is no block for {?x} or other does not hold of {?x}, so a holds of {?x}\")\n",
         );
         assert_eq!(plan.disjuncts.len(), 2);
         let watched: Vec<Vec<&str>> = plan
@@ -2121,11 +2120,11 @@ mod tests {
     #[test]
     fn a_nested_absent_stays_in_the_query_and_costs_monotonicity() {
         let (_, terms, plan) = compile(
-            "(relation player Thing)\n(relation beats A B)\n\
+            "(relation player Thing :why \"{?1} is a player\")\n(relation beats A B :why \"{?1} beats {?2}\")\n\
              (rule undefeated ()\n\
              \x20 :match (and (player ?p)\n\
              \x20              (absent (and (player ?q) (neq ?p ?q) (absent (beats ?p ?q)))))\n\
-             \x20 :assert (player ?p))\n",
+             \x20 :assert (player ?p) :why \"{?p} is a player who beats every other player, so {?p} is a player\")\n",
         );
         assert_eq!(plan.guards.len(), 1, "only the top-level guard is lifted");
         let g = &plan.guards[0];
@@ -2149,8 +2148,8 @@ mod tests {
     #[test]
     fn a_multi_assert_keeps_every_template_and_answers_for_the_first() {
         let (_, terms, plan) = compile(
-            "(relation a Thing)\n(relation b Thing)\n\
-             (rule r ()\n  :match (a ?x)\n  :assert (and (b ?x) (not (a ?x))))\n",
+            "(relation a Thing :why \"a holds of {?1}\")\n(relation b Thing :why \"b holds of {?1}\")\n\
+             (rule r ()\n  :match (a ?x)\n  :assert (and (b ?x) (not (a ?x))) :why \"a holds of {?x}, so b holds of {?x} and a does not\")\n",
         );
         assert_eq!(plan.asserts.len(), 2);
         assert_eq!(
@@ -2167,8 +2166,8 @@ mod tests {
     #[test]
     fn a_negated_assert_names_the_relation_it_negates() {
         let (_, terms, plan) = compile(
-            "(relation a Thing)\n\
-             (rule r ()\n  :match (a ?x)\n  :assert (not (a ?x)))\n",
+            "(relation a Thing :why \"a holds of {?1}\")\n\
+             (rule r ()\n  :match (a ?x)\n  :assert (not (a ?x)) :why \"a holds of {?x}, so a does not hold of {?x}\")\n",
         );
         assert_eq!(asserted_relation(&plan, &terms), None);
         assert_eq!(
@@ -2183,8 +2182,8 @@ mod tests {
     fn the_memo_compiles_a_pair_once() {
         let mut ast = Ast::new();
         let mut terms = Terms::new();
-        let src = "(relation edge A B)\n\
-                   (rule walk (?R ?T)\n  :match (?R ?a ?b)\n  :assert (?T ?a ?b))\n\
+        let src = "(relation edge A B :why \"there is an edge from {?1} to {?2}\")\n\
+                   (rule walk (?R ?T)\n  :match (?R ?a ?b)\n  :assert (?T ?a ?b) :why \"{?R} holds of {?a} and {?b}, so {?T} holds of {?a} and {?b}\")\n\
                    (walk edge edge)\n";
         let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
         let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");

@@ -48,7 +48,7 @@
 
 (relation chn Node Node :why "{?1} precedes {?2}")
 (relation tr  Node Node :why "{?1} reaches {?2}")
-(relation cyc Node Node)
+(relation cyc Node Node :why "{?1} leads to {?2} around the cycle")
 
 (transitive chn)
 (transitive tr)

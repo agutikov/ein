@@ -239,12 +239,12 @@ fn an_unaffordable_key_says_why() {
     let fixture =
         std::fs::read_to_string(repo_root().join("examples/branching/06_lookahead_on.ein"))
             .expect("the fixture");
-    let typed = "\n(relation co-located Color House)\n";
+    let typed = "\n(relation co-located Color House";
     assert_eq!(fixture.matches(typed).count(), 1, "the fixture's signature");
     let untyped = tmp.join("06-untyped.ein");
     std::fs::write(
         &untyped,
-        fixture.replace(typed, "\n(relation co-located T T)\n"),
+        fixture.replace(typed, "\n(relation co-located T T"),
     )
     .expect("the untyped program");
     let untyped = untyped.to_string_lossy().to_string();

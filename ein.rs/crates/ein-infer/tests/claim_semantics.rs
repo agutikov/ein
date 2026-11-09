@@ -19,9 +19,9 @@ use ein_ir::{Ast, load, parse};
 /// Three properties of one item, the triple dead: R is ∅, three singletons and
 /// three pairs, seven states, each reached by one commitment.
 const TRIPLE: &str = "
-(rule three-conflict () :match (and (a-prop ?x) (b-prop ?y) (c-prop ?z)) :assert (false))
-(hrule guess (?R ?T) :match (is-a ?x ?T) :assert (?R ?x))
-(relation is-a T T) (relation a-prop T) (relation b-prop T) (relation c-prop T)
+(rule three-conflict () :match (and (a-prop ?x) (b-prop ?y) (c-prop ?z)) :assert (false) :why \"a-prop holds of {?x}, b-prop of {?y} and c-prop of {?z}, which cannot all be\")
+(hrule guess (?R ?T) :match (is-a ?x ?T) :assert (?R ?x) :why \"guess that {?R} holds of {?x}, a {?T}\")
+(relation is-a T T :why \"{?1} is a {?2}\") (relation a-prop T :why \"a-prop holds of {?1}\") (relation b-prop T :why \"b-prop holds of {?1}\") (relation c-prop T :why \"c-prop holds of {?1}\")
 (is-a Item T) (is-a X Item)
 ";
 const TRIPLE_HRULES: &str = ":hrules (guess (a-prop Item) guess (b-prop Item) guess (c-prop Item))";
@@ -32,8 +32,8 @@ const TRIPLE_R: &str = "(model) (model (a-prop X)) (model (b-prop X)) (model (c-
 /// R has four states; the top one is reached by five commitments, two of them
 /// minimal: {(co-located C A)} and {(co-located B A), (co-located C B)}.
 const CHAIN: &str = "
-(rule transitive (?rel) :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c)) :assert (?rel ?a ?c))
-(relation co-located T T) (transitive co-located)
+(rule transitive (?rel) :match (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c)) :assert (?rel ?a ?c) :why \"{?rel} relates {?a} to {?b} and {?b} to {?c}, and is transitive, so it relates {?a} to {?c}\")
+(relation co-located T T :why \"{?1} is co-located with {?2}\") (transitive co-located)
 (co-located A B) (co-located B C)
 ";
 const CHAIN_ROOT: &str = "(co-located A B) (co-located A C) (co-located B C)";
@@ -53,7 +53,7 @@ fn chain_r(merged: &str) -> String {
 /// root is the one alive node that owes.
 const OWING: &str = "
 (import std.algebra :symbols (total-owed))
-(relation is-a T T) (relation likes Person Food)
+(relation is-a T T :why \"{?1} is a {?2}\") (relation likes Person Food :why \"{?1} likes {?2}\")
 (is-a Ann Person) (is-a Bob Person) (is-a Soup Food) (is-a Stew Food)
 (total-owed likes is-a)
 (likes Bob Stew)
@@ -62,29 +62,29 @@ const OWING: &str = "
 /// A self-loop `irreflexive` refutes; nothing is guessed. Every node is dead.
 const DEAD: &str = "
 (import std.algebra :symbols (irreflexive))
-(relation loops Node Node) (irreflexive loops)
+(relation loops Node Node :why \"{?1} loops to {?2}\") (irreflexive loops)
 (loops A A)
 ";
 
 /// One candidate, and a rule that writes a stored negative beside it: R is ∅
 /// and {(p A)}, whose state holds `(not (q A))`.
 const NEGATIVE: &str = "
-(relation is-a T T) (relation p T) (relation q T)
+(relation is-a T T :why \"{?1} is a {?2}\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\")
 (is-a A T)
-(hrule guess () :match (is-a ?x T) :assert (p ?x))
-(rule writes-a-negative () :match (p ?x) :assert (not (q ?x)))
+(hrule guess () :match (is-a ?x T) :assert (p ?x) :why \"guess that p holds of {?x}\")
+(rule writes-a-negative () :match (p ?x) :assert (not (q ?x)) :why \"p holds of {?x}, so q does not hold of {?x}\")
 ";
 
 /// Seating Ann makes her a diner, and a diner owes a meal: flagged by the
 /// static check, so R is the cube's. ∅, {meal}, {meal, seat}.
 const FLAGGED: &str = "
 (import std.algebra :symbols (total-owed))
-(relation is-a T T) (relation seats Guest Chair) (relation meal Diner Food)
+(relation is-a T T :why \"{?1} is a {?2}\") (relation seats Guest Chair :why \"{?1} is seated on {?2}\") (relation meal Diner Food :why \"{?1} has {?2} for a meal\")
 (is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food)
-(rule seated-dines () :match (seats ?g ?c) :assert (is-a ?g Diner))
+(rule seated-dines () :match (seats ?g ?c) :assert (is-a ?g Diner) :why \"{?g} is seated on {?c}, so {?g} is a Diner\")
 (total-owed meal is-a)
-(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f))
+(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why \"guess that guest {?g} is seated on chair {?c}\")
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f) :why \"guess that guest {?g} has {?f} for a meal\")
 ";
 
 fn loaded(src: &str) -> Result<(Kb, Terms, Ast), String> {
@@ -272,11 +272,11 @@ fn merged_on_a_state_one_commitment_reaches_fails() {
 #[test]
 fn merged_needs_a_state_several_commitments_reach() {
     let src = "
-(relation h T) (relation slot T)
+(relation h T :why \"h holds of {?1}\") (relation slot T :why \"{?1} is a slot\")
 (slot A) (slot C)
-(hrule guess () :match (slot ?x) :assert (h ?x))
-(rule imp-A () :match (h A) :assert (h B))
-(rule imp-C () :match (h C) :assert (h D))
+(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of slot {?x}\")
+(rule imp-A () :match (h A) :assert (h B) :why \"h holds of A, so h holds of B\")
+(rule imp-C () :match (h C) :assert (h D) :why \"h holds of C, so h holds of D\")
 ";
     // R: ∅, {A,B} from {A}, {C,D} from {C}, {A,B,C,D} from {A,C}.
     let states = "(model) (model (h A) (h B)) (model (h C) (h D)) (model (h A) (h B) (h C) (h D))";
@@ -304,10 +304,10 @@ fn merged_needs_a_state_several_commitments_reach() {
 #[test]
 fn merged_is_all_or_nothing() {
     let src = "
-(relation h T) (relation slot T)
+(relation h T :why \"h holds of {?1}\") (relation slot T :why \"{?1} is a slot\")
 (slot A) (slot B) (slot C)
-(hrule guess () :match (slot ?x) :assert (h ?x))
-(rule imp-A-B () :match (h A) :assert (h B))
+(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of slot {?x}\")
+(rule imp-A-B () :match (h A) :assert (h B) :why \"h holds of A, so h holds of B\")
 ";
     // {A,B} is reached by {A} and {A,B}, and {A,B,C} by {A,C} and {A,B,C}.
     let states = "(model) (model (h B)) (model (h C)) (model (h B) (h C)) \
@@ -327,10 +327,10 @@ fn merged_with_the_wrong_generator_fails() {
     // examples/lattice/synth/merged_states.ein's shape, with B and D
     // candidates too: every state is reached by two commitments.
     let src = "
-(relation h T) (relation slot T)
+(relation h T :why \"h holds of {?1}\") (relation slot T :why \"{?1} is a slot\")
 (slot A) (slot B)
-(hrule guess () :match (slot ?x) :assert (h ?x))
-(rule imp-A-B () :match (h A) :assert (h B))
+(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of slot {?x}\")
+(rule imp-A-B () :match (h A) :assert (h B) :why \"h holds of A, so h holds of B\")
 ";
     // R: ∅, {B}, and {A,B} reached by {A} and {A,B}.
     let one = "(region (model) (model (h B)) (model (h A) (h B)) \
@@ -452,7 +452,7 @@ fn a_route_that_stops_leaves_the_claim_unchecked() {
 /// the region does not list, and a relation no declaration or fact makes.
 #[test]
 fn the_loader_refuses_what_is_not_a_claim() {
-    let body = "(relation p T) (p A)";
+    let body = "(relation p T :why \"p holds of {?1}\") (p A)";
     refused(
         &format!("{body} (solve :expect (region (model (p A)) (owing (model))))"),
         "`(owing …)` says R is empty, and the region lists states",

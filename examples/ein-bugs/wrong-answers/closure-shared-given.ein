@@ -31,7 +31,7 @@
 ;;; dropped, and the core is `(c C01) (d C01)` (`ein solve FILE`, release and
 ;;; debug, at `94c75204`). Owned by F22: no per-fact estimate is exact.
 
-(relation c T) (relation d T) (relation g T) (relation u T) (relation v T) (relation x T)
+(relation c T :why "c holds of {?1}") (relation d T :why "d holds of {?1}") (relation g T :why "g holds of {?1}") (relation u T :why "u holds of {?1}") (relation v T :why "v holds of {?1}") (relation x T :why "x holds of {?1}")
 (c C01) (d C01) (c C02) (d C02) (c C03) (d C03) (c C04) (d C04) (c C05) (d C05) (c C06) (d C06)
 (c C07) (d C07) (c C08) (d C08) (c C09) (d C09) (c C10) (d C10) (c C11) (d C11) (c C12) (d C12)
 (c C13) (d C13) (c C14) (d C14) (c C15) (d C15) (c C16) (d C16) (c C17) (d C17) (c C18) (d C18)
@@ -39,9 +39,9 @@
 (c C25) (d C25) (c C26) (d C26) (c C27) (d C27) (c C28) (d C28) (c C29) (d C29) (c C30) (d C30)
 (c C31) (d C31) (c C32) (d C32) (c C33) (d C33)
 (g K)
-(rule mk-u () :match (g ?k) :assert (u ?k))
-(rule mk-v () :match (g ?k) :assert (v ?k))
-(rule x-cd () :match (and (c ?y) (d ?y)) :assert (x K))
-(rule x-uv () :match (and (u ?k) (v ?k)) :assert (x ?k))
-(rule clash () :match (x ?k) :assert (false))
+(rule mk-u () :match (g ?k) :assert (u ?k) :why "g holds of {?k}, so u holds of {?k}")
+(rule mk-v () :match (g ?k) :assert (v ?k) :why "g holds of {?k}, so v holds of {?k}")
+(rule x-cd () :match (and (c ?y) (d ?y)) :assert (x K) :why "c and d both hold of {?y}, so x holds of K")
+(rule x-uv () :match (and (u ?k) (v ?k)) :assert (x ?k) :why "u and v both hold of {?k}, so x holds of {?k}")
+(rule clash () :match (x ?k) :assert (false) :why "x holds of {?k}, which cannot be")
 (solve :no-hypothesis (c d g u v x))

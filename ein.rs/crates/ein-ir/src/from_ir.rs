@@ -3045,11 +3045,11 @@ mod tests {
     /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
     #[test]
     fn an_open_assert_routes_the_rule_out_of_the_saturation_agenda() {
-        let src = "(relation is-a T T)\n(relation r A B)\n\
+        let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n\
                    (rule total-owed (?R ?isa)\n  \
                      :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \
                                  (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  \
-                     :assert (open ?R))\n";
+                     :assert (open ?R) :why \"{?a} has no {?R} partner of type {?B} yet — one is still owed\")\n";
         let (terms, kb) = ok(src);
         let name = terms.syms.get("total-owed").expect("interned");
         assert!(
@@ -3062,8 +3062,9 @@ mod tests {
         );
 
         // The bare degenerate is the same object with nothing to project.
-        let (terms, kb) =
-            ok("(relation r A B)\n(rule owes () :match (absent (r a b)) :assert (open))\n");
+        let (terms, kb) = ok(
+            "(relation r A B :why \"r holds of {?1} and {?2}\")\n(rule owes () :match (absent (r a b)) :assert (open) :why \"r does not hold of a and b yet — that fact is still owed\")\n",
+        );
         assert!(
             kb.program()
                 .obligations
@@ -3072,8 +3073,9 @@ mod tests {
         );
 
         // An ordinary rule is untouched by any of it.
-        let (terms, kb) =
-            ok("(relation r A B)\n(rule copy () :match (r ?a ?b) :assert (r ?b ?a))\n");
+        let (terms, kb) = ok(
+            "(relation r A B :why \"r holds of {?1} and {?2}\")\n(rule copy () :match (r ?a ?b) :assert (r ?b ?a) :why \"r holds of {?a} and {?b}, so r holds of {?b} and {?a}\")\n",
+        );
         assert!(
             kb.program()
                 .rules
@@ -3093,12 +3095,12 @@ mod tests {
     /// grammar's table (`ein-ir/tests/grammar_pages.rs`).
     #[test]
     fn a_variable_used_once_loads_where_a_wildcard_was_written() {
-        let pre = "(relation n T) (relation hit T) (relation box T) (relation tag T T)\n(n 2)\n";
+        let pre = "(relation n T :why \"n holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") (relation tag T T :why \"tag holds of {?1} and {?2}\")\n(n 2)\n";
         ok(&format!(
-            "{pre}(rule r () :match (and (n ?u) (box (tag ?v ?w))) :assert (hit r))"
+            "{pre}(rule r () :match (and (n ?u) (box (tag ?v ?w))) :assert (hit r) :why \"n holds of {{?u}} and box holds of (tag {{?v}} {{?w}}), so hit holds of r\")"
         ));
         ok(&format!(
-            "{pre}(rule owe () :match (and (n ?x) (absent (tag ?x ?any))) :assert (open tag))"
+            "{pre}(rule owe () :match (and (n ?x) (absent (tag ?x ?any))) :assert (open tag) :why \"n holds of {{?x}} and no tag of {{?x}} holds yet — one is still owed\")"
         ));
     }
 
@@ -3133,12 +3135,12 @@ mod tests {
                              that holds no variable";
         const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
                             parameter its activator binds";
-        let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) (relation tag T T)\n\
-                   (relation item T) (relation lbl T)\n(p a) (q a) (box (p a))\n";
+        let pre = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") (relation tag T T :why \"tag holds of {?1} and {?2}\")\n\
+                   (relation item T :why \"{?1} is an item\") (relation lbl T :why \"lbl holds of {?1}\")\n(p a) (q a) (box (p a))\n";
         // At load: what a context-free grammar does not see.
         for (rule, want) in [
             (
-                "(rule e () :match (and (p ?x) (eq ?x (p ?y))) :assert (hit ?x))".to_string(),
+                "(rule e () :match (and (p ?x) (eq ?x (p ?y))) :assert (hit ?x) :why \"p holds of {?x}, which equals a p fact, so hit holds of {?x}\")".to_string(),
                 format!(
                     "rule 'e': its :match writes (eq ?x (p ?y)), and the form (p ?y) holds a \
                      variable — {GUARD}"
@@ -3146,7 +3148,7 @@ mod tests {
             ),
             (
                 // Under an `absent`, and at any depth.
-                "(rule e () :match (and (p ?x) (absent (neq ?x (box (p ?x))))) :assert (hit ?x))"
+                "(rule e () :match (and (p ?x) (absent (neq ?x (box (p ?x))))) :assert (hit ?x) :why \"p holds of {?x} and {?x} equals (box (p {?x})), so hit holds of {?x}\")"
                     .to_string(),
                 format!(
                     "rule 'e': its :match writes (neq ?x (box (p ?x))), and the form (box (p ?x)) \
@@ -3156,30 +3158,30 @@ mod tests {
             // A relation variable no parameter binds, inside a pattern and at
             // the top level, in either clause.
             (
-                "(rule r () :match (box (?r a)) :assert (hit a))".to_string(),
+                "(rule r () :match (box (?r a)) :assert (hit a) :why \"box holds of ({?r} a), so hit holds of a\")".to_string(),
                 format!("rule 'r': its :match writes (?r a) with ?r as its relation, {FREE}"),
             ),
             (
-                "(rule r () :match (and (p ?x) (absent (not (?r ?x)))) :assert (hit ?x))"
+                "(rule r () :match (and (p ?x) (absent (not (?r ?x)))) :assert (hit ?x) :why \"p holds of {?x} and nothing is stored false of {?x}, so hit holds of {?x}\")"
                     .to_string(),
                 format!("rule 'r': its :match writes (?r ?x) with ?r as its relation, {FREE}"),
             ),
             (
-                "(rule r () :match (and (p ?r) (?r a)) :assert (hit a))".to_string(),
+                "(rule r () :match (and (p ?r) (?r a)) :assert (hit a) :why \"p holds of {?r} and {?r} holds of a, so hit holds of a\")".to_string(),
                 format!("rule 'r': its :match writes (?r a) with ?r as its relation, {FREE}"),
             ),
             (
-                "(rule r () :match (p ?r) :assert (box (?r a)))".to_string(),
+                "(rule r () :match (p ?r) :assert (box (?r a)) :why \"p holds of {?r}, so box holds of ({?r} a)\")".to_string(),
                 format!("rule 'r': its :assert writes (?r a) with ?r as its relation, {FREE}"),
             ),
             (
-                "(hrule h () :match (p ?r) :assert (?r a))".to_string(),
+                "(hrule h () :match (p ?r) :assert (?r a) :why \"p holds of {?r}: guess that {?r} holds of a\")".to_string(),
                 format!("hrule 'h': its :assert writes (?r a) with ?r as its relation, {FREE}"),
             ),
             // An obligation's `:match`.
             (
                 "(rule owe () :match (and (item ?x) (box (?r a)) (absent (tag ?x ?l))) \
-                 :assert (open tag))"
+                 :assert (open tag) :why \"item {?x} has no tag yet — one is still owed\")"
                     .to_string(),
                 format!("rule 'owe': its :match writes (?r a) with ?r as its relation, {FREE}"),
             ),
@@ -3188,10 +3190,10 @@ mod tests {
         }
         // A relation parameter its activator binds to a nested fact, where the
         // activator is written: a fact, or a literal in an `:assert`.
-        let mirror = "(rule mirror (?R) :match (box (?R a)) :assert (hit a))";
+        let mirror = "(rule mirror (?R) :match (box (?R a)) :assert (hit a) :why \"box holds of ({?R} a), so hit holds of a\")";
         for activator in [
             "(mirror (p a))".to_string(),
-            "(rule mk () :match (q ?x) :assert (mirror (p a)))".to_string(),
+            "(rule mk () :match (q ?x) :assert (mirror (p a)) :why \"q holds of {?x}, so rule mirror is switched on for (p a)\")".to_string(),
         ] {
             assert_eq!(
                 err(&format!("{pre}{mirror}\n{activator}")),
@@ -3210,15 +3212,15 @@ mod tests {
         // premise before it binds, in a conjunction and under an `absent`.
         for rule in [
             "(rule e () :match (and (p ?x) (q ?y) (neq ?x ?y) (eq ?x a) (neq ?x b) (eq ?x 1)) \
-             :assert (hit ?x))",
-            "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y ?x)))) :assert (hit ?x))",
-            "(rule e () :match (and (p ?x) (eq ?x a)) :assert (hit ?x))",
-            "(rule e () :match (and (box (p ?u)) (p ?v)) :assert (hit a))",
-            "(rule e (?R) :match (box (?R a)) :assert (hit a))",
-            "(rule e () :match (and (p ?x) (eq ?x (p a))) :assert (hit ?x))",
-            "(rule e () :match (and (neq ?x a) (p ?x)) :assert (hit ?x))",
-            "(rule e () :match (and (p ?x) (eq ?x ?u)) :assert (hit ?u))",
-            "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x))",
+             :assert (hit ?x) :why \"p holds of {?x} and q of {?y}, {?x} is not {?y} or b and is a and 1, so hit holds of {?x}\")",
+            "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y ?x)))) :assert (hit ?x) :why \"p holds of {?x} and q holds of nothing other than {?x}, so hit holds of {?x}\")",
+            "(rule e () :match (and (p ?x) (eq ?x a)) :assert (hit ?x) :why \"p holds of {?x}, which is a, so hit holds of {?x}\")",
+            "(rule e () :match (and (box (p ?u)) (p ?v)) :assert (hit a) :why \"box holds of (p {?u}) and p holds of {?v}, so hit holds of a\")",
+            "(rule e (?R) :match (box (?R a)) :assert (hit a) :why \"box holds of ({?R} a), so hit holds of a\")",
+            "(rule e () :match (and (p ?x) (eq ?x (p a))) :assert (hit ?x) :why \"p holds of {?x}, which is the fact (p a), so hit holds of {?x}\")",
+            "(rule e () :match (and (neq ?x a) (p ?x)) :assert (hit ?x) :why \"p holds of {?x}, which is not a, so hit holds of {?x}\")",
+            "(rule e () :match (and (p ?x) (eq ?x ?u)) :assert (hit ?u) :why \"p holds of {?x} and {?u} equals it, so hit holds of {?u}\")",
+            "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x) :why \"p holds of {?x} and q holds of nothing but a, so hit holds of {?x}\")",
         ] {
             ok(&format!("{pre}{rule}"));
         }
@@ -3245,40 +3247,40 @@ mod tests {
                  (eq ?{var} ?{var})"
             )
         };
-        let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) \
-                   (relation tag T T)\n(p a) (q b)\n";
+        let pre = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") \
+                   (relation tag T T :why \"tag holds of {?1} and {?2}\")\n(p a) (q b)\n";
         for (rule, want) in [
             // A free variable.
             (
-                "(rule r () :match (p ?x) :assert (q ?y))",
+                "(rule r () :match (p ?x) :assert (q ?y) :why \"p holds of {?x}, so q holds of a value no premise binds\")",
                 line("rule", "r", "y", ""),
             ),
             // An `(or …)` arm that leaves it unbound.
             (
-                "(rule r () :match (or (p ?x) (q ?y)) :assert (hit ?x))",
+                "(rule r () :match (or (p ?x) (q ?y)) :assert (hit ?x) :why \"p or q holds of a value, so hit holds of the value p holds of\")",
                 line("rule", "r", "x", " where its :match holds through (q ?y)"),
             ),
             // Seen only under an `(absent …)`, and under a guard inside one.
             (
-                "(rule r () :match (and (p ?x) (absent (q ?y))) :assert (hit ?y))",
+                "(rule r () :match (and (p ?x) (absent (q ?y))) :assert (hit ?y) :why \"p holds of {?x} and q of nothing, so hit holds of a value no premise binds\")",
                 line("rule", "r", "y", ""),
             ),
             (
-                "(rule r () :match (and (p ?x) (absent (eq ?y a))) :assert (hit ?y))",
+                "(rule r () :match (and (p ?x) (absent (eq ?y a))) :assert (hit ?y) :why \"p holds of {?x} and nothing equals a, so hit holds of a value no premise binds\")",
                 line("rule", "r", "y", ""),
             ),
             // An hrule.
             (
-                "(hrule h () :match (p ?x) :assert (q ?y))",
+                "(hrule h () :match (p ?x) :assert (q ?y) :why \"p holds of {?x}: guess that q holds of a value no premise binds\")",
                 line("hrule", "h", "y", ""),
             ),
             // Nested in a conclusion's argument, and an empty `:match` (F12).
             (
-                "(rule r () :match (p ?x) :assert (box (tag ?x ?y)))",
+                "(rule r () :match (p ?x) :assert (box (tag ?x ?y)) :why \"p holds of {?x}, so box holds of a tag of {?x} and a value no premise binds\")",
                 line("rule", "r", "y", ""),
             ),
             (
-                "(rule r () :match () :assert (q ?y))",
+                "(rule r () :match () :assert (q ?y) :why \"with no premise, q holds of a value nothing binds\")",
                 line("rule", "r", "y", ""),
             ),
         ] {
@@ -3288,7 +3290,7 @@ mod tests {
         // them; and a `forall`'s bound variable, which its guard reads alone.
         assert_eq!(
             err(&format!(
-                "{pre}(rule r () :match (p ?x) :assert (tag ?z ?y))"
+                "{pre}(rule r () :match (p ?x) :assert (tag ?z ?y) :why \"p holds of {{?x}}, so tag holds of two values no premise binds\")"
             )),
             format!(
                 "{}; {}",
@@ -3299,23 +3301,23 @@ mod tests {
         assert_eq!(
             err(&format!(
                 "(import std.macro :symbols (forall))\n{pre}\
-                 (rule r () :match (and (p ?x) (forall ?y (q ?y) (p ?y))) :assert (tag ?x ?y))"
+                 (rule r () :match (and (p ?x) (forall ?y (q ?y) (p ?y))) :assert (tag ?x ?y) :why \"p holds of {{?x}} and of every q value, so tag holds of {{?x}} and a value no premise binds\")"
             )),
             line("rule", "r", "y", "")
         );
         // What binds, and loads.
         for rule in [
-            "(rule r (?y) :match (p ?x) :assert (tag ?x ?y))",
-            "(rule r () :match (box (tag ?x ?y)) :assert (tag ?y ?x))",
-            "(rule r () :match (not (p ?x)) :assert (hit ?x))",
-            "(rule r () :match (and (p ?x) (eq ?y ?y)) :assert (q ?y))",
-            "(rule r () :match (and (p ?x) (neq ?y ?x)) :assert (tag ?x ?y))",
-            "(rule r () :match (and (p ?x) (not (eq ?y ?x))) :assert (tag ?x ?y))",
-            "(rule r () :match (and (p ?x) (is-a ?y House)) :assert (q ?y))",
-            "(rule r () :match (or (p ?x) (q ?x)) :assert (hit ?x))",
-            "(rule r () :match (and (p ?x) (absent (q ?x))) :assert (hit ?x))",
-            "(hrule h () :match (p ?x) :assert (q ?x))",
-            "(rule r () :match () :assert (q a))",
+            "(rule r (?y) :match (p ?x) :assert (tag ?x ?y) :why \"p holds of {?x}, so tag holds of {?x} and {?y}\")",
+            "(rule r () :match (box (tag ?x ?y)) :assert (tag ?y ?x) :why \"box holds of (tag {?x} {?y}), so tag holds of {?y} and {?x}\")",
+            "(rule r () :match (not (p ?x)) :assert (hit ?x) :why \"p is stored false of {?x}, so hit holds of {?x}\")",
+            "(rule r () :match (and (p ?x) (eq ?y ?y)) :assert (q ?y) :why \"p holds of {?x} and {?y} is any name of the program, so q holds of {?y}\")",
+            "(rule r () :match (and (p ?x) (neq ?y ?x)) :assert (tag ?x ?y) :why \"p holds of {?x} and {?y} is another name, so tag holds of {?x} and {?y}\")",
+            "(rule r () :match (and (p ?x) (not (eq ?y ?x))) :assert (tag ?x ?y) :why \"p holds of {?x} and {?y} is not {?x}, so tag holds of {?x} and {?y}\")",
+            "(rule r () :match (and (p ?x) (is-a ?y House)) :assert (q ?y) :why \"p holds of {?x} and {?y} is a House, so q holds of {?y}\")",
+            "(rule r () :match (or (p ?x) (q ?x)) :assert (hit ?x) :why \"p or q holds of {?x}, so hit holds of {?x}\")",
+            "(rule r () :match (and (p ?x) (absent (q ?x))) :assert (hit ?x) :why \"p holds of {?x} and q does not, so hit holds of {?x}\")",
+            "(hrule h () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}: guess that q holds of {?x}\")",
+            "(rule r () :match () :assert (q a) :why \"q holds of a, with no premise\")",
         ] {
             ok(&format!("{pre}{rule}"));
         }
@@ -3331,21 +3333,25 @@ mod tests {
     #[test]
     fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
         const NAMED: &str = "a relation is named by a symbol, not a fact";
-        let r = "(rule r (?R) :match (box (?R b)) :assert (hit z))";
+        let r = "(rule r (?R) :match (box (?R b)) :assert (hit z) :why \"box holds of ({?R} b), so hit holds of z\")";
         let r_param = "rule 'r''s parameter ?R, which names a relation";
-        let pre = "(relation box Node) (relation hit Node) (relation item Node) (relation q T T)\n";
+        let pre = "(relation box Node :why \"box holds of {?1}\") (relation hit Node :why \"hit holds of {?1}\") (relation item Node :why \"{?1} is an item\") (relation q T T :why \"q holds of {?1} and {?2}\")\n";
         for (src, want) in [
             // A variable from a declared relation's argument: `g14`'s two
             // programs, with the fact and without it.
             (
-                format!("{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f))\n(item (a b))"),
+                format!(
+                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")\n(item (a b))"
+                ),
                 format!(
                     "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
                      can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
                 ),
             ),
             (
-                format!("{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f))"),
+                format!(
+                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")"
+                ),
                 format!(
                     "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
                      can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
@@ -3354,21 +3360,27 @@ mod tests {
             // A variable inside a fact pattern, and one under a relation a
             // parameter names; an hrule derives too.
             (
-                format!("{pre}{r}\n(rule mk () :match (box (g ?f)) :assert (r ?f))"),
+                format!(
+                    "{pre}{r}\n(rule mk () :match (box (g ?f)) :assert (r ?f) :why \"box holds of (g {{?f}}), so rule r is switched on for {{?f}}\")"
+                ),
                 format!(
                     "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (box (g \
                      ?f)) can bind ?f to a fact, as an argument of (g ?f) — {NAMED}"
                 ),
             ),
             (
-                format!("{pre}{r}\n(rule mk (?S) :match (?S ?f) :assert (r ?f))\n(mk item)"),
+                format!(
+                    "{pre}{r}\n(rule mk (?S) :match (?S ?f) :assert (r ?f) :why \"{{?S}} holds of {{?f}}, so rule r is switched on for {{?f}}\")\n(mk item)"
+                ),
                 format!(
                     "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (?S ?f) \
                      can bind ?f to a fact, as an argument of the relation ?S names — {NAMED}"
                 ),
             ),
             (
-                format!("{pre}{r}\n(hrule mk () :match (item ?f) :assert (r ?f))"),
+                format!(
+                    "{pre}{r}\n(hrule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item: guess that rule r is switched on for {{?f}}\")"
+                ),
                 format!(
                     "hrule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
                      can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
@@ -3379,7 +3391,7 @@ mod tests {
             // written there, each refused through the marker.
             (
                 format!(
-                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m))\n(marker (a b))"
+                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n(marker (a b))"
                 ),
                 format!(
                     "the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' \
@@ -3388,8 +3400,8 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m))\n\
-                     (rule mk () :match (item ?x) :assert (marker (a b)))\n(item c)"
+                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n\
+                     (rule mk () :match (item ?x) :assert (marker (a b)) :why \"{{?x}} is an item, so the marker names (a b)\")\n(item c)"
                 ),
                 format!(
                     "rule 'mk': its :assert writes (marker (a b)), whose (a b) is ?m of (marker \
@@ -3398,8 +3410,8 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m))\n\
-                     (rule mk () :match (item ?x) :assert (marker ?x))"
+                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n\
+                     (rule mk () :match (item ?x) :assert (marker ?x) :why \"{{?x}} is an item, so the marker names {{?x}}\")"
                 ),
                 format!(
                     "rule 'mk': its :assert writes (marker ?x), whose ?x is ?m of (marker ?m), \
@@ -3409,7 +3421,9 @@ mod tests {
             ),
             // A rule's parameter passes it on: its activator, written.
             (
-                format!("{pre}{r}\n(rule pass (?x) :match () :assert (r ?x))\n(pass (a b))"),
+                format!(
+                    "{pre}{r}\n(rule pass (?x) :match () :assert (r ?x) :why \"pass is given {{?x}}, so rule r is switched on for {{?x}}\")\n(pass (a b))"
+                ),
                 format!(
                     "the fact (pass (a b)) writes (a b) as rule 'pass''s parameter ?x, which it \
                      passes to {r_param} — {NAMED}"
@@ -3419,7 +3433,7 @@ mod tests {
             // of its arity whose name the program writes (Q-M1f.42 (a)).
             (
                 format!(
-                    "{pre}{r}\n(rule copy (?S ?T) :match (?S ?x) :assert (?T ?x))\n(copy item r)"
+                    "{pre}{r}\n(rule copy (?S ?T) :match (?S ?x) :assert (?T ?x) :why \"{{?S}} holds of {{?x}}, so {{?T}} holds of {{?x}}\")\n(copy item r)"
                 ),
                 format!(
                     "rule 'copy': its :assert writes (?T ?x), whose ?x is {r_param}, and (?S ?x) \
@@ -3429,7 +3443,7 @@ mod tests {
             // An `(or …)` whose one arm binds it where a name is held.
             (
                 format!(
-                    "{pre}{r}\n(rule mk () :match (or (item ?f) (relation ?f ?a)) :assert (r ?f))"
+                    "{pre}{r}\n(rule mk () :match (or (item ?f) (relation ?f ?a)) :assert (r ?f) :why \"{{?f}} is an item or a declared relation, so rule r is switched on for {{?f}}\")"
                 ),
                 format!(
                     "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
@@ -3445,20 +3459,24 @@ mod tests {
         // name on and is written with names (the stdlib's
         // `bijective-properties`), an `eq` guard, and a value parameter.
         for src in [
-            format!("{pre}{r}\n(rule mk () :match (relation ?f ?a) :assert (r ?f))"),
             format!(
-                "{pre}(rule co (?R1 ?V1 ?R2 ?V2) :match (?R1 ?V1 ?h) :assert (?R2 ?V2 ?h))\n\
-                 (rule fan () :match (co ?R1 ?V1 ?R2 ?V2) :assert (co ?R2 ?V2 ?R1 ?V1))\n\
+                "{pre}{r}\n(rule mk () :match (relation ?f ?a) :assert (r ?f) :why \"{{?f}} is a relation declared over {{?a}}, so rule r is switched on for {{?f}}\")"
+            ),
+            format!(
+                "{pre}(rule co (?R1 ?V1 ?R2 ?V2) :match (?R1 ?V1 ?h) :assert (?R2 ?V2 ?h) :why \"{{?R1}} holds of {{?V1}} and {{?h}}, so {{?R2}} holds of {{?V2}} and {{?h}}\")\n\
+                 (rule fan () :match (co ?R1 ?V1 ?R2 ?V2) :assert (co ?R2 ?V2 ?R1 ?V1) :why \"rule co copies {{?R1}} {{?V1}} to {{?R2}} {{?V2}}, so it also copies back the other way\")\n\
                  (co q a q b)"
             ),
             format!(
-                "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m))\n(marker box)\n\
-                 (rule mk () :match (marker ?m) :assert (marker ?m))"
+                "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n(marker box)\n\
+                 (rule mk () :match (marker ?m) :assert (marker ?m) :why \"the marker names {{?m}}, so it names {{?m}} again\")"
             ),
-            format!("{pre}{r}\n(rule mk () :match (eq ?f ?f) :assert (r ?f))"),
             format!(
-                "{pre}(rule v (?y) :match (item ?y) :assert (hit ?y))\n\
-                 (rule mk () :match (item ?f) :assert (v ?f))\n(item (a b))"
+                "{pre}{r}\n(rule mk () :match (eq ?f ?f) :assert (r ?f) :why \"{{?f}} is any name of the program, so rule r is switched on for {{?f}}\")"
+            ),
+            format!(
+                "{pre}(rule v (?y) :match (item ?y) :assert (hit ?y) :why \"{{?y}} is an item, so hit holds of {{?y}}\")\n\
+                 (rule mk () :match (item ?f) :assert (v ?f) :why \"{{?f}} is an item, so rule v is switched on for {{?f}}\")\n(item (a b))"
             ),
         ] {
             ok(&src);
@@ -3474,8 +3492,8 @@ mod tests {
     fn eq_at_another_arity_is_refused_at_load() {
         const TAIL: &str =
             "— eq is the relation of equality, which holds between exactly two values";
-        let pre = "(relation p Node) (relation hit Node) (relation q Node Node)\n(p a)\n";
-        let r = "(rule r (?R) :match (?R ?x) :assert (hit ?x))";
+        let pre = "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"hit holds of {?1}\") (relation q Node Node :why \"q holds of {?1} and {?2}\")\n(p a)\n";
+        let r = "(rule r (?R) :match (?R ?x) :assert (hit ?x) :why \"{?R} holds of {?x}, so hit holds of {?x}\")";
         let line = |form: &str, n: usize, binds: &str| {
             format!(
                 "rule 'r': its parameter ?R heads {form}, a form of {n} argument{}, and {binds} {TAIL}",
@@ -3491,30 +3509,34 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x ?x)) :assert (hit ?x))\n(r eq)"
+                    "{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x ?x)) :assert (hit ?x) :why \"p holds of {{?x}} and {{?R}} holds of {{?x}}, {{?x}} and {{?x}}, so hit holds of {{?x}}\")\n(r eq)"
                 ),
                 line("(?R ?x ?x ?x)", 3, "the fact (r eq) binds ?R to eq"),
             ),
             (
                 format!(
-                    "{pre}(rule r (?R) :match (and (p ?x) (absent (?R ?x))) :assert (hit ?x))\n(r eq)"
+                    "{pre}(rule r (?R) :match (and (p ?x) (absent (?R ?x))) :assert (hit ?x) :why \"p holds of {{?x}} and {{?R}} does not, so hit holds of {{?x}}\")\n(r eq)"
                 ),
                 line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
             ),
             (
                 format!(
-                    "{pre}(rule r (?R) :match (and (p ?x) (not (?R ?x))) :assert (hit ?x))\n(r eq)"
+                    "{pre}(rule r (?R) :match (and (p ?x) (not (?R ?x))) :assert (hit ?x) :why \"p holds of {{?x}} and {{?R}} is stored false of it, so hit holds of {{?x}}\")\n(r eq)"
                 ),
                 line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
             ),
             (
-                format!("{pre}(rule r (?R) :match (p ?x) :assert (?R ?x))\n(r eq)"),
+                format!(
+                    "{pre}(rule r (?R) :match (p ?x) :assert (?R ?x) :why \"p holds of {{?x}}, so {{?R}} holds of {{?x}}\")\n(r eq)"
+                ),
                 line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
             ),
             // Derived: a conclusion, a marker, a guard while `eq` is a name
             // of the program, and an hrule's `(solve :hrules …)` activator.
             (
-                format!("{pre}{r}\n(rule mk () :match (p ?y) :assert (r eq))"),
+                format!(
+                    "{pre}{r}\n(rule mk () :match (p ?y) :assert (r eq) :why \"p holds of {{?y}}, so rule r is switched on for eq\")"
+                ),
                 line(
                     "(?R ?x)",
                     1,
@@ -3522,7 +3544,9 @@ mod tests {
                 ),
             ),
             (
-                format!("{pre}{r}\n(rule mk () :match (mark ?f) :assert (r ?f))\n(mark eq)"),
+                format!(
+                    "{pre}{r}\n(rule mk () :match (mark ?f) :assert (r ?f) :why \"{{?f}} is marked, so rule r is switched on for {{?f}}\")\n(mark eq)"
+                ),
                 line(
                     "(?R ?x)",
                     1,
@@ -3531,7 +3555,7 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f))\n(note eq)"
+                    "{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f) :why \"p holds of {{?y}} and {{?f}} is any name of the program, so rule r is switched on for {{?f}}\")\n(note eq)"
                 ),
                 line(
                     "(?R ?x)",
@@ -3542,7 +3566,7 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}(hrule h (?R) :match (?R ?x) :assert (hit ?x))\n(solve :hrules (h (eq)))"
+                    "{pre}(hrule h (?R) :match (?R ?x) :assert (hit ?x) :why \"{{?R}} holds of {{?x}}: guess that hit holds of {{?x}}\")\n(solve :hrules (h (eq)))"
                 ),
                 format!(
                     "hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve \
@@ -3570,12 +3594,18 @@ mod tests {
         // name of the program; a parameter heading a pattern inside an
         // argument, a value; a written `(eq a b)`; and a nested `(eq a)`.
         for src in [
-            format!("{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x))\n(r eq)"),
+            format!(
+                "{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x) :why \"p holds of {{?x}} and {{?R}} holds of {{?x}} and {{?x}}, so hit holds of {{?x}}\")\n(r eq)"
+            ),
             format!("{pre}{r}\n(r q)"),
-            format!("{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f))"),
-            format!("{pre}(rule r (?R) :match (p (?R ?x)) :assert (hit ?x))\n(r eq)"),
+            format!(
+                "{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f) :why \"p holds of {{?y}} and {{?f}} is any name of the program, so rule r is switched on for {{?f}}\")"
+            ),
+            format!(
+                "{pre}(rule r (?R) :match (p (?R ?x)) :assert (hit ?x) :why \"p holds of ({{?R}} {{?x}}), so hit holds of {{?x}}\")\n(r eq)"
+            ),
             format!("{pre}(eq a a)"),
-            format!("{pre}(relation box Node)\n(box (eq a))"),
+            format!("{pre}(relation box Node :why \"box holds of {{?1}}\")\n(box (eq a))"),
         ] {
             ok(&src);
         }
@@ -3596,20 +3626,22 @@ mod tests {
     /// `not`, and the projection's ways of not resolving.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
-        let pre = "(relation is-a T T)\n(relation r A B)\n";
+        let pre = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n";
         let guard = "(and (relation ?R ?A ?B) (?isa ?a ?A) \
                      (absent (and (?isa ?b ?B) (?R ?a ?b))))";
         for (want, src) in [
             // Nested rather than concluded.
             (
                 "not a term inside one",
-                format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (not (open ?R)))"),
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match {guard} :assert (not (open ?R)) :why \"{{?a}} has no {{?R}} partner of type {{?B}}, and its being owed is stored false\")"
+                ),
             ),
             // The projection's three ways of not resolving.
             (
                 "needs an `(absent …)` in :match",
                 format!(
-                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A)) :assert (open ?R))"
+                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A)) :assert (open ?R) :why \"{{?a}} is a {{?A}}, which {{?R}} is declared over, so a {{?R}} partner is owed\")"
                 ),
             ),
             (
@@ -3617,21 +3649,21 @@ mod tests {
                 format!(
                     "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
                      (absent (and (?isa ?b ?B) (?R ?a ?b))) \
-                     (absent (and (?isa ?c ?B) (?R ?a ?c)))) :assert (open ?R))"
+                     (absent (and (?isa ?c ?B) (?R ?a ?c)))) :assert (open ?R) :why \"{{?a}} has no {{?R}} partner of type {{?B}} yet — one is still owed\")"
                 ),
             ),
             (
                 "compound witness",
                 format!(
                     "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
-                     (absent (and (?R ?a ?x) (?R ?x ?b)))) :assert (open ?R))"
+                     (absent (and (?R ?a ?x) (?R ?x ?b)))) :assert (open ?R) :why \"{{?a}} reaches nothing through two {{?R}} steps yet — such a path is still owed\")"
                 ),
             ),
             (
                 "the obligation is ground",
                 format!(
                     "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
-                     (absent (?R ?a b))) :assert (open ?R))"
+                     (absent (?R ?a b))) :assert (open ?R) :why \"{{?a}} has no {{?R}} link to b yet — one is still owed\")"
                 ),
             ),
             // A variable relation head comes from the activator, never a premise.
@@ -3639,7 +3671,7 @@ mod tests {
                 "is not in the parameter list",
                 format!(
                     "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A)) \
-                     :assert (open ?R))"
+                     :assert (open ?R) :why \"{{?a}} is a {{?A}}, which {{?R}} is declared over, so a {{?R}} partner is owed\")"
                 ),
             ),
             // Written as a premise's relation too, the rule pass refuses it
@@ -3649,7 +3681,7 @@ mod tests {
                 "with ?R as its relation, which no parameter binds",
                 format!(
                     "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
-                     (absent (?R ?a ?b))) :assert (open ?R))"
+                     (absent (?R ?a ?b))) :assert (open ?R) :why \"{{?a}} is a {{?A}} with no {{?R}} partner yet — one is still owed\")"
                 ),
             ),
         ] {
@@ -3683,7 +3715,7 @@ mod tests {
     /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
     #[test]
     fn the_stdlib_duals_resolve_before_the_stage_that_ships_them() {
-        let src = "(relation is-a T T)\n\
+        let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n\
              (rule total-owed (?R ?isa)\n  \
                :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \
                            (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  \
@@ -3724,7 +3756,9 @@ mod tests {
 
     #[test]
     fn a_declaration_stores_itself_as_facts_so_rules_can_read_signatures() {
-        let (terms, kb) = ok("(relation r A B)\n(relation bare)");
+        let (terms, kb) = ok(
+            "(relation r A B :why \"r holds of {?1} and {?2}\")\n(relation bare :why \"bare holds\")",
+        );
         assert_eq!(
             facts(&terms, &kb),
             vec!["(relation r A B)", "(relation r)", "(relation bare)"],
@@ -3794,8 +3828,10 @@ mod tests {
             refused("(relation r T T)\n(r e f :rule x :using (p (r a b)))"),
             ["2:24: unexpected `p`: a name"]
         );
-        let (terms, kb) = ok("(relation r T T)\n(r a b :source \"(1)\")\n(r c d)\n\
-             (r e f :rule x :using ((r a b)))");
+        let (terms, kb) = ok(
+            "(relation r T T :why \"r holds of {?1} and {?2}\")\n(r a b :source \"(1)\")\n(r c d)\n\
+             (r e f :rule x :using ((r a b)))",
+        );
         let kinds: Vec<(&str, usize)> = kb
             .facts()
             .filter_map(|f| kb.primary(f))
@@ -3835,7 +3871,8 @@ mod tests {
             refused("(relation r T T)\n(r a b :source sentence :rule \"x\")")[0],
             "2:16: unexpected `sentence`: a name"
         );
-        let (terms, kb) = ok("(relation r T T)\n(r a b :source \"sentence\")");
+        let (terms, kb) =
+            ok("(relation r T T :why \"r holds of {?1} and {?2}\")\n(r a b :source \"sentence\")");
         let fact = kb.facts().last().expect("a fact");
         let prov = terms.provs.get(kb.primary(fact).expect("recorded"));
         assert_eq!(prov.kind, ProvKind::Source);
@@ -3890,8 +3927,10 @@ mod tests {
 
     #[test]
     fn an_expect_naming_a_relation_the_program_does_not_have_is_a_load_error() {
-        let e = err("(relation p T P)\n(p A H)\n\
-             (query :goal (p A ?h) :expect (model (p A H) (nosuch A)))");
+        let e = err(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+             (query :goal (p A ?h) :expect (model (p A H) (nosuch A)))",
+        );
         assert!(e.contains("nosuch"), "{e}");
         assert!(e.contains("no declaration or fact makes a relation"), "{e}");
     }
@@ -3902,8 +3941,10 @@ mod tests {
     /// belongs.
     #[test]
     fn a_query_claim_lists_only_facts_its_goal_matches() {
-        let e = err("(relation p T P)\n(relation q T P)\n(p A H)\n(q A H)\n\
-             (query :goal (p A ?h) :expect (model (q A H)))");
+        let e = err(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(relation q T P :why \"q holds of {?1} and {?2}\")\n(p A H)\n(q A H)\n\
+             (query :goal (p A ?h) :expect (model (q A H)))",
+        );
         assert!(
             e.contains("(q A H), which no atom of the query's :goal matches"),
             "{e}"
@@ -3911,32 +3952,42 @@ mod tests {
         assert!(e.contains("(solve … :expect (region …))"), "{e}");
         // …in every disjunct, so one good class beside one bad one is still
         // refused.
-        let e = err("(relation p T P)\n(relation q T P)\n(p A H)\n(q A H)\n\
+        let e = err(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(relation q T P :why \"q holds of {?1} and {?2}\")\n(p A H)\n(q A H)\n\
              (query :goal (p A ?h) \
-              :expect (or (model (p A H)) (model (q A H))))");
+              :expect (or (model (p A H)) (model (q A H))))",
+        );
         assert!(e.contains("(q A H), which no atom"), "{e}");
         // A goal's constant must match, and a variable bind one value.
-        let e = err("(relation p T P)\n(p A H)\n(p B H)\n\
-             (query :goal (p A ?h) :expect (model (p B H)))");
+        let e = err(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n(p B H)\n\
+             (query :goal (p A ?h) :expect (model (p B H)))",
+        );
         assert!(e.contains("(p B H), which no atom"), "{e}");
-        let (_terms, _kb) = ok("(relation p T P)\n(p A H)\n\
-             (query :goal (and (p ?x ?h) (p ?x H)) :expect (model (p A H)))");
+        let (_terms, _kb) = ok(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+             (query :goal (and (p ?x ?h) (p ?x H)) :expect (model (p A H)))",
+        );
     }
 
     /// A class is listed once, and `:over` is one of three words.
     #[test]
     fn a_class_twice_and_an_unknown_over_are_load_errors() {
-        let e = err("(relation p T P)\n(p A H)\n\
-             (query :goal (p A ?h) :expect (or (model (p A H)) (model (p A H))))");
+        let e = err(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+             (query :goal (p A ?h) :expect (or (model (p A H)) (model (p A H))))",
+        );
         assert!(e.contains("lists the class (model (p A H)) twice"), "{e}");
-        let e = err("(relation p T P)\n(p A H)\n(query :goal (p A ?h) :over best)");
+        let e = err(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n(query :goal (p A ?h) :over best)",
+        );
         assert!(
             e.contains(":over best — one of all, minimal, maximal"),
             "{e}"
         );
         for over in ["all", "minimal", "maximal"] {
             ok(&format!(
-                "(relation p T P)\n(p A H)\n(query :goal (p A ?h) :over {over})"
+                "(relation p T P :why \"p holds of {{?1}} and {{?2}}\")\n(p A H)\n(query :goal (p A ?h) :over {over})"
             ));
         }
     }
@@ -3945,7 +3996,9 @@ mod tests {
     /// corpus is 128 entries of exactly that.
     #[test]
     fn a_query_without_expect_is_unaffected() {
-        let (_terms, kb) = ok("(relation p T P)\n(p A H)\n(query :goal (p A ?h))");
+        let (_terms, kb) = ok(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n(query :goal (p A ?h))",
+        );
         assert_eq!(kb.program().queries.len(), 1);
     }
 
@@ -3968,9 +4021,11 @@ mod tests {
 
     #[test]
     fn a_rules_pattern_view_records_variables_and_relation_heads() {
-        let (terms, kb) = ok("(relation r T T)\n(relation s T T)\n\
+        let (terms, kb) = ok(
+            "(relation r T T :why \"r holds of {?1} and {?2}\")\n(relation s T T :why \"s holds of {?1} and {?2}\")\n\
              (rule j (?p) :match (and (r ?a ?b) (not (s ?b ?c))) \
-              :assert (r ?a ?c) :why \"j\")");
+              :assert (r ?a ?c) :why \"r holds of {?a} and {?b} and s is denied of {?b} and {?c}, so r holds of {?a} and {?c}\")",
+        );
         let j = terms.syms.get("j").expect("interned");
         let rule = kb.program().rules.get(j).expect("registered");
         let names = |syms: &[Symbol]| -> Vec<&str> { syms.iter().map(|&s| terms.sym(s)).collect() };
@@ -3993,8 +4048,8 @@ mod tests {
     #[test]
     fn every_pass_accumulates_rather_than_stopping_at_the_first_problem() {
         let message = err(
-            "(macro m (?a) (x ?a))\n(macro m (?a) (y ?a))\n(relation dup)\n\
-             (relation dup)\n(rule __closed__ () :match (x ?a) :assert (y ?a))",
+            "(macro m (?a) (x ?a) :why \"x holds of {?a}\")\n(macro m (?a) (y ?a) :why \"y holds of {?a}\")\n(relation dup :why \"dup holds\")\n\
+             (relation dup :why \"dup holds\")\n(rule __closed__ () :match (x ?a) :assert (y ?a) :why \"x holds of {?a}, so y holds of {?a}\")",
         );
         assert_eq!(
             message,

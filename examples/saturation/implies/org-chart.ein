@@ -20,8 +20,8 @@
   :assert (?q ?a ?b)
   :why    "{?p} implies {?q}.")
 
-(relation boss-of T T)
-(relation leads T T)
+(relation boss-of T T :why "{?1} is the boss of {?2}")
+(relation leads T T :why "{?1} leads {?2}")
 (implies boss-of leads)
 
 (boss-of Manager Engineer :source "demo")

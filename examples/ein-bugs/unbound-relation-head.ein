@@ -22,6 +22,6 @@
 
 (rule uses-free-head (?S)
   :match  (?R ?x)
-  :assert (p ?x))
+  :assert (p ?x) :why "{?x} is in some relation ?R that no parameter binds, so p holds of {?x}")
 
 (uses-free-head p)

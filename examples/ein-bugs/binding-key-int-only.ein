@@ -32,13 +32,13 @@
 ;;; same R. The point stands: one activator, one plan, root's two `noted`
 ;;; facts.
 
-(relation edge  Node Node)
-(relation holds Node)
-(relation noted Node Node)
+(relation edge  Node Node :why "there is an edge from {?1} to {?2}")
+(relation holds Node :why "{?1} holds")
+(relation noted Node Node :why "{?1} is noted with {?2}")
 
 (rule note (?R ?f)
   :match  (and (?R ?a ?b) (holds ?f))
-  :assert (noted ?a ?f))
+  :assert (noted ?a ?f) :why "{?R} runs from {?a} to some node and {?f} holds, so {?a} is noted with {?f}")
 
 (edge 1 2) (edge 2 3)
 (holds 1)  (holds 3)

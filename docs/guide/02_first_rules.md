@@ -31,7 +31,7 @@ House-2 is next to House-1."
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
-(relation next-to T T)
+(relation next-to T T :why "{?1} is next to {?2}")
 (symmetric next-to)                       ; ← tag: "apply `symmetric` to next-to"
 (next-to House-1 House-2 :source "demo")
 (query :goal (next-to House-2 House-1))

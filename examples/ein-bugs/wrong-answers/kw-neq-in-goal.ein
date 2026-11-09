@@ -28,7 +28,7 @@
 ;;; whole word, at the boundary `00_ebnf.md` § 1 states (the user's ruling of
 ;;; 2026-11-05 on Q-M1e2.17), and the program answers its twin's R.
 
-(relation p Node) (relation neqw Node) (relation tag Node)
+(relation p Node :why "p holds of {?1}") (relation neqw Node :why "neqw holds of {?1}") (relation tag Node :why "{?1} is tagged")
 (p a) (neqw a)
-(hrule h () :match (p ?x) :assert (tag ?x))
+(hrule h () :match (p ?x) :assert (tag ?x) :why "p holds of {?x}; guess that {?x} is tagged")
 (query :goal (neqw ?y))

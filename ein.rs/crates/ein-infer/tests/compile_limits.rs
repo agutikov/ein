@@ -18,7 +18,7 @@ use ein_ir::{Ast, from_ir::load, parse};
 fn wide_rule(n: usize) -> String {
     let premises: Vec<String> = (0..n).map(|i| format!("(p ?v{i})")).collect();
     format!(
-        "(relation p Thing)\n(rule wide ()\n  :match (and {})\n  :assert (q ?v0))\n",
+        "(relation p Thing :why \"p holds of {{?1}}\")\n(rule wide ()\n  :match (and {})\n  :assert (q ?v0) :why \"p holds of {{?v0}} and of each other value the rule binds, so q holds of {{?v0}}\")\n",
         premises.join(" ")
     )
 }

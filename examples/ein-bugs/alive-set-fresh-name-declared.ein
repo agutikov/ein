@@ -32,9 +32,9 @@
 ;; when the user retired the flag: no route reads it, and a program that sets
 ;; it is refused at load.
 
-(relation p T T)
-(relation q T T)
-(relation seen T)
+(relation p T T :why "p holds of {?1} and {?2}")
+(relation q T T :why "q holds of {?1} and {?2}")
+(relation seen T :why "{?1} is seen")
 
 (p A B)
 (seen Z)

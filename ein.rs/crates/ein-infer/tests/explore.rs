@@ -803,34 +803,34 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
     }
     let programs = [
         // A premise, a nested fact and a `not`.
-        "(relation holds T) (relation pair T T) (relation wrap T) (relation hit T)
+        "(relation holds T :why \"{?1} holds\") (relation pair T T :why \"{?1} and {?2} are a pair\") (relation wrap T :why \"wrap holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")
          (holds a) (wrap (box a)) (not (pair b a))
-         (rule w () :match (holds _) :assert (hit w))
-         (rule n () :match (wrap (box _)) :assert (hit n))
-         (rule g () :match (not (pair _ ?y)) :assert (hit ?y))",
+         (rule w () :match (holds _) :assert (hit w) :why \"some value holds, so hit holds of w\")
+         (rule n () :match (wrap (box _)) :assert (hit n) :why \"wrap holds of some (box …), so hit holds of n\")
+         (rule g () :match (not (pair _ ?y)) :assert (hit ?y) :why \"some value and {?y} are stored as not a pair, so hit holds of {?y}\")",
         // An `absent`, over a relation no commitment extends.
-        "(relation holds T) (relation hit T)
+        "(relation holds T :why \"{?1} holds\") (relation hit T :why \"hit holds of {?1}\")
          (holds a)
-         (rule z () :match (absent (holds _)) :assert (hit z))
+         (rule z () :match (absent (holds _)) :assert (hit z) :why \"nothing holds, so hit holds of z\")
          (solve :no-hypothesis (holds))",
         // Two in one premise, independent.
-        "(relation pair T T) (relation hit T)
+        "(relation pair T T :why \"{?1} and {?2} are a pair\") (relation hit T :why \"hit holds of {?1}\")
          (pair a b)
-         (rule t () :match (pair _ _) :assert (hit t))
-         (rule u () :match (and (pair ?x _) (pair _ ?x)) :assert (hit u))",
+         (rule t () :match (pair _ _) :assert (hit t) :why \"some two values are a pair, so hit holds of t\")
+         (rule u () :match (and (pair ?x _) (pair _ ?x)) :assert (hit u) :why \"{?x} is first in a pair and second in a pair, so hit holds of u\")",
         // An hrule.
-        "(relation holds T T) (relation tag T)
+        "(relation holds T T :why \"holds relates {?1} to {?2}\") (relation tag T :why \"{?1} is tagged\")
          (holds a b)
-         (hrule h () :match (holds ?x _) :assert (tag ?x))",
+         (hrule h () :match (holds ?x _) :assert (tag ?x) :why \"guess that {?x}, which holds relates to some value, is tagged\")",
         // An obligation whose witness premise writes `_`, with an hrule and
         // without one.
-        "(relation item T) (relation tag T T) (relation lbl T)
+        "(relation item T :why \"{?1} is an item\") (relation tag T T :why \"{?1} is tagged {?2}\") (relation lbl T :why \"{?1} is a label\")
          (item a) (item b) (lbl x) (lbl y)
-         (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag))
-         (hrule h () :match (and (item ?x) (lbl ?l)) :assert (tag ?x ?l))",
-        "(relation item T) (relation tag T T) (relation lbl T)
+         (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag) :why \"item {?x} has no tag yet — one is still owed\")
+         (hrule h () :match (and (item ?x) (lbl ?l)) :assert (tag ?x ?l) :why \"guess that item {?x} is tagged {?l}\")",
+        "(relation item T :why \"{?1} is an item\") (relation tag T T :why \"{?1} is tagged {?2}\") (relation lbl T :why \"{?1} is a label\")
          (item a) (item b) (lbl x) (lbl y)
-         (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag))",
+         (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag) :why \"item {?x} has no tag yet — one is still owed\")",
     ];
     for wild in programs {
         let mut n = 0;

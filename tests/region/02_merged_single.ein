@@ -8,20 +8,21 @@
 ;;; (merged …) listed, the claim pins k_c = 16 as well as k_s = 8.
 ;;; The program is examples/lattice/synth/merged_states.ein's.
 
-(relation h T)
-(relation slot T)
-(relation world T)
-(relation need T T)
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h of {?2} would meet the need {?1}")
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 (need K1 A) (need K1 C)
-(hrule guess () :match (slot ?x) :assert (h ?x))
-(rule imp-A-B () :match (h A) :assert (h B))
-(rule imp-C-D () :match (h C) :assert (h D))
-(rule dead-1 () :match (and (h A) (h C)) :assert (false))
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess that h holds of the slot {?x}")
+(rule imp-A-B () :match (h A) :assert (h B) :why "h holds of A, so h holds of B")
+(rule imp-C-D () :match (h C) :assert (h D) :why "h holds of C, so h holds of D")
+(rule dead-1 () :match (and (h A) (h C)) :assert (false) :why "h holds of both A and C, which cannot be")
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
-  :assert (open h))
+  :assert (open h)
+  :why    "h holds of nothing that meets the need K1 — one is still owed")
 
 (solve
   :expect (region

@@ -9,6 +9,6 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation z)
+(relation z :why "z holds")
 (z)
 (z :source "nothing at all")

@@ -250,10 +250,10 @@ fn a_containers_positions_name_its_stored_program() {
     // too.
     std::fs::write(
         dir.join("g.ein"),
-        "(relation p Node) (relation hit Node)\n\
+        "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"{?1} is hit\")\n\
          (p a)\n\
-         (macro one (?a) (eq ?a))\n\
-         (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x))\n\
+         (macro one (?a) (eq ?a) :why \"the equality (eq {?a}), written with one argument\")\n\
+         (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x) :why \"p holds of {?x} and the pattern one holds of {?x}, so {?x} is hit\")\n\
          (query :goal (hit ?x))\n",
     )
     .expect("written");

@@ -201,7 +201,7 @@ fn the_kernel_names_a_macro_may_not_shadow() {
         );
     }
     for name in ["__closed__", "__symmetric__"] {
-        let src = format!("(macro {name} (?p) (rel ?p))");
+        let src = format!("(macro {name} (?p) (rel ?p) :why \"rel holds of {{?p}}\")");
         let err = load_macro_names(&src).expect_err("reserved names are rejected at load");
         assert!(
             err.contains(&format!("macro '{name}' shadows a reserved kernel name")),
@@ -209,7 +209,7 @@ fn the_kernel_names_a_macro_may_not_shadow() {
         );
     }
     for name in ["forall", "unknown", "co"] {
-        let src = format!("(macro {name} (?p) (rel ?p))");
+        let src = format!("(macro {name} (?p) (rel ?p) :why \"rel holds of {{?p}}\")");
         let names = load_macro_names(&src).expect("a non-reserved name loads");
         assert_eq!(names, vec![name.to_string()]);
     }
@@ -685,7 +685,10 @@ fn a_rule_needs_params_and_a_query_needs_a_kw_pair() {
     }
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let forms = parse_ok(&mut ast, "(rule x ())");
+    let forms = parse_ok(
+        &mut ast,
+        "(rule x () :why \"rule x says nothing: it has neither a :match nor an :assert\")",
+    );
     let e = ein_ir::load(&mut ast, &mut terms, &forms, None).expect_err("an empty rule");
     assert_eq!(e.0, "(rule x) missing :match or :assert at None");
 }

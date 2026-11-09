@@ -29,10 +29,10 @@
 ;;; region-spec: {"name":"trigger_hole","about":"A hole made by an obligation, not by an absent (lattice/04's mechanism):\nB triggers a debt only C pays, so {A,B} owes between {A} and {A,B,C}.\nBeside it, a dead node revived — {A,D} dies without E — so the region\nhas a hole of each kind. Root owes A.","candidates":"ABCDE","R":[["A","ABCDE"]],"holes":[["AB","ABDE"],["AD","ABCD"]],"owing":[["","BCDE"],["AB","ABDE"]]}
 ;;; region-status: oRoooRoRoxoooxoxoRoooRoRoRoooRoR
 
-(relation h T)
-(relation slot T)
-(relation world T)
-(relation need T T)
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)

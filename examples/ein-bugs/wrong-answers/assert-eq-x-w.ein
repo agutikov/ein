@@ -22,6 +22,6 @@
 ;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,
 ;;; release and debug alike).
 
-(relation p Node)
+(relation p Node :why "p holds of {?1}")
 (p a)
-(rule r () :match (p ?x) :assert (eq ?x w))
+(rule r () :match (p ?x) :assert (eq ?x w) :why "p holds of {?x}, so {?x} is w")

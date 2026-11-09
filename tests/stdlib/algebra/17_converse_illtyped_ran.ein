@@ -15,7 +15,7 @@
 
 (relation is-a*    T T :why "{?1} is a subtype of {?2}")
 (relation owns     Person Pet   :why "{?1} owns {?2}")
-(relation owned-by Pet    Place)
+(relation owned-by Pet    Place :why "{?1} is owned by {?2}")
 
 (converse owns owned-by)
 (converse-illtyped-dom owns owned-by is-a*)   ; well-typed on its side: silent

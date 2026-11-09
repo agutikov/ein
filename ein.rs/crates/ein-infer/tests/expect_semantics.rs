@@ -26,23 +26,23 @@ use ein_ir::{Ast, Node};
 /// program: R is seven states — ∅, the four single seatings, the two full
 /// ones — and its maximal line the two full ones.
 const SEATS: &str = r#"
-(relation instance Thing Type)
-(relation seat Person Slot)
+(relation instance Thing Type :why "{?1} is an instance of {?2}")
+(relation seat Person Slot :why "{?1} sits in {?2}")
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)
 (rule one-per-person (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-      :assert (false))
+      :assert (false) :why "{?R} gives {?a} both {?b} and {?c}, and {?a} may have only one")
 (rule one-per-seat (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-      :assert (false))
+      :assert (false) :why "{?R} gives {?c} to both {?a} and {?b}, and {?c} may go to only one")
 (one-per-person seat) (one-per-seat seat)
-(hrule guess (?p ?s) :match (instance ?p Person) :assert (seat ?p ?s))
+(hrule guess (?p ?s) :match (instance ?p Person) :assert (seat ?p ?s) :why "guess that {?p} sits in {?s}")
 (solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
 "#;
 
 /// A program whose root is dead: R is empty, every node dead.
 const DEAD: &str = r#"
-(relation p T)
-(rule no () :match (p A) :assert (false))
+(relation p T :why "p holds of {?1}")
+(rule no () :match (p A) :assert (false) :why "p holds of A, which cannot be")
 (p A)
 "#;
 
@@ -286,11 +286,11 @@ fn a_decided_single_decides_a_claim_over_all_of_r() {
     // One guest who must sit, one seat: ∅ owes, and R is the one seating.
     const ONE: &str = r#"
 (import std.algebra :symbols (total-owed))
-(relation is-a T T)
-(relation seat Person Slot)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation seat Person Slot :why "{?1} sits in {?2}")
 (is-a Ann Person) (is-a S1 Slot)
 (total-owed seat is-a)
-(hrule guess (?p ?s) :match (is-a ?p Person) :assert (seat ?p ?s))
+(hrule guess (?p ?s) :match (is-a ?p Person) :assert (seat ?p ?s) :why "guess that {?p} sits in {?s}")
 (solve :hrules (guess (Ann S1)))
 "#;
     let single = Mode {
@@ -346,7 +346,7 @@ fn an_exhausted_find_decides_its_part() {
 /// place.
 #[test]
 fn rendering_agrees_with_the_fact_dump() {
-    let src = "(relation p Thing Place)\n(relation q Thing)\n\
+    let src = "(relation p Thing Place :why \"p holds of {?1} and {?2}\")\n(relation q Thing :why \"q holds of {?1}\")\n\
                (p A H1)\n(p A 42)\n(q B)\n(not (p A H2))\n";
     let mut ast = Ast::new();
     let mut terms = Terms::new();

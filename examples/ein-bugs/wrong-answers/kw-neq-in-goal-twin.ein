@@ -4,7 +4,7 @@
 ;;; does. Its answer is the witness's right one, the name read back (`ein
 ;;; solve FILE` at `35186bc0`, release and debug).
 
-(relation p Node) (relation nneqw Node) (relation tag Node)
+(relation p Node :why "p holds of {?1}") (relation nneqw Node :why "nneqw holds of {?1}") (relation tag Node :why "{?1} is tagged")
 (p a) (nneqw a)
-(hrule h () :match (p ?x) :assert (tag ?x))
+(hrule h () :match (p ?x) :assert (tag ?x) :why "p holds of {?x}; guess that {?x} is tagged")
 (query :goal (nneqw ?y))

@@ -35,13 +35,13 @@
   :assert (co-located ?b ?y)
   :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}.")
 
-(relation is-a T T)
+(relation is-a T T :why "{?1} is a {?2}")
 (is-a House-1 House)
 (is-a House-2 House)
 (is-a Norwegian Nationality)
 (is-a Blue Color)
-(relation co-located T T)
-(relation next-to T T)
+(relation co-located T T :why "{?1} and {?2} are in the same house")
+(relation next-to T T :why "{?1} is next to {?2}")
 (square-unique next-to House)
 
 (co-located Norwegian House-1 :source "(10)")

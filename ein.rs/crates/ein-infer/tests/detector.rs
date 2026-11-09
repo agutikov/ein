@@ -24,36 +24,36 @@ use ein_ir::{Ast, load, parse};
 /// § 2.3): stratified (r < q < p), one priority, `derive-p` written first, so
 /// root holds a stale `(p one)` beside `(q one)` from scratch, and swapping
 /// the two rules' text changes the universe (§ 7.1 there).
-const STRATIFIED_STALE: &str = "(relation thing T) (relation p T) (relation q T) (relation r T)
+const STRATIFIED_STALE: &str = "(relation thing T :why \"{?1} is a thing\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\")
      (thing one)
-     (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x))
-     (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x))
+     (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :why \"{?x} is a thing and q does not hold of it, so p holds of {?x}\")
+     (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :why \"{?x} is a thing and r does not hold of it, so q holds of {?x}\")
      (query :goal (r ?x))";
 
 /// `lattice/10_fifo_gap.ein` with the reader `r2` at priority 100: it is
 /// admitted before `r1` in every written order, so no equal-priority pair
 /// exists for a reorder to move, and the order check still reports it (the
 /// proposal's § 7, item 4).
-const FIFO_GAP_PRIORITY: &str = "(relation thing T) (relation a T) (relation b T)
-     (relation p T) (relation q T) (relation z T)
+const FIFO_GAP_PRIORITY: &str = "(relation thing T :why \"{?1} is a thing\") (relation a T :why \"a holds of {?1}\") (relation b T :why \"b holds of {?1}\")
+     (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation z T :why \"z holds of {?1}\")
      (thing one)
-     (hrule guess-a () :match (thing ?x) :assert (a ?x))
-     (hrule guess-b () :match (thing ?x) :assert (b ?x))
-     (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x))
-     (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x))
+     (hrule guess-a () :match (thing ?x) :assert (a ?x) :why \"guess that a holds of {?x}, a thing\")
+     (hrule guess-b () :match (thing ?x) :assert (b ?x) :why \"guess that b holds of {?x}, a thing\")
+     (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :why \"a and b hold of {?x} and q does not, so p holds of {?x}\")
+     (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :why \"a holds of {?x} and z does not, so q holds of {?x}\")
      (query :goal (p ?x))";
 
 /// A flagged program whose root is dead, over 17 candidates: an obligation's
 /// trigger is its site, and `dead` fires at root.
 const ROOT_DEAD_PAST_THE_LIMIT: &str = "
-     (relation thing T) (relation h T) (relation need T T)
+     (relation thing T :why \"{?1} is a thing\") (relation h T :why \"h holds of {?1}\") (relation need T T :why \"h holding of {?2} pays debt {?1}\")
      (thing A) (thing B) (thing C) (thing D) (thing E) (thing F) (thing G) (thing H)
      (thing I) (thing J) (thing K) (thing L) (thing M) (thing N) (thing O) (thing P)
      (thing Q)
      (need K1 A)
-     (hrule guess () :match (thing ?x) :assert (h ?x))
-     (rule dead () :match (thing A) :assert (false))
-     (rule owe () :match (and (h ?x) (absent (and (need K1 ?y) (h ?y)))) :assert (open h))
+     (hrule guess () :match (thing ?x) :assert (h ?x) :why \"guess that h holds of {?x}, a thing\")
+     (rule dead () :match (thing A) :assert (false) :why \"A is a thing, which cannot be\")
+     (rule owe () :match (and (h ?x) (absent (and (need K1 ?y) (h ?y)))) :assert (open h) :why \"h holds of {?x}, and of nothing that pays debt K1: one such is still owed\")
      (query :goal (h ?x))";
 
 /// The static check of `text` (read from `at`), through the oracle's own

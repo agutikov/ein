@@ -18,10 +18,10 @@
 ;;; Once S1f.5.1 refuses the witness, this file is the program a bare `_` is
 ;;; rewritten as.
 
-(relation holds T) (relation hit T) (relation big T) (relation big2 T) (relation big3 T) (relation small T) (relation c T)
+(relation holds T :why "{?1} holds") (relation hit T :why "{?1} is hit") (relation big T :why "{?1} is big") (relation big2 T :why "big2 holds of {?1}") (relation big3 T :why "big3 holds of {?1}") (relation small T :why "{?1} is small") (relation c T :why "c holds of {?1}")
 (big b0) (big2 b0) (big3 b0)
-(rule m1 () :match (and (big ?x) (big2 ?x) (big3 ?x)) :assert (holds ?x))
-(rule w () :match (holds ?w0) :assert (hit w))
-(rule k () :match (and (hit w) (c x)) :assert (false))
-(rule s () :match (small ?x) :assert (holds ?x))
+(rule m1 () :match (and (big ?x) (big2 ?x) (big3 ?x)) :assert (holds ?x) :why "{?x} is big, and big2 and big3 hold of it, so {?x} holds")
+(rule w () :match (holds ?w0) :assert (hit w) :why "{?w0} holds, so w is hit")
+(rule k () :match (and (hit w) (c x)) :assert (false) :why "w is hit and c holds of x, which cannot be")
+(rule s () :match (small ?x) :assert (holds ?x) :why "{?x} is small, so {?x} holds")
 (c x) (small s0)

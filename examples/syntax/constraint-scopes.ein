@@ -9,8 +9,8 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(relation next-to House House)
-(relation right-of House House)
+(relation next-to House House :why "{?1} is next to {?2}")
+(relation right-of House House :why "{?1} is right of {?2}")
 (bijective next-to)
 (symmetric next-to)
 (includes right-of next-to)

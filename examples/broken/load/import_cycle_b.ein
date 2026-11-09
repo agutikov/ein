@@ -1,4 +1,4 @@
 ;; The other end of the `import_cycle.ein` pair.
 
 (import import_cycle)
-(relation y T T)
+(relation y T T :why "y holds of {?1} and {?2}")

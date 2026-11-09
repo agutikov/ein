@@ -24,12 +24,12 @@
 ;;; side's frontier. Since S1e2.2.21's fix, `(q a) (seed a)`, in either
 ;;; build.
 
-(relation seed T) (relation p T) (relation q T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}")
 
 (seed a)
 
-(rule mk () :match (seed ?x) :assert (p ?x))
+(rule mk () :match (seed ?x) :assert (p ?x) :why "{?x} is a seed, so p holds of {?x}")
 
-(hrule g () :match (seed ?x) :assert (q ?x))
+(hrule g () :match (seed ?x) :assert (q ?x) :why "{?x} is a seed: guess that q holds of {?x}")
 
-(rule neg () :match (q ?x) :assert (not (p ?x)))
+(rule neg () :match (q ?x) :assert (not (p ?x)) :why "q holds of {?x}, so p does not hold of {?x}")

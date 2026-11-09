@@ -21,10 +21,10 @@
 ;;; region-spec: {"name":"local_not_global","about":"The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come\ntogether or not at all, as lattice/06_friends_tables' groups do. Either\nalone owes the other, so ∅ and {A,B} are in R with a hole on each side.\nEvery edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n∅ maximal and {A,B} minimal, and the cube says neither is.","candidates":"AB","R":[["",""],["AB","AB"]],"owing":[["A","A"],["B","B"]]}
 ;;; region-status: RooR
 
-(relation h T)
-(relation slot T)
-(relation world T)
-(relation need T T)
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
 
 (world W)
 (slot A) (slot B)

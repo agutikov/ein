@@ -20,7 +20,7 @@
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
-(relation co-located T T)
+(relation co-located T T :why "{?1} and {?2} share a location")
 (symmetric co-located)
 
 (co-located Alice Bob :source "demo")

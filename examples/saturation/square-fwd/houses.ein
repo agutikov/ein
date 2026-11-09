@@ -30,8 +30,8 @@
   :assert (co-located ?b ?y)
   :why    "square ({?R}, fwd): {?a}↔{?x} bridges {?b}↔{?y}.")
 
-(relation right-of T T)
-(relation co-located T T)
+(relation right-of T T :why "{?1} is right of {?2}")
+(relation co-located T T :why "{?1} and {?2} are in the same house")
 (square-fwd right-of)
 
 (right-of B A :source "(1)")

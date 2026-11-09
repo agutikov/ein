@@ -68,9 +68,9 @@
   :assert (?R ?x)
   :why    "guess: is {?x} {?R}?")
 
-(relation is-a     T T)
-(relation proposed T)
-(relation incompat T T)
+(relation is-a     T T :why "{?1} is a {?2}")
+(relation proposed T   :why "{?1} is proposed")
+(relation incompat T T :why "{?1} and {?2} may not both be proposed")
 
 (symmetric incompat)
 

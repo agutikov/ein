@@ -21,7 +21,7 @@
   :assert (?rel ?a ?c)
   :why    "{?rel} is transitive.")
 
-(relation before-of T T)
+(relation before-of T T :why "{?1} is before {?2}")
 (transitive before-of)
 
 (before-of Breakfast Lunch :source "demo")

@@ -70,7 +70,7 @@ atom that fills an argument slot, and "X is one of these" is said with
 ([`zebra2.ein`](../../../../examples/zebra2.ein) does exactly this):
 
 ```lisp
-(relation is-a T T)          ;; the membership relation, declared like any other
+(relation is-a T T :why "{?1} is a {?2}")          ;; the membership relation, declared like any other
 ```
 
 The author's `(object RELATION)` / `(is-a RELATION OBJECT)` instinct is
@@ -163,7 +163,8 @@ ordinary ein rule:
 (symmetric next-to)                       ;; a fact …
 (rule symmetric (?R)                      ;; … given meaning by a rule
   :match  (?R ?a ?b)
-  :assert (?R ?b ?a))
+  :assert (?R ?b ?a)
+  :why    "{?R} is symmetric: {?a} ↔ {?b}.")
 ```
 
 `std.algebra` implements *"Tarski's ⟨∪, ∩, ¬, 0, 1, ; , ⁻¹, 1'⟩ … as
@@ -183,8 +184,8 @@ kernel forms; they are `(macro …)` declarations in
 [`stdlib/macro.ein`](../../../../stdlib/macro.ein):
 
 ```lisp
-(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))
-(macro unknown (?P)     (and (absent ?P) (absent (not ?P))))
+(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))) :why "every {?b} the guard {?G} holds of satisfies {?B}: none satisfies the guard and not the body")
+(macro unknown (?P)     (and (absent ?P) (absent (not ?P))) :why "{?P} is unknown: neither it nor its negation holds")
 ```
 
 ## 4. The abstract syntax of Ein, as Ein relations (descriptive)
@@ -197,11 +198,11 @@ each level; no M1 rule consumes them (they are documentation that
 execute. `Sort`, `Pattern`, `Property` here are atoms (Objects, §2):
 
 ```lisp
-(relation fact-of   Relation Object)   ;; a Fact applies a Relation to Object slots
-(relation sig-of    Relation Sort)     ;; a Relation has argument Sorts
-(relation prop-of   Property Relation) ;; a Property tags a Relation
-(relation match-of  Rule Pattern)      ;; a Rule has a :match pattern …
-(relation assert-of Rule Pattern)      ;; … and an :assert pattern
+(relation fact-of   Relation Object   :why "a fact applies {?1} to {?2}")            ;; a Fact applies a Relation to Object slots
+(relation sig-of    Relation Sort     :why "{?1} has an argument of sort {?2}")      ;; a Relation has argument Sorts
+(relation prop-of   Property Relation :why "{?1} is a property of {?2}")             ;; a Property tags a Relation
+(relation match-of  Rule Pattern      :why "rule {?1} has the :match pattern {?2}")  ;; a Rule has a :match pattern …
+(relation assert-of Rule Pattern      :why "rule {?1} has the :assert pattern {?2}") ;; … and an :assert pattern
 ```
 
 §5 (F5) is what turns this tier from descriptive into operational: once

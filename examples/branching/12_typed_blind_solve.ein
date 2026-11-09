@@ -113,8 +113,8 @@
   :assert (false)
   :why    "{?R} arg 1 expects {?Ran}; {?b} is not a {?Ran}")
 
-(relation color-of House Color)
-(relation is-a     T T)
+(relation color-of House Color :why "the colour of {?1} is {?2}")
+(relation is-a     T T         :why "{?1} is a {?2}")
 
 ;; color-of is a bijection between House and Color.
 (functional color-of)          ; violation-rule activator (2-arg)

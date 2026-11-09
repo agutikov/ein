@@ -434,6 +434,12 @@ fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
 /// rules and its two macros, `forall` and `unknown`, carry their `:why`
 /// (the macros' since S1f.5.5's swap), and it declares no relation and no
 /// hrule.
+///
+/// **And it refuses none** since M1f S1f.5.14's T1f.5.14.7, which wrote every
+/// missing `:why` of the corpus: every program that loads without the flag
+/// loads with it, so the flag can be the default. Until then the sweep asked
+/// that both outcomes be reached, so that it was looking at something; a
+/// program written since without a `:why` fails it here, by name.
 #[test]
 fn require_why_decides_loading_only() {
     let (mut same, mut refused) = (0, 0);
@@ -465,6 +471,7 @@ fn require_why_decides_loading_only() {
                         "{rel}: the flag refused with {line}"
                     );
                 }
+                eprintln!("{rel}: {e}");
                 refused += 1;
             }
         }
@@ -472,10 +479,11 @@ fn require_why_decides_loading_only() {
             assert!(load(true).is_ok(), "{rel}: a stdlib module is refused");
         }
     }
-    // Both outcomes are reached, or the sweep is looking at nothing.
+    // Every corpus program carries its `:why`s (T1f.5.14.7), and the sweep
+    // is looking at something.
     assert!(
-        same > 0 && refused > 0,
-        "{same} let through, {refused} refused"
+        same > 300 && refused == 0,
+        "{same} let through, {refused} refused: a corpus program lacks a :why"
     );
     eprintln!("{same} let through, {refused} refused");
 }

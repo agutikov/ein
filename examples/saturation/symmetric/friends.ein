@@ -18,7 +18,7 @@
   :assert (?rel ?b ?a)
   :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
 
-(relation friend-of T T)
+(relation friend-of T T :why "{?1} is a friend of {?2}")
 (symmetric friend-of)
 
 (friend-of Carol Dave :source "demo")

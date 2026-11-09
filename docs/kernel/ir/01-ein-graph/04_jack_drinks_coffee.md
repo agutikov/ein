@@ -72,7 +72,7 @@ separate rule. See §2.
 
 ;; Schema + implicit assumptions (no :source → ONTOLOGY layer)
 ;; Types
-(relation is-a T T)
+(relation is-a T T :why "{?1} is a {?2}")
 
 ;; Instances
 (is-a Jack   Human)
@@ -80,8 +80,8 @@ separate rule. See §2.
 
 ;; Relation declarations — flat args (form b, no body follows;
 ;; see 03_ein_model.md §7.2).
-(relation can-drink Human Drink)
-(relation drinks    Human Drink)
+(relation can-drink Human Drink :why "{?1} can drink {?2}")
+(relation drinks    Human Drink :why "{?1} drinks {?2}")
 
 ;; Type-level fact (1): humans can drink drinks.
 (can-drink Human Drink)

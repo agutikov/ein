@@ -46,14 +46,14 @@
   :symbols (compose derive-join join-l join-r
             compose-contravariant join-converse))
 
-(relation r   Node Node)   ; declared and empty — every route runs backwards
-(relation s   Node Node)
-(relation t   Node Node)   ; = r;s
-(relation j   Node Node)   ; = r∪s
+(relation r   Node Node :why "{?1} r-reaches {?2}")   ; declared and empty — every route runs backwards
+(relation s   Node Node :why "{?1} s-reaches {?2}")
+(relation t   Node Node :why "{?1} reaches {?2} by an r step then an s step")   ; = r;s
+(relation j   Node Node :why "{?1} reaches {?2} by an r step or an s step")   ; = r∪s
 (relation r-c Node Node :why "{?1} is r-reached from {?2}")
-(relation s-c Node Node)
-(relation t-c Node Node)
-(relation j-c Node Node)
+(relation s-c Node Node :why "{?1} is s-reached from {?2}")
+(relation t-c Node Node :why "{?1} is reached from {?2} by an r step then an s step")
+(relation j-c Node Node :why "{?1} is reached from {?2} by an r step or an s step")
 
 (converse r r-c) (converse s s-c) (converse t t-c) (converse j j-c)
 

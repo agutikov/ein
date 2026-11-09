@@ -259,7 +259,7 @@ mod tests {
     fn the_naf_world_includes_the_candidate() {
         let src = "(rule self-block ()\n  :match (and (cand ?x) (absent (cand ?x)))\n\
                    \x20 :assert (false)\n  :why \"unsatisfiable in any one world\")\n\
-                   (relation cand T)";
+                   (relation cand T :why \"cand holds of {?1}\")";
         assert!(!dies(src, "cand", "A"));
     }
 
@@ -279,8 +279,8 @@ mod tests {
     fn a_nested_absent_is_not_judged_at_all() {
         let src = "(rule r ()\n  :match (and (s ?x) (absent (and (p ?y) \
                    (absent (and (q ?y) (absent (s ?y)))))))\n  :assert (false) \
-)\n\
-                   (relation s T) (relation p T) (relation q T)\n\
+:why \"s holds of {?x} while everything p holds of is q and not s, which cannot be\")\n\
+                   (relation s T :why \"s holds of {?1}\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\")\n\
                    (p B :source \"(1)\") (q B :source \"(2)\")";
         assert!(!dies(src, "s", "B"));
     }
@@ -292,7 +292,7 @@ mod tests {
     fn a_positive_rule_still_kills() {
         let src = "(rule blow-up ()\n  :match (and (cand ?x) (bad ?x))\n  :assert (false)\n\
                    \x20 :why \"cand + bad is absurd\")\n\
-                   (relation cand T)\n(relation bad T)\n(bad A :source \"(1)\")";
+                   (relation cand T :why \"cand holds of {?1}\")\n(relation bad T :why \"{?1} is bad\")\n(bad A :source \"(1)\")";
         assert!(dies(src, "cand", "A"));
         assert!(!dies(src, "cand", "B"));
     }

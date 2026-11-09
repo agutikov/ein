@@ -35,12 +35,12 @@
   :assert (false)
   :why    "{?R} not functional: {?a} has {?b} and {?c}.")
 
-(relation is-a       T T)
+(relation is-a       T T :why "{?1} is a {?2}")
 ;; S1.7.23 — `co-located` relates a Color to a Drink; the typed
 ;; signature lets hypgen's name-free candidate set exclude the type
 ;; atoms (`Color`/`Drink`/`T`) so only leaf instances are guessed
 ;; (no kernel `is-a` read; signature is object-selection metadata).
-(relation co-located Color Drink)
+(relation co-located Color Drink :why "{?1} is co-located with {?2}")
 (symmetric         co-located)
 (transitive        co-located)
 (sibling-exclusive is-a co-located)

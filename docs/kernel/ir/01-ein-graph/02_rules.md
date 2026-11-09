@@ -385,8 +385,8 @@ relation R\* and bridge it via the `includes` activator
 (every direct R-edge lifts to R\*), plus `(transitive R*)`:
 
 ```lisp
-(relation is-a  T T)
-(relation is-a* T T)
+(relation is-a  T T :why "{?1} is a {?2}")
+(relation is-a* T T :why "{?1} is a {?2} (transitively)")
 (includes is-a is-a*)    ; the `includes` rule: every (is-a a b) → (is-a* a b)
 (transitive is-a*)        ; the `transitive` rule on is-a*
 ```

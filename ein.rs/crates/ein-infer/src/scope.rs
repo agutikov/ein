@@ -186,10 +186,10 @@ mod tests {
 
     /// W6's `uncovered.ein`: the obligations rung owes `seats` alone.
     const OBLIGED: &str = "(import std.algebra :symbols (total-owed surjective-owed))\n\
-        (relation is-a T T)\n(relation seats Guest Chair)\n(relation knows Guest Guest)\n\
+        (relation is-a T T :why \"{?1} is a {?2}\")\n(relation seats Guest Chair :why \"{?1} is seated on {?2}\")\n(relation knows Guest Guest :why \"{?1} knows {?2}\")\n\
         (is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair)\n\
         (total-owed seats is-a)\n(surjective-owed seats is-a)\n";
-    const MUTUAL: &str = "(rule knows-is-mutual () :match (knows ?a ?b) :assert (knows ?b ?a))\n";
+    const MUTUAL: &str = "(rule knows-is-mutual () :match (knows ?a ?b) :assert (knows ?b ?a) :why \"{?a} knows {?b}, so {?b} knows {?a}\")\n";
 
     /// Clause 3 on the obligations rung, and clause 1: `knows`, which a rule
     /// concludes and no obligation owes, is named; `is-a`, which no rule
@@ -213,7 +213,7 @@ mod tests {
     /// program scopes out, is not named.
     #[test]
     fn an_arity_the_blind_enumerator_skips_is_outside_unless_scoped_out() {
-        let decls = "(relation is-a T T)\n(relation r3 T T T)\n(relation r2 T T)\n\
+        let decls = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r3 T T T :why \"r3 holds of {?1}, {?2} and {?3}\")\n(relation r2 T T :why \"r2 holds of {?1} and {?2}\")\n\
                      (is-a A T) (is-a B T)\n";
         let src = format!("{decls}(solve :no-hypothesis (is-a))\n(query :goal (r3 ?x ?y ?z))");
         assert_eq!(named(&src), [("r3".to_string(), Why::Arity)]);
@@ -234,9 +234,9 @@ mod tests {
     /// outside, though R's states differ in it.
     #[test]
     fn a_concluded_relation_no_hrule_proposes_is_outside() {
-        let src = "(relation thing T)\n(relation a T)\n(relation p T)\n(thing one)\n\
-                   (hrule guess-a () :match (thing ?x) :assert (a ?x))\n\
-                   (rule from-a () :match (a ?x) :assert (p ?x))\n\
+        let src = "(relation thing T :why \"{?1} is a thing\")\n(relation a T :why \"a holds of {?1}\")\n(relation p T :why \"p holds of {?1}\")\n(thing one)\n\
+                   (hrule guess-a () :match (thing ?x) :assert (a ?x) :why \"guess that a holds of the thing {?x}\")\n\
+                   (rule from-a () :match (a ?x) :assert (p ?x) :why \"a holds of {?x}, so p holds of {?x}\")\n\
                    (query :goal (a ?x))";
         assert_eq!(named(src), [("p".to_string(), Why::NoHrule)]);
     }

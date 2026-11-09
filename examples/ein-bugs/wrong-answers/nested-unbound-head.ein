@@ -34,6 +34,6 @@
 ;;; named by a name or by a parameter its activator binds*; the top-level
 ;;; `(?r b)` gets the same line.
 
-(relation box Node) (relation hit Node) (relation a Node)
+(relation box Node :why "{?1} is in a box") (relation hit Node :why "{?1} is hit") (relation a Node :why "a holds of {?1}")
 (box (a b))
-(rule r () :match (box (?r b)) :assert (hit z))
+(rule r () :match (box (?r b)) :assert (hit z) :why "some fact about b is in a box, so z is hit")

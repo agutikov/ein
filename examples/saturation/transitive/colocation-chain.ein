@@ -23,7 +23,7 @@
   :assert (?rel ?a ?c)
   :why    "{?rel} is transitive: {?a} →{?rel}→ {?b} →{?rel}→ {?c}.")
 
-(relation co-located T T)
+(relation co-located T T :why "{?1} and {?2} share a location")
 (transitive co-located)
 
 (co-located A B :source "(1)")

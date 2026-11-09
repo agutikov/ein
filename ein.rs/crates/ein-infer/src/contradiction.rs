@@ -163,7 +163,7 @@ mod tests {
     #[test]
     fn a_pair_and_a_direct_are_both_found_direct_first() {
         let (terms, kb) = kb_of(
-            "(relation p Thing)\n(p one)\n(not (p one))\n(false)\n(p two)\n(not (p three))\n",
+            "(relation p Thing :why \"p holds of {?1}\")\n(p one)\n(not (p one))\n(false)\n(p two)\n(not (p three))\n",
         );
         let found = detect(&kb, &terms);
         assert_eq!(found.len(), 2, "{found:?}");
@@ -177,7 +177,8 @@ mod tests {
 
     #[test]
     fn a_pairs_sides_are_both_its_facts_and_a_directs_its_one() {
-        let (terms, kb) = kb_of("(relation p Thing)\n(p one)\n(not (p one))\n(false)\n");
+        let (terms, kb) =
+            kb_of("(relation p Thing :why \"p holds of {?1}\")\n(p one)\n(not (p one))\n(false)\n");
         let found = detect(&kb, &terms);
         let direct = found[0];
         let pair = found[1];
@@ -192,7 +193,8 @@ mod tests {
 
     #[test]
     fn the_incremental_check_agrees_with_the_scan() {
-        let (terms, kb) = kb_of("(relation p Thing)\n(p one)\n(not (p one))\n(p two)\n");
+        let (terms, kb) =
+            kb_of("(relation p Thing :why \"p holds of {?1}\")\n(p one)\n(not (p one))\n(p two)\n");
         // Every fact the KB holds, checked both ways. The scan is over the
         // whole KB, so on a consistent-until-now KB the two agree fact by fact.
         let flagged: Vec<bool> = kb.facts().map(|f| contradicts(&kb, &terms, f)).collect();
@@ -209,7 +211,8 @@ mod tests {
 
     #[test]
     fn a_consistent_kb_reports_nothing() {
-        let (terms, kb) = kb_of("(relation p Thing)\n(p one)\n(not (p two))\n");
+        let (terms, kb) =
+            kb_of("(relation p Thing :why \"p holds of {?1}\")\n(p one)\n(not (p two))\n");
         assert!(detect(&kb, &terms).is_empty());
         assert!(!has_contradiction(&kb, &terms));
         for f in kb.facts() {

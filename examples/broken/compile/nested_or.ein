@@ -6,10 +6,10 @@
 ; (unsound), and its mirror `(absent (or (p ?x) (q ?x)))` never fired with
 ; neither present (incomplete, and permanently: the empty sub-plan makes the
 ; guard fail, and a failing monotone guard retires its candidate).
-(relation a Thing)
-(relation p Thing)
-(relation q Thing)
+(relation a Thing :why "a holds of {?1}")
+(relation p Thing :why "p holds of {?1}")
+(relation q Thing :why "q holds of {?1}")
 
 (rule nested-disjunction ()
   :match  (and (a ?x) (or (p ?x) (q ?x)))
-  :assert (p ?x))
+  :assert (p ?x) :why "a holds of {?x} and so does p or q, so p holds of {?x}")

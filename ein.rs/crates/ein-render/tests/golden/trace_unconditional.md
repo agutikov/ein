@@ -156,7 +156,7 @@ Derives `not(color-loc(Blue, H3))`.
 
 Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)`, `is-a(Red, Color)`, `is-a(H2, House)`
 
-Derives `color-loc(Red, H2)`.
+Derives `color-loc(Red, H2)` — H2 is painted Red
 
 <dot>
 
@@ -166,7 +166,7 @@ Derives `color-loc(Red, H2)`.
 
 Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)`, `is-a(Green, Color)`, `is-a(H3, House)`
 
-Derives `color-loc(Green, H3)`.
+Derives `color-loc(Green, H3)` — H3 is painted Green
 
 <dot>
 
@@ -176,7 +176,7 @@ Derives `color-loc(Green, H3)`.
 
 Premises: `functional(color-loc)`, `total(color-loc)`, `relation(color-loc, Color, House)`, `is-a(Blue, Color)`, `is-a(H1, House)`
 
-Derives `color-loc(Blue, H1)`.
+Derives `color-loc(Blue, H1)` — H1 is painted Blue
 
 <dot>
 
@@ -226,7 +226,7 @@ Derives `not(color-loc(Green, H1))`.
 
 Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)`, `is-a(H1, House)`, `is-a(Blue, Color)`
 
-Derives `color-loc(Blue, H1)`.
+Derives `color-loc(Blue, H1)` — H1 is painted Blue
 
 <dot>
 
@@ -236,7 +236,7 @@ Derives `color-loc(Blue, H1)`.
 
 Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)`, `is-a(H2, House)`, `is-a(Red, Color)`
 
-Derives `color-loc(Red, H2)`.
+Derives `color-loc(Red, H2)` — H2 is painted Red
 
 <dot>
 
@@ -246,7 +246,7 @@ Derives `color-loc(Red, H2)`.
 
 Premises: `injective(color-loc)`, `surjective(color-loc)`, `relation(color-loc, Color, House)`, `is-a(H3, House)`, `is-a(Green, Color)`
 
-Derives `color-loc(Green, H3)`.
+Derives `color-loc(Green, H3)` — H3 is painted Green
 
 <dot>
 

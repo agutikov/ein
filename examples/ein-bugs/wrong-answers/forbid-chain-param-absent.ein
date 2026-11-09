@@ -31,13 +31,13 @@
 ;;; rule 'watch' derives resting on (absent …) over the relation its
 ;;; parameter ?R names`.
 
-(relation seed T) (relation p T) (relation p2 T) (relation y T) (relation watch T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation y T :why "y holds of {?1}") (relation watch T :why "the relation {?1} is watched")
 
 (seed a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
 
-(rule mk    ()   :match (p ?x) :assert (watch p2))
-(rule watch (?R) :match (and (seed ?x) (absent (?R ?x))) :assert (y ?x))
-(rule bad   ()   :match (y ?x) :assert (false))
+(rule mk    ()   :match (p ?x) :assert (watch p2) :why "p holds of {?x}, so p2 is watched, switching rule watch on for it")
+(rule watch (?R) :match (and (seed ?x) (absent (?R ?x))) :assert (y ?x) :why "{?R} is watched and does not hold of the seed {?x}, so y holds of {?x}")
+(rule bad   ()   :match (y ?x) :assert (false) :why "y holds of {?x}, which cannot be")

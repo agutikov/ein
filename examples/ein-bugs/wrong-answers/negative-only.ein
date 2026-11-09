@@ -31,8 +31,8 @@
 ;;; this file answers its control's R, which the `:expect` below states. The
 ;;; register row `W15/negative-only` is fixed.
 
-(relation p T T)
-(relation q T T)
+(relation p T T :why "p holds of {?1} and {?2}")
+(relation q T T :why "q holds of {?1} and {?2}")
 
 (p A B)
 (not (q Z A))

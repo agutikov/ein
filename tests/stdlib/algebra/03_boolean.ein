@@ -44,9 +44,9 @@
 
 (relation owns      Person Thing :why "{?1} owns {?2}")
 (relation rents     Person Thing :why "{?1} rents {?2}")
-(relation shares    Person Thing)   ; owns ∩ rents
-(relation owns-only Person Thing)   ; owns ∖ rents
-(relation either    Person Thing)   ; owns ∪ rents
+(relation shares    Person Thing :why "{?1} both owns and rents {?2}")   ; owns ∩ rents
+(relation owns-only Person Thing :why "{?1} owns {?2} and does not rent it")   ; owns ∖ rents
+(relation either    Person Thing :why "{?1} owns or rents {?2}")   ; owns ∪ rents
 
 (meet       owns rents shares)
 (difference owns rents owns-only)

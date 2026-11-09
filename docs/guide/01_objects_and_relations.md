@@ -45,7 +45,7 @@ declare it once, naming the types of its slots:
 - **English:** "a nationality lives in a house."
 - **ein-lang:**
   ```lisp
-  (relation nation-loc Nationality House)
+  (relation nation-loc Nationality House :why "the {?1} lives in {?2}")
   ```
 - **graph:** a relation node with one outgoing arrow per slot (here, to
   `Nationality` and to `House`).
@@ -119,7 +119,7 @@ readily as two derivations do.
 That's the whole vocabulary. Put together, a tiny model reads:
 
 ```lisp
-(relation nation-loc Nationality House)   ; ontology: the schema
+(relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; ontology: the schema
 (is-a Norwegian Nationality)              ; ontology: the type tree
 (is-a Englishman Nationality)
 (nation-loc Norwegian House-1 :source "condition (10)")   ; a fact

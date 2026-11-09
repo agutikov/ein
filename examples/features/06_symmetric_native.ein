@@ -34,10 +34,10 @@
 ;;; `rivals`, `allies` — sorted: allies, knows, rivals), so a seed that
 ;;; happened to follow file order would not pass either.
 
-(relation knows  Person Person)
-(relation rivals Person Person)
-(relation allies Person Person)
-(relation is-a   T T)
+(relation knows  Person Person :why "{?1} knows {?2}")
+(relation rivals Person Person :why "{?1} is a rival of {?2}")
+(relation allies Person Person :why "{?1} is an ally of {?2}")
+(relation is-a   T T           :why "{?1} is a {?2}")
 
 (__symmetric__ knows)
 (__symmetric__ rivals)

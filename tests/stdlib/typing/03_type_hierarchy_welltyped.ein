@@ -27,7 +27,7 @@
 
 (relation is-a*    T T          :why "{?1} is a subtype of {?2}")
 (relation owns     Person Pet   :why "{?1} owns {?2}")
-(relation owned-by Animal Person)
+(relation owned-by Animal Person :why "{?1} is owned by {?2}")
 
 (is-a* Pet Animal)             ; a Pet is an Animal — the pair is well-typed
 

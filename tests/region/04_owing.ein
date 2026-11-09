@@ -8,8 +8,8 @@
 ;;; tests/stdlib/algebra/23_total_owed.ein's.
 
 (import std.algebra :symbols (total-owed))
-(relation is-a  T T)
-(relation likes Person Food)
+(relation is-a  T T :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
 (is-a Ann Person) (is-a Bob Person)
 (is-a Soup Food)  (is-a Stew Food)
 (total-owed likes is-a)

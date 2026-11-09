@@ -10,8 +10,9 @@
 
 (rule transitive (?rel)
   :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
-  :assert (?rel ?a ?c))
-(relation co-located T T)
+  :assert (?rel ?a ?c)
+  :why    "{?rel} is transitive and links {?a} to {?b} and {?b} to {?c}, so it links {?a} to {?c}")
+(relation co-located T T :why "{?1} is co-located with {?2}")
 (transitive co-located)
 (co-located A B)
 (co-located B C)

@@ -16,12 +16,12 @@
 ;;; corpus file, and a file under `corpus/fuzz_findings/` is not one. The fuzz
 ;;; `.ein` stays there as a frontend-fuzzer seed.
 
-(relation ok      T)
-(relation blessed T)
-(relation cand    T)
+(relation ok      T :why "{?1} is ok")
+(relation blessed T :why "{?1} is blessed")
+(relation cand    T :why "{?1} is a candidate")
 (rule promote ()
   :match  (and (ok ?x) (blessed ?x))
-  :assert (cand ?x))
+  :assert (cand ?x) :why "{?x} is ok and blessed, so {?x} is a candidate")
 (ok      B)
 (blessed A)
 (query

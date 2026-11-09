@@ -42,25 +42,25 @@
 ;; the fix removes the need for the workaround and the goal goes back to the
 ;; question the file is about. Q-M1e.13 itself is still open.
 
-(relation is-a T T)
-(relation p T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation p T :why "p holds of {?1}")
 
 (is-a A T) (is-a B T)
 
 ;; One candidate per object — reads only `is-a`, so the kill cache it triggers
 ;; is not a fact this generator conditions on.
-(hrule guess () :match (is-a ?x T) :assert (p ?x))
+(hrule guess () :match (is-a ?x T) :assert (p ?x) :why "guess that p holds of {?x}")
 
 ;; One step from any (p ?x), so the pre-branch lookahead kills every candidate
 ;; and the cache writes (not (p A)) / (not (p B)) into root.
-(rule no-p () :match (p ?x) :assert (false))
+(rule no-p () :match (p ?x) :assert (false) :why "p holds of {?x}, and p may hold of nothing")
 
 ;; Totality, on stored negatives alone — no `absent`, so no NAF boundary is in
 ;; the argument. Dormant while root is saturated; refuting once the cache has
 ;; written. Root is not re-saturated, so it never fires.
 (rule totality ()
   :match  (and (not (p A)) (not (p B)))
-  :assert (false))
+  :assert (false) :why "p is false of both A and B, yet something must have p")
 
 (solve :expect (region
                  ;; state 1 of 1 — ∅, root itself · minimal and maximal

@@ -61,10 +61,10 @@
 ;; rule keeps R, three states (M1e2 S1e2.4.1 § 2.1), and leaves a file about
 ;; nothing.
 
-(relation pending      T)
-(relation needs-review T)
-(relation waived       T)
-(relation signed       T)
+(relation pending      T :why "{?1} is pending")
+(relation needs-review T :why "{?1} needs review")
+(relation waived       T :why "{?1} is waived")
+(relation signed       T :why "{?1} is signed")
 
 (rule auto-sign ()
   :match  (and (pending ?y) (waived ?y))

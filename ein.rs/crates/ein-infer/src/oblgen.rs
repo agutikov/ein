@@ -976,7 +976,7 @@ mod tests {
 
     /// The three-fact shape every case below varies: one relation, one
     /// membership scan, one thing that has no partner yet.
-    const OWING: &str = "(relation is-a T T)\n(relation likes P F)\n\
+    const OWING: &str = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation likes P F :why \"{?1} likes {?2}\")\n\
                          (is-a Ann P)\n(is-a Soup F)\n";
 
     /// **The branch is the guard's scan**, and its size is the extent of the
@@ -989,7 +989,7 @@ mod tests {
              (rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open ?R)\n)\n\
+             \x20 :assert (open ?R) :why \"{{?a}} is a {{?A}} with no {{?B}} under {{?R}} yet — one is still owed\"\n)\n\
              (owed likes is-a)\n"
         ));
         assert_eq!(r.mode, Mode::Obligations);
@@ -1007,7 +1007,7 @@ mod tests {
             "{OWING}(rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open)\n)\n\
+             \x20 :assert (open) :why \"{{?a}} is a {{?A}} with no {{?B}} under {{?R}} yet — something is still owed\"\n)\n\
              (owed likes is-a)\n"
         ));
         assert_eq!(r.mode, Mode::Declined);
@@ -1026,7 +1026,7 @@ mod tests {
              (rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open ?R)\n)\n\
+             \x20 :assert (open ?R) :why \"{{?a}} is a {{?A}} with no {{?B}} under {{?R}} yet — one is still owed\"\n)\n\
              (owed likes is-a)\n"
         );
         assert_eq!(rung_with(&src, false).mode, Mode::Stuck);
@@ -1041,11 +1041,11 @@ mod tests {
     #[test]
     fn an_obligation_that_scans_what_the_rung_proposes_declines() {
         let r = rung_of(&format!(
-            "{OWING}(relation sort T T)\n(sort P S)\n(sort F S)\n\
+            "{OWING}(relation sort T T :why \"{{?1}} is of sort {{?2}}\")\n(sort P S)\n(sort F S)\n\
              (rule owed (?R ?isa)\n\
              \x20 :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n\
              \x20               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n\
-             \x20 :assert (open ?R)\n)\n\
+             \x20 :assert (open ?R) :why \"{{?a}} is a {{?A}} with no {{?B}} under {{?R}} yet — one is still owed\"\n)\n\
              (owed likes is-a)\n(owed is-a sort)\n"
         ));
         assert_eq!(r.mode, Mode::Declined);
@@ -1106,12 +1106,12 @@ mod tests {
     /// W14's shape (`examples/ein-bugs/wrong-answers/oblig-fresh-name.ein`):
     /// Ann owes a liked food, and `special` makes Z a food once anyone likes
     /// anything.
-    const OWES_FOOD: &str = "(relation person T)\n(relation food T)\n\
-                             (relation likes T T)\n(person Ann)\n(food Soup)\n\
+    const OWES_FOOD: &str = "(relation person T :why \"{?1} is a person\")\n(relation food T :why \"{?1} is a food\")\n\
+                             (relation likes T T :why \"{?1} likes {?2}\")\n(person Ann)\n(food Soup)\n\
                              (rule owes-food ()\n\
                              \x20 :match  (and (person ?a)\n\
                              \x20               (absent (and (food ?b) (likes ?a ?b))))\n\
-                             \x20 :assert (open likes)\n)\n";
+                             \x20 :assert (open likes) :why \"{?a} is a person who likes no food yet — one is still owed\"\n)\n";
 
     /// **C4 over `D`** (M1e2 S1e2.2.15, W14; Q-M1e2.10 (a), ruled
     /// 2026-11-04): a guard that scans a relation a commitment can change
@@ -1120,7 +1120,7 @@ mod tests {
     #[test]
     fn an_obligation_that_scans_a_relation_a_commitment_derives_declines() {
         let (r, rung) = rung_at_root(&format!(
-            "{OWES_FOOD}(rule special ()\n  :match  (likes ?p ?f)\n  :assert (food Z))\n"
+            "{OWES_FOOD}(rule special ()\n  :match  (likes ?p ?f)\n  :assert (food Z) :why \"{{?p}} likes {{?f}}, so Z is a food\")\n"
         ));
         assert_eq!(r.mode, Mode::Declined);
         assert!(

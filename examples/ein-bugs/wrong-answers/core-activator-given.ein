@@ -11,12 +11,12 @@
 ;;; (c) on 2026-11-04, root's activators are the program's, and S1e2.2.19's
 ;;; fix left this core where it was.
 
-(relation seed T) (relation p T) (relation p2 T) (relation r2 T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation r2 T :why "r2 holds of {?1}, which activates rule r2 for {?1}")
 
 (seed a)
 (r2 a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
 
-(rule r2 (?k) :match (p ?k) :assert (false))
+(rule r2 (?k) :match (p ?k) :assert (false) :why "rule r2 is activated for {?k} and p holds of it, which cannot be")

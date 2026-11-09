@@ -108,8 +108,8 @@ mod tests {
     /// half — that an *authored* `(__closed__ R)` is left alone.
     #[test]
     fn a_second_pass_closes_nothing_new() {
-        let src = "(relation open-r T T)\n(relation shut-r T T)\n\
-                   (rule fill () :match (shut-r ?a ?b) :assert (open-r ?a ?b))";
+        let src = "(relation open-r T T :why \"open-r holds of {?1} and {?2}\")\n(relation shut-r T T :why \"shut-r holds of {?1} and {?2}\")\n\
+                   (rule fill () :match (shut-r ?a ?b) :assert (open-r ?a ?b) :why \"shut-r holds of {?a} and {?b}, so open-r holds of {?a} and {?b}\")";
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let forms = parse(&mut ast, src, Some("<test>")).expect("parses");

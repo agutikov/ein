@@ -11,10 +11,10 @@
 ;;; and a constant anywhere in a rule is a name of the program (Q-M1e2.9 (a),
 ;;; ruled 2026-11-04).
 
-(relation p T T)
-(relation q T T)
-(relation good T)
-(relation seen T)
+(relation p T T :why "p holds of {?1} and {?2}")
+(relation q T T :why "q holds of {?1} and {?2}")
+(relation good T :why "{?1} is good")
+(relation seen T :why "{?1} is seen")
 
 (p A B)
 (seen Z)   ; the one addition: Z named in a fact

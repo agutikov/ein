@@ -132,7 +132,7 @@ fn a_writeback_name_in_a_string_or_a_comment_or_a_longer_name_is_not_one() {
             "(relation p T :why \"{{?1}} is not {name}\")\n; {name}\n#| {name} |#\n(p a)\n"
         );
         load(&text).unwrap_or_else(|e| panic!("{name} in a string or a comment: {e}"));
-        let longer = format!("(relation p T)\n(p {name}x)\n");
+        let longer = format!("(relation p T :why \"p holds of {{?1}}\")\n(p {name}x)\n");
         load(&longer).unwrap_or_else(|e| panic!("{name}x is a name: {e}"));
         assert!(!grammar::is_one_name(name), "{name} is a NAME of the lexer");
         assert!(grammar::is_one_name(&format!("{name}x")));
@@ -200,22 +200,22 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
     let positions = [
         (
             "relation",
-            "(relation D T)",
+            "(relation D T :why \"D holds of {?1}\")",
             "relation 'D' shadows a reserved kernel name",
         ),
         (
             "rule",
-            "(relation p T)\n(relation q T)\n(rule D () :match (p ?x) :assert (q ?x))",
+            "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n(rule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}, so q holds of {?x}\")",
             "rule 'D' shadows a reserved kernel name",
         ),
         (
             "hrule",
-            "(relation p T)\n(relation q T)\n(hrule D () :match (p ?x) :assert (q ?x))",
+            "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n(hrule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}: guess that q holds of {?x}\")",
             "hrule 'D' shadows a reserved kernel name",
         ),
         (
             "macro",
-            "(relation p T)\n(macro D (?x) (p ?x))",
+            "(relation p T :why \"p holds of {?1}\")\n(macro D (?x) (p ?x) :why \"p holds of {?x}\")",
             "macro 'D' shadows a reserved kernel name",
         ),
         (
@@ -244,11 +244,11 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
 #[test]
 fn a_dunder_is_legal_wherever_a_program_uses_it() {
     let text = "(import std.algebra :symbols (imply1))
-(relation p T T)
-(relation q T)
-(relation knows T T)
-(relation functional T)
-(relation foo T T)
+(relation p T T :why \"p holds of {?1} and {?2}\")
+(relation q T :why \"q holds of {?1}\")
+(relation knows T T :why \"{?1} knows {?2}\")
+(relation functional T :why \"{?1} is functional\")
+(relation foo T T :why \"foo holds of {?1} and {?2}\")
 (p a b)
 (__closed__ p)
 (__symmetric__ knows)
@@ -257,8 +257,8 @@ fn a_dunder_is_legal_wherever_a_program_uses_it() {
 (knows b a :rule __symmetric__)
 (imply1 functional __closed__)
 (functional foo)
-(rule r () :match (__closed__ ?R) :assert (q ?R))
-(rule s () :match (p ?x ?y) :assert (__symmetric__ ?x))
+(rule r () :match (__closed__ ?R) :assert (q ?R) :why \"the extension of {?R} is closed, so q holds of {?R}\")
+(rule s () :match (p ?x ?y) :assert (__symmetric__ ?x) :why \"p holds of {?x} and {?y}, so {?x} is declared symmetric\")
 (solve :no-hypothesis (__closed__ __symmetric__))
 (query :goal (__closed__ ?R) :expect (model (__closed__ p)))
 ";

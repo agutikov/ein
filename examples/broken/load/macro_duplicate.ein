@@ -1,4 +1,4 @@
 ;; Two macros, one name.
 
-(macro m (?a) (rel ?a))
-(macro m (?a) (other ?a))
+(macro m (?a) (rel ?a) :why "rel holds of {?a}")
+(macro m (?a) (other ?a) :why "other holds of {?a}")

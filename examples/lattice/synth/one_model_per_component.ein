@@ -20,10 +20,10 @@
 ;;; region-spec: {"name":"one_model_per_component","about":"Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any\ntwo exclude each other, none owes: R is four isolated nodes, each its own\ncomponent and each on both lines. An Ambiguity of four, component by\ncomponent.","candidates":"ABCD","R":[["A","A"],["B","B"],["C","C"],["D","D"]],"owing":[["",""]]}
 ;;; region-status: oRRxRxxxRxxxxxxx
 
-(relation h T)
-(relation slot T)
-(relation world T)
-(relation need T T)
+(relation h T :why "h holds of {?1}")
+(relation slot T :why "{?1} is a slot, a candidate for h")
+(relation world T :why "{?1} is the world")
+(relation need T T :why "h holding of {?2} pays debt {?1}")
 
 (world W)
 (slot A) (slot B) (slot C) (slot D)

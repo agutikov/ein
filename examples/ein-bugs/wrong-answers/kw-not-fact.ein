@@ -26,5 +26,5 @@
 ;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 
-(relation p Node) (relation notw)
+(relation p Node :why "p holds of {?1}") (relation notw :why "notw holds")
 (p a) (notw)

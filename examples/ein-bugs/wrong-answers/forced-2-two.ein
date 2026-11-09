@@ -31,11 +31,11 @@
 ;;; answers `Solution` k = 1. Same logical content, opposite verdicts.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
-(relation thing T)
-(relation q T)
-(relation bad T)
+(relation thing T :why "{?1} is a thing")
+(relation q T :why "q holds of {?1}")
+(relation bad T :why "{?1} is bad")
 (thing one) (thing two)
-(rule taint () :match (q ?x)   :assert (bad ?x))
-(rule kill  () :match (bad ?x) :assert (false))
+(rule taint () :match (q ?x)   :assert (bad ?x) :why "q holds of {?x}, which taints it: {?x} is bad")
+(rule kill  () :match (bad ?x) :assert (false) :why "{?x} is bad, which cannot be")
 (solve :no-hypothesis (bad))
 (query :goal (thing ?x))

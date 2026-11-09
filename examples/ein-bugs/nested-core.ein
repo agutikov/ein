@@ -15,8 +15,8 @@
 ;;; nothing checked the spelling. `ein-cli/tests/read_out.rs` asserts the
 ;;; line, and `corpus_shapes.md5`'s read-out digests hold the block.
 
-(relation p T)
-(relation q T)
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
 (not (p A))
 (q A)
-(rule boom () :match (and (not (p ?x)) (q ?x)) :assert (false))
+(rule boom () :match (and (not (p ?x)) (q ?x)) :assert (false) :why "p is false of {?x} and q holds of {?x}, which cannot both be")

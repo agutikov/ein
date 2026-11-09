@@ -12,5 +12,5 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(rule only-match () :match (r ?a ?b))
-(hrule h () :assert (r a b))
+(rule only-match () :match (r ?a ?b) :why "r holds of {?a} and {?b}, and with no :assert the rule concludes nothing")
+(hrule h () :assert (r a b) :why "guess that r holds of a and b")

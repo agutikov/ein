@@ -36,7 +36,7 @@
   :assert (not ?h)
   :why    "Assumed {?h}; branch derived a contradiction. Therefore (not {?h}).")
 
-(relation co-located T T)
+(relation co-located T T :why "{?1} and {?2} are in the same house")
 
 (hypothesis (co-located Norwegian House-2))
 (contradiction-under (co-located Norwegian House-2))

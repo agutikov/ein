@@ -122,7 +122,7 @@ fn write(dir: &Path, name: &str, text: &str) -> PathBuf {
 fn a_facts_origin_is_a_three_way_split_over_its_provenance() {
     let (mut terms, mut kb) = kb_of(
         r#"
-        (relation r T T)
+        (relation r T T :why "r holds of {?1} and {?2}")
         (r a b :source "(1)")
         (r c d :rule step :using ((r a b)))
         (r e f)
@@ -242,11 +242,11 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
     let body = |head: &str| {
         format!(
             r#"
-            (relation player T T) (relation beats T T)
+            (relation player T T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}")
             (rule r ()
               :match (and (player ?p)
                           ({head} ?q (and (player ?q) (neq ?p ?q)) (beats ?p ?q)))
-              :assert (ok ?p) :why "u")
+              :assert (ok ?p) :why "{{?p}} is a player who beats every other player, so {{?p}} is ok")
             "#
         )
     };
@@ -291,15 +291,15 @@ fn importing_a_module_whole_requalifies_what_it_imported_flat() {
     write(
         &dir,
         "mid.ein",
-        "(import std.macro :symbols (forall))\n(macro wrap (?g ?b) (forall ?x ?g ?b))\n",
+        "(import std.macro :symbols (forall))\n(macro wrap (?g ?b) (forall ?x ?g ?b) :why \"{?b} holds wherever {?g} holds\")\n",
     );
     let main = write(
         &dir,
         "main.ein",
         "(import mid)\n\
-         (relation player T T) (relation beats T T)\n\
+         (relation player T T :why \"{?1} is a player\") (relation beats T T :why \"{?1} beats {?2}\")\n\
          (rule r () :match (and (player ?p) (mid.wrap (player ?p) (beats ?p ?p)))\n\
-         \x20 :assert (ok ?p) :why \"w\")\n",
+         \x20 :assert (ok ?p) :why \"{?p} is a player and beats {?p} wherever {?p} is a player, so {?p} is ok\")\n",
     );
 
     let mut ast = Ast::new();
@@ -344,10 +344,14 @@ fn a_file_relative_import_resolves_against_the_importing_file() {
     write(
         &dir,
         "lib.ein",
-        "(relation knows T T)\n\
-         (rule sym (?r) :match (?r ?a ?b) :assert (?r ?b ?a) :why \"s\")\n",
+        "(relation knows T T :why \"{?1} knows {?2}\")\n\
+         (rule sym (?r) :match (?r ?a ?b) :assert (?r ?b ?a) :why \"{?r} is symmetric: it holds of {?a} and {?b}, so it holds of {?b} and {?a}\")\n",
     );
-    let main = write(&dir, "main.ein", "(import lib)\n(relation x T T)\n");
+    let main = write(
+        &dir,
+        "main.ein",
+        "(import lib)\n(relation x T T :why \"x holds of {?1} and {?2}\")\n",
+    );
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let kb = load_file(&mut ast, &mut terms, &main).expect("the project loads");
@@ -358,7 +362,7 @@ fn a_file_relative_import_resolves_against_the_importing_file() {
     write(
         &dir,
         "lib.ein",
-        "(macro twice (?x) (and ?x ?x))\n(macro unused (?y) (not ?y))\n",
+        "(macro twice (?x) (and ?x ?x) :why \"{?x} holds, and holds again\")\n(macro unused (?y) (not ?y) :why \"{?y} is stored false\")\n",
     );
     let main = write(&dir, "main.ein", "(import lib :symbols (twice))\n");
     let mut ast = Ast::new();
@@ -404,7 +408,7 @@ fn a_file_relative_import_without_a_base_directory_is_refused() {
 fn a_symbols_import_pulls_the_name_reference_closure() {
     let (terms, kb) = kb_of(
         "(import std.bijection :symbols (bijective-setup))\n\
-         (relation color-of T T)\n",
+         (relation color-of T T :why \"{?1} is coloured {?2}\")\n",
     );
     let rules = names(&terms, &kb.program().rules);
     for pulled in [
@@ -451,7 +455,8 @@ fn a_symbols_import_pulls_the_name_reference_closure() {
 /// where a declarator binds one.
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
-    let (terms, kb) = kb_of("(not (likes A B) :source \"(1)\") (relation likes T T)");
+    let (terms, kb) =
+        kb_of("(not (likes A B) :source \"(1)\") (relation likes T T :why \"{?1} likes {?2}\")");
     let not = terms.syms.get("not").expect("interned");
     assert_eq!(
         rendered(&terms, kb.facts().filter(|&f| terms.facts.rel(f) == not)).len(),
@@ -460,9 +465,9 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     );
 
     let (terms, kb) = kb_of(
-        "(rule eq-elim () :match (x ?a) :assert (y ?a) :why \"ok\")\n\
-         (relation absent-of T T)\n\
-         (relation x T T) (relation y T T)\n",
+        "(rule eq-elim () :match (x ?a) :assert (y ?a) :why \"x holds of {?a}, so y holds of {?a}\")\n\
+         (relation absent-of T T :why \"absent-of holds of {?1} and {?2}\")\n\
+         (relation x T T :why \"x holds of {?1} and {?2}\") (relation y T T :why \"y holds of {?1} and {?2}\")\n",
     );
     assert!(names(&terms, &kb.program().rules).contains(&"eq-elim".to_string()));
     assert!(names(&terms, &kb.program().relations).contains(&"absent-of".to_string()));
@@ -497,12 +502,15 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     for (declarator, source) in [
         (
             "rule",
-            "(rule __closed__ () :match (x ?a) :assert (y ?a) :why \"w\")",
+            "(rule __closed__ () :match (x ?a) :assert (y ?a) :why \"x holds of {?a}, so y holds of {?a}\")",
         ),
-        ("relation", "(relation __symmetric__ T T)"),
+        (
+            "relation",
+            "(relation __symmetric__ T T :why \"__symmetric__ holds of {?1} and {?2}\")",
+        ),
         (
             "hrule",
-            "(hrule __closed__ () :match (x ?a) :assert (y ?a) :why \"w\")",
+            "(hrule __closed__ () :match (x ?a) :assert (y ?a) :why \"guess that y holds of {?a}, as x does\")",
         ),
     ] {
         let msg = load_error(source);
@@ -568,7 +576,7 @@ fn no_load_negative_expectation_carries_a_machine_specific_path() {
 fn diamond() -> (Terms, Kb) {
     kb_of(
         r#"
-        (relation r T T) (relation d T T) (relation top T T)
+        (relation r T T :why "r holds of {?1} and {?2}") (relation d T T :why "d holds of {?1} and {?2}") (relation top T T :why "top holds of {?1} and {?2}")
         (r A B :source "(1)")
         (r B C :source "(2)")
         (d A C :rule compose :using ((r A B) (r B C)))
@@ -1205,7 +1213,7 @@ fn zebra_loads_seventy_one_facts_eighteen_of_them_given_and_none_derived() {
 fn a_snapshot_still_resolves_its_premises_after_the_source_moves_on() {
     let (mut terms, mut kb) = kb_of(
         r#"
-        (relation p T T) (relation q T T)
+        (relation p T T :why "p holds of {?1} and {?2}") (relation q T T :why "q holds of {?1} and {?2}")
         (p a b :source "(1)")
         (q a b :rule p-to-q :using ((p a b)))
         "#,

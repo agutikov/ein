@@ -277,7 +277,8 @@ fn the_oracles_directory_has_no_walk_and_draws_with_none() {
 fn diff_models_reads_a_models_facts_as_ein() {
     let dir = scratch("diff-by-value");
     let program = dir.join("one.ein");
-    std::fs::write(&program, "(relation p T)\n(p a)\n").expect("the program is written");
+    std::fs::write(&program, "(relation p T :why \"p holds of {?1}\")\n(p a)\n")
+        .expect("the program is written");
     let p = program.to_string_lossy().to_string();
     for (n, fact) in [
         "(p a)",

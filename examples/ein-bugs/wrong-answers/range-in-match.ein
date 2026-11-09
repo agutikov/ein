@@ -31,6 +31,6 @@
 ;;; its :match writes 1..3 as an argument of n, and no fact can hold it — a
 ;;; range is cardinality metadata, and a rule matches and concludes facts*.
 
-(relation n Node) (relation hit Node)
+(relation n Node :why "n holds of {?1}") (relation hit Node :why "{?1} is hit")
 (n 2)
-(rule r () :match (n 1..3) :assert (hit r))
+(rule r () :match (n 1..3) :assert (hit r) :why "n holds of 1..3, so r is hit")

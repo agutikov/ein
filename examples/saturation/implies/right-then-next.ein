@@ -23,8 +23,8 @@
   :assert (?q ?a ?b)
   :why    "{?p} implies {?q}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}.")
 
-(relation right-of T T)
-(relation next-to T T)
+(relation right-of T T :why "{?1} is immediately right of {?2}")
+(relation next-to T T :why "{?1} is next to {?2}")
 (implies right-of next-to)
 
 (right-of H2 H1 :source "(1)")

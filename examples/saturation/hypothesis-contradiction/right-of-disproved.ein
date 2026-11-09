@@ -23,7 +23,7 @@
   :assert (not ?h)
   :why    "Assumed {?h}; contradicted. Therefore (not {?h}).")
 
-(relation right-of T T)
+(relation right-of T T :why "{?1} is right of {?2}")
 
 (hypothesis (right-of A B))
 (contradiction-under (right-of A B))

@@ -50,19 +50,19 @@
 ;;; The g and h facts are written in descending order so that the order they
 ;;; are matched in, the index's, is not their rank's.
 
-(relation sw T)
-(relation on T)
-(relation g T)
-(relation h T)
-(relation p T)
-(relation q T)
+(relation sw T :why "sw holds of {?1}")
+(relation on T :why "{?1} is on")
+(relation g T :why "g holds of {?1}")
+(relation h T :why "h holds of {?1}")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
 
 (sw A) (sw B)
 (g G40) (g G39) (g G38) (g G37) (g G36) (g G35) (g G34) (g G33) (g G32) (g G31) (g G30) (g G29) (g G28) (g G27) (g G26) (g G25) (g G24) (g G23) (g G22) (g G21) (g G20) (g G19) (g G18) (g G17) (g G16) (g G15) (g G14) (g G13) (g G12) (g G11) (g G10) (g G09) (g G08) (g G07) (g G06) (g G05) (g G04) (g G03) (g G02) (g G01)
 (h H40) (h H39) (h H38) (h H37) (h H36) (h H35) (h H34) (h H33) (h H32) (h H31) (h H30) (h H29) (h H28) (h H27) (h H26) (h H25) (h H24) (h H23) (h H22) (h H21) (h H20) (h H19) (h H18) (h H17) (h H16) (h H15) (h H14) (h H13) (h H12) (h H11) (h H10) (h H09) (h H08) (h H07) (h H06) (h H05) (h H04) (h H03) (h H02) (h H01)
 
-(rule mk-p () :match (and (on A) (g ?x)) :assert (p ?x))
-(rule mk-q () :match (and (on B) (h ?y)) :assert (q ?y))
-(rule clash () :match (and (p ?x) (q ?y)) :assert (false))
+(rule mk-p () :match (and (on A) (g ?x)) :assert (p ?x) :why "A is on and g holds of {?x}, so p holds of {?x}")
+(rule mk-q () :match (and (on B) (h ?y)) :assert (q ?y) :why "B is on and h holds of {?y}, so q holds of {?y}")
+(rule clash () :match (and (p ?x) (q ?y)) :assert (false) :why "p holds of {?x} and q of {?y}, which cannot both be")
 
 (hrule guess () :match (sw ?s) :assert (on ?s) :why "guess: on {?s}?")

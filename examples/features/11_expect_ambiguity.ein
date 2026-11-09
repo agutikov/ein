@@ -21,7 +21,7 @@
 ;;; Two people, two seats, all-different in both directions: Ann and Bob can
 ;;; swap, and nothing in the puzzle prefers either arrangement.
 
-(relation instance Thing Type)
+(relation instance Thing Type :why "{?1} is an instance of {?2}")
 (relation seat     Person Slot :why "{?1} sits in {?2}")
 
 (instance Ann Person) (instance Bob Person)

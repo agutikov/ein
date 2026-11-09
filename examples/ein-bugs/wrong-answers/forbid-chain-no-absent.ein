@@ -28,13 +28,13 @@
 ;;; plan was compiled from, and a dead node's core follows one the node
 ;;; derived or committed, never root's.
 
-(relation seed T) (relation p T) (relation p2 T) (relation q T) (relation r2 T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation q T :why "q holds of {?1}") (relation r2 T :why "r2 holds of {?1}")
 
 (seed a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
 
-(rule mk () :match (p ?x) :assert (q ?x))
-(rule q  (?n) :match (seed ?n) :assert (r2 ?n))
-(rule r2 (?k) :match (seed ?k) :assert (false))
+(rule mk () :match (p ?x) :assert (q ?x) :why "p holds of {?x}, so q holds of {?x}, switching rule q on for it")
+(rule q  (?n) :match (seed ?n) :assert (r2 ?n) :why "q holds of the seed {?n}, so r2 holds of it, switching rule r2 on for {?n}")
+(rule r2 (?k) :match (seed ?k) :assert (false) :why "r2 holds of the seed {?k}, which cannot be")

@@ -29,9 +29,9 @@
 ;;; `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17),
 ;;; and the program answers its twin's R.
 
-(relation item Node) (relation orz Node) (relation tag Node Node)
+(relation item Node :why "{?1} is an item") (relation orz Node :why "orz holds of {?1}") (relation tag Node Node :why "{?1} has the tag {?2}")
 (item a) (item b) (orz a)
 (rule owed (?R)
   :match  (and (relation ?R ?A ?B) (orz ?a) (absent (?R ?a ?b)))
-  :assert (open ?R))
+  :assert (open ?R) :why "orz holds of {?a}, and {?a} has no {?R} yet: one is still owed")
 (owed tag)

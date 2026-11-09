@@ -11,10 +11,10 @@
 ; `unbound relation head ?R in a premise of SForm(…)`. Since then the loader
 ; refuses a relation variable no parameter binds, at the top level as inside a
 ; pattern, and this file moved here from `examples/broken/compile/`.
-(relation p Thing)
+(relation p Thing :why "p holds of {?1}")
 
 (rule uses-free-head (?S)
   :match  (?R ?x)
-  :assert (p ?x))
+  :assert (p ?x) :why "{?x} is in some relation ?R that no parameter binds, so p holds of {?x}")
 
 (uses-free-head p)

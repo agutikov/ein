@@ -23,9 +23,9 @@
 
 (import std.algebra :symbols (total-owed))
 
-(relation is-a  T T)
-(relation opens Kitchen)
-(relation meal  Guest Food)
+(relation is-a  T T        :why "{?1} is a {?2}")
+(relation opens Kitchen    :why "kitchen {?1} is open")
+(relation meal  Guest Food :why "{?1} is served {?2}")
 
 (is-a Ann Guest) (is-a K1 Kitchen) (is-a Soup Food)
 
@@ -34,7 +34,7 @@
   :assert (total-owed meal is-a)
   :why    "{?k} is open, so every guest owes a meal")
 
-(hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k))
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f))
+(hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k) :why "guess that kitchen {?k} is open")
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f) :why "guess that {?g} is served {?f}")
 
 (query :goal (meal ?g ?f))

@@ -59,11 +59,11 @@
   :symbols (irreflexive antisymmetric asymmetric connex empty
             functional injective))
 
-(relation instance Thing Type)
+(relation instance Thing Type :why "{?1} is a {?2}")
 (relation lt       Node Node :why "{?1} comes before {?2}")
 (relation pick     Node Mark :why "{?1} is marked {?2}")
-(relation loopy    Node Node)
-(relation nothing  Node Node)
+(relation loopy    Node Node :why "{?1} has a loopy edge to {?2}")
+(relation nothing  Node Node :why "{?1} and {?2} are paired in nothing, which must stay empty")
 
 (instance A Node) (instance B Node) (instance C Node)
 

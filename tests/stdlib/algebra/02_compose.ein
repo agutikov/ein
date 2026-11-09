@@ -30,7 +30,7 @@
 
 (import std.algebra :symbols (compose difunctional))
 
-(relation instance Thing Type)
+(relation instance Thing Type  :why "{?1} is a {?2}")
 (relation step     Node Node  :why "{?1} steps to {?2}")
 (relation two-step Node Node  :why "{?1} reaches {?2} in two steps")
 (relation seat     Row  Col   :why "{?1} occupies {?2}")

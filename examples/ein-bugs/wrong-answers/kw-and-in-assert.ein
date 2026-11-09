@@ -28,7 +28,7 @@
 ;;; § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 
-(relation p Node) (relation andz Node)
+(relation p Node :why "p holds of {?1}") (relation andz Node :why "andz holds of {?1}")
 (p a)
-(rule r () :match (p ?x) :assert (andz ?x))
+(rule r () :match (p ?x) :assert (andz ?x) :why "p holds of {?x}, so andz holds of {?x}")
 (query :goal (andz ?y))

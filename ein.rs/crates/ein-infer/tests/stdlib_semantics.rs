@@ -202,7 +202,7 @@ const ELIM: &str = "(import std.macro :symbols (forall))\n\
 fn a_bijective_declaration_fans_out_into_the_operational_activators() {
     let sat = saturate(&format!(
         "{BIJECTION_SETUP}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (bijection-hierarchy is-a)
         (typecheck-hierarchy is-a)
         (bijective color-of)
@@ -243,7 +243,7 @@ fn a_bijective_declaration_fans_out_into_the_operational_activators() {
 fn domain_elimination_forces_the_last_surviving_value() {
     let sat = saturate(&format!(
         "{BIJECTION_ELIM}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (functional color-of) (total color-of)
         (domain-elimination color-of is-a)
         (is-a H1 House)
@@ -271,7 +271,7 @@ fn domain_elimination_forces_the_last_surviving_value() {
 fn range_elimination_forces_the_last_surviving_object() {
     let sat = saturate(&format!(
         "{BIJECTION_ELIM}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (injective color-of) (surjective color-of)
         (range-elimination color-of is-a)
         (is-a Red Color)
@@ -299,7 +299,7 @@ fn range_elimination_forces_the_last_surviving_object() {
 fn domain_elimination_says_nothing_while_two_values_survive() {
     let sat = saturate(&format!(
         "{BIJECTION_ELIM}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (functional color-of) (total color-of)
         (domain-elimination color-of is-a)
         (is-a H1 House)
@@ -327,7 +327,7 @@ fn domain_elimination_says_nothing_while_two_values_survive() {
 fn a_functional_positive_excludes_every_other_value() {
     let sat = saturate(&format!(
         "{BIJECTION_NEG}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (functional-negative color-of is-a)
         (is-a Red Color) (is-a Blue Color) (is-a Green Color)
         (color-of H1 Red :source \"given\")
@@ -351,7 +351,7 @@ fn a_functional_positive_excludes_every_other_value() {
 fn an_injective_positive_excludes_every_other_object() {
     let sat = saturate(&format!(
         "{BIJECTION_NEG}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (injective-negative color-of is-a)
         (is-a H1 House) (is-a H2 House) (is-a H3 House)
         (color-of H1 Red :source \"given\")
@@ -378,7 +378,7 @@ fn an_injective_positive_excludes_every_other_object() {
 fn a_typecheck_fires_on_the_mistyped_argument_and_on_nothing_else() {
     let mistyped = saturate(&format!(
         "{BIJECTION_TC}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (typecheck-arg-0 color-of is-a House)
         (typecheck-arg-1 color-of is-a Color)
         (is-a H1 House) (is-a Red Color) (is-a Bob Person) (is-a Person T)
@@ -398,7 +398,7 @@ fn a_typecheck_fires_on_the_mistyped_argument_and_on_nothing_else() {
 
     let well_typed = saturate(&format!(
         "{BIJECTION_TC}
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\")
         (typecheck-arg-0 color-of is-a House)
         (typecheck-arg-1 color-of is-a Color)
         (is-a H1 House) (is-a Red Color)
@@ -425,7 +425,7 @@ fn a_typecheck_fires_on_the_mistyped_argument_and_on_nothing_else() {
 fn totality_reports_an_object_whose_every_partner_is_excluded() {
     let src = "(import std.macro :symbols (forall))\n\
         (import std.algebra :symbols (total))\n\
-        (relation color-of House Color)
+        (relation color-of House Color :why \"{?1} is coloured {?2}\")
         (total color-of is-a)
         (is-a H1 House)
         (is-a Red Color) (is-a Blue Color)
@@ -464,7 +464,7 @@ fn totality_reports_an_object_whose_every_partner_is_excluded() {
 /// fires it once, one colour excluded fires it not at all.
 #[test]
 fn no_room_left_reports_the_object_with_nowhere_to_go() {
-    let src = "(relation color-of House Color) (relation is-a T T)
+    let src = "(relation color-of House Color :why \"{?1} is coloured {?2}\") (relation is-a T T :why \"{?1} is a {?2}\")
         (functional color-of 0 1) (total color-of 0)
         (no-room-left color-of is-a House Color)
         (is-a House T) (is-a Color T)
@@ -502,7 +502,7 @@ fn no_room_left_reports_the_object_with_nowhere_to_go() {
 fn the_elim_typecheck_also_fires_only_on_the_mistyped_argument() {
     let mistyped = saturate(&format!(
         "{ELIM}
-        (relation color-of House Color) (relation is-a T T)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\") (relation is-a T T :why \"{{?1}} is a {{?2}}\")
         (typecheck-arg-0 color-of is-a House)
         (is-a House T) (is-a Color T) (is-a Person T)
         (is-a Englishman Person)
@@ -514,7 +514,7 @@ fn the_elim_typecheck_also_fires_only_on_the_mistyped_argument() {
 
     let well_typed = saturate(&format!(
         "{ELIM}
-        (relation color-of House Color) (relation is-a T T)
+        (relation color-of House Color :why \"{{?1}} is coloured {{?2}}\") (relation is-a T T :why \"{{?1}} is a {{?2}}\")
         (typecheck-arg-0 color-of is-a House)
         (typecheck-arg-1 color-of is-a Color)
         (is-a House T) (is-a Color T)
@@ -541,7 +541,7 @@ fn the_elim_typecheck_also_fires_only_on_the_mistyped_argument() {
 /// the guard's doing and not a broken fixture.
 #[test]
 fn domain_elimination_needs_the_algebraic_properties_not_just_its_activator() {
-    let src = "(relation color-of House Color) (relation is-a T T)
+    let src = "(relation color-of House Color :why \"{?1} is coloured {?2}\") (relation is-a T T :why \"{?1} is a {?2}\")
         (domain-elimination color-of is-a House Color)
         (is-a House T) (is-a Color T)
         (is-a H1 House)
@@ -580,7 +580,8 @@ fn domain_elimination_needs_the_algebraic_properties_not_just_its_activator() {
 /// duplicate it or loop.
 #[test]
 fn the_native_mirror_computes_the_same_closure_as_the_stdlib_rule() {
-    let edges = "(relation knows T T)\n(knows A B)\n(knows C D)\n(knows E E)\n";
+    let edges =
+        "(relation knows T T :why \"{?1} knows {?2}\")\n(knows A B)\n(knows C D)\n(knows E E)\n";
     let native = knows_extension(&format!("(__symmetric__ knows)\n{edges}"));
     let userspace = knows_extension(&format!(
         "(import std.algebra :symbols (symmetric))\n(symmetric knows)\n{edges}"
@@ -726,9 +727,9 @@ fn a_genuinely_ambiguous_symmetric_puzzle_reports_exactly_its_two_models() {
 /// refuses since (Q-M1f.1 (b)).
 #[test]
 fn a_rule_that_derives_its_own_activator_still_reaches_a_fixpoint() {
-    let src = "(rule a (?rel) :match (?rel ?x ?y) :assert (mark ?rel) :why \"w\")
-        (rule mark () :match (mark ?r) :assert (a ?r) :why \"w\")
-        (relation k T T) (relation a T)
+    let src = "(rule a (?rel) :match (?rel ?x ?y) :assert (mark ?rel) :why \"{?rel} holds of {?x} and {?y}, so {?rel} is marked\")
+        (rule mark () :match (mark ?r) :assert (a ?r) :why \"{?r} is marked, so rule a is switched on for {?r}\")
+        (relation k T T :why \"k holds of {?1} and {?2}\") (relation a T :why \"rule a is switched on for the relation {?1}\")
         (a k)
         (k A B :source \"(1)\")
         ";
@@ -767,9 +768,9 @@ fn sibling_exclusive_can_negate_the_relation_it_reads() {
         "(rule sibling-exclusive (?siblings-via ?exclusive-under)
            :match  (and (?siblings-via ?a ?T) (?siblings-via ?b ?T) (neq ?a ?b))
            :assert (not (?exclusive-under ?a ?b))
-           :why \"sib\")
-         (relation is-a       T T)
-         (relation co-located T T)
+           :why \"{?a} and {?b} differ and {?siblings-via} relates both to {?T}, so {?exclusive-under} does not hold of {?a} and {?b}\")
+         (relation is-a       T T :why \"{?1} is a {?2}\")
+         (relation co-located T T :why \"{?1} is co-located with {?2}\")
          (sibling-exclusive is-a co-located)
          (sibling-exclusive is-a is-a)
          (is-a Color T)

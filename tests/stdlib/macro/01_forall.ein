@@ -45,11 +45,11 @@
 
 (import std.macro :symbols (forall))
 
-(relation group        Group)
+(relation group        Group       :why "{?1} is a group")
 (relation member       Thing Group :why "{?1} is in {?2}")
 (relation marked       Thing       :why "{?1} is marked")
 (relation complete     Group       :why "every member of {?1} is marked")
-(relation complete-raw Group)
+(relation complete-raw Group       :why "every member of {?1} is marked (by the written-out expansion)")
 
 (group Team) (group Crew)
 (member Ann Team) (member Bob Team)

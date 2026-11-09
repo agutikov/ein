@@ -745,7 +745,7 @@ fn a_type_bound_as_an_object_is_one_sentence_on_every_surface() {
     let file = tmp.join("likes.ein");
     std::fs::write(
         &file,
-        "(relation is-a T T)\n(relation likes T T)\n(__closed__ is-a)\n(is-a Ann Person)\n\
+        "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation likes T T :why \"{?1} likes {?2}\")\n(__closed__ is-a)\n(is-a Ann Person)\n\
          (query :goal (likes Ann ?x) :over maximal\n\
          \x20 :expect (model (likes Ann Person)))\n",
     )

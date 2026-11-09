@@ -86,7 +86,7 @@ Derives `not(color-of(H3, Red))`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H1, House)`, `is-a(Red, Color)`
 
-Derives `color-of(H1, Red)`.
+Derives `color-of(H1, Red)` — the colour of H1 is Red
 
 <dot>
 
@@ -144,7 +144,7 @@ Derives `not(color-of(H3, Blue))`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H2, House)`, `is-a(Blue, Color)`
 
-Derives `color-of(H2, Blue)`.
+Derives `color-of(H2, Blue)` — the colour of H2 is Blue
 
 <dot>
 
@@ -154,7 +154,7 @@ Derives `color-of(H2, Blue)`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H3, House)`, `is-a(Green, Color)`
 
-Derives `color-of(H3, Green)`.
+Derives `color-of(H3, Green)` — the colour of H3 is Green
 
 <dot>
 
@@ -248,7 +248,7 @@ Derives `not(color-of(H3, Green))`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H2, House)`, `is-a(Green, Color)`
 
-Derives `color-of(H2, Green)`.
+Derives `color-of(H2, Green)` — the colour of H2 is Green
 
 <dot>
 
@@ -258,7 +258,7 @@ Derives `color-of(H2, Green)`.
 
 Premises: `functional(color-of, 0, 1)`, `total(color-of, 0)`, `is-a(H3, House)`, `is-a(Blue, Color)`
 
-Derives `color-of(H3, Blue)`.
+Derives `color-of(H3, Blue)` — the colour of H3 is Blue
 
 <dot>
 

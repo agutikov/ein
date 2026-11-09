@@ -4,9 +4,9 @@
 ;;; Its answer is the witness's right one, the name read back (`ein solve
 ;;; FILE` at `35186bc0`, release and debug).
 
-(relation item Node) (relation oorz Node) (relation tag Node Node)
+(relation item Node :why "{?1} is an item") (relation oorz Node :why "oorz holds of {?1}") (relation tag Node Node :why "{?1} has the tag {?2}")
 (item a) (item b) (oorz a)
 (rule owed (?R)
   :match  (and (relation ?R ?A ?B) (oorz ?a) (absent (?R ?a ?b)))
-  :assert (open ?R))
+  :assert (open ?R) :why "oorz holds of {?a}, and {?a} has no {?R} yet: one is still owed")
 (owed tag)

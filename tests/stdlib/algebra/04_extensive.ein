@@ -47,11 +47,11 @@
 
 (import std.algebra :symbols (identity top complement))
 
-(relation instance Thing Type)
+(relation instance Thing Type :why "{?1} is a {?2}")
 (relation edge     Node Node :why "{?1} is joined to {?2}")
-(relation loop     Node Node)   ; 1' on Node
-(relation full     Node Node)   ; 1 on Node×Node
-(relation gap      Node Node)   ; ¬edge on Node×Node
+(relation loop     Node Node :why "{?1} has a self-loop to {?2}")   ; 1' on Node
+(relation full     Node Node :why "{?1} and {?2} are a pair in the full Node×Node rectangle")   ; 1 on Node×Node
+(relation gap      Node Node :why "{?1} is not joined to {?2}")   ; ¬edge on Node×Node
 
 (instance A Node) (instance B Node)
 

@@ -35,10 +35,10 @@ this page wrote it `:where (neq ?a ?c)`, which loaded with its guard dropped
   :why    "{?rel} is transitive.")
 
 ;; Schema + implicit assumptions (no :source → background)
-(relation is-a       T T)
-(relation co-located Attribute Attribute)
-(relation right-of   Attribute Attribute)
-(relation position   House House)                ; structural; a right-of derivation is a rule
+(relation is-a       T T :why "{?1} is a {?2}")
+(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
+(relation right-of   Attribute Attribute :why "{?1}'s house is immediately right of {?2}'s")
+(relation position   House House :why "{?1} and {?2} are related by position")                ; structural; a right-of derivation is a rule
 ;; The attribute hierarchy and its members are ordinary `is-a` facts.
 (is-a House Attribute) (is-a Color Attribute) (is-a Nationality Attribute)
 (is-a House-1 House) (is-a House-2 House) (is-a House-3 House)
@@ -74,8 +74,8 @@ Declares its own membership relations and links every attribute through a
 single generic `co-located`:
 
 ```lisp
-(relation type     T T)
-(relation instance T T)
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
 (type Nationality Attribute)
 (instance Norwegian Nationality)
 (instance Japanese  Nationality)
@@ -118,7 +118,7 @@ Uses the relation `is-a` with two recurring rules
 (`transitive is-a` and `asymmetric is-a`):
 
 ```lisp
-(relation is-a T T)
+(relation is-a T T :why "{?1} is a {?2}")
 (is-a Nationality Attribute)
 (is-a Norwegian Nationality)
 (is-a Japanese  Nationality)

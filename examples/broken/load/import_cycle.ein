@@ -3,4 +3,4 @@
 ;; different chains because the chain is the resolution stack.
 
 (import import_cycle_b)
-(relation x T T)
+(relation x T T :why "x holds of {?1} and {?2}")

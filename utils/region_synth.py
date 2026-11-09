@@ -301,10 +301,12 @@ def program(spec: dict) -> str:
             ";;; region-spec: " + json.dumps(spec, ensure_ascii=False, separators=(",", ":")),
             ";;; region-status: " + "".join(STATUS_CHARS[s] for s in status),
             "",
-            "(relation h T)",
-            "(relation slot T)",
-            "(relation world T)",
-            "(relation need T T)",
+            # Every declaration carries a `:why` since M1f S1f.5.14's
+            # T1f.5.14.7, when the loader began to require one (Q-M1f.63).
+            '(relation h T :why "h holds of {?1}")',
+            '(relation slot T :why "{?1} is a slot, a candidate for h")',
+            '(relation world T :why "{?1} is the world")',
+            '(relation need T T :why "h holding of {?2} pays debt {?1}")',
             "",
             "(world W)",
             "(" + ") (".join(f"slot {c}" for c in cands) + ")",

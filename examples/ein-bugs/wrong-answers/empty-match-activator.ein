@@ -28,7 +28,7 @@
 ;;; and R two states, the answer above by hand. The register's `now` is that
 ;;; answer; the section above is the record of the one it replaced.
 
-(relation q Node) (relation p Node) (relation hit Node)
+(relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}") (relation hit Node :why "{?1} is a hit")
 (q a)
-(rule r (?x) :match () :assert (hit ?x))
+(rule r (?x) :match () :assert (hit ?x) :why "rule r is activated for {?x} and has no premise, so {?x} is a hit")
 (r a)

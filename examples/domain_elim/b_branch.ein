@@ -38,8 +38,8 @@
   :assert (?R ?a ?b)
   :why "guess: ({?R} {?a} {?b})?")
 
-(relation is-a      T T)
-(relation color-loc Color House)
+(relation is-a      T T         :why "{?1} is a {?2}")
+(relation color-loc Color House :why "{?2} is painted {?1}")
 
 (bijective color-loc)
 

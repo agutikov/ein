@@ -42,28 +42,28 @@
 ;; left there is one relation to ask about, and the goal moves to it. Remove
 ;; the guard and this answers `Ambiguity` with k = 2, and the claim fails.
 
-(relation is-a T T)
-(relation marker)
-(relation p T)
-(relation q T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation marker :why "the marker is present")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
 
 (marker)
 (is-a A T) (is-a B T)
 
-(hrule guess-q () :match (marker)    :assert (q A))
-(hrule guess-p () :match (is-a ?x T) :assert (p ?x))
+(hrule guess-q () :match (marker)    :assert (q A) :why "guess that q holds of A")
+(hrule guess-p () :match (is-a ?x T) :assert (p ?x) :why "guess that p holds of {?x}")
 
 ;; One step from any (p ?x) once (q A) holds, so inside the fork that committed
 ;; to (q A) the lookahead kills every p candidate and caches both negatives.
 (rule kill-p ()
   :match  (and (q A) (p ?x))
-  :assert (false))
+  :assert (false) :why "q holds of A and p of {?x}, which cannot both be")
 
 ;; Reads stored negatives only — no `absent`, so no NAF boundary is in the
 ;; argument. Dormant at root and in any fork holding a p fact.
 (rule totality ()
   :match  (and (not (p A)) (not (p B)))
-  :assert (false))
+  :assert (false) :why "p is false of both A and B, yet something must have p")
 
 (solve :expect (region
                  ;; state 1 of 5 — ∅, root itself · minimal

@@ -12,9 +12,9 @@
 ;;; holds `(food Z)` in both files (`special`), so the two agree fact for fact
 ;;; on every state but root, which owes in both.
 
-(relation person T)
-(relation food   T)
-(relation likes  T T)
+(relation person T :why "{?1} is a person")
+(relation food   T :why "{?1} is a food")
+(relation likes  T T :why "{?1} likes {?2}")
 
 (person Ann)
 (food Soup)

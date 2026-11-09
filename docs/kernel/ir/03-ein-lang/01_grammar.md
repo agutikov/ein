@@ -205,10 +205,10 @@ therefore also stores the arity-1 fact `(relation R)` — the
 arity-independent "is `?R` a declared relation?" pattern:
 
 ```lisp
-(relation likes Person Drink)
+(relation likes Person Drink :why "{?1} likes {?2}")
 ;; stores BOTH  (relation likes Person Drink)   ← the signature mirror
 ;;        and   (relation likes)                ← the membership fact
-(rule needs-a-relation () :match (relation ?R) :assert (…))
+(rule needs-a-relation () :match (relation ?R) :assert (…) :why "{?R} is a declared relation")
 ```
 
 For a bare declaration the two coincide, so exactly one fact is stored.
@@ -244,7 +244,7 @@ and enumerations carry no annotation, so they read as background):
 
 ```lisp
 (is-a House Attribute) (is-a Color Attribute)
-(relation co-located Attribute Attribute)
+(relation co-located Attribute Attribute :why "{?1} and {?2} are in the same house")
 (is-a Norwegian Nationality)
 (is-a House-1 House)
 (symmetric  co-located)

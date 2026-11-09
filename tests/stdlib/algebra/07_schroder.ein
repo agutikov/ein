@@ -48,8 +48,8 @@
 (import std.macro   :symbols (unknown))
 
 (relation r         Node Node :why "{?1} steps to {?2}")
-(relation s         Node Node)
-(relation t         Node Node)   ; = r;s, and closed — that is the obligation
+(relation s         Node Node :why "{?1} s-steps to {?2}")
+(relation t         Node Node :why "{?1} steps to some node that s-steps to {?2}")   ; = r;s, and closed — that is the obligation
 (relation undecided Node Node :why "{?1}→{?2} is neither asserted nor denied")
 
 (compose-negative-s r s t)

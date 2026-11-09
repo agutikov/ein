@@ -39,9 +39,9 @@
   :assert (open-slot ?h ?c)
   :why    "({?h}, {?c}) is undecided")
 
-(relation house-color House Color)
-(relation is-a        T T)
-(relation open-slot   House Color)
+(relation house-color House Color :why "{?1} is painted {?2}")
+(relation is-a        T T         :why "{?1} is a {?2}")
+(relation open-slot   House Color :why "whether {?1} is painted {?2} is still undecided")
 
 (is-a House T)
 (is-a Color T)

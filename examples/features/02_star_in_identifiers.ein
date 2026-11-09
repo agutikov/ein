@@ -31,8 +31,8 @@
   :assert (?R ?a ?c)
   :why    "{?R} is transitive: {?a} →{?R}→ {?b} →{?R}→ {?c}.")
 
-(relation is-a  T T)
-(relation is-a* T T)
+(relation is-a  T T :why "{?1} is directly a {?2}")
+(relation is-a* T T :why "{?1} is a {?2}, directly or through a chain of is-a")
 
 ;; Two activators set up the closure of is-a into is-a*.
 (subrel is-a is-a*)

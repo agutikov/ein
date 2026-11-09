@@ -306,11 +306,18 @@ class Gen:
         params, activator = "()", None
         if kind == "rule" and self.r.random() < 0.15:
             params, activator = "(?P)", f"({name} T)"
+        head = self.head(bound)
         lines = [f"({kind} {name} {params}",
                  f"  :match  {match}",
-                 f"  :assert {self.head(bound)}"]
-        if self.r.random() < 0.4:
-            lines.append(f'  :why    "{name} fired"')
+                 f"  :assert {head}"]
+        # Every form carries a `:why` since M1f S1f.5.14's T1f.5.14.7, when the
+        # loader began to require one: what the form says, its clauses in
+        # words (Q-M1f.63). It was *"{name} fired"* on 40 % of rules, the
+        # placeholder the stage forbids; the draw stays, so a seed generates
+        # the program it did, with a :why on every rule.
+        self.r.random()
+        verb = "guesses" if kind == "hrule" else "concludes"
+        lines.append(f'  :why    "{name} {verb} {head} from {match}"')
         out = "\n".join(lines) + ")"
         return out if activator is None else f"{out}\n{activator}"
 
@@ -322,11 +329,11 @@ class Gen:
         if self.algebra:
             f.append("(import std.algebra :symbols (symmetric transitive))")
         for rel in self.bins:
-            why = f' :why "{rel} {{?1}} {{?2}}"' if self.r.random() < 0.3 else ""
-            f.append(f"(relation {rel} T T{why})")
+            self.r.random()  # the draw that decided a :why, kept for the stream
+            f.append(f'(relation {rel} T T :why "{rel} holds of {{?1}} and {{?2}}")')
         for uni in self.unis:
-            f.append(f"(relation {uni} T)")
-        f.append("(relation is-a T T)")
+            f.append(f'(relation {uni} T :why "{uni} holds of {{?1}}")')
+        f.append('(relation is-a T T :why "{?1} is a {?2}")')
         for o in self.objs:
             f.append(f"(is-a {o} T)")
         for i in range(self.r.randint(2, 6)):
@@ -610,6 +617,10 @@ def minimise(text: str, case: Path, fails) -> str:
             if trial != best and fails(trial):
                 best, changed = trial, True
         for m in list(re.finditer(r"\(and ((?:[^()]|\([^()]*\))+)\)", best)):
+            # A rule's `:why` quotes its clauses (Q-M1f.63): a conjunction
+            # inside a string is text, not a premise to drop.
+            if best.count('"', 0, m.start()) % 2:
+                continue
             parts = re.findall(r"\([^()]*(?:\([^()]*\))?[^()]*\)", m.group(1))
             if len(parts) < 2:
                 continue

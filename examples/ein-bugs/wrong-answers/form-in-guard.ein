@@ -30,7 +30,7 @@
 ;;; a variable a premise before it binds, a name, a string or an integer*,
 ;;; and the same line for `n`.
 
-(relation p Node) (relation q Node) (relation f Node) (relation hit-eq Node) (relation hit-neq Node)
+(relation p Node :why "p holds of {?1}") (relation q Node :why "q holds of {?1}") (relation f Node :why "f holds of {?1}") (relation hit-eq Node :why "hit-eq holds of {?1}") (relation hit-neq Node :why "hit-neq holds of {?1}")
 (p a) (p b) (p 1) (p (f a)) (q a)
-(rule e () :match (and (p ?x) (eq ?x (f a))) :assert (hit-eq ?x))
-(rule n () :match (and (p ?x) (neq ?x (f a))) :assert (hit-neq ?x))
+(rule e () :match (and (p ?x) (eq ?x (f a))) :assert (hit-eq ?x) :why "p holds of {?x}, which equals (f a), so hit-eq holds of {?x}")
+(rule n () :match (and (p ?x) (neq ?x (f a))) :assert (hit-neq ?x) :why "p holds of {?x}, which is not (f a), so hit-neq holds of {?x}")

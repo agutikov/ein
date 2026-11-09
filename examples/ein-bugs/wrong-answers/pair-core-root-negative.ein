@@ -23,11 +23,11 @@
 ;;; either build; it names the commitment either way, which is why this file
 ;;; is a boundary and not a row.
 
-(relation p T) (relation q T) (relation seed T)
+(relation p T :why "p holds of {?1}") (relation q T :why "q holds of {?1}") (relation seed T :why "{?1} is a seed")
 
 (seed a)
 (not (p a))
 
-(hrule g () :match (seed ?x) :assert (q ?x))
+(hrule g () :match (seed ?x) :assert (q ?x) :why "{?x} is a seed: guess that q holds of {?x}")
 
-(rule pos () :match (q ?x) :assert (p ?x))
+(rule pos () :match (q ?x) :assert (p ?x) :why "q holds of {?x}, so p holds of {?x}")

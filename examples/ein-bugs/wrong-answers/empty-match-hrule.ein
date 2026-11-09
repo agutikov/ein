@@ -27,7 +27,7 @@
 ;;; above by hand. The register's `now` is that answer; the section above is
 ;;; the record of the one it replaced.
 
-(relation q Node) (relation p Node)
+(relation q Node :why "q holds of {?1}") (relation p Node :why "p holds of {?1}")
 (p a)
-(hrule h () :match () :assert (q b))
+(hrule h () :match () :assert (q b) :why "guess, with no premise, that q holds of b")
 (solve :hrules (h))

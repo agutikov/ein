@@ -32,13 +32,13 @@
 
 (import std.macro :symbols (forall))
 
-(relation item T) (relation slot T) (relation in T T) (relation tag T)
+(relation item T :why "{?1} is an item") (relation slot T :why "{?1} is a slot") (relation in T T :why "{?1} is in {?2}") (relation tag T :why "{?1} is tagged")
 
 (item a) (slot s1) (slot s2)
 
-(hrule g () :match (slot ?s) :assert (tag ?s))
+(hrule g () :match (slot ?s) :assert (tag ?s) :why "guess that the slot {?s} is tagged")
 
-(rule ex () :match (and (item ?x) (tag ?s)) :assert (not (in ?x ?s)))
+(rule ex () :match (and (item ?x) (tag ?s)) :assert (not (in ?x ?s)) :why "{?s} is tagged, so the item {?x} is not in it")
 
 (rule full () :match (and (item ?x) (forall ?s (slot ?s) (not (in ?x ?s))))
-  :assert (false))
+  :assert (false) :why "every slot excludes the item {?x}, so it is in none, which cannot be")

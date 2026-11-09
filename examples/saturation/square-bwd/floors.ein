@@ -24,8 +24,8 @@
   :assert (co-located ?a ?x)
   :why    "square ({?R}, bwd).")
 
-(relation above-of T T)
-(relation co-located T T)
+(relation above-of T T :why "{?1} is above {?2}")
+(relation co-located T T :why "{?1} and {?2} are on the same horizontal level")
 (square-bwd above-of)
 
 (above-of Floor2 Floor1 :source "(1)")

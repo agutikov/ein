@@ -38,10 +38,10 @@
 ;;; S1f.5.15 and the written and arrival order since. No corpus program writes the
 ;;; shape. Owned by F22, whose search would re-derive what the store keeps.
 
-(relation seed T) (relation p T) (relation p2 T) (relation w T) (relation b T)
+(relation seed T :why "{?1} is a seed") (relation p T :why "p holds of {?1}") (relation p2 T :why "p2 holds of {?1}") (relation w T :why "w holds of {?1}") (relation b T :why "b holds of {?1}")
 (seed a) (b a)
-(hrule g  () :match (seed ?x) :assert (p ?x))
-(hrule g2 () :match (seed ?x) :assert (p2 ?x))
-(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false))
-(rule mk () :match (p ?x) :assert (w ?x))
-(rule w (?n) :match (eq ?n a) :assert (false))
+(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
+(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
+(rule early () :match (and (p ?x) (b ?x) (seed ?x)) :assert (false) :why "p and b both hold of the seed {?x}, which cannot be")
+(rule mk () :match (p ?x) :assert (w ?x) :why "p holds of {?x}, so w holds of {?x}, switching rule w on for it")
+(rule w (?n) :match (eq ?n a) :assert (false) :why "w holds of {?n} and {?n} is a, which cannot be")

@@ -22,4 +22,4 @@
 
 (hrule hyp-0 ()
   :match  (is-a ?v0 T)
-  :assert (not (r0 ?v0 o2)))
+  :assert (not (r0 ?v0 o2)) :why "guess that r0 does not hold of {?v0} and o2")

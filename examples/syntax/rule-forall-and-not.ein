@@ -15,8 +15,8 @@
 ;;; contains these shapes.
 
 (import std.macro :symbols (forall))
-(relation r T T)
+(relation r T T :why "r holds of {?1} and {?2}")
 (rule f ()
   :match  (and (r ?a ?b) (forall ?c (r ?b ?c) (r ?c ?b)) (not (r ?b ?a)) (eq ?a ?a))
   :assert (and (r ?b ?a) (not (r ?a ?a)))
-  :why "forall")
+  :why "r holds of {?a} and {?b}, every r step out of {?b} comes back, and r is false of {?b} and {?a}, so r holds of {?b} and {?a} and is false of {?a} and itself")

@@ -25,11 +25,11 @@
 ;;; `(config …)` line this file was is gone. R never read it — no config option
 ;;; changes R (`configuration.md` § 2.5) — so the file's R is the one it had,
 ;;; and the register keeps the walk's answer above as its `wrong`.
-(relation thing T)
-(relation q T)
-(relation bad T)
+(relation thing T :why "{?1} is a thing")
+(relation q T :why "q holds of {?1}")
+(relation bad T :why "{?1} is bad")
 (thing one)
-(rule taint () :match (q ?x)   :assert (bad ?x))
-(rule kill  () :match (bad ?x) :assert (false))
+(rule taint () :match (q ?x)   :assert (bad ?x) :why "q holds of {?x}, which taints it: {?x} is bad")
+(rule kill  () :match (bad ?x) :assert (false) :why "{?x} is bad, which cannot be")
 (solve :no-hypothesis (bad))
 (query :goal (thing ?x))

@@ -55,9 +55,9 @@
 ;;; R's maximal state was the `{(p A), (q A)}` above, what *respect* would have
 ;;; answered, kept as the row's alternative.
 
-(relation is-a T T)
-(relation p T)
-(relation q T)
+(relation is-a T T :why "{?1} is a {?2}")
+(relation p T :why "p holds of {?1}")
+(relation q T :why "q holds of {?1}")
 
 (is-a A T)
 

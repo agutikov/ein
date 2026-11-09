@@ -352,11 +352,11 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // candidate, so `bad`'s absence can be filled.
     (
         "derived",
-        "(relation p T) (relation s T) (relation q T T) (relation r T) (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x))
-         (hrule g2 () :match (r ?x) :assert (s ?x))
-         (rule tag () :match (s ?x) :assert (q ?x Tagged))
-         (rule bad () :match (and (p ?x) (absent (q ?x Tagged))) :assert (false))",
+        "(relation p T :why \"p holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation q T T :why \"q holds of {?1} and {?2}\") (relation r T :why \"r holds of {?1}\") (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (hrule g2 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
+         (rule tag () :match (s ?x) :assert (q ?x Tagged) :why \"s holds of {?x}, so q holds of {?x} and Tagged\")
+         (rule bad () :match (and (p ?x) (absent (q ?x Tagged))) :assert (false) :why \"p holds of {?x} and q does not hold of {?x} and Tagged, which cannot be\")",
         false,
         true,
         true,
@@ -364,11 +364,11 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // The same, reading `(q ?x Other)`, which nothing a commitment adds has.
     (
         "static",
-        "(relation p T) (relation s T) (relation q T T) (relation r T) (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x))
-         (hrule g2 () :match (r ?x) :assert (s ?x))
-         (rule tag () :match (s ?x) :assert (q ?x Tagged))
-         (rule bad () :match (and (p ?x) (absent (q ?x Other))) :assert (false))",
+        "(relation p T :why \"p holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation q T T :why \"q holds of {?1} and {?2}\") (relation r T :why \"r holds of {?1}\") (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (hrule g2 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
+         (rule tag () :match (s ?x) :assert (q ?x Tagged) :why \"s holds of {?x}, so q holds of {?x} and Tagged\")
+         (rule bad () :match (and (p ?x) (absent (q ?x Other))) :assert (false) :why \"p holds of {?x} and q does not hold of {?x} and Other, which cannot be\")",
         true,
         true,
         false,
@@ -378,12 +378,12 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // `(absent (done W))` static, and the cube shows the hole it makes.
     (
         "even-depth",
-        "(relation p T) (relation s T) (relation done T) (relation world T)
-         (relation slot T) (world W) (s A) (slot A) (slot B)
-         (hrule g () :match (slot ?x) :assert (p ?x))
+        "(relation p T :why \"p holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation done T :why \"{?1} is done\") (relation world T :why \"{?1} is a world\")
+         (relation slot T :why \"{?1} is a slot\") (world W) (s A) (slot A) (slot B)
+         (hrule g () :match (slot ?x) :assert (p ?x) :why \"{?x} is a slot, so guess that p holds of {?x}\")
          (rule all-p () :match (and (world ?w) (absent (and (s ?x) (absent (p ?x)))))
-                        :assert (done ?w))
-         (rule bad () :match (and (p B) (absent (done W))) :assert (false))",
+                        :assert (done ?w) :why \"p holds of everything s holds of, so world {?w} is done\")
+         (rule bad () :match (and (p B) (absent (done W))) :assert (false) :why \"p holds of B while W is not done, which cannot be\")",
         false,
         true,
         true,
@@ -391,11 +391,11 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // A stored negative a commitment derives fills the read.
     (
         "negative",
-        "(relation p T) (relation t T) (relation q T) (relation r T) (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x))
-         (hrule g2 () :match (r ?x) :assert (t ?x))
-         (rule neg () :match (p ?x) :assert (not (q ?x)))
-         (rule bad () :match (and (t ?x) (absent (not (q ?x)))) :assert (false))",
+        "(relation p T :why \"p holds of {?1}\") (relation t T :why \"t holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (hrule g2 () :match (r ?x) :assert (t ?x) :why \"r holds of {?x}, so guess that t holds of {?x}\")
+         (rule neg () :match (p ?x) :assert (not (q ?x)) :why \"p holds of {?x}, so q does not hold of {?x}\")
+         (rule bad () :match (and (t ?x) (absent (not (q ?x)))) :assert (false) :why \"t holds of {?x} and no stored fact says q does not hold of {?x}, which cannot be\")",
         false,
         true,
         true,
@@ -404,11 +404,11 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // the closure says it cannot see the plan that would compile.
     (
         "activator",
-        "(relation p T) (relation t T) (relation q T) (relation r T) (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x))
-         (hrule g2 () :match (r ?x) :assert (t ?x))
-         (rule watch (?R) :match (and (t ?x) (absent (?R ?x))) :assert (false))
-         (rule act () :match (p ?x) :assert (watch q))",
+        "(relation p T :why \"p holds of {?1}\") (relation t T :why \"t holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation r T :why \"r holds of {?1}\") (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (hrule g2 () :match (r ?x) :assert (t ?x) :why \"r holds of {?x}, so guess that t holds of {?x}\")
+         (rule watch (?R) :match (and (t ?x) (absent (?R ?x))) :assert (false) :why \"t holds of {?x} and {?R} does not, which cannot be\")
+         (rule act () :match (p ?x) :assert (watch q) :why \"p holds of {?x}, so rule watch is switched on for q\")",
         false,
         false,
         false,
@@ -417,11 +417,11 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
     // proposed, and the read asks for membership in a type.
     (
         "type-constant",
-        "(relation is-a T T) (relation owns T T)
+        "(relation is-a T T :why \"{?1} is a {?2}\") (relation owns T T :why \"{?1} owns {?2}\")
          (is-a A Thing) (is-a B Thing) (is-a C Box) (owns A C)
          (hrule g () :match (and (is-a ?x Thing) (is-a ?y Thing) (neq ?x ?y))
-                     :assert (is-a ?x ?y))
-         (rule check () :match (and (owns ?x ?y) (absent (is-a ?x Thing))) :assert (false))",
+                     :assert (is-a ?x ?y) :why \"{?x} and {?y} are two different Things, so guess that {?x} is a {?y}\")
+         (rule check () :match (and (owns ?x ?y) (absent (is-a ?x Thing))) :assert (false) :why \"{?x} owns {?y} but is not a Thing, which cannot be\")",
         true,
         true,
         false,
@@ -636,11 +636,11 @@ fn closure_operator_breaks(r: &Region) -> Vec<String> {
 /// A program the static check flags on which `cl` is **not** monotone, so the
 /// law below is the verdict's and not the oracle's: `{(p A)}` derives `(s A)`
 /// while `(q A)` is absent, and `{(p A), (q A)}` does not.
-const CL_NOT_MONOTONE: &str = "(relation p T) (relation q T) (relation s T) (relation r T) (r A)
-     (hrule g1 () :match (r ?x) :assert (p ?x))
-     (hrule g2 () :match (r ?x) :assert (q ?x))
-     (hrule g3 () :match (r ?x) :assert (s ?x))
-     (rule derive-s () :match (and (p ?x) (absent (q ?x))) :assert (s ?x))";
+const CL_NOT_MONOTONE: &str = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation s T :why \"s holds of {?1}\") (relation r T :why \"r holds of {?1}\") (r A)
+     (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+     (hrule g2 () :match (r ?x) :assert (q ?x) :why \"r holds of {?x}, so guess that q holds of {?x}\")
+     (hrule g3 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
+     (rule derive-s () :match (and (p ?x) (absent (q ?x))) :assert (s ?x) :why \"p holds of {?x} and q does not, so s holds of {?x}\")";
 
 /// **A *Monotone* verdict makes saturation a closure operator on the cube** —
 /// S1e2.1b.6, the comparison's *saturation on the cube* row. `cl(C)` is the

@@ -4,6 +4,6 @@
 ;; of the states the claim lists, and `<to>` is that state, fact for fact. A
 ;; `<to>` that is not a listed state names nothing the claim states.
 
-(relation p T)
+(relation p T :why "p holds of {?1}")
 (p A)
 (solve :expect (region (model (p A)) (merged (model) (model (p A)))))
