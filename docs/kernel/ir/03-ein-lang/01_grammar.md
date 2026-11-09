@@ -216,9 +216,11 @@ Auto-vivified relations — property-tag carriers like `symmetric`, which
 have no declaration — get neither, so `(relation ?R)` means precisely
 *declared* relation.
 
-**`:why` render template (optional).** A `:why "<tmpl>"` string turns a fact
-of this relation into natural-language text — used by `ein solve`'s result
-table (the *rendered query facts* column). It reuses the rule `:why` engine
+**`:why` render template.** A `:why "<tmpl>"` string turns a fact
+of this relation into natural-language text, its *statement*: written after each
+fact of the relation in a `--dump-answer` state file and after each one `--trace`
+derives, since M1f S1f.5.14's T1f.5.14.2. Until M1e2 S1e2.1c.5 `ein solve`'s result table printed it (the *rendered query
+facts* column), and from then until T1f.5.14.2 nothing did. It reuses the rule `:why` engine
 but references the fact's argument **slots positionally**: `{?1}` is arg 0,
 `{?2}` is arg 1, … (a leading digit is the relation-template form;
 rule/goal `:why` uses letter-led var names). A relation with **no** `:why`
@@ -954,8 +956,9 @@ goal binds `?who_water` / `?h_zebra` / …):
 ```
 
 The division of labour: a `(relation … :why)` template renders an individual
-*fact* to text (the rendered-facts column); the `(query … :goal-text)`
-template renders the *headline result* from the goal bindings.
+*fact* to text (a state file's comment after the fact, `--trace`'s *Derives*
+line); the `(query … :goal-text)` template renders the *headline result* from
+the goal bindings, a projection class's sentence on the read-out.
 
 ### Trace
 

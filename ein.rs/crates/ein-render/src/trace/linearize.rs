@@ -16,7 +16,6 @@ use ein_ir::Ast;
 use super::ast::{FactRef, TraceStep, fact_ref};
 use super::relevance::relevant_firings;
 use crate::slice::render_slice;
-use ein_core::render_why;
 
 /// One outstanding obligation as a trace line: its `:why`, or — for a rule
 /// that declares none — the rule and its bindings, so a debt is never a blank
@@ -82,19 +81,12 @@ fn step_from_firing(
         .map(|(k, v)| (terms.sym(*k).to_string(), terms.display(*v)))
         .collect();
     step.why = kb
-        .and_then(|kb| kb.program().rules.get(firing.rule))
-        .and_then(|r| r.why)
-        .map(|w| terms.sym(w).to_string())
-        .filter(|w| !w.is_empty())
-        .map(|template| {
-            let bindings: Vec<(String, String)> = firing
-                .bindings
-                .iter()
-                .map(|(k, v)| (terms.sym(*k).to_string(), terms.display(*v)))
-                .collect();
-            render_why(&template, &bindings)
+        .and_then(|kb| {
+            crate::sentence::rule_sentence(kb.program(), terms, firing.rule, &firing.bindings)
         })
         .unwrap_or_default();
+    step.statement =
+        kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, firing.derived[0]));
     step.sources = firing
         .premises
         .iter()

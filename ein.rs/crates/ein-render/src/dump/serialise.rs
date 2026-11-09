@@ -5,6 +5,8 @@
 //! writer went with the walk at M1e2 S1e2.1c.5.
 
 use ein_core::{FactId, Kb, ProvKind, Tag, Terms, Value};
+
+use crate::sentence::Origin;
 use ein_infer::firing::Firing;
 
 use super::json::Json;
@@ -16,24 +18,31 @@ use super::json::Json;
 /// these were keywords, `:source "…"`, `:rule "r"` and `:hypothesis N`, of
 /// which the loader read the first, took `:rule` only as an atom, and had no
 /// third, so a reloaded state's facts read as given anyway.
+///
+/// **And the fact in English** since M1f S1f.5.14's T1f.5.14.2
+/// ([`crate::sentence`]): a rule's `:why` filled with the firing's bindings
+/// after `: `, and the fact's statement, its relation's `:why`, after ` — `
+/// (alone, for a given with no sentence): `; rule r: <reason> — <statement>`.
+/// A line break in either starts a new comment line ([`crate::sentence::as_comment`]).
 fn provenance_comment(kb: &Kb, terms: &Terms, f: FactId) -> Option<String> {
-    let prov = kb.primary(f).map(|p| terms.provs.get(p))?;
-    match prov.kind {
-        // Both skipped when empty, so an empty string or a missing name
-        // falls through to no comment at all.
-        ProvKind::Source => prov
-            .source
-            .map(|s| terms.sym(s))
-            .filter(|s| !s.is_empty())
-            .map(|s| format!("; source {}", ein_core::text::quote(s))),
-        ProvKind::Rule => prov
-            .rule
-            .map(|r| terms.sym(r))
-            .filter(|r| !r.is_empty())
-            .map(|r| format!("; rule {}", ein_core::text::symbol(r))),
-        ProvKind::Hypothesis => Some(format!("; hypothesis {}", prov.branch.unwrap_or(0))),
-        ProvKind::Rejected => None,
+    let s = crate::sentence::fact_sentence(kb, terms, f);
+    let mut text = match &s.origin {
+        Origin::Source(sentence) => format!("source {}", ein_core::text::quote(sentence)),
+        Origin::Rule(rule) => format!("rule {}", ein_core::text::symbol(rule)),
+        Origin::Hypothesis(n) => format!("hypothesis {n}"),
+        Origin::Given => String::new(),
+    };
+    if let Some(reason) = &s.reason {
+        text.push_str(": ");
+        text.push_str(reason);
     }
+    if let Some(statement) = &s.statement {
+        if !text.is_empty() {
+            text.push_str(" — ");
+        }
+        text.push_str(statement);
+    }
+    (!text.is_empty()).then(|| format!("; {}", crate::sentence::as_comment(&text)))
 }
 
 /// One fact as one line: the one printer's text ([`Terms::fact_text`]), which

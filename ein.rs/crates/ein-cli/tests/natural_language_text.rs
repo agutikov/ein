@@ -15,9 +15,10 @@
 //! | surface | which text | as |
 //! |---|---|---|
 //! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”`, each line after a line break at the sentence's column |
-//! | `--trace` | a rule's `:why`, filled at its firing, and a premise's `:source` | the characters |
+//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and since M1f S1f.5.14 the derived fact's relation's `:why`, filled | the characters |
 //! | `ein saturate --dump` | `:source`, `:goal-text` | quoted, as the printer quotes |
 //! | a `--dump-answer` state file | all three, the program re-written | quoted, and it reloads to the same text |
+//! | a `--dump-answer` state file's fact comments (M1f S1f.5.14) | a rule's `:why` filled at the fact's first recorded justification, and the relation's `:why` filled with the fact's arguments | the characters, each line after a line break a comment line of its own (`;   `) |
 //! | `ein render program` | `:goal-text` | quoted, inside a DOT label |
 //! | a `.einb` | all three | `ein solve` of it prints what `ein solve` of the `.ein` does |
 //!
@@ -149,6 +150,9 @@ fn the_trace_prints_the_rules_why_and_the_premises_source() {
         let why = RULE_WHY.replace("{?p}", p).replace("{?h}", h);
         assert!(page.contains(&why), "the trace: no {why:?}");
         assert!(page.contains(source), "the trace: no {source:?}");
+        // What the derived fact says, its relation's `:why` (M1f S1f.5.14).
+        let derives = format!("Derives `housed({p})` — {}", HOUSED_WHY.replace("{?1}", p));
+        assert!(page.contains(&derives), "the trace: no {derives:?}");
     }
 }
 
@@ -195,6 +199,37 @@ fn a_state_file_writes_every_text_and_reads_back_to_it() {
     let mut want = texts(&repo_root().join(PROGRAM));
     want.sort();
     assert_eq!(got, want);
+}
+
+/// Each fact of a state file is written in English after it (M1f S1f.5.14's
+/// T1f.5.14.2): a given's `:source` quoted, a derived fact's rule and its
+/// `:why` filled with the firing's bindings, then ` — ` and the relation's
+/// `:why` filled with the fact's arguments, every line break in either a new
+/// comment line. The file still reloads to its facts (the test above).
+#[test]
+fn a_state_file_writes_each_fact_in_english() {
+    let scratch = Scratch::new("ein-nl-text-facts");
+    let dir = scratch.path().join("answer");
+    let r = ein(&["solve", PROGRAM, "--dump-answer", &dir.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let file = std::fs::read_to_string(dir.join("models").join("01.ein")).expect("the state file");
+    let comment = ein_render::sentence::as_comment;
+    for (p, h, source) in [("Ann", "H1", SOURCE_ANN), ("Bob", "H2", SOURCE_BOB)] {
+        let lives = RELATION_WHY.replace("{?1}", p).replace("{?2}", h);
+        let line = format!(
+            "(lives {p} {h}) ; source {} — {}\n",
+            ein_core::text::quote(source),
+            comment(&lives)
+        );
+        assert!(file.contains(&line), "the state file: no {line:?}:\n{file}");
+        let why = RULE_WHY.replace("{?p}", p).replace("{?h}", h);
+        let housed = HOUSED_WHY.replace("{?1}", p);
+        let line = format!(
+            "(housed {p}) ; rule settle: {}\n",
+            comment(&format!("{why} — {housed}"))
+        );
+        assert!(file.contains(&line), "the state file: no {line:?}:\n{file}");
+    }
 }
 
 /// `ein render program` draws the query's `:goal-text` quoted, inside the

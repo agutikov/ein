@@ -54,6 +54,7 @@ pub fn ops() -> Vec<Op> {
     out.extend(all_views().into_iter().map(Op::Dot));
     out.extend(READ_OUT_MODES.iter().map(|(m, _)| Op::ReadOut(m)));
     out.push(Op::RegionTrace);
+    out.push(Op::States);
     out.push(Op::RegionLattice);
     out.extend(core_ops());
     out.push(Op::Oracle);
@@ -143,6 +144,11 @@ pub enum Op {
     ReadOut(&'static str),
     /// `ein solve --trace`'s markdown, under describe.
     RegionTrace,
+    /// `ein solve --dump-answer`'s state files, under describe, each fact with
+    /// its provenance and the fact in English — M1f S1f.5.14's T1f.5.14.2,
+    /// whose rendering reads a fact's first recorded justification and so has
+    /// to be held to the same invariance as the rest of the answer.
+    States,
     /// `ein render lattice`'s DOT.
     RegionLattice,
     /// Under one of [`READ_OUT_MODES`]: the summary's `region` block
@@ -169,6 +175,7 @@ impl std::fmt::Display for Op {
             Op::Dot(v) => write!(f, "dot[{v}]"),
             Op::ReadOut(m) => write!(f, "read-out[{m}]"),
             Op::RegionTrace => write!(f, "region-trace"),
+            Op::States => write!(f, "states"),
             Op::RegionLattice => write!(f, "region-lattice"),
             Op::Cores(m) => write!(f, "cores[{m}]"),
             Op::Oracle => write!(f, "oracle"),
@@ -205,7 +212,7 @@ impl Op {
             // the loaded KB's shape, and root saturation's event stream. None
             // of them crosses a fork, so none of them carries narration, and
             // blanking a firing count here would only weaken the golden.
-            Op::Ir(_) | Op::Load | Op::Saturate => text.to_string(),
+            Op::Ir(_) | Op::Load | Op::Saturate | Op::States => text.to_string(),
             _ => ein_narration::blank(text),
         })
     }
@@ -257,7 +264,12 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
     }
     let outcome = match op {
         Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
-        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice | Op::Cores(_) | Op::Oracle => {
+        Op::ReadOut(_)
+        | Op::RegionTrace
+        | Op::States
+        | Op::RegionLattice
+        | Op::Cores(_)
+        | Op::Oracle => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             region_op(&ast, terms, &mut kb, path, op, jobs)
         }
@@ -279,6 +291,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
                 | Op::Dot(_)
                 | Op::ReadOut(_)
                 | Op::RegionTrace
+                | Op::States
                 | Op::RegionLattice
                 | Op::Cores(_)
                 | Op::Oracle => {
@@ -382,6 +395,35 @@ fn region_op(
                     full_kb: false,
                 },
             )
+        }
+        Op::States => {
+            // The state files, from the call the binary makes; the program
+            // each repeats above its facts is the CLI's (imports inlined), and
+            // what is compared is the facts and their comments below it.
+            let r = ein_infer::read_out::run(kb, terms, ast, &opts).map_err(|e| e.to_string())?;
+            let scratch = ein_corpus::Scratch::new("ein-corpus-ops-states");
+            let inputs = ein_render::dump::region_answer::Inputs {
+                source: &file,
+                program: "",
+                summary: "",
+                answer_txt: "",
+                forms: &[],
+            };
+            ein_render::dump::region_answer::write(scratch.path(), &r, kb, terms, ast, &inputs)?;
+            let mut files: Vec<_> = std::fs::read_dir(scratch.path().join("models"))
+                .map(|d| d.filter_map(|e| e.ok().map(|e| e.path())).collect())
+                .unwrap_or_default();
+            files.sort();
+            let mut out = String::new();
+            for f in files {
+                let text = std::fs::read_to_string(&f).map_err(|e| e.to_string())?;
+                let facts = text.split_once("── the state").map_or("", |(_, b)| b);
+                out.push_str(&format!(
+                    "--- {}\n{facts}",
+                    f.file_name().unwrap_or_default().to_string_lossy()
+                ));
+            }
+            Ok(out)
         }
         Op::RegionLattice => {
             let visits = Arc::new(Mutex::new(Default::default()));

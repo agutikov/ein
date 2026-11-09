@@ -30,7 +30,7 @@ Derives `__closed__(r)`.
 
 Premises: `__closed__(r)`
 
-Derives `closed-here(r)`.
+Derives `closed-here(r)` — r's extension was closed by infer-closure
 
 <dot>
 

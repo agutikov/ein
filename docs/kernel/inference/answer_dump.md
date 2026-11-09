@@ -161,6 +161,25 @@ a reloaded state read as given then too, while the file said otherwise (the
 inventory of 2026-11-05's S-5). `answer_round_trip.rs` holds every reloaded
 fact as given.
 
+**The comment says the fact in English** since M1f S1f.5.14's T1f.5.14.2: a
+derived fact's rule is followed by its `:why` filled with the bindings of the
+fact's first recorded justification, and every fact whose relation carries a
+`:why` by that `:why` filled with its arguments, after ` — ` (alone, for a given
+with no sentence):
+
+```lisp
+(co-located Englishman Red) ; source "condition (2)" — Englishman and Red are in the same house
+(co-located House-3 Milk) ; rule symmetric: co-located is symmetric: Milk ↔ House-3. — House-3 and Milk are in the same house
+(instance House-5 House) ; House-5 is an instance of House
+```
+
+A line break in a text starts a new comment line, `;   `, so the text is
+carried character for character and the file still loads to its facts
+(`ein-cli/tests/natural_language_text.rs`). A fact with no text at all keeps
+the comment it had, or none. Which justification is *first recorded* can move
+with rule order: a reason is an explanation, as a core is, and F22 makes both
+canonical (the user's ruling of 2026-11-08).
+
 **`--dump-states`' and `--dump-lattice`'s snapshots are a lesser thing.**
 They carry a state's facts and no rules. They load and reload to the same
 facts (`ein-render/tests/dump_states_load.rs`), so `ein render kb` draws them,

@@ -96,7 +96,7 @@ fn job_counts() -> Vec<usize> {
 fn solves(op: Op) -> bool {
     matches!(
         op,
-        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice | Op::Dot(_)
+        Op::ReadOut(_) | Op::RegionTrace | Op::States | Op::RegionLattice | Op::Dot(_)
     )
 }
 

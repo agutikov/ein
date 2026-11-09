@@ -97,6 +97,9 @@ pub struct TraceStep {
     /// each name.
     pub bindings: Vec<(String, String)>,
     pub why: String,
+    /// What the derived fact says: its relation's `:why`, positional — M1f
+    /// S1f.5.14's T1f.5.14.2. `None` where the relation carries none.
+    pub statement: Option<String>,
     /// The inline DOT slice — render-time, not serialised.
     pub diagram: Option<String>,
     /// The clustering key (target entity) — render-time, not serialised.
@@ -116,6 +119,7 @@ impl TraceStep {
             derived,
             bindings: Vec::new(),
             why: String::new(),
+            statement: None,
             diagram: None,
             section: None,
             sources: Vec::new(),

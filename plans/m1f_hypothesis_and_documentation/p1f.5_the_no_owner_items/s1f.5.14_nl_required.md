@@ -6,7 +6,8 @@
 **Status:** specified 2026-08-28; **T1f.5.14.6, the loader flag, done 2026-11-08, ahead of the phase** (the user:
 *"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); **running since 2026-11-10**, the
 phase's last stage, on default decisions recorded as they are taken (the user's instruction of 2026-11-09): T1, the
-census, done ([its record](#t1f5141-record-2026-11-10)). **Ruled and placed on 2026-11-08**
+census, done ([its record](#t1f5141-record-2026-11-10)); T2, a fact in English from its first recorded justification,
+in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)). **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -333,6 +334,56 @@ Three things to establish before writing it:
 - **Cost.** A provenance lookup per rendered fact, on a path that today renders
   8 facts and would render 444. Measure it on the zebra family before shipping;
   the answer table is on every `ein solve`.
+
+#### T1f.5.14.2 record, 2026-11-10
+
+**Fact-level rendering ships, in the two surfaces that print a fact for a reader and are not Ein text a claim is
+pasted from** ([Q-M1f.58](../open_questions.md#q-m1f58--where-a-fact-is-rendered-in-english-and-what-it-reads-from),
+taken by default on the user's instruction of 2026-11-09). The stage file's surface, the read-out's *rendered* answer
+table, went with the walk at M1e2 S1e2.1c.5; since then a relation's `:why` reached no surface at all, though
+`01_grammar.md` still said the solve table printed it. The read-out's `(model …)` blocks are Ein text a claim is
+pasted from (`as :expect`), so they stay s-expressions, as `ein solve`'s stdout and `answer.txt` do: **no read-out
+byte moves**, and `read_out.md` and its examples page are unchanged.
+
+- **`ein_render::sentence`**, a module of its own: `rule_sentence` fills a rule's (or hrule's) `:why` with a firing's
+  bindings, lifted out of `trace/linearize.rs` and `slice.rs`, which both call it now, so the trace, the DOT slice
+  and a state file fill a rule's `:why` one way; `statement` fills a relation's `:why` with a fact's arguments; and
+  `fact_sentence` reads a fact's **first recorded justification** ([`Kb::primary`]) for its origin (`source`, `rule`,
+  `hypothesis`, or a given) and its reason, beside its statement.
+- **A `--dump-answer` state file** writes each fact's comment as `; rule r: <reason> — <statement>`, `; source "…" —
+  <statement>`, `; hypothesis N — <statement>`, or `; <statement>` for a given with no sentence; a fact with no text
+  keeps the comment it had. A line break in a text starts a comment line of its own (`;   `), so the text is carried
+  character for character and the file reloads to its facts (`answer_round_trip.rs`, unchanged).
+  `natural_language_text.rs`' new `a_state_file_writes_each_fact_in_english` holds both texts on Cyrillic, CJK,
+  emoji and every escape.
+- **`--trace`**'s step says what the derived fact says: *Derives `f` — <statement>* where its relation carries a
+  `:why` (the same test).
+- **First recorded**, as the stage file said to take, and not refined: a reason is an explanation, as a core is, and
+  the user's ruling of 2026-11-08 (*"core is an explanation, F22 makes it canonical"*) covers it. Within a run it is
+  deterministic: a state file's KB is its commitment's fixpoint, built once per state by `Nodes::with_fixpoint`, and
+  the corpus sweep gains a **`states` op** (`ein-render/tests/corpus_ops`), the state files under describe compared
+  exactly, which `id_order_invariance` and `jobs_invariance` now hold.
+- **What moved, named before it was blessed** (`EIN_BLESS=1`): `corpus_shapes.md5` gains the `states` digest of
+  every corpus file that answers with a state, 334, and the `region-trace` digest moves on the 52 files whose trace
+  derives a fact of a relation with a `:why`, each by the statement after its *Derives* lines; of the six trace
+  goldens one moves, `trace_owing.md`, by one line: *Derives `closed-here(r)` — r's extension was closed by
+  infer-closure*. No R, N, H, claim, exit code or read-out byte moved.
+
+**The cost** (`utils/bench_env.sh`, pinned to cpu4, 2026-11-10: each run best of 7, the binary built at `b7108e3a` against this
+commit's, on the zebra family):
+
+| program | `ein solve F` | `--dump-answer D` | `--trace T` |
+|---|---:|---:|---:|
+| `zebra.ein` | 884 → 882 ms (0.998) | 2727 → 2720 ms (0.998) | 2771 → 2764 ms (0.997) |
+| `zebra2.ein` | 505 → 506 ms (1.001) | 6546 → 6540 ms (0.999) | 6565 → 6561 ms (0.999) |
+| `zebra2-obligations.ein` | 505 → 505 ms (0.998) | 6546 → 6538 ms (0.999) | 6557 → 6553 ms (0.999) |
+| `zebra2-minus-15.ein` | 8746 → 8766 ms (1.002) | 29704 → 29710 ms (1.000) | 29792 → 29749 ms (0.999) |
+| `zebra2-minus-15-obligations.ein` | 8701 → 8716 ms (1.002) | 29620 → 29627 ms (1.000) | 29698 → 29678 ms (0.999) |
+| `zebra2-hints.ein` | 105 → 105 ms (0.998) | 1289 → 1290 ms (1.001) | 1295 → 1295 ms (1.000) |
+
+Every ratio is between 0.997 and 1.002: **no measurable cost**, so the rendering ships on the default path of the
+two surfaces and no presentation option gates it. A bare `ein solve` renders no fact; a dump's and a trace's seconds
+are the cores they take for N, which the English does not touch.
 
 ### Task T1f.5.14.3 — Where a template has nowhere to live
 

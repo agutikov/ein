@@ -65,6 +65,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.55](#q-m1f55--a-container-on-a-solves-now) | a `container` on a solve's `now` | **defaulted 2026-11-09 (the user's instruction): (a), the case page runs the container, as `wrong_answers.rs` does**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
 | [Q-M1f.56](#q-m1f56--what-the-nl-census-counts-which-fact-set-and-which-registers) | what the NL census counts: which fact set, and which registers | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every fact of every state file, and four registers, puzzle, stdlib, kernel and undeclared**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.57](#q-m1f57--which-fixtures-get-a-why) | which fixtures get a `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), every file the loader reads, on the form's last line in a refused fixture; a file refused at the parse and the records under `plans/` and `docs/history/` are left**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.58](#q-m1f58--where-a-fact-is-rendered-in-english-and-what-it-reads-from) | where a fact is rendered in English, and what it reads from | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), a state file's comments and `--trace`'s *Derives* line, from the fact's first recorded justification; stdout does not move**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1384,3 +1385,21 @@ about, and (b) has no register to split. `utils/nl_census.py`'s docstring states
 
 **Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** A `:why` in a file refused at the parse is
 read by nothing and moves the positions its refusal prints; a record is not edited.
+
+### Q-M1f.58 — Where a fact is rendered in English, and what it reads from
+
+**Raised** 2026-11-10 by S1f.5.14's T1f.5.14.2. The stage file's surface for a fact's sentence, the read-out's
+*rendered* answer table, went with the walk at M1e2 S1e2.1c.5; since then a relation's `:why` reaches no surface,
+though `01_grammar.md` still said the solve table renders it. The read-out's `(model …)` blocks are Ein text a claim
+is pasted from.
+
+- **(a) The state files and the trace**: a `--dump-answer` state file's comment after each fact carries its rule's
+  `:why` filled at its first recorded justification and its relation's `:why` filled with its arguments; `--trace`'s
+  *Derives* line carries the statement. stdout and `answer.txt` do not move.
+- **(b) (a), and a new presentation form on stdout**, `--models text`, a sentence per listed fact.
+- **(c) The read-out's `(model …)` blocks in English**, which would stop them being claims.
+
+**Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** It costs nothing on a bare `ein solve` and moves
+no read-out byte; (b) is a form nobody asked for and the stage's minimum-work rule leaves it out; (c) breaks what a
+claim is. *First recorded* is the stage file's own pick, and the user's ruling of 2026-11-08 on cores (*"core is an
+explanation, F22 makes it canonical"*) covers it.

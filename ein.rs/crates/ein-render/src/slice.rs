@@ -17,7 +17,6 @@ use ein_infer::firing::Firing;
 use crate::dot_util::{digraph_open, fact_label, hashed_id, multiline, quote};
 use crate::kb_dot::{KbDotOpts, to_dot};
 use crate::palette::hash_color;
-use ein_core::render_why;
 
 const SEED_COLOUR: &str = "#d62728"; // red — hypothesis / seed facts, ⊥
 const NEG_COLOUR: &str = "#7f7f7f"; // grey — eliminated-alternative facts
@@ -123,17 +122,8 @@ pub fn render_slice(
         let fnode = quote(&format!("fire{idx}_{rule_name}"));
         let colour = hash_color(&rule_name);
         let why = kb
-            .and_then(|kb| kb.program().rules.get(firing.rule))
-            .and_then(|r| r.why)
-            .map(|w| terms.sym(w).to_string())
-            .filter(|w| !w.is_empty())
-            .map(|template| {
-                let bindings: Vec<(String, String)> = firing
-                    .bindings
-                    .iter()
-                    .map(|(k, v)| (terms.sym(*k).to_string(), terms.display(*v)))
-                    .collect();
-                render_why(&template, &bindings)
+            .and_then(|kb| {
+                crate::sentence::rule_sentence(kb.program(), terms, firing.rule, &firing.bindings)
             })
             .unwrap_or_default();
         let style = if firing.redundant {

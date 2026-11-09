@@ -25,6 +25,7 @@ pub mod read_out;
 pub mod region_doc;
 pub mod region_dot;
 pub mod rules;
+pub mod sentence;
 pub mod shape;
 pub mod slice;
 pub mod trace;
@@ -35,14 +36,16 @@ pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value
 /// `:why` substitution — [`ein_core::render_why`], re-exported.
 ///
 /// It moved down to `ein-core` at M1d S1d.2.4 so the obligation pass could
-/// render an `owe`'s sentence from `ein-infer`; this crate's three callers and
-/// every `ein_render::render_why` outside it are unchanged.
+/// render an `owe`'s sentence from `ein-infer`. Within this crate a rule's
+/// `:why` is filled by [`sentence::rule_sentence`] alone since M1f S1f.5.14's
+/// T1f.5.14.2, and a relation's by [`sentence::statement`].
 pub use ein_core::render_why;
 pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
 pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
 pub use models::{KeyOutcome, ModelsForm, key_table};
 pub use palette::{PALETTE, hash_color};
 pub use rules::{RuleMode, render_rule_form, render_rules_forms};
+pub use sentence::{FactSentence, Origin, fact_sentence, rule_sentence};
 pub use shape::dot_shape;
 pub use slice::{render_slice, render_solution, render_state};
 pub use trace::{TraceStep, steps_of, steps_of_with};

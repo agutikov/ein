@@ -57,6 +57,16 @@ pub struct RegionTrace {
     pub reorder: bool,
 }
 
+/// `Derives `(f)`.`, and what the fact says where its relation carries a
+/// `:why` (M1f S1f.5.14's T1f.5.14.2): `Derives `(f)` — <statement>`, the
+/// statement as its template writes it.
+fn derives_line(step: &TraceStep) -> String {
+    match &step.statement {
+        Some(s) => format!("Derives `{}` — {s}", step.derived_label()),
+        None => format!("Derives `{}`.", step.derived_label()),
+    }
+}
+
 fn step(step: &TraceStep, diagrams: bool) -> Vec<String> {
     let mut out = vec![
         format!("### Step {} — `{}`", step.n, step.rule),
@@ -68,7 +78,7 @@ fn step(step: &TraceStep, diagrams: bool) -> Vec<String> {
     }
     out.push(premises_line(step));
     out.push(String::new());
-    out.push(format!("Derives `{}`.", step.derived_label()));
+    out.push(derives_line(step));
     out.push(String::new());
     if diagrams {
         out.extend(dot_block(step.diagram.as_ref()));
