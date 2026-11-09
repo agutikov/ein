@@ -601,6 +601,61 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
     assert_eq!(ok.facts_under("q"), ["(q A B)", "(q B A)"]);
 }
 
+/// **A value parameter binds a nested fact** — M1f S1f.5.18, W33 and W58, on
+/// the user's ruling of 2026-11-08 on S1f.5.5's census (*"Q3 - as
+/// recommended"*): a nested fact is a value, so an activator binds a
+/// parameter to it as to a name, whether the activator is written down or a
+/// rule derives it.
+///
+/// Until S1f.5.18 `compile::Compiler::bind_activator` skipped a nested fact
+/// (*a nested Fact does not bind*): the parameter was a free variable of the
+/// plan, so `(act (f a))` fired `(p ?y)` on every `p` and concluded `(hit a)`
+/// and `(hit b)` beside `(hit (f a))` (`W33/activator-nested-value`), and a
+/// conclusion that alone read the parameter stopped the run with
+/// `FireError::UnboundVar`'s *unbound var ?y in :assert* (`W58`). The test
+/// beside it holds the relation half, which stays refused.
+#[test]
+fn a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound() {
+    // Written down, read by the premise: W33's witness.
+    let mut matched = load_text(
+        "(relation p T) (relation hit T)\n(p a) (p b) (p (f a))\n\
+         (rule act (?y) :match (p ?y) :assert (hit ?y))\n(act (f a))\n",
+    );
+    matched.saturate();
+    assert_eq!(matched.facts_under("hit"), ["(hit (f a))"]);
+
+    // Written down, read by the conclusion alone: W58's witness.
+    let mut concluded = load_text(
+        "(relation p T) (relation hit T)\n(p a)\n\
+         (rule act (?y) :match (p ?x) :assert (hit ?y))\n(act (f a))\n",
+    );
+    concluded.saturate();
+    assert_eq!(concluded.facts_under("hit"), ["(hit (f a))"]);
+
+    // Derived by a rule through a variable, and read by both clauses: the
+    // activator `mk` derives binds `?y` to the fact `src` holds.
+    let mut derived = load_text(
+        "(relation p T) (relation hit T) (relation src T)\n\
+         (p a) (p b) (p (f a)) (src (f a))\n\
+         (rule mk () :match (src ?s) :assert (act ?s))\n\
+         (rule act (?y) :match (p ?y) :assert (and (hit ?y) (hit (got ?y))))\n",
+    );
+    derived.saturate();
+    assert_eq!(
+        derived.facts_under("hit"),
+        ["(hit (f a))", "(hit (got (f a)))"]
+    );
+
+    // Two activators that differ only in a nested fact bind two values, and
+    // each plan matches its own.
+    let mut two = load_text(
+        "(relation p T) (relation hit T)\n(p (f a)) (p (f b)) (p c)\n\
+         (rule act (?y) :match (p ?y) :assert (hit ?y))\n(act (f a)) (act (f b))\n",
+    );
+    two.saturate();
+    assert_eq!(two.facts_under("hit"), ["(hit (f a))", "(hit (f b))"]);
+}
+
 // ── `(config …)` coercion ──────────────────────────────────────────
 
 /// The bool coercion reads its IR shapes — work-list

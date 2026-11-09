@@ -609,8 +609,8 @@
 0    examples/ein-bugs/wrong-answers/pair-core-root-given.ein :: solve
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: saturate
 0    examples/ein-bugs/wrong-answers/pair-core-root-negative.ein :: solve
-1    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: saturate
-1    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: solve
+0    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: saturate
+0    examples/ein-bugs/wrong-answers/parameter-nested-assert.ein :: solve
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: saturate
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --maximal --region-limit 8
 0    examples/ein-bugs/wrong-answers/past-limit-lines.ein :: solve --minimal --region-limit 8

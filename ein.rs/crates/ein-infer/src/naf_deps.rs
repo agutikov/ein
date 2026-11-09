@@ -73,7 +73,7 @@
 //!
 //! [`Q-M1e.9`]: ../../../../docs/history/m1e_review_processing/open_questions.md
 
-use ein_core::{Symbol, Terms};
+use ein_core::{Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
 
 use crate::compile::{asserted_relation, naf_relation_refs, negated_relation};
@@ -89,7 +89,7 @@ use crate::plan::{Plan, Slot};
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NafDep {
     pub rule: Symbol,
-    pub activator: Box<[Symbol]>,
+    pub activator: Box<[Value]>,
     pub derived: Box<[String]>,
     pub declared_only: Box<[String]>,
     /// M1e S1e.2.3 — [`Q-M1e.9`]'s exposure, or `None`.
@@ -239,9 +239,11 @@ fn sorted(set: FxHashSet<String>) -> Box<[String]> {
 }
 
 /// Ordering of string sequences: element-wise by text, and a prefix sorts first.
-fn cmp_args(terms: &Terms, a: &[Symbol], b: &[Symbol]) -> std::cmp::Ordering {
+fn cmp_args(terms: &Terms, a: &[Value], b: &[Value]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
-        let o = terms.syms.cmp_text(*x, *y);
+        // By content: a name by its text, as until M1f S1f.5.18 kept the
+        // names alone, and a nested fact after every name (Q-M1f.43).
+        let o = terms.cmp_semantic(*x, *y);
         if o != std::cmp::Ordering::Equal {
             return o;
         }
@@ -263,11 +265,21 @@ pub struct NafWarning {
 pub const DERIVED_NAF: &str = "DerivedNafWarning";
 pub const REFUTATION_UNDER_ABSENT: &str = "RefutationUnderAbsentWarning";
 
-fn activator_suffix(terms: &Terms, activator: &[Symbol]) -> String {
+/// An activator's argument as a label writes it: a name's own text, as it was
+/// written before M1f S1f.5.18 kept a nested fact here too, and a fact as Ein
+/// text.
+pub(crate) fn raw_text(terms: &Terms, v: Value) -> String {
+    match v.as_sym() {
+        Some(s) => terms.sym(s).to_string(),
+        None => terms.display(v),
+    }
+}
+
+fn activator_suffix(terms: &Terms, activator: &[Value]) -> String {
     if activator.is_empty() {
         return String::new();
     }
-    let names: Vec<&str> = activator.iter().map(|&a| terms.sym(a)).collect();
+    let names: Vec<String> = activator.iter().map(|&a| raw_text(terms, a)).collect();
     format!(" [activator {}]", names.join(" "))
 }
 

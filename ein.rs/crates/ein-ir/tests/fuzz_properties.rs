@@ -621,11 +621,14 @@ fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
 /// variable's, `ein_infer::plan`'s register spaces), every register a relation
 /// premise's slots hold at any depth, and every register an `eq` or `neq`
 /// guard reads, which it binds where nothing else does (M1f S1f.5.7). An
-/// `(absent …)`, lifted or nested, binds nothing outside it. **A parameter is
-/// excepted until S1f.5.18**: its activator binds it, which is what the
-/// loader holds a conclusion to, unless the activator binds it to a nested
-/// fact, which the compiler does not seed (W33's cause; W58 is the stop it
-/// makes where only the conclusion reads the parameter).
+/// `(absent …)`, lifted or nested, binds nothing outside it. A rule with
+/// parameters is compiled only from an activator, which seeds every one, a
+/// nested fact too since S1f.5.18, so a conclusion reads a parameter as a
+/// constant of the plan; one no activator activates compiles no plan. **A
+/// parameter was excepted until S1f.5.18**, which seeded a nested fact (W33's
+/// cause; W58 was the stop it made where only the conclusion read the
+/// parameter), and until then the plan of a rule with parameters and no
+/// activator was compiled here with none, its parameters unbound.
 fn unbound_conclusion(text: &str) -> Option<String> {
     use ein_infer::plan::{GuardArgKind, Plan, Slot, Step};
     fn regs(plan: &Plan, slot: Slot, out: &mut Vec<u16>) {
@@ -651,11 +654,7 @@ fn unbound_conclusion(text: &str) -> Option<String> {
         .cloned()
         .collect();
     for rule in &rules {
-        let mut activators = ein_infer::activators_for(&kb, &terms, rule);
-        if activators.is_empty() {
-            activators.push(None);
-        }
-        for activator in activators {
+        for activator in ein_infer::activators_for(&kb, &terms, rule) {
             // A plan the compiler refuses is its own diagnosed outcome.
             let Ok(plan) = ein_infer::compile_rule(&ast, &mut terms, rule, activator) else {
                 continue;
@@ -685,7 +684,7 @@ fn unbound_conclusion(text: &str) -> Option<String> {
                 }
                 for &r in &read {
                     let name = plan.reg_names[r as usize];
-                    if !bound.contains(&r) && !rule.params.contains(&name) {
+                    if !bound.contains(&r) {
                         return Some(format!(
                             "rule '{}': ?{}",
                             terms.sym(rule.name),

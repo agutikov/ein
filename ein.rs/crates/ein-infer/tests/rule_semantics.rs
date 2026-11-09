@@ -747,10 +747,10 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
 /// redundant firing — where until then they shared one key and it was never
 /// enqueued, the collision §3.2 was reaching for.
 ///
-/// A nested `Fact` binds no parameter, so it reaches `values` not at all; it
-/// reaches the activator half now that the half is the compile key's every
-/// argument. The same fixture is run four ways and only the *kind* of the
-/// second argument varies:
+/// Since M1f S1f.5.18 (W33) a nested `Fact` binds its parameter as a name
+/// does, so it reaches `values` as well as the activator half, which is the
+/// compile key's every argument. The same fixture is run four ways and only
+/// the *kind* of the second argument varies:
 ///
 /// | second argument | plans | firings | productive |
 /// |---|---:|---:|---:|
@@ -759,13 +759,13 @@ fn activators_differing_only_by_an_int_argument_both_fire() {
 /// | two symbols | 2 | 2 | 1 |
 /// | two ints | 2 | 2 | 1 |
 ///
-/// **And nothing changes but a duplicate.** `activator` reaches the compiler
-/// at exactly one site — `Compiler::run` passes it to `bind_activator` and
-/// nowhere else — and `bind_activator` skips a `Fact` argument outright, so
-/// the two plans are equal in every field of [`Plan`] but their activator
-/// list. The second application derives what the first derived, which is why
-/// the derived set is the same in all four cells and one firing in each is
-/// productive. Q-M1e.16's second fix, the layout in the key, would have kept
+/// **And nothing changes but a duplicate.** The rule reads `?f` nowhere, so
+/// whatever value each plan's seed binds it to, the second application
+/// derives what the first derived, which is why the derived set is the same
+/// in all four cells and one firing in each is productive. Until M1f S1f.5.18
+/// `bind_activator` skipped a `Fact` argument outright, so the two plans were
+/// equal in every field of [`Plan`] but their activator list; since, each
+/// seed holds its own fact (W33), and the cells count as they did. Q-M1e.16's second fix, the layout in the key, would have kept
 /// this collapse; the first, which S1e2.2.7 took, gives each plan its space.
 /// The shape the collapse's key cost a derivation on is the next test.
 #[test]
@@ -821,7 +821,9 @@ fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
 /// **An `int` in the position another activator gives a nested `Fact` loses
 /// no derivation, in either order and in either build** — M1e2 S1e2.2.7's
 /// regression for the latent bug behind `Q-M1a.8`, which until then this test
-/// pinned as a defect.
+/// pinned as a defect. The `int` is the name `1` since M1f S1f.5.4, and since
+/// M1f S1f.5.18 (W33) the nested `Fact` binds `?f` too, so each plan derives
+/// its own `(noted ?a ?f)`, and the two together their union.
 ///
 /// Both activators drop their second argument from `plan.activator_args`, and
 /// until S1e2.2.7 that list was the binding key's activator half, so the two
@@ -854,30 +856,32 @@ fn an_int_beside_a_nested_fact_in_one_position_loses_no_derivation() {
               :assert (noted ?a ?f)
               :why    "note")
             (edge 1 2) (edge 2 3)
-            (holds 1)  (holds 3)
+            (holds 1)  (holds 3)  (holds (src Y))
             {activators}
             "#
         )
     };
     // The controls: one plan each, no layout to disagree with. The nested-fact
-    // activator derives the four conclusions the rule has, the int one the two
-    // with `?f` = 1.
-    let whole = BTreeSet::from([
-        "(noted 1 1)".to_string(),
-        "(noted 1 3)".to_string(),
-        "(noted 2 1)".to_string(),
-        "(noted 2 3)".to_string(),
+    // activator derives the two with `?f` = `(src Y)`, the name one the two
+    // with `?f` = 1. Until M1f S1f.5.18 the nested fact bound nothing, `?f`
+    // was `(holds ?f)`'s to bind, and the nested-fact activator derived every
+    // `(noted ?a ?f)`, which this control stated (W33).
+    let nested = BTreeSet::from([
+        "(noted 1 (src Y))".to_string(),
+        "(noted 2 (src Y))".to_string(),
     ]);
+    let name = BTreeSet::from(["(noted 1 1)".to_string(), "(noted 2 1)".to_string()]);
     assert_eq!(
         saturate(&program("(note edge (src Y))")).derived(),
-        whole,
-        "the nested-fact activator alone derives every (noted ?a ?f)"
+        nested,
+        "the nested-fact activator alone derives the two with ?f = (src Y)"
     );
     assert_eq!(
         saturate(&program("(note edge 1)")).derived(),
-        BTreeSet::from(["(noted 1 1)".to_string(), "(noted 2 1)".to_string()]),
-        "the int activator alone derives the two with ?f = 1"
+        name,
+        "the name activator alone derives the two with ?f = 1"
     );
+    let whole: BTreeSet<String> = nested.union(&name).cloned().collect();
 
     // Both, in both orders: a rule set with one more activator concludes the
     // union, and the order two facts are written in changes nothing.

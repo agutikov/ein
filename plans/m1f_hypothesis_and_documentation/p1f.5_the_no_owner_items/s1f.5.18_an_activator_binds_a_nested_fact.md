@@ -211,3 +211,64 @@ corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 `:assert`; and `detector`'s count of the corpus programs the static check flags is 49 where it was 48,
 `derived-activator-never.ein`'s `r` an `activator` site. The first gate run stopped at those two tests, which this commit
 updates; the run its body names is the whole gate again, with `--no-fail-fast` forwarded to `cargo test`.
+
+## T1f.5.18.2 record (2026-11-09)
+
+**The seed** (`ein_infer::compile`): `Compiler::bind_activator` seeds every parameter from its activator, a nested fact as
+a name, and returns the activator's every argument. The list of parameters bound to a fact, which `head_not_a_name` read
+until then, is gone: a relation head written as such a parameter meets the seeded fact and is refused where it was, so
+W24's compile-time line holds.
+
+**`Plan::activator_args` is every argument, as values** ([Q-M1f.43](../open_questions.md#q-m1f43--planactivator_args-once-a-nested-fact-binds),
+(a)), the compile key's list: `firing::Firing`, `obligations::Owed`, `oblgen::InstanceKey`, `forbid::Refusal`,
+`monotone::Site` and `AbsentRead`, `naf_deps::NafDep` and `detector`'s root plans and sites hold values, ordered by
+`Terms::cmp_semantic` (a name by its text, as before, and a nested fact after every name), and every surface that prints
+one prints a name as it did and a fact as Ein text (`Terms::display`; `naf_deps::raw_text` where a label printed a
+name's raw text). `detector`'s match of an owed instance against the activators a node holds compares every argument.
+
+**`FireError::UnboundVar` is retired** (Q-M1f.37; S1f.5.10's acceptance item, moved here): the variant, its *unbound var
+?y in :assert — bindings: …* line and `ein-cli`'s `KeyError: "…"` arm in `common::saturate_error_line` are gone. No
+conclusion reads a register its match and its activator leave unbound, the loader refusing a variable no premise or
+parameter binds (S1f.5.10) and the compiler seeding every parameter, so `firing::resolve` asserts it, naming both.
+`fuzz_properties::no_firing_meets_an_unbound_variable` drops its parameter exception: a rule with parameters is compiled
+only from its activators, whose seed binds each, and the stream holds every conclusion bound with none excepted, 425
+programs loaded and 3 refused of 2 000 (`cargo test -p ein-ir --test fuzz_properties no_firing -- --nocapture`,
+2026-11-09), the numbers S1f.5.10's run printed.
+
+**The tests.**
+- `ein-infer`'s `compile_semantics::a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound`, beside W24's
+  relation half: W33's program concludes `(hit (f a))` alone and W58's `(hit (f a))`, an activator a rule derives from a
+  fact `src` holds binds the same, read by a premise and by a nested conclusion, and two activators that differ only in a
+  nested fact each match their own value.
+- `firing`'s `an_unbound_assert_var_quotes_the_bindings`, the variant's line, is replaced by
+  `a_parameter_bound_to_a_nested_fact_is_concluded`: a plan compiled from `(r (f thing2))` keeps the fact in its activator
+  list and writes it in the conclusion.
+- `rule_semantics`' two W7 controls are restated: `activators_differing_only_by_a_nested_fact_argument_both_fire` counts
+  as it did, the rule reading `?f` nowhere, and `an_int_beside_a_nested_fact_in_one_position_loses_no_derivation`, whose
+  control stated *the nested-fact activator alone derives every (noted ?a ?f)*, W33's wrong answer, gains `(holds (src
+  Y))`, so each activator derives its own two and the pair their union, in either order.
+- `cli_semantics::a_conclusion_variable_nothing_binds_is_refused_at_load` holds W58's witness answering on `saturate`,
+  `solve`, `solve --minimal` and `oracle`, exit 0, where it held the stop.
+- `refutation_under_absent`'s list of *forbid*'s refusals: `activator-all-nested.ein`'s names its activator, `rule 'alarm'
+  [activator (box a)]`, as its int and symbol twins name theirs.
+
+**What moved** (`build/s1f.5.18/xcheck/run_all.sh t2`, this build against `8249e872`'s, 538 files, 529 the same,
+`zebra2-minus-15.ein` re-run alone): T1f.5.18.1's eight, W33's and W58's witnesses turning right and the `binding-key`
+family and its fuzz findings and plan probe, and one more, `activator-all-nested.ein`, whose *forbid* refusal and event
+stream name its activator's fact (Q-M1f.43; its exit, 1, and its refusal unmoved). Every fixture whose `:expect` stated
+W33's wrong answer is restated in this commit, with a section of its header saying so: `binding-key-both.ein` and
+`-swapped.ein`, every state holding `(noted 1 1)` and `(noted 2 1)`, and `binding-key-nested-only.ein`, no state holding a
+`noted` fact, which a model cannot say once no model names `noted`, so a query states it, `(query :goal (noted ?a ?f)
+:expect (model))`, which `8249e872`'s build refutes.
+
+**The register**: W33's and W58's rows `fixed`, each `now` the right answer (`solve --minimal`'s line, root's state
+holding `(hit (f a))`) and a `[case.region]` for R, four states and two; their `[case.fixed]` carry the null id, which
+the next commit writes. Two fixed rows are restated with no answer moving: `W7/binding-key-layout`'s `right`, which stated
+the twelve-fact maximal state the unbound `?f` derived, now `(holds 1)`, `(holds 2)`, `(holds 3)`, `(holds Y)`, `(noted 1
+1)` and `(noted 2 1)`; and `W16/activator-all-nested`'s `now`, the refusal's line naming `[activator (box a)]`. The
+register reads **146 fixed, 20 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-09).
+
+**Banked**: `corpus_exits.txt` two cells 1 → 0, W58's `solve` and `saturate`; `corpus_shapes.md5` 137 digests moved over
+the six programs above (`activator-all-nested` 14, `binding-key-both` 26, `-nested-only` 28, `-swapped` 26, W33's witness
+21, W58's 22), none of any other program.

@@ -1482,8 +1482,9 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
 /// second stopped `solve` and `oracle` while `saturate` and `solve --minimal`
 /// answered; and the third and the fourth answered on every command. What
 /// loads: a variable a typed premise, an `eq` guard or a parameter binds. And
-/// W58's witness, a parameter its activator binds to a nested fact, still
-/// stops the run, which S1f.5.18 fixes (Q-M1f.37).
+/// W58's witness, a parameter its activator binds to a nested fact, which
+/// stopped the run with the same line until S1f.5.18 seeded the parameter
+/// (Q-M1f.37), answers on every command.
 #[test]
 fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     let line = |head: &str, name: &str, var: &str, place: &str| {
@@ -1574,18 +1575,24 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     for fact in ["(q h1 :rule typed)", "(q b :rule", "(q House :rule every)"] {
         assert!(r.out.contains(fact), "no {fact}:\n{}", r.out);
     }
-    // W58: the one path left, a parameter its activator binds to a nested
-    // fact, which the compiler does not seed (W33's cause), until S1f.5.18.
-    let r = ein(&[
-        "solve",
-        "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein",
-    ]);
-    assert_eq!(r.code, 1, "{}", r.err);
-    assert!(
-        r.err.contains("unbound var ?y in :assert"),
-        "W58's stop moved, which S1f.5.18 owns:\n{}",
-        r.err
-    );
+    // W58: the one path S1f.5.10 left, a parameter its activator binds to a
+    // nested fact, which the compiler did not seed (W33's cause) until
+    // S1f.5.18; every command answers since, root holding `(hit (f a))`.
+    let w58 = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein";
+    for args in [
+        vec!["saturate", "--dump", w58],
+        vec!["solve", w58],
+        vec!["solve", "--minimal", w58],
+        vec!["oracle", w58],
+    ] {
+        let r = ein(&args);
+        assert_eq!(r.code, 0, "ein {args:?}:\n{}", r.err);
+        for python in ["KeyError", "bindings: {", "unbound var"] {
+            assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+        }
+    }
+    let r = ein(&["saturate", "--dump", w58]);
+    assert!(r.out.contains("(hit (f a) :rule act)"), "{}", r.out);
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything

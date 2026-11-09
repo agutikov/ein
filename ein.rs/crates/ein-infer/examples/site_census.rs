@@ -533,7 +533,14 @@ fn main() {
                 ))
                 .or_default()
                 .insert(rel.clone());
-            let act: Vec<&str> = site.activator.iter().map(|&a| terms.sym(a)).collect();
+            let act: Vec<String> = site
+                .activator
+                .iter()
+                .map(|&a| match a.as_sym() {
+                    Some(s) => terms.sym(s).to_string(),
+                    None => terms.display(a),
+                })
+                .collect();
             sites_json.push(json!({
                 "rule": terms.sym(site.rule),
                 "activator": act,

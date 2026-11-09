@@ -35,6 +35,17 @@
 ;;; 1 2)` and `(noted 2 2)`; `ein oracle` gives the same R. The point stands:
 ;;; root's `noted` facts are the same in either activator order, and `Y` is a
 ;;; candidate.
+;;;
+;;; ── Since M1f S1f.5.18 ─────────────────────────────────────────────────
+;;;
+;;; An activator binds a parameter to a nested fact as to a name (W33, the
+;;; user's ruling of 2026-11-08 on S1f.5.5's census, fixed by S1f.5.18's
+;;; T1f.5.18.2 on 2026-11-09). `(note edge (src Y))` binds `?f` to `(src Y)`,
+;;; and no `(holds (src Y))` is a fact or a candidate, so the rule derives
+;;; nothing and no state holds a `noted` fact, which the query at the end
+;;; states. The `:expect` below stated the `noted` facts the unbound `?f`
+;;; derived, W33's wrong answer, until that commit restated it; the answer by
+;;; hand above is the record of that reading.
 
 (relation edge  Node Node)
 (relation holds Node)
@@ -55,21 +66,20 @@
   ;; unscoped H is 21 candidates whose R passes the budget; `edge` and
   ;; `noted` held out, H is `(holds 2)` and `(holds Y)`, the oracle the same.
   :no-hypothesis (edge noted)
-  ;; `holds` and `noted` are named, so both are closed: each state lists
-  ;; their complete extent, root's facts included.
+  ;; `holds` is named, so it is closed: each state lists its complete
+  ;; extent, root's facts included. No state holds a `noted` fact, which a
+  ;; model cannot say (a relation no model names is not closed), so the
+  ;; query below says it (M1f S1f.5.18).
   :expect (region
             ;; state 1 of 4 — ∅, root itself · minimal
-            (model (holds 1) (holds 3)
-                   (noted 1 1) (noted 1 3) (noted 2 1) (noted 2 3))
+            (model (holds 1) (holds 3))
             ;; state 2 of 4 — 1 candidate · from {(holds 2)}
-            (model (holds 1) (holds 2) (holds 3)
-                   (noted 1 1) (noted 1 2) (noted 1 3) (noted 2 1)
-                   (noted 2 2) (noted 2 3))
+            (model (holds 1) (holds 2) (holds 3))
             ;; state 3 of 4 — 1 candidate · from {(holds Y)}
-            (model (holds 1) (holds 3) (holds Y)
-                   (noted 1 1) (noted 1 3) (noted 1 Y) (noted 2 1)
-                   (noted 2 3) (noted 2 Y))
+            (model (holds 1) (holds 3) (holds Y))
             ;; state 4 of 4 — 2 candidates · maximal · from {(holds 2), (holds Y)}
-            (model (holds 1) (holds 2) (holds 3) (holds Y)
-                   (noted 1 1) (noted 1 2) (noted 1 3) (noted 1 Y)
-                   (noted 2 1) (noted 2 2) (noted 2 3) (noted 2 Y))))
+            (model (holds 1) (holds 2) (holds 3) (holds Y))))
+
+;; Its goal closes `noted`: one class over all of R, with no row (M1f
+;; S1f.5.18, T1f.5.18.2). Until then the unbound `?f` derived four at root.
+(query :goal (noted ?a ?f) :expect (model))

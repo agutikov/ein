@@ -370,7 +370,7 @@ pub fn naf_map(
                 repr(&ReprValue::Tuple(
                     d.activator
                         .iter()
-                        .map(|&a| ReprValue::Str(s.terms.sym(a).to_string()))
+                        .map(|&a| ReprValue::Str(crate::naf_deps::raw_text(s.terms, a)))
                         .collect()
                 )),
                 list_repr(&d.derived),
@@ -606,7 +606,7 @@ fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[S
     let args_repr = repr(&ReprValue::Tuple(
         plan.activator_args
             .iter()
-            .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
+            .map(|&v| ReprValue::Str(crate::naf_deps::raw_text(terms, v)))
             .collect(),
     ));
     let why = plan.why.map(|s| terms.sym(s)).unwrap_or("");

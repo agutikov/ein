@@ -374,30 +374,28 @@ pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
 
 /// A `SaturateError` as the line the run ends with.
 ///
-/// `KeyError` is named bare and the other classes qualified, and a conclusion
-/// no fact can hold names no class: it is the rule and the slot as the program
-/// writes them, the line `ein solve` prints too (it was `TypeError: …` until
-/// M1e2 S1e2.2.18). `KeyError`'s message is quoted the way
-/// [`repr_str`](ein_core::repr::repr_str) quotes a string — so an unbound
-/// `:assert` variable ends the run as
-/// `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, quotes and all
-/// ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
-/// The message was printed alone until 2026-08-20, when
+/// A class is named qualified, and a conclusion no fact can hold names no
+/// class: it is the rule and the slot as the program writes them, the line
+/// `ein solve` prints too (it was `TypeError: …` until M1e2 S1e2.2.18).
+///
+/// **`KeyError` was the other unqualified class until M1f S1f.5.18**: an
+/// unbound `:assert` variable ended the run as `KeyError: "unbound var ?v1 in
+/// :assert — bindings: {…}"`, quotes and all, the message quoted the way
+/// [`repr_str`](ein_core::repr::repr_str) quotes a string. The message was
+/// printed alone until 2026-08-20, when
 /// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)'s
-/// fuzzer produced the first input that reaches it; no corpus file had ever
-/// hit it. `examples/ein-bugs/unbound-assert-var.ein` was the fixture until
-/// M1f S1f.5.10, which refuses its program at load (F13): the one input that
-/// reaches the `KeyError` line since is a parameter its activator binds to a
-/// nested fact, read only by a conclusion (`W58/parameter-nested-assert`),
-/// which S1f.5.18 fixes.
+/// fuzzer produced the first input that reaches it.
+/// `examples/ein-bugs/unbound-assert-var.ein` was the fixture until M1f
+/// S1f.5.10, which refuses its program at load (F13); the one input left, a
+/// parameter its activator binds to a nested fact read only by a conclusion
+/// (`W58/parameter-nested-assert`), answers since S1f.5.18 seeds the
+/// parameter, which retired `ein_infer::firing::FireError`'s `UnboundVar` and
+/// this line ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;
     use ein_infer::saturator::SaturateError;
     match e {
         SaturateError::Compile(c) => compile_error_line(c),
-        SaturateError::Fire(FireError::UnboundVar(m)) => {
-            format!("KeyError: {}", ein_core::repr::repr_str(m))
-        }
         // Ein's spelling since M1e2 S1e2.2.18: the rule and the slot as the
         // program writes them, the line `ein solve` prints too.
         SaturateError::Fire(FireError::NotAFact(m)) => m.clone(),

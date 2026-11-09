@@ -668,7 +668,7 @@ fn witness_args(plan: &Plan, slots: Span, regs: &[Value]) -> Option<Vec<Value>> 
 /// One obligation instance as the table and the node function both key it:
 /// the rule, the activator's arguments and the match's bindings, which is
 /// [`crate::obligations::Owed`]'s identity.
-pub type InstanceKey = (Symbol, Box<[Symbol]>, Box<[(Symbol, Value)]>);
+pub type InstanceKey = (Symbol, Box<[Value]>, Box<[(Symbol, Value)]>);
 
 /// Every obligation instance root owes, each with the candidates that can
 /// witness it — licence L5's alternatives — or why that set is not known.

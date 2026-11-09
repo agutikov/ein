@@ -307,20 +307,27 @@ pub struct Disjunct {
 #[derive(Clone, Debug)]
 pub struct Plan {
     pub rule: Symbol,
-    /// `plan.activator_args` — the activator's **symbol** arguments only.
-    /// The cache key keeps *all* of them, as values, and that asymmetry is
-    /// Q-M1a.8. Since M1e2 S1e2.2.7 it reaches no identity: the binding key's
-    /// activator half is the cache key's list
-    /// ([`crate::firing::BindingKey`]), and this one is what the `enqueue`,
-    /// `fire` and `owe` events print and the static checks print as a label.
-    /// Until then it was the binding key's, and an `int` beside a nested
-    /// `Fact` in one position lost a derivation (Q-M1e.16, M1e2's W7). It is
-    /// empty for an activator whose every argument is a nested fact (or an
-    /// int, until M1f S1f.5.4 retired the kind), so it does not say whether a
-    /// plan *has* an activator, which is
-    /// whether its rule has parameters: *forbid* read it so until M1e2
-    /// S1e2.2.16, and a refutation resting on such an activator loaded (W16).
-    pub activator_args: Box<[Symbol]>,
+    /// `plan.activator_args` — the activator's **every** argument, as values,
+    /// the compile key's list ([`crate::compile::PlanKey`]), since M1f
+    /// S1f.5.18 (Q-M1f.43, taken by default on the user's instruction of
+    /// 2026-11-09). It is what the `enqueue`, `fire` and `owe` events print,
+    /// what the static checks print as a label, and a plan's activator where
+    /// an analysis keys on one (`oblgen`'s `InstanceKey`, the region's owed
+    /// instances, `detector`'s root plans, `naf_deps`); since S1f.5.18 every
+    /// argument binds its parameter (W33), so two plans that differ only in a
+    /// nested fact bind two values, and each key tells them apart.
+    ///
+    /// **Until S1f.5.18 it kept the symbol arguments only**, the asymmetry
+    /// Q-M1a.8 named: a nested fact bound nothing, so two plans that differed
+    /// in one alone were equal but for it, and an event printed such an
+    /// activator as `[]`. Until M1e2 S1e2.2.7 it was the binding key's
+    /// activator half too, and an `int` beside a nested `Fact` in one position
+    /// lost a derivation (Q-M1e.16, M1e2's W7); it was empty for an activator
+    /// whose every argument is a nested fact, so it does not say whether a plan
+    /// *has* an activator, which is whether its rule has parameters: *forbid*
+    /// read it so until M1e2 S1e2.2.16, and a refutation resting on such an
+    /// activator loaded (W16).
+    pub activator_args: Box<[Value]>,
     /// The activator fact this plan was compiled from, `None` for a rule
     /// with no parameters — M1e2 S1e2.2.19. A plan is a pure function of its
     /// [`crate::compile::PlanKey`], and the key's values are this fact's

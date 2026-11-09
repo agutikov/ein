@@ -1044,7 +1044,7 @@ impl Saturator {
                 terms.sym(plan.rule).to_string(),
                 plan.activator_args
                     .iter()
-                    .map(|&x| ein_core::text::symbol(terms.sym(x)).into_owned())
+                    .map(|&x| terms.display(x))
                     .collect::<Vec<_>>(),
                 m.bindings()
                     .map(|(k, v)| (terms.sym(k).to_string(), events::sexpr_value(terms, v)))
@@ -1514,7 +1514,7 @@ impl Saturator {
             let (a_sym, b_sym) = (s.terms.kernel.mirror_a, s.terms.kernel.mirror_b);
             return Ok(Some(Firing {
                 rule: self.sym_sym,
-                activator: Box::new([rel]),
+                activator: Box::new([Value::sym(rel)]),
                 bindings: Box::new([(a_sym, a), (b_sym, b)]),
                 derived: Box::new([stored]),
                 premises: Box::new([src]),
@@ -1582,7 +1582,7 @@ fn emit_fire(s: &mut Session<'_>, firing: &Firing) {
     let activator: Vec<String> = firing
         .activator
         .iter()
-        .map(|&x| ein_core::text::symbol(s.terms.sym(x)).into_owned())
+        .map(|&x| s.terms.display(x))
         .collect();
     let bindings = events::binding_pairs(s.terms, &firing.bindings);
     let premises = events::sexpr_facts(s.terms, &firing.premises);

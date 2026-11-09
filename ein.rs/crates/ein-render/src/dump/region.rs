@@ -145,7 +145,7 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
                                 Json::Array(
                                     s.activator
                                         .iter()
-                                        .map(|&a| Json::str(ein_core::text::symbol(terms.sym(a))))
+                                        .map(|&a| Json::str(terms.display(a)))
                                         .collect(),
                                 ),
                             ),
@@ -353,7 +353,7 @@ fn absents_json(m: &Monotonicity, terms: &Terms) -> Json {
                         Json::Array(
                             a.activator
                                 .iter()
-                                .map(|&x| Json::str(ein_core::text::symbol(terms.sym(x))))
+                                .map(|&x| Json::str(terms.display(x)))
                                 .collect(),
                         ),
                     ),

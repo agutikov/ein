@@ -900,6 +900,21 @@
 # fixed, 22 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
 # | sort | uniq -c`, 2026-11-09).
 #
+# **S1f.5.18's T1f.5.18.2 fixed W33 and W58 the same day**: the compiler
+# seeds a parameter its activator binds to a nested fact as it seeds one bound
+# to a name (`compile::Compiler::bind_activator`), so W33's witness concludes
+# `(hit (f a))` alone and W58's answers, root holding `(hit (f a))`, where it
+# stopped; with it `FireError::UnboundVar` and its `KeyError` line are retired
+# (Q-M1f.37). Each `[case.fixed]` carries the null id in the fixing commit and
+# the hash from the stage's next. Two fixed rows are restated, no answer of
+# theirs moving: `W7/binding-key-layout`'s `right`, which stated the `noted`
+# facts the unbound `?f` derived, W33's wrong answer, and now states the two
+# `(note edge 1)` derives, as the witness's `:expect` does; and
+# `W16/activator-all-nested`'s `now`, whose refusal names `alarm`'s activator,
+# `[activator (box a)]`, `Plan::activator_args` keeping every argument since
+# (Q-M1f.43). The register reads **146 rows fixed, 20 open and 1 not-wrong**
+# (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -2914,8 +2929,8 @@ verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["holds", "noted"]
-models    = [["(holds 1)", "(holds 2)", "(holds 3)", "(holds Y)", "(noted 1 1)", "(noted 1 2)", "(noted 1 3)", "(noted 1 Y)", "(noted 2 1)", "(noted 2 2)", "(noted 2 3)", "(noted 2 Y)"]]
-derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts. Since S1e2.2.7 the witness's two states hold the four and the six, as the swapped twin's and binding-key-nested-only.ein's do, in a release and a debug build alike (`ein solve FILE --dump-answer DIR` in every mode, `ein oracle`; build/s1e2.2.7/). Restated at S1f.5.5's swap (T1f.5.5.4, 2026-11-09), S1f.5.4's proposal A (accepted 2026-11-08): a run of digits is a name, so `1`, `2` and `3` are candidate objects and unscoped H is 21 candidates whose R passes the budget; the witness's solve holds `edge` and `noted` out, so H is (holds 2) and (holds Y), R four states, ∅, {(holds 2)}, {(holds Y)} and both, the maximal, and `ein oracle` the same, whose maximal state holds the eight (noted ?a ?f) over the four holds"
+models    = [["(holds 1)", "(holds 2)", "(holds 3)", "(holds Y)", "(noted 1 1)", "(noted 2 1)"]]
+derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts. Since S1e2.2.7 the witness's two states hold the four and the six, as the swapped twin's and binding-key-nested-only.ein's do, in a release and a debug build alike (`ein solve FILE --dump-answer DIR` in every mode, `ein oracle`; build/s1e2.2.7/). Restated at S1f.5.5's swap (T1f.5.5.4, 2026-11-09), S1f.5.4's proposal A (accepted 2026-11-08): a run of digits is a name, so `1`, `2` and `3` are candidate objects and unscoped H is 21 candidates whose R passes the budget; the witness's solve holds `edge` and `noted` out, so H is (holds 2) and (holds Y), R four states, ∅, {(holds 2)}, {(holds Y)} and both, the maximal, and `ein oracle` the same, whose maximal state held the eight (noted ?a ?f) over the four holds. **Restated by M1f S1f.5.18 (T1f.5.18.2, 2026-11-09)**, W33's fix: everything above about the `noted` facts read the nested-fact activator as binding nothing, so that `?f` was `(holds ?f)`'s to bind and *the nested-fact activator alone derives every (noted ?a ?f)*, which is W33's wrong answer. An activator binds a parameter to a nested fact as to a name (the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*), so `(note edge (src Y))` binds `?f` to `(src Y)`, which no fact or candidate `holds`, and derives nothing, and `(note edge 1)` derives `(noted 1 1)` and `(noted 2 1)`: a saturator that loses nothing concludes their union, those two, in every state, in either activator order (`ein solve FILE --dump-answer DIR`, release and debug, 2026-11-09). The region's lines, over `holds`, are unmoved"
 
 [case.review]
 verdict = "confirmed"
@@ -5069,7 +5084,7 @@ question = ["Q-M1e2.5"]
 witness  = "examples/ein-bugs/activator-all-nested.ein"
 status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
-note     = "W16's second shape with (item (box a)): a nested fact binds no parameter, so each plan in the chain matches over every item, here the one. The control is activator-all-symbol.ein, refused. Fixed by T1e2.2.16.2, as W16/activator-all-int"
+note     = "W16's second shape with (item (box a)): a nested fact bound no parameter, so each plan in the chain matched over every item, here the one; since M1f S1f.5.18 it binds its parameter (W33), and the chain reaches the same one. The control is activator-all-symbol.ein, refused. Restated by M1f S1f.5.18 (T1f.5.18.2, 2026-11-09): the refusal names `alarm`'s activator, `[activator (box a)]`, as the int twin's names `1` and the control's `a`, where it named none, `Plan::activator_args` keeping every argument since (Q-M1f.43). Fixed by T1e2.2.16.2, as W16/activator-all-int"
 
 [case.fixed]
 commit = "3257488f"
@@ -5093,7 +5108,7 @@ derived   = "a refusal, as W16/activator-all-int's and the symbol control's: `al
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'alarm': concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'alarm' [activator (box a)]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ W17 — *forbid* misses a refutation whose activator chain first appears at a node ══
 [[case]]
@@ -8910,10 +8925,14 @@ settings = "default"
 owner    = "S1f.5.18"
 question = ["Q-M1e2.18", "S1f.5.5 census"]
 witness  = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
-status   = "open"
-open_because = "The compiler seeds a rule's parameters from its activator and skips a nested fact (*a nested Fact does not bind*), so `?y` stays free and `act` fires on every `p`, with no line; W24 (Q-M1e2.18 (iv)) refused the same activator only where the parameter names a relation. S1f.5.18 binds the parameter to the nested fact as to any other value (the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
+status   = "fixed"
 look_at  = ["root", "events fire", "summary"]
-note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/activator_nested_value.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. `hit` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(hit a)`, `(hit b)` and `(hit (f a))` (`ein saturate --dump`), and the query's one class lists all three rows. The same holds of `()` and `(and …)` as the activator's argument, which the final grammar refuses (the census)"
+note     = "Filed by S1f.5.0 (T1f.5.0.4, 2026-11-08) from S1f.5.5's census, § Findings outside the grammar, its probe `build/s1f.5.5/probes/activator_nested_value.ein`, the program unchanged, on the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner. `hit` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(hit a)`, `(hit b)` and `(hit (f a))` (`ein saturate --dump`), and the query's one class lists all three rows. The same holds of `()` and `(and …)` as the activator's argument, which the final grammar refuses (the census). Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09): `(act (f a))` binds `?y` to `(f a)`, so `act` matches `(p (f a))` alone and root holds `(hit (f a))` and no other `hit`; H gains `(hit a)` and `(hit b)`, which root no longer holds, so R is their cube, four states, its minimal line root's state, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.18 (T1f.5.18.2): `compile::Compiler::bind_activator` seeds a parameter its activator binds to a nested fact as it seeds one bound to a name, so the plan matches and concludes the value (W33's cause gone)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -8928,10 +8947,10 @@ models    = [["(hit (f a))", "(hit a)", "(hit b)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(hit a)", "(hit b)"]]
 
 [case.right]
 reading   = "an activator binds a rule's parameter to its argument, a nested fact a value as any other (the census's default, the user's ruling of 2026-11-08 on S1f.5.5's census (*\"Q3 - as recommended\"*): each of the census's three findings outside the grammar filed `open`, with its owner)"
@@ -8947,9 +8966,9 @@ run       = "solve --minimal"
 line      = "minimal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["hit"]
 models    = [
-  [],
+  ["(hit (f a))"],
 ]
 
 # ══ W34 — `:assert ()` stores a fact named `#empty`, which joins H ══
@@ -10432,10 +10451,14 @@ settings = "default"
 owner    = "S1f.5.18"
 question = ["Q-M1f.37", "S1f.5.5 census"]
 witness  = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
-status   = "open"
-open_because = "The compiler seeds a rule's parameters from its activator and skips a nested fact (*a nested Fact does not bind*), W33's cause: where the parameter is read only by the `:assert`, it reaches the conclusion unbound and the run stops. The loader cannot refuse it, a parameter being bound by its activator, which is what S1f.5.10's check holds a conclusion to; S1f.5.18 binds the parameter to the nested fact as to any other value (the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*), and with it retires `FireError::UnboundVar`, whose last path this is (Q-M1f.37)"
+status   = "fixed"
 look_at  = ["root"]
-note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), outside its case: its step 1 (`build/s1f.5.10/shapes`, 2026-11-09) found the one shape that still reaches `FireError::UnboundVar` once the loader checks a conclusion's variables. W33's witness reads the parameter in its `:match` too, so `act` fires on every `p`; this one reads it only in the `:assert`, so the run stops"
+note     = "Filed by S1f.5.10 (T1f.5.10.1, 2026-11-09), outside its case: its step 1 (`build/s1f.5.10/shapes`, 2026-11-09) found the one shape that still reaches `FireError::UnboundVar` once the loader checks a conclusion's variables. W33's witness reads the parameter in its `:match` too, so `act` fires on every `p`; this one reads it only in the `:assert`, so the run stops. Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09): `(act (f a))` binds `?y` to `(f a)`, so `act` fires on `(p a)` and root holds `(hit (f a))`, every command answering, exit 0; H is `(hit a)`, so R is two states, its minimal line root's state, in either build"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.18 (T1f.5.18.2): `compile::Compiler::bind_activator` seeds a parameter its activator binds to a nested fact as it seeds one bound to a name, so the plan matches and concludes the value (W33's cause gone); with it `FireError::UnboundVar` and its `KeyError` line are retired (Q-M1f.37), since no conclusion reads a register its match and its activator leave unbound"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -10443,6 +10466,14 @@ by        = "region"
 why       = "`ein solve --minimal` on the witness, release and debug, at 2eb483e0 (2026-11-09): the program loads, root fires `act` on `(p a)` with `?y` unbound, and the run stops, exit 1; every command the same"
 exit      = 1
 error     = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(hit a)"]]
 
 [case.right]
 reading   = "an activator binds a rule's parameter to its argument, a nested fact a value as any other (W33's right, the user's ruling of 2026-11-08 on S1f.5.5's census, *\"Q3 - as recommended\"*)"
@@ -10454,9 +10485,14 @@ models    = [["(hit (f a))"]]
 derived   = "`(act (f a))` binds `?y` to `(f a)`, so `act` fires on `(p a)` and root holds `(hit (f a))`: the minimal line is root's state. It is the twin's answer, the rule written `(rule act () :match (p ?x) :assert (hit (f a)))` (`ein solve --minimal` at 2eb483e0, release)"
 
 [case.now]
-run   = "solve --minimal"
-line  = "minimal"
-error = "unbound var ?y in :assert — bindings: {'x': 'a'}"
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["hit"]
+models    = [
+  ["(hit (f a))"],
+]
 
 # ══ W59 — an activator a rule derives can bind a relation parameter to a fact, and the program loads ══
 [[case]]

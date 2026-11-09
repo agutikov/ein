@@ -309,10 +309,6 @@ struct Compiler<'a> {
     // The plan's register space, seeds first.
     plan_space: Space,
     seed: Vec<(Symbol, Value)>,
-    // The parameters the activator bound to a nested `Fact`, which binds none:
-    // what a relation head written as one of them is refused with (M1e2
-    // S1e2.2.24, W24, Q-M1e2.18 (iv)).
-    fact_bound: Vec<(Symbol, Value)>,
     // The guard sub-plan currently being compiled, with the scope it projects.
     sub: Option<Space>,
     sub_scope: FxHashSet<Symbol>,
@@ -367,7 +363,6 @@ impl<'a> Compiler<'a> {
             guard_keys: Vec::new(),
             plan_space: Space::default(),
             seed: Vec::new(),
-            fact_bound: Vec::new(),
             sub: None,
             sub_scope: FxHashSet::default(),
             known: FxHashSet::default(),
@@ -434,17 +429,29 @@ impl<'a> Compiler<'a> {
         })
     }
 
-    /// Bind the rule's parameters from the activator, positionally.
+    /// Bind the rule's parameters from the activator, positionally, and
+    /// return its every argument, the compile key's list
+    /// ([`Plan::activator_args`]).
     ///
-    /// Only name arguments bind — a nested-`Fact` argument leaves
-    /// its parameter free, which is why a seed can be shorter than the
-    /// parameter list. The seed is what `slot` substitutes from and what
-    /// `split_naf` seeds every guard's scope with.
+    /// Every argument binds its parameter, a name or a nested fact alike: a
+    /// nested fact is a value, which a pattern matches and a conclusion
+    /// writes. The seed is what `slot` substitutes from and what `split_naf`
+    /// seeds every guard's scope with, and a relation head written as a
+    /// parameter the activator binds to a fact meets the fact there and is
+    /// refused (`head_not_a_name`).
+    ///
+    /// **Until M1f S1f.5.18 a nested fact bound nothing** (*a nested Fact does
+    /// not bind*), so a seed could be shorter than the parameter list and the
+    /// parameter was a free variable of the plan: `(act (f a))` over `(p a)
+    /// (p b) (p (f a))` fired `(p ?y)` on every `p` (W33), and a conclusion
+    /// that alone read it stopped the run with `FireError::UnboundVar`'s
+    /// `KeyError` (W58), which S1f.5.18 retired with it. The user's ruling of
+    /// 2026-11-08 on S1f.5.5's census (*"Q3 - as recommended"*).
     fn bind_activator(
         &mut self,
         rule: &Rule,
         activator: Option<FactId>,
-    ) -> Result<Box<[Symbol]>, CompileError> {
+    ) -> Result<Box<[Value]>, CompileError> {
         let Some(fact) = activator else {
             return Ok(Box::new([]));
         };
@@ -478,12 +485,6 @@ impl<'a> Compiler<'a> {
             )));
         }
         for (&p, &a) in rule.params.iter().zip(args.iter()) {
-            if a.as_fact().is_some() {
-                // A nested Fact does not bind; a relation head written as
-                // this parameter is refused (`head_not_a_name`).
-                self.fact_bound.push((p, a));
-                continue;
-            }
             match self.plan_space.get(p) {
                 // A repeated parameter name keeps the first position and
                 // takes the last value.
@@ -494,11 +495,7 @@ impl<'a> Compiler<'a> {
                 }
             }
         }
-        Ok(args
-            .iter()
-            .filter_map(|a| a.as_sym())
-            .collect::<Vec<_>>()
-            .into_boxed_slice())
+        Ok(args.into_boxed_slice())
     }
 
     // ── Disjuncts and conjuncts ────────────────────────────────────
@@ -854,8 +851,11 @@ impl<'a> Compiler<'a> {
 
     /// M1e2 S1e2.2.24 (W24, the user's ruling of 2026-11-05 on Q-M1e2.18
     /// (iv)) — a relation head written as a parameter, bound by the activator
-    /// to a value that is not a name: a nested `Fact`, which binds no
-    /// parameter, so the relation head named no relation. Until then the
+    /// to a value that is not a name: a nested `Fact`, which names no
+    /// relation. Since M1f S1f.5.18 the parameter is seeded with the fact, as
+    /// a value parameter is, and the head meets it there; until then a nested
+    /// fact bound nothing and this line read it from a list of its own. Until
+    /// S1e2.2.24 the
     /// top-level premise stopped compilation with the unbound-head line in the
     /// Python IR's spelling, and a pattern inside a pattern was an opaque slot
     /// that matched nothing, in silence. The loader refuses the activators it
@@ -878,14 +878,6 @@ impl<'a> Compiler<'a> {
             ein_ir::loc_repr(self.ast, self.ast.loc(node)),
             crate::events::sexpr_value(self.terms, v),
         ))
-    }
-
-    /// The nested fact the activator bound a parameter to, if it did.
-    fn fact_value(&self, name: Symbol) -> Option<Value> {
-        self.fact_bound
-            .iter()
-            .find(|(n, _)| *n == name)
-            .map(|(_, v)| *v)
     }
 
     /// What an `(absent …)` whose sub-plan compiled to no steps would be.
@@ -944,14 +936,11 @@ impl<'a> Compiler<'a> {
                     // activator.
                     //
                     // Since M1e2 S1e2.2.24 (W24) the loader refuses a head
-                    // variable no parameter binds, and a parameter bound to a
-                    // nested fact is refused just below, so no program the
-                    // loader accepts reaches the last arm: a direct caller of
-                    // `compile_rule` with no activator does.
-                    None if self.fact_value(name).is_some() => {
-                        let v = self.fact_value(name).expect("checked");
-                        return Err(self.head_not_a_name(node, head, v));
-                    }
+                    // variable no parameter binds, and since M1f S1f.5.18 a
+                    // parameter bound to a nested fact is seeded with it and
+                    // refused just above, so no program the loader accepts
+                    // reaches this arm: a direct caller of `compile_rule` with
+                    // no activator does.
                     None => {
                         return Err(CompileError(format!(
                             "unbound relation head ?{} in a premise of `{}` — \
@@ -1245,7 +1234,7 @@ impl<'a> Compiler<'a> {
                     }
                     Node::Var(s) => {
                         let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
-                        match self.seed_value(name).or_else(|| self.fact_value(name)) {
+                        match self.seed_value(name) {
                             Some(v) if v.as_sym().is_none() => {
                                 return Err(self.head_not_a_name(node, head, v));
                             }

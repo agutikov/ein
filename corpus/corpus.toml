@@ -720,19 +720,19 @@ note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): `defined_behaviour.md` § 3.2's
 path   = "examples/ein-bugs/binding-key-nested-only.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, the two and each with `(holds 2)`, which `:expect` states."
+note   = "M1e2 W7's family (S1e2.2.7, Q-M1e.16): § 3.2's program with the int activator deleted, a control, and the `noted` facts the order-swap pair must reach: four at root, and `(noted 1 Y)` and `(noted 2 Y)` beside them in `{(holds Y)}` (`Y` a name of the program, Q-M1e2.9 (a)). R is those two states, which `:expect` states, in either build and under either key. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, the two and each with `(holds 2)`, which `:expect` states. Since M1f S1f.5.18 (T1f.5.18.2, 2026-11-09) the nested fact binds `?f` (W33), to `(src Y)`, which no fact or candidate `holds`, so the rule derives nothing and no state holds a `noted` fact, which a query's `:expect` states, the region's naming `holds` alone; the `noted` facts above were W33's wrong answer."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-both.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's witness (`W7/binding-key-layout`, Q-M1e.16), promoted from `corpus/fuzz_findings/binding-key-layout.ein` by S1e2.2.7: an int and a nested fact in one activator position. The binding key interned only an activator's symbol arguments, so the two plans shared a space with two register layouts, and `(noted 1 3)` was lost in every state in a release build, while a debug build aborted in `check_layout`. Fixed by S1e2.2.7 (2026-11-04): the key interns every argument, as the compile cache's does. R is two states with the nested-only control's `noted` facts, which `:expect` states, in either build. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, which `:expect` states; unscoped, H was 21 candidates and R past the budget."
+note   = "M1e2 W7's witness (`W7/binding-key-layout`, Q-M1e.16), promoted from `corpus/fuzz_findings/binding-key-layout.ein` by S1e2.2.7: an int and a nested fact in one activator position. The binding key interned only an activator's symbol arguments, so the two plans shared a space with two register layouts, and `(noted 1 3)` was lost in every state in a release build, while a debug build aborted in `check_layout`. Fixed by S1e2.2.7 (2026-11-04): the key interns every argument, as the compile cache's does. R is two states with the nested-only control's `noted` facts, which `:expect` states, in either build. Since M1f S1f.5.5's swap a run of digits is a name, so `2` is a candidate object too, and the solve holds `edge` and `noted` out (S1f.5.4's proposal A, accepted 2026-11-08): R is four states, which `:expect` states; unscoped, H was 21 candidates and R past the budget. Since M1f S1f.5.18 (T1f.5.18.2, 2026-11-09) the nested fact binds `?f` (W33), to `(src Y)`, so its plan derives nothing and every state holds the int-only control's two `noted` facts, which `:expect` states; W7's `right` is restated to them."
 
 [[entry]]
 path   = "examples/ein-bugs/binding-key-swapped.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "test"]
-note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both. Since M1f S1f.5.5's swap scoped as its twin (S1f.5.4's proposal A): R four states, the same `:expect`."
+note   = "M1e2 W7's twin: `binding-key-both.ein` with the two activator lines exchanged, promoted from `corpus/fuzz_findings/binding-key-layout-swapped.ein` by S1e2.2.7. This order answered right in release before the fix (the nested-fact plan, compiled first, derives every `noted` fact itself) and a debug build aborted on it too. The pair is the test: the same `:expect`, word for word, holds on both. Since M1f S1f.5.5's swap scoped as its twin (S1f.5.4's proposal A): R four states, the same `:expect`. Since M1f S1f.5.18 (T1f.5.18.2, 2026-11-09) the nested fact binds `?f` (W33), so every state holds the int-only control's two `noted` facts in either order, the same `:expect`."
 
 [[entry]]
 path   = "examples/ein-bugs/activator-text-int-and-string.ein"
@@ -1574,7 +1574,7 @@ note   = "M1f W32 (`W32/kwpair-in-macro`), banked by S1f.5.0 from S1f.5.11's cas
 path   = "examples/ein-bugs/wrong-answers/activator-nested-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5's census (its probe `activator_nested_value.ein`): the activator `(act (f a))` binds the value parameter `?y` to nothing, so `act` derives `(hit a)`, `(hit b)` and `(hit (f a))`. Open, owned by S1f.5.18: `(hit (f a))` only (the user's ruling on the census, 2026-11-08)."
+note   = "M1f W33 (`W33/activator-nested-value`), banked by S1f.5.0 from S1f.5.5's census (its probe `activator_nested_value.ein`): the activator `(act (f a))` bound the value parameter `?y` to nothing, so `act` derived `(hit a)`, `(hit b)` and `(hit (f a))`. Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09): `(hit (f a))` only (the user's ruling on the census, 2026-11-08), and H gains `(hit a)` and `(hit b)`, R four states."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-empty.ein"
@@ -1736,7 +1736,7 @@ note   = "M1f W57 (`W57/assert-var-never-fires`), filed by S1f.5.10's T1f.5.10.1
 path   = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W58 (`W58/parameter-nested-assert`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09) outside its case: a value parameter its activator binds to a nested fact, read only by the `:assert`, reaches it unbound, W33's cause, and the run stops, exit 1. Open, owned by S1f.5.18, which binds the parameter (Q-M1f.37)."
+note   = "M1f W58 (`W58/parameter-nested-assert`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09) outside its case: a value parameter its activator binds to a nested fact, read only by the `:assert`, reached it unbound, W33's cause, and the run stopped, exit 1. Fixed by S1f.5.18 (T1f.5.18.2, 2026-11-09), which binds the parameter: root holds `(hit (f a))`, every command answering, exit 0 (Q-M1f.37)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
