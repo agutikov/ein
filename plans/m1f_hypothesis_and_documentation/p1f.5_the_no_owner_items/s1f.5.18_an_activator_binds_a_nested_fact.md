@@ -6,14 +6,15 @@
 [Q-M1f.3](../open_questions.md#q-m1f3--three-wrong-answers-the-census-found-with-no-row) (file W33 and give it this
 stage) and [Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b), whose
 load-time check is the half of G-14 no grammar can see. The user ruled on 2026-11-09 *"just continue with default
-decisions till the end of the phase"*. **Started 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.10
+decisions till the end of the phase"*. **Done 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.10
 (`8249e872`), in five commits: T1f.5.18.1 ([its record](#t1f5181-record-2026-11-09)), every move listed, W59's two rows
 filed, four questions taken by default (Q-M1f.41 to Q-M1f.44) (`e96a8d45`); T1f.5.18.2
 ([its record](#t1f5182-record-2026-11-09)), the seed, W33 and W58 fixed, `FireError::UnboundVar` retired (`2901cac1`);
 T1f.5.18.3 ([its record](#t1f5183-record-2026-11-09)), the load-time check, W59 fixed (`52d45b11`); T1f.5.18.4
-([its record](#t1f5184-record-2026-11-09)), the pages; T1f.5.18.5, the acceptance re-taken and what the merge
-writes. The register on the lane reads 148 fixed, 18 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml |
-sort | uniq -c`, 2026-11-09).
+([its record](#t1f5184-record-2026-11-09)), the pages (`73f9a448`); T1f.5.18.5, the acceptance re-taken
+([§ Acceptance re-taken](#acceptance-re-taken-2026-11-09)) and what the merge writes ([§ For the merge](#for-the-merge)).
+The register on the lane reads 148 fixed, 18 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort |
+uniq -c`, 2026-11-09).
 **Depends on:** [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md), which files W33 as an `open` row first.
 It is independent of the grammar stages. It touches `ein-infer/src/compile.rs`, as
 [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md) and [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md)
@@ -372,4 +373,101 @@ or a derived activator binding a relation parameter to a fact as loading:
   census's [W33 finding](s1f.5.5_census.md#findings-outside-the-grammar) says what fixed it.
 
 W59's two `[case.fixed]` blocks carry `52d45b11`, T1f.5.18.3's, where that commit wrote the null id. The phase README's
-row, Q-M1f.1 and Q-M1f.3, `AGENTS.md` and the live read-out page are the merge's (T1f.5.18.5's § For the merge).
+row, Q-M1f.1 and Q-M1f.3, `AGENTS.md` and the live read-out page are the merge's ([§ For the merge](#for-the-merge)).
+
+## Acceptance re-taken (2026-11-09)
+
+Each item, and what holds it:
+
+- *`activator_nested_value`'s witness derives `(hit (f a))` only, and W33's row is `fixed`*: `ein saturate --dump
+  examples/ein-bugs/wrong-answers/activator-nested-value.ein` lists `(hit (f a) :rule act)` and no other `hit`
+  (2026-11-09, release and debug); `W33/activator-nested-value` is `fixed`, its `now` root's state holding `(hit (f a))`;
+  `compile_semantics::a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound` holds the same from a written
+  activator and a derived one.
+- *`parameter-nested-assert`'s witness derives `(hit (f a))`, W58's row is `fixed`, and no run stops on an unbound
+  conclusion variable: `FireError::UnboundVar` is gone*: the witness's `saturate --dump` lists `(hit (f a) :rule act)`,
+  every command exits 0 (`cli_semantics::a_conclusion_variable_nothing_binds_is_refused_at_load`), and
+  `W58/parameter-nested-assert` is `fixed`. The variant is gone (`grep -rn "UnboundVar(" ein.rs/crates --include='*.rs'`
+  finds nothing, 2026-11-09); `firing::resolve` asserts that no conclusion reads an unbound register, and
+  `fuzz_properties::no_firing_meets_an_unbound_variable` holds every plan of every accepted program of its stream to it
+  with no parameter excepted. S1f.5.10's acceptance item, moved here by Q-M1f.37, is met.
+- *`g14/derived-activator.ein` and `g14/derived-activator-never.ein` are refused at load, one line each*: `ein solve` on
+  each prints the one line and exits 1 (2026-11-09); the two refusal fixtures under `examples/broken/load/` hold the line
+  in their `.expected`, W59's two witnesses hold it in the register, and
+  `cli_semantics::a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load` holds it on the eight
+  commands that load.
+- *No corpus program that answers today is refused, unless the user has seen it and agreed*: **met**. The sweep of every
+  program of the five roots against `8249e872` (`build/s1f.5.18/xcheck/run_all.sh t3`, 542 files) refuses W59's two
+  witnesses and the two `g14` probes, the programs the ruling names, and nothing else; the reading that does so is
+  Q-M1f.41 (b), taken by default, where the stage file's sketch would have refused 32 corpus programs. One program
+  written in a Rust test, which no corpus root holds, declared the marker it fanned out from and was rewritten to leave
+  it undeclared (T1f.5.18.3's record).
+- *`./run_tests.sh` is green*: at every code commit, each body naming its log, with `--no-fail-fast` forwarded to `cargo
+  test` (T1f.5.18.1, 16 min 21 s; T1f.5.18.2, 16 min 33 s; T1f.5.18.3, 17 min 7 s, each after a first run its body
+  names); T1f.5.18.4 and this record are docs and the register's hashes, checked by `utils/doc_audit.py --links --check`
+  and the register's readers.
+
+**S1f.5.18 is done, 2026-11-09.**
+
+## For the merge
+
+S1f.5.18 ran in lane 2 (`p1f5-lane2`, after S1f.5.7 and S1f.5.10, from `dc4c0bdc`), which does not edit the prose both
+lanes share. What those places should gain when the coordinator merges the branch:
+
+1. **P1f.5's README, the stage table's S1f.5.18 row**, its state: *"**done 2026-11-09**, on lane 2 in five commits
+   ([the records](s1f.5.18_an_activator_binds_a_nested_fact.md#t1f5181-record-2026-11-09)): T1f.5.18.1, every move
+   listed, W59 filed (`e96a8d45`); T1f.5.18.2, a nested fact binds its parameter, W33 and W58 fixed,
+   `FireError::UnboundVar` retired, `Plan::activator_args` every argument (`2901cac1`); T1f.5.18.3, the load-time check,
+   W59 fixed (`52d45b11`); T1f.5.18.4, the pages (`73f9a448`); T1f.5.18.5, the acceptance re-taken.
+   [Q-M1f.41](../open_questions.md#q-m1f41--what-can-hold-a-fact-means-for-g-14s-derived-activator) to Q-M1f.44 taken by
+   default; on the lane the register reads 148 fixed, 18 open and 1 not wrong"*.
+2. **[`open_questions.md`](../open_questions.md)'s Q-M1f.1 and Q-M1f.3** (outside lane 2's block): Q-M1f.1's index cell
+   gains *"; **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator
+   binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41)"*, and its section ends
+   with *"**Built 2026-11-09** by S1f.5.18's T1f.5.18.3 (its stage file linked as the index cell links it): both `g14` programs are refused at load, one line each, and no corpus program that answers is (W59's two
+   rows)."*; Q-M1f.3's index cell gains *"; W33 **fixed 2026-11-09** by S1f.5.18 (T1f.5.18.2)"*, and its section ends
+   with *"W33 **fixed 2026-11-09** by S1f.5.18's T1f.5.18.2: an activator binds a parameter to a nested fact as to a
+   name."*
+3. **The register's counts**: S1f.5.18 files two rows (W59) and fixes four (W33, W58 and W59's two): +4 fixed, −2 open,
+   +2 rows. With S1f.5.7's and S1f.5.10's, lane 2 adds +22 fixed, −4 open and +18 rows to `dc4c0bdc`'s register (126
+   fixed, 22 open, 1 not wrong); on the lane `grep '^status' corpus/wrong_answers.toml | sort | uniq -c` reads 148 fixed,
+   18 open, 1 not wrong (167 rows).
+4. **AGENTS.md**, after S1f.5.10's sentence: *"**S1f.5.18 ran to its end the same day** (lane 2): an activator binds a
+   parameter to a nested fact as to a name (W33, the user's ruling of 2026-11-08 on S1f.5.5's census), so a value
+   parameter matches and concludes the fact, and the last path to `FireError::UnboundVar`, a parameter read only by a
+   conclusion (W58), is gone with the variant and its `KeyError` line (Q-M1f.37); `Plan::activator_args` is every
+   argument, as values (Q-M1f.43); and the loader refuses a program in which a rule could derive an activator binding a
+   relation parameter to a fact, whether or not a run derives it (Q-M1f.1 (b), `ein_ir::from_ir`'s
+   `refuse_derived_relation_activators`, `defined_behaviour.md` § 4.9), reading which positions hold relation names off
+   the program: a declared relation's argument can hold a fact, and a marker's argument holds what a rule passes on
+   from it (Q-M1f.41), so the stdlib's fan-outs load; W59's two rows, the `g14` programs, filed and fixed; Q-M1f.41 to
+   Q-M1f.44 defaulted"*, linking this file as
+   `plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md`, with
+   the merged count.
+5. **The milestone README**: nothing; it names no stage's state.
+6. **The live read-out page, `docs/kernel/inference/read_out.md`, and its generated golden page** (S1f.5.16's, on
+   `master`): no row or number moves. Where the page describes a site's or a refusal's `[activator …]`, it names each
+   argument, a nested fact as Ein text, `[activator (box a)]`, since S1f.5.18 (Q-M1f.43); until then a nested fact was
+   left out, and an activator whose every argument was one printed no `[activator …]` at all. No corpus read-out moves:
+   the one corpus line that moved is *forbid*'s refusal on `examples/ein-bugs/activator-all-nested.ein`, on stderr. No
+   summary field's name or schema moves (`ein-summary/2`); a `monotonicity` site's `activator` array holds the fact's
+   text the same way. A program the check refuses prints the loader's line, `defined_behaviour.md` § 4.9's.
+7. **The register's schema**: no bump. Every row S1f.5.18 files uses schema /16's fields; /18 stays unused.
+8. **The id blocks**: row W59 used, W60 to W69 unused; questions Q-M1f.41 to Q-M1f.44 used, Q-M1f.45 to Q-M1f.49 unused.
+9. **Code the merge must reconcile**: `Plan::activator_args`, `firing::Firing::activator`, `obligations::Owed::activator`,
+   `oblgen::InstanceKey`, `forbid::Refusal::activator`, `monotone::Site::activator` and `AbsentRead::activator`,
+   `naf_deps::NafDep::activator` and `detector`'s root plans are `Box<[Value]>` since T1f.5.18.2, where they were
+   `Box<[Symbol]>`; code on master that reads one as symbols (S1f.5.12's, if it touches cores' labels) prints a value
+   with `Terms::display` and orders it with `Terms::cmp_semantic`. `FireError::UnboundVar` is gone, so a match on it does
+   not compile.
+10. **Files both lanes may have touched**, which the merge should re-take rather than splice: `corpus_exits.txt` and
+    `corpus_shapes.md5` (`EIN_BLESS=1`; S1f.5.18's cells are W59's witnesses', the two fixtures', W58's, and the digests
+    of `activator-all-nested`, the `binding-key` family and W33's and W58's witnesses); the register's header paragraphs
+    (lane 2 appends three after S1f.5.10's); `corpus/corpus.toml` (two entries after W58's, two load-negative entries
+    before `unbound_head`, and the notes of W33's, W58's and the `binding-key` family's); `examples/README.md` (the
+    witness count, 161 on the lane); `examples/broken/load/README.md` (a section); `open_questions.md`'s index table
+    (lane 2's rows follow Q-M1f.40); `defined_behaviour.md` (§ 3.2, § 4's table and its class paragraph, § 4.6, § 4.9,
+    § 4.13); `01_grammar.md`'s parameter list; `alive_invariant.rs`' list and `detector.rs`' flagged count (master's
+    banked programs move both); `cli_semantics.rs`, `program_read.rs`, `stdlib_semantics.rs`, `compile_semantics.rs`,
+    `rule_semantics.rs`, `refutation_under_absent.rs` and `fuzz_properties.rs`; and M1e2's inventory and S1f.5.5's census
+    (G-14, W33).
