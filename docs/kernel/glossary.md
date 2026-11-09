@@ -18,7 +18,11 @@ A *name* — a lexical token that identifies a node (`Norwegian`,
 `House-1`, `Red`, `co-located`, `rule`, `not`, `T`). The atom is the
 name; the node it denotes is the thing named. Two occurrences of the
 same atom denote the same node. Distinguish from **Object** (the node
-itself). See
+itself). **A run of digits is an atom like any other** since M1f S1f.5.5's
+swap (S1f.5.4's ruling, the user's of 2026-11-06): `1`, `01` and `-7` are
+three names, and `(p 1)` and `(p 01)` two facts; Ein has no numbers
+([Q-M1e2.24](../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)),
+and the int value kind went with S1f.5.4's T1f.5.4.3 (2026-11-09). See
 [`ir/01-ein-graph/03_ein_model.md` §2](ir/01-ein-graph/03_ein_model.md).
 
 ### Object

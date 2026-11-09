@@ -39,14 +39,16 @@ ends in a written refusal, the production comes back, and the guard with it. The
 plan stood.
 **Run after the swap on 2026-11-09**, on the coordinator's brief of that day and the user's instruction *"just
 continue with default decisions till the end of the phase"*, in the order T1f.5.4.3, T1f.5.4.5, T1f.5.4.4, one
-commit each. **T1f.5.4.3 done 2026-11-09** ([its record](#t1f543-record-2026-11-09)): the int kind is gone, each
+commit each. **T1f.5.4.3 done 2026-11-09** (`410a3388`, [its record](#t1f543-record-2026-11-09)): the int kind is gone, each
 path shown unreachable first (30 probes, the whole suite and 240 000 mutants, none reached by a program), no answer
 or register row moved, and `.einb`'s `INTS` section kept empty with no format bump
 ([Q-M1f.10](../open_questions.md#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone), defaulted).
-**T1f.5.4.5 done 2026-11-09** ([its record](#t1f545-record-2026-11-09)): W37 fixed, a template reference reading the
+**T1f.5.4.5 done 2026-11-09** (`eccf4186`, [its record](#t1f545-record-2026-11-09)): W37 fixed, a template reference reading the
 name rule's characters up to the first `}`, and a template naming a variable no reference can reach refused at load
 ([Q-M1f.11](../open_questions.md#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name), defaulted); the
-register reads 118 fixed, 21 open and 1 not wrong.
+register reads 118 fixed, 21 open and 1 not wrong. **T1f.5.4.4 done 2026-11-09** ([its
+record](#t1f544-record-2026-11-09)): no page describes an `INT` token or an int value as live, and § 4.11 states the
+new refusal. **S1f.5.4 is done**: every item of [§ Acceptance](#acceptance) is met (that section).
 **Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), done, so that `1..5` was gone first. Its remaining tasks
 run after [S1f.5.5](s1f.5.5_the_grammar.md)'s swap.
 
@@ -313,6 +315,42 @@ are rows of one test.
 After the swap, beside S1f.5.5's T7. `00_ebnf.md`, `01_grammar.md` (the `INT` row), `02_patterns.md`,
 `defined_behaviour.md`, `glossary.md`, `examples/README.md`. Q-M1e2.20 says what overrode it.
 
+### T1f.5.4.4 record, 2026-11-09
+
+**One commit, on `eccf4186`** (T1f.5.4.5), pages only, and the register's one id. Run last of the three, after W37's
+fix, so that the pages describe both. Each sentence that described an `INT` token or an int value as live says what
+it was and what it is since this stage; a record, and a quotation of an engine line, is left as written. S1f.5.5's
+T7 keeps the grammar pages' prose: what this commit restates there is only the digits and the int.
+
+**Restated.**
+- `01_grammar.md`: the `INT` row, *none since the swap*, a run of digits a `NAME` and the int kind gone; a premise's
+  and a guard's values, where *an integer* was one of them; and the `:goal-text` paragraph, what a reference names
+  and that a template naming a variable no reference can reach is refused.
+- `02_patterns.md`: the same two lists. `00_ebnf.md`: § 1's fact 1, where `neq-1` *starts an `INT`*, and § 5's census
+  line, whose `INT` 84 are names; the rest of § 1's facts and § 3 stay T7's.
+- `defined_behaviour.md`: § 2.1, the order `Sym < Fact` (its heading's old anchor kept by an `<a id>`, since
+  `docs/history/m1a_rust/design/02` cites it); § 2.2, the `repr` and the printer of three shapes; § 3.2, the bindings
+  half and the register layout, a name where an integer binds; § 3.3, the one shape outside the induction a nested
+  fact; § 4.5, two id spaces and *too many distinct {symbols,facts}*; § 4.6, its two lines retired by T1f.5.4.3; § 4's
+  firing line, which T5 deleted, its *int* no value; § 4.9's premise row; and **a new § 4.11**, the loader's refusal of
+  a template reference no reference can reach (T1f.5.4.5).
+- `glossary.md`'s **Atom**: a run of digits is an atom like any other. `examples/README.md`: the `mixed-type-hypothesis`
+  clause and W7's family, their int a name since.
+- Beyond the stage's list, each a sentence that described the int as live: `02-data-model/03_implementation.md`'s
+  `value.rs` and `terms.rs` rows, `01_entities.md`'s `Fact.args`, `architecture_and_algorithms.md`'s `FactId` row,
+  `inference/README.md`'s two, `answer_dump.md`'s printer, and `docs/api/rust.md`'s `Terms`.
+- [Q-M1e2.20](../../m1e2_correctness/open_questions.md#q-m1e220--does-a-claim-compare-values-or-their-printed-text):
+  overtaken, its case unwritable since the swap and the int kind gone, the printer's comparison by value standing.
+
+**The register's id.** `W37/template-var-star`'s `[case.fixed]` names `eccf4186`, where T1f.5.4.5 left the null id,
+and the header's paragraph says so; `ein-corpus`' schema tests pass (`cargo test -p ein-corpus`, 2026-11-09).
+
+**What a page still says about an int**, each on purpose (`grep -rn -i "\bint\b\|integer\|\bINT\b" docs/kernel
+docs/api docs/guide`, 2026-11-09): a dated record (*until M1f S1f.5.4*, § 3.2's W7 and W16 history, `answer_dump.md`'s
+W28), a quotation of an engine line (§ 4.9's two guard rows, whose sentence still says *or an integer*, kept by
+T1f.5.4.3 for the two W24 rows that record it; § 4.6's two retired lines), the three pages under a superseded banner,
+and an integer that is no value (a `u32` id, `priority: int` in `01_entities.md`'s `Rule`, S1f.5.15's).
+
 ### Task T1f.5.4.5 — a template names every variable (W37)
 
 **Added 2026-11-08**, on the user's ruling on S1f.5.5's T9 review stop, item 7 (*"Accept all as recommended"*):
@@ -374,7 +412,7 @@ reference it can reach, with no reference, and with `{?a}`, a reference to no va
 - `corpus_shapes.md5`: ten rows, the four programs' `region-trace` and the witness's `region-trace` and five
   `read-out[…]` (`EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes`, 2026-11-09), no other.
 - The register: `W37/template-var-star` flipped to `fixed`, its `now` *a is a q*, its `[case.fixed]` the null id
-  (the stage's next commit, T1f.5.4.4, writes this one's), and the header's paragraph; **118 rows fixed, 21 open and 1
+  (the stage's next commit, T1f.5.4.4, wrote `eccf4186`), and the header's paragraph; **118 rows fixed, 21 open and 1
   not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09). `ein-corpus`'
   `what_a_goal_text_prints_is_an_answer`, which took W37's live row as its open example, reads the row as it stood at
   `410a3388`, embedded, as the swap's three schema tests read theirs, and holds that the live row answers.
@@ -406,6 +444,12 @@ swap:
 - No page describes an `INT` token or an int value.
 - `W37/template-var-star` is fixed: a template reference names every variable the name rule spells (T1f.5.4.5).
 - `./run_tests.sh` is green.
+
+**Met, 2026-11-09.** `Tag::Int` and `Node::Int` are gone (T1f.5.4.3), and that commit moved two test goldens it
+named first, `repr_values.txt`'s int rows and `grammar_table.txt`'s new rows, and no answer golden; no program writes
+`:priority`, so H and every rule list are unmoved on the 511 (its cross-check); no page describes an `INT` token or an
+int value as live (T1f.5.4.4); W37 is fixed (T1f.5.4.5); and the gate was green on each code commit (15 min 48 s, 15
+min 50 s).
 
 ## Step 1 — every move listed (2026-11-08)
 

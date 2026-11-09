@@ -554,7 +554,8 @@ constrained-reasoning research.
   and a stage that makes the grammar refuse a shape adds a row there.
   T6 (the same day) reads a `--diff-models` file's facts with the parser and
   compares them by value, so a fact's spelling no longer decides a match.
-  **S1f.5.4's T1f.5.4.3 retired the int kind the same day**: a `Value` is a
+  **S1f.5.4 ran to its end the same day.** Its T1f.5.4.3 (`410a3388`)
+  retired the int kind: a `Value` is a
   name or a nested fact, and `Tag::Int`, the int pool and `Node::Int` are
   gone, each path shown unreachable from any program first; a `.einb` keeps
   its `INTS` section, empty, and refuses one that holds an int, with no
@@ -562,14 +563,15 @@ constrained-reasoning research.
   ([Q-M1f.10](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone),
   defaulted); no answer moved
   ([§ T1f.5.4.3 record](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#t1f543-record-2026-11-09)).
-  Its T1f.5.4.5 fixed `W37/template-var-star` the same day: a template
+  Its T1f.5.4.5 (`eccf4186`) fixed `W37/template-var-star`: a template
   reference reads the name rule's characters up to the first `}`, so the
   stdlib's `{?isR*}` and every variable the name rule spells are filled, and
   the loader refuses a template naming a variable that holds `}`, which no
   reference can reach
   ([Q-M1f.11](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name),
   defaulted): 118 fixed, 21 open and 1 not wrong (`grep '^status'
-  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09). Its T1f.5.4.4
+  restated every page that described an `INT` token or an int value as live.
   T7 follows the language stages' remaining halves.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is

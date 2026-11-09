@@ -79,8 +79,8 @@ inside a route.
 
 ### 1 — The two arenas
 
-`Ast` owns the parsed forms; `Terms` owns the interned symbols, integers and
-values. Both outlive the KB and are threaded through by `&mut`, because
+`Ast` owns the parsed forms; `Terms` owns the interned symbols and values
+(and integers, until M1f S1f.5.4 retired the int kind). Both outlive the KB and are threaded through by `&mut`, because
 loading *and* solving intern. A `Kb` is meaningless without the `Terms` it was
 built against — the data model is integers
 ([design/03](../history/m1a_rust/design/03_data_model.md)), and a fact is a

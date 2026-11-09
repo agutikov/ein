@@ -121,8 +121,9 @@ as the int. The one printer writes every state, and the list is gone.
 by the one printer (`ein_core::text`, `Terms::display`), which prints a value
 as text the loader reads back to the same value: a name bare only where it
 lexes as one `SYMBOL` (`House-1`, `neqw`), and quoted everywhere else (`"x
-y"`, `"1"`, `"not"`, `"?x"`, `"1..5"`, `"Åsa"`), an int bare, a nested fact
-`(rel …)`. So loading `models/NN.ein` gives that state's facts **by value**:
+y"`, `"not"`, `"?x"`, `"Åsa"`), a nested fact `(rel …)`; since M1f S1f.5.5's
+swap `1`, `07` and `1..5` are names that print bare, and since S1f.5.4 there is
+no int, which printed bare. So loading `models/NN.ein` gives that state's facts **by value**:
 `ein-cli/tests/answer_round_trip.rs` reloads every state file `ein solve
 --dump-answer` writes, on every corpus program it answers (272 programs and
 392 712 files per commit, 2026-11-06; the slow entries under

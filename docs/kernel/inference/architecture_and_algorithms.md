@@ -212,7 +212,7 @@ and the normative reading of a boundary query is
 
 | type (`module`) | what it is | analog |
 |---|---|---|
-| `FactId` (`ein-core/facts.rs`) | an interned `(relation, args)` identity; `args` are `Value`s — `Sym \| Int \| Fact` (nested = a relational node); its derivations are `Prov` records | a ground atom / tuple / labelled hyperedge |
+| `FactId` (`ein-core/facts.rs`) | an interned `(relation, args)` identity; `args` are `Value`s — `Sym \| Fact` (nested = a relational node; `Int` until M1f S1f.5.4); its derivations are `Prov` records | a ground atom / tuple / labelled hyperedge |
 | `Relation` (`ein-core/entities.rs`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
 | `Rule` (`ein-core/entities.rs`) | `params`, `match` pattern, `assert`, `why`, activator (no `priority` since M1f S1f.5.15) | a Datalog/production rule (Horn-ish clause) |
 | `Plan` = per-`Disjunct` `Step`s (`Scan`/`Join`/`Guard`) + `NafGuard`s (`plan.rs`) | a rule's `:match` compiled to a join program over relations; its top-level `(absent …)` premises lifted off (`compile.rs`) into a per-disjunct guard span, paired back by `Plan::guards` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |

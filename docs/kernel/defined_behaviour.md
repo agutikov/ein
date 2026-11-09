@@ -145,18 +145,23 @@ costs is re-blessing every message in that directory at once.
 
 ## 2. Values and order
 
-### 2.1 Fact arguments are totally ordered: `Int < Sym < Fact`
+<!-- The heading read `Int < Sym < Fact` until M1f S1f.5.4, and the history cites its anchor. -->
+<a id="21-fact-arguments-are-totally-ordered-int--sym--fact"></a>
 
-Within a tag, integers order by numeric value at any width, symbols by
-**lexicographic rank** — position in the sorted symbol list, never the order
-the interner assigned ids in — and facts by relation name, then arguments
-element-wise, then arity, so a shorter argument tuple that is a prefix of a
-longer one sorts first.
+### 2.1 Fact arguments are totally ordered: `Sym < Fact`
+
+Within a tag, symbols order by **lexicographic rank** — position in the sorted
+symbol list, never the order the interner assigned ids in — and facts by
+relation name, then arguments element-wise, then arity, so a shorter argument
+tuple that is a prefix of a longer one sorts first. A run of digits is a
+symbol, so `(p 10)` sorts before `(p 2)`. Until M1f S1f.5.4 retired the int
+kind (T1f.5.4.3, 2026-11-09) the order was `Int < Sym < Fact`, integers by
+numeric value at any width; since S1f.5.5's swap no program could write one.
 
 *Why it is stated.* The search layer sorts its alive set, so a puzzle with
-mixed-type arguments in one relation slot, or with an `(hrule … :assert (not
-…))` head, puts a symbol beside an integer, or two facts, in one sort — and
-the cross-tag half of this order is consulted exactly there.
+mixed-kind arguments in one relation slot, or with an `(hrule … :assert (not
+…))` head, puts a symbol beside a fact, or two facts, in one sort — and the
+cross-tag half of this order is consulted exactly there.
 `Terms::cmp_semantic` is the order, and
 [`examples/ein-bugs/mixed-type-hypothesis.ein`](../../examples/ein-bugs/mixed-type-hypothesis.ein)
 and
@@ -166,13 +171,14 @@ are two puzzles that reach it.
 ### 2.2 Where a value is sorted for display, it is sorted by its `repr`
 
 State-dump node order and explanation tie-breaks go through one `repr` for the
-four shapes a fact argument can take, and so do the shape digests and the
+three shapes a fact argument can take (four until M1f S1f.5.4 retired the
+int), and so do the shape digests and the
 diagnostics that quote a value Python's way (`KeyError: '…'`). Where a value
 is **printed** on a surface, the read-out, a dump, the trace, the events or a
 DOT label, it is printed as Ein text since M1e2 S1e2.3.8 (`ein_core::text`): a
 name bare where it lexes as one `SYMBOL` and quoted in `"` elsewhere, `\\` `\"`
-`\n` `\t` `\r` escaped, an integer as its canonical decimal, a nested fact as
-`(rel …)`, so the text loads back to the same value
+`\n` `\t` `\r` escaped, a nested fact as `(rel …)` (and an integer as its
+canonical decimal, until M1f S1f.5.4), so the text loads back to the same value
 (`lex::the_printers_symbol_is_the_lexers`, `answer_round_trip.rs`). Until then
 the DOT labels printed a nested fact as its `repr` and a name as its raw text.
 The `repr`:
@@ -182,7 +188,8 @@ The `repr`:
   carriage return are `\t` `\n` `\r`; any other non-printable code point is
   `\xNN` below U+0100, `\uNNNN` below U+10000 and `\UNNNNNNNN` above, in
   lower-case hex;
-- an **integer** is its canonical decimal text;
+- a run of digits is a **string** like any other name, `'7'` (an
+  **integer**, its canonical decimal text bare, until M1f S1f.5.4);
 - a **tuple** is `(a, b)` — one item is `(a,)`, none is `()`;
 - a nested **fact** is `Fact(relation_name='p', args=('A',))`.
 
@@ -194,9 +201,10 @@ The `repr`:
 it after a Unicode upgrade; a category that moves surfaces as a changed row of
 `ein-core/tests/format_tables.rs`'s `repr_escapes.txt`.
 
-Integers are carried as canonical decimal **text**, not as an `i64`: the
-grammar accepts `-?[0-9]+` at any width, so a fixed-width parse would reject
-values the engine can otherwise handle.
+Until M1f S1f.5.4 integers were carried as canonical decimal **text**, not
+as an `i64`, since the grammar accepted `-?[0-9]+` at any width. Since
+S1f.5.5's swap a run of digits is a name, kept as written, so there is no
+width and no canonical form: `7`, `07` and `-7` are three names.
 
 ### 2.3 Formatted floats follow one fixed-point spec
 
@@ -292,7 +300,7 @@ one activator:
 |---|---|
 | the compile cache key | **every** argument, as a value |
 | the identity's activator half | the same list: **every** argument |
-| the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — symbols *and* integers |
+| the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — every name (and every integer, until M1f S1f.5.4 retired the int) |
 
 So two activators of one rule that differ in **any** argument have different
 identities, and both fire. **"Differ" is by value since M1e2 S1e2.2.16**
@@ -307,8 +315,8 @@ skipped no activator (W16;
 `rule_semantics.rs::an_int_and_a_string_with_one_text_are_two_activators`).
 `compile.rs` called it *the one collision* and kept it. A string and an atom
 with one text are one value, a symbol, so they are one key, as they are one
-fact. An integer reaches both halves, since it binds its
-parameter; a nested **`Fact`** binds nothing and reaches the activator half
+fact. A name reaches both halves, since it binds its
+parameter, as an integer did until M1f S1f.5.4; a nested **`Fact`** binds nothing and reaches the activator half
 alone. Two activators differing only in a nested `Fact` compile to plans equal
 in every field but that list, so the second application concludes what the
 first did: a **redundant** firing, one more firing and nothing derived
@@ -316,8 +324,9 @@ differently
 (`rule_semantics.rs::activators_differing_only_by_a_nested_fact_argument_both_fire`).
 
 **Why the activator half is the whole list.** A plan's register layout is a
-function of the rule and of *which* parameters its activator bound, and an
-integer binds its parameter where a nested `Fact` does not. While the
+function of the rule and of *which* parameters its activator bound, and a
+name binds its parameter where a nested `Fact` does not, as an integer did
+until M1f S1f.5.4. While the
 activator half kept the symbols alone, an integer in the position another
 activator gives a nested `Fact` put two plans with two *register layouts* in
 one identity space — `?f` is register 1 in one and register 3 in the other —
@@ -337,7 +346,7 @@ firing whose conclusion nothing else derives:
 (edge 1 2) (edge 2 3)
 (holds 1)  (holds 3)
 
-(note edge 1)                     ; an int  in the second position
+(note edge 1)                     ; an int in the second position (a name since M1f S1f.5.4)
 (note edge (src Y))               ; a Fact  in the second position
 ```
 
@@ -440,11 +449,14 @@ because a variable can only carry a value the match already found in the KB —
 and that induction is confirmed rather than assumed: swept over every state a
 bounded describe meets on the corpus, the scan finds **nothing**, against
 either baseline (`ein-infer/tests/alive_invariant.rs`). The one shape outside
-the induction is a relation head written as a parameter and bound to an
-integer, whose decimal text the compiler would intern as a name, and it is
-**refused**: by the loader where the activator is written down, by the compiler
-where a rule derives it ([§ 4.6](#46-a-relation-named-by-a-number--m1e2-s1e224)).
-No corpus program has one.
+the induction is a relation head written as a parameter and bound to a value
+that is not a name, a nested fact, and it is **refused**: by the loader where
+the activator is written down, by the compiler where a rule derives it
+([§ 4.9](#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)). Until M1f
+S1f.5.4 an integer was the other such value, whose decimal text the compiler
+would have interned as a name, refused the same two ways
+([§ 4.6](#46-a-relation-named-by-a-number--m1e2-s1e224)); since S1f.5.5's swap
+a run of digits is a name of the program. No corpus program has either.
 
 **The baseline.** *Everything the loaded program reaches*, not the interner's
 length. `Ann` in `examples/ein-bugs/mixed-type-hypothesis.ein` is interned at
@@ -530,7 +542,9 @@ them, in three forms:
   as `:source "x"`, at the conclusion's top level; a range until M1e2
   S1e2.2.20, which refused one in a rule at load, and M1f S1f.5.3, which
   retired the token, § 4.8; a keyword pair inside a nested conclusion until
-  S1e2.2.24, § 4.9);
+  S1e2.2.24, § 4.9; no program reaches the line since M1f S1f.5.5's T5
+  deleted it, the grammar's `Term` holding a name, a variable or a fact, and
+  the *int* it lists is no value since S1f.5.4);
 - `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
   a fact (relation argument …), or an (and …) of facts` (an atom, a
   variable, a string where a fact belongs);
@@ -757,14 +771,15 @@ options.
 > the review's `CO-L1`. Three refusals: the store is bounded by a `u32` and a
 > `u16` rather than by memory, and two of the three bounds were unchecked.
 
-`ein-core` interns into three id spaces of 2³⁰ (`Value` packs a 2-bit tag
+`ein-core` interns into two id spaces of 2³⁰ (`Value` packs a 2-bit tag
 beside a 30-bit payload) and two arenas addressed by a `u32` start. Every one
-of the five is a `Result` at the site that grows it, so hitting one is a load
-error a reader can act on:
+of the four is a `Result` at the site that grows it, so hitting one is a load
+error a reader can act on. (Three id spaces until M1f S1f.5.4 retired the int
+pool, whose limit read *too many distinct integer literals*.)
 
 | input | message | exit |
 |---|---|---|
-| more than 2³⁰ distinct symbols / integer literals / facts | ``too many distinct {symbols,integer literals,facts} — the limit is 1073741824`` | 1 |
+| more than 2³⁰ distinct symbols / facts | ``too many distinct {symbols,facts} — the limit is 1073741824`` | 1 |
 | more than 2³² bytes of symbol text | ``too much symbol text — the limit is 4294967296 bytes`` | 1 |
 | more than 2³² stored fact arguments | ``too many stored fact arguments — the limit is 4294967296`` | 1 |
 | a fact with more than 65 535 arguments | ``a fact takes at most 65535 arguments`` | 1 |
@@ -808,7 +823,7 @@ retired with its `.expected` and corpus entry (S1f.5.4's Q2 (a), decided
 2026-11-08), and `compile_semantics.rs`' test, now
 `a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused`, holds that
 `3` names a relation and keeps the nested-fact half below. The two lines,
-which T1f.5.5.5 or S1f.5.4's T1f.5.4.3 retires with the int kind, were:
+which S1f.5.4's T1f.5.4.3 retired with the int kind (2026-11-09), were:
 
 | input | message | exit |
 |---|---|---|
@@ -948,7 +963,7 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 | `_` as a guard's argument | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
 | a form or a keyword pair as a guard's argument | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer` (`the keyword pair :k a` for one) |
 | a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds, a name, a string or an integer` |
-| a premise that is not a form: an atom, a variable, `_`, an integer, a string | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
+| a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 | a keyword pair inside a pattern inside a pattern, in either clause | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
@@ -1012,6 +1027,32 @@ S1f.5.14's T1f.5.14.7, nothing is refused and nothing moves. Pinned by `ein-ir/t
 `a_macro_needs_a_why_only_where_its_parser_reads_one` and
 `require_why_decides_loading_only`, and by `ein-cli/tests/config_reference.rs`'
 `require_why_decides_loading_only`.
+
+### 4.11 A template reference no reference can reach — M1f T1f.5.4.5
+
+A template reference, `{?name}` in a `:why` or a `:goal-text`, reads the name
+rule's characters up to the first `}` (`ein_core::why::render_why`), so it
+names every variable a program writes since M1f S1f.5.4's T1f.5.4.5
+(2026-11-09, W37): `{?isR*}`, `{?_x_}` and `{?a.b}` are filled, where until
+then a reference took one letter or digit and then letters, digits, `_` and
+`-`, and printed any other as written. `}` is a name character too, so a
+variable holding one, `?a}b`, is one no reference can name. The loader refuses
+a template that writes a reference to one, taken by default on the user's
+instruction of 2026-11-09
+([Q-M1f.11](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name)):
+a rule's, an hrule's or a macro's `:why` and a query's `:goal-text`, each read
+against its own variables, one line a reference, `; `-joined with every other
+loader error; exit 1 (`ein test`: 2):
+
+| input | message |
+|---|---|
+| a template that writes `{?a}b}` where `?a}b` is a variable of its form | `<rule\|hrule\|macro> '<name>': its :why writes {?a}b}, a reference to ?a}b, which no reference can name — a reference reads a variable's name up to its first }` (`query: its :goal-text writes …` for a query) |
+
+A reference to no variable of the form, `{?a}` there, stays text, as an
+unbound one always has. A relation's `:why` names its slots by position,
+`{?1}`, and is not read. Pinned by `ein-ir/tests/load_semantics.rs`'
+`a_template_naming_a_variable_no_reference_reaches_is_refused` and
+`ein-core`'s `why` unit tests.
 
 ## 5. The CLI surface
 

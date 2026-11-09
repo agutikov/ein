@@ -21,7 +21,7 @@ documentation split.
 | `VAR`      | `\?[A-Za-z][A-Za-z0-9_*-]*`    | `?a`, `?house`, `?T`, `?R*`              | pattern variables — bound by `:match`, reused in `:assert`. Uppercase allowed for type-shaped vars; `*` in tail allowed (same convention as SYMBOL). |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:rule`, `:where`, `:source`             | argument markers; **always** followed by a value  |
 | `WILDCARD` | `_`                            | `_`                                      | argument wildcard in patterns: in a rule's `:match`, at any depth (a premise, a nested fact, a `not`, an `(absent …)`, an hrule's or an obligation's pattern), `_` matches any value and binds nothing, so two of them are independent and neither can be read in an `:assert` or a guard; in an `:assert` it is no value, and the run stops at the rule's first firing ([`defined_behaviour.md` § 4](../../defined_behaviour.md#4-errors-and-exit-codes)). Written as a form's **relation**, `(_ a)`, it is refused at load, at any depth of either clause: a relation is named by a name or by a parameter its activator binds (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, on the user's rulings Q-M1e2.13 (a) and Q-M1e2.14 (c)). Until then this row read *head / arg wildcard in patterns*, and the rule compiler lowered `_` as a slot that matched nothing: a premise with one never fired, an `(absent …)` over one always held, an hrule with one proposed nothing, and a head `_` stopped compilation with the Python IR's spelling (W20). In a guard, `(eq ?x _)`, it names no value and is refused at load since M1e2 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md) (W24, Q-M1e2.16 (1)); until then it compared as a raw IR node, equal to no value, so `(eq ?x _)` never held and `(neq ?x _)` always did, in silence. As a whole premise, `:match _`, it is refused at load too, where the compiler dropped it |
-| `INT`      | `-?[0-9]+`                     | `0`, `42`, `-7`                          | integer atoms until M1f S1f.5.5's swap; `:priority 10`, the one keyword that took one, went with S1f.5.15, and since the swap a run of digits is a name (S1f.5.4's ruling), `7` and `07` two, so the parser builds no `INT` |
+| `INT`      | —                              | —                                        | **none since M1f S1f.5.5's swap**: a run of digits is a `NAME` like any other (S1f.5.4's ruling, the user's of 2026-11-06), so `7`, `07` and `-7` are three names, each printed as written, and a fact of one is never a fact of another. Until the swap `INT`, `-?[0-9]+`, lexed *integer atoms*, `007` and `7` one value; `:priority 10`, the one keyword that took one, went with S1f.5.15. The int value kind went with [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 (2026-11-09): a value is a name or a nested fact |
 | `STRING`   | `"…"` with `\\` escape          | `"condition (10)"`, `"{?r} is transitive"` | `:source` provenance, `:why` templates and other keyword values; and a **fact's argument**, top-level or nested, which the loader holds as a symbol whose text is the string's body: `"foo"` and `foo` are one value, and `"1"` is not the int `1` (`examples/syntax/arg-kinds.ein`; M1e2 S1e2.2.16, 2026-11-04). In a **rule**, a string means what it means in a fact, the symbol it names, at any depth of a `:match`, a guard, an `(absent …)` or an `:assert`, and it is a name of the program as that atom is: `(holds "b")` in a rule matches the fact `(holds b)`, and `(tag ?x "lbl")` stores `lbl` (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04). Until then the rule compiler did not lower one: it matched nothing in a `:match`, equalled no value in a guard, held under every `absent`, proposed nothing from an hrule, and in an `:assert` stopped saturation with a `TypeError` (W18). A string that is a keyword's value inside a rule's clause keeps its meaning, text |
 
 **There is no `RANGE`**, and no number of any kind: Ein has no numbers and no
@@ -417,8 +417,8 @@ patterns. Since M1e2
 (W24, the user's rulings of 2026-11-05) the loader refuses, with one line
 naming the rule and the clause
 ([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
-an atom, a variable, `_`, an integer or a string written where a premise
-goes; a relation written as a variable no parameter binds, at the top level
+an atom (a run of digits among them, an integer until M1f S1f.5.4), a
+variable, `_` or a string written where a premise goes; a relation written as a variable no parameter binds, at the top level
 or inside a pattern, in a `:match` or an `:assert`; a keyword pair inside a
 pattern inside a pattern; and an activator that binds a relation parameter
 to a nested fact. Until then each read nothing, in silence: a premise that is
@@ -540,7 +540,8 @@ mean "for this `?x`".
 
 A **guard**, `(eq a b)` or `(neq a b)`, is judged where it is written, on
 values: a variable a premise before it binds (the rule's parameters count),
-a name, a string or an integer. Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii))
+a name or a string (a run of digits is a name, an integer until M1f
+S1f.5.4). Since M1e2 S1e2.2.24 (W24, Q-M1e2.18 (ii))
 `(and (neq ?x a) (p ?x))`, a guard on a variable no premise before it binds,
 is refused at load, naming the variable, as is `_`, a form or a keyword pair
 as a guard's argument; until then the unbound `?x` compared as a null, so
@@ -748,7 +749,13 @@ then the walk's `--max-set-size` was the cap, and `solve` exited 1).
 **`:goal-text` headline template (optional).** A `:goal-text "<tmpl>"` string
 renders the one-line natural-language answer for `ein solve`'s result table,
 referencing the goal's **own variables** by name — the same `{?var}` engine as
-rule `:why`, bound from the solution. The vocabulary lives entirely in the
+rule `:why`, bound from the solution. A reference is the variable as the
+program writes it after its `?`, up to the first `}`, so `{?isR*}` names
+`?isR*` and `{?_x_}` names `?_x_` (M1f S1f.5.4's T1f.5.4.5, W37; until then a
+reference took a letter or digit and then letters, digits, `_` and `-`, and
+printed any other as written), and a template naming a variable that holds a
+`}`, which no reference can reach, is refused at load
+([`defined_behaviour.md` § 4.11](../../defined_behaviour.md#411-a-template-reference-no-reference-can-reach--m1f-t1f545)). The vocabulary lives entirely in the
 puzzle; nothing is hardcoded in the renderer. The value is a **single** string
 literal (ein-lang does not concatenate adjacent strings). Example (the Zebra
 goal binds `?who_water` / `?h_zebra` / …):

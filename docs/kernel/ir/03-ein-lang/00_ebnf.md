@@ -115,8 +115,9 @@ Four terminal facts that are load-bearing and easy to lose:
    ends at the same boundary**: `'neq'` in §2 matches only where no
    `WordChar` follows, so a lexer keyword is, at any position, the literal or
    no `SYMBOL`, never both, and `neqw` is a name wherever it is written.
-   `(neq-1 ?x)` is the keyword and `-1`, since `-` is no word character and
-   starts an `INT`, and `neq-1` is no name anywhere; a trace word a word
+   `(neq-1 ?x)` was the keyword and `-1`, since `-` is no word character and
+   started an `INT`, and `neq-1` no name anywhere, until S1f.5.5's swap, which
+   made a run of digits a name (S1f.5.4) and `neq-1` the name it spells; a trace word a word
    character follows, `(trace (stepx …))`, is a parse error, a trace holding
    only events. *Since M1e2 S1e2.2.22 (2026-11-05), on the user's ruling on
    [Q-M1e2.17](../../../../plans/m1e2_correctness/open_questions.md#q-m1e217--where-does-a-keyword-end),
@@ -340,7 +341,8 @@ containing at least one): `relation` 90 · `rule` 88 · `query` 67 · `and` 65 �
 `import` 42 · `not` 43 · `neq` 39 · `hrule` 23 · `config` 18 · `or` 10 ·
 `macro` 5 · `trace` 3 · `=` 3 · `step` 1. Terminals: `VAR` 105 · `STRING` 95 ·
 `INT` 84 · dunder `SYMBOL` 11 · `WILDCARD` 3. (`RANGE` 4 until M1f S1f.5.3
-retired the token.)
+retired the token; `INT`'s 84 are runs of digits, each a name since S1f.5.5's
+swap, S1f.5.4's ruling.)
 
 **Five productions have no exerciser at all**, and it is better to write that
 down than to let a reader assume otherwise: `BranchOpen`, `BranchClose`,

@@ -251,8 +251,10 @@ KB's names index does not hold — 46 names on 25 programs (2026-11-04), among
 them `mixed-type-hypothesis.ein`'s `Ann`, `07_schroder.ein`'s `G`, W4's `Z`,
 W15's, W14's, W7's `Y`, W16's `a` and W18's `lbl` — holds each to the seed, and confirms that no run reaches a name
 outside the program's. The one shape that could name something else, a relation
-parameter bound to an integer, is refused at load or at compile
+parameter bound to a nested fact, is refused at load or at compile, as one
+bound to an integer was until M1f S1f.5.4 retired the int
 ([`defined_behaviour.md` § 4.6](../defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
+A run of digits is a name since S1f.5.5's swap.
 
 Tracked at
 M1 Q-S1.5.4.D
@@ -666,8 +668,8 @@ shuffled each layer's candidate order and asserted the resulting
 `LatticeSnapshotV1` still compared equal to the unshuffled run's, until it
 went with the walk at M1e2 S1e2.1c.5 (2026-11-03);
 [`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
-runs the whole corpus a second time with every interned name and integer
-assigned in a shuffled order and the `FactId` space offset, and requires the
+runs the whole corpus a second time with every interned name (and integer,
+until M1f S1f.5.4) assigned in a shuffled order and the `FactId` space offset, and requires the
 same bytes from every op, narration included, since M1e2 S1e2.2.12, which
 added every core a run reports and `ein oracle --dump`'s cube to what it
 compares; and

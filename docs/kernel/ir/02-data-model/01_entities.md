@@ -142,19 +142,20 @@ arguments. The proposition.
 ```text
 Fact(
     relation_name: str,
-    args:          tuple[str | int | Fact, ...],   # argument identities (admits relational-node args)
+    args:          tuple[str | Fact, ...],         # argument identities (admits relational-node args)
     provenance:    Provenance | None,              # PRIMARY justification (§3.1)
     raw:           IRNode | None,                  # original IR node (metadata)
     loc:           Loc | None,
 )
 ```
 
-Arguments admit three shapes, matching the kernel ein model's
+Arguments admit two shapes (three until M1f S1f.5.4 retired the `int`: a
+run of digits is a name since S1f.5.5's swap), matching the kernel ein model's
 **named** vs **relational** node duality
 ([`../01-ein-graph/03_ein_model.md` §3](../01-ein-graph/03_ein_model.md)):
 
-- `str` — a named node (an object name or a Relation name).
-- `int` — a numeric literal.
+- `str` — a named node (an object name or a Relation name); `7` and `07` are
+  two.
 - `Fact` — a **relational node** embedded as an argument
   (e.g. `(hypothesis (co-located Norwegian House-2))`). The nested
   `Fact` participates in identity recursively: two outer facts are
@@ -168,7 +169,7 @@ Resolution to typed entities happens on demand via
 Cross-references:
 - `f.relation` → `Relation | None` — the relation entity this fact
   instantiates.
-- `f.arg_entities` → `tuple[Relation | Fact | str | int, ...]` —
+- `f.arg_entities` → `tuple[Relation | Fact | str, ...]` —
   resolve each name arg to its `Relation` entity when declared;
   object names stay raw strings (S1.7.23 — no `Type` / `Instance`
   entities), nested `Fact` args pass through.
