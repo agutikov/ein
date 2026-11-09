@@ -10,7 +10,8 @@
 ;;; `\"`, `\\` and `\u{…}` — and a raw newline needs none.
 ;;;
 ;;; `ein-cli/tests/natural_language_text.rs` holds the text byte for byte on
-;;; every surface that carries it: the read-out's sentence and `answer.txt`,
+;;; every surface that carries it: the read-out's sentence and `answer.txt`
+;;; (each line after a line break started inside the row, M1f S1f.5.16),
 ;;; `--trace`, `ein saturate --dump`, a `--dump-answer` state file, `ein render
 ;;; program` and a `.einb`. The claim below is about facts, which hold as they
 ;;; would with no text at all: the text changes no answer.

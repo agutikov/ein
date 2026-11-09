@@ -96,13 +96,20 @@ impl Text {
     }
 }
 
+/// The lines `block` prints: one per entry, and one more per line break an
+/// entry holds, a text's ([`hang`]) — what the 100 lines count (M1f
+/// S1f.5.16's T1f.5.16.5).
+fn lines_of(block: &[String]) -> usize {
+    block.iter().map(|l| 1 + l.matches('\n').count()).sum()
+}
+
 /// How many of `blocks` fit in `left` lines: all, or whole blocks while they
 /// fit and at least one. The read-out's listings are cut by it, and since
 /// M1e2 S1e2.3.3 the forms printed after the read-out too.
 pub fn fit(left: usize, blocks: &[Vec<String>]) -> usize {
     let mut lines = 0usize;
     for (i, b) in blocks.iter().enumerate() {
-        lines = lines.saturating_add(b.len());
+        lines = lines.saturating_add(lines_of(b));
         if lines > left {
             return i.max(1);
         }
@@ -199,13 +206,56 @@ impl Out {
             self.text.push_str(l);
             self.text.push('\n');
         }
-        self.listed += blocks[..shown].iter().map(Vec::len).sum::<usize>();
+        self.listed += blocks[..shown].iter().map(|b| lines_of(b)).sum::<usize>();
         shown
     }
 }
 
+/// Unicode's mandatory line breaks (UAX #14's BK, CR, LF and NL), `\r\n`
+/// read as one: where a text a program wrote starts a new line.
+fn split_breaks(text: &str) -> Vec<&str> {
+    let mut out = Vec::new();
+    let mut start = 0;
+    let mut it = text.char_indices().peekable();
+    while let Some((i, c)) = it.next() {
+        if matches!(
+            c,
+            '\n' | '\r' | '\u{0B}' | '\u{0C}' | '\u{85}' | '\u{2028}' | '\u{2029}'
+        ) {
+            out.push(&text[start..i]);
+            let mut end = i + c.len_utf8();
+            if c == '\r'
+                && let Some(&(j, '\n')) = it.peek()
+            {
+                it.next();
+                end = j + 1;
+            }
+            start = end;
+        }
+    }
+    out.push(&text[start..]);
+    out
+}
+
+/// `value`, printed at column `col`, with each further line of a text it
+/// holds started where its first character is: past its indent and an
+/// opening `“` — M1f S1f.5.16's T1f.5.16.5, Q-M1f.19 (a). A `:goal-text`
+/// filled for a class's row, and an obligation's `:why` under `owing`, are
+/// the program's text, and a line break in one is the writer's; until then
+/// its next line started at column 0, outside every row.
+fn hang(value: &str, col: usize) -> String {
+    let lines = split_breaks(value);
+    if lines.len() == 1 {
+        return value.to_string();
+    }
+    let lead = value.chars().take_while(|&c| c == ' ' || c == '“').count();
+    let pad = " ".repeat(col + lead);
+    lines.join(&format!("\n{pad}"))
+}
+
 fn row_text(label: &str, value: impl AsRef<str>) -> String {
-    format!("  {label:<18}{}", value.as_ref())
+    let col = 2 + label.chars().count().max(18);
+    format!("  {label:<18}{}", hang(value.as_ref(), col))
 }
 
 fn which_words(w: Which) -> &'static str {
@@ -410,7 +460,8 @@ pub const WARNING_ROWS: usize = 4;
 
 /// A row under the `lattice` row, at the hole rows' indent.
 fn sub_row(label: &str, value: impl AsRef<str>) -> String {
-    format!("    {label:<16}{}", value.as_ref())
+    let col = 4 + label.chars().count().max(16);
+    format!("    {label:<16}{}", hang(value.as_ref(), col))
 }
 
 /// What the universe leaves out, as one sentence — M1e2 S1e2.2.8 (W6), the
@@ -1943,5 +1994,37 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
         for (li, l) in lines.iter().enumerate() {
             out.row(if li == 0 { "as :expect" } else { "" }, l);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A text's line breaks are Unicode's mandatory ones, `\r\n` one break;
+    /// each further line starts at the column the text's first character is
+    /// printed at (M1f S1f.5.16's T1f.5.16.5).
+    #[test]
+    fn a_texts_line_breaks_keep_the_rows_column() {
+        assert_eq!(
+            split_breaks("a\r\nb\rc\nd\u{2028}e"),
+            ["a", "b", "c", "d", "e"]
+        );
+        assert_eq!(split_breaks("one line"), ["one line"]);
+        assert_eq!(hang("x", 20), "x");
+        assert_eq!(
+            row_text("", "    “a\nb”"),
+            format!("{}    “a\n{}b”", " ".repeat(20), " ".repeat(25))
+        );
+        assert_eq!(
+            sub_row("site", "a\r\nb"),
+            format!("    site            a\n{}b", " ".repeat(20))
+        );
+        // The listing counts the lines a block prints, not its entries.
+        assert_eq!(lines_of(&["a\nb".to_string(), "c".to_string()]), 3);
+        assert_eq!(
+            fit(2, &[vec!["a\nb".to_string()], vec!["c".to_string()]]),
+            1
+        );
     }
 }

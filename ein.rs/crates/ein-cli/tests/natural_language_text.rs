@@ -14,7 +14,7 @@
 //!
 //! | surface | which text | as |
 //! |---|---|---|
-//! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”` |
+//! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”`, each line after a line break at the sentence's column |
 //! | `--trace` | a rule's `:why`, filled at its firing, and a premise's `:source` | the characters |
 //! | `ein saturate --dump` | `:source`, `:goal-text` | quoted, as the printer quotes |
 //! | a `--dump-answer` state file | all three, the program re-written | quoted, and it reloads to the same text |
@@ -61,6 +61,16 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
+/// The read-out's sentence for `who`: the `:goal-text` filled, in `“…”`, each
+/// line after a line break started at the sentence's column, 25, where its
+/// first character is printed (M1f S1f.5.16's T1f.5.16.5, Q-M1f.19 (a)): the
+/// text's `\n` and its `\r` each start a line, and nothing else moves.
+fn sentence(who: &str) -> String {
+    let filled = GOAL_TEXT.replace("{?who}", who);
+    let lines: Vec<&str> = filled.split(['\n', '\r']).collect();
+    format!("“{}”", lines.join(&format!("\n{}", " ".repeat(25))))
+}
+
 /// Every string a program's text holds, in the order the parser met them.
 fn texts(path: &Path) -> Vec<String> {
     let text = std::fs::read_to_string(path).expect("readable");
@@ -95,14 +105,23 @@ fn the_program_writes_the_six_texts() {
 }
 
 /// The read-out prints the `:goal-text` filled, for each row of the class,
-/// and `answer.txt` is the read-out; the claim holds (`ein test`, exit 0).
+/// each line of it inside the row, and `answer.txt` is the read-out; the claim
+/// holds (`ein test`, exit 0).
 #[test]
 fn the_read_out_prints_the_goal_text_as_written() {
     let r = ein(&["solve", PROGRAM]);
     assert_eq!(r.code, 0, "{}", r.err);
     for who in ["Ann", "Bob"] {
-        let sentence = format!("“{}”", GOAL_TEXT.replace("{?who}", who));
+        let sentence = sentence(who);
         assert!(r.out.contains(&sentence), "no {sentence:?}:\n{}", r.out);
+    }
+    // No line of the read-out starts outside a row: each is the header, the
+    // rule, blank, or indented.
+    for l in r.out.lines().skip(2) {
+        assert!(
+            l.is_empty() || l.starts_with("  "),
+            "a line outside every row: {l:?}"
+        );
     }
     let scratch = Scratch::new("ein-nl-text-answer");
     let dir = scratch.path().join("answer");
@@ -110,7 +129,7 @@ fn the_read_out_prints_the_goal_text_as_written() {
     assert_eq!(d.code, 0, "{}", d.err);
     let answer = std::fs::read_to_string(dir.join("answer.txt")).expect("answer.txt");
     for who in ["Ann", "Bob"] {
-        let sentence = format!("“{}”", GOAL_TEXT.replace("{?who}", who));
+        let sentence = sentence(who);
         assert!(answer.contains(&sentence), "answer.txt: no {sentence:?}");
     }
     let t = ein(&["test", PROGRAM]);
@@ -208,8 +227,5 @@ fn a_container_holds_the_texts() {
     assert_eq!((a.code, b.code), (0, 0), "{}{}", a.err, b.err);
     let headless = |out: &str| out.lines().skip(1).collect::<Vec<_>>().join("\n");
     assert_eq!(headless(&a.out), headless(&b.out));
-    assert!(
-        b.out
-            .contains(&format!("“{}”", GOAL_TEXT.replace("{?who}", "Ann")))
-    );
+    assert!(b.out.contains(&sentence("Ann")));
 }

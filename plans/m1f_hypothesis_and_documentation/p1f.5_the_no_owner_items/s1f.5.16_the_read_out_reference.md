@@ -6,7 +6,8 @@ in M1e's [P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--doc
 2026-08-29 ([§ The ids](README.md#the-ids)).
 **Status:** specified 2026-11-08 on the user's instruction: *"Ok, schedule S1f.5.16 also"*. **Running since
 2026-11-09**: T1f.5.16.1, the census, done ([its record](#t1-record-2026-11-09)); Q1 defaulted (a), and three findings,
-one of them S1f.5.2's item, which T1f.5.16.5 fixes before T2. No engine code, test, golden or page has moved yet.
+one of them S1f.5.2's item, which T1f.5.16.5 fixed before T2 ([its record](#t5-record-2026-11-09)): a text's line
+breaks keep the row's column, ten read-out digests moved, no answer.
 **Depends on:** [S1f.5.5](s1f.5.5_the_grammar.md)'s swap and the non-grammar halves after it
 ([§ The order](README.md#the-order), item 8), so that the census is taken, and the examples are written, in the
 final grammar; and [S1f.5.15](s1f.5.15_rule_priority.md), done, whose `strata` row the page documents.
@@ -649,12 +650,28 @@ before T2, so that the examples are written by the fixed printer.
   forms after it see the lines the screen shows.
 - **The goldens it moves, named before they move**: `natural_language_text`'s
   `the_read_out_prints_the_goal_text_as_written` and `a_container_holds_the_texts`, which look for the sentence as one
-  run of characters; `corpus_shapes.md5`'s `read-out[describe]`, `[maximal]`, `[minimal]`, `[single]` and `[n2]` and
-  `oracle` lines of `examples/features/15_unicode_escapes.ein` and `tests/text/01_unicode.ein`, the two corpus programs
-  whose `:goal-text` holds a line break (`git grep -n 'goal-text' -- '*.ein'`, 2026-11-09); and no other. No answer,
+  run of characters; `corpus_shapes.md5`'s `read-out[describe]`, `[maximal]`, `[minimal]`, `[single]` and `[n2]` lines of
+  `examples/features/15_unicode_escapes.ein` and `tests/text/01_unicode.ein`, the two corpus programs whose
+  `:goal-text` holds a line break (`git grep -n 'goal-text' -- '*.ein'`, 2026-11-09), and their `oracle` lines if that
+  rendering prints the query's classes; and no other. No answer,
   exit code or summary field moves, and the register is unmoved: no answer is misstated.
 - **The pages**: the two programs' headers, and `natural_language_text.rs`'s table, say how the read-out prints a text
   with a line break.
+
+### T5 record, 2026-11-09
+
+`read_out.rs`'s `row_text` and `sub_row` print a value through `hang`, which starts each further line of a text at the
+column its first character is printed at (past the value's indent and an opening `“`), splitting at Unicode's
+mandatory breaks with `\r\n` one; and the listing counts the lines a block prints (`lines_of`), so `fit`, the cut and
+`Text::listed` see the screen's. `read_out::tests::a_texts_line_breaks_keep_the_rows_column` holds both.
+
+What moved is what the task named, less one: **ten** lines of `corpus_shapes.md5`, the five `read-out[…]` lines of
+each of the two programs (`15_unicode_escapes.ein` 31 lines before and after, its second line now indented;
+`01_unicode.ein` 36 to 38, its `\r` now a line break too). Their `oracle` lines did not move: that rendering is the
+cube's, with no query block. `natural_language_text`'s two assertions now look for the sentence as the read-out prints
+it, each line after a break at column 25 (`sentence`), and the first also holds that no read-out line starts outside a
+row. The two programs' headers say where the second line goes. No answer, exit code, summary field or register row
+moved; `read_out_examples.md`'s blocks print no text with a line break, and did not move.
 
 ## Acceptance
 

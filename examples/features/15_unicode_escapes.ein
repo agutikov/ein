@@ -22,10 +22,11 @@
 ;;;
 ;;; `ein solve examples/features/15_unicode_escapes.ein` prints, for each
 ;;; person, the query's sentence over two lines, the `\n` a line break and
-;;; `\u{1F44B}` the waving hand 👋; `ein saturate --dump` prints each fact's
-;;; `:source` quoted, every escape written back as one, and `--trace T` the
-;;; rule's `:why` at each firing. The claim on `(query …)` holds (`ein test`,
-;;; exit 0).
+;;; `\u{1F44B}` the waving hand 👋, the second line inside the row, under the
+;;; first's first character (M1f S1f.5.16, Q-M1f.19); `ein saturate --dump`
+;;; prints each fact's `:source` quoted, every escape written back as one, and
+;;; `--trace T` the rule's `:why` at each firing. The claim on `(query …)`
+;;; holds (`ein test`, exit 0).
 
 (relation speaks Person Language :why "{?1} speaks {?2}")
 (relation greets Person Language :why "{?1} greets in {?2}")
