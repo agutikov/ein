@@ -19,10 +19,10 @@
 | **S-16** | surface | past the limit, `--minimal --single` and `--minimal -n 1` say less than describe certifies | a surface | non-monotone: all 7 stopped at the limit | **ruled 2026-11-07, (b)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md) |
 | **S-17** | surface | the minimal-line row says *no obligation is stated* where no node the run met owes | a surface | non-monotone: a probe, at a lowered limit | **ruled 2026-11-07, (a)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes) |
 | **F1** | surface | the same sentence on complete runs of programs that state one | a surface | monotone: 8 under `tests/stdlib/` | **ruled 2026-11-07, (a)**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#s-17-and-f1-the-clause-goes) |
-| **S-18** | surface | a guard as a query's goal prints *the goal holds: it has no variable* | a surface | monotone: a probe | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) |
+| **S-18** | surface | a guard as a query's goal prints *the goal holds: it has no variable* | a surface | monotone: a probe | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md); **done 2026-11-09** (W55, T1f.5.7.2) |
 | **D-14** | spelling | an owing hole that is not dead is written `core: []`, where `null` means no core taken | a surface | non-monotone: 8 holes on 7 programs | **ruled 2026-11-07**: [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) |
 | **D-15** | page | `02_patterns.md` describes `:where` as a filter, and its T3 example no longer loads | a page | refused at load: the page's own example | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), ruled 2026-11-07. **Done 2026-11-09**: `:where` refused at the parse since M1f S1f.5.5's swap (`8c3fe86e`), the compiler's drop retired by S1f.5.11's T1f.5.11.2, and no current kernel page describes `:where` (T1f.5.11.3) |
-| **G-21** | gap | a rule may conclude a fact of the reserved `neq` | unruled | monotone: a probe, 0 corpus programs | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21) |
+| **G-21** | gap | a rule may conclude a fact of the reserved `neq` | unruled | monotone: a probe, 0 corpus programs | **ruled 2026-11-07**: [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21); **done 2026-11-09** (W30, T1f.5.7.4) |
 | **G-22** | gap | a keyword pair beside an `:assert`'s conjuncts is dropped in silence | unruled | monotone: a probe, 0 corpus programs | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), ruled 2026-11-07. **Done 2026-11-09**: refused at the parse since M1f S1f.5.5's swap (`8c3fe86e`, `W32/kwpair-in-assert` fixed), the compiler's filter retired by S1f.5.11's T1f.5.11.2 |
 | **P-14** | cost | past the limit, `--minimal -n 2` and `--minimal --single` visit about 2^limit nodes where one saturation decides | cost | non-monotone: all 7 stopped at the limit | **closed by S-16's ruling, 2026-11-07**: [S1f.5.6](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md) |
 | **P-15** | cost | N's cores past the limit are computed, then written `not-kept` | cost | non-monotone: `lattice/06`, `past-limit-lines` | **ruled 2026-11-08, (c)**: [S1f.5.12](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md) |
@@ -223,6 +223,10 @@ $ ein solve plans/m1e2_correctness/inventory_2026-11-06/probes/goal_guard.ein
 [exit 0]
 ```
 
+**Fixed 2026-11-09** by [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#t1f572-record-2026-11-09)'s
+T1f.5.7.2 (W55): the goal answers `?y = Node`, `?y = a` and `?y = p`, the program's names but `w`, and suggests `(model
+(neq w Node) (neq w a) (neq w p))`, which loads and holds. The read-out below is the inventory's, as it stood.
+
 The suggested claim, written down:
 
 ```text
@@ -294,6 +298,8 @@ $ ein saturate plans/m1e2_correctness/inventory_2026-11-06/probes/assert_neq.ein
 **What it needs: the user's ruling.** [S1e2.2.22 § Notes](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md#notes): *a label and a question, no answer here*. Under Q-M1e2.17 (i)(a), a guard written `(neq-1 ?x)` in an `:assert` reaches it too.
 
 **Where.** [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), line 627, is where a built-in predicate is read in a `:match`. The `:assert` side has no such check.
+
+**Fixed 2026-11-09** by [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#t1f574-record-2026-11-09)'s T1f.5.7.4 (W30): the probe's `(neq w a)` holds and is not stored, and `(neq w w)` at `{(p w)}` is `(false)`, so R is {∅}.
 
 **Ruled 2026-11-07** ([Q-M1e2.26](open_questions.md#q-m1e226--are-eq-and-neq-relations)): a rule may conclude `eq` or `neq`, with no restriction. A true conclusion adds nothing, and a false one, such as `(neq a a)`, is a contradiction, as `(false)` is. Today the conclusion is stored as an ordinary fact, so `(neq a a)` sits in root's KB while a guard computes it false, and R keeps ∅ (2026-11-07). The plan is [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#conclusions-g-21).
 

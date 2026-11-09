@@ -31,6 +31,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.32](#q-m1f32--an-hrules-eq-or-neq-instance) | an hrule's `eq` or `neq` instance | **defaulted 2026-11-09 (the user's instruction): no hypothesis**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
 | [Q-M1f.33](#q-m1f33--a-written-fact-of-eq) | a written fact of `eq` | **defaulted 2026-11-09 (the user's instruction): a conclusion with no premise, checked, never stored**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
 | [Q-M1f.34](#q-m1f34--where-a-guards-free-variable-is-bound-beside-an-absent) | where a guard's free variable is bound, beside an `(absent …)` | **defaulted 2026-11-09 (the user's instruction): where it is written, as a relation premise binds**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.35](#q-m1f35--a-goals-absent--whose-row-is-it) | a goal's `(absent …)`: whose row is it? | **defaulted 2026-11-09 (the user's instruction): S1f.5.7's, filed (W56) and fixed in a task of its own**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.5 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -620,3 +621,22 @@ reads.
 binds, so the order rule an `(absent …)` already has is the only one; (b) would make a guard bind past an `(absent …)`
 that a relation premise in its place would not. `ein-infer/tests/rule_semantics.rs`'
 `a_binding_guard_binds_where_it_is_written` (T1f.5.7.3) holds both orders.
+
+### Q-M1f.35 — A goal's `(absent …)`: whose row is it?
+
+**Raised** 2026-11-09 by [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.5,
+outside its case. The stage's test of a goal's empty row wrote `(query :goal (absent (q ?x)))` and found the goal
+answered with a `q` in the state. A goal is compiled as a rule's `:match` is, its top-level `(absent …)` lifted out of
+the plan for the closure/world boundary to judge, and `verdict::goal_bindings`, which reads the goal's rows, never
+judges it: `(and (p ?y) (absent (q ?y)))` over `(p a) (p b) (q b)` answers `?y = b`. And a claim cannot list the
+class, `(absent (q a))` being no relation's fact to the loader, as `(neq w a)` was not until T1f.5.7.2. No corpus goal
+writes an `(absent …)`, `forall` or `unknown`. The register's `W56/goal-absent` holds it.
+
+- **(a) S1f.5.7 fixes it**, in a task of its own after the pages (T1f.5.7.6): `goal_bindings` judges each lifted guard
+  against the state, as the boundary does a rule's, and a query's claim may list a goal's `(absent …)` instance, as it
+  lists a guard's. The stage rewrote the goal's evaluation, and the fix moves no corpus program.
+- **(b) The row is filed `open` and deferred** to a stage that owns goals, which P1f.5 has none of.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is the goal evaluation the stage changed, the class the
+stage's own guards made claimable, and a deferred row would have no owner to wait on. `W56/goal-absent` is filed `open`
+by T1f.5.7.5 and fixed by T1f.5.7.6.

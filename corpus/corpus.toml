@@ -1702,6 +1702,12 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W55 (`W55/goal-guard-before-binder`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a goal's `(neq a ?y)` written before `(p ?y)` is judged on a null and holds, so the class is `(model (neq a a) (p a))` and the claim `(model)` is FAILED. Open, owned by S1f.5.7: a conjunction means the same in any order (Q-M1e2.26)."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W56 (`W56/goal-absent`), filed by S1f.5.7's T1f.5.7.5 (2026-11-09) outside its case: a goal's `(absent (q ?y))` is never judged, so `?y = b` is a row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance is refused at load. Open, owned by S1f.5.7 (Q-M1f.35): T1f.5.7.6 judges the goal's lifted guards and lets the claim load, which then holds."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24

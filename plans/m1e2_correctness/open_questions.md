@@ -39,7 +39,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.23](#q-m1e223--what-is-a-string-for) | What is a string for? | [S1f.5.2](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md) (F4) | **ruled 2026-11-06**: natural language, only in `:why`, `:source` and `:goal-text`; G-6 ruled the same day, a variable in a fact refused. **Built 2026-11-09** by M1f S1f.5.5's swap and S1f.5.2 |
 | [Q-M1e2.24](#q-m1e224--are-there-numbers-in-ein) | Are there numbers in Ein? | [S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md) (F6), [S1f.5.4](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) (F7) | **ruled 2026-11-06 and -07**: no numbers and no ranges, now or planned; any run of name characters is a name, digits included, and a digit label is a candidate; a name's characters are an ASCII allow-list, forever, `\` never and quotes and brackets for now; **the range token retired 2026-11-08** by S1f.5.3 (`65d1ad85`), the rest not built |
 | [Q-M1e2.25](#q-m1e225--how-strict-is-the-grammar-and-what-holds-the-parser-to-it) | How strict is the grammar, and what holds the parser to it? | [S1f.5.5](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md) (F9) | **the user's instructions, 2026-11-06 and -07**: revisit it, and generate the parser; **ruled 2026-11-07: grmtools, with recovery on**, made deterministic (F11); not built |
-| [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations) | Are `eq` and `neq` relations? | [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (S-18, G-21) | **ruled 2026-11-07**: yes, of equality and non-equality, their facts fixed by name identity and computed, in a goal, a premise and a conclusion, a free variable over the program's names; supersedes Q-M1e2.18 (ii)(a); a nested fact as a guard's argument answered; not built |
+| [Q-M1e2.26](#q-m1e226--are-eq-and-neq-relations) | Are `eq` and `neq` relations? | [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (S-18, G-21) | **ruled 2026-11-07**: yes, of equality and non-equality, their facts fixed by name identity and computed, in a goal, a premise and a conclusion, a free variable over the program's names; supersedes Q-M1e2.18 (ii)(a); a nested fact as a guard's argument answered; **built 2026-11-09** by S1f.5.7 (W30, W24's two, W50 to W55), five readings defaulted, [Q-M1f.30](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument) to Q-M1f.34 |
 | [Q-M1e2.27](#q-m1e227--what-do--and-null-mean-in-eins-json) | What do `[]` and `null` mean in Ein's JSON? | [S1f.5.8](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md) (D-14) | **ruled 2026-11-07**: `[]` is the empty set, `null` an object that does not exist; a node that is not dead has `core: null`; not built |
 | [Q-M1e2.28](#q-m1e228--which-keywords-does-each-form-take) | Which keywords does each form take? | [S1f.5.11](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md) (D-15, G-15, G-22) | **ruled 2026-11-07**: a fixed list per form, and any other keyword is an error; a term and a nested fact take none, so `:where` is refused wherever written; `:cardinality` and `:mode` retired, a fact keeps `:rule` and `:using`, and `:why` on a fact is refused; supersedes Q32's drop; not built |
 
@@ -2123,6 +2123,10 @@ relations, and a rule's premise means the same in any order of its conjuncts, so
 premise before it binds is answered, not refused. `W24/guard-before-binder`'s `right` is restated by
 [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#premises). (i)(a) is superseded
 too, the same day: a nested fact as a guard's argument is answered; (iii)(a) and (iv)(a) stand, and `_` in a guard stays refused (Q-M1e2.22).
+**Built 2026-11-09** by S1f.5.7's T1f.5.7.3: both shapes load, `W24/guard-before-binder` and `W24/form-in-guard` fixed to
+their restated rights, and a form that holds a variable stays refused
+([Q-M1f.30](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument),
+defaulted).
 
 ## Q-M1e2.19 — What do `--minimal` and `--maximal` answer past the limit?
 
@@ -2650,6 +2654,13 @@ its value; the agent found almost none, and the meaning stays writable explicitl
 `(eq ?y ?y)`. So the implicit form is refused at load, a restriction with a reason: it forbids nothing that
 can be meant, and catches a likely typo. The user: *"yes, file F13 with the refusal"*. **Not built**:
 [S1f.5.10](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md).
+
+**Built 2026-11-09** by [S1f.5.7](../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md),
+in four commits: the relations in a goal (T1f.5.7.2), premises (T1f.5.7.3) and conclusions (T1f.5.7.4), W30's three,
+W24's two restated rows and W50 to W55's ten fixed, every move listed first (T1f.5.7.1); where the ruling is silent the
+stage took five readings by default, on the user's instruction of 2026-11-09, each a row of M1f's
+[open questions](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument),
+Q-M1f.30 to Q-M1f.34.
 
 ## Q-M1e2.27 — What do `[]` and `null` mean in Ein's JSON?
 

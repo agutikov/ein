@@ -257,13 +257,18 @@ Declared once in [`ein-core/terms.rs`](../../../../ein.rs/crates/ein-core/src/te
 ## Computed predicates
 
 Declared in [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs)
-(`predicates.names()`). A predicate's truth is *computed* from the current
-bindings, not looked up in the KB.
+(`predicates.names()`). A predicate's truth is *computed*, not looked up in
+the KB. Since M1f S1f.5.7 the two are **relations** (the user's ruling of
+2026-11-07, Q-M1e2.26): computed and never stored, a free side bound by the
+guard, `eq` to the other side's value and `neq` over the program's names
+(`predicates::domain`), and a conclusion of either checked, a false one
+`(false)`; until then each compared the bindings and bound nothing
+([`01_grammar.md` § Premise order around a guard](01_grammar.md#premise-order-around-a-guard)).
 
 | name | arity | meaning | engine site |
 |------|-------|---------|-------------|
-| `eq` | 2 | `(eq ?a ?b)` true iff the slots resolve equal | matcher `Guard` opcode |
-| `neq` | 2 | `(neq ?a ?b)` true iff the slots resolve unequal | matcher `Guard` opcode |
+| `eq` | 2 | `(eq ?a ?b)` holds iff the two values are one; a free side is bound to the other | matcher `Guard` opcode |
+| `neq` | 2 | `(neq ?a ?b)` holds iff the two values differ; a free side ranges over the program's names but the other | matcher `Guard` opcode |
 
 ## Pattern-macro sugar (`forall` / `unknown`) — NOT reserved
 

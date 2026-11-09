@@ -17,7 +17,8 @@ continue with default decisions till the end of the phase"*): T1f.5.7.1 done ([i
 every move listed, ten rows filed (W50 to W55) and W24's two restated, five questions taken by default (Q-M1f.30 to
 Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal (`e5ae6946`); T1f.5.7.3 done
 ([its record](#t1f573-record-2026-11-09)), premises (`6841faff`); T1f.5.7.4 done ([its
-record](#t1f574-record-2026-11-09)), conclusions.
+record](#t1f574-record-2026-11-09)), conclusions (`31a68fdf`); T1f.5.7.5 done ([its
+record](#t1f575-record-2026-11-09)), the pages, and W56 filed.
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -459,3 +460,42 @@ files, 513 the same, 2026-11-09), the inventory's `assert_neq.ein` among the mov
 `corpus_shapes.md5` 147 digests of the eight witnesses, none of any other program, and no exit code; the eight rows'
 region blocks. The register reads **139 fixed, 19 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml |
 sort | uniq -c`, 2026-11-09).
+
+## T1f.5.7.5 record (2026-11-09)
+
+**The pages.** No current kernel page describes `eq` and `neq` as predicates that bind nothing, a guard on a variable
+no premise before it binds or a form as a guard's argument as refused, or a conclusion of either as stored: each
+sentence that did says what it was and what it is since this stage.
+
+- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md): a fact's relation (a written `(eq a b)` checked,
+  `(neq …)` no fact), what a premise may be, a conclusion of `eq` or `neq` (G-21), *Premise order around a guard*
+  rewritten (a premise in any order, a free variable over the program's names, Q-M1f.34), and § Query (a goal over
+  `eq` and `neq`, a claim naming either, the empty row's two sentences, a region claim refused).
+- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md): the closure line, the computed-equality row,
+  and the registry's table and its paragraph.
+- [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) § Computed predicates, and
+  [`implementation.md`](../../../docs/kernel/inference/implementation.md)'s `predicates.rs` row.
+- [`glossary.md`](../../../docs/kernel/glossary.md): an entry for `eq` and `neq`.
+- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.1's claim rows (a region claim naming
+  either, a goal's form that holds a variable) and § 4.9's guard rows and its paragraph.
+- The inventory's [S-18 and G-21](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) say what fixed them, and
+  [Q-M1e2.18](../../m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) and
+  [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations) that they are built.
+
+M1e2's `read_out.md` is the record and is not edited; the live read-out page is S1f.5.16's, on `master`, and what this
+stage changes on it is the coordinator's to write at the merge ([§ For the merge](#for-the-merge)).
+
+**Found outside the case, filed, and fixed by the next task.** The stage's test of a goal's empty row
+(`cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`, added here) wrote `(query :goal (absent (q
+?x)))`, and the goal answered over a state holding a `q`: a goal's top-level `(absent …)` is lifted out of its plan
+and `verdict::goal_bindings` never judges it, and a claim listing the class's `(absent (q a))` is refused. Filed as
+`W56/goal-absent`, `open` and owned by S1f.5.7
+([Q-M1f.35](../open_questions.md#q-m1f35--a-goals-absent--whose-row-is-it), defaulted), its witness
+`examples/ein-bugs/wrong-answers/goal-absent.ein`, `now` the claim's refusal at `31a68fdf`. No corpus goal writes an
+`(absent …)`, `forall` or `unknown` (a scan of every `:goal` in the five roots, 2026-11-09). The register reads **139
+fixed, 20 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+## For the merge
+
+S1f.5.7 ran in lane 2 (`p1f5-lane2`), which does not edit the prose both lanes share. What those places should gain
+when the coordinator merges the branch is written here, with the stage's last task.

@@ -1,0 +1,35 @@
+;;; A goal's `(absent …)` is not judged, and a claim that lists its instance is
+;;; refused — M1f **W56**, register row `W56/goal-absent`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.5, 2026-11-09),
+;;; `open` and owned by S1f.5.7 (Q-M1f.35, taken by default on the user's
+;;; instruction of 2026-11-09): found where the stage's test of a goal's empty
+;;; row wrote a goal whose only variable is an `(absent …)`'s own.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two nodes, `a` and `b`, `b` marked, no hypothesis, and a query asking for
+;;; the nodes that are not marked, with the claim that `a` is the one.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is root's state alone. `(p ?y)` binds `a` and `b`, and `(absent (q ?y))`
+;;; holds of `a` and not of `b`, which `(q b)` marks: one row, `?y = a`, whose
+;;; class is the goal's instances `(absent (q a))` and `(p a)`, as a class is
+;;; for a guard's (`eq`, `neq`, S1f.5.7). The claim lists that class and
+;;; holds: exit 0.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The loader refuses the claim, *:expect names absent, which no declaration
+;;; or fact makes a relation*, exit 1 (`ein solve FILE` at `6841faff`,
+;;; release and debug alike). With no claim the goal answers two rows, `?y = a`
+;;; and `?y = b`: a goal's top-level `(absent …)` is lifted out of its plan, as
+;;; a rule's is, and the goal's evaluation never judges it, so the read-out
+;;; suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`.
+
+(relation p Node :why "{?1} is a node")
+(relation q Node :why "{?1} is marked")
+(p a) (p b) (q b)
+(solve :hypothesis-relations ())
+(query :goal (and (p ?y) (absent (q ?y)))
+  :expect (model (absent (q a)) (p a)))

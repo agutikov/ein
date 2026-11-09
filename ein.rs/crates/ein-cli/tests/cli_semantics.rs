@@ -3013,3 +3013,50 @@ fn a_core_the_run_did_not_keep_says_so_and_no_member_of_n_has_an_empty_core() {
     // stop prints a core for.
     assert_eq!(met[&true], met[&false], "past-limit-lines' N");
 }
+
+/// **A goal's empty row says whether the goal has a variable** — M1f S1f.5.7
+/// (S-18): *the goal holds: it has no variable* is printed only for a goal
+/// with no variable, `(neq a b)`; a goal whose every variable is an `(absent
+/// …)`'s own binds none, and says so; and a goal whose guard has a free
+/// variable prints a row per value, where it printed *it has no variable*
+/// until S1f.5.7.
+#[test]
+fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
+    let scratch = ein_corpus::Scratch::new("ein-goal-row");
+    let file = scratch.path().join("goal.ein");
+    std::fs::write(
+        &file,
+        "(relation p Node) (relation q Node)\n(p a)\n\
+         (query :goal (neq a b))\n\
+         (query :goal (absent (q ?x)))\n\
+         (query :goal (neq w ?y))\n",
+    )
+    .expect("the program is written");
+    let r = ein(&["solve", &file.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let block = |i: usize| -> String {
+        let start = r
+            .out
+            .find(&format!("query {i} of 3"))
+            .expect("the query's block");
+        let rest = &r.out[start..];
+        let end = rest[1..].find("query ").map_or(rest.len(), |e| e + 1);
+        rest[..end].to_string()
+    };
+    assert!(
+        block(1).contains("the goal holds: it has no variable"),
+        "{}",
+        block(1)
+    );
+    assert!(
+        block(2).contains("the goal holds: it binds no variable"),
+        "{}",
+        block(2)
+    );
+    let third = block(3);
+    assert!(!third.contains("the goal holds"), "{third}");
+    for name in ["Node", "a", "p", "q"] {
+        assert!(third.contains(&format!("?y = {name}")), "{third}");
+    }
+    assert!(!third.contains("?y = w"), "{third}");
+}

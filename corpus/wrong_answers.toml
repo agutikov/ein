@@ -831,6 +831,14 @@
 # 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
 # -c`, 2026-11-09).
 #
+# **W56 was filed the same day by S1f.5.7's T1f.5.7.5**, outside its case
+# (Q-M1f.35, taken by default): a goal's top-level `(absent …)` is lifted
+# out of its plan, as a rule's is, and the goal's evaluation never judges
+# it, and a claim that lists its instance is refused. One row, `open` and
+# owned by S1f.5.7, whose T1f.5.7.6 fixes it. The register reads **139 rows
+# fixed, 20 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -8214,7 +8222,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from the inventory of 2026-11-06's G-21, its probe `assert_neq.ein`, the program unchanged, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `neq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(neq w a :rule r)` and `{(p w)}` holds `(neq w a)` and `(neq w w)` (`ein solve --dump-answer`'s state files). Neither state file loads, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. S1f.5.7 § Conclusions gave this row's right as *R 2 states*; at `{(p w)}` the rule concludes the false `(neq w w)`, so under the same ruling R is {∅}, as the row's right states: a finding of S1f.5.0, put to the user. Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): at root `(neq w a)` holds and adds nothing, and at `{(p w)}` `(neq w w)` is `(false)`, so that state is dead and R is {∅}; the state file loads"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -8269,7 +8277,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(neq a a :rule r)` (`ein saturate --dump`). Root's state file does not load, a fact line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): `(neq a a)` is `(false)`, derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`; the state file is gone with R"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -8322,7 +8330,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.0 (T1f.5.0.2, 2026-11-08) from S1f.5.7 § Conclusions, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w :rule r)` and `{(p w)}` also `(eq w w)` (`ein solve --dump-answer`'s state files, which load). Fixed by S1f.5.7 (T1f.5.7.4, 2026-11-09): `(eq a w)` is `(false)`, derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -9631,7 +9639,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no fact, rule or commitment changes `eq` or `neq`) and G-21. `eq` has no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a w)` (`ein saturate --dump`). `(eq a a)`, the true one, is stored too, and moves no state's `(model …)`; `eq_neq_conclusions.rs` holds that it is not stored. `(neq …)` is no fact the grammar takes. Fixed by T1f.5.7.4 (2026-11-09): the written `(eq a w)` is `(false)`, given where it stands, so root is dead, `refuted by (given)`, and `w` is no name of the program"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -9740,7 +9748,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a))` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): the written `(not (eq a a))` is `(neq a a)`, false, so `(false)` stands in its place and root is dead"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -9793,7 +9801,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21). By value: root holds `(not (eq a a) :rule r)` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): `(not (eq a a))` is `(neq a a)`, `(false)` derived by `r` from `(p a)`, so root is dead, core `(p a)`, `refuted by r`"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -9905,7 +9913,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21): `W30/assert-eq-x-w` with its conclusion's relation written as a parameter. By value: root holds `(eq a w :rule r)` (`ein saturate --dump`). Fixed by T1f.5.7.4 (2026-11-09): under `(r eq)` the conclusion `(eq a w)` is `(false)`, derived by `r` from `(p a)`, so root is dead"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -9959,7 +9967,7 @@ look_at  = ["answer"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: no commitment changes `eq` or `neq`). The same hrule concluding `neq` proposes the four `neq` facts, whose state files do not load, a fact line `(neq …)` being a parse error; the witness is the `eq` one, whose files load (`answer_round_trip.rs`), and the fix covers both (`firing::computed`). Fixed by T1f.5.7.4 (2026-11-09): the hrule proposes no `eq` instance, so H is empty and R is {∅}"
 
 [case.fixed]
-commit = "0000000"
+commit = "31a68fdf"
 by     = "S1f.5.7 (T1f.5.7.4): a conclusion of `eq` or `neq`, or `(not (eq …))`, is checked, never stored: a true one adds nothing and a false one is `(false)`, derived by its rule from the premises it matched; a written fact of `eq` is a conclusion with no premise; an hrule's instance of either is no hypothesis (G-21, Q-M1f.31, Q-M1f.32, Q-M1f.33)"
 date   = "2026-11-09"
 
@@ -10157,3 +10165,36 @@ models    = [
 ]
 queries   = [{ classes = 1, expect = "held" }]
 
+# ══ W56 — a goal's `(absent …)` is not judged, and a claim that lists its instance is refused ══
+[[case]]
+id       = "W56/goal-absent"
+case     = "W56"
+title    = "a goal's `(absent …)` is not judged, and a claim that lists its instance is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.5.7"
+question = ["Q-M1f.35"]
+witness  = "examples/ein-bugs/wrong-answers/goal-absent.ein"
+status   = "open"
+open_because = "The goal is compiled as a rule's `:match` is, its top-level `(absent …)` lifted out of the plan for the closure/world boundary to judge, and the goal's evaluation (`verdict::goal_bindings`) never judges it, so `?y = b` is a row though `(q b)` holds; and the loader refuses a query's claim naming `absent`, which no declaration makes a relation. S1f.5.7's T1f.5.7.6 judges each lifted guard against the state and lets a claim list a goal's `(absent …)` instance, as it lists a guard's (Q-M1f.35)"
+look_at  = ["summary"]
+note     = "Filed by S1f.5.7 (T1f.5.7.5, 2026-11-09), outside its case: found where the stage's test of a goal's empty row (`cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`) wrote `(query :goal (absent (q ?x)))`, which answered one row over a state that holds a `q`. No corpus goal writes an `(absent …)`, `forall` or `unknown` (S1f.5.7's scan of every `:goal`, 2026-11-09). With no claim the read-out answers two rows and suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`, which the loader refuses"
+
+[case.wrong]
+run     = "saturate"
+by      = "command"
+why     = "`ein saturate` and `ein solve` on the witness, release and debug, at 6841faff (2026-11-09): refused at load, *:expect names absent, which no declaration or fact makes a relation*, exit 1; with no claim, `ein solve` answers the goal's one class with two rows, `?y = a` and `?y = b`"
+exit    = 1
+refused = "kb load error: :expect names absent, which no declaration or fact makes a relation"
+
+[case.right]
+reading   = "`(absent P)` is negation as failure, judged against the state (`absent_semantics.md`), in a goal as in a rule's premise, and a query's class is the goal's instances under its rows (`region_language.md` § 5), an `(absent …)`'s among them, which a claim may list as it lists a guard's (Q-M1f.35)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "R is root's state alone. The goal's one row is `?y = a`, `(q b)` refuting `?y = b`; its class is `(absent (q a))` and `(p a)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: :expect names absent, which no declaration or fact makes a relation"

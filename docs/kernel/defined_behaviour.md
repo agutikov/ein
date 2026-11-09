@@ -645,8 +645,10 @@ Five arrived on 2026-08-23 with
 | `(owing …)` beside states of R | `` (region …) — `(owing …)` says R is empty, and the region lists states `` | 1 |
 | a `(merged …)` whose `<to>` is not a listed state | `(merged …) — its state is not one the region lists` | 1 |
 | a claim naming a relation the program does not have | `(solve … :expect …) names <r>, which no declaration or fact makes a relation` | 1 |
+| a claim naming `eq` or `neq` (M1f S1f.5.7) | `(solve … :expect …) names <r>, which a state never stores — eq and neq are computed from their definition, so a region claim, which lists a state's facts, holds neither` | 1 |
 | `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | a parse error at the first token that is not † | 1 |
-| `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
+| `:expect` naming a relation the program does not have (`eq` and `neq`, which a goal may ask about, excepted since M1f S1f.5.7) | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
+| a `:goal` whose `eq` or `neq` compares a form that holds a variable (M1f S1f.5.7, Q-M1f.30) | `query: its :goal writes (neq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
 | a `?var` or `_` inside an `:expect` | a parse error at the variable, or at the `_` with S1f.5.1's note † | 1 |
 
@@ -1024,18 +1026,22 @@ error, in ein's own words; exit 1 (`ein test`: 2):
 | input | message |
 |---|---|
 | `_` as a guard's argument (a parse error since M1f S1f.5.5's swap, § 4.8) | `<rule\|hrule> '<r>': its :match writes (eq ?x _), and _ names no value — a guard compares two values, and _ stands for an argument of a pattern` |
-| a form or a keyword pair as a guard's argument (the keyword pair a parse error since M1f S1f.5.5's swap, S1f.5.11) | `… writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` (`the keyword pair :k a` for one, until the swap) |
-| a guard on a variable no premise before it binds | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name` |
+| a form that holds a variable as a guard's argument (since M1f S1f.5.7, Q-M1f.30; every form, and a keyword pair, until then, the keyword pair a parse error since M1f S1f.5.5's swap, S1f.5.11) | `… writes (eq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` (`… and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name` until S1f.5.7) |
+| ~~a guard on a variable no premise before it binds~~ — **loads since M1f S1f.5.7** (the user's ruling of 2026-11-07, Q-M1e2.26): the guard waits for the premise that binds it, or binds it over the program's names | `… writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name`, until S1f.5.7 |
 | a premise that is not a form: an atom (a run of digits among them, an integer until M1f S1f.5.4), a variable, `_`, a string (`_` and a string a parse error since M1f S1f.5.5's swap, § 4.8 and § 4.12) | `… its :match is foo, and foo is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` (`… writes _ as a premise of and, …` inside a form) |
 | a relation written as a variable no parameter binds, at the top level or inside a pattern, in either clause | `… its <:match\|:assert> writes (?r b) with ?r as its relation, which no parameter binds — a relation is named by a name or by a parameter its activator binds` |
 | a keyword pair inside a pattern inside a pattern, in either clause (a parse error since M1f S1f.5.5's swap, S1f.5.11, which refuses a keyword pair anywhere in a term) | `… writes :k v as an argument of a, and no fact can hold it — a keyword pair is no value, so a pattern inside a pattern that holds one matches nothing` |
 | an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact` |
 | the same activator, derived by a rule through a variable | `the relation head ?<p> of <form> at <loc> is bound to the fact (a b) — a relation is named by a symbol, not a fact.` (a `CompileError`, § 4's second row, as § 4.6's integer) |
 
-A guard's variable counts as bound by the rule's parameters and by the
-variables of the positive patterns written before it; under an `(absent …)`,
-by those the enclosing premises bound before it and the `absent`'s own
-earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
+Since M1f S1f.5.7 a guard's variable needs no binder before it: a premise
+means the same in any order of its conjuncts, so a guard waits for the relation
+premise that binds its variable, and binds one nothing binds, `eq` to the other
+side and `neq` over the program's names (§ 01_grammar.md's *Premise order
+around a guard*). From S1e2.2.24 until then a guard's variable counted as bound
+by the rule's parameters and by the variables of the positive patterns written
+before it; under an `(absent …)`, by those the enclosing premises bound before
+it and the `absent`'s own earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
 pattern's top level or as a premise of an `(and …)`, which the compiler
 dropped (Q32); `_` as a pattern's argument; `_` and a keyword pair at a
 conclusion's top level, which stopped the firing with § 4's line. Each is a
