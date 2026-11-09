@@ -133,7 +133,12 @@ def size_of(path: Path) -> str:
         return f"{n} files"
     if not path.exists():
         return "absent"
-    text = read(path)
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        # A binary artefact (a `.einb` a command's run wrote, M1f S1f.5.19):
+        # its size, where its lines would say 0.
+        return f"{path.stat().st_size} bytes"
     return f"{text.count(chr(10))} lines"
 
 
@@ -172,19 +177,52 @@ def details(summary: str, body: list[str]) -> list[str]:
 # ── DOT ───────────────────────────────────────────────────────────────────────
 
 def split_digraphs(text: str) -> list[tuple[str, str]]:
-    """A stream of `digraph NAME { … }` blocks, as `(name, block)` pairs."""
-    out, cur, name = [], [], None
+    """A stream of `digraph NAME { … }` blocks, as `(name, block)` pairs. A
+    block ends where its braces balance, counted outside quoted strings and
+    comments: until M1f S1f.5.19 it ended at the first line that read `}`,
+    which is a `subgraph cluster_…`'s close in every rule view, so every
+    `render rules` and `render program` rule the bundle drew was cut there and
+    refused by Graphviz (654 graphs over the bundle's 145 cases of
+    2026-11-09, each case's `consistency.md` counting them)."""
+    out, cur, name, depth = [], [], None, 0
     for line in text.splitlines():
-        m = re.match(r"^(?:strict\s+)?(?:di)?graph\s+(\S+)?\s*\{", line)
-        if m and name is None:
-            name, cur = (m.group(1) or "graph").strip('"'), [line]
-            continue
-        if name is not None:
+        if name is None:
+            m = re.match(r"^(?:strict\s+)?(?:di)?graph\s+(\S+)?\s*\{", line)
+            if not m:
+                continue
+            name, cur, depth = (m.group(1) or "graph").strip('"'), [line], _braces(line)
+        else:
             cur.append(line)
-            if line.strip() == "}":
-                out.append((name, "\n".join(cur) + "\n"))
-                name, cur = None, []
+            depth += _braces(line)
+        if depth <= 0:
+            out.append((name, "\n".join(cur) + "\n"))
+            name, cur = None, []
     return out
+
+
+def _braces(line: str) -> int:
+    """`{` less `}` on a DOT line, outside a quoted string and a `//` or `#`
+    comment."""
+    if line.lstrip().startswith("#"):
+        return 0
+    n, quoted, i = 0, False, 0
+    while i < len(line):
+        c = line[i]
+        if quoted:
+            if c == "\\":
+                i += 1
+            elif c == '"':
+                quoted = False
+        elif c == '"':
+            quoted = True
+        elif c == "/" and line[i + 1:i + 2] == "/":
+            break
+        elif c == "{":
+            n += 1
+        elif c == "}":
+            n -= 1
+        i += 1
+    return n
 
 
 def layout_for(dot: str) -> str:

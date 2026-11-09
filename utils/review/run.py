@@ -88,6 +88,10 @@ class RunSpec:
     # A model set to compare the answer with (`--diff-models`): the case page
     # writes one from the register's `right.models` (S1e2.1.6).
     diff_models: Path | None = None
+    # The source a `.einb` `file` was saved from (M1f S1f.5.19, a `container`
+    # row): the program page shows its text, which is what the container
+    # stores, and says so.
+    source: str | None = None
 
 
 @dataclass
@@ -439,13 +443,18 @@ def diff_block(inv: Invocation, run_out: Path | None = None) -> str:
 
 def program_page(p: Pages) -> None:
     page = p.dir / "program.md"
-    src = REPO / p.spec.file
+    src = REPO / (p.spec.source or p.spec.file)
     lines = header("The program", "the source, and three views of it drawn before anything is loaded",
                    "`ein render program`, `ein render rules`, `ein render constraints`",
                    [("04_dot_rendering.md", "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")],
                    [src, p.raw / "render-program.stdout.txt", p.raw / "render-rules.stdout.txt",
                     p.raw / "render-constraints.stdout.txt"], page)
-    lines += ["## Source", "", f"`{p.spec.file}` — {size_of(src)}", "", "```lisp", read(src).rstrip(), "```", ""]
+    if p.spec.source:
+        lines += [f"The run reads `{p.spec.file}`, a `.einb` container `ein kb save` wrote from `{p.spec.source}`: "
+                  "the source below is the program it stores, and every view on this page is drawn from the "
+                  "container.", ""]
+    lines += ["## Source", "", f"`{p.spec.source or p.spec.file}` — {size_of(src)}", "", "```lisp",
+              read(src).rstrip(), "```", ""]
     for title, inv, sub in [("The program as written (`render program`)", "render-program", "program"),
                             ("Every rule (`render rules`)", "render-rules", "rules"),
                             ("Constraint scopes (`render constraints`)", "render-constraints", "constraints")]:

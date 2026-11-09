@@ -21,7 +21,16 @@ all of R). `--corpus` builds one for every corpus entry with a declared
 `solve` run, at that run's flags and without events.
 `--smoke` builds one small case, and one program whose solve is refused, into
 a temporary directory and link-checks it: the per-commit gate's step, using
-the debug `ein` `cargo test` built.
+the debug `ein` `cargo test` built. Since M1f S1f.5.19 it also builds two
+cases whose run is not a solve, and first reads every register row with no
+run through the index and the case pages' register-only parts.
+
+**A row whose `[case.now]` is a command's run** (the register's schema /16:
+`saturate`, a `render` view, `kb save`) gets a page of its own (S1f.5.19,
+`review/command.py`): the command as run, its exit, stdout and stderr in full,
+against the register's `wrong`, `now` and `right` as
+`ein-cli/tests/wrong_answers.rs` reads them, and every artefact it writes,
+linked and drawn. A `container` row runs on the witness saved as a `.einb`.
 A case that fails to build makes the command exit 1.
 `--regions` (S1e2.1a.8) surveys every corpus program's region and writes a
 gallery: the synthetic programs `utils/region_synth.py` wrote, the biggest
@@ -88,6 +97,7 @@ def cmd_run(args: list[str]) -> int:
 
 def cmd_bundle(args: list[str]) -> int:
     from review.case import case_page, index_page, program_case, register
+    from review.command import CommandRun
     bin = ein_bin(take(args, "--bin"))
     out = Path(take(args, "--out") or REPO / "build/review").resolve()
     flags = []
@@ -115,8 +125,9 @@ def cmd_bundle(args: list[str]) -> int:
             page, cols = case_page(row, out / row["id"], bin)
             built.append((row, page, cols))
             got = next(c.result for c in cols if c.result is not None)
-            print(f"{row['id']:32s} {row['now']['run']:16s} k={got.k} exhausted={str(got.exhausted).lower()} — "
-                  f"{page.relative_to(out)}")
+            said = (f"exit={got.main.code}" if isinstance(got, CommandRun) else
+                    f"k={got.k} exhausted={str(got.exhausted).lower()}")
+            print(f"{row['id']:32s} {row['now']['run']:16s} {said} — {page.relative_to(out)}")
         except Exception as e:  # noqa: BLE001 — a case that fails is reported, not fatal
             failed.append((row["id"], f"{type(e).__name__}: {e}"))
             print(f"{row['id']:32s} FAILED: {e}", file=sys.stderr)
@@ -162,19 +173,45 @@ def cmd_smoke(args: list[str]) -> int:
     program whose `ein solve` is refused (its goal does not compile, exit 1),
     so it writes no dump: a page that links a dump the run did not write
     dangles, which is how the region gallery's `features/02` page did
-    (M1e2 S1e2.1.7)."""
+    (M1e2 S1e2.1.7).
+
+    Since M1f S1f.5.19 (Q-M1f.53) two cases whose run is not a solve too —
+    `W40/kb-save`, a container and the container its run writes, and
+    `W41/saturate-import`, whose `wrong` is a refusal — and, first, every row
+    of the register read with no run (`register_pass`): the index's cells and
+    each case page's register-only parts. The whole bundle, the nightly's, had
+    been the only reader of a row shape, and stopped on W41's from `fc53818f`
+    to S1f.5.19 behind a green gate."""
     import subprocess
     import tempfile
+    from review.case import register, register_pass
     debug = REPO / "ein.rs/target/debug/ein"
     bin = take(args, "--bin") or os.environ.get("EIN_BIN") or str(debug)
+    rows = register()
+    failed = register_pass(rows)
+    for rid, e in failed:
+        print(f"{rid:32s} the register pass FAILED: {e}", file=sys.stderr)
+    print(f"smoke: the register pass read {len(rows)} rows, {len(failed)} failed")
+    if failed:
+        return 1
     with tempfile.TemporaryDirectory(prefix="ein-review-smoke-") as tmp:
-        code = cmd_bundle(["--bin", bin, "--out", tmp, "W2/forced-2", "examples/ein-bugs/query-goal-free-head.ein"])
+        code = cmd_bundle(["--bin", bin, "--out", tmp, "W2/forced-2", "W40/kb-save", "W41/saturate-import",
+                           "examples/ein-bugs/query-goal-free-head.ein"])
         if code:
             return code
         svgs = list(Path(tmp).rglob("*.svg"))
         empty = [p for p in svgs if p.stat().st_size == 0]
         if not svgs or empty:
             print(f"error: {len(svgs)} SVGs, {len(empty)} empty", file=sys.stderr)
+            return 1
+        # Every DOT the bundle kept has its drawing (M1f S1f.5.19): a graph
+        # Graphviz refused is written as a DOT with no SVG beside it, and the
+        # smoke's own case had four, every rule view cut at a subgraph's
+        # close, unseen since S1e2.1.5.
+        refused = [p for p in Path(tmp).rglob("*.dot") if not p.with_suffix(".svg").exists()]
+        for p in refused:
+            print(f"error: Graphviz refused {p.relative_to(tmp)}", file=sys.stderr)
+        if refused:
             return 1
         check = subprocess.run([sys.executable, str(REPO / "utils/doc_audit.py"), "--links", "--check", tmp])
         print(f"smoke: {len(svgs)} SVGs, link check exit {check.returncode}")

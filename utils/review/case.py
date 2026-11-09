@@ -13,6 +13,15 @@ answers, the register and Graphviz, assembles.
 
     build/review/README.md            the index: one row per register row
     build/review/<case>/<witness>/    one case: README.md, runs/now/, right/
+
+Since M1f S1f.5.19 a row whose `[case.now]` is a command's run that is not a
+solve (the register's schema /16: `saturate`, a `render` view, `kb save`) has
+a case page of its own, `command.py`'s, with this page's title, fixed
+callout, § 1 table and checklist; a `container` row runs on the witness saved
+as a `.einb`, a solve's too; and `register_pass` reads every row of the
+register through those register-only parts and the index's cells with no
+run, which the gate's smoke does, so a row shape the bundle cannot read fails
+per commit.
 """
 
 from __future__ import annotations
@@ -26,6 +35,8 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
+from review.command import (CommandRun, command_case, first_line, is_command, plan_argv, recorded_answer,
+                            recorded_kind, recorded_what, save_container, shown)
 from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, dump_link,
                         form_text, grids_from, node_links, overlay_head, set_text, state_files, state_href,
                         verdict_block, yes)
@@ -132,12 +143,16 @@ def now_differences(want: dict, got: dict | None, run: RunResult | None = None) 
     if field:
         what = "a refusal" if field == "refused" else "an error"
         inv = run.invocations[0] if run and run.invocations else None
-        first = next((ln for ln in (inv.stderr if inv else "").splitlines() if ln), "<empty>")
+        first = first_line(inv.stderr if inv else "")
+        # `{FILE}` is the path the run was handed (schema /16), and a solve's
+        # usage refusal exits 2 (schema /19), as `wrong_answers.rs` reads them.
+        line = want[field].replace("{FILE}", run.spec.file if run else "{FILE}")
+        exit = want.get("exit", 1)
         out = []
-        if inv is None or inv.code != 1:
-            out.append(f"exit: recorded 1, {what}, got {inv.code if inv else '?'}")
-        if first != want[field]:
-            out.append(f"{field}: recorded {json.dumps(want[field], ensure_ascii=False)}, "
+        if inv is None or inv.code != exit:
+            out.append(f"exit: recorded {exit}, {what}, got {inv.code if inv else '?'}")
+        if first != line:
+            out.append(f"{field}: recorded {json.dumps(line, ensure_ascii=False)}, "
                        f"got {json.dumps(first, ensure_ascii=False)}")
         if got is not None:
             out.append(f"{what} wrote a summary")
@@ -367,8 +382,9 @@ def region_section(r: RunResult, page: Path, row: dict | None = None, heading: s
 # ── the case page ─────────────────────────────────────────────────────────────
 
 def checklist(row: dict) -> list[str]:
-    wrong = ("the *wrong* column is the register's record of a region run: " + row["wrong"].get("why", "")
-             if by_region(row["wrong"]) else
+    kind = recorded_kind(row["wrong"])
+    wrong = (f"the *wrong* column is the register's record of {recorded_by(row['wrong'])}: "
+             + row["wrong"].get("why", "") if kind != "walk" else
              f"the *wrong* column is the register's record of the walk; a build of `{WALK_COMMIT}` re-runs it")
     return [
         "Is the program the one the case describes?",
@@ -379,14 +395,10 @@ def checklist(row: dict) -> list[str]:
     ]
 
 
-def by_region(a: dict) -> bool:
-    """A recorded answer a region run gave, not the walk (`[case.wrong] by`,
-    S1e2.1a.7): W13's."""
-    return a.get("by") == "region"
-
-
 def recorded_by(a: dict) -> str:
-    return "a region run" if by_region(a) else "the walk"
+    """The walk, a region run (S1e2.1a.7) or, since schema /16, a command's
+    run that is not a solve (W40, W41, W55, W56)."""
+    return {"walk": "the walk", "region run": "a region run", "command": "a command's run"}[recorded_kind(a)]
 
 
 def fixed_callout(row: dict, page: Path) -> list[str]:
@@ -397,17 +409,31 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
         return []
     w, now, right = row["wrong"], row["now"], row["right"]
     part = {"all": "all of R", "maximal": "the maximal line", "minimal": "the minimal line"}.get(now.get("line"), "?")
+    on = " on the container" if now.get("container") else ""
+    won = " on the container" if w.get("container") else ""
+    if is_command(now["run"]):
+        # A command's run (schema /16, M1f S1f.5.19): its answer is a refusal,
+        # an error, or that it answered.
+        said = (f"now **refuses the program**, exit {now.get('exit', 1)}: *{now['refused']}*" if now.get("refused") else
+                f"now ends in **an error**, exit 1: *{now['error']}*" if now.get("error") else
+                "now **answers**: exit 0, nothing on stderr"
+                + (", and its stdout is the same run's on the witness" if now.get("container") else ""))
+        return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
+                f"*{answer_words(w)}* (`ein {w['run']}`{won}, the "
+                f"register's `wrong`). `ein {now['run']}`{on} {said} — which is the register's `right`, "
+                f"{recorded_answer(right)}; `wrong_answers.rs` holds `[case.now]` to it, and this build re-ran it "
+                "(§ 3, § 4).", ""]
     if now.get("refused"):
         # A refusal (M1e2 S1e2.2.5, *forbid*): the program is refused, which
         # is the register's `right`.
         return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
                 f"*{answer_words(w)}* "
-                f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now **refuses the program**, "
-                f"exit 1: *{now['refused']}* — which is the register's `right`, a refusal; `wrong_answers.rs` "
+                f"(`ein {w['run']}`{won}, the register's `wrong`). `ein {now['run']}`{on} now **refuses the program**, "
+                f"exit {now.get('exit', 1)}: *{now['refused']}* — which is the register's `right`, a refusal; `wrong_answers.rs` "
                 "holds `[case.now]` to it, and this build re-ran it (§ 3).", ""]
     return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
             f"*{answer_words(w)}* "
-            f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now answers {part}: "
+            f"(`ein {w['run']}`{won}, the register's `wrong`). `ein {now['run']}`{on} now answers {part}: "
             f"*{now.get('k')} state(s), exhausted = {str(now.get('exhausted')).lower()}*"
             + (f", R empty ({now['empty']})" if now.get("empty") else "")
             + f", which is the register's `right`, *{right.get('verdict', '—')}, k = {right.get('k', '—')}* — "
@@ -472,7 +498,7 @@ def review_cell(row: dict) -> str:
 
 def walk_answer(a: dict) -> str:
     return (f"`ein {a['run']}`" + (f" `{' '.join(a['env'])}`" if a.get("env") else "")
-            + f" → {answer_words(a)}")
+            + (" on the container" if a.get("container") else "") + f" → {answer_words(a)}")
 
 
 def code_span(text: str) -> str:
@@ -488,7 +514,8 @@ def error_cell(c) -> str:
     if c.right is not None:
         return "—"
     if c.recorded:
-        return code_span(c.answer["error"]) if c.answer.get("error") else "—"
+        line = c.answer.get("error") or c.answer.get("refused")
+        return code_span(line) if isinstance(line, str) else "—"
     inv = c.result.invocations[0] if c.result.invocations else None
     if inv is None or inv.code == 0:
         return "—"
@@ -497,9 +524,15 @@ def error_cell(c) -> str:
 
 def answer_words(a: dict) -> str:
     """A recorded answer's verdict, k and exhausted, or the error it ended in
-    (M1e2 S1e2.2.18, W18: exit 1 before any answer, schema /7)."""
+    (M1e2 S1e2.2.18, W18: exit 1 before any answer, schema /7), or the
+    refusal it is (schema /16: a command's at load, W41, W55, W56; /19: a
+    solve's usage refusal, exit 2, W43), or that a command answered."""
     if a.get("error"):
-        return f"**an error**, exit 1: {code_span(a['error'])}"
+        return f"**an error**, exit {a.get('exit', 1)}: {code_span(a['error'])}"
+    if isinstance(a.get("refused"), str):
+        return f"**refused**, exit {a.get('exit', 1)}: {code_span(a['refused'])}"
+    if a.get("answered"):
+        return "**answered**, exit 0"
     return f"{a.get('verdict', '—')}, k = {a.get('k', '—')}, exhausted = {str(a.get('exhausted', '—')).lower()}"
 
 
@@ -512,13 +545,76 @@ def region_cell(reg: dict | None) -> str:
             + f"; minimal {lines(reg.get('minimal'))}; maximal {lines(reg.get('maximal'))}")
 
 
+def case_rows(row: dict, page: Path) -> list[list[str]]:
+    """§ 1 · The case: the row as the register states it, read from the
+    register alone — which `register_pass` holds over every row."""
+    now, right, w = row["now"], row["right"], row["wrong"]
+    owner = owner_page(row["owner"])
+    on = " on the container" if now.get("container") else ""
+    if is_command(now["run"]):
+        # A command's run (schema /16): no line, no states.
+        now_cell = (f"`ein {now['run']}`{on} → " + answer_words(now) + " — *the command's run the register holds the "
+                    "row to*")
+    else:
+        now_cell = ((f"`ein {now['run']}`{on} → **refused**, exit {now.get('exit', 1)}: `{now['refused']}`"
+                     if now.get("refused") else
+                     f"`ein {now['run']}`{on} → **an error**, exit 1: {code_span(now['error'])}" if now.get("error")
+                     else f"`ein {now['run']}`{on} → "
+                     + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
+                     + f", k = {now.get('k')}, exhausted = "
+                     f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else ""))
+                    + " — *the region run the register holds the row to*")
+    rows = [
+        ["case", f"**{row['case']}** — {row['title']}"],
+        ["class", row["class"]],
+        ["settings", row["settings"]],
+        ["status", f"**{row['status']}**"],
+        ["owner", f"[{row['owner']}]({rel(owner, page)})" if owner else row["owner"]],
+        ["carried as", ", ".join(row.get("question", [])) or "—"],
+        ["wrong", walk_answer(w) + f" — *{recorded_by(w)}, as the register records it*"
+                  + (f": {w['why']}" if recorded_kind(w) != "walk" and w.get("why") else "")],
+        ["now", now_cell],
+        ["region", region_cell(row.get("region"))],
+        ["right", (("**a refusal** — " + right.get("derived", "")) if right.get("refused") else
+                   ("**answered** — " + right.get("derived", "")) if right.get("answered") else
+                   (f"{right.get('verdict', '—')}, k = {right.get('k', '—')}"
+                    + (f", exhausted = {str(right['exhausted']).lower()}" if "exhausted" in right else "")))
+                  + (f" — *{right['reading']}*" if right.get("reading") else "")],
+    ]
+    if row.get("fixed"):
+        f = row["fixed"]
+        rows.append(["fixed", f"by {f['by']}, `{f['commit']}`, {f['date']}"])
+    if row.get("open_because"):
+        rows.append(["open because", row["open_because"]])
+    rows += [["note", row.get("note", "—")], ["review", review_cell(row)]]
+    return rows
+
+
+def write_right(out: Path, row: dict, mfile: str | None) -> None:
+    """`right/README.md`: the register's `[case.right]`, verbatim."""
+    right = row["right"]
+    if right:
+        write(out / "right" / "README.md", "\n".join(
+            [f"# {row['id']} — the right answer", "", f"[The case](../README.md) · from `corpus/wrong_answers.toml`", "",
+             "```json", json.dumps(right, indent=2, ensure_ascii=False), "```", ""]
+            + ([f"`--diff-models` reads [right.models](right.models), written from it."] if mfile else [])))
+
+
 def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
-    """Run one register row's `[case.now]`, and build its page."""
+    """Run one register row's `[case.now]`, and build its page: a command's
+    run (schema /16) on `command.py`'s page, a solve on this one."""
     if out.exists():
         shutil.rmtree(out)
     page = out / "README.md"
     right = row["right"]
     now = row["now"]
+    w = row["wrong"]
+    head = [f"# {row['id']} — {row['title']}", ""] + fixed_callout(row, page)
+    if is_command(now["run"]):
+        r = command_case(row, out, bin, page, head, case_rows(row, page), checklist(row))
+        write_right(out, row, None)
+        return page, [Col("wrong", None, None, w, recorded=True), Col("now", None, r, now),
+                      Col("right", None, None, None, right)]
     mfile = models_file(right)
     diff_path = None
     if mfile:
@@ -530,46 +626,24 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     recorded += [(f"twin {i + 1}", t) for i, t in enumerate(row.get("twin", []))]
     for label, a in recorded:
         cols.append(Col(label, None, None, a, recorded=True))
-    spec = RunSpec(row["witness"], flags_of(now["run"]), {},
-                   title=f"{row['id']} — now: `ein {now['run']}`", diff_models=diff_path)
+    # A `container` row (schema /16) reads the witness saved as a `.einb`, as
+    # `wrong_answers.rs` runs it (Q-M1f.55): every invocation reads the
+    # container, and the program page shows the source it stores.
+    file, save = row["witness"], None
+    if now.get("container"):
+        save, einb = save_container(row["witness"], out / "container", bin)
+        if save.code != 0:
+            raise RuntimeError(f"`ein kb save {row['witness']}` exited {save.code}: {first_line(save.stderr)}")
+        file = shown(einb)
+    spec = RunSpec(file, flags_of(now["run"]), {},
+                   title=f"{row['id']} — now: `ein {now['run']}`" + (" on the container" if save else ""),
+                   diff_models=diff_path, source=row["witness"] if save else None)
     r = build_run(spec, out / "runs" / "now", bin)
     nowcol = Col("now", spec, r, now)
     cols.append(nowcol)
     cols.append(Col("right", None, None, None, right))
-    lines = [f"# {row['id']} — {row['title']}", ""]
-
-    # 1 — the case.
-    owner = owner_page(row["owner"])
-    w = row["wrong"]
-    rows = [
-        ["case", f"**{row['case']}** — {row['title']}"],
-        ["class", row["class"]],
-        ["settings", row["settings"]],
-        ["status", f"**{row['status']}**"],
-        ["owner", f"[{row['owner']}]({rel(owner, page)})" if owner else row["owner"]],
-        ["carried as", ", ".join(row.get("question", [])) or "—"],
-        ["wrong", walk_answer(w) + f" — *{recorded_by(w)}, as the register records it*"
-                  + (f": {w['why']}" if by_region(w) and w.get("why") else "")],
-        ["now", (f"`ein {now['run']}` → **refused**, exit 1: `{now['refused']}`" if now.get("refused") else
-                 f"`ein {now['run']}` → **an error**, exit 1: {code_span(now['error'])}" if now.get("error") else
-                 f"`ein {now['run']}` → " + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
-                 + f", k = {now.get('k')}, exhausted = "
-                 f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else ""))
-                + " — *the region run the register holds the row to*"],
-        ["region", region_cell(row.get("region"))],
-        ["right", (("**a refusal** — " + right.get("derived", "")) if right.get("refused") else
-                   (f"{right.get('verdict', '—')}, k = {right.get('k', '—')}"
-                    + (f", exhausted = {str(right['exhausted']).lower()}" if "exhausted" in right else "")))
-                  + (f" — *{right['reading']}*" if right.get("reading") else "")],
-    ]
-    if row.get("fixed"):
-        f = row["fixed"]
-        rows.append(["fixed", f"by {f['by']}, `{f['commit']}`, {f['date']}"])
-    if row.get("open_because"):
-        rows.append(["open because", row["open_because"]])
-    rows += [["note", row.get("note", "—")], ["review", review_cell(row)]]
-    lines += fixed_callout(row, page)
-    lines += ["## 1 · The case", ""] + table(["", ""], rows) + [""]
+    lines = list(head)
+    lines += ["## 1 · The case", ""] + table(["", ""], case_rows(row, page)) + [""]
 
     # 2 — the problem.
     wpath = REPO / row["witness"]
@@ -578,6 +652,12 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     if hc:
         lines += details("the witness's own header", ["```text", hc, "```"])
     lines += details(f"the source — {read(wpath).count(chr(10))} lines", ["```lisp", read(wpath).rstrip(), "```"])
+    if save is not None:
+        lines += ["**The container.** `[case.now]` reads the witness saved as a `.einb` (`container = true`, schema "
+                  f"/16), so every invocation of the run reads [`{Path(file).name}`]({rel(REPO / file, page)}) "
+                  f"({(REPO / file).stat().st_size} bytes), written by `{save.shell()}`, exit {save.code}"
+                  + (f", stderr {code_span(first_line(save.stderr))}" if save.stderr.strip() else ", nothing on stderr")
+                  + ".", ""]
     for sub, title in (("program", "the program as written (`render program`)"), ("rules", "every rule (`render rules`)"),
                        ("root", "root after saturation (`render kb FILE`)")):
         svgs = sorted((r.out / "img" / sub).glob("*.svg"))
@@ -614,12 +694,12 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
 
     # 3 — the answers, side by side.
     lines += ["## 3 · The answers, side by side", "",
-              (f"The *wrong* column is the register's record of a region run ({w.get('why', '')}); "
-               if by_region(w) else
+              (f"The *wrong* column is the register's record of {recorded_by(w)} ({w.get('why', '')}); "
+               if recorded_kind(w) != "walk" else
                "The walk's columns are the register's record (`wrong`, `control`, `twin`): the walk has no CLI path "
                f"since S1e2.1a.5's switch, and a build of `{WALK_COMMIT}` re-runs them. ")
               + "**now** is run here.", ""]
-    head = ["", *[c.label + (f" ({'region run' if by_region(c.answer) else 'walk'}, recorded)" if c.recorded else "")
+    head = ["", *[c.label + (f" ({recorded_kind(c.answer)}, recorded)" if c.recorded else "")
                   for c in cols]]
     def per(fn):
         return [yes(fn(c)) for c in cols]
@@ -740,11 +820,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     lines += [f"- [ ] {q}" for q in checklist(row)]
     lines += ["", "Verdict: *confirmed* · *right answer corrected* · *not wrong* · *split* · *merge* · "
               "*deferred* (the user deferred the reading to a followup, which owns the open row)", ""]
-    if right:
-        write(out / "right" / "README.md", "\n".join(
-            [f"# {row['id']} — the right answer", "", f"[The case](../README.md) · from `corpus/wrong_answers.toml`", "",
-             "```json", json.dumps(right, indent=2, ensure_ascii=False), "```", ""]
-            + ([f"`--diff-models` reads [right.models](right.models), written from it."] if mfile else [])))
+    write_right(out, row, mfile)
     write(page, "\n".join(lines) + "\n")
     return page, cols
 
@@ -755,6 +831,94 @@ def git_commit() -> str:
     c = run("git", ["git", "rev-parse", "--short", "HEAD"]).stdout.strip()
     dirty = run("git", ["git", "status", "--porcelain"]).stdout.strip()
     return c + (" (working tree dirty)" if dirty else "")
+
+
+def answer_cell(a: dict, recorded: bool = True) -> str:
+    """A register block's answer as the index writes it: a refusal (schema
+    /4's `right`, /16's and /19's lines), an error (/7), a command's
+    `answered` (/16), or a verdict and k — whichever the block states."""
+    refused = a.get("refused")
+    if refused is True:
+        s = "a refusal"
+    elif refused:
+        s = "refused" + (f", exit {a['exit']}" if a.get("exit", 1) != 1 else "")
+    elif a.get("error"):
+        s = "an error"
+    elif a.get("answered"):
+        s = "answered"
+    else:
+        s = f"{a.get('verdict', '—')} k={a.get('k', '—')}"
+    if recorded and recorded_kind(a) != "walk":
+        s += f" *({recorded_kind(a)})*"
+    return s + (" *(container)*" if a.get("container") else "")
+
+
+def differs_cell(row: dict) -> str:
+    """What the right answer states differently from the recorded wrong one —
+    read off the two register blocks, the index's one comparison of its own."""
+    w, r = row["wrong"], row["right"]
+    differs = [f for f in ("verdict", "k", "exhausted", "core") if f in r and r[f] != w.get(f)]
+    if "models" in r and sorted(map(sorted, r["models"])) != sorted(map(sorted, w.get("models", []) or [])):
+        differs.append("models")
+    if "qualifier" in r:
+        differs.append("qualifier")
+    if r.get("refused") and not w.get("refused"):
+        differs.append("a refusal")
+    if r.get("answered") and not w.get("answered"):
+        differs.append("answered")
+    return ", ".join(differs) or ("*a reading*" if r.get("reading") else "—")
+
+
+def now_cell(row: dict, got) -> str:
+    """The index's *now*: what the run answered, marked where it differs from
+    `[case.now]`. `got` is the run (a solve's `RunResult` or a command's
+    `CommandRun`), or None for `register_pass`, which runs nothing."""
+    now = row["now"]
+    on = " on the container" if now.get("container") else ""
+    if got is None:
+        return f"`{now['run']}`{on} *(not run)*"
+    diffs = got.diffs if isinstance(got, CommandRun) else now_differences(now, got.now, got)
+    if isinstance(got, CommandRun):
+        cell = f"`{now['run']}`{on} " + ("answered" if got.main.code == 0 else f"exit {got.main.code}")
+    else:
+        cell = (f"`{now['run']}`{on} refused" if now.get("refused") else
+                f"`{now['run']}`{on} an error" if now.get("error") else
+                f"`{now['run']}`{on} {got.now['line'] if got.now else '?'} k={got.k}")
+    return cell + ("" if not diffs else " **(≠ the register: " + "; ".join(d.split(':')[0] for d in diffs) + ")**")
+
+
+def index_row(row: dict, link: str, now: str) -> list[str]:
+    """One row of the index's register table, its run's cell `now`."""
+    return [link, row["owner"], row["settings"], answer_cell(row["wrong"]), now,
+            answer_cell(row["right"], recorded=False), differs_cell(row), row["status"],
+            f"`{row['fixed']['commit']}`" if row.get("fixed") else "—",
+            row["review"]["verdict"] if "review" in row else "—"]
+
+
+def register_pass(rows: list[dict] | None = None) -> list[tuple[str, str]]:
+    """Every row of the register through every part of the bundle that reads
+    the register alone — the index's row, each case page's title, fixed
+    callout, § 1 table and checklist, and a command's run planned — with no
+    run (M1f S1f.5.19, Q-M1f.53). A row shape the bundle cannot read fails
+    here, per commit, and not first in the nightly's whole bundle, which is
+    how W41's refusal and W40's command runs went unread from `fc53818f` to
+    S1f.5.19. Returns `(row id, error)` for each row that fails."""
+    failed = []
+    page = REPO / "build" / "review" / "README.md"
+    for row in rows if rows is not None else register():
+        try:
+            case = REPO / "build" / "review" / row["id"] / "README.md"
+            index_row(row, f"[{row['id']}]({rel(case, page)})", now_cell(row, None))
+            [f"# {row['id']} — {row['title']}"] + fixed_callout(row, case)
+            table(["", ""], case_rows(row, case))
+            checklist(row)
+            if is_command(row["now"]["run"]):
+                plan_argv(row["now"]["run"], row["witness"], "out")
+            else:
+                flags_of(row["now"]["run"])
+        except Exception as e:  # noqa: BLE001 — every row is read, each failure named
+            failed.append((row.get("id", "?"), f"{type(e).__name__}: {e}"))
+    return failed
 
 
 def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list[tuple[str, Path, RunResult]],
@@ -768,33 +932,15 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
              "`build/` is gitignored: rebuild with `python3 utils/review_bundle.py`.", ""]
     if built:
         lines += ["## The register", "",
-                  "*wrong* is the answer the register records: the walk's, or a region run's where it says so; "
-                  "*now* is the row's `[case.now]`, run here, and marked where it differs from what the register "
-                  "holds it to. *fixed by* is the row's `[case.fixed]`, the commit that made `now` answer `right`. "
-                  "Each page's § 5 draws the run on R.", ""]
+                  "*wrong* is the answer the register records: the walk's, or a region run's or a command's where it "
+                  "says so; *now* is the row's `[case.now]`, run here, and marked where it differs from what the "
+                  "register holds it to. *fixed by* is the row's `[case.fixed]`, the commit that made `now` answer "
+                  "`right`. A solve's page draws the run on R in its § 5; a command's run (the register's schema "
+                  "/16) has a page of its own, its exit, stdout and stderr against the register's.", ""]
         rows = []
         for row, p, cols in built:
-            w, r, now = row["wrong"], row["right"], row["now"]
             got = next(c.result for c in cols if c.result is not None)
-            diffs = now_differences(now, got.now, got)
-            # What the right answer states differently from the walk's — read
-            # off the two register blocks, the index's one comparison of its own.
-            differs = [f for f in ("verdict", "k", "exhausted", "core") if f in r and r[f] != w.get(f)]
-            if "models" in r and sorted(map(sorted, r["models"])) != sorted(map(sorted, w.get("models", []) or [])):
-                differs.append("models")
-            if "qualifier" in r:
-                differs.append("qualifier")
-            rows.append([f"[{row['id']}]({rel(p, page)})", row["owner"], row["settings"],
-                         ("an error" if w.get("error") else f"{w['verdict']} k={w['k']}")
-                         + (" *(region run)*" if by_region(w) else ""),
-                         (f"`{now['run']}` refused" if now.get("refused") else
-                          f"`{now['run']}` an error" if now.get("error") else
-                          f"`{now['run']}` {got.now['line'] if got.now else '?'} k={got.k}")
-                         + ("" if not diffs else " **(≠ the register: " + "; ".join(d.split(':')[0] for d in diffs) + ")**"),
-                         "a refusal" if r.get("refused") else f"{r.get('verdict', '—')} k={r.get('k', '—')}",
-                         ", ".join(differs) or ("*a reading*" if r.get("reading") else "—"), row["status"],
-                         f"`{row['fixed']['commit']}`" if row.get("fixed") else "—",
-                         row["review"]["verdict"] if "review" in row else "—"])
+            rows.append(index_row(row, f"[{row['id']}]({rel(p, page)})", now_cell(row, got)))
         lines += table(["case", "owner", "settings", "wrong (recorded)", "now (run)", "right", "differs in",
                         "status", "fixed by", "review"], rows) + [""]
     if extra:
