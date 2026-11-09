@@ -1754,31 +1754,31 @@ note   = "M1f W59 (`W59/derived-activator-never`), filed by S1f.5.18's T1f.5.18.
 path   = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W60 (`W60/eq-arity-premise`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09), the shape S1f.5.18 found: a relation parameter its activator binds to `eq`, `(r eq)`, heads a premise of one argument, `(?R ?x)`, so every command stops at root where the plan is compiled, exit 1, with the compiler's arity line. Open, owned by S1f.5.9: the program is refused at load."
+note   = "M1f W60 (`W60/eq-arity-premise`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09), the shape S1f.5.18 found: a relation parameter its activator binds to `eq`, `(r eq)`, heads a premise of one argument, `(?R ?x)`, so every command stops at root where the plan is compiled, exit 1, with the compiler's arity line. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "M1f W60 (`W60/eq-arity-under-commitment`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): the same premise under an activator a rule derives from `(mark eq)` only where a commitment holds a `p`, so `saturate` answers, exit 0, where `solve` and `solve --minimal` stop, exit 1, the three runs banking the disagreement. Open, owned by S1f.5.9: the program is refused at load on every command."
+note   = "M1f W60 (`W60/eq-arity-under-commitment`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): the same premise under an activator a rule derives from `(mark eq)` only where a commitment holds a `p`, so `saturate` answers, exit 0, where `solve` and `solve --minimal` stop, exit 1, the three runs banking the disagreement. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line (Q-M1f.46)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-hrule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W60 (`W60/eq-arity-hrule`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): an hrule's parameter its `(solve :hrules (h (eq)))` activator binds to `eq` heads a premise of one argument, so `saturate` answers, exit 0, where `solve` stops before reading a state, exit 1. Open, owned by S1f.5.9: the program is refused at load on every command."
+note   = "M1f W60 (`W60/eq-arity-hrule`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): an hrule's parameter its `(solve :hrules (h (eq)))` activator binds to `eq` heads a premise of one argument, so `saturate` answers, exit 0, where `solve` stops before reading a state, exit 1. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line (Q-M1f.46)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W60 (`W60/eq-arity-conclusion`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): a relation parameter its activator binds to `eq` heads a conclusion of one argument, so root stores `(eq a :rule r)` and the program answers, R two states. Open, owned by S1f.5.9: the program is refused at load."
+note   = "M1f W60 (`W60/eq-arity-conclusion`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09): a relation parameter its activator binds to `eq` heads a conclusion of one argument, so root stores `(eq a :rule r)` and the program answers, R two states. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fact-eq-arity.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W61 (`W61/fact-eq-arity`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09) beside W60: a written fact of `eq` at one argument, `(eq a)`, is stored as an ordinary fact, the check of a written `eq` fact (Q-M1f.33) reading two arguments only, and the program answers, R two states. Open, owned by S1f.5.9: the program is refused at load."
+note   = "M1f W61 (`W61/fact-eq-arity`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09) beside W60: a written fact of `eq` at one argument, `(eq a)`, is stored as an ordinary fact, the check of a written `eq` fact (Q-M1f.33) reading two arguments only, and the program answers, R two states. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

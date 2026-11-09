@@ -789,6 +789,12 @@ have always been a positioned **parse** error; `false` is unpinned and needs no
 row, being silent in a `:match` at every arity, which is what a reader expects.
 That leaves `eq` and `absent`, one row each, at every arity but their own.
 
+**Since M1f S1f.5.9 only a macro's body reaches the `eq` row.** Through a
+relation parameter its activator binds to `eq`, `(?R ?x)` under `(r eq)`, the
+row was reached where the plan was compiled, at root or only under a commitment
+or an hrule's `(solve :hrules …)` activator (W60); the loader refuses that since
+(§ 4.14).
+
 Four fixtures pin them in
 [`examples/broken/compile/`](../../examples/broken/compile/README.md) —
 `eq_arity_low`, `eq_arity_high`, `absent_arity_zero`, `absent_arity_high` —
@@ -1259,6 +1265,47 @@ to a nested fact, read only by a conclusion, which the compiler did not seed
 `cli_semantics.rs` test of the same name, `fuzz_properties`'
 `no_firing_meets_an_unbound_variable`, `examples/ein-bugs/unbound-assert-var.ein`
 and `corpus/wrong_answers.toml`'s four W57 rows.
+
+### 4.14 `eq` at another arity — M1f S1f.5.9
+
+`eq` is the relation of equality, between exactly two values (M1f S1f.5.7, the
+user's ruling of 2026-11-07 on Q-M1e2.26), and the grammar refuses `(eq ?x)`
+where a premise or a conclusion is written. Two ways around the grammar are
+refused at load since M1f
+[S1f.5.9](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.4,
+on the coordinator's brief and taken by default on the user's instruction of
+2026-11-09 (Q-M1f.46, Q-M1f.47), one line each, `; `-joined with every other
+loader error, exit 1 (`ein test`: 2), on every command that loads the program:
+
+| input | message |
+|---|---|
+| a rule's or an hrule's relation parameter that can be bound to `eq`, heading a premise (at any depth of `and`, `or`, `not` and `absent`) or a top-level conclusion whose arity is not 2 | `<rule\|hrule> '<r>': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values`; where a rule derives the activator, `… and ?R can be bound to eq by <where eq comes from> — eq is the relation of equality, which holds between exactly two values` |
+| a written fact of `eq`, or of `(not (eq …))`, at any arity but 2 | `the fact (eq a) writes eq with 1 argument — eq is the relation of equality, which holds between exactly two values` |
+
+**Which parameters can hold `eq`** is read as § 4.9's check reads relation
+names (S1f.5.18, Q-M1f.41): a position that holds relation names can hold
+`eq` where a fact, a conclusion or a `(solve :hrules …)` activator writes `eq`
+there, or a `(relation …)` declaration's signature writes it as a type; or
+where a conclusion writes a variable that its `:match` binds, in some
+disjunct, only at positions that can, or only with an `eq` or `neq` guard
+while the program writes `eq` as a name; to a fixpoint. `<where eq comes from>`
+names the first such source and each conclusion it passes through: *the fact
+(mark eq), through rule 'mk''s conclusion (r ?f)*, *rule 'mk''s conclusion (r
+eq)*, or *an eq or neq guard of rule 'mk', over the program's names, eq among
+them, through its conclusion (r ?f)*. A parameter heading a pattern inside a
+pattern's argument fills a value, `(p (eq a))`, and is not read; nor is a
+declared relation of another arity, `(?R ?x)` under `(r q)` with `q` binary,
+which matches nothing, as `(q ?x)` written directly does, matching being
+arity-coupled. `neq` is no name a program can write, so no parameter holds it.
+
+**Until S1f.5.9** (W60's four rows, W61's): the premise loaded and the run
+stopped where the activator's plan was compiled, § 4.3's line in the Python
+IR's spelling, at root on every command, or under a commitment, or at an
+hrule's activator, where `ein saturate` answered and `ein solve` stopped; the
+conclusion stored `(eq a :rule r)`; and the written fact stored `(eq a)`,
+Q-M1f.33's check reading two arguments only. Pinned by `ein-ir`'s `from_ir.rs`
+`eq_at_another_arity_is_refused_at_load`, `ein-cli`'s `cli_semantics.rs`
+test of the same name, and `corpus/wrong_answers.toml`'s W60 and W61 rows.
 
 ## 5. The CLI surface
 

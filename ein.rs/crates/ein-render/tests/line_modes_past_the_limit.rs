@@ -194,8 +194,9 @@ fn oracle_line(r: &Region, which: Which) -> BTreeSet<u64> {
 /// W60's `eq-arity-under-commitment` (2026-11-09), whose `r` is an `activator`
 /// site, so the static check flags it, and whose activator, `(r eq)`, only a
 /// commitment derives, where its plan is compiled and the run stops; its
-/// T1f.5.9.4 refuses the program at load, and takes it off the list.
-const ORACLE_STOPS: [&str; 1] = ["examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein"];
+/// T1f.5.9.4 refused the program at load the same day, and took it off the
+/// list. Empty since.
+const ORACLE_STOPS: [&str; 0] = [];
 
 /// **Every line mode past the limit certifies what describe certifies**, the
 /// same states, lines and row, and labels no state on a line the oracle does

@@ -3358,3 +3358,98 @@ fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
     let r = ein(&["solve", "-H", &w("empty-match-hrule")]);
     assert!(r.out.lines().any(|l| l.trim() == "(q b)"), "{}", r.out);
 }
+
+/// **A relation parameter that can hold `eq` and heads a form of another arity
+/// is refused at load, by every command, with one line** — M1f S1f.5.9's
+/// T1f.5.9.4, the shape S1f.5.18 found (Q-M1f.46), and a written fact of `eq`
+/// at another arity beside it (Q-M1f.47).
+///
+/// W60's four witnesses and W61's, each on every command that loads a program:
+/// exit 1 (`ein test`: 2), and the loader's line in Ein's words, where until
+/// S1f.5.9 the first stopped every command where the plan was compiled, with
+/// the compiler's arity line in the Python IR's spelling; the second and the
+/// third stopped `ein solve` while `ein saturate` answered; and the fourth and
+/// W61's stored a fact of `eq` at one argument. What loads: the same parameter
+/// heading a form of two arguments, `eq`'s guard (S1f.5.7), and a declared
+/// relation of another arity, which matches nothing, as the pattern written
+/// directly does.
+#[test]
+fn eq_at_another_arity_is_refused_at_load() {
+    let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
+    let tail = "— eq is the relation of equality, which holds between exactly two values";
+    let refused: [(String, String); 5] = [
+        (
+            w("eq-arity-premise"),
+            format!(
+                "rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r \
+                 eq) binds ?R to eq {tail}"
+            ),
+        ),
+        (
+            w("eq-arity-under-commitment"),
+            format!(
+                "rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and ?R can be \
+                 bound to eq by the fact (mark eq), through rule 'mk''s conclusion (r ?f) {tail}"
+            ),
+        ),
+        (
+            w("eq-arity-hrule"),
+            format!(
+                "hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve \
+                 :hrules (h (eq))) binds ?R to eq {tail}"
+            ),
+        ),
+        (
+            w("eq-arity-conclusion"),
+            format!(
+                "rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r \
+                 eq) binds ?R to eq {tail}"
+            ),
+        ),
+        (
+            w("fact-eq-arity"),
+            format!("the fact (eq a) writes eq with 1 argument {tail}"),
+        ),
+    ];
+    let scratch = ein_corpus::Scratch::new("ein-eq-arity");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    for (file, want) in &refused {
+        let want = format!("kb load error: {want}");
+        for (args, code) in [
+            (vec!["saturate", "--dump", file.as_str()], 1),
+            (vec!["solve", file], 1),
+            (vec!["solve", "--minimal", file], 1),
+            (vec!["oracle", file], 1),
+            (vec!["test", file], 2),
+            (vec!["render", "lattice", file], 1),
+            (vec!["render", "kb", file], 1),
+            (vec!["kb", "save", file, &einb], 1),
+        ] {
+            let r = ein(&args);
+            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l.trim() == want),
+                "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            for python in ["CompileError", "SForm(", "takes exactly"] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
+    // What loads: two arguments, the guard; and a declared binary relation
+    // under the same one-argument pattern, which matches nothing.
+    let ok = scratch.path().join("ok.ein");
+    std::fs::write(
+        &ok,
+        "(relation p Node) (relation q Node Node) (relation hit Node)\n\
+         (p a) (q a b)\n\
+         (rule two (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x))\n(two eq)\n\
+         (rule one (?R) :match (?R ?x) :assert (hit ?x))\n(one q)\n",
+    )
+    .expect("writes");
+    let r = ein(&["saturate", "--dump", &ok.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.out.contains("(hit a :rule two)"), "{}", r.out);
+    assert!(!r.out.contains(":rule one"), "{}", r.out);
+}

@@ -27,6 +27,13 @@
 ;;; spelling, *`(eq …)` takes exactly 2 arguments and was given 1:
 ;;; SForm(head=Var(name='R'), …) at Loc(…)*, M1e S1e.2.1's arity check
 ;;; (`ein solve FILE` at `ee3da657`, release and debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.9.4, 2026-11-09): every command
+;;; that loads it exits 1 with one line, naming `r`, `?R`, the form and `(r eq)` (`ein test`: 2), in either
+;;; build, where every command stopped where the plan was compiled. The register's `now` is that refusal; the section
+;;; above is the record of the answer it replaced.
 
 (relation p Node :why "{?1} is a p")
 (relation hit Node :why "{?1} is hit")

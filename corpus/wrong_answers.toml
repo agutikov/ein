@@ -10639,10 +10639,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["Q-M1e2.26", "Q-M1f.46"]
 witness  = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"
-status   = "open"
-open_because = "The loader reads no activator's `eq` against the arity of the forms its parameter heads, so `(?R ?x)` under `(r eq)` loads and the compiler refuses it where the plan is compiled, at root, M1e S1e.2.1's arity check, a stop where a refusal at load is right; S1f.5.9 refuses it at load (Q-M1f.46)"
+status   = "fixed"
 look_at  = ["root"]
-note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46, Q-M1f.36's reading: a stop where a refusal is right is a row). The shape is the one S1f.5.18 found and left unfiled, `ein-cli/tests/program_read.rs`' error past the load; it comes from M1e S1e.2.1's arity check and S1f.5.7's `eq`"
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46, Q-M1f.36's reading: a stop where a refusal is right is a row). The shape is the one S1f.5.18 found and left unfiled, `ein-cli/tests/program_read.rs`' error past the load; it comes from M1e S1e.2.1's arity check and S1f.5.7's `eq`. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stopped at root with the compiler's arity line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -10657,9 +10661,9 @@ refused   = true
 derived   = "`r`'s parameter `?R` heads `(?R ?x)`, one argument, and the fact `(r eq)` binds it to `eq`, so the premise is `(eq ?x)`, which the grammar refuses where it is written: the loader refuses the program with one line naming `r`, `?R`, the form and the activator, and every command that loads it exits 1 (`ein test`: 2)"
 
 [case.now]
-run   = "solve"
-line  = "all"
-error = "`(eq …)` takes exactly 2 arguments and was given 1: SForm(head=Var(name='R'), args=(Var(name='x'),)) at Loc(file='examples/ein-bugs/wrong-answers/eq-arity-premise.ein', line=35, col=11) — a built-in predicate compares exactly two values, so write one guard per pair."
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
 
 [[case]]
 id       = "W60/eq-arity-under-commitment"
@@ -10670,10 +10674,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["Q-M1e2.26", "Q-M1f.46"]
 witness  = "examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein"
-status   = "open"
-open_because = "The loader reads no activator's `eq` against the arity of the forms its parameter heads, so `(?R ?x)` under an activator `mk` derives from `(mark eq)` loads, root derives no activator, and the compiler refuses the plan at the first commitment that derives it: `ein saturate` answers and `ein solve` stops; S1f.5.9 refuses it at load on every command (Q-M1f.46)"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): only a commitment holding a candidate `(p …)` derives the activator, so `ein saturate` answers root's fixpoint where describe stops, two commands disagreeing on one program; the row's `now` is describe's stop, and the corpus entry banks all three runs' exits"
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): only a commitment holding a candidate `(p …)` derives the activator, so `ein saturate` answers root's fixpoint where describe stops, two commands disagreeing on one program; the row's `now` is describe's stop, and the corpus entry banks all three runs' exits. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where `ein saturate` answered and describe stopped"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -10688,9 +10696,9 @@ refused   = true
 derived   = "`mk` writes `(r ?f)` with `?f` bound at `mark`'s argument, which `(mark eq)` writes `eq` at, so `?R` can hold `eq`, and `(?R ?x)` is then `(eq ?x)`: the program is refused at load, one line naming `r`, `?R`, the form, `(mark eq)` and `mk`, and every command that loads it exits 1 (`ein test`: 2)"
 
 [case.now]
-run   = "solve"
-line  = "all"
-error = "`(eq …)` takes exactly 2 arguments and was given 1: SForm(head=Var(name='R'), args=(Var(name='x'),)) at Loc(file='examples/ein-bugs/wrong-answers/eq-arity-under-commitment.ein', line=36, col=11) — a built-in predicate compares exactly two values, so write one guard per pair."
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and ?R can be bound to eq by the fact (mark eq), through rule 'mk''s conclusion (r ?f) — eq is the relation of equality, which holds between exactly two values"
 
 [[case]]
 id       = "W60/eq-arity-hrule"
@@ -10701,10 +10709,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["Q-M1e2.26", "Q-M1f.46"]
 witness  = "examples/ein-bugs/wrong-answers/eq-arity-hrule.ein"
-status   = "open"
-open_because = "The loader reads no `(solve :hrules …)` activator's `eq` against the arity of the forms the hrule's parameter heads, so the program loads, `ein saturate` answers, the hrule playing no part in a saturation, and the compiler refuses the hrule's plan when a solve builds the rung; S1f.5.9 refuses it at load on every command (Q-M1f.46)"
+status   = "fixed"
 look_at  = ["root"]
-note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): an hrule's, under its `(solve :hrules …)` activator"
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): an hrule's, under its `(solve :hrules …)` activator. Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where `ein saturate` answered and describe stopped"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -10719,9 +10731,9 @@ refused   = true
 derived   = "`h`'s parameter `?R` heads `(?R ?x)`, one argument, and `(solve :hrules (h (eq)))` binds it to `eq`: the program is refused at load, one line naming `h`, `?R`, the form and the solve form, and every command that loads it exits 1 (`ein test`: 2)"
 
 [case.now]
-run   = "solve"
-line  = "all"
-error = "ein.inference.compile.CompileError: `(eq …)` takes exactly 2 arguments and was given 1: SForm(head=Var(name='R'), args=(Var(name='x'),)) at Loc(file='examples/ein-bugs/wrong-answers/eq-arity-hrule.ein', line=30, col=11) — a built-in predicate compares exactly two values, so write one guard per pair."
+run     = "solve"
+line    = "all"
+refused = "kb load error: hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve :hrules (h (eq))) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
 
 [[case]]
 id       = "W60/eq-arity-conclusion"
@@ -10732,10 +10744,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["Q-M1e2.26", "Q-M1f.46"]
 witness  = "examples/ein-bugs/wrong-answers/eq-arity-conclusion.ein"
-status   = "open"
-open_because = "A conclusion of `eq` is checked only at two arguments (`firing::computed`), so `(?R ?x)` under `(r eq)` stores `(eq a :rule r)`, a fact of `eq`, which no fact is; S1f.5.9 refuses it at load, as the same parameter heading a premise (Q-M1f.46)"
+status   = "fixed"
 look_at  = ["root"]
-note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): a conclusion's. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a :rule r)` (`ein saturate --dump`)"
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09), one of the four ways the engine answers a program in which a relation parameter an activator binds to `eq` heads a form of another arity (Q-M1f.46): a conclusion's. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a :rule r)` (`ein saturate --dump`). Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stored `(eq a :rule r)` and answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a relation parameter that can hold `eq` and heads a premise or a conclusion whose arity is not 2, read as S1f.5.18's check reads relation names, one line per form naming the rule, the parameter, the form and where `eq` comes from (`ein_ir::from_ir`'s `refuse_eq_at_another_arity`, Q-M1f.46)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -10747,29 +10763,15 @@ exhausted = true
 closes    = ["p"]
 models    = [["(p a)"], ["(p a)", "(p z)"]]
 
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p z)"]]
-
 [case.right]
 reading   = "Q-M1e2.26 and G-21, the user's rulings of 2026-11-07 (`eq` is the relation of equality, between two values, computed and never stored), and Q-M1f.1 (b)'s reading, as `W60/eq-arity-premise`'s"
 refused   = true
 derived   = "`r`'s parameter `?R` heads its conclusion `(?R ?x)`, one argument, and `(r eq)` binds it to `eq`, so the conclusion is `(eq ?x)`, which the grammar refuses where it is written: the program is refused at load, one line naming `r`, `?R`, the form and the activator, and every command that loads it exits 1 (`ein test`: 2)"
 
 [case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 2
-relations = ["p"]
-models    = [
-  ["(p a)"],
-  ["(p a)", "(p z)"],
-]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
 
 # ══ W61 — a written fact of `eq` at another arity is stored ══
 [[case]]
@@ -10781,10 +10783,14 @@ settings = "default"
 owner    = "S1f.5.9"
 question = ["Q-M1e2.26", "Q-M1f.33", "Q-M1f.47"]
 witness  = "examples/ein-bugs/wrong-answers/fact-eq-arity.ein"
-status   = "open"
-open_because = "The loader checks a written fact of `eq`, or of `(not (eq …))`, as a conclusion with no premise only at two arguments (Q-M1f.33), so `(eq a)` is stored as an ordinary fact; S1f.5.9 refuses it at load (Q-M1f.47)"
+status   = "fixed"
 look_at  = ["root"]
-note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09) beside W60, whose conclusion row stores the same fact through a parameter. `(eq)`, `(eq a a a)` and `(not (eq a))` load and are stored the same way. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a)` (`ein saturate --dump`)"
+note     = "Filed by S1f.5.9 (T1f.5.9.1, 2026-11-09) beside W60, whose conclusion row stores the same fact through a parameter. `(eq)`, `(eq a a a)` and `(not (eq a))` load and are stored the same way. `eq` holds no candidate, so a state's `(model …)` does not name it: by value, root holds `(eq a)` (`ein saturate --dump`). Fixed by T1f.5.9.4 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stored `(eq a)` and answered"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.9 (T1f.5.9.4): the loader refuses a written fact of `eq`, or of its negation, at any arity but 2, one line per fact (`ein_ir::from_ir`'s `refuse_eq_facts_of_another_arity`, Q-M1f.47)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -10796,26 +10802,12 @@ exhausted = true
 closes    = ["p"]
 models    = [["(p a)"], ["(p a)", "(p z)"]]
 
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p z)"]]
-
 [case.right]
 reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 (`eq` is the relation of equality, between two values, computed and never stored), and Q-M1f.33's reading of a written fact of `eq` as a conclusion with no premise, which the grammar refuses as `(eq ?x)`"
 refused   = true
 derived   = "`(eq a)` writes `eq` with one argument, which is no fact of equality, true or false: the program is refused at load, one line naming the fact, and every command that loads it exits 1 (`ein test`: 2)"
 
 [case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 2
-relations = ["p"]
-models    = [
-  ["(p a)"],
-  ["(p a)", "(p z)"],
-]
+run     = "solve"
+line    = "all"
+refused = "kb load error: the fact (eq a) writes eq with 1 argument — eq is the relation of equality, which holds between exactly two values"

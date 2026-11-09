@@ -27,6 +27,13 @@
 ;;; derives `(r eq)`, where its plan is compiled, exit 1, with the compiler's
 ;;; *`(eq …)` takes exactly 2 arguments and was given 1* (at `ee3da657`,
 ;;; release and debug alike): two commands disagree on one program.
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.9.4, 2026-11-09): every command
+;;; that loads it exits 1 with one line, naming `r`, `?R`, the form, `(mark eq)` and `mk` (`ein test`: 2), in either
+;;; build, where `ein saturate` answered and `ein solve` stopped. The register's `now` is that refusal; the section
+;;; above is the record of the answer it replaced.
 
 (relation p Node :why "{?1} is a p")
 (relation hit Node :why "{?1} is hit")

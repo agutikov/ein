@@ -239,25 +239,28 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 fn a_containers_positions_name_its_stored_program() {
     let scratch = Scratch::new("ein-program-read");
     let dir = scratch.path();
-    // An error past the load that names a position: a pattern whose relation
-    // a parameter binds to `eq`, written with one argument, refused when the
-    // activator's plan is compiled, at the first firing (M1e S1e.2.1's arity
-    // check, M1f S1f.5.7's `eq`). Until M1f S1f.5.18 this test wrote G-14's
+    // An error past the load that names a position: a macro whose template
+    // writes `eq` with one argument, which the compiler refuses where the rule
+    // is compiled (M1e S1e.2.1's arity check, which a macro's body still
+    // reaches, `02_patterns.md`). Until M1f S1f.5.18 this test wrote G-14's
     // residue, a relation parameter an activator a rule derives binds to a
-    // nested fact, which the loader refuses since (W59), so `kb save` does too.
+    // nested fact, which the loader refuses since (W59); and until M1f
+    // S1f.5.9 a pattern whose relation a parameter binds to `eq`, `(?R ?x)`
+    // under `(r eq)`, which the loader refuses since (W60), so `kb save` does
+    // too.
     std::fs::write(
         dir.join("g.ein"),
         "(relation p Node) (relation hit Node)\n\
          (p a)\n\
-         (rule r (?R) :match (?R ?x) :assert (hit ?x))\n\
-         (r eq)\n\
+         (macro one (?a) (eq ?a))\n\
+         (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x))\n\
          (query :goal (hit ?x))\n",
     )
     .expect("written");
     assert_eq!(ein_in(dir, &["kb", "save", "g.ein", "g.einb"]).code, 0);
     let plain = ein_in(dir, &["saturate", "g.ein"]);
     assert!(
-        plain.stderr.contains("Loc(file='g.ein', line=3, col=22)"),
+        plain.stderr.contains("Loc(file='g.ein', line=3, col=18)"),
         "{}",
         plain.stderr
     );

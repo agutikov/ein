@@ -10,7 +10,9 @@ continue with default decisions till the end of the phase"*. **In progress 2026-
 ([its record](#t1f591-record-2026-11-09)), every move listed, W60's four rows and W61 filed, three questions taken by
 default (Q-M1f.45 to Q-M1f.47) (`b6852791`); T1f.5.9.2 ([its record](#t1f592-record-2026-11-09)), the empty conjunction
 fires and the empty conclusion asserts nothing, W31's four rows and W34 fixed, the empty core `∅` on every text surface
-(Q-M1f.48) (`2c79af6d`); T1f.5.9.3 ([its record](#t1f593-record-2026-11-09)), `(and)`'s and `(or)`'s note, the pages.
+(Q-M1f.48) (`2c79af6d`); T1f.5.9.3 ([its record](#t1f593-record-2026-11-09)), `(and)`'s and `(or)`'s note, the pages
+(`1210bdfd`); T1f.5.9.4 ([its record](#t1f594-record-2026-11-09)), `eq` at another arity refused at load, W60 and W61
+fixed.
 **Depends on:** nothing it waits for. [S1f.5.5](s1f.5.5_the_grammar.md)'s grammar refuses `(and)`, and since its swap
 `()` parses only as a whole `:match` or `:assert`. [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md) landed
 first, so a rule with `:match ()` and an unbound conclusion variable is refused at load (W57's
@@ -371,6 +373,79 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
   fixed them.
 
 W31's four and W34's `[case.fixed]` blocks carry ``2c79af6d``, T1f.5.9.2's, where that commit wrote the null id.
+
+## T1f.5.9.4 record (2026-11-09)
+
+**The check** ([Q-M1f.46](../open_questions.md#q-m1f46--a-relation-parameter-bound-to-eq-at-another-arity), taken by
+default; the prototype's third part): `ein_ir::from_ir`'s `refuse_eq_at_another_arity`, at the end of S1f.5.18's
+`refuse_derived_relation_activators` and over what it reads, the positions that hold relation names (`rp`), every
+argument a conclusion writes there with where its `:match` binds it (`sites`), and the names the program writes as
+arguments (`written`). A position that holds relation names can hold `eq` where a fact writes `eq` there, a `(solve
+:hrules …)` activator does, a `(relation …)` signature writes it as a type, or a conclusion writes it; or where a
+conclusion writes a variable that its `:match` binds, in some disjunct, only at positions that can, or only with an
+`eq` or `neq` guard while `eq` is a name the program writes; to a fixpoint. A rule's, an hrule's or an obligation's
+parameter that can hold `eq` is refused for each premise it heads at any depth of `and`, `or`, `not` and `absent`, and
+each top-level conclusion it heads, whose arity is not 2, one line, `; `-joined with the loader's others:
+
+```text
+rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (r eq) binds ?R to eq — eq is the
+relation of equality, which holds between exactly two values
+rule 'r': its parameter ?R heads (?R ?x), a form of 1 argument, and ?R can be bound to eq by the fact (mark eq),
+through rule 'mk''s conclusion (r ?f) — …
+hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve :hrules (h (eq))) binds ?R to eq — …
+```
+
+**W61** ([Q-M1f.47](../open_questions.md#q-m1f47--a-written-fact-of-eq-at-another-arity)): `refuse_eq_facts_of_another_arity`,
+after the facts pass, refuses a written fact of `eq`, or of `(not (eq …))`, at any arity but 2, *the fact (eq a) writes
+eq with 1 argument — …*, where Q-M1f.33's check read two arguments and stored the rest. A nested `(box (eq a))` is a
+value and loads.
+
+**What it does not refuse**: `(?R ?x ?y)` under `(r eq)`, `eq`'s guard (S1f.5.7); `(?R ?x)` under `(r q)` with `q`
+binary, which matches nothing, as written directly; a guard-bound variable passed to the parameter while `eq` is no name
+the program writes; a parameter heading a pattern inside a pattern's argument, which fills a value; a written `(eq a
+a)`. Every command that loads a program the check refuses exits 1 (`ein test`: 2): `saturate`, every `solve` mode,
+`oracle`, `test`, `render lattice`, `render kb` and `kb save`. The compiler's arity line stays, reached through a
+macro's body, `(macro one (?a) (eq ?a))`, which the stage leaves where M1e S1e.2.1 and S1f.5.5 put it (`02_patterns.md`'s
+primitives table: a macro's body is a template, refused where the rule compiles, on every command alike).
+
+**The tests.**
+- `ein-ir`'s `from_ir::tests::eq_at_another_arity_is_refused_at_load`: the line for a written activator, a premise of
+  three, one under `absent` and one under `not`, a conclusion; a derived activator through a conclusion, a marker and a
+  guard; an hrule's `(solve :hrules …)` activator; and W61's written facts, `(eq a)`, `(eq a a a)` and `(not (eq a))`;
+  and six programs that load.
+- `ein-cli`'s `cli_semantics::eq_at_another_arity_is_refused_at_load`: W60's four witnesses and W61's on the eight
+  commands that load, the exit and the line, with no `CompileError`, `SForm(` or *takes exactly* on stderr; and a
+  program whose two-argument pattern under `(r eq)` concludes and whose one-argument pattern under a binary relation
+  concludes nothing.
+- `ein-cli`'s `program_read::a_containers_positions_name_its_stored_program` keeps its purpose, an error past the load
+  that names a position in a container's stored program: S1f.5.18 moved it to `(?R ?x)` under `(r eq)`, which the loader
+  refuses since, so it writes a macro whose template is `(eq ?a)`, which the compiler refuses at its `Loc`, `line=3,
+  col=18`, `kb save` accepting it.
+- `detector`'s flagged count 49 → 48 and `line_modes_past_the_limit`'s `ORACLE_STOPS` empty: the commitment witness
+  loads no more.
+
+**The rows**: W60's four and W61's `fixed`, each `now` the refusal and no region (the conclusion's and the fact's
+`[case.region]` dropped, a refused `now` stating none), `[case.fixed]` the null id, which the next commit writes. The
+witnesses' headers gain a section saying what replaced the answer, and their corpus notes say so. The register reads
+**158 fixed, 13 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**What moved** (`build/s1f.5.9/xcheck/run_all.sh t4`, this build against `ee3da657`'s): 547 files, 220 s, `zebra2-minus-15.ein` compared alone:
+536 the same and eleven moving, T1f.5.9.3's six as they moved there and W60's four witnesses and W61's, each refused at
+load on every command with its line, where the premise's stopped at root, the commitment's and the hrule's stopped
+`solve` while `saturate` answered, and the conclusion's and the fact's answered. The check refuses nothing else in the
+five roots: no other program writes `eq` where a parameter heading a form of another arity can read it, or a fact of
+`eq` at another arity.
+
+**Banked**: `corpus_exits.txt` six cells 0 → 1, `eq-arity-conclusion`'s and `fact-eq-arity`'s `solve` and `saturate`,
+and `eq-arity-under-commitment`'s and `eq-arity-hrule`'s `saturate`; `corpus_shapes.md5` 140 digests removed and 35
+added, each of the five witnesses losing the 21 renderings a loaded program draws and changing 7, none of any other
+program.
+
+**The pages.** [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.3 says only a macro's body
+reaches its `eq` row since, and a new [§ 4.14](../../../docs/kernel/defined_behaviour.md#414-eq-at-another-arity--m1f-s1f59)
+states the two refusals, which parameters can hold `eq`, what loads, what they replaced (W60, W61) and what pins them;
+[`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s parameter list and its written `eq` fact say
+so.
 
 ## For the merge
 

@@ -240,6 +240,8 @@ pub fn load_query_with(
     for &form in &facts {
         ingest_fact(ast, terms, &mut kb, form)?;
     }
+    // A written fact of `eq` at another arity (M1f S1f.5.9, W61).
+    refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
     // A rule parameter that names a relation, bound to a nested fact by an
     // activator the program writes down (M1e2 S1e2.2.4, S1e2.2.24).
     validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
@@ -2078,6 +2080,343 @@ fn refuse_derived_relation_activators(
             }
         }
     }
+
+    refuse_eq_at_another_arity(EqArity {
+        ast,
+        terms,
+        program,
+        rp: &rp,
+        sites: &sites,
+        written: &written,
+        facts,
+        solve_blocks,
+        errors,
+    });
+
+    /// What [`refuse_eq_at_another_arity`] reads off the check above.
+    struct EqArity<'a> {
+        ast: &'a Ast,
+        terms: &'a Terms,
+        program: &'a ein_core::program::Program,
+        rp: &'a BTreeMap<Pos, Holds>,
+        sites: &'a [Site],
+        written: &'a BTreeSet<String>,
+        facts: &'a [NodeId],
+        solve_blocks: &'a [NodeId],
+        errors: &'a mut Vec<String>,
+    }
+
+    /// **A relation parameter that can be bound to `eq` heads a form of
+    /// another arity** — M1f S1f.5.9, W60, the shape S1f.5.18 found.
+    ///
+    /// `eq` is the relation of equality, between exactly two values (M1f
+    /// S1f.5.7), and the grammar refuses `(eq ?x)` wherever a premise or a
+    /// conclusion is written; but a form whose relation is a parameter,
+    /// `(?R ?x)`, is `(eq ?x)` once an activator binds `?R` to `eq`, a name a
+    /// fact may hold. Until S1f.5.9 such a premise loaded and stopped the run
+    /// where the activator's plan was compiled (M1e S1e.2.1's arity check, the
+    /// compiler's `CompileError`), at root, or only under a commitment, where
+    /// `ein saturate` answered; and such a conclusion stored `(eq a)`.
+    ///
+    /// Read as the check above reads relation names: a position that holds
+    /// relation names can hold `eq` where a fact, a conclusion or a `(solve
+    /// :hrules …)` activator writes `eq` there; or where a conclusion writes a
+    /// variable that its `:match` binds, in some disjunct, only at positions
+    /// that can hold `eq`, or only with an `eq` or `neq` guard, over the
+    /// program's names, while the program writes `eq` as a name; to a
+    /// fixpoint. A parameter that can hold `eq` is refused for each premise or
+    /// conclusion it heads whose arity is not 2, one line each.
+    fn refuse_eq_at_another_arity(c: EqArity<'_>) {
+        /// Why a position can hold `eq`: where it is written, or what passes
+        /// it on from a position that can.
+        enum EqFrom {
+            Fact(NodeId),
+            Hrules(NodeId),
+            Signature(String),
+            Conclusion {
+                head: &'static str,
+                rule: String,
+                conclusion: NodeId,
+            },
+            Guard {
+                head: &'static str,
+                rule: String,
+                conclusion: NodeId,
+            },
+            Passed {
+                head: &'static str,
+                rule: String,
+                conclusion: NodeId,
+                from: Pos,
+            },
+        }
+        /// Where `eq` comes from, written down first.
+        fn render(ast: &Ast, at: &BTreeMap<Pos, EqFrom>, pos: &Pos) -> String {
+            let dump = |n: NodeId| crate::dump::dump_compact(ast, n);
+            match &at[pos] {
+                EqFrom::Fact(f) => format!("the fact {}", dump(*f)),
+                EqFrom::Hrules(s) => dump(*s),
+                EqFrom::Signature(r) => {
+                    format!("the declaration of {r}, which writes eq as a type")
+                }
+                EqFrom::Conclusion {
+                    head,
+                    rule,
+                    conclusion,
+                } => format!("{head} '{rule}''s conclusion {}", dump(*conclusion)),
+                EqFrom::Guard {
+                    head,
+                    rule,
+                    conclusion,
+                } => format!(
+                    "an eq or neq guard of {head} '{rule}', over the program's names, eq among \
+                     them, through its conclusion {}",
+                    dump(*conclusion)
+                ),
+                EqFrom::Passed {
+                    head,
+                    rule,
+                    conclusion,
+                    from,
+                } => format!(
+                    "{}, through {head} '{rule}''s conclusion {}",
+                    render(ast, at, from),
+                    dump(*conclusion)
+                ),
+            }
+        }
+        let is_eq = |n: NodeId| matches!(c.ast.node(n), Node::Atom(s) if c.ast.sym(s) == "eq");
+        let mut at: BTreeMap<Pos, EqFrom> = BTreeMap::new();
+        // Written: a fact's argument, and a `(solve :hrules …)` activator's.
+        for &f in c.facts {
+            let p = positive(c.ast, f);
+            let Some(rel) = relation_of(c.ast, p) else {
+                continue;
+            };
+            for (k, &a) in c.ast.form_args(p).iter().enumerate() {
+                let pos = (rel.clone(), k);
+                if is_eq(a) && c.rp.contains_key(&pos) {
+                    at.entry(pos).or_insert(EqFrom::Fact(f));
+                }
+            }
+        }
+        for &block in c.solve_blocks {
+            for &pair in c.ast.form_args(block) {
+                let Node::KwPair { key, value } = c.ast.node(pair) else {
+                    continue;
+                };
+                if !matches!(c.ast.node(key), Node::Keyword(k) if c.ast.sym(k) == "hrules") {
+                    continue;
+                }
+                let Some(hrule) = c.ast.head_name(value) else {
+                    continue;
+                };
+                for &item in c.ast.form_args(value) {
+                    let Node::SForm { head, .. } = c.ast.node(item) else {
+                        continue;
+                    };
+                    let tuple = std::iter::once(head).chain(c.ast.form_args(item).iter().copied());
+                    for (k, a) in tuple.enumerate() {
+                        let pos = (hrule.to_string(), k);
+                        if is_eq(a) && c.rp.contains_key(&pos) {
+                            at.entry(pos).or_insert(EqFrom::Hrules(block));
+                        }
+                    }
+                }
+            }
+        }
+        // A `(relation …)` declaration's argument holds `eq` where its
+        // signature writes it as a type, at its index, the name being the
+        // first.
+        for (name, r) in c.program.relations.iter() {
+            for (j, &t) in r.signature.iter().enumerate() {
+                if c.terms.sym(t) == "eq" {
+                    at.entry(("relation".to_string(), j + 1))
+                        .or_insert(EqFrom::Signature(c.terms.sym(name).to_string()));
+                }
+            }
+        }
+        let eq_named = c.written.contains("eq") || !at.is_empty();
+        // Derived: a conclusion's argument, to a fixpoint. A variable its
+        // `:match` binds where relation names are held, in some disjunct, can
+        // hold `eq` where every such position can; one only a guard binds
+        // holds any name of the program.
+        loop {
+            let mut grew = false;
+            for s in c.sites {
+                if !c.rp.contains_key(&s.to) || at.contains_key(&s.to) {
+                    continue;
+                }
+                let from = if is_eq(s.arg) {
+                    Some(EqFrom::Conclusion {
+                        head: s.head,
+                        rule: s.rule.clone(),
+                        conclusion: s.conclusion,
+                    })
+                } else if matches!(c.ast.node(s.arg), Node::Var(_)) {
+                    s.ways.iter().find_map(|(_, way)| {
+                        let named: Vec<Pos> = way
+                            .iter()
+                            .filter_map(|o| match o {
+                                Occ::Param(m) if c.rp.contains_key(&(s.rule.clone(), *m)) => {
+                                    Some((s.rule.clone(), *m))
+                                }
+                                Occ::Arg { rel, k, .. }
+                                    if rel == "relation"
+                                        || c.rp.contains_key(&(rel.clone(), *k)) =>
+                                {
+                                    Some((rel.clone(), *k))
+                                }
+                                _ => None,
+                            })
+                            .collect();
+                        let guard = way.iter().any(|o| matches!(o, Occ::Guard));
+                        if named.is_empty() {
+                            (guard && eq_named).then(|| EqFrom::Guard {
+                                head: s.head,
+                                rule: s.rule.clone(),
+                                conclusion: s.conclusion,
+                            })
+                        } else {
+                            named
+                                .iter()
+                                .all(|p| at.contains_key(p))
+                                .then(|| EqFrom::Passed {
+                                    head: s.head,
+                                    rule: s.rule.clone(),
+                                    conclusion: s.conclusion,
+                                    from: named[0].clone(),
+                                })
+                        }
+                    })
+                } else {
+                    None
+                };
+                if let Some(from) = from {
+                    at.insert(s.to.clone(), from);
+                    grew = true;
+                }
+            }
+            if !grew {
+                break;
+            }
+        }
+        if at.is_empty() {
+            return;
+        }
+        /// Where `?param` heads a premise under `node`: through `and`, `or`,
+        /// `not` and `absent`, never inside a pattern's argument, which a
+        /// nested value fills.
+        fn premises(ast: &Ast, node: NodeId, param: &str, out: &mut Vec<NodeId>) {
+            let Node::SForm { head, .. } = ast.node(node) else {
+                return;
+            };
+            match ast.head_name(node) {
+                Some("and" | "or" | "not" | "absent") => {
+                    for &a in ast.form_args(node) {
+                        premises(ast, a, param, out);
+                    }
+                }
+                _ => {
+                    if matches!(ast.node(head), Node::Var(s) if ast.sym(s) == param) {
+                        out.push(node);
+                    }
+                }
+            }
+        }
+        let registries: [(&'static str, &ein_core::entities::Registry<Rule>); 3] = [
+            ("rule", &c.program.rules),
+            ("hrule", &c.program.hrules),
+            ("rule", &c.program.obligations),
+        ];
+        for (head, registry) in registries {
+            for (name, rule) in registry.iter() {
+                let rule_name = c.terms.sym(name).to_string();
+                for (i, &p) in rule.params.iter().enumerate() {
+                    let pos = (rule_name.clone(), i);
+                    if !at.contains_key(&pos) {
+                        continue;
+                    }
+                    let param = c.terms.sym(p);
+                    let mut forms: Vec<NodeId> = Vec::new();
+                    if let Some(m) = rule.match_.as_ref() {
+                        premises(c.ast, NodeId(m.expr.0), param, &mut forms);
+                    }
+                    if let Some(a) = rule.assert_.as_ref() {
+                        for conclusion in top_conjuncts(c.ast, NodeId(a.expr.0)) {
+                            let conclusion = positive(c.ast, conclusion);
+                            if matches!(c.ast.node(conclusion), Node::SForm { head, .. }
+                                if matches!(c.ast.node(head), Node::Var(s) if c.ast.sym(s) == param))
+                            {
+                                forms.push(conclusion);
+                            }
+                        }
+                    }
+                    let source = render(c.ast, &at, &pos);
+                    let binds = match at[&pos] {
+                        EqFrom::Fact(_) | EqFrom::Hrules(_) => {
+                            format!("{source} binds ?{param} to eq")
+                        }
+                        _ => format!("?{param} can be bound to eq by {source}"),
+                    };
+                    for form in forms {
+                        let n = c.ast.form_args(form).len();
+                        if n == 2 {
+                            continue;
+                        }
+                        c.errors.push(format!(
+                            "{head} '{rule_name}': its parameter ?{param} heads {}, a form of {n} \
+                             argument{}, and {binds} — eq is the relation of equality, which \
+                             holds between exactly two values",
+                            crate::dump::dump_compact(c.ast, form),
+                            if n == 1 { "" } else { "s" },
+                        ));
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// **A written fact of `eq` at another arity** — M1f S1f.5.9, W61, on the
+/// user's ruling of 2026-11-07 that `eq` is the relation of equality between
+/// two values (Q-M1e2.26), taken by default on the user's instruction of
+/// 2026-11-09 (Q-M1f.47).
+///
+/// `ingest_fact` reads a written fact of `eq`, or of `(not (eq …))`, as a
+/// conclusion with no premise, checked and never stored (Q-M1f.33): at two
+/// arguments. At any other, `(eq a)`, `(eq)`, `(eq a a a)` or `(not (eq a))`, it
+/// is no fact of equality, true or false, and the grammar refuses `(eq ?x)` as
+/// a premise and a conclusion; until S1f.5.9 it was stored as an ordinary fact
+/// (W61). One line per fact, `; `-joined with the loader's others. A nested
+/// `(box (eq a))` is a value, as `(box (eq a b))` is, and loads.
+fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
+    let terms_of = |node: NodeId| -> Vec<NodeId> {
+        ast.form_args(node)
+            .iter()
+            .copied()
+            .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
+            .collect()
+    };
+    for &f in facts {
+        let sides = match ast.head_name(f) {
+            Some("eq") => terms_of(f),
+            Some("not") => match terms_of(f).first() {
+                Some(&inner) if ast.head_name(inner) == Some("eq") => terms_of(inner),
+                _ => continue,
+            },
+            _ => continue,
+        };
+        if sides.len() != 2 {
+            let n = sides.len();
+            errors.push(format!(
+                "the fact {} writes eq with {n} argument{} — eq is the relation of equality, which \
+                 holds between exactly two values",
+                crate::dump::dump_compact(ast, f),
+                if n == 1 { "" } else { "s" }
+            ));
+        }
+    }
 }
 
 /// Does `?param` stand as the head of a form anywhere under `node`?
@@ -3121,6 +3460,122 @@ mod tests {
                 "{pre}(rule v (?y) :match (item ?y) :assert (hit ?y))\n\
                  (rule mk () :match (item ?f) :assert (v ?f))\n(item (a b))"
             ),
+        ] {
+            ok(&src);
+        }
+    }
+
+    /// **`eq` at another arity is refused at load** — M1f S1f.5.9 (W60,
+    /// Q-M1f.46; W61, Q-M1f.47): a relation parameter that can hold `eq`
+    /// heading a premise or a conclusion whose arity is not 2, read as the
+    /// check above reads relation names, one line each; and a written fact of
+    /// `eq`, or its negation, at another arity.
+    #[test]
+    fn eq_at_another_arity_is_refused_at_load() {
+        const TAIL: &str =
+            "— eq is the relation of equality, which holds between exactly two values";
+        let pre = "(relation p Node) (relation hit Node) (relation q Node Node)\n(p a)\n";
+        let r = "(rule r (?R) :match (?R ?x) :assert (hit ?x))";
+        let line = |form: &str, n: usize, binds: &str| {
+            format!(
+                "rule 'r': its parameter ?R heads {form}, a form of {n} argument{}, and {binds} {TAIL}",
+                if n == 1 { "" } else { "s" }
+            )
+        };
+        for (src, want) in [
+            // Written: a fact, a conclusion, a premise of three, under
+            // `absent` and under `not`, and a conclusion.
+            (
+                format!("{pre}{r}\n(r eq)"),
+                line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
+            ),
+            (
+                format!(
+                    "{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x ?x)) :assert (hit ?x))\n(r eq)"
+                ),
+                line("(?R ?x ?x ?x)", 3, "the fact (r eq) binds ?R to eq"),
+            ),
+            (
+                format!(
+                    "{pre}(rule r (?R) :match (and (p ?x) (absent (?R ?x))) :assert (hit ?x))\n(r eq)"
+                ),
+                line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
+            ),
+            (
+                format!(
+                    "{pre}(rule r (?R) :match (and (p ?x) (not (?R ?x))) :assert (hit ?x))\n(r eq)"
+                ),
+                line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
+            ),
+            (
+                format!("{pre}(rule r (?R) :match (p ?x) :assert (?R ?x))\n(r eq)"),
+                line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
+            ),
+            // Derived: a conclusion, a marker, a guard while `eq` is a name
+            // of the program, and an hrule's `(solve :hrules …)` activator.
+            (
+                format!("{pre}{r}\n(rule mk () :match (p ?y) :assert (r eq))"),
+                line(
+                    "(?R ?x)",
+                    1,
+                    "?R can be bound to eq by rule 'mk''s conclusion (r eq)",
+                ),
+            ),
+            (
+                format!("{pre}{r}\n(rule mk () :match (mark ?f) :assert (r ?f))\n(mark eq)"),
+                line(
+                    "(?R ?x)",
+                    1,
+                    "?R can be bound to eq by the fact (mark eq), through rule 'mk''s conclusion (r ?f)",
+                ),
+            ),
+            (
+                format!(
+                    "{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f))\n(note eq)"
+                ),
+                line(
+                    "(?R ?x)",
+                    1,
+                    "?R can be bound to eq by an eq or neq guard of rule 'mk', over the program's \
+                     names, eq among them, through its conclusion (r ?f)",
+                ),
+            ),
+            (
+                format!(
+                    "{pre}(hrule h (?R) :match (?R ?x) :assert (hit ?x))\n(solve :hrules (h (eq)))"
+                ),
+                format!(
+                    "hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve \
+                     :hrules (h (eq))) binds ?R to eq {TAIL}"
+                ),
+            ),
+            // W61: a written fact, and its negation.
+            (
+                format!("{pre}(eq a)"),
+                format!("the fact (eq a) writes eq with 1 argument {TAIL}"),
+            ),
+            (
+                format!("{pre}(eq a a a)"),
+                format!("the fact (eq a a a) writes eq with 3 arguments {TAIL}"),
+            ),
+            (
+                format!("{pre}(not (eq a))"),
+                format!("the fact (not (eq a)) writes eq with 1 argument {TAIL}"),
+            ),
+        ] {
+            assert_eq!(err(&src), want, "{src}");
+        }
+        // What loads: two arguments, the guard (S1f.5.7); a declared relation
+        // of another arity, which matches nothing; a guard while `eq` is no
+        // name of the program; a parameter heading a pattern inside an
+        // argument, a value; a written `(eq a b)`; and a nested `(eq a)`.
+        for src in [
+            format!("{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x))\n(r eq)"),
+            format!("{pre}{r}\n(r q)"),
+            format!("{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f))"),
+            format!("{pre}(rule r (?R) :match (p (?R ?x)) :assert (hit ?x))\n(r eq)"),
+            format!("{pre}(eq a a)"),
+            format!("{pre}(relation box Node)\n(box (eq a))"),
         ] {
             ok(&src);
         }

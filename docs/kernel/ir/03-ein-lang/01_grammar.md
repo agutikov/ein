@@ -339,7 +339,8 @@ whose facts are computed** since M1f
 [§ Premise order around a guard](#premise-order-around-a-guard)), so no fact
 changes them: `(neq …)` is no fact the grammar takes, and a written `(eq a b)`,
 or `(not (eq a b))`, is checked as a conclusion with no premise, a true one not
-stored and a false one `(false)`, written where it stands (Q-M1f.33, Q-M1f.31);
+stored and a false one `(false)`, written where it stands (Q-M1f.33, Q-M1f.31),
+and one at any other arity, `(eq a)`, is refused at load since M1f S1f.5.9 (W61);
 until S1f.5.7 each was stored as an ordinary fact, which no guard read — and the
 declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
 heads either (each is a reserved word, never a name). Everything else —
@@ -473,6 +474,13 @@ relation, `?rel` above, binds a name: one its activator binds to a fact is
 refused at load, where the activator is written down and, since S1f.5.18, where
 a rule could derive it, which the loader reads off the program
 ([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+One that can be bound to `eq`, the relation of equality between two values,
+heads premises and conclusions of two arguments: one of another arity, `(?R
+?x)` under `(r eq)`, is `(eq ?x)`, which the grammar refuses where it is
+written, and is refused at load since M1f S1f.5.9, read the same way
+([`defined_behaviour.md` § 4.14](../../defined_behaviour.md#414-eq-at-another-arity--m1f-s1f59));
+until then the run stopped where the plan was compiled, or the conclusion
+stored `(eq a)` (W60).
 
 Concrete: the rule
 

@@ -23,6 +23,13 @@
 ;;; only; `eq` holds no candidate, and R is two states, ∅ and `{(p z)}`, exit
 ;;; 0 (`ein solve FILE` and `ein oracle FILE` at `ee3da657`, release and
 ;;; debug alike).
+;;;
+;;; ── Since M1f S1f.5.9 ──────────────────────────────────────────────────
+;;;
+;;; The loader refuses the program (T1f.5.9.4, 2026-11-09): every command
+;;; that loads it exits 1 with one line, naming the fact (`ein test`: 2), in either
+;;; build, where it stored `(eq a)`. The register's `now` is that refusal; the section
+;;; above is the record of the answer it replaced.
 
 (relation p Node :why "{?1} is a p")
 (p a)
