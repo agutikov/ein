@@ -259,12 +259,14 @@ pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> ExpectFact<'a> {
 /// is what keeps the two honest.
 pub fn render(ast: &Ast, node: NodeId) -> String {
     match ast.node(node) {
-        // `Node::Str` holds its text unescaped. An atom and a string are
-        // each the name they spell once loaded, so each prints as the one
+        // An atom is the name it spells once loaded, so it prints as the one
         // printer prints that name (M1e2 S1e2.3.8): bare where it lexes as
         // itself, else quoted, which is what `Terms::display` prints for the
-        // interned value.
-        Node::Atom(s) | Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
+        // interned value. A string was the name it spells too, until M1f
+        // S1f.5.5's swap refused one in a claim (S1f.5.2; T1f.5.2.3 retired
+        // the arm).
+        Node::Atom(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
+        Node::Str(_) => unreachable!("a claim's fact holds no string (ein.y's ClaimFact)"),
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),

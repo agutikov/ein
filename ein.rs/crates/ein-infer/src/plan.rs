@@ -211,10 +211,11 @@ pub enum GuardArgKind {
     /// guard's variable is bound where the guard is judged; until then
     /// `(and (neq ?x a) (p ?x))` fired for `a` too.
     Reg(Reg),
-    /// An `Atom` or a `String`, resolving to the symbol it names, as the
-    /// loader holds it in a fact (and an `Int`, to its value, until M1f
-    /// S1f.5.4 retired the kind). A string was a [`Self::Node`] until M1e2
-    /// S1e2.2.18, so `(eq ?x "b")` never held.
+    /// An `Atom`, resolving to the symbol it names, as the loader holds it in
+    /// a fact (and an `Int`, to its value, until M1f S1f.5.4 retired the
+    /// kind). A string was a [`Self::Node`] until M1e2 S1e2.2.18, so `(eq ?x
+    /// "b")` never held, and the symbol it names until M1f S1f.5.5's swap
+    /// refused one in a guard (S1f.5.2; T1f.5.2.3 retired the arm).
     Const(Value),
     /// Anything else — a `Wildcard`, an `SForm`, a `KwPair` — which guard
     /// resolution returns as-is, so it compares by IR-node equality: equal to

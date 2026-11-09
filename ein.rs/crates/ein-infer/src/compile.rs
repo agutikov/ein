@@ -966,10 +966,12 @@ impl<'a> Compiler<'a> {
     ///
     /// A `Var` the activator bound becomes a `Const`, so the unifier treats it
     /// uniformly with a literal.
-    /// An `Atom` and a `String` become the symbol they name, as the loader
-    /// holds them in a fact (`from_ir::atomic_value`), so `"b"` and `b` are one
-    /// value in a rule as in a fact, at any depth, in a `:match` and an
-    /// `:assert` alike; `"1"` is the symbol `1`, not the int.
+    /// An `Atom` becomes the symbol it names, as the loader holds it in a fact
+    /// (`from_ir::atomic_value`), at any depth, in a `:match` and an `:assert`
+    /// alike; `1` is the symbol `1` (M1f S1f.5.4). A `String` did the same from
+    /// M1e2 S1e2.2.18, so `"b"` and `b` were one value, until M1f S1f.5.5's
+    /// swap refused a string in a pattern (S1f.5.2's ruling); S1f.5.2's
+    /// T1f.5.2.3 retired its arm.
     /// A `Wildcard` becomes [`Slot::Any`], which matches any value and binds
     /// nothing, at any depth of a `:match`, an `absent` and a nested pattern;
     /// in an `:assert` it is no value, and the firing stops
@@ -1007,10 +1009,11 @@ impl<'a> Compiler<'a> {
                     None => Ok(Slot::Reg(self.var_reg(name)?)),
                 }
             }
-            Node::Atom(s) | Node::Str(s) => {
+            Node::Atom(s) => {
                 let name = self.ast.sym(s).to_string();
                 Ok(Slot::Const(Value::sym(self.intern(&name))))
             }
+            Node::Str(_) => unreachable!("a pattern holds no string (ein.y's Arg and Term)"),
             Node::Wildcard => Ok(Slot::Any),
             Node::SForm { head, args } => {
                 let rel = match self.ast.node(head) {
@@ -1067,11 +1070,14 @@ impl<'a> Compiler<'a> {
                 let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
                 GuardArgKind::Reg(self.var_reg(name)?)
             }
-            // A string is the symbol it names, as in `slot` (M1e2 S1e2.2.18).
-            Node::Atom(s) | Node::Str(s) => {
+            // A name is the symbol it names, as in `slot`. A string was too,
+            // from M1e2 S1e2.2.18 to M1f S1f.5.5's swap, which refused one
+            // here (S1f.5.2; T1f.5.2.3 retired the arm).
+            Node::Atom(s) => {
                 let name = self.ast.sym(s).to_string();
                 GuardArgKind::Const(Value::sym(self.intern(&name)))
             }
+            Node::Str(_) => unreachable!("a guard compares no string (ein.y's Guard and Term)"),
             // `_`, a form or a keyword pair, compared by IR-node equality.
             // The loader refuses each as a guard's argument since M1e2
             // S1e2.2.24 (W24, Q-M1e2.16 (1), Q-M1e2.18 (i), (iii)), so no
@@ -1251,9 +1257,10 @@ impl<'a> Compiler<'a> {
             Node::Var(s) => self.guard_keys.extend([1, s.0]),
             Node::Keyword(s) => self.guard_keys.extend([2, s.0]),
             Node::Wildcard => self.guard_keys.push(3),
-            Node::Str(s) => self.guard_keys.extend([4, s.0]),
-            // 5 was an int's, until M1f S1f.5.4 retired the kind, and 6 a
-            // range's, until M1f S1f.5.3 retired the token.
+            Node::Str(_) => unreachable!("a guard compares no string (ein.y's Guard and Term)"),
+            // 4 was a string's, until M1f S1f.5.2's T1f.5.2.3 retired the arm,
+            // 5 an int's, until M1f S1f.5.4 retired the kind, and 6 a range's,
+            // until M1f S1f.5.3 retired the token.
             Node::KwPair { key, value } => {
                 self.guard_keys.push(7);
                 self.encode_node(key);
@@ -1716,7 +1723,7 @@ mod tests {
     /// string is natural-language text, written only after `:why`, `:source`
     /// or `:goal-text` (S1f.5.2), so a string in a pattern and in an `:assert`
     /// is refused at the parse, each with S1f.5.2's note; the name written bare
-    /// is the key the string was. The value arm goes with T1f.5.2.3.
+    /// is the key the string was. The value arm went with S1f.5.2's T1f.5.2.3.
     #[test]
     fn a_string_in_a_pattern_is_the_symbol_it_names() {
         let src = "(relation likes A B)\n\

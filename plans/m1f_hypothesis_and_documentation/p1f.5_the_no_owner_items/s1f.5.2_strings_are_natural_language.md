@@ -17,7 +17,8 @@ it was 2.5.
 ([Q-M1e2.23](../../m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)).
 **In progress since 2026-11-09**, on the generated parser: T1f.5.2.5 done, W38 filed and fixed ([its
 record](#t1f525-record-2026-11-09)); T1f.5.2.2 done, the ruling held in every place and the text on every surface
-([its record](#t1f522-record-2026-11-09)); T1f.5.2.3 and T1f.5.2.4 next.
+([its record](#t1f522-record-2026-11-09)); T1f.5.2.3 done, no string a value anywhere in the engine, each arm
+shown unreachable first, no answer and no golden moved ([its record](#t1f523-record-2026-11-09)); T1f.5.2.4 next.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* The refusal and the escapes are the generated parser's (`STRING` only after `:why`,
@@ -327,6 +328,91 @@ one test.
 
 After the swap and S1f.5.5's T5: the `Node::Str` arms that make a value, retired as a separate commit, so that no
 answer moves in it.
+
+**The sites, read 2026-11-09** (`grep -rn 'Node::Str' ein.rs/crates`, on `bbab388a`), the stage's list re-taken after
+the swap and T5, which deleted the trace readers it named (`trace/ast.rs`' two):
+- **a value, each to go**: the loader's `atomic_value` (a fact's argument), the compiler's `slot` (a pattern's),
+  `guard_arg` (a guard's) and `encode_node` (a guard's key, code 4), `invariant::walk_constants` (a rule's constant,
+  with the `kw` flag that only it read), `expect::render` (a claim's fact) and `ir_dot`'s `atom_id_for_value` (a DOT
+  node for an argument);
+- **G-6's half**, the same ruling: `atomic_value`'s `Var` arm and `Terms::value_var`, a variable in a fact stored as
+  the name `?x`, which the grammar refuses since the swap;
+- **a text, each kept**: the builder that makes the node, `eq_nodes` and `node_repr`, the dumper (`escape_string_literal`,
+  the one printer's `quote`), `string_value` (`:why`, `:source`), `macros`' `:why`, `read_out`'s `:goal-text`, and
+  `value_label`, which labels a query's `:goal-text` in `ein render program`'s note;
+- **one that reads a text as a name**: `from_ir::intern_program_names` interns every leaf of a query's key pairs, a
+  `:goal-text`'s text among them, as a name nothing asks for. It goes: a text names nothing.
+
+**Named before it moves, 2026-11-09.** No golden and no answer. `ein-core`'s unit test
+`atom_string_and_var_flatten_to_one_text_value`, which built a string's and a variable's values by hand, becomes
+`a_name_is_its_texts_one_value`; the interner no longer holds a query's `:goal-text` as a symbol, which only a
+`.einb`'s symbol table could show, so the cross-check reads every container both ways.
+
+### T1f.5.2.3 record, 2026-11-09
+
+**One commit, on `bbab388a`** (T1f.5.2.2). A string is no value anywhere in the engine: the arms that made one are
+gone, each shown unreachable first, and **no answer and no golden moved**.
+
+**How unreachable was shown.** A copy of `bbab388a` (`git archive`, `build/s1f.5.2/t3/probe/`) with a panic,
+`S2-PROBE <id>`, at each of eleven sites (`build/s1f.5.2/t3/probe_patch.py` places them by their text, T1f.5.4.3's
+harness): the seven value arms above, `atomic_value`'s `Var` arm and `Terms::value_var`, and the two walks that also
+meet a text, `intern_program_names` and `value_label`, each probed only where the string is not a key pair's value
+(the copy handles a key pair's text, and `ir_dot`'s `render_note`'s, as the walk did, before the probe). Each probe
+logs its id, the thread and argv, so one reached inside a child `ein` would be named (`build/s1f.5.2/t3/hits.log`).
+- `cargo test --workspace --no-fail-fast` on it (`build/s1f.5.2/t3/probe-tests.log`, 15 min 55 s): 948 passed and 1
+  failed, the failure a probe in a test binary, `ein-core`'s `atom_string_and_var_flatten_to_one_text_value`, which
+  builds a variable's value by hand; **no probe in an `ein` process**, no corpus sweep, golden, fuzz property or CLI
+  run reached one.
+- Every corpus file under 6 000 bytes (402) and 40 000 seeded mutants of them (`ein_corpus::mutants`, seed 0), then
+  200 000 more (seed 987654321), each parsed, drawn (`ein render program`'s, `rules`' and `constraints`' functions),
+  dumped, loaded, saturated and printed (`s2_sweep`, an example of `ein-render` in the copy,
+  `build/s1f.5.2/t3/s2_sweep.rs`): 16 383 refused at the parse, 2 692 at load, 86 at compile, 21 157 saturated and 84
+  stopped saturating, and 81 873, 13 094, 348, 104 583 and 504, **no probe and no other panic** (`sweep.txt`,
+  `sweep2.txt`). A first run, without `render_note`'s exemption, met 464 strings there, every one a query's
+  `:goal-text`, a text: the exemption is what tells the two apart.
+
+And by construction: the grammar builds a `Str` only as the value of `:why`, `:source` or `:goal-text` (`ein.y`'s
+`Text`, in six places: a fact's and a trace step's `:source`, a relation's, a rule's and a macro's `:why`, a query's
+`:goal-text`), and no fact, pattern, guard or claim takes one; and it builds no variable in a fact (`FactArg`).
+
+**Removed.**
+- `ein-ir`: `atomic_value`'s string and variable arms, now one `unreachable!` naming `FactArg`; `expect::render`'s
+  string arm (`ClaimFact`); and `intern_program_names` interns a text no more.
+- `ein-core`: `Terms::value_var`; `value_text`'s doc, which said `(likes A "foo")` and `(likes A foo)` are one fact
+  *today*, says what it was.
+- `ein-infer`: `compile::slot`'s and `guard_arg`'s string arms and `encode_node`'s code 4, each an `unreachable!`
+  naming the production; `invariant::walk_constants`' string arm and its `kw` flag, which only that arm read.
+- `ein-render`: `ir_dot::atom_id_for_value`'s string arm, folded into the arm that panics on a keyword.
+Each `unreachable!` is Q-M1f.9's convention; the comments that described a string as a live value (the compiler's
+`slot`, `plan::GuardArgKind::Const`, the AST's `Node::Str`) say what it was and what it is.
+
+**Kept, and why.** The builder that makes a `Str` and the arms that read one as text: `eq_nodes`, `node_repr`, the
+dumper (`escape_string_literal`, the one printer's `quote`), `string_value` (`:why`, `:source`), the macro reader's
+`:why`, `read_out`'s `:goal-text`, and `value_label`, which labels a query's `:goal-text` in `ein render program`'s
+note as it did (bare where the text spells one name, quoted otherwise; no corpus `:goal-text` is one name). A fact's
+`:source` is still interned as provenance, which is storage and no value. `ein_render::trace`'s `RefArg::Str` holds a
+name's text and is named for it, not for a string.
+
+**Nothing moved.** Every `.ein` under the five roots (515) through `bbab388a`'s release build and this commit's
+(`build/s1f.5.2/xcheck/`, 150 s, 2026-11-09): `solve --json-summary -H --dump-answer`, `saturate --dump` and `test`,
+timings masked, **515 of 515 the same on every command**; T12's 2 000 mutants through `saturate` the same (1 047
+accepted, 767 refused with repairs, 186 without); and **the container both ways** (`einb.sh`): each file `ein kb
+save`d by each build and each container read by both with `solve`, the four reads agreeing with each other and with
+`solve` of the `.ein` on all 342 that load but `g14/derived-activator.ein`, whose four reads agree with each other and
+place its compile refusal at `<string>`, as T1f.5.4.3 found; 12 of the 343 containers differ in bytes, each a program
+with a `:goal-text`, whose text the symbol table no longer holds. No golden moved: the gate below reads every one.
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end of
+the phase"*):
+- **G-6's variable arm goes with the string's**: the same ruling, the same unreachability, and `Terms::value_var` has
+  no other caller.
+- **A text is no longer interned as a name**, which moves a container's bytes and no answer: a `.einb` is a private
+  cache (AGENTS.md), and the reads agree.
+- **`value_label` keeps labelling a text as a name prints**: quoting every text would move no corpus view but would
+  change a one-word `:goal-text`'s label, which this commit may not; S1f.5.5's T7 or a later stage may.
+
+**The gate.** On this commit, 15 min 41 s (`build/gate-s1f.5.2-T3.log`), green: 949 tests and every static check,
+as T1f.5.2.2's, one `ein-core` unit test renamed; no golden file is in the commit.
 
 ### Task T1f.5.2.4 — the pages
 

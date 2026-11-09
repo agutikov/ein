@@ -94,12 +94,11 @@ fn atom_arg_attrs(ast: &Ast, id: NodeId) -> String {
 fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(_) | Node::Var(_) | Node::Wildcard => atom_id(ast, id),
-        // A string's node is its name as the one printer prints it (M1e2
-        // S1e2.3.8), so `"1"` is the name `1`'s node and `"x y"` reads as
-        // one value.
-        Node::Str(s) => quote(&ein_core::text::symbol(ast.sym(s))),
         Node::SForm { .. } => quote(&value_label(ast, id)),
-        Node::Keyword(_) | Node::KwPair { .. } => {
+        // A string's node was its name as the one printer prints it (M1e2
+        // S1e2.3.8), until M1f S1f.5.5's swap made a string natural-language
+        // text, which is no value (S1f.5.2; T1f.5.2.3 retired the arm).
+        Node::Str(_) | Node::Keyword(_) | Node::KwPair { .. } => {
             panic!("cannot use as DOT node id")
         }
     }

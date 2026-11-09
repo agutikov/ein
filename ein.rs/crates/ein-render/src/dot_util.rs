@@ -151,8 +151,11 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Wildcard => "_".to_string(),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
-        // The name a string is, as the one printer prints it (M1e2
-        // S1e2.3.8): `"1"` and `"x y"` quoted, `"Red"` bare as `Red`.
+        // A string is natural-language text since M1f S1f.5.5's swap, which
+        // reaches this label only as a keyword's value, `:goal-text "…"` in a
+        // query's note. It is labelled as the one printer prints a name, as
+        // it was when a string was the name it spells (M1e2 S1e2.3.8): quoted,
+        // and bare where it lexes as one name.
         Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::SForm { head, args } => {
             let inner: Vec<String> = ast

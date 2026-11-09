@@ -485,19 +485,16 @@ impl Terms {
         }
     }
 
-    /// A textual argument — what the loader's `atomic_value` produces for an
-    /// `Atom` (its `name`) and for a `String` (its `value`).
+    /// A name as a value — what the loader's `atomic_value` produces for an
+    /// `Atom`: the symbol its text spells.
     ///
-    /// That both collapse to one shape is a **semantic** fact about ein-lang,
-    /// not an implementation detail: `(likes A "foo")` and `(likes A foo)` are
-    /// the same fact today, and interning must keep them so.
+    /// Until M1f S1f.5.5's swap a `String` collapsed to the same shape, so
+    /// `(likes A "foo")` and `(likes A foo)` were one fact, and a `Var` in a
+    /// fact to the name `?x` (`value_var`, retired by S1f.5.2's T1f.5.2.3); a
+    /// string is natural-language text since, and neither is a fact's
+    /// argument.
     pub fn value_text(&mut self, s: &str) -> Result<Value, Overflow> {
         Ok(Value::sym(self.intern_text(s)?))
-    }
-
-    /// A `Var` in argument position — `?name`, as `atomic_value` renders it.
-    pub fn value_var(&mut self, name: &str) -> Result<Value, Overflow> {
-        self.value_text(&format!("?{name}"))
     }
 
     /// See [`Terms::intern_text`] for what a shared view can and cannot do.
@@ -695,20 +692,16 @@ mod tests {
         assert_send_sync::<crate::FactStore>();
     }
 
+    /// A name's value is its text's symbol, one text one value. Until M1f
+    /// S1f.5.2 this test also held a string and a variable in a fact to the
+    /// names they spelled (`"foo"` to `foo`, `?x` to the name `?x`), which the
+    /// grammar refuses in a fact since S1f.5.5's swap.
     #[test]
-    fn atom_string_and_var_flatten_to_one_text_value() {
+    fn a_name_is_its_texts_one_value() {
         let mut t = Terms::new();
-        // `Atom("foo")` and `String("foo")` both become the text "foo" — so
-        // `(likes A foo)` and `(likes A "foo")` are one fact.
-        let from_atom = t.value_text("foo").expect("room");
-        let from_string = t.value_text("foo").expect("room");
-        assert_eq!(from_atom, from_string);
-        // A Var arg is its `?name` spelling, and is therefore an ordinary
-        // symbol that collides with a literal atom of that name.
-        assert_eq!(
-            t.value_var("x").expect("room"),
-            t.value_text("?x").expect("room")
-        );
+        let foo = t.value_text("foo").expect("room");
+        assert_eq!(foo, t.value_text("foo").expect("room"));
+        assert_ne!(foo, t.value_text("?foo").expect("room"));
         // A run of digits is a name like any other (M1f S1f.5.4), and `07`
         // is another one.
         assert_ne!(

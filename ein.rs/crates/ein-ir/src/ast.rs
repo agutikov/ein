@@ -86,7 +86,9 @@ pub enum Node {
     Keyword(SymId),
     /// `_`.
     Wildcard,
-    /// A double-quoted string, stored **unescaped**.
+    /// A double-quoted string, stored **unescaped**: natural-language text,
+    /// the value of a `:why`, `:source` or `:goal-text` key pair and nothing
+    /// else since M1f S1f.5.5's swap (S1f.5.2's ruling, `ein.y`'s `Text`).
     Str(SymId),
     /// `:key value`. `key` is a [`Node::Keyword`] node so it keeps its own
     /// `Loc`.

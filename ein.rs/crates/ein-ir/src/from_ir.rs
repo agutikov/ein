@@ -346,10 +346,13 @@ pub fn load_query_with(
 fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     fn walk(ast: &Ast, terms: &mut Terms, node: NodeId) {
         match ast.node(node) {
-            Node::Atom(s) | Node::Var(s) | Node::Str(s) => {
+            Node::Atom(s) | Node::Var(s) => {
                 let _ = terms.intern_text(ast.sym(s));
             }
-            Node::Keyword(_) | Node::Wildcard => {}
+            // A string is natural-language text, here a query's `:goal-text`,
+            // and names nothing (M1f S1f.5.2): until T1f.5.2.3 it was
+            // interned as a name, which nothing asked for.
+            Node::Str(_) | Node::Keyword(_) | Node::Wildcard => {}
             Node::KwPair { key, value } => {
                 walk(ast, terms, key);
                 walk(ast, terms, value);
@@ -609,13 +612,20 @@ fn string_value(ast: &Ast, node: Option<NodeId>) -> Option<&str> {
     }
 }
 
-/// Stringify an `Atom` / `String` / `Var` for use as a fact
-/// argument. Anything else (a `Wildcard`, a keyword, a nested form) answers
-/// `None`.
+/// A name as a fact's argument: the symbol it spells. Anything else (a
+/// nested form, and the shapes the grammar refuses in a fact) answers `None`.
+///
+/// A fact holds names and facts (`ein.y`'s `FactArg`). Until M1f S1f.5.5's
+/// swap a string there was the name it spells, `(p "a")` the fact `(p a)`
+/// (M1e2 S1e2.2.16), and a variable the name `?x`, printed `"?x"`; the swap
+/// refused both at the parse (S1f.5.2's ruling and its G-6), and T1f.5.2.3
+/// retired the two arms, each shown unreachable first.
 fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Value>, Overflow> {
     Ok(Some(match ast.node(node) {
-        Node::Atom(s) | Node::Str(s) => terms.value_text(ast.sym(s))?,
-        Node::Var(s) => terms.value_var(ast.sym(s))?,
+        Node::Atom(s) => terms.value_text(ast.sym(s))?,
+        Node::Str(_) | Node::Var(_) => unreachable!(
+            "a fact holds names and facts, no string and no variable (ein.y's FactArg)"
+        ),
         _ => return Ok(None),
     }))
 }
