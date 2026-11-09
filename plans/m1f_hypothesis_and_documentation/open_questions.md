@@ -38,6 +38,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.27](#q-m1f27--what-program-a-einbs-answer-directory-writes) | what program a `.einb`'s answer directory writes | **defaulted 2026-11-09 (the user's instruction): (a), the program the container stores, as every view of a container reads it**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.5 |
 | [Q-M1f.28](#q-m1f28--is-a-not-dead-nodes-core-written--a-wrong-answer) | is a not-dead node's core written `[]` a wrong answer? | **defaulted 2026-11-09 (the user's instruction): (a), no register row: a spelling, fixed with no answer moving**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
 | [Q-M1f.29](#q-m1f29--a-dead-roots-core-under---count) | a dead root's core under `--count` | **defaulted 2026-11-09 (the user's instruction): (a), `null`, as the question prints no core; documented**; [S1f.5.8](p1f.5_the_no_owner_items/s1f.5.8_no_contradiction_no_core.md)'s T1f.5.8.1 |
+| [Q-M1f.50](#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag) | where the `heavy_dump` line goes, and which entries carry the flag | **defaulted 2026-11-09 (the user's instruction): (a), 40 000 state files, in the gap above the six `slow` `square-*`; five entries flagged, `features/01_not_and_absent` among them**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.1 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -787,3 +788,29 @@ core either. Root is dead, so its core exists.
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** It moves nothing, and a count's question is *how many*.
 Re-opening it means (b), which moves `--count`'s stdout on those 39 programs.
+
+### Q-M1f.50 — Where the `heavy_dump` line goes, and which entries carry the flag
+
+**Raised** 2026-11-09 by [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s
+T1f.5.13.1. The spec sets the line *in the gap of the distribution*, and the distribution of that day
+(`EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release --test answer_round_trip -- --nocapture`,
+`7bc6ea72`) has two gaps: 23 390 to 64 514 state files, and 169 to 4 096. Above the first are the four entries P-16
+named and `features/01_not_and_absent`, which is `slow`. Between the two are the six `slow` `square-fwd` and
+`square-bwd` at 23 390, `type-exclusivity/pets` at 11 339 and two `syntax/` programs at 4 096. A probe of the per-commit
+run (debug, under the second lane's load) timed the four at 49 to 58 s each, `pets` at 8.1 s and the two `syntax/`
+programs at 1.3 and 1.7 s.
+
+- **(a) 40 000, in the upper gap.** Exactly the four leave the per-commit tier, as the ruling named them, and the
+  test's slowest shard falls from 62.2 s to 9.3 s, `pets` the longest program left. The flag is held on every entry
+  the round trip dumps, the slow tier's included, so `features/01_not_and_absent`, `slow` and over the line, carries it
+  too: five entries.
+- **(b) A line in the lower gap**, 1 000 say. `pets` and the two `syntax/` programs leave too, and the six `square-*`
+  carry the flag beside `slow`: 14 entries, the slowest shard 5.5 s, and three more programs round-tripped only nightly.
+- **(c) The flag held per commit alone**, the slow tier not checking an unflagged entry. `features/01` carries no
+  flag, and a `slow` entry that lost `slow` would rejoin the per-commit round trip with a 64 655-file dump that only
+  that run would notice.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) moves what the ruling named and nothing else, and every program under 40 000 state
+files is still round-tripped per commit. Re-opening it means (b): one constant in `ein-corpus`'s `manifest.rs`, nine
+more flags in `corpus/corpus.toml`, and the set `the_heavy_dump_set_is_exactly_these_five` pins restated.

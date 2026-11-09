@@ -2,16 +2,14 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.13**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** half a day.
-- An hour for the distribution of state files per program, and the first run of the slow tier.
-- Two hours for the manifest field, its check and the test's selection.
-- An hour for the nightly step, its mirror and the pages.
 
-**Status:** specified 2026-11-08 on the user's ruling of that day on P-16.
-**Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
-moved.
-**Depends on:** nothing. [S1f.5.12](s1f.5.12_cores_for_n_only.md) makes each of the four dumps cheaper, and
-neither stage waits for the other.
+**Status:** specified 2026-11-08 on the user's ruling of that day on P-16. **Running 2026-11-09**, on the user's
+go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions till the end
+of the phase"*), after S1f.5.8 and beside the second lane's S1f.5.9: T1f.5.13.1, the distribution and the slow tier's
+first run ([its record](#t1-record-2026-11-09)). One choice was taken by default and recorded,
+[Q-M1f.50](../open_questions.md#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag).
+**Depends on:** nothing. [S1f.5.12](s1f.5.12_cores_for_n_only.md) made each of the four dumps cheaper, and
+neither stage waited for the other.
 
 ## The ruling
 
@@ -75,6 +73,62 @@ past-the-limit check, after the four leave.
 
 `EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release --test answer_round_trip`: the state
 files per program, T chosen in its gap, and every failure listed.
+
+### T1 record, 2026-11-09
+
+**The slow tier's first run passes.** `EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release
+--test answer_round_trip -- --nocapture` at `7bc6ea72`: 9 of 9 tests pass, in 116.4 s, with the second lane's gate
+running beside it (`build/s1f.5.13/t1_slow_list.log`, the machine state at its head). 296 of the 417 entries are
+answered and write 485 020 state files; 39 of those write none, and the other 121 the round trip does not answer (a
+file the loader refuses, or a run that writes no `index.json`). **No failure**, so there is no finding to show the
+user: the 14 `slow` entries, whose dumps no CI tier had round-tripped, reload by value, every member of N with its
+core and every node held to its deadness.
+
+**The distribution** (`build/s1f.5.13/t1_distribution.txt`), the state files `check` reloads per program:
+
+| state files | entries | today's tier |
+|---:|---|---|
+| 65 214 · 64 817 · 64 761 · 64 655 · 64 514 | `square-unique/corner-house`, `cul-de-sac`, `features/04_open`, `features/01_not_and_absent`, `square-unique/terminus` | per commit, but `features/01`, `slow` |
+| 23 390 | `square-fwd` and `square-bwd`, `floors`, `houses` and `meetings`, six | `slow` |
+| 11 339 | `type-exclusivity/pets` | per commit |
+| 4 096 | `syntax/equality`, `syntax/constraint-scopes` | per commit |
+| 169 | `type-exclusivity/colors`, `nationalities` | per commit |
+| 34 or fewer | the other 280, 39 of them writing no state file | per commit, but seven `slow` ones: `lattice/06_friends_tables`, `lattice/07_two_pairs_two_tables`, `zebra`, `zebra2`, `zebra2-obligations` and the two `zebra2-minus-15` |
+
+**What each costs the per-commit run**, by a scratch probe that timed each `check` in list mode, reverted after
+(debug, as the gate builds it, at `7bc6ea72`, under the same load, `build/s1f.5.13/t1_debug_default_probe.log`): the
+test took 62.8 s. `terminus` 57.7 s, `features/04_open` 56.6 s, `cul-de-sac` 51.9 s and `corner-house` 48.8 s,
+each on a shard of its own, so the slowest shard is the test; then `pets` 8.1 s, `zebra2-hints` 4.3 s (six state
+files; the oracle's cube and the lattice dump are its cost), `past-limit-lines` 3.3 s, the two `syntax/` programs
+1.7 s and 1.3 s, and every other program 0.5 s or less. Summed per shard over the probe
+(`build/s1f.5.13/shard_sums.py`): today the slowest shard is 62.2 s and the eight 244 s together; with the four left
+out, 9.3 s and 29.3 s; with `pets` and the two `syntax/` programs out as well, 5.5 s and 18.2 s.
+
+**T = 40 000** (`ein_corpus::manifest::HEAVY_DUMP_FILES`), taken by default
+([Q-M1f.50](../open_questions.md#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag)). The
+distribution has two gaps a line could sit in: 23 390 to 64 514 (2.8×), which separates exactly the four the ruling
+named, and 169 to 4 096 (24×), which would move `pets` and the two `syntax/` programs too and save about 4 s more of
+the per-commit wall. Forty thousand is 1.6× under the five and 1.7× over the six. **The flag is held on every entry
+the round trip dumps**, the slow tier's too, so it says one thing of every entry: `features/01_not_and_absent`, which
+is `slow` and writes 64 655, carries it, and five entries are flagged.
+
+**The spec's case, re-taken on today's build** (`utils/bench_env.sh --core 4 build/s1f.5.13/dumps.sh …`, release,
+one pinned P-core, best of three, 2026-11-09, `build/s1f.5.13/t1_dumps.log`; the second lane started a release
+`cargo test` of three targets during it, and the spread is 0.04 s or less): S1f.5.12 took no core from these runs
+before or after, and their cost is the files.
+
+| program | wall | state files | apparent size | on disk |
+|---|---:|---:|---:|---:|
+| `saturation/square-unique/corner-house` | 2.60 s | 65 214 | 255 MiB | 393 MiB |
+| `saturation/square-unique/cul-de-sac` | 2.89 s | 64 817 | 262 MiB | 397 MiB |
+| `saturation/square-unique/terminus` | 3.36 s | 64 514 | 318 MiB | 429 MiB |
+| `features/04_open` | 3.18 s | 64 761 | 307 MiB | 430 MiB |
+| `features/01_not_and_absent` (`slow`) | 3.03 s | 64 655 | 284 MiB | 402 MiB |
+| `ein-bugs/wrong-answers/past-limit-lines` | 0.71 s | 3 | — | 1 MiB |
+| `saturation/type-exclusivity/pets` | 0.55 s | 11 339 | — | 74 MiB |
+
+**What stays per commit past the limit** is `past-limit-lines`: three state files, and `nogoods.json`'s 15 members of
+N each with its core (S1f.5.12's T3 record), so `members_of_n`'s past-the-limit check keeps a per-commit witness.
 
 ### Task T1f.5.13.2 — the field, its check and the selection
 
