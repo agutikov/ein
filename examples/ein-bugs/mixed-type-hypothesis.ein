@@ -2,7 +2,10 @@
 ;;;
 ;;; Two candidate `seat` facts whose second argument is the int `1` in one
 ;;; and the symbol `left` in the other, on a KB that is otherwise perfectly
-;;; well-formed.
+;;; well-formed. **Since M1f S1f.5.5's swap `1` is a name** (S1f.5.4's
+;;; ruling, the int kind retired by its T1f.5.4.3, 2026-11-09), so the two
+;;; candidates are two names and sort by text; what follows is the case as
+;;; it was banked, and the program still answers `Solution`, `?s = 1`.
 ;;;
 ;;; What it pins. The commitment search orders its candidates by *content*
 ;;; (`Terms::cmp_fact_semantic`, called from `apriori::layer_1`):

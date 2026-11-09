@@ -9,6 +9,17 @@
 //! may start with a digit. Unbound references keep their reference text; the
 //! trace renderer prefers a partial render over a hard failure.
 //!
+//! **A reference names every variable a program can write** since M1f
+//! S1f.5.4's T1f.5.4.5 (W37, on the user's ruling of 2026-11-08 on S1f.5.5's
+//! T9 review stop, item 7): after `{?` it reads the name rule's characters
+//! ([`crate::text::is_name_char`]) up to the first `}`. Until then it read one
+//! letter or digit and then letters, digits, `_` and `-`, so `{?isR*}`, the
+//! stdlib's, and every variable the name rule allows past those (`?_x_`,
+//! `?a.b`, `?n*`) printed as written. `}` is a name character too (the user,
+//! 2026-11-07), so a variable holding one cannot be named, and the loader
+//! refuses a template that writes such a reference
+//! ([`unreachable_references`]).
+//!
 //! This is nominally
 //! [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)
 //! T6, and it lived in `ein-render` until M1d S1d.2.4, because the only
@@ -22,42 +33,64 @@
 /// Substitute `{?ref}` references against `bindings`, an association list of
 /// `(name, rendered value)`.
 ///
-/// The pattern is `\{\?([A-Za-z0-9][A-Za-z0-9_-]*)\}`, scanned here
-/// directly: a reference is `{?`, one alphanumeric, then any run of
-/// alphanumerics / `_` / `-`, then `}`.
+/// A reference is `{?`, one or more of the name rule's characters
+/// ([`crate::text::is_name_char`]) other than `}`, then `}`: the variable's
+/// name as the program writes it after its `?`, up to the first `}`. Every
+/// name character is ASCII, so the scan is over bytes.
 pub fn render_why(template: &str, bindings: &[(String, String)]) -> String {
     let bytes = template.as_bytes();
     let mut out = String::with_capacity(template.len());
     let mut i = 0;
     while i < bytes.len() {
-        if bytes[i] == b'{' && i + 2 < bytes.len() && bytes[i + 1] == b'?' {
-            let start = i + 2;
-            let mut j = start;
-            // The first character must be alphanumeric; the rest may add
-            // `_` and `-`.
-            if j < bytes.len() && bytes[j].is_ascii_alphanumeric() {
-                j += 1;
-                while j < bytes.len()
-                    && (bytes[j].is_ascii_alphanumeric() || bytes[j] == b'_' || bytes[j] == b'-')
-                {
-                    j += 1;
-                }
-                if j < bytes.len() && bytes[j] == b'}' {
-                    let name = &template[start..j];
-                    match bindings.iter().find(|(k, _)| k == name) {
-                        Some((_, v)) => out.push_str(v),
-                        None => out.push_str(&template[i..=j]),
-                    }
-                    i = j + 1;
-                    continue;
-                }
+        if let Some(end) = reference_end(bytes, i) {
+            let name = &template[i + 2..end];
+            match bindings.iter().find(|(k, _)| k == name) {
+                Some((_, v)) => out.push_str(v),
+                None => out.push_str(&template[i..=end]),
             }
+            i = end + 1;
+            continue;
         }
         // Not a reference — copy one character and carry on.
         let ch = template[i..].chars().next().expect("in bounds");
         out.push(ch);
         i += ch.len_utf8();
     }
+    out
+}
+
+/// Where the reference starting at `i` ends: the index of its closing `}`, or
+/// `None` where `i` starts no reference (not `{?`, no name character before a
+/// `}`, or no `}`).
+fn reference_end(bytes: &[u8], i: usize) -> Option<usize> {
+    if bytes.get(i) != Some(&b'{') || bytes.get(i + 1) != Some(&b'?') {
+        return None;
+    }
+    let start = i + 2;
+    let mut j = start;
+    while j < bytes.len() && bytes[j] != b'}' && crate::text::is_name_char(char::from(bytes[j])) {
+        j += 1;
+    }
+    (j > start && bytes.get(j) == Some(&b'}')).then_some(j)
+}
+
+/// The variables of `vars` that `template` writes a reference to and no
+/// reference can name: a name holding `}`, which a reference reads up to, so
+/// `{?a}b}` is the reference `{?a}` and the text `b}` — M1f S1f.5.4's
+/// T1f.5.4.5, the question W37's fix settles (taken by default on the user's
+/// instruction of 2026-11-09, as S1f.5.5's T9 review recommended). The loader
+/// refuses each one, so a template never prints a sentence its author did not
+/// write. `vars` are names without their `?`.
+pub fn unreachable_references<'a>(
+    template: &str,
+    vars: impl IntoIterator<Item = &'a str>,
+) -> Vec<&'a str> {
+    let mut out: Vec<&str> = vars
+        .into_iter()
+        .filter(|v| v.contains('}') && template.contains(&format!("{{?{v}}}")))
+        .collect();
+    out.sort_unstable();
+    out.dedup();
     out
 }
 
@@ -98,5 +131,51 @@ mod tests {
             render_why("{x} and {?} and {}", &b(&[("x", "no")])),
             "{x} and {?} and {}"
         );
+    }
+
+    /// **A reference names every variable the name rule spells** — M1f
+    /// S1f.5.4's T1f.5.4.5, W37. Each name below was printed as written until
+    /// then, `{?` one letter or digit, then letters, digits, `_` and `-`.
+    #[test]
+    fn a_reference_reads_the_name_rules_characters_up_to_the_first_brace() {
+        for name in [
+            "isR*", "n*", "_x_", "a.b", "x'", "$x", "%", "a^b", "a/b", "<=", "!x", "@x", "~",
+            "a+b", "a&b", "a=b", "`q`", "[a]", "{a", "1st", "-7", "07",
+        ] {
+            let template = format!("<{{?{name}}}>");
+            assert_eq!(
+                render_why(&template, &b(&[(name, "V")])),
+                "<V>",
+                "{template}"
+            );
+        }
+        // Up to the first `}`: `{?a}b}` is the reference `{?a}` and `b}`.
+        assert_eq!(render_why("{?a}b}", &b(&[("a", "V")])), "Vb}");
+        // A character no name has ends no reference: the text stays.
+        for kept in [
+            "{?a b}",
+            "{?a?b}",
+            "{?a:b}",
+            "{?a,b}",
+            "{?a#b}",
+            "{?a|b}",
+            "{?Жук}",
+            "{?a",
+        ] {
+            assert_eq!(
+                render_why(kept, &b(&[("a b", "V"), ("a", "V"), ("Жук", "V")])),
+                kept
+            );
+        }
+    }
+
+    #[test]
+    fn a_reference_to_a_name_holding_a_brace_is_unreachable() {
+        assert_eq!(
+            unreachable_references("{?a}b} and {?c}", ["a}b", "c", "d}"]),
+            ["a}b"]
+        );
+        assert!(unreachable_references("{?a} b}", ["a}b"]).is_empty());
+        assert!(unreachable_references("{?isR*}", ["isR*"]).is_empty());
     }
 }

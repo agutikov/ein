@@ -1580,7 +1580,7 @@ note   = "M1f W36's second witness (`W36/alt-flag-two-derivations`), banked by S
 path   = "examples/ein-bugs/wrong-answers/template-var-star.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W37 (`W37/template-var-star`), banked by S1f.5.5 from its T9 review's § 11: a template reference cannot name the variable `?n*`, so the query's `:goal-text` prints *“{?n*} is a q”* where *“a is a q”* is right, and the rule's `:why` likewise on `--trace`, as the stdlib's three `{?isR*}` templates do. Open, owned by S1f.5.4: a reference reads the characters a variable takes."
+note   = "M1f W37 (`W37/template-var-star`), banked by S1f.5.5 from its T9 review's § 11: a template reference could not name the variable `?n*`, so the query's `:goal-text` printed *“{?n*} is a q”* where *“a is a q”* is right, and the rule's `:why` likewise on `--trace`, as the stdlib's three `{?isR*}` templates did. Fixed by S1f.5.4 (T1f.5.4.5, 2026-11-09): a reference reads the name rule's characters up to the first `}`."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

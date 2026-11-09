@@ -81,7 +81,7 @@ pub const MAX_NESTING: usize = 4;
 pub enum Arg {
     /// Any value.
     Any,
-    /// A name or an integer.
+    /// A name (or an integer, until M1f S1f.5.4 retired the int kind).
     Val(Value),
     /// A nested fact, `(not (likes A B))`'s one argument.
     Nested(Shape),

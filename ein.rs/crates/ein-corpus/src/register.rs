@@ -1583,7 +1583,8 @@ mod tests {
     /// A row as it stood before M1f S1f.5.5's swap (T1f.5.5.4) restated it,
     /// for the schema tests whose live example the swap turned into a refusal:
     /// W28's claims and classes, and W29's core and query beside a refusal,
-    /// each recorded at `977829bf` with its long strings cut.
+    /// each recorded at `977829bf` with its long strings cut; and W37's open
+    /// `now`, recorded at `410a3388`, before M1f S1f.5.4's T1f.5.4.5 fixed it.
     fn as_it_stood(row: &str) -> Row {
         let reg: Register = toml::from_str(&format!("schema = \"{REGISTER_SCHEMA}\"\n{row}"))
             .expect("the row as it stood parses");
@@ -2257,11 +2258,71 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(defects(&r).iter().any(|d| d.contains("beside its core")));
     }
 
+    /// `W37/template-var-star` as it stood at `410a3388`, before M1f S1f.5.4's
+    /// T1f.5.4.5 fixed it: `open`, its `now` the template as written.
+    const W37_OPEN: &str = r##"
+[[case]]
+id       = "W37/template-var-star"
+case     = "W37"
+title    = "a template cannot name a variable whose name holds a character other than …"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.5.4"
+question = ["S1f.5.5 T9 review item 7"]
+witness  = "examples/ein-bugs/wrong-answers/template-var-star.ein"
+status   = "open"
+open_because = "`ein_core::why::render_why` reads a reference as `{?`, one letter or digit, …"
+look_at  = ["answer", "trace"]
+note     = "Filed by S1f.5.5 (T1f.5.5.10, 2026-11-08) from its T9 review's § 11, …"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at a50cf081 (2026-11-08): …"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q a)"]]
+goal_text = ["{?n*} is a q"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "a template reference names any variable the program can write (Q31's `{?var}` notation: …"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q a)"]]
+goal_text = ["a is a q"]
+derived   = "`reach` fires on `(p a)` with `?n*` bound to `a`, …"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+goal_text = ["{?n*} is a q"]
+"##;
+
     /// **What a query's `:goal-text` prints is an answer**, schema /15 (M1f
     /// S1f.5.5, W37): the read-out's sentences, recorded exactly where `right`
-    /// states them and compared in the order printed. W37's `now` prints the
-    /// template as written where its right fills the reference, so it is open
-    /// by the method; the same `now` printing the filled sentence answers it.
+    /// states them and compared in the order printed. W37's `now` printed the
+    /// template as written where its right fills the reference, so it was open
+    /// by the method (the row as it stood at `410a3388`); the same `now`
+    /// printing the filled sentence answers it, as the live row does since M1f
+    /// S1f.5.4's T1f.5.4.5.
     #[test]
     fn what_a_goal_text_prints_is_an_answer() {
         let reg = register();
@@ -2272,12 +2333,14 @@ queries   = [{ classes = 1, expect = "none" }]
             }
             .defects()
         };
-        let row = reg
+        let live = reg
             .case
             .iter()
             .find(|r| r.right.goal_text.is_some())
-            .expect("W37 states what its goal text prints")
-            .clone();
+            .expect("W37 states what its goal text prints");
+        assert!(defects(live).is_empty(), "{:?}", defects(live));
+        assert!(live.now.against(&live.right).is_empty(), "W37 is fixed");
+        let row = as_it_stood(W37_OPEN);
         assert!(defects(&row).is_empty(), "{:?}", defects(&row));
         let differs = row.now.against(&row.right);
         assert!(

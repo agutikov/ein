@@ -6637,12 +6637,12 @@ daca8caf55e17be3       12L  examples/ein-bugs/wrong-answers/template-var-star.ei
 ee5d9df62bdff135       12L  examples/ein-bugs/wrong-answers/template-var-star.ein::dot[kb-no-types]
 ee5d9df62bdff135       12L  examples/ein-bugs/wrong-answers/template-var-star.ein::dot[kb-no-instances]
 5da56868a30694bc       13L  examples/ein-bugs/wrong-answers/template-var-star.ein::dot[kb-since]
-ff2dfe1bd0256040       31L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[describe]
-d0b16bd23a642efd       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[maximal]
-1bdb4e5a70ef128c       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[minimal]
-4e224578c07976bf       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[single]
-b06d0f1a80076a58       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[n2]
-c2efbda5da746e1e       45L  examples/ein-bugs/wrong-answers/template-var-star.ein::region-trace
+c0486c83443959a6       31L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[describe]
+c006fdcc14c14d0e       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[maximal]
+795fdce55c321427       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[minimal]
+daffd27b1bc2b540       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[single]
+d00d584eb679eb7b       22L  examples/ein-bugs/wrong-answers/template-var-star.ein::read-out[n2]
+bce78b171ec405b6       45L  examples/ein-bugs/wrong-answers/template-var-star.ein::region-trace
 5405eb58ff969e3b        7L  examples/ein-bugs/wrong-answers/template-var-star.ein::region-lattice
 943fb441e46cec66       90L  examples/ein-bugs/wrong-answers/template-var-star.ein::cores[describe]
 3a8a894e2b108847       75L  examples/ein-bugs/wrong-answers/template-var-star.ein::cores[maximal]
@@ -11658,7 +11658,7 @@ e693e66755f10cc4       23L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::d
 bc89b9dfc4264701       19L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::read-out[minimal]
 c4115db5b9a6ead7       19L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::read-out[single]
 93d5552387c3a462       19L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::read-out[n2]
-297b4b5576be17d5       50L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::region-trace
+4c6353bfb5458cf6       50L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::region-trace
 b3f298b655379f21        7L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::region-lattice
 b71139be6e61b7fe       99L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::cores[describe]
 ba06a6fb70af9542       66L  tests/stdlib/algebra/16_converse_illtyped_dom.ein::cores[maximal]
@@ -11699,7 +11699,7 @@ bcbf71bc97d51ee5       22L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::d
 fc34a0f4c1b9ffa9       19L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::read-out[minimal]
 54b7031f0d28f241       19L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::read-out[single]
 2a44d29ae7b85f95       19L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::read-out[n2]
-1a7ae2d7bbc40b85       50L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::region-trace
+1d7cc6e39141097f       50L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::region-trace
 25b5ab06ed298311        7L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::region-lattice
 0ff508c1d656e887       99L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::cores[describe]
 6ec6c0d2e364bb05       66L  tests/stdlib/algebra/17_converse_illtyped_ran.ein::cores[maximal]
@@ -13298,7 +13298,7 @@ b4dcaa6978cfc6a9       27L  tests/stdlib/typing/02_type_hierarchy_converse.ein::
 16f2b07a34c8a1c1       19L  tests/stdlib/typing/02_type_hierarchy_converse.ein::read-out[minimal]
 327caf383e708556       19L  tests/stdlib/typing/02_type_hierarchy_converse.ein::read-out[single]
 c28dfba155a43076       19L  tests/stdlib/typing/02_type_hierarchy_converse.ein::read-out[n2]
-b09bd56405a7d60f       74L  tests/stdlib/typing/02_type_hierarchy_converse.ein::region-trace
+b49c83c5b6f33f36       74L  tests/stdlib/typing/02_type_hierarchy_converse.ein::region-trace
 a098bc3cf8495be7        7L  tests/stdlib/typing/02_type_hierarchy_converse.ein::region-lattice
 04f5c30ea7ac1862       99L  tests/stdlib/typing/02_type_hierarchy_converse.ein::cores[describe]
 ac54ebf8b9d946cc       66L  tests/stdlib/typing/02_type_hierarchy_converse.ein::cores[maximal]
@@ -13339,7 +13339,7 @@ d8c4f2dd68b098d6       32L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein:
 6547feaa0a939030       24L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::read-out[minimal]
 bcfdc703a3f71f2d       24L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::read-out[single]
 e15676284b266e9a       24L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::read-out[n2]
-244e65345975b444       69L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::region-trace
+aa755b6ab6d6cf1b       69L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::region-trace
 9665d578490ba62c        7L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::region-lattice
 54319aea690f261f       90L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::cores[describe]
 89a8ecb3bf90175c       75L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::cores[maximal]

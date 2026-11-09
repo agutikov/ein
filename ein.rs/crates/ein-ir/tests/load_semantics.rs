@@ -479,3 +479,68 @@ fn require_why_decides_loading_only() {
     );
     eprintln!("{same} let through, {refused} refused");
 }
+
+// ── A template names every variable it can reach — M1f S1f.5.4, T1f.5.4.5 ──
+
+/// **A template that writes a reference to a variable holding `}` is refused,
+/// and one that reaches its variables loads** — M1f S1f.5.4's T1f.5.4.5
+/// (W37), the question its fix settles, taken by default on the user's
+/// instruction of 2026-11-09 as S1f.5.5's T9 review recommended.
+///
+/// A reference reads a variable's name up to its first `}`
+/// (`ein_core::why::render_why`), and `}` is one of the name rule's
+/// characters, so `?a}b` is a variable no reference can name: `{?a}b}` is the
+/// reference `{?a}` and the text `b}`. Each place a template names a scope's
+/// variables, a rule's and an hrule's `:why`, a macro's and a query's
+/// `:goal-text`, is refused with one line where it writes one; the same
+/// program loads with a reference to a variable it can reach (`?n*`, W37's),
+/// or with `?a}b` named by no reference, and a reference to no variable at
+/// all, `{?a}`, stays text as before.
+#[test]
+fn a_template_naming_a_variable_no_reference_reaches_is_refused() {
+    let pre = "(relation p T) (relation q T)\n(p a)\n";
+    let line = |what: &str, clause: &str| {
+        format!(
+            "{what}: its {clause} writes {{?a}}b}}, a reference to ?a}}b, which no reference \
+             can name — a reference reads a variable's name up to its first }}"
+        )
+    };
+    for (form, what, clause) in [
+        (
+            "(rule r () :match (p ?a}b) :assert (q ?a}b) :why \"{?a}b} is a q\")",
+            "rule 'r'",
+            ":why",
+        ),
+        (
+            "(hrule h () :match (p ?a}b) :assert (q ?a}b) :why \"guess {?a}b}\")",
+            "hrule 'h'",
+            ":why",
+        ),
+        (
+            "(macro m (?a}b) (p ?a}b) :why \"{?a}b} is a p\")",
+            "macro 'm'",
+            ":why",
+        ),
+        (
+            "(query :goal (p ?a}b) :goal-text \"{?a}b} is a p\")",
+            "query",
+            ":goal-text",
+        ),
+    ] {
+        let text = format!("{pre}{form}\n");
+        let refused = load_text_with(&text, false).expect_err(form);
+        assert!(
+            refused.contains(&line(what, clause)),
+            "{form}: no line {:?} in\n{refused}",
+            line(what, clause)
+        );
+        for reaching in [
+            form.replace("{?a}b}", "{?a}"),
+            form.replace("?a}b", "?n*"),
+            form.replace("{?a}b}", "it"),
+        ] {
+            load_text_with(&format!("{pre}{reaching}\n"), false)
+                .unwrap_or_else(|e| panic!("{reaching}: {e}"));
+        }
+    }
+}

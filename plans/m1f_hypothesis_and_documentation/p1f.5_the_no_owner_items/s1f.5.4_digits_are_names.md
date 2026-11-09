@@ -43,6 +43,10 @@ commit each. **T1f.5.4.3 done 2026-11-09** ([its record](#t1f543-record-2026-11-
 path shown unreachable first (30 probes, the whole suite and 240 000 mutants, none reached by a program), no answer
 or register row moved, and `.einb`'s `INTS` section kept empty with no format bump
 ([Q-M1f.10](../open_questions.md#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone), defaulted).
+**T1f.5.4.5 done 2026-11-09** ([its record](#t1f545-record-2026-11-09)): W37 fixed, a template reference reading the
+name rule's characters up to the first `}`, and a template naming a variable no reference can reach refused at load
+([Q-M1f.11](../open_questions.md#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name), defaulted); the
+register reads 118 fixed, 21 open and 1 not wrong.
 **Depends on:** [S1f.5.3](s1f.5.3_range_retired.md), done, so that `1..5` was gone first. Its remaining tasks
 run after [S1f.5.5](s1f.5.5_the_grammar.md)'s swap.
 
@@ -325,6 +329,68 @@ W37's row flipped in the same commit and the stdlib's three traces printing the 
 this stage settles: `{` and `}` are name characters for now (the user, 2026-11-07), so a variable holding `}`
 cannot be referenced; recommended, the loader refuses a template that names a variable it cannot reach, which no
 corpus program writes.
+
+**Named before it moves, 2026-11-09.** A reference to a variable outside `[A-Za-z0-9_-]` is written, among the corpus
+programs, by the stdlib's three `{?isR*}` templates and by the witness (`grep -rnoE '\{\?[^} ]*[^A-Za-z0-9_} -][^} ]*\}'
+--include='*.ein' examples tests stdlib corpus`, 2026-11-09), and `--trace` prints `{?isR*}` on four programs, not three:
+`tests/stdlib/algebra/16_converse_illtyped_dom.ein` too, whose `converse-illtyped-dom` fires (`ein solve FILE --trace
+T` over every program naming `type-hierarchy` or `converse`, 2026-11-09). So what moves is:
+- `ein-render/tests/golden/corpus_shapes.md5`, the rows of those five programs, `typing/02` and `/03`, `algebra/16`
+  and `/17` and `template-var-star.ein`, wherever a row renders a template: the region trace, and any other op that
+  prints a `:why` or a `:goal-text` filled;
+- `corpus/wrong_answers.toml`'s `W37/template-var-star`, flipped to `fixed`, its `now` the right sentence, *a is a q*.
+No other golden, and no answer.
+
+### T1f.5.4.5 record, 2026-11-09
+
+**One commit, on `410a3388`** (T1f.5.4.3). `W37/template-var-star` is fixed: a template reference names every
+variable the name rule spells, and the question that rides on it is settled by the loader.
+
+**The fix** (`ein_core::why::render_why`). A reference is `{?`, one or more of the name rule's characters
+(`ein_core::text::is_name_char`) other than `}`, then `}`: the variable's name as the program writes it after its
+`?`, up to the first `}`. Until now it read one letter or digit and then letters, digits, `_` and `-`, so `{?isR*}`,
+`{?n*}` and every variable the name rule adds past those (`?_x_`, `?a.b`, `?x'`, `?$x`) printed as written. A
+character no name has (a space, `?`, `:`, `,`, `#`, `|`, anything outside ASCII) still ends no reference, and the
+text stays. Held by `why`'s `a_reference_reads_the_name_rules_characters_up_to_the_first_brace` (23 names, one per
+decorator and connector, and the characters that end none).
+
+**The question, settled** (taken by default on the user's instruction of 2026-11-09, as S1f.5.5's T9 review
+recommended and § Task T1f.5.4.5 above wrote it): `}` is a name character, so `?a}b` is a variable no reference can
+name, `{?a}b}` reading as `{?a}` and the text `b}`. **The loader refuses a template that writes a reference to a
+variable in its scope holding `}`**, one line a reference: a rule's or an hrule's `:why` (its parameters and both
+clauses' variables), a macro's `:why` (its parameters) and a query's `:goal-text` (its goal's variables), *rule 'r':
+its :why writes {?a}b}, a reference to ?a}b, which no reference can name — a reference reads a variable's name up to
+its first }*. A relation's `:why` names its slots by position and is not read. No corpus program writes one, so no
+answer moves (*Nothing else moved*). Held by `load_semantics`'
+`a_template_naming_a_variable_no_reference_reaches_is_refused` (each of the four places, and each loading with a
+reference it can reach, with no reference, and with `{?a}`, a reference to no variable, kept as text) and
+`ein_core::why::unreachable_references`' unit test.
+[Q-M1f.11](../open_questions.md#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) records it.
+
+**What moved, as named above.**
+- The four stdlib programs' traces name the hierarchy relation, `is-a*`, where they printed `{?isR*}`, two lines
+  each and four on `typing/02` (`ein solve FILE --trace T`, release, 2026-11-09: no reference left unfilled on any
+  of the four), and the witness prints *“a is a q”* and, on `--trace`, *a is a p, so it is a q*.
+- `corpus_shapes.md5`: ten rows, the four programs' `region-trace` and the witness's `region-trace` and five
+  `read-out[…]` (`EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes`, 2026-11-09), no other.
+- The register: `W37/template-var-star` flipped to `fixed`, its `now` *a is a q*, its `[case.fixed]` the null id
+  (the stage's next commit, T1f.5.4.4, writes this one's), and the header's paragraph; **118 rows fixed, 21 open and 1
+  not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09). `ein-corpus`'
+  `what_a_goal_text_prints_is_an_answer`, which took W37's live row as its open example, reads the row as it stood at
+  `410a3388`, embedded, as the swap's three schema tests read theirs, and holds that the live row answers.
+- The witness's header, its corpus note and its `examples/README.md` line say it is fixed.
+- And, comments only, T1f.5.4.3's leftovers: `mixed-type-hypothesis.ein`'s and `nested-fact-hypothesis.ein`'s
+  headers, which described the int as live, and `fact_grain.rs`' `Arg::Val`.
+
+**Nothing else moved.** Every `.ein` under the five roots (511) through `410a3388`'s release build and this
+commit's (`build/s1f.5.4/t5/xcheck/`, T1f.5.4.3's scripts with `solve --trace`'s page added, 157 s, 2026-11-09):
+**506 the same on every command**, and five move, each only where named: the witness's read-out sentence (`solve`'s
+stdout and the dump's `answer.txt`, *“a is a q”*) and trace, and the four stdlib programs' traces, the `{?isR*}`
+lines alone; no exit code, summary, state file, claim or `saturate --dump` moved. T12's 2 000 mutants through
+`saturate` the same (1 047 accepted, 767 refused with repairs, 186 without).
+
+**The gate.** On this commit, 15 min 50 s (`build/gate-s1f.5.4-T5.log`), green: 940 tests and every static check,
+T1f.5.4.3's 937 and three more, `why`'s two and `load_semantics`' one.
 
 ## Acceptance
 

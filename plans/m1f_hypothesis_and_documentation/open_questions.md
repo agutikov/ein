@@ -19,6 +19,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) | the parser's remaining cost: within grmtools, or past it? | **defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12 |
 | [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **defaulted 2026-11-09 (the user's instruction): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
 | [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **defaulted 2026-11-09 (the user's instruction): the section stays, written empty, and a file that holds an int is refused; no format bump**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
+| [Q-M1f.11](#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) | a template reference to a variable no reference can name | **defaulted 2026-11-09 (the user's instruction): the loader refuses it, one line a reference**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -343,3 +344,23 @@ decisions till the end of the phase"*. (a) is the agent's recommendation: the pl
 go, and (a) keeps its bytes so that nothing needs one; it moves no golden and no output (`ein-einb/tests/invalidation.rs`'
 `a_file_that_holds_an_integer_is_refused` builds both shapes of an old file and holds the refusal), and the next
 major bump, whenever one is made, can drop the section. Re-opening it means (b).
+
+### Q-M1f.11 — A template reference to a variable no reference can name
+
+**Raised** 2026-11-08 by [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T9 review (§ 11) and carried
+by [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5, the fix of W37
+([§ T1f.5.4.5 record](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md#t1f545-record-2026-11-09)). A template
+reference reads a variable's name up to the first `}`, and `}` is one of the name rule's characters (the user,
+2026-11-07, *for now*), so a variable holding one, `?a}b`, cannot be named: `{?a}b}` is the reference `{?a}` and the
+text `b}`. No corpus program writes such a variable.
+
+- **(a) The loader refuses a template that writes a reference to a variable in its scope holding `}`**: a rule's,
+  an hrule's or a macro's `:why` and a query's `:goal-text`, one line a reference naming the form and the clause.
+- **(b) Leave it**: the reference reads `{?a}`, unbound or bound to another variable, and the sentence prints with
+  `b}` after it, which its author did not write.
+- **(c) Take `}` out of the name rule**, which re-opens the user's ruling on what a name is.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is what S1f.5.5's T9 review recommended and S1f.5.4's task wrote down: a refusal at
+load says so where (b) prints a wrong sentence in silence, and (c) is the user's to rule. It moves no corpus answer.
+Re-opening it means (b), or (c) if the name rule changes.

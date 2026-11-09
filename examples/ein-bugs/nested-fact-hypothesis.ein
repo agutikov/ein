@@ -1,11 +1,13 @@
 ;;; M1a — two `Fact` arguments in one hypothesis slot.
 ;;;
-;;; `mixed-type-hypothesis.ein` puts an int and a symbol in the same slot of
-;;; two candidates. This is the *other* half of the same ordering question,
+;;; `mixed-type-hypothesis.ein` put an int and a symbol in the same slot of
+;;; two candidates (two names since M1f S1f.5.4 retired the int). This is the
+;;; *other* half of the same ordering question,
 ;;; produced by the S1a.6.6 fuzzer: two candidates whose argument is a
 ;;; nested fact, compared element-wise by the commitment search's content
-;;; order. `Value` is totally ordered (Int < Sym < Fact, and a nested fact by
-;;; its own content), so the run answers `Solution`.
+;;; order. `Value` is totally ordered (Sym < Fact, and a nested fact by its
+;;; own content; Int < Sym < Fact until M1f S1f.5.4), so the run answers
+;;; `Solution`.
 ;;;
 ;;; **It needs no mixed slot types.** One hrule whose `:assert` head is a
 ;;; `(not …)` is enough — the hypothesis's argument is then a nested fact, and

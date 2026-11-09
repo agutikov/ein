@@ -712,6 +712,19 @@
 # not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-09).
 #
+# **S1f.5.4's T1f.5.4.3 retired the int kind the same day** (`Tag::Int`, the
+# int pool, `Node::Int`), each path shown unreachable from any program
+# first: no row moved. **Its T1f.5.4.5 fixed W37 the same day**: a template
+# reference reads the name rule's characters up to the first `}`, so
+# `W37/template-var-star`'s `:goal-text` prints *a is a q* and the row flipped
+# to `fixed`; and, taken by default on the user's instruction of 2026-11-09 as
+# S1f.5.5's T9 review recommended, the loader refuses a template that writes a
+# reference to a variable holding `}`, which none can name and no corpus
+# program writes. Its `[case.fixed]` carries the null id in the flipping
+# commit, and the stage's next commit, T1f.5.4.4, writes the hash. The register
+# reads **118 rows fixed, 21 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -8917,10 +8930,14 @@ settings = "default"
 owner    = "S1f.5.4"
 question = ["S1f.5.5 T9 review item 7"]
 witness  = "examples/ein-bugs/wrong-answers/template-var-star.ein"
-status   = "open"
-open_because = "`ein_core::why::render_why` reads a reference as `{?`, one letter or digit, then letters, digits, `_` and `-`, then `}`, so `{?n*}` does not fit and is copied as text, an unbound reference's fallback, though `?n*` is a variable both lexers read; S1f.5.4, whose name rule gives a variable its characters, makes a reference read the characters a variable takes (the T9 review's recommendation: the name rule's characters up to the first `}`), on the user's ruling of 2026-11-08 on S1f.5.5's T9 review stop, item 7 (*\"Accept all as recommended\"*): a row filed, owned by S1f.5.4, before anything fixes it"
+status   = "fixed"
 look_at  = ["answer", "trace"]
-note     = "Filed by S1f.5.5 (T1f.5.5.10, 2026-11-08) from its T9 review's § 11, on the user's ruling of that day on the review stop, item 7 (*\"Accept all as recommended\"*). The stdlib shows the same defect today in three `:why` templates that name `?isR*`, `stdlib/typing.ein`'s `type-hierarchy-converse` and `stdlib/algebra.ein`'s `converse-illtyped-dom` and `-ran`, which print *under hierarchy {?isR*}* on `--trace` (`ein solve tests/stdlib/typing/02_type_hierarchy_converse.ein --trace T`, `03_type_hierarchy_welltyped.ein`, `tests/stdlib/algebra/17_converse_illtyped_ran.ein`); the witness's rule `:why` does too, *{?n*} is a p, so it is a q*. A `:why` reaches no surface the register reads, so the row holds the query's `:goal-text`, which the read-out prints. After S1f.5.5's swap every variable the name rule adds prints the same way (`?_x_`, `?a.b`): the T9 review's `zebra2.ein` with `_`-led names prints *The {?_who_water_} drinks water in {?_h_water_}*. The witness parses under the generated grammar and answers the same there (T9's generated build, 2026-11-08), so the swap does not move the row. Whether the loader refuses a template naming a variable no reference can reach (a variable holding `}`) is the fix's question, S1f.5.4's"
+note     = "Filed by S1f.5.5 (T1f.5.5.10, 2026-11-08) from its T9 review's § 11, on the user's ruling of that day on the review stop, item 7 (*\"Accept all as recommended\"*). The stdlib shows the same defect today in three `:why` templates that name `?isR*`, `stdlib/typing.ein`'s `type-hierarchy-converse` and `stdlib/algebra.ein`'s `converse-illtyped-dom` and `-ran`, which print *under hierarchy {?isR*}* on `--trace` (`ein solve tests/stdlib/typing/02_type_hierarchy_converse.ein --trace T`, `03_type_hierarchy_welltyped.ein`, `tests/stdlib/algebra/17_converse_illtyped_ran.ein`); the witness's rule `:why` does too, *{?n*} is a p, so it is a q*. A `:why` reaches no surface the register reads, so the row holds the query's `:goal-text`, which the read-out prints. After S1f.5.5's swap every variable the name rule adds prints the same way (`?_x_`, `?a.b`): the T9 review's `zebra2.ein` with `_`-led names prints *The {?_who_water_} drinks water in {?_h_water_}*. The witness parses under the generated grammar and answers the same there (T9's generated build, 2026-11-08), so the swap does not move the row. Whether the loader refuses a template naming a variable no reference can reach (a variable holding `}`) is the fix's question, S1f.5.4's. Fixed by S1f.5.4 (T1f.5.4.5, 2026-11-09): a reference reads the name rule's characters up to the first `}` (`ein_core::why::render_why`), so the `:goal-text` prints *a is a q*, the rule's `:why` *a is a p, so it is a q* on `--trace`, and the stdlib's three templates name the hierarchy relation; and the question, taken by default on the user's instruction of 2026-11-09 as the T9 review recommended: the loader refuses a rule's or a macro's `:why` or a query's `:goal-text` that writes a reference to a variable in its scope holding `}`, one line a reference, which no corpus program writes"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.4 (T1f.5.4.5), on the user's ruling of 2026-11-08 on S1f.5.5's T9 review stop, item 7: a template reference reads the name rule's characters up to the first `}`, so it names every variable a program can reach"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -8960,7 +8977,7 @@ relations = []
 models    = [
   [],
 ]
-goal_text = ["{?n*} is a q"]
+goal_text = ["a is a q"]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]

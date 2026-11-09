@@ -211,6 +211,17 @@ pub fn load_query_with(
             errors.push(missing_why("macro", &m.name));
         }
     }
+    for m in declared_macros.values() {
+        if let Some(why) = &m.why {
+            refuse_unreachable_references(
+                &format!("macro '{}'", m.name),
+                ":why",
+                why,
+                &m.params,
+                &mut errors,
+            );
+        }
+    }
     // Pass 1 — relations, with their auto-stored declaration facts.
     for form in relations {
         ingest_relation(ast, terms, &mut kb, form, opts, &mut errors)?;
@@ -455,6 +466,13 @@ fn solve_keyword(ast: &Ast, kw_pairs: &[ExprRef], want: &str) -> Option<NodeId> 
 /// the goal's relations must be among the ones it closes.
 fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
     for query in &kb.program().queries {
+        if let Some(text) = string_value(ast, query_keyword(ast, query, "goal-text")) {
+            let mut vars: Vec<String> = Vec::new();
+            if let Some(goal) = query_keyword(ast, query, "goal") {
+                walk_pattern(ast, goal, &mut vars, &mut Vec::new());
+            }
+            refuse_unreachable_references("query", ":goal-text", text, &vars, errors);
+        }
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
         {
@@ -519,6 +537,30 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
                 classes.push(class);
             }
         }
+    }
+}
+
+/// **A template that names a variable no reference can reach is refused** —
+/// M1f S1f.5.4's T1f.5.4.5 (W37), taken by default on the user's instruction
+/// of 2026-11-09 as S1f.5.5's T9 review recommended. A reference reads a
+/// variable's name up to its first `}` ([`ein_core::why::render_why`]), and
+/// `}` is a name character, so `{?a}b}` is the reference `{?a}` and the text
+/// `b}`: a rule's `:why`, a macro's or a query's `:goal-text` that writes one
+/// for a variable in its scope (`vars`, names without their `?`) would print a
+/// sentence its author did not write. One line a reference, naming `what` and
+/// its clause. A relation's `:why` names its slots by position and is not read.
+fn refuse_unreachable_references(
+    what: &str,
+    clause: &str,
+    template: &str,
+    vars: &[String],
+    errors: &mut Vec<String>,
+) {
+    for v in ein_core::why::unreachable_references(template, vars.iter().map(String::as_str)) {
+        errors.push(format!(
+            "{what}: its {clause} writes {{?{v}}}, a reference to ?{v}, which no reference can \
+             name — a reference reads a variable's name up to its first }}"
+        ));
     }
 }
 
@@ -828,6 +870,13 @@ fn ingest_rules(
             Some(w) => Some(terms.intern_text(w)?),
             None => None,
         };
+        if let Some(w) = string_value(ast, kw_get(&pairs, "why")) {
+            let mut vars: Vec<String> = Vec::new();
+            for node in [params_form, match_node, assert_node] {
+                walk_pattern(ast, node, &mut vars, &mut Vec::new());
+            }
+            refuse_unreachable_references(&format!("{head} '{name}'"), ":why", w, &vars, errors);
+        }
         let param_names: Vec<String> = ast
             .form_args(params_form)
             .iter()

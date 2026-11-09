@@ -3,7 +3,8 @@
 ;;; `W37/template-var-star` (`corpus/wrong_answers.toml`), filed by S1f.5.5
 ;;; (2026-11-08) from its T9 review's § 11, on the user's ruling of that day
 ;;; on the review stop (item 7, *"Accept all as recommended"*): `open`, owned
-;;; by S1f.5.4, before anything fixes it.
+;;; by S1f.5.4, before anything fixed it; `fixed` since S1f.5.4's T1f.5.4.5
+;;; (2026-11-09).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -26,19 +27,19 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; R is {∅} and the class is right, but the sentence is the template as
-;;; written, *“{?n*} is a q”* (`ein solve FILE`, exit 0), and so is the
-;;; trace's *{?n*} is a p, so it is a q* (`ein solve FILE --trace T`).
-;;; `ein_core::why::render_why` reads a reference as `{?`, one letter or
-;;; digit, then letters, digits, `_` and `-`, then `}`; `{?n*}` does not fit,
-;;; so it is copied as text, which is an unbound reference's fallback. The
-;;; stdlib's three templates print *under hierarchy {?isR\*}* the same way
-;;; (`ein solve tests/stdlib/typing/02_type_hierarchy_converse.ein --trace
-;;; T`, 2026-11-08). After S1f.5.5's swap every variable the name rule adds
-;;; does too (`?_x_`, `?a.b`, `?x'`): the T9 review's `zebra2.ein` with
-;;; `_`-led names prints *“The {?\_who\_water\_} drinks water in …”*.
-;;; S1f.5.4 fixes it (T1f.5.4.5): a reference reads the name rule's
-;;; characters up to the first `}`.
+;;; The right answer, since S1f.5.4's fix (T1f.5.4.5, 2026-11-09): R is {∅},
+;;; the class is right, and the sentence is *“a is a q”* (`ein solve FILE`,
+;;; exit 0), and the trace's *a is a p, so it is a q* (`ein solve FILE
+;;; --trace T`). A reference reads the name rule's characters up to the first
+;;; `}`, so it names every variable a program can write; the stdlib's three
+;;; templates print the hierarchy relation where they printed *{?isR\*}*.
+;;; Until then `ein_core::why::render_why` read a reference as `{?`, one
+;;; letter or digit, then letters, digits, `_` and `-`, then `}`, so `{?n*}`
+;;; was copied as text, an unbound reference's fallback, and the sentence was
+;;; the template as written, *“{?n*} is a q”*, as was every variable the name
+;;; rule adds past those (`?_x_`, `?a.b`, `?x'`). A variable holding `}`
+;;; still cannot be named, a reference ending at the first `}`, and the
+;;; loader refuses a template that writes a reference to one.
 
 (relation p T :why "{?1} is a p")
 (relation q T :why "{?1} is a q")
