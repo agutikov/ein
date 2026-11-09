@@ -12,14 +12,17 @@
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-18, its two questions and G-21
 ([Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations)), and on what stays refused in a guard
 ([§ Questions](#questions-it-has-to-settle)). Nothing is open.
-**Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), on the user's instruction of that day (*"just
-continue with default decisions till the end of the phase"*): T1f.5.7.1 done ([its record](#t1f571-record-2026-11-09)),
+**Done 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), on the user's instruction of that day (*"just continue with
+default decisions till the end of the phase"*), in seven commits: T1f.5.7.1 ([its record](#t1f571-record-2026-11-09)),
 every move listed, ten rows filed (W50 to W55) and W24's two restated, five questions taken by default (Q-M1f.30 to
-Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal (`e5ae6946`); T1f.5.7.3 done
-([its record](#t1f573-record-2026-11-09)), premises (`6841faff`); T1f.5.7.4 done ([its
-record](#t1f574-record-2026-11-09)), conclusions (`31a68fdf`); T1f.5.7.5 done ([its
-record](#t1f575-record-2026-11-09)), the pages, and W56 filed (`c35135c9`); T1f.5.7.6 done ([its
-record](#t1f576-record-2026-11-09)), a goal's `(absent …)` judged.
+Q-M1f.34) (`a081ae95`); T1f.5.7.2 ([its record](#t1f572-record-2026-11-09)), the relations in a goal (`e5ae6946`); T1f.5.7.3
+([its record](#t1f573-record-2026-11-09)), premises (`6841faff`); T1f.5.7.4 ([its
+record](#t1f574-record-2026-11-09)), conclusions (`31a68fdf`); T1f.5.7.5 ([its
+record](#t1f575-record-2026-11-09)), the pages, and W56 filed (`c35135c9`); T1f.5.7.6 ([its
+record](#t1f576-record-2026-11-09)), a goal's `(absent …)` judged (`607c5d88`); T1f.5.7.7, the acceptance re-taken
+([§ Acceptance re-taken](#acceptance-re-taken-2026-11-09)) and what the merge writes ([§ For the merge](#for-the-merge)).
+Six questions taken by default in all, Q-M1f.30 to Q-M1f.35; the register on the lane reads 140 fixed, 19 open and 1 not
+wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -507,7 +510,81 @@ the new witness among them (`build/s1f.5.7/xcheck`, 533 files, 513 the same, 202
 the witness's two cells 1 → 0, `corpus_shapes.md5` its 7 digests moved and 21 added, and its region block. The register reads **140 fixed, 19 open and 1 not
 wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 
+## Acceptance re-taken (2026-11-09)
+
+Each item, and what holds it:
+
+- *`(query :goal (neq w ?y))` answers a row for each name of the program but `w`, and `(eq w ?y)` answers `?y = w`*:
+  `examples/features/16_eq_neq_goal.ein`'s first two claims under `ein test` (`corpus_cli`, `test_cli`), the register's
+  `W55/goal-neq-free`, and `predicates::tests::eq_and_neq_are_their_definition_over_the_programs_names`, every
+  combination of a name, a query's own name and a variable on each side.
+- *`(neq a b)` holds and `(eq a b)` has no row, each with a claim that loads and holds*: the fixture's third and fourth.
+- *`(and (p ?y) (neq w ?y))`'s claim `(model (neq w a) (p a))` loads and holds under `ein test`*: the fixture's eighth.
+- *the goal holds: it has no variable is printed only for a goal with no variable*:
+  `cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`.
+- *A rule's premise means the same in any order of its conjuncts, and a guard's variable nothing else binds ranges
+  over the program's names: `W24/guard-before-binder` answers its restated right*: the register's two W24 rows, and
+  `rule_semantics`' `a_premise_means_the_same_in_any_order_of_its_conjuncts`,
+  `a_guards_free_variable_ranges_over_the_programs_names` and `a_binding_guard_binds_where_it_is_written`;
+  `examples/features/17_eq_neq_premise.ein`.
+- *A rule that concludes a true `eq` or `neq` stores nothing, and one that concludes a false one makes its state a
+  contradiction, with a core and a rule*: W30's three rows, W51's and W52's conclusion rows, and
+  `rule_semantics::an_eq_or_neq_conclusion_is_checked_never_stored`.
+- *No corpus answer moves*: the cross-check of every program of the five roots against `dc4c0bdc`'s build moved only
+  the register's witnesses the stage owns, its two fixtures and the two inventory probes of its case
+  (`build/s1f.5.7/xcheck/result.txt`).
+- *`./run_tests.sh` is green*: at every commit, each body naming its log.
+
+**S1f.5.7 is done, 2026-11-09.**
+
 ## For the merge
 
-S1f.5.7 ran in lane 2 (`p1f5-lane2`), which does not edit the prose both lanes share. What those places should gain
-when the coordinator merges the branch is written here, with the stage's last task.
+S1f.5.7 ran in lane 2 (`p1f5-lane2`, from `dc4c0bdc`), which does not edit the prose both lanes share. What those
+places should gain when the coordinator merges the branch:
+
+1. **P1f.5's README, the stage table's S1f.5.7 row**, its state: *"**done 2026-11-09**, on lane 2 in seven commits
+   ([the records](s1f.5.7_eq_and_neq_are_relations.md#t1f571-record-2026-11-09)): T1f.5.7.1, every move listed, W50 to
+   W55 filed and W24's two restated (`a081ae95`); T1f.5.7.2, the relations in a goal (`e5ae6946`); T1f.5.7.3,
+   premises (`6841faff`); T1f.5.7.4, conclusions (`31a68fdf`); T1f.5.7.5, the pages, and W56 filed (`c35135c9`);
+   T1f.5.7.6, a goal's `(absent …)` judged (`607c5d88`); T1f.5.7.7, the acceptance re-taken. [Q-M1f.30](../open_questions.md#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument)
+   to Q-M1f.35 taken by default; on the lane the register reads 140 fixed, 19 open and 1 not wrong"*. The same
+   README's items table: S-18's and G-21's last cell gains *"**done 2026-11-09** (W55, W30)"*.
+2. **The register's counts**: lane 2 files eleven rows (W50 to W56) and fixes them and W30's three and W24's two, all
+   in `corpus/wrong_answers.toml`, which the merge carries; on the lane `grep '^status' corpus/wrong_answers.toml | sort
+   | uniq -c` reads 140 fixed, 19 open, 1 not wrong (160 rows). The merged count is master's plus these: +14 fixed, −3
+   open, +11 rows.
+3. **AGENTS.md**, after the sentence on S1f.5.5's close: *"**S1f.5.7 ran to its end the same day** (lane 2): `eq` and
+   `neq` are the relations of equality and non-equality, computed and never stored (the user's ruling of 2026-11-07,
+   Q-M1e2.26, and G-21). In a goal and a premise a guard binds a variable nothing else binds, `eq` to the other side
+   and `neq` over the program's names (`ein_infer::predicates::domain`), and waits for the relation premise that
+   binds it, so a premise means the same in any order of its conjuncts; a conclusion of either, a written `(eq …)`
+   fact and `(not (eq …))` are checked, a false one `(false)`; a query's claim may name either. W30's three, W24's two
+   restated rows and W50 to W56's eleven fixed, Q-M1f.30 to Q-M1f.35 defaulted"*, linking this file as
+   `plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md`, with the
+   merged count.
+4. **The milestone README**: nothing; it names no stage's state.
+5. **The live read-out page, `docs/kernel/inference/read_out.md`, and its generated golden page** (S1f.5.16's, on
+   `master`), what `ein solve` prints differently since this stage:
+   - a query's class: a guard's variable is bound in every row it has, `?y = Node`, `?y = a`, … where the row read
+     *the goal holds: it has no variable*; that sentence is printed only for a goal with no variable, and a new one,
+     *the goal holds: it binds no variable*, for a goal whose every variable is an `(absent …)`'s own
+     (`ein-render`'s query block);
+   - a class's facts and its `as :expect` line: the goal's instances under the rows at every depth (W54), an `eq`,
+     `neq` or `(absent …)` instance among them, so the suggested claim loads; a goal's `(absent …)` is judged (W56),
+     so a row the state refutes is gone;
+   - a state dead by a false `eq` or `neq` conclusion: `empty  every node is dead — root's own fixpoint derives
+     (false)` at root, `unsat core` the premises the firing matched, `refuted by` the rule; by a written false `(eq a
+     w)`: `unsat core (false)`, `refuted by (given)`;
+   - no summary field's name or schema moves (`ein-summary/2`).
+6. **The register's schema**: no bump. Every row lane 2 files uses schema /16's fields; /18, which the coordinator kept
+   for lane 2, is unused.
+7. **The id blocks**: rows W50 to W56 used, W57 unused; questions Q-M1f.30 to Q-M1f.35 used, Q-M1f.36 to Q-M1f.41
+   unused.
+8. **Files both lanes may have touched**, which the merge should re-take rather than splice: `corpus_exits.txt` and
+   `corpus_shapes.md5` (`EIN_BLESS=1`; lane 2's cells are its eleven witnesses and two fixtures), the register's
+   header paragraphs (lane 2 appends six after W40/W41's), `corpus/corpus.toml`'s entries, `examples/README.md`'s
+   witness count (154 on the lane) and its `features/` line, `open_questions.md`'s index table (lane 2's rows follow
+   Q-M1f.17's), `test_cli::a_query_with_no_expectation_is_never_solved`'s count of held claims under
+   `examples/features/` (19 on the lane), and the kernel pages lane 2 edited: `01_grammar.md`, `02_patterns.md`,
+   `06_reserved_names.md`, `glossary.md`, `defined_behaviour.md` (§ 4.1's claim rows, § 4.9) and
+   `inference/implementation.md`.

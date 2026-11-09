@@ -10186,7 +10186,7 @@ look_at  = ["summary"]
 note     = "Filed by S1f.5.7 (T1f.5.7.5, 2026-11-09), outside its case: found where the stage's test of a goal's empty row (`cli_semantics::a_goals_empty_row_says_whether_the_goal_has_a_variable`) wrote `(query :goal (absent (q ?x)))`, which answered one row over a state that holds a `q`. No corpus goal writes an `(absent …)`, `forall` or `unknown` (S1f.5.7's scan of every `:goal`, 2026-11-09). With no claim the read-out answers two rows and suggests `(model (absent (q a)) (absent (q b)) (p a) (p b))`, which the loader refuses. Fixed by T1f.5.7.6 (2026-11-09): `goal_bindings` judges the goal's lifted guard, so the one row is `?y = a`, and the claim loads and holds, exit 0"
 
 [case.fixed]
-commit = "0000000"
+commit = "607c5d88"
 by     = "S1f.5.7 (T1f.5.7.6): a goal's lifted `(absent …)` is judged against the state, and a query's claim may list its instance (Q-M1f.35)"
 date   = "2026-11-09"
 
