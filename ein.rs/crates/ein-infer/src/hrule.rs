@@ -145,10 +145,15 @@ impl Hrules {
                 };
                 match build_fact(s.terms, s.ast, plan, env, template) {
                     Ok(fact) => f(s, fact)?,
-                    // `UnboundVar` / `NotAFact` — a malformed template yields
-                    // no candidate. An `Overflow` is not that, but it is
-                    // unreachable here for the same reason it is elsewhere:
-                    // the interner holds 2^30 rows.
+                    // `NotAFact` — a malformed template yields no candidate.
+                    // `UnboundVar` reaches no hrule since M1f S1f.5.10: the
+                    // loader refuses a template variable no premise or
+                    // parameter binds, and a `:hrules` activator binds a
+                    // parameter to a name, never a nested fact. Until then a
+                    // template that wrote one proposed nothing, in silence
+                    // (`W57/hrule-assert-var`). An `Overflow` is not that,
+                    // but it is unreachable here for the same reason it is
+                    // elsewhere: the interner holds 2^30 rows.
                     Err(_) => continue,
                 }
             }

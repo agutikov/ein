@@ -68,9 +68,21 @@ pub struct Firing {
 /// What stops a firing that should never have been attempted.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FireError {
-    /// `unbound var ?{name} in :assert — bindings: …`. The matcher guarantees
-    /// no unbound var reaches an `:assert` template, so this is an invariant
-    /// violation rather than a rejected input — which is why it is loud.
+    /// `unbound var ?{name} in :assert — bindings: …`: a conclusion read a
+    /// register its match left unbound.
+    ///
+    /// **Since M1f S1f.5.10 the loader refuses a conclusion variable no
+    /// premise or parameter binds** (P1f.5's F13, `ein_ir::from_ir`'s
+    /// `refuse_unbound_conclusions`), and `ein-ir`'s `fuzz_properties` holds
+    /// every plan of an accepted program to it, so the one path left is a
+    /// **parameter its activator binds to a nested fact**, which
+    /// `compile::Compiler::bind_activator` does not seed (W33's cause): read
+    /// only by a conclusion, it reaches here (`W58/parameter-nested-assert`).
+    /// S1f.5.18 binds the parameter and retires this variant (Q-M1f.37).
+    /// Until S1f.5.10 a rule whose `:assert` wrote a variable its `:match`
+    /// left unbound reached here at its first firing, on whichever command
+    /// reached that firing (W57), the doc calling it an invariant violation
+    /// the matcher guaranteed against.
     UnboundVar(String),
     /// A conclusion no fact can hold: a top-level `:assert` that is not a
     /// fact, or an argument that is not a value — a relation written as a
@@ -469,13 +481,17 @@ mod tests {
         assert!(!prov.bindings.is_empty());
     }
 
-    /// The matcher guarantees no unbound var reaches an `:assert`, so one that
-    /// does is an invariant violation — and it says so, bindings included.
+    /// A conclusion that reads a register its match left unbound says so,
+    /// bindings included. Since M1f S1f.5.10 the loader refuses a conclusion
+    /// variable no premise or parameter binds, so the register is a
+    /// parameter no activator bound, as an activator binding it to a nested
+    /// fact leaves it until S1f.5.18 (W58); until S1f.5.10 this test wrote
+    /// `(rule r () …)`, a variable no premise bound.
     #[test]
     fn an_unbound_assert_var_quotes_the_bindings() {
         let (ast, mut terms, _kb, plan) = setup(
             "(relation a Thing)\n(relation b A B)\n\
-             (rule r ()\n  :match (a ?x)\n  :assert (b ?x ?never))\n",
+             (rule r (?never)\n  :match (a ?x)\n  :assert (b ?x ?never))\n",
         );
         let mut regs = vec![Value::UNBOUND; plan.n_regs as usize];
         let x = plan

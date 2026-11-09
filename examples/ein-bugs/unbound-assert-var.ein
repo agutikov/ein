@@ -1,25 +1,38 @@
-;;; M1a S1a.6.6 — an unbound variable reaching an `:assert`.
+;;; M1a S1a.6.6 — an unbound variable reaching an `:assert`, refused at load
+;;; since M1f S1f.5.10.
 ;;;
-;;; No corpus file reached this case until the fuzzer wrote one: a rule
-;;; whose template reads a variable that the arm it matched through never
-;;; bound. Two forms:
+;;; No corpus file reached this case until the fuzzer wrote one, on
+;;; 2026-08-20: a rule whose template reads a variable that the arm it matched
+;;; through never bound. The rule's `:match` is a disjunction whose arms bind
+;;; **different** variables, and its `:assert` reads `?v0` and `?v1`:
+;;; matching the first arm binds `?v1` and `?v3`, the second `?v0` and `?v2`,
+;;; so each leaves one of the two unbound.
 ;;;
-;;; The rule's `:match` is a disjunction whose arms bind **different**
-;;; variables, and its `:assert` reads `?v0` and `?v1`. Matching the second
-;;; arm binds `?v0` and `?v2`, so `?v1` arrives at the assert template
-;;; unbound. The engine detects it and refuses the run, exit 1, with one
-;;; stderr line naming the variable and the bindings it did have:
+;;; **Since M1f S1f.5.10** (2026-11-09, on the user's ruling of 2026-11-07 on
+;;; P1f.5's F13, *"yes, file F13 with the refusal"*) the loader holds a
+;;; conclusion's every variable to every way its `:match` can hold, and
+;;; refuses the program, one line per variable naming the disjunct that
+;;; leaves it unbound and the two explicit spellings of what the implicit
+;;; form could mean, `; `-joined, on every command that loads it, exit 1
+;;; (`ein test`: 2):
+;;;
+;;;     kb load error: rule 'fire-3': its :assert writes ?v0, which no premise
+;;;     or parameter binds where its :match holds through (r1 ?v1 ?v3) — to
+;;;     conclude it of every object of a type, bind it with a premise such as
+;;;     (is-a ?v0 T), or of every name of the program with (eq ?v0 ?v0); rule
+;;;     'fire-3': its :assert writes ?v1, … through (r0 ?v0 ?v2) — …
+;;;
+;;; **Until then** the program loaded and the run stopped at the rule's first
+;;; firing, exit 1, with one stderr line naming the variable and the bindings
+;;; the arm did have, in the Python implementation's spelling:
 ;;;
 ;;;     KeyError: "unbound var ?v1 in :assert — bindings: {'v0': 'o2', 'v2': 'o1'}"
 ;;;
-;;; Fixed 2026-08-20 in ein.rs, which printed the message alone until then;
-;;; `KeyError: "…"` is the same treatment `CompileError` and
-;;; `FileNotFoundError` already had — the class, then the message.
-;;;
-;;; It is an *invariant violation* rather than a rejected input — the matcher
-;;; is supposed to guarantee no unbound var reaches a template — which is why
-;;; it is loud at run time rather than a load-time diagnostic, and why the
-;;; corpus sweep's banked exit code is what pins it.
+;;; (`ein saturate`'s; `ein solve` printed the message alone). The engine
+;;; called it an *invariant violation*, the matcher being supposed to
+;;; guarantee no unbound var reaches a template, and the loader never checked
+;;; it. The register's `W57/assert-var-stops` is the same stop without the
+;;; disjunction, and its three siblings the ways the engine answered instead.
 
 (r0 o2 o1)
 

@@ -672,7 +672,7 @@ note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query g
 path   = "examples/ein-bugs/unbound-assert-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "Reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. The run is refused, exit 1, with the message double-quoted; the engine printed it unquoted until this fixture."
+note   = "Reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. Refused at load since M1f S1f.5.10 (F13), exit 1, one line per variable naming the disjunct that leaves it unbound; until then the run stopped at its first firing, exit 1, `KeyError: \"unbound var ?v1 in :assert — bindings: {…}\"`, the message double-quoted since this fixture."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-relation-head.ein"

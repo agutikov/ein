@@ -1470,6 +1470,124 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
     }
 }
 
+/// **A conclusion's variable nothing binds is refused at load, by every
+/// command, with one line** — M1f S1f.5.10, on the user's ruling of 2026-11-07
+/// on P1f.5's F13 (*"yes, file F13 with the refusal"*).
+///
+/// W57's four witnesses and the regression fixture, each on every command that
+/// loads a program: exit 1 (`ein test`: 2), and the loader's line, one per
+/// variable, naming the rule, the variable and the two explicit spellings, in
+/// Ein's words. Until S1f.5.10 the first and the fixture stopped every command
+/// at root's firing, *unbound var ?y in :assert — bindings: {'x': 'a'}*; the
+/// second stopped `solve` and `oracle` while `saturate` and `solve --minimal`
+/// answered; and the third and the fourth answered on every command. What
+/// loads: a variable a typed premise, an `eq` guard or a parameter binds. And
+/// W58's witness, a parameter its activator binds to a nested fact, still
+/// stops the run, which S1f.5.18 fixes (Q-M1f.37).
+#[test]
+fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
+    let line = |head: &str, name: &str, var: &str, place: &str| {
+        format!(
+            "{head} '{name}': its :assert writes ?{var}, which no premise or parameter \
+             binds{place} — to conclude it of every object of a type, bind it with a premise \
+             such as (is-a ?{var} T), or of every name of the program with (eq ?{var} ?{var})"
+        )
+    };
+    let refused: [(&str, String); 5] = [
+        (
+            "examples/ein-bugs/wrong-answers/assert-var-stops.ein",
+            line("rule", "r", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein",
+            line("rule", "r", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/hrule-assert-var.ein",
+            line("hrule", "h", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein",
+            line("rule", "r", "y", ""),
+        ),
+        (
+            "examples/ein-bugs/unbound-assert-var.ein",
+            format!(
+                "{}; {}",
+                line(
+                    "rule",
+                    "fire-3",
+                    "v0",
+                    " where its :match holds through (r1 ?v1 ?v3)"
+                ),
+                line(
+                    "rule",
+                    "fire-3",
+                    "v1",
+                    " where its :match holds through (r0 ?v0 ?v2)"
+                )
+            ),
+        ),
+    ];
+    let scratch = ein_corpus::Scratch::new("ein-unbound-conclusion");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    for (file, want) in &refused {
+        let want = format!("kb load error: {want}");
+        for (args, code) in [
+            (vec!["saturate", "--dump", file], 1),
+            (vec!["solve", file], 1),
+            (vec!["solve", "--minimal", file], 1),
+            (vec!["oracle", file], 1),
+            (vec!["test", file], 2),
+            (vec!["render", "lattice", file], 1),
+            (vec!["render", "kb", file], 1),
+            (vec!["kb", "save", file, &einb], 1),
+        ] {
+            let r = ein(&args);
+            assert_eq!(r.code, code, "ein {args:?}:\n{}", r.err);
+            assert!(
+                r.err.lines().any(|l| l.trim() == want),
+                "ein {args:?}: no line {want:?}:\n{}",
+                r.err
+            );
+            for python in ["KeyError", "bindings: {", "unbound var"] {
+                assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
+            }
+        }
+    }
+    // What loads: a variable a typed premise, an `eq` guard or a parameter
+    // binds — the acceptance's typed premise among them.
+    let ok = scratch.path().join("ok.ein");
+    std::fs::write(
+        &ok,
+        "(relation p Node) (relation q Node) (relation is-a Node Node)\n\
+         (p a) (is-a h1 House)\n\
+         (rule typed () :match (and (p ?x) (is-a ?y House)) :assert (q ?y))\n\
+         (rule every () :match (and (p ?x) (eq ?y ?y)) :assert (q ?y))\n\
+         (rule param (?y) :match (p ?x) :assert (q ?y))\n(param b)\n",
+    )
+    .expect("writes");
+    let r = ein(&["saturate", "--dump", &ok.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    // `typed` concludes `(q h1)`; `every`, every name of the program, `House`
+    // and `b` among them, `b` the parameter's too.
+    for fact in ["(q h1 :rule typed)", "(q b :rule", "(q House :rule every)"] {
+        assert!(r.out.contains(fact), "no {fact}:\n{}", r.out);
+    }
+    // W58: the one path left, a parameter its activator binds to a nested
+    // fact, which the compiler does not seed (W33's cause), until S1f.5.18.
+    let r = ein(&[
+        "solve",
+        "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein",
+    ]);
+    assert_eq!(r.code, 1, "{}", r.err);
+    assert!(
+        r.err.contains("unbound var ?y in :assert"),
+        "W58's stop moved, which S1f.5.18 owns:\n{}",
+        r.err
+    );
+}
+
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.

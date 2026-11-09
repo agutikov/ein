@@ -3,6 +3,12 @@
 ;;; A parametrised rule with a top-level `(or …)` over two
 ;;; disjuncts of different arity.
 ;;;
+;;; Its `:assert` concluded `(quad ?d ?c ?b ?a)` until M1f S1f.5.10, which
+;;; refuses a conclusion's variable a disjunct leaves unbound (F13): the
+;;; second disjunct binds no `?c` or `?d`. It concludes what both bind since,
+;;; and keeps its node kinds; no activator is written, so the rule never
+;;; fires, before and after (Q-M1f.39).
+;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
 ;;; digested by `corpus_shapes.md5`, so a change to how any of these
@@ -11,4 +17,4 @@
 
 (rule n (?rel)
   :match  (or (quad ?a ?b ?c ?d) (?rel ?a ?b))
-  :assert (quad ?d ?c ?b ?a))
+  :assert (quad ?b ?a ?b ?a))

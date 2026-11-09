@@ -385,7 +385,11 @@ pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
 /// The message was printed alone until 2026-08-20, when
 /// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)'s
 /// fuzzer produced the first input that reaches it; no corpus file had ever
-/// hit it. `examples/ein-bugs/unbound-assert-var.ein` is the fixture.
+/// hit it. `examples/ein-bugs/unbound-assert-var.ein` was the fixture until
+/// M1f S1f.5.10, which refuses its program at load (F13): the one input that
+/// reaches the `KeyError` line since is a parameter its activator binds to a
+/// nested fact, read only by a conclusion (`W58/parameter-nested-assert`),
+/// which S1f.5.18 fixes.
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;
     use ein_infer::saturator::SaturateError;

@@ -967,6 +967,19 @@ fn ingest_rules(
         if errors.len() != n_refused {
             continue;
         }
+        // A conclusion's variable nothing binds (M1f S1f.5.10, F13).
+        refuse_unbound_conclusions(
+            ast,
+            &head,
+            &name,
+            &param_vars,
+            match_node,
+            assert_node,
+            errors,
+        );
+        if errors.len() != n_refused {
+            continue;
+        }
         let why = match string_value(ast, kw_get(&pairs, "why")) {
             Some(w) => Some(terms.intern_text(w)?),
             None => None,
@@ -1309,6 +1322,142 @@ fn refuse_no_fact_holds(
                 dc(arg)
             ),
         });
+    }
+}
+
+/// **A conclusion's every variable is bound** — M1f S1f.5.10, on the user's
+/// ruling of 2026-11-07 on F13 (*"yes, file F13 with the refusal"*).
+///
+/// Every variable a rule's or an hrule's `:assert` writes, at any depth, must
+/// be bound on every way its `:match` can hold, as the compiler reads it
+/// (`ein_infer::compile`):
+///
+/// - by a **parameter**, which the activator binds;
+/// - by a **relation premise**, at any depth of its arguments — a stored
+///   `(not P)` among them, a pattern over stored negations;
+/// - or by an **`eq` or `neq` guard**, whose variable nothing else binds
+///   ranges over the program's names (M1f S1f.5.7).
+///
+/// A variable seen only inside an `(absent …)` — `forall` and `unknown` expand
+/// to one — is not bound outside it. A top-level `(or …)` is one way per
+/// disjunct, and the variable must be bound in each; a nested one binds what
+/// every one of its arms binds (the compiler refuses it, `ein_infer::compile`).
+/// An `(open …)` conclusion names a relation, which `validate_open` checks.
+///
+/// One line per variable, in the order the `:assert` writes them, naming the
+/// rule, the variable, the disjuncts that leave it unbound where some bind it,
+/// and the two explicit spellings of what the implicit form could mean:
+/// *every object of a type*, a premise such as `(is-a ?y T)`, and *every name
+/// of the program*, `(eq ?y ?y)`.
+///
+/// **Until S1f.5.10** the loader did not check it, and the run found it at
+/// whichever node first fired the rule: it stopped with
+/// `ein_infer::firing::FireError::UnboundVar`'s *unbound var ?y in :assert —
+/// bindings: {'x': 'a'}*, exit 1, or, where only a commitment fires the rule,
+/// answered on the commands that never reached one; an hrule's template
+/// proposed nothing, in silence; and a rule that never fired loaded and
+/// answered.
+fn refuse_unbound_conclusions(
+    ast: &Ast,
+    head: &str,
+    name: &str,
+    params: &[&str],
+    match_node: NodeId,
+    assert_node: NodeId,
+    errors: &mut Vec<String>,
+) {
+    /// What a premise binds outside itself.
+    fn binds(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
+        if !matches!(ast.node(node), Node::SForm { .. }) {
+            return;
+        }
+        match ast.head_name(node) {
+            Some("absent") => {}
+            Some("and") => {
+                for &a in ast.form_args(node) {
+                    binds(ast, a, out);
+                }
+            }
+            Some("or") => {
+                let mut every: Option<BTreeSet<String>> = None;
+                for &a in ast.form_args(node) {
+                    let mut arm = BTreeSet::new();
+                    binds(ast, a, &mut arm);
+                    every = Some(match every {
+                        None => arm,
+                        Some(e) => e.intersection(&arm).cloned().collect(),
+                    });
+                }
+                out.extend(every.unwrap_or_default());
+            }
+            // A guard's argument is a variable, a name, or a fact that holds
+            // no variable (`refuse_no_fact_holds`), and a relation premise's
+            // every variable binds, so both read the same here.
+            _ => vars_under(ast, node, out),
+        }
+    }
+    /// Each variable under `node`, in source order, once.
+    fn written(ast: &Ast, node: NodeId, out: &mut Vec<String>) {
+        match ast.node(node) {
+            Node::Var(s) => {
+                let s = ast.sym(s);
+                if !out.iter().any(|o| o == s) {
+                    out.push(s.to_string());
+                }
+            }
+            Node::SForm { .. } => {
+                for &a in ast.form_args(node) {
+                    written(ast, a, out);
+                }
+            }
+            _ => {}
+        }
+    }
+    let disjuncts: Vec<NodeId> = if matches!(ast.node(match_node), Node::SForm { .. })
+        && ast.head_name(match_node) == Some("or")
+    {
+        ast.form_args(match_node).to_vec()
+    } else {
+        vec![match_node]
+    };
+    let bound: Vec<BTreeSet<String>> = disjuncts
+        .iter()
+        .map(|&d| {
+            let mut b: BTreeSet<String> = params.iter().map(|p| p.to_string()).collect();
+            binds(ast, d, &mut b);
+            b
+        })
+        .collect();
+    let mut vars: Vec<String> = Vec::new();
+    for c in top_conjuncts(ast, assert_node) {
+        if !is_open_form(ast, c) {
+            written(ast, c, &mut vars);
+        }
+    }
+    for v in vars {
+        let unbound: Vec<NodeId> = disjuncts
+            .iter()
+            .zip(&bound)
+            .filter(|(_, b)| !b.contains(&v))
+            .map(|(&d, _)| d)
+            .collect();
+        if unbound.is_empty() {
+            continue;
+        }
+        let place = if unbound.len() == disjuncts.len() {
+            String::new()
+        } else {
+            let arms: Vec<String> = unbound
+                .iter()
+                .map(|&d| crate::dump::dump_compact(ast, d))
+                .collect();
+            format!(" where its :match holds through {}", arms.join(" or "))
+        };
+        errors.push(format!(
+            "{head} '{name}': its :assert writes ?{v}, which no premise or parameter binds{place} \
+             — to conclude it of every object of a type, bind it with a premise such as \
+             (is-a ?{v} T), or of every name of the program with (eq ?{v} ?{v})"
+        ));
     }
 }
 
@@ -2231,6 +2380,103 @@ mod tests {
             "(rule e () :match (and (neq ?x a) (p ?x)) :assert (hit ?x))",
             "(rule e () :match (and (p ?x) (eq ?x ?u)) :assert (hit ?u))",
             "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x))",
+        ] {
+            ok(&format!("{pre}{rule}"));
+        }
+    }
+
+    /// **A conclusion's every variable is bound, and is refused at load where
+    /// it is not** — M1f S1f.5.10, on the user's ruling of 2026-11-07 on
+    /// P1f.5's F13 (*"yes, file F13 with the refusal"*). Each shape the
+    /// stage file names, one line per variable naming the rule, the variable
+    /// and the two explicit spellings: a free variable, an `(or …)` arm, a
+    /// variable seen only under an `(absent …)`, and an hrule; and a guard's
+    /// under an `(absent …)`, a nested conclusion's, an empty `:match`'s, two
+    /// variables in one conclusion and a `forall`'s. Then what binds, and
+    /// loads: a parameter, a relation premise at any depth, a stored `(not
+    /// P)`, an `eq` or `neq` guard (M1f S1f.5.7), the acceptance's typed
+    /// premise, and an `(or …)` whose every arm binds.
+    #[test]
+    fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
+        let line = |head: &str, name: &str, var: &str, place: &str| {
+            format!(
+                "{head} '{name}': its :assert writes ?{var}, which no premise or parameter \
+                 binds{place} — to conclude it of every object of a type, bind it with a \
+                 premise such as (is-a ?{var} T), or of every name of the program with \
+                 (eq ?{var} ?{var})"
+            )
+        };
+        let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) \
+                   (relation tag T T)\n(p a) (q b)\n";
+        for (rule, want) in [
+            // A free variable.
+            (
+                "(rule r () :match (p ?x) :assert (q ?y))",
+                line("rule", "r", "y", ""),
+            ),
+            // An `(or …)` arm that leaves it unbound.
+            (
+                "(rule r () :match (or (p ?x) (q ?y)) :assert (hit ?x))",
+                line("rule", "r", "x", " where its :match holds through (q ?y)"),
+            ),
+            // Seen only under an `(absent …)`, and under a guard inside one.
+            (
+                "(rule r () :match (and (p ?x) (absent (q ?y))) :assert (hit ?y))",
+                line("rule", "r", "y", ""),
+            ),
+            (
+                "(rule r () :match (and (p ?x) (absent (eq ?y a))) :assert (hit ?y))",
+                line("rule", "r", "y", ""),
+            ),
+            // An hrule.
+            (
+                "(hrule h () :match (p ?x) :assert (q ?y))",
+                line("hrule", "h", "y", ""),
+            ),
+            // Nested in a conclusion's argument, and an empty `:match` (F12).
+            (
+                "(rule r () :match (p ?x) :assert (box (tag ?x ?y)))",
+                line("rule", "r", "y", ""),
+            ),
+            (
+                "(rule r () :match () :assert (q ?y))",
+                line("rule", "r", "y", ""),
+            ),
+        ] {
+            assert_eq!(err(&format!("{pre}{rule}")), want, "{rule}");
+        }
+        // Two variables, one line each, in the order the `:assert` writes
+        // them; and a `forall`'s bound variable, which its guard reads alone.
+        assert_eq!(
+            err(&format!(
+                "{pre}(rule r () :match (p ?x) :assert (tag ?z ?y))"
+            )),
+            format!(
+                "{}; {}",
+                line("rule", "r", "z", ""),
+                line("rule", "r", "y", "")
+            )
+        );
+        assert_eq!(
+            err(&format!(
+                "(import std.macro :symbols (forall))\n{pre}\
+                 (rule r () :match (and (p ?x) (forall ?y (q ?y) (p ?y))) :assert (tag ?x ?y))"
+            )),
+            line("rule", "r", "y", "")
+        );
+        // What binds, and loads.
+        for rule in [
+            "(rule r (?y) :match (p ?x) :assert (tag ?x ?y))",
+            "(rule r () :match (box (tag ?x ?y)) :assert (tag ?y ?x))",
+            "(rule r () :match (not (p ?x)) :assert (hit ?x))",
+            "(rule r () :match (and (p ?x) (eq ?y ?y)) :assert (q ?y))",
+            "(rule r () :match (and (p ?x) (neq ?y ?x)) :assert (tag ?x ?y))",
+            "(rule r () :match (and (p ?x) (not (eq ?y ?x))) :assert (tag ?x ?y))",
+            "(rule r () :match (and (p ?x) (is-a ?y House)) :assert (q ?y))",
+            "(rule r () :match (or (p ?x) (q ?x)) :assert (hit ?x))",
+            "(rule r () :match (and (p ?x) (absent (q ?x))) :assert (hit ?x))",
+            "(hrule h () :match (p ?x) :assert (q ?x))",
+            "(rule r () :match () :assert (q a))",
         ] {
             ok(&format!("{pre}{rule}"));
         }

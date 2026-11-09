@@ -8,7 +8,8 @@
 2026-11-09 *"just continue with default decisions till the end of the phase"*.
 **Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.7 (`2eb483e0`): T1f.5.10.1
 ([its record](#t1f5101-record-2026-11-09)), every move listed, W57's four rows and W58 filed, five questions taken by
-default (Q-M1f.36 to Q-M1f.40).
+default (Q-M1f.36 to Q-M1f.40) (`6fbcf64b`); T1f.5.10.2 ([its record](#t1f5102-record-2026-11-09)), the refusal, W57
+fixed.
 **Depends on:** [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md), whose `(eq ?y ?y)` is one of the two
 spellings the refusal names, and which makes a guard bind. It lands before
 [S1f.5.9](s1f.5.9_an_empty_match_fires.md), so that a rule with `:match ()` and an unbound conclusion
@@ -189,3 +190,62 @@ commitment witness's three among them (`solve` 1, `solve --minimal` 0, `saturate
 the programs whose read-out errs gains `assert-var-under-commitment.ein`, whose `--monotone` answers where its read-out
 stops at a commitment's firing, W57's disagreement seen from one more pair of runs, until T1f.5.10.2 refuses it. The
 prototype is set aside as `build/s1f.5.10/prototype.patch`; T1f.5.10.2 lands it.
+
+## T1f.5.10.2 record (2026-11-09)
+
+**The refusal** (`ein_ir::from_ir`'s `refuse_unbound_conclusions`, the prototype of T1f.5.10.1): after the loader's
+rule-shape refusals (`refuse_no_fact_holds`) and before the verdict atom's (`validate_open`), it reads a rule's or an
+hrule's `:match` as the compiler does, one way per disjunct of a top-level `(or …)`. A way binds the rule's parameters,
+every variable of a relation premise at any depth of its arguments (a stored `(not P)` among them), and every variable
+of an `eq` or `neq` guard; an `(absent …)` binds nothing outside it, so neither does a `forall` or an `unknown`, which
+expand to one; `()` binds nothing; a nested `(or …)` binds what each of its arms binds, and the compiler refuses it
+anyway (a `CompileError`, before and after). Each variable the `:assert` writes, at any depth and in the order written,
+that some way leaves unbound is one line, `; `-joined with the loader's others (Q-M1f.38):
+
+```text
+rule 'r': its :assert writes ?y, which no premise or parameter binds — to conclude it of every object of a type,
+bind it with a premise such as (is-a ?y T), or of every name of the program with (eq ?y ?y)
+rule 'fire-3': its :assert writes ?v0, which no premise or parameter binds where its :match holds through (r1 ?v1 ?v3)
+— …
+```
+
+An `(open …)` conclusion names a relation, which `validate_open` already checks (`defined_behaviour.md` § 4.2), so it
+is not read here. Every command that loads the program refuses it with the line, exit 1 (`ein test`: 2): `saturate`,
+every `solve` mode, `oracle`, `test`, `render lattice`, `render kb` and `kb save`.
+
+**What stays** (Q-M1f.37): `FireError::UnboundVar` and its `KeyError: "unbound var …"` line, which W58's shape, a
+parameter its activator binds to a nested fact read only by a conclusion, still reaches until S1f.5.18 binds the
+parameter. Its doc says so, as do `firing`'s unit test (a parameter no activator bound, where it wrote a variable no
+premise bound), `hrule.rs`' comment (no hrule reaches it: the loader refuses the template, and a `:hrules` activator
+binds names only) and `ein-cli`'s `common::saturate_error_line`.
+
+**The tests.**
+- `ein-ir`'s `from_ir::tests::a_conclusion_variable_nothing_binds_is_refused_at_load`: the line for each shape the stage
+  file names, a free variable, an `(or …)` arm, a variable seen only under an `(absent …)` and an hrule, and a guard's
+  under an `(absent …)`, a nested conclusion's, an empty `:match`'s, two in one conclusion (two lines, in order) and a
+  `forall`'s; and eleven rules that bind and load, a parameter, a nested premise, a stored `(not P)`, `eq`, `neq` and
+  `(not (eq …))`, the acceptance's `(and (p ?x) (is-a ?y House))`, an `(or …)` whose arms both bind, and an hrule.
+- `ein-cli`'s `cli_semantics::a_conclusion_variable_nothing_binds_is_refused_at_load`: W57's four witnesses and the
+  fixture on the eight commands that load, the exit and the line, with no `KeyError`, `bindings: {` or `unbound var`
+  on stderr; a program whose typed premise, `eq` guard and parameter each bind, which loads and concludes; and W58's
+  stop, unmoved, S1f.5.18's.
+- `ein-ir`'s `fuzz_properties::no_firing_meets_an_unbound_variable`, the stage file's property (Q-M1f.40): for every
+  generated program the loader accepts, every plan the compiler builds for its rules and hrules reads, in each
+  conclusion, only registers each disjunct binds, a parameter excepted until S1f.5.18. `ein-ir` takes `ein-infer` as a
+  dev-dependency for it. The per-commit stream loads 425 programs of its 2 000 and refuses 3 with the line (`cargo test
+  -p ein-ir --test fuzz_properties no_firing -- --nocapture`, 2026-11-09); at 20 000, a release build, 4 189 and 15, in
+  26.9 s, which the parse-only property takes too (26.98 s), the parse being the cost.
+- `ein-infer`'s `rule_semantics::the_forall_bound_variable_does_not_escape_the_guard`: a head that names the
+  `forall`'s `?q` is refused at load, naming `?q` and not `?p`, where its first firing stopped the run.
+
+**Moved**, every one a row, the fixture or Q-M1f.39's rewrite: W57's four rows `fixed`, each `now` the refusal and no
+region; `examples/ein-bugs/unbound-assert-var.ein` refused at load with two lines, its program kept, its header and
+corpus note restated; `examples/syntax/rule-nary-and-or.ein` rewritten, its `:assert` `(quad ?b ?a ?b ?a)`, its answer
+R {∅} as before (`ein solve` on the old program with `2eb483e0`'s build and on the new with this one); and
+`region_modes`' list of programs whose read-out errs back to its two. Against `2eb483e0`'s build every program of the
+five roots but the fixture and W57's four witnesses is the same (`build/s1f.5.10/xcheck`, 538 files, 533 the same,
+93 s, 2026-11-09), W58's witness among the same. Banked: `corpus_exits.txt` six cells 0 → 1, W57's three answering
+witnesses'; `corpus_shapes.md5` 152 digests removed and 47 added, the five refused programs each losing the 21
+renderings a loaded program draws and changing 7, and `rule-nary-and-or`'s 12 IR and rule views, none of any other
+program. The register reads **144 fixed, 20 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+uniq -c`, 2026-11-09).

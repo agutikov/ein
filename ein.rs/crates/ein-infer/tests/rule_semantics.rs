@@ -189,9 +189,11 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
 /// invisible in the happy case — the rule concludes `(all-beaten Alice)`
 /// whether or not `?q` leaked — so the claim is pinned from both sides: the
 /// firing's bindings, which `--events` prints verbatim, name `?p` and nothing
-/// else; and a rule that puts `?q` in its head is refused at fire time with a
-/// message that names `?q` as unbound *while showing `?p` bound*. A leaked
-/// binding would satisfy that head instead of failing.
+/// else; and a rule that puts `?q` in its head is refused, naming `?q` as the
+/// variable no premise binds. A leaked binding would satisfy that head
+/// instead. **Since M1f S1f.5.10 the refusal is the loader's** (F13): until
+/// then the rule loaded and its first firing stopped the run with a message
+/// that named `?q` unbound while showing `?p` bound.
 #[test]
 fn the_forall_bound_variable_does_not_escape_the_guard() {
     let tournament = |head: &str| {
@@ -230,13 +232,14 @@ fn the_forall_bound_variable_does_not_escape_the_guard() {
         ),
     };
     assert!(
-        err.contains("unbound var ?q in :assert"),
-        "the head's ?q should be reported unbound, got: {err}"
+        err.contains(
+            "rule 'all-beaten': its :assert writes ?q, which no premise or parameter binds"
+        ),
+        "the head's ?q should be refused at load as a variable no premise binds, got: {err}"
     );
     assert!(
-        err.contains("'p': 'Alice'"),
-        "the message should show the outer environment that *was* built, so \
-         the reader can see ?p present and ?q missing, got: {err}"
+        !err.contains("writes ?p"),
+        "?p is bound by the outer premise, so only ?q is named, got: {err}"
     );
 }
 
