@@ -23,6 +23,9 @@
 //!    refuses is parsed again and reports the same, byte for byte, and its
 //!    recovery took at most `lrpar`'s step budget, all of it only where the
 //!    report says it was cut.
+//! 5. **No accepted program carries a keyword its form does not list** (M1f
+//!    S1f.5.11, T1f.5.11.2): each keyword pair an accepted program holds is a
+//!    form's own, on the form's list, and no term or nested fact holds one.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
@@ -32,8 +35,8 @@
 use std::path::PathBuf;
 
 use ein_corpus::{golden, golden_path, repo_root};
-use ein_ir::dump::dump_canonical;
-use ein_ir::{Ast, parse};
+use ein_ir::dump::{dump_canonical, dump_compact};
+use ein_ir::{Ast, Node, NodeId, parse};
 
 /// One parse, as the text a table can hold.
 fn answer(text: &str) -> String {
@@ -124,6 +127,13 @@ const SPLICES: &[&str] = &[
     "__closed__",
     "?x",
     ":why",
+    // S1f.5.11's keywords (T1f.5.11.2): one a fact takes, and four no form
+    // does, so the stream writes a pair beside a form's own and inside a term.
+    ":source",
+    ":where",
+    ":cardinality",
+    ":mode",
+    ":k",
     "1..5",
     "1..*",
     "()",
@@ -473,5 +483,127 @@ fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
     assert!(
         refused >= read / 20,
         "only {refused} of {read} inputs were refused, so the property is untested"
+    );
+}
+
+/// The keywords a form takes: S1f.5.11's § The lists, as the user ruled them on
+/// 2026-11-07 (Q-M1e2.28), less `:priority`, which S1f.5.15 removed before the
+/// swap, and with a macro's `:why`, the user's ruling of 2026-11-08. A form is
+/// named by its head: every declarator's word is reserved, so no fact is headed
+/// by one, and `not` heads a stored negation, a fact. A trace takes none, and
+/// [`STEP`] is what each of its steps takes.
+fn listed(head: &str) -> &'static [&'static str] {
+    match head {
+        "relation" | "macro" => &["why"],
+        "rule" | "hrule" => &["match", "assert", "why"],
+        "query" => &["goal", "goal-text", "over", "expect"],
+        "solve" => &["hrules", "hypothesis-relations", "no-hypothesis", "expect"],
+        "config" => &["lattice-sanity-check", "record-alternative-justifications"],
+        "import" => &["symbols", "as"],
+        "trace" => &[],
+        _ => &["source", "rule", "using"],
+    }
+}
+
+/// What a trace's `step` takes.
+const STEP: &[&str] = &["rule", "using", "derives", "source", "assumes"];
+
+/// `node` holds no keyword and no keyword pair, at any depth: it is a term, a
+/// nested fact, a name or a list, never a form's clause.
+fn no_keyword_below(ast: &Ast, node: NodeId) -> Result<(), String> {
+    match ast.node(node) {
+        Node::KwPair { .. } | Node::Keyword(_) => Err(format!(
+            "holds the keyword pair {} inside a term",
+            dump_compact(ast, node)
+        )),
+        Node::SForm { head, args } => {
+            no_keyword_below(ast, head)?;
+            ast.args(args)
+                .iter()
+                .try_for_each(|&a| no_keyword_below(ast, a))
+        }
+        _ => Ok(()),
+    }
+}
+
+/// `form`'s own keyword pairs are on `list`, and nothing below them or beside
+/// them holds one; a trace's steps each carry [`STEP`]'s. Counts the pairs.
+fn keywords_listed(
+    ast: &Ast,
+    form: NodeId,
+    list: &[&str],
+    pairs: &mut usize,
+) -> Result<(), String> {
+    let head = ast.head_name(form).unwrap_or("?");
+    for &a in ast.form_args(form) {
+        match ast.node(a) {
+            Node::KwPair { key, value } => {
+                *pairs += 1;
+                let Node::Keyword(k) = ast.node(key) else {
+                    return Err(format!("({head} …) holds a pair whose key is no keyword"));
+                };
+                if !list.contains(&ast.sym(k)) {
+                    return Err(format!(
+                        "({head} …) carries :{}, which it does not list (one of {list:?})",
+                        ast.sym(k)
+                    ));
+                }
+                no_keyword_below(ast, value)?;
+            }
+            _ if head == "trace" => {
+                if ast.head_name(a) != Some("step") {
+                    return Err(format!("(trace …) holds {}", dump_compact(ast, a)));
+                }
+                keywords_listed(ast, a, STEP, pairs)?;
+            }
+            _ => no_keyword_below(ast, a)?,
+        }
+    }
+    Ok(())
+}
+
+/// **No accepted program carries a keyword its form does not list** (M1f
+/// S1f.5.11, T1f.5.11.2).
+///
+/// The user, 2026-11-07: *"there are fixed set of allowed kwargs, if parser sees
+/// :k or :G :notes or whatever else unknown kwarg - it is an error"*. Each form
+/// takes the keywords [`listed`] names, as its tokens in `ein.y`, and a term or
+/// a nested fact takes none, so every program the parser accepts holds keyword
+/// pairs only as a form's own clauses, each on its form's list. Until the swap
+/// only `query`, `solve` and `config` refused one they did not know; a pair in a
+/// `:match` or a macro call was dropped (Q32), and S1f.5.11's T1f.5.11.2
+/// retired the drops. Every input of the stream the parser accepts is read, and
+/// the pairs it holds are counted, so a stream that carried few would fail here
+/// rather than pass empty: at least one pair for four accepted programs, where
+/// the per-commit stream carries 261 in 442 (`cargo test -p ein-ir --test
+/// fuzz_properties`, 2026-11-09). The generator splices `:source`, `:where`,
+/// `:cardinality`, `:mode` and `:k` since this property came, so the refused
+/// side of the stream writes a pair inside a term too.
+#[test]
+fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
+    let (iters, seed) = budget();
+    let mut rng = Rng(seed | 1);
+    let seeds = seeds();
+    let (mut accepted, mut pairs) = (0usize, 0usize);
+    for i in 0..iters {
+        let text = generated(&seeds, &mut rng);
+        let mut ast = Ast::new();
+        let Ok(forms) = parse(&mut ast, &text, None) else {
+            continue;
+        };
+        accepted += 1;
+        for &form in &forms {
+            let list = listed(ast.head_name(form).unwrap_or(""));
+            if let Err(why) = keywords_listed(&ast, form, list, &mut pairs) {
+                panic!("iteration {i} (EIN_FUZZ_SEED={seed}): {why}:\n---\n{text}\n---");
+            }
+        }
+    }
+    eprintln!(
+        "fuzz: {pairs} keyword pairs in {accepted} accepted programs, each on its form's list"
+    );
+    assert!(
+        pairs >= accepted / 4,
+        "{pairs} keyword pairs in {accepted} accepted programs, so the property is barely tested"
     );
 }

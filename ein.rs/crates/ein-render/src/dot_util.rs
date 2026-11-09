@@ -137,13 +137,16 @@ pub fn fact_label_parts(terms: &Terms, relation_name: &str, args: &[Value]) -> S
 /// A human-readable single-line label for an IR *value* node — what an edge
 /// label or a constraint operand shows.
 ///
-/// Total: a [`Node::KwPair`] is labelled `:key value`, the spelling
-/// `ir_dot`'s `render_note` gives a `(query …)` block's keywords. A view's
-/// own filter drops the keyword pairs of the form it draws, but this function
-/// recurses into nested forms, and a keyword pair below the filter used to
-/// panic here (*not a value node: KwPair*, exit 101 on `render constraints`
-/// and `render program`). M1e2 S1e2.3.2, the user's ruling (a) of 2026-11-03;
-/// the witness is `examples/ein-bugs/kwpair-below-the-filter.ein`.
+/// A value holds no [`Node::KwPair`] (`ein.y`'s `FactArg`, `Arg` and `Term`):
+/// a keyword pair is a form's own clause, which each view reads or filters
+/// before it labels the form's arguments, and since M1f S1f.5.5's swap no
+/// keyword pair parses inside a term or a nested fact (S1f.5.11's ruling).
+/// One below the filter used to panic here (*not a value node: KwPair*, exit
+/// 101 on `render constraints` and `render program`), and from M1e2 S1e2.3.2,
+/// the user's ruling (a) of 2026-11-03, it was labelled `:key value`; the
+/// witness, `examples/broken/kwpair-below-the-filter.ein`, is refused at the
+/// parse since the swap. The review stop's item 11 retired the arm with
+/// S1f.5.11's T1f.5.11.2, shown unreachable first; it names the grammar.
 pub fn value_label(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(s) => ast.sym(s).to_string(),
@@ -168,8 +171,8 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
                 format!("({head} {})", inner.join(" "))
             }
         }
-        Node::KwPair { key, value } => {
-            format!("{} {}", value_label(ast, key), value_label(ast, value))
+        Node::KwPair { .. } => {
+            unreachable!("a value holds no keyword pair (ein.y's FactArg, Arg and Term)")
         }
     }
 }
@@ -178,31 +181,36 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
 mod tests {
     use super::*;
 
-    /// M1e2 S1e2.3.2, ruling (a): a keyword pair below a form is labelled
-    /// `:key value` at every depth, and the form as written is the label.
-    /// The program was the fuzz witness's first step, the one that panicked;
-    /// since M1f S1f.5.5's swap no keyword pair parses inside a term or a
-    /// nested fact (S1f.5.11's ruling), so the witness is refused at its first
-    /// `:rule`, and a pair reaches the arm only as a form's own, which the
-    /// views filter (the review stop's item 11: the arm goes with S1f.5.11's
-    /// T1f.5.11.2). Held here through a fact's own `:rule` and `:using`.
+    /// **No keyword pair reaches a value's label** — M1f S1f.5.11's
+    /// T1f.5.11.2, which retired `value_label`'s arm for one (the review stop's
+    /// item 11). Until M1e2 S1e2.3.2 a keyword pair below a form panicked here,
+    /// and from it (ruling (a)) was labelled `:key value`. The fuzz witness's
+    /// first step is refused at the parse since M1f S1f.5.5's swap, at its
+    /// first `:rule`: no keyword pair parses inside a term or a nested fact
+    /// (S1f.5.11's ruling). A pair is a form's own clause, and each view reads
+    /// the fact's arguments without it: a fact carrying its own `:rule` and
+    /// `:using` is drawn by both views that drew the witness, its arguments
+    /// labelled and its pairs read as provenance.
     #[test]
-    fn a_keyword_pair_below_a_form_is_labelled_key_value() {
+    fn no_keyword_pair_reaches_a_values_label() {
         let witness =
             "(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1)))";
         let refused = ein_ir::parse(&mut Ast::new(), witness, None).expect_err("refused");
         assert_eq!(refused.position(), (1, 18), "{refused}");
-        let src = "(lives-in N H1 :rule from-condition :using ((c10)))";
+        let src = "(lives-in (house N) H1 :rule from-condition :using ((c10)))";
         let mut ast = Ast::new();
-        let top = ein_ir::parse(&mut ast, src, None).expect("the fact parses")[0];
-        let pairs: Vec<String> = ast
-            .form_args(top)
+        let forms = ein_ir::parse(&mut ast, src, None).expect("the fact parses");
+        let program = crate::ir_to_dot(&ast, &forms, crate::DotOpts::default());
+        assert!(program.contains("(house N)"), "{program}");
+        let constraints = crate::render_constraints(&ast, &forms, "witness");
+        assert!(constraints.starts_with("digraph"), "{constraints}");
+        let labels: Vec<String> = ast
+            .form_args(forms[0])
             .iter()
-            .filter(|&&a| matches!(ast.node(a), Node::KwPair { .. }))
+            .filter(|&&a| !matches!(ast.node(a), Node::KwPair { .. }))
             .map(|&a| value_label(&ast, a))
             .collect();
-        assert_eq!(pairs[0], ":rule from-condition");
-        assert_eq!(pairs.len(), 2, "{pairs:?}");
+        assert_eq!(labels, ["(house N)", "H1"]);
     }
 
     #[test]

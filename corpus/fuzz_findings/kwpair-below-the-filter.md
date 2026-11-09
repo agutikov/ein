@@ -18,7 +18,9 @@ S1f.5.11's ruling (its default; Q-M1e2.28). The program that reached
 load one, so the witness moved to
 [`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein),
 a `parse-negative` entry whose `.expected` is the report, and every run of it
-exits 1. The arm goes with S1f.5.11's T1f.5.11.2. The `.ein` beside this file
+exits 1. The arm went with S1f.5.11's T1f.5.11.2 (2026-11-09), shown unreachable
+first: no value holds a keyword pair, and `value_label` holds the arm
+`unreachable!`, naming the grammar's productions. The `.ein` beside this file
 stays a fuzz seed, its recorded outcome the parse refusal (`fuzz_seeds.txt`). The
 second door, `render program`, arrived at M1e2 S1e2.1.3, after the finding.
 This file and the `.ein` beside it stay: the panic signature below is what

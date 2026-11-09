@@ -469,33 +469,29 @@ impl<'a> Compiler<'a> {
     // ── Disjuncts and conjuncts ────────────────────────────────────
 
     /// A top-level `(or d1 … dm)` `:match` → `[d1, …, dm]`; else `[expr]`.
+    ///
+    /// Every argument is a disjunct (`ein.y`'s `Connective`). Until M1f
+    /// S1f.5.5's swap a keyword pair written beside them was dropped here, as
+    /// beside a conjunction's members below, and S1f.5.11's T1f.5.11.2 retired
+    /// the filter: no keyword pair parses inside a term since the swap.
     fn match_disjuncts(&self, expr: NodeId) -> Vec<NodeId> {
         if self.head_is(expr, "or") {
-            return self.positional_args(expr);
+            return self.ast.form_args(expr).to_vec();
         }
         vec![expr]
     }
 
     /// A top-level `(and c1 … ck)` `:assert` → `[c1, …, ck]`; else `[expr]`.
+    /// Every argument is a conjunct (`ein.y`'s `Conclusion`).
     fn assert_conjuncts(&self, expr: NodeId) -> Vec<NodeId> {
         if self.head_is(expr, "and") {
-            return self.positional_args(expr);
+            return self.ast.form_args(expr).to_vec();
         }
         vec![expr]
     }
 
     fn head_is(&self, node: NodeId, name: &str) -> bool {
         matches!(self.ast.node(node), Node::SForm { .. }) && self.ast.head_name(node) == Some(name)
-    }
-
-    /// A form's arguments with the `KwPair`s dropped.
-    fn positional_args(&self, node: NodeId) -> Vec<NodeId> {
-        self.ast
-            .form_args(node)
-            .iter()
-            .copied()
-            .filter(|&a| !matches!(self.ast.node(a), Node::KwPair { .. }))
-            .collect()
     }
 
     fn compile_disjunct(&mut self, body: NodeId) -> Result<Disjunct, CompileError> {
@@ -543,12 +539,18 @@ impl<'a> Compiler<'a> {
         out: &mut Vec<Step>,
     ) -> Result<(), CompileError> {
         match self.ast.node(node) {
-            // Q32: `:where` and any other in-match kw_pair is dropped at
-            // compile time. The grammar still accepts them; the engine ignores
-            // them. Loud failure was considered and rejected — the migration
-            // path leaves authoring tools tolerant.
-            Node::KwPair { .. } => return Ok(()),
             Node::SForm { .. } => {}
+            // A keyword pair, `:where (neq ?a ?b)` beside a conjunction's
+            // members, was dropped here (Q32, 2026-05-20: tolerance chosen over
+            // a loud failure), so the rule compiled and fired unguarded, until
+            // M1f S1f.5.5's swap refused a keyword pair inside a term at the
+            // parse (S1f.5.11's ruling, D-15; Q-M1e2.28). S1f.5.11's T1f.5.11.2
+            // retired the drop, each path shown unreachable first.
+            Node::KwPair { .. } => {
+                unreachable!(
+                    "a premise is a pattern or a connective, never a keyword pair (ein.y's Premise)"
+                )
+            }
             // A premise that is not a form — an atom, a variable, `_`, a
             // string. The loader refuses each in a rule since
             // M1e2 S1e2.2.24 (W24, Q-M1e2.16 (1)), so no program it accepts
@@ -901,9 +903,6 @@ impl<'a> Compiler<'a> {
         // pushing as we go would interleave them into this step's span.
         let mut lowered: Vec<Slot> = Vec::with_capacity(args.len());
         for &a in args {
-            if matches!(self.ast.node(a), Node::KwPair { .. }) {
-                continue;
-            }
             let slot = self.slot(a)?;
             lowered.push(slot);
         }
@@ -978,15 +977,20 @@ impl<'a> Compiler<'a> {
     /// An `SForm` becomes a nested pattern, with its head substituted from the
     /// binding when it is a bound `Var`; one whose head is a parameter the
     /// activator bound to a nested fact is refused (`head_not_a_name`).
-    /// Everything else — a `KwPair`, an `SForm` whose head is a variable the
-    /// activator does not bind — is returned as-is and compared by equality,
-    /// which is the "unrecognised shape" safety net and which never matches
-    /// anything; in an `:assert` it stops the firing. Since M1e2 S1e2.2.24
-    /// (W24) no program the loader accepts reaches it in a `:match`: the loader
-    /// refuses a keyword pair inside a pattern inside a pattern, and a relation
-    /// variable no parameter binds, in a rule, as it refuses a range and a
-    /// wildcard written as a form's relation (S1e2.2.20); a keyword pair at an
-    /// `:assert`'s top level still stops the firing.
+    /// An `SForm` whose head is a variable the activator does not bind is
+    /// returned as-is and compared by equality, which is the "unrecognised
+    /// shape" safety net and which never matches anything; in an `:assert` it
+    /// stops the firing. Since M1e2 S1e2.2.24 (W24) no program the loader
+    /// accepts reaches it in a `:match`: the loader refuses a relation variable
+    /// no parameter binds, in a rule, as it refused a range and a wildcard
+    /// written as a form's relation (S1e2.2.20).
+    /// A `KwPair` was returned as-is too: inside a pattern inside a pattern
+    /// until S1e2.2.24's loader refused one there, and at an `:assert`'s
+    /// conclusion's top level, where it stopped the firing, until M1f
+    /// S1f.5.5's swap refused a keyword pair inside a term at the parse
+    /// (S1f.5.11). The relation compiler skipped one at a premise's top level
+    /// (Q32's drop) until then; S1f.5.11's T1f.5.11.2 retired the skip, and
+    /// the arm is unreachable.
     ///
     /// **A string was such a node until M1e2 S1e2.2.18** (W18, 2026-11-04):
     /// `(rule s () :match (holds "1") …)` never fired though `(holds "1")` is
@@ -1040,9 +1044,11 @@ impl<'a> Compiler<'a> {
                 let Some(rel) = rel else {
                     return Ok(Slot::Opaque(node));
                 };
-                // Nested args are **not** KwPair-filtered — this recurses over
-                // every argument unconditionally, where the relation compiler
-                // filters. The asymmetry is kept.
+                // Every argument is a slot, here as at a premise's top level:
+                // the relation compiler skipped a keyword pair written there,
+                // and this recursion did not, until S1f.5.11's T1f.5.11.2
+                // retired the skip (no keyword pair parses inside a term since
+                // M1f S1f.5.5's swap).
                 let children: Vec<NodeId> = self.ast.args(args).to_vec();
                 let mut lowered = Vec::with_capacity(children.len());
                 for c in children {
@@ -1057,6 +1063,9 @@ impl<'a> Compiler<'a> {
                         len: self.slots.len() as u32 - start,
                     },
                 })
+            }
+            Node::KwPair { .. } => {
+                unreachable!("a pattern's argument is no keyword pair (ein.y's Arg and Term)")
             }
             _ => Ok(Slot::Opaque(node)),
         }
@@ -1076,10 +1085,11 @@ impl<'a> Compiler<'a> {
                 GuardArgKind::Const(Value::sym(self.intern(&name)))
             }
             Node::Str(_) => unreachable!("a guard compares no string (ein.y's Guard and Term)"),
-            // `_`, a form or a keyword pair, compared by IR-node equality.
-            // The loader refuses each as a guard's argument since M1e2
-            // S1e2.2.24 (W24, Q-M1e2.16 (1), Q-M1e2.18 (i), (iii)), so no
-            // program it accepts reaches this arm.
+            // A form, compared by IR-node equality. The loader refuses one
+            // as a guard's argument since M1e2 S1e2.2.24 (W24, Q-M1e2.16 (1),
+            // Q-M1e2.18 (i), (iii)), so no program it accepts reaches this
+            // arm. `_` and a keyword pair reached it too until M1f S1f.5.5's
+            // swap, which refuses both there at the parse (S1f.5.1, S1f.5.11).
             _ => GuardArgKind::Node,
         };
         Ok(GuardArg { kind, node })

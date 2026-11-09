@@ -22,6 +22,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.11](#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) | a template reference to a variable no reference can name | **defaulted 2026-11-09 (the user's instruction): the loader refuses it, one line a reference**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5 |
 | [Q-M1f.12](#q-m1f12--which-surfaces-carry-natural-language-text) | which surfaces carry natural-language text | **defaulted 2026-11-09 (the user's instruction): those that carried it before the swap, each held byte for byte; none added**; [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2 |
 | [Q-M1f.13](#q-m1f13--f3s-cause-reaches-a-disjunction-whose-row-is-it) | F3's cause reaches a disjunction: whose row is it? | **defaulted 2026-11-09 (the user's instruction): W39, `open`, deferred to F22, as W25 is**; [S1f.5.1](p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s T1f.5.1.3 |
+| [Q-M1f.14](#q-m1f14--which-keyword-pair-arms-go-once-no-term-holds-one) | which keyword-pair arms go, once no term holds one? | **defaulted 2026-11-09 (the user's instruction): the drops, the validator's skips and the renderers' arms; the walkers that descend into a pair's value stay**; [S1f.5.11](p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s T1f.5.11.2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -417,3 +418,30 @@ till the end of the phase"*. (a) is the agent's recommendation: it follows the u
 defect, and keeps S1f.5.1, whose subject is `_`, from moving the saturator's dedup, which every match crosses. In the corpus at `1e751131` one program reaches the cause, `wild-in-head-twin.ein`, whose run
 reports no core, so no printed answer moves today (the census, T1f.5.1.3's record). `W39/or-one-key` is the row.
 Re-opening it means (b), in F22 or before it.
+
+### Q-M1f.14 — Which keyword-pair arms go, once no term holds one?
+
+**Raised** 2026-11-09 by [S1f.5.11](p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)'s T1f.5.11.2
+([its record](p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md#t1f5112-record-2026-11-09)). Since S1f.5.5's swap
+the grammar builds a keyword pair only as a form's own clause, and no term or nested fact holds one (S1f.5.11's
+ruling). The stage's brief names what goes: the compiler's in-`:match` drop and its filters, the macro expander's
+arity filter, `from_ir.rs`' *not refused* note, and any arm in `value_label` or another renderer that only a pair
+inside a term reaches. The census put a panic at 23 arms that are only ever handed a term, and none was reached by
+any program (the record). Unlike `_`, whose node S1f.5.1 retired with every arm that read it, the pair stays a
+node: every form's clauses are pairs.
+
+- **(a) The drops, the validator's skips and the renderers' arms go; the walkers stay.** What drops, skips or
+  labels a pair inside a term goes, an `unreachable!` naming `ein.y`'s production where the match needs an arm
+  (Q-M1f.9 (a)). What descends into a pair's value as into a form's arguments (the expander's `expand` and
+  `substitute`, the loader's term walkers, the invariant's constant walk, the guard key's code, `expect::render`,
+  `node_repr`) stays, total over `Node` as the dumper and the import resolver are.
+- **(b) Every arm the census found unreachable goes**, each walker's pair arm an `unreachable!` too.
+- **(c) Only what the brief names**: the compiler's drop and filters, the arity filter, the note and
+  `value_label`'s arm; the validator's skips and the rules view's filter, which skip a pair as the drop did, stay.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: it retires everything that treated a pair inside a
+term as something to drop or label, which is what the acceptance names (*nothing in the compiler or the macro
+expander drops a keyword pair*), and leaves the walks correct for a library caller that hands one a whole form,
+where (b) would make each a panic and retire nothing the ruling names. No answer moves either way. Re-opening it
+means (b).

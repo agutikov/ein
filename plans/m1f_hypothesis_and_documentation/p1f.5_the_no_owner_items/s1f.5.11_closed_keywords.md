@@ -14,7 +14,11 @@ was 1.5.
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on D-15, G-15 and G-22
 ([Q-M1e2.28](../../m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
-**Not started.** No engine code, test, golden or fixture has moved.
+**Not started** until the swap, which moved its refusals, fixtures and rows (below). **Running since 2026-11-09**:
+T1f.5.11.2 done ([its record](#t1f5112-record-2026-11-09)): the compiler's drop and its filters, the expander's arity
+filter, the loader validator's skips and the renderers' arms retired, each shown unreachable first, 33 rows of the
+grammar's table and a fuzz property holding the lists, no answer and no golden but the table's moving; T1f.5.11.3,
+the pages, next.
 **Re-planned on 2026-11-08, on the user's ruling** ([P1f.5 § The order](README.md#the-order)): *"It is the same
 work done twice, why not switch to grmtools first and remove hand-written parser and then verify requirement met
 (strings, names, etc...) ?"* Until then this stage was to land the lists in the loader, on the hand-written
@@ -254,6 +258,125 @@ and its `KwPair` filters, the macro expander's arity filter, `from_ir.rs`' *not 
 named them move. A test holds one parse error for each form and for each place in a term, as rows of the grammar's
 table: a `:match`'s `and`, a pattern, an `:assert`, a `:goal`, an `absent`, a guard, a macro call and a nested
 fact. `fuzz_properties` gains the property that no accepted program carries a keyword its form does not list.
+
+### T1f.5.11.2 record, 2026-11-09
+
+**One commit, on `366877cc`** (S1f.5.1's T1f.5.1.4). Nothing in the compiler or the macro expander drops a keyword
+pair, and the code that did is gone, each path shown unreachable first; the grammar's table holds a parse error for
+each form and each place in a term, and the fuzzer holds the lists. **No answer moved, and no golden but the
+grammar's table**, whose new rows are named first.
+
+**The grammar's table** (`ein-ir/tests/grammar_pages.rs`, 256 → 289 rows; `cargo test -p ein-ir --test
+grammar_pages`, 2026-11-09). Its golden, `grammar_table.txt`, gains the 33 rows' reports, 224 lines (`EIN_BLESS=1`),
+each refused at the parse at its keyword, and none names a deleted line: each is the ruling's.
+- **One for each form**, a keyword it does not take: a relation's `:cardinality 1..1`, a rule's `:where (neq ?x a)`,
+  an hrule's `:zz 1`, a fact's `:zz 1`, a stored negation's `:k v`, a query's `:G 1`, a solve's `:notes (p)`, a
+  config's `:zz true`, an import's `:zz 1`, a macro's `:k v`, a trace's `:k v` and a trace step's `:zz 1`, each
+  *unexpected `:k`: a keyword this form does not take* at the keyword. T5's rows already held a query's `:mode` and
+  an unknown keyword on a query, a solve and a config, and S1f.5.2's a fact's `:why`, a relation's `:source` and a
+  query's `:why`.
+- **One for each place in a term**: a `:match`'s `and`, twice (W32's `where-in-and` shape, and
+  `compile_semantics`' old-where program, below), its `or`, a pattern in a rule and in an hrule (W32's
+  `kwpair-in-pattern`), an `absent`, a premise's stored negation, a guard, an `:assert`'s `and` (W32's
+  `kwpair-in-assert`, G-22), a conclusion, a conclusion's stored negation, a `:goal`'s `and` (W32's
+  `kwpair-in-goal`) and its pattern, a macro call in a `:match` (W32's `kwpair-in-macro`) and in an `:assert`, a
+  macro's body, a nested fact (the case's `(facts (r a b :source "(1)"))`) and one in a fact's `:using`, a claim's
+  model, a region claim and a trace step's `:derives`. Each is refused at its keyword with the same line, but the
+  two nested facts, whose `:source` is a keyword a fact takes, `unexpected :source`. A pair inside a pattern inside
+  a pattern, a guard's argument that is a pair, a premise's `:where` and an `absent` of a pair alone were T5's rows.
+
+**The fuzzer's property** (`ein-ir/tests/fuzz_properties.rs`' fifth,
+`no_accepted_program_carries_a_keyword_its_form_does_not_list`): every keyword pair an accepted input of the
+stream holds is a form's own clause and on its form's list (§ The lists, without `:priority`, which S1f.5.15
+removed, and with a macro's `:why`, the user's of 2026-11-08), a trace's steps carrying a step's, and no term or
+nested fact holds a keyword. It counts the pairs and fails below one for four accepted inputs: the per-commit
+stream holds 261 in 442 (`cargo test -p ein-ir --test fuzz_properties`, 2026-11-09). The generator splices
+`:source`, `:where`, `:cardinality`, `:mode` and `:k` beside `:why` since, so the stream writes a pair inside a
+term as well as beside a form's own, which moves the nightly's stream: its fuzz job on this tree, both seeds at
+1 000 000 iterations, ran after this commit, and its outcome is in T1f.5.11.3's record, below.
+
+**How unreachable was shown** (T1f.5.1.3's harness, `build/s1f.5.11/t2/`). A copy of `366877cc` (`git archive`,
+`probe/`) with a panic, `S11-PROBE <id>`, at 23 sites (`probe_patch.py`, by text), every arm that drops, skips,
+walks into or labels a keyword pair in a function only ever handed a term: the compiler's three drops (the
+disjunct and conjunct lists' filter, the premise's arm, the relation step's skip), its slot and guard lowering's
+catch-alls met with a pair, and its guard key's pair code; the invariant's constant walk; the macro expander's
+arity filter and its `expand` and `substitute` arms; the loader's validator (`refuse_no_fact_holds`: the pattern's
+skip, the premise's arm, the conclusion's skip) and its term walkers (`names_relation`, `open_forms`, `pos_args`,
+`vars_under`, `collect_vars_outside`, `walk_pattern`); `expect::render` and `node_repr`; `value_label` and the rules
+view's `positional`. Each probe logs its id, the thread and argv.
+- `cargo test --workspace --no-fail-fast` on it (`probe-tests.log`, 16 min 26 s): **949 passed and 1 failed, the
+  one probe**,
+  `render/value_label-KwPair` in `dot_util::tests::a_keyword_pair_below_a_form_is_labelled_key_value`, the unit
+  test that handed `value_label` a fact's own `:rule` and `:using` pairs directly, which no view does (each filters
+  a form's pairs before it labels its arguments); restated below.
+- Every corpus file under 6 000 bytes (404) and 40 000 seeded mutants of them (`ein_corpus::mutants`, seed 0), then
+  200 000 more (seed 987654321), each parsed, drawn (`ein render program`'s, `rules`' and `constraints`'
+  functions), dumped, loaded, saturated and printed (`s11_sweep.rs`, T1f.5.1.3's `s1_sweep`): 16 317 refused at the
+  parse, 2 646 at load, 64 at compile, 21 294 saturated and 83 stopped saturating, and 81 974, 12 729, 340,
+  104 851 and 510, **no probe and no other panic** (`sweep.txt`, `sweep2.txt`), the outcomes T1f.5.1.3's on the
+  same inputs.
+
+And by construction: `ein.y` builds a `KwPair` only as a direct child of a top-level form and of a trace's `step`
+(its `pair` calls), no production of a term or a nested fact takes a keyword, and the macro expander and the
+import resolver copy only what a program wrote.
+
+**Removed**, the drops and what only a pair inside a term reached:
+- `ein-infer` `compile.rs`: `positional_args`, the filter the `(or …)` disjuncts and the `(and …)` conjuncts were
+  read through; the premise's `KwPair` arm, Q32's drop, now an `unreachable!` naming `ein.y`'s `Premise`; the
+  relation step's skip of a pair at a pattern's top level, with an `unreachable!` in `slot` naming `Arg` and `Term`
+  where a pair would otherwise have become an opaque slot.
+- `ein-ir` `macros.rs`: the arity filter, so a call's arity is its every argument (`(forall G B :k v)` expanded as
+  `(forall G B)` until the swap).
+- `ein-ir` `from_ir.rs`: the validator's three skips (a pattern's pair, a premise that is a pair, an `:assert`
+  conjunct that is a pair; a pair met as a premise is now refused as one that is no form), `pos_args` and its
+  filter, and the *not refused* note, restated as what was not refused until the swap and what retired it.
+- `ein-render`: `value_label`'s `KwPair` arm (the review stop's item 11), an `unreachable!` naming `FactArg`, `Arg`
+  and `Term`, and the rules view's filter in `positional`.
+- Every comment that described a drop as live says what it was and when it went: `slot`'s and `guard_arg`'s,
+  `plan.rs`' `Slot::Opaque` and `GuardArgKind::Node`, the invariant's, `value_label`'s, and the kwpair fuzz
+  finding's note and corpus entry.
+
+**Kept, and why.** The structural walkers that descend into a pair's value as into a form's arguments: the
+expander's `expand` and `substitute`, the loader's `names_relation`, `open_forms`, `vars_under`,
+`collect_vars_outside` and `walk_pattern`, the invariant's `walk_constants`, the guard key's code 7,
+`expect::render` and `node_repr`. Each is handed a clause's value and so meets no pair (the probes above), but
+none drops one: each is total over `Node`, as the dumper, the import resolver and `eq_nodes`, which do meet a
+form's own pairs, are. Making them partial would turn a correct walk into a panic for a library caller that
+hands one a whole form, and retire nothing the ruling names. The loader's name walk, the fact reader's filter
+(`fact_args`), the relation-parameter check's filter, `constraints.rs`' and `ir_dot`'s `positional` filters and
+`models.rs`' `first_loc` meet a top-level form's own pairs and stay as they are.
+([Q-M1f.14](../open_questions.md#q-m1f14--which-keyword-pair-arms-go-once-no-term-holds-one), defaulted.)
+
+**The tests that named the drops.** `compile_semantics`' `a_where_keyword_pair_in_a_match_is_dropped_and_the_rule_still_compiles`
+is `a_where_guard_written_as_a_positional_premise_compiles`, its refusal half a row of the grammar's table (its
+program, verbatim) and its compile half kept, with its now unused `errors` helper gone; `macros.rs`'
+`arity_is_counted_over_positional_args_only` is `arity_is_counted_over_every_argument`; and `dot_util`'s
+`a_keyword_pair_below_a_form_is_labelled_key_value` is `no_keyword_pair_reaches_a_values_label`: the fuzz witness
+refused at the parse, and a fact carrying its own `:rule` and `:using` drawn by both views that drew the witness,
+its arguments labelled. The stage's other tests (`ir_semantics`' `:where` rules and `from_ir`'s `:mode` queries)
+moved at the swap.
+
+**Nothing moved.** Every `.ein` under the five roots (517, `find examples tests stdlib corpus plans -name '*.ein' |
+wc -l`, 2026-11-09) through the release builds of `366877cc` and this commit (`build/s1f.5.11/t2/xcheck/`,
+T1f.5.1.3's scripts, 156 s): `solve --json-summary -H --dump-answer`, `saturate --dump` and `test`, timings masked,
+**517 of 517 the same on every command**; T12's 2 000 mutants through `saturate`, the error text included, the same
+(1 047 accepted, 767 refused with repairs, 186 without); and the container both ways: on the 344 that load, the four
+reads agree with each other and with `solve` of the `.ein` but `g14/derived-activator.ein`, whose four reads agree
+with each other and place its compile refusal at `<string>`, as T1f.5.1.3 found.
+
+**Taken by default on the user's instruction of 2026-11-09** (*"just continue with default decisions till the end
+of the phase"*):
+- **Which arms go** (above): the drops, the validator's skips and the renderers' arms, and not the walkers;
+  [Q-M1f.14](../open_questions.md#q-m1f14--which-keyword-pair-arms-go-once-no-term-holds-one).
+- **A retired drop that needed an arm** is an `unreachable!` naming `ein.y`'s production, as Q-M1f.9 (a) has a
+  deleted loader line: the premise's, `slot`'s and `value_label`'s. Where no arm is needed the filter went with
+  nothing in its place: the expander counts every argument, and the validator refuses a pair met as a premise.
+- **The rows** are one per form and one per place in a term, the case's own programs where it had one, so each W32
+  witness's shape is a row; the generator gains five keyword splices, so the property reads a stream that writes
+  pairs in terms.
+
+**The gate.** On this commit, 16 min 11 s (`build/gate-s1f.5.11-T2.log`), green: 951 tests, T1f.5.1.3 step 3's 950 and
+the fuzz property, and every static check.
 
 ### Task T1f.5.11.3 — the pages
 

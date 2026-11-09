@@ -970,12 +970,16 @@ fn ingest_rules(
 /// written where a premise goes. Each is a row of the grammar's table
 /// (`ein-ir/tests/grammar_pages.rs`).
 ///
-/// Not refused, until S1f.5.11's T1f.5.11.2 says so: a keyword pair at a pattern's top level, `(n ?x :where v)`,
-/// or as a premise of an `(and …)`, `:where (neq ?a ?b)`, which the compiler
-/// drops (Q32); `_` as a pattern's argument, which matches any value; and in
-/// an `:assert`'s conclusion, `_` or a keyword pair at its top level, which
-/// stop the firing with the line `ein_infer::firing::FireError::NotAFact`
-/// prints, as before.
+/// **Until the swap three more shapes were not refused here.** A keyword pair
+/// at a pattern's top level, `(n ?x :where v)`, or as a premise of an `(and
+/// …)`, `:where (neq ?a ?b)`, which this walk skipped and the compiler dropped
+/// (Q32), so the rule fired as if it were not written; `_` as a pattern's
+/// argument, which matched any value (W20, S1e2.2.20); and `_` or a keyword
+/// pair at an `:assert`'s conclusion's top level, which stopped the firing with
+/// the line `ein_infer::firing::FireError::NotAFact` printed. The grammar
+/// refuses each since (S1f.5.11's ruling, S1f.5.1's), and S1f.5.11's
+/// T1f.5.11.2 retired this walk's skips with the compiler's drop: a keyword
+/// pair met as a premise would be refused as a premise that is no form.
 ///
 /// **Until S1e2.2.20** the compiler lowered a range as an opaque slot that
 /// matched nothing, in silence, and a wildcard head stopped compilation with
@@ -1046,8 +1050,10 @@ fn refuse_no_fact_holds(
             }
         }
         /// A pattern written as a premise or a conclusion: its relation, and
-        /// its arguments as slots. Its own keyword pairs are the compiler's to
-        /// drop (Q32) or the firing's to refuse, as before.
+        /// its arguments as slots. Until M1f S1f.5.5's swap its own keyword
+        /// pairs were skipped here, the compiler's to drop (Q32) or the
+        /// firing's to refuse; since, a pattern holds none (`ein.y`'s `Args`
+        /// and `Terms`), and S1f.5.11's T1f.5.11.2 retired the skip.
         fn pattern(&mut self, node: NodeId, bound: Option<&mut Vec<String>>) {
             let ast = self.ast;
             let Node::SForm { head, args } = ast.node(node) else {
@@ -1056,9 +1062,6 @@ fn refuse_no_fact_holds(
             self.form_head(node, head);
             let mut bound = bound;
             for &a in ast.args(args) {
-                if matches!(ast.node(a), Node::KwPair { .. }) {
-                    continue;
-                }
                 self.slot(a);
                 if let Some(b) = bound.as_deref_mut() {
                     vars_in(ast, a, b);
@@ -1097,8 +1100,10 @@ fn refuse_no_fact_holds(
         /// scopes a guard.
         fn premise(&mut self, node: NodeId, within: Option<NodeId>, bound: &mut Vec<String>) {
             let ast = self.ast;
+            // A keyword pair was skipped here, a premise Q32 dropped, until
+            // S1f.5.11's T1f.5.11.2; no premise is one since M1f S1f.5.5's
+            // swap, and one met would be a premise that is no form.
             match ast.node(node) {
-                Node::KwPair { .. } => {}
                 Node::SForm { args, .. } => match ast.head_name(node) {
                     Some("absent") => {
                         let mut inner = bound.clone();
@@ -1129,10 +1134,12 @@ fn refuse_no_fact_holds(
                 Node::SForm { args, .. }
                     if within.is_none() && ast.head_name(node) == Some("and") =>
                 {
+                    // Each member, a conjunct (`ein.y`'s `Conclusion`): a
+                    // keyword pair beside them was skipped until S1f.5.11's
+                    // T1f.5.11.2, and none parses there since M1f S1f.5.5's
+                    // swap.
                     for &a in ast.args(args) {
-                        if !matches!(ast.node(a), Node::KwPair { .. }) {
-                            self.conclusion(a, Some(node));
-                        }
+                        self.conclusion(a, Some(node));
                     }
                 }
                 Node::SForm { .. } => self.pattern(node, None),
@@ -1372,19 +1379,15 @@ fn open_forms(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
     }
 }
 
-/// Positional (non-`KwPair`) arguments of a form.
-fn pos_args(ast: &Ast, node: NodeId) -> Vec<NodeId> {
-    ast.form_args(node)
-        .iter()
-        .copied()
-        .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
-        .collect()
-}
-
 /// The top-level `:assert` conjuncts — `(and c1 … ck)` → the `ci`, else `[expr]`.
+///
+/// Every argument of the `and` is a conjunct, and every argument of an
+/// `(open …)` one of its own: a term holds no keyword pair since M1f S1f.5.5's
+/// swap (S1f.5.11). Until S1f.5.11's T1f.5.11.2 both read a form's arguments
+/// with its keyword pairs filtered out (`pos_args`).
 fn top_conjuncts(ast: &Ast, expr: NodeId) -> Vec<NodeId> {
     if matches!(ast.node(expr), Node::SForm { .. }) && ast.head_name(expr) == Some("and") {
-        return pos_args(ast, expr);
+        return ast.form_args(expr).to_vec();
     }
     vec![expr]
 }
@@ -1540,7 +1543,7 @@ fn validate_open(
     }
 
     for &o in &opens {
-        let args = pos_args(ast, o);
+        let args = ast.form_args(o).to_vec();
         // (2) arity.
         if args.len() > 1 {
             errors.push(format!(

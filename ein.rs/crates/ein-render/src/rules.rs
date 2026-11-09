@@ -68,12 +68,12 @@ fn is_guard(ast: &Ast, expr: NodeId) -> bool {
     matches!(head_name(ast, expr), Some("absent" | "forall"))
 }
 
+/// A clause's arguments: every one, since a term holds no keyword pair
+/// (`ein.y`'s `Args` and `Terms`). Until M1f S1f.5.5's swap a pair written
+/// inside a pattern was filtered here, as the compiler dropped one (Q32), and
+/// S1f.5.11's T1f.5.11.2 retired the filter.
 fn positional(ast: &Ast, expr: NodeId) -> Vec<NodeId> {
-    ast.form_args(expr)
-        .iter()
-        .copied()
-        .filter(|a| !matches!(ast.node(*a), Node::KwPair { .. }))
-        .collect()
+    ast.form_args(expr).to_vec()
 }
 
 fn form_head(ast: &Ast, expr: NodeId) -> NodeId {

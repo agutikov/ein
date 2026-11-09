@@ -24,8 +24,10 @@
 //!   table's end (T1f.5.4.3): a token that is no name, in every place a name
 //!   goes, where until the swap it loaded split or was refused at a character.
 //!   S1f.5.2's follow (T1f.5.2.2), a string and a variable in a fact wherever
-//!   a value goes, and S1f.5.1's after them (T1f.5.1.3): a bare `_` and `?_`
-//!   in each place of S1f.5.1's table and wherever a name or a variable goes.
+//!   a value goes, S1f.5.1's after them (T1f.5.1.3): a bare `_` and `?_` in
+//!   each place of S1f.5.1's table and wherever a name or a variable goes, and
+//!   S1f.5.11's last (T1f.5.11.2): a keyword each form does not take, one row
+//!   a form, and a keyword pair in each place in a term.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -1640,6 +1642,151 @@ const TABLE: &[Row] = &[
         "a trace step's :derives",
         &[],
         "(trace (step s1 :derives (p ?_)))",
+    ),
+    // ── S1f.5.11's keywords: each form takes a fixed set, and a term none ──
+    // The user, 2026-11-07 (Q-M1e2.28, D-15, G-15, G-22): *"there are fixed set
+    // of allowed kwargs, if parser sees :k or :G :notes or whatever else
+    // unknown kwarg - it is an error"*, and *"yes, plan to remove `:where`"*.
+    // Each form's keywords are its tokens in `ein.y` (S1f.5.11's § The lists),
+    // and no production of a term or a nested fact takes one, so a keyword a
+    // form does not list, `:where`, `:cardinality` and `:mode` among them, is
+    // refused at the parse, and so is any keyword pair inside a term. Until
+    // the swap only `query`, `solve` and `config` refused an unknown keyword
+    // (their rows are T5's, above); every other form, and every term, dropped
+    // one in silence: a `:match`'s or a goal's pair was dropped by the compiler
+    // (Q32), a macro call's by the expander's arity filter, both retired by
+    // S1f.5.11's T1f.5.11.2, and an annotation's by the loader. W32's seven
+    // rows were the wrong answers. One row for each form, then one for each
+    // place in a term; `fuzz_properties`' last property holds the lists on
+    // every program the fuzzer's stream accepts.
+    row(
+        "a relation's keyword",
+        &[],
+        "(relation s Node :cardinality 1..1)",
+    ),
+    row(
+        "a rule's keyword",
+        &[],
+        "(rule r () :match (p ?x) :assert (q ?x) :where (neq ?x a))",
+    ),
+    row(
+        "an hrule's keyword",
+        &[],
+        "(hrule h () :match (p ?x) :assert (q ?x) :zz 1)",
+    ),
+    row("a fact's keyword", &[], "(relation q T) (q c :zz 1)"),
+    row(
+        "a stored negation's keyword",
+        &[],
+        "(relation q T) (not (q c) :k v)",
+    ),
+    row("a query's keyword", &[], "(query :goal (p ?x) :G 1)"),
+    row("a solve's keyword", &[], "(solve :notes (p))"),
+    row("a config's keyword", &[], "(config :zz true)"),
+    row("an import's keyword", &[], "(import std.macro :zz 1)"),
+    row("a macro's keyword", &[], "(macro m (?a) (p ?a) :k v)"),
+    row("a trace's keyword", &[], "(trace :k v)"),
+    row(
+        "a trace step's keyword",
+        &[],
+        "(trace (step s1 :rule r :derives (q a) :zz 1))",
+    ),
+    row(
+        "a :match's and",
+        &[],
+        "(rule r () :match (and (p ?x) :where (neq ?x a)) :assert (q ?x))",
+    ),
+    row(
+        "a :match's and",
+        &[],
+        "(relation r T T)\n(rule old-where (?r)\n  :match (and (?r ?a ?b) :where (neq ?a ?b))\n  :assert (?r ?b ?a)\n  :why \"ow\")\n(old-where r)",
+    ),
+    row(
+        "a :match's or",
+        &[],
+        "(rule r () :match (or (p ?x) (q ?x) :k v) :assert (hit ?x))",
+    ),
+    row(
+        "a pattern",
+        &[],
+        "(rule r () :match (p ?x :k v) :assert (q ?x))",
+    ),
+    row(
+        "a pattern, in an hrule",
+        &[],
+        "(hrule h () :match (p ?x :k v) :assert (q ?x))",
+    ),
+    row(
+        "an absent",
+        &[],
+        "(rule r () :match (and (p ?x) (absent (q ?x) :k v)) :assert (hit ?x))",
+    ),
+    row(
+        "a premise's stored negation",
+        &[],
+        "(rule r () :match (and (p ?x) (not (q ?x) :k v)) :assert (hit ?x))",
+    ),
+    row(
+        "a guard",
+        &[],
+        "(rule r () :match (and (p ?x) (neq ?x a :k v)) :assert (hit ?x))",
+    ),
+    row(
+        "an :assert's and",
+        &[],
+        "(rule r () :match (p ?x) :assert (and (q ?x) :k v))",
+    ),
+    row(
+        "a conclusion",
+        &[],
+        "(rule r () :match (p ?x) :assert (q ?x :k v))",
+    ),
+    row(
+        "a conclusion's stored negation",
+        &[],
+        "(rule r () :match (p ?x) :assert (not (q ?x) :k v))",
+    ),
+    row(
+        "a :goal's and",
+        &[],
+        "(relation p T) (p a) (p b)\n(query :goal (and (p ?x) :zz 1) :expect (model (p a) (p b)))",
+    ),
+    row("a :goal's pattern", &[], "(query :goal (p ?x :zz 1))"),
+    row(
+        "a macro call in a :match",
+        &[],
+        "(import std.macro :symbols (forall))\n(rule r () :match (and (p ?x) (forall (q ?y) (p ?y) :k v)) :assert (hit ?x))",
+    ),
+    row(
+        "a macro call in an :assert",
+        &[],
+        "(macro both (?a) (and (q ?a) (hit ?a)))\n(rule r () :match (p ?x) :assert (both ?x :k v))",
+    ),
+    row("a macro's body", &[], "(macro m (?a) (p ?a :k v))"),
+    row(
+        "a nested fact",
+        &[],
+        "(relation facts F) (relation r T T)\n(facts (r a b :source \"(1)\"))",
+    ),
+    row(
+        "a nested fact in a :using",
+        &[],
+        "(relation q T) (q c :rule r :using ((p c :source \"s\")))",
+    ),
+    row(
+        "a claim's model",
+        &[],
+        "(query :goal (p ?x) :expect (model (p a) (p b) :zz 1))",
+    ),
+    row(
+        "a region claim",
+        &[],
+        "(relation p T) (p a) (solve :expect (region (model (p a)) :zz 1))",
+    ),
+    row(
+        "a trace step's :derives",
+        &[],
+        "(trace (step s1 :derives (q a :k v)))",
     ),
 ];
 

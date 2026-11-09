@@ -175,20 +175,20 @@ fn expand(
         Node::SForm { head, args } => {
             let name = ast.atom_name(head).map(str::to_string);
             if let Some(m) = name.as_deref().and_then(|n| macros.get(n)) {
-                // Trailing kw-pairs are metadata (dropped downstream by the
-                // compiler — Q32) and do not count toward arity.
-                let positional: Vec<NodeId> = ast
-                    .args(args)
-                    .iter()
-                    .copied()
-                    .filter(|a| !matches!(ast.node(*a), Node::KwPair { .. }))
-                    .collect();
-                if positional.len() != m.params.len() {
+                // Every argument of a call is one of the macro's: a call is a
+                // premise or a conclusion (`ein.y`'s `Premise` and
+                // `Conclusion`), which holds no keyword pair. Until M1f
+                // S1f.5.5's swap a call's trailing keyword pairs were metadata,
+                // dropped here and not counted toward its arity (the compiler
+                // dropped them downstream, Q32), so `(forall G B :k v)` expanded
+                // as `(forall G B)`; S1f.5.11's T1f.5.11.2 retired the filter.
+                let actual: Vec<NodeId> = ast.args(args).to_vec();
+                if actual.len() != m.params.len() {
                     return Err(MacroError(format!(
                         "macro {}/{} invoked with {} args at {}",
                         m.name,
                         m.params.len(),
-                        positional.len(),
+                        actual.len(),
                         loc_repr(ast, ast.loc(node)),
                     )));
                 }
@@ -196,7 +196,7 @@ fn expand(
                     .params
                     .iter()
                     .map(String::as_str)
-                    .zip(positional.iter().copied())
+                    .zip(actual.iter().copied())
                     .collect();
                 let body = m.body;
                 let expanded = substitute(ast, body, &subst);
@@ -210,6 +210,10 @@ fn expand(
             let loc = ast.loc(node);
             Ok(ast.sform(head, &new_args, loc))
         }
+        // A pair's value is walked as a form's arguments are. The expander is
+        // handed a clause's value, which holds no pair since M1f S1f.5.5's swap
+        // (S1f.5.11), so no program reaches the arm; the walk keeps it, total
+        // over the tree (S1f.5.11's T1f.5.11.2).
         Node::KwPair { key, value } => {
             let value = expand(ast, value, macros, depth)?;
             let loc = ast.loc(node);
@@ -248,6 +252,8 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
             let loc = ast.loc(template);
             ast.sform(new_head, &new_args, loc)
         }
+        // A template holds no pair (`ein.y`'s `Template`), so no program
+        // reaches the arm; the walk keeps it, as `expand` does.
         Node::KwPair { key, value } => {
             let value = substitute(ast, value, subst);
             let loc = ast.loc(template);
@@ -407,12 +413,13 @@ mod tests {
         assert!(out.contains("(forall a b)"), "{out}");
     }
 
-    /// The arity of an invocation is its positional arguments. Until M1f
-    /// S1f.5.5's swap (T1f.5.5.4) a call's trailing keyword pairs were
-    /// metadata and not counted; since, no keyword pair parses inside a term
-    /// (S1f.5.11's ruling), so a call carries none and the parse refuses one.
+    /// The arity of an invocation is its every argument. Until M1f S1f.5.5's
+    /// swap (T1f.5.5.4) a call's trailing keyword pairs were metadata, dropped
+    /// and not counted; since, no keyword pair parses inside a term (S1f.5.11's
+    /// ruling), so a call carries none and the parse refuses one, and
+    /// S1f.5.11's T1f.5.11.2 retired the expander's filter.
     #[test]
-    fn arity_is_counted_over_positional_args_only() {
+    fn arity_is_counted_over_every_argument() {
         let err = expand_src(&format!(
             "{FORALL}\n(rule r () :match (forall (p ?x)) :assert (done))"
         ))

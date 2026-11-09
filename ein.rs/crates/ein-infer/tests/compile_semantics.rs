@@ -164,47 +164,25 @@ fn refused(text: &str) -> ein_ir::ParseError {
     parse(&mut Ast::new(), text, Some("<fixture>")).expect_err("the parser refuses it")
 }
 
-/// Each error of a refusal as `line:col: what`, its notes after it.
-fn errors(r: &ein_ir::ParseError) -> Vec<String> {
-    r.errors
-        .iter()
-        .map(|e| {
-            let mut line = format!("{}:{}: {}", e.line, e.col, e.what);
-            for n in &e.notes {
-                line.push_str(&format!(" — note: {n}"));
-            }
-            line
-        })
-        .collect()
-}
-
 // ── The in-`:match` keyword pair ───────────────────────────────────
 
-/// `:where (neq ?a ?b)` inside a `:match` conjunction is **refused at the
-/// parse** since M1f S1f.5.5's swap, at the keyword: each form takes a fixed
-/// set of keywords, and no keyword pair parses inside a term (S1f.5.11's
-/// ruling, D-15; Q-M1e2.28). Until then it was dropped (work-list
-/// `an-in-match-keyword-pair-is-dropped-not-compiled`): Q32 moved guards from
-/// a `:where` clause to positional `(neq …)` premises and chose tolerance over
-/// a loud failure, so the old spelling survived the parser and vanished, and
-/// the rule compiled to one `SCAN` and no guard, firing unguarded. The
-/// positional guard is what to write.
+/// **A guard is a positional premise, and it compiles** — the test of Q32's
+/// drop, restated by M1f S1f.5.11's T1f.5.11.2, which retired the drop.
+///
+/// Until M1f S1f.5.5's swap `:where (neq ?a ?b)` inside a `:match` conjunction
+/// was dropped (work-list `an-in-match-keyword-pair-is-dropped-not-compiled`):
+/// Q32 moved guards from a `:where` clause to positional `(neq …)` premises
+/// and chose tolerance over a loud failure, so the old spelling survived the
+/// parser and vanished, and the rule compiled to one `SCAN` and no guard,
+/// firing unguarded; this test held the drop. Since the swap the pair is
+/// refused at the parse, at the keyword: each form takes a fixed set of
+/// keywords, and no keyword pair parses inside a term (S1f.5.11's ruling,
+/// D-15; Q-M1e2.28). The refusal of this program is a row of the grammar's
+/// table (`ein-ir/tests/grammar_pages.rs`, *a :match's and*), where every
+/// place in a term is held, and the compiler's drop is gone; what stays here
+/// is the compiler's half, that the positional guard is what to write.
 #[test]
-fn a_where_keyword_pair_in_a_match_is_dropped_and_the_rule_still_compiles() {
-    let r = refused(
-        r#"(relation r T T)
-(rule old-where (?r)
-  :match (and (?r ?a ?b) :where (neq ?a ?b))
-  :assert (?r ?b ?a)
-  :why "ow")
-(old-where r)
-"#,
-    );
-    assert_eq!(
-        errors(&r),
-        ["3:26: unexpected `:where`: a keyword this form does not take"],
-        "{r}"
-    );
+fn a_where_guard_written_as_a_positional_premise_compiles() {
     let mut l = load_text(
         r#"(relation r T T)
 (rule old-where (?r)

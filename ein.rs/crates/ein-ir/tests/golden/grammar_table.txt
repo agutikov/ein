@@ -1769,3 +1769,227 @@
   note: ?_ is reserved and names nothing: where any value will do, write a variable used once
   repair: Delete `?_`
 
+## 256. a relation's keyword (was: —)
+    (relation s Node :cardinality 1..1)
+<row>:1:18: unexpected `:cardinality`: a keyword this form does not take
+  repair: Insert a name, Delete `:cardinality`
+  repair: Delete `:cardinality`, Delete `1..1`
+
+## 257. a rule's keyword (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (q ?x) :where (neq ?x a))
+<row>:3:41: unexpected `:where`: a keyword this form does not take
+  repair: Insert `:match`, Delete `:where`
+  repair: Insert `:assert`, Delete `:where`
+
+## 258. an hrule's keyword (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (p ?x) :assert (q ?x) :zz 1)
+<row>:3:42: unexpected `:zz`: a keyword this form does not take
+  repair: Delete `:zz`, Delete `1`
+
+## 259. a fact's keyword (was: —)
+    (relation q T) (q c :zz 1)
+<row>:1:21: unexpected `:zz`: a keyword this form does not take
+  repair: Insert a name, Delete `:zz`
+  repair: Insert `:rule`, Delete `:zz`
+  repair: Delete `:zz`, Delete `1`
+
+## 260. a stored negation's keyword (was: —)
+    (relation q T) (not (q c) :k v)
+<row>:1:27: unexpected `:k`: a keyword this form does not take
+  repair: Insert `:rule`, Delete `:k`
+  repair: Delete `:k`, Delete `v`
+
+## 261. a query's keyword (was: —)
+    (query :goal (p ?x) :G 1)
+<row>:1:21: unexpected `:G`: a keyword this form does not take
+  repair: Insert `:over`, Delete `:G`
+  repair: Delete `:G`, Delete `1`
+
+## 262. a solve's keyword (was: —)
+    (solve :notes (p))
+<row>:1:8: unexpected `:notes`: a keyword this form does not take
+  repair: Insert `:hrules`, Delete `:notes`
+  repair: Insert `:hypothesis-relations`, Delete `:notes`
+  repair: Insert `:no-hypothesis`, Delete `:notes`
+
+## 263. a config's keyword (was: —)
+    (config :zz true)
+<row>:1:9: unexpected `:zz`: a keyword this form does not take
+  repair: Insert `:lattice-sanity-check`, Delete `:zz`
+  repair: Insert `:record-alternative-justifications`, Delete `:zz`
+  repair: Delete `:zz`, Delete `true`
+
+## 264. an import's keyword (was: —)
+    (import std.macro :zz 1)
+<row>:1:19: unexpected `:zz`: a keyword this form does not take
+  repair: Insert `:as`, Delete `:zz`
+  repair: Delete `:zz`, Delete `1`
+
+## 265. a macro's keyword (was: —)
+    (macro m (?a) (p ?a) :k v)
+<row>:1:22: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 266. a trace's keyword (was: —)
+    (trace :k v)
+<row>:1:8: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 267. a trace step's keyword (was: —)
+    (trace (step s1 :rule r :derives (q a) :zz 1))
+<row>:1:40: unexpected `:zz`: a keyword this form does not take
+  repair: Insert `:rule`, Delete `:zz`
+  repair: Delete `:zz`, Delete `1`
+
+## 268. a :match's and (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) :where (neq ?x a)) :assert (q ?x))
+<row>:3:31: unexpected `:where`: a keyword this form does not take
+  repair: Delete `:where`
+
+## 269. a :match's and (was: —)
+    (relation r T T)
+    (rule old-where (?r)
+      :match (and (?r ?a ?b) :where (neq ?a ?b))
+      :assert (?r ?b ?a)
+      :why "ow")
+    (old-where r)
+<row>:3:26: unexpected `:where`: a keyword this form does not take
+  repair: Delete `:where`
+
+## 270. a :match's or (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (or (p ?x) (q ?x) :k v) :assert (hit ?x))
+<row>:3:37: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 271. a pattern (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x :k v) :assert (q ?x))
+<row>:3:25: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 272. a pattern, in an hrule (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (p ?x :k v) :assert (q ?x))
+<row>:3:26: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 273. an absent (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (absent (q ?x) :k v)) :assert (hit ?x))
+<row>:3:46: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 274. a premise's stored negation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (not (q ?x) :k v)) :assert (hit ?x))
+<row>:3:43: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 275. a guard (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (p ?x) (neq ?x a :k v)) :assert (hit ?x))
+<row>:3:41: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 276. an :assert's and (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (and (q ?x) :k v))
+<row>:3:46: unexpected `:k`: a keyword this form does not take
+  repair: Insert `(`, Delete `:k`
+  repair: Delete `:k`, Delete `v`
+<row>:3:52: unexpected end of input
+  repair: Insert `)`
+
+## 277. a conclusion (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (q ?x :k v))
+<row>:3:40: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 278. a conclusion's stored negation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x) :assert (not (q ?x) :k v))
+<row>:3:46: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`, Delete `v`
+
+## 279. a :goal's and (was: —)
+    (relation p T) (p a) (p b)
+    (query :goal (and (p ?x) :zz 1) :expect (model (p a) (p b)))
+<row>:2:26: unexpected `:zz`: a keyword this form does not take
+  repair: Delete `:zz`, Delete `1`
+
+## 280. a :goal's pattern (was: —)
+    (query :goal (p ?x :zz 1))
+<row>:1:20: unexpected `:zz`: a keyword this form does not take
+  repair: Delete `:zz`
+
+## 281. a macro call in a :match (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (import std.macro :symbols (forall))
+    (rule r () :match (and (p ?x) (forall (q ?y) (p ?y) :k v)) :assert (hit ?x))
+<row>:4:53: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 282. a macro call in an :assert (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (macro both (?a) (and (q ?a) (hit ?a)))
+    (rule r () :match (p ?x) :assert (both ?x :k v))
+<row>:4:43: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 283. a macro's body (was: —)
+    (macro m (?a) (p ?a :k v))
+<row>:1:21: unexpected `:k`: a keyword this form does not take
+  repair: Delete `:k`
+
+## 284. a nested fact (was: —)
+    (relation facts F) (relation r T T)
+    (facts (r a b :source "(1)"))
+<row>:2:15: unexpected `:source`
+  repair: Insert `)`
+<row>:2:29: unexpected `)`
+  repair: Delete `)`
+
+## 285. a nested fact in a :using (was: —)
+    (relation q T) (q c :rule r :using ((p c :source "s")))
+<row>:1:42: unexpected `:source`
+  repair: Delete `:source`, Delete `"s"`
+
+## 286. a claim's model (was: —)
+    (query :goal (p ?x) :expect (model (p a) (p b) :zz 1))
+<row>:1:48: unexpected `:zz`: a keyword this form does not take
+  repair: Insert `(`, Delete `:zz`
+  repair: Delete `:zz`, Delete `1`
+<row>:1:55: unexpected end of input
+  repair: Insert `)`
+
+## 287. a region claim (was: —)
+    (relation p T) (p a) (solve :expect (region (model (p a)) :zz 1))
+<row>:1:59: unexpected `:zz`: a keyword this form does not take
+  repair: Delete `:zz`, Delete `1`
+
+## 288. a trace step's :derives (was: —)
+    (trace (step s1 :derives (q a :k v)))
+<row>:1:31: unexpected `:k`: a keyword this form does not take
+  repair: Insert a name, Delete `:k`
+  repair: Insert `(`, Delete `:k`
+  repair: Delete `:k`, Delete `v`
+

@@ -90,18 +90,19 @@ pub enum Slot {
     // swap refused a bare `_` at the parse (S1f.5.1, Q-M1e2.22), and S1f.5.1's
     // T1f.5.1.3 retired it: a premise's fact is a function of the register
     // file since (F3's trace, W39 the one exception, a disjunction).
-    /// An IR node the compiler's `slot` returned unchanged — a `KwPair` in a
-    /// nested pattern, or an `SForm` whose head is a variable the activator
-    /// does not bind. A `String` was one until M1e2 S1e2.2.18, and a
-    /// `Wildcard` and a `Range` until S1e2.2.20, which lowered the first to
-    /// `Slot::Any` (retired with the node by M1f S1f.5.1) and refused the
-    /// second, and a wildcard as a relation, at load (and M1f S1f.5.3 retired
-    /// the range token). **Since S1e2.2.24** (W24, Q-M1e2.16 (1)) the loader refuses the
-    /// two that were left, a keyword pair inside a pattern inside a pattern
-    /// and a relation variable no parameter binds, and the compiler a
-    /// parameter its activator bound to a nested fact, so no program the
-    /// loader accepts reaches one in a `:match`; in an `:assert`, a keyword
-    /// pair at a conclusion's top level still stops the firing.
+    /// An IR node the compiler's `slot` returned unchanged — an `SForm` whose
+    /// head is a variable the activator does not bind. A `String` was one
+    /// until M1e2 S1e2.2.18, and a `Wildcard` and a `Range` until S1e2.2.20,
+    /// which lowered the first to `Slot::Any` (retired with the node by M1f
+    /// S1f.5.1) and refused the second, and a wildcard as a relation, at load
+    /// (and M1f S1f.5.3 retired the range token). **Since S1e2.2.24** (W24,
+    /// Q-M1e2.16 (1)) the loader refuses a relation variable no parameter
+    /// binds, and the compiler a parameter its activator bound to a nested
+    /// fact, so no program the loader accepts reaches one in a `:match`. A
+    /// `KwPair` was one too, in a nested pattern until S1e2.2.24 and at an
+    /// `:assert`'s conclusion's top level, where it stopped the firing, until
+    /// M1f S1f.5.5's swap refused a keyword pair inside a term (S1f.5.11);
+    /// `slot` holds the arm unreachable since S1f.5.11's T1f.5.11.2.
     ///
     /// The unifier compares it to the argument by equality, and no IR node is
     /// ever equal to a name or a `Fact`, so an opaque slot **never
@@ -218,8 +219,9 @@ pub enum GuardArgKind {
     /// "b")` never held, and the symbol it names until M1f S1f.5.5's swap
     /// refused one in a guard (S1f.5.2; T1f.5.2.3 retired the arm).
     Const(Value),
-    /// Anything else — an `SForm`, a `KwPair` (a `Wildcard` until M1f
-    /// S1f.5.1 retired the node) — which guard
+    /// Anything else — an `SForm` (a `Wildcard` until M1f S1f.5.1 retired the
+    /// node, and a `KwPair` until M1f S1f.5.5's swap refused one inside a
+    /// term, S1f.5.11) — which guard
     /// resolution returns as-is, so it compares by IR-node equality: equal to
     /// no value. **Since M1e2 S1e2.2.24** (W24, Q-M1e2.16 (1), Q-M1e2.18) the
     /// loader refuses each as a guard's argument, and a variable no premise

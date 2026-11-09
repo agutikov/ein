@@ -485,8 +485,9 @@ impl Universe {
 ///
 /// The structural primitives are transparent: `(and (p A) (not (q B)))`
 /// asserts about `p` and `q`, not about `and` and `not`. A keyword pair
-/// contributes its value only — `:priority 250` names no relation — and a
-/// variable contributes nothing at all.
+/// contributes its value only, and a variable contributes nothing at all; no
+/// `:assert` holds a keyword pair since M1f S1f.5.5's swap (S1f.5.11), so the
+/// pair's arm is the walk's, total over the tree, and reached by no program.
 ///
 /// A **string** was the symbol it names here, as the compiler lowered it and
 /// the loader held it in a fact, so `(tag ?x "lbl")` named `lbl` — M1e2
