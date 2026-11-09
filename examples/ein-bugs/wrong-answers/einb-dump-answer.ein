@@ -1,6 +1,6 @@
 ;;; `ein solve --dump-answer` refuses a `.einb` — M1f **W43**, register row
 ;;; `W43/einb-dump-answer` (`corpus/wrong_answers.toml`), filed by S1f.5.12's
-;;; T1f.5.12.4 (2026-11-09).
+;;; T1f.5.12.4 and fixed by its T1f.5.12.5 (2026-11-09).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -24,11 +24,13 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; `ein solve` refuses the container before the run, exit 2, with `error:
+;;; The right answer, since S1f.5.12's T1f.5.12.5 (2026-11-09): the dump
+;;; writes every file from the program the container stores. Until then `ein
+;;; solve` refused the container before the run, exit 2, with `error:
 ;;; --dump-answer DIR: a .einb container carries no program source, and every
 ;;; file the answer directory holds starts with it — run it on the .ein`,
 ;;; where `ein solve` on the container without `--dump-answer`, and every other
-;;; command, answers it (2026-11-09).
+;;; command, answered it.
 
 (relation p T :why "{?1} is picked")
 (relation seen T :why "{?1} is seen")

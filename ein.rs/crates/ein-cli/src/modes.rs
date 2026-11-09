@@ -199,31 +199,16 @@ pub fn run(m: &ArgMatches) -> i32 {
     opts.deadline = max_time.map(|s| Instant::now() + Duration::from_secs_f64(s.max(0.0)));
 
     // `--dump-answer` makes its directory before the run, as the walk's
-    // does, so a path that cannot be written fails before the work.
+    // does, so a path that cannot be written fails before the work. Every
+    // state file starts with the program, which a `.einb` stores: since M1f
+    // S1f.5.12 (T1f.5.12.5, W43) the dump writes that one, where it refused
+    // the container, exit 2 (`solve::inlined_program`).
     let dump = m.get_one::<String>("dump-answer").cloned();
-    if let Some(dir) = dump.as_deref() {
-        // Every state file starts with the program's source, which a
-        // container does not carry. `--count` writes none.
-        if !counting {
-            match crate::common::read_program(Path::new(&file)) {
-                Ok(crate::common::Held::Container(_)) => {
-                    eprintln!(
-                        "error: --dump-answer {dir}: a .einb container carries no program source, and \
-                         every file the answer directory holds starts with it — run it on the .ein"
-                    );
-                    return 2;
-                }
-                Ok(crate::common::Held::Text(_)) => {}
-                Err(e) => {
-                    eprintln!("{e}");
-                    return 1;
-                }
-            }
-        }
-        if let Err(e) = std::fs::create_dir_all(dir) {
-            crate::solve::artefact_failed("dump-answer", dir, e);
-            return 1;
-        }
+    if let Some(dir) = dump.as_deref()
+        && let Err(e) = std::fs::create_dir_all(dir)
+    {
+        crate::solve::artefact_failed("dump-answer", dir, e);
+        return 1;
     }
     // `--dump-lattice` too: its directory is made before the run.
     let lattice_dir = m.get_one::<String>("dump-lattice").cloned();

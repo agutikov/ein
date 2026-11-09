@@ -101,16 +101,38 @@ pub fn not_utf8_line(path: &Path, bytes: &[u8], at: usize) -> String {
     )
 }
 
-/// The text of a program path, for the one caller that wants the source and
-/// not the program: `--dump-answer`'s inlining, which refuses a container
-/// before the run.
-pub fn read_text(path: &Path) -> Result<String, String> {
+/// A program path's text, for the one caller that wants the text and not the
+/// loaded program: `--dump-answer`'s inlining (`solve::inlined_program`).
+pub struct ProgramText {
+    pub text: String,
+    /// The name its positions are parsed under.
+    pub name: Option<String>,
+    /// Where its file-relative imports resolve; `None` for a container's.
+    pub base: Option<std::path::PathBuf>,
+}
+
+/// The text of a program path: a text as written, named by its path and
+/// resolved against its directory; or the program a `.einb` stores, the
+/// resolved and import-flattened text `ein kb save` wrote, named
+/// `<program stored in x.einb>` (`ein_einb::program_name`) and with nothing
+/// left to resolve. Until M1f S1f.5.12 (T1f.5.12.5, W43) a container was
+/// refused here, and `ein solve x.einb --dump-answer DIR` exited 2 where the
+/// `.ein` answered.
+pub fn program_text(path: &Path) -> Result<ProgramText, String> {
     match read_program(path)? {
-        Held::Text(t) => Ok(t),
-        Held::Container(_) => Err(format!(
-            "{}: a .einb container, where the program's source is wanted",
-            path.display()
-        )),
+        Held::Text(text) => Ok(ProgramText {
+            text,
+            name: path.to_str().map(str::to_string),
+            base: path.parent().map(Path::to_path_buf),
+        }),
+        #[cfg(feature = "einb")]
+        Held::Container(bytes) => Ok(ProgramText {
+            text: ein_einb::program_of(&bytes, true).map_err(|e| format!("kb load error: {e}"))?,
+            name: Some(ein_einb::program_name(Some(&path.display().to_string()))),
+            base: None,
+        }),
+        #[cfg(not(feature = "einb"))]
+        Held::Container(_) => Err(no_einb_line(path)),
     }
 }
 

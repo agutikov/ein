@@ -187,8 +187,15 @@ fixpoint of the program.
 - **One run, one directory.** A file with several `(query …)` blocks is one
   run, and each query's classes are in `answer.json`'s `queries`. Under the
   walk, which solved once per query, the flag was refused on such a file.
-- **A `.einb` is refused**, exit 2. The container carries no program source,
-  and every state file starts with one.
+- **A `.einb` writes the directory its `.ein` writes** (M1f S1f.5.12, W43):
+  every state file starts with the program the container stores, resolved and
+  import-flattened, as `ein render program` draws it (Q-M1f.17). On a program
+  that imports, that program keeps every declaration its imports brought,
+  where the `.ein`'s state files keep the ones it uses
+  ([Q-M1f.27](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f27--what-program-a-einbs-answer-directory-writes)),
+  and every file but a state file's program is the `.ein`'s, but for the path
+  it names (`einb_cli::the_answer_directory_of_a_container_is_its_sources`).
+  Until S1f.5.12 a `.einb` was refused, exit 2.
 - **A budget stop is an answer**: `--region-budget` and `--region-limit`
   write the whole directory, and `index.json`'s `region` says
   `exhausted: false` and `stopped: {why, …}`. **A `-T` abort is not**: it

@@ -7,7 +7,8 @@
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions
 till the end of the phase"*), beside the second lane's S1f.5.10: T1f.5.12.1, every ask, writer and move listed (`87b7cb5a`, [its
 record](#t1-record-2026-11-09)); T1f.5.12.2, the two asks and N's cores after the walk (`0116cf65`, [its record](#t2-record-2026-11-09));
-T1f.5.12.4, W43 filed ([its record](#t4-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
+T1f.5.12.4, W43 filed (`96f66c40`, [its record](#t4-record-2026-11-09)); T1f.5.12.5, W43 fixed ([its
+record](#t5-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
 `.einb` ([§ Task T1f.5.12.4](#task-t1f5124--the-answer-directory-of-a-einb-w43)).
 **Depends on:** nothing. It is independent of the grammar stages. [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md)'s
 four dumps each get cheaper with it, but neither stage waits for the other.
@@ -305,6 +306,39 @@ and `ein-infer/tests/register_region.rs` holds the row's region to the library's
 one commit; this one is filed first, as the coordinator's brief asks, and the schema is what that costs.
 
 The register reads **128 fixed, 23 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+-c`, 2026-11-09).
+
+### T5 record, 2026-11-09
+
+**Nothing made it impossible.** The refusal's reason, *carries no program source*, was true only of a source file: a
+container stores its program, resolved and import-flattened, and `ein_einb::program_of` reads it without opening the
+KB, as the `render` views have since T1f.5.5.13. So `ein-cli`'s `common::read_text`, which refused a container, is
+`common::program_text`: a text as written, named by its path and resolved against its directory, or the program a
+container stores, named `<program stored in x.einb>` (Q-M1f.15) with nothing left to resolve. `solve::inlined_program`
+writes either through the same three calls, and `modes.rs` no longer reads the path before the run. A build without
+the `einb` feature refuses a container at load, as before, so the dump is never reached.
+
+**What the directory holds.** Every file the `.ein`'s run writes, and each the same but for the path it names
+(`answer.txt`'s header, `answer.json`'s and `index.json`'s `source`, each state file's `source` line). On a program
+that imports, a state file's program is the one the container stores, which keeps every declaration its imports
+brought, where the `.ein`'s state files keep the ones it uses: on `zebra2-hints.ein`, the stdlib's `unknown` macro.
+Which program the directory writes is
+[Q-M1f.27](../open_questions.md#q-m1f27--what-program-a-einbs-answer-directory-writes), defaulted to (a), the stored
+one, as Q-M1f.17 has every view of a container read it.
+
+**The tests.** `einb_cli`'s `the_answer_directory_of_a_container_is_its_sources` saves four programs, three that
+import nothing (W43's witness, `branching/01_saturate_only`, `lattice/02_genuine_3set_death`) and `zebra2-hints`, and
+holds the container's run to the source's: the exit, stderr and stdout, the same files, each byte for byte but for
+the path, and on `zebra2-hints` each state file's header and state. `answer_dump.rs`'
+`a_container_is_refused_because_it_carries_no_program`, which held the refusal, is
+`a_container_writes_the_directory_its_program_writes`: exit 0, nothing on stderr, R's three state files each a
+fixpoint of its program, and N's member with its core. The register's `W43/einb-dump-answer` is fixed: its `now` is
+`solve` on the container, which `wrong_answers.rs` runs with `--dump-answer`, exit 0, R's three states and N's member
+with its core, (p a) (p b), read off the container's `nogoods.json`, as its `right` states them; and its
+`[case.fixed]` carries the null id, which T1f.5.12.3 writes. [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) says a `.einb` writes the
+directory its `.ein` writes, where it said it was refused.
+
+The register reads **129 fixed, 22 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
 -c`, 2026-11-09).
 
 ## Acceptance

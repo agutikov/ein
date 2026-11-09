@@ -220,8 +220,9 @@ impl Default for Options {
 /// - [`Self::nogoods`]: each member of `N` a description holds, taken
 ///   **after the walk**, each through the node function against the snapshot
 ///   the walk resumed every node from — `--dump-answer`'s `nogoods.json` and
-///   `--trace`'s *N*. A member whose core the walk took keeps it; every other
-///   is taken then, past `--region-limit` too.
+///   `--trace`'s *N*. A member whose core the walk took and kept keeps it;
+///   every other is taken then, past `--region-limit` too, where the walk
+///   keeps a node as its two bits.
 ///
 /// Every core taken after the walk is the one the walk takes eagerly: the
 /// node is root's fork with the same facts, resumed from the same snapshot

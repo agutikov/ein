@@ -35,6 +35,7 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.24](#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own) | a second surface that glues: another row of W42, or a case of its own? | **defaulted 2026-11-09 (the user's instruction): (a), W42's second row, `W42/h-long-relation`**; [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.5 |
 | [Q-M1f.25](#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores) | the state route's members of N it did not saturate: whose preparation takes their cores? | **defaulted 2026-11-09 (the user's instruction): (a), the walk's snapshot, after the walk; 58 cores move on 3 programs**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1 |
 | [Q-M1f.26](#q-m1f26--not-kept-retires-and-what-a-member-with-no-core-prints) | `not-kept` retires, and what a member with no core prints | **defaulted 2026-11-09 (the user's instruction): (a), the status goes, and a renderer refuses a member with no core**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1 |
+| [Q-M1f.27](#q-m1f27--what-program-a-einbs-answer-directory-writes) | what program a `.einb`'s answer directory writes | **defaulted 2026-11-09 (the user's instruction): (a), the program the container stores, as every view of a container reads it**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.5 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -719,3 +720,25 @@ cores (`region::Cores::nogoods` off), which no `ein` command does before it writ
 **Defaulted 2026-11-09 (the user's instruction): (a)**, the spec's own default (*"`not-kept` retires (default)…
 If one is left, the status stays for it alone"*), step 1 having found no other writer. Re-opening it means (b), one
 enum variant and its two sentences.
+
+### Q-M1f.27 — What program a `.einb`'s answer directory writes
+
+**Raised** 2026-11-09 by [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.5, which fixes
+W43: `ein solve X.einb --dump-answer DIR` writes the directory where it was refused, and every state file starts with
+the program. On a `.ein` that program is the source with its imports inlined and tree-shaken
+(`ein_ir::resolve_and_minimize`), every imported declaration nothing reaches dropped. A container stores its program
+resolved and import-flattened but not shaken (`ein_einb`'s program section), and keeps no mark of which forms an
+import brought, so the shake cannot be re-run on it. On `zebra2-hints.ein` the two differ by one form, the stdlib's
+`unknown` macro, which the container's state files keep; on a program that imports nothing they are byte for byte
+the same (`einb_cli::the_answer_directory_of_a_container_is_its_sources`, 2026-11-09).
+
+- **(a) The program the container stores**, as `ein render program`, `rules` and `constraints` draw it
+  ([Q-M1f.17](#q-m1f17--what-a-view-that-never-loads-reads-from-a-container)): the program the run answered, so each
+  state file loads to its state; on a program that imports, a state file's program keeps the unused declarations.
+- **(b) Shake the stored program again**, every form treated as the program's own: nothing is dropped, so (b) is (a).
+- **(c) Store the shaken program in the container** (`ein kb save`): the files would match the `.ein`'s, at the cost
+  of a container whose views no longer draw what Q-M1f.17 ruled they draw, and of a format change.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) moves no container and no view, and the state and every other file are the `.ein`'s.
+Re-opening it means (c).

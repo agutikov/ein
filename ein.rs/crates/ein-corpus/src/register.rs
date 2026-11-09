@@ -2704,6 +2704,9 @@ goal_text = ["{?n*} is a q"]
         r.status = "open".to_string();
         r.fixed = None;
         r.open_because = Some("the refusal".to_string());
+        // N's cores, which a refused run writes nowhere, as the row stood
+        // when it was filed.
+        r.right.nogoods = None;
         r.now = Now {
             run: r.wrong.run.clone(),
             line: "all".to_string(),

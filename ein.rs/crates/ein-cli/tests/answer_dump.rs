@@ -451,14 +451,18 @@ fn a_stopped_run_still_says_what_it_is() {
     );
 }
 
+/// **A container writes the directory its program writes** — M1f S1f.5.12
+/// (T1f.5.12.5), W43's fix: every state file starts with the program the
+/// container stores. Until then a `.einb` was refused here, exit 2, *a .einb
+/// container carries no program source*, and this test held that refusal.
+/// `einb_cli::the_answer_directory_of_a_container_is_its_sources` holds the
+/// directory file for file against the source's.
 #[test]
-fn a_container_is_refused_because_it_carries_no_program() {
+fn a_container_writes_the_directory_its_program_writes() {
     let root = scratch("einb");
-    let einb = root.join("z.einb");
-    let r = ein(
-        &["kb", "save", "examples/zebra2.ein", &einb.to_string_lossy()],
-        &[],
-    );
+    let einb = root.join("w.einb");
+    let witness = "examples/ein-bugs/wrong-answers/einb-dump-answer.ein";
+    let r = ein(&["kb", "save", witness, &einb.to_string_lossy()], &[]);
     assert_eq!(r.code, 0, "{}", r.err);
     let dir = root.join("d");
     let r = ein(
@@ -470,13 +474,20 @@ fn a_container_is_refused_because_it_carries_no_program() {
         ],
         &[],
     );
-    assert_eq!(r.code, 2, "{}", r.err);
-    assert!(
-        r.err.contains("--dump-answer") && r.err.contains(".einb"),
-        "{}",
-        r.err
+    assert_eq!(
+        (r.code, r.err.as_str()),
+        (0, ""),
+        "the container is answered"
     );
-    assert!(r.out.is_empty(), "it ran anyway:\n{}", r.out);
+    let mut found = Vec::new();
+    let n = check_states(&dir, witness, &mut found);
+    assert!(found.is_empty(), "{}", found.join("\n"));
+    assert_eq!(n, 3, "R's three states, each a file");
+    let nogoods = std::fs::read_to_string(dir.join("nogoods.json")).expect("nogoods.json");
+    assert!(
+        nogoods.contains("\"clash\"") && nogoods.contains("within-budget"),
+        "N's one member with its core: {nogoods}"
+    );
 }
 
 /// **Every `work` counter and every `root` field a summary carries is

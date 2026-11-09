@@ -129,6 +129,115 @@ fn a_solve_of_a_container_is_byte_identical_to_a_solve_of_its_source() {
     }
 }
 
+/// **`--dump-answer` on a container writes the directory its source writes**
+/// — M1f S1f.5.12 (T1f.5.12.5), W43's fix. Until then `ein solve X.einb
+/// --dump-answer DIR` was refused before the run, exit 2, *a .einb container
+/// carries no program source*, where the same run on the `.ein` answered and
+/// every other command read the program the container stores. The same files,
+/// each the source's byte for byte but for the path it names; on a program
+/// that imports, a state file's program is the one the container stores,
+/// every declaration its imports brought (Q-M1f.27), and its header and its
+/// state are the source's.
+#[test]
+fn the_answer_directory_of_a_container_is_its_sources() {
+    const STATE: &str = ";; ── the state ──";
+    let dir = scratch("dump-answer");
+    for (puzzle, imports) in [
+        (
+            "examples/ein-bugs/wrong-answers/einb-dump-answer.ein",
+            false,
+        ),
+        ("examples/branching/01_saturate_only.ein", false),
+        ("examples/lattice/02_genuine_3set_death.ein", false),
+        ("examples/zebra2-hints.ein", true),
+    ] {
+        let einb = dir.join("kb.einb");
+        let container = einb.to_str().expect("utf-8");
+        let saved = ein(&["kb", "save", puzzle, container]);
+        assert_eq!(saved.code, 0, "kb save {puzzle}: {}", saved.stderr);
+        let (a, b) = (dir.join("from-text"), dir.join("from-container"));
+        let _ = std::fs::remove_dir_all(&a);
+        let _ = std::fs::remove_dir_all(&b);
+        let from_text = ein(&["solve", puzzle, "--dump-answer", a.to_str().expect("utf-8")]);
+        let from_container = ein(&[
+            "solve",
+            container,
+            "--dump-answer",
+            b.to_str().expect("utf-8"),
+        ]);
+        assert_eq!(
+            (from_container.code, from_container.stderr.as_str()),
+            (from_text.code, from_text.stderr.as_str()),
+            "{puzzle}: the container's exit and stderr"
+        );
+        assert_eq!(
+            normalise(&from_container.stdout, container, puzzle),
+            from_text.stdout,
+            "{puzzle}: stdout"
+        );
+        let files = |root: &Path| -> Vec<PathBuf> {
+            let mut out = Vec::new();
+            let mut stack = vec![root.to_path_buf()];
+            while let Some(d) = stack.pop() {
+                for e in std::fs::read_dir(&d).expect("a directory") {
+                    let p = e.expect("an entry").path();
+                    if p.is_dir() {
+                        stack.push(p);
+                    } else {
+                        out.push(p.strip_prefix(root).expect("under root").to_path_buf());
+                    }
+                }
+            }
+            out.sort();
+            out
+        };
+        let written = files(&a);
+        assert_eq!(files(&b), written, "{puzzle}: the files written");
+        assert!(
+            written.iter().any(|f| f.starts_with("models")) && written.len() >= 5,
+            "{puzzle}: {written:?}"
+        );
+        for f in &written {
+            let want = std::fs::read_to_string(a.join(f)).expect("utf-8");
+            let got = normalise(
+                &std::fs::read_to_string(b.join(f)).expect("utf-8"),
+                container,
+                puzzle,
+            );
+            if !(imports && f.extension().is_some_and(|e| e == "ein")) {
+                assert_eq!(got, want, "{puzzle}: {}", f.display());
+                continue;
+            }
+            // A state file of a program that imports: its header and its
+            // state are the source's, and its program the container's.
+            let header = |t: &str| -> String {
+                t.lines()
+                    .take_while(|l| l.starts_with(";;;"))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            };
+            let state = |t: &str| t.split_once(STATE).map(|(_, s)| s.to_string());
+            assert_eq!(
+                header(&got),
+                header(&want),
+                "{puzzle}: {}'s header",
+                f.display()
+            );
+            assert!(
+                state(&want).is_some(),
+                "{puzzle}: {} holds a state",
+                f.display()
+            );
+            assert_eq!(
+                state(&got),
+                state(&want),
+                "{puzzle}: {}'s state",
+                f.display()
+            );
+        }
+    }
+}
+
 /// The whole `solve` surface, not just its default: every diagnostic the
 /// command can print is a different projection of the same KB, and one of them
 /// moving is what a shallow round trip would hide.

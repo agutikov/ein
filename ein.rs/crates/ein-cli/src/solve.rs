@@ -229,20 +229,23 @@ pub(crate) fn resolve_jobs(n: i64) -> usize {
 /// The program `--dump-answer` writes at the head of every file: the source
 /// with its imports inlined, by the three calls `stdlib/README.md` documents
 /// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
-/// holds to the same program. The file has already loaded, so a failure here
-/// is a defect, and it is written into the file rather than swallowed.
+/// holds to the same program; or, on a `.einb`, the program it stores, already
+/// resolved and import-flattened (M1f S1f.5.12, W43). The file has already
+/// loaded, so a failure here is a defect, and it is written into the file
+/// rather than swallowed.
 pub(crate) fn inlined_program(file: &str) -> String {
     let path = Path::new(file);
-    let text = match crate::common::read_text(path) {
-        Ok(t) => t,
+    let p = match crate::common::program_text(path) {
+        Ok(p) => p,
         Err(e) => return format!(";; (the source could not be read for inlining: {e})\n"),
     };
+    let text = p.text;
     let mut ast = Ast::new();
-    let forms = match ein_ir::parse(&mut ast, &text, path.to_str()) {
+    let forms = match ein_ir::parse(&mut ast, &text, p.name.as_deref()) {
         Ok(f) => f,
         Err(e) => return format!(";; (the source did not parse for inlining: {e})\n{text}"),
     };
-    match ein_ir::resolve_and_minimize(&mut ast, &forms, path.parent()) {
+    match ein_ir::resolve_and_minimize(&mut ast, &forms, p.base.as_deref()) {
         Ok(inlined) => ein_ir::dump_canonical(&ast, &inlined),
         Err(e) => format!(";; (imports could not be inlined: {e})\n{text}"),
     }
