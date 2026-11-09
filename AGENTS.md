@@ -767,13 +767,14 @@ constrained-reasoning research.
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
   it stops being true.
-  **Since M1e S1e.2.2 every one of the pages — 45 since M1e2 S1e2.1.2 added
+  **Since M1e S1e.2.2 every one of the pages — 46 since M1e2 S1e2.1.2 added
   `inference/answer_dump.md`, S1e2.1a.1 `inference/region_dump.md`, S1e2.1b.6
-  `inference/monotonicity.md` and M1f S1f.5.16 `inference/read_out.md` and its
-  examples page (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-09) — is in
+  `inference/monotonicity.md`, M1f S1f.5.16 `inference/read_out.md` and its
+  examples page, and M1f S1f.5.14 `ir/03-ein-lang/09_natural_language.md`
+  (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-10) — is in
   exactly one of three
   declared states, visible from the page rather than from a plan** —
-  [README § Which pages to trust](docs/kernel/README.md): *current* (42, no
+  [README § Which pages to trust](docs/kernel/README.md): *current* (43, no
   banner), *superseded with a banner* (**3**, all of them M1 P1.5b's design —
   `inference/algorithm_layer_n.md`, `inference/lattice_diagrams.md`,
   `inference/parity_baselines.md`), and *moved to `docs/history/`* (**0**).
@@ -785,7 +786,7 @@ constrained-reasoning research.
   superseded page to match today's engine**: it is neither a record nor a
   specification afterwards, and `docs/history/m1a_rust/design/07` cites the
   first of the three as the search layer's contract. The pass that
-  keeps the other 40 honest is [README § Keeping this
+  keeps the other 43 honest is [README § Keeping this
   true](docs/kernel/README.md) — six checks, five of them `utils/doc_audit.py`
   and the sixth a shell, and the sixth is the one that found the most.
 - **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its

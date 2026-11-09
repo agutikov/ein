@@ -7,8 +7,9 @@
 *"yes, land the :why flag early"*; [its record](#t1f5146-record-2026-11-08)); **running since 2026-11-10**, the
 phase's last stage, on default decisions recorded as they are taken (the user's instruction of 2026-11-09): T1, the
 census, done ([its record](#t1f5141-record-2026-11-10)); T2, a fact in English from its first recorded justification,
-in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)); T3, the three forms with
-nowhere to put a template decided, done ([its record](#t1f5143-record-2026-11-10)). **Ruled and placed on 2026-11-08**
+in the state files and the trace at no measurable cost, done ([its record](#t1f5142-record-2026-11-10)); T3 and T4,
+the three forms with nowhere to put a template decided and the page written, done
+([T3](#t1f5143-record-2026-11-10), [T4](#t1f5144-record-2026-11-10)). **Ruled and placed on 2026-11-08**
 ([P1f.5 § The order](README.md#the-order)). The user's principle that day, on the phase's grammar: *"collect all
 requirement for the parser in this phase and implement grammar that will already meet all of them instead of making
 wrong parser that meets our old wrong parser and then updating it step by step"*. NL `:why` was one of the two
@@ -460,6 +461,20 @@ should be a ruling and not a side effect.
 If the user wants (d) anyway, it is a separate stage with a corpus-wide
 migration commit, and this stage's page is its specification. *Since the
 ruling it is this stage's T1f.5.14.7, not a separate stage.*
+
+#### T1f.5.14.4 record, 2026-11-10
+
+**Rung (d), through the loader flag**, as the user ruled on 2026-11-08; § T4's recommendation stays above as the record
+of what the user overrode and of the risk T7 answers. The page is
+[`docs/kernel/ir/03-ein-lang/09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md),
+*current*, 46 kernel pages since (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-10): the four texts and where
+each is printed (§ 1), the mandate and what an honest `:why` says per form (§ 2), a fact in English, the four
+provenance kinds and the fallback ladder, with a state file's lines (§ 3), the four registers and the census's numbers
+(§ 4), T3's three decisions (§ 5), and the line between the domain's words and the engine's (§ 6): every text a
+program writes is the domain's, and the words around them the engine's, owned by `read_out.md` and
+`reserved_engine_strings.md`, which gains a paragraph pointing at it. Linked from `01_grammar.md`'s `:why` paragraph
+and its division of labour, from `ir/03-ein-lang/README.md`, from `docs/kernel/README.md`'s user row, and from
+`utils/README.md`'s census row; `docs/kernel/README.md` and AGENTS.md count it. T5 pins it to a run.
 
 ### Task T1f.5.14.5 — Bank both checks
 

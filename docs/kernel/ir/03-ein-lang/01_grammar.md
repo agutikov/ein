@@ -219,7 +219,10 @@ have no declaration — get neither, so `(relation ?R)` means precisely
 **`:why` render template.** A `:why "<tmpl>"` string turns a fact
 of this relation into natural-language text, its *statement*: written after each
 fact of the relation in a `--dump-answer` state file and after each one `--trace`
-derives, since M1f S1f.5.14's T1f.5.14.2. Until M1e2 S1e2.1c.5 `ein solve`'s result table printed it (the *rendered query
+derives, since M1f S1f.5.14's T1f.5.14.2
+([`09_natural_language.md`](09_natural_language.md) states every text a
+program writes, where each is printed, the ladder a fact falls back on, and
+whose words are whose). Until M1e2 S1e2.1c.5 `ein solve`'s result table printed it (the *rendered query
 facts* column), and from then until T1f.5.14.2 nothing did. It reuses the rule `:why` engine
 but references the fact's argument **slots positionally**: `{?1}` is arg 0,
 `{?2}` is arg 1, … (a leading digit is the relation-template form;
@@ -955,6 +958,8 @@ goal binds `?who_water` / `?h_zebra` / …):
 ;;  →  "The Norwegian drinks water in House-1; the Japanese owns zebra in House-5"
 ```
 
+Every text a program writes, where each is printed and what a fact reads as
+where it has none: [`09_natural_language.md`](09_natural_language.md).
 The division of labour: a `(relation … :why)` template renders an individual
 *fact* to text (a state file's comment after the fact, `--trace`'s *Derives*
 line); the `(query … :goal-text)` template renders the *headline result* from

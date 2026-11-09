@@ -47,6 +47,12 @@ model in [`../02-data-model/`](../02-data-model/).
   expressed in ein-lang itself, using only real syntax (is-a kinds,
   relation signatures, the property algebra). Operational for L0/L1/L2
   today; the L3-on-L3 frontier (rules as data) is design-only, F5.
+- [`09_natural_language.md`](09_natural_language.md) — what a program says
+  in English: the four texts (`:why` on a relation, a rule, an hrule and a
+  macro; `:goal-text`; `:source`), the mandate that every declaration carries
+  a `:why`, a fact in English from its provenance and the fallback ladder,
+  the four registers the census splits an answer into, and where the
+  domain's words end and the engine's begin (M1f S1f.5.14).
 
 ## Reading order
 
