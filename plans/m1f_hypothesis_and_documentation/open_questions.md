@@ -33,6 +33,8 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.22](#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) | a class label of sixteen characters glues to its value | **defaulted 2026-11-09 (the user's instruction): documented, not fixed here; the stage that fixes it files its row first**; [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md). **Fixed 2026-11-09** by [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.6 (`31e9c7f7`), (b): W42 filed by T1f.5.6.5, `-H`'s form its second row ([Q-M1f.24](#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own)) |
 | [Q-M1f.23](#q-m1f23--what-the-route-row-names-where-root-decides-a-flagged-programs-minimal-line) | what the `route` row names where root decides a flagged program's minimal line | **defaulted 2026-11-09 (the user's instruction): (a), the cube and `L7 the cube`, as `-n 1` printed; no new licence**; [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.2 |
 | [Q-M1f.24](#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own) | a second surface that glues: another row of W42, or a case of its own? | **defaulted 2026-11-09 (the user's instruction): (a), W42's second row, `W42/h-long-relation`**; [S1f.5.6](p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md)'s T1f.5.6.5 |
+| [Q-M1f.25](#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores) | the state route's members of N it did not saturate: whose preparation takes their cores? | **defaulted 2026-11-09 (the user's instruction): (a), the walk's snapshot, after the walk; 58 cores move on 3 programs**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1 |
+| [Q-M1f.26](#q-m1f26--not-kept-retires-and-what-a-member-with-no-core-prints) | `not-kept` retires, and what a member with no core prints | **defaulted 2026-11-09 (the user's instruction): (a), the status goes, and a renderer refuses a member with no core**; [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1 |
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
 them across the milestone boundary, which is what a sticky id is for:
@@ -681,3 +683,39 @@ corpus program declares a name that long.
 till the end of the phase"*, and the coordinator's brief for the task: *"If another one glues, it is the same row
 (another witness) or another, in the same task"*. (a) keeps the fix and its witnesses together; re-opening it moves one
 row's id.
+
+### Q-M1f.25 — The state route's members of N it did not saturate: whose preparation takes their cores?
+
+**Raised** 2026-11-09 by [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1. The user's
+ruling on P-15, (c), takes N's cores after the walk, *each through the node function against the same snapshot*. The
+spec names the members a run met. The state route reads N off its maximal alive states and saturates few of its
+members, and `--dump-answer` and `--trace` took every other member's core through `region::Nodes::new`, a second
+preparation of the already-saturated root: `W10/second-preparation`'s mechanism, which on `zebra2.ein` gives 19 of
+366 members another core, status or rules than the run's own preparation (the stage's probe, 2026-11-09).
+
+- **(a) The walk's snapshot**, after the walk, as every other member of N is taken: one preparation for every core a
+  run prints, and each the first preparation's (366 of 366 on `zebra2.ein`, 73 of 73 on `zebra2-hints.ein`). 58
+  members' cores, statuses or rules move on three programs, `zebra2`, `zebra2-obligations` and `zebra2-hints`, each an
+  explanation, as the user's ruling of 2026-11-08 on Q-M1f.6 has every core (*"core is an explanation, F22 makes it
+  canonical"*).
+- **(b) The second preparation, as today**: no core moves, the renderers keep their own preparation, and a member of
+  one N is taken against two snapshots by whether the walk visited it.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the ruling's own clause applied to every member, and it removes the one path that
+prepared root twice; re-opening it means (b), and the 58 cores move back.
+
+### Q-M1f.26 — `not-kept` retires, and what a member with no core prints
+
+**Raised** 2026-11-09 by [S1f.5.12](p1f.5_the_no_owner_items/s1f.5.12_cores_for_n_only.md)'s T1f.5.12.1. With every
+member of N given its core after the walk, `explore.rs`'s `partial_cube`, the one writer of `CoreStatus::NotKept`, has
+nothing to write it for. A member can still carry no core where a library caller describes R without asking for N's
+cores (`region::Cores::nogoods` off), which no `ein` command does before it writes `nogoods.json` or `--trace`.
+
+- **(a) The status goes**, its word, its sentence and every reader, and `nogoods.json` and `--trace` refuse a member
+  with no core, naming the option the run was not asked: an engine defect, never a line.
+- **(b) The status stays** for the library caller, and the renderers print it there.
+
+**Defaulted 2026-11-09 (the user's instruction): (a)**, the spec's own default (*"`not-kept` retires (default)…
+If one is left, the status stays for it alone"*), step 1 having found no other writer. Re-opening it means (b), one
+enum variant and its two sentences.

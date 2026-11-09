@@ -2,15 +2,12 @@
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
 **Was S1e2.5.12**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
-**Estimate:** 1 day.
-- A quarter of a day to list every surface that asks for cores, every writer of `not-kept`, and the cost
-  before.
-- Half a day for the split, the cores taken after the walk, and the test.
-- A quarter of a day for the cost after, and the pages.
 
-**Status:** specified 2026-11-08 on the user's ruling of that day on P-15.
-**Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
-moved.
+**Status:** specified 2026-11-08 on the user's ruling of that day on P-15. **Running since 2026-11-09**, on the
+user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions
+till the end of the phase"*), beside the second lane's S1f.5.10: T1f.5.12.1, every ask, writer and move listed ([its
+record](#t1-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
+`.einb` ([§ Task T1f.5.12.4](#task-t1f5124--the-answer-directory-of-a-einb-w43)).
 **Depends on:** nothing. It is independent of the grammar stages. [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md)'s
 four dumps each get cheaper with it, but neither stage waits for the other.
 
@@ -82,6 +79,110 @@ walk, *each through the node function, against the same snapshot, so each is the
 Each of the four options, and the nodes whose cores it prints. Every writer of `not-kept`, and every golden
 that holds one. The cost before, as above.
 
+### T1 record, 2026-11-09
+
+**Every ask**, read off the code at `114e8f26`: one switch, `explore::Options::cores` (`region::Options::cores` and
+`downset::Options::cores` beneath it), on for any of four options, and each surface prints the cores of other nodes:
+
+| surface | prints a core for | taken |
+|---|---|---|
+| the read-out, `--json-summary` and `--dump-answer`'s `answer.txt` and `answer.json` | root, and on the cube each minimal hole (`unsat core`, `minimal hole`, `region.core`, `region.holes.minimal[].core`) | on every run, the switch on or off |
+| `--dump-answer`'s `nogoods.json` | each member of N describe holds | at every dead node the walk visits, the switch on |
+| `--trace`'s *N — minimal dead sets* | the same | the same |
+| `--dump-lattice`'s `nodes.json` | every node the walk visits | the same |
+| `--events`' `enter` lines | every node the walk visits | the same |
+| `ein oracle --dump`'s `region.json` | every node of the cube | `region::Options::cores`, on with `--dump` |
+| `ein test --events` | every node the walk visits | `explore::Options::cores`, on with `--events` |
+
+Only describe prints N (`ReadOut::described` is describe's alone), so under `--minimal`, `--maximal`, `--single` or
+`-n N`, `--dump-answer` and `--trace` print no member's core and took one at every dead node all the same.
+
+**Every writer of `not-kept`: one**, `Space::partial_cube` in [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs),
+describe past `--region-limit` on a flagged program. Its readers: `region_answer::nogoods` (a `null` core and rules),
+`trace::region`'s *Core: not kept: the run stopped at `--region-limit`.*, `explain::CoreStatus`'s `word`, `from_word`
+and `not_kept`, and `region_doc`'s reading of an oracle dump through `from_word`, which never holds it. The tests
+that hold it: `cli_semantics`' `a_core_the_run_did_not_keep_says_so_and_no_member_of_n_has_an_empty_core`,
+`answer_round_trip`'s `members_of_n`, `corpus_cores`' `not_kept` count (held at one or more) and `explain_semantics`'
+`a_core_status_is_one_word_read_back_as_written`. No checked-in golden holds the word; `corpus_shapes.md5` holds it in
+four digests (below). The register records none: its core statuses leave it out (`ein_corpus::register`).
+
+**And a writer the spec did not name: the state route's N went through a second preparation of root.** The state
+route reads N off its maximal alive states and saturates few of its members. For each other member,
+`region_answer::nogoods` and `trace::region` called `region::Nodes::new`, which prepares the already-saturated root
+again, then `Nodes::refutation`. That is the mechanism `W10/second-preparation`'s `open_because` names. A scratch probe
+(`build/s1f.5.12/s1f512_probe.rs`, gitignored, run as an `ein-infer` example) takes every member of N three ways: the
+node function against the walk's snapshot after the walk, `refutation` over a fresh first preparation, and
+`refutation` over the second. The walk's snapshot gives the first preparation's core, status and rules on every
+member, 366 of 366 on `zebra2.ein` and on `zebra2-obligations.ein` and 73 of 73 on `zebra2-hints.ein`, and the second
+preparation differs on 19, 19 and 28 of them (2026-11-09).
+
+**The case, re-taken** by `build/s1f.5.12/sweep.py` (gitignored, kept with its logs): every `.ein` under `examples/`,
+`tests/`, `stdlib/` and `corpus/`, 426 files, under a bare `ein solve`, `--maximal`, `--minimal` and `--single`, each
+with `--json-summary`, `--dump-answer` and `--trace`, and describe at `--region-limit 1` and `2` on every program the
+static check flags: 1 762 runs at `114e8f26`, release.
+- `lattice/06_friends_tables`: 68 of 68 members `not-kept`, as the case says; `past-limit-lines`: 15 of 15.
+- Over the sweep, 92 members are `not-kept`, on 11 runs: those two at the default limit, and nine runs at the lowered
+  limits, one member each, on seven programs (`core-activator-guard-only`, `forbid-chain-no-absent`,
+  `guard-only-first`, `guard-only-second`, `oblig-stdlib-total-owed` and its `-declared` twin at limits 1 and 2, and
+  `past-limit-lines` at 2). Five more programs stop at the default limit with no member of N met.
+
+**The cost before**, `ein solve FILE --dump-answer DIR` (`utils/bench_env.sh python3 build/s1f.5.12/cost.py`, one
+pinned P-core, best of three, 2026-11-09), on every program past the limit and the sweep's ten slowest describes:
+
+| program | past the limit | best of three | spread | nodes the walk visits | dead, each a core search | members of N printed | `not-kept` |
+|---|---|---:|---:|---:|---:|---:|---:|
+| `ein-bugs/wrong-answers/past-limit-lines` | yes | 1.19 s | 0.04 s | 65 536 | 65 532 | 15 | 15 |
+| `features/01_not_and_absent` | yes | 3.03 s | 0.04 s | 64 655 | 0 | 0 | 0 |
+| `features/04_open` | yes | 3.20 s | 0.04 s | 64 761 | 0 | 0 | 0 |
+| `lattice/06_friends_tables` | yes | 2.51 s | 0.01 s | 65 299 | 65 022 | 68 | 68 |
+| `saturation/square-unique/corner-house` | yes | 2.58 s | 0.17 s | 65 389 | 0 | 0 | 0 |
+| `saturation/square-unique/cul-de-sac` | yes | 2.87 s | 0.01 s | 64 923 | 0 | 0 | 0 |
+| `saturation/square-unique/terminus` | yes | 3.34 s | 0.09 s | 65 029 | 0 | 0 | 0 |
+| `zebra2-minus-15` | no | 31.28 s | 0.41 s | 8 391 | 1 995 | 1 495 | 0 |
+| `zebra2-minus-15-obligations` | no | 31.18 s | 0.05 s | 8 391 | 1 995 | 1 495 | 0 |
+| `zebra2` | no | 8.88 s | 1.00 s | 374 | 190 | 366 | 0 |
+| `zebra2-obligations` | no | 8.85 s | 0.00 s | 374 | 190 | 366 | 0 |
+| `zebra` | no | 2.68 s | 0.00 s | 445 | 225 | 458 | 0 |
+| `saturation/square-fwd/houses` | no | 2.27 s | 0.03 s | 85 574 | 0 | 0 | 0 |
+
+The dead nodes are `--dump-lattice`'s count of the same walk (its `steps`). On `lattice/06` the walk takes 65 022 core
+searches and prints none of them, S1e2.3.9's count, and on the state route's programs it takes one at each dead
+extension it saturates (190 on `zebra2`) and the dump takes each other member's through the second preparation. The
+five programs past the limit with no member of N met take none, their walks meeting no dead node.
+
+**Every move, on a prototype of T2** (`python3 build/s1f.5.12/diff.py build/s1f.5.12/base.jsonl
+build/s1f.5.12/proto.jsonl`, 2026-11-09): 14 runs move, every one in a class, **0 findings**. No exit code, stdout,
+stderr, summary or answer file moves but `nogoods.json`, and no trace moves but in its *N*. No line mode moves.
+
+- **`not-kept`: 92 members on 11 runs** each written with its core, `within-budget` and its rules, in `nogoods.json`
+  and in `--trace`'s *N*, where they printed `not-kept` and *Core: not kept*.
+- **The second preparation: 58 members on 3 programs**, each now taken against the walk's snapshot. `zebra2.ein` and
+  `zebra2-obligations.ein`, 19 of 366 each: on 6 the core and the rules move, each core one fact larger; on 12 the
+  rules alone; on 1, `{(pet-loc Dog House-4), (smoke-loc Chesterfields House-5)}`, the status, `cut-environments` to
+  `within-budget` beside the same five facts. `zebra2-hints.ein`, 20 of 73: the core and the rules, 16 cores smaller
+  by one or two facts and 4 of the same size. Each is the first preparation's, by the probe above.
+  `W10/second-preparation`'s member is not among them: the walk's snapshot gives it the same 18 facts.
+
+The first prototype also moved `k_c` on the 37 runs past the limit: a name in `partial_cube` shadowed the members of
+R it counts. The diff caught it, and the sweep above is the prototype with it fixed.
+
+**The goldens and tests that move** (`cargo test --workspace --release --no-fail-fast` on the prototype, 2026-11-09):
+- `ein-render/tests/golden/corpus_shapes.md5`: 5 of 13 801 renderings, `cores[describe]` and `region-trace` of
+  `past-limit-lines` and `lattice/06_friends_tables` (past the sweep's limit of 10, each member's core where it printed
+  `not-kept`), and `cores[describe]` of `zebra2-hints` (the second preparation);
+- the four tests that hold `not-kept`, rewritten on the prototype as T2 writes them, and green;
+- nothing else fails: `wrong_answers` (`W10/second-preparation`'s 18 facts are what the walk's snapshot gives),
+  `corpus_cli`, `read_out_reference`, `read_out_examples` and every other test pass unchanged. No answer, count or
+  register row moves, and the live read-out reference has no row whose words move: stdout prints no member of N's
+  core.
+
+**Two choices, taken by default** on the user's instruction of 2026-11-09:
+[Q-M1f.25](../open_questions.md#q-m1f25--the-state-routes-members-of-n-it-did-not-saturate-whose-preparation-takes-their-cores),
+the state route's members of N it did not saturate are taken against the walk's snapshot, (a), the 58 moves above;
+and [Q-M1f.26](../open_questions.md#q-m1f26--not-kept-retires-and-what-a-member-with-no-core-prints), `not-kept`
+retires with no other writer left, (a), and a renderer handed a member with no core refuses it, which the binary
+never does.
+
 ### Task T1f.5.12.2 — the split, and N's cores after the walk
 
 The two asks. N's cores are taken after the walk, and `not-kept` retires. A test in
@@ -103,6 +204,21 @@ The cost after, beside step 1's. The pages:
   `not-kept`;
 - `CLAUDE.md`'s S1e2.3.9 paragraph;
 - the inventory's P-15, which says what fixed it.
+
+### Task T1f.5.12.4 — the answer directory of a `.einb` (W43)
+
+**Handed to the stage by the coordinator on 2026-11-09**, from S1f.5.5's T1f.5.5.13, which found it and left it: `ein
+solve X.einb --dump-answer DIR` exits 2, refused before the run with `error: --dump-answer DIR: a .einb container
+carries no program source, and every file the answer directory holds starts with it — run it on the .ein`. A `.einb`
+stores its program, resolved and import-flattened: since T1f.5.5.13 the `render` views and `saturate` read it through
+`ein-cli`'s `common::read_program`, its positions naming `<program stored in x.einb>` (Q-M1f.15). AGENTS.md says every
+command that takes a `.ein` takes a `.einb`, and the one-tool rule says two paths may not disagree. It touches the
+dump code T1f.5.12.2 touches.
+
+A refusal where a run should answer is a wrong answer, W40's six rows the precedent. So, in two commits: **T1f.5.12.4
+files it** as a register row from the stage's block, W43, `open` and owned by this stage, its `now` the refusal; and
+**T1f.5.12.5 fixes it**: the dump writes every file from the program the container stores, unless something makes that
+impossible, in which case the record says why and the refusal's line stays, in Ein's words.
 
 ## Acceptance
 
