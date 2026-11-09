@@ -1,0 +1,42 @@
+;;; A relation parameter a derived activator can bind to `eq` heads a premise
+;;; of one argument, and only a commitment derives it, so `ein saturate`
+;;; answers where `ein solve` stops — M1f **W60**, register row
+;;; `W60/eq-arity-under-commitment` (`corpus/wrong_answers.toml`), filed by
+;;; S1f.5.9 (T1f.5.9.1, 2026-11-09), `open` and owned by S1f.5.9.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule `r` whose parameter `?R` heads `(?R ?x)`, and a rule `mk` that
+;;; derives `r`'s activator from the marker `mark`, `(r ?f)`, wherever a `p`
+;;; holds. `(mark eq)` passes `eq` on; no fact holds a `p`, so root derives
+;;; no activator, and a commitment holding a candidate `(p …)` does.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `mk` can bind `?R` to `eq`, which `(mark eq)` writes where `mk` reads it,
+;;; and `(?R ?x)` is then `(eq ?x)`, which holds no fact of equality: the
+;;; program is refused at load, whether or not a state derives the activator,
+;;; as S1f.5.18 refuses a derived activator that can bind a relation
+;;; parameter to a fact (Q-M1f.1 (b)), and every command that loads it exits
+;;; 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `ein saturate FILE --dump` answers root's fixpoint, exit 0; `ein solve`,
+;;; `solve --minimal` and `ein oracle` stop at the first commitment that
+;;; derives `(r eq)`, where its plan is compiled, exit 1, with the compiler's
+;;; *`(eq …)` takes exactly 2 arguments and was given 1* (at `ee3da657`,
+;;; release and debug alike): two commands disagree on one program.
+
+(relation p Node :why "{?1} is a p")
+(relation hit Node :why "{?1} is hit")
+(hit z)
+(mark eq)
+(rule r (?R)
+  :match (?R ?x)
+  :assert (hit ?x)
+  :why "{?x} stands in {?R}, so it is hit")
+(rule mk ()
+  :match (and (p ?y) (mark ?f))
+  :assert (r ?f)
+  :why "{?y} is a p, so r is asked of {?f}")

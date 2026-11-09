@@ -41,6 +41,9 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.42](#q-m1f42--a-conclusion-whose-relation-is-a-parameter) | a conclusion whose relation is a parameter | **defaulted 2026-11-09 (the user's instruction): followed into every rule of its arity whose name the program writes as an argument**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
 | [Q-M1f.43](#q-m1f43--planactivator_args-once-a-nested-fact-binds) | `Plan::activator_args`, once a nested fact binds | **defaulted 2026-11-09 (the user's instruction): every argument, as values, the compile key's list**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
 | [Q-M1f.44](#q-m1f44--what-the-load-time-check-replaces-which-of-it-is-a-register-row) | what the load-time check replaces: which of it is a register row? | **defaulted 2026-11-09 (the user's instruction): a row per way the engine answers today, W59's two**; [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.1 |
+| [Q-M1f.45](#q-m1f45--the-and-refusals-line-and-or) | the `(and)` refusal's line, and `(or)` | **defaulted 2026-11-09 (the user's instruction): a note on the parse error naming the rule and the clause, `(or)` given one too**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
+| [Q-M1f.46](#q-m1f46--a-relation-parameter-bound-to-eq-at-another-arity) | a relation parameter bound to `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load wherever a parameter can hold `eq`, read as S1f.5.18 reads relation names, premises and conclusions alike; a row per way the engine answers, W60's four**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
+| [Q-M1f.47](#q-m1f47--a-written-fact-of-eq-at-another-arity) | a written fact of `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load, beside Q-M1f.33's check; W61, this stage's**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -836,3 +839,65 @@ states).
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** It is [Q-M1f.36](#q-m1f36--what-the-refusal-replaces-which-of-it-is-a-register-row)'s
 reading: a stop and a refusal are two answers, and so are an answer and a refusal.
+
+### Q-M1f.45 — The `(and)` refusal's line, and `(or)`
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1. The user ruled on F12 that `(and)` stays refused, `and` taking
+arguments and `()` being the one spelling of the empty conjunction, and the stage file asks for a line that says so,
+naming the rule and the clause. Since S1f.5.5's swap the grammar refuses `(and)` (`ein.y`'s `Premises` and
+`Conclusions` take one or more), before the loader reads the rule, with *unexpected `)`* and its repairs; `(or)` is
+refused the same way, and the ruling says nothing of it.
+
+- **(a) A note on the parse error** (`ein_ir::grammar`'s notes, as S1f.5.1's `_` and S1f.5.2's string carry one),
+  naming the rule or the form and the clause, `rule 'r''s :match writes (and), the empty conjunction, whose one
+  spelling is () — and takes one premise or more`; `(or)` gets one too, `or takes one disjunct or more`, which reads
+  no meaning into the empty disjunction.
+- **(b) The same for `(and)` alone**, `(or)` keeping the bare parse error.
+- **(c) A loader line**, the grammar accepting `(and)` again so the loader can name the rule.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The grammar is the phase's final one and refuses the shape
+already, so the line is the parse error's, and a note is how that error says what a ruling says (S1f.5.1, S1f.5.2);
+(b) leaves the twin shape unexplained; (c) undoes a refusal the grammar holds.
+
+### Q-M1f.46 — A relation parameter bound to `eq` at another arity
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1, from the shape S1f.5.18 found and left unfiled: `(rule r (?R)
+:match (?R ?x) …)` with `(r eq)` loads, and the run stops where the activator's plan is compiled, M1e S1e.2.1's arity
+check (`eq` is the relation of equality between two values, S1f.5.7). The stage's probes (`build/s1f.5.9/case/`,
+`ee3da657`) find four ways the engine answers it: a written activator stops every command at root; an activator a
+rule derives only under a commitment stops `ein solve` where `ein saturate` answers; an hrule's `(solve :hrules (h
+(eq)))` activator stops `ein solve` where `ein saturate` answers; and a conclusion `(?R ?x)` stores `(eq a)`. The same
+pattern through a declared relation of another arity, `(r q)` with `q` binary, matches nothing and loads, as `(q ?x)`
+written directly does, matching being arity-coupled.
+
+- **(a) Refused at load wherever a parameter can hold `eq`**, read as S1f.5.18's check reads relation names
+  (`refuse_derived_relation_activators`): a position that holds relation names can hold `eq` where a fact, a
+  conclusion or a `(solve :hrules …)` activator writes it there, where a conclusion writes a variable its `:match`
+  binds only at positions that can, or only with an `eq` or `neq` guard while `eq` is a name the program writes, to a
+  fixpoint; each premise or conclusion such a parameter heads whose arity is not 2 is one line. A row per way the
+  engine answers today, W60's four (Q-M1f.36's reading); the declared relation of another arity no row.
+- **(b) Refused at load where the activator is written down** (`(r eq)`, `(solve :hrules (h (eq)))`), and a derived
+  activator left `open`, owned by the P1f.5 close, a stop at run.
+- **(c) Answered**: `(eq ?x)` matches nothing and concludes nothing.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** S1f.5.18's ruling (Q-M1f.1 (b)) refuses a derived activator
+a static check can see, whether or not a run derives it, and this check is that one's, over the same flow; (b) keeps a
+pair of commands disagreeing on the commitment and hrule witnesses, which the user's *one tool, consistent answers*
+forbids; and (c) gives `eq` a reading at one argument that the grammar refuses where `(eq ?x)` is written.
+
+### Q-M1f.47 — A written fact of `eq` at another arity
+
+**Raised** 2026-11-09 by [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1, beside Q-M1f.46. A top-level fact may be headed `eq` (`ein.y`'s
+`FactHead`), and Q-M1f.33 reads a written fact of `eq`, or of `(not (eq …))`, as a conclusion with no premise, checked
+and never stored; but the check reads two arguments only, so `(eq a)`, `(eq)`, `(eq a a a)` and `(not (eq a))` load and
+are stored as ordinary facts (`build/s1f.5.9/case/eqfact/`, `ee3da657`).
+
+- **(a) Refused at load**, one line per fact, beside Q-M1f.33's check (`from_ir::ingest_fact`), as the grammar refuses
+  `(eq ?x)` as a premise and a conclusion; a nested `(box (eq a))` stays a value, as `(box (eq a b))` is.
+- **(b) Refused at the parse**, `FactHead` taking `eq` with two arguments only.
+- **(c) Stored, as today**, left `open` and owned by the P1f.5 close.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is W60's conclusion row written as a fact, and Q-M1f.33 made
+the loader the place that reads a written `eq` fact; (b) changes the grammar's fact production and its negation's for a
+shape no program writes, which the loader's line reaches as well; (c) leaves a fact of a relation whose facts are
+computed stored. One row, `W61/fact-eq-arity`, this stage's.

@@ -1,0 +1,31 @@
+;;; A written fact of `eq` at one argument is stored — M1f **W61**, register
+;;; row `W61/fact-eq-arity` (`corpus/wrong_answers.toml`), filed by S1f.5.9
+;;; (T1f.5.9.1, 2026-11-09), `open` and owned by S1f.5.9, found beside W60.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)`, and a fact of `eq` written with one argument, `(eq a)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `eq` is the relation of equality, between exactly two values, whose facts
+;;; are computed and never stored (M1f S1f.5.7, Q-M1e2.26), and a written
+;;; fact of it is checked as a conclusion with no premise (Q-M1f.33). One
+;;; argument is no fact of equality, true or false, and the grammar refuses
+;;; `(eq ?x)` as a premise and as a conclusion: the program is refused at
+;;; load, one line naming the fact, and every command that loads it exits 1
+;;; (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The program loads and stores `(eq a)` as an ordinary fact (`ein saturate
+;;; FILE --dump`), the check of a written `eq` fact reading two arguments
+;;; only; `eq` holds no candidate, and R is two states, ∅ and `{(p z)}`, exit
+;;; 0 (`ein solve FILE` and `ein oracle FILE` at `ee3da657`, release and
+;;; debug alike).
+
+(relation p Node :why "{?1} is a p")
+(p a)
+(hit z)
+(eq a)
+(query :goal (p ?x))

@@ -1,0 +1,33 @@
+;;; An hrule's parameter its `(solve :hrules …)` activator binds to `eq` heads
+;;; a premise of one argument, so `ein saturate` answers where `ein solve`
+;;; stops — M1f **W60**, register row `W60/eq-arity-hrule`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.9 (T1f.5.9.1, 2026-11-09),
+;;; `open` and owned by S1f.5.9.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; An hrule `h` whose parameter `?R` heads `(?R ?x)`, and the solve form's
+;;; activator for it, `(h (eq))`, which binds `?R` to `eq`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(?R ?x)` is `(eq ?x)` under the activator, a form the grammar refuses
+;;; where it is written, and the activator is written in the program: it is
+;;; refused at load, and every command that loads it exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `ein saturate FILE --dump` answers, exit 0, the hrule playing no part in a
+;;; saturation; `ein solve`, `solve --minimal` and `ein oracle` stop where the
+;;; hrule's plan is compiled, before any state is read, exit 1, with the
+;;; compiler's *`(eq …)` takes exactly 2 arguments and was given 1* (at
+;;; `ee3da657`, release and debug alike).
+
+(relation p Node :why "{?1} is a p")
+(relation q Node :why "{?1} is a q")
+(p a)
+(hrule h (?R)
+  :match (?R ?x)
+  :assert (q ?x)
+  :why "{?x} stands in {?R}, so it may be a q")
+(solve :hrules (h (eq)))
