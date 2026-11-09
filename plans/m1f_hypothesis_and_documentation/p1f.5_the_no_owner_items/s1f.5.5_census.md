@@ -177,7 +177,10 @@ is in `build/s1f.5.5/probes/` and its output below is today's binary at `ec004a4
   `(hit b)` and `(hit (f a))`, where it should derive `(hit (f a))` only. `compile.rs` skips a nested
   fact when it seeds the parameters (*a nested Fact does not bind*), which W24 made a refusal only where
   the parameter names a relation. The same holds of `()` and `(and …)` as the activator's argument,
-  which the final grammar refuses. *Default:* filed as a register row by the stage that owns
+  which the final grammar refuses. **Fixed 2026-11-09** by
+  [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md)'s T1f.5.18.2 (W33, filed by S1f.5.0): an activator
+  binds a parameter to a nested fact as to a name, so the program derives `(hit (f a))` alone. *Default:* filed as
+  a register row by the stage that owns
   activators; not this stage's.
 - **`:assert ()` stores a fact named `@empty`, which then joins H.** `(rule r () :match (q ?x) :assert
   ())` over `(q a)`: `saturate --dump` lists the derived `( :rule r)`, and `solve` answers two states,

@@ -10519,7 +10519,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.18 (T1f.5.18.1, 2026-11-09), one of the two ways the engine answers a program in which a rule could derive an activator binding a relation parameter to a fact (Q-M1f.44, Q-M1f.36's reading: a stop where a refusal is right is a row). The witness is S1f.5.5's probe `g14/derived-activator.ein` (its paper grammar, Q1), `:why`s added. Fixed by T1f.5.18.3 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build, where it stopped with W24's compile line"
 
 [case.fixed]
-commit = "0000000"
+commit = "52d45b11"
 by     = "S1f.5.18 (T1f.5.18.3): the loader refuses a program in which a rule could derive an activator binding a relation parameter to a fact, one line per site naming the deriving rule, the activated rule and the parameter (`ein_ir::from_ir`'s `refuse_derived_relation_activators`, Q-M1f.1 (b), Q-M1f.41)"
 date   = "2026-11-09"
 
@@ -10554,7 +10554,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.5.18 (T1f.5.18.1, 2026-11-09), one of the two ways the engine answers a program in which a rule could derive an activator binding a relation parameter to a fact (Q-M1f.44): no fact or candidate puts a fact in `item`, so no run meets the parameter bound to one. The witness is S1f.5.5's probe `g14/derived-activator-never.ein`, `:why`s added. Fixed by T1f.5.18.3 (2026-11-09): every command that loads the program exits 1 (`ein test`: 2) with the loader's line, `derived-activator`'s, in either build, where it answered 64 states"
 
 [case.fixed]
-commit = "0000000"
+commit = "52d45b11"
 by     = "S1f.5.18 (T1f.5.18.3): the loader refuses a program in which a rule could derive an activator binding a relation parameter to a fact, one line per site naming the deriving rule, the activated rule and the parameter (`ein_ir::from_ir`'s `refuse_derived_relation_activators`, Q-M1f.1 (b), Q-M1f.41)"
 date   = "2026-11-09"
 

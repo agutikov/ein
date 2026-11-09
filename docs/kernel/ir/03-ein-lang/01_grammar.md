@@ -444,6 +444,17 @@ A relation-polymorphic rule with no matching application facts never
 fires — the parameters are the gate. A non-generic rule needs no
 application fact.
 
+**An activator binds each parameter to its argument, any value**: a name, or a
+nested fact, `(act (f a))` binding `?y` to `(f a)`, which the rule's patterns
+match and its conclusions write as they would a name (M1f
+[S1f.5.18](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md), the user's
+ruling of 2026-11-08 on S1f.5.5's census; until then a nested fact bound
+nothing, and its parameter matched every value, W33). A parameter that names a
+relation, `?rel` above, binds a name: one its activator binds to a fact is
+refused at load, where the activator is written down and, since S1f.5.18, where
+a rule could derive it, which the loader reads off the program
+([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+
 Concrete: the rule
 
 ```lisp
@@ -499,7 +510,8 @@ the parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2); a relation written as 
 or inside a pattern, in a `:match` or an `:assert`; a keyword pair inside a
 pattern inside a pattern (at the parse since M1f S1f.5.5's swap, which
 refuses a keyword pair anywhere in a term, S1f.5.11); and an activator that
-binds a relation parameter to a nested fact. Until then each read nothing, in silence: a premise that is
+binds a relation parameter to a nested fact, written down, or, since M1f
+S1f.5.18, one a rule could derive (Q-M1f.1 (b)). Until then each read nothing, in silence: a premise that is
 not a form was dropped, so the rule fired as if it were not written, and the
 rest matched nothing, where the same relation variable at the top level
 stopped compilation in the Python IR's spelling. A keyword pair at a

@@ -7,8 +7,13 @@
 stage) and [Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b), whose
 load-time check is the half of G-14 no grammar can see. The user ruled on 2026-11-09 *"just continue with default
 decisions till the end of the phase"*. **Started 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), after S1f.5.10
-(`8249e872`): T1f.5.18.1 ([its record](#t1f5181-record-2026-11-09)), every move listed, W59's two rows filed, four
-questions taken by default (Q-M1f.41 to Q-M1f.44).
+(`8249e872`), in five commits: T1f.5.18.1 ([its record](#t1f5181-record-2026-11-09)), every move listed, W59's two rows
+filed, four questions taken by default (Q-M1f.41 to Q-M1f.44) (`e96a8d45`); T1f.5.18.2
+([its record](#t1f5182-record-2026-11-09)), the seed, W33 and W58 fixed, `FireError::UnboundVar` retired (`2901cac1`);
+T1f.5.18.3 ([its record](#t1f5183-record-2026-11-09)), the load-time check, W59 fixed (`52d45b11`); T1f.5.18.4
+([its record](#t1f5184-record-2026-11-09)), the pages; T1f.5.18.5, the acceptance re-taken and what the merge
+writes. The register on the lane reads 148 fixed, 18 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml |
+sort | uniq -c`, 2026-11-09).
 **Depends on:** [S1f.5.0](s1f.5.0_the_known_wrong_answers_filed.md), which files W33 as an `open` row first.
 It is independent of the grammar stages. It touches `ein-infer/src/compile.rs`, as
 [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md) and [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md)
@@ -347,3 +352,24 @@ replaced the answer, and their corpus notes say so. The register reads **148 fix
 `derived-activator-never.ein`'s two, 0 → 1; `corpus_shapes.md5` removes 56 digests and adds 54: each witness loses the 21
 renderings a loaded program draws and changes 7, and each fixture adds 20, none of any other program; `alive_invariant`
 drops the two witnesses' names, which load no more, and `detector` counts 48 flagged programs again.
+
+## T1f.5.18.4 record (2026-11-09)
+
+**The pages.** No current kernel page describes a nested fact as binding no parameter, the `KeyError` line as reachable,
+or a derived activator binding a relation parameter to a fact as loading:
+
+- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): § 3.2's table and prose, an activator's every
+  argument binding its parameter, a nested fact too, with what it did until then (W33, W58), `Plan::activator_args`
+  (Q-M1f.43), and the `binding-key` family's restated `:expect` and its `--dump` since; § 4's table loses the `KeyError`
+  row, a paragraph saying why (Q-M1f.37), and the class names Python spells are two; § 4.6's last paragraph; § 4.9's
+  table, the derived activator's row the loader's line and a row for a fact written where a relation name is passed on,
+  and a paragraph for the check, its reading (Q-M1f.41, Q-M1f.42), what it replaced (W59) and the compiler's line as the
+  backstop; and § 4.13, nothing reaching the retired line since.
+- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md): the parameter list says an activator binds each
+  parameter to its argument, any value, a nested fact included, and a relation parameter bound to a fact is refused where
+  written and where a rule could derive it; *What a premise may be* names the derived case.
+- The inventory's [G-14](../../m1e2_correctness/inventory_2026-11-06.md) says its derived activator is done, and the
+  census's [W33 finding](s1f.5.5_census.md#findings-outside-the-grammar) says what fixed it.
+
+W59's two `[case.fixed]` blocks carry `52d45b11`, T1f.5.18.3's, where that commit wrote the null id. The phase README's
+row, Q-M1f.1 and Q-M1f.3, `AGENTS.md` and the live read-out page are the merge's (T1f.5.18.5's § For the merge).
