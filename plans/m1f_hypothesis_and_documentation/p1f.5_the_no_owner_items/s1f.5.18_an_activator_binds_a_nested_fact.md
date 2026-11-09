@@ -19,6 +19,7 @@ uniq -c`, 2026-11-09).
 It is independent of the grammar stages. It touches `ein-infer/src/compile.rs`, as
 [S1f.5.7](s1f.5.7_eq_and_neq_are_relations.md) and [S1f.5.10](s1f.5.10_a_conclusion_variable_must_be_bound.md)
 do, so it runs after them and before [S1f.5.9](s1f.5.9_an_empty_match_fires.md).
+**Merged into master at `a90c452b`, 2026-11-09** (T1f.5.M.1, [P1f.5 § The order](README.md#the-order), item 10).
 
 ## The case
 

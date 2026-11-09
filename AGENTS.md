@@ -675,8 +675,8 @@ constrained-reasoning research.
   **The second lane, `p1f5-lane2`, ran four stages the same day**, beside
   S1f.5.6, S1f.5.12, S1f.5.8 and S1f.5.13, from `dc4c0bdc`, and was merged
   into master after them (T1f.5.M.1); each stage's count was the lane's, so
-  the register's is given once, merged, at the end. **S1f.5.7** ([its
-  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#t1f571-record-2026-11-09)):
+  the register's is given once, merged, at the end. **S1f.5.7**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md#t1f571-record-2026-11-09)):
   `eq` and `neq` are the relations of equality and non-equality, computed and
   never stored (the user's ruling of 2026-11-07, Q-M1e2.26, and G-21). In a
   goal and a premise a guard binds a variable nothing else binds, `eq` to the
@@ -686,8 +686,8 @@ constrained-reasoning research.
   conclusion of either, a written `(eq …)` fact and `(not (eq …))` are
   checked, a false one `(false)`; a query's claim may name either. W30's
   three, W24's two restated rows and W50 to W56's eleven fixed, Q-M1f.30 to
-  Q-M1f.35 defaulted. **S1f.5.10** ([its
-  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md#t1f5101-record-2026-11-09)):
+  Q-M1f.35 defaulted. **S1f.5.10**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md#t1f5101-record-2026-11-09)):
   a rule's or an hrule's `:assert` that writes a variable some way of
   satisfying its `:match` leaves unbound is refused at load, on every command,
   one line per variable naming the rule, the variable and the two explicit
@@ -699,8 +699,8 @@ constrained-reasoning research.
   by a conclusion, which S1f.5.18 fixed, retiring the variant;
   `fuzz_properties` holds every plan of an accepted program to the rule,
   `ein-ir` taking `ein-infer` as a dev-dependency; Q-M1f.36 to Q-M1f.40
-  defaulted. **S1f.5.18** ([its
-  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md#t1f5181-record-2026-11-09)):
+  defaulted. **S1f.5.18**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md#t1f5181-record-2026-11-09)):
   an activator binds a parameter to a nested fact as to a name (W33, the
   user's ruling of 2026-11-08 on S1f.5.5's census), so a value parameter
   matches and concludes the fact, and the last path to
@@ -714,8 +714,8 @@ constrained-reasoning research.
   off the program: a declared relation's argument can hold a fact, and a
   marker's argument holds what a rule passes on from it (Q-M1f.41), so the
   stdlib's fan-outs load; W59's two rows, the `g14` programs, filed and fixed;
-  Q-M1f.41 to Q-M1f.44 defaulted. **S1f.5.9**, the lane's last ([its
-  records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md#t1f591-record-2026-11-09)):
+  Q-M1f.41 to Q-M1f.44 defaulted. **S1f.5.9**, the lane's last
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md#t1f591-record-2026-11-09)):
   an empty `:match` is the empty conjunction, which is true, so a rule whose
   `:match` is `()` fires once at root, or once per activator fact with its
   parameters alone bound, and an hrule's proposes its conclusion likewise
@@ -731,11 +731,11 @@ constrained-reasoning research.
   `eq`, read as S1f.5.18's check reads relation names, with a written `(eq a)`
   beside it (`ein_ir::from_ir`'s `refuse_eq_at_another_arity` and
   `refuse_eq_facts_of_another_arity`, `defined_behaviour.md` § 4.14; W60's
-  four rows and W61, filed and fixed); Q-M1f.45 to Q-M1f.48 defaulted. **The
-  merge** ([P1f.5 § The
-  order](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-order),
-  item 10) moved no answer and no register row: lane 2's 23 rows, W50 to W61,
-  follow W43's, the goldens were re-taken rather than spliced, and the
+  four rows and W61, filed and fixed); Q-M1f.45 to Q-M1f.48 defaulted.
+  **The merge**, `a90c452b`
+  ([P1f.5 § The order](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-order),
+  item 10), moved no answer and no register row: lane 2's 23 rows, W50 to
+  W61, follow W43's, the goldens were re-taken rather than spliced, and the
   register reads 161 fixed, 13 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
   **This tree is now the only statement of intent that is

@@ -25,6 +25,7 @@ Six questions taken by default in all, Q-M1f.30 to Q-M1f.35; the register on the
 wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
+**Merged into master at `a90c452b`, 2026-11-09** (T1f.5.M.1, [P1f.5 § The order](README.md#the-order), item 10).
 
 ## The ruling
 

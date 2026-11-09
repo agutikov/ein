@@ -22,6 +22,7 @@ first, so a rule with `:match ()` and an unbound conclusion variable is refused 
 `assert-var-never-fires`) rather than stopping the run at root. [S1f.5.8](s1f.5.8_no_contradiction_no_core.md), on
 `master` while this lane runs, spells *no core* `null` and a dead node's empty core `[]`; the first `[]` core in Ein is
 this stage's ([§ For the merge](#for-the-merge)).
+**Merged into master at `a90c452b`, 2026-11-09** (T1f.5.M.1, [P1f.5 § The order](README.md#the-order), item 10).
 
 ## The ruling
 

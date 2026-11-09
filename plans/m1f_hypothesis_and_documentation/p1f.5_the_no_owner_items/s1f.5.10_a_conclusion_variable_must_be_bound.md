@@ -18,6 +18,7 @@ corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 spellings the refusal names, and which makes a guard bind. It lands before
 [S1f.5.9](s1f.5.9_an_empty_match_fires.md), so that a rule with `:match ()` and an unbound conclusion
 variable is refused at load rather than stopping the run at root.
+**Merged into master at `a90c452b`, 2026-11-09** (T1f.5.M.1, [P1f.5 § The order](README.md#the-order), item 10).
 
 ## The ruling
 
