@@ -807,8 +807,8 @@
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 # **S1f.5.6 fixed both the same day** (T1f.5.6.6): each printer puts one space
 # at least between a label and its value, at every width. Each `[case.fixed]`
-# carried the null id in the fixing commit, and the stage's next commit,
-# T1f.5.6.4, wrote the hash. The register reads **128 rows fixed, 22 open and
+# carried the null id in the fixing commit, `31e9c7f7`, and the stage's next
+# commit, T1f.5.6.4, wrote the hash. The register reads **128 rows fixed, 22 open and
 # 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-09).
 #
@@ -9579,7 +9579,7 @@ look_at  = ["answer"]
 note     = "Filed by S1f.5.6 (T1f.5.6.5, 2026-11-09) from S1f.5.16's T1f.5.16.4, which found it and documented it as Q-M1f.22 without filing or fixing it, and handed to the stage by the coordinator the same day. The read-out pads a block's label to sixteen characters and prints the value straight after it (`ein_render::read_out`'s `padded`), so `class 100 of 277`, sixteen characters, touches its count: at the default limit `answer.txt` prints `class 100 of 27728 states` for class 100 of 277, 28 states (`ein solve examples/features/04_open.ein --dump-answer DIR`, 2026-11-09), and at `--region-limit 12`, the row's run, `class 100 of 2771 state` for one state. Stdout's 100 lines never reach a hundredth class on the corpus, so only `answer.txt` prints it, and no golden holds that file's text; a row label of eighteen characters would glue the same way at the margin, and none is that long (`commitments (k_c)` is seventeen). `W42/h-long-relation` is the same column logic on `-H`'s form. Fixed by S1f.5.6 (T1f.5.6.6, 2026-11-09): `padded` puts one space at least between a label and its value, so the line reads `class 100 of 277 1 state`, and every other row's value stays at its column"
 
 [case.fixed]
-commit = "0000000"
+commit = "31e9c7f7"
 by     = "S1f.5.6 (T1f.5.6.6), on Q-M1f.22's (b): one space at least between a label and its value, at every width, in the read-out's printer"
 date   = "2026-11-09"
 
@@ -9654,7 +9654,7 @@ look_at  = ["answer"]
 note     = "Filed by S1f.5.6 (T1f.5.6.5, 2026-11-09) beside `W42/class-label-04-open`, from the task's check of every surface that pads a label to a width: `-H`'s form pads a relation's name to sixteen characters and prints its candidate count straight after (`ein-cli`'s `modes.rs`), so a name of sixteen characters or more touches the count. No corpus program declares one (`grep -rhoE '\\(relation [^ ()]+' examples tests stdlib corpus`, 2026-11-09: none of sixteen characters or more), so the witness is written for it: `lives-next-door-to`, eighteen. The register test's own reader of `-H` (`wrong_answers.rs`' `relations`) reads the glued line as no relation, so `now` lists none. The other padded surfaces leave a separator: `-t`'s table right-aligns a time after a ten-character column whose labels are at most eight, and `ein saturate --stats`, `ein test`, `ein --version`, `--dump-config` and the key and grid forms each print one space or more after the padded field (corrected by T1f.5.6.6 from *two spaces or more*: `ein --version` and `--dump-config` print one). Fixed by S1f.5.6 (T1f.5.6.6, 2026-11-09): `-H`'s form puts one space at least after the relation, so the line reads `lives-next-door-to 2 candidates, 0 dead alone`, and the register test reads the relation"
 
 [case.fixed]
-commit = "0000000"
+commit = "31e9c7f7"
 by     = "S1f.5.6 (T1f.5.6.6), on Q-M1f.22's (b), applied to the second printer: one space at least between `-H`'s relation and its count"
 date   = "2026-11-09"
 

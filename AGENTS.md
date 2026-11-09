@@ -627,6 +627,16 @@ constrained-reasoning research.
   gone, `defined_behaviour.md` § 1 rewritten, the editor grammar under the name
   rule), its acceptance re-taken item by item
   ([§ Acceptance re-taken](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md#acceptance-re-taken-2026-11-09)).
+  **S1f.5.6 ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md#t1-record-2026-11-09)):
+  where ∅ is in R every minimal question, `--minimal`, `-n N` and `--single`,
+  is decided at root after one saturation on a flagged program too, within
+  `--region-limit` and past it, and describe's minimal-line row lost *the
+  trivial line: no obligation is stated*; and W42, a label as long as its
+  column glued to its value (S1f.5.16's Q-M1f.22, and `-H`'s form), was filed
+  under the register's schema `/17` and fixed: 128 fixed, 22 open and 1 not
+  wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+  2026-11-09).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

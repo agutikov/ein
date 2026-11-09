@@ -4,12 +4,17 @@
 **Was S1e2.5.6**, in M1e2's P1e2.5, until 2026-11-08 ([§ The ids](README.md#the-ids)).
 
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-16, which closes P-14 with it,
-and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Running since 2026-11-09**, on the
-user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default
-decisions till the end of the phase"*): T1f.5.6.1, every move listed, is done ([its record](#t1-record-2026-11-09)), and so are T1f.5.6.2, the rule
-([its record](#t2-record-2026-11-09)), T1f.5.6.3, the clause ([its record](#t3-record-2026-11-09)), T1f.5.6.5, W42 filed ([its record](#t5-record-2026-11-09)), and T1f.5.6.6, W42 fixed ([its record](#t6-record-2026-11-09)).
-The coordinator handed the stage a fifth item the same day, S1f.5.16's Q-M1f.22, a class label glued to its
-value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)).
+and on S-17 and F1 ([§ The clause](#s-17-and-f1-the-clause-goes)). **Done 2026-11-09**, on the user's go-ahead
+for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions till the end of
+the phase"*), in six commits: T1f.5.6.1, every move listed (`eef535b2`, [its record](#t1-record-2026-11-09));
+T1f.5.6.2, the rule (`4c9d12d5`, [its record](#t2-record-2026-11-09)); T1f.5.6.3, the clause (`ccd1007f`, [its
+record](#t3-record-2026-11-09)); T1f.5.6.5, W42 filed (`ac9f27e7`, [its record](#t5-record-2026-11-09)); T1f.5.6.6,
+W42 fixed (`31e9c7f7`, [its record](#t6-record-2026-11-09)); and T1f.5.6.4, the pages ([its record](#t4-record-2026-11-09)).
+The coordinator handed the stage a fifth item on 2026-11-09, S1f.5.16's Q-M1f.22, a class label glued to its
+value ([§ Task T1f.5.6.5](#task-t1f565--a-label-never-touches-its-value-q-m1f22)). Two choices were taken by default
+and recorded: [Q-M1f.23](../open_questions.md#q-m1f23--what-the-route-row-names-where-root-decides-a-flagged-programs-minimal-line)
+and [Q-M1f.24](../open_questions.md#q-m1f24--a-second-surface-that-glues-another-row-of-w42-or-a-case-of-its-own).
+The acceptance is re-taken [below](#acceptance-re-taken-2026-11-09).
 **Depends on:** nothing. It touches `explore.rs` and the read-out, and none of the grammar stages do.
 
 ## The ruling
@@ -296,6 +301,28 @@ limit, its `minimal line` row (no name for {∅}) and its summary fields, in the
 fixed them. The probe outputs under `p1e2.1b_non_monotone_programs/detector_proposal/outputs/` are a record,
 and do not change.
 
+### T4 record, 2026-11-09
+
+Run last, after T1f.5.6.6, so that it writes W42's hash. The pages each output-changing commit did not already carry:
+
+- **The live read-out reference** said each change in the commit that made it: § 3's `verdict` and mode `minimal line`
+  rows and a paragraph under them (T2), § 2's describe `minimal line` row and § 11.2's `region.minimal.trivial` (T3), and
+  § 1's column (T6); its examples page was re-written by `utils/read_out_examples.py` in T2 and T3.
+- **[`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3.3**, a closed
+  plan's page and the reference for how each mode is computed: a paragraph under its table, the ∅ rule on a flagged
+  program, and that the route row still names L7 (Q-M1f.23). M1e2's `read_out.md` is a record and is not edited, nor are
+  the probe outputs under `p1e2.1b_non_monotone_programs/detector_proposal/outputs/`.
+- **[The no-owner inventory](../../m1e2_correctness/inventory_2026-11-06_no_owner.md)**: S-16, P-14, S-17 and F1 each
+  say what fixed them, in the summary table and above each item, which stays as it was taken.
+- **The register**: W42's two `[case.fixed]` carry `31e9c7f7`, and its header says so;
+  [Q-M1f.22](../open_questions.md#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value) names the commit.
+- **The records**: this file's status and acceptance, [the phase README](README.md)'s S1f.5.6 row, its three items'
+  rows and § The order's item 10, and AGENTS.md's account of P1f.5.
+
+Pages only: `utils/doc_audit.py --links --check` over the tree, 0 findings, and the tests that read an edited page or
+the register, `read_out_reference`, `read_out_examples`, `wrong_answers` and `ein-corpus`'s, green
+(build/s1f.5.6/t4-tests.log).
+
 ### Task T1f.5.6.5 — a label never touches its value (Q-M1f.22)
 
 **Handed to the stage by the coordinator on 2026-11-09**, from S1f.5.16's T1f.5.16.4, which found it and documented
@@ -381,3 +408,37 @@ Q-M1f.22's row says it is fixed, and by which task. The register reads 128 fixed
   `--region-limit`, and `minimal.trivial` is true exactly where ∅ is in R.
 - No R moves. W27's two minimal rows have their `right` restated, and stay fixed.
 - `./run_tests.sh` is green.
+
+### Acceptance, re-taken 2026-11-09
+
+Re-taken on the stage's last build, `31e9c7f7`, by the sweep T1 took, every `.ein` under `examples/`, `tests/`,
+`stdlib/` and `corpus/`, 426 files and 2 420 runs, compared with T1's at `4aa9f3ef` (`python3 build/s1f.5.6/accept.py
+build/s1f.5.6/base.jsonl build/s1f.5.6/final.jsonl`, 2026-11-09), item by item:
+
+- **Every minimal question answers {∅}, decided, after one saturation, on every program with ∅ in R.** 214 programs
+  (T1's 211, the F1 probe and its control, and W42's `-H` witness), 1 040 minimal runs: `-n 1`, `-n 2`, `--single` and
+  `--minimal`, and on the 23 flagged programs each at `--region-limit 1` and `2` too. None lists another state, stops,
+  takes a second saturation or writes a `partial` note; `explore.rs` holds `-n k+1` as well, on every program the
+  oracle reaches. **Met.**
+- **`--single` says *Solution* on the 7 past the limit, and `-n N` says ∅ is all of the minimal line on the 23**: the 7
+  print `Solution — the minimal line is one state`, and `-n 1` and `-n 2` on the 23 print `1 state — all of them` and
+  `yes — this is all of the minimal line`, 46 runs. **Met.**
+- **Every mode agrees with the oracle within the limit, and with describe past it**: `ein-infer/tests/explore.rs`'s
+  `every_mode_is_the_oracle`, now with the ∅ rule's cells (835 monotone, 80 flagged), and
+  `ein-render/tests/line_modes_past_the_limit.rs`, now with the minimal questions where ∅ is in R (324 of 800 runs),
+  green in every gate of the stage. **Met.**
+- **Where ∅ is in R, describe's row reads `1 state — ∅` at every limit, and `minimal.trivial` is true exactly there**:
+  260 describe runs on programs with ∅ in R, at the default limit and on the flagged ones at 1 and 2, every one
+  `1 state — ∅`; the field disagrees with `region.root = "in-r"` on no describe run of the sweep; and
+  `region_modes.rs`'s `the_minimal_line_row_names_empty_and_no_clause` holds the case's five rows. **Met.**
+- **No R moves, and W27's two minimal rows are restated and stay fixed**: every describe's region block of the 2 405
+  runs both sweeps hold is the same, `minimal.trivial` aside, and no exit code moves; W27's rows state `exhausted =
+  true` and `others = 0` and are fixed (`4c9d12d5`). **Met.**
+- **`./run_tests.sh` is green**: at every code commit, T2 16 min 2 s, T3 16 min 14 s, T5 17 min 4 s and T6 16 min 6 s
+  (`build/gate-s1f.5.6-T<m>.log`). **Met.**
+- **The handed task**: W42 is filed (`ac9f27e7`) and fixed (`31e9c7f7`), its two rows held by `wrong_answers.rs` under
+  schema `/17`, and Q-M1f.22 says so; `features/04_open.ein`'s `answer.txt` prints `class 100 of 277 28 states` at the
+  default limit (`ein solve examples/features/04_open.ein --dump-answer DIR`, 2026-11-09). **Met.**
+
+The register reads 128 fixed, 22 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-09): T1f.5.6.5 filed two rows and T1f.5.6.6 fixed them, and no other row moved.

@@ -395,6 +395,17 @@ over the cube.
 | `--single` | the same, and stops at the second state | `Ambiguity` is certified at once. `Solution` and `Contradiction` need the cube |
 | `--minimal`, `--maximal`, describe | the cube | within `--region-limit`. Past it: partial. A member met with no member of R met below it is minimal, every subset having been met first, so the minimal line describe and `--minimal` certify is those members, {∅} when ∅ ∈ R; the maximal line needs the whole cube, so `--maximal` certifies none (`-n N` none, `--single` *not decided*). The other members met are printed as members of R, counted and not listed, and `--dump-answer` writes each. Since M1e2 S1e2.2.26 (W27, Q-M1e2.19, 2026-11-05): until then `--minimal` and `--maximal` labelled every member met with their line |
 
+**Where ∅ ∈ R, every minimal question is decided at root**, on a flagged program
+too, within `--region-limit` and past it: M1f
+[S1f.5.6](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.6_the_empty_state_decides_the_minimal_line.md),
+on the user's ruling of 2026-11-07 on S-16 (*"b, use the ∅ rule in both"*). ∅ is
+below every commitment, so the minimal line is {∅} on any program, and whether ∅
+is in R is root's fixpoint alone: `--minimal`, `--minimal -n N` and `--minimal
+--single` answer {∅}, decided (`Solution` under `--single`), after one
+saturation, where the table above has the cube or, past the limit, *not
+decided* and a lower bound. It is the line's definition and no licence, so the
+route row still names L7 ([Q-M1f.23](../../m1f_hypothesis_and_documentation/open_questions.md#q-m1f23--what-the-route-row-names-where-root-decides-a-flagged-programs-minimal-line)).
+
 What P1e2.1b decides a non-monotone node *is* may license more, such as
 S1e2.1b.6's guard split. That is S1e2.1c.3's.
 
