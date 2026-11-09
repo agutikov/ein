@@ -103,8 +103,14 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// `answer.txt` ([`Now::printed`], [`Printed`]), where `right` states them
 /// ([`Right::printed`]), W42's: a label as long as its column glued to its
 /// value, so `class 100 of 277` and `28 states` read as `class 100 of 27728
-/// states`.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/17";
+/// states`. `/19` since M1f S1f.5.12 (T1f.5.12.4, 2026-11-09): a refusal a
+/// solve's run answers with can exit 2 ([`Now::exit`], [`Answer::exit`]), a
+/// usage refusal of what the run was asked to write while the library answers
+/// the program, so the row states its [`Region`]; and `{out}` in a recorded
+/// line is the run's scratch directory, as `run`'s `{out}` is, W43's: `ein
+/// solve X.einb --dump-answer DIR` refused the container. (`/18` is the second
+/// lane's.)
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/19";
 
 /// Where a [`Printed`] line is read (schema /17): the run's stdout, or the
 /// read-out `--dump-answer DIR` writes uncut, `DIR/answer.txt`.
@@ -414,6 +420,12 @@ pub struct Now {
     /// search that answered stopped.)
     #[serde(default)]
     pub error: Option<String>,
+    /// The exit code a [`Self::refused`] run ends with, where it is not 1 —
+    /// schema /19 (M1f S1f.5.12, W43): `2`, a usage refusal of what a solve's
+    /// run was asked to write, the library answering the program, so the row
+    /// states its [`Region`] (W43's open `now`: `--dump-answer` on a `.einb`).
+    #[serde(default)]
+    pub exit: Option<i32>,
     #[serde(default)]
     pub exhausted: bool,
     /// The states it lists.
@@ -1191,9 +1203,22 @@ impl Register {
             {
                 out.push(at("a refused [now] lists nothing".to_string()));
             }
-            // A command's refusal is its own (schema /16): the library answers
-            // the witness, whose region the row states.
-            if r.now.refused.is_some() && r.region.is_some() && !r.now.is_command() {
+            // A command's refusal is its own (schema /16), and so is a solve's
+            // usage refusal, exit 2 (schema /19): the library answers the
+            // witness, whose region the row states.
+            if let Some(e) = r.now.exit
+                && (e != 2 || r.now.refused.is_none() || r.now.is_command())
+            {
+                out.push(at(format!(
+                    "[now] exit {e}: a solve's refusal exits 1, or 2 where it refuses what the run \
+                     was asked to write (schema /19)"
+                )));
+            }
+            if r.now.refused.is_some()
+                && r.region.is_some()
+                && !r.now.is_command()
+                && r.now.exit != Some(2)
+            {
                 out.push(at(
                     "a refused [now] has no [case.region]: the library refuses it too".to_string(),
                 ));
@@ -1432,15 +1457,19 @@ impl Register {
                     ));
                 }
                 if a.refused.is_some() {
-                    if !command || a.error.is_some() {
+                    // A solve's usage refusal, exit 2 (schema /19, W43's).
+                    let usage = !command && a.exit == 2;
+                    if !(command || usage) || a.error.is_some() {
                         out.push(at(
-                            "a recorded refusal is a command's (schema /16), and not an error too"
+                            "a recorded refusal is a command's (schema /16) or a solve's usage \
+                             refusal, exit 2 (schema /19), and not an error too"
                                 .to_string(),
                         ));
                     }
-                    if a.exit != 1 || !a.verdict.is_empty() || a.k != 0 || a.exhausted {
+                    if !(a.exit == 1 || usage) || !a.verdict.is_empty() || a.k != 0 || a.exhausted {
                         out.push(at(
-                            "a recorded refusal exits 1 and states no verdict or k".to_string()
+                            "a recorded refusal exits 1, or 2 on a solve, and states no verdict or k"
+                                .to_string(),
                         ));
                     }
                 } else if a.error.is_some() {
@@ -2105,6 +2134,7 @@ queries   = [{ classes = 1, expect = "none" }]
             answered: false,
             refused: None,
             error: Some("a line".to_string()),
+            exit: None,
             exhausted: false,
             k: 0,
             empty: None,
@@ -2640,6 +2670,98 @@ goal_text = ["{?n*} is a q"]
             }
             assert!(defects(&r).iter().any(|d| d.contains("is not one of")));
         }
+    }
+
+    /// **A solve's usage refusal exits 2**, schema /19 (M1f S1f.5.12, W43):
+    /// `ein solve X.einb --dump-answer DIR` refused the container before the
+    /// run while the library answered the program. W43's `wrong` records it,
+    /// and a `now` refused the same way is well formed, its region stated; the
+    /// exit is 2 and nothing else, on a solve and on nothing else.
+    #[test]
+    fn a_solves_usage_refusal_exits_two() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.id == "W43/einb-dump-answer")
+            .expect("W43's row");
+        assert!(defects(row).is_empty(), "{:?}", defects(row));
+        assert_eq!(
+            (row.wrong.exit, row.wrong.refused.is_some()),
+            (2, true),
+            "W43's `wrong` is the refusal, exit 2"
+        );
+        // The refusal as an open row's `now`: exit 2 beside `refused`, and the
+        // region stated, since the library answers the program.
+        let mut r = row.clone();
+        r.status = "open".to_string();
+        r.fixed = None;
+        r.open_because = Some("the refusal".to_string());
+        r.now = Now {
+            run: r.wrong.run.clone(),
+            line: "all".to_string(),
+            container: true,
+            answered: false,
+            refused: r.wrong.refused.clone(),
+            error: None,
+            exit: Some(2),
+            exhausted: false,
+            k: 0,
+            empty: None,
+            relations: Vec::new(),
+            models: Vec::new(),
+            outside: Vec::new(),
+            core: None,
+            nogoods: None,
+            core_status: None,
+            stale: None,
+            nogoods_listed: false,
+            others: None,
+            claim: None,
+            queries: None,
+            refuted_by: None,
+            goal_text: None,
+            printed: None,
+        };
+        assert!(r.region.is_some());
+        assert!(defects(&r).is_empty(), "{:?}", defects(&r));
+        // Exit 1, the default, is *forbid*'s, which states no region.
+        let mut s = r.clone();
+        s.now.exit = None;
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("a refused [now] has no [case.region]"))
+        );
+        // Any other exit, or an exit beside no refusal, is no refusal's.
+        for (exit, refused) in [(3, true), (2, false)] {
+            let mut s = r.clone();
+            s.now.exit = Some(exit);
+            if !refused {
+                s.now.refused = None;
+            }
+            assert!(
+                defects(&s)
+                    .iter()
+                    .any(|d| d.contains("a solve's refusal exits 1, or 2")),
+                "exit {exit}, refused {refused}"
+            );
+        }
+        // A recorded refusal on a solve exits 2, and on nothing else.
+        let mut s = row.clone();
+        s.wrong.exit = 1;
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("a recorded refusal is a command's"))
+        );
     }
 
     /// **What a query's `:goal-text` prints is an answer**, schema /15 (M1f

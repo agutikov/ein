@@ -6,7 +6,8 @@
 **Status:** specified 2026-11-08 on the user's ruling of that day on P-15. **Running since 2026-11-09**, on the
 user's go-ahead for P1f.5 of 2026-11-08 and the instruction of 2026-11-09 (*"just continue with default decisions
 till the end of the phase"*), beside the second lane's S1f.5.10: T1f.5.12.1, every ask, writer and move listed (`87b7cb5a`, [its
-record](#t1-record-2026-11-09)); T1f.5.12.2, the two asks and N's cores after the walk ([its record](#t2-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
+record](#t1-record-2026-11-09)); T1f.5.12.2, the two asks and N's cores after the walk (`0116cf65`, [its record](#t2-record-2026-11-09));
+T1f.5.12.4, W43 filed ([its record](#t4-record-2026-11-09)). The coordinator handed the stage a second item on 2026-11-09, `--dump-answer` on a
 `.einb` ([§ Task T1f.5.12.4](#task-t1f5124--the-answer-directory-of-a-einb-w43)).
 **Depends on:** nothing. It is independent of the grammar stages. [S1f.5.13](s1f.5.13_large_dumps_to_the_slow_tier.md)'s
 four dumps each get cheaper with it, but neither stage waits for the other.
@@ -277,6 +278,34 @@ A refusal where a run should answer is a wrong answer, W40's six rows the preced
 files it** as a register row from the stage's block, W43, `open` and owned by this stage, its `now` the refusal; and
 **T1f.5.12.5 fixes it**: the dump writes every file from the program the container stores, unless something makes that
 impossible, in which case the record says why and the refusal's line stays, in Ein's words.
+
+### T4 record, 2026-11-09
+
+**It is a wrong answer.** `ein solve X.einb --dump-answer DIR` refuses the container before the run, exit 2, writing
+nothing, where the same run on the `.ein` answers, exit 0, and `ein solve X.einb` without the flag, `oracle`, `test`,
+`saturate`, the `render` views and `kb save` all read the program it stores (W40's six rows, S1f.5.5's T1f.5.5.13). A
+refusal of a program another path answers is W40's class, so it is filed as **W43**, from the stage's block, one row,
+`W43/einb-dump-answer`, `open` and owned by S1f.5.12.
+
+**The witness** is written for it, [`einb-dump-answer.ein`](../../../examples/ein-bugs/wrong-answers/einb-dump-answer.ein):
+two candidates, `(p a)` and `(p b)`, which one rule, `clash`, refutes together, so R is three states and N one member
+the state route does not visit, whose core the dump takes after the walk. Its header derives the right answer by hand;
+its corpus entry declares `solve` and `saturate`, and `corpus_exits.txt` and `corpus_shapes.md5` gain its lines
+(`EIN_BLESS=1`, the two diffs read before they were kept: its own lines and no other).
+
+**The row's `now` is the refusal**, through the binary, as `wrong_answers.rs` holds every row: `ein kb save` the
+witness, then `ein solve` on the container with `--dump-answer {out}/answer`, `refused` its stderr's first line and
+`exit = 2`. The register could hold neither until now: a recorded refusal exited 1 and was a command's (schema /16),
+and a solve's refused `now` stated no region, since the library refused the program too. So the register goes to
+**schema `/19`** (`/18` is the second lane's): a solve's refusal can exit 2, `exit` beside `refused`, a usage refusal
+of what the run was asked to write while the library answers the program, so the row states its region; and `{out}`
+in a recorded line is the run's scratch directory, as `run`'s is. `ein_corpus::register` reads both and its
+well-formedness holds them (`a_solves_usage_refusal_exits_two`), `wrong_answers.rs` holds the refusal's exit and line,
+and `ein-infer/tests/register_region.rs` holds the row's region to the library's, as it holds a command's refusal's. W40's rows were filed and fixed in
+one commit; this one is filed first, as the coordinator's brief asks, and the schema is what that costs.
+
+The register reads **128 fixed, 23 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+-c`, 2026-11-09).
 
 ## Acceptance
 

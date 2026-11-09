@@ -72,6 +72,11 @@
 //! label as long as its column glued to its value until S1f.5.6's
 //! T1f.5.6.6, so the line, and not a field of the summary, is the answer.
 //!
+//! **Since M1f S1f.5.12 a solve's refusal can exit 2** (schema /19, W43): a
+//! usage refusal of what the run was asked to write, `exit = 2` beside
+//! `refused`; and `{out}` in a recorded line is the run's scratch directory,
+//! as `run`'s `{out}` is.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -496,6 +501,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         answered: false,
         refused: None,
         error: None,
+        exit: None,
         exhausted: region["exhausted"] == true,
         k: states.len(),
         empty,
@@ -632,11 +638,15 @@ fn every_row_answers_what_the_register_records() {
             (None, None) => None,
         };
         let diffs = if let Some((field, what, want)) = ended {
-            // `{FILE}` is the path the run was handed (schema /16).
-            let want = &want.replace("{FILE}", &got.file);
+            // `{FILE}` is the path the run was handed (schema /16), and
+            // `{out}` the run's scratch directory (schema /19).
+            let want = &want
+                .replace("{FILE}", &got.file)
+                .replace("{out}", &dir.display().to_string());
+            let exit = row.now.exit.unwrap_or(1);
             let mut d = Vec::new();
-            if got.code != 1 {
-                d.push(format!("exit: recorded 1, {what}, got {}", got.code));
+            if got.code != exit {
+                d.push(format!("exit: recorded {exit}, {what}, got {}", got.code));
             }
             if first != want {
                 d.push(format!("{field}: recorded {want:?}, got {first:?}"));

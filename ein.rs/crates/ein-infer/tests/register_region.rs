@@ -324,8 +324,15 @@ fn every_row_states_its_witness_s_region() {
         // S1f.5.4), the parser's, or by *forbid*.
         // A command's refusal or error (schema /16, M1f T1f.5.5.13) is the
         // command's own: the library answers the witness, and the row states
-        // its region, as an answering row does.
-        if let Some(want) = row.now.refused.as_ref().filter(|_| !row.now.is_command()) {
+        // its region, as an answering row does. So is a solve's usage
+        // refusal, exit 2 (schema /19, M1f S1f.5.12, W43): the binary refuses
+        // what the run was asked to write, and the library answers.
+        if let Some(want) = row
+            .now
+            .refused
+            .as_ref()
+            .filter(|_| !row.now.is_command() && row.now.exit != Some(2))
+        {
             if let Some(e) = refusal(&row.witness) {
                 if *want != e {
                     bad.push(format!(

@@ -1,0 +1,42 @@
+;;; `ein solve --dump-answer` refuses a `.einb` — M1f **W43**, register row
+;;; `W43/einb-dump-answer` (`corpus/wrong_answers.toml`), filed by S1f.5.12's
+;;; T1f.5.12.4 (2026-11-09).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two names, `a` and `b`, each seen, and `p` the relation a run may commit
+;;; to: the candidates are `(p a)` and `(p b)`. One rule, `clash`, refutes the
+;;; two together. So R is three states, ∅, {(p a)} and {(p b)}, and N is one
+;;; set, {(p a), (p b)}, whose core is the two facts, refuted by `clash`: an
+;;; answer directory with state files and a member of N with its core.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; AGENTS.md: *every command that takes a `.ein` path takes a `.einb` too,
+;;; dispatching on the magic bytes*, and the user's rule is one tool,
+;;; consistent answers: no two commands, or one command on two forms of one
+;;; program, may disagree. A `.einb` stores its program, resolved and
+;;; import-flattened, and every command reads it (W40's six rows), so `ein
+;;; solve x.einb --dump-answer DIR` answers as `ein solve x.ein --dump-answer
+;;; DIR` does: exit 0, R's three states on stdout, and `DIR` holding a state
+;;; file for each, the stored program and then the state, and `nogoods.json`
+;;; with N's one member, its core (p a) (p b) and its rule, `clash`.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; `ein solve` refuses the container before the run, exit 2, with `error:
+;;; --dump-answer DIR: a .einb container carries no program source, and every
+;;; file the answer directory holds starts with it — run it on the .ein`,
+;;; where `ein solve` on the container without `--dump-answer`, and every other
+;;; command, answers it (2026-11-09).
+
+(relation p T :why "{?1} is picked")
+(relation seen T :why "{?1} is seen")
+
+(seen a)
+(seen b)
+
+(rule clash () :match (and (p a) (p b)) :assert (false)
+  :why "a and b are not both picked")
+
+(solve :hypothesis-relations (p))

@@ -823,6 +823,20 @@
 # not-wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-09).
 #
+# **W43 was filed on 2026-11-09 by M1f S1f.5.12** (T1f.5.12.4), from S1f.5.5's
+# T1f.5.5.13, which found it and left it, handed to the stage by the
+# coordinator: `ein solve X.einb --dump-answer DIR` refuses the container
+# before the run, exit 2, *carries no program source*, where the same run on
+# the `.ein` answers and every other command reads the program the container
+# stores (W40's six rows). One row, `W43/einb-dump-answer`, on a witness written
+# for it, `open` and owned by S1f.5.12, whose next task fixes it. **Schema
+# /19** (`/18` is the second lane's): a solve's refusal can exit
+# 2 (`exit`), a usage refusal of what the run was asked to write while the
+# library answers the program, so the row states its region; and `{out}` in a
+# recorded line is the run's scratch directory. The register reads **128 rows
+# fixed, 23 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
+# | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -906,7 +920,12 @@
 #               and this is its stderr's first line; nothing below is stated.
 #               *Forbid*'s refusal, or since M1e2 S1e2.2.20 the loader's
 #               (`kb load error: …`, W20's range and wildcard head; W24's
-#               shapes since S1e2.2.24)
+#               shapes since S1e2.2.24); `{out}` in it is the run's scratch
+#               directory, as `run`'s `{out}` is (schema /19)
+#     exit      (schema /19, M1f S1f.5.12) `2`, beside `refused` on a solve's
+#               run: a usage refusal of what the run was asked to write, the
+#               library answering the program, so the row states its
+#               [case.region] (W43's open `now`, `--dump-answer` on a `.einb`)
 #     error     (schema /7, M1e2 S1e2.2.18) the run ended in an error before it
 #               answered: exit 1, and this is its stderr's first line; nothing
 #               below is stated, and the row states no [case.region] (not the
@@ -988,7 +1007,8 @@
 #               with `why`, whose answer is its `refused` or `error` line
 #     container (schema /16) the run read the witness saved as a `.einb`
 #     refused   (schema /16) the command refused the program: `exit` is 1 and
-#               this is its stderr's first line (W41's `wrong`)
+#               this is its stderr's first line (W41's `wrong`); or since
+#               schema /19 a solve's usage refusal, `exit` 2 (W43's `wrong`)
 #     witness   (control, twin) another file; default: the row's witness
 #     run       a corpus run name — `ein <run>` with the file elided, so
 #               `"solve -e -L"` is `ein solve <witness> -e -L`
@@ -1096,7 +1116,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/17"
+schema = "ein-wrong-answers/19"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -9710,3 +9730,49 @@ models    = [
   ["(lives-next-door-to Ann Bob)", "(lives-next-door-to Bob Ann)"],
 ]
 printed   = [{ file = "stdout", label = "lives-next-door-to", line = "  lives-next-door-to 2 candidates, 0 dead alone" }]
+
+# ══ W43 — `ein solve --dump-answer` refuses a `.einb` ═══════════════════════
+[[case]]
+id       = "W43/einb-dump-answer"
+case     = "W43"
+title    = "`ein solve --dump-answer` refuses a `.einb`, which the same run answers on its `.ein` and every other command answers"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.12"
+question = ["S1f.5.12 T1f.5.12.4"]
+witness  = "examples/ein-bugs/wrong-answers/einb-dump-answer.ein"
+status   = "open"
+look_at  = ["answer"]
+open_because = "S1f.5.12's next task, T1f.5.12.5, fixes it: today `ein solve` reads the container to see whether it is one before the run and refuses it, since every file the answer directory holds starts with the program's source; the container stores its program, resolved and import-flattened, which the dump can write instead"
+note     = "Filed by S1f.5.12 (T1f.5.12.4, 2026-11-09) from S1f.5.5's T1f.5.5.13, which found it, reported it and left it (*a flag's usage refusal, which T13's brief does not name*), and the coordinator's brief of 2026-11-09, which handed it to S1f.5.12: a refusal where a run should answer is a wrong answer, W40's six rows the precedent. The row saves the witness with `ein kb save` and runs `ein solve` on the container with `--dump-answer` (schema /16's `container`); the refusal exits 2, a usage refusal the register records since schema /19, while the library answers the program, R three states. `ein solve` on the container without `--dump-answer` answers it, as `oracle`, `test`, `saturate`, the `render` views and `kb save` do"
+
+[case.wrong]
+run       = "solve --dump-answer {out}/answer"
+by        = "region"
+container = true
+why       = "`ein kb save` the witness, then `ein solve` on the container with `--dump-answer DIR`, release, at 87b7cb5a (2026-11-09): exit 2 before the run, nothing on stdout and no directory written; the same run on the witness answers, exit 0, R three states and N one member; `{out}` is the run's scratch directory"
+exit      = 2
+refused   = "error: --dump-answer {out}/answer: a .einb container carries no program source, and every file the answer directory holds starts with it — run it on the .ein"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p a)"], ["(p b)"]]
+
+[case.right]
+derived   = "AGENTS.md: every command that takes a `.ein` takes a `.einb`, and one tool, consistent answers: the container is the witness's program, stored, so the run answers it as it answers the witness, exit 0, writing the answer directory from the program the container stores. R is three states: ∅ and each candidate alone, `clash` refuting the two together, so N is {(p a), (p b)}"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["p"]
+models    = [[], ["(p a)"], ["(p b)"]]
+
+[case.now]
+run       = "solve --dump-answer {out}/answer"
+line      = "all"
+container = true
+exit      = 2
+refused   = "error: --dump-answer {out}/answer: a .einb container carries no program source, and every file the answer directory holds starts with it — run it on the .ein"

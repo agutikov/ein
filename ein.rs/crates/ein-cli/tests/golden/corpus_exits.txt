@@ -425,6 +425,8 @@
 0    examples/ein-bugs/wrong-answers/core-search-cut-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: saturate
 0    examples/ein-bugs/wrong-answers/core-search-cut.ein :: solve
+0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: saturate
+0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render rules
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: saturate
