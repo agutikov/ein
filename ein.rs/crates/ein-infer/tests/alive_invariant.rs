@@ -134,6 +134,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `b` in a conclusion no firing reaches. Each owning stage says whether its
 /// fix moves its line.
 ///
+/// Two of the witnesses M1f S1f.5.7 banked on 2026-11-09 (T1f.5.7.1) stand
+/// here: W52's `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
+/// parameter binds to `eq`, as W30's `assert-eq-x-w.ein`'s; and W54's
+/// `goal-nested-var.ein`, `a` and `b` inside its stored negations.
+///
 /// **Left at M1f S1f.5.5's swap (T1f.5.5.4)**, each refused at the parse since
 /// and so loading here no more: `broken/compile/eq_arity_high.ein`'s `A` and
 /// `B` (moved to `examples/broken/`, `eq` taking two terms), the moved
@@ -142,7 +147,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
 /// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
 /// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
-const SEEDED: [(&str, &[&str]); 28] = [
+const SEEDED: [(&str, &[&str]); 30] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -184,6 +189,10 @@ const SEEDED: [(&str, &[&str]); 28] = [
         &["`Z`, asserted by rule `spawn`"],
     ),
     (
+        "examples/ein-bugs/wrong-answers/goal-nested-var.ein",
+        &["`a`, in (not (p a))", "`b`, in (not (p b))"],
+    ),
+    (
         "examples/ein-bugs/wrong-answers/match-only.ein",
         &["`Z`, matched by rule `reach-z`"],
     ),
@@ -210,6 +219,10 @@ const SEEDED: [(&str, &[&str]); 28] = [
     (
         "examples/ein-bugs/wrong-answers/range-in-match.ein",
         &["`1..3`, matched by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein",
+        &["`w`, asserted by rule `r`"],
     ),
     (
         "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",

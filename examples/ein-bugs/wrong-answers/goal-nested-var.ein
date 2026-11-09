@@ -1,0 +1,28 @@
+;;; A query's class prints a pattern inside a pattern as written — M1f
+;;; **W54**, register row `W54/goal-nested-var` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, `open` and owned
+;;; by S1f.5.7: found where `(not (eq ?x ?y))` in a goal printed its class.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two stored negations, `(not (p a))` and `(not (p b))`, and a query whose
+;;; goal is `(not (p ?x))`, with the claim that its one class is the two.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The goal has two rows, `?x = a` and `?x = b`, so the class is the goal's
+;;; two instances, `(not (p a))` and `(not (p b))` (`region_language.md` § 5),
+;;; and the claim holds: exit 0.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The class grounds a conjunct's arguments one level deep, and prints a
+;;; pattern inside it as written: the two rows give one fact, `(not (p ?x))`,
+;;; the class is `(model (not (p ?x)))`, which no claim can state, and the
+;;; claim is FAILED, exit 1 (`ein solve FILE` at `dc4c0bdc`, release and debug
+;;; alike).
+
+(relation p Node :why "{?1} is a node")
+(not (p a))
+(not (p b))
+(query :goal (not (p ?x)) :expect (model (not (p a)) (not (p b))))

@@ -26,6 +26,11 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.15](#q-m1f15--where-does-a-position-in-a-containers-stored-program-point) | where does a position in a container's stored program point? | **defaulted 2026-11-09 (the user's instruction): it names the container, `<program stored in x.einb>`, and the stored text's line; a source position needs a format change, not made**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
 | [Q-M1f.16](#q-m1f16--which-of-the-reads-defects-are-register-rows) | which of the read's defects are register rows? | **defaulted 2026-11-09 (the user's instruction): each refusal of a program another command answers (W40's six, W41); the lines and exits of a file every command refuses are held by a test**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
 | [Q-M1f.17](#q-m1f17--what-a-view-that-never-loads-reads-from-a-container) | what a view that never loads reads from a container | **defaulted 2026-11-09 (the user's instruction): the program it stores, resolved and import-flattened**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T1f.5.5.13 |
+| [Q-M1f.30](#q-m1f30--a-form-that-holds-a-variable-as-a-guards-argument) | a form that holds a variable, as a guard's argument | **defaulted 2026-11-09 (the user's instruction): refused at load, in a rule and in a goal; a fact that holds no variable is answered**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.31](#q-m1f31--not-eq-x-y-a-stored-negation-or-neq-x-y) | `(not (eq x y))`: a stored negation, or `(neq x y)`? | **defaulted 2026-11-09 (the user's instruction): `(neq x y)`, in every place**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.32](#q-m1f32--an-hrules-eq-or-neq-instance) | an hrule's `eq` or `neq` instance | **defaulted 2026-11-09 (the user's instruction): no hypothesis**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.33](#q-m1f33--a-written-fact-of-eq) | a written fact of `eq` | **defaulted 2026-11-09 (the user's instruction): a conclusion with no premise, checked, never stored**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
+| [Q-M1f.34](#q-m1f34--where-a-guards-free-variable-is-bound-beside-an-absent) | where a guard's free variable is bound, beside an `(absent …)` | **defaulted 2026-11-09 (the user's instruction): where it is written, as a relation premise binds**; [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -525,3 +530,93 @@ the imported forms in place of each `(import …)`.
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) is the agent's recommendation: it answers, and what it draws is the program the file
 holds. `program_read` holds each view's drawing of a container to the `.ein`'s on a program with no import.
+
+### Q-M1f.30 — A form that holds a variable, as a guard's argument
+
+**Raised** 2026-11-09 by [S1f.5.7](p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md)'s T1f.5.7.1. The user
+ruled a nested fact answered as a guard's argument (`W24/form-in-guard`, *"yes, keep that default"*): `(eq ?x (f a))`
+compares `?x` with the value `(f a)`, as `(p (f a))` holds it. A form with a variable in it, `(eq ?x (f ?y))`, is a
+pattern, and the ruling's witness writes none. `eq` binds a variable nothing else binds to the other side's value, so
+with `?x` free and `?y` bound it would bind `?x` to `(f v)`, a value a match builds and no store may hold: the matcher
+reads the fact store and cannot add to it, and a register holds only a value the store holds.
+
+- **(a) Refused at load**, in a rule and in a query's goal, one line per form in Ein's spelling: *… and the form (f ?y)
+  holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable*. The
+  same question written as a premise, `(p (f ?y))`, is answered.
+- **(b) Answered where the store holds the value**: a form whose variables are bound is looked up, and `eq` binds a
+  free side to it only when found. A row would go missing where it is not, in silence.
+- **(c) Answered in full**, the matcher allowed to intern a fact it builds: a change to the fact store's lending rule
+  (`Terms`, P1a.7's *nothing interns during a search*).
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) keeps Q-M1e2.18 (i)(a)'s refusal for the one shape the 2026-11-07 ruling did not
+answer, and moves no program: no corpus file writes a form in a guard. (b) answers wrongly where it cannot answer, and
+(c) is a change to the interner's contract outside the stage. `cli_semantics` and `from_ir`'s unit tests hold (a).
+
+### Q-M1f.31 — `(not (eq x y))`: a stored negation, or `(neq x y)`?
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. The grammar takes `(not (eq a b))` wherever a stored negation goes: a
+top-level fact, a premise, a conclusion, a goal and a claim. Until S1f.5.7 each was the relation `not` over the fact
+`(eq a b)`: a premise matched a stored `(not (eq …))` and nothing else, so it never fired, and a fact or a conclusion
+was stored, `(not (eq a a))` too, and killed nothing (W51). `(not (neq …))` is a parse error, `neq` being no name.
+
+- **(a) It is `(neq x y)`**, in every place: `eq`'s facts are computed, and so is the negation of one. A premise and a
+  goal are the `neq` guard, a conclusion is checked as `neq`'s (G-21), a written one is a fact of `neq` (Q-M1f.33),
+  and an hrule's is no hypothesis (Q-M1f.32).
+- **(b) A stored negation**, as until S1f.5.7, with the pair check extended so a stored `(not (eq a a))` is a
+  contradiction; a premise still matches only stored ones.
+- **(c) Refused at load**, with a line naming `(neq …)`.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It is the ruling read where it reads: `eq` and `neq` are
+relations of equality and non-equality wherever a relation can be written, and `(not P)` over a relation whose truth
+is computed is computed. (b) keeps one relation with two readings, the defect G-21 named, and (c) is a restriction
+with no logical reason, which the user asked for none of (2026-11-07, G-21). W51's three rows hold (a).
+
+### Q-M1f.32 — An hrule's `eq` or `neq` instance
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. An hrule's `:assert` takes an `eq` or `neq` conclusion, and the hrule
+rung proposed every instance as a hypothesis, which a commitment stored, `(eq a b)` among them (W53).
+
+- **(a) No hypothesis**: a commitment states facts a state stores, and a state stores neither relation, so the rung
+  proposes no instance of either.
+- **(b) A hypothesis checked as a conclusion**: a true one a commitment that adds nothing, a false one a candidate dead
+  alone, which joins N.
+- **(c) Refused at load.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** A commitment that adds nothing, or only `(false)`, is no
+hypothesis about the program's facts; (b) would put a state in R twice over and a member in N that no fact explains,
+and (c) is a restriction the user asked for none of. `W53/hrule-eq` holds (a).
+
+### Q-M1f.33 — A written fact of `eq`
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. A top-level fact's relation may be `eq` (`ein.y`'s `FactHead`), so `(eq
+a w)` loaded, and was stored as an ordinary fact, which no guard reads (W50). `(neq …)` is no fact the grammar takes.
+
+- **(a) A conclusion with no premise**: a true one is not stored, and a false one is `(false)`, written where it
+  stands, so root is a contradiction, `refuted by` `(given)`, as a rule's false conclusion is (G-21).
+- **(b) Refused at load.**
+- **(c) Stored, as until S1f.5.7.**
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** A fact is a rule with no premise, and G-21 says what a rule's
+false conclusion of `eq` is; (b) is a restriction the user asked for none of, and (c) is the defect, a fact changing a
+relation whose facts are fixed. The grammar's asymmetry, `(eq …)` a fact and `(neq …)` none, stays the grammar's: no
+program writes either, and S1f.5.5's grammar is the phase's final one. `W50/fact-eq-false` and `W51/not-eq-fact` hold
+(a).
+
+### Q-M1f.34 — Where a guard's free variable is bound, beside an `(absent …)`
+
+**Raised** 2026-11-09 by S1f.5.7's T1f.5.7.1. A premise means the same in any order of its conjuncts (the user's ruling
+of 2026-11-07), and an `(absent …)` reads the variables the premises before it bind (S1.21.8): `(and (absent (q ?x))
+(p ?x))` asks whether there is no `q` at all. A guard whose variable nothing in its conjunction binds, `(neq ?x a)`
+with no `(p ?x)`, binds it, ranging over the program's names, so where it binds decides what an `(absent …)` beside it
+reads.
+
+- **(a) Where it is written**, as a relation premise binds: `(and (neq ?x a) (absent (q ?x)))` is *the names other than
+  `a` with no `q`*, and `(and (absent (q ?x)) (neq ?x a))` *the names other than `a`, if there is no `q` at all*. A
+  guard whose variable a relation premise of the conjunction binds waits for it, whatever the order.
+- **(b) Before every `(absent …)`**, so the two read alike: the guard moved, as (a) moves it after a binder.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** It reads a binding guard as the relation it is, a premise that
+binds, so the order rule an `(absent …)` already has is the only one; (b) would make a guard bind past an `(absent …)`
+that a relation premise in its place would not. `ein-infer/tests/rule_semantics.rs`'
+`a_binding_guard_binds_where_it_is_written` (T1f.5.7.3) holds both orders.

@@ -1,0 +1,26 @@
+;;; A written `(not (eq …))` is stored as a negation, not read as `neq` — M1f
+;;; **W51**, register row `W51/not-eq-fact` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, `open`
+;;; and owned by S1f.5.7, on the user's ruling of 2026-11-07 (Q-M1e2.26, G-21).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p a)` and the written negation `(not (eq a a))`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `eq`'s facts are computed, and so is the negation of one: `(not (eq x y))`
+;;; is `(neq x y)` (Q-M1f.31, taken by default on the user's instruction of
+;;; 2026-11-09). A written one is checked as a conclusion with no premise
+;;; (Q-M1f.33): `(neq a a)` is false, so root is a contradiction, `(false)`
+;;; written where it stands. R is empty.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The negation is stored: root holds `(not (eq a a))` (`ein saturate FILE
+;;; --dump`), no contradiction pairs it, H is empty and R is {∅}, exit 0 (`ein
+;;; solve FILE` and `ein oracle FILE` at `dc4c0bdc`, release and debug alike).
+
+(relation p Node :why "{?1} is a node")
+(p a)
+(not (eq a a))

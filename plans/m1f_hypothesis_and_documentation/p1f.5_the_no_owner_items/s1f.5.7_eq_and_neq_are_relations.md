@@ -12,8 +12,10 @@
 **Status:** specified 2026-11-07 on the user's rulings of that day on S-18, its two questions and G-21
 ([Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations)), and on what stays refused in a guard
 ([§ Questions](#questions-it-has-to-settle)). Nothing is open.
-**Not started, and not to start until the user says so.** No engine code, test, golden or fixture has
-moved.
+**Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), on the user's instruction of that day (*"just
+continue with default decisions till the end of the phase"*): T1f.5.7.1 done ([its record](#t1f571-record-2026-11-09)),
+every move listed, ten rows filed (W50 to W55) and W24's two restated, five questions taken by default (Q-M1f.30 to
+Q-M1f.34).
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -256,3 +258,104 @@ fixed them. Q-M1e2.18 says what superseded its (ii)(a).
   state a contradiction, with a core and a rule.
 - No corpus answer moves.
 - `./run_tests.sh` is green.
+
+## T1f.5.7.1 record (2026-11-09)
+
+**Run on the user's instruction of 2026-11-09**, *"just continue with default decisions till the end of the phase"*:
+the step's stop to show the user real programs is covered by this record, and every decision a reviewer would call one
+is taken by default and is a row of [`open_questions.md`](../open_questions.md), Q-M1f.30 to Q-M1f.34. The stage ran in
+lane 2's worktree, on `p1f5-lane2` from `dc4c0bdc`.
+
+**The prototype** was the whole stage, goals, premises and conclusions, built in the worktree before any commit, its
+release binary kept as `build/s1f.5.7/xcheck/bin/ein-new` beside the base's, `ein-base` (`dc4c0bdc`). Every program of
+the five roots, 520 files (`find examples tests stdlib corpus plans -name '*.ein'`), went through both:
+`solve --json-summary -H --dump-answer`, `saturate --dump` and `test`, the exit, stdout and stderr of each, the summary
+and every file the dump wrote compared, timings masked (`build/s1f.5.7/xcheck/run_all.sh`, 90 s). **513 are the same**
+and seven move, each one the case's:
+
+| program | what moves |
+|---|---|
+| `wrong-answers/assert-neq-w-x.ein` (`W30/assert-neq-w-x`) | R two states → {∅}: `{(p w)}` dead, `(neq w w)` false; root stores no `neq` |
+| `wrong-answers/assert-neq-x-x.ein` (`W30/assert-neq-x-x`) | R {∅} → empty: root dead, core `(p a)`, `refuted by r` |
+| `wrong-answers/assert-eq-x-w.ein` (`W30/assert-eq-x-w`) | R two states → empty: root dead, core `(p a)`, `refuted by r` |
+| `wrong-answers/guard-before-binder.ein` (`W24/guard-before-binder`) | refused at load → loads: root `(hit-eq a)`, `(hit-neq b)`, `(hit-neq 1)`, `(hit-neq (f a))` |
+| `wrong-answers/form-in-guard.ein` (`W24/form-in-guard`) | refused at load → loads: root `(hit-eq (f a))`, `(hit-neq a)`, `(hit-neq b)`, `(hit-neq 1)` |
+| `plans/…/inventory_2026-11-06/probes/assert_neq.ein` | `W30/assert-neq-w-x`'s program, the inventory's probe |
+| `plans/…/inventory_2026-11-06/probes/goal_guard.ein` | the case's first goal: three rows, `?y = Node`, `a`, `p` |
+
+Every one is a row or the case, as the step asks. `goal_guard_claim.ein`, the inventory's probe writing the suggested
+`(model (neq w ?y))`, is a parse error before and after, a variable in a claim. W24's two restated witnesses answer R
+of 256 states each, the blind enumerator's eight candidates over `f`, `hit-eq`, `hit-neq` and `q`, which describe,
+`--minimal`, `--maximal` and `ein oracle` agree on; their rows are asked under `--minimal`, root's state.
+
+**The case's goals**, each on `(relation p Node) (p a)`, the prototype's answer; the program's names are `Node`, `a`
+and `p` (`(relation p Node)` is a stored fact), and `w` is only the query's:
+
+| `:goal` | today (`dc4c0bdc`) | the prototype | its `as :expect`, which loads and holds |
+|---|---|---|---|
+| `(neq w ?y)` | *the goal holds: it has no variable* | `?y = Node`, `?y = a`, `?y = p` | `(model (neq w Node) (neq w a) (neq w p))` |
+| `(eq w ?y)` | no row | `?y = w` | `(model (eq w w))` |
+| `(neq a b)` | holds; its claim refused at load | *the goal holds: it has no variable* | `(model (neq a b))` |
+| `(neq a a)` | no row | no row | `(model)` |
+| `(and (p ?y) (neq w ?y))` | `?y = a`; its claim refused at load | `?y = a` | `(model (neq w a) (p a))` |
+| `(and (neq a ?y) (p ?y))` | `?y = a`, the guard judged on a null | no row | `(model)` |
+| `(eq ?x ?y)` | *it has no variable* | three rows, each name with itself | `(model (eq Node Node) (eq a a) (eq p p))` |
+| `(neq ?x ?y)` | no row | six rows, every ordered pair of two names | six facts |
+| `(eq ?x ?x)` / `(neq ?x ?x)` | *no variable* / no row | three rows / no row | — |
+
+A claim about a whole state, `(solve … :expect (region (model (p a) (neq a b))))`, is refused at load, with *names neq,
+which a state never stores — eq and neq are computed from their definition, so a region claim, which lists a state's
+facts, holds neither* (the stage file's default, taken). A goal over a nested fact binds to it: `(and (p ?y) (eq ?x
+?y))` over `(p (f a))` answers `?x = (f a)`, the one value `eq` holds of.
+
+**Premises, beyond W24's two**: `(rule r (?P) :match (and (neq ?x ?P) (p ?x)) …)` under `(r a)` fires for `b`, the
+guard waiting for `(p ?x)`; `(and (neq ?x a) (absent (q ?x)))` over `(p a) (p b) (q b)` derives `hit` of every name but
+`a` and `b`, `Node`, `hit`, `p` and `q` among them, a binding guard ranging over the program's names, relation names
+included, as the stage file rules; `(and (absent (q ?x)) (neq ?x a))` derives none, the `(absent …)` reading no `?x`
+since nothing before it binds one (Q-M1f.34).
+
+**Conclusions**: W30's three answer their rights, and the oracle agrees on each.
+
+**What the step found that the stage file does not list as a row**, each a wrong answer today under the ruling, filed `open`,
+owned by this stage, with a witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, each `now` taken at
+`dc4c0bdc` on the release build, describe and `ein oracle` agreeing:
+
+| row | witness | `now`, today | `right` | fixed by |
+|---|---|---|---|---|
+| `W50/fact-eq-false` | `fact-eq-false.ein`: `(p a) (eq a w)` | R two states, `(eq a w)` stored | root dead (Q-M1f.33) | T1f.5.7.4 |
+| `W51/not-eq-premise` | `not-eq-premise.ein`: a premise `(not (eq ?x ?y))` | the rule never fires, R four states | root holds `(hit a b)`, `(hit b a)`, R {∅} (Q-M1f.31) | T1f.5.7.3 |
+| `W51/not-eq-fact` | `not-eq-fact.ein`: `(not (eq a a))` | R {∅}, the negation stored | root dead (Q-M1f.31, Q-M1f.33) | T1f.5.7.4 |
+| `W51/not-eq-assert` | `not-eq-assert.ein`: `:assert (not (eq ?x ?x))` | R {∅}, the negation stored | root dead, core `(p a)`, `refuted by r` | T1f.5.7.4 |
+| `W52/relvar-eq-premise` | `relvar-eq-premise.ein`: `(?R ?x ?y)` under `(r eq)` | the rule never fires | root holds `(hit a a)`, `(hit b b)` | T1f.5.7.3 |
+| `W52/relvar-eq-assert` | `relvar-eq-assert.ein`: `:assert (?R ?x w)` under `(r eq)` | R two states, `(eq a w)` stored | root dead | T1f.5.7.4 |
+| `W53/hrule-eq` | `hrule-eq.ein`: an hrule concluding `(eq ?x ?y)` | H four `eq` facts, R sixteen states | H empty, R {∅} (Q-M1f.32) | T1f.5.7.4 |
+| `W54/goal-nested-var` | `goal-nested-var.ein`: `(query :goal (not (p ?x)) …)` | one class `(not (p ?x))`, the claim FAILED | the class is the two instances, the claim holds | T1f.5.7.2 |
+| `W55/goal-neq-free` | `goal-neq-free.ein`: `goal_guard.ein` with the claim its answer states | refused at load, the claim naming `neq` | three rows, the claim holds | T1f.5.7.2 |
+| `W55/goal-guard-before-binder` | `goal-guard-before-binder.ein`: `(and (neq a ?y) (p ?y))`, `:expect (model)` | `?y = a`, the claim FAILED | no row, the claim holds | T1f.5.7.2 |
+
+W53's witness concludes `eq`, not `neq`: an hrule concluding `neq` proposes the four `neq` facts, whose state files do
+not load, the line `(neq …)` being a parse error, which `answer_round_trip.rs` and `answer_dump.rs` would have to name;
+the fix covers both. W54 is outside the case: a query's class grounds a conjunct's arguments one level deep, so a pattern inside a pattern
+printed with its variables in it. A `(not (eq ?x ?y))` goal reached it; no corpus goal does. W55 is the case's own: its
+goals had no row, S1f.5.0 having filed G-21's three and none of S-18's, so the two that show it in a status code, the
+case's probe with the claim its answer states and the goal whose guard comes first, are rows.
+
+**A form that holds a variable** as a guard's argument, `(eq ?x (f ?y))`, stays refused at load (Q-M1f.30), now in a
+query's goal too, where it was compared as an IR node and had no row. Its line is new: *… and the form (f ?y) holds a
+variable — a guard compares two values, each a variable, a name, or a fact that holds no variable*.
+
+**W24's two rows are restated**, as the stage file says: `W24/guard-before-binder`'s and `W24/form-in-guard`'s `right`
+is the loaded answer above, each row `open` and owned by S1f.5.7 until T1f.5.7.3 fixes it. The register then reads
+**124 fixed, 34 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+
+**What moves by banking**: `corpus_exits.txt` gains the ten witnesses' twenty cells and `corpus_shapes.md5` 389
+digests, none removed; `alive_invariant.rs`' `SEEDED` names `goal-nested-var`'s `a` and `b` and `relvar-eq-assert`'s
+`w`, 28 → 30 programs; `claim_round_trip.rs`' `DO_NOT_READ_BACK` names `hrule-eq`, whose printed region lists `eq`
+facts, which no region claim may name, until T1f.5.7.4; the register's well-formedness test takes a live row's classes
+(`register::tests::a_claim_and_a_querys_classes_are_answers`), W54's, where it took W28's as they stood; and
+`examples/README.md` names the witnesses.
+
+**`cargo test --workspace` on the prototype** failed where the step expected and nowhere else: the register's rows
+(W24's, W30's), `answer_round_trip.rs` and `answer_dump.rs`, whose `DO_NOT_LOAD` names W30's two `neq` witnesses, the
+W24 refusal's tests (`cli_semantics`, `from_ir`'s unit test), the matcher's null-guard test, and the banked exits.
+Each is a task's below.

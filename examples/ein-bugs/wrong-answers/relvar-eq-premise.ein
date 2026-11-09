@@ -1,0 +1,35 @@
+;;; A premise whose relation is a parameter its activator binds to `eq` scans
+;;; stored facts — M1f **W52**, register row `W52/relvar-eq-premise`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.1, 2026-11-09)
+;;; from its step 1's probes, `open` and owned by S1f.5.7, on the user's
+;;; ruling of 2026-11-07 (Q-M1e2.26: the reading holds wherever a relation can
+;;; be written).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two facts `(p a)` and `(p b)`, and a rule whose third premise's relation
+;;; is its parameter `?R`, activated by `(r eq)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Under `(r eq)` the third premise is `(eq ?x ?y)`, the relation of
+;;; equality, whose facts are computed: the rule fires on `(a, a)` and `(b,
+;;; b)`, so root holds `(hit a a)` and `(hit b b)`. H is `(hit a b)` and `(hit
+;;; b a)`, which no rule refutes, so R is four states, each holding root's two.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; The premise is a pattern over stored `eq` facts, which no state holds: the
+;;; rule never fires, root holds no `hit`, and R is four states, none holding
+;;; `(hit a a)` or `(hit b b)`, exit 0 (`ein solve FILE` and `ein oracle FILE`
+;;; at `dc4c0bdc`, release and debug alike).
+
+(relation p Node :why "{?1} is a node")
+(relation hit Node Node :why "{?1} and {?2} are two nodes")
+(p a)
+(p b)
+(rule r (?R)
+  :match (and (p ?x) (p ?y) (?R ?x ?y))
+  :assert (hit ?x ?y)
+  :why "{?x} and {?y} are nodes in the relation {?R}")
+(r eq)

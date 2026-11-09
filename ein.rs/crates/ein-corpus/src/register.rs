@@ -1740,8 +1740,9 @@ mod tests {
 
     /// A row as it stood before M1f S1f.5.5's swap (T1f.5.5.4) restated it,
     /// for the schema tests whose live example the swap turned into a refusal:
-    /// W28's claims and classes, and W29's core and query beside a refusal,
-    /// each recorded at `977829bf` with its long strings cut; and W37's open
+    /// W28's solve-form claim (its classes until M1f S1f.5.7's W54 and W55
+    /// stated a query's again, live), and W29's core and query beside a
+    /// refusal, each recorded at `977829bf` with its long strings cut; and W37's open
     /// `now`, recorded at `410a3388`, before M1f S1f.5.4's T1f.5.4.5 fixed it.
     fn as_it_stood(row: &str) -> Row {
         let reg: Register = toml::from_str(&format!("schema = \"{REGISTER_SCHEMA}\"\n{row}"))
@@ -1802,69 +1803,6 @@ models    = [
   [],
 ]
 claim     = "failed"
-"##;
-
-    /// `W28/classes-int-name` as it stood at `977829bf`, before S1f.5.5's swap restated it.
-    const W28_CLASSES: &str = r##"
-[[case]]
-id       = "W28/classes-int-name"
-case     = "W28"
-title    = "a claim and a query's projection classes compare printed text, which printed …"
-class    = "claim"
-settings = "default"
-owner    = "S1e2.3.8"
-question = ["Q-M1e2.20"]
-witness  = "examples/ein-bugs/wrong-answers/classes-int-name.ein"
-status   = "fixed"
-look_at  = ["answer", "summary"]
-note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28's claims: the same text …"
-
-[case.fixed]
-commit = "712f23fd"
-by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
-date   = "2026-11-06"
-
-[case.wrong]
-run       = "solve"
-by        = "region"
-why       = "`ein solve FILE`, release and debug, at 86227f9a (2026-11-06): R the eight …"
-verdict   = "Ambiguity"
-k         = 8
-exhausted = true
-queries   = [{ classes = 2, expect = "none" }]
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 8
-k_c      = 8
-minimal  = [[]]
-maximal  = [["(pick \"1\")", "(pick A)", "(pick B)"]]
-
-[case.right]
-derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: classes are keyed by value. A …"
-verdict   = "Ambiguity"
-k         = 8
-exhausted = true
-queries   = [{ classes = 4, expect = "none" }]
-
-[case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 8
-relations = ["pick"]
-models    = [
-  [],
-  ["(pick \"1\")"],
-  ["(pick \"1\")", "(pick A)"],
-  ["(pick \"1\")", "(pick A)", "(pick B)"],
-  ["(pick \"1\")", "(pick B)"],
-  ["(pick A)"],
-  ["(pick A)", "(pick B)"],
-  ["(pick B)"],
-]
-queries   = [{ classes = 4, expect = "none" }]
 "##;
 
     /// `W29/core-two-ways` as it stood at `977829bf`, before S1f.5.5's swap restated it.
@@ -2240,16 +2178,21 @@ queries   = [{ classes = 1, expect = "none" }]
             }
             .defects()
         };
-        // No live row states a claim or the classes since M1f S1f.5.5's swap
-        // restated W28's to the refusal, so the rows as they stood.
+        // No live row states a solve form's claim since M1f S1f.5.5's swap
+        // restated W28's to the refusal, so that row as it stood; a query's
+        // classes are stated by W54's and W55's rows since M1f S1f.5.7
+        // (T1f.5.7.1), and the first is used.
         assert!(
-            reg.case
-                .iter()
-                .all(|r| r.right.claim.is_none() && r.right.queries.is_none()),
-            "a live row states a claim or the classes again: use it"
+            reg.case.iter().all(|r| r.right.claim.is_none()),
+            "a live row states a claim again: use it"
         );
         let solve = as_it_stood(W28_CLAIM_SOLVE);
-        let query = as_it_stood(W28_CLASSES);
+        let query = reg
+            .case
+            .iter()
+            .find(|r| r.right.queries.is_some() && r.now.queries.is_some())
+            .cloned()
+            .expect("a live row states a query's classes (W54, W55)");
         for row in [&solve, &query] {
             assert!(defects(row).is_empty(), "{:?}", defects(row));
         }
