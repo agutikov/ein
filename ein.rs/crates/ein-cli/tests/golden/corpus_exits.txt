@@ -464,8 +464,8 @@
 0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2.ein :: solve
-1    examples/ein-bugs/wrong-answers/form-in-guard.ein :: saturate
-1    examples/ein-bugs/wrong-answers/form-in-guard.ein :: solve
+0    examples/ein-bugs/wrong-answers/form-in-guard.ein :: saturate
+0    examples/ein-bugs/wrong-answers/form-in-guard.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-default.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein :: solve
 0    examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein :: saturate
@@ -474,8 +474,8 @@
 0    examples/ein-bugs/wrong-answers/goal-neq-free.ein :: solve
 0    examples/ein-bugs/wrong-answers/goal-nested-var.ein :: saturate
 0    examples/ein-bugs/wrong-answers/goal-nested-var.ein :: solve
-1    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: saturate
-1    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: solve
+0    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: saturate
+0    examples/ein-bugs/wrong-answers/guard-before-binder.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: saturate
 0    examples/ein-bugs/wrong-answers/guard-only-first.ein :: solve
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: saturate
@@ -771,6 +771,10 @@
 0    examples/features/16_eq_neq_goal.ein :: saturate
 0    examples/features/16_eq_neq_goal.ein :: solve
 0    examples/features/16_eq_neq_goal.ein :: test
+0    examples/features/17_eq_neq_premise.ein :: render program
+0    examples/features/17_eq_neq_premise.ein :: saturate
+0    examples/features/17_eq_neq_premise.ein :: solve
+0    examples/features/17_eq_neq_premise.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

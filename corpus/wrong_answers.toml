@@ -812,6 +812,15 @@
 # reads **127 rows fixed, 31 open and 1 not-wrong** (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
 #
+# **S1f.5.7's T1f.5.7.3 fixed W24's two restated rows, `W51/not-eq-premise`
+# and `W52/relvar-eq-premise` the same day**: a premise follows the reading a
+# goal does, so the loader takes a guard before its binder and a fact that
+# holds no variable as a guard's argument, and the compiler reads `eq`
+# wherever it is written, `(not (eq …))` as `(neq …)`. W24's two keep
+# S1e2.2.24's fix as the record (`3ab9a231`) in their notes. The register
+# reads **131 rows fixed, 27 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -7271,10 +7280,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.16", "Q-M1e2.18", "Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
-status   = "open"
-open_because = "The loader refuses a form as a guard's argument (Q-M1e2.18 (i)(a)), and the user's ruling of 2026-11-07 answers a nested fact there: it is a value, as it is in `(p (f a))`. S1f.5.7's T1f.5.7.3 lets the loader take one that holds no variable, which the compiler reads as the nested fact it spells"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 on S-18 and Q-M1e2.26, *a nested fact as a guard's argument: answered* (*\"yes, keep that default\"*), supersedes Q-M1e2.18 (i)(a), so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05)"
+note     = "A form as a guard's argument, `(eq ?x (f a))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (i)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-nested-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq (f a))` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 on S-18 and Q-M1e2.26, *a nested fact as a guard's argument: answered* (*\"yes, keep that default\"*), supersedes Q-M1e2.18 (i)(a), so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05). Fixed again by T1f.5.7.3 (2026-11-09), to its restated right: the program loads, `(f a)` the nested fact it spells, and root holds `(hit-eq (f a))`, `(hit-neq a)`, `(hit-neq b)` and `(hit-neq 1)`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -7286,6 +7299,14 @@ exhausted = true
 closes    = ["f", "hit-eq", "q"]
 models    = [["(q a)"]]
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 256
+k_c      = 256
+minimal  = [[]]
+maximal  = [["(f 1)", "(f a)", "(f b)", "(hit-eq 1)", "(hit-eq a)", "(hit-eq b)", "(q 1)", "(q b)"]]
+
 [case.right]
 reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 on S-18 and its *a nested fact as a guard's argument: answered*, which supersedes Q-M1e2.18 (i)(a): `eq` and `neq` are relations, and a nested fact is a value, as it is in `(p (f a))`"
 verdict   = "Solution"
@@ -7296,9 +7317,14 @@ models    = [["(hit-eq (f a))", "(hit-neq 1)", "(hit-neq a)", "(hit-neq b)", "(q
 derived   = "The program loads. `e` fires on `(p (f a))` alone, so root holds `(hit-eq (f a))`, and `n` on `a`, `b` and `1`, so it holds `(hit-neq a)`, `(hit-neq b)` and `(hit-neq 1)`. Its minimal line is root's state, {∅}"
 
 [case.now]
-run     = "solve --minimal"
-line    = "all"
-refused = "kb load error: rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name; rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — a guard compares two values, each a variable a premise before it binds or a name"
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["f", "hit-eq", "q"]
+models    = [
+  ["(hit-eq (f a))", "(q a)"],
+]
 
 [[case]]
 id       = "W24/guard-before-binder"
@@ -7309,10 +7335,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.16", "Q-M1e2.18", "Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
-status   = "open"
-open_because = "The loader refuses a guard on a variable no premise before it binds (Q-M1e2.18 (ii)(a)), and the user's ruling of 2026-11-07 makes a premise mean the same in any order of its conjuncts. S1f.5.7's T1f.5.7.3 lets the loader take it, and the compiler judges the guard after the premise that binds its variable"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 (Q-M1e2.26, *premises should follow the same rule*) supersedes Q-M1e2.18 (ii)(a), whose option (b), moving the guard after its binders, the reading contains, so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05)"
+note     = "A guard on a variable no premise before it binds, `(and (neq ?x a) (p ?x))`. Filed and fixed by S1e2.2.24 (T1e2.2.24.2, 2026-11-05) on the user's ruling of that day (Q-M1e2.18 (ii)(a)); the witness is the stage's step-1 probe `build/s1e2.2.24/shapes/g-order-rule.ein`, the program unchanged. Its twin is the refusal, so no file. By value: root.facts_by_relation.hit-neq is 4 and hit-eq 0 at f8c10730, `(hit-neq a)` among them. Fixed by T1e2.2.24.2: every command that loads the program exits 1 (`ein test`: 2) with the loader's line, naming the variable, in either build. Restated by S1f.5.2 (T1f.5.2.2, 2026-11-09): the loader's line no longer names a string or an integer among a guard's values, neither being a value a program can write since S1f.5.5's swap (a string is natural-language text, S1f.5.2; a run of digits a name, S1f.5.4); `now` and `right` restated, the fix unmoved. Restated by S1f.5.7 (T1f.5.7.1, 2026-11-09), as its stage file says: the user's ruling of 2026-11-07 (Q-M1e2.26, *premises should follow the same rule*) supersedes Q-M1e2.18 (ii)(a), whose option (b), moving the guard after its binders, the reading contains, so the row's `right` is the loaded answer, and the row is `open` and owned by S1f.5.7, its `now` the refusal until T1f.5.7.3; S1e2.2.24's fix was `3ab9a231` (2026-11-05). Fixed again by T1f.5.7.3 (2026-11-09), to its restated right: the program loads, each guard judged after `(p ?x)`, and root holds `(hit-eq a)`, `(hit-neq b)`, `(hit-neq 1)` and `(hit-neq (f a))`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve --minimal"
@@ -7324,6 +7354,14 @@ exhausted = true
 closes    = ["f", "hit-eq", "q"]
 models    = [["(q a)"]]
 
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 256
+k_c      = 256
+minimal  = [[]]
+maximal  = [["(f 1)", "(f a)", "(f b)", "(hit-eq 1)", "(hit-eq b)", "(hit-neq a)", "(q 1)", "(q b)"]]
+
 [case.right]
 reading   = "Q-M1e2.26, the user's ruling of 2026-11-07 (*premises should follow the same rule*), which supersedes Q-M1e2.18 (ii)(a): a rule's `:match` means the same in any order of its conjuncts, and a guard's variable nothing else binds ranges over the program's names"
 verdict   = "Solution"
@@ -7334,9 +7372,14 @@ models    = [["(hit-eq a)", "(hit-neq (f a))", "(hit-neq 1)", "(hit-neq b)", "(q
 derived   = "The program loads, each guard judged after `(p ?x)`. `e` fires on `a` alone, so root holds `(hit-eq a)`, and `n` on `b`, `1` and `(f a)`, so it holds `(hit-neq b)`, `(hit-neq 1)` and `(hit-neq (f a))`. Its minimal line is root's state, {∅}"
 
 [case.now]
-run     = "solve --minimal"
-line    = "all"
-refused = "kb load error: rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name; rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — a guard compares two values, each a variable a premise before it binds or a name"
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 1
+relations = ["f", "hit-eq", "hit-neq", "q"]
+models    = [
+  ["(hit-eq a)", "(hit-neq (f a))", "(hit-neq 1)", "(hit-neq b)", "(q a)"],
+]
 
 [[case]]
 id       = "W24/kwpair-in-guard"
@@ -9615,10 +9658,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26", "Q-M1f.31"]
 witness  = "examples/ein-bugs/wrong-answers/not-eq-premise.ein"
-status   = "open"
-open_because = "The compiler reads a premise `(not (eq ?x ?y))` as a pattern over stored `(not …)` facts, and no state holds one, so the rule never fires. S1f.5.7's T1f.5.7.3 reads it as `(neq ?x ?y)` (Q-M1f.31, taken by default)"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). A goal `(not (eq ?x ?y))` is the same compile: it has no row today. `hit` has candidates today and none once root derives its two facts"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). A goal `(not (eq ?x ?y))` is the same compile: it has no row today. `hit` has candidates today and none once root derives its two facts. Fixed by T1f.5.7.3 (2026-11-09): the premise is `(neq ?x ?y)`, the rule fires on `(a, b)` and `(b, a)`, and R is {∅}"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9633,10 +9680,10 @@ models    = [[], ["(hit a b)"], ["(hit b a)"], ["(hit a b)", "(hit b a)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 4
-k_c      = 4
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(hit a b)", "(hit b a)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "Q-M1e2.26, the user's ruling of 2026-11-07, read by Q-M1f.31 (taken by default on the user's instruction of 2026-11-09): `eq`'s facts are computed, and so is the negation of one, so `(not (eq x y))` is `(neq x y)`"
@@ -9651,13 +9698,10 @@ derived   = "The rule fires on `(a, b)` and `(b, a)`, so root holds `(hit a b)` 
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 4
-relations = ["hit"]
+k         = 1
+relations = []
 models    = [
   [],
-  ["(hit a b)"],
-  ["(hit a b)", "(hit b a)"],
-  ["(hit b a)"],
 ]
 
 [[case]]
@@ -9768,10 +9812,14 @@ settings = "default"
 owner    = "S1f.5.7"
 question = ["Q-M1e2.26"]
 witness  = "examples/ein-bugs/wrong-answers/relvar-eq-premise.ein"
-status   = "open"
-open_because = "The compiler reads a premise whose relation a parameter binds to `eq` as a pattern over stored `eq` facts, which no state holds, so the rule never fires. S1f.5.7's T1f.5.7.3 reads it as the `eq` guard it is"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). `neq` is never a name, so no activator binds a parameter to it"
+note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1's probes, on the user's ruling of 2026-11-07 (Q-M1e2.26: `eq` and `neq` are relations, in every place a relation can be written). `neq` is never a name, so no activator binds a parameter to it. Fixed by T1f.5.7.3 (2026-11-09): under `(r eq)` the premise is the `eq` guard, and root holds `(hit a a)` and `(hit b b)`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.7 (T1f.5.7.3): a premise follows a goal's reading: the loader takes a guard before its binder and a fact that holds no variable as a guard's argument, and the compiler reads `eq` wherever it is written, `(not (eq …))` as `neq` (Q-M1e2.26, Q-M1f.31)"
+date   = "2026-11-09"
 
 [case.wrong]
 run       = "solve"
@@ -9807,10 +9855,10 @@ exhausted = true
 k         = 4
 relations = ["hit"]
 models    = [
-  [],
-  ["(hit a b)"],
-  ["(hit a b)", "(hit b a)"],
-  ["(hit b a)"],
+  ["(hit a a)", "(hit a b)", "(hit b a)", "(hit b b)"],
+  ["(hit a a)", "(hit a b)", "(hit b b)"],
+  ["(hit a a)", "(hit b a)", "(hit b b)"],
+  ["(hit a a)", "(hit b b)"],
 ]
 
 [[case]]
@@ -9942,7 +9990,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09), found where a goal `(not (eq ?x ?y))`, which S1f.5.7 answers, printed its class; outside the stage's case, and S1f.5.7's to fix since its goals reach it. No corpus goal writes a variable inside a pattern (S1f.5.7's cross-check of every program, `build/s1f.5.7/xcheck`, 2026-11-09). The read-out's `as :expect` printed `(model (not (p ?x)))`, which does not load. Fixed by T1f.5.7.2 (2026-11-09): a class substitutes its rows at every depth, so the class is `(not (p a))` and `(not (p b))`, the claim holds, and the read-out suggests it, exit 0"
 
 [case.fixed]
-commit = "0000000"
+commit = "e5ae6946"
 by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
 date   = "2026-11-09"
 
@@ -9997,7 +10045,7 @@ look_at  = ["summary"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its case, the inventory of 2026-11-06's S-18: its probe `goal_guard.ein` with the claim the right answer states. Without the claim the read-out says *the goal holds: it has no variable* and suggests `(model (neq w ?y))`, which does not parse (`goal_guard_claim.ein`). Fixed by T1f.5.7.2 (2026-11-09): the claim loads, `neq` being a relation a goal may ask about, and the goal's rows are `?y = Node`, `?y = a` and `?y = p`, so the claim holds, exit 0"
 
 [case.fixed]
-commit = "0000000"
+commit = "e5ae6946"
 by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
 date   = "2026-11-09"
 
@@ -10047,7 +10095,7 @@ look_at  = ["summary"]
 note     = "Filed by S1f.5.7 (T1f.5.7.1, 2026-11-09) from its step 1, on the user's ruling of 2026-11-07 (Q-M1e2.26: a conjunction means the same in any order of its conjuncts). A rule's premise in that order is `W24/guard-before-binder`, refused at load since M1e2 S1e2.2.24; a goal's never was. Fixed by T1f.5.7.2 (2026-11-09): the guard waits for `(p ?y)`, so `(neq a a)` is judged and fails, the goal has no row, and the claim `(model)` holds, exit 0"
 
 [case.fixed]
-commit = "0000000"
+commit = "e5ae6946"
 by     = "S1f.5.7 (T1f.5.7.2): `eq` and `neq` are relations in a goal: a guard binds a variable nothing else binds, `eq` to the other side and `neq` over the program's names, after the premise that binds it where one does; a query's claim may name either; a class grounds its goal at every depth (Q-M1e2.26)"
 date   = "2026-11-09"
 

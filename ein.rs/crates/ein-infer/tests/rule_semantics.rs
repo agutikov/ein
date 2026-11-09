@@ -1121,3 +1121,153 @@ fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
         "`:assert ()` and `:assert (@empty)` stored one fact"
     );
 }
+
+// ── `eq` and `neq` are relations (M1f S1f.5.7) ─────────────────────────────
+//
+// The user's ruling of 2026-11-07 on Q-M1e2.26: `eq` and `neq` are the
+// relations of equality and of non-equality, computed and never stored, and a
+// premise follows the reading a goal does.
+
+/// **A premise means the same in any order of its conjuncts.** A guard written
+/// before the relation premise that binds its variable waits for it, so each
+/// pair of rules below derives one set of facts. Until S1f.5.7 the loader
+/// refused the first of each pair (W24, Q-M1e2.18 (ii)(a)), and before M1e2
+/// S1e2.2.24 the guard compared the unbound variable as a null, so `eq-first`
+/// never fired and `neq-first` fired for `a` too.
+#[test]
+fn a_premise_means_the_same_in_any_order_of_its_conjuncts() {
+    let run = saturate(
+        r#"
+        (relation p T) (relation e1 T) (relation e2 T) (relation n1 T) (relation n2 T)
+        (p a) (p b) (p (f a))
+        (rule eq-first () :match (and (eq ?x a) (p ?x)) :assert (e1 ?x))
+        (rule eq-last () :match (and (p ?x) (eq ?x a)) :assert (e2 ?x))
+        (rule neq-first () :match (and (neq ?x a) (p ?x)) :assert (n1 ?x))
+        (rule neq-last () :match (and (p ?x) (neq ?x a)) :assert (n2 ?x))
+        "#,
+    );
+    let of = |rel: &str| -> BTreeSet<String> {
+        run.derived()
+            .iter()
+            .filter_map(|f| f.strip_prefix(&format!("({rel} ")))
+            .map(|rest| rest[..rest.len() - 1].to_string())
+            .collect()
+    };
+    assert_eq!(of("e1"), BTreeSet::from(["a".to_string()]));
+    assert_eq!(of("e1"), of("e2"), "eq, either order");
+    assert_eq!(
+        of("n1"),
+        BTreeSet::from(["(f a)".to_string(), "b".to_string()])
+    );
+    assert_eq!(of("n1"), of("n2"), "neq, either order");
+}
+
+/// **A guard's variable nothing binds ranges over the program's names**: every
+/// constant a fact writes in an argument, at any depth, and every constant of
+/// a rule's `:match` or `:assert` (Q-M1e2.9 (a)), `(relation …)`'s names among
+/// them. `eq` binds it to the other side, and `neq` to every name but it.
+#[test]
+fn a_guards_free_variable_ranges_over_the_programs_names() {
+    let run = saturate(
+        r#"
+        (relation q T) (relation same T T) (relation apart T T)
+        (q b) (q (box c))
+        (rule pair-same () :match (and (q ?y) (eq ?x ?y)) :assert (same ?x ?y))
+        (rule pair-apart () :match (and (q ?y) (neq ?x ?y)) :assert (apart ?x ?y))
+        "#,
+    );
+    let derived = run.derived();
+    let of = |rel: &str| -> BTreeSet<String> {
+        derived
+            .iter()
+            .filter(|f| f.starts_with(&format!("({rel} ")))
+            .cloned()
+            .collect()
+    };
+    // `eq` binds `?x` to `?y`'s value, a name or a nested fact.
+    assert_eq!(
+        of("same"),
+        BTreeSet::from([
+            "(same (box c) (box c))".to_string(),
+            "(same b b)".to_string()
+        ])
+    );
+    // `neq` ranges over the names: `T`, `apart`, `b`, `c`, `q` and `same`
+    // (each `(relation …)` is a stored fact), not the nested fact `(box c)`,
+    // and not a rule's name.
+    let names = ["T", "apart", "b", "c", "q", "same"];
+    let mut want: BTreeSet<String> = BTreeSet::new();
+    for x in names {
+        if x != "b" {
+            want.insert(format!("(apart {x} b)"));
+        }
+        want.insert(format!("(apart {x} (box c))"));
+    }
+    assert_eq!(of("apart"), want);
+}
+
+/// **A guard that binds its variable binds it where it is written**, as a
+/// relation premise in its place would (Q-M1f.34, taken by default on the
+/// user's instruction of 2026-11-09): an `(absent …)` after it reads the
+/// variable, and one before it does not, which is the order rule an `(absent
+/// …)` already has (S1.21.8). Here `(neq ?x a)` before `(absent (q ?x))` is
+/// *every name but `a` with no `q`*, and after it *every name but `a`, if there
+/// is no `q` at all*, which there is.
+#[test]
+fn a_binding_guard_binds_where_it_is_written() {
+    let run = saturate(
+        r#"
+        (relation p T) (relation q T) (relation first T) (relation last T)
+        (p a) (p b) (q b)
+        (rule guard-first () :match (and (neq ?x a) (absent (q ?x))) :assert (first ?x))
+        (rule guard-last () :match (and (absent (q ?x)) (neq ?x a)) :assert (last ?x))
+        "#,
+    );
+    let derived = run.derived();
+    let first: BTreeSet<&str> = derived
+        .iter()
+        .filter_map(|f| f.strip_prefix("(first "))
+        .map(|r| r.trim_end_matches(')'))
+        .collect();
+    assert_eq!(
+        first,
+        BTreeSet::from(["T", "first", "last", "p", "q"]),
+        "every name of the program but `a`, and `b`, which has a `q`"
+    );
+    assert!(
+        !derived.iter().any(|f| f.starts_with("(last ")),
+        "`(absent (q ?x))` with nothing bound asks whether there is no `q` at all: {derived:?}"
+    );
+}
+
+/// **`(not (eq ?x ?y))` is `(neq ?x ?y)`, and a relation its activator binds
+/// to `eq` is `eq`** (Q-M1f.31, taken by default on the user's instruction of
+/// 2026-11-09; Q-M1e2.26). Until S1f.5.7 each was a pattern over stored
+/// facts, which no state holds, and neither rule fired (W51, W52).
+#[test]
+fn not_eq_and_a_relation_bound_to_eq_are_the_guards() {
+    let run = saturate(
+        r#"
+        (relation p T) (relation apart T T) (relation in T T T)
+        (p a) (p b)
+        (rule not-eq () :match (and (p ?x) (p ?y) (not (eq ?x ?y))) :assert (apart ?x ?y))
+        (rule within (?R) :match (and (p ?x) (p ?y) (?R ?x ?y)) :assert (in ?R ?x ?y))
+        (within eq)
+        "#,
+    );
+    let derived = run.derived();
+    assert!(
+        derived.contains("(apart a b)") && derived.contains("(apart b a)"),
+        "{derived:?}"
+    );
+    assert!(
+        !derived
+            .iter()
+            .any(|f| f == "(apart a a)" || f == "(apart b b)")
+    );
+    let within: BTreeSet<&String> = derived.iter().filter(|f| f.starts_with("(in ")).collect();
+    assert_eq!(
+        within,
+        BTreeSet::from([&"(in eq a a)".to_string(), &"(in eq b b)".to_string()])
+    );
+}

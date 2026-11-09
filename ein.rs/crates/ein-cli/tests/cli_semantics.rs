@@ -1284,14 +1284,21 @@ fn a_run_of_digits_is_a_name_in_every_place() {
 /// line in Ein's spelling. Since the swap three are the grammar's, each a
 /// parse error at the place with the file, line and column (`_` as a guard's
 /// argument and as a premise, S1f.5.1; `foo` as a premise, the paper
-/// grammar's; a keyword pair as a guard's argument, S1f.5.11), and the other
-/// four, which a context-free grammar does not see, keep the loader's line. A
+/// grammar's; a keyword pair as a guard's argument, S1f.5.11), and two,
+/// which a context-free grammar does not see, keep the loader's line. A
 /// parameter a rule binds to a nested fact through a variable is the
 /// compiler's (`ein-infer/tests/compile_semantics.rs`).
+///
+/// **Since M1f S1f.5.7 (T1f.5.7.3) two of the seven load**, on the user's
+/// ruling of 2026-11-07 on Q-M1e2.26: `form-in-guard`, a fact that holds no
+/// variable as a guard's argument, which is a value, and
+/// `guard-before-binder`, a guard written before the premise that binds its
+/// variable, which waits for it. A form that holds a variable stays refused
+/// (Q-M1f.30), with its own line.
 #[test]
 fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
-    const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                         binds or a name";
+    const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
+                         that holds no variable";
     let at_the_parse: [(&str, &[&str]); 3] = [
         (
             "wild-in-guard",
@@ -1329,26 +1336,12 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             }
         }
     }
-    let at_load: [(&str, String); 4] = [
+    let at_load: [(&str, String); 2] = [
         (
             "nested-unbound-head",
             "rule 'r': its :match writes (?r b) with ?r as its relation, which no parameter \
              binds — a relation is named by a name or by a parameter its activator binds"
                 .to_string(),
-        ),
-        (
-            "form-in-guard",
-            format!(
-                "rule 'e': its :match writes (eq ?x (f a)), and the form (f a) is no value — {GUARD}; \
-                 rule 'n': its :match writes (neq ?x (f a)), and the form (f a) is no value — {GUARD}"
-            ),
-        ),
-        (
-            "guard-before-binder",
-            format!(
-                "rule 'e': its :match writes (eq ?x a), and no premise before it binds ?x — {GUARD}; \
-                 rule 'n': its :match writes (neq ?x a), and no premise before it binds ?x — {GUARD}"
-            ),
         ),
         (
             "nested-fact-activator",
@@ -1371,6 +1364,53 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
             for python in ["CompileError", "Wildcard()", "SForm", "Fact("] {
                 assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
             }
+        }
+    }
+    // Since S1f.5.7 the two shapes its ruling answers load, on every command.
+    for name in ["form-in-guard", "guard-before-binder"] {
+        let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
+        for cmd in ["saturate", "solve", "oracle"] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, 0, "ein {cmd} {file}:\n{}", r.err);
+        }
+    }
+    // A form that holds a variable stays refused (Q-M1f.30), in a rule and in
+    // a query's goal, one line per form.
+    let scratch = ein_corpus::Scratch::new("ein-guard-pattern");
+    for (src, want) in [
+        (
+            "(rule e () :match (and (p ?x) (q ?y) (eq ?x (f ?y))) :assert (hit ?x))",
+            format!(
+                "kb load error: rule 'e': its :match writes (eq ?x (f ?y)), and the form (f ?y) \
+                 holds a variable — {GUARD}"
+            ),
+        ),
+        (
+            "(query :goal (and (q ?y) (neq ?x (f ?y))))",
+            format!(
+                "kb load error: query: its :goal writes (neq ?x (f ?y)), and the form (f ?y) \
+                 holds a variable — {GUARD}"
+            ),
+        ),
+    ] {
+        let file = scratch.path().join("pattern.ein");
+        std::fs::write(
+            &file,
+            format!(
+                "(relation p Node) (relation q Node) (relation f Node) (relation hit Node)\n\
+                 (p a) (q a)\n{src}\n"
+            ),
+        )
+        .expect("the program is written");
+        let file = file.to_string_lossy();
+        for (cmd, code) in [("saturate", 1), ("solve", 1), ("oracle", 1), ("test", 2)] {
+            let r = ein(&[cmd, &file]);
+            assert_eq!(r.code, code, "ein {cmd} {src}:\n{}", r.err);
+            assert_eq!(
+                r.err.lines().rfind(|l| !l.is_empty()),
+                Some(want.as_str()),
+                "ein {cmd} {src}"
+            );
         }
     }
     // The `:assert` shapes the test above held at the firing, and the

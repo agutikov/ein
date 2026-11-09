@@ -676,7 +676,15 @@ impl<'a> Compiler<'a> {
         // on `args[0..2]` with the tail dropped. `neq` never showed either,
         // because the grammar shape-pins `NeqForm` and `eq` is an ordinary
         // `GenericList` — which is the rule, not the coincidence.
-        if let Some(pred) = head_name.as_deref().and_then(predicates::get) {
+        //
+        // Since M1f S1f.5.7 `eq` is the relation wherever it is written, so a
+        // pattern whose relation is a parameter its activator binds to `eq`,
+        // `(?R ?x ?y)` under `(r eq)`, is this guard, and `(not (eq a b))`,
+        // the stored negation of a fact whose truth is computed, is `(neq a
+        // b)` (Q-M1f.31, taken by default on the user's instruction of
+        // 2026-11-09). Until then each was an ordinary pattern over stored
+        // facts, which no state holds, and matched nothing (W51, W52).
+        if let Some((pred, args)) = self.guard_form(node) {
             if args.len() != pred.arity() {
                 return Err(self.bad_arity(
                     node,
@@ -1041,6 +1049,40 @@ impl<'a> Compiler<'a> {
 
     // ── Where a guard goes (M1f S1f.5.7) ───────────────────────────
 
+    /// `node` as an `eq` / `neq` guard, with the arguments it compares, or
+    /// `None` for a premise that is not one: `(eq a b)` and `(neq a b)`, a
+    /// pattern whose relation is a parameter its activator binds to `eq`, and
+    /// `(not P)` over any of these, which is the other predicate over the same
+    /// arguments (Q-M1f.31).
+    fn guard_form(&mut self, node: NodeId) -> Option<(predicates::Pred, Vec<NodeId>)> {
+        let Node::SForm { head, args } = self.ast.node(node) else {
+            return None;
+        };
+        let args = self.ast.args(args).to_vec();
+        let name: Option<String> = match self.ast.node(head) {
+            Node::Atom(s) => Some(self.ast.sym(s).to_string()),
+            Node::Var(s) => {
+                let var = self.terms.intern_text(self.ast.sym(s)).expect("room");
+                self.seed_value(var)
+                    .and_then(|v| v.as_sym())
+                    .map(|v| self.terms.sym(v).to_string())
+            }
+            _ => None,
+        };
+        match name.as_deref() {
+            Some("not") if args.len() == 1 => {
+                let (pred, inner) = self.guard_form(args[0])?;
+                let other = match pred {
+                    predicates::Pred::Eq => predicates::Pred::Neq,
+                    predicates::Pred::Neq => predicates::Pred::Eq,
+                };
+                Some((other, inner))
+            }
+            Some(h) => predicates::get(h).map(|p| (p, args)),
+            None => None,
+        }
+    }
+
     /// Open a conjunction: `bound` is what is bound where it starts.
     fn open_seq(&mut self, body: NodeId, bound: FxHashSet<Symbol>) {
         let mut later = FxHashSet::default();
@@ -1104,6 +1146,9 @@ impl<'a> Compiler<'a> {
             Node::Atom(s) => Some(self.ast.sym(s).to_string()),
             _ => None,
         };
+        if self.guard_form(node).is_some() {
+            return;
+        }
         match head_name.as_deref() {
             Some("and") => {
                 for a in self.ast.args(args).to_vec() {
@@ -1111,7 +1156,6 @@ impl<'a> Compiler<'a> {
                 }
             }
             Some("absent") | Some("or") => {}
-            Some(h) if predicates::is_predicate(h) => {}
             _ => {
                 for a in self.ast.args(args).to_vec() {
                     self.vars_of(a, out);

@@ -1048,8 +1048,18 @@ fn ingest_rules(
 /// - a **premise that is not a form**, the whole `:match`, a member of an
 ///   `(and …)` or an `(or …)`, an `(absent …)`'s body: since M1f S1f.5.5's
 ///   swap only a macro's body puts one there, a name or a variable;
-/// - a **guard's argument that is no value it can compare**: a form, or a
-///   variable no premise before the guard binds.
+/// - a **guard's argument that is a pattern**, a form that holds a variable,
+///   `(eq ?x (f ?y))` (Q-M1f.30, taken by default on the user's instruction of
+///   2026-11-09).
+///
+/// **Until M1f S1f.5.7 it refused every form as a guard's argument, and a
+/// variable no premise before the guard binds** (Q-M1e2.18 (i)(a) and
+/// (ii)(a), since S1e2.2.24). The user's ruling of 2026-11-07 on Q-M1e2.26
+/// answers both: `eq` and `neq` are relations, a fact that holds no variable
+/// is a value as it is in `(p (f a))`, and a premise means the same in any
+/// order of its conjuncts, so a guard waits for the premise that binds its
+/// variable, and a variable nothing binds ranges over the program's names
+/// (`ein_infer::compile`'s `Seq`).
 ///
 /// **Since M1f S1f.5.5's swap the grammar refuses the rest**, and T1f.5.5.5
 /// deleted their lines: a wildcard written as a relation, `(_ a)`; a keyword
@@ -1109,10 +1119,8 @@ fn refuse_no_fact_holds(
         FreeHead(NodeId, NodeId),
         /// A premise that is not a form, and what it is a premise of.
         NotAForm(NodeId, Option<NodeId>),
-        /// A guard, and its argument that is a form.
+        /// A guard, and its argument that is a form holding a variable.
         GuardNode(NodeId, NodeId),
-        /// A guard, and its variable no premise before it binds.
-        GuardFree(NodeId, NodeId),
     }
     struct Walk<'a> {
         ast: &'a Ast,
@@ -1156,31 +1164,34 @@ fn refuse_no_fact_holds(
                 }
             }
         }
-        /// A guard, `(eq a b)` or `(neq a b)`, judged where it is written.
-        fn guard(&mut self, node: NodeId, bound: &[String]) {
+        /// A guard, `(eq a b)` or `(neq a b)`: a relation whose facts are
+        /// computed (M1f S1f.5.7, Q-M1e2.26), so each argument is a value — a
+        /// variable, a name, or a fact that holds no variable — and a variable
+        /// no premise binds is one the guard binds, in any order of the
+        /// conjuncts. A form that holds a variable is a pattern, and is
+        /// refused (Q-M1f.30).
+        ///
+        /// Until S1f.5.7 a form was refused here whatever it held (Q-M1e2.18
+        /// (i)(a)), and so was a variable no premise *before* the guard binds
+        /// (Q-M1e2.18 (ii)(a)), each since M1e2 S1e2.2.24 (W24); the user's
+        /// ruling of 2026-11-07 answers both.
+        fn guard(&mut self, node: NodeId) {
             let ast = self.ast;
-            // One line per argument as written: `(eq (f a) (f a))` and
-            // `(eq ?u ?u)` name theirs once.
+            // One line per argument as written: `(eq (f ?x) (f ?x))` names
+            // its once.
             let mut seen: Vec<String> = Vec::new();
-            let mut once = |a: NodeId| {
-                let text = crate::dump::dump_compact(ast, a);
-                let new = !seen.contains(&text);
-                if new {
-                    seen.push(text);
-                }
-                new
-            };
-            let mut found: Vec<Found> = Vec::new();
             for &a in ast.form_args(node) {
-                match ast.node(a) {
-                    Node::SForm { .. } if once(a) => found.push(Found::GuardNode(node, a)),
-                    Node::Var(s) if !bound.iter().any(|b| b == ast.sym(s)) && once(a) => {
-                        found.push(Found::GuardFree(node, a))
-                    }
-                    _ => {}
+                if !matches!(ast.node(a), Node::SForm { .. }) {
+                    continue;
+                }
+                let mut vars = Vec::new();
+                vars_in(ast, a, &mut vars);
+                let text = crate::dump::dump_compact(ast, a);
+                if !vars.is_empty() && !seen.contains(&text) {
+                    seen.push(text);
+                    self.out.push(Found::GuardNode(node, a));
                 }
             }
-            self.out.extend(found);
         }
         /// A premise, with the variables the premises before it bind: the
         /// rule's parameters, a positive pattern's variables, and inside an
@@ -1209,7 +1220,7 @@ fn refuse_no_fact_holds(
                             self.premise(a, Some(node), &mut bound.clone());
                         }
                     }
-                    Some("eq") | Some("neq") => self.guard(node, bound),
+                    Some("eq") | Some("neq") => self.guard(node),
                     _ => self.pattern(node, Some(bound)),
                 },
                 _ => self.out.push(Found::NotAForm(node, within)),
@@ -1265,8 +1276,8 @@ fn refuse_no_fact_holds(
     let dc = |n: NodeId| crate::dump::dump_compact(ast, n);
     const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
                            (neq a b), an (absent …), or an (and …) or (or …) of premises";
-    const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                         binds or a name";
+    const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
+                         that holds no variable";
     for f in walk.out {
         errors.push(match f {
             Found::FreeHead(form, h) => format!(
@@ -1289,15 +1300,10 @@ fn refuse_no_fact_holds(
                 )
             }
             Found::GuardNode(guard, arg) => format!(
-                "{head} '{name}': its {clause} writes {}, and the form {} is no value — {GUARD}",
-                dc(guard),
-                dc(arg)
-            ),
-            Found::GuardFree(guard, var) => format!(
-                "{head} '{name}': its {clause} writes {}, and no premise before it binds {} — \
+                "{head} '{name}': its {clause} writes {}, and the form {} holds a variable — \
                  {GUARD}",
                 dc(guard),
-                dc(var)
+                dc(arg)
             ),
         });
     }
@@ -2087,16 +2093,22 @@ mod tests {
     /// premise (S1f.5.1), a keyword pair as a guard's argument or inside a
     /// pattern (S1f.5.11), a name, a variable or a string as a premise (the
     /// paper grammar's own, and S1f.5.2 for the string). The loader keeps what
-    /// a context-free grammar does not see: a form as a guard's argument, a
-    /// guard on a variable no premise before it binds, a relation variable no
-    /// parameter binds, and an activator binding a relation parameter to a
-    /// nested fact. What this test held loading until the swap and the grammar
-    /// refuses (a string as a guard's argument, Q32's `:where` pairs, `_` as an
-    /// argument) is written in the final grammar below.
+    /// a context-free grammar does not see: a form that holds a variable as a
+    /// guard's argument (Q-M1f.30), a relation variable no parameter binds,
+    /// and an activator binding a relation parameter to a nested fact. What
+    /// this test held loading until the swap and the grammar refuses (a string
+    /// as a guard's argument, Q32's `:where` pairs, `_` as an argument) is
+    /// written in the final grammar below.
+    ///
+    /// **Since M1f S1f.5.7 (T1f.5.7.3) two shapes load** that S1e2.2.24
+    /// refused, on the user's ruling of 2026-11-07 on Q-M1e2.26: a fact that
+    /// holds no variable as a guard's argument, a value, and a guard on a
+    /// variable no premise before it binds, which waits for the premise that
+    /// does, or ranges over the program's names where none does.
     #[test]
     fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
-        const GUARD: &str = "a guard compares two values, each a variable a premise before it \
-                             binds or a name";
+        const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
+                             that holds no variable";
         const FREE: &str = "which no parameter binds — a relation is named by a name or by a \
                             parameter its activator binds";
         let pre = "(relation p T) (relation q T) (relation hit T) (relation box T) (relation tag T T)\n\
@@ -2104,29 +2116,19 @@ mod tests {
         // At load: what a context-free grammar does not see.
         for (rule, want) in [
             (
-                "(rule e () :match (and (p ?x) (eq ?x (p a))) :assert (hit ?x))".to_string(),
+                "(rule e () :match (and (p ?x) (eq ?x (p ?y))) :assert (hit ?x))".to_string(),
                 format!(
-                    "rule 'e': its :match writes (eq ?x (p a)), and the form (p a) is no value — {GUARD}"
+                    "rule 'e': its :match writes (eq ?x (p ?y)), and the form (p ?y) holds a \
+                     variable — {GUARD}"
                 ),
             ),
             (
-                "(rule e () :match (and (neq ?x a) (p ?x)) :assert (hit ?x))".to_string(),
-                format!(
-                    "rule 'e': its :match writes (neq ?x a), and no premise before it binds ?x — {GUARD}"
-                ),
-            ),
-            (
-                "(rule e () :match (and (p ?x) (eq ?x ?u)) :assert (hit ?x))".to_string(),
-                format!(
-                    "rule 'e': its :match writes (eq ?x ?u), and no premise before it binds ?u — {GUARD}"
-                ),
-            ),
-            (
-                // A variable the absent's own premise binds after the guard.
-                "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x))"
+                // Under an `absent`, and at any depth.
+                "(rule e () :match (and (p ?x) (absent (neq ?x (box (p ?x))))) :assert (hit ?x))"
                     .to_string(),
                 format!(
-                    "rule 'e': its :match writes (neq ?y a), and no premise before it binds ?y — {GUARD}"
+                    "rule 'e': its :match writes (neq ?x (box (p ?x))), and the form (box (p ?x)) \
+                     holds a variable — {GUARD}"
                 ),
             ),
             // A relation variable no parameter binds, inside a pattern and at
@@ -2181,7 +2183,9 @@ mod tests {
         // guard under an `absent` on a variable the enclosing premises bound.
         // Until the swap the first wrote `(neq ?x "b")`, a string, and three
         // more Q32's `:where` and `_` as an argument, which the grammar
-        // refuses.
+        // refuses. And since S1f.5.7 what S1e2.2.24 refused: a fact that holds
+        // no variable as a guard's argument, and a guard on a variable no
+        // premise before it binds, in a conjunction and under an `absent`.
         for rule in [
             "(rule e () :match (and (p ?x) (q ?y) (neq ?x ?y) (eq ?x a) (neq ?x b) (eq ?x 1)) \
              :assert (hit ?x))",
@@ -2189,6 +2193,10 @@ mod tests {
             "(rule e () :match (and (p ?x) (eq ?x a)) :assert (hit ?x))",
             "(rule e () :match (and (box (p ?u)) (p ?v)) :assert (hit a))",
             "(rule e (?R) :match (box (?R a)) :assert (hit a))",
+            "(rule e () :match (and (p ?x) (eq ?x (p a))) :assert (hit ?x))",
+            "(rule e () :match (and (neq ?x a) (p ?x)) :assert (hit ?x))",
+            "(rule e () :match (and (p ?x) (eq ?x ?u)) :assert (hit ?u))",
+            "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x))",
         ] {
             ok(&format!("{pre}{rule}"));
         }

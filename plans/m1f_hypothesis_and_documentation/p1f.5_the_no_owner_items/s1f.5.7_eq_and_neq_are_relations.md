@@ -15,7 +15,8 @@
 **Running since 2026-11-09**, in lane 2's worktree (`p1f5-lane2`), on the user's instruction of that day (*"just
 continue with default decisions till the end of the phase"*): T1f.5.7.1 done ([its record](#t1f571-record-2026-11-09)),
 every move listed, ten rows filed (W50 to W55) and W24's two restated, five questions taken by default (Q-M1f.30 to
-Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal.
+Q-M1f.34); T1f.5.7.2 done ([its record](#t1f572-record-2026-11-09)), the relations in a goal (`e5ae6946`); T1f.5.7.3 done
+([its record](#t1f573-record-2026-11-09)), premises.
 **Depends on:** nothing. It lands on the parser of the day. [S1f.5.5](s1f.5.5_the_grammar.md) frames the
 goal's position in the grammar.
 
@@ -400,3 +401,33 @@ program's names, each of 32 goals, every argument a name of the program, a name 
 free or shared; `match_::tests::two_free_guard_arguments_range_over_the_programs_names` replaces the null's test. The
 register reads **127 fixed, 31 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 2026-11-09).
+
+## T1f.5.7.3 record (2026-11-09)
+
+**Premises.** A rule's `:match` follows the reading a goal does, on the user's ruling of 2026-11-07 (*"premises should
+follow the same rule"*), which supersedes Q-M1e2.18 (i)(a) and (ii)(a):
+
+- **The loader** (`from_ir::refuse_no_fact_holds`) takes a guard on a variable no premise before it binds, and a fact
+  that holds no variable as a guard's argument; it refuses a form that holds a variable, one line per form, *rule 'e':
+  its :match writes (eq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a
+  variable, a name, or a fact that holds no variable* (Q-M1f.30). Its other refusals are unmoved.
+- **The compiler** reads `eq` wherever it is written (`compile`'s `guard_form`): a pattern whose relation a parameter
+  binds to `eq`, `(?R ?x ?y)` under `(r eq)`, is the `eq` guard, and `(not (eq ?x ?y))` is `(neq ?x ?y)` (Q-M1f.31), in
+  a premise and in a goal. T1f.5.7.2's guard placement and matcher answer the rest.
+
+**Moved**, every one a row: `W24/guard-before-binder` and `W24/form-in-guard` load, and answer their restated `right`s
+(root holds `(hit-eq a)`, `(hit-neq b)`, `(hit-neq 1)`, `(hit-neq (f a))`, and `(hit-eq (f a))`, `(hit-neq a)`,
+`(hit-neq b)`, `(hit-neq 1)`), describe, `--minimal`, `--maximal` and `ein oracle` agreeing on R's 256 states
+(`ein-infer/tests/explore.rs` holds every mode to the oracle on every register witness); `W51/not-eq-premise` and
+`W52/relvar-eq-premise` fire. `cli_semantics::a_rule_shape_that_reads_nothing_is_refused_at_load` holds the two
+witnesses loading on `saturate`, `solve` and `oracle`, and the pattern's refusal in a rule and in a goal on every
+command; `from_ir`'s unit test of the same name holds the shapes that load and the line. Four tests in
+`ein-infer/tests/rule_semantics.rs` hold the reading: a premise in either order, a free variable over the program's
+names, a binding guard where it is written beside an `(absent …)` (Q-M1f.34), and `(not (eq …))` and a relation bound
+to `eq`. `examples/features/17_eq_neq_premise.ein` shows a premise guard before its binder, a fact as a guard's
+argument, and a guard whose variable no premise binds, four claims `ein test` holds (`test_cli`'s count, 15 → 19).
+Against `dc4c0bdc`'s build every program but these and T1f.5.7.2's is the same (`build/s1f.5.7/xcheck`, 532 files, 522
+the same, 2026-11-09). Banked: `corpus_exits.txt` W24's four cells 1 → 0 and the fixture's four; `corpus_shapes.md5` 54
+digests of the four witnesses moved, 42 added for W24's two, which load, and 41 for the fixture, none of any other
+program; the register's region blocks for the four, `register_region.rs`'s re-bank. The register reads **131 fixed, 27
+open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-09).
