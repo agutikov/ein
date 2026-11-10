@@ -104,6 +104,13 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.87](#q-m1f87--the-verdicts-loader-lines-once-the-grammar-places-open) | the verdict's loader lines once the grammar places `open` | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), the five the grammar covers deleted, each a row of the grammar's table and named in `DELETED`, `validate_open` holding the rest as an invariant; the five that stay start with where the `(open …)` is written, `at None` gone**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
 | [Q-M1f.88](#q-m1f88--the-line-open-is-refused-with) | the line `open` is refused with | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), the parse error's, ``unexpected `open` ``, the stage's sentence a note under it (`ein_ir::grammar::OPEN_NOTE`), as `_` and a string carry one**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
 | [Q-M1f.89](#q-m1f89--which-of-what-the-refusal-replaces-is-a-register-row) | which of what the refusal replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), a row per place with a reading of its own, W70's seven, W71's fourteen and W72's three; the pin holds all fifty-two places**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
+| [Q-M1f.90](#q-m1f90--which-of-the-import-reads-moves-are-register-rows-and-where-their-witnesses-live) | which of the import read's moves are register rows, and where their witnesses live | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), W74's nine rows on the one witness git can keep, a module that is a directory, one per command run the register can run; a module that is not UTF-8, one that cannot be read and a `.einb` container are the pin's, `ein-cli/tests/unicode_only_in_a_string.rs`, which writes each at run time; and W73's five rows, one per Unicode space and one for a space inside a name**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.91](#q-m1f91--a-module-that-is-a-einb-container) | a module that is a `.einb` container | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), refused with a line of its own, naming the module's path and saying an import reads Ein text (`ein_ir::read::container_module_line`)**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.92](#q-m1f92--how-the-line-quotes-a-character-a-reader-cannot-see) | how the line quotes a character a reader cannot see | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), as the escape a string writes it with, `'\u{a0}' (U+00A0)`, for a space, a control, a zero-width or bidirectional format character, a combining mark or a variation selector (`ein_ir::grammar::shown_char`); any other character as itself**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.93](#q-m1f93--which-path-a-modules-read-line-names) | which path a module's read line names | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), the path the import resolves to, the one `module not found at …` names, relative where the program was given relatively**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.94](#q-m1f94--a-directorys-and-an-unreadable-modules-line-and-a-missing-ones-none) | a directory's and an unreadable module's line, and a missing one's `(None)` | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), the program's lines, `IsADirectoryError: …` and `PermissionError: …`, F23's D-1 for both; `module not found at … (None)` for a module that does not exist stays, its `(None)` F23's D-2 with every import line's**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.95](#q-m1f95--how-many-characters-the-refusal-names) | how many characters the refusal names | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), the first, where the lexer stops: `lrpar` lexes a file before it parses it, so a lexing error is the file's one error**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.96](#q-m1f96--a-byte-order-mark) | a byte-order mark | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), refused as any other character that is not ASCII, at 1:1, `'\u{feff}' (U+FEFF)`; it was a token that is not a name until then**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1980,3 +1987,110 @@ program can write `open`, of which thirty-eight loaded and were answered.
 
 **Defaulted 2026-11-10 (the stage's default): (a).** The precedent filed every way, not every program, and the pin
 holds every place on every command. Re-opening it means (b).
+
+### Q-M1f.90 — Which of the import read's moves are register rows, and where their witnesses live
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T2. An imported module that exists and cannot be read as text, four ways, a module that
+is not UTF-8 (the close review's finding 2), one that cannot be read, a directory and a `.einb` container, was reported
+on every command as `module not found at … (None)`; the coordinator's instruction makes each command run whose line
+moves a register row (Q-M1f.36). A register row's witness is a corpus file, or one under `corpus/fuzz_findings/`, and
+only one of the four can be one: a `.ein` under `examples/`, `stdlib/` or `tests/` that is not UTF-8 breaks the eleven
+test files that read every corpus file as UTF-8 text (`read_to_string(…).expect`), git keeps no mode bit but the
+executable one, and a container is binary and moves with the format. A directory named `x.ein` is no corpus file
+(`ein_corpus::corpus_files` walks into it). And a register `now` can hold a command's refusal, exit 1, but not `ein
+test`'s, exit 2, and a `wrong` cannot record a solve's refusal at load (a solve's recorded refusal is a usage one, exit 2,
+schema `/19`).
+
+- **(a) W74's rows on the directory**: `import-module-directory.ein` and its module, a directory holding a README, one row
+  per command run the register can run, nine (`saturate --dump`, `oracle`, the six views, `kb save`); `ein test`, the
+  `solve` modes and the other three ways, written at run time, are the pin's
+  (`ein-cli/tests/unicode_only_in_a_string.rs`). W73, a Unicode space that loaded, one row per space the census found
+  (U+00A0, U+3000, U+2028, U+0085) and one for a no-break space inside what is written as one name, by Q-M1f.89's
+  reading: the places where a space loads read it as a space in every one.
+- **(b) The module that is not UTF-8 banked under `corpus/fuzz_findings/`**, the register's one place outside the corpus,
+  with `not_in_corpus`: a row for the finding's own way, at the cost of that directory's steady state, *empty*, a
+  finding there being promoted to `examples/` when fixed, which this one never can be.
+- **(c) A schema that lets a row write its module at run time** into its scratch, the witness copied beside it.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It files a row for every way the register can hold, and holds every
+way on every command in the pin. Re-opening it means (b) or (c).
+
+### Q-M1f.91 — A module that is a `.einb` container
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. Once a module is read through the program's read, a container is told from text by
+its first bytes; the program a command is given may be one, and is opened. `ein-ir`, where the resolver is, cannot open
+one: `ein-einb` stands above it.
+
+- **(a) Refused, with a line of its own**: *`<path>: a .einb container, and an imported module is Ein text: import the
+  .ein it was saved from`* (`ein_ir::read::container_module_line`).
+- **(b) Opened as the program it stores**, the resolver taking a callback from `ein-cli` that opens a container.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** AGENTS.md: *`.einb` is a private cache format, never an interchange
+one*; a module is a program's text. Re-opening it means (b).
+
+### Q-M1f.92 — How the line quotes a character a reader cannot see
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. The user's line names the character, `'<char>' (U+XXXX)`. A no-break space, a
+zero-width space, a right-to-left override or a byte-order mark written between the quotes shows nothing, or reorders
+the line.
+
+- **(a) As the escape a string writes it with**: `'\u{a0}' (U+00A0)`, for a space, a control, a zero-width or
+  bidirectional format character, a combining mark or a variation selector (`ein_ir::grammar::shown_char`), and any
+  other character as itself, `'é' (U+00E9)`.
+- **(b) Always the character itself.**
+- **(c) The code point alone**, with no quote.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The line shows what it names, and one error stays one line, as
+`cut_at_40` escapes a control in a token. Re-opening it means (b) or (c).
+
+### Q-M1f.93 — Which path a module's read line names
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. The read's line names the path it was handed. A module has two: the path the import
+resolves to, `<the importing file's directory>/<module>.ein`, which `module not found at …` names, and its canonical
+path, which its parse errors and its forms' positions name.
+
+- **(a) The path the import resolves to**: relative where the program was given relatively, as `ein solve` run from the
+  repository names `examples/…`.
+- **(b) The canonical path**, as the module's parse errors.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The read is of the path the import names, and the line is the one
+that path, given to a command, prints. Re-opening it means (b).
+
+### Q-M1f.94 — A directory's and an unreadable module's line, and a missing one's `(None)`
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. The program's read names a directory and an unreadable file in Python's spelling,
+`IsADirectoryError: [Errno 21] Is a directory: '<path>'` and `PermissionError: [Errno 13] Permission denied:
+'<path>'`, which F23's D-1 owns; the stage file asked for *the OS's reason in Ein's words*. And a module that does not
+exist keeps `(import m) — module not found at … (None)`, whose `(None)` is the import's position, a top-level form
+carrying none, F23's D-2 with every import line's `at None`.
+
+- **(a) The program's lines, for a module too**, and the missing module's line kept: one read, so F23's change of the
+  spelling moves both; and D-2 placed with every other `at None`.
+- **(b) Ein's words for both now**, the program's line too, taking that half of D-1; and the import's position placed,
+  taking D-2's import lines.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The user's instruction is *the main file's line*, and D-1 and D-2
+are F23's (Q-M1f.75 left both there). No line of the four ways carries `None` or *not found*. Re-opening it means (b).
+
+### Q-M1f.95 — How many characters the refusal names
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T3. `lrpar` lexes the whole file before it parses, and stops at the first lexing error
+(`parse_actions`), so a file is refused at its first character that is not ASCII outside a string and a comment, one
+error, where a parse error is followed by every error recovery reaches.
+
+- **(a) The first**, where the lexer stops.
+- **(b) Every one**, a scan over the file before the parse, each a line.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is where the file stops being Ein, as a character no token
+starts with was; the scan would read a string's and a comment's extent a second time. Re-opening it means (b).
+
+### Q-M1f.96 — A byte-order mark
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s T2. A file an editor saved with a byte-order mark starts with U+FEFF, which was a token
+that is not a name, `` unexpected `\u{feff}…` ``; no corpus file starts with one.
+
+- **(a) Refused as any other character that is not ASCII**, at 1:1, `'\u{feff}' (U+FEFF) is not ASCII: …`.
+- **(b) Skipped where it is the file's first character.**
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The ruling is *anywhere else than inside string literals*, with
+comments added by Q-M1f.65 (b). Re-opening it means (b).

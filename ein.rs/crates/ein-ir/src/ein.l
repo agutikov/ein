@@ -13,7 +13,12 @@
 //     is refused where it stands (Q-M1e2.22, S1f.5.1);
 //   - a token runs to a separator: a space, a paren, `;`, `#|` or the end.
 //     BAD, BADTEXT and BADESCAPE are the catch-alls that make it so (F2):
-//     whatever is glued to a token makes one longer, bad, token.
+//     whatever ASCII is glued to a token makes one longer, bad, token;
+//   - a character that is not ASCII is written only inside a string (TEXT,
+//     and BADESCAPE's, a string still) or a comment, the skip rule's (M1f
+//     S1f.5.22, the user's ruling of 2026-11-10, and Q-M1f.65 (b)): no other
+//     rule matches one, so the lexer stops at it, and the parse error names
+//     it, its code point and where Unicode is allowed (`ein_ir::grammar`);
 //   - the engine's three writeback names are a token of their own, used by no
 //     production, so each is refused where it stands (Q-M1f.7, T1f.5.5.11).
 //   - after any token but a paren, only `(`, `)` and the rule that skips
@@ -28,11 +33,12 @@
 // rule left out of a state costs nothing there; this one halves the lexing
 // and moves no token. A token other than a paren is a run of characters BAD
 // matches (or, after a string, BADTEXT does), which would go on, and so be
-// the longer match, wherever a character other than whitespace, \x1c to
-// \x1f, `(`, `)`, `;` or `#` followed it, or a `#` followed by a character
-// BAD takes. So after one comes the end, or one of those six where no rule
-// but `(`, `)` and the skip rule can start: a `#` there opens a comment or
-// starts no token at all, in either state. Every rule but those three is
+// the longer match, wherever an ASCII character other than whitespace, \x1c
+// to \x1f, `(`, `)`, `;` or `#` followed it, or a `#` followed by a character
+// BAD takes. So after one comes the end, one of those six where no rule but
+// `(`, `)` and the skip rule can start (a `#` there opens a comment or starts
+// no token at all, in either state), or a character that is not ASCII, where
+// no rule starts in either state (M1f S1f.5.22). Every rule but those three is
 // tried in INITIAL alone, and the tokens are T4's, kind and span
 // (`generated_parser::the_lexer_gives_the_tokens_t4s_did`).
 %x AFTER_WORD
@@ -117,18 +123,26 @@ _ <AFTER_WORD>"UNDERSCORE"
 // W38). The six alternatives are the values of one to six significant
 // digits, each after the leading zeros that keep it within six; the fourth
 // leaves out D800 to DFFF.
-// Any other escape is BADESCAPE; a string glued to what follows, BADTEXT.
+// Any other escape is BADESCAPE; a string glued to what follows, BADTEXT,
+// whose tail is ASCII, as BAD's is.
 "([^"\\]|\\[ntr"\\]|\\u\{(0{0,5}[0-9A-Fa-f]|0{0,4}[1-9A-Fa-f][0-9A-Fa-f]|0{0,3}[1-9A-Fa-f][0-9A-Fa-f]{2}|0{0,2}([1-9A-Ca-cEeFf][0-9A-Fa-f]{3}|[Dd][0-7][0-9A-Fa-f]{2})|0?[1-9A-Fa-f][0-9A-Fa-f]{4}|10[0-9A-Fa-f]{4})\})*" <AFTER_WORD>"TEXT"
 "([^"\\]|\\[^\n])*" <AFTER_WORD>"BADESCAPE"
-"([^"\\]|\\[^\n])*"[^\s();\x1c-\x1f]+ <AFTER_WORD>"BADTEXT"
+"([^"\\]|\\[^\n])*"[\x00-\x7F--[\s();\x1c-\x1f]]+ <AFTER_WORD>"BADTEXT"
 // Everything else up to a separator. `#` ends a token only where `#|`
-// opens a comment, as `;` does.
-([^\s();#\x1c-\x1f]|#[^|\s();\x1c-\x1f])+ <AFTER_WORD>"BAD"
-// What separates tokens and names nothing: a run of whitespace (Unicode's,
-// and \x1c to \x1f), `;` comments to the end of the line and `#| … |#`
-// comments, as one rule (T1f.5.5.12), so that a run of them is one
-// position where it was one per piece under the three rules this replaced,
-// `[\s\x1c-\x1f]+`, `;[^\n]*` and `#\|([^|]|\|+[^|#])*\|+#`. No named rule
-// matches where any of the three does, so the tokens are the same
-// (`generated_parser::the_lexer_gives_the_tokens_t4s_did`).
-<INITIAL,AFTER_WORD>([\s\x1c-\x1f]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;
+// opens a comment, as `;` does. ASCII only (M1f S1f.5.22): a character that
+// is not ASCII outside a string and a comment matches no rule, so the lexer
+// stops there, and the parse error names it (`ein_ir::grammar`'s
+// NOT_ASCII), where until then BAD took it into a token that is not a name.
+([\x00-\x7F--[\s();#\x1c-\x1f]]|#[\x00-\x7F--[|\s();\x1c-\x1f]])+ <AFTER_WORD>"BAD"
+// What separates tokens and names nothing: a run of whitespace (ASCII's,
+// \t \n \v \f \r and the space, and \x1c to \x1f), `;` comments to the end
+// of the line and `#| … |#` comments, as one rule (T1f.5.5.12), so that a run
+// of them is one position where it was one per piece under the three rules
+// this replaced, `[\s\x1c-\x1f]+`, `;[^\n]*` and `#\|([^|]|\|+[^|#])*\|+#`.
+// No named rule matches where any of the three does, so the tokens are the
+// same (`generated_parser::the_lexer_gives_the_tokens_t4s_did`). A comment
+// holds any character, Unicode's among them (Q-M1f.65 (b)); whitespace is
+// ASCII's since M1f S1f.5.22, where until then `\s` was Unicode's, so a
+// no-break space, U+3000 and U+2028 were separators a reader could not tell
+// from a space or a line break (W73).
+<INITIAL,AFTER_WORD>([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;

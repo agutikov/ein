@@ -62,9 +62,13 @@ fn refusal(witness: &str) -> Option<String> {
         Ok(forms) => forms,
         Err(e) => return Some(e.to_string().lines().next().unwrap_or("").to_string()),
     };
+    // The binary is run from the repository's root on the witness's relative
+    // path, so a path its line names, an imported module's, is relative to
+    // the root too (M1f S1f.5.22, W74).
+    let root = format!("{}/", repo_root().display());
     load(&mut ast, &mut terms, &forms, path.parent())
         .err()
-        .map(|e| format!("kb load error: {}", e.0))
+        .map(|e| format!("kb load error: {}", e.0).replace(&root, ""))
 }
 
 fn ask(path: &Path, mode: Mode) -> Answer {

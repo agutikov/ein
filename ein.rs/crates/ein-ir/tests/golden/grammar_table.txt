@@ -877,8 +877,7 @@
 
 ## 124. a fact's argument (was: —)
     (relation p T) (p Жук)
-<row>:1:19: unexpected `Жук`: a token that is not a name
-  repair: Delete `Жук`
+<row>:1:19: 'Ж' (U+0416) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
 
 ## 125. a fact's relation (was: —)
     (a?x b)
@@ -2320,4 +2319,94 @@
 <row>:1:27: unexpected `open`
   note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Delete `open`
+
+## 335. a fact's relation (was: —)
+    (pé k)
+<row>:1:3: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 336. a fact's value (was: —)
+    (relation p T) (p café)
+<row>:1:22: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 337. a value alone (was: —)
+    (relation p T) (p →)
+<row>:1:19: '→' (U+2192) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 338. a declared relation's name (was: —)
+    (relation t─ T)
+<row>:1:12: '─' (U+2500) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 339. a declared relation's type (was: —)
+    (relation t T─)
+<row>:1:14: '─' (U+2500) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 340. a rule's variable (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (p ?x​) :assert (q ?x))
+<row>:3:24: '\u{200b}' (U+200B) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 341. after a keyword (was: —)
+    (relation t T :why "t")
+<row>:1:19: '\u{a0}' (U+00A0) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 342. a nested fact's relation (was: —)
+    (relation p T) (p (qé k))
+<row>:1:21: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 343. a query's goal (was: —)
+    (relation p T) (query :goal (p ?x🦓))
+<row>:1:34: '🦓' (U+1F993) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 344. a query claim's fact (was: —)
+    (relation p T) (query :goal (p ?x) :expect (model (p ké)))
+<row>:1:55: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 345. a macro's body (was: —)
+    (macro m (?v) (pé ?v))
+<row>:1:17: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 346. a config flag's value (was: —)
+    (config :lattice-sanity-check true　)
+<row>:1:35: '\u{3000}' (U+3000) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 347. a solve's relation list (was: —)
+    (solve :hypothesis-relations (pé))
+<row>:1:32: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 348. a trace step's name (was: —)
+    (trace (step s1é :derives (a k)))
+<row>:1:16: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 349. an import's module (was: —)
+    (import std.macroé)
+<row>:1:18: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 350. between two forms (was: —)
+    (relation p T) (p k) (p j)
+<row>:1:21: '\u{2028}' (U+2028) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 351. between two forms (was: —)
+    (relation p T) (p k)(p j)
+<row>:1:21: '\u{85}' (U+0085) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 352. in place of a paren (was: —)
+    (relation p T) （p k)
+<row>:1:16: '（' (U+FF08) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 353. glued after a string (was: —)
+    (relation t T :why "t"é)
+<row>:1:23: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 354. after a # (was: —)
+    (relation p T) (p k) #é
+<row>:1:23: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 355. the file's first character (was: —)
+    ﻿(relation p T)
+<row>:1:1: '\u{feff}' (U+FEFF) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 356. inside a name, a bidirectional override (was: —)
+    (relation p T) (p k‮j)
+<row>:1:20: '\u{202e}' (U+202E) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
 

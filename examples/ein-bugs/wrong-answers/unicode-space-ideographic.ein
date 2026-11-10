@@ -1,0 +1,30 @@
+;;; An ideographic space between two tokens is read as a space — M1f
+;;; **W73**, register row `W73/ideographic-space`, filed by S1f.5.22 (T1f.5.22.2,
+;;; 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The last fact is `(p j)` written with U+3000, the ideographic space a CJK
+;;; input method types, between the relation and its value.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A character that is not ASCII is written only inside a string literal,
+;;; after `:why`, `:source` or `:goal-text`, or in a comment (the user's
+;;; ruling of 2026-11-10, and Q-M1f.65 (b) for a comment): anywhere else
+;;; the program is refused at the lexer, at the character, by a line that
+;;; names it and its code point and says where Unicode is allowed, and every
+;;; command exits 1 (`ein test`: 2). A Unicode space is no exception: a
+;;; separator is ASCII whitespace.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `724c11e8`, release: the program loads, the ideographic space a
+;;; separator, `(p j)` stored, R four states, exit 0 on every command.
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(is-a k Thing)
+(is-a j Thing)
+(a k)
+(p　j)

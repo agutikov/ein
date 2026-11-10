@@ -22,7 +22,7 @@ documentation split.
 
 | terminal   | regex                          | examples                                | role                                              |
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
-| `NAME`     | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | atoms; a pattern's or a fact's relation; rule / type / step names. **The name rule** (M1f [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md), the user's ruling of 2026-11-06): a run of ASCII name characters, ASCII forever, each printed as written and reloading to itself, so `7` and `07` are two names; no character has a meaning of its own, `*` among them (the transitive-closure convention `R*`, S1.5.8c.2). A reserved word is never a name and a position word is one wherever a name goes ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 1); a token ends only at a space, a paren, a comment or the end of input, so `a?x`, `a,b` and `Жук` are each one token that is not a name, refused (fact 5). Until S1f.5.5's swap this row was `SYMBOL`, `[A-Za-z][A-Za-z0-9_*-]*`, a letter first, a run of digits an `INT` and `=` a reserved head |
+| `NAME`     | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | atoms; a pattern's or a fact's relation; rule / type / step names. **The name rule** (M1f [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md), the user's ruling of 2026-11-06): a run of ASCII name characters, ASCII forever, each printed as written and reloading to itself, so `7` and `07` are two names; no character has a meaning of its own, `*` among them (the transitive-closure convention `R*`, S1.5.8c.2). A reserved word is never a name and a position word is one wherever a name goes ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 1); a token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused (fact 5), and `Жук` is refused at its `Ж`, a character that is not ASCII outside a string (fact 6, [below](#what-a-programs-text-may-hold)). Until S1f.5.5's swap this row was `SYMBOL`, `[A-Za-z][A-Za-z0-9_*-]*`, a letter first, a run of digits an `INT` and `=` a reserved head |
 | `VAR`      | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | pattern variables — bound by `:match`, reused in `:assert`: `?` and a name's characters. Until the swap `\?[A-Za-z][A-Za-z0-9_*-]*` |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:match`, `:rule`, `:source`             | a form's clause markers, each **always** followed by its value. **Each form takes a fixed set** ([§ 2's table](#the-keywords-each-form-takes)), each keyword a token of the forms that take it, and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact (M1f [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), the user's ruling of 2026-11-07, [Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)). Until S1f.5.5's swap a keyword was one token for every form: only `query`, `solve` and `config` refused one they did not know, and every other form, and every term, dropped one in silence (D-15, G-15, G-22; W32's seven rows); S1f.5.11's T1f.5.11.2 retired the compiler's and the macro expander's drops |
 | `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, Q-M1e2.13 (a)); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (Q-M1e2.14 (c), S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
@@ -52,6 +52,52 @@ production takes since, and the third is a `BAD` token.
 
 **Comments** — SMT-LIB-compatible: `; line` to end of line, `#| block |#`
 non-nesting.
+
+### What a program's text may hold
+
+A program is UTF-8 text (or a `.einb` container, which stores one), and **a
+character that is not ASCII is written only inside a string literal, after
+`:why`, `:source` or `:goal-text`, or in a comment** (M1f
+[S1f.5.22](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md),
+the user's ruling of 2026-11-10, *"Unicode is not allowed anywhere else than
+inside string literals, and the error must say it explicitely"*, and
+[Q-M1f.65](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f65--may-a-comment-hold-unicode)
+(b), *"Comments may hold Unicode"*). Anywhere else, in a name, a variable, a
+keyword, between two tokens or in place of a paren, the lexer stops at it, and
+every command refuses the program with one line that names the character, its
+code point and where Unicode is allowed:
+
+```text
+x.ein:7:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+x.ein:7:3: '\u{a0}' (U+00A0) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+```
+
+A character a reader cannot see where it stands, a space, a control, a
+zero-width or bidirectional format character, a combining mark or a variation
+selector, is quoted as the escape a string writes it with, as the second line
+quotes a no-break space
+([Q-M1f.92](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f92--how-the-line-quotes-a-character-a-reader-cannot-see));
+the line names the file's first such character, where the lexer stops
+([Q-M1f.95](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f95--how-many-characters-the-refusal-names)).
+A separator is ASCII's whitespace, `\t \n \v \f \r` and the space, and
+`\x1c` to `\x1f`. **Until S1f.5.22** a character that is not ASCII glued to a
+token made it one token that is not a name, *`unexpected `café`: a token that
+is not a name`*, and a Unicode space, U+00A0, U+3000, U+2028 or U+0085, was a
+separator, so a program writing one loaded and was answered as if it were a
+space (W73, [`corpus/wrong_answers.toml`](../../../../corpus/wrong_answers.toml)).
+A byte that is not UTF-8 is refused before the text is read, `x.ein:2:4: byte
+0xff is not UTF-8: a program is UTF-8 text, or a .einb container` (since
+S1f.5.5's T1f.5.5.13).
+
+**An imported module is read as the program a command is given is read**
+(`ein_ir::read`, since S1f.5.22, the close review's finding 2), so a module
+that is not UTF-8, one that cannot be read and one that is a directory are
+refused with the line their path gives as a program, behind `kb load error: `
+and naming the path the import resolves to, and a module that is a `.einb`
+container with a line of its own; a module that holds a character that is not
+ASCII outside a string is refused at it. Until then each was `(import m) —
+module not found at m.ein (None)`, a path that exists reported as missing
+(W74); a module that does not exist keeps that line, its `(None)` F23's D-2.
 
 **Naming convention** — hyphenated lowercase for relations and rule
 names (`has-color`, `triangle-composition`); PascalCase or `Foo_N`

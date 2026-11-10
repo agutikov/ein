@@ -1131,6 +1131,27 @@
 # rows fixed, 13 open and 1 not-wrong** (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
 #
+# **W73 and W74 were filed and fixed on 2026-11-10 by M1f S1f.5.22**, on the
+# user's ruling of that day on the close review's finding 2, *"Unicode is not
+# allowed anywhere else than inside string literals, and the error must say it
+# explicitely"*, Q-M1f.65 (b) adding a comment. W73, a Unicode space outside a
+# string and a comment, which `ein.l`'s skip rule read as a separator, `\s`
+# being Unicode's, so the program loaded: five rows, U+00A0 between two
+# tokens and inside what reads as one name, U+3000, U+2028 and U+0085; every
+# other character that is not ASCII was refused already as a token that is not
+# a name, so only its line moved, which is no row. W74, an imported module that
+# exists and cannot be read as text, which every command reported as `module
+# not found at … (None)` (the finding): nine rows on the one way git can keep,
+# a module that is a directory, one per command run the register can run
+# (Q-M1f.90). T1f.5.22.2 filed the fourteen `open`, each `now` held to the
+# unchanged engine; T1f.5.22.2 read a module through `ein_ir::read`, the read
+# every command makes of the program it is given, and T1f.5.22.3 made `ein.l`'s
+# catch-alls and its whitespace ASCII, so each is refused, W73's at the
+# character with a line naming it, its code point and where Unicode is allowed.
+# No schema change. Each `[case.fixed]` carries the null id. The register
+# reads **231 rows fixed, 13 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -13081,3 +13102,476 @@ derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open
 [case.now]
 run     = "saturate --dump"
 refused = "examples/ein-bugs/wrong-answers/open-macro-unused.ein:29:18: unexpected `open`"
+
+# ══ W73 — a Unicode space outside a string and a comment loads, read as a space ══
+[[case]]
+id       = "W73/nbsp"
+case     = "W73"
+title    = "a Unicode space outside a string literal and a comment loads, read as a space"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["Q-M1f.65"]
+witness  = "examples/ein-bugs/wrong-answers/unicode-space-nbsp.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the no-break space, U+00A0, between a relation and its value. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 724c11e8 (2026-11-10): the program loads, the no-break space a separator (`ein.l`'s skip rule read Unicode's whitespace, `\\s`), `(p j)` stored, R four states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-10 on the close review's finding 2, and Q-M1f.65 (b): Unicode is written only inside a string literal or a comment"
+derived   = "A character that is not ASCII is written only inside a string literal, after `:why`, `:source` or `:goal-text`, or in a comment (the user's ruling of 2026-11-10, *\"Unicode is not allowed anywhere else than inside string literals, and the error must say it explicitely\"*, and Q-M1f.65 (b) for a comment), and a separator is ASCII whitespace: written between a relation and its value, the no-break space, U+00A0 is refused at the lexer, at the character, by a line naming it, its code point and where Unicode is allowed, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/unicode-space-nbsp.ein:31:3: '\\u{a0}' (U+00A0) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment"
+
+[[case]]
+id       = "W73/nbsp-in-a-name"
+case     = "W73"
+title    = "a Unicode space outside a string literal and a comment loads, read as a space"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["Q-M1f.65"]
+witness  = "examples/ein-bugs/wrong-answers/unicode-space-in-a-name.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the no-break space, U+00A0, inside what is written as one value. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 724c11e8 (2026-11-10): the program loads, the no-break space a separator, so the fact is `(p k j)`, two values, R eight states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-10 on the close review's finding 2, and Q-M1f.65 (b): Unicode is written only inside a string literal or a comment"
+derived   = "A character that is not ASCII is written only inside a string literal, after `:why`, `:source` or `:goal-text`, or in a comment (the user's ruling of 2026-11-10, *\"Unicode is not allowed anywhere else than inside string literals, and the error must say it explicitely\"*, and Q-M1f.65 (b) for a comment), and a separator is ASCII whitespace: written inside what is written as one value, the no-break space, U+00A0 is refused at the lexer, at the character, by a line naming it, its code point and where Unicode is allowed, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/unicode-space-in-a-name.ein:31:5: '\\u{a0}' (U+00A0) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment"
+
+[[case]]
+id       = "W73/ideographic-space"
+case     = "W73"
+title    = "a Unicode space outside a string literal and a comment loads, read as a space"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["Q-M1f.65"]
+witness  = "examples/ein-bugs/wrong-answers/unicode-space-ideographic.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the ideographic space, U+3000, between a relation and its value. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 724c11e8 (2026-11-10): the program loads, the ideographic space a separator, `(p j)` stored, R four states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-10 on the close review's finding 2, and Q-M1f.65 (b): Unicode is written only inside a string literal or a comment"
+derived   = "A character that is not ASCII is written only inside a string literal, after `:why`, `:source` or `:goal-text`, or in a comment (the user's ruling of 2026-11-10, *\"Unicode is not allowed anywhere else than inside string literals, and the error must say it explicitely\"*, and Q-M1f.65 (b) for a comment), and a separator is ASCII whitespace: written between a relation and its value, the ideographic space, U+3000 is refused at the lexer, at the character, by a line naming it, its code point and where Unicode is allowed, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/unicode-space-ideographic.ein:30:3: '\\u{3000}' (U+3000) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment"
+
+[[case]]
+id       = "W73/line-separator"
+case     = "W73"
+title    = "a Unicode space outside a string literal and a comment loads, read as a space"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["Q-M1f.65"]
+witness  = "examples/ein-bugs/wrong-answers/unicode-space-line-separator.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the line separator, U+2028, between two facts. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 724c11e8 (2026-11-10): the program loads, the line separator a separator, both facts stored, R two states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-10 on the close review's finding 2, and Q-M1f.65 (b): Unicode is written only inside a string literal or a comment"
+derived   = "A character that is not ASCII is written only inside a string literal, after `:why`, `:source` or `:goal-text`, or in a comment (the user's ruling of 2026-11-10, *\"Unicode is not allowed anywhere else than inside string literals, and the error must say it explicitely\"*, and Q-M1f.65 (b) for a comment), and a separator is ASCII whitespace: written between two facts, the line separator, U+2028 is refused at the lexer, at the character, by a line naming it, its code point and where Unicode is allowed, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/unicode-space-line-separator.ein:31:6: '\\u{2028}' (U+2028) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment"
+
+[[case]]
+id       = "W73/next-line"
+case     = "W73"
+title    = "a Unicode space outside a string literal and a comment loads, read as a space"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["Q-M1f.65"]
+witness  = "examples/ein-bugs/wrong-answers/unicode-space-next-line.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the next-line control, U+0085, between two facts. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 724c11e8 (2026-11-10): the program loads, the next-line control a separator, both facts stored, R two states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-10 on the close review's finding 2, and Q-M1f.65 (b): Unicode is written only inside a string literal or a comment"
+derived   = "A character that is not ASCII is written only inside a string literal, after `:why`, `:source` or `:goal-text`, or in a comment (the user's ruling of 2026-11-10, *\"Unicode is not allowed anywhere else than inside string literals, and the error must say it explicitely\"*, and Q-M1f.65 (b) for a comment), and a separator is ASCII whitespace: written between two facts, the next-line control, U+0085 is refused at the lexer, at the character, by a line naming it, its code point and where Unicode is allowed, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/unicode-space-next-line.ein:30:6: '\\u{85}' (U+0085) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment"
+
+# ══ W74 — an imported module that exists and cannot be read as text is reported as missing ══
+[[case]]
+id       = "W74/directory-saturate"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-oracle"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "oracle"
+by        = "command"
+why       = "`ein oracle` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "oracle"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-render-lattice"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render lattice"
+by        = "command"
+why       = "`ein render lattice` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "render lattice"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-render-kb"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render kb"
+by        = "command"
+why       = "`ein render kb` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "render kb"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-render-program"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render program"
+by        = "command"
+why       = "`ein render program` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "render program"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-render-rules"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render rules"
+by        = "command"
+why       = "`ein render rules` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "render rules"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-render-rule"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render rule --name r"
+by        = "command"
+why       = "`ein render rule --name r` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "render rule --name r"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-render-constraints"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render constraints"
+by        = "command"
+why       = "`ein render constraints` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "render constraints"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+[[case]]
+id       = "W74/directory-kb-save"
+case     = "W74"
+title    = "an imported module that exists and cannot be read as text is reported as missing, `module not found … (None)`"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.22"
+question = ["the close review's finding 2"]
+witness  = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "kb save {out}/again.einb"
+by        = "command"
+why       = "`ein kb save {out}/again.einb` and every other command on the witness, release, at 724c11e8 (2026-11-10): exit 1 (`ein test`: 2), the module reported as missing though its path exists"
+exit      = 1
+refused   = "kb load error: (import import-module-directory-module) — module not found at examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)"
+
+[case.right]
+refused   = true
+reading   = "the user's instruction of 2026-11-10 on the close review's finding 2: an imported module is read as the program a command is given is read"
+derived   = "An imported module is read through the one read every command makes of the program it is given, so a path that exists and cannot be read as text is refused with that read's line, naming the module's own path, never as missing and never with `None`: here a directory, so every command exits 1 (`ein test`: 2) with the read's line for a directory"
+
+[case.now]
+run     = "kb save {out}/again.einb"
+refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"

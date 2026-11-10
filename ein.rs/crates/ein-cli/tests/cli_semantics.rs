@@ -2778,8 +2778,9 @@ fn a_stdlib_override_without_the_marker_is_refused_through_the_environment() {
 /// under the default one — two shipped feature sets disagreeing on garbage
 /// input, on the surface a generated program or a pipeline hits first.
 ///
-/// There is one predicate now (`common::looks_like_einb`) and one constant
-/// (`common::EINB_MAGIC`, compared against `ein_einb::header::MAGIC` by
+/// There is one predicate now (`ein_ir::read::looks_like_einb`, `ein-cli`'s
+/// `common` until M1f S1f.5.22) and one constant (`ein_ir::read::EINB_MAGIC`,
+/// compared against `ein_einb::header::MAGIC` by
 /// `einb_cli::the_two_magic_constants_agree`). This is the **behaviour** half,
 /// and it is deliberately not in `einb_cli.rs`, which is
 /// `#![cfg(feature = "einb")]`: what it asserts is that the two builds agree,

@@ -3,9 +3,10 @@
 //! The parser is generated from the grammar, `src/ein.l` and `src/ein.y`
 //! ([`grammar`], M1f S1f.5.5); since the swap (T1f.5.5.4) it is the only one.
 //!
-//! This crate owns the engine's only filesystem access — import resolution and
-//! the stdlib — which is what keeps any later policy on what the engine may
-//! read a single seam.
+//! This crate owns the engine's only filesystem access — the read of a
+//! program's text ([`read`], since M1f S1f.5.22 every command's and every
+//! imported module's), import resolution and the stdlib — which is what keeps
+//! any later policy on what the engine may read a single seam.
 //!
 //! The frontend is a **pure function** (source → forms) with no engine state,
 //! which is why it was M1a's first phase
@@ -26,6 +27,7 @@ pub mod from_ir;
 pub mod grammar;
 pub mod imports;
 pub mod macros;
+pub mod read;
 pub mod stdlib;
 
 pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr, node_repr};

@@ -505,10 +505,13 @@ fn relative(p: &Path) -> String {
 }
 
 /// `ein.l`'s skip rule as it ships, and the three rules it replaced at
-/// T1f.5.5.12, each as `ein.l` writes it, without a start condition.
+/// T1f.5.5.12, each as `ein.l` writes it, without a start condition. The
+/// whitespace in both is ASCII's since M1f S1f.5.22 (W73), where it was
+/// `\s`, Unicode's: the two lexers this test compares read one class.
 const SKIP_RULE: &str =
-    r"<INITIAL,AFTER_WORD>([\s\x1c-\x1f]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;";
-const THREE_SKIP_RULES: &str = "[\\s\\x1c-\\x1f]+ ;\n;[^\\n]* ;\n#\\|([^|]|\\|+[^|#])*\\|+# ;";
+    r"<INITIAL,AFTER_WORD>([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;";
+const THREE_SKIP_RULES: &str =
+    "[\\x09-\\x0D\\x20\\x1C-\\x1F]+ ;\n;[^\\n]* ;\n#\\|([^|]|\\|+[^|#])*\\|+# ;";
 
 type LexerDef = lrlex::LRNonStreamingLexerDef<lrlex::DefaultLexerTypes<u32>>;
 

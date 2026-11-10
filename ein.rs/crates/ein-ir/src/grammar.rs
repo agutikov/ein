@@ -85,6 +85,62 @@ pub const POSITION_WORDS: [&str; 10] = [
 pub const OPEN_NOTE: &str = "open is reserved: it is the verdict a rule's :assert states, written as the \
      whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value";
 
+/// Where a character that is not ASCII may be written, as the line that
+/// refuses one anywhere else says it (M1f S1f.5.22, the user's ruling of
+/// 2026-11-10, *"Unicode is not allowed anywhere else than inside string
+/// literals, and the error must say it explicitely"*, and Q-M1f.65 (b): a
+/// comment may hold Unicode). [`not_ascii`] writes the line.
+pub const UNICODE_ALLOWED: &str = "Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment";
+
+/// The line a character that is not ASCII is refused with, outside a string
+/// literal and a comment (M1f S1f.5.22): the character, quoted, and its code
+/// point, then where Unicode is allowed ([`UNICODE_ALLOWED`]).
+///
+/// ```text
+/// 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+/// ```
+///
+/// A character a reader cannot see where it stands, a space, a control, a
+/// zero-width or a bidirectional format character, a combining mark or a
+/// variation selector, is quoted as the escape a string writes it with,
+/// `'\u{a0}' (U+00A0)`, so that the line shows what it names and one error
+/// stays one line ([`shown_char`], Q-M1f.92).
+pub fn not_ascii(c: char) -> String {
+    format!(
+        "'{}' (U+{:04X}) is not ASCII: {UNICODE_ALLOWED}",
+        shown_char(c),
+        c as u32
+    )
+}
+
+/// A character as [`not_ascii`] quotes it: itself, or where a reader cannot
+/// see it, the `\u{…}` escape a string writes it with.
+pub fn shown_char(c: char) -> String {
+    let invisible = c.is_whitespace()
+        || c.is_control()
+        || matches!(c as u32,
+            0x00AD | 0x034F | 0x061C | 0x115F | 0x1160 | 0x17B4 | 0x17B5 | 0x3164 | 0xFEFF | 0xFFA0
+            | 0x0300..=0x036F
+            | 0x180B..=0x180F
+            | 0x1AB0..=0x1AFF
+            | 0x1DC0..=0x1DFF
+            | 0x200B..=0x200F
+            | 0x202A..=0x202E
+            | 0x2060..=0x206F
+            | 0x20D0..=0x20FF
+            | 0xFE00..=0xFE0F
+            | 0xFE20..=0xFE2F
+            | 0xFFF9..=0xFFFB
+            | 0x1D173..=0x1D17A
+            | 0xE0000..=0xE007F
+            | 0xE0100..=0xE01EF);
+    if invisible {
+        format!("\\u{{{:x}}}", c as u32)
+    } else {
+        c.to_string()
+    }
+}
+
 /// The `(query …)` keywords that choose the lattice, which belong on
 /// `(solve …)` (M1e2 S1e2.1a.4): a query that writes one is refused at the
 /// keyword, with a note saying where it goes (the paper grammar's default 5).
@@ -297,13 +353,29 @@ fn report(
     for e in errors {
         out.push(match e {
             LexParseError::LexError(l) => {
-                let at = l.span().start();
+                let mut at = l.span().start();
+                let mut chars = text[at..].chars();
+                let first = chars.next();
+                // `#` and a character that is not ASCII: no rule starts at the
+                // `#` (BAD takes `#` before an ASCII character alone), and the
+                // character is what the line is about.
+                if first == Some('#') && chars.next().is_some_and(|c| !c.is_ascii()) {
+                    at += 1;
+                }
                 let (line, col) = lines.line_col(at);
-                let ch: String = text[at..].chars().take(1).collect();
+                let what = match text[at..].chars().next() {
+                    // M1f S1f.5.22: no rule but a string's and the skip rule's
+                    // comments matches a character that is not ASCII.
+                    Some(c) if !c.is_ascii() => not_ascii(c),
+                    c => format!(
+                        "no token starts with {}",
+                        shown(&c.map(String::from).unwrap_or_default())
+                    ),
+                };
                 SyntaxError {
                     line,
                     col,
-                    what: format!("no token starts with {}", shown(&ch)),
+                    what,
                     notes: Vec::new(),
                     repairs: Vec::new(),
                     more_repairs: 0,

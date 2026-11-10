@@ -20,13 +20,19 @@
 //! This module is the engine's **only** filesystem access, which is what keeps
 //! any later policy on what the engine may read a single seam rather than an
 //! audit: everything goes through [`Resolver`], and the stdlib half already
-//! does ([`crate::stdlib`]).
+//! does ([`crate::stdlib`]). A module on disk is read through
+//! [`crate::read::read_program`], the read every command makes of the program
+//! it is given (M1f S1f.5.22): a module that exists and cannot be read as text
+//! is refused with that read's line, naming the module's path, where until
+//! then it was `module not found at … (None)` (the close review's finding 2,
+//! W74).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use crate::ast::{Ast, Node, NodeId, loc_repr};
 use crate::grammar::{ParseError, parse};
+use crate::read;
 use crate::stdlib;
 
 const MODULE_SEP: char = '.';
@@ -83,6 +89,15 @@ enum Root {
     Embedded,
 }
 
+/// Why [`Resolver::read`] has no text for a module.
+enum Unread {
+    /// No file is there: `module not found at …`.
+    Missing,
+    /// A file is there and cannot be read as text: the line
+    /// [`read::read_program`] gives it, naming its path (M1f S1f.5.22).
+    Refused(String),
+}
+
 /// Import resolution with an explicit stdlib source.
 ///
 /// Carrying the source rather than resolving it per call is what lets a test
@@ -122,7 +137,7 @@ impl Resolver {
     ///
     /// Empty when `std.macro` is unreadable: degrade to no check.
     pub fn stdlib_macro_names(&self) -> Vec<String> {
-        let Some(text) = self.read(&self.stdlib_root(), &["macro"]).1 else {
+        let Ok(text) = self.read(&self.stdlib_root(), &["macro"]).1 else {
             return Vec::new();
         };
         let mut ast = Ast::new();
@@ -140,12 +155,22 @@ impl Resolver {
         out
     }
 
-    /// `(root/rel….ein, its text if it is a file)`.
+    /// `(root/rel….ein, its text)`, or why there is none: [`Unread::Missing`]
+    /// where no file is there, and [`Unread::Refused`] with the line the read
+    /// of a program gives where one is and cannot be read as text.
     ///
-    /// The display path is what "module not found at …" names, so how it is
-    /// built is observable: empty segments dropped, then the final component's
-    /// extension replaced with `.ein`.
-    fn read(&self, root: &Root, rel: &[&str]) -> (String, Option<String>) {
+    /// The display path is what "module not found at …" names, and what the
+    /// read's line names, so how it is built is observable: empty segments
+    /// dropped, then the final component's extension replaced with `.ein`.
+    ///
+    /// A file on disk is read through [`crate::read::read_program`], the read
+    /// every command makes of the program it is given, since M1f S1f.5.22: a
+    /// module that is not UTF-8 is refused at its first such byte, one that
+    /// cannot be read or is a directory with the OS's reason, and a `.einb`
+    /// container as one ([`crate::read::container_module_line`], Q-M1f.91).
+    /// Until then it was `read_to_string(…).ok()` behind `is_file()`, so each
+    /// was *not found* (the close review's finding 2, W74).
+    fn read(&self, root: &Root, rel: &[&str]) -> (String, Result<String, Unread>) {
         match root {
             Root::Dir(dir) => {
                 let mut path = dir.clone();
@@ -154,16 +179,21 @@ impl Resolver {
                 }
                 path.set_extension("ein");
                 let display = path.display().to_string();
-                let text = path
-                    .is_file()
-                    .then(|| std::fs::read_to_string(&path).ok())
-                    .flatten();
+                let text = match read::read_program(&path) {
+                    Ok(read::Held::Text(text)) => Ok(text),
+                    Ok(read::Held::Container(_)) => {
+                        Err(Unread::Refused(read::container_module_line(&path)))
+                    }
+                    Err(e) if e.not_found() => Err(Unread::Missing),
+                    Err(e) => Err(Unread::Refused(e.line)),
+                };
                 (display, text)
             }
             Root::Embedded => {
                 let joined: Vec<&str> = rel.iter().copied().filter(|s| !s.is_empty()).collect();
                 let name = format!("{}.ein", joined.join("/"));
-                (format!("<embedded>/{name}"), self.stdlib.read(&name))
+                let text = self.stdlib.read(&name).ok_or(Unread::Missing);
+                (format!("<embedded>/{name}"), text)
             }
         }
     }
@@ -311,10 +341,14 @@ impl Resolver {
             (Root::Dir(dir.to_path_buf()), segments.clone())
         };
         let (display, text) = self.read(&root, &rel);
-        let Some(text) = text else {
-            return Err(LoadError(format!(
-                "(import {module}) — module not found at {display} ({loc})"
-            )));
+        let text = match text {
+            Ok(text) => text,
+            Err(Unread::Missing) => {
+                return Err(LoadError(format!(
+                    "(import {module}) — module not found at {display} ({loc})"
+                )));
+            }
+            Err(Unread::Refused(line)) => return Err(LoadError(line)),
         };
         // `Path.resolve()` — the identity, so two spellings of one file are
         // one node in the cycle graph.

@@ -190,7 +190,8 @@ def flag_half(ein: Path, scratch: Path) -> dict:
     on, off = flag_spellings(ein)
     out = {}
     for root in ROOTS:
-        files = sorted((REPO / root).rglob("*.ein"))
+        # A file: W74's module is a directory named `*.ein` (M1f S1f.5.22).
+        files = sorted(p for p in (REPO / root).rglob("*.ein") if p.is_file())
         row = {"files": len(files), "load": 0, "refused": 0, "not_loaded": 0,
                "forms": collections.Counter(), "refused_files": []}
         for p in files:

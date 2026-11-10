@@ -2011,6 +2011,72 @@ const TABLE: &[Row] = &[
         &[],
         "(trace (step s1 :derives (open k)))",
     ),
+    // ── A character that is not ASCII, outside a string literal and a
+    // comment (M1f S1f.5.22, the user's ruling of 2026-11-10, Q-M1f.65 (b)):
+    // refused at the lexer, at the character, in every place; a Unicode space
+    // among them, which until then was a separator (W73) ──
+    row("a fact's relation", &[], "(p\u{e9} k)"),
+    row("a fact's value", &[], "(relation p T) (p caf\u{e9})"),
+    row("a value alone", &[], "(relation p T) (p \u{2192})"),
+    row("a declared relation's name", &[], "(relation t\u{2500} T)"),
+    row("a declared relation's type", &[], "(relation t T\u{2500})"),
+    row(
+        "a rule's variable",
+        &[],
+        "(rule r () :match (p ?x\u{200b}) :assert (q ?x))",
+    ),
+    row("after a keyword", &[], "(relation t T :why\u{a0}\"t\")"),
+    row(
+        "a nested fact's relation",
+        &[],
+        "(relation p T) (p (q\u{e9} k))",
+    ),
+    row(
+        "a query's goal",
+        &[],
+        "(relation p T) (query :goal (p ?x\u{1f993}))",
+    ),
+    row(
+        "a query claim's fact",
+        &[],
+        "(relation p T) (query :goal (p ?x) :expect (model (p k\u{e9})))",
+    ),
+    row("a macro's body", &[], "(macro m (?v) (p\u{e9} ?v))"),
+    row(
+        "a config flag's value",
+        &[],
+        "(config :lattice-sanity-check true\u{3000})",
+    ),
+    row(
+        "a solve's relation list",
+        &[],
+        "(solve :hypothesis-relations (p\u{e9}))",
+    ),
+    row(
+        "a trace step's name",
+        &[],
+        "(trace (step s1\u{e9} :derives (a k)))",
+    ),
+    row("an import's module", &[], "(import std.macro\u{e9})"),
+    row(
+        "between two forms",
+        &[],
+        "(relation p T) (p k)\u{2028}(p j)",
+    ),
+    row("between two forms", &[], "(relation p T) (p k)\u{85}(p j)"),
+    row("in place of a paren", &[], "(relation p T) \u{ff08}p k)"),
+    row(
+        "glued after a string",
+        &[],
+        "(relation t T :why \"t\"\u{e9})",
+    ),
+    row("after a #", &[], "(relation p T) (p k) #\u{e9}"),
+    row("the file's first character", &[], "\u{feff}(relation p T)"),
+    row(
+        "inside a name, a bidirectional override",
+        &[],
+        "(relation p T) (p k\u{202e}j)",
+    ),
 ];
 
 /// A row's program: a rule row's declarations before it.

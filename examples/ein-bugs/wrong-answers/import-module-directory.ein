@@ -1,0 +1,33 @@
+;;; An imported module that exists and is a directory is reported as missing —
+;;; M1f **W74**, register rows `W74/directory-*`, filed by S1f.5.22
+;;; (T1f.5.22.2, 2026-11-10), from the close review's finding 2.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A file-relative import of `q` from `import-module-directory-module`, which
+;;; resolves to `import-module-directory-module.ein` beside this file: a
+;;; directory, with a README saying why, so the path exists and is no file.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An imported module is read as the program a command is given is read (the
+;;; user's instruction of 2026-11-10, on the close review's finding 2: a
+;;; module that is not UTF-8 was reported *not found … (None)*): a path that
+;;; exists and cannot be read as text is refused with the read's line, naming
+;;; the module's own path, never as missing and never with `None`. Every
+;;; command that reads the program exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `724c11e8`, release: every command exits 1 (`ein test`: 2) with `kb load
+;;; error: (import import-module-directory-module) — module not found at
+;;; examples/ein-bugs/wrong-answers/import-module-directory-module.ein (None)`:
+;;; the resolver read a path that is no file as no module, and the `None` is
+;;; the import's position, which a top-level form does not carry.
+
+(import import-module-directory-module :symbols (q))
+
+(relation a Thing :why "{?1} is an a")
+(is-a k Thing)
+(a k)
+(rule r () :match (a ?x) :assert (q ?x) :why "{?x} is an a, so a q")

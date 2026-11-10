@@ -31,7 +31,10 @@ consequences of that framing are worth being explicit about:
 line each, `{file}:{line}:{col}: unexpected X`, where `X` is the token as
 written and, where the token has a name, the name after it (`a name`, `a
 variable`, `a keyword this form does not take`, `a token that is not a
-name`); a character no token starts with is `no token starts with X`. Under
+name`); a character no token starts with is `no token starts with X`, and
+since M1f S1f.5.22 a character that is not ASCII outside a string literal and
+a comment is its own line, which names it and where Unicode is allowed
+([§ 1.6](#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment--m1f-s1f522)). Under
 each error come its notes, where a ruling says more than the token does (a
 bare `_`, a string as a value, a query's lattice keyword, a retired
 `(config …)` flag, and since M1f S1f.5.23 an `open` that is not a rule's
@@ -162,6 +165,62 @@ them to `examples/broken/`, each refused at the parse since.
 visible re-baseline rather than noise. It is the clearest
 candidate on this page for being **fixed** rather than documented; what it
 costs is re-blessing every message in that directory at once.
+
+### 1.6 A character that is not ASCII is written only in a string or a comment — M1f S1f.5.22
+
+A character that is not ASCII is written only inside a string literal, after
+`:why`, `:source` or `:goal-text`, or in a `;` or `#| … |#` comment (the
+user's ruling of 2026-11-10, *"Unicode is not allowed anywhere else than
+inside string literals, and the error must say it explicitely"*, and
+[Q-M1f.65](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f65--may-a-comment-hold-unicode)
+(b), *"Comments may hold Unicode"*). Anywhere else no lexer rule matches it,
+the lexer stops there, and the file is refused with one line at the
+character, on every command (exit 1, `ein test` 2, `kb save` writing no
+container):
+
+```text
+$ ein solve t.ein               # file is: (p café)
+t.ein:1:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+```
+
+- **The character, quoted, and its code point**, `'é' (U+00E9)`, `'🦓'
+  (U+1F993)`; one a reader cannot see where it stands, a space, a control, a
+  zero-width or bidirectional format character, a combining mark or a
+  variation selector, as the escape a string writes it with, `'\u{a0}'
+  (U+00A0)`, `'\u{202e}' (U+202E)`
+  ([Q-M1f.92](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f92--how-the-line-quotes-a-character-a-reader-cannot-see),
+  `ein_ir::grammar::not_ascii`).
+- **One line, at the file's first such character**: `lrpar` lexes a file
+  before it parses it and stops at the first lexing error, so no parse error
+  and no repair follows
+  ([Q-M1f.95](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f95--how-many-characters-the-refusal-names)).
+  A `#` before one is passed over: no rule starts at that `#`, and the line
+  is about the character.
+- **Every place**: a name, a variable, a keyword, a declared relation's name
+  or type, a nested fact, a rule, an hrule, a macro's name or body, a query's
+  goal, `:over` or claim, a `(solve …)` list, a `(config …)` flag, a trace
+  step, an import's module, between two tokens, a line's or the file's first
+  character (a byte-order mark among them,
+  [Q-M1f.96](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f96--a-byte-order-mark)),
+  in place of a paren, glued after a string, and in an imported module, whose
+  line names the module's resolved path. The grammar's table holds a row per
+  place (`grammar_pages`), and `ein-cli/tests/unicode_only_in_a_string.rs`
+  every place on twenty commands, and twelve characters in every place
+  through the parser.
+- **Not refused**: any character inside a string literal, whatever the string
+  is written as (a string where a value goes is refused as one, § 4.12, and an
+  escape it does not read as one, at its quote), and in a comment. A
+  byte that is not UTF-8 is refused before the text is read (§ 4).
+
+**Until S1f.5.22** a character that is not ASCII glued to a token made it one
+token that is not a name, *`unexpected `café`: a token that is not a name`*
+and a repair, and the skip rule's whitespace was `\s`, Unicode's, so a
+no-break space, U+3000, U+2028 and U+0085 were separators: a program writing
+one between two tokens loaded and was answered as if it were a space, and one
+inside what reads as one name, `k`, U+00A0, `j`, was two names (W73, five rows,
+[`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). The census
+of T1f.5.22.1 found no corpus file writing one outside a string or a comment
+(454 files, 2026-11-10), so no corpus answer moved.
 
 ## 2. Values and order
 
@@ -573,6 +632,7 @@ names the failure's class, and exiting non-zero:
 |---|---|---|
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` (`ein saturate` printed `error: <path> not found` until M1f T1f.5.5.13) | 1 |
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
+| an imported module that exists and cannot be read as text: not UTF-8, unreadable, a directory, a `.einb` container | `kb load error: ` and the line its path gives as a program, naming the path the import resolves to, `kb load error: m.ein:3:4: byte 0xff is not UTF-8: …`, `kb load error: IsADirectoryError: [Errno 21] Is a directory: 'm.ein'`; a container `kb load error: m.ein: a .einb container, and an imported module is Ein text: import the .ein it was saved from`; since M1f S1f.5.22 (§ 4.18), `kb load error: (import m) — module not found at m.ein (None)` until then | 1 (`ein test`: 2) |
 | a rule that will not compile: since M1f S1f.5.24 none, every refusal the compiler made a program reach being the loader's (§ 4.15, § 4.16); from S1f.5.21 until then only a macro's body that wrote `eq` or `absent` at another arity (§ 4.3) | `kb load error: <file>:<line>:<col>: rule '<r>': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — …` since S1f.5.24, on every command, the views and `kb save` among them (§ 4.16); the same line bare, on every command that compiled, from S1f.5.21; `ein.inference.compile.CompileError: …` and the IR's repr until then | 1 |
 | a conclusion no fact can hold: since M1f S1f.5.24 none at a firing, a macro's body that is a bare parameter, called in an `:assert`, being refused at load (§ 4.16); from S1f.5.5's swap until then only that, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `kb load error: <file>:<line>:<col>: rule '<r>': its :assert concludes ?y, which is not a fact — …` since S1f.5.24; `rule '<r>': its :assert …` at the firing until then, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
@@ -587,7 +647,8 @@ activator binds to a nested fact is bound (§ 3.2, W33 and W58), so no input
 reaches it, and `ein_infer::firing::FireError::UnboundVar` is gone.
 
 **Every command reads a program through one path since M1f S1f.5.5's
-T1f.5.5.13** (2026-11-09, `ein-cli`'s `common::read_program`), so a file that
+T1f.5.5.13** (2026-11-09, `ein-cli`'s `common::read_program`, `ein_ir::read`'s
+since M1f S1f.5.22, which reads every imported module too, § 4.18), so a file that
 cannot be read, or is not UTF-8, is refused with the same line by `solve`,
 `saturate`, `oracle`, `test`, each `render` view and `kb save`, at each
 command's load-error exit. Until then the read exited the process on either,
@@ -1522,6 +1583,41 @@ position words a fact's head admits, each a name by Q-M1e2.17 (`eq` checked,
 S1f.5.7's); a written `(false k)` kills root as `(false)` does, and a written
 `(absent k)` stores a fact no premise reads (both found by S1f.5.23's T2,
 outside its case).
+
+### 4.18 An imported module is read as the program is — M1f S1f.5.22
+
+An imported module on disk, a file-relative one or a `std.*` one under a
+checkout or `$EIN_STDLIB`, is read through the read every command makes of
+the program it is given (`ein_ir::read::read_program`), and a module that
+exists and cannot be read as text is refused with that read's line, behind
+`kb load error: `, on every command (exit 1, `ein test` 2), naming the path
+the import resolves to
+([Q-M1f.93](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f93--which-path-a-modules-read-line-names)):
+
+| the module | the line |
+|---|---|
+| not UTF-8 | `kb load error: m.ein:3:4: byte 0xff is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first such byte |
+| unreadable | `kb load error: PermissionError: [Errno 13] Permission denied: 'm.ein'` |
+| a directory | `kb load error: IsADirectoryError: [Errno 21] Is a directory: 'm.ein'` |
+| a `.einb` container | `kb load error: m.ein: a .einb container, and an imported module is Ein text: import the .ein it was saved from` ([Q-M1f.91](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f91--a-module-that-is-a-einb-container)) |
+| holding a character that is not ASCII outside a string | `kb load error: <its resolved path>:2:5: 'é' (U+00E9) is not ASCII: …` (§ 1.6), as any parse error in a module names its resolved path |
+| missing | `kb load error: (import m) — module not found at m.ein (None)`, unchanged |
+
+The first three are the lines the module's path gives to `ein solve` as a
+program, the directory's and the unreadable file's in the Python spelling
+F23's D-1 owns for both; the missing module's `(None)` is the import's
+position, which a top-level form does not carry, F23's D-2 with every other
+`at None` (§ 1.5,
+[Q-M1f.94](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f94--a-directorys-and-an-unreadable-modules-line-and-a-missing-ones-none)).
+
+**Until S1f.5.22** the resolver read a module with
+`std::fs::read_to_string(…).ok()` behind `is_file()`, so each of the first
+four was `(import m) — module not found at m.ein (None)`, a path that exists
+reported as missing with a Rust `None` (the close review's finding 2; W74,
+nine rows, on a module that is a directory, the one way git can keep). What
+pins it: `ein-cli/tests/unicode_only_in_a_string.rs`'s
+`an_imported_module_is_read_as_the_program_is`, each way on twenty commands,
+and each line held to the one the module's path gives as a program.
 
 ## 5. The CLI surface
 

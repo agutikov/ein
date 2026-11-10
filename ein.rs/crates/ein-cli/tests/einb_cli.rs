@@ -505,9 +505,11 @@ fn looks_like_einb(rel: &Path) -> bool {
 
 /// **The two magic constants agree** — M1e S1e.4.4, `EH-L2`.
 ///
-/// `ein-cli` carries its own copy (`common::EINB_MAGIC`) because `ein-einb` is
-/// an optional dependency and a `--no-default-features` build must still
-/// recognise a container in order to refuse it. That is the state
+/// `ein-ir` carries its own copy (`ein_ir::read::EINB_MAGIC`, `ein-cli`'s
+/// `common::EINB_MAGIC` until M1f S1f.5.22 moved the read there) because
+/// `ein-einb` is an optional dependency of `ein-cli` and a
+/// `--no-default-features` build must still recognise a container in order
+/// to refuse it. That is the state
 /// [`AR-M1`] permits for a pair too small to share a crate — *compared by a
 /// test* — and this is the test. It can only run in the default build, which
 /// is the one where both constants exist; the **behaviour** half, which has to
@@ -519,9 +521,13 @@ fn looks_like_einb(rel: &Path) -> bool {
 /// [`AR-M1`]: ../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium
 #[test]
 fn the_two_magic_constants_agree() {
-    // `ein-cli`'s copy is in a private module, so it is compared through the
-    // one thing both builds ship: a container the writer just wrote, opened by
-    // the reader through the CLI's own sniff.
+    // The reader's copy is public since M1f S1f.5.22, `ein_ir::read`'s, so it
+    // is compared directly; and through the one thing both builds ship, a
+    // container the writer just wrote, opened by the reader through the CLI's
+    // own sniff.
+    assert_eq!(ein_einb::header::MAGIC, ein_ir::read::EINB_MAGIC);
+    assert!(ein_ir::read::looks_like_einb(&ein_einb::header::MAGIC));
+    assert!(!ein_ir::read::looks_like_einb(b"EINB\0xyz"));
     assert_eq!(ein_einb::header::MAGIC, *b"EINB\0\0\0\0");
     assert_eq!(ein_einb::header::MAGIC.len(), 8);
     assert!(ein_einb::is_einb(&ein_einb::header::MAGIC));

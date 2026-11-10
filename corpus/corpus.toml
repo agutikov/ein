@@ -2109,6 +2109,42 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W72 (`W72/macro-unused`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a macro's body no rule calls, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/unicode-space-nbsp.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W73 (`W73/nbsp`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10): a no-break space, U+00A0, between a relation and its value, read as a space, which loaded and was answered, `ein.l`'s skip rule reading Unicode's whitespace. Unicode is written only inside a string literal or a comment (the user's ruling of 2026-11-10)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/unicode-space-in-a-name.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W73 (`W73/nbsp-in-a-name`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10): a no-break space, U+00A0, inside what is written as one value, which split it in two, `(p k j)`, which loaded and was answered, `ein.l`'s skip rule reading Unicode's whitespace. Unicode is written only inside a string literal or a comment (the user's ruling of 2026-11-10)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/unicode-space-ideographic.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W73 (`W73/ideographic-space`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10): an ideographic space, U+3000, between a relation and its value, read as a space, which loaded and was answered, `ein.l`'s skip rule reading Unicode's whitespace. Unicode is written only inside a string literal or a comment (the user's ruling of 2026-11-10)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/unicode-space-line-separator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W73 (`W73/line-separator`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10): a line separator, U+2028, between two facts, read as a space, which loaded and was answered, `ein.l`'s skip rule reading Unicode's whitespace. Unicode is written only inside a string literal or a comment (the user's ruling of 2026-11-10)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/unicode-space-next-line.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W73 (`W73/next-line`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10): a next-line control, U+0085, between two facts, read as a space, which loaded and was answered, `ein.l`'s skip rule reading Unicode's whitespace. Unicode is written only inside a string literal or a comment (the user's ruling of 2026-11-10)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-module-directory.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W74 (`W74/directory-*`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10), from the close review's finding 2: a file-relative import of a module that resolves to a directory, `import-module-directory-module.ein/`, beside it, which every command reported as `module not found … (None)`. An imported module is read as the program a command is given is read, and a path that exists and cannot be read as text is refused with that read's line, naming the module's path."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

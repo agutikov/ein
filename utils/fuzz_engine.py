@@ -443,7 +443,8 @@ def seed_corpus(limit_bytes: int = 6000) -> list[Path]:
     out = []
     for root in ("examples", "stdlib"):
         for p in sorted((REPO / root).rglob("*.ein")):
-            if p.stat().st_size <= limit_bytes:
+            # A file: W74's module is a directory named `*.ein` (M1f S1f.5.22).
+            if p.is_file() and p.stat().st_size <= limit_bytes:
                 out.append(p)
     return out
 

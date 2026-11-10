@@ -2,8 +2,9 @@
 //! S1f.5.5, T1f.5.5.13).
 //!
 //! Every command that takes a program reads it here: [`read_program`] reads
-//! the bytes and tells a `.einb` container from UTF-8 text by the magic bytes,
-//! [`load_held`] loads either (a text against its own directory, so a
+//! the bytes and tells a `.einb` container from UTF-8 text by the magic bytes
+//! (through `ein_ir::read` since M1f S1f.5.22, which the import resolver
+//! reads a module through too), [`load_held`] loads either (a text against its own directory, so a
 //! file-relative `(import …)` resolves; a container opened), and
 //! [`parse_held`] parses either without loading (a container's stored
 //! program). Until that task `ein saturate` read text only and loaded it with
@@ -24,81 +25,20 @@ use std::time::{Duration, Instant};
 use ein_core::{Kb, Terms};
 use ein_ir::{Ast, NodeId};
 
-/// What a program path holds, by its first bytes.
-pub enum Held {
-    /// UTF-8 text: a program as written.
-    Text(String),
-    /// A `.einb` container ([`looks_like_einb`]), which stores its program.
-    Container(Vec<u8>),
-}
+pub use ein_ir::read::Held;
 
-impl Held {
-    /// What [`read_program`] read, for the line `ein saturate` prints under
-    /// `input:`.
-    pub fn size_line(&self) -> String {
-        match self {
-            Held::Text(t) => format!("{} chars", t.chars().count()),
-            Held::Container(b) => format!("{} bytes, a .einb container", b.len()),
-        }
-    }
-}
-
-/// Read a program from `path`: the one read every command makes of one.
+/// Read a program from `path`: the one read every command makes of one,
+/// [`ein_ir::read::read_program`], its failure the line the command prints.
 ///
-/// A file that cannot be read gives one line naming the error class, the
-/// errno text and the quoted path (`FileNotFoundError: [Errno 2] No such file
-/// or directory: '<path>'`, and its two siblings below), the spelling
-/// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
-/// states and parks for the user. A file that is neither a container nor
-/// UTF-8 gives [`not_utf8_line`], in Ein's own words since T1f.5.5.13.
+/// The read moved to `ein-ir` at M1f S1f.5.22, so that the import resolver
+/// reads an imported module through it too and refuses one as this refuses
+/// the program it is given, naming the module's path (the close review's
+/// finding 2, W74): a file that cannot be read gives one line naming the
+/// error class, the errno text and the quoted path, and a file that is
+/// neither a `.einb` container nor UTF-8 gives
+/// [`ein_ir::read::not_utf8_line`].
 pub fn read_program(path: &Path) -> Result<Held, String> {
-    use std::io::ErrorKind;
-    let bytes = std::fs::read(path).map_err(|e| {
-        let shown = ein_core::repr::repr_str(&path.display().to_string());
-        match e.kind() {
-            ErrorKind::NotFound => {
-                format!("FileNotFoundError: [Errno 2] No such file or directory: {shown}")
-            }
-            ErrorKind::PermissionDenied => {
-                format!("PermissionError: [Errno 13] Permission denied: {shown}")
-            }
-            ErrorKind::IsADirectory => {
-                format!("IsADirectoryError: [Errno 21] Is a directory: {shown}")
-            }
-            _ => format!("OSError: {e}: {shown}"),
-        }
-    })?;
-    if looks_like_einb(&bytes) {
-        return Ok(Held::Container(bytes));
-    }
-    match String::from_utf8(bytes) {
-        Ok(text) => Ok(Held::Text(text)),
-        Err(e) => {
-            let at = e.utf8_error().valid_up_to();
-            Err(not_utf8_line(path, e.as_bytes(), at))
-        }
-    }
-}
-
-/// A file that is neither UTF-8 text nor a `.einb` container, refused at its
-/// first byte that is not UTF-8, with the line and column a parse error
-/// gives (lines split at `\n`, columns in characters, both 1-based):
-///
-/// ```text
-/// bad.ein:2:4: byte 0xff is not UTF-8: a program is UTF-8 text, or a .einb container
-/// ```
-///
-/// It was `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'`
-/// until M1f S1f.5.5's T1f.5.5.13: Python's spelling, with no position.
-pub fn not_utf8_line(path: &Path, bytes: &[u8], at: usize) -> String {
-    let before = String::from_utf8_lossy(&bytes[..at]);
-    let line = before.matches('\n').count() + 1;
-    let col = before.rsplit('\n').next().unwrap_or("").chars().count() + 1;
-    format!(
-        "{}:{line}:{col}: byte 0x{:02x} is not UTF-8: a program is UTF-8 text, or a .einb container",
-        path.display(),
-        bytes[at]
-    )
+    ein_ir::read::read_program(path).map_err(|e| e.line)
 }
 
 /// A program path's text, for the one caller that wants the text and not the
@@ -134,31 +74,6 @@ pub fn program_text(path: &Path) -> Result<ProgramText, String> {
         #[cfg(not(feature = "einb"))]
         Held::Container(_) => Err(no_einb_line(path)),
     }
-}
-
-/// `EINB\0` plus three pad bytes — the container's magic, and the **only**
-/// sniff in this crate.
-///
-/// A second copy of `ein_einb::header::MAGIC`, because `ein-einb` is an
-/// optional dependency and a `--no-default-features` build must still
-/// recognise a container in order to refuse it. That is the case
-/// [`AR-M1`](../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium)'s
-/// rule covers explicitly — *compared by a test, since a shared crate for
-/// eight bytes is worse than the problem* — and the test is
-/// `einb_cli::the_two_magic_constants_agree`.
-///
-/// It sniffed **five** bytes until M1e S1e.4.2's sibling stage (`EH-L2`), so
-/// `EINB\0xyz` was *"a `.einb` container and this build has no `einb`
-/// feature"* in the light build and a UTF-8 error in the default one — two
-/// shipped feature sets disagreeing on garbage input.
-pub const EINB_MAGIC: [u8; 8] = *b"EINB\0\0\0\0";
-
-/// Whether these bytes open a `.einb` container, in **either** build.
-///
-/// The one predicate, so the two feature arms below cannot answer it
-/// differently.
-pub fn looks_like_einb(bytes: &[u8]) -> bool {
-    bytes.len() >= EINB_MAGIC.len() && bytes[..EINB_MAGIC.len()] == EINB_MAGIC
 }
 
 /// A program loaded from a path, and how it was read.

@@ -38,9 +38,10 @@ reads one ([§3](#3-gone) says what this page said until the swap).
 The lexer, `lrlex`, tries every rule its current start condition allows at
 each position and takes the **longest** match; between two matches of one
 length, the rule written first. Every terminal is ASCII-anchored: a
-non-ASCII character can appear only inside a string (`TEXT`) or a comment.
-Names are ASCII, forever (the user, 2026-11-07); a string is natural-language
-text, and any Unicode (fact 4).
+non-ASCII character can appear only inside a string (`TEXT`) or a comment,
+and anywhere else no rule matches it, so the lexer stops there and the parse
+error names it (fact 6). Names are ASCII, forever (the user, 2026-11-07); a
+string is natural-language text, and any Unicode (fact 4).
 
 <!-- generated: ein.l -->
 ```text
@@ -100,13 +101,13 @@ VAR          ::= \?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; 
 KEYWORD      ::= :[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+    /* then AFTER_WORD; "a keyword this form does not take" */
 TEXT         ::= "([^"\\]|\\[ntr"\\]|\\u\{(0{0,5}[0-9A-Fa-f]|0{0,4}[1-9A-Fa-f][0-9A-Fa-f]|0{0,3}[1-9A-Fa-f][0-9A-Fa-f]{2}|0{0,2}([1-9A-Ca-cEeFf][0-9A-Fa-f]{3}|[Dd][0-7][0-9A-Fa-f]{2})|0?[1-9A-Fa-f][0-9A-Fa-f]{4}|10[0-9A-Fa-f]{4})\})*"    /* then AFTER_WORD; "a string" */
 BADESCAPE    ::= "([^"\\]|\\[^\n])*"    /* then AFTER_WORD; "a string with an unknown escape" */
-BADTEXT      ::= "([^"\\]|\\[^\n])*"[^\s();\x1c-\x1f]+    /* then AFTER_WORD; "a string glued to what follows" */
-BAD          ::= ([^\s();#\x1c-\x1f]|#[^|\s();\x1c-\x1f])+    /* then AFTER_WORD; "a token that is not a name" */
-(skipped)    ::= ([\s\x1c-\x1f]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+    /* in INITIAL, AFTER_WORD; then INITIAL */
+BADTEXT      ::= "([^"\\]|\\[^\n])*"[\x00-\x7F--[\s();\x1c-\x1f]]+    /* then AFTER_WORD; "a string glued to what follows" */
+BAD          ::= ([\x00-\x7F--[\s();#\x1c-\x1f]]|#[\x00-\x7F--[|\s();\x1c-\x1f]])+    /* then AFTER_WORD; "a token that is not a name" */
+(skipped)    ::= ([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+    /* in INITIAL, AFTER_WORD; then INITIAL */
 ```
 <!-- /generated: ein.l -->
 
-Five terminal facts that are load-bearing and easy to lose:
+Six terminal facts that are load-bearing and easy to lose:
 
 1. **A reserved word is a token only as a whole word.** The thirteen words
    no name may be and the position words (`ein_ir::grammar::RESERVED_WORDS`
@@ -192,11 +193,12 @@ Five terminal facts that are load-bearing and easy to lose:
    a `\u{…}` whose digits named no character read as U+FFFD, in silence.
 5. **A token ends at a separator.** After any token but `(` and `)` the lexer
    is in `AFTER_WORD`, where it tries `(`, `)` and the skip rule alone: a
-   space, a paren, a comment or the end of input ends a token, and anything
-   else continues it. So `a?x`, `?x?y`, `a,b` and `Жук` are each one `BAD`
-   token, *a token that is not a name*, and `"a"b` one `BADTEXT`, *a string
-   glued to what follows*, each a parse error at the token with the file,
-   line and column; none splits in silence. **The name rule** (M1f
+   space, a paren, a comment or the end of input ends a token, and any other
+   ASCII character continues it. So `a?x`, `?x?y` and `a,b` are each one
+   `BAD` token, *a token that is not a name*, and `"a"b` one `BADTEXT`, *a
+   string glued to what follows*, each a parse error at the token with the
+   file, line and column; none splits in silence. `Жук` was one `BAD` token
+   too until M1f S1f.5.22, and is refused at its `Ж` since (fact 6). **The name rule** (M1f
    [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md),
    the user's ruling of 2026-11-06): a `NAME` is a run of the ASCII name
    characters `ein.l` lists, letters, digits and
@@ -206,6 +208,32 @@ Five terminal facts that are load-bearing and easy to lose:
    a letter and then letters, digits, `_`, `*` and `-`, a run of digits an
    `INT`, and a token ended wherever the next could start, so `a?x` was two
    tokens and `?x?y` two variables.
+6. **A character that is not ASCII is written only inside a string or a
+   comment** (M1f
+   [S1f.5.22](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md),
+   the user's ruling of 2026-11-10, *"Unicode is not allowed anywhere else
+   than inside string literals, and the error must say it explicitely"*, and
+   [Q-M1f.65](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f65--may-a-comment-hold-unicode)
+   (b) for a comment). `TEXT` and `BADESCAPE` take any character between
+   their quotes, and the skip rule's comments any to their end; `BAD`,
+   `BADTEXT`'s tail and the skip rule's whitespace are ASCII, `\x00-\x7F`
+   less the separators and `\x09-\x0D`, the space and `\x1C-\x1F`. So no
+   rule matches a character that is not ASCII anywhere else, in either start
+   condition: the lexer stops at it, `lrpar` returns that one lexing error
+   (it lexes a file before it parses it), and the report names the character,
+   its code point and where Unicode is allowed, *`x.ein:7:7: 'é' (U+00E9) is
+   not ASCII: Unicode is allowed only inside a string literal (after :why,
+   :source or :goal-text) or in a comment`* (`ein_ir::grammar::not_ascii`),
+   one quoted as the escape a string writes it with where a reader cannot see
+   it, `'\u{a0}' (U+00A0)` (Q-M1f.92); a `#` before one is passed over, the
+   character being what the line is about. **Until S1f.5.22** such a
+   character was taken into a `BAD` token wherever it was glued to one, and
+   `\s`, Unicode's whitespace, was the skip rule's, so a no-break space,
+   U+3000, U+2028 and U+0085 were separators, and a program writing one
+   between two tokens, or inside what reads as one name, loaded (W73). The
+   grammar's table holds a row per place
+   (`grammar_pages`), and `ein-cli/tests/unicode_only_in_a_string.rs` every
+   place on every command.
 
 ## §2 Phrase grammar
 
@@ -357,7 +385,9 @@ different messages, and the corpus has a fixture directory for each
 > per error recovery reaches, `file:line:col: unexpected X`, the token's name
 > after it where it has one, then the error's notes and at most three ranked
 > repairs and a count of the rest; a report cut at the recovery budget says
-> where. A loader error about a top-level form ends `at None`. Both are
+> where; a character that is not ASCII outside a string and a comment is one
+> line, naming it and where Unicode is allowed (§1, fact 6). A loader error
+> about a top-level form ends `at None`. Both are
 > defined behaviour, stated in
 > [`defined_behaviour.md` §1](../../defined_behaviour.md), and every
 > `.expected` file under `examples/broken/` is baselined against them.
@@ -418,6 +448,7 @@ A specification with no test is a wish. What pins the grammar:
 | [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs) | §1's and §2's blocks, written from `ein.l` and `ein.y` and failing when they differ; every token `ein.y` names a rule of `ein.l`; and **the grammar's table**, a refused program per place, its report banked in `tests/golden/grammar_table.txt`, with the loader lines the grammar took over named by its rows |
 | [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt` (`grep -c '^=== ' ein.rs/crates/ein-ir/tests/golden/grammar_decisions.txt`, 2026-11-09): `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the thirty `examples/broken/*.ein` reports, whose `.expected` files are the engine's defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
 | the same file's `a_keyword_is_a_whole_word_in_every_place` | **53 460 parses** (M1e2 S1e2.2.22, restated at the swap): every word the hand-written parser matched as a literal and the kernel's eight other heads, each followed by a name character and an argument shape, in each of the twenty places the parser reads a keyword; no name split after a word, every trace word followed by a name character a parse error, and the 348 parses of a word before `-` and a digit each reading the name it spells (§1, fact 1) |
+| [`ein-cli/tests/unicode_only_in_a_string.rs`](../../../../ein.rs/crates/ein-cli/tests/unicode_only_in_a_string.rs) | a character that is not ASCII outside a string literal and a comment, every place a token can stand on every command, and twelve characters in each place through the parser, refused at the character with §1's fact 6's line; each in a string and a comment loading on every command; and an imported module that cannot be read as text refused as the program is (M1f S1f.5.22) |
 | [`ein-ir/tests/generated_parser.rs`](../../../../ein.rs/crates/ein-ir/tests/generated_parser.rs) | a report is the same twice (F11's patched `lrpar`); a report cut at the budget says so; the nesting limit; the end of input placed where the text ends; and the lexer's tokens held to T4's, kind and span, over 21 083 inputs (T1f.5.5.12) |
 | `fuzz_properties` and `corpus_shapes.md5`'s `ir[parse]` lines | every seed and finding parses as it was recorded, and every corpus file's parse, digested — the *structure* of an acceptance, not just the fact of one |
 
