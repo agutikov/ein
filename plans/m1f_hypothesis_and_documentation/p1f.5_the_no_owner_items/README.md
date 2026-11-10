@@ -692,6 +692,10 @@ they are shown here:
   `ein-ci:ubuntu-24.04-rust1.97.1`, `ein-ci:26.04`, `ein-ci:24.04` and `ein-ci:26.04-amd64`. Nothing reads them, and
   removing them is the user's call.
 
+**The user's answers, 2026-11-11**: *"p1f.7 runs before p1f.6, it's questions take a default"*, and *"remove docker images"*. P1f.7
+started the same day, before P1f.6, each question it raises taking its stage's default; the six images were removed
+(`docker rmi`, 2026-11-11), the two `-eca9ef96` tags kept.
+
 ## The ids
 
 | until 2026-11-08 | since | stage |

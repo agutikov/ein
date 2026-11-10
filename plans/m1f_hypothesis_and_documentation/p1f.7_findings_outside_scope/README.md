@@ -6,7 +6,10 @@ stage has started. It runs after [P1f.5](../p1f.5_the_no_owner_items/README.md) 
 that close (the user, 2026-11-10: *"stop in the end of the phase"*), so the user decides then when this phase
 starts, and whether its questions stop the stage or take a default. **P1f.5 closed on 2026-11-11**
 ([its close](../p1f.5_the_no_owner_items/README.md#the-close-2026-11-11)): S1f.5.22, S1f.5.25, S1f.5.27 and S1f.5.28
-found no wrong answer outside their scope, so this phase has the nine stages below, and it waits for the user.
+found no wrong answer outside their scope, so this phase has the nine stages below. **Running since 2026-11-11**, on
+the user's answer of that day, *"p1f.7 runs before p1f.6, it's questions take a default"*: it runs before P1f.6, and a question
+a stage raises takes the stage's default, recorded as a Q-M1f row marked *defaulted* and shown at this phase's close
+([§ How every stage runs](#how-every-stage-runs)).
 **Depends on:** P1f.5. Its stages use [S1f.5.21](../p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s
 refusal line and [S1f.5.24](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s walk of
 a rule's clauses after macro expansion (`ein_ir::from_ir::refuse_malformed_primitives`).
@@ -71,10 +74,11 @@ Every stage follows the method of P1f.5's re-opened stages, S1f.5.21 to S1f.5.24
 4. **T4, the pages**: the kernel pages the class touches, `defined_behaviour.md`, `00_ebnf.md`'s table where the
    grammar takes a refusal, and the stage's records.
 
-A choice the finding leaves open, such as refusing a shape against giving it a meaning, is a Q-M1f row. How it
-is taken is the user's call when the phase starts ([§ Status](#p1f7--the-wrong-answers-p1f5s-stages-found-outside-their-scope-a-stage-each)).
-Each stage file names the direction that agrees with the rulings already made, so that a default, if the user
-allows defaults, has a precedent.
+A choice the finding leaves open, such as refusing a shape against giving it a meaning, is a Q-M1f row. **It takes
+the stage's default** (the user, 2026-11-11, *"p1f.7 runs before p1f.6, it's questions take a default"*): the direction the stage
+file names, which agrees with the rulings already made, recorded as a Q-M1f row marked *defaulted* and shown at the
+phase's close. As in P1f.5, a default that would reverse one of the user's own rulings, or a step that is
+irreversible or outward-facing, still stops for the user.
 
 ## The order
 
@@ -96,8 +100,8 @@ the main tree. The default order:
 
 Stages added later (S1f.7.10 onward) run after these unless one depends on another.
 
-Where this phase falls against [P1f.6](../p1f.6_calculator/README.md) (the calculator, whose S1f.6.1 stops for the
-user) is the user's call at P1f.5's close.
+This phase runs before [P1f.6](../p1f.6_calculator/README.md), the calculator, whose S1f.6.1 stops for the user (the
+user, 2026-11-11, *"p1f.7 runs before p1f.6, it's questions take a default"*).
 
 ## Acceptance for the phase
 

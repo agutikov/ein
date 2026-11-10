@@ -786,8 +786,9 @@ constrained-reasoning research.
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11); the nine wrong
   answers they found outside their scope are P1f.7's S1f.7.1 to S1f.7.9, none
   started; and the defaults Q-M1f.69 to .111 stand, the ones that touch a
-  ruling listed there for the user. What runs next, P1f.7 or P1f.6, is the
-  user's call.
+  ruling listed there for the user. The user ruled the same day that P1f.7
+  runs before P1f.6 and that its questions take the stage's default, and
+  P1f.7 started.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
