@@ -314,6 +314,7 @@ S1f.5.18's, which fixed it the same day.
 | [S1f.5.26](s1f.5.26_the_tutorial_runs.md) | The tutorial's programs run on today's engine | — | finding 6 | **done 2026-11-10** ([its records](s1f.5.26_the_tutorial_runs.md#t1-record-2026-11-10)): the guide's sixteen `lisp` blocks read, three refused (chapter 4's retired `(config …)` flag, chapter 3's two rules with no `:why`), one answering otherwise than its page and one misquoting its file, and four sentences of prose false; each fixed in the page, chapter 4's block now `zebra2.ein`'s forms with its hypothesis layer; `ein-cli/tests/guide_programs.rs` loads every block and solves every whole program, held both ways; no engine code, answer or register row moved; [Q-M1f.69](../open_questions.md#q-m1f69--what-the-guides-pin-reads-in-a-program-block) and [Q-M1f.70](../open_questions.md#q-m1f70--what-the-stage-does-with-what-t1-found-false-beside-the-blocks) defaulted |
 | [S1f.5.27](s1f.5.27_the_nightly_reduced.md) | The nightly reduced: long-running steps to the dev host, critical ones kept in CI | — | finding 8; [Q-M1f.51](../open_questions.md#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | **new 2026-11-10** |
 | [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) | The findings taken from the stage records: confirmed, triaged, fixed | — | finding 9, and finding 7's prose | **new 2026-11-10** |
+| [S1f.5.29](s1f.5.29_the_review_bundle_smoke_on_the_runner.md) | The review bundle's smoke on the runner's Graphviz: the per-commit job red since `00c4ed34` | — | the user's instruction of 2026-11-10; the per-commit CI red at `review_bundle.py --smoke`, 7 DOTs refused by the runner's x86-64-v3 Graphviz 14.1.2 | **new 2026-11-10** |
 
 ### The order
 
@@ -508,6 +509,8 @@ The order, as those rulings leave it:
     ahead of it:
     [S1f.5.26](s1f.5.26_the_tutorial_runs.md), the tutorial (pages and a test, first);
     [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md), the compiler's refusals in Ein's words and at load;
+    [S1f.5.29](s1f.5.29_the_review_bundle_smoke_on_the_runner.md), the per-commit CI red at the review bundle's smoke
+    (added 2026-11-10 on the user's instruction, placed here because CI stays red until it lands);
     [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md), the macro body (after S1f.5.21, whose line it
     uses; Q-M1f.67);
     [S1f.5.23](s1f.5.23_open_is_reserved.md), `open` (Q-M1f.66);
