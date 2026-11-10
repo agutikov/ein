@@ -11750,7 +11750,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: a rule with a parameter is compiled once per activator, and only a commitment writes this one's, so the commands that never reach the commitment answered and those that do stopped. The row's `now` is describe's stop; its `wrong` names the commands that answered; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11784,7 +11784,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: an hrule is compiled where the hypothesis layer asks it for candidates, which a saturation never does, so `ein saturate` answered a program every solve question stopped on; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11818,7 +11818,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: an obligation is compiled by the pass that reads what a quiescent state owes, which a saturation never runs, so `ein saturate` answered a program every solve question stopped on. The `eq` is reached through the macro's parameter, written as its head; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11852,7 +11852,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: a rule no activator activates is never compiled, so every command answered. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open. It stands for the same site in W67, W68 and W69: a rule no activator reaches is never compiled or fired, whatever its clauses write; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11886,7 +11886,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `not` is matched where `r` is compiled, at root. `std.macro`'s `unknown` writes the same shape, `(absent (not ?P))`, when called with a conjunction, `(unknown (and (p ?x) (q ?x)))`, which the stage's pin holds; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11918,7 +11918,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed guard is evaluated where `r` is compiled, at root; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11950,7 +11950,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the hypothesis layer's path: an hrule's `:match` is matched where H is built. The row's `now` is `ein oracle`, a command's run, which answered while the row was open. The same hrule written with `macro-not-conjunction.ein`'s `(not (and …))` stops a debug build on `hrule.rs`'s assertion that no hrule reads `not`, which a written `(not (p ?x))` stops on too (the stage's T2 record); fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -11982,7 +11982,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the obligation pass's path: an obligation's `:match` is matched over each quiescent state. The row's `now` is `ein oracle`, a command's run, which answered while the row was open; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12016,7 +12016,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the user's case, *\"the ultimate goal in this case is not allow execution of (eq <arg>)\"* (Q-M1f.67): the conclusion was executed; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12048,7 +12048,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `false` was concluded, and decided R; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12080,7 +12080,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `or` was concluded; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12112,7 +12112,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `not` was concluded; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12144,7 +12144,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `and` was concluded, as a value; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12176,7 +12176,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the hypothesis layer's path: an hrule's conclusion is what it proposes, so the malformed `eq` was committed. The row's `now` is `ein oracle`, a command's run, which answered while the row was open; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12210,7 +12210,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: a firing refuses a conclusion that is no fact, and only a commitment activates `r`, so the commands that never reach it answered and those that do stopped. The row's `now` is describe's stop; its `wrong` names the commands that answered; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
@@ -12244,7 +12244,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the hypothesis layer drops a conclusion that is no fact (`hrule.rs`, *a malformed template yields no candidate*), where a rule's firing stops on it. The row's `now` is `ein oracle`, a command's run, which answered while the row was open; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "ddc5c28a"
 by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
 date   = "2026-11-10"
 
