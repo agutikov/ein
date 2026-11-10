@@ -1,8 +1,17 @@
 # S1f.5.29 — The review bundle's smoke on the runner's Graphviz: the per-commit job red since `00c4ed34`
 
 **Phase:** [P1f.5](README.md) (The no-owner items)
-**Status:** specified 2026-11-10 on the user's instruction of that day ([§ The instruction](#the-instruction)). Not
-started.
+**Status:** specified 2026-11-10 on the user's instruction of that day ([§ The instruction](#the-instruction)).
+**Done 2026-11-10**, in the working tree for the coordinator's commit: T1f.5.29.1, the cause, which was not S1f.5.17's
+([§ T1 record](#t1-record-2026-11-10)): the runner's Graphviz has no `fdp` layout, a package `apt-get install graphviz`
+does not pull on Ubuntu 26.04, so every KB view, which suggests `fdp`, was refused; T1f.5.29.2, the fix in CI's
+provisioning and the bundle's check ([§ T2 record](#t2-record-2026-11-10)); T1f.5.29.3, the rule and the pages
+([§ T3 record](#t3-record-2026-11-10)). Three choices taken by default:
+[Q-M1f.77](../open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done) (the stage's),
+[Q-M1f.78](../open_questions.md#q-m1f78--where-the-runners-missing-fdp-is-fixed) and
+[Q-M1f.79](../open_questions.md#q-m1f79--does-a-refused-dot-fail-the-whole-bundle) (the coordinator's). Two runs on
+the commit remain ([§ Acceptance, re-taken](#acceptance-re-taken-2026-11-10)): `utils/ci_container.sh`, the
+coordinator's, and the per-commit job on the user's next push.
 **Depends on:** nothing in code. It runs after [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md), one stage at a
 time on the main tree, and ahead of the rest of item 12 ([README § The order](README.md#the-order)), because the
 per-commit CI is red until it lands.
@@ -72,7 +81,21 @@ The GitHub nightly has not run the whole bundle since `00c4ed34`: its last run, 
 `review_bundle.py` on W40's and W41's row shape, which S1f.5.19 fixed. The whole bundle draws many more KB views
 and trace blocks, so it should be expected to fail the same way.
 
+**Confirmed by T1, 2026-11-10: the cause was not S1f.5.17's.** The two paragraphs above are the record of what the
+stage presumed when it was written. Drawn on the runner's build with its stderr kept, each refused DOT says *There is
+no layout engine support for "fdp"*: every KB view suggests `fdp` (`kb_dot::to_dot`), and Ubuntu 26.04's `graphviz`
+links `fdp` to `dot` without the plugin behind it, `libgvplugin-neato-layout8`, a package it neither depends on nor
+recommends. Both 26.04 builds refuse the same DOTs, and no DOT is at fault. The whole bundle does not fail the same
+way: it exits 0 with 612 KB views and trace blocks refused, a refusal being a line on its page, so the GitHub nightly's
+bundle step had drawn no KB view since 2026-11-06 and passed ([§ T1 record](#t1-record-2026-11-10)). The coordinator took
+the fix in CI's provisioning, not in a view ([Q-M1f.78](../open_questions.md#q-m1f78--where-the-runners-missing-fdp-is-fixed)),
+and a refused DOT now fails the whole bundle too
+([Q-M1f.79](../open_questions.md#q-m1f79--does-a-refused-dot-fail-the-whole-bundle)).
+
 ## What it changes
+
+*As specified, before T1. What T1 found moved the fix from a view to CI's provisioning (Q-M1f.78), and
+added the whole bundle's check (Q-M1f.79): [§ T2 record](#t2-record-2026-11-10).*
 
 - **The cause, confirmed, not presumed.** Each of the seven DOTs is drawn on the runner's Graphviz build, with its
   stderr kept.
@@ -118,3 +141,196 @@ smoke checks and prints), S1f.5.19's record (a line: its *0 failed* was local), 
 - The gate is green locally and in `utils/ci_container.sh` on the stage's commit. The per-commit job on GitHub is
   green on the user's next push, and a note records that run once it exists.
 - No answer, register row or golden moved but those named.
+
+## T1 record, 2026-11-10
+
+T1f.5.29.1, at `28da7eb5`. **The cause is not the one the stage presumed, and the stage stopped here for a choice**
+([§ What a fix can be](#what-a-fix-can-be)), which the coordinator took the same day: (a)
+([Q-M1f.78](../open_questions.md#q-m1f78--where-the-runners-missing-fdp-is-fixed)). Logs and probes are under
+`build/s1f.5.29/` (gitignored), the probes under `build/s1f.5.29/tools/`, and each drawing's outcome in its `m.*.tsv`;
+the bundle itself, `build/s1f.5.29/bundle-v3/`, was deleted once counted.
+
+**Reproduced.** In `utils/ci_container.sh`'s default image, `ein-ci:ubuntu-26.04-amd64v3-rust1.97.1` (built
+2026-11-08 and still present, `docker image inspect`; Ubuntu 26.04, Graphviz 14.1.2-1ubuntu1, `libpathplan4` amd64v3,
+the packages the runner unpacks by its apt log, `gh run view 42766075844 --log`), `python3 utils/review_bundle.py
+--smoke`, run on this checkout mounted at its own path with the host's debug `ein` (it needs GLIBC 2.34 and the image
+has 2.43), exits 1 on **six** DOTs (`build/s1f.5.29/smoke-v3-HEAD.log`). They are the CI log's seven but
+`query-goal-free-head`'s root KB view: since `4e3c0c9d` (S1f.5.21, W64) that program is refused at load, so `ein render
+kb` writes no view of it.
+
+**Graphviz's own words**, the same for each of the six, each drawn as `render_svgs` draws it (the engine a `// suggested
+layout:` comment names, else `dot`; `-Tsvg`) with its stderr kept (`build/s1f.5.29/tools/drawall.py`,
+`build/s1f.5.29/smoke-host.v3.tsv`): exit 1, no SVG, and
+
+```
+There is no layout engine support for "fdp"
+ Use one of: dot
+```
+
+**The cause: the runner's Graphviz has no `fdp` layout.** Every KB view `ein-render` writes (`kb_dot::to_dot`, since
+S1a.5.1) carries `// suggested layout: fdp`, the trace block's `digraph state` among them, and the bundle lays such a DOT
+out with the engine it names whenever `shutil.which` finds it (`utils/review/util.py`, `layout_for`). On Ubuntu 26.04
+`/usr/bin/fdp` is a link to `dot`, but the plugin behind it, `libgvplugin_neato_layout.so.8`, is a package of its own,
+`libgvplugin-neato-layout8`, which `graphviz 14.1.2-1ubuntu1` neither depends on nor recommends (`apt-cache depends
+graphviz` in the image: `libcgraph8`, `libgvc7`, `libgvpr2`, `libgvplugin-gd8`, `libgvplugin-pango8`, recommends
+`fonts-liberation`). So `apt-get install -y graphviz`, the workflows' line, installs `dot`'s layout and no other:
+`echo 'digraph{}' | dot -Kxyz` lists *Use one of: dot* in the image, and *circo dot fdp neato nop nop1 nop2 osage
+patchwork sfdp twopi* with the plugin added. On 24.04, `libgvc6` carries the plugin itself. **It is not the x86-64-v3
+build**: the baseline build refuses the same DOTs, and no DOT the bundle draws today raises S1f.5.17's `shortest.c`
+lines on either build, by `fdp` or by `dot`.
+
+Every DOT the whole bundle writes, drawn on each Graphviz (`build/s1f.5.29/tools/matrix.sh`, `build/s1f.5.29/m.*.tsv`;
+*refused* is an exit other than 0 or no SVG, and every other drawing printed nothing on stderr):
+
+| Graphviz | image | `fdp` | the smoke's 31 DOTs | the whole bundle's 3 885 |
+|---|---|---|---:|---:|
+| 14.1.2 amd64v3, as the runner installs it | `ein-ci:ubuntu-26.04-amd64v3-rust1.97.1` | no | 6 refused | **612 refused** |
+| 14.1.2 baseline | `ein-ci:26.04-amd64` (26.04 with no variant, S1f.5.17's probe image) | no | 6 refused | 612 refused |
+| 14.1.2 amd64v3, `libgvplugin-neato-layout8` (amd64v3) added | `ein-ci-probe:v3-neato` (`tools/Dockerfile.neato`) | yes | 0 | **0** |
+| 14.1.2 amd64v3, the `fdp` line taken out of every DOT, so `dot` lays each out | `ein-ci:ubuntu-26.04-amd64v3-rust1.97.1` | — | 0 | **0** |
+| 2.42.2-9ubuntu0.1 | `ein-ci:ubuntu-24.04-rust1.97.1` | yes | 0 | 0 |
+| 16.0.0 | this machine | yes | 0 | 0 |
+
+The smoke itself, at HEAD: exit 1 in both 26.04 images (`smoke-v3-HEAD.log`, `smoke-base-HEAD.log`), exit 0 with the
+plugin added (`smoke-v3neato-HEAD.log`), on 24.04 (`smoke-2404-HEAD.log`) and here (`smoke-host-HEAD.log`), 31 SVGs
+and the link check exit 0 in each.
+
+**The whole bundle in the image.** `python3 utils/review_bundle.py --out build/s1f.5.29/bundle-v3`, run in the amd64v3
+image with the host's release `ein`: **191 cases, 0 failed, exit 0, 354.2 s** (`build/s1f.5.29/bundle-v3.log`). It
+wrote 3 890 DOTs and 3 273 SVGs. Of the 617 DOTs with no SVG, **612 are refused, every DOT in the bundle that suggests
+`fdp`**: 475 KB views and 137 trace blocks over 130 cases. The other five are lattices past `DAG_NODES_DRAWN` (1 000
+nodes), which the bundle keeps as a DOT and does not lay out by design (`utils/review/run.py`): `W8/corner-house`,
+`W15/equality`, `W27/past-limit-lines-minimal` and `-maximal`, and `W42/class-label-04-open`. The smoke's *every DOT
+has its SVG* check would count such a lattice as refused too, though none of its four builds writes one.
+
+**What it means beyond the smoke.**
+- **The nightly is not red on it, and its bundle has drawn no KB view since the runner moved to 26.04** (2026-11-06,
+  S1f.5.17's table): the whole bundle writes a refused drawing on its page as *Graphviz refused this graph* with
+  Graphviz's message, and a case fails only on an exception, so the run above exits 0. The stage's expectation that
+  the whole bundle *fail the same way* does not hold. S1f.5.17's in-container nightly at `76ede241`, *137 cases, 0
+  failed*, ran in the image above, so its bundle drew no KB view either.
+- **Nothing else checks `fdp`.** `dot_wellformed` lays every view out with `dot` (`fn graphviz`), so a KB view's
+  suggested engine is exercised only by the bundle, and refused there only since `00c4ed34`'s check.
+- **`utils/ci_container.sh` would have caught it**: its image lacks the plugin exactly as the runner does.
+
+### What a fix can be
+
+No DOT is at fault: every one of the 612 draws on the same build once a layout plugin for it is there, or once `dot`
+lays it out. Three fixes, each shown above to draw all 3 885 on the runner's build:
+
+- **(a) The runner installs the plugin.** `libgvplugin-neato-layout8` beside `graphviz` on the workflows' apt line
+  (`per-commit.yml`, `nightly.yml`, and `release.yml`'s two for parity), in `utils/ci_container.sh`'s image, and in
+  the two lines `gate_steps.rs` and `nightly_steps.rs` name as provisioning. No view, golden, answer or drawing moves,
+  and the CI lays out what the user's bundle lays out. The cost: a 26.04 package name on the apt line, which a later
+  image renames loudly (the install fails), and which 24.04 does not have, so `ci_container.sh --image ubuntu:24.04`
+  installs it only where it exists. `run_tests.sh` could check for `fdp` as it checks for `dot` (exit 127), so a
+  machine without it fails at the start and not at the smoke.
+- **(b) The bundle falls back to `dot`** where the suggested engine does not load (one probe a run), and says so on
+  the page. No golden moves, but on the runner the smoke checks a drawing the user's bundle does not make.
+- **(c) The KB view stops suggesting `fdp`** (`kb_dot.rs`), so every KB view is laid out by `dot` everywhere: the
+  stage's own kind of fix, a view in `ein-render`. It moves the four DOT goldens that carry the line
+  (`tests/golden/dot/kb_render_to_dot.dot`, `slice_render_solution.dot`, `slice_render_state.dot`,
+  `tests/golden/kb_zebra_unified.dot`), at least the 2 346 `dot[kb…]` lines of `corpus_shapes.md5` (six KB views
+  × 391 files), the worked fragment in
+  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md), and every KB drawing the user
+  reviews, from force-directed to ranked.
+
+The stage asked for a fix of (c)'s kind on the presumption of S1f.5.17's cause. The cause is a package, so the choice
+goes back to the coordinator. The agent's recommendation is (a): it is the cause, it moves nothing, and it keeps the
+CI drawing what the user reviews. The smoke printing Graphviz's stderr (T2) and the `ci_container.sh` rule (T3, a
+Q-M1f row) do not depend on the choice.
+
+## T2 record, 2026-11-10
+
+T1f.5.29.2, in the working tree on `28da7eb5`, after the coordinator took Q-M1f.78's (a) and Q-M1f.79's (a).
+
+**CI's Graphviz has `fdp`** ([Q-M1f.78](../open_questions.md#q-m1f78--where-the-runners-missing-fdp-is-fixed)):
+- `per-commit.yml`, `nightly.yml` and `release.yml` (its two lines, for parity) install `graphviz
+  libgvplugin-neato-layout8`, and `gate_steps.rs`' `NOT_GATE_STEPS` and `nightly_steps.rs`' `NOT_NIGHTLY_STEPS` name
+  that line as provisioning.
+- `run_tests.sh` checks, after `dot`, that `fdp` lays a graph out (`echo 'graph { a }' | fdp -Tsvg`), and exits 127
+  with one line where it does not: `error: Graphviz's 'fdp' lays out no graph — install its layout plugin
+  (libgvplugin-neato-layout8 on Ubuntu 26.04).` Run in each image, the check exits 127 with that line in the one
+  without the plugin and passes in the one with it.
+- `utils/ci_container.sh`'s image installs the plugin wherever its archive has the package (24.04's has none: its
+  `libgvc6` carries the plugin), and its tag carries a hash of the Dockerfile, so the image built before, which has no
+  plugin, is not reused. The new one, `ein-ci:ubuntu-26.04-amd64v3-rust1.97.1-eca9ef96`, has
+  `libgvplugin-neato-layout8 14.1.2-1ubuntu1` amd64v3; built, with the checkout cloned, in 105 s
+  (`utils/ci_container.sh --shell`, `build/s1f.5.29/ci-container-image-build.log`). Its banner prints the layouts
+  Graphviz offers: `── layouts: circo dot fdp neato nop nop1 nop2 osage patchwork sfdp twopi`. On 24.04
+  (`--image ubuntu:24.04 --variant none`) the same Dockerfile builds without the package and the banner lists the same
+  layouts (`build/s1f.5.29/ci-container-2404-image-build.log`).
+
+**A refused DOT fails the bundle, with what Graphviz said**
+([Q-M1f.79](../open_questions.md#q-m1f79--does-a-refused-dot-fail-the-whole-bundle)):
+- `review.util.render_svgs` keeps Graphviz's stderr beside a refused DOT as `<name>.refused.txt` (the engine, its
+  exit, its message), after clearing a stale SVG and note. `keep_undrawn` writes a DOT kept undrawn by design with a
+  `<name>.undrawn.txt` saying why, and the one such writer, `run.py`'s lattice past `DAG_NODES_DRAWN`, uses it.
+  `refused_dots` reads both: a DOT with a refusal note, or with no SVG and no undrawn note.
+- `cmd_bundle`, the smoke's and the nightly's, exits 1 on a refused DOT among the cases it built, printing each path
+  with Graphviz's message indented under it, and its summary line counts them (`…, 0 failed, 0 DOTs refused; …`). The
+  smoke's own scan, `00c4ed34`'s, is gone: the smoke builds through `cmd_bundle`. In the image without the plugin:
+
+  ```
+  error: Graphviz refused W2/forced-2/runs/now/img/root/01_kb.dot
+      fdp -Tsvg exit 1
+      There is no layout engine support for "fdp"
+       Use one of: dot
+  ```
+- `--smoke --keep DIR` builds into DIR, which must be new or empty (exit 2 otherwise), and leaves it there.
+
+**Verified in the new image**, on the working tree with the host's `ein`, mounted at its own path (logs under
+`build/s1f.5.29/`):
+
+| run | before: the image without the plugin, at `28da7eb5` (T1) | after: `…-eca9ef96`, the working tree |
+|---|---|---|
+| `review_bundle.py --smoke` | exit 1, 6 DOTs refused, no message (`smoke-v3-HEAD.log`) | **exit 0**: 0 DOTs refused, 31 SVGs, link check exit 0 (`smoke-v3-plugin-T2.log`) |
+| `review_bundle.py`, every register row | 191 cases, 0 failed, exit 0, and 612 DOTs refused that nothing counted (`bundle-v3.log`, `m.v3.tsv`) | **191 cases, 0 failed, 0 DOTs refused, exit 0**, 359.6 s: 3 890 DOTs and 3 885 SVGs, the five lattices past `DAG_NODES_DRAWN` each with its `.undrawn.txt` (`bundle-v3-T2.log`) |
+| `doc_audit.py --links --check` on that bundle | — | 6 857 pages, 0 findings |
+
+The check bites where the plugin is missing: in the image without it, the smoke on the working tree exits 1 printing
+the six with Graphviz's message (`smoke-v3-noplugin-T2.log`), and `review_bundle.py W2` exits 1 on 6 DOTs refused
+(`bundle-noplugin-W2.log`), where the whole bundle exited 0 before. Here, on Graphviz 16.0.0, the smoke exits 0
+(`smoke-host-T2.log`). `build/s1f.5.29/bundle-v3-T2/` was deleted once counted.
+
+**Nothing else moved.** No view and no `ein-render` file changed, so no DOT golden, `corpus_shapes.md5` line, answer,
+exit code or register row moved: the register reads 177 fixed, 13 open and 1 not wrong (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10). `dot_wellformed` passes in the gate below.
+
+**The gate**: green, 16 min 36 s (`./run_tests.sh`, `build/gate-s1f.5.29.log`): the new `fdp` check passed, 1 004
+tests and 0 failed, `dot_wellformed` among them, and the smoke read 191 rows and built its four with 0 DOTs refused, 31
+SVGs, link check exit 0. The workflows' comment lines and pages edited after it started were re-checked on the final
+tree: `gate_steps` and `nightly_steps` pass, `doc_audit.py --links --check` over the gate's roots finds 0 in 399 pages.
+
+## T3 record, 2026-11-10
+
+T1f.5.29.3:
+- [Q-M1f.77](../open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done), the stage's default: a stage
+  that changes a DOT writer, the review bundle or what CI installs is not done until `utils/ci_container.sh` is green
+  on its commit. [`AGENTS.md`](../../../AGENTS.md)'s *Running the gate* says so in a paragraph of its own, beside the
+  Graphviz one. [Q-M1f.78](../open_questions.md#q-m1f78--where-the-runners-missing-fdp-is-fixed) and
+  [Q-M1f.79](../open_questions.md#q-m1f79--does-a-refused-dot-fail-the-whole-bundle), the coordinator's, recorded
+  with their alternatives.
+- [`utils/review_bundle.py`](../../../utils/review_bundle.py)'s docstring: what the smoke checks, in order, `--keep`,
+  and every DOT drawn in any bundle, with the plugin a KB view needs; `run_tests.sh`'s header names `fdp`;
+  [`utils/README.md`](../../../utils/README.md)'s rows for the bundle and `ci_container.sh`.
+- [S1f.5.19](s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md#t2-record-2026-11-09)'s T2 record: a line
+  that its *0 failed* and the smoke's were local.
+- This file: [§ The case](#the-case-why-it-fails) says what T1 confirmed, keeping the presumption as its record, and
+  the records.
+
+## Acceptance, re-taken 2026-11-10
+
+On the working tree at `28da7eb5`, item by item:
+
+- **`utils/review_bundle.py --smoke` passes in `utils/ci_container.sh`'s default image and locally, and so does the
+  whole bundle in that image.** The default image is now `…-eca9ef96`, the runner's x86-64-v3 Graphviz 14.1.2 with the
+  plugin the workflows now install: the smoke exits 0 there and here, and the whole bundle refuses 0 DOTs, exit 0
+  ([§ T2 record](#t2-record-2026-11-10)). **Met.**
+- **A refused DOT's line carries Graphviz's stderr.** Its path, then the engine, its exit and its message, indented.
+  **Met.**
+- **The gate is green locally and in `utils/ci_container.sh` on the stage's commit. The per-commit job on GitHub is
+  green on the user's next push, and a note records that run once it exists.** Local: green, 16 min 36 s. On the commit:
+  `utils/ci_container.sh` checks HEAD as committed, so it is the coordinator's run after the commit, and the GitHub job
+  is the user's next push. **Open until those two runs.**
+- **No answer, register row or golden moved but those named.** None was named and none moved. **Met.**

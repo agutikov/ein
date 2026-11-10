@@ -58,7 +58,7 @@ jobs:
         with: { python-version: "3.14" }
       # `dot_wellformed.rs` fails rather than skips without Graphviz, which is
       # the only authority the DOT views have on being well-formed.
-      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
       # The whole gate — the corpus sweep through the CLI, the shape digests,
@@ -109,7 +109,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
       - run: cargo build --workspace --no-default-features
       # 610 of the 619 the default build runs; the nine that go are the
       # `.einb` tests and the help-surface golden, which is of the default

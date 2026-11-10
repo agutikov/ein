@@ -37,9 +37,9 @@ from collections import OrderedDict, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from review.util import (REPO, Invocation, SvgJob, details, doc, header, image, jsonl, load_json,
-                         read, rebase, rel, render_svgs, run, size_of, split_digraphs, table, warning_words,
-                         write)
+from review.util import (REPO, Invocation, SvgJob, details, doc, header, image, jsonl, keep_undrawn,
+                         load_json, read, rebase, rel, render_svgs, run, size_of, split_digraphs, table,
+                         warning_words, write)
 from review.rasterise import rasterise_text
 
 STEPS_PER_PAGE = 50
@@ -646,7 +646,9 @@ def lattice_pages(p: Pages) -> list[dict]:
                 continue
             drawn.append(count)
             if count > DAG_NODES_DRAWN:
-                dot = write(sub / f"{i + 1:02d}_{_safe(n)}.dot", block)
+                dot = keep_undrawn(sub / f"{i + 1:02d}_{_safe(n)}.dot", block,
+                                   f"{count} nodes, past DAG_NODES_DRAWN ({DAG_NODES_DRAWN}): not laid out by design "
+                                   "(utils/review/run.py).")
                 lines += [f"**{count} nodes — not laid out**: past {DAG_NODES_DRAWN} Graphviz takes minutes and the "
                           f"picture is not one a person reads. The [DOT]({rel(dot, index)}) is kept, and the step "
                           "pages below list every node.", ""]

@@ -3,7 +3,7 @@
 
     utils/review_bundle.py [--out DIR] [CASE | FILE.ein …]      the bundle
     utils/review_bundle.py --corpus [--out DIR]                 every corpus entry
-    utils/review_bundle.py --smoke                              the gate's check
+    utils/review_bundle.py --smoke [--keep DIR]                 the gate's check
     utils/review_bundle.py --regions [--out DIR]                the region gallery (build/review/regions/)
     utils/review_bundle.py run FILE [SOLVE FLAGS…] --out DIR [--env NAME=V]…
 
@@ -23,7 +23,22 @@ all of R). `--corpus` builds one for every corpus entry with a declared
 a temporary directory and link-checks it: the per-commit gate's step, using
 the debug `ein` `cargo test` built. Since M1f S1f.5.19 it also builds two
 cases whose run is not a solve, and first reads every register row with no
-run through the index and the case pages' register-only parts.
+run through the index and the case pages' register-only parts. What it
+checks, in order: the register pass; the four builds, each a case that
+builds and every DOT drawn (below); every SVG non-empty; and every link and
+image reference resolving (`doc_audit.py --links --check`). `--keep DIR`
+builds into DIR, new or empty, and leaves it, so a red smoke's DOTs can be
+drawn again elsewhere (S1f.5.29).
+
+**Every DOT drawn** (M1f S1f.5.29): the bundle, the smoke's and the
+nightly's whole one alike, exits 1 on a DOT Graphviz refused, printing its
+path and, indented under it, what Graphviz said (kept beside the DOT as
+`.refused.txt`). A DOT kept and not laid out by design, a lattice past
+`DAG_NODES_DRAWN`, says so beside it (`.undrawn.txt`) and is not a refusal.
+A KB view suggests `fdp`, so the Graphviz needs a layout plugin beside
+`dot`'s: on Ubuntu 26.04 that is `libgvplugin-neato-layout8`, which
+`apt-get install graphviz` does not pull, and without it every KB view is
+refused (`There is no layout engine support for "fdp"`).
 
 **A row whose `[case.now]` is a command's run** (the register's schema /16:
 `saturate`, a `render` view, `kb save`) gets a page of its own (S1f.5.19,
@@ -31,7 +46,7 @@ run through the index and the case pages' register-only parts.
 against the register's `wrong`, `now` and `right` as
 `ein-cli/tests/wrong_answers.rs` reads them, and every artefact it writes,
 linked and drawn. A `container` row runs on the witness saved as a `.einb`.
-A case that fails to build makes the command exit 1.
+A case that fails to build makes the command exit 1, as a refused DOT does.
 `--regions` (S1e2.1a.8) surveys every corpus program's region and writes a
 gallery: the synthetic programs `utils/region_synth.py` wrote, the biggest
 regions and the most interesting, each with a page (`review/regions.py`).
@@ -98,6 +113,7 @@ def cmd_run(args: list[str]) -> int:
 def cmd_bundle(args: list[str]) -> int:
     from review.case import case_page, index_page, program_case, register
     from review.command import CommandRun
+    from review.util import refused_dots
     bin = ein_bin(take(args, "--bin"))
     out = Path(take(args, "--out") or REPO / "build/review").resolve()
     flags = []
@@ -140,8 +156,18 @@ def cmd_bundle(args: list[str]) -> int:
         except Exception as e:  # noqa: BLE001
             failed.append((rel_file, f"{type(e).__name__}: {e}"))
     index = index_page(out, built, extra, failed, bin)
-    print(f"{index} — {len(built)} cases, {len(extra)} programs, {len(failed)} failed; {time.time() - t:.1f} s")
-    return 1 if failed else 0
+    # A DOT Graphviz refused fails the bundle as a case does (M1f S1f.5.29),
+    # with what Graphviz printed: until then the page said so and the run
+    # exited 0, so the nightly's step drew no KB view from 2026-11-06 and passed.
+    # Only the cases built here are read, each rebuilt from an empty directory.
+    refused = [hit for d in [out / row["id"] for row, _, _ in built]
+               + [out / "programs" / f.removesuffix(".ein") for f, _, _ in extra] for hit in refused_dots(d)]
+    for dot, said in refused:
+        print(f"error: Graphviz refused {dot.relative_to(out)}", file=sys.stderr)
+        print("\n".join("    " + line for line in said.splitlines()), file=sys.stderr)
+    print(f"{index} — {len(built)} cases, {len(extra)} programs, {len(failed)} failed, "
+          f"{len(refused)} DOTs refused; {time.time() - t:.1f} s")
+    return 1 if failed or refused else 0
 
 
 def cmd_corpus(args: list[str]) -> int:
@@ -181,12 +207,22 @@ def cmd_smoke(args: list[str]) -> int:
     of the register read with no run (`register_pass`): the index's cells and
     each case page's register-only parts. The whole bundle, the nightly's, had
     been the only reader of a row shape, and stopped on W41's from `fc53818f`
-    to S1f.5.19 behind a green gate."""
+    to S1f.5.19 behind a green gate.
+
+    Every DOT it keeps has its drawing: a graph Graphviz refused fails it,
+    each printed with what Graphviz said (`cmd_bundle`, M1f S1f.5.29). The
+    check is S1f.5.19's; the message is S1f.5.29's, whose cause, a runner
+    whose `fdp` has no layout plugin, the bare path did not say. `--keep DIR`
+    builds into DIR, which must be new or empty, and leaves it there."""
     import subprocess
     import tempfile
     from review.case import register, register_pass
     debug = REPO / "ein.rs/target/debug/ein"
     bin = take(args, "--bin") or os.environ.get("EIN_BIN") or str(debug)
+    keep = take(args, "--keep")
+    if keep and Path(keep).exists() and any(Path(keep).iterdir()):
+        print(f"error: --keep {keep}: not empty; the smoke builds into a new or empty directory", file=sys.stderr)
+        return 2
     rows = register()
     failed = register_pass(rows)
     for rid, e in failed:
@@ -194,28 +230,27 @@ def cmd_smoke(args: list[str]) -> int:
     print(f"smoke: the register pass read {len(rows)} rows, {len(failed)} failed")
     if failed:
         return 1
-    with tempfile.TemporaryDirectory(prefix="ein-review-smoke-") as tmp:
-        code = cmd_bundle(["--bin", bin, "--out", tmp, "W2/forced-2", "W40/kb-save", "W41/saturate-import",
+
+    def build(out: Path) -> int:
+        code = cmd_bundle(["--bin", bin, "--out", str(out), "W2/forced-2", "W40/kb-save", "W41/saturate-import",
                            "examples/ein-bugs/query-goal-free-head.ein"])
         if code:
             return code
-        svgs = list(Path(tmp).rglob("*.svg"))
+        svgs = list(out.rglob("*.svg"))
         empty = [p for p in svgs if p.stat().st_size == 0]
         if not svgs or empty:
             print(f"error: {len(svgs)} SVGs, {len(empty)} empty", file=sys.stderr)
             return 1
-        # Every DOT the bundle kept has its drawing (M1f S1f.5.19): a graph
-        # Graphviz refused is written as a DOT with no SVG beside it, and the
-        # smoke's own case had four, every rule view cut at a subgraph's
-        # close, unseen since S1e2.1.5.
-        refused = [p for p in Path(tmp).rglob("*.dot") if not p.with_suffix(".svg").exists()]
-        for p in refused:
-            print(f"error: Graphviz refused {p.relative_to(tmp)}", file=sys.stderr)
-        if refused:
-            return 1
-        check = subprocess.run([sys.executable, str(REPO / "utils/doc_audit.py"), "--links", "--check", tmp])
+        check = subprocess.run([sys.executable, str(REPO / "utils/doc_audit.py"), "--links", "--check", str(out)])
         print(f"smoke: {len(svgs)} SVGs, link check exit {check.returncode}")
         return check.returncode
+
+    if keep:
+        out = Path(keep).resolve()
+        out.mkdir(parents=True, exist_ok=True)
+        return build(out)
+    with tempfile.TemporaryDirectory(prefix="ein-review-smoke-") as tmp:
+        return build(Path(tmp))
 
 
 def main(argv: list[str]) -> int:

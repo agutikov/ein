@@ -244,19 +244,60 @@ class SvgResult:
     error: str = ""
 
 
+# Beside a DOT the bundle keeps: why it has no SVG. `.refused.txt` holds what
+# Graphviz printed when it refused the graph (`render_svgs`), `.undrawn.txt`
+# why the bundle did not ask it (`keep_undrawn`). `refused_dots` reads both.
+REFUSED_NOTE = ".refused.txt"
+UNDRAWN_NOTE = ".undrawn.txt"
+
+
 def render_svgs(jobs: list[SvgJob]) -> list[SvgResult]:
     """Every DOT to SVG, in parallel. A refusal is kept — the DOT is written
-    beside the SVG path as `.dot`, the error is returned — never dropped,
-    because a DOT Graphviz refuses is a `dot_wellformed.rs` gap."""
+    beside the SVG path as `.dot`, Graphviz's stderr beside it as
+    `.refused.txt` (M1f S1f.5.29), the error is returned — never dropped,
+    because a DOT Graphviz refuses is a `dot_wellformed.rs` gap, or a gap in
+    the Graphviz that drew it: on Ubuntu 26.04 `fdp` is found and has no
+    layout plugin behind it unless `libgvplugin-neato-layout8` is installed."""
     def one(j: SvgJob) -> SvgResult:
         j.svg.parent.mkdir(parents=True, exist_ok=True)
         j.svg.with_suffix(".dot").write_text(j.dot, encoding="utf-8")
+        note = j.svg.with_suffix(REFUSED_NOTE)
+        j.svg.unlink(missing_ok=True)
+        note.unlink(missing_ok=True)
         p = subprocess.run([layout_for(j.dot), "-Tsvg", "-o", str(j.svg)],
                            input=j.dot, capture_output=True, text=True)
         ok = p.returncode == 0 and j.svg.exists() and j.svg.stat().st_size > 0
+        if not ok:
+            note.write_text(f"{layout_for(j.dot)} -Tsvg exit {p.returncode}\n{p.stderr.strip() or '(no message)'}\n",
+                            encoding="utf-8")
         return SvgResult(j.svg, ok, p.stderr.strip())
     with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
         return list(pool.map(one, jobs))
+
+
+def keep_undrawn(dot_path: Path, dot: str, why: str) -> Path:
+    """A DOT the bundle keeps and does not lay out, by design (a lattice past
+    `DAG_NODES_DRAWN`), said so beside it, so `refused_dots` tells it from a
+    refusal by what the bundle wrote and not by its size or its path."""
+    write(dot_path, dot)
+    write(dot_path.with_suffix(UNDRAWN_NOTE), why.rstrip() + "\n")
+    return dot_path
+
+
+def refused_dots(root: Path) -> list[tuple[Path, str]]:
+    """Every DOT under `root` that Graphviz refused, with what it printed
+    (M1f S1f.5.29): one with a `.refused.txt` beside it, or with no SVG and
+    no `.undrawn.txt`, which no writer should leave. The smoke and the whole
+    bundle fail on one; the nightly's bundle drew no KB view from 2026-11-06
+    to S1f.5.29 and exited 0, because a refusal was a line on its page."""
+    out = []
+    for d in sorted(root.rglob("*.dot")):
+        note = d.with_suffix(REFUSED_NOTE)
+        if note.exists():
+            out.append((d, note.read_text(encoding="utf-8").strip()))
+        elif not d.with_suffix(".svg").exists() and not d.with_suffix(UNDRAWN_NOTE).exists():
+            out.append((d, "(no SVG beside it, and nothing says why)"))
+    return out
 
 
 def image(svg: SvgResult, page: Path, alt: str) -> list[str]:

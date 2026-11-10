@@ -26,12 +26,18 @@
 # draws without a word (S1f.5.17 § Step 1, 2026-11-08). The image needs an
 # x86-64-v3 CPU to run that variant. `--variant none` is the baseline.
 #
-# The image installs what the workflows install, `graphviz` and `python3`
-# (3.14 on 26.04, which is what `setup-python` gives the runner; 24.04's is
-# 3.12), plus `cmake` and `g++` for `snmalloc`, and rustup's toolchain from
-# `ein.rs/rust-toolchain.toml`. It runs as your user, so nothing it writes
-# under `build/` is root's. It needs `docker` (or `$CONTAINER`, a
-# docker-compatible CLI) and network access the first time an image is built.
+# The image installs what the workflows install, `graphviz` with
+# `libgvplugin-neato-layout8` and `python3` (3.14 on 26.04, which is what
+# `setup-python` gives the runner; 24.04's is 3.12), plus `cmake` and `g++`
+# for `snmalloc`, and rustup's toolchain from `ein.rs/rust-toolchain.toml`.
+# The plugin is `fdp`'s, which every KB view suggests: 26.04's `graphviz`
+# does not pull it, so without it `fdp` refuses every graph (S1f.5.29).
+# 24.04's archive has no such package (its `libgvc6` carries the plugin), so
+# the image installs it only where the archive has it. The tag carries a
+# hash of the Dockerfile, so an image built before a change to it is not
+# reused. It runs as your user, so nothing it writes under `build/` is
+# root's. It needs `docker` (or `$CONTAINER`, a docker-compatible CLI) and
+# network access the first time an image is built.
 
 set -euo pipefail
 
@@ -62,17 +68,7 @@ if ! command -v "${CONTAINER}" >/dev/null 2>&1; then
 fi
 
 TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "${ROOT}/ein.rs/rust-toolchain.toml")"
-SLUG="$(echo "${IMAGE}" | tr ':/' '--')${VARIANT:+-${VARIANT}}"
-TAG="ein-ci:${SLUG}-rust${TOOLCHAIN}"
-WORK="${ROOT}/build/ci-container/${SLUG}"
-mkdir -p "${WORK}/image"   # the build context, empty on purpose
-
-# The image: rebuilt only when it is missing.
-if ! "${CONTAINER}" image inspect "${TAG}" >/dev/null 2>&1; then
-    echo "── building ${TAG}" >&2
-    "${CONTAINER}" build -t "${TAG}" \
-        --build-arg BASE="${IMAGE}" --build-arg VARIANT="${VARIANT}" \
-        --build-arg TOOLCHAIN="${TOOLCHAIN}" -f - "${WORK}/image" <<'DOCKERFILE'
+read -r -d '' DOCKERFILE <<'DOCKERFILE' || true
 ARG BASE
 FROM ${BASE}
 ARG VARIANT
@@ -80,14 +76,28 @@ ARG TOOLCHAIN
 ENV DEBIAN_FRONTEND=noninteractive
 RUN if [ -n "${VARIANT}" ]; then \
         echo "APT::Architecture-Variants \"${VARIANT}\";" > /etc/apt/apt.conf.d/99variant; fi \
-    && apt-get update && apt-get install -y \
-        graphviz python3 cmake g++ make curl ca-certificates git pkg-config \
+    && apt-get update \
+    && plugin="$(apt-cache show libgvplugin-neato-layout8 >/dev/null 2>&1 \
+                 && echo libgvplugin-neato-layout8 || true)" \
+    && apt-get install -y \
+        graphviz ${plugin} python3 cmake g++ make curl ca-certificates git pkg-config \
     && rm -rf /var/lib/apt/lists/*
 ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo PATH=/opt/cargo/bin:$PATH
 RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal \
         --default-toolchain "${TOOLCHAIN}" -c rustfmt -c clippy \
     && chmod -R a+rwX /opt/rustup /opt/cargo
 DOCKERFILE
+SLUG="$(echo "${IMAGE}" | tr ':/' '--')${VARIANT:+-${VARIANT}}"
+TAG="ein-ci:${SLUG}-rust${TOOLCHAIN}-$(printf '%s' "${DOCKERFILE}" | sha256sum | cut -c1-8)"
+WORK="${ROOT}/build/ci-container/${SLUG}"
+mkdir -p "${WORK}/image"   # the build context, empty on purpose
+
+# The image: rebuilt only when it is missing.
+if ! "${CONTAINER}" image inspect "${TAG}" >/dev/null 2>&1; then
+    echo "── building ${TAG}" >&2
+    printf '%s\n' "${DOCKERFILE}" | "${CONTAINER}" build -t "${TAG}" \
+        --build-arg BASE="${IMAGE}" --build-arg VARIANT="${VARIANT}" \
+        --build-arg TOOLCHAIN="${TOOLCHAIN}" -f - "${WORK}/image"
 fi
 
 # The checkout: a clone of this repository, at HEAD's commit.
@@ -111,6 +121,7 @@ RUN=( "${CONTAINER}" run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp
     dot -V 2>&1 | sed "s/^/── /"
     printf "── libpathplan4 %s %s\n" "$(dpkg-query -W -f "\${Version}" libpathplan4)" \
         "$(dpkg -s libpathplan4 | sed -n "s/^Architecture-Variant: //p")"
+    echo "graph {}" | dot -K- -Tsvg 2>&1 | sed -n "s/^ *Use one of: */── layouts: /p"
     echo "── $(python3 --version), $(rustc --version)"
     echo "── checkout $(git log -1 --format="%h %s" | cut -c1-70)"' >&2
 if (( SHELL_ONLY )); then

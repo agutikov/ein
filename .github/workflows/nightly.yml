@@ -39,7 +39,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      # `libgvplugin-neato-layout8` is `fdp`'s layout: every KB view suggests `fdp`,
+      # and Ubuntu 26.04's `graphviz` links `fdp` to `dot` without it, so the review
+      # bundle's drawings of them were refused (M1f S1f.5.29, Q-M1f.78).
+      - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
       - run: mkdir -p "${GATE_TMP}"
       # The `slow = true` entries the per-commit sweep skips, every declared
       # cell of each: 14 entries on 2026-11-03

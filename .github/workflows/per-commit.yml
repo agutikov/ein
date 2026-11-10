@@ -74,7 +74,10 @@ jobs:
       # stderr line `cargo test` captures for a passing test, so this job had
       # been reporting a pass for 5 209 renderings nothing checked. S1a.10.3
       # made it fail instead, and this line is the other half of that.
-      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      # `libgvplugin-neato-layout8` is `fdp`'s layout: every KB view suggests `fdp`,
+      # and Ubuntu 26.04's `graphviz` links `fdp` to `dot` without it, so the review
+      # bundle's drawings of them were refused (M1f S1f.5.29, Q-M1f.78).
+      - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
       # The tests' `TMPDIR` has to exist before rustc and the tests write to
       # it; `run_tests.sh` makes its own just before its test step.
       - run: mkdir -p "${GATE_TMP}"

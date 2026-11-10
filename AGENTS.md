@@ -1520,6 +1520,17 @@ HEAD as committed, so an image move can be checked before a push. Both tiers
 were green there at `76ede241`: the gate in 13 min 19 s and the nightly in
 26 min 27 s (2026-11-08).
 
+**When `utils/ci_container.sh` is part of done** (M1f S1f.5.29,
+[Q-M1f.77](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)).
+A stage that changes a DOT writer, the review bundle or what CI installs is
+not done until `utils/ci_container.sh` is green on its commit. Twice a
+Graphviz refusal reached CI behind a green gate here: S1f.5.17's router, and
+S1f.5.29's `fdp`, which 26.04's `graphviz` links to `dot` with no layout
+plugin behind it, so every KB view was refused. The workflows and the image
+install `libgvplugin-neato-layout8`, `run_tests.sh` exits 127 where `fdp`
+lays out no graph, and a refused DOT fails the review bundle, the smoke's and
+the nightly's alike, with Graphviz's message under its path.
+
 **The stdlib conformance gate** is `ein-infer/tests/stdlib_coverage.rs`, and
 what it costs is 0.04 s:
 

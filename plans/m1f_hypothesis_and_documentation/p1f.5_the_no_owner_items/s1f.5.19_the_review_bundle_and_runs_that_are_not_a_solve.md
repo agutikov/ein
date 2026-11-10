@@ -190,6 +190,12 @@ the register, and 0 refused graphs over the 168 solve cases' `consistency.md`; 6
 (`find build/review -name '*.md' | wc -l`, `-name '*.svg'`, `du -sh build/review`). The nightly's link check after it
 (`python3 utils/doc_audit.py --links --check build/review`): **6 739 pages, 0 findings**, exit 0, 10 s.
 
+*Read later (S1f.5.29, 2026-11-10): the counts above and the smoke's were taken here, on Graphviz 16.0.0, and are local.
+On the runner's Ubuntu 26.04 Graphviz, which has no `fdp` layout, the smoke refused every KB view it drew, so the
+per-commit job was red from `00c4ed34` on, and the whole bundle, re-taken in a runner-like image at `28da7eb5`, refused
+all 612 of its KB views and trace blocks and exited 0 ([S1f.5.29 § T1
+record](s1f.5.29_the_review_bundle_smoke_on_the_runner.md#t1-record-2026-11-10)).*
+
 **`build/review/` rebuilt** ([Q-M1f.54](../open_questions.md#q-m1f54--the-2026-11-06-inventorys-evidence-in-buildreview)):
 it is gitignored (`git check-ignore -v build/review`: `.gitignore:6:build/`). The 2026-11-06 inventory's evidence,
 `build_open_items.py`, `gen_no_owner.py`, `items/`, `commands/`, `programs/` and `.state/`, moved intact to

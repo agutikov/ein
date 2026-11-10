@@ -12,7 +12,8 @@
 # is the only authority the DOT views have on being well-formed, and since
 # S1a.10.3 it *fails* rather than skips without it — a skip went to a stderr
 # line `cargo test` captures for a passing test, so CI had been reporting a
-# pass over 5 209 renderings nothing checked.
+# pass over 5 209 renderings nothing checked. And `fdp` with its layout plugin
+# (M1f S1f.5.29): the review-bundle smoke lays every KB view out with it.
 #
 # Budget: **619 tests in ~1 m 51 s** (re-measured 2026-08-23, S1a.9.3/.9.4, warm
 # build, twice within 0.3 s). It was 577 in ~1 m 16 s at S1a.9.0 the day
@@ -119,6 +120,15 @@ fi
 if ! command -v dot >/dev/null 2>&1; then
     echo "error: no Graphviz 'dot' on PATH — dot_wellformed.rs would fail." >&2
     echo "       Install graphviz; it is a hard dependency of the gate." >&2
+    exit 127
+fi
+# `fdp` too, and laying a graph out, not only on `PATH` (M1f S1f.5.29): every
+# KB view suggests it, and the review bundle's smoke lays those out with it.
+# Ubuntu 26.04's `graphviz` links `fdp` to `dot` and installs no plugin behind
+# it, so `fdp` is found and refuses every graph; the smoke was red on the
+# runner from `00c4ed34` with a green gate here.
+if ! echo 'graph { a }' | fdp -Tsvg >/dev/null 2>&1; then
+    echo "error: Graphviz's 'fdp' lays out no graph — install its layout plugin (libgvplugin-neato-layout8 on Ubuntu 26.04)." >&2
     exit 127
 fi
 

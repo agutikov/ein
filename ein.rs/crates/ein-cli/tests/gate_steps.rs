@@ -61,13 +61,14 @@ use steps::{env_prefix, normalise, shell_steps};
 /// The workflow's `- run:` lines that are **not** gate steps, with the reason.
 ///
 /// Provisioning: CI has to install what a developer's machine already has.
-/// `run_tests.sh`'s counterpart is a `command -v dot` that exits 127 — the
-/// same requirement, expressed as a check rather than as an install, which is
-/// why it is not a step on either list.
+/// `run_tests.sh`'s counterpart is a check that `dot` and `fdp` each lay a
+/// graph out, exiting 127 — the same requirement, expressed as a check rather
+/// than as an install, which is why it is not a step on either list.
 const NOT_GATE_STEPS: &[(&str, &str)] = &[
     (
-        "sudo apt-get update && sudo apt-get install -y graphviz",
-        "provisioning: the gate checks for `dot` and exits 127 instead",
+        "sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8",
+        "provisioning: the gate checks that `dot` and `fdp` lay a graph out, and \
+         exits 127 instead (M1f S1f.5.29: 26.04's `graphviz` installs no `fdp`)",
     ),
     (
         "mkdir -p \"${GATE_TMP}\"",

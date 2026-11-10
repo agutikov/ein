@@ -44,8 +44,9 @@ use steps::{env_prefix, normalise, shell_steps};
 /// reasons.
 const NOT_NIGHTLY_STEPS: &[(&str, &str)] = &[
     (
-        "sudo apt-get update && sudo apt-get install -y graphviz",
-        "provisioning: run_tests.sh checks for `dot` and exits 127 instead",
+        "sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8",
+        "provisioning: run_tests.sh checks that `dot` and `fdp` lay a graph out, \
+         and exits 127 instead",
     ),
     (
         "mkdir -p \"${GATE_TMP}\"",

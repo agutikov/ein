@@ -91,6 +91,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.74](#q-m1f74--a-nested-or--a-macros-expansion-writes) | a nested `(or …)` a macro's expansion writes | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), refused at load as a written one is, the loader reading the expanded rule; within Q-M1f.67's ruling, which allows a refusal at instantiation, and an unused macro still loads**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
 | [Q-M1f.75](#q-m1f75--the-compilers-arms-no-program-reaches-and-d-1s-and-d-2s-other-lines) | the compiler's arms no program reaches, and D-1's and D-2's other lines | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), the three a direct caller of `compile_rule` reaches stay its errors, in Ein's words, and the moved arms and the `_` head become invariants; `FileNotFoundError` stays F23's (the read path), and `loc_repr`'s `Loc(…)` is taken here (`<file>:<line>:<col>`), `at None` staying F23's**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
 | [Q-M1f.76](#q-m1f76--which-of-what-the-move-replaces-is-a-register-row) | which of what the move replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), a row per way the engine answers today (Q-M1f.36's reading), W62's six, W63's three, W64's two and W65's five, each fixed by T1f.5.21.2; `features/02`, the one `positive` program the move refuses, rewritten with no row (Q-M1f.39's reading)**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
+| [Q-M1f.77](#q-m1f77--when-is-utilsci_containersh-part-of-done) | when is `utils/ci_container.sh` part of done? | **defaulted 2026-11-10 (the stage's default, S1f.5.29): (a), a stage that changes a DOT writer, the review bundle or what CI installs is not done until `utils/ci_container.sh` is green on its commit; AGENTS.md's *Running the gate* says so**; [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) |
+| [Q-M1f.78](#q-m1f78--where-the-runners-missing-fdp-is-fixed) | where the runner's missing `fdp` is fixed | **defaulted 2026-11-10 (the coordinator's default, S1f.5.29): (a), the runner installs the plugin: `libgvplugin-neato-layout8` beside `graphviz` in the three workflows and `utils/ci_container.sh`'s image, and `run_tests.sh` exits 127 where `fdp` lays out no graph; no view, golden or drawing moves**; [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) |
+| [Q-M1f.79](#q-m1f79--does-a-refused-dot-fail-the-whole-bundle) | does a refused DOT fail the whole bundle? | **defaulted 2026-11-10 (the coordinator's default, S1f.5.29): (a), yes, as in the smoke: `utils/review_bundle.py` exits 1 on a DOT Graphviz refused, printing what Graphviz said under its path; a lattice past `DAG_NODES_DRAWN`, kept undrawn by design, says so beside its DOT and is not a refusal**; [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1720,3 +1723,72 @@ runs never ask.
 
 **Defaulted 2026-11-10 (the stage's default): (a).** A stop and a refusal are two answers, as are an answer and a
 refusal (Q-M1f.36, Q-M1f.44), and the precedent filed every way. Re-opening it means (b).
+
+### Q-M1f.77 — When is `utils/ci_container.sh` part of done?
+
+**Raised** 2026-11-10 by [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md). Twice a Graphviz refusal reached the per-commit CI behind
+a green `./run_tests.sh` here: S1f.5.17's, the runner's x86-64-v3 `libpathplan` failing to route 20 views, and
+S1f.5.29's, the runner's `fdp` with no layout plugin behind it, which refused every KB view the review bundle's smoke
+draws, red on GitHub from `00c4ed34` on. In both, `utils/ci_container.sh`'s image, built like the runner, showed what
+the runner showed. It runs HEAD as committed, so it is a check on a commit, not on a working tree.
+
+- **(a) A stage that changes a DOT writer, the review bundle or what CI installs is not done until
+  `utils/ci_container.sh` is green on its commit**, the gate's run in the image beside the local one, and the stage's
+  commit or record says both. Cost: one more gate run per such stage, in the image, which needs an x86-64-v3 CPU and
+  `docker`.
+- **(b) Install the baseline Graphviz build in CI**, `runs-on` pinned or the amd64 variant forced, so the runner meets
+  the build the local gate meets. It answers S1f.5.17's case only: S1f.5.29's plugin is missing from both 26.04
+  builds, and the local Graphviz is neither.
+- **(c) Run the smoke's drawings in the container from `run_tests.sh` itself**, so every local gate draws them on the
+  runner's build. Every developer's gate then needs `docker`, a built image and the CPU, which the gate needs nowhere
+  else.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is the stage file's default: it costs only the stages that
+can break the drawing, and it would have caught both cases. Re-opening it means (b) or (c).
+
+### Q-M1f.78 — Where the runner's missing `fdp` is fixed
+
+**Raised** 2026-11-10 by [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md)'s T1. The runner's Graphviz 14.1.2 refuses every KB view the review bundle
+draws, 612 of the whole bundle's 3 885 laid-out DOTs, with *There is no layout engine support for "fdp"*: every KB
+view suggests `fdp` (`kb_dot::to_dot`), and Ubuntu 26.04's `graphviz` links `fdp` to `dot` without
+`libgvplugin-neato-layout8`, the plugin behind it, which it neither depends on nor recommends. The stage file had
+presumed S1f.5.17's cause and asked for a view-side fix; no DOT is at fault. Each fix below draws all 3 885 on the
+runner's build (the stage's T1 record).
+
+- **(a) The runner installs the plugin**: `libgvplugin-neato-layout8` beside `graphviz` on the apt line of
+  `per-commit.yml`, `nightly.yml` and `release.yml` (its two, for parity), in `utils/ci_container.sh`'s image (only
+  where the archive has the package: 24.04's `libgvc6` carries the plugin), and in the provisioning lines
+  `gate_steps.rs` and `nightly_steps.rs` name; `run_tests.sh` exits 127 where `fdp` lays out no graph, as it does
+  where there is no `dot`. No view, golden, answer or drawing moves, and the CI lays out what the user's bundle lays
+  out. Cost: a 26.04 package name on the apt line, which a later image renames loudly (the install fails).
+- **(b) The bundle falls back to `dot`** where the suggested engine does not load (one probe a run), and says so on
+  the page. No golden moves, but on the runner the smoke checks a drawing the user's bundle does not make.
+- **(c) The KB view stops suggesting `fdp`** (`kb_dot.rs`), so every KB view is laid out by `dot` everywhere. It moves
+  the four DOT goldens that carry the line (`kb_render_to_dot.dot`, `slice_render_solution.dot`,
+  `slice_render_state.dot`, `kb_zebra_unified.dot`), at least the 2 346 `dot[kb…]` lines of `corpus_shapes.md5`, the
+  worked fragment in `04_dot_rendering.md`, and every KB drawing the user reviews, from force-directed to ranked.
+
+**Defaulted 2026-11-10 (the coordinator's default): (a).** It fixes the cause, a package, and moves nothing. No user
+ruling is reversed: the user's ruling on S1f.5.17 was not to report the Graphviz bug upstream, and *view-side* was
+the stage file's presumption, not a ruling. Re-opening it means (b) or (c).
+
+### Q-M1f.79 — Does a refused DOT fail the whole bundle?
+
+**Raised** 2026-11-10 by [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md)'s T1. Since `00c4ed34` the smoke fails on a DOT with no SVG beside it, but
+the whole bundle, the nightly's step, wrote a refused drawing on its page as *Graphviz refused this graph* and exited
+0, a case failing only on an exception. So the GitHub nightly's bundle step drew no KB view from 2026-11-06, when the
+runner moved to 26.04, and passed (the nightly was red then on later steps, S1f.5.17's mutants and S1f.5.19's row
+shape), as S1f.5.17's in-container nightly at `76ede241` (*137 cases, 0 failed*) did in the same
+image. Five DOTs in the whole bundle are kept undrawn on purpose: lattices past `DAG_NODES_DRAWN` (1 000 nodes),
+whose page says so.
+
+- **(a) Yes, as in the smoke**: `cmd_bundle` exits 1 on a DOT Graphviz refused, printing its path and what Graphviz
+  said (kept beside the DOT as `.refused.txt`), over the cases it built. A DOT kept undrawn by design says so beside it
+  (`.undrawn.txt`, `review.util.keep_undrawn`) and is not a refusal, told apart by what the bundle wrote, not by its
+  size or path. The summary line counts the refused DOTs.
+- **(b) No**: the nightly's bundle stays a review artefact, a refusal a line on its page, and only the smoke gates.
+  A drawing the user reviews can then go missing with the nightly green, as every KB view did.
+
+**Defaulted 2026-11-10 (the coordinator's default): (a).** A review artefact missing its drawings is what the user's
+rule against incomplete review artefacts forbids, and the nightly is the only run that builds the whole bundle.
+Re-opening it means (b).
