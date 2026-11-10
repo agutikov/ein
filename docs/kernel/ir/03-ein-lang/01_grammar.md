@@ -563,6 +563,29 @@ than facts, and neither is stored as one:
 | `(false)` | direct ⊥ — this branch is contradictory | S1.5.8c |
 | `(open)` / `(open ?R)` | this state is **unfinished**: it owes a witness, and `(open ?R)` names the relation whose extent is incomplete | M1d S1d.2.3 |
 
+**`open` is written there and nowhere else** (M1f
+[S1f.5.23](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md),
+the user's ruling of 2026-11-10 on
+[Q-M1f.66](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f66--may-open-be-written-as-a-value),
+*"Refuse it"*): a rule's or an hrule's whole `:assert`, `(open)` or `(open ?R)`,
+`?R` a parameter or a relation's name. It is one of the words that are never a
+name ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 1), so no fact, nested
+fact, stored negation, pattern, value, type, object, activator argument, goal,
+claim, `(solve …)` list, `:over`, import, trace step or macro body writes it, and
+each is refused at the parse, at the `open`, with the note *open is reserved: it
+is the verdict a rule's :assert states, written as the whole :assert, (open) or
+(open ?R), and nowhere else, so it names no relation and no value*
+([`defined_behaviour.md` § 4.17](../../defined_behaviour.md#417-open-is-written-only-as-a-rules-verdict--m1f-s1f523)).
+A macro's body writes no `open` either, called or not
+([Q-M1f.86](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f86--may-a-macros-body-write-open)):
+the verdict is written in the rule. Until S1f.5.23 `open` was a word a
+position gives a meaning to, a name wherever a name goes, and the loader
+refused it only in a rule's `:match`, inside a conclusion and beside one, so
+`(p (open x))` loaded (the close review's finding 3), and so did `open` as a
+fact's relation, an activator's relation parameter, a value anywhere, which made
+it a name of the program the blind enumerator proposed facts about, and a
+macro's body stating the verdict for a rule (W70 to W72).
+
 **A conclusion of `eq` or `neq`** — `(neq ?x ?y)`, `(eq ?x w)`, `(not (eq ?x
 ?y))`, or a pattern whose relation a parameter binds to `eq` — **is checked
 against its definition, never stored** (M1f
@@ -598,7 +621,10 @@ on the search-lattice node instead, read once per quiescent KB **after** the
 fixpoint; a rule that asserts it is an *obligation* and never enters the
 saturation agenda. `(open ?R)` names the incomplete relation and nothing
 else: the witness domain and the slot to fill are projected out of the rule's
-own `(absent …)`, and five shapes are refused at load rather than guessed.
+own `(absent …)`, and where it does not resolve the rule is refused at load
+rather than guessed, the line placed where the `(open …)` is written (since M1f
+S1f.5.23; five more shapes were refused at load until then, each a parse error
+since).
 The form, the refusals and their messages are in
 [`06_reserved_names.md` § the verdict atom](06_reserved_names.md#the-verdict-atom--open-m1d-p1d2-s1d23-read-since-s1d24)
 and [`defined_behaviour.md` §4.2](../../defined_behaviour.md).

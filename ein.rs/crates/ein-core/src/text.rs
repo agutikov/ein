@@ -4,7 +4,7 @@
 //! A fact argument is a name (a [`crate::Symbol`]) or a nested fact. A name
 //! prints **bare** where its text reads back as one name under the name rule
 //! (M1f S1f.5.4's ruling, the parser's since S1f.5.5's swap): a run of
-//! [name characters](is_name_char), not a bare `_`, not one of the twelve
+//! [name characters](is_name_char), not a bare `_`, not one of the thirteen
 //! words that are never a name ([`LEXER_KEYWORDS`]) and not one of the
 //! engine's three writeback names. So `1`, `07`, `-7`, `1..5`, `it's` and
 //! `[a]` print bare, and `(p 1) (p 01)` print as two facts. Anything else
@@ -27,13 +27,16 @@
 
 use std::borrow::Cow;
 
-/// The twelve words that are never a name (`ein-ir`'s
+/// The thirteen words that are never a name (`ein-ir`'s
 /// `grammar::RESERVED_WORDS`, tokens of their own in `ein.l`): a name that is
 /// one of them prints quoted. A longer run (`not-red`, `rule.x`, `neq-1`) is
-/// the name it spells, a reserved word being a whole token.
+/// the name it spells, a reserved word being a whole token. `open`, the
+/// verdict, joined them at M1f S1f.5.23 (the user's ruling on Q-M1f.66): no
+/// program can write a name `open`, and a form headed `open` is the verdict,
+/// which [`head`] prints bare.
 pub const LEXER_KEYWORDS: &[&str] = &[
     "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
-    "import",
+    "import", "open",
 ];
 
 /// A character of a name, under the name rule (M1f S1f.5.4's ruling, the
@@ -71,9 +74,9 @@ pub fn is_name_char(ch: char) -> bool {
 
 /// Does `s`, written bare, read back as one name? A run of
 /// [name characters](is_name_char) that is not a bare `_`, not one of the
-/// twelve words that are never a name ([`LEXER_KEYWORDS`]), and not one of
+/// thirteen words that are never a name ([`LEXER_KEYWORDS`]), and not one of
 /// the engine's three writeback names (`ein.l`'s `WRITEBACK`, T1f.5.5.11). The
-/// eleven words a position gives a meaning to (`relation`, `model`, …) are
+/// ten words a position gives a meaning to (`relation`, `model`, …) are
 /// names wherever a name goes, so they print bare.
 pub fn is_symbol(s: &str) -> bool {
     !s.is_empty()
@@ -168,14 +171,15 @@ pub fn is_internal(name: &str) -> bool {
 }
 
 /// A fact's head as Ein text: a relation is a `SYMBOL`, a kernel form's head
-/// (`not`, `and`, `or`, `neq`, `=`) reads back as that form, and the two names
+/// (`not`, `and`, `or`, `neq`, `=`, and `open`, the verdict, since M1f
+/// S1f.5.23) reads back as that form, and the two names
 /// the loader gives a nested form with no atom head print as what loads them
 /// ([`NESTED_HEAD`], [`EMPTY_HEAD`]). Any other text is quoted, which does not
 /// parse in head position: no corpus state holds one
 /// (`ein-cli/tests/answer_round_trip.rs`).
 pub fn head(rel: &str) -> Cow<'_, str> {
     match rel {
-        "not" | "and" | "or" | "neq" | "=" => Cow::Borrowed(rel),
+        "not" | "and" | "or" | "neq" | "=" | "open" => Cow::Borrowed(rel),
         NESTED_HEAD => Cow::Borrowed("_"),
         _ => symbol(rel),
     }
@@ -211,7 +215,6 @@ mod tests {
             "__dunder__",
             "x*",
             "relation",
-            "open",
             "1",
             "01",
             "-7",
@@ -231,6 +234,7 @@ mod tests {
             ("x y", "\"x y\""),
             ("", "\"\""),
             ("not", "\"not\""),
+            ("open", "\"open\""),
             ("?x", "\"?x\""),
             ("_", "\"_\""),
             (":kw", "\":kw\""),
@@ -252,6 +256,8 @@ mod tests {
         assert_eq!(form("p", &[]), "(p)");
         assert_eq!(form("p", &["A".into()]), "(p A)");
         assert_eq!(form("not", &["(p A)".into()]), "(not (p A))");
+        assert_eq!(form("open", &["likes".into()]), "(open likes)");
+        assert_eq!(form("open", &[]), "(open)");
         assert_eq!(form(NESTED_HEAD, &["a".into()]), "(_ a)");
         assert_eq!(form(EMPTY_HEAD, &[]), "()");
     }

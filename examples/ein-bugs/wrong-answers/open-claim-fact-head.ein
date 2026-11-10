@@ -1,0 +1,30 @@
+;;; `open` written as a nested fact's relation in a query's claim loads, as a
+;;; relation — M1f **W70**, register row `W70/claim-fact-head`, filed by
+;;; S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The claim `(model (p (open k)))` lists a `p` whose value is a fact of the
+;;; relation `open`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as a nested fact's relation in a query's claim, so the
+;;; program is refused at the parse, at the `open`, and every command exits 1
+;;; (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, R is 4 states, and `ein solve`
+;;; refutes the claim, *the claim lists 1 class, the query has 2*, exit 1; `ein
+;;; saturate` and the views answer, exit 0.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(query :goal (p ?x) :expect (model (p (open k))))

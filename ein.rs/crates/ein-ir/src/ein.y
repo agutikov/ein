@@ -49,12 +49,14 @@ Form -> b::Id:
 
 // ── Names ────────────────────────────────────────────────────────────
 // A name, wherever any name goes: a fact's argument, a pattern's, a list's.
+// Not `open`, the verdict, which `Assert` alone takes (M1f S1f.5.23, the
+// user's ruling on Q-M1f.66): no relation, value or name is `open`.
 Name -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
   | "eq" { b::name(p, $lexer, $1) } | "absent" { b::name(p, $lexer, $1) }
   | "false" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
-  | "open" { b::name(p, $lexer, $1) } | "model" { b::name(p, $lexer, $1) }
+  | "model" { b::name(p, $lexer, $1) }
   | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
   | "owing" { b::name(p, $lexer, $1) }
   ;
@@ -66,13 +68,14 @@ DeclName -> b::Id:
   | "model" { b::name(p, $lexer, $1) } | "region" { b::name(p, $lexer, $1) }
   | "merged" { b::name(p, $lexer, $1) } | "owing" { b::name(p, $lexer, $1) }
   ;
-// A top-level fact's relation: not `relation`, which declares, and not a
-// claim's `region`, `merged` or `owing`, which belong under `(solve :expect)`.
+// A top-level fact's relation: not `relation`, which declares, not a
+// claim's `region`, `merged` or `owing`, which belong under `(solve :expect)`,
+// and not `open`, the verdict, which no fact is of (M1f S1f.5.23).
 FactHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "step" { b::name(p, $lexer, $1) } | "eq" { b::name(p, $lexer, $1) }
   | "absent" { b::name(p, $lexer, $1) } | "false" { b::name(p, $lexer, $1) }
-  | "true" { b::name(p, $lexer, $1) } | "open" { b::name(p, $lexer, $1) }
+  | "true" { b::name(p, $lexer, $1) }
   | "model" { b::name(p, $lexer, $1) }
   ;
 // A premise's relation: not `eq` or `absent`, which are shaped below, and
@@ -186,14 +189,15 @@ Guard -> b::Id:
 // A pattern's argument: a name, a variable, a pattern inside it, or, since
 // a macro such as `forall` is called as a pattern and takes premises, a
 // connective. Its relation is a name or a variable, but never `eq` or
-// `absent`, which the connectives shape.
+// `absent`, which the connectives shape, and never `open`, the verdict (M1f
+// S1f.5.23; the loader refused one here until then).
 Args -> Vec<b::Id>: { b::none() } | Args Arg { b::push($1, $2) } ;
 Arg -> b::Id: Name { $1 } | Var { $1 } | "(" ArgHead Args ")" { b::list(p, $2, $3) } | Connective { $1 } ;
 ArgHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
   | "false" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
-  | "open" { b::name(p, $lexer, $1) } | "model" { b::name(p, $lexer, $1) }
+  | "model" { b::name(p, $lexer, $1) }
   | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
   | "owing" { b::name(p, $lexer, $1) } | Var { $1 }
   ;
@@ -209,7 +213,9 @@ Term -> b::Id:
 Terms -> Vec<b::Id>: { b::none() } | Terms Term { b::push($1, $2) } ;
 
 // An :assert is a conclusion, `()` (nothing), or `(open)` / `(open ?R)`,
-// which is a whole conclusion and never part of one (M1d S1d.2.3).
+// which is a whole conclusion and never part of one (M1d S1d.2.3). These two
+// are the only places `open` is written (M1f S1f.5.23, Q-M1f.66): `?R` is a
+// variable or a relation's name, and no name is `open`.
 Assert -> b::Id:
     "(" ")" { b::empty(p) }
   | Conclusion { $1 }

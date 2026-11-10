@@ -249,7 +249,9 @@ fn every_token_the_phrase_block_writes_the_lexical_block_defines() {
 /// A line the loader, the compiler or the firing refused a program with until
 /// M1f S1f.5.5's T5 deleted it, the grammar having refused that shape at the
 /// parse since the swap: its id, the file it was in, and its sentence as the
-/// program read it.
+/// program read it. The last five are the verdict's placements, `validate_open`'s,
+/// which a pattern's argument and a macro's body reached until M1f S1f.5.23
+/// made `open` no name (the user's ruling on Q-M1f.66), deleted by that stage.
 const DELETED: &[(&str, &str, &str)] = &[
     (
         "top-level-form",
@@ -513,6 +515,31 @@ const DELETED: &[(&str, &str, &str)] = &[
         "absent-empty",
         "ein-infer compile.rs",
         "`(absent …)` sub-plan compiled to no steps in … — the guard would fail against every KB …",
+    ),
+    (
+        "open-in-match",
+        "from_ir.rs",
+        "rule 'r': `(open …)` is a verdict about the KB and is legal only in :assert — the third-state probe for a fact is `(unknown …)` at None",
+    ),
+    (
+        "open-arity",
+        "from_ir.rs",
+        "rule 'r': `open` takes the incomplete relation and nothing else — `(open)` or `(open ?R)`, not 2 arguments at None",
+    ),
+    (
+        "open-beside",
+        "from_ir.rs",
+        "rule 'r': a rule asserting `open` may assert nothing else — it is read after the fixpoint, where a derivation would be too late at None",
+    ),
+    (
+        "open-inside",
+        "from_ir.rs",
+        "rule 'r': `(open …)` is a whole conclusion, not a term inside one at None",
+    ),
+    (
+        "open-argument",
+        "from_ir.rs",
+        "rule 'r': `open`'s argument names a relation — a rule parameter or a relation name at None",
     ),
 ];
 
@@ -1823,6 +1850,167 @@ const TABLE: &[Row] = &[
         "(relation p T) (p a) (query :goal (and))",
     ),
     row("a macro's template", &[], "(macro m (?x) (and))"),
+    // ── S1f.5.23: `open`, the verdict, is written only as a rule's whole
+    // :assert, `(open)` or `(open ?R)`, and is no name (Q-M1f.66) ──
+    row("a top-level fact's relation", &[], "(open x)"),
+    row(
+        "a nested fact's relation",
+        &[],
+        "(relation p T) (p (open x))",
+    ),
+    row("a stored negation's relation", &[], "(not (open k))"),
+    row("a fact's argument", &[], "(relation p T) (p open)"),
+    row("an is-a's object", &[], "(is-a open Thing)"),
+    row("a declaration's type", &[], "(relation t open)"),
+    row("a fact's :rule", &[], "(relation p T) (p k :rule open)"),
+    row(
+        "a fact's :using",
+        &[],
+        "(relation p T) (p k :rule copy :using ((open k)))",
+    ),
+    row(
+        "a pattern's relation inside a premise",
+        &["open-in-match"],
+        "(rule r () :match (and (n ?x) (p (open ?x))) :assert (hit ?x))",
+    ),
+    row(
+        "the pattern a premise's not negates",
+        &["open-in-match"],
+        "(rule r () :match (and (n ?x) (not (open ?x))) :assert (hit ?x))",
+    ),
+    row(
+        "a guard's value",
+        &["open-in-match"],
+        "(rule r () :match (and (n ?x) (neq ?x (open k))) :assert (hit ?x))",
+    ),
+    row(
+        "a premise's argument",
+        &[],
+        "(rule r () :match (and (n ?x) (p open)) :assert (hit ?x))",
+    ),
+    row(
+        "a guard's value",
+        &[],
+        "(rule r () :match (and (n ?x) (eq ?y open)) :assert (hit ?y))",
+    ),
+    row(
+        "a conclusion's argument",
+        &["open-inside"],
+        "(rule r () :match (n ?x) :assert (hit (open ?x)))",
+    ),
+    row(
+        "the pattern a conclusion's not negates",
+        &["open-inside"],
+        "(relation is-a T T) (relation r A B)\n(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (not (open ?R)))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (n ?x) :assert (p open))",
+    ),
+    row(
+        "an hrule's conclusion argument",
+        &[],
+        "(hrule h () :match (n ?x) :assert (p open))",
+    ),
+    row(
+        "an (open …)'s argument",
+        &[],
+        "(rule r () :match (and (n ?x) (absent (q ?x))) :assert (open open))",
+    ),
+    row(
+        "an activator's argument",
+        &[],
+        "(relation p T)\n(rule copy (?R) :match (?R ?x) :assert (p ?x))\n(copy open)",
+    ),
+    row(
+        "a macro's template, the verdict",
+        &["open-beside"],
+        "(macro both (?r) (and (open ?r) (hit a)))",
+    ),
+    row(
+        "a macro's template, the verdict",
+        &["open-arity"],
+        "(macro o2 (?r) (open ?r ?r))",
+    ),
+    row(
+        "a macro's template, the verdict",
+        &["open-argument", "open-in-match"],
+        "(macro o1 (?r) (open ?r))",
+    ),
+    row(
+        "a macro's template, a value",
+        &[],
+        "(macro po (?v) (p open))",
+    ),
+    row(
+        "a macro call's argument",
+        &[],
+        "(macro pp (?v) (p ?v))\n(rule r () :match (and (n ?x) (pp open)) :assert (hit ?x))",
+    ),
+    row(
+        "a query's :goal",
+        &[],
+        "(relation p T) (query :goal (p open))",
+    ),
+    row(
+        "a pattern's relation inside a query's :goal",
+        &[],
+        "(relation p T) (query :goal (p (open ?x)))",
+    ),
+    row(
+        "a query claim's fact",
+        &[],
+        "(relation p T) (query :goal (p ?x) :expect (model (p open)))",
+    ),
+    row(
+        "a query claim's fact",
+        &[],
+        "(relation p T) (query :goal (p ?x) :expect (model (open k)))",
+    ),
+    row(
+        "a query claim's neq",
+        &[],
+        "(relation p T) (query :goal (p ?x) :expect (model (neq k open)))",
+    ),
+    row("a query's :over", &[], "(query :goal (a ?x) :over open)"),
+    row(
+        "a region claim's fact",
+        &[],
+        "(relation p T) (solve :expect (region (model (p open))))",
+    ),
+    row(
+        "a solve's relation list",
+        &[],
+        "(solve :hypothesis-relations (open))",
+    ),
+    row(
+        "a solve's relation list",
+        &[],
+        "(solve :no-hypothesis (open))",
+    ),
+    row("a solve's :hrules", &[], "(solve :hrules (open))"),
+    row("an import's module", &[], "(import open)"),
+    row(
+        "an import's :symbols",
+        &[],
+        "(import std.macro :symbols (open))",
+    ),
+    row(
+        "a trace step's name",
+        &[],
+        "(trace (step open :derives (a k)))",
+    ),
+    row(
+        "a trace step's :rule",
+        &[],
+        "(trace (step s1 :rule open :derives (a k)))",
+    ),
+    row(
+        "a trace step's :derives",
+        &[],
+        "(trace (step s1 :derives (open k)))",
+    ),
 ];
 
 /// A row's program: a rule row's declarations before it.
@@ -1909,9 +2097,11 @@ fn load_error(text: &str) -> String {
 ///   (Q-M1f.7 (b), T1f.5.5.11), so the loader refuses `__closed__` bound by a
 ///   relation, a rule, a macro or an import's `:as`; the other reserved words
 ///   are tokens no declarator takes, refused at the parse (the table above).
-/// - **`(open …)`'s placement, arity and argument**: a pattern's argument may be
-///   any name, `open` among them (`ein.y`'s `ArgHead`), and a macro's body is a
-///   template, which a conclusion invoking it expands into any of the shapes.
+/// - **The verdict's projection** (`validate_open`): since M1f S1f.5.23 the
+///   grammar writes `open` only as a rule's whole `:assert`, `(open)` or
+///   `(open ?R)`, so its placements are the table's; that `?R` is a parameter
+///   and resolves against the rule's own `absent` is the program's to tell, and
+///   each line starts with where the `(open …)` is written.
 /// - **A premise that is not a form** (`Found::NotAForm`): a macro whose body
 ///   is a bare parameter puts its argument where a premise goes.
 ///
@@ -1944,28 +2134,9 @@ fn the_lines_the_grammar_does_not_cover_are_still_reached() {
             "alias '__closed__' shadows a reserved kernel name",
         ),
         (
-            "(relation p T) (relation hit T)\n(rule r () :match (p (open ?y)) :assert (hit a))",
-            "`(open …)` is a verdict about the KB and is legal only in :assert",
-        ),
-        (
-            "(macro both (?r) (and (open ?r) (hit a)))\n(relation p T) (relation hit T)\n\
-             (rule r (?R) :match (and (p ?x) (absent (?R ?x ?y))) :assert (both ?R))",
-            "a rule asserting `open` may assert nothing else",
-        ),
-        (
-            "(macro o2 (?r) (open ?r ?r))\n(relation p T) (relation hit T)\n\
-             (rule r (?R) :match (and (p ?x) (absent (?R ?x ?y))) :assert (o2 ?R))",
-            "`open` takes the incomplete relation and nothing else",
-        ),
-        (
-            "(macro o1 (?r) (open ?r))\n(relation p T) (relation hit T)\n\
-             (rule r (?R) :match (and (p ?x) (absent (?R ?x ?y))) :assert (o1 (p ?x)))",
-            "`open`'s argument names a relation",
-        ),
-        (
-            "(relation is-a T T) (relation r A B)\n(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) \
-             (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (not (open ?R)))",
-            "`(open …)` is a whole conclusion, not a term inside one",
+            "(relation p T) (relation hit T)\n\
+             (rule r (?R) :match (and (p ?x) (absent (?R ?x ?y))) :assert (open ?S))",
+            "<loader>:2:63: rule 'r': `(open ?S)` names a relation the activator does not bind",
         ),
         (
             "(macro id (?x) ?x)\n(relation p T) (relation hit T)\n(rule r () :match (id foo) :assert (hit a))",

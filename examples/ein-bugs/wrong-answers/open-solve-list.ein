@@ -1,0 +1,29 @@
+;;; `open` written in a `(solve …)` form's relation list loads, as a relation —
+;;; M1f **W71**, register row `W71/solve-list`, filed by S1f.5.23 (T1f.5.23.2,
+;;; 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `(solve :hypothesis-relations (open))` says the hypotheses are facts of the
+;;; relation `open`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as a `(solve …)` form's relation list, so the program is
+;;; refused at the parse, at the `open`, and every command exits 1 (`ein test`:
+;;; 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, H is empty, and R is {∅}, exit 0
+;;; on every command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(solve :hypothesis-relations (open))

@@ -1,0 +1,29 @@
+;;; `open` written as a nested fact's relation loads, as a relation (the close
+;;; review's finding 3) — M1f **W70**, register row `W70/nested-fact-head`,
+;;; filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `(p (open x))` is a fact whose value is a nested fact, so `open` stands as
+;;; the relation that nested fact is of.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as a nested fact's relation, so the program is refused at
+;;; the parse, at the `open`, and every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads and `p` holds `(open x)`; `x` is a
+;;; name of the program, so H is five candidates and R 32 states, exit 0 on
+;;; every command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(p (open x))

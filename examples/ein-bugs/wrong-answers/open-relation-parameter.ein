@@ -1,0 +1,34 @@
+;;; `open` bound to a relation parameter, beside a fact of `open`, loads and is
+;;; read as a relation — M1f **W70**, register row `W70/relation-parameter`,
+;;; filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `copy`'s `?R` is a relation parameter; the activator `(copy open)` binds it
+;;; to `open`, and `(open k)` is a fact of that relation, so `copy` reads it.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as an activator's argument bound to a relation parameter,
+;;; and a fact's relation, so the program is refused at the parse, at the
+;;; `open`, and every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, `copy` reads `(open k)` and root
+;;; derives `(q k)`; R is 2 states, exit 0 on every command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(rule copy (?R)
+  :match  (?R ?x)
+  :assert (q ?x)
+  :why "{?x} is in {?R}, so it is a q")
+(copy open)
+(open k)

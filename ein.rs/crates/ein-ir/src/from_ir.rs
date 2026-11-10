@@ -1052,10 +1052,10 @@ fn ingest_rules(
                 _ => None,
             })
             .collect();
-        // The reserved verdict atom: legal only in `:assert`, only at arity 0
-        // or 1, only as a whole conclusion, and only where its projection
-        // resolves. A rule that asserts it is an **obligation** and is routed
-        // out of the saturation agenda below.
+        // The reserved verdict atom: the grammar writes it only as a rule's
+        // whole `:assert`, at arity 0 or 1 (M1f S1f.5.23), and it is refused
+        // here where its projection does not resolve. A rule that asserts it is
+        // an **obligation** and is routed out of the saturation agenda below.
         let n_errors = errors.len();
         let is_obligation = validate_open(
             ast,
@@ -1064,7 +1064,6 @@ fn ingest_rules(
             &param_names,
             match_node,
             assert_node,
-            &loc,
             errors,
         );
         if errors.len() != n_errors {
@@ -1607,7 +1606,9 @@ fn refuse_nested_disjunctions(
 /// conclusion (`Conclusion`). It reads a form headed by `eq`, `neq`, `absent`,
 /// `not`, `false`, `and` or `or` against the shape the grammar gives it there,
 /// and a conclusion that is no form; what other checks read it leaves to them:
-/// `open` (`validate_open`), a premise that is no form and a relation variable
+/// the verdict `(open …)` (`validate_open`; the grammar writes it only as a
+/// rule's whole `:assert` since M1f S1f.5.23, and a macro's body and a call's
+/// argument write no `open`), a premise that is no form and a relation variable
 /// no parameter binds (`refuse_no_fact_holds`), and an `(or …)` written as a
 /// premise (`refuse_nested_disjunctions`). A written rule never fails it, since
 /// the grammar refused the same shapes at the parse. One line per form, in the
@@ -1752,7 +1753,9 @@ impl<'a> Shapes<'a> {
             }
             Some("not") => self.negation(node, false),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
-            Some("open") => {} // `validate_open`'s
+            // No premise is `(open …)` since M1f S1f.5.23: the grammar writes
+            // `open` only as a rule's whole `:assert`, which `validate_open`
+            // holds; until then this arm left one to `validate_open`'s refusal.
             _ => {
                 for a in args {
                     self.arg(a);
@@ -1876,7 +1879,8 @@ impl<'a> Shapes<'a> {
                 ),
             ),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
-            Some("open") => {} // `validate_open`'s
+            // The verdict, a rule's whole `:assert`: `validate_open`'s.
+            Some("open") => {}
             _ => {
                 for a in args {
                     self.term(node, a);
@@ -3046,26 +3050,32 @@ fn rel_premises(
 /// (M1d P1d.2 [S1d.2.3]). Errors are pushed rather than returned so one
 /// malformed rule does not hide the next.
 ///
-/// The four refusals, and the reason each is a refusal rather than a guess:
+/// **Where `open` stands is the grammar's since M1f S1f.5.23** (the user's
+/// ruling on Q-M1f.66, *"Refuse it"*): `open` is no name, and `ein.y`'s
+/// `Assert` is the one production that takes it, `(open)` or `(open ?R)`, a
+/// rule's whole `:assert`, its argument a variable or a relation's name. So no
+/// `(open …)` stands in a `:match`, inside a conclusion, beside another
+/// conclusion or with two arguments, written or through a macro, whose body and
+/// arguments write no `open` either; this pass refused each of those four, and
+/// an argument that was neither a variable nor a name, until then
+/// (`grammar_pages`' `DELETED`, the grammar's table holding each), and it holds
+/// that as an invariant now. What it still refuses is what only the program can
+/// tell, the projection:
 ///
-/// 1. **`(open …)` in `:match`** — the atom is a conclusion about the KB, not
-///    a premise. The third-state *fact* probe is `(unknown P)`, and the
-///    message says so because the two were one word until 2026-08-24.
-/// 2. **arity ≥ 2** — the form is `(open)` or `(open ?R)`. Anything else is
-///    the superseded triple `(open ?b G B)` or the positional
-///    `(open ?R 0 ?a)`, both of which restated what the guard already says.
-/// 3. **a mixed `:assert`** — a rule concluding `open` *and* a fact would
-///    belong to both the saturation agenda and the obligation pass, and
-///    refusing it is cheaper than deciding which owns it.
-/// 4. **a projection that does not resolve** — `(open ?R)` names the relation
+/// 1. **`(open ?R)` whose `?R` is not a parameter** — a relation variable is
+///    bound by the activator, never by a premise, so it could never resolve;
+/// 2. **a projection that does not resolve** — `(open ?R)` names the relation
 ///    whose extent is incomplete and the engine reads the rest out of the
 ///    rule's own `absent`: exactly one `absent` holding a positive `?R`
 ///    premise, and exactly one such premise bearing a variable the guard does
 ///    not already bind. None, two, or a ground body is refused rather than
 ///    guessed.
 ///
+/// Each line starts with the position the `(open …)` is written at, the
+/// spelling M1f S1f.5.21 gave a refusal; until S1f.5.23 each ended `at None`
+/// (F23's D-2), a rule being a form the parser keeps no position for.
+///
 /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
-#[allow(clippy::too_many_arguments)]
 fn validate_open(
     ast: &Ast,
     head: &str,
@@ -3073,102 +3083,63 @@ fn validate_open(
     params: &[String],
     match_node: NodeId,
     assert_node: NodeId,
-    loc: &str,
     errors: &mut Vec<String>,
 ) -> bool {
-    // (1) the atom is assert-side only.
-    let mut in_match = Vec::new();
-    open_forms(ast, match_node, &mut in_match);
-    if !in_match.is_empty() {
-        errors.push(format!(
-            "{head} '{name}': `(open …)` is a verdict about the KB and is legal \
-             only in :assert — the third-state probe for a fact is `(unknown …)` \
-             at {loc}"
-        ));
-    }
-
-    let conjuncts = top_conjuncts(ast, assert_node);
-    let opens: Vec<NodeId> = conjuncts
-        .iter()
-        .copied()
-        .filter(|&c| is_open_form(ast, c))
-        .collect();
-
-    // An `(open …)` buried inside a conclusion — `(not (open))`, `(f (open))` —
-    // is neither a conjunct nor a fact, so it is caught here rather than
-    // silently stored.
-    let mut anywhere = Vec::new();
-    open_forms(ast, assert_node, &mut anywhere);
-    if anywhere.len() > opens.len() {
-        errors.push(format!(
-            "{head} '{name}': `(open …)` is a whole conclusion, not a term inside \
-             one at {loc}"
-        ));
+    let mut forms = Vec::new();
+    open_forms(ast, match_node, &mut forms);
+    open_forms(ast, assert_node, &mut forms);
+    let whole = is_open_form(ast, assert_node);
+    assert!(
+        forms.len() == usize::from(whole) && (!whole || ast.form_args(assert_node).len() <= 1),
+        "{head} '{name}': an (open …) stands where the grammar writes none — ein.y's Assert is \
+         the one production that takes open, a rule's whole :assert, (open) or (open ?R) \
+         (M1f S1f.5.23)"
+    );
+    if !whole {
         return false;
     }
-    if opens.is_empty() {
-        return false;
-    }
-
-    // (3) nothing else may be concluded alongside it.
-    if conjuncts.len() > opens.len() {
+    let who = format!("{}{head} '{name}'", placed(ast, assert_node));
+    let Some(&arg) = ast.form_args(assert_node).first() else {
+        return true; // bare `(open)` — countable, nothing to project.
+    };
+    let (rel, is_var) = match ast.node(arg) {
+        Node::Var(s) => (ast.sym(s).to_string(), true),
+        Node::Atom(s) => (ast.sym(s).to_string(), false),
+        _ => unreachable!(
+            "{who}: (open …)'s argument is a variable or a name (ein.y's Assert, AnyHead)"
+        ),
+    };
+    // A variable relation head is bound by the activator, never by a
+    // premise (`compile.rs`: "M1 matches relations per activator"), so an
+    // `(open ?R)` whose `?R` is not a parameter could never resolve.
+    if is_var && !params.iter().any(|p| p == &rel) {
         errors.push(format!(
-            "{head} '{name}': a rule asserting `open` may assert nothing else — \
-             it is read after the fixpoint, where a derivation would be too late \
-             at {loc}"
+            "{who}: `(open ?{rel})` names a relation the activator does not bind — `?{rel}` is \
+             not in the parameter list"
         ));
+        return true;
     }
-
-    for &o in &opens {
-        let args = ast.form_args(o).to_vec();
-        // (2) arity.
-        if args.len() > 1 {
-            errors.push(format!(
-                "{head} '{name}': `open` takes the incomplete relation and nothing \
-                 else — `(open)` or `(open ?R)`, not {} arguments at {loc}",
-                args.len()
-            ));
-            continue;
-        }
-        let Some(&arg) = args.first() else {
-            continue; // bare `(open)` — countable, nothing to project.
-        };
-        let (rel, is_var) = match ast.node(arg) {
-            Node::Var(s) => (ast.sym(s).to_string(), true),
-            Node::Atom(s) => (ast.sym(s).to_string(), false),
-            _ => {
-                errors.push(format!(
-                    "{head} '{name}': `open`'s argument names a relation — a rule \
-                     parameter or a relation name at {loc}"
-                ));
-                continue;
-            }
-        };
-        // A variable relation head is bound by the activator, never by a
-        // premise (`compile.rs`: "M1 matches relations per activator"), so an
-        // `(open ?R)` whose `?R` is not a parameter could never resolve.
-        if is_var && !params.iter().any(|p| p == &rel) {
-            errors.push(format!(
-                "{head} '{name}': `(open ?{rel})` names a relation the activator \
-                 does not bind — `?{rel}` is not in the parameter list at {loc}"
-            ));
-            continue;
-        }
-        validate_projection(ast, head, name, &rel, is_var, match_node, loc, errors);
-    }
+    validate_projection(ast, &who, &rel, is_var, match_node, errors);
     true
 }
 
-/// (4) — resolve the witness step out of the rule's own `absent`, or refuse.
-#[allow(clippy::too_many_arguments)]
+/// `<file>:<line>:<col>: `, where `node` is written, or nothing where the
+/// parser kept no position for it.
+fn placed(ast: &Ast, node: NodeId) -> String {
+    match ast.loc(node) {
+        Some(l) => format!("{}: ", loc_repr(ast, Some(l))),
+        None => String::new(),
+    }
+}
+
+/// (2) — resolve the witness step out of the rule's own `absent`, or refuse.
+/// `who` is the line's start, the position and the rule.
 fn validate_projection(
     ast: &Ast,
-    head: &str,
-    name: &str,
+    who: &str,
     rel: &str,
     is_var: bool,
     match_node: NodeId,
-    loc: &str,
     errors: &mut Vec<String>,
 ) {
     let shown = if is_var {
@@ -3189,16 +3160,15 @@ fn validate_projection(
         .collect();
     if holders.is_empty() {
         errors.push(format!(
-            "{head} '{name}': `(open {shown})` needs an `(absent …)` in :match \
-             holding a positive `{shown}` premise — that premise is the witness \
-             the obligation owes at {loc}"
+            "{who}: `(open {shown})` needs an `(absent …)` in :match holding a positive \
+             `{shown}` premise — that premise is the witness the obligation owes"
         ));
         return;
     }
     if holders.len() > 1 {
         errors.push(format!(
-            "{head} '{name}': {} `(absent …)` guards hold a positive `{shown}` \
-             premise — which one states the obligation is not decidable at {loc}",
+            "{who}: {} `(absent …)` guards hold a positive `{shown}` premise — which one states \
+             the obligation is not decidable",
             holders.len()
         ));
         return;
@@ -3228,13 +3198,13 @@ fn validate_projection(
     match witnesses.len() {
         1 => {}
         0 => errors.push(format!(
-            "{head} '{name}': `(open {shown})`'s `{shown}` premise binds no \
-             variable of its own, so the obligation is ground — that is a plain \
-             `absent` check and not something a witness could discharge at {loc}"
+            "{who}: `(open {shown})`'s `{shown}` premise binds no variable of its own, so the \
+             obligation is ground — that is a plain `absent` check and not something a witness \
+             could discharge"
         )),
         n => errors.push(format!(
-            "{head} '{name}': {n} positive `{shown}` premises each bind a witness \
-             variable — a compound witness has no single slot to branch on at {loc}"
+            "{who}: {n} positive `{shown}` premises each bind a witness variable — a compound \
+             witness has no single slot to branch on"
         )),
     }
 }
@@ -4413,25 +4383,21 @@ mod tests {
     /// arguments, or with a term for its argument, and `open` bound by a
     /// declarator, are parse errors at their place (`open` is a word a position
     /// gives a meaning to, the paper grammar's default 1), each a row of the
-    /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`). The
-    /// loader's lines for them stay, a pattern's argument and a macro's body
-    /// still reaching each (that file's
-    /// `the_lines_the_grammar_does_not_cover_are_still_reached`); below are
-    /// the refusals a context-free grammar does not see: an `(open …)` under a
-    /// `not`, and the projection's ways of not resolving.
+    /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`). **Since
+    /// M1f S1f.5.23 every other place is too**: `open` is no name (the user's
+    /// ruling on Q-M1f.66), so a pattern's argument, a conclusion's, a macro's
+    /// body and a call's argument write none, and the loader's lines for the
+    /// placements are deleted (`grammar_pages`' `DELETED`). Below are the
+    /// refusals a context-free grammar does not see: the projection's ways of
+    /// not resolving, each placed where the `(open …)` is written.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
         let pre = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n";
-        let guard = "(and (relation ?R ?A ?B) (?isa ?a ?A) \
-                     (absent (and (?isa ?b ?B) (?R ?a ?b))))";
+        // Nested rather than concluded, `(not (open ?R))`, was refused here
+        // until M1f S1f.5.23, and is refused at the parse since: the grammar
+        // writes `open` only as a rule's whole `:assert` (`grammar_pages`'
+        // table).
         for (want, src) in [
-            // Nested rather than concluded.
-            (
-                "not a term inside one",
-                format!(
-                    "{pre}(rule bad (?R ?isa) :match {guard} :assert (not (open ?R)) :why \"{{?a}} has no {{?R}} partner of type {{?B}}, and its being owed is stored false\")"
-                ),
-            ),
             // The projection's three ways of not resolving.
             (
                 "needs an `(absent …)` in :match",

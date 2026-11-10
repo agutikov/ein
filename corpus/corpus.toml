@@ -1965,6 +1965,150 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W69 (`W69/macro-bare-conclusion-hrule`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): the same bare conclusion in an hrule, which the hypothesis layer dropped in silence, proposing nothing. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-fact-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/fact-head`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a top-level fact's relation, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/nested-fact-head`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a nested fact's relation, finding 3's, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-negation-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/negation-head`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a stored negation's relation, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/goal-pattern-head`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a pattern's relation inside a query's goal, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/claim-fact-head`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a nested fact's relation in a query's claim, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-relation-parameter.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/relation-parameter`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a relation parameter's binding, with a fact of `open`, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-obligation-parameter.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W70 (`W70/obligation-parameter`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as an obligation's relation parameter, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-fact-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/fact-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a fact's argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-is-a-object.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/is-a-object`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as an object's name, typed, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-signature-type.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/signature-type`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a type in a relation's signature, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-premise-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/premise-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a premise pattern's argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-eq-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/eq-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a guard's value, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/conclusion-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a conclusion's argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-hrule-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/hrule-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as an hrule's conclusion argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-derived-activator.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/derived-activator`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a derived activator's argument, bound to a relation parameter, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-goal-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/goal-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a query goal's argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-claim-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/claim-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a query claim's argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-macro-argument.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/macro-argument`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a macro call's argument, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-fact-clause.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/fact-clause`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a fact's `:rule` clause, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-solve-list.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/solve-list`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a `(solve …)` form's relation list, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-trace-step.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W71 (`W71/trace-step`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a trace step's name, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W72 (`W72/macro-verdict`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a macro's body, the verdict, called in an `:assert`, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-macro-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W72 (`W72/macro-value`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a macro's body, a value, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/open-macro-unused.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W72 (`W72/macro-unused`), filed by S1f.5.23's T1f.5.23.2 (2026-11-10): `open`, the verdict, written as a macro's body no rule calls, which loaded and was answered. Fixed by S1f.5.23's T1f.5.23.3 (2026-11-10): refused at the parse, at the `open`, every command, with a note."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

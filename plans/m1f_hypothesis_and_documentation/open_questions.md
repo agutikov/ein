@@ -100,6 +100,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.83](#q-m1f83--which-of-what-the-refusal-replaces-is-a-register-row) | which of what the refusal replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), a row per way the engine answered where a refusal is right, W66's four, W67's four, W68's six and W69's two, each fixed by T1f.5.24.3; the compile stop and the firing stop at root, which the ruling allows, are no row, and the views' and `kb save`'s exits on such a program move under Q-M1f.71**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
 | [Q-M1f.84](#q-m1f84--the-compilers-arity-arms-and-the-firings-whole-conclusion-line) | the compiler's arity arms and the firing's whole-conclusion line | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), invariants, as S1f.5.21's nested `(or …)` arm (Q-M1f.9 (a)'s pattern): the loader's check makes each unreachable, and `fuzz_properties` holds the compiler to refuse nothing the loader accepts**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
 | [Q-M1f.85](#q-m1f85--which-findings-p1f7-takes) | which findings P1f.7 takes | **defaulted 2026-11-10 (the coordinator, on the user's instruction of that day): S1f.5.28's items 12 to 16, the batch the coordinator had given it from S1f.5.21's and S1f.5.24's records, as S1f.7.1 to S1f.7.5; and every wrong answer P1f.5's remaining stages find outside their scope, a stage each from S1f.7.6. S1f.5.28 keeps items 1 to 11, the close review's findings 9 and 7, which the user ruled into it**; [P1f.7](p1f.7_findings_outside_scope/README.md) |
+| [Q-M1f.86](#q-m1f86--may-a-macros-body-write-open) | may a macro's body write `open`? | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), no: refused at the parse, called or not, as `_` and a string are in a body; the verdict is written in the rule**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
+| [Q-M1f.87](#q-m1f87--the-verdicts-loader-lines-once-the-grammar-places-open) | the verdict's loader lines once the grammar places `open` | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), the five the grammar covers deleted, each a row of the grammar's table and named in `DELETED`, `validate_open` holding the rest as an invariant; the five that stay start with where the `(open …)` is written, `at None` gone**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
+| [Q-M1f.88](#q-m1f88--the-line-open-is-refused-with) | the line `open` is refused with | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), the parse error's, ``unexpected `open` ``, the stage's sentence a note under it (`ein_ir::grammar::OPEN_NOTE`), as `_` and a string carry one**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
+| [Q-M1f.89](#q-m1f89--which-of-what-the-refusal-replaces-is-a-register-row) | which of what the refusal replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.23): (a), a row per place with a reading of its own, W70's seven, W71's fourteen and W72's three; the pin holds all fifty-two places**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1903,3 +1907,76 @@ answers that S1f.5.21's T1 and S1f.5.24's T2 found outside their scope, which th
 
 **Defaulted 2026-11-10 (the coordinator): (a).** It is the reading of *"to allow to close current phase"* that
 lets P1f.5 stop growing. (c) would undo the user's ruling on finding 9. Re-opening it means (b) or (c).
+
+### Q-M1f.86 — May a macro's body write `open`?
+
+**Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T2, on the user's
+ruling on [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value): `open` is written only as a rule's `(open)` or
+`(open ?R)` conclusion. A macro's body is a template (`ein.y`'s `Template`), whose head is any name, so until S1f.5.23
+a body could write `(open ?R)`: a rule's `:assert` calling it was an obligation (`W72/macro-verdict`), and one called
+in a `:match` or beside a conclusion was `validate_open`'s refusal after expansion.
+
+- **(a) Refused at the parse, called or not**: `open` is no name, so no template writes it, as none writes `_` or a
+  string. The verdict is written in the rule.
+- **(b) A template takes the verdict**: `(open)` and `(open AnyHead)` as productions of `Template`, and the loader keeps
+  `validate_open`'s placement lines for what an expansion puts in a `:match`, inside a conclusion or beside one, as
+  S1f.5.24 reads every other primitive a macro's expansion writes.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The ruling is *written only as a rule's conclusion*, and a
+macro's body is none; no corpus program writes `open` in a macro (T2's sweep). An unused macro that writes it is
+refused too. The ruling on [Q-M1f.67](#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) does not reach
+it: that ruling is about a primitive's shape, which only a use decides, and `open` is a word the grammar refuses where
+it stands, as it refuses `_` in a body. Re-opening it means (b).
+
+### Q-M1f.87 — The verdict's loader lines once the grammar places `open`
+
+**Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T3. With `open` no
+name, five of `validate_open`'s ten lines are reached by no program: `(open …)` in a `:match`, inside a conclusion,
+beside one, with two arguments, and with an argument that is neither a variable nor a name. Five stay: `(open ?R)` whose
+`?R` is no parameter, and the projection's four. Each of the ten ended `at None` (F23's D-2), a rule being a form the
+parser keeps no position for.
+
+- **(a) Delete the five, and place the five that stay**: S1f.5.5's T5 precedent, each deleted line named in
+  `grammar_pages`' `DELETED` and a row of the grammar's table, the loader holding as an invariant that no `(open …)`
+  stands but a rule's whole `:assert`; each line that stays starts with where the `(open …)` is written,
+  `<file>:<line>:<col>: rule 'r': …`, S1f.5.21's spelling, and drops `at None`.
+- **(b) Keep the five as lines no program reaches, and leave `at None` to F23.**
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The stage file asks for the verdict's lines in Ein's words, with
+no `at None`; the deleted lines are what the grammar refuses since, and one fixture moves, `open_compound_witness`.
+Re-opening it means (b).
+
+### Q-M1f.88 — The line `open` is refused with
+
+**Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T3. The stage file
+sketches one line, *``<file>:<line>:<col>: `open` is the verdict a rule's :assert states, and is not a relation: …``*.
+Where the grammar refuses, the line is a parse error's ([`defined_behaviour.md`
+§ 1](../../docs/kernel/defined_behaviour.md#1-parse-and-load-diagnostics)): ``<file>:<line>:<col>: unexpected `open` ``,
+then the error's notes and repairs.
+
+- **(a) The parse error's line, and the stage's sentence as a note under it**, as S1f.5.1's `_` and S1f.5.2's string
+  carry one: *`note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open)
+  or (open ?R), and nowhere else, so it names no relation and no value`* (`ein_ir::grammar::OPEN_NOTE`).
+- **(b) A first line of its own**: the parse error's `what` replaced by the sentence wherever the token found is `open`.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** One spelling for a parse error, the precedent of `_` and a
+string; the first line names the token and its place, and the note says what it is. Re-opening it means (b).
+
+### Q-M1f.89 — Which of what the refusal replaces is a register row
+
+**Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T2: fifty-two places a
+program can write `open`, of which thirty-eight loaded and were answered.
+
+- **(a) A row per place with a reading of its own** (Q-M1f.36's reading, as Q-M1f.83): W70's seven, `open` as a
+  relation (a fact's, a nested fact's, a stored negation's, a goal's pattern's, a claim's fact's, a relation
+  parameter's beside a fact of `open`, an obligation's parameter's); W71's fourteen, `open` as a value (a fact's
+  argument, an object, a type, a premise's argument, a guard's value, a conclusion's, an hrule's, a derived
+  activator's, a goal's, a claim's, a macro call's, a fact's `:rule`, a `(solve …)` list's, a trace step's name); W72's
+  three, a macro's body (the verdict called in an `:assert`, a value, a body no rule calls). The places that read as
+  one of those do (a nested negation, `:using`, the other claim, solve-list and trace shapes, an `is-a`'s type, a
+  value under `absent` or `not`) are the pin's, `ein-cli/tests/open_reserved.rs`, which holds all fifty-two; a
+  `--diff-models` file that lists `open` is a run's input and no program, refused at its read since, and no row.
+- **(b) A row per place that loaded**, thirty-eight.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The precedent filed every way, not every program, and the pin
+holds every place on every command. Re-opening it means (b).

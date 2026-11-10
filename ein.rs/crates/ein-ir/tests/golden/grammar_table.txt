@@ -65,6 +65,7 @@
 ## 11. a relation's name (was: —)
     (relation open A B)
 <row>:1:11: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Delete `open`
 
 ## 12. a rule's name and parameters (was: rule-name-params)
@@ -116,6 +117,7 @@
     (relation r A B)
     (rule open () :match (r ?a ?b) :assert (r ?b ?a))
 <row>:2:7: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Insert a name, Delete `open`
 
 ## 19. a macro's parameters and body (was: macro-arity)
@@ -149,6 +151,7 @@
 ## 24. a macro's name (was: —)
     (macro open (?P) (absent ?P))
 <row>:1:8: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Insert a name, Delete `open`
 
 ## 25. an import's module (was: import-module)
@@ -396,10 +399,8 @@
     (relation is-a T T) (relation r A B)
     (rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))
 <row>:2:49: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Delete `open`
-  repair: Insert `neq`
-  repair: Insert a variable
-  and 1 more repair
 
 ## 55. a conclusion's argument (was: nested-kw, conclusion-argument)
     (relation n T) (relation p T) (relation q T) (relation hit T)
@@ -463,10 +464,8 @@
     (relation is-a T T) (relation r A B)
     (rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (and (open ?R) (r ?a b)))
 <row>:2:120: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Delete `open`
-  repair: Insert `neq`
-  repair: Insert a variable
-  and 1 more repair
 
 ## 63. an (open …)'s argument (was: —)
     (relation is-a T T) (relation r A B)
@@ -2062,4 +2061,263 @@
 <row>:1:19: unexpected `)`
   note: macro 'm''s template writes (and) — and takes one argument or more
   repair: Insert a variable
+
+## 296. a top-level fact's relation (was: —)
+    (open x)
+<row>:1:2: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 297. a nested fact's relation (was: —)
+    (relation p T) (p (open x))
+<row>:1:20: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 298. a stored negation's relation (was: —)
+    (not (open k))
+<row>:1:7: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 299. a fact's argument (was: —)
+    (relation p T) (p open)
+<row>:1:19: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 300. an is-a's object (was: —)
+    (is-a open Thing)
+<row>:1:7: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 301. a declaration's type (was: —)
+    (relation t open)
+<row>:1:13: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 302. a fact's :rule (was: —)
+    (relation p T) (p k :rule open)
+<row>:1:27: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 303. a fact's :using (was: —)
+    (relation p T) (p k :rule copy :using ((open k)))
+<row>:1:41: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 304. a pattern's relation inside a premise (was: open-in-match)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (p (open ?x))) :assert (hit ?x))
+<row>:3:35: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 305. the pattern a premise's not negates (was: open-in-match)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (not (open ?x))) :assert (hit ?x))
+<row>:3:37: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 306. a guard's value (was: open-in-match)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (neq ?x (open k))) :assert (hit ?x))
+<row>:3:40: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 307. a premise's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (p open)) :assert (hit ?x))
+<row>:3:34: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 308. a guard's value (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (eq ?y open)) :assert (hit ?y))
+<row>:3:38: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+  repair: Insert a variable, Delete `open`
+
+## 309. a conclusion's argument (was: open-inside)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (hit (open ?x)))
+<row>:3:40: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 310. the pattern a conclusion's not negates (was: open-inside)
+    (relation is-a T T) (relation r A B)
+    (rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (not (open ?R)))
+<row>:2:120: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 311. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (p open))
+<row>:3:37: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 312. an hrule's conclusion argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (n ?x) :assert (p open))
+<row>:3:38: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 313. an (open …)'s argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (absent (q ?x))) :assert (open open))
+<row>:3:62: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 314. an activator's argument (was: —)
+    (relation p T)
+    (rule copy (?R) :match (?R ?x) :assert (p ?x))
+    (copy open)
+<row>:3:7: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 315. a macro's template, the verdict (was: open-beside)
+    (macro both (?r) (and (open ?r) (hit a)))
+<row>:1:24: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 316. a macro's template, the verdict (was: open-arity)
+    (macro o2 (?r) (open ?r ?r))
+<row>:1:17: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 317. a macro's template, the verdict (was: open-argument, open-in-match)
+    (macro o1 (?r) (open ?r))
+<row>:1:17: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 318. a macro's template, a value (was: —)
+    (macro po (?v) (p open))
+<row>:1:19: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 319. a macro call's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (macro pp (?v) (p ?v))
+    (rule r () :match (and (n ?x) (pp open)) :assert (hit ?x))
+<row>:4:35: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 320. a query's :goal (was: —)
+    (relation p T) (query :goal (p open))
+<row>:1:32: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 321. a pattern's relation inside a query's :goal (was: —)
+    (relation p T) (query :goal (p (open ?x)))
+<row>:1:33: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 322. a query claim's fact (was: —)
+    (relation p T) (query :goal (p ?x) :expect (model (p open)))
+<row>:1:54: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 323. a query claim's fact (was: —)
+    (relation p T) (query :goal (p ?x) :expect (model (open k)))
+<row>:1:52: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 324. a query claim's neq (was: —)
+    (relation p T) (query :goal (p ?x) :expect (model (neq k open)))
+<row>:1:58: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 325. a query's :over (was: —)
+    (query :goal (a ?x) :over open)
+<row>:1:27: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 326. a region claim's fact (was: —)
+    (relation p T) (solve :expect (region (model (p open))))
+<row>:1:49: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 327. a solve's relation list (was: —)
+    (solve :hypothesis-relations (open))
+<row>:1:31: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 328. a solve's relation list (was: —)
+    (solve :no-hypothesis (open))
+<row>:1:24: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 329. a solve's :hrules (was: —)
+    (solve :hrules (open))
+<row>:1:17: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+
+## 330. an import's module (was: —)
+    (import open)
+<row>:1:9: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 331. an import's :symbols (was: —)
+    (import std.macro :symbols (open))
+<row>:1:29: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 332. a trace step's name (was: —)
+    (trace (step open :derives (a k)))
+<row>:1:14: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 333. a trace step's :rule (was: —)
+    (trace (step s1 :rule open :derives (a k)))
+<row>:1:23: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Insert a name, Delete `open`
+
+## 334. a trace step's :derives (was: —)
+    (trace (step s1 :derives (open k)))
+<row>:1:27: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
 

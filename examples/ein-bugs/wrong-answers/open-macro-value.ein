@@ -1,0 +1,32 @@
+;;; a macro's body writes `open` as a value, and loads — M1f **W72**, register
+;;; row `W72/macro-value`, filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `po`'s body is `(p open)`, so `r`'s premise `(po ?x)` expands to `(p open)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as a macro's body, so the program is refused at the
+;;; parse, at the `open`, and every command exits 1 (`ein test`: 2). A macro's
+;;; body is no rule's `:assert`, so the grammar refuses `open` in it, called or
+;;; not (Q-M1f.86).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, and R is 22 states, exit 0 on
+;;; every command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro po (?v) (p open) :why "open is a p")
+(rule r ()
+  :match  (and (a ?x) (po ?x))
+  :assert (q ?x)
+  :why "{?x} is an a, and open is a p, so {?x} is a q")

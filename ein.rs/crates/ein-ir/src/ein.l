@@ -39,7 +39,8 @@
 %%
 <INITIAL,AFTER_WORD>\( <INITIAL>"("
 <INITIAL,AFTER_WORD>\) <INITIAL>")"
-// The declarators and the kernel's connectives. Never a name.
+// The declarators, the kernel's connectives and, below, `open`, the verdict
+// (M1f S1f.5.23, the user's ruling on Q-M1f.66). Never a name.
 not <AFTER_WORD>"not"
 and <AFTER_WORD>"and"
 or <AFTER_WORD>"or"
@@ -53,7 +54,10 @@ trace <AFTER_WORD>"trace"
 macro <AFTER_WORD>"macro"
 import <AFTER_WORD>"import"
 // Words a position gives a meaning to. Each is also a name (ein.y's Name),
-// so `(p model)` and `(relation step T)` still mean what they mean today.
+// so `(p model)` and `(relation step T)` still mean what they mean today;
+// all but `open`, which is a name nowhere since M1f S1f.5.23 and is written
+// only as a rule's whole :assert, `(open)` or `(open ?R)` (ein.y's Assert).
+// Its rule stays here, where it was, so that no token moves.
 relation <AFTER_WORD>"relation"
 step <AFTER_WORD>"step"
 eq <AFTER_WORD>"eq"

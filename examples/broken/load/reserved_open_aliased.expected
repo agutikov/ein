@@ -1,2 +1,3 @@
 {DIR}/reserved_open_direct.ein:16:8: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Insert a name, Delete `open`

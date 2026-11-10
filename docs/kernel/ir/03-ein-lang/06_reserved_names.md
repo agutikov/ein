@@ -90,8 +90,8 @@ program uses and never binds
 ([Q-M1f.7](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders)
 (b)); an import's `:as` takes the same guard since then. The engine's three
 writeback rule names are refused wherever a program writes them
-([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The twelve reserved words
-(`not` / `and` / `or` / `neq` / the declarators but `relation`) can't be written as a declared
+([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The thirteen reserved words
+(`not` / `and` / `or` / `neq` / the declarators but `relation` / `open`, the last since M1f S1f.5.23) can't be written as a declared
 name at all (parse error; *`SYMBOL`-excluded* until M1f S1f.5.5's swap). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `unknown` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
@@ -112,7 +112,10 @@ was in both copies and behaved correctly, which is what made it a drift rather
 than a design. There is one list now
 ([`ein_core::RESERVED`](../../../../ein.rs/crates/ein-core/src/terms.rs)); the
 thirty-two cells of *four declarators × {`open`, `absent`} × four routes* are
-`ein-ir`'s `reserved_names_are_reserved_through_every_import_route`, and the
+`ein-ir`'s `reserved_names_are_reserved_through_every_import_route` (forty-eight
+since M1f T1f.5.5.11 added `__closed__`; since S1f.5.23 the flat route's
+`:symbols (open)` is refused at the importing program's own parse, `open`
+being no name), and the
 four routes are pinned as fixtures in
 [`examples/broken/load/`](../../../../examples/broken/load/) —
 `reserved_open_direct`, `_symbols`, `_qualified`, `_aliased`.
@@ -128,14 +131,18 @@ lexer's set is twelve since M1e2 S1e2.1a.4, with the `solve` declarator.)
 | | the question it answers | membership | how it fails |
 |---|---|---|---|
 | `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` (the two dunders since M1f T1f.5.5.11) | a **load** error, at the declaration |
-| `ein_ir::grammar::RESERVED_WORDS` — [`00_ebnf.md`](00_ebnf.md) (`ein-ir`'s `LEXER_KEYWORDS` until M1f S1f.5.5's swap, the printer's `ein_core::text::LEXER_KEYWORDS` since) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever a name goes |
+| `ein_ir::grammar::RESERVED_WORDS` — [`00_ebnf.md`](00_ebnf.md) (`ein-ir`'s `LEXER_KEYWORDS` until M1f S1f.5.5's swap, the printer's `ein_core::text::LEXER_KEYWORDS` since) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` `open` (`open` since M1f S1f.5.23) | a **parse** error, wherever a name goes |
 
-Four names are in both and neither set contains the other. **`open` and
-`relation` are the two that decide it**: both must read as names, because
-`(open ?R)` is a fact head the loader routes and `(relation ?R ?A ?B)` is a
-pattern rules match; since M1f S1f.5.5's swap each is a position word, a token
-of its own that `ein.y` takes wherever a name goes.
-`grammar::tests::the_reserved_words_are_the_printers` holds the twelve and
+Five names are in both since M1f S1f.5.23, four until then, and neither set
+contains the other. **`relation` is the one that decides it**: it must read as
+a name, because `(relation ?R ?A ?B)` is a pattern rules match, so it is a
+position word, a token of its own that `ein.y` takes wherever a name goes.
+**`open` decided it too until S1f.5.23**, read as a name because `(open ?R)`
+was a fact head the loader routed; since then `ein.y`'s `Assert` takes the
+token `'open'` itself, the one place it is written, and it is never a name
+(the user's ruling on Q-M1f.66, [§ the verdict
+atom](#the-verdict-atom--open-m1d-p1d2-s1d23-read-since-s1d24)).
+`grammar::tests::the_reserved_words_are_the_printers` holds the thirteen and
 that no position word is one `NAME`;
 `lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine` held the
 twelve, the four-name intersection, and that both lexed as `SYMBOL`s, until the
@@ -157,7 +164,16 @@ of a rule's pattern ([`01_grammar.md`'s `WILDCARD` row](01_grammar.md#1-lexical-
 
 Reserved, but **not** a rule-body primitive: it appears only as an `:assert`
 conclusion, the compiler never meets it in a `:match`, and no detector reads
-it. It is `(false)`'s dual — where `(false)` says *this branch is dead*,
+it. **It is written nowhere else** since M1f
+[S1f.5.23](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)
+(the user's ruling of 2026-11-10 on
+[Q-M1f.66](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f66--may-open-be-written-as-a-value),
+*"Refuse it"*): `open` is one of the words that are never a name, so no fact,
+pattern, value, activator, goal, claim, list, trace or macro body writes it,
+each refused at the parse at the `open`. Until then it was a name, so
+`(p (open x))` loaded (the close review's finding 3), a relation parameter
+could be bound to it and read the relation `open`, and as a value it was a name
+of the program the blind enumerator proposed facts about (W70 to W72). It is `(false)`'s dual — where `(false)` says *this branch is dead*,
 `open` says *this state is unfinished* — and the asymmetry between them is
 that a contradiction survives any extension while openness exists to be
 destroyed by one, so an `open` conclusion is **never stored**. It is a tally
@@ -170,15 +186,17 @@ on the search-lattice node, read once per quiescent KB *after* the fixpoint.
 
 A rule asserting it is an **obligation** and is kept out of the saturation
 agenda entirely (`Program::obligations`), for the reason it derives nothing.
-Five things are refused at load rather than guessed:
+Five things are refused rather than guessed, three at the parse and two at
+load, each load line starting with where the `(open …)` is written (since M1f
+S1f.5.23; each of the five was refused at load until then, ending `at None`):
 
 | refused | why |
 |---|---|
-| `(open …)` in a `:match` | the atom is a conclusion about the KB. The third-state probe for a *fact* is `(unknown P)`, and the message says so |
-| arity ≥ 2 | the superseded `forall`-dual triple `(open ?b G B)` restated the guard in the head, where it could disagree with it |
-| an `:assert` mixing `open` with anything else | such a rule would belong to the agenda and the post-fixpoint pass at once |
-| `(open ?R)` where `?R` is not a parameter | a variable relation head is bound by the activator; the compiler cannot resolve one from a premise |
-| a projection that does not resolve | exactly one `(absent …)` must hold a positive `?R` premise, and exactly one such premise must bind a variable the guard does not already bind. None, two, or a ground body is refused |
+| `(open …)` in a `:match` (the parse) | the atom is a conclusion about the KB. The third-state probe for a *fact* is `(unknown P)` |
+| arity ≥ 2 (the parse) | the superseded `forall`-dual triple `(open ?b G B)` restated the guard in the head, where it could disagree with it |
+| an `:assert` mixing `open` with anything else (the parse) | such a rule would belong to the agenda and the post-fixpoint pass at once |
+| `(open ?R)` where `?R` is not a parameter (at load) | a variable relation head is bound by the activator; the compiler cannot resolve one from a premise |
+| a projection that does not resolve (at load) | exactly one `(absent …)` must hold a positive `?R` premise, and exactly one such premise must bind a variable the guard does not already bind. None, two, or a ground body is refused |
 
 ### What reads it — the obligation pass (S1d.2.4)
 

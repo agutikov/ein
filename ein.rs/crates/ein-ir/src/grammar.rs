@@ -13,7 +13,7 @@
 //! **A refused file reports every error recovery reaches** ([`ParseError`]),
 //! each with its true position, what was found there, its notes, and at most
 //! three of the repairs CPCT+ ranked, the first being the one the parse went
-//! on with, then a count of the rest. Where a place takes a name, the eleven
+//! on with, then a count of the rest. Where a place takes a name, the ten
 //! words a position gives a meaning to ([`POSITION_WORDS`]) are names there
 //! too, so the repairs that differ only in which of them, or which name, they
 //! insert are one repair, *Insert a name* (the user's ruling of 2026-11-08 on
@@ -60,23 +60,30 @@ pub use lrpar::parser::RECOVERY_STEP_BUDGET;
 /// rest.
 pub const REPAIRS_SHOWN: usize = 3;
 
-/// The twelve words that are never a name: tokens of their own in `ein.l`,
-/// each a declarator or a kernel connective. `ein_core::text::LEXER_KEYWORDS`
-/// is the printer's copy, which `the_reserved_words_are_the_printers` holds
-/// to this one.
-pub const RESERVED_WORDS: [&str; 12] = [
+/// The thirteen words that are never a name: tokens of their own in `ein.l`,
+/// each a declarator, a kernel connective, or `open`, the verdict, which is
+/// written only as a rule's whole `:assert`, `(open)` or `(open ?R)` (`ein.y`'s
+/// `Assert`; M1f S1f.5.23, the user's ruling on Q-M1f.66: a position word
+/// until then). `ein_core::text::LEXER_KEYWORDS` is the printer's copy, which
+/// `the_reserved_words_are_the_printers` holds to this one.
+pub const RESERVED_WORDS: [&str; 13] = [
     "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
-    "import",
+    "import", "open",
 ];
 
-/// The eleven words a position gives a meaning to (the paper grammar's
+/// The ten words a position gives a meaning to (the paper grammar's
 /// default 1): tokens of their own in `ein.l`, and names wherever a name goes
 /// (`ein.y`'s `Name`), so `(p model)` is a fact and `(relation step T)` a
-/// declaration.
-pub const POSITION_WORDS: [&str; 11] = [
-    "relation", "step", "eq", "absent", "false", "true", "open", "model", "region", "merged",
-    "owing",
+/// declaration. `open` was the eleventh until M1f S1f.5.23.
+pub const POSITION_WORDS: [&str; 10] = [
+    "relation", "step", "eq", "absent", "false", "true", "model", "region", "merged", "owing",
 ];
+
+/// What a parse error found at an `open` says (M1f S1f.5.23, the user's
+/// ruling on Q-M1f.66, *"Refuse it"*): the one place it is written, and that
+/// it names nothing.
+pub const OPEN_NOTE: &str = "open is reserved: it is the verdict a rule's :assert states, written as the \
+     whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value";
 
 /// The `(query …)` keywords that choose the lattice, which belong on
 /// `(solve …)` (M1e2 S1e2.1a.4): a query that writes one is refused at the
@@ -359,9 +366,9 @@ fn rule_name(tok: u32) -> Option<&'static str> {
 /// What a ruling of this phase says about the token an error found, beyond
 /// the token itself: the review stop's item 3 (S1f.5.1's and S1f.5.2's
 /// sentences), the paper grammar's default 5 (the loader's two lines a
-/// keyword's position no longer reaches), and, on a string with an escape
-/// it does not read, each such escape and where it is (S1f.5.2's escapes,
-/// T1f.5.2.5).
+/// keyword's position no longer reaches), on a string with an escape it does
+/// not read, each such escape and where it is (S1f.5.2's escapes, T1f.5.2.5),
+/// and at an `open`, where the verdict is written (S1f.5.23, [`OPEN_NOTE`]).
 fn notes(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
     lines: &b::Lines,
@@ -401,6 +408,7 @@ fn notes(
             ));
         }
         Some(")") => out.extend(empty_connective(lexer, at)),
+        Some("open") => out.push(OPEN_NOTE.to_string()),
         _ if found.starts_with(':') && top_form(lexer, at) == Some("config") => {
             if let Some((flag, stage, why)) = RETIRED.iter().find(|(f, _, _)| *f == &found[1..]) {
                 out.push(format!(

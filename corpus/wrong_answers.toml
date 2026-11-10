@@ -1109,6 +1109,28 @@
 # open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
 # uniq -c`, 2026-11-10).
 #
+# **W70 to W72 were filed and fixed on 2026-11-10 by M1f S1f.5.23**, on the
+# user's ruling on the close review's finding 3 and on Q-M1f.66 (*"Refuse
+# it"*): `open` is the verdict a rule's `:assert` states, `(open)` or `(open
+# ?R)`, and is written nowhere else. It was a word a position gives a meaning
+# to, a name wherever a name goes, and the loader refused it only in a rule's
+# `:match`, inside a conclusion and beside one, so thirty-eight of the
+# fifty-two places a program can write it loaded and were answered. W70, `open`
+# as a relation's name, seven rows: a fact's, a nested fact's (the finding), a
+# stored negation's, a goal's pattern's and a claim's fact's, a relation
+# parameter bound to it beside a fact of it, which a rule read, and an
+# obligation's, which every state owed. W71, `open` as a value, a name of the
+# program the blind enumerator proposed facts about, fourteen rows. W72, a
+# macro's body writing `open`, three rows: the verdict stated through a macro,
+# a value, and a macro no rule calls (Q-M1f.86). T1f.5.23.2 filed the
+# twenty-four `open`, each `now` a command's run that answered, held to the
+# unchanged engine, and T1f.5.23.3 fixed them: `open` is no name, the grammar's
+# `Assert` the one production that takes it, so each is refused at the parse,
+# at the `open`, with a note (`ein_ir::grammar`'s `RESERVED_WORDS`). No schema
+# change. Each `[case.fixed]` carries the null id. The register reads **217
+# rows fixed, 13 open and 1 not-wrong** (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -12261,3 +12283,801 @@ derived   = "`h`'s `:assert` expands to the conclusion `?x`, which the grammar r
 [case.now]
 run     = "oracle"
 refused = "kb load error: {FILE}:34:15: hrule 'h': its :assert concludes ?x, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
+
+# ══ W70 — `open`, the verdict, written as a relation's name loads, and is read as a relation ══
+
+[[case]]
+id       = "W70/fact-head"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-fact-head.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a fact's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `open` an auto-vivified relation holding `(open x)`; `x` is a name of the program, so H is five candidates and R 32 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a fact's relation, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-fact-head.ein:28:2: unexpected `open`"
+
+[[case]]
+id       = "W70/nested-fact-head"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a nested fact's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads and `p` holds `(open x)`; `x` is a name of the program, so H is five candidates and R 32 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a nested fact's relation, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-nested-fact-head.ein:29:5: unexpected `open`"
+
+[[case]]
+id       = "W70/negation-head"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-negation-head.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a stored negation's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, root holds `(not (open k))`, and R is 4 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a stored negation's relation, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-negation-head.ein:29:7: unexpected `open`"
+
+[[case]]
+id       = "W70/goal-pattern-head"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a pattern's relation inside a query's goal. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, R is 4 states, and the query is answered with one projection class, no row, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a pattern's relation inside a query's goal, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-goal-pattern-head.ein:30:18: unexpected `open`"
+
+[[case]]
+id       = "W70/claim-fact-head"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a nested fact's relation in a query's claim. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, R is 4 states, and `ein solve` refutes the claim, *the claim lists 1 class, the query has 2*, exit 1; `ein saturate` and the views answer, exit 0"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a nested fact's relation in a query's claim, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-claim-fact-head.ein:30:40: unexpected `open`"
+
+[[case]]
+id       = "W70/relation-parameter"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-relation-parameter.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an activator's argument bound to a relation parameter, and a fact's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `copy` reads `(open k)` and root derives `(q k)`; R is 2 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as an activator's argument bound to a relation parameter, and a fact's relation, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-relation-parameter.ein:33:7: unexpected `open`"
+
+[[case]]
+id       = "W70/obligation-parameter"
+case     = "W70"
+title    = "`open`, the verdict, written as a relation's name loads, and is read as a relation"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-obligation-parameter.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an activator's argument bound to an obligation's relation parameter. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, every alive node owes, and R is empty, *every alive node owes — no commitment pays every debt*, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as an activator's argument bound to an obligation's relation parameter, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-obligation-parameter.ein:36:6: unexpected `open`"
+
+# ══ W71 — `open`, the verdict, written as a value loads, and is read as a name of the program ══
+
+[[case]]
+id       = "W71/fact-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-fact-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a fact's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, and `open` is a name of the program, so the blind enumerator proposes `(a open)` and `(q open)`: R is 16 states, its maximal `(model (a k) (a open) (p k) (p open) (q k) (q open))`, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a fact's argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-fact-value.ein:29:4: unexpected `open`"
+
+[[case]]
+id       = "W71/is-a-object"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-is-a-object.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an object's name. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, and the blind enumerator proposes `(a open)`, `(p open)` and `(q open)`: R is 32 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as an object's name, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-is-a-object.ein:27:7: unexpected `open`"
+
+[[case]]
+id       = "W71/signature-type"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-signature-type.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a type in a relation's signature. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `t` a relation over the type `open`; R is 8 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a type in a relation's signature, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-signature-type.ein:29:13: unexpected `open`"
+
+[[case]]
+id       = "W71/premise-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-premise-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a premise pattern's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `open` is a name of the program, so `(p open)` is a candidate and `r` fires under it: R is 22 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a premise pattern's argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-premise-value.ein:30:26: unexpected `open`"
+
+[[case]]
+id       = "W71/eq-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-eq-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a guard's value. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, root derives `(q open)`, and R is 16 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a guard's value, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-eq-value.ein:28:30: unexpected `open`"
+
+[[case]]
+id       = "W71/conclusion-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a conclusion's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, root derives `(p open)`, and R is 16 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a conclusion's argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-conclusion-value.ein:29:14: unexpected `open`"
+
+[[case]]
+id       = "W71/hrule-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-hrule-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an hrule's conclusion argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `h` proposes `(p open)`, and R is 2 states, ∅ and `{(p open)}`, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as an hrule's conclusion argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-hrule-value.ein:30:14: unexpected `open`"
+
+[[case]]
+id       = "W71/derived-activator"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-derived-activator.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a conclusion's argument, an activator binding a relation parameter. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, root derives `(copy open)`, `copy` reads the relation `open`, which holds nothing, and R is 32 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a conclusion's argument, an activator binding a relation parameter, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-derived-activator.ein:36:17: unexpected `open`"
+
+[[case]]
+id       = "W71/goal-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-goal-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a query goal's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, R is 4 states, and the query is answered, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a query goal's argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-goal-value.ein:27:17: unexpected `open`"
+
+[[case]]
+id       = "W71/claim-value"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-claim-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a query claim's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, R is 4 states, and `ein solve` refutes the claim, *the claim lists 1 class, the query has 2*, exit 1; `ein saturate` and the views answer, exit 0"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a query claim's argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-claim-value.ein:28:39: unexpected `open`"
+
+[[case]]
+id       = "W71/macro-argument"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-macro-argument.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro call's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `r`'s premise expands to `(p open)`, and R is 22 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a macro call's argument, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-macro-argument.ein:30:27: unexpected `open`"
+
+[[case]]
+id       = "W71/fact-clause"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-fact-clause.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a fact's `:rule` clause. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, root holds `(p k)`, and R is 2 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a fact's `:rule` clause, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-fact-clause.ein:27:12: unexpected `open`"
+
+[[case]]
+id       = "W71/solve-list"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-solve-list.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a `(solve …)` form's relation list. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, H is empty, and R is {∅}, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a `(solve …)` form's relation list, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-solve-list.ein:29:31: unexpected `open`"
+
+[[case]]
+id       = "W71/trace-step"
+case     = "W71"
+title    = "`open`, the verdict, written as a value loads, and is read as a name of the program"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66"]
+witness  = "examples/ein-bugs/wrong-answers/open-trace-step.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a trace step's name. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, and R is 4 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a trace step's name, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-trace-step.ein:26:14: unexpected `open`"
+
+# ══ W72 — a macro's body writes `open`, the verdict, and loads ══
+
+[[case]]
+id       = "W72/macro-verdict"
+case     = "W72"
+title    = "a macro's body writes `open`, the verdict, and loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66", "Q-M1f.86"]
+witness  = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro's body. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, `r` is an obligation, every alive node owes a `likes` partner for `k`, and R is empty, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a macro's body, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2); a macro's body is no rule's `:assert`, so the grammar refuses `open` in it, called or not (Q-M1f.86)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-macro-verdict.ein:32:18: unexpected `open`"
+
+[[case]]
+id       = "W72/macro-value"
+case     = "W72"
+title    = "a macro's body writes `open`, the verdict, and loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66", "Q-M1f.86"]
+witness  = "examples/ein-bugs/wrong-answers/open-macro-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro's body. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, and R is 22 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a macro's body, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2); a macro's body is no rule's `:assert`, so the grammar refuses `open` in it, called or not (Q-M1f.86)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-macro-value.ein:28:19: unexpected `open`"
+
+[[case]]
+id       = "W72/macro-unused"
+case     = "W72"
+title    = "a macro's body writes `open`, the verdict, and loads"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.23"
+question = ["Q-M1f.66", "Q-M1f.86"]
+witness  = "examples/ein-bugs/wrong-answers/open-macro-unused.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro's body no rule calls. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at f62e34e1 (2026-11-10): the program loads, and R is 4 states, exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "Q-M1f.66, the user's ruling of 2026-11-10: `open` is refused as a value too, so a program writes it only as a rule's `(open)` or `(open ?R)` conclusion"
+derived   = "`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`, and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10, *\"Refuse it\"*): written as a macro's body no rule calls, it is refused at the parse, at the `open`, and every command exits 1 (`ein test`: 2); a macro's body is no rule's `:assert`, so the grammar refuses `open` in it, called or not (Q-M1f.86)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/open-macro-unused.ein:29:18: unexpected `open`"

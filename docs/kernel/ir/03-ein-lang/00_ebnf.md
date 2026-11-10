@@ -108,15 +108,22 @@ BAD          ::= ([^\s();#\x1c-\x1f]|#[^|\s();\x1c-\x1f])+    /* then AFTER_WORD
 
 Five terminal facts that are load-bearing and easy to lose:
 
-1. **A reserved word is a token only as a whole word.** The twelve words
+1. **A reserved word is a token only as a whole word.** The thirteen words
    no name may be and the position words (`ein_ir::grammar::RESERVED_WORDS`
    and `POSITION_WORDS`) are rules written before `NAME`, and `NAME` is
    longest match: `neq` is the token `'neq'`, a tie the earlier rule wins,
-   and `neqw`, `neq_test`, `neq-1`, `rule-x`, `rule.x` and `not-a` are each
-   the one `NAME` they spell, wherever they are written. The eleven position
-   words, `relation`, `step`, `eq`, `absent`, `false`, `true`, `open`, `model`,
-   `region`, `merged` and `owing`, are tokens of their own and names too,
-   wherever §2's `Name` goes; the twelve reserved words are never a name.
+   and `neqw`, `neq_test`, `neq-1`, `rule-x`, `rule.x`, `not-a` and `open-slot`
+   are each the one `NAME` they spell, wherever they are written. The ten
+   position words, `relation`, `step`, `eq`, `absent`, `false`, `true`,
+   `model`, `region`, `merged` and `owing`, are tokens of their own and names
+   too, wherever §2's `Name` goes; the thirteen reserved words are never a
+   name. `open` is the thirteenth since M1f S1f.5.23 (the user's ruling on
+   Q-M1f.66, *"Refuse it"*), a position word until then: §2's `Assert` is the
+   one production that takes it, a rule's whole `:assert`, `(open)` or `(open
+   ?R)`, and an error found at any other `open` carries the note *open is
+   reserved: it is the verdict a rule's :assert states, written as the whole
+   :assert, (open) or (open ?R), and nowhere else, so it names no relation and
+   no value*.
    A keyword is `:` and
    a run of name characters the same way: `:why` is the token `':why'`, and
    `:where` a `KEYWORD`, which no production of §2 takes, so a keyword a form
@@ -211,10 +218,10 @@ appear between any two tokens, and no production names them.
    Written by ein-ir/tests/grammar_pages.rs. The start rule is Program. */
 Program ::= /* empty */ | Program Form
 Form ::= Relation | Rule | Query | Solve | Config | Trace | Macro | Import | NotFact | Fact
-Name ::= NAME | 'relation' | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'open' | 'model'
-       | 'region' | 'merged' | 'owing'
+Name ::= NAME | 'relation' | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'model' | 'region'
+       | 'merged' | 'owing'
 DeclName ::= NAME | 'step' | 'true' | 'model' | 'region' | 'merged' | 'owing'
-FactHead ::= NAME | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'open' | 'model'
+FactHead ::= NAME | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'model'
 PremiseHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'model' | 'region' | 'merged'
               | 'owing' | Var
 ConclusionHead ::= NAME | 'relation' | 'step' | 'absent' | 'true' | 'model' | 'region'
@@ -251,8 +258,8 @@ Connective ::= '(' 'and' Premises ')' | '(' 'or' Premises ')' | '(' 'not' Patter
 Guard ::= '(' 'eq' Term Term ')' | '(' 'neq' Term Term ')'
 Args ::= /* empty */ | Args Arg
 Arg ::= Name | Var | '(' ArgHead Args ')' | Connective
-ArgHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'open' | 'model' | 'region'
-          | 'merged' | 'owing' | Var
+ArgHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'model' | 'region' | 'merged'
+          | 'owing' | Var
 Pattern ::= '(' AnyHead Terms ')'
 AnyHead ::= Name | Var
 Term ::= Name | Var | Pattern | '(' 'not' Pattern ')'
@@ -391,11 +398,16 @@ different messages, and the corpus has a fixture directory for each
   compiled it answered
   ([`defined_behaviour.md` § 4.15](../../defined_behaviour.md#415-the-compilers-refusals-a-program-reached-at-load--m1f-s1f521)).
 - **The kernel's names.** A dunder, `__closed__` or `__symmetric__`, is a
-  `NAME` the loader refuses where a program binds one (Q-M1f.7 (b), T11),
-  and `open` placed beside another conclusion or inside one is the loader's
-  (`validate_open`); the computed predicates `eq` and `neq`, and `eq`'s arity
-  through a macro, are the compiler's
-  ([`06_reserved_names.md`](06_reserved_names.md)).
+  `NAME` the loader refuses where a program binds one (Q-M1f.7 (b), T11).
+  Where `open` stands is the grammar's since M1f S1f.5.23, a rule's whole
+  `:assert` and nowhere else, so a macro's body writes none either; what the
+  loader still refuses of it is the program's to tell, an `(open ?R)` whose
+  `?R` is no parameter or whose projection does not resolve (`validate_open`,
+  each line placed where the `(open …)` is written). Until S1f.5.23 `open`
+  was a name, and the loader refused it only placed beside another conclusion,
+  inside one or in a `:match`. `eq`'s and `neq`'s arity through a macro is
+  the loader's since M1f S1f.5.24, the compiler's until then (above;
+  [`06_reserved_names.md`](06_reserved_names.md)).
 
 ## §5 What keeps this document honest
 

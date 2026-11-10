@@ -340,7 +340,10 @@ fn declaration(decl: &str, name: &str) -> String {
 /// 1): in the program on the direct route, in the module on the other three.
 /// The loader's route-independence is held since by a third name the grammar
 /// reads as a name, the kernel dunder `__closed__` (T1f.5.5.11), refused as a
-/// reserved name through every route: forty-eight cells.
+/// reserved name through every route: forty-eight cells. **Since M1f S1f.5.23
+/// `open` is no name at all** (the user's ruling on Q-M1f.66), so the flat
+/// route's `:symbols (open)` is refused at the program's own parse, before the
+/// module is read.
 #[test]
 fn reserved_names_are_reserved_through_every_import_route() {
     let m = Modules::new("routes");
@@ -357,6 +360,8 @@ fn reserved_names_are_reserved_through_every_import_route() {
                 let cell = format!("{decl} {name} via {route}");
                 let want = if name.starts_with("__") {
                     "shadows a reserved kernel name".to_string()
+                } else if name == "open" && route == "symbols" {
+                    "<probe>:1:21: unexpected `open`\n  note: open is reserved".to_string()
                 } else {
                     format!(":3:{}: unexpected `{name}`", decl.len() + 3)
                 };

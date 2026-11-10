@@ -1,0 +1,36 @@
+;;; a macro's body writes `open`, the verdict, and a rule's `:assert` calls it:
+;;; an obligation through a macro loads — M1f **W72**, register row
+;;; `W72/macro-verdict`, filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `owe`'s body is `(open ?R)`, so `r`'s `:assert (owe likes)` expands to
+;;; `(open likes)`, the verdict, written in a macro and not in the rule.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as a macro's body, so the program is refused at the
+;;; parse, at the `open`, and every command exits 1 (`ein test`: 2). A macro's
+;;; body is no rule's `:assert`, so the grammar refuses `open` in it, called or
+;;; not (Q-M1f.86).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, `r` is an obligation, every alive
+;;; node owes a `likes` partner for `k`, and R is empty, exit 0 on every
+;;; command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(relation likes Thing Thing :why "{?1} likes {?2}")
+(macro owe (?R) (open ?R) :why "one {?R} is owed")
+(rule r ()
+  :match  (and (a ?x) (absent (likes ?x ?y)))
+  :assert (owe likes)
+  :why "{?x} likes nothing yet — one such is still owed")

@@ -34,7 +34,8 @@ variable`, `a keyword this form does not take`, `a token that is not a
 name`); a character no token starts with is `no token starts with X`. Under
 each error come its notes, where a ruling says more than the token does (a
 bare `_`, a string as a value, a query's lattice keyword, a retired
-`(config …)` flag), then at most three ranked repairs, `repair: Insert `)``
+`(config …)` flag, and since M1f S1f.5.23 an `open` that is not a rule's
+verdict, § 4.17), then at most three ranked repairs, `repair: Insert `)``
 or `repair: Delete `a?x``, and `and n more repairs`; a report cut at the
 recovery budget, 30 000 steps, ends with a line saying where it stopped.
 Every command exits 1 on one (`ein test`: 2, the file an `ERROR` row), and no
@@ -137,20 +138,23 @@ Every error the loader raises interpolates the form's source location, and a
 unknown relation `foo` at None
 ```
 
-**Fourteen of the 35 `examples/broken/load/` fixtures** have a message that
+**Thirteen of the 35 `examples/broken/load/` fixtures** have a message that
 ends this way, and `grep -L 'at None' examples/broken/load/*.expected` names
-the twenty-one that do not (2026-11-10, `nested_or` among them since M1f
-S1f.5.21 and `eq_in_a_macro_body` since S1f.5.24; the page said 31 and seventeen when it was re-taken on 2026-11-09): the error is raised somewhere that
+the twenty-two that do not (2026-11-10, `nested_or` among them since M1f
+S1f.5.21, `eq_in_a_macro_body` since S1f.5.24 and `open_compound_witness` since
+S1f.5.23; the page said fourteen and twenty-one before S1f.5.23, and 31 and seventeen when it was re-taken on 2026-11-09): the error is raised somewhere that
 *has* a location, or nowhere that has one at all — `macro_arity_mismatch`
 (inside macro expansion, on a nested node — it prints a real position,
 `<file>:6:20`, which was the Python IR's `Loc(file=…, line=6, col=20)` until
 M1f S1f.5.21 took that half of F23's D-2, Q-M1f.75), `nested_or` (since
 S1f.5.21, § 4.15), `eq_in_a_macro_body` (since S1f.5.24, § 4.16, whose line
-starts with the macro body's position), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
+starts with the macro body's position), `open_compound_witness` (since
+S1f.5.23, § 4.2, whose line starts with where its `(open ?R)` is written), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
 the two `import_*` that name no module found, the two `expect_*` M1c added,
 the solve, query and region claims' five, and the four `reserved_open_*`,
 whose import of `reserved_open_direct.ein` is refused at its parse since M1f
-S1f.5.5's swap. On 2026-08-31 it was 11 of 41; the swap moved twenty-one of
+S1f.5.5's swap, and `reserved_open_symbols` at its own `:symbols (open)` since
+S1f.5.23, `open` being no name. On 2026-08-31 it was 11 of 41; the swap moved twenty-one of
 them to `examples/broken/`, each refused at the parse since.
 
 *Why.* [Q-M1a.6](../history/m1a_rust/open_questions.md#q-m1a6--at-none-in-loader-messages)
@@ -734,7 +738,13 @@ Ten more, and by §4.1's rule they name no exception class either. They all
 concern `open`, the reserved verdict atom
 ([`06_reserved_names.md` § the verdict atom](ir/03-ein-lang/06_reserved_names.md)),
 and every one of them is a place the engine would otherwise have had to guess.
-`<k>` is `rule` or `hrule`, `<n>` the rule's name.
+`<k>` is `rule` or `hrule`, `<n>` the rule's name. **Since M1f S1f.5.23 the
+first five are refused at the parse**, `open` being no name and `ein.y`'s
+`Assert` the one production that takes it (§ 4.17): each line below is their
+record, and `validate_open` holds as an invariant that no `(open …)` stands but
+a rule's whole `:assert`. **The last five stay the loader's**, and each starts
+with where the `(open …)` is written, `<file>:<line>:<col>: <k> '<n>': …`, where
+it ended ` at <loc>`, which read `at None` (Q-M1f.87).
 
 | input | message | exit |
 |---|---|---|
@@ -749,23 +759,29 @@ and every one of them is a place the engine would otherwise have had to guess.
 | the `?R` premise binds no variable of its own | ``<k> '<n>': `(open ?R)`'s `?R` premise binds no variable of its own, so the obligation is ground — that is a plain `absent` check and not something a witness could discharge at <loc>`` | 1 |
 | two positive `?R` premises each bind one | ``<k> '<n>': <m> positive `?R` premises each bind a witness variable — a compound witness has no single slot to branch on at <loc>`` | 1 |
 
-Four are pinned by fixtures in
-[`examples/broken/load/`](../../examples/broken/load/) — `open_in_match`,
-`open_arity`, `open_mixed_assert`, `open_compound_witness` — and all ten by
-`ein-ir`'s `the_verdict_atom_refuses_every_shape_it_cannot_resolve`. **Nine of
+Four are pinned by fixtures, `open_in_match`, `open_arity` and
+`open_mixed_assert` in [`examples/broken/`](../../examples/broken/) since M1f
+S1f.5.5's swap, each a parse error, and `open_compound_witness` in
+[`examples/broken/load/`](../../examples/broken/load/), whose line reads
+`{FILE}:10:12: rule 'bad': 2 positive …` since S1f.5.23; the five the loader
+keeps by `ein-ir`'s `the_verdict_atom_refuses_every_shape_it_cannot_resolve`
+and `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`,
+and the five the grammar took by `grammar_pages`' table and `DELETED`. **Nine of
 the ten until M1e S1e.4.7**: row 5, an `open` whose argument is neither a
 variable nor a name, had no case anywhere in the repo, so the sentence that
 said *all ten* was the second false thing in this paragraph and the harder one
 to see — the count above said *nine* while the table held ten, and the
 citation said the shortfall was covered.
 Binding the name is the eleventh and is not new: `(relation open …)`,
-`(macro open …)` and `(rule open …)` take §1's existing *shadows a reserved
+`(macro open …)` and `(rule open …)` took §1's existing *shadows a reserved
 kernel name* message, because `open` joined `ein_core::RESERVED` — the nine
 names a declarator may not **bind** (eleven since M1f S1f.5.5's T1f.5.5.11,
-which added the kernel's two dunders, and the guard an import's `:as` too), and
-*not* `ein-ir`'s eleven-word
-`LEXER_KEYWORDS`, which `open` must stay out of because `(open ?R)` is an
-ordinary fact head. Both sets were called `RESERVED` until M1e S1e.4.2.
+which added the kernel's two dunders, and the guard an import's `:as` too) —
+and each is a parse error since S1f.5.5's swap, no declarator taking `open`.
+It stayed out of `ein-ir`'s `LEXER_KEYWORDS`, the words never a name, while
+`(open ?R)` was an ordinary fact head, until M1f S1f.5.23, which made it the
+thirteenth of `ein_ir::grammar::RESERVED_WORDS` (§ 4.17). Both sets were called
+`RESERVED` until M1e S1e.4.2.
 
 ### 4.3 Kernel meta-primitive arity — M1e S1e.2.1
 
@@ -1449,6 +1465,63 @@ connective as a premise pattern's argument, `(p (and (q ?x)))`, which the
 grammar takes so a macro can be called there and which reads nothing; and a
 macro called in a query's `:goal`, which is not expanded (both found by
 S1f.5.24's T2, outside its case).
+
+### 4.17 `open` is written only as a rule's verdict — M1f S1f.5.23
+
+`open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`
+(§ 4.2), and since M1f
+[S1f.5.23](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md),
+on the user's ruling of 2026-11-10 on the close review's finding 3 and on
+Q-M1f.66 (*"Refuse it"*), it is written nowhere else: it is one of the thirteen
+words that are never a name (`ein_ir::grammar::RESERVED_WORDS`), and `ein.y`'s
+`Assert` is the one production that takes it. Every other place is a parse
+error at the `open`, on every command that reads the program, the views and
+`kb save` among them, exit 1 (`ein test`: 2), with a note (Q-M1f.88):
+
+```text
+$ ein solve t.ein               # file is: (relation p T) (p (open x))
+t.ein:1:20: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
+  repair: Delete `open`
+```
+
+The places: a fact's, a nested fact's or a stored negation's relation; a
+pattern's relation anywhere in a rule, an hrule or a query's `:goal`, and a
+claim's fact; a value, as a fact's argument, an object, a type, a premise's,
+a guard's or a conclusion's argument, a macro call's, an activator binding a
+relation parameter, a goal's or a claim's; a name in a `(solve …)` list, a
+query's `:over`, an import, a fact's `:rule` or `:using`, or a trace step; the
+verdict's own argument, `(open open)`; and a macro's body, called or not
+(Q-M1f.86). A container whose stored program writes one is refused where it is
+read, its stored program read back through the parser (Q-M1f.15), and a
+`--diff-models` file that lists one is refused at its read. What the loader
+still refuses of the verdict is § 4.2's last five, each placed where the
+`(open …)` is written (Q-M1f.87).
+
+**Until S1f.5.23** `open` was a word a position gives a meaning to, a name
+wherever a name goes, and the loader refused it only in a rule's `:match`,
+inside a conclusion and beside one, at no position (`at None`). So of the
+fifty-two places a program can write it, thirty-eight loaded and were
+answered: `(p (open x))` (the finding) and every fact of `open`; a goal's
+pattern and a claim's fact; a relation parameter bound to it, which read a
+relation `open`, or an obligation's, which every state owed; `open` as a value,
+a name of the program the blind enumerator proposed facts about; and a
+macro's body stating the verdict for a rule. Twenty-four register rows, W70 to
+W72, filed and fixed by the stage (Q-M1f.89). No corpus program wrote `open`
+but as a rule's whole `:assert`, so no corpus answer moved.
+
+Pinned by `ein-cli`'s `open_reserved.rs` (the fifty-two places and the
+twenty-four witnesses, each on twenty commands: one first line at an `open`,
+the note under it, no container, nothing fired; the verdict loading where a
+rule's or an hrule's `:assert` states it, answered by every command and its
+container; and a container that stores `open` as a name refused), `ein-ir`'s
+`grammar_pages` table (a row per place, banked in `grammar_table.txt`) and
+`DELETED`, `grammar::tests::the_reserved_words_are_the_printers`, and
+`corpus/wrong_answers.toml`'s W70 to W72 rows. **What is not refused**: the
+position words a fact's head admits, each a name by Q-M1e2.17 (`eq` checked,
+S1f.5.7's); a written `(false k)` kills root as `(false)` does, and a written
+`(absent k)` stores a fact no premise reads (both found by S1f.5.23's T2,
+outside its case).
 
 ## 5. The CLI surface
 

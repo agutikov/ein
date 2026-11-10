@@ -26,6 +26,16 @@ where the compiler refused it only where it compiled the rule and the views and
 `kb save` accepted it; a macro no rule calls still loads (the user's ruling on
 Q-M1f.67). It was the last compile refusal a program reached.
 
+**`open` is no name since M1f S1f.5.23** (the user's ruling on Q-M1f.66, W70 to
+W72, 2026-11-10): it is written only as a rule's whole `:assert`, `(open)` or
+`(open ?R)`. So `reserved_open_symbols` is refused at its own parse, at the
+`open` its `:symbols (open)` writes, before the module is read, where it was
+refused at the module's; the other three `reserved_open_*` and
+`reserved_open_direct` keep the module's parse error, which carries a note
+since, *open is reserved: …*; and `open_compound_witness`, the one verdict
+fixture the loader still refuses, starts its line with where its `(open ?R)` is
+written, `{FILE}:10:12:`, where it ended `at None`.
+
 **Twenty-one moved to `../` at M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09,
 Q-M1f.2 (a)), each refused at the parse since, its `.expected` the parse
 report: `config_bad_value`, `config_retired_flag`, `config_unknown_flag`,

@@ -1,0 +1,31 @@
+;;; `open` written as an hrule's conclusion argument loads, and the hrule
+;;; proposes a fact about it — M1f **W71**, register row `W71/hrule-value`,
+;;; filed by S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `h` is an hrule whose conclusion is `(p open)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as an hrule's conclusion argument, so the program is
+;;; refused at the parse, at the `open`, and every command exits 1 (`ein test`:
+;;; 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, `h` proposes `(p open)`, and R is
+;;; 2 states, ∅ and `{(p open)}`, exit 0 on every command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(hrule h ()
+  :match  (a ?x)
+  :assert (p open)
+  :why "{?x} is an a, so open may be a p")

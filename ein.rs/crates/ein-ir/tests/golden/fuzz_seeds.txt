@@ -201,16 +201,12 @@
   repair: Delete `)`
 === ";; `(open …)` is a verdict about the KB. The third-state probe for a\n;; *fact* is `(unknown P)` — one word until M1d P1d.2 renamed the macro.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))\n"
   refused <string>:6:49: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Delete `open`
-  repair: Insert `neq`
-  repair: Insert a variable
-  and 1 more repair
 === ";; A rule concluding `open` AND a fact would belong to the saturation\n;; agenda and to the post-fixpoint obligation pass at once.\n\n(relation is-a T T)\n(relation r A B)\n(rule bad (?R ?isa)\n  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)\n               (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  :assert (and (open ?R) (r ?a b)))\n"
   refused <string>:9:17: unexpected `open`
+  note: open is reserved: it is the verdict a rule's :assert states, written as the whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value
   repair: Delete `open`
-  repair: Insert `neq`
-  repair: Insert a variable
-  and 1 more repair
 === ";; LOAD NEGATIVE — a lattice keyword left on (query …).\n;;\n;; M1e2 S1e2.1a.4 split solving from asking: the keywords that choose the\n;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the\n;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries\n;; ask about one region, so a query may not choose its own. The loader says where\n;; the keyword went instead of calling it unknown.\n;;\n;; Expected (load error): see query_lattice_keyword.expected.\n\n(relation p Thing Place)\n(p A H1)\n(query :goal (p A ?h) :no-hypothesis (p))\n"
   refused <string>:13:23: unexpected `:no-hypothesis`
   note: :no-hypothesis chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice

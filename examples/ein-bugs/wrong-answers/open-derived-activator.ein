@@ -1,0 +1,37 @@
+;;; `open` written as a derived activator's argument loads, bound to a relation
+;;; parameter — M1f **W71**, register row `W71/derived-activator`, filed by
+;;; S1f.5.23 (T1f.5.23.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `start` concludes `(copy open)`, an activator that binds `copy`'s relation
+;;; parameter `?R` to `open`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `open` is the verdict a rule's `:assert` states, `(open)` or `(open ?R)`,
+;;; and is written nowhere else (the user's ruling on Q-M1f.66, 2026-11-10):
+;;; here it is written as a conclusion's argument, an activator binding a
+;;; relation parameter, so the program is refused at the parse, at the `open`,
+;;; and every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f62e34e1`, release: the program loads, root derives `(copy open)`,
+;;; `copy` reads the relation `open`, which holds nothing, and R is 32 states,
+;;; exit 0 on every command.
+;;; Refused at the parse since S1f.5.23 (T1f.5.23.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(rule copy (?R)
+  :match  (?R ?x)
+  :assert (q ?x)
+  :why "{?x} is in {?R}, so it is a q")
+(rule start ()
+  :match  (a ?x)
+  :assert (copy open)
+  :why "{?x} is an a, so whatever is in open is a q")
