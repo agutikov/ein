@@ -332,5 +332,8 @@ On the working tree at `28da7eb5`, item by item:
 - **The gate is green locally and in `utils/ci_container.sh` on the stage's commit. The per-commit job on GitHub is
   green on the user's next push, and a note records that run once it exists.** Local: green, 16 min 36 s. On the commit:
   `utils/ci_container.sh` checks HEAD as committed, so it is the coordinator's run after the commit, and the GitHub job
-  is the user's next push. **Open until those two runs.**
+  is the user's next push. **The container: met.** `utils/ci_container.sh` on `dbfd7862` exited 0 (2026-11-10,
+  `build/ci-container-dbfd7862.log`). Its image is Ubuntu 26.04.1 with Graphviz 14.1.2, `libpathplan4 14.1.2-1ubuntu1
+  amd64v3`, and layouts `circo dot fdp neato …`. Its smoke read 191 register rows, 0 failed, drew 31 SVGs with no
+  DOT refused, and the link check exited 0. **The GitHub job: open until the user's next push.**
 - **No answer, register row or golden moved but those named.** None was named and none moved. **Met.**
