@@ -59,3 +59,8 @@ expansion. The rows are flipped. A test holds every witness on every command.
 - The expanded goal is held to the checks a rule's `:match` gets after expansion.
 - Every witness is a register row, filed `open` before the fix and `fixed` after it. No corpus answer moves.
 - `./run_tests.sh` green.
+
+## The analysis of 2026-11-11
+
+The finding was re-taken on the binaries at `4bf6da73` before the stage started, and reproduced. What that found
+beyond this file is the S1f.7.5 row of [the phase's table](README.md#the-analysis-of-2026-11-11), and T1 takes it in.

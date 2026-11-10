@@ -2394,3 +2394,36 @@ and not this.
 P-core threads, the runner's count: 92.3 s → 23.6 s (seed 1) and 87.4 s → 21.0 s (seed 987654321), every property's
 counters the same (`utils/bench_env.sh`, release, 2026-11-10, S1f.5.28's T2 record). Each property still fails on a
 mutation of its check, by its iteration and seed. Re-opening it means (b), or the budgets raised.
+
+### Q-M1f.112 — P1f.7 after its analysis: the order, S1f.7.9, and three findings with no stage
+
+**Raised** 2026-11-11 by the coordinator, on the read-only
+[analysis of P1f.7's nine findings](p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11), taken before
+any stage started. Three things it left to the user:
+
+- whether S1f.7.9's fix stays in the phase or moves to a followup, since refusing a `:rule` that names no rule
+  leaves the larger defect, a written provenance that leaves every core;
+- whether S1f.7.8 runs first, as the one finding a puzzle's author meets by a misspelt name;
+- whether the three findings with no stage (`(q (eq k j))` stored, a goal over a relation nothing makes, a macro
+  call written as a fact) become stages.
+
+**Ruled 2026-11-11 (the user):** *"yes S1f.7.9 moves to a new F24; yes the phase order changes to put S1f.7.8
+first"*, and *"yes - it become S1f.7.10 onward"*. [F24](../followups/f24_written_provenance.md) is filed, S1f.7.9
+files its rows `open` and owned by it, the [order](p1f.7_findings_outside_scope/README.md#the-order) is restated,
+and S1f.7.10 to S1f.7.12 are planned.
+
+### Q-M1f.113 — What is a nested `(eq k j)` for: a quoted statement, or nothing a state can hold?
+
+**Raised** 2026-11-11 by the coordinator, on [S1f.7.10](p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md)'s
+finding and the user's question of that day (what such a fact would be used for, from Ein's point of view).
+
+- **(a) The value rule**: a value is a name, or a fact a state could hold, an atom of an ordinary relation or its
+  negation. `eq`, `neq`, `absent`, `false` with an argument, `and` and `or` are never a nested head; `not` stays.
+- **(b) Quoting kept**: `eq` and `neq` both allowed as values matched by shape, and the `(not ?s)` conclusion made
+  to check a bound `eq`.
+
+**Ruled 2026-11-11 (the user): (a)**, *"(a), adopt the rule"*. The reasons are in
+[P1f.7 § The value rule](p1f.7_findings_outside_scope/README.md#the-value-rule). With it the user ruled how P1f.7
+treats what it finds outside its scope: fixed in place if quick, or a row of
+[F25](../followups/f25_roughness_found_outside_zebra.md), and not shown for review unless it moves an existing
+zebra program's answer.

@@ -61,3 +61,8 @@ added, and the stage's records.
 - The debug and release builds give one answer on every hrule that reads `not`, and it is the oracle's or a refusal.
 - Every witness is a register row, filed `open` before the fix and `fixed` after it. No corpus answer moves.
 - `./run_tests.sh` green, and the debug-build test suite runs the witness.
+
+## The analysis of 2026-11-11
+
+The finding was re-taken on the binaries at `4bf6da73` before the stage started, and reproduced. What that found
+beyond this file is the S1f.7.2 row of [the phase's table](README.md#the-analysis-of-2026-11-11), and T1 takes it in.

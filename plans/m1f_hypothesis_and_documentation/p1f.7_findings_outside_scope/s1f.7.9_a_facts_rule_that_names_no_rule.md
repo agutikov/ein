@@ -3,8 +3,20 @@
 **Phase:** [P1f.7](README.md) (The wrong answers P1f.5's stages found outside their scope)
 **Status:** new 2026-11-10, from [S1f.5.23's T2 record](../p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md#t2-record-2026-11-10)
 (its out-of-scope finding 4), filed here under [Q-M1f.85](../open_questions.md#q-m1f85--which-findings-p1f7-takes).
-Not started.
+Not started. **Reduced to its rows on 2026-11-11** (the user: *"yes S1f.7.9 moves to a new F24"*): the fix and the
+question under it are [F24](../../followups/f24_written_provenance.md)'s, and this stage does T1 and T2 below and
+files its rows `open`, owned by F24. The sections after § The finding are the plan as it stood, kept as record.
 **Depends on:** nothing.
+
+## What the analysis of 2026-11-11 found
+
+A written `:rule` fact is a derivation with no premises, whether or not its rule is declared, so the fact leaves
+every core: `(p k :rule zzz)` with `p → q` and `q ∧ p → (false)` prints `unsat core ∅`, where the program without
+`:rule` gives `(p k)`. `:rule r`, a declared rule, and `:using ((nope x))`, a fact never held, do the same. R is not
+moved. A `--dump-answer` state file writes no `:rule` (its provenance is a comment), so no dump depends on the form.
+Refusing an unknown name would leave the empty core, and would move `examples/syntax/unary-and-nary.ein`,
+`examples/broken/load/derivation_cycle.ein` and four test files that write provenance by hand. The witnesses this
+stage files are the three rows of F24's table.
 
 ## The finding
 

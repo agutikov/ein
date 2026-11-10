@@ -788,7 +788,25 @@ constrained-reasoning research.
   started; and the defaults Q-M1f.69 to .111 stand, the ones that touch a
   ruling listed there for the user. The user ruled the same day that P1f.7
   runs before P1f.6 and that its questions take the stage's default, and
-  P1f.7 started.
+  P1f.7 started. **Before its first stage the nine findings were re-taken**,
+  read-only, and all reproduced
+  ([§ The analysis of 2026-11-11](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11)),
+  and the user ruled on it the same day: S1f.7.8, a `(solve …)` list that
+  names nothing, runs first, since one misspelt name moves R in silence;
+  S1f.7.9 files its rows only, its fix moved to the new followup
+  [F24](plans/followups/f24_written_provenance.md), written provenance (a
+  written `:rule` fact leaves every core); and three findings of the analysis
+  are S1f.7.10 to S1f.7.12, a nested `(eq k j)`, a goal over a relation
+  nothing makes, and a macro call written as a fact. The user also adopted
+  **the value rule** that day (Q-M1f.113): *a value is a name, or a fact a
+  state could hold, an atom of an ordinary relation or its negation*, so
+  `eq`, `neq`, `absent`, `false` with an argument, `and` and `or` are never a
+  nested head and `not` stays
+  ([§ The value rule](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-value-rule)).
+  And **a finding outside a stage's scope that moves no existing zebra
+  program's answer is not shown to the user**: it is fixed in place if quick,
+  or a row of [F25](plans/followups/f25_roughness_found_outside_zebra.md),
+  until a corpus of real Ein programs exists (P1f.6's calculator onward).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
