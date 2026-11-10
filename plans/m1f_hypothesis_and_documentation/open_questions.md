@@ -99,6 +99,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.82](#q-m1f82--the-line-a-malformed-primitive-is-refused-with) | the line a malformed primitive is refused with | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), the compiler's, S1f.5.21's spelling, behind `kb load error: `: the position where the expanded form is written, the rule as the loader names it (`hrule 'h'`), the clause, the form as Ein text and what to write instead**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
 | [Q-M1f.83](#q-m1f83--which-of-what-the-refusal-replaces-is-a-register-row) | which of what the refusal replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), a row per way the engine answered where a refusal is right, W66's four, W67's four, W68's six and W69's two, each fixed by T1f.5.24.3; the compile stop and the firing stop at root, which the ruling allows, are no row, and the views' and `kb save`'s exits on such a program move under Q-M1f.71**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
 | [Q-M1f.84](#q-m1f84--the-compilers-arity-arms-and-the-firings-whole-conclusion-line) | the compiler's arity arms and the firing's whole-conclusion line | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), invariants, as S1f.5.21's nested `(or …)` arm (Q-M1f.9 (a)'s pattern): the loader's check makes each unreachable, and `fuzz_properties` holds the compiler to refuse nothing the loader accepts**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.85](#q-m1f85--which-findings-p1f7-takes) | which findings P1f.7 takes | **defaulted 2026-11-10 (the coordinator, on the user's instruction of that day): S1f.5.28's items 12 to 16, the batch the coordinator had given it from S1f.5.21's and S1f.5.24's records, as S1f.7.1 to S1f.7.5; and every wrong answer P1f.5's remaining stages find outside their scope, a stage each from S1f.7.6. S1f.5.28 keeps items 1 to 11, the close review's findings 9 and 7, which the user ruled into it**; [P1f.7](p1f.7_findings_outside_scope/README.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1884,3 +1885,21 @@ compiler's `absent` and `eq` arities and the firing's *its :assert concludes ?y,
 
 **Defaulted 2026-11-10 (the stage's default): (a).** The loader covers each, which is (a)'s precedent; (b)'s three
 are the ones it does not. Re-opening it means (b).
+
+### Q-M1f.85 — Which findings P1f.7 takes
+
+**Raised** 2026-11-10 by the user's instruction: *"new batch of findings
+plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md creates
+new phase p1f.7 with stage per finding to allow to close current phase"*. S1f.5.28 then listed sixteen items. Items 1
+to 11 were the close review's findings 9 and 7, which the user had ruled into that stage. Items 12 to 16 were wrong
+answers that S1f.5.21's T1 and S1f.5.24's T2 found outside their scope, which the coordinator had added the same day.
+
+- **(a) Items 12 to 16, and every later finding of the same kind**: the batch becomes S1f.7.1 to S1f.7.5, and a
+  wrong answer that P1f.5's remaining stages (S1f.5.22, .23, .25, .27, .28) find outside their scope becomes a
+  stage from S1f.7.6. S1f.5.28 keeps items 1 to 11.
+- **(b) Items 12 to 16 only**: later findings go back to S1f.5.28, which keeps growing until the phase closes.
+- **(c) All sixteen items**: S1f.5.28 is emptied, and the close review's findings 9 and 7 leave the phase the user
+  ruled them into.
+
+**Defaulted 2026-11-10 (the coordinator): (a).** It is the reading of *"to allow to close current phase"* that
+lets P1f.5 stop growing. (c) would undo the user's ruling on finding 9. Re-opening it means (b) or (c).

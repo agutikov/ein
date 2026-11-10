@@ -32,7 +32,11 @@ On a fifth, *"yes, land the :why flag early"*, S1f.5.14's flag, `--require-why`,
 **Every stage done on 2026-11-10, and re-opened the same day** on the user's answers to
 [the close review](close_review.md): every default stands, accepted without review, and each of its nine findings
 with no owner became a stage, S1f.5.21 to S1f.5.28, with finding 7's prose given to S1f.5.28
-([§ The order](#the-order), item 12).
+([§ The order](#the-order), item 12). **The wrong answers those stages find outside their scope are a phase of their
+own since the same day, [P1f.7](../p1f.7_findings_outside_scope/README.md)**, a stage each, so this phase can close
+(the user: *"new batch of findings … creates new phase p1f.7 with stage per finding to allow to close current
+phase"*). The first five, S1f.5.28's items 12 to 16, are S1f.7.1 to S1f.7.5. **The coordinator stops at this
+phase's close** (the user, 2026-11-10: *"stop in the end of the phase"*).
 **Was P1e2.5**, in [M1e2](../../m1e2_correctness/README.md), until 2026-11-08. No stage had run. Each kept
 its number, `S1e2.5.<n>` → `S1f.5.<n>`, and the two stages P1f.5 had follow them
 ([§ The ids](#the-ids)). The questions the review raised keep their ids, `Q-M1e2.22` to `.28`, as M1f's
@@ -519,6 +523,9 @@ The order, as those rulings leave it:
     [S1f.5.25](s1f.5.25_a_closed_stdout.md), the closed stdout (Q-M1f.68);
     [S1f.5.27](s1f.5.27_the_nightly_reduced.md), the nightly;
     [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md), the unchecked findings, last, on the tree the others leave.
+    A wrong answer any of them finds outside its scope is recorded in its record and becomes a stage of
+    [P1f.7](../p1f.7_findings_outside_scope/README.md), not of this phase (the user's instruction of 2026-11-10,
+    [Q-M1f.85](../open_questions.md#q-m1f85--which-findings-p1f7-takes)).
     The T1 of S1f.5.22, .23, .24 and .25 was taken by the coordinator on 2026-11-10, when the stages were written,
     and the four questions were put to the user together and ruled the same day, so none waits.
 
@@ -585,7 +592,9 @@ user, and writes no `docs/history/` record here.
 register rows; the user's rulings and the 55 decisions taken by default, each linked to its row; the findings with
 no owner, re-checked on 2026-11-10; and the `build/` cleanup the user approved that day, which is done. **The user
 answered the same day**: no override, every default accepted without review, and every finding a stage, S1f.5.21
-to S1f.5.28 ([§ The order](#the-order), item 12). The close record waits for those stages.
+to S1f.5.28 ([§ The order](#the-order), item 12). The close record waits for those stages. It names the wrong
+answers they found outside their scope as [P1f.7](../p1f.7_findings_outside_scope/README.md)'s, and then the
+coordinator stops for the user.
 
 ## The ids
 

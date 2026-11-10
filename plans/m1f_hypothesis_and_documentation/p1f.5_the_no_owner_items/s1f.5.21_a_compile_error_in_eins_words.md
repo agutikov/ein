@@ -246,7 +246,9 @@ compiler's: left to F23 with a line in D-1's row. `KeyError` is gone since S1f.5
 variable, `(query :goal (p (?R ?x)))`, loads, and the compiler lowers the inner pattern as an opaque slot that matches
 nothing, so `(p (g k))` gives the goal no row, in silence (`goal-free-head-nested.ein`, release at `864b16ed`: *the goal
 has no row: undetermined here*). In a rule the same shape is refused at load since M1e2 S1e2.2.24 (W24's
-`nested-unbound-head`). It is no `CompileError`, so it is not this stage's; reported to the coordinator.
+`nested-unbound-head`). It is no `CompileError`, so it is not this stage's; reported to the coordinator. (Given to
+[S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) as item 12, then to
+[P1f.7](../p1f.7_findings_outside_scope/README.md) as S1f.7.1, both on 2026-11-10.)
 
 ## T2 record, 2026-11-10
 

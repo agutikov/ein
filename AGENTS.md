@@ -774,7 +774,11 @@ constrained-reasoning research.
   owner became a stage, S1f.5.21 to S1f.5.28 (a compile error in Ein's words,
   Unicode only in a string, `open` reserved, a macro's body checked at load, a
   closed stdout, the tutorial, the nightly reduced, the unchecked findings),
-  four of them waiting on Q-M1f.65 to .68.
+  four of them waiting on Q-M1f.65 to .68. The wrong answers those stages
+  find outside their scope are a phase of their own,
+  [P1f.7](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md),
+  a stage each, so that P1f.5 can close (the user, 2026-11-10), and the
+  coordinator stops at P1f.5's close (*"stop in the end of the phase"*).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

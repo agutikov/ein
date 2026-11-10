@@ -17,7 +17,8 @@ every command refusing before any path runs the rule, the sixteen rows `fixed`, 
 ([§ Acceptance, re-taken](#acceptance-re-taken-2026-11-10)). Five questions taken by default, Q-M1f.80 to Q-M1f.84.
 The register reads 193 fixed, 13 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 2026-11-10). Four wrong answers found outside the stage are recorded in the T2 record, not fixed, and given to
-[S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) as its items 13 to 16. Committed as `ddc5c28a`, whose hash W66
+[S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) as its items 13 to 16, and moved the same day to
+[P1f.7](../p1f.7_findings_outside_scope/README.md) as S1f.7.2 to S1f.7.5. Committed as `ddc5c28a`, whose hash W66
 to W69's `[case.fixed]` rows carry.
 **Depends on:** [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md), for the line's spelling.
 
@@ -256,7 +257,7 @@ names where it looks for the stdlib).
 No other golden: `help_shape.txt` is unmoved (no option), and so is every summary, read-out and plan-shape golden.
 
 **Found outside the stage, recorded and not fixed** (given to [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) as
-its items 13 to 16) (each on the release binary at `dbfd7862`, programs in the
+its items 13 to 16, then to [P1f.7](../p1f.7_findings_outside_scope/README.md) as S1f.7.2 to S1f.7.5) (each on the release binary at `dbfd7862`, programs in the
 session's scratch):
 
 1. **An hrule whose `:match` reads `not` stops a debug build.** `(hrule h () :match (and (a ?x) (absent (not (p
