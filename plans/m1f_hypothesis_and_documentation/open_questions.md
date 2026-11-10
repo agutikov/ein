@@ -65,7 +65,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.47](#q-m1f47--a-written-fact-of-eq-at-another-arity) | a written fact of `eq` at another arity | **defaulted 2026-11-09 (the user's instruction): refused at load, beside Q-M1f.33's check; W61, this stage's**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.1 |
 | [Q-M1f.48](#q-m1f48--how-a-text-surface-writes-the-empty-core) | how a text surface writes the empty core | **defaulted 2026-11-09 (the user's instruction, on the coordinator's note): `∅` on every text surface, where a dead node's core was taken and holds no fact**; [S1f.5.9](p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s T1f.5.9.2 |
 | [Q-M1f.50](#q-m1f50--where-the-heavy_dump-line-goes-and-which-entries-carry-the-flag) | where the `heavy_dump` line goes, and which entries carry the flag | **defaulted 2026-11-09 (the user's instruction): (a), 40 000 state files, in the gap above the six `slow` `square-*`; five entries flagged, `features/01_not_and_absent` among them**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.1 |
-| [Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | three more tests whose slow half no CI tier runs | **defaulted 2026-11-09 (the user's instruction): (a), recorded, not scheduled; parked for the phase's close**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3 |
+| [Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | three more tests whose slow half no CI tier runs | **defaulted 2026-11-09 (the user's instruction): (a), recorded, not scheduled; parked for the phase's close**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3. **Taken by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) on 2026-11-10, (b) by tier**: `region`'s and `obligation_rung`'s slow halves are CI nightly steps, `route_invariance`'s a dev-host step, and `nightly_steps.rs`' `every_slow_half_runs_on_a_tier` fails on a target that reads `EIN_CORPUS_SLOW` and runs on neither |
 | [Q-M1f.52](#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve) | the nightly's review bundle and the register's runs that are not a solve | **defaulted 2026-11-09 (the user's instruction): (a), reported, not fixed here; the nightly is red at `utils/review_bundle.py` since `fc53818f`**; [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s T1f.5.13.3. **Re-opened the same day as (b)**, taken by default on the user's instruction of 2026-11-09: placed as a stage of its own, [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md); **built 2026-11-09** (`00c4ed34`): the bundle builds all 175 cases and the nightly is green |
 | [Q-M1f.53](#q-m1f53--how-the-per-commit-gate-catches-a-register-row-the-bundle-cannot-read) | how the per-commit gate catches a register row the bundle cannot read | **defaulted 2026-11-09 (the user's instruction): (b), the smoke builds a command case and reads every register row with no run**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
 | [Q-M1f.54](#q-m1f54--the-2026-11-06-inventorys-evidence-in-buildreview) | the 2026-11-06 inventory's evidence in `build/review/` | **defaulted 2026-11-09 (the user's instruction): (b), moved intact to `build/inventory-2026-11-06/`, and `build/review/` rebuilt**; [S1f.5.19](p1f.5_the_no_owner_items/s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) |
@@ -116,6 +116,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.99](#q-m1f99--what-the-register-records-of-a-run-a-closed-stdout-ended) | what the register records of a run a closed stdout ended | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), schema `/21`: a `now` with `stdout = "closed"` is a command's run whatever its subcommand, and answers by `signal` (13, nothing on stderr) or `panicked` (exit 101, the panic's message); a `right` can be `signal = 13`, and a recorded answer the panic**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
 | [Q-M1f.100](#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone) | an artefact flag that writes to a pipe whose reader has gone | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), it ends the process by `SIGPIPE` too, the disposition being process-wide; `defined_behaviour.md` § 4.4's arm, the message and the exit code unchanged, holds for every other failure; shown to the user at the close, since it narrows § 4.4**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
 | [Q-M1f.101](#q-m1f101--a-closed-stdout-on-windows) | a closed stdout on Windows | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), left as it is, `restore_sigpipe` a no-op there: Windows has no `SIGPIPE`, so a write to a closed pipe is an error and a `print!` would still panic, exit 101, which no host here can run; shown to the user at the close**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.102](#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs) | what the CI nightly keeps, and what the dev host runs | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), the stage file's rule: a step that guards an answer or a contract no per-commit step guards stays in CI, at a budget that fits in 5 min on the runner; a step over that, or one that measures, runs on the dev host, which runs every nightly step at full budget too; the stage file's classification confirmed, the fuzzer's budget moved (Q-M1f.103)**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
+| [Q-M1f.103](#q-m1f103--the-fuzzers-budget-in-the-ci-nightly) | the fuzzer's budget in the CI nightly | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), 20 000 inputs a seed, where the stage file proposed 100 000: on the runner's measured rate 100 000 is past the rule's 5 min, and 20 000 fits; the dev host runs 1 000 000**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
+| [Q-M1f.104](#q-m1f104--a-critical-step-the-runners-spread-puts-on-the-line) | a critical step the runner's spread puts on the line | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), `corpus_cores`' slow half stays whole in the nightly: 256 s on the latest run, 428 s and 436 s on the two before, on a runner slower in every step, and its slow half has no budget to cut**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
+| [Q-M1f.105](#q-m1f105--how-the-dev-hosts-list-is-held) | how the dev host's list is held | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), a third copy in `run_tests.sh`, held by `nightly_steps.rs` to the nightly's as a superset whose other steps `DEV_HOST_ONLY` names with why, with a floor, the two fuzz budgets pinned, and a census of the targets that read `EIN_CORPUS_SLOW`**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
+| [Q-M1f.106](#q-m1f106--the-whole-review-bundle-on-the-runners-graphviz) | the whole review bundle on the runner's Graphviz | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), it runs on the dev host, here or in the runner's image (`utils/ci_container.sh --dev-host`); per commit the runner draws every view with `dot` (`dot_wellformed`) and the smoke's 31 DOTs with their own engines, and Q-M1f.77 is unchanged**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1313,6 +1318,16 @@ started failing, nothing would notice.
 [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it): the stage stays in its scope, and nothing it
 measured fails. Re-opening it means (b).
 
+**Taken by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) on 2026-11-10**, when the user had accepted
+(a) as parked and the close review's finding 8 re-opened the nightly: (b), by tier, under the stage's rule
+([Q-M1f.102](#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)). `region`'s and `obligation_rung`'s slow
+halves are CI nightly steps, each a second route held to an answer on the `zebra2-minus-15` family that no per-commit
+test reaches; `route_invariance`'s is a dev-host step, over 5 min, its programs' answers digested per commit by
+`corpus_shapes`. The guard (b) asked for is `nightly_steps.rs`' `every_slow_half_runs_on_a_tier`: a target that reads
+`EIN_CORPUS_SLOW` and that neither the nightly nor `--dev-host` runs with it fails, but `read_out_examples`, whose slow
+branch reads only the page's blocks at `--region-budget 33554432`, and the page has none, which the test checks. Each
+slow half's time is in the stage's records.
+
 ### Q-M1f.52 — The nightly's review bundle and the register's runs that are not a solve
 
 **Raised** 2026-11-09 by [S1f.5.13](p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md)'s
@@ -2184,3 +2199,105 @@ and the standard of proof refutes a behaviour only with one.
 
 **Defaulted 2026-11-10 (the stage's default): (a).** The ruling is about `SIGPIPE`, which Windows does not have, and
 (b) is the writer the ruling chose not to build. Re-opening it means (b).
+
+### Q-M1f.102 — What the CI nightly keeps, and what the dev host runs
+
+**Raised** 2026-11-10 by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md), on the user's ruling on the close
+review's finding 8: *"reduce nightly job, remove long running tests, we will eventually run them on dev host, retain
+critical tests in CI"*. The ruling names two kinds of step and leaves their line to be drawn. The nightly took 81 min
+54 s here on 2026-11-09, two fuzz seeds 51 min of it, and the latest run on GitHub 74 min 44 s, its fuzz jobs 75 and
+59 min, one a seed beside the others (run 42802597417, 2026-11-10).
+
+- **(a) The stage file's rule.** *Critical*: a step that guards an answer or a contract no per-commit step guards (the
+  slow entries' answers, the config principle on the slow cells, the cores and dumps of the entries the per-commit tier
+  leaves out, the suite's sensitivity). *Long-running*: over 5 min on the runner, or measuring rather than checking. A
+  critical step stays in CI at a budget that fits and runs whole on the dev host; the rest run on the dev host only.
+  `./run_tests.sh --dev-host` runs every nightly step at full budget and the steps that left, and nothing schedules it.
+- **(b) A wall-clock budget for the nightly as a whole**, filled by priority. It needs a priority order the ruling does
+  not give, and a step's place would move with the runner's speed, which varies up to 2× between runs (the stage's T1).
+- **(c) Keep every step in CI, spread over more parallel jobs.** It keeps the long-running tests in CI, which the
+  ruling removes.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** T1 re-took every step here and read three runs on the runner, and
+confirmed the stage file's classification row by row, but the fuzzer's budget
+([Q-M1f.103](#q-m1f103--the-fuzzers-budget-in-the-ci-nightly)): kept, the slow corpus entries' cells, `answer_dump`,
+the round trip's, the levers' and the cores' slow halves, the mutation census and the bench smoke; added, `region`'s and
+`obligation_rung`'s slow halves
+([Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs)); to the dev host, the id space permuted eight
+ways, `stdlib_census.py --check`, the whole review bundle with its link check, and `route_invariance`'s slow half.
+Re-opening it means (b), or a line other than 5 min.
+
+### Q-M1f.103 — The fuzzer's budget in the CI nightly
+
+**Raised** 2026-11-10 by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md)'s T1. The stage file proposed 100 000
+inputs a seed, *about 2.5 min*, from this machine's rate, a million in 1 532.7 s (S1f.5.19's T3 record). The runner's
+rate is what the rule reads: a million took 4 410 s and 3 494 s (run 42802597417, 2026-11-10, six properties on four
+vCPUs; seven since S1f.5.21), and 2 572 s and 3 020 s the day before (run 42605782048). Here, on four P-core threads,
+the runner's count, 20 000 take 106.3 s and 100.1 s, and the properties that parse every input ran 1.13× and 1.34×
+slower an input on the runner than here, so on the runner 20 000 come to about 2.7 and 3.3 min with the step's build
+of about 50 s, and 100 000 to about 10 and 13 min.
+
+- **(a) 20 000 a seed** in the nightly, ten times the per-commit tier's 2 000 and a fiftieth of the dev host's million.
+- **(b) 100 000 a seed**, the stage file's number, past the rule's 5 min on the runner.
+- **(c) Make an input cheaper**, so a larger budget fits: S1f.5.28's item 10 and
+  [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it), not this stage's.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is the rule's own budget, *a budget that fits*, read on the
+runner's rate rather than this machine's. `nightly_steps.rs`' `the_fuzzer_runs_at_each_tiers_budget` holds it between
+the per-commit 2 000 and the dev host's million. The first nightly after the push measures it on the runner.
+Re-opening it means (b), or (c) first and a larger budget after.
+
+### Q-M1f.104 — A critical step the runner's spread puts on the line
+
+**Raised** 2026-11-10 by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md)'s T1. `corpus_cores`' slow half, the
+class-4 claim on the 14 `slow` entries, which no per-commit test reaches, took 256 s on the runner on 2026-11-10 (run
+42802597417) and 428 s and 436 s on 11-08 and 11-09 (runs 42469293951, 42605782048), whose `deep-corpus` jobs were
+slower in their long steps than the latest's (`stdlib_census.py` 642 s against 380 s). The rule keeps a critical step in CI at
+a budget that fits; this one's slow half is all or nothing (`corpus_cores.rs`' `slow_too`).
+
+- **(a) Keep it whole in the nightly**, under the line on the latest run, and re-read it when a nightly shows it over.
+- **(b) Give the test a budget**, a subset of the slow entries in CI and all of them on the dev host: a new selection
+  and a new pin, for a step the latest run puts under the line.
+- **(c) Move it to the dev host**, which leaves the claim on the zebra family to no CI tier.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is critical and fits on the latest run, (b) is engineering
+for a spread, and (c) drops a critical step from CI, which the ruling keeps. Re-opening it means (b).
+
+### Q-M1f.105 — How the dev host's list is held
+
+**Raised** 2026-11-10 by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md)'s T2. The stage asks that a test pin the
+dev-host list as `nightly_steps.rs` pins the nightly's, and that a step leaving the nightly appear in it.
+
+- **(a) A third copy, held to the nightly's.** `run_tests.sh --dev-host` lists its steps under `dev_host_step "…"`
+  banners; `nightly_steps.rs` holds every nightly step to be one of them, in order, at the dev host's fuzz budget, every
+  other one to be named in `DEV_HOST_ONLY` with why, and the list to a floor of 17, so a step taken out of the nightly
+  and left there fails until named, and one taken out of all three copies fails the floor. It pins the two fuzz
+  budgets, which the diff reads past, the checked `TMPDIR`, and every target that reads `EIN_CORPUS_SLOW` to a step on
+  one of the two lists (Q-M1f.51's (b)).
+- **(b) One copy**, `--dev-host` calling `--nightly`'s steps with a budget variable: the nightly's steps are then not
+  the workflow's text, which is what the diff compares, and the moved steps sit outside the shared block.
+- **(c) A file of its own**, `dev_host_steps.rs`, with the workflow parse moved to `steps/mod.rs`: the same checks, and
+  a restructure of `nightly_steps.rs` for no new property.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** Each step is read from the file that runs it, as `gate_steps.rs`
+and `nightly_steps.rs` already do, and every way the copies can drift fails a test (the stage's T2 record checks each
+by mutation). Re-opening it means (b) or (c).
+
+### Q-M1f.106 — The whole review bundle on the runner's Graphviz
+
+**Raised** 2026-11-10 by [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md)'s T1. Since
+[S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) a DOT Graphviz refuses fails the
+whole bundle, and the nightly's bundle step was the one CI run that drew all its DOTs on the runner's Graphviz with the
+engine each suggests. The rule moves the bundle to the dev host: 372 s on the latest run, 740 s and 752 s on the two
+before, and what it guards is the review's pages, not an answer.
+
+- **(a) The dev host draws it**, here or in the runner's image (`utils/ci_container.sh --dev-host`). Per commit the
+  runner still lays every view `ein-render` writes out with `dot` (`dot_wellformed`) and the smoke's 31 DOTs with the
+  engine each suggests, `fdp`'s KB views and the trace blocks among them, and
+  [Q-M1f.77](#q-m1f77--when-is-utilsci_containersh-part-of-done) is unchanged.
+- **(b) Widen Q-M1f.77**: a stage that changes a DOT writer or the bundle also builds the whole bundle in the runner's
+  image, `utils/ci_container.sh --dev-host` or the bundle alone in its `--shell`.
+- **(c) Keep the bundle in the nightly**, past the rule's 5 min.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The 612 refusals S1f.5.29 found were every `fdp` view, which the
+smoke draws, and no view kind the bundle draws is outside `dot_wellformed`'s and the smoke's. Re-opening it means (b).

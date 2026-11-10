@@ -51,6 +51,10 @@
 //! the floor that asked for *some rendering moved*, the narration cut's
 //! evidence of use, turned over with it.
 //!
+//! The per-commit tier runs one permutation; eight are the dev host's,
+//! `./run_tests.sh --dev-host`, since M1f S1f.5.27, the CI nightly's until
+//! then.
+//!
 //! ```text
 //! EIN_ID_SEEDS=8 cargo test -p ein-render --test id_order_invariance
 //! EIN_ID_FILES=corpus/out/fuzz/cases cargo test -p ein-render --test id_order_invariance

@@ -511,16 +511,21 @@ sub-language, the reserved names and the stdlib API are the rest of
 ./run_tests.sh             # the gate: six static checks, cargo test --workspace and three more steps — 329 s on 2026-11-03
 ./run_tests.sh --slow      # + every test's slow half (EIN_CORPUS_SLOW=1), + 8 id-space seeds
 ./run_tests.sh --nightly   # instead of the gate: every step of .github/workflows/nightly.yml
+./run_tests.sh --dev-host  # instead of the gate: the nightly at full budget, and the long steps CI does not run
 cd ein.rs && cargo fmt && cargo clippy --workspace --all-targets -- -D warnings
 EIN_BLESS=1 ./run_tests.sh # re-bank the goldens, deliberately
 ```
 
 The gate needs **Graphviz** on `PATH`: `dot_wellformed.rs` is the only
 authority the DOT views have on being well-formed, and it fails rather than
-skips without it. CI runs the gate per commit and the slow tier, eight id-space
-seeds, the stdlib censuses, the review bundle and a two-million-mutation
-frontend fuzz nightly ([`.github/workflows/`](.github/workflows/)), and
-`./run_tests.sh --nightly` runs the nightly's steps here.
+skips without it. CI runs the gate per commit and, nightly, the slow tier, the
+tests' slow halves, the mutation census and a frontend fuzz of 20 000 mutations
+a seed ([`.github/workflows/`](.github/workflows/)), and
+`./run_tests.sh --nightly` runs the nightly's steps here. What runs longer than
+5 min on the runner, or measures rather than checks, runs on the dev host,
+which nothing schedules: `./run_tests.sh --dev-host`, the nightly at full budget
+(a million mutations a seed) with eight id-space seeds, `route_invariance`'s
+slow half, the stdlib census and the whole review bundle (M1f S1f.5.27).
 
 ## Scheduled — the roadmap
 

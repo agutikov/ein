@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 #
-# ci_container.sh — the gate, or the nightly, in a container built like
+# ci_container.sh — the gate, the nightly or the dev host, in a container built like
 # GitHub's runner image, so that an image move can be checked before a push.
 # M1f S1f.5.17.
 #
 #     utils/ci_container.sh                          # ./run_tests.sh on ubuntu:26.04, amd64v3 packages
 #     utils/ci_container.sh --nightly                # ./run_tests.sh --nightly there
+#     utils/ci_container.sh --dev-host               # ./run_tests.sh --dev-host there (M1f S1f.5.27)
 #     utils/ci_container.sh --image ubuntu:24.04 --variant none
 #     utils/ci_container.sh --tests-only -p ein-render --test dot_wellformed
 #     utils/ci_container.sh --shell                  # a shell in the checkout instead

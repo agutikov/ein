@@ -283,7 +283,7 @@ entry, reloading each state file to its state by value; the line is `ein_corpus:
 
 - **Per commit** the round trip leaves out every entry that is `slow` or `heavy_dump`, and fails on an unflagged one
   that writes 40 000 or more. **Under `EIN_CORPUS_SLOW=1`**, which the nightly's `deep-corpus` job sets, as
-  `./run_tests.sh --slow` and `--nightly` do, it takes every entry and fails as well on a flagged one that writes
+  `./run_tests.sh --slow`, `--nightly` and `--dev-host` do, it takes every entry and fails as well on a flagged one that writes
   fewer. `ein-corpus`'s `the_heavy_dump_set_is_exactly_these_five` pins the set per commit, and `nightly_steps.rs`
   that the nightly sets the flag.
 - **Not `slow`**, which is a claim about the declared runs: the dump is none of them, and the four entries the ruling
@@ -298,6 +298,37 @@ entry, reloading each state file to its state by value; the line is `ein_corpus:
 `features/01_not_and_absent`, which is `slow` too and carries the flag because the slow tier holds it on every entry.
 Per commit the round trip took 8.6 s where it took 55 s, and the slow tier takes 121 s in release (2026-11-09,
 [S1f.5.13's T2 record](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md#t2-record-2026-11-09)).
+
+## Tiers
+
+**Three tiers run the corpus's tests** (M1f S1f.5.27, the user's ruling of 2026-11-10: *"reduce nightly job, remove
+long running tests, we will eventually run them on dev host, retain critical tests in CI"*): the per-commit gate
+(`./run_tests.sh`, `per-commit.yml`), the CI nightly (`./run_tests.sh --nightly`, `nightly.yml`) and the dev host
+(`./run_tests.sh --dev-host`), which nothing schedules. The nightly keeps a step that guards an answer or a contract no
+per-commit step guards, at a budget that fits in 5 min on the runner; a step past that, or one that measures rather
+than checks, is the dev host's, which also runs every nightly step at full budget
+([Q-M1f.102](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
+`ein-cli/tests/gate_steps.rs` holds the gate's list to its workflow, and `nightly_steps.rs` the nightly's to its
+workflow and the dev host's to the nightly's.
+
+| test or script | per commit | CI nightly | dev host |
+|---|---|---|---|
+| `corpus_cli` | every entry but the `slow` ones | the `slow` ones too (`EIN_CORPUS_SLOW=1`, `--release`) | as the nightly |
+| `answer_round_trip` | every entry but the `slow` and `heavy_dump` ones | every entry | as the nightly |
+| `lever_invariance` | every declared lever cell but the `slow` ones | the `slow` cells too | as the nightly |
+| `corpus_cores` | every entry but the `slow` ones | the `slow` ones too | as the nightly |
+| `answer_dump` | every entry | the same, in release | as the nightly |
+| `region`, `obligation_rung` | the fast halves | the slow halves too, since S1f.5.27 | as the nightly |
+| `route_invariance` | every monotone program both routes describe at the default budget | — | the zebra family and the six `square-*` at `--region-budget` 2²⁵ too |
+| `id_order_invariance` | one permutation of the id space | — | eight |
+| `fuzz_properties` | 2 000 inputs | 20 000 a seed, two seeds | 1 000 000 a seed |
+| `utils/stdlib_mutants.py --check` | — | yes | yes |
+| `utils/stdlib_census.py --check` | — (`stdlib_coverage` is the gate) | — | yes |
+| `utils/review_bundle.py` | `--smoke` | — | the whole bundle, and its link check |
+| `cargo bench --bench engine -- --test` | yes | yes | yes |
+
+What each step took, on the runner and here, is in
+[S1f.5.27's records](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md#t1-record-2026-11-10).
 
 ## Levers
 

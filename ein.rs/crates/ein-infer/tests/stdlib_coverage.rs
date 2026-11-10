@@ -35,8 +35,9 @@
 //!
 //! The script shells out to a release binary hundreds of times and takes
 //! ~38 s (2026-09-01); a check shaped like that runs when somebody remembers
-//! it — which since M1e S1e.4.5 (`TE-L4`) is a **nightly**
-//! (`.github/workflows/nightly.yml`) rather than nobody. This one runs in
+//! it — which from M1e S1e.4.5 (`TE-L4`) was a **nightly**
+//! (`.github/workflows/nightly.yml`) rather than nobody, and since M1f
+//! S1f.5.27 is the dev host, `./run_tests.sh --dev-host`. This one runs in
 //! `cargo test`, needs no binary, and costs **0.04 s** — a program of three
 //! declarations and two facts exhausts in microseconds. **It fails the
 //! moment a rule is added without a program**, which is the only moment anyone

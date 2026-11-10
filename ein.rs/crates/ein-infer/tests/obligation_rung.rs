@@ -278,7 +278,8 @@ fn the_candidates_are_what_the_guard_scans() {
 /// compared on `zebra2`, where the obligation tree reaches its one state in
 /// 45 saturations. `zebra2-minus-15`'s 32 cost 2 346 a side (5 s in a release
 /// build, 2026-11-03), so `EIN_CORPUS_SLOW` compares those, the way the
-/// corpus sweep splits the same way.
+/// corpus sweep splits the same way. The CI nightly sets it since M1f
+/// S1f.5.27 (Q-M1f.51), where no tier had.
 #[test]
 fn the_theory_finds_what_the_hrule_finds() {
     let deep = std::env::var_os("EIN_CORPUS_SLOW").is_some();

@@ -1776,7 +1776,8 @@ fn r_by_size(s: &states::StateRoute, d: &states::Description, k: usize) -> Vec<u
 /// `-j 16`). Its R per size and its N per size, through layer 6, are route
 /// 1's, banked here from that run; and the state route finishes it, with the
 /// 32 states M1d's tree found. `EIN_CORPUS_SLOW=1` only: about 10 s at
-/// `-j 16` in a release build.
+/// `-j 16` in a release build. The CI nightly runs it since M1f S1f.5.27
+/// (Q-M1f.51), where no tier had.
 #[test]
 fn the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6() {
     if std::env::var_os("EIN_CORPUS_SLOW").is_none() {

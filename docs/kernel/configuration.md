@@ -610,13 +610,13 @@ or by one of the two dev-only crates (`ein-corpus`, `ein-narration`, both
 | name | what it does | read at |
 |---|---|---|
 | `EIN_BLESS` | `=1` rewrites a golden instead of comparing it — including this page's generated block | `ein-corpus/src/lib.rs` |
-| `EIN_CORPUS_SLOW` | `=1` adds the `slow = true` corpus entries' cells, and the deep arm of `obligation_rung` | `ein-cli/tests/corpus_cli.rs`, `ein-infer/tests/obligation_rung.rs` |
+| `EIN_CORPUS_SLOW` | `=1` adds the `slow = true` corpus entries' cells, the `heavy_dump` entries' dumps, and the slow half of every test that has one; the CI nightly and the dev host set it, each on the targets its list names (M1f S1f.5.27, `ein-cli/tests/nightly_steps.rs`) | `ein-cli/tests/corpus_cli.rs`, `answer_round_trip.rs`, `lever_invariance.rs`, `route_invariance.rs`, `read_out_examples.rs`; `ein-infer/tests/corpus_cores.rs`, `region.rs`, `obligation_rung.rs` |
 | `EIN_CORPUS_TIMEOUT` | per-cell wall budget in seconds, default 300 | `ein-cli/tests/corpus_cli.rs` |
-| `EIN_ID_SEEDS` | how many interner permutations `id_order_invariance` sweeps | `ein-render/tests/id_order_invariance.rs` |
+| `EIN_ID_SEEDS` | how many interner permutations `id_order_invariance` sweeps, default 1; the dev host sets 8 (M1f S1f.5.27) | `ein-render/tests/id_order_invariance.rs` |
 | `EIN_ID_FILES` | point that sweep at a directory instead of the corpus — the fuzzer's seam | `ein-render/tests/id_order_invariance.rs` |
 | `EIN_ID_REPORT` | print the sweep's per-file report | `ein-render/tests/id_order_invariance.rs` |
 | `EIN_JOBS_SWEEP` | the job counts `jobs_invariance` runs, e.g. `2,4,8,16` | `ein-render/tests/jobs_invariance.rs` |
-| `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000 | `ein-ir/tests/fuzz_properties.rs` |
+| `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000, the per-commit tier's; the CI nightly sets 20 000 a seed and the dev host 1 000 000 (M1f S1f.5.27, `nightly_steps.rs`' `the_fuzzer_runs_at_each_tiers_budget`) | `ein-ir/tests/fuzz_properties.rs` |
 | `EIN_FUZZ_SEED` | moves that fuzzer's stream | `ein-ir/tests/fuzz_properties.rs` |
 | `EIN_NARRATION_STRICT` | `=1` runs the id-order, jobs and corpus-shape comparisons with no narration cut — a fork's derivation compared byte for byte, which is how the cut is measured | `ein-narration/src/lib.rs` |
 

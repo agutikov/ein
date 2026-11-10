@@ -473,8 +473,9 @@ def report(rules: list[dict], census: dict, args) -> int:
         # past one would be green over a *partial* sweep whose surviving runs
         # happened to cover all 77 rules. (A *total* failure already exits 1
         # through `zero`.) Empty on 2026-09-01 over 217 entries and 663 runs,
-        # so this changes no result today; it is what makes the nightly step
-        # able to fail for the reason the sweep most plausibly breaks.
+        # so this changes no result today; it is what makes the dev host's
+        # step (the nightly's until M1f S1f.5.27) able to fail for the reason
+        # the sweep most plausibly breaks.
         return 1 if zero or census["failures"] else 0
     return 0
 

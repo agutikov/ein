@@ -1,19 +1,27 @@
 # Tier 2 of three — docs/history/m1a_rust/design/12_toolchain_and_layout.md §4.
 #
-# Budget: an hour. Everything the per-commit tier cannot afford, plus the check
-# that only makes sense over time: does anything the corpus does not cover
-# break. The three jobs run side by side, and `deep-corpus` is the long one:
-# 18 min on the run of 2026-11-03, about half of it `stdlib_census.py`
-# (`gh run view 41620115500 --json jobs`).
+# Everything the per-commit tier cannot afford **that guards an answer or a
+# contract no per-commit step guards**, each step at a budget that fits in
+# 5 min on the runner: M1f S1f.5.27's rule, on the user's ruling of
+# 2026-11-10, *"reduce nightly job, remove long running tests, we will
+# eventually run them on dev host, retain critical tests in CI"*
+# (plans/m1f_hypothesis_and_documentation/open_questions.md, Q-M1f.102). A step
+# over 5 min on the runner, or one that measures rather than checks, runs on
+# the dev host instead, `./run_tests.sh --dev-host`, which runs every step here
+# at full budget and the steps that left: the id space permuted eight ways,
+# `stdlib_census.py`, the whole review bundle and `route_invariance`'s slow
+# half. Nothing schedules the dev host; the user runs it. The three jobs run
+# side by side.
 #
 # **`./run_tests.sh --nightly` runs every step of this file**, since M1e2
 # S1e2.3.6: the three jobs one after another, in this file's order, the fuzz
 # job once per seed of its matrix. `ein-cli/tests/nightly_steps.rs` diffs the
-# two lists, so a step added here and not there fails a test. Every `run:`
-# here is a step of that list, or a provisioning step the test names with its
-# reason (Graphviz, the tests' `TMPDIR`). Until that stage nothing local ran
-# these steps, and this workflow failed on every run from 2026-10-17 to 11-03
-# without anybody here seeing it
+# two lists, so a step added here and not there fails a test; since S1f.5.27
+# it holds `--dev-host`'s list to this one's too, so a step that leaves here
+# and is not named there fails it. Every `run:` here is a step of that list,
+# or a provisioning step the test names with its reason (Graphviz, the tests'
+# `TMPDIR`). Until S1e2.3.6 nothing local ran these steps, and this workflow
+# failed on every run from 2026-10-17 to 11-03 without anybody here seeing it
 # (plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.6_the_nightly_workflow.md).
 
 name: nightly
@@ -24,14 +32,15 @@ on:
 
 jobs:
   deep-corpus:
-    name: ein.rs — the slow corpus entries, and the id space permuted
+    name: ein.rs — the slow corpus entries, and the tests' slow halves
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     # M1e2 S1e2.3.6 — the tests' `TMPDIR`, a fresh directory under `build/`,
     # as in the per-commit tier since S1e2.3.5: the job's test steps run under
     # it, and `check_test_scratch.py` holds it empty after them. The slow cells
-    # are tests the per-commit tier never runs, so this is the one place their
-    # scratch is checked. `run_tests.sh --nightly` names its own
+    # are tests the per-commit tier never runs, so this is the one CI job that
+    # checks their scratch (`--dev-host` checks its own since M1f S1f.5.27).
+    # `run_tests.sh --nightly` names its own
     # `build/gate-tmp-<pid>`; the steps that read it are spelt the same.
     env: { GATE_TMP: "${{ github.workspace }}/build/gate-tmp" }
     steps:
@@ -55,11 +64,9 @@ jobs:
       # (docs/history/m1a_rust/measurements/corpus_cost.md).
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
-      # Eight id-space permutations of every corpus file, where the per-commit
-      # tier runs `EIN_ID_SEEDS`' default of one: does any output depend on an
-      # ordering accident.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --release --test id_order_invariance
-        env: { EIN_ID_SEEDS: "8" }
+      # Eight id-space permutations of every corpus file left for the dev host
+      # at M1f S1f.5.27: 452 s on the runner (run 42802597417, 2026-11-10), and
+      # the per-commit tier runs one permutation of every file.
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
       # program (`docs/kernel/inference/answer_dump.md`). **This step runs what
       # the per-commit tier runs, under `--release`.** It was here for one slow
@@ -89,38 +96,42 @@ jobs:
       # entries that are not slow, and this the zebra family's too.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test corpus_cores
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.5.27 (Q-M1f.51) — two slow halves no tier ran, each a second
+      # route held to an answer on the zebra2-minus-15 family, which no
+      # per-commit test reaches: `region`'s state route to route 1 through
+      # layer 6, and `obligation_rung`'s theory to the hrule's 32 states. The
+      # third, `route_invariance`'s, runs on the dev host: 857 s here
+      # (2026-11-09), and the state route's answers on its programs are
+      # digested per commit by `corpus_shapes`.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test region
+        env: { EIN_CORPUS_SLOW: "1" }
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test obligation_rung
+        env: { EIN_CORPUS_SLOW: "1" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # M1e2 S1e2.3.6 — the test steps left nothing in their `TMPDIR`,
       # every entry named with the file that writes it (S1e2.3.5's check).
       - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
         working-directory: ${{ github.workspace }}
-      # ── The two `--check` censuses — M1e S1e.4.5, `TE-L4` ──
+      # ── The sensitivity census — M1e S1e.4.5, `TE-L4` ──
       #
-      # Both read the release `ein` the steps above have already built
+      # It reads the release `ein` the steps above have already built
       # (`CARGO_BIN_EXE_ein` is `target/release/ein` under `--release`), so
-      # this is two runs and not a job. Neither is the gate and neither should
-      # be: the per-commit claim is `ein-infer/tests/stdlib_coverage.rs`,
-      # in-process and scoped to `tests/stdlib/`, because a rule that fires only
-      # inside `examples/zebra.ein` has no test. These are the weaker
-      # corpus-wide claim and the sensitivity claim, the two that were, in the
-      # coverage test's own words, shaped like something that "runs when
-      # somebody remembers it".
+      # this is a run and not a job. It is not the gate: the per-commit claim
+      # is `ein-infer/tests/stdlib_coverage.rs`, in-process and scoped to
+      # `tests/stdlib/`, which asks whether a rule is activated, and this
+      # whether the activation would notice a defect. Its sibling,
+      # `stdlib_census.py --check`, the weaker corpus-wide claim and a
+      # measurement, left for the dev host at M1f S1f.5.27 (380 s on the
+      # runner, run 42802597417), and so did the whole review bundle and its
+      # link check (372 s and 13 s there): the per-commit
+      # `review_bundle.py --smoke` reads every register row and builds four
+      # cases, and `utils/ci_container.sh --dev-host` builds the whole bundle
+      # on the runner's Graphviz.
       #
-      # `working-directory` overrides the job's `ein.rs`: both scripts resolve
-      # the repo from `__file__` and run the engine with `cwd=REPO`, but the
+      # `working-directory` overrides the job's `ein.rs`: the script resolves
+      # the repo from `__file__` and runs the engine with `cwd=REPO`, but the
       # `python3 utils/...` path is root-relative.
-      - run: python3 utils/stdlib_census.py --check
-        working-directory: ${{ github.workspace }}
-      # M1e2 S1e2.1.6 — the whole review bundle, every register case, with the
-      # release `ein` the corpus step above built: a case whose page fails to
-      # build exits 1. Then every link and image in it resolves. Two steps
-      # since S1e2.3.6, where they were one `a && b`: `run_tests.sh --nightly`
-      # runs under `set -e`, which does not stop on the left of an `&&`.
-      - run: python3 utils/review_bundle.py
-        working-directory: ${{ github.workspace }}
-      - run: python3 utils/doc_audit.py --links --check build/review
-        working-directory: ${{ github.workspace }}
       # M1e S1e.3.6 — would `tests/` notice a defect in the rule it tests: four
       # mechanical mutation families over every `(rule …)` in `stdlib/`, each
       # run past `ein test tests/`, and the survivors held as a set to
@@ -131,7 +142,7 @@ jobs:
         working-directory: ${{ github.workspace }}
 
   frontend-fuzz:
-    name: ein.rs — the frontend fuzzer, at budget
+    name: ein.rs — the frontend fuzzer, at the nightly's budget
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     strategy:
@@ -140,12 +151,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
-      # 10^6 mutations is P1a.1's acceptance number; the per-commit tier runs
-      # 2 000 of them (`EIN_FUZZ_ITERS`' default in `fuzz_properties.rs`). A
-      # find is minimised and written to corpus/fuzz_findings/, which the
-      # failure artifact carries out.
+      # 20 000 mutations a seed since M1f S1f.5.27 (Q-M1f.103). It was 10^6,
+      # P1a.1's acceptance number, which the dev host runs: five of the file's
+      # properties parse every input of the stream, and the runner took
+      # 4 410 s and 3 494 s for a million a seed (run 42802597417,
+      # 2026-11-10). The per-commit tier runs 2 000 (`EIN_FUZZ_ITERS`' default
+      # in `fuzz_properties.rs`). A find is minimised and written to
+      # corpus/fuzz_findings/, which the failure artifact carries out.
       - run: cargo test -p ein-ir --release --test fuzz_properties
-        env: { EIN_FUZZ_ITERS: "1000000", EIN_FUZZ_SEED: "${{ matrix.seed }}" }
+        env: { EIN_FUZZ_ITERS: "20000", EIN_FUZZ_SEED: "${{ matrix.seed }}" }
       - uses: actions/upload-artifact@v6
         if: failure()
         with:

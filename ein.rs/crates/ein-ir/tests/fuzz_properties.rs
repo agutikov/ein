@@ -40,7 +40,10 @@
 //!    them are invariants, which a panic here would show.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
-//! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
+//! the CI nightly raises it to 20 000 a seed and the dev host to P1a.1's
+//! 1 000 000 (M1f S1f.5.27, `ein-cli/tests/nightly_steps.rs`). Five of the
+//! properties below parse every input of the stream, each on its own, and
+//! the parse is the cost (S1f.5.27's T1). `EIN_FUZZ_SEED` moves the stream. Both are
 //! deterministic: the same pair reproduces the same run, which is what makes a
 //! find replayable.
 
@@ -450,9 +453,13 @@ fn every_seed_and_finding_parses_the_way_it_was_recorded() {
 ///
 /// It reads every fourth input of the stream, and at most 10 000 of it,
 /// spread evenly: a refusal costs the generated parser milliseconds, most of
-/// them lexing, and three in four of these inputs are refused, so the
-/// nightly's 1 000 000 would take an hour a seed. 500 inputs per commit, in
-/// about three seconds of a debug build, and 10 000 a seed in the nightly.
+/// them its recovery search (M1f S1f.5.27's T1: the 2.6 % of refused inputs
+/// that take 10 000 steps or more are three quarters of the stream's parse
+/// time, and an accepted input parses in tens of microseconds), and three in
+/// four of these inputs are refused, so the dev
+/// host's 1 000 000 would take an hour a seed. 500 inputs per commit, in
+/// about three seconds of a debug build, 5 000 a seed in the CI nightly's
+/// 20 000, and 10 000 a seed on the dev host (M1f S1f.5.27).
 #[test]
 fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
     use ein_ir::grammar::{self, RECOVERY_STEP_BUDGET};

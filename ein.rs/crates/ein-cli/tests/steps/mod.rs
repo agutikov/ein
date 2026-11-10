@@ -1,12 +1,13 @@
 //! What `gate_steps.rs` and `nightly_steps.rs` share: reading a step list out
-//! of `run_tests.sh`, and the one normalisation both sides of each diff go
-//! through. Not a test target: cargo builds only `tests/*.rs`, and each of the
+//! of `run_tests.sh` (the gate's, `--nightly`'s and `--dev-host`'s), and the
+//! one normalisation both sides of each diff go through. Not a test target: cargo builds only `tests/*.rs`, and each of the
 //! two files includes this with `mod steps;`.
 
 /// The steps of `run_tests.sh` that a `banner "…"` line announces, in order.
 ///
-/// `banner` is `step` for the per-commit gate and `nightly_step` for
-/// `--nightly`. A line is a banner when it *starts* with `banner "`, so the
+/// `banner` is `step` for the per-commit gate, `nightly_step` for
+/// `--nightly` and `dev_host_step` for `--dev-host` (M1f S1f.5.27). A line is
+/// a banner when it *starts* with `banner "`, so the
 /// one-line definition `nightly_step() { step "$@"; }` is not one: the parse
 /// is by line, and that line starts with `nightly_step()`.
 ///

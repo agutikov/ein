@@ -32,7 +32,8 @@ builds into DIR, new or empty, and leaves it, so a red smoke's DOTs can be
 drawn again elsewhere (S1f.5.29).
 
 **Every DOT drawn** (M1f S1f.5.29): the bundle, the smoke's and the
-nightly's whole one alike, exits 1 on a DOT Graphviz refused, printing its
+whole one alike (the dev host's since M1f S1f.5.27, the nightly's before),
+exits 1 on a DOT Graphviz refused, printing its
 path and, indented under it, what Graphviz said (kept beside the DOT as
 `.refused.txt`). A DOT kept and not laid out by design, a lattice past
 `DAG_NODES_DRAWN`, says so beside it (`.undrawn.txt`) and is not a refusal.

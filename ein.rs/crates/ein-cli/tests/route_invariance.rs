@@ -26,6 +26,9 @@
 //! `--region-budget` 2²⁵, where both finish. `syntax/arg-kinds` was one until
 //! M1e2 S1e2.2.14: its R is the whole cube of 41 candidates since, 2⁴¹
 //! commitments, which no budget of 2²⁵ facts describes, so it is skipped.
+//! The slow half is the dev host's, `./run_tests.sh --dev-host`, since M1f
+//! S1f.5.27 (Q-M1f.51): no CI tier runs it, the state route's answers on its
+//! programs being digested per commit by `corpus_shapes`.
 //!
 //! ```text
 //! cargo test -p ein-cli --test route_invariance

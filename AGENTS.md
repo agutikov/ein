@@ -1093,8 +1093,10 @@ constrained-reasoning research.
   and 77 of 77 over 217 entries in 38 s when M1e S1e.4.5 re-took it on
   2026-09-01. `--check` exits 1 while any rule is at zero, or while a declared
   run exits 0 and narrates nothing, and is **not** the gate: S1c.1.5 made that
-  a cargo test, in-process and scoped to `tests/stdlib/`. It **runs nightly**
-  since S1e.4.5, beside `stdlib_mutants.py --check`. What stays here is the
+  a cargo test, in-process and scoped to `tests/stdlib/`. It **ran nightly**
+  from S1e.4.5, beside `stdlib_mutants.py --check`, and runs on the dev host
+  since M1f S1f.5.27 (`./run_tests.sh --dev-host`), a measurement over 5 min
+  on the runner, where its sibling stays nightly. What stays here is the
   measurement the gate is a yes/no of.
   The twentieth, **`layer_census.py`**, is
   [M1d](docs/history/m1d_satisfiability/README.md) S1d.10.1's and asks what a *layer of
@@ -1249,11 +1251,12 @@ constrained-reasoning research.
 ./run_tests.sh                                               # the whole per-commit tier
 ./run_tests.sh --tests-only                                  # skip the static checks
 ./run_tests.sh --nightly                                     # M1e2 S1e2.3.6: instead of the gate, every step of nightly.yml, its three jobs in order
-EIN_FUZZ_ITERS=1000000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test fuzz_properties   # the nightly's fuzz job, once per seed (1, 987654321)
+./run_tests.sh --dev-host                                    # M1f S1f.5.27: instead of the gate, the nightly at full budget and the steps that left it
+EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test fuzz_properties     # the nightly's fuzz job, once per seed (1, 987654321); the dev host runs 1000000
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 14 slow entries
-EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
+EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance   # the dev host's, since M1f S1f.5.27
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ein solve … --maximal --models key|grid                       # the M1d S1d.3.3 forms, over the states listed
@@ -1500,6 +1503,30 @@ program's `--dump-answer` reloaded by value, the `slow` entries' and the five
 `heavy_dump` ones' too, whose dumps write 40 000 state files or more
 ([`corpus/README.md` § `heavy_dump`](corpus/README.md#heavy_dump)); 121 s in
 release on 2026-11-09. No CI tier had run that test's slow half before.
+
+**The nightly holds only what guards an answer or a contract no per-commit
+step guards**, each step within 5 min on the runner, since M1f S1f.5.27 (the
+user's ruling of 2026-11-10, *"reduce nightly job, remove long running tests,
+we will eventually run them on dev host, retain critical tests in CI"*;
+[Q-M1f.102](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
+It keeps the slow corpus entries' cells, the round trip's, the levers' and the
+cores' slow halves, `region`'s and `obligation_rung`'s slow halves (no tier
+ran those two before,
+[Q-M1f.51](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs)),
+the mutation census and the bench smoke, and runs the fuzzer at 20 000 inputs
+a seed, where a million had taken up to 4 410 s a seed on the runner since
+the parser swap (run 42802597417, 2026-11-10;
+[Q-M1f.103](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f103--the-fuzzers-budget-in-the-ci-nightly)).
+**`./run_tests.sh --dev-host` is the tier nothing schedules**, which the user
+runs here or in the runner's image (`utils/ci_container.sh --dev-host`):
+every nightly step at full budget, the fuzzer at a million a seed, and the
+steps that left or never ran in CI, the id space permuted eight ways,
+`route_invariance`'s slow half, `stdlib_census.py --check` and the whole
+review bundle with its link check. `nightly_steps.rs` holds its list to the
+nightly's: every nightly step is in it, and every other is named in
+`DEV_HOST_ONLY` with why, so a step that leaves the nightly and is not named
+there fails `cargo test`. The run times are in
+[S1f.5.27's records](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md#t2-record-2026-11-10).
 
 A reference that cannot be a link is still fine as `` `code` ``, and that is
 the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`
