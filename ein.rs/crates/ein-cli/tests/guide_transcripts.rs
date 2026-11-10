@@ -35,7 +35,9 @@
 //! EIN_BLESS=1 cargo test -p ein-cli --test guide_transcripts
 //! ```
 //!
-//! Its blind spot is [`CD-M4`]'s: prose outside the marker is unguarded.
+//! Its blind spot is [`CD-M4`]'s: prose outside the marker is unguarded. The
+//! guide's `lisp` blocks are [`guide_programs.rs`](guide_programs.rs)'s since
+//! M1f S1f.5.26, which loads each and solves each whole program.
 //!
 //! [`CD-M4`]: ../../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium
 

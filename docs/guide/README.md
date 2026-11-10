@@ -41,7 +41,8 @@ rules, then the whole puzzle solved end to end.
 
 ## Running the examples
 
-Build the engine once, then every snippet is runnable:
+Build the engine once, then every command on these pages runs, and every
+program block that writes no `…` runs as written:
 
 ```sh
 cargo build --release --manifest-path ein.rs/Cargo.toml -p ein-cli
@@ -75,3 +76,22 @@ sorted bindings two-per-line and dropped the rule under the title, and no
 engine in this repo's history has printed that. A pin catches drift; only
 taking the bytes from a run catches fabrication, which is why the block is
 generated now and why this table says which kind each one is.
+
+## Which program blocks are read
+
+**Every `lisp` block on these pages is read by
+`ein-cli/tests/guide_programs.rs`** (M1f S1f.5.26), so a block that writes a
+form today's engine refuses — a retired `(config …)` flag, a keyword its form
+does not take, a missing `:why` — fails `cargo test`. A block that writes no
+`…` is a **whole program**: it is loaded and solved, and `ein solve` must
+answer it. A block that writes `…` is an **excerpt**: every top-level form it
+writes whole is parsed and loaded, together, where it stands, and a form with
+a `…` in it is skipped as elided. Chapter 4's block went on writing a flag
+retired at M1e2 S1e2.1c.5 (2026-11-03), with nothing to read it, until
+S1f.5.26 took the line out.
+
+What the test does not read: the prose around a block, the `sh` commands
+outside a marked transcript, and whether an excerpt quotes the file it names —
+chapter 3's and chapter 4's blocks quote `zebra2.ein`'s forms, chapter 2's
+quote three `examples/` files, and S1f.5.26 checked each by hand
+(2026-11-10).

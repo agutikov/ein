@@ -11,7 +11,8 @@ M1f was created on 2026-08-29 by moving two phases out of
 ([close_review.md](p1f.5_the_no_owner_items/close_review.md#decided-by-default)): *"I accept all decisions as is
 without review. Please remember that any decision may be changed later due to new findings, new research results,
 new requirements etc."* So a defaulted row stands as taken and is not a ruling. Any one may be reopened, naming
-what bears on it.
+what bears on it. That acceptance covers the rows defaulted by then, up to Q-M1f.64; from Q-M1f.69 on, a row
+defaulted by a stage the close re-opened is that stage's, recorded in its file.
 
 | id | question | state |
 |---|---|---|
@@ -82,6 +83,8 @@ what bears on it.
 | [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value) | may `open` be written as a value? | **ruled 2026-11-10, (a)**: refused; `open` is written only as a rule's verdict; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
 | [Q-M1f.67](#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) | where is a macro body that no rule could use refused? | **ruled 2026-11-10**, in the user's words: an unused malformed macro is allowed, and what matters is that `(eq <arg>)` is never executed; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
 | [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **ruled 2026-11-10, (b)**: handle `SIGPIPE` properly, its default disposition restored on the binary; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.69](#q-m1f69--what-the-guides-pin-reads-in-a-program-block) | what the guide's pin reads in a program block | **defaulted 2026-11-10 (the stage's default, S1f.5.26): (a), the text decides: a block that writes `…` outside a string is an excerpt, a top-level form with one is elided; an excerpt's whole forms load together where they stand, and a whole program loads and `ein solve` answers it**; [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md) |
+| [Q-M1f.70](#q-m1f70--what-the-stage-does-with-what-t1-found-false-beside-the-blocks) | what the stage does with what T1 found false beside the blocks | **defaulted 2026-11-10 (the stage's default, S1f.5.26): (a), each fixed in the page: a block that misquotes its file or answers otherwise than its page says, and four sentences of prose; the test does not hold them**; [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1563,3 +1566,41 @@ binary, as the global allocator does (`ein-cli/src/main.rs`), not in the library
 convention (`cat`, `grep`), not an exit Ein chooses. Rust 1.97.1 has no stable option for it
 (`rustc -C help`), so it is one audited `libc::signal(SIGPIPE, SIG_DFL)` call on the binary, the second
 audited `unsafe` site beside `ein-einb`'s `cast.rs` (design/12 § 2).
+
+### Q-M1f.69 — What the guide's pin reads in a program block
+
+**Raised** 2026-11-10 by [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md)'s T2. The stage says a
+`lisp` block of `docs/guide/` is a whole program or an excerpt (it writes `…`), that a whole program is loaded and
+answered and an excerpt's complete forms parsed and loaded, and leaves open how the kind and the forms are told
+apart, how an excerpt's forms load, and what *answered* asks.
+
+- **(a) The text decides, read as the lexer reads strings and comments.** A block that writes `…` outside a string
+  is an excerpt; a top-level form with a `…` in it outside a string and a comment is elided, and blanked, as is a
+  `…` between forms, character for character, so a position the loader prints is the page's. An excerpt's whole
+  forms load together, as one program, through `ein_ir::load_file` under the default options; a whole program loads
+  the same way and `ein solve FILE`, the default question, must exit 0, so a refuted `:expect` fails it. The prose,
+  the `sh` commands outside a marked transcript, and whether an excerpt quotes its file are not read.
+- **(b) Each whole form of an excerpt loaded alone.** A refusal names the form rather than the block, and two forms
+  that clash, two relations of one name, pass.
+- **(c) A marker per block**, `<!-- program -->` or `<!-- excerpt -->`, as a transcript has, rather than the `…`.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** A `…` is what tells a reader a block is cut, so the test reads
+the block as the reader does and needs no marker kept in step with it; the forms loading together is what a reader
+who copies them gets. `ein-cli/tests/guide_programs.rs` holds it.
+
+### Q-M1f.70 — What the stage does with what T1 found false beside the blocks
+
+**Raised** 2026-11-10 by [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md)'s T1. Besides the three
+blocks today's engine refuses, the read found two blocks it loads that are false: chapter 2's transitive block
+answers one state where the page's run of the file it quotes says four, lacking the file's `(relation is-a T T …)`,
+and chapter 2's co-located block quotes a rule `05_mini_zebra.ein` does not have; and four sentences of prose:
+chapter 1's *`is-a` is a built-in relation*, chapter 4's bare `ein solve` that *stops at its default budget … and
+says so on stderr*, `-s`'s *wall clock per phase*, and `--trace`'s *"it follows that…" narrative*.
+
+- **(a) Fix each in the page**, as the stage fixes the refusals; the test does not hold them, and the guide's README
+  says so.
+- **(b) Fix the refusals only**, the stage's acceptance read narrowly, and leave the rest to a later reading.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The user's ruling is *"fix the tutorial"*; each is the page's,
+none moves an engine answer or a register row, and a reader who copies chapter 2's block or trusts chapter 4's
+sentence is misled as one who copied the retired flag was.

@@ -3,8 +3,9 @@
 A **rule** watches for a pattern of facts and, when it matches, asserts new
 facts. That's the whole engine in one sentence: *rules rewrite the graph,
 adding edges until nothing new can be added* (a fixpoint). This chapter
-meets the three gentlest rules, each with the graph **before** and **after**
-it fires — and each runnable in one command.
+meets the two gentlest rules, each with the graph **before** and **after**
+it fires, and then the relation they make the puzzle's engine — each
+runnable in one command.
 
 A rule has a `:match` (the pattern to find) and an `:assert` (what to add):
 
@@ -88,8 +89,10 @@ Cat is an Animal."
   :assert (?rel ?a ?c)
   :why    "{?rel} is transitive.")
 
+(relation is-a T T :why "{?1} is a {?2}")
 (transitive is-a)
-(is-a Cat Mammal)  (is-a Mammal Animal)
+(is-a Cat Mammal :source "taxonomy")
+(is-a Mammal Animal :source "taxonomy")
 (query :goal (is-a Cat Animal))
 ```
 
@@ -126,7 +129,7 @@ $ ein solve examples/saturation/transitive/taxonomy.ein
 Four states, because Ein may also guess `is-a` facts the program does not
 state, and none of the guesses breaks anything; the goal holds in all four.
 
-## `co-located` — the first puzzle-shaped rule
+## `co-located` — the first puzzle-shaped relation
 
 The Zebra puzzle's engine is **co-located**: two attributes that share a
 house imply each other's placement. It's the bridge from these toy rules to
@@ -135,17 +138,19 @@ the real puzzle.
 **English:** "if the Norwegian and Water are in the same house, then placing
 one places the other."
 
-**ein-lang** (the shape, from [`examples/branching/05_mini_zebra.ein`](../../examples/branching/05_mini_zebra.ein) — a 3-attribute mini Zebra):
+**ein-lang** (from [`examples/branching/05_mini_zebra.ein`](../../examples/branching/05_mini_zebra.ein) — a 3-attribute mini Zebra):
 
 ```lisp
-(rule co-located (?rel)
-  :match  (?rel ?a ?b)
-  :assert (?rel ?b ?a)          ; co-located is symmetric…
-  :why "{?rel} sym")
-;; …+ transitive, so co-located forms equivalence classes across attributes
+(relation co-located T T :why "{?1} is co-located with {?2}")
+(symmetric  co-located)        ; the two rules above, activated for co-located:
+(transitive co-located)        ; it forms equivalence classes across attributes
+(co-located Alice Tea :source "(1) Alice drinks Tea")
+(co-located Alice Cat :source "(2) Alice has the Cat")
+;; … with the two rules, the is-a tree, a `guess` hrule and the query
 ```
 
-In `mini_zebra.ein`, `co-located`'s symmetric + transitive closure links
+No new rule: `co-located` is a relation, and the two rules you just met make
+it an equivalence. Its symmetric + transitive closure links
 Nationality ⇄ Drink ⇄ Pet into one equivalence class, and a `guess`
 *hypothesis rule* proposes the cross-attribute pairings the facts don't pin
 directly:

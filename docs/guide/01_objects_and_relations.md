@@ -58,8 +58,12 @@ declare it once, naming the types of its slots:
   }
   ```
 
-`nation-loc` is a relation with two slots; `is-a` (used above) is a
-built-in two-slot relation. Every relation carries its rendering text, a
+`nation-loc` is a relation with two slots, and so is `is-a` (used above):
+it is not built in, since Ein has no type system of its own, and a puzzle
+whose `is-a` facts Ein may guess declares it as it does any other relation,
+`(relation is-a T T :why "{?1} is a {?2}")`
+([`06_reserved_names.md`](../kernel/ir/03-ein-lang/06_reserved_names.md)).
+Every relation carries its rendering text, a
 `:why` — e.g. `(relation nation-loc Nationality House :why "the {?1} lives in
 {?2}")` — which says what one of its facts reads as in English; the loader
 refuses a relation, rule or hrule without one (`--no-require-why` loads it

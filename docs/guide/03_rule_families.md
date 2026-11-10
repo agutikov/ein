@@ -104,8 +104,8 @@ produces is fuel for domain-elimination above.
 
 ## co-located — propagate a partner through a shared house
 
-The positive counterpart, and the rule you met in Chapter 2, now in its real
-two-attribute form ([`zebra2.ein`](../../examples/zebra2.ein)):
+The positive counterpart, and Chapter 2's `co-located`, now a rule of its own
+in its real two-attribute form ([`zebra2.ein`](../../examples/zebra2.ein)):
 
 ```lisp
 (rule co-located (?R1 ?V1 ?R2 ?V2)
@@ -137,7 +137,8 @@ neighbour is **unique**:
   :match  (and (?R1 ?V1 ?h1)
                (?S ?h2 ?h1)
                (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
-  :assert (?R2 ?V2 ?h2))
+  :assert (?R2 ?V2 ?h2)
+  :why    "({?R1} {?V1} {?h1}) and unique-{?S} neighbour {?h2} ⟹ ({?R2} {?V2} {?h2}).")
 ```
 
 ```dot
@@ -167,7 +168,8 @@ out:
   :match  (and (?R1 ?V1 ?h1) (relation ?R2 ?A ?B)
                (is-a ?h_other ?B)
                (absent (?S ?h_other ?h1)))
-  :assert (not (?R2 ?V2 ?h_other)))
+  :assert (not (?R2 ?V2 ?h_other))
+  :why    "({?V1} at {?h1} via {?R1}) restricts {?V2} to {?S}-neighbours (fwd); {?h_other} excluded.")
 ```
 
 ```dot

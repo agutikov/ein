@@ -10,19 +10,24 @@ Open [`examples/zebra2.ein`](../../examples/zebra2.ein) — it's just the
 pieces from this guide, in layers:
 
 ```lisp
-(config :enable-pre-branch-lookahead true)        ; an engine knob (Ch.3 stdlib aside)
-
 (import std.algebra   :symbols (symmetric transitive includes))   ; the library logic
-(import std.bijection :symbols (bijective-properties …))
+(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
 
 (relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; the schema
 (relation color-loc  Color       House :why "{?2} is painted {?1}")
-… (drink-loc, smoke-loc, pet-loc, right-of, next-to)
+;; … drink-loc, smoke-loc, pet-loc, right-of, next-to, is-a and is-a* likewise
 
 (symmetric next-to) (transitive is-a*)              ; activate the properties
 (bijective color-loc) (bijective nation-loc) …
 
 (rule co-located …) (rule adjacent-via-fwd …) (rule disjunctive-prune-fwd …) …  ; the spatial rules
+
+(hrule guess (?R ?T1 ?T2)                           ; what may be guessed
+  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (?R ?a ?b)
+  :why    "guess: ({?R} {?a} {?b})?")
+(solve :hrules (guess (color-loc Color House) (nation-loc Nationality House) (drink-loc Drink House)
+                      (smoke-loc Cigarette House) (pet-loc Pet House)))
 
 (is-a Norwegian Nationality) …                      ; the type tree
 (nation-loc Norwegian House-1 :source "condition (10)")   ; the 15 clues
@@ -43,17 +48,21 @@ digraph { rankdir=LR; node [shape=box];
   schema  [label="relation signatures\n+ property tags"];
   facts   [label="is-a tree + 15 clues"];
   rules   [label="spatial rules\n(co-located, adjacent-via, …)"];
+  guess   [label="(hrule guess …)\n+ (solve :hrules …)"];
   query   [label="(query :goal …)", shape=note];
   engine  [label="ein solve", shape=ellipse];
   answer  [label="Norwegian ↔ water\nJapanese ↔ zebra", shape=note];
   imports -> engine; schema -> engine; facts -> engine; rules -> engine;
-  query -> engine; engine -> answer;
+  guess -> engine; query -> engine; engine -> answer;
 }
 ```
 
-Nothing here is new — it's Chapters 1–3 at full size. The `(query …)` is the
-only piece we haven't used: a `:goal` pattern Ein matches against the solved
-KB, and a `:goal-text` template that renders the headline answer.
+Nothing here is new — it's Chapters 1–3 at full size. The `(hrule guess …)`
+is Chapter 2's `guess`, written out: it proposes `(?R ?a ?b)` for every `?a`
+of one type and `?b` of another, and `(solve :hrules …)` names the five
+relations it runs over, each with its two types. The `(query …)` is the only
+piece we haven't used: a `:goal` pattern Ein matches against the solved KB,
+and a `:goal-text` template that renders the headline answer.
 
 ## Solve it
 
@@ -110,14 +119,15 @@ still owed).
 ```sh
 ein solve examples/zebra2.ein                 # describe every state the puzzle allows
 ein solve examples/zebra2.ein --trace out.md  # write a full markdown derivation trace
-ein solve examples/zebra2.ein -s              # + the wall clock per phase
+ein solve examples/zebra2.ein -s              # + the wall clock
 ```
 
 A bare `ein solve` describes the whole set of states — R — with its counts,
-its lines and what it cost. On this puzzle it finds the one state and stops at
-its default budget before it has shown there is no other, and says so on
-stderr: `--single` is the question that asks for the proof. `--trace` emits the
-step-by-step "it follows that…" narrative with inline graphs.
+its lines and what it cost. On this puzzle it classifies every commitment
+(`exhausted yes`) and finds the one state `--single` showed; `--single` asks
+only whether R is one state, and its `work` row is smaller for it. `--trace`
+writes the derivation step by step, each step's premises and what it derives,
+with inline graphs.
 
 ## Where to go next
 
