@@ -155,7 +155,7 @@ One page moved with it: the excerpt of `zebra2.ein` in `docs/guide/04_solving_th
 `:hrules` and declared them only in a comment. The block writes the three declarations out, as `zebra2.ein` has
 them.
 
-**The rows** are `fixed`, each `now` the refusal's line: 254 fixed, 13 open and 1 not wrong (`grep '^status'
+**The rows** are `fixed` by `c78e6430`, each `now` the refusal's line: 254 fixed, 13 open and 1 not wrong (`grep '^status'
 corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11).
 
 **The pin**, `ein-cli/tests/solve_lists.rs`: nine shapes of a list naming nothing and the five witnesses, each on

@@ -14426,7 +14426,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hrules` list naming an hrule the program does not declare, `gues` for `guess`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "c78e6430"
 by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
 date   = "2026-11-11"
 
@@ -14459,7 +14459,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hrules` activator naming a relation the program does not have, `att` for `at`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "c78e6430"
 by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
 date   = "2026-11-11"
 
@@ -14492,7 +14492,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hrules` activator giving its hrule another number of arguments, `(at Color)` for `guess (?R ?T1 ?T2)`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "c78e6430"
 by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
 date   = "2026-11-11"
 
@@ -14525,7 +14525,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hypothesis-relations` list naming a relation the program does not have, `like` for `likes`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "c78e6430"
 by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
 date   = "2026-11-11"
 
@@ -14558,7 +14558,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:no-hypothesis` list naming a relation the program does not have, `like` for `likes`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "c78e6430"
 by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
 date   = "2026-11-11"
 
