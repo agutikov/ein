@@ -170,7 +170,7 @@ path   = "examples/features/02_star_in_identifiers.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 cost_ms = 98
-note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question. Slow since M1e2 S1e2.1a.5's switch, at 1.28 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 1.27 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 98 ms together, the slowest `render lattice` at 84 ms; `slow` removed, since the state route describes it in milliseconds."
+note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question. Slow since M1e2 S1e2.1a.5's switch, at 1.28 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 1.27 s. Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20 facts (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`): 98 ms together, the slowest `render lattice` at 84 ms; `slow` removed, since the state route describes it in milliseconds. Its goal was `(?R Rex Animal)`, which `solve` and `oracle` refused where a state was answered from it, until M1f S1f.5.21 (W64), whose loader refuses it on every command; rewritten `(is-a* Rex Animal)`, these runs answering as before (Q-M1f.76)."
 
 [[entry]]
 path   = "examples/features/03_forall.ein"
@@ -683,13 +683,13 @@ note   = "M1a hazard H2, second shape — the same ordering of `alive`, over two
 path   = "examples/ein-bugs/query-goal-free-head-unsat.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "render rules"]
-note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so the goal is never compiled and the run exits 0. Pins the asymmetry a too-eager fix broke for the length of one commit."
+note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so the goal was never compiled and the run exited 0, the asymmetry a too-eager fix broke for the length of one commit. M1f W64 (`W64/goal-free-head-no-state`), filed and fixed by S1f.5.21 (2026-11-10): the loader refuses a goal's relation variable since, so every command refuses this program too, exit 1, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query goal has no activator, so a head variable can never be bound and the pattern is uncompilable; `solve` refuses it with a `CompileError`, exit 1, and the engine ran the program until this fixture."
+note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query goal has no activator, so a head variable can never be bound and the pattern is uncompilable; `solve` refused it with a `CompileError` where a state was answered from the goal, exit 1, while `saturate` answered. M1f W64 (`W64/goal-free-head`), filed and fixed by S1f.5.21 (2026-11-10): refused at load since, every command, one line."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-assert-var.ein"
@@ -1815,21 +1815,77 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W61 (`W61/fact-eq-arity`), filed by S1f.5.9's T1f.5.9.1 (2026-11-09) beside W60: a written fact of `eq` at one argument, `(eq a)`, is stored as an ordinary fact, the check of a written `eq` fact (Q-M1f.33) reading two arguments only, and the program answers, R two states. Fixed by S1f.5.9's T1f.5.9.4 (2026-11-09): refused at load, every command, one line."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "render rules", "render program"]
+note   = "M1f W62 (`W62/nested-or-stops`) and W65's witness, filed by S1f.5.21's T1f.5.21.1 (2026-11-10): an `(or …)` written as a premise of an `(and …)`, in a rule root compiles, so every command that compiles stopped on the compiler's line in the Python IR's spelling while the views and `kb save` answered, the runs banking both. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "solve --minimal", "saturate"]
+note   = "M1f W62 (`W62/nested-or-under-commitment`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): the same disjunction in a rule only a commitment activates, so `saturate` and `solve --minimal` answered, exit 0, where describe stopped, exit 1, the three runs banking the disagreement. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-or-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W62 (`W62/nested-or-hrule`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): the same disjunction in an hrule, which `saturate` never compiles, so it answered where `solve` stopped. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-or-never-compiled.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W62 (`W62/nested-or-never-compiled`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): the same disjunction in a rule no activator activates, which every command answered. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-or-goal.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W62 (`W62/nested-or-goal`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): the same disjunction in a query's goal, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W62 (`W62/nested-or-goal-no-state`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): the same goal where R is empty, so the goal was never compiled and every command answered. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wide-match-stops.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W63 (`W63/wide-match-stops`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): a rule whose `:match` writes 257 distinct variables, past the register file's 256, compiled at root, so every command that compiles stopped. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wide-match-never-compiled.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W63 (`W63/wide-match-never-compiled`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): the same width in a rule no activator activates, which every command answered. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/wide-goal.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W63 (`W63/wide-goal`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): a query's goal writing 257 distinct variables, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
-# The `CompileError` fixtures (S1a.3.1's three, one left since M1e2 S1e2.2.24
-# moved `empty_absent` and `unbound_head` to `broken/load/`, the loader
-# refusing both) — files that parse and load and are then refused by the
-# compiler. Their messages are not left unchecked: each
+# The `CompileError` fixtures — files that parse and load and are then refused
+# by the compiler. S1a.3.1's three left one by one: `empty_absent` and
+# `unbound_head` to `broken/load/` at M1e2 S1e2.2.24, the loader refusing both,
+# and `nested_or` at M1f S1f.5.21 (W62); `eq_in_a_macro_body` is S1f.5.21's,
+# the one compile refusal a program still reaches, through a macro's body. Their messages are not left unchecked: each
 # has a `.expected` beside it, held byte-for-byte by
 # `ein-infer/tests/compile_semantics.rs` (`examples/broken/compile/README.md`).
 # `render rules` is deliberately not among the runs: it never reaches the
 # compiler, so the cell would record an exit code and discard the output.
 
 [[entry]]
-path   = "examples/broken/compile/nested_or.ein"
+path   = "examples/broken/compile/eq_in_a_macro_body.ein"
 group  = "compile-negative"
 runs   = ["solve", "saturate"]
+note   = "M1f S1f.5.21: `(eq ?x)` written in a macro's body, which the grammar never reads expanded, so the compiler is the first to see it and refuses it where it compiles the rule, with one line in Ein's words on every command that compiles; the one compile refusal a corpus program reaches since the stage moved the others to the loader. Where it is refused is S1f.5.24's (Q-M1f.67)."
 
 # M1e S1e.2.1 — `CO-H1`'s class. The grammar shape-pins four of the seven
 # kernel meta-primitives (`00_ebnf.md` §2's *Kernel meta-primitives*
@@ -2187,6 +2243,12 @@ path   = "examples/broken/load/unbound_head.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "`(?R ?x)`, a relation variable no parameter binds, at the top level. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's unbound-head CompileError in the Python spelling; since then the loader refuses it (W24, the stage's default 1), and it moved here from `examples/broken/compile/`, with `render rules` among its runs."
+
+[[entry]]
+path   = "examples/broken/load/nested_or.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "S1a.3.1's nested `(or …)` in a `:match` premise. A compile-negative fixture until M1f S1f.5.21 (W62, the close review's finding 1), refused by the compiler where it compiled the rule, in the Python IR's spelling and three ways by command, while the views and `kb save` answered; since then the loader refuses it, one line on every command, `render rules` among its runs as every load-negative entry has."
 
 [[entry]]
 path   = "examples/broken/load/rule_duplicate_name.ein"

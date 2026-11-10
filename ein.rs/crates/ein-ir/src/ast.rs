@@ -344,23 +344,21 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
     }
 }
 
-/// A source location as a loader message interpolates it —
-/// `Loc(file='a.ein', line=6, col=20)`.
+/// A source location as a loader message interpolates it — `a.ein:6:20`,
+/// the file, the line and the column, as a parse error places itself.
 ///
-/// `None` for a **top-level** form, which is what makes loader messages end
-/// in `at None` (`defined_behaviour.md` § 1.5): `relation_decl`,
-/// `generic_fact`, `eq_fact`, … all build their `SForm` without a `loc` and
-/// only `generic_list` passes one. Q-M1a.6 — a real usability bug, kept so
-/// that fixing it is one visible re-baseline rather than noise.
+/// It was the Python IR's `Loc(file='a.ein', line=6, col=20)` until M1f
+/// S1f.5.21, which took D-2's half of it (F23, Q-M1f.75): the compiler's arity
+/// line printed it too. `None` for a **top-level** form, which is what makes
+/// loader messages end in `at None` (`defined_behaviour.md` § 1.5):
+/// `relation_decl`, `generic_fact`, `eq_fact`, … all build their `SForm`
+/// without a `loc` and only `generic_list` passes one. Q-M1a.6 — a real
+/// usability bug, kept so that fixing it is one visible re-baseline rather
+/// than noise, and F23's D-2 since.
 pub fn loc_repr(ast: &Ast, loc: Option<Loc>) -> String {
     match loc {
         None => "None".to_string(),
-        Some(l) => format!(
-            "Loc(file={}, line={}, col={})",
-            ein_core::repr::repr_str(ast.file(l.file)),
-            l.line,
-            l.col
-        ),
+        Some(l) => format!("{}:{}:{}", ast.file(l.file), l.line, l.col),
     }
 }
 
@@ -409,7 +407,7 @@ mod tests {
                     col: 20
                 })
             ),
-            "Loc(file='examples/zebra2.ein', line=6, col=20)"
+            "examples/zebra2.ein:6:20"
         );
     }
 

@@ -581,8 +581,14 @@ default view is.
 
 The program **as written** — this chapter's per-form IR view — is the other
 door: `ein render program FILE [--levi] [--rule-mode …]`. It prints one
-digraph per group (the rule library, the ontology, the facts, the query). It
-**parses and never loads**, so a program the loader refuses still has a
+digraph per group (the rule library, the ontology, the facts, the query),
+drawn from the parsed forms, so a macro call is drawn as written and imports
+are not resolved. It **reads the program through the loader first** since M1f
+[S1f.5.21](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md),
+as `render rules`, `render rule` and `render constraints` do, so a program the
+loader refuses is refused with its line, exit 1, as every other command refuses
+it (W65, [Q-M1f.71](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f71--does-a-view-draw-a-program-the-loader-refuses));
+until then it parsed and never loaded, and a refused program still had a
 picture. [`utils/render_examples.sh`](../../../../utils/render_examples.sh)
 writes both views for every example. Both doors are held by
 `ein-cli/tests/render_doors.rs`, which pipes what the *command* prints

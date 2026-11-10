@@ -61,7 +61,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **2** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fifteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **78** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **82** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **2** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -364,7 +364,7 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**78** options across fifteen parsers, in the default build (`einb`,
+**82** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
@@ -376,16 +376,19 @@ parallel copy. What this page states is the *shape*, read off that golden:
 | `ein render kb` | 5 |
 | `ein render lattice` | 3 |
 | `ein render region` | 3 |
-| `ein render rule` | 2 |
-| `ein render program` | 2 |
+| `ein render rule` | 3 |
+| `ein render program` | 3 |
 | `ein kb save` | 2 |
-| `ein render rules` | 1 |
+| `ein render rules` | 2 |
+| `ein render constraints` | 1 |
 
-`ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
-dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 76 and no `ein kb` at all. M1f T1f.5.14.6
-added seven, `--require-why` on each command that loads a program (§ 3.4),
-which T1f.5.14.7 turned into `--no-require-why`, seven for seven. M1e2
+`ein`, `ein kb` and `ein render` take none — they are dispatchers. `ein kb
+save` exists only under the `einb` feature; a `--no-default-features` build
+has 80 and no `ein kb` at all. M1f T1f.5.14.6 added seven, `--require-why` on
+each command that loads a program (§ 3.4), which T1f.5.14.7 turned into
+`--no-require-why`, seven for seven; M1f S1f.5.21 added four more, the views
+that draw a program as written, which read it through the loader first since
+([Q-M1f.71](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f71--does-a-view-draw-a-program-the-loader-refuses)), eleven for eleven. M1e2
 S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
 `--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
 cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
@@ -523,9 +526,12 @@ program to answer about.
 ### 3.4 The option that decides loading
 
 One option, on every command that loads a program — `ein solve`, `ein
-oracle`, `ein test`, `ein saturate`, `ein render kb`, `ein render lattice` and
-`ein kb save` — and on none that only parses one (`ein render program`,
-`rules`, `rule`, `constraints`) or loads nothing (`ein render region`). It sets
+oracle`, `ein test`, `ein saturate`, `ein render kb`, `ein render lattice`,
+`ein render program`, `rules`, `rule`, `constraints` and `ein kb save` — and on
+none that loads nothing (`ein render region`). The four views that draw a
+program as written parsed it and never loaded it until M1f S1f.5.21, which has
+them read it through the loader first and refuse what it refuses
+([Q-M1f.71](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f71--does-a-view-draw-a-program-the-loader-refuses)), so they take it since. It sets
 `ein_ir::LoadOptions::require_why` false, which an embedder sets the same way
 (`ein_ir::load_with`, `load_query_with`, `load_file_with`; `ein_einb::OpenOptions::load`);
 `ein_ir::load` and the other entries with no options require a `:why`.
@@ -752,7 +758,7 @@ one or the other.
 | `the_shipped_environment_set_is_what_the_page_lists` | a shipping crate reads an `EIN_*` name with no row in § 4's first class, or that class lists one nothing reads |
 | `the_sanity_flag_adds_its_row_and_nothing_else` | `:lattice-sanity-check true` moves `solve -p`'s exit code, stdout or stderr past its own `paths` row on either of two fixtures, or prints no unbounded row |
 | `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's fifteen loads, or is refused without the stage and the reason |
-| `require_why_decides_loading_only` | § 3.4 has no `--no-require-why` row; the option is on another set of commands than the seven that load a program, or a command still takes `--require-why`; on one of them a program missing three `:why`s loads without the option, is refused at another exit code or without its three lines, or does not run with it; a container is not refused where its `.ein` is; or a corpus program prints other bytes with the option |
+| `require_why_decides_loading_only` | § 3.4 has no `--no-require-why` row; the option is on another set of commands than the eleven that load a program (seven until M1f S1f.5.21), or a command still takes `--require-why`; on one of them a program missing three `:why`s loads without the option, is refused at another exit code or without its three lines, or does not run with it; a container is not refused where its `.ein` is; or a corpus program prints other bytes with the option |
 | `the_surface_table_agrees_with_the_sections_it_summarises` | § 1's three counts are not the ones §§ 2–4 own |
 
 **Re-banking the block:**

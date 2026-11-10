@@ -21,7 +21,7 @@
 
 use ein_core::entities::Rule;
 use ein_core::{FactId, Kb, SlotKey, Symbol, Terms, Value};
-use ein_ir::{Ast, Node, NodeId, node_repr};
+use ein_ir::{Ast, Node, NodeId};
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::sync::{Arc, Mutex};
 
@@ -34,7 +34,23 @@ use crate::predicates;
 /// A `:match` clause the compiler cannot lower to a faithful plan.
 ///
 /// Every branch that raises this used to `return []` — silently dropping a
-/// premise, or a whole disjunction. The message is what a rule author sees.
+/// premise, or a whole disjunction. The message is what a rule author sees,
+/// in Ein's words since M1f S1f.5.21 (the close review's finding 1): the rule,
+/// the clause and the form as the program writes them, and where the compiler
+/// knows the form's position, the file, the line and the column in front, as a
+/// parse error places itself. Until then it quoted the Python IR's repr
+/// (`SForm(head=Atom(name='or'), …)`), cited stage ids, and every command
+/// printed it its own way (`ein saturate` behind
+/// `ein.inference.compile.CompileError:`, `ein render kb` behind the file's
+/// name).
+///
+/// **Which a program reaches** since S1f.5.21: only the two arity lines, `eq`'s
+/// and `absent`'s, which a macro's body produces (S1f.5.24's, Q-M1f.67). The
+/// loader refuses a nested `(or …)`, a clause past the register file and a
+/// goal's relation variable, so their arms are invariants; and an activator of
+/// another arity, a relation head bound to a fact and a rule's relation
+/// variable with no activator are reached by a direct caller of
+/// [`compile_rule`] only (Q-M1f.75).
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct CompileError(pub String);
 
@@ -278,15 +294,22 @@ impl Space {
         self.index.get(&name).copied()
     }
 
+    /// A new register, past the last.
+    ///
+    /// **The file holds [`MAX_REGS`]**, and the loader refuses a `:match` or a
+    /// `:goal` that writes more distinct variables than that, a rule's
+    /// parameters among them (`ein_ir::from_ir`'s `refuse_wide_matches`, M1f
+    /// S1f.5.21, W63), which bounds each register file a plan has. So no
+    /// program reaches the bound here, and it is an invariant (Q-M1f.9 (a)'s
+    /// pattern); until S1f.5.21 it was this function's `CompileError`, *more
+    /// than 256 distinct variables in one `:match`*, which a rule no state
+    /// compiled never met.
     fn push(&mut self, name: Symbol, from: Option<Reg>) -> Result<Reg, CompileError> {
-        if self.names.len() >= MAX_REGS {
-            return Err(CompileError(format!(
-                "more than {MAX_REGS} distinct variables in one `:match` — \
-                 ein.rs numbers a rule's variables into a fixed register file \
-                 ({MAX_REGS} slots) so the matcher's inner loop allocates \
-                 nothing. Split the rule."
-            )));
-        }
+        assert!(
+            self.names.len() < MAX_REGS,
+            "a register file holds {MAX_REGS} variables, and the loader refuses a :match or a \
+             :goal that writes more (ein_ir::from_ir's refuse_wide_matches)"
+        );
         let reg = self.names.len() as Reg;
         self.names.push(name);
         self.scope_of.push(from);
@@ -298,6 +321,10 @@ impl Space {
 struct Compiler<'a> {
     ast: &'a Ast,
     terms: &'a mut Terms,
+    // Who a refusal names, `rule 'r'` or `query`, and its clause, `:match` or
+    // `:goal` (M1f S1f.5.21): set by `run`.
+    who: String,
+    clause: &'static str,
     // Arenas.
     steps: Vec<Step>,
     slots: Vec<Slot>,
@@ -354,6 +381,8 @@ impl<'a> Compiler<'a> {
         Compiler {
             ast,
             terms,
+            who: String::new(),
+            clause: ":match",
             steps: Vec::new(),
             slots: Vec::new(),
             guards: Vec::new(),
@@ -372,6 +401,14 @@ impl<'a> Compiler<'a> {
     }
 
     fn run(mut self, rule: &Rule, activator: Option<FactId>) -> Result<Plan, CompileError> {
+        // A query's goal is compiled as a parameter-less rule named `#query`
+        // (`verdict::goal_bindings`), so a refusal of one names the query.
+        if rule.name == self.terms.kernel.query_rule {
+            self.who = "query".to_string();
+            self.clause = ":goal";
+        } else {
+            self.who = format!("rule '{}'", self.terms.sym(rule.name));
+        }
         let activator_args = self.bind_activator(rule, activator)?;
 
         // A top-level `(or …)` lowers to one step-tuple per disjunct (A13):
@@ -470,8 +507,7 @@ impl<'a> Compiler<'a> {
         let Some(fact) = activator else {
             return Ok(Box::new([]));
         };
-        let (rel, args) = self.terms.facts.get(fact);
-        let args: Vec<Value> = args.to_vec();
+        let args: Vec<Value> = self.terms.facts.get(fact).1.to_vec();
         if rule.params.len() != args.len() {
             // S1.22.0. This used to leave `bindings` empty and comment that
             // "the matcher will reject via the 'unbound head var' branch" —
@@ -480,23 +516,26 @@ impl<'a> Compiler<'a> {
             // drivers filter mismatched activators before they get here
             // (`activators_for`, `hrule.Hrules`); a direct caller that
             // constructs the pair anyway gets told.
-            let args_repr = ein_core::repr::repr(&ein_core::repr::ReprValue::Tuple(
-                args.iter().map(|&a| self.terms.repr_value(a)).collect(),
-            ));
-            let params_repr = ein_core::repr::repr(&ein_core::repr::ReprValue::Tuple(
-                rule.params
-                    .iter()
-                    .map(|&p| ein_core::repr::ReprValue::Str(self.terms.sym(p).to_string()))
-                    .collect(),
-            ));
+            //
+            // In Ein's words since M1f S1f.5.21: the activator as a fact and the
+            // parameters as the rule writes them, where it printed a Python
+            // tuple of each, `pairwise('r',)` and `('R', 'T')`.
+            let fact = crate::events::sexpr(self.terms, fact);
+            let params: Vec<String> = rule
+                .params
+                .iter()
+                .map(|&p| format!("?{}", self.terms.sym(p)))
+                .collect();
             return Err(CompileError(format!(
-                "activator {}{args_repr} has {} argument(s) but rule `{}` \
-                 declares {} parameter(s) {params_repr} — it cannot bind them, \
-                 so it does not activate this rule.",
-                self.terms.sym(rel),
+                "{}: its activator {fact} has {} argument{}, and it declares {} parameter{} ({}) \
+                 — an activator binds a rule's parameters one for one, so this one activates \
+                 nothing",
+                self.who,
                 args.len(),
-                self.terms.sym(rule.name),
+                if args.len() == 1 { "" } else { "s" },
                 rule.params.len(),
+                if rule.params.len() == 1 { "" } else { "s" },
+                params.join(" "),
             )));
         }
         for (&p, &a) in rule.params.iter().zip(args.iter()) {
@@ -647,7 +686,7 @@ impl<'a> Compiler<'a> {
                     "absent",
                     1,
                     args.len(),
-                    "negation-as-failure is over a single premise, so wrap several in an `(and …)`",
+                    "negation as failure is over one premise, so wrap several in an (and …)",
                 ));
             }
             return self.absent(node, args[0], top, out);
@@ -673,15 +712,18 @@ impl<'a> Compiler<'a> {
         // neither p nor q in the KB, and `(absent (or (p ?x) (q ?x)))` never
         // fired with neither, permanently (the empty sub-plan makes the guard
         // fail, and a failing monotone guard retires its candidate).
+        //
+        // From S1.22.0 until M1f S1f.5.21 this was a `CompileError` in the
+        // Python IR's spelling, met where a plan was compiled: at root, under
+        // a commitment, by the hypothesis layer for an hrule, and where a state
+        // was answered from a goal, so some commands answered a program others
+        // stopped on (W62). The loader refuses one since, after macro
+        // expansion, so no program reaches this arm (Q-M1f.9 (a)'s pattern).
         if head_name.as_deref() == Some("or") {
-            return Err(CompileError(format!(
-                "nested `(or …)` in a `:match` premise: {}. Only a TOP-LEVEL \
-                 `(or …)` is supported (S1.8.A13 splits it into one plan per \
-                 disjunct); a nested one needs DNF expansion, which the M1 \
-                 compiler does not do. Lift the disjunction to the top of the \
-                 `:match`, or split the rule.",
-                node_repr(self.ast, node)
-            )));
+            unreachable!(
+                "an (or …) is a whole :match or :goal, and the loader refuses one written as a \
+                 premise (ein_ir::from_ir's refuse_nested_disjunctions)"
+            );
         }
 
         // A registered built-in predicate — `eq` / `neq`. Its args stay **raw
@@ -710,7 +752,7 @@ impl<'a> Compiler<'a> {
                     pred.as_str(),
                     pred.arity(),
                     args.len(),
-                    "a built-in predicate compares exactly two values, so write one guard per pair",
+                    "it compares two values, so write one guard per pair",
                 ));
             }
             let start = self.guard_args.len() as u32;
@@ -848,13 +890,19 @@ impl<'a> Compiler<'a> {
     /// A kernel meta-primitive written at an arity it does not have — M1e
     /// S1e.2.1, `CO-H1` and its class.
     ///
-    /// Same shape as the refusals beside it: name the form, quote it as the IR
-    /// `repr`, and say what to write
-    /// instead. It carries one thing they do not — the **position**. A
-    /// premise is a `generic_list`, which is the one production the parser
-    /// hands a `Loc`, so unlike a top-level declaration this can say where;
-    /// the sibling messages end in nothing rather than in `at None` only
-    /// because they predate anyone asking.
+    /// **Only a macro's body reaches it** since M1f S1f.5.5's swap: the
+    /// grammar takes `eq` and `neq` at two terms and `absent` at one premise,
+    /// and S1f.5.9 refuses at load a relation parameter bound to `eq` at
+    /// another arity. A macro's body is a template whose head may be any name
+    /// at any arity, so its expansion is first read here (S1f.5.24's, on the
+    /// user's ruling on Q-M1f.67: an unused malformed macro loads, and no path
+    /// executes the primitive).
+    ///
+    /// The line, in Ein's words since M1f S1f.5.21: the place, the rule, the
+    /// form as written and what to write instead. A premise has a position,
+    /// and it is the macro body's, where the form is written, so the line
+    /// starts with it. Until S1f.5.21 it quoted the IR's `repr` and placed it
+    /// `at Loc(file=…, line=…, col=…)`.
     fn bad_arity(
         &self,
         node: NodeId,
@@ -864,11 +912,23 @@ impl<'a> Compiler<'a> {
         advice: &str,
     ) -> CompileError {
         CompileError(format!(
-            "`({name} …)` takes exactly {want} argument{} and was given {got}: {} at {} — {advice}.",
+            "{}{}: its {} writes {}, and {name} takes exactly {want} argument{}, not {got} — \
+             {advice}",
+            self.place(node),
+            self.who,
+            self.clause,
+            ein_ir::dump_compact(self.ast, node),
             if want == 1 { "" } else { "s" },
-            node_repr(self.ast, node),
-            ein_ir::loc_repr(self.ast, self.ast.loc(node)),
         ))
+    }
+
+    /// Where `node` is written, `<file>:<line>:<col>: `, as a parse error
+    /// places itself; nothing where the parser gave it no position.
+    fn place(&self, node: NodeId) -> String {
+        match self.ast.loc(node) {
+            Some(loc) => format!("{}: ", ein_ir::loc_repr(self.ast, Some(loc))),
+            None => String::new(),
+        }
     }
 
     /// M1e2 S1e2.2.24 (W24, the user's ruling of 2026-11-05 on Q-M1e2.18
@@ -890,14 +950,22 @@ impl<'a> Compiler<'a> {
     /// (Q-M1e.21 (b)), and it was refused here with its own line. Since
     /// S1f.5.5's swap a run of digits is a name, which binds like any other,
     /// so a value is a name or a fact and this is a fact.
+    ///
+    /// **No program reaches it** since S1f.5.18, whose checks refuse at load
+    /// every activator a program writes or a rule could derive that binds a
+    /// relation parameter to a fact, and a candidate is a name: a direct
+    /// caller of [`compile_rule`] with such an activator does (Q-M1f.75). In
+    /// Ein's words since M1f S1f.5.21, where it placed the form `at Loc(…)`.
     fn head_not_a_name(&self, node: NodeId, head: NodeId, v: Value) -> CompileError {
         debug_assert!(v.as_fact().is_some(), "a value that is no name is a fact");
         CompileError(format!(
-            "the relation head {} of {} at {} is bound to the fact {} — a \
-             relation is named by a symbol, not a fact.",
-            ein_ir::dump_compact(self.ast, head),
+            "{}{}: its {} writes {}, and its activator binds {} to the fact {} — a relation is \
+             named by a symbol, not a fact",
+            self.place(node),
+            self.who,
+            self.clause,
             ein_ir::dump_compact(self.ast, node),
-            ein_ir::loc_repr(self.ast, self.ast.loc(node)),
+            ein_ir::dump_compact(self.ast, head),
             crate::events::sexpr_value(self.terms, v),
         ))
     }
@@ -920,7 +988,7 @@ impl<'a> Compiler<'a> {
             "`(absent …)` sub-plan compiled to no steps in {} — the guard \
              would fail against every KB and its candidates would be retired \
              permanently.",
-            node_repr(self.ast, node)
+            ein_ir::dump_compact(self.ast, node)
         )
     }
 
@@ -963,33 +1031,36 @@ impl<'a> Compiler<'a> {
                     // refused just above, so no program the loader accepts
                     // reaches this arm: a direct caller of `compile_rule` with
                     // no activator does.
+                    //
+                    // **A goal reached it** until M1f S1f.5.21, a query having
+                    // no activator: `(query :goal (?R Rex Animal))` stopped the
+                    // run where a state was answered from it, in the Python
+                    // IR's spelling (S1a.6.6's fixture, W64). The loader
+                    // refuses a goal's relation variable since
+                    // (`refuse_goal_relation_variables`), so only a direct
+                    // caller compiling a rule with parameters and no activator
+                    // reaches this line (Q-M1f.75), in Ein's words since.
                     None => {
                         return Err(CompileError(format!(
-                            "unbound relation head ?{} in a premise of `{}` — \
-                             M1 matches relations per activator (Q29), so the \
-                             head var must be bound by the rule's activator. \
-                             Check that the activator fact's arity matches the \
-                             rule's parameter list.",
+                            "{}{}: its {} writes {} with ?{} as its relation, and no activator \
+                             binds it — a relation written as a variable is a parameter its \
+                             activator binds, so compile the rule with one",
+                            self.place(node),
+                            self.who,
+                            self.clause,
+                            ein_ir::dump_compact(self.ast, node),
                             self.ast.sym(s),
-                            node_repr(self.ast, node)
                         )));
                     }
                 }
             }
-            // A head the parser admits is an atom, a variable or `_`, and the
-            // loader refuses `_` as a relation since M1e2 S1e2.2.20
-            // (Q-M1e2.14 (c)), so no program it accepts reaches this arm;
-            // until then `(_ a)` did, and printed this line.
-            _ => {
-                return Err(CompileError(format!(
-                    "unbound relation head ?{} in a premise of `{}` — M1 \
-                     matches relations per activator (Q29), so the head var \
-                     must be bound by the rule's activator. Check that the \
-                     activator fact's arity matches the rule's parameter list.",
-                    node_repr(self.ast, head),
-                    node_repr(self.ast, node)
-                )));
-            }
+            // A premise's relation is a name or a variable (`ein.y`'s
+            // `PremiseHead`). Until M1f S1f.5.5's swap the parser also
+            // admitted `_`, which the loader refused as a relation from M1e2
+            // S1e2.2.20 (Q-M1e2.14 (c)), and `(_ a)` printed the unbound-head
+            // line until then; the swap refuses a bare `_` at the parse
+            // (S1f.5.1), and S1f.5.21 made the arm an invariant (Q-M1f.9 (a)).
+            _ => unreachable!("a premise's relation is a name or a variable (ein.y's PremiseHead)"),
         };
 
         // Lowered into a local first, then appended in one block: `slot`
@@ -1336,7 +1407,9 @@ impl<'a> Compiler<'a> {
                 Some(v) => GuardArgKind::Const(v),
                 None => {
                     return Err(CompileError(format!(
-                        "the guard {} compares the form {}, which holds a variable — {}",
+                        "{}: its {} writes {}, and the form {} holds a variable — {}",
+                        self.who,
+                        self.clause,
                         ein_ir::dump_compact(self.ast, guard),
                         ein_ir::dump_compact(self.ast, node),
                         GUARD_VALUES

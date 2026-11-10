@@ -58,10 +58,25 @@ fired (W31), and `:assert ()` stored a fact under that head (W34).
 [`00_ebnf.md` § 2](00_ebnf.md#2-phrase-grammar) prints. A macro's body is a
 `Template`, which takes any head at any arity, so `(macro two (?a ?b) (absent
 ?a ?b))` reaches the compiler, whose arity lines for `eq` and `absent` stay,
-each with a positioned `CompileError` (M1e
+each a positioned refusal (M1e
 [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),
 [Q-M1e.18](../../../history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments);
 `compile_semantics::the_compile_and_firing_lines_a_macro_still_reaches`).
+They are the only refusals the compiler makes that a program reaches since
+M1f [S1f.5.21](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md),
+and each reads the same on every command that compiles, in Ein's words: the
+place in the macro's body, the rule, the form as expanded and what to write,
+`examples/broken/compile/eq_in_a_macro_body.ein:21:18: rule 'r': its :match
+writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two
+values, so write one guard per pair`; until then it quoted the Python IR's
+repr and placed it `at Loc(file=…, line=…, col=…)`, and `ein saturate` put
+`ein.inference.compile.CompileError:` in front. Where a macro body's
+primitive is refused is [S1f.5.24](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s,
+on the user's ruling on Q-M1f.67: an unused malformed macro loads, and no
+path executes the primitive; the views and `kb save`, which execute no rule,
+accept the program. **An `(or …)` written as a premise** is no primitive at
+another arity but a shape, and the loader refuses it since S1f.5.21, a
+macro's expansion included (`defined_behaviour.md` § 4.15).
 **Until the swap** the hand-written grammar pinned `not` (`NotForm ::= '('
 'not' Value KwPair* ')'`), `neq` (`NeqForm`) and `and` / `or` (`Value+`),
 and `eq` and `absent` were plain `SYMBOL`s a rule could pattern-match on,

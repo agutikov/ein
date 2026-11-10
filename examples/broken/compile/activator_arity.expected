@@ -1,1 +1,1 @@
-activator pairwise('r',) has 1 argument(s) but rule `pairwise` declares 2 parameter(s) ('R', 'T') — it cannot bind them, so it does not activate this rule.
+rule 'pairwise': its activator (pairwise r) has 1 argument, and it declares 2 parameters (?R ?T) — an activator binds a rule's parameters one for one, so this one activates nothing

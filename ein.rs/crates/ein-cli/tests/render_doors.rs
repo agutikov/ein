@@ -130,16 +130,40 @@ fn every_door_prints_dot_that_dot_draws() {
     assert!(lattice.join("nodes.md").is_file());
 }
 
-/// **The program is drawn before it is loaded**, so a program the loader
-/// refuses still has a picture — which is the case a reviewer of a broken
-/// fixture needs most.
+/// **A program the loader refuses is refused by every view**, with the line
+/// and the exit every other command gives it — M1f S1f.5.21 (W65, Q-M1f.71).
+///
+/// Until then this test held the opposite, *the program is drawn before it is
+/// loaded*, so a refused program still had a picture (M1e2 S1e2.1.3): which
+/// was a view answering a program every other command refused, the close
+/// review's finding 1. The four views that draw a program as written read it
+/// through the loader first since, and draw a program it accepts as before.
 #[test]
-fn render_program_draws_what_the_loader_refuses() {
+fn every_view_refuses_what_the_loader_refuses() {
     let file = "examples/broken/load/derivation_cycle.ein";
-    assert_ne!(ein(&["saturate", file]).code, 0, "{file} loads now");
-    let r = ein(&["render", "program", file]);
+    let refusal = ein(&["saturate", file]);
+    assert_eq!(refusal.code, 1, "{file} loads now");
+    let line = refusal.err.lines().next().expect("a line").to_string();
+    for view in [
+        &["render", "program", file][..],
+        &["render", "rules", file],
+        &["render", "rule", "--name", "r", file],
+        &["render", "constraints", file],
+    ] {
+        let r = ein(view);
+        assert_eq!(r.code, 1, "{view:?}: {}", r.err);
+        assert_eq!(r.err.lines().next(), Some(line.as_str()), "{view:?}");
+        assert!(
+            r.out.is_empty(),
+            "{view:?} drew a refused program:\n{}",
+            r.out
+        );
+    }
+    // A program the loader accepts draws as before.
+    let ok = "examples/features/01_not_and_absent.ein";
+    let r = ein(&["render", "program", ok]);
     assert_eq!(r.code, 0, "{}", r.err);
-    dot_accepts(file, &r.out);
+    dot_accepts(ok, &r.out);
 }
 
 /// **`--since` draws what a commitment added**, from the files `--dump-answer`

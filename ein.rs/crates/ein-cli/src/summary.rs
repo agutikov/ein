@@ -168,7 +168,7 @@ fn leftover_at(
             emitted.push(f);
             ControlFlow::Continue(())
         })
-        .map_err(crate::common::compile_error_line)?;
+        .map_err(|e| e.to_string())?;
     }
     // Attributed, because a bare count cannot answer the question the count is
     // *for*: whether the leftover is the program failing to close a domain it

@@ -111,8 +111,8 @@
 0    examples/broken/compile/activator_arity.ein :: saturate
 0    examples/broken/compile/activator_arity.ein :: saturate --dump
 0    examples/broken/compile/activator_arity.ein :: solve
-1    examples/broken/compile/nested_or.ein :: saturate
-1    examples/broken/compile/nested_or.ein :: solve
+1    examples/broken/compile/eq_in_a_macro_body.ein :: saturate
+1    examples/broken/compile/eq_in_a_macro_body.ein :: solve
 1    examples/broken/config_bad_value.ein :: render rules
 1    examples/broken/config_bad_value.ein :: saturate
 1    examples/broken/config_bad_value.ein :: solve
@@ -157,10 +157,10 @@
 1    examples/broken/load/derivation_cycle.ein :: render rules
 1    examples/broken/load/derivation_cycle.ein :: saturate
 1    examples/broken/load/derivation_cycle.ein :: solve
-0    examples/broken/load/derived_activator.ein :: render rules
+1    examples/broken/load/derived_activator.ein :: render rules
 1    examples/broken/load/derived_activator.ein :: saturate
 1    examples/broken/load/derived_activator.ein :: solve
-0    examples/broken/load/derived_activator_never.ein :: render rules
+1    examples/broken/load/derived_activator_never.ein :: render rules
 1    examples/broken/load/derived_activator_never.ein :: saturate
 1    examples/broken/load/derived_activator_never.ein :: solve
 1    examples/broken/load/expect_omits_the_goal.ein :: render rules
@@ -169,7 +169,7 @@
 1    examples/broken/load/expect_unknown_relation.ein :: render rules
 1    examples/broken/load/expect_unknown_relation.ein :: saturate
 1    examples/broken/load/expect_unknown_relation.ein :: solve
-0    examples/broken/load/hrule_duplicate_name.ein :: render rules
+1    examples/broken/load/hrule_duplicate_name.ein :: render rules
 1    examples/broken/load/hrule_duplicate_name.ein :: saturate
 1    examples/broken/load/hrule_duplicate_name.ein :: solve
 1    examples/broken/load/import_as_and_symbols.ein :: render rules
@@ -178,7 +178,7 @@
 1    examples/broken/load/import_bare_std.ein :: render rules
 1    examples/broken/load/import_bare_std.ein :: saturate
 1    examples/broken/load/import_bare_std.ein :: solve
-0    examples/broken/load/import_conflicting_definitions.ein :: render rules
+1    examples/broken/load/import_conflicting_definitions.ein :: render rules
 1    examples/broken/load/import_conflicting_definitions.ein :: saturate
 1    examples/broken/load/import_conflicting_definitions.ein :: solve
 1    examples/broken/load/import_cycle.ein :: render rules
@@ -196,13 +196,16 @@
 1    examples/broken/load/import_symbols_not_provided.ein :: render rules
 1    examples/broken/load/import_symbols_not_provided.ein :: saturate
 1    examples/broken/load/import_symbols_not_provided.ein :: solve
-0    examples/broken/load/macro_arity_mismatch.ein :: render rules
+1    examples/broken/load/macro_arity_mismatch.ein :: render rules
 1    examples/broken/load/macro_arity_mismatch.ein :: saturate
 1    examples/broken/load/macro_arity_mismatch.ein :: solve
 1    examples/broken/load/macro_duplicate.ein :: render rules
 1    examples/broken/load/macro_duplicate.ein :: saturate
 1    examples/broken/load/macro_duplicate.ein :: solve
-0    examples/broken/load/open_compound_witness.ein :: render rules
+1    examples/broken/load/nested_or.ein :: render rules
+1    examples/broken/load/nested_or.ein :: saturate
+1    examples/broken/load/nested_or.ein :: solve
+1    examples/broken/load/open_compound_witness.ein :: render rules
 1    examples/broken/load/open_compound_witness.ein :: saturate
 1    examples/broken/load/open_compound_witness.ein :: solve
 1    examples/broken/load/query_class_twice.ein :: render rules
@@ -229,25 +232,25 @@
 1    examples/broken/load/reserved_open_qualified.ein :: solve
 1    examples/broken/load/reserved_open_symbols.ein :: render rules
 1    examples/broken/load/reserved_open_symbols.ein :: solve
-0    examples/broken/load/rule_duplicate_name.ein :: render rules
+1    examples/broken/load/rule_duplicate_name.ein :: render rules
 1    examples/broken/load/rule_duplicate_name.ein :: saturate
 1    examples/broken/load/rule_duplicate_name.ein :: solve
-0    examples/broken/load/rule_half_declarators.ein :: render rules
+1    examples/broken/load/rule_half_declarators.ein :: render rules
 1    examples/broken/load/rule_half_declarators.ein :: saturate
 1    examples/broken/load/rule_half_declarators.ein :: solve
-0    examples/broken/load/rule_missing_assert.ein :: render rules
+1    examples/broken/load/rule_missing_assert.ein :: render rules
 1    examples/broken/load/rule_missing_assert.ein :: saturate
 1    examples/broken/load/rule_missing_assert.ein :: solve
-0    examples/broken/load/rule_missing_match.ein :: render rules
+1    examples/broken/load/rule_missing_match.ein :: render rules
 1    examples/broken/load/rule_missing_match.ein :: saturate
 1    examples/broken/load/rule_missing_match.ein :: solve
 1    examples/broken/load/solve_twice.ein :: render rules
 1    examples/broken/load/solve_twice.ein :: saturate
 1    examples/broken/load/solve_twice.ein :: solve
-0    examples/broken/load/unbound_head.ein :: render rules
+1    examples/broken/load/unbound_head.ein :: render rules
 1    examples/broken/load/unbound_head.ein :: saturate
 1    examples/broken/load/unbound_head.ein :: solve
-0    examples/broken/load/unimported_std_macro.ein :: render rules
+1    examples/broken/load/unimported_std_macro.ein :: render rules
 1    examples/broken/load/unimported_std_macro.ein :: saturate
 1    examples/broken/load/unimported_std_macro.ein :: solve
 1    examples/broken/macro_reserved_name.ein :: render rules
@@ -375,10 +378,10 @@
 1    examples/ein-bugs/naf-upward-closure.ein :: solve
 0    examples/ein-bugs/nested-core.ein :: solve
 0    examples/ein-bugs/nested-fact-hypothesis.ein :: solve
-0    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
-0    examples/ein-bugs/query-goal-free-head-unsat.ein :: saturate
-0    examples/ein-bugs/query-goal-free-head-unsat.ein :: solve
-0    examples/ein-bugs/query-goal-free-head.ein :: saturate
+1    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
+1    examples/ein-bugs/query-goal-free-head-unsat.ein :: saturate
+1    examples/ein-bugs/query-goal-free-head-unsat.ein :: solve
+1    examples/ein-bugs/query-goal-free-head.ein :: saturate
 1    examples/ein-bugs/query-goal-free-head.ein :: solve
 1    examples/ein-bugs/unbound-assert-var.ein :: saturate
 1    examples/ein-bugs/unbound-assert-var.ein :: solve
@@ -597,6 +600,21 @@
 0    examples/ein-bugs/wrong-answers/negative-only.ein :: solve
 1    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: saturate
 1    examples/ein-bugs/wrong-answers/nested-fact-activator.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein :: saturate
+1    examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-goal.ein :: saturate
+1    examples/ein-bugs/wrong-answers/nested-or-goal.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-hrule.ein :: saturate
+1    examples/ein-bugs/wrong-answers/nested-or-hrule.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-never-compiled.ein :: saturate
+1    examples/ein-bugs/wrong-answers/nested-or-never-compiled.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-stops.ein :: render program
+1    examples/ein-bugs/wrong-answers/nested-or-stops.ein :: render rules
+1    examples/ein-bugs/wrong-answers/nested-or-stops.ein :: saturate
+1    examples/ein-bugs/wrong-answers/nested-or-stops.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein :: saturate
+1    examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein :: solve
+1    examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein :: solve --minimal
 1    examples/ein-bugs/wrong-answers/nested-unbound-head.ein :: saturate
 1    examples/ein-bugs/wrong-answers/nested-unbound-head.ein :: solve
 0    examples/ein-bugs/wrong-answers/not-eq-assert.ein :: saturate
@@ -688,6 +706,12 @@
 1    examples/ein-bugs/wrong-answers/where-in-pattern.ein :: solve
 1    examples/ein-bugs/wrong-answers/where-on-rule.ein :: saturate
 1    examples/ein-bugs/wrong-answers/where-on-rule.ein :: solve
+1    examples/ein-bugs/wrong-answers/wide-goal.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wide-goal.ein :: solve
+1    examples/ein-bugs/wrong-answers/wide-match-never-compiled.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wide-match-never-compiled.ein :: solve
+1    examples/ein-bugs/wrong-answers/wide-match-stops.ein :: saturate
+1    examples/ein-bugs/wrong-answers/wide-match-stops.ein :: solve
 0    examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein :: saturate
 0    examples/ein-bugs/wrong-answers/wild-in-absent-twin.ein :: solve
 1    examples/ein-bugs/wrong-answers/wild-in-absent.ein :: saturate

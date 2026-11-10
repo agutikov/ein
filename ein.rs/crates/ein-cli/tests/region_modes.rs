@@ -1156,9 +1156,10 @@ fn one_verdict_on_every_corpus_program() {
                     // whole (W28's witnesses, M1e2 S1e2.3.8), so it is read.
                     if described.code != 0 && !described.out.contains("\n  lattice ") {
                         // A read-out that errs prints none: a goal the
-                        // compiler rejects ends the run where a state is
+                        // compiler rejected ended the run where a state is
                         // answered from it (`read_out.rs`), and `--monotone`
-                        // answers no query.
+                        // answers no query; the loader refuses such a goal
+                        // since M1f S1f.5.21, so none does.
                         unread
                             .lock()
                             .expect("one writer at a time")
@@ -1236,15 +1237,14 @@ fn one_verdict_on_every_corpus_program() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     let mut unread = unread.into_inner().expect("joined");
     unread.sort();
-    assert_eq!(
-        unread,
-        [
-            "examples/ein-bugs/query-goal-free-head.ein",
-            "examples/features/02_star_in_identifiers.ein"
-        ],
-        "the programs whose read-out errs, and so has no lattice block to compare \
-         (`W57/assert-var-under-commitment` was a third from M1f S1f.5.10's T1f.5.10.1, its \
-         `--monotone` answering where its read-out stopped, until T1f.5.10.2 refused it at load)"
+    assert!(
+        unread.is_empty(),
+        "the programs whose read-out errs, and so has no lattice block to compare: {unread:?}. \
+         None since M1f S1f.5.21, whose loader refuses a goal's relation variable (W64): until \
+         then `query-goal-free-head.ein` and `features/02_star_in_identifiers.ein`, whose \
+         `--monotone` answered where the read-out stopped on the goal, the compiler's line; and \
+         `W57/assert-var-under-commitment` a third from M1f S1f.5.10's T1f.5.10.1 until \
+         T1f.5.10.2 refused it at load"
     );
     let (checked, flagged, refused) = (
         checked.into_inner(),

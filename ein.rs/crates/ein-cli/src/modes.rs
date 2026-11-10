@@ -317,10 +317,6 @@ pub fn run(m: &ArgMatches) -> i32 {
             );
             return 2;
         }
-        Err(ein_infer::SolveError::Compile(e)) => {
-            eprintln!("ein.inference.compile.CompileError: {e}");
-            return 1;
-        }
         // `-y` found a parent path that reaches another state on a monotone
         // program: the engine's error, never an answer (M1e2 S1e2.1c.5).
         Err(ein_infer::SolveError::SpotCheck(e)) => {

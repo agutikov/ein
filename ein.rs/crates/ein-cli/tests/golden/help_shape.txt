@@ -26,6 +26,7 @@ COMMAND ein render
   ABOUT DOT for rules / constraints (S1.6.1)
 COMMAND ein render constraints
   ABOUT constraint-scope DOT (structural properties)
+  OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers (M1f T1f.5.14.7)
   POSITIONAL file required=True help=
 COMMAND ein render kb
   ABOUT a KB as one DOT digraph, entities fused across forms: FILE loaded and saturated. A --dump-answer state file is a FILE, so a model draws the same way root does
@@ -42,8 +43,9 @@ COMMAND ein render lattice
   OPTION --view -- metavar=VIEW arity=1 default='solution' choices=full|solution group=- required=False help='solution' the nodes of R and the nodes one fact above them that are not (default), or 'full' every node the run visited
   POSITIONAL file required=True help=
 COMMAND ein render program
-  ABOUT the program as written: one DOT digraph per group — rules, ontology, facts, the query. Parsed, never loaded, so a program the loader refuses still draws
+  ABOUT the program as written: one DOT digraph per group — rules, ontology, facts, the query. Read through the loader first, so a program it refuses is refused, as every command refuses it; drawn as parsed, its imports unresolved
   OPTION --levi -- metavar=- arity=0 default=False choices=- group=- required=False help=draw unary and binary facts as Levi-bipartite octagons rather than labelled arrows
+  OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers (M1f T1f.5.14.7)
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
 COMMAND ein render region
@@ -55,10 +57,12 @@ COMMAND ein render region
 COMMAND ein render rule
   ABOUT a single rule's DOT, by name
   OPTION --name -- metavar=NAME arity=1 default=None choices=- group=- required=True help=rule name to render
+  OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers (M1f T1f.5.14.7)
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
 COMMAND ein render rules
   ABOUT one DOT digraph per rule
+  OPTION --no-require-why -- metavar=- arity=0 default=False choices=- group=- required=False help=load a program in which a relation, rule, hrule or macro carries no :why "…". By default such a program is refused, one line per form. It decides whether a program loads, never what a loaded one answers (M1f T1f.5.14.7)
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
   SUBCOMMAND saturate (delegated)

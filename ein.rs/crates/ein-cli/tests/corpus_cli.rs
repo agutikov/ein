@@ -648,6 +648,46 @@ fn every_refusal_carries_a_diagnostic() {
     );
 }
 
+/// **No cell prints the Python IR's spelling** — M1f S1f.5.21, the close
+/// review's finding 1.
+///
+/// Until then a refusal the compiler made quoted the IR's repr,
+/// `SForm(head=Atom(name='or'), …)`, cited a stage id and *the M1 compiler*,
+/// and `ein saturate` put `ein.inference.compile.CompileError:` in front of
+/// it; and the loader's macro lines placed a form `at Loc(file=…, line=…,
+/// col=…)`. Every cell of the corpus is held to none of them, on stderr;
+/// `cli_semantics::a_compile_refusal_reads_the_same_on_every_command` holds the
+/// witnesses on every command, and `ein-infer`'s
+/// `compile_semantics::no_corpus_program_is_refused_in_the_python_spelling`
+/// every corpus program's load and every plan it compiles.
+#[test]
+fn no_cell_prints_the_python_spelling() {
+    const PYTHON: [&str; 7] = [
+        "CompileError",
+        "SForm(",
+        "Atom(name=",
+        "Var(name=",
+        "Loc(",
+        "S1.8.",
+        "M1 compiler",
+    ];
+    let bad: Vec<String> = cells()
+        .iter()
+        .filter_map(|c| {
+            PYTHON
+                .iter()
+                .find(|p| c.stderr.contains(**p))
+                .map(|p| format!("  {} :: {} prints `{p}`", c.path, c.run))
+        })
+        .collect();
+    assert!(
+        bad.is_empty(),
+        "{} cells print the Python IR's spelling:\n{}",
+        bad.len(),
+        bad.join("\n")
+    );
+}
+
 /// **The artefact flags write their artefacts, where the caller asked.**
 ///
 /// `{out}` in a run name is the manifest's way of naming a file the run will

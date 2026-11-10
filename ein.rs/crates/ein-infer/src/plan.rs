@@ -71,10 +71,13 @@ pub type Reg = u16;
 /// A fixed-size array is what keeps the inner loop allocation-free, so the
 /// count has to be bounded somewhere. 256 distinct variables in one `:match`
 /// is two orders of magnitude past anything in the corpus (the widest rule in
-/// `stdlib/` binds seven), and overflowing it is a [`crate::CompileError`] rather
-/// than a panic — this is the engine's one compile-time bound and it says so
-/// out loud.
-pub const MAX_REGS: usize = 256;
+/// `stdlib/` binds seven). It is the engine's one compile-time bound and it says
+/// so out loud: overflowing it was a [`crate::CompileError`] rather than a panic
+/// from S1a.3.1, and since M1f S1f.5.21 the loader refuses a `:match` or a
+/// `:goal` that writes more distinct variables than this, a rule's parameters
+/// among them ([`ein_ir::MAX_MATCH_VARIABLES`], which this is, W63), so every
+/// command refuses it alike and the compiler's check is an invariant.
+pub const MAX_REGS: usize = ein_ir::MAX_MATCH_VARIABLES;
 
 /// A compiled argument position.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]

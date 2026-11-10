@@ -33,7 +33,7 @@
 //!    sections below own. Two hundred lines apart inside one file is still a
 //!    parallel copy.
 //! 7. [`require_why_decides_loading_only`] — § 3.4's `--no-require-why` is on
-//!    the seven commands that load a program, the default refuses there what
+//!    the eleven commands that load a program (seven until M1f S1f.5.21), the default refuses there what
 //!    its row says and the option loads it, and it moves nothing a program
 //!    prints (M1f T1f.5.14.6, T1f.5.14.7).
 //!
@@ -579,13 +579,21 @@ const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?1} is q\")\
                       (solve :expect (region (model (p a) (q a))))\n";
 
 /// The commands that load a program: every one takes `--no-require-why`.
-const LOADING: [&[&str]; 7] = [
+/// Eleven since M1f S1f.5.21, which has the four views that draw a program as
+/// written read it through the loader first (Q-M1f.71); seven until then.
+/// `render rule` names the rule it draws, `--name r1`, which comes after the
+/// command's own words here and is no part of its name in the golden.
+const LOADING: [&[&str]; 11] = [
     &["solve"],
     &["oracle"],
     &["test"],
     &["saturate"],
     &["render", "kb"],
     &["render", "lattice"],
+    &["render", "rules"],
+    &["render", "rule", "--name", "r1"],
+    &["render", "constraints"],
+    &["render", "program"],
     &["kb", "save"],
 ];
 
@@ -598,7 +606,7 @@ const LOADING: [&[&str]; 7] = [
 /// after other stages finished swith to default true"*), the option becoming
 /// `--no-require-why` (Q-M1f.62). Held from the outside, on every command that
 /// loads a program: the page has its row; the golden gives the option to those
-/// seven commands and no other; by default a program missing three `:why`s is
+/// eleven commands and no other (seven until M1f S1f.5.21); by default a program missing three `:why`s is
 /// refused with one line for each, at the exit code that command gives every
 /// load error, and with the option it runs; a container saved with the option
 /// is refused where its `.ein` is; and two corpus programs, one of them
@@ -629,7 +637,14 @@ fn require_why_decides_loading_only() {
     }
     let mut want: Vec<String> = LOADING
         .iter()
-        .map(|c| format!("ein {}", c.join(" ")))
+        .map(|c| {
+            let words: Vec<&str> = c
+                .iter()
+                .copied()
+                .take_while(|w| !w.starts_with("--"))
+                .collect();
+            format!("ein {}", words.join(" "))
+        })
         .collect();
     want.sort();
     takes.sort();

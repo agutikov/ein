@@ -444,7 +444,10 @@ def diff_block(inv: Invocation, run_out: Path | None = None) -> str:
 def program_page(p: Pages) -> None:
     page = p.dir / "program.md"
     src = REPO / (p.spec.source or p.spec.file)
-    lines = header("The program", "the source, and three views of it drawn before anything is loaded",
+    # Since M1f S1f.5.21 each view reads the program through the loader first
+    # and refuses what it refuses (W65, Q-M1f.71), so a refused program's page
+    # shows the refusal under each view, where it drew the rules until then.
+    lines = header("The program", "the source, and three views of it, drawn as written once the loader has read it",
                    "`ein render program`, `ein render rules`, `ein render constraints`",
                    [("04_dot_rendering.md", "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")],
                    [src, p.raw / "render-program.stdout.txt", p.raw / "render-rules.stdout.txt",

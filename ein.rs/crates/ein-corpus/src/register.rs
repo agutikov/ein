@@ -109,8 +109,13 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// the program, so the row states its [`Region`]; and `{out}` in a recorded
 /// line is the run's scratch directory, as `run`'s `{out}` is, W43's: `ein
 /// solve X.einb --dump-answer DIR` refused the container. (`/18` is the second
-/// lane's.)
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/19";
+/// lane's.) `/20` since M1f S1f.5.21 (T1f.5.21.1, 2026-11-10): a recorded
+/// answer can be that a command's run **answered** ([`Answer::answered`]),
+/// exit 0, where the right answer is a refusal, W65's: a view and `kb save`
+/// answered a program every other command refused; and a row whose right
+/// answer is a refusal states no [`Region`] whatever its `now` runs, a
+/// command's included, since a program refused at load has no R, W62 to W65's.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/20";
 
 /// Where a [`Printed`] line is read (schema /17): the run's stdout, or the
 /// read-out `--dump-answer DIR` writes uncut, `DIR/answer.txt`.
@@ -830,6 +835,14 @@ pub struct Answer {
     /// `exhausted` are not stated. A record (W41's `wrong`).
     #[serde(default)]
     pub refused: Option<String>,
+    /// A command's run answered (schema /20, M1f S1f.5.21): exit 0, the
+    /// program read and drawn or written, where the right answer is a
+    /// refusal, and `verdict`, `k` and `exhausted` are not stated. A record
+    /// (W65's `wrong`: `render program`, `render rules`, `render rule`,
+    /// `render constraints` and `kb save` answered a program every other
+    /// command refused).
+    #[serde(default)]
+    pub answered: bool,
     /// `NAME=value`, set for the run.
     #[serde(default)]
     pub env: Vec<String>,
@@ -1450,9 +1463,26 @@ impl Register {
                         a.run
                     )));
                 }
-                if command && a.error.is_none() && a.refused.is_none() {
+                if command && a.error.is_none() && a.refused.is_none() && !a.answered {
                     out.push(at(
-                        "a command's recorded answer (schema /16) is its refusal or its error"
+                        "a command's recorded answer (schema /16) is its refusal or its error, \
+                         or that it answered (schema /20)"
+                            .to_string(),
+                    ));
+                }
+                if a.answered
+                    && (!command
+                        || !r.right.refused
+                        || a.error.is_some()
+                        || a.refused.is_some()
+                        || a.exit != 0
+                        || !a.verdict.is_empty()
+                        || a.k != 0
+                        || a.exhausted)
+                {
+                    out.push(at(
+                        "a recorded `answered` (schema /20) is a command's run, exit 0, beside a \
+                         right that is a refusal, and states no error, refusal, verdict or k"
                             .to_string(),
                     ));
                 }
@@ -1489,7 +1519,8 @@ impl Register {
                                 .to_string(),
                         ));
                     }
-                } else if !VERDICTS.contains(&a.verdict.as_str()) {
+                } else if !a.answered && !VERDICTS.contains(&a.verdict.as_str()) {
+                    // A command that answered (schema /20) states no verdict.
                     out.push(at(format!(
                         "verdict {:?} is not one of {VERDICTS:?}",
                         a.verdict
@@ -1555,6 +1586,10 @@ impl Register {
                 // command's row states its witness's (schema /16).
                 None if (r.now.refused.is_some() || r.now.error.is_some())
                     && !r.now.is_command() => {}
+                // A program refused at load has no R, so a row whose right
+                // answer is a refusal states none, whatever its `now` runs
+                // (schema /20, M1f S1f.5.21, W62 to W65).
+                None if r.right.refused => {}
                 None => out.push(format!("{}: no [case.region]", r.id)),
                 Some(g) => {
                     if !ROUTES.contains(&g.route.as_str()) {

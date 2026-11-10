@@ -53,13 +53,16 @@ const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein oracle\n", 11),
     ("COMMAND ein saturate\n", 6),
     ("COMMAND ein render\n", 0),
-    ("COMMAND ein render rules\n", 1),
-    ("COMMAND ein render rule\n", 2),
-    ("COMMAND ein render constraints\n", 0),
+    // The four views that draw a program as written take `--no-require-why`
+    // since M1f S1f.5.21, which has them read it through the loader first
+    // (Q-M1f.71).
+    ("COMMAND ein render rules\n", 2),
+    ("COMMAND ein render rule\n", 3),
+    ("COMMAND ein render constraints\n", 1),
     ("COMMAND ein render lattice\n", 3),
     // M1e2 S1e2.1.3's two doors: `--levi` and `--rule-mode`; `--since`,
     // `--colour-by`, `--no-types`, `--no-instances`, and `--no-require-why`.
-    ("COMMAND ein render program\n", 2),
+    ("COMMAND ein render program\n", 3),
     ("COMMAND ein render kb\n", 5),
     // M1e2 S1e2.1a.2's `--view` over a region dump; S1e2.1a.7's `--visited`
     // and `--answer`, a region run's two dumps drawn on it.
@@ -110,16 +113,17 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        67 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        71 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "67 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "71 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s nine and `ein kb save`'s two"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 78 across fifteen since M1f T1f.5.14.6, the count
+/// Every option of every parser — 82 across fifteen since M1f S1f.5.21 (78 from
+/// T1f.5.14.6, the four views' `--no-require-why` since), the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.

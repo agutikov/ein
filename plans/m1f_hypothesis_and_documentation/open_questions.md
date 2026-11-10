@@ -85,6 +85,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **ruled 2026-11-10, (b)**: handle `SIGPIPE` properly, its default disposition restored on the binary; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
 | [Q-M1f.69](#q-m1f69--what-the-guides-pin-reads-in-a-program-block) | what the guide's pin reads in a program block | **defaulted 2026-11-10 (the stage's default, S1f.5.26): (a), the text decides: a block that writes `…` outside a string is an excerpt, a top-level form with one is elided; an excerpt's whole forms load together where they stand, and a whole program loads and `ein solve` answers it**; [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md) |
 | [Q-M1f.70](#q-m1f70--what-the-stage-does-with-what-t1-found-false-beside-the-blocks) | what the stage does with what T1 found false beside the blocks | **defaulted 2026-11-10 (the stage's default, S1f.5.26): (a), each fixed in the page: a block that misquotes its file or answers otherwise than its page says, and four sentences of prose; the test does not hold them**; [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md) |
+| [Q-M1f.71](#q-m1f71--does-a-view-draw-a-program-the-loader-refuses) | does a view draw a program the loader refuses? | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), it refuses it: `render program`, `render rules`, `render rule` and `render constraints` read the program through the loader first, refuse what it refuses with its line, exit 1, and take `--no-require-why` as the other seven commands that load do**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
+| [Q-M1f.72](#q-m1f72--the-line-a-moved-refusal-prints) | the line a moved refusal prints | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), the loader's lines as S1f.5.9's, .10's and .18's print, `rule '<name>': …` behind `kb load error: `, no position; the compiler's remaining line `<file>:<line>:<col>: rule '<name>': …`, its form as Ein text**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
+| [Q-M1f.73](#q-m1f73--how-the-loader-counts-the-register-ceiling) | how the loader counts the register ceiling | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), one count, every distinct variable the `:match` writes and the rule's parameters, or the `:goal`'s, at most 256: a bound on each register file the compiler builds, so its arm is an invariant**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
+| [Q-M1f.74](#q-m1f74--a-nested-or--a-macros-expansion-writes) | a nested `(or …)` a macro's expansion writes | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), refused at load as a written one is, the loader reading the expanded rule; within Q-M1f.67's ruling, which allows a refusal at instantiation, and an unused macro still loads**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
+| [Q-M1f.75](#q-m1f75--the-compilers-arms-no-program-reaches-and-d-1s-and-d-2s-other-lines) | the compiler's arms no program reaches, and D-1's and D-2's other lines | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), the three a direct caller of `compile_rule` reaches stay its errors, in Ein's words, and the moved arms and the `_` head become invariants; `FileNotFoundError` stays F23's (the read path), and `loc_repr`'s `Loc(…)` is taken here (`<file>:<line>:<col>`), `at None` staying F23's**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
+| [Q-M1f.76](#q-m1f76--which-of-what-the-move-replaces-is-a-register-row) | which of what the move replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), a row per way the engine answers today (Q-M1f.36's reading), W62's six, W63's three, W64's two and W65's five, each fixed by T1f.5.21.2; `features/02`, the one `positive` program the move refuses, rewritten with no row (Q-M1f.39's reading)**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1604,3 +1610,113 @@ says so on stderr*, `-s`'s *wall clock per phase*, and `--trace`'s *"it follows 
 **Defaulted 2026-11-10 (the stage's default): (a).** The user's ruling is *"fix the tutorial"*; each is the page's,
 none moves an engine answer or a register row, and a reader who copies chapter 2's block or trusts chapter 4's
 sentence is misled as one who copied the retired flag was.
+
+### Q-M1f.71 — Does a view draw a program the loader refuses?
+
+**Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. `ein render program`, `render rules`, `render rule` and `render constraints` parse a
+program and never load it (*"Parsed, never loaded, so a program the loader refuses still draws"*, M1e2 S1e2.1.3, the
+agent's design answering Q-M1e.20), so each draws a program every other command refuses, exit 0: the close review's
+finding 1 names `render program` and `render rules` doing so on `nested_or.ein`, and once the stage moves that refusal
+to the loader they would draw it still, as they draw the twelve load-negatives that have a `render rules` run today.
+
+- **(a) The views refuse it**: each reads the program through the loader first, as `solve`, `saturate`, `oracle`,
+  `test`, `render lattice`, `render kb` and `kb save` do, refuses what it refuses with the same line and exit 1, and
+  then draws the program as written, its imports unresolved, as before; each takes `--no-require-why`, so a program
+  with no `:why` loads where the other seven load it. The one-tool rule is *no two commands may disagree*, and a view
+  that exits 0 on a refused program disagrees about whether it is one. The cost: a refused program is not drawn, so the
+  review bundle's program page shows the refusal where it drew the rules (`utils/review/run.py`), and four more
+  commands take the option (78 → 82 CLI options, `configuration.md`).
+- **(b) The views draw it and print the loader's line as a `note:`**, exit 0: nothing a reviewer reads is lost, and
+  the views keep drawing what the loader refuses; but they still answer a program every other command refuses.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is the stage file's default, written from the user's ruling on
+finding 1, whose text counts the views' exit 0 as a break of the one-tool rule. W65's rows hold it (`render-program`,
+`render-rules`, `render-rule`, `render-constraints`, beside `kb-save`), and `render_doors.rs`' test of a drawn refusal is
+turned around. Re-opening it means (b).
+
+### Q-M1f.72 — The line a moved refusal prints
+
+**Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. The stage file sketches the line as `<file>:<line>:<col>: rule '<name>': <what>`,
+*as the loader's refusals since S1f.5.9, .10 and .18 print*; those print `rule '<name>': <what>`, behind the CLI's
+`kb load error: `, with no position (`examples/broken/load/derived_activator.expected`, `W57`'s `now`).
+
+- **(a) The precedent's shape**: each moved refusal is one loader line, `rule 'r': its :match writes (or (p ?x) (q ?x))
+  as a premise of and — …`, `; `-joined with the loader's others behind `kb load error: `, the form as Ein text
+  (`ein_ir::dump_compact`); the compiler's remaining line, reached through a macro's body, keeps a position, since the
+  form it names is the macro's and not the rule's: `<file>:<line>:<col>: rule 'r': its :match writes (eq ?x), and eq
+  takes exactly 2 arguments — …`. The compiler knows a rule's name and not its form, so an hrule's reads `rule 'h'`.
+- **(b) A position on every line**, the loader's too, as the sketch writes it: the moved lines and S1f.5.9's, .10's and
+  .18's would differ, or the earlier ones move with no answer behind it.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The sketch's stated reason is the precedent, and the precedent has
+no position; a position on the loader's lines is D-2's question (F23), whose `Loc(…)` half this stage takes
+(Q-M1f.75). Re-opening it means (b).
+
+### Q-M1f.73 — How the loader counts the register ceiling
+
+**Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. The compiler numbers a plan's variables into a register file of 256 (`MAX_REGS`):
+one for the plan, the rule's parameters and the variables its positive premises and guards write, and one per lifted
+`(absent …)`, the variables its body writes. Moving the refusal to the loader needs a count the loader can make.
+
+- **(a) One count**: every distinct variable a rule's `:match` writes, anywhere in it, and its parameters, or every one a
+  `:goal` writes, at most 256. It bounds each register file the compiler builds, so the compiler's arm is an invariant,
+  and it says the bound in the program's words, *a rule binds at most 256 variables*. It refuses a program the compiler
+  would compile, one whose `:match` writes more than 256 variables split between its positive premises and an
+  `(absent …)`'s body; no corpus program is within 249 of it (the widest binds 7).
+- **(b) The compiler's count**, register file by register file, in the loader: exact, and a second statement of the
+  compiler's scoping kept in step with it.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** `compile_limits` holds a rule at 256 to load and compile, and one
+at 257 to be refused at load. Re-opening it means (b).
+
+### Q-M1f.74 — A nested `(or …)` a macro's expansion writes
+
+**Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. `(forall ?x (or (p ?x) (q ?x)) (a ?x))` and a program's `(macro either (?x) (or
+(p ?x) (q ?x)))` called inside an `(and …)` expand to a nested `(or …)`, which the compiler refuses as it refuses a
+written one. The user's ruling on Q-M1f.67 leaves a macro's malformed primitive to S1f.5.24 and allows its refusal at
+expansion, at compile or later.
+
+- **(a) Refused at load, as a written one is**: the loader reads the rule after expansion (S1f.5.10's check does), so
+  one walk refuses both; the macro's body is no malformed primitive (`(or …)` is a whole `:match` wherever the macro is
+  so called), and a macro no rule uses still loads.
+- **(b) Left at compile**, S1f.5.24's with the arity lines.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is a refusal at instantiation, which Q-M1f.67's ruling allows,
+and it leaves the compiler no nested `(or …)` to meet. Re-opening it means (b).
+
+### Q-M1f.75 — The compiler's arms no program reaches, and D-1's and D-2's other lines
+
+**Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. Three of the compiler's refusals are reached by no program and by a direct caller
+of `compile_rule`: an activator of another arity (`activators_for` drops it), a relation head its activator binds to a
+fact (S1f.5.18's checks refuse each activator a program can write or derive), and a rule's relation variable compiled
+with no activator. D-1 names `FileNotFoundError` beside `CompileError`, and D-2 the loader's `at None` and `at
+Loc(file=…, line=…, col=…)`.
+
+- **(a)** The three stay the compiler's errors for that caller, each line in Ein's words; the arms the loader now
+  covers (the nested `(or …)`, the register ceiling, a goal's relation variable) and the `_` head (the grammar's
+  `PremiseHead`) become invariants (Q-M1f.9 (a)'s pattern). `FileNotFoundError` is the read path's
+  (`common::read_program`), not the compiler's: left to F23, with a line in D-1's row. `ein_ir::loc_repr`, which the
+  compiler's arity line and the loader's macro lines print, is one function: its `Loc(…)` is taken here,
+  `<file>:<line>:<col>`, and `at None`, a top-level form with no position, stays F23's.
+- **(b)** Every arm no program reaches an invariant, the three included; and D-1's and D-2's rest left to F23 whole.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The three are a library caller's diagnostics, which an invariant
+would turn into a panic for a call the API allows; and the `Loc(` the acceptance names is printed by the one function
+both use. Re-opening it means (b).
+
+### Q-M1f.76 — Which of what the move replaces is a register row
+
+**Raised** 2026-11-10 by [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s T1. The move replaces, for each refusal, a stop on every command that compiles, a
+disagreement where only a commitment, an hrule or a listed state compiles it, and an answer where nothing compiles it;
+and four views and `kb save` that answer a program every other command refuses. `examples/features/02_star_in_identifiers.ein`,
+a `positive` corpus program, writes `(query :goal (?R Rex Animal))`, which `solve` and `oracle` refuse and its declared
+runs never ask.
+
+- **(a) A row per way the engine answers today**, Q-M1f.36's reading: W62's six (the nested `(or …)` at root, under a
+  commitment, in an hrule, never compiled, in a goal, in a goal with no state), W63's three, W64's two and W65's five,
+  each `open` before T1f.5.21.2 and fixed by it; `features/02`'s goal rewritten, `(is-a* Rex Animal)`, its declared runs
+  answering as before, with no row (Q-M1f.39's reading of the one corpus program a check refuses).
+- **(b) One row per refusal**, the ways in the note.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** A stop and a refusal are two answers, as are an answer and a
+refusal (Q-M1f.36, Q-M1f.44), and the precedent filed every way. Re-opening it means (b).

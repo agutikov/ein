@@ -91,6 +91,21 @@ impl Default for LoadOptions {
 /// names them.
 pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
 
+/// The most distinct variables a rule's `:match`, its parameters among them,
+/// or a query's `:goal` may write — M1f S1f.5.21 (W63, Q-M1f.73).
+///
+/// The compiler numbers a plan's variables into a fixed register file of this
+/// many slots, so the matcher's inner loop allocates nothing
+/// (`ein_infer::MAX_REGS`, which is this constant): one file for the plan, its
+/// parameters and the variables its positive premises and guards write, and
+/// one per lifted `(absent …)`, the variables its body writes. The loader
+/// counts every distinct variable the clause writes, anywhere in it, with the
+/// parameters, which bounds each file, so the compiler meets no clause past it
+/// (`refuse_wide_matches`). Until S1f.5.21 the compiler refused one where it
+/// compiled the plan, so a rule no state activated, and a goal no state was
+/// answered from, loaded and answered.
+pub const MAX_MATCH_VARIABLES: usize = 256;
+
 /// The line [`LoadOptions::require_why`] refuses a form with: its head and its
 /// name as written, in the W24 refusals' spelling.
 fn missing_why(head: &str, name: &str) -> String {
@@ -576,6 +591,11 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
         }
         if let Some(goal) = query_keyword(ast, query, "goal") {
             refuse_guard_patterns(ast, goal, errors);
+            // A goal is compiled as a rule's `:match` is, and refused where the
+            // compiler would refuse it (M1f S1f.5.21: W62, W63, W64).
+            refuse_nested_disjunctions(ast, "query", ":goal", goal, errors);
+            refuse_wide_matches(ast, "query", ":goal", &[], goal, errors);
+            refuse_goal_relation_variables(ast, goal, errors);
         }
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
@@ -982,6 +1002,13 @@ fn ingest_rules(
             assert_node,
             errors,
         );
+        // An `(or …)` written as a premise, and a `:match` past the register
+        // file: the compiler's two refusals a program reached, read here since
+        // M1f S1f.5.21 (W62, W63), after expansion, so a macro's `(or …)` too
+        // (Q-M1f.74).
+        let who = format!("{head} '{name}'");
+        refuse_nested_disjunctions(ast, &who, ":match", match_node, errors);
+        refuse_wide_matches(ast, &who, ":match", &param_vars, match_node, errors);
         if errors.len() != n_refused {
             continue;
         }
@@ -1359,7 +1386,7 @@ fn refuse_no_fact_holds(
 /// A variable seen only inside an `(absent …)` — `forall` and `unknown` expand
 /// to one — is not bound outside it. A top-level `(or …)` is one way per
 /// disjunct, and the variable must be bound in each; a nested one binds what
-/// every one of its arms binds (the compiler refuses it, `ein_infer::compile`).
+/// every one of its arms binds (and is refused since M1f S1f.5.21, [`refuse_nested_disjunctions`]).
 /// An `(open …)` conclusion names a relation, which `validate_open` checks.
 ///
 /// One line per variable, in the order the `:assert` writes them, naming the
@@ -1476,6 +1503,145 @@ fn refuse_unbound_conclusions(
              — to conclude it of every object of a type, bind it with a premise such as \
              (is-a ?{v} T), or of every name of the program with (eq ?{v} ?{v})"
         ));
+    }
+}
+
+/// **An `(or …)` is a whole `:match`, or a whole `:goal`** — M1f S1f.5.21,
+/// on the user's ruling on the close review's finding 1 (*"new stage in
+/// p1f.5"*), W62.
+///
+/// A top-level `(or …)` is one way the rule holds per disjunct, each compiled
+/// as a plan of its own (`ein_infer::compile`'s `match_disjuncts`). One written
+/// as a premise, of an `(and …)`, an `(absent …)` or a top-level `(or …)`, is
+/// not lowered: until S1.22.0 the compiler dropped it, so the rule fired
+/// unguarded or its guard retired its candidates, and from then until
+/// S1f.5.21 it refused it where it compiled the plan, with the Python IR's
+/// spelling. A plan is compiled per activator, by the hypothesis layer for an
+/// hrule and where a state is answered for a goal, so a rule only a commitment
+/// activates, an hrule, a goal and one no state reached loaded, and some
+/// commands answered what others stopped on. The loader refuses it since, one
+/// line per disjunction as written, naming what it is a premise of; the walk
+/// is the compiler's (`premise`), so it does not descend into a pattern, a
+/// guard or a stored negation, where an `(or …)` is no premise.
+fn refuse_nested_disjunctions(
+    ast: &Ast,
+    who: &str,
+    clause: &str,
+    node: NodeId,
+    errors: &mut Vec<String>,
+) {
+    fn premise(ast: &Ast, node: NodeId, within: NodeId, out: &mut Vec<(NodeId, NodeId)>) {
+        if !matches!(ast.node(node), Node::SForm { .. }) {
+            return;
+        }
+        match ast.head_name(node) {
+            Some("or") => out.push((node, within)),
+            Some("and") | Some("absent") => {
+                for &a in ast.form_args(node) {
+                    premise(ast, a, node, out);
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut found: Vec<(NodeId, NodeId)> = Vec::new();
+    if matches!(ast.node(node), Node::SForm { .. }) {
+        match ast.head_name(node) {
+            // A top-level `(or …)`: each disjunct is a way, and an `(or …)`
+            // written as one is nested.
+            Some("or") | Some("and") | Some("absent") => {
+                for &a in ast.form_args(node) {
+                    premise(ast, a, node, &mut found);
+                }
+            }
+            _ => {}
+        }
+    }
+    let split = if clause == ":goal" {
+        "ask two queries"
+    } else {
+        "split the rule"
+    };
+    for (or, within) in found {
+        let parent = ast.head_name(within).unwrap_or("");
+        errors.push(format!(
+            "{who}: its {clause} writes {} as a premise of {parent} — an (or …) is a whole \
+             {clause}, each of its premises one way it holds: lift it to the top of the {clause}, \
+             or {split}",
+            crate::dump::dump_compact(ast, or),
+        ));
+    }
+}
+
+/// **A rule binds at most [`MAX_MATCH_VARIABLES`] variables, and so does a
+/// goal** — M1f S1f.5.21, W63 (Q-M1f.73).
+///
+/// The count is every distinct variable the clause writes, at any depth, and
+/// the rule's parameters, which bounds each register file the compiler builds
+/// for it. Until S1f.5.21 the compiler refused a plan past its file where it
+/// compiled it (`MAX_REGS`, S1a.3.1's one compile-time bound), so a rule no
+/// state activated and a goal no state was answered from loaded and answered.
+fn refuse_wide_matches(
+    ast: &Ast,
+    who: &str,
+    clause: &str,
+    params: &[&str],
+    node: NodeId,
+    errors: &mut Vec<String>,
+) {
+    let mut vars: BTreeSet<String> = params.iter().map(|p| p.to_string()).collect();
+    vars_under(ast, node, &mut vars);
+    if vars.len() <= MAX_MATCH_VARIABLES {
+        return;
+    }
+    let (among, binds, split) = if clause == ":goal" {
+        ("", "a goal", "ask two queries")
+    } else if params.is_empty() {
+        ("", "a rule", "split the rule")
+    } else {
+        (", its parameters among them", "a rule", "split the rule")
+    };
+    errors.push(format!(
+        "{who}: its {clause} writes {} distinct variables{among}, and {binds} binds at most \
+         {MAX_MATCH_VARIABLES} — {split}",
+        vars.len()
+    ));
+}
+
+/// **A goal names the relations it asks about** — M1f S1f.5.21, W64.
+///
+/// A premise whose relation is a variable is a rule's, whose parameter its
+/// activator binds (Q29); in a rule one no parameter binds is refused at load
+/// since M1e2 S1e2.2.24 (W24, `refuse_no_fact_holds`). A query has no
+/// activator, so in a goal every such premise is refused, one line each, at the
+/// depths the compiler reads a premise: under `(and …)`, `(or …)` and
+/// `(absent …)`. Until S1f.5.21 the compiler refused it where a state was
+/// answered from the goal, `ein.inference.compile.CompileError: unbound
+/// relation head ?R in a premise of `SForm(…)``, so `ein saturate`, which reads
+/// no query, and `ein solve` on a program whose R is empty answered it
+/// (S1a.6.6's `query-goal-free-head.ein` and its `-unsat` sibling).
+fn refuse_goal_relation_variables(ast: &Ast, node: NodeId, errors: &mut Vec<String>) {
+    let Node::SForm { head, .. } = ast.node(node) else {
+        return;
+    };
+    match ast.head_name(node) {
+        Some("and") | Some("or") | Some("absent") => {
+            for &a in ast.form_args(node) {
+                refuse_goal_relation_variables(ast, a, errors);
+            }
+        }
+        _ => {
+            if let Node::Var(_) = ast.node(head) {
+                let dc = |n: NodeId| crate::dump::dump_compact(ast, n);
+                errors.push(format!(
+                    "query: its :goal writes {} with {} as its relation, which nothing binds — a \
+                     relation is named by a name, or by a rule's parameter its activator binds, \
+                     and a query has no activator",
+                    dc(node),
+                    dc(head)
+                ));
+            }
+        }
     }
 }
 
@@ -3236,6 +3402,130 @@ mod tests {
             "(rule e () :match (and (p ?x) (absent (and (neq ?y a) (q ?y)))) :assert (hit ?x) :why \"p holds of {?x} and q holds of nothing but a, so hit holds of {?x}\")",
         ] {
             ok(&format!("{pre}{rule}"));
+        }
+    }
+
+    /// **The compiler's three refusals a program reached, at load** — M1f
+    /// S1f.5.21 (W62, W63, W64; the close review's finding 1). An `(or …)`
+    /// written as a premise, of an `(and …)`, an `(absent …)` or a top-level
+    /// `(or …)`, in a rule's, an hrule's or a goal's clause, written or
+    /// produced by a macro (Q-M1f.74); a `:match` or a `:goal` past the
+    /// register file, a rule's parameters counted (Q-M1f.73); and a goal's
+    /// premise whose relation is a variable, under `and`, `or` and `absent`.
+    /// Then what loads: a top-level `(or …)`, an `(or …)` inside a pattern's
+    /// argument (no premise), a rule at the ceiling, a goal with its relation
+    /// named, and a macro's `(or …)` called as a whole `:match`.
+    #[test]
+    fn the_compilers_refusals_a_program_reached_are_refused_at_load() {
+        let pre = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") \
+                   (relation q T :why \"q holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n(a k)\n";
+        let nested = |who: &str, clause: &str, within: &str, or: &str, split: &str| {
+            format!(
+                "{who}: its {clause} writes {or} as a premise of {within} — an (or …) is a \
+                 whole {clause}, each of its premises one way it holds: lift it to the top of \
+                 the {clause}, or {split}"
+            )
+        };
+        let r = |w: &str, or: &str| nested("rule 'r'", ":match", w, or, "split the rule");
+        let g = |w: &str| nested("query", ":goal", w, "(or (p ?x) (q ?x))", "ask two queries");
+        let or = "(or (p ?x) (q ?x))";
+        for (text, want) in [
+            (
+                "(rule r () :match (and (a ?x) (or (p ?x) (q ?x))) :assert (out ?x) :why \"r\")".to_string(),
+                r("and", or),
+            ),
+            (
+                "(rule r () :match (and (a ?x) (absent (or (p ?x) (q ?x)))) :assert (out ?x) :why \"r\")".to_string(),
+                r("absent", or),
+            ),
+            (
+                "(rule r () :match (or (or (p ?x) (q ?x)) (a ?x)) :assert (out ?x) :why \"r\")".to_string(),
+                r("or", or),
+            ),
+            (
+                "(rule r (?R) :match (and (?R ?x) (or (p ?x) (q ?x))) :assert (out ?x) :why \"r\")".to_string(),
+                r("and", or),
+            ),
+            (
+                "(hrule h () :match (and (a ?x) (or (p ?x) (q ?x))) :assert (out ?x) :why \"h\")".to_string(),
+                nested("hrule 'h'", ":match", "and", or, "split the rule"),
+            ),
+            (
+                "(macro either (?x) (or (p ?x) (q ?x)) :why \"either\")\n\
+                 (rule r () :match (and (a ?x) (either ?x)) :assert (out ?x) :why \"r\")".to_string(),
+                r("and", or),
+            ),
+            (
+                "(import std.macro :symbols (forall))\n\
+                 (rule r () :match (and (a ?x) (forall ?x (or (p ?x) (q ?x)) (a ?x))) :assert (out ?x) :why \"r\")".to_string(),
+                r("and", or),
+            ),
+            ("(query :goal (and (a ?x) (or (p ?x) (q ?x))))".to_string(), g("and")),
+            ("(query :goal (absent (or (p ?x) (q ?x))))".to_string(), g("absent")),
+            (
+                "(query :goal (?R k))".to_string(),
+                "query: its :goal writes (?R k) with ?R as its relation, which nothing binds — a \
+                 relation is named by a name, or by a rule's parameter its activator binds, and \
+                 a query has no activator"
+                    .to_string(),
+            ),
+            (
+                "(query :goal (and (a ?x) (absent (?R ?x))))".to_string(),
+                "query: its :goal writes (?R ?x) with ?R as its relation, which nothing binds — a \
+                 relation is named by a name, or by a rule's parameter its activator binds, and \
+                 a query has no activator"
+                    .to_string(),
+            ),
+        ] {
+            assert_eq!(err(&format!("{pre}{text}")), want, "{text}");
+        }
+        // The register ceiling: 257 variables, a parameter counted, and a goal.
+        let wide = |n: usize| {
+            (0..n)
+                .map(|i| format!("(p ?v{i})"))
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        let at = MAX_MATCH_VARIABLES;
+        assert_eq!(
+            err(&format!(
+                "{pre}(rule w () :match (and {}) :assert (out ?v0) :why \"w\")",
+                wide(at + 1)
+            )),
+            "rule 'w': its :match writes 257 distinct variables, and a rule binds at most 256 — \
+             split the rule"
+        );
+        assert_eq!(
+            err(&format!(
+                "{pre}(rule w (?R) :match (and {}) :assert (out ?v0) :why \"w\")",
+                wide(at)
+            )),
+            "rule 'w': its :match writes 257 distinct variables, its parameters among them, and a \
+             rule binds at most 256 — split the rule"
+        );
+        assert_eq!(
+            err(&format!("{pre}(query :goal (and {}))", wide(at + 1))),
+            "query: its :goal writes 257 distinct variables, and a goal binds at most 256 — ask \
+             two queries"
+        );
+        // What loads.
+        for text in [
+            "(rule r () :match (or (p ?x) (q ?x)) :assert (out ?x) :why \"r\")".to_string(),
+            "(rule r () :match (or (and (a ?x) (p ?x)) (q ?x)) :assert (out ?x) :why \"r\")"
+                .to_string(),
+            format!(
+                "(rule w () :match (and {}) :assert (out ?v0) :why \"w\")",
+                wide(at)
+            ),
+            "(query :goal (or (p ?x) (q ?x)))".to_string(),
+            "(query :goal (and (a ?x) (p ?x)))".to_string(),
+            format!("(query :goal (and {}))", wide(at)),
+            "(macro either (?x) (or (p ?x) (q ?x)) :why \"either\")\n\
+             (rule r () :match (either ?x) :assert (out ?x) :why \"r\")"
+                .to_string(),
+            "(macro either (?x) (or (p ?x) (q ?x)) :why \"either, used by no rule\")".to_string(),
+        ] {
+            ok(&format!("{pre}{text}"));
         }
     }
 

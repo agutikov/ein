@@ -1,0 +1,29 @@
+;;; A disjunction nested inside a conjunction, in a query's `:goal`: `ein
+;;; saturate` and the views answer, and every solve question stops — M1f
+;;; **W62**, register row `W62/nested-or-goal`, filed by S1f.5.21
+;;; (T1f.5.21.1, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A goal is compiled as a rule's `:match` is, where a state is answered
+;;; from it, and `ein saturate` never reads a query.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An `(or …)` is a whole `:goal`, as it is a whole `:match`, so the query
+;;; is refused at load: every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `864b16ed`, release: `ein saturate`, `render lattice`, `render kb`,
+;;; the views and `kb save` answered, exit 0; `ein solve` (every mode) and
+;;; `oracle` stopped, exit 1, on the compiler's line, `solve` behind
+;;; `ein.inference.compile.CompileError:`. Refused at load since S1f.5.21
+;;; (T1f.5.21.2).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(a k)
+(p k)
+(query :goal (and (a ?x) (or (p ?x) (q ?x))))

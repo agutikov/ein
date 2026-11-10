@@ -9,6 +9,15 @@ fixtures here import by path (`reserved_open_{aliased,qualified,symbols}`), so
 it stays beside them although the grammar refuses `(macro open …)` at the parse
 since M1f S1f.5.5's swap; the four `.expected` are that parse error.
 
+**`nested_or` moved here from `../compile/` at M1f S1f.5.21** (W62, 2026-11-10):
+the loader refuses an `(or …)` written as a premise since, one line naming the
+rule, the disjunction and what it is a premise of, where the compiler refused
+it in the Python IR's spelling. Every fixture here is refused by every command
+that reads a program since the same stage, the four views that draw one
+(`render program`, `rules`, `rule`, `constraints`) among them, which parsed
+and never loaded a program until then (W65), so twelve of these fixtures'
+`render rules` cells exit 1 where they drew (`corpus_exits.txt`).
+
 **Twenty-one moved to `../` at M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09,
 Q-M1f.2 (a)), each refused at the parse since, its `.expected` the parse
 report: `config_bad_value`, `config_retired_flag`, `config_unknown_flag`,

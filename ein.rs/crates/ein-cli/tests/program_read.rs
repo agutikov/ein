@@ -247,7 +247,10 @@ fn a_containers_positions_name_its_stored_program() {
     // nested fact, which the loader refuses since (W59); and until M1f
     // S1f.5.9 a pattern whose relation a parameter binds to `eq`, `(?R ?x)`
     // under `(r eq)`, which the loader refuses since (W60), so `kb save` does
-    // too.
+    // too. Since M1f S1f.5.21 the compiler's line names the position in Ein's
+    // words, `g.ein:3:18:`, where it wrote `at Loc(file='g.ein', line=3,
+    // col=18)`, and the views and `kb save` still accept the program, which no
+    // command executes (Q-M1f.67).
     std::fs::write(
         dir.join("g.ein"),
         "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"{?1} is hit\")\n\
@@ -260,16 +263,21 @@ fn a_containers_positions_name_its_stored_program() {
     assert_eq!(ein_in(dir, &["kb", "save", "g.ein", "g.einb"]).code, 0);
     let plain = ein_in(dir, &["saturate", "g.ein"]);
     assert!(
-        plain.stderr.contains("Loc(file='g.ein', line=3, col=18)"),
+        plain
+            .stderr
+            .starts_with("g.ein:3:18: rule 'r': its :match writes (eq ?x)"),
         "{}",
         plain.stderr
     );
     for args in [&["saturate", "g.einb"][..], &["solve", "g.einb"]] {
         let r = ein_in(dir, args);
         assert_eq!(r.code, 1, "{args:?}: {}", r.stderr);
+        // The position is the stored text's, as the loader read it back
+        // (Q-M1f.15), so its line and column are that text's.
         assert!(
-            r.stderr
-                .contains("Loc(file='<program stored in g.einb>', line="),
+            r.stderr.starts_with("<program stored in g.einb>:")
+                && r.stderr
+                    .contains(": rule 'r': its :match writes (eq ?x), and eq takes"),
             "{args:?}: {}",
             r.stderr
         );

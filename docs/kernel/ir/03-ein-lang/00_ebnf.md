@@ -373,6 +373,15 @@ different messages, and the corpus has a fixture directory for each
   conclusion that is a bare variable reach the loader and the compiler through
   a macro, which refuse each (S1f.5.5's T5 kept the twelve lines a program
   still reaches that way, `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`).
+- **Where an `(or …)` sits, how many variables a clause writes, and a goal's
+  relations.** `Connective` takes an `(or …)` wherever a premise goes, so an
+  `(or …)` written as a premise of an `(and …)`, an `(absent …)` or a
+  top-level `(or …)` parses; so do a `:match` or a `:goal` of any width, and a
+  goal's premise whose relation is a variable (`PremiseHead`'s `Var`). The
+  loader refuses each since M1f S1f.5.21, a macro's expansion included; until
+  then the compiler did, where it compiled a plan, so a command that never
+  compiled it answered
+  ([`defined_behaviour.md` § 4.15](../../defined_behaviour.md#415-the-compilers-refusals-a-program-reached-at-load--m1f-s1f521)).
 - **The kernel's names.** A dunder, `__closed__` or `__symmetric__`, is a
   `NAME` the loader refuses where a program binds one (Q-M1f.7 (b), T11),
   and `open` placed beside another conclusion or inside one is the loader's

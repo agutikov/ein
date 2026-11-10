@@ -1060,6 +1060,31 @@
 # fixed, 13 open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml
 # | sort | uniq -c`, 2026-11-09).
 #
+# **W62 to W65 were filed and fixed on 2026-11-10 by M1f S1f.5.21**, on the
+# user's ruling on the close review's finding 1 (*"new stage in p1f.5"*): a
+# refusal the compiler made a program reach was met only where a plan was
+# compiled, printed in the Python IR's spelling and four ways by command, and
+# a command that never compiled the plan answered. W62, the nested `(or …)`,
+# six rows: at root every command that compiles stopped; under a commitment
+# `saturate` and `solve --minimal` answered what describe stopped on; in an
+# hrule `saturate` answered; in a rule no activator reached every command
+# answered; and in a goal, compiled only where a state is answered, `saturate`
+# answered, and every command where R is empty. W63, the register ceiling, 257
+# variables, three rows, and W64, a goal's relation variable, two rows, on
+# S1a.6.6's two fixtures. W65, five rows: `render program`, `render rules`,
+# `render rule`, `render constraints` and `kb save` answered a program every
+# other command refused. T1f.5.21.1 filed the sixteen `open`, each `now` held to
+# the unchanged engine, and T1f.5.21.2 fixed them: the loader refuses the three
+# shapes on every command, one line each (`ein_ir::from_ir`'s
+# `refuse_nested_disjunctions`, `refuse_wide_matches` and
+# `refuse_goal_relation_variables`), and the four views read a program through
+# the loader before they draw it (Q-M1f.71). **Schema /20**: a recorded answer
+# can be that a command's run answered (`answered`, W65's `wrong`), and a row
+# whose right answer is a refusal states no `[case.region]`, a command's `now`
+# included. Each `[case.fixed]` carries the null id, the stage's commit not
+# yet written. The register reads **177 rows fixed, 13 open and 1 not-wrong**
+# (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -1227,11 +1252,15 @@
 #     by        walk (the default) | region — a recorded answer a region run
 #               gave, with `why` saying how it was taken (W13's `wrong`, S1e2.1a.7)
 #               | command (schema /16) — a command's run that is not a solve,
-#               with `why`, whose answer is its `refused` or `error` line
+#               with `why`, whose answer is its `refused` or `error` line, or
+#               since schema /20 that it `answered`
 #     container (schema /16) the run read the witness saved as a `.einb`
 #     refused   (schema /16) the command refused the program: `exit` is 1 and
 #               this is its stderr's first line (W41's `wrong`); or since
 #               schema /19 a solve's usage refusal, `exit` 2 (W43's `wrong`)
+#     answered  (schema /20, M1f S1f.5.21) `true`: the command answered, exit 0,
+#               where the right answer is a refusal, and verdict, k and
+#               exhausted are not stated (W65's `wrong`)
 #     witness   (control, twin) another file; default: the row's witness
 #     run       a corpus run name — `ein <run>` with the file elided, so
 #               `"solve -e -L"` is `ein solve <witness> -e -L`
@@ -1294,7 +1323,9 @@
 #     (W40, W41).
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
-#     describes it; absent on a row whose `now` is a refusal. `ein-infer/tests/register_region.rs` recomputes it with
+#     describes it; absent on a row whose `now` is a refusal, or since schema
+#     /20 whose `right` is one, a command's `now` included (W62 to W65: a
+#     program refused at load has no R). `ein-infer/tests/register_region.rs` recomputes it with
 #     `explore` and holds every field; `EIN_BLESS=1` re-banks the blocks.
 #     route     `state route` (a monotone program's alive states, describe's
 #               route since M1e2 S1e2.1c.2) | `route 1` (the alive down-set,
@@ -1339,7 +1370,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/19"
+schema = "ein-wrong-answers/20"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -11130,3 +11161,550 @@ derived   = "`(eq a)` writes `eq` with one argument, which is no fact of equalit
 run     = "solve"
 line    = "all"
 refused = "kb load error: the fact (eq a) writes eq with 1 argument — eq is the relation of equality, which holds between exactly two values"
+
+# ══ W62 — a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it ══
+
+[[case]]
+id       = "W62/nested-or-stops"
+case     = "W62"
+title    = "a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.74"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), one of the ways the engine answers a program whose `:match` nests an `(or …)`, the stage's census: root compiles the rule, and every command that compiles stops. An `(or …)` under an `(absent …)`, or written by a macro's expansion, `forall`'s or a program's own, reaches the same stop (`examples/broken/load/nested_or.ein`, S1a.3.1's fixture, the first, under `broken/compile/` until S1f.5.21). A stop is no answer, and the ruling's is a refusal (Q-M1f.36's reading: a stop where a refusal is right is a row, as W57's was); fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): root compiles `r` and the run stops, exit 1, on the compiler's line in the Python IR's spelling; every mode, `oracle` and `render lattice` the same, `ein saturate` behind `ein.inference.compile.CompileError:`, `render kb` behind the file's name; `render program`, `render rules`, `render rule`, `render constraints` and `kb save` answered, exit 0 (W65)"
+exit      = 1
+error     = "nested `(or …)` in a `:match` premise: SForm(head=Atom(name='or'), args=(SForm(head=Atom(name='p'), args=(Var(name='x'),)), SForm(head=Atom(name='q'), args=(Var(name='x'),)))). Only a TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one plan per disjunct); a nested one needs DNF expansion, which the M1 compiler does not do. Lift the disjunction to the top of the `:match`, or split the rule."
+
+[case.right]
+refused   = true
+derived   = "`r`'s `:match` writes `(or (p ?x) (q ?x))` as a premise of an `(and …)`; an `(or …)` is a whole `:match`, one way per disjunct, so `r` is refused at load, one line naming the rule and the disjunction: every command that reads the program exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W62/nested-or-under-commitment"
+case     = "W62"
+title    = "a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.74"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-under-commitment.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a rule with a parameter is compiled once per activator, and only a commitment writes this one's, so the commands that never reach the commitment answered and those that do stopped. The row's `now` is describe's stop, since a run that stops states no region; its `wrong` names the commands that answered; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` (describe) on the witness, release, at 864b16ed (2026-11-10): the commitment holding `(s k)` activates `r`, whose plan stops the run, exit 1; `--maximal`, `--count`, `oracle` and `render lattice` the same; `ein saturate`, `ein solve --minimal`, `--single` and `-n 1` answered, exit 0, never compiling `r`, which the user's rule that no two commands may disagree forbids"
+exit      = 1
+error     = "nested `(or …)` in a `:match` premise: SForm(head=Atom(name='or'), args=(SForm(head=Atom(name='p'), args=(Var(name='x'),)), SForm(head=Atom(name='q'), args=(Var(name='x'),)))). Only a TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one plan per disjunct); a nested one needs DNF expansion, which the M1 compiler does not do. Lift the disjunction to the top of the `:match`, or split the rule."
+
+[case.right]
+refused   = true
+derived   = "`r`'s `:match` writes an `(or …)` as a premise of an `(and …)`, so `r` is refused at load, whatever activates it: every command exits 1 (`ein test`: 2), and none answers"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W62/nested-or-hrule"
+case     = "W62"
+title    = "a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.74"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): an hrule is compiled where the hypothesis layer asks it for candidates, which a saturation never does, so `ein saturate` answered a program every solve question stopped on; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): the hypothesis layer compiles `h` and the run stops, exit 1, behind `ein.inference.compile.CompileError:`; every mode, `oracle` and `render lattice` the same; `ein saturate`, which asks no hrule for candidates, answered, exit 0"
+exit      = 1
+error     = "ein.inference.compile.CompileError: nested `(or …)` in a `:match` premise: SForm(head=Atom(name='or'), args=(SForm(head=Atom(name='p'), args=(Var(name='x'),)), SForm(head=Atom(name='q'), args=(Var(name='x'),)))). Only a TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one plan per disjunct); a nested one needs DNF expansion, which the M1 compiler does not do. Lift the disjunction to the top of the `:match`, or split the rule."
+
+[case.right]
+refused   = true
+derived   = "`h`'s `:match` writes an `(or …)` as a premise of an `(and …)`, an hrule's as a rule's, so `h` is refused at load: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: hrule 'h': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W62/nested-or-never-compiled"
+case     = "W62"
+title    = "a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.74"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-never-compiled.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a rule no activator activates is never compiled, so every command answered. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its witness has an R (four states), which a refused row does not state (schema /20); fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): no `(r …)` is written, so no plan of `r` is compiled, and R is four states, exit 0, with no word of the disjunction; every command the same"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+
+[case.right]
+refused   = true
+derived   = "`r`'s `:match` writes an `(or …)` as a premise of an `(and …)`, so `r` is refused at load, whether or not anything activates it: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W62/nested-or-goal"
+case     = "W62"
+title    = "a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.74"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-goal.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a query's goal is compiled as a rule's `:match` is, by the compiler, and only where a state is answered from it; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): the goal is compiled where root's state is answered from it, and the run stops, exit 1, behind `ein.inference.compile.CompileError:`; every mode the same, `oracle` with the message bare; `ein saturate`, `render lattice`, `render kb`, the views and `kb save` answered, exit 0, never compiling the goal"
+exit      = 1
+error     = "ein.inference.compile.CompileError: nested `(or …)` in a `:match` premise: SForm(head=Atom(name='or'), args=(SForm(head=Atom(name='p'), args=(Var(name='x'),)), SForm(head=Atom(name='q'), args=(Var(name='x'),)))). Only a TOP-LEVEL `(or …)` is supported (S1.8.A13 splits it into one plan per disjunct); a nested one needs DNF expansion, which the M1 compiler does not do. Lift the disjunction to the top of the `:match`, or split the rule."
+
+[case.right]
+refused   = true
+derived   = "the goal writes `(or (p ?x) (q ?x))` as a premise of an `(and …)`; an `(or …)` is a whole `:goal`, as it is a whole `:match`, so the query is refused at load: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: query: its :goal writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :goal, each of its premises one way it holds: lift it to the top of the :goal, or ask two queries"
+
+[[case]]
+id       = "W62/nested-or-goal-no-state"
+case     = "W62"
+title    = "a nested `(or …)` in a `:match` or a `:goal` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.74"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-goal-no-state.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): the goal is compiled only where a state is listed, so a program whose R is empty answered, the asymmetry `examples/ein-bugs/query-goal-free-head-unsat.ein` pinned for a relation written as a variable (W64). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): root is dead, so no state is answered from the goal and the goal is never compiled; R is empty, exit 0, with no word of the disjunction; every command the same"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(a k)"]
+
+[case.right]
+refused   = true
+derived   = "the goal writes an `(or …)` as a premise of an `(and …)`, so the query is refused at load, whatever R is: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: query: its :goal writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :goal, each of its premises one way it holds: lift it to the top of the :goal, or ask two queries"
+
+
+# ══ W63 — a `:match` or a `:goal` past the register file loads, and is refused only where the compiler meets it ══
+
+[[case]]
+id       = "W63/wide-match-stops"
+case     = "W63"
+title    = "a `:match` or a `:goal` past the register file loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.73"]
+witness  = "examples/ein-bugs/wrong-answers/wide-match-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): the engine's one compile-time bound, refused by the compiler where it compiles the rule. Under a commitment and in an hrule the bound is met as W62's rows meet the disjunction, one plan per activator; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a rule's `:match` or a query's `:goal` that writes more distinct variables than a plan's register file holds, 256, a rule's parameters among them, one line on every command (`ein_ir::from_ir`'s `refuse_wide_matches`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): root compiles `wide`, whose 257th variable overflows the register file, and the run stops, exit 1; every mode, `oracle` and `render lattice` the same, `ein saturate` behind `ein.inference.compile.CompileError:`, `render kb` behind the file's name; the views and `kb save` answered, exit 0"
+exit      = 1
+error     = "more than 256 distinct variables in one `:match` — ein.rs numbers a rule's variables into a fixed register file (256 slots) so the matcher's inner loop allocates nothing. Split the rule."
+
+[case.right]
+refused   = true
+derived   = "`wide`'s `:match` writes 257 distinct variables, and a plan's register file holds 256, so `wide` is refused at load: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: rule 'wide': its :match writes 257 distinct variables, and a rule binds at most 256 — split the rule"
+
+[[case]]
+id       = "W63/wide-match-never-compiled"
+case     = "W63"
+title    = "a `:match` or a `:goal` past the register file loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.73"]
+witness  = "examples/ein-bugs/wrong-answers/wide-match-never-compiled.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a rule no activator activates is never compiled. The row's `now` is `ein saturate --dump`, which answered while the row was open; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a rule's `:match` or a query's `:goal` that writes more distinct variables than a plan's register file holds, 256, a rule's parameters among them, one line on every command (`ein_ir::from_ir`'s `refuse_wide_matches`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): no `(wide …)` is written, so no plan of `wide` is compiled, and R is two states, exit 0; every command the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+
+[case.right]
+refused   = true
+derived   = "`wide`'s `:match` writes 257 distinct variables, its parameter among them, so `wide` is refused at load, whether or not anything activates it: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: rule 'wide': its :match writes 258 distinct variables, its parameters among them, and a rule binds at most 256 — split the rule"
+
+[[case]]
+id       = "W63/wide-goal"
+case     = "W63"
+title    = "a `:match` or a `:goal` past the register file loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.73"]
+witness  = "examples/ein-bugs/wrong-answers/wide-goal.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a goal is compiled into the register file a rule is, and only where a state is answered from it; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a rule's `:match` or a query's `:goal` that writes more distinct variables than a plan's register file holds, 256, a rule's parameters among them, one line on every command (`ein_ir::from_ir`'s `refuse_wide_matches`); the compiler's line is an invariant since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): the goal is compiled where root's state is answered from it, and the run stops, exit 1, behind `ein.inference.compile.CompileError:`; every mode the same, `oracle` with the message bare; `ein saturate`, `render lattice`, `render kb`, `render program`, `render constraints` and `kb save` answered, exit 0"
+exit      = 1
+error     = "ein.inference.compile.CompileError: more than 256 distinct variables in one `:match` — ein.rs numbers a rule's variables into a fixed register file (256 slots) so the matcher's inner loop allocates nothing. Split the rule."
+
+[case.right]
+refused   = true
+derived   = "the goal writes 257 distinct variables, and a plan's register file holds 256, so the query is refused at load: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: query: its :goal writes 257 distinct variables, and a goal binds at most 256 — ask two queries"
+
+
+# ══ W64 — a query's `:goal` premise whose relation is a variable loads, and is refused only where a state is answered from it ══
+
+[[case]]
+id       = "W64/goal-free-head"
+case     = "W64"
+title    = "a query's `:goal` premise whose relation is a variable loads, and is refused only where a state is answered from it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/query-goal-free-head.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), on S1a.6.6's fixture (2026-08-20), whose refusal was the compiler's, reached where a state is answered from the goal, so `ein saturate`, which reads no query, answered it. In a rule the same premise is refused at load since M1e2 S1e2.2.24 (W24); `examples/features/02_star_in_identifiers.ein` wrote it too, rewritten by T1f.5.21.2 (Q-M1f.76); fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a query's `:goal` premise whose relation is a variable, which no activator binds in a goal, one line on every command (`ein_ir::from_ir`'s `refuse_goal_relation_variables`); the compiler's line is an invariant for a goal since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): the goal is compiled where a state is answered from it, and the run stops, exit 1, behind `ein.inference.compile.CompileError:`, on the compiler's line in the Python IR's spelling; every mode the same, `oracle` bare; `ein saturate`, `render lattice`, `render kb`, `render program`, `render constraints` and `kb save` answered, exit 0"
+exit      = 1
+error     = "ein.inference.compile.CompileError: unbound relation head ?R in a premise of `SForm(head=Var(name='R'), args=(Atom(name='Rex'), Atom(name='Animal')))` — M1 matches relations per activator (Q29), so the head var must be bound by the rule's activator. Check that the activator fact's arity matches the rule's parameter list."
+
+[case.right]
+refused   = true
+derived   = "the goal's premise `(?R Rex Animal)` names its relation by a variable, which only a rule's activator binds, and a query has none, so the query is refused at load: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: query: its :goal writes (?R Rex Animal) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator"
+
+[[case]]
+id       = "W64/goal-free-head-no-state"
+case     = "W64"
+title    = "a query's `:goal` premise whose relation is a variable loads, and is refused only where a state is answered from it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36"]
+witness  = "examples/ein-bugs/query-goal-free-head-unsat.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), on the fixture that pinned the asymmetry (*the goal is never compiled and the run exits 0*). The row's `now` is `ein saturate --dump`, which answered while the row was open; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a query's `:goal` premise whose relation is a variable, which no activator binds in a goal, one line on every command (`ein_ir::from_ir`'s `refuse_goal_relation_variables`); the compiler's line is an invariant for a goal since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 864b16ed (2026-11-10): root is dead, so no state is answered from the goal and the goal is never compiled; R is empty, exit 0; every command the same"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(is-a a T)"]
+
+[case.right]
+refused   = true
+derived   = "the goal's premise names its relation by a variable, so the query is refused at load, whatever R is: every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: query: its :goal writes (?R a b) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator"
+
+
+# ══ W65 — a command that reads a program answers one every other command refuses ══
+
+[[case]]
+id       = "W65/render-program"
+case     = "W65"
+title    = "a command that reads a program answers one every other command refuses"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.71"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render program"
+by        = "command"
+why       = "`ein render program` on the witness, release, at 864b16ed (2026-11-10): exit 0, the rule drawn, where `ein solve`, `saturate`, `oracle`, `test` with a claim, `render lattice` and `render kb` stopped on the compiler's line (W62's `nested-or-stops`)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "a program every other command refuses is refused by this one too, with the same line and exit (the user's rule that no two commands may disagree; the stage's default, Q-M1f.71): the rule `r` is refused at load, so `ein render program` exits 1 with the loader's line"
+
+[case.now]
+run     = "render program"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W65/render-rules"
+case     = "W65"
+title    = "a command that reads a program answers one every other command refuses"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.71"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render rules"
+by        = "command"
+why       = "`ein render rules` on the witness, release, at 864b16ed (2026-11-10): exit 0, the rule drawn, where `ein solve`, `saturate`, `oracle`, `test` with a claim, `render lattice` and `render kb` stopped on the compiler's line (W62's `nested-or-stops`)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "a program every other command refuses is refused by this one too, with the same line and exit (the user's rule that no two commands may disagree; the stage's default, Q-M1f.71): the rule `r` is refused at load, so `ein render rules` exits 1 with the loader's line"
+
+[case.now]
+run     = "render rules"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W65/render-rule"
+case     = "W65"
+title    = "a command that reads a program answers one every other command refuses"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.71"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render rule --name r"
+by        = "command"
+why       = "`ein render rule --name r` on the witness, release, at 864b16ed (2026-11-10): exit 0, the rule drawn, where `ein solve`, `saturate`, `oracle`, `test` with a claim, `render lattice` and `render kb` stopped on the compiler's line (W62's `nested-or-stops`)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "a program every other command refuses is refused by this one too, with the same line and exit (the user's rule that no two commands may disagree; the stage's default, Q-M1f.71): the rule `r` is refused at load, so `ein render rule --name r` exits 1 with the loader's line"
+
+[case.now]
+run     = "render rule --name r"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W65/render-constraints"
+case     = "W65"
+title    = "a command that reads a program answers one every other command refuses"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.71"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render constraints"
+by        = "command"
+why       = "`ein render constraints` on the witness, release, at 864b16ed (2026-11-10): exit 0, the rule drawn, where `ein solve`, `saturate`, `oracle`, `test` with a claim, `render lattice` and `render kb` stopped on the compiler's line (W62's `nested-or-stops`)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "a program every other command refuses is refused by this one too, with the same line and exit (the user's rule that no two commands may disagree; the stage's default, Q-M1f.71): the rule `r` is refused at load, so `ein render constraints` exits 1 with the loader's line"
+
+[case.now]
+run     = "render constraints"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+[[case]]
+id       = "W65/kb-save"
+case     = "W65"
+title    = "a command that reads a program answers one every other command refuses"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.21"
+question = ["Q-M1f.36", "Q-M1f.71"]
+witness  = "examples/ein-bugs/wrong-answers/nested-or-stops.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). `kb save` loads the program and never compiles it, so it wrote a container of a program every command that opens one refused; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "kb save {out}/again.einb"
+by        = "command"
+why       = "`ein kb save DIR/again.einb` on the witness, release, at 864b16ed (2026-11-10): exit 0, a container written, where `ein solve`, `saturate`, `oracle`, `test` with a claim, `render lattice` and `render kb` stopped on the compiler's line (W62's `nested-or-stops`)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "a program every other command refuses is refused by this one too, with the same line and exit (the user's rule that no two commands may disagree; the stage's default, Q-M1f.71): the rule `r` is refused at load, so `ein kb save DIR/again.einb` exits 1 with the loader's line"
+
+[case.now]
+run     = "kb save {out}/again.einb"
+refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"

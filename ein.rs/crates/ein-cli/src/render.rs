@@ -1,7 +1,13 @@
 //! `ein render` — DOT views of rules / constraints / the search lattice.
 //!
 //! Every body is the same three steps: load, call one renderer, write it with
-//! a trailing newline. The renderers themselves are `ein-render`'s
+//! a trailing newline. **Every view reads the program through the loader**
+//! since M1f S1f.5.21 (W65, Q-M1f.71), so a program the loader refuses is
+//! refused here with its line, exit 1, as every other command refuses it; the
+//! four that draw a program as written (`rules`, `rule`, `constraints`,
+//! `program`) draw it from its parsed forms after that, its imports
+//! unresolved, as before. Until S1f.5.21 those four parsed it and never loaded
+//! it, so each drew a program every other command refused. The renderers themselves are `ein-render`'s
 //! ([S1a.5.1](../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers));
 //! what this adds is the surface around them.
 
@@ -18,7 +24,22 @@ fn emit(dot: &str) {
     println!("{dot}");
 }
 
-pub fn cmd_rules(file: &str, mode: RuleMode) -> i32 {
+/// Is `file` refused by the loader? Then its line is printed, as every
+/// command that loads prints it, and the view exits 1 (M1f S1f.5.21, W65).
+///
+/// The load is a check, in arenas of its own: a view draws the program as
+/// written, so what it draws is read by [`parse_program`] after it, which a
+/// load would have expanded.
+fn refused(file: &str, load: &ein_ir::LoadOptions) -> bool {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    load_program(&mut ast, &mut terms, Path::new(file), load).is_none()
+}
+
+pub fn cmd_rules(file: &str, mode: RuleMode, load: &ein_ir::LoadOptions) -> i32 {
+    if refused(file, load) {
+        return 1;
+    }
     let mut ast = Ast::new();
     let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
@@ -32,7 +53,10 @@ pub fn cmd_rules(file: &str, mode: RuleMode) -> i32 {
     0
 }
 
-pub fn cmd_rule(file: &str, name: &str, mode: RuleMode) -> i32 {
+pub fn cmd_rule(file: &str, name: &str, mode: RuleMode, load: &ein_ir::LoadOptions) -> i32 {
+    if refused(file, load) {
+        return 1;
+    }
     let mut ast = Ast::new();
     let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
@@ -50,7 +74,10 @@ pub fn cmd_rule(file: &str, name: &str, mode: RuleMode) -> i32 {
     1
 }
 
-pub fn cmd_constraints(file: &str) -> i32 {
+pub fn cmd_constraints(file: &str, load: &ein_ir::LoadOptions) -> i32 {
+    if refused(file, load) {
+        return 1;
+    }
     let mut ast = Ast::new();
     let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
@@ -109,11 +136,17 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
 }
 
 /// `ein render program` — the program **as written**, by
-/// [`ein_render::ir_to_dot`]: parsed and never loaded, so `examples/broken/`
-/// draws too. M1e2 S1e2.1.3, answering Q-M1e.20.
+/// [`ein_render::ir_to_dot`]. M1e2 S1e2.1.3, answering Q-M1e.20.
 ///
-/// Imports are not resolved: the stdlib's forms would drown the program's own.
-pub fn cmd_program(file: &str, mode: RuleMode, levi: bool) -> i32 {
+/// Read through the loader first since M1f S1f.5.21 (W65, Q-M1f.71), so a
+/// program the loader refuses is refused, with its line; until then it was
+/// parsed and never loaded, and `examples/broken/load/` drew too. What it draws
+/// is the parsed forms, so imports are not resolved: the stdlib's forms would
+/// drown the program's own.
+pub fn cmd_program(file: &str, mode: RuleMode, levi: bool, load: &ein_ir::LoadOptions) -> i32 {
+    if refused(file, load) {
+        return 1;
+    }
     let mut ast = Ast::new();
     let Some(forms) = parse_program(&mut ast, Path::new(file)) else {
         return 1;
@@ -181,8 +214,11 @@ fn loaded_and_saturated(
     load: &ein_ir::LoadOptions,
 ) -> Option<ein_core::Kb> {
     let mut kb = load_program(ast, terms, Path::new(file), load)?;
+    // The line `ein saturate` and `ein solve` print, since M1f S1f.5.21; it
+    // was behind the file's name here until then (the close review's
+    // finding 1).
     if let Err(e) = ein_infer::saturate_events(ast, terms, &mut kb) {
-        eprintln!("{file}: {e}");
+        eprintln!("{}", crate::common::saturate_error_line(&e));
         return None;
     }
     Some(kb)

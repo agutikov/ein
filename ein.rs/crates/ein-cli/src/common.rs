@@ -390,16 +390,6 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
         .collect()
 }
 
-/// How a run *fails* on a rule that will not compile.
-///
-/// The error reaches `solve` and `saturate` alike, and both end on the one
-/// line `ein.inference.compile.CompileError: <message>` and exit 1 — the
-/// class named, then the message
-/// ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
-pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
-    format!("ein.inference.compile.CompileError: {msg}")
-}
-
 /// A `SaturateError` as the line the run ends with.
 ///
 /// A class is named qualified, and a conclusion no fact can hold names no
@@ -423,7 +413,11 @@ pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;
     use ein_infer::saturator::SaturateError;
     match e {
-        SaturateError::Compile(c) => compile_error_line(c),
+        // The compiler's line as `ein solve` prints it, in Ein's words, since
+        // M1f S1f.5.21; it was `ein.inference.compile.CompileError: <message>`
+        // here and the message alone there until then (the close review's
+        // finding 1).
+        SaturateError::Compile(c) => c.to_string(),
         // Ein's spelling since M1e2 S1e2.2.18: the rule and the slot as the
         // program writes them, the line `ein solve` prints too.
         SaturateError::Fire(FireError::NotAFact(m)) => m.clone(),

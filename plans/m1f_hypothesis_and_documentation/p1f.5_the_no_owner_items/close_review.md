@@ -171,7 +171,8 @@ Re-checked on 2026-11-10 with the release binary at `f454de3b`, unless marked ot
 row. The register rule applies: a finding that turns out to be a wrong answer is filed before it is fixed.
 
 1. **A compile error's first line differs by command, and prints the IR's Python spelling.** On
-   [`examples/broken/compile/nested_or.ein`](../../../examples/broken/compile/nested_or.ein):
+   [`examples/broken/compile/nested_or.ein`](../../../examples/broken/load/nested_or.ein) (under
+   `examples/broken/load/` since S1f.5.21, which moved the refusal to the loader):
    - `ein solve`, `ein oracle` and `ein render lattice` print the message bare;
    - `ein saturate` puts `ein.inference.compile.CompileError:` in front, a Python class name;
    - `ein render kb` puts the file name in front;

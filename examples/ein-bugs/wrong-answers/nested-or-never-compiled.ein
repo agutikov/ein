@@ -1,0 +1,29 @@
+;;; A disjunction nested inside a conjunction, in a rule no activator
+;;; activates: every command answers — M1f **W62**, register row
+;;; `W62/nested-or-never-compiled`, filed by S1f.5.21 (T1f.5.21.1,
+;;; 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `r` has a parameter and the program writes no `(r …)`, so no state
+;;; compiles a plan of it.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An `(or …)` is a whole `:match`, so `r` is refused at load, whether or
+;;; not anything activates it: every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `864b16ed`, release: every command answered, exit 0, with no word of
+;;; the disjunction; `ein solve` R {∅}. Refused at load since S1f.5.21
+;;; (T1f.5.21.2).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(a k)
+(rule r (?R)
+  :match  (and (?R ?x) (or (p ?x) (q ?x)))
+  :assert (p ?x)
+  :why "{?R} holds of {?x}, and p or q does, so p does")

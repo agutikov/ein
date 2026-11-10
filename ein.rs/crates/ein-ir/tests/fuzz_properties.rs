@@ -31,6 +31,13 @@
 //!    hrules reads, in each conclusion, only registers each disjunct binds,
 //!    so a loader that lets one through shows here. It compiles with
 //!    `ein-infer`, a dev-dependency since S1f.5.10.
+//! 7. **The compiler refuses nothing the loader accepts** (M1f S1f.5.21, the
+//!    close review's finding 1): every plan of an accepted program's rules,
+//!    hrules and obligations, one per activator, and every query's goal
+//!    compiles, but where a macro's body wrote a primitive at another arity
+//!    (S1f.5.24's); a nested `(or …)`, a clause past the register file and a
+//!    goal's relation variable are the loader's, and the compiler's arms for
+//!    them are invariants, which a panic here would show.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
@@ -745,6 +752,91 @@ fn no_firing_meets_an_unbound_variable() {
         "fuzz: {loaded} programs loaded, every conclusion bound; {refused} refused for a \
          conclusion variable nothing binds"
     );
+    assert!(
+        loaded >= iters / 20,
+        "only {loaded} of {iters} programs loaded, so the property is barely tested"
+    );
+}
+
+/// The first refusal the compiler makes of a plan of `text`, which the loader
+/// accepts, as `rule 'r': …`: every rule's, hrule's and obligation's plan, one
+/// per activator as the engine compiles them, and every query's goal. `None`
+/// where `text` does not load, or every plan compiles, or the one refusal is a
+/// macro body's primitive at another arity, which the compiler is the first to
+/// read (S1f.5.24's, Q-M1f.67).
+fn compile_refusal(text: &str) -> Option<String> {
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, text, None).ok()?;
+    let mut terms = ein_core::Terms::new();
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).ok()?;
+    let program = kb.program();
+    let rules: Vec<ein_core::Rule> = program
+        .rules
+        .values()
+        .chain(program.hrules.values())
+        .chain(program.obligations.values())
+        .cloned()
+        .collect();
+    let mut refusals: Vec<String> = Vec::new();
+    for rule in &rules {
+        for activator in ein_infer::activators_for(&kb, &terms, rule) {
+            if let Err(e) = ein_infer::compile_rule(&ast, &mut terms, rule, activator) {
+                refusals.push(e.0);
+            }
+        }
+    }
+    let goals: Vec<NodeId> = program
+        .queries
+        .iter()
+        .filter_map(|q| ein_infer::query_value(&ast, q, "goal"))
+        .collect();
+    for goal in goals {
+        if let Some(e) = ein_infer::verdict::goal_plan_error(&ast, &mut terms, &kb, Some(goal)) {
+            refusals.push(e.0);
+        }
+    }
+    refusals
+        .into_iter()
+        .find(|r| !r.contains(" takes exactly "))
+}
+
+/// **The compiler refuses nothing the loader accepts** (M1f S1f.5.21, the
+/// close review's finding 1).
+///
+/// A refusal the compiler made a program reach was met only where a plan was
+/// compiled, so a command that never compiled it answered what one that did
+/// stopped on; and each was printed in the Python IR's spelling. The loader
+/// refuses each since (a nested `(or …)`, W62; a clause past the register
+/// file, W63; a goal's relation variable, W64), so for every generated program
+/// it accepts, every plan compiles ([`compile_refusal`]), but a macro body's
+/// primitive at another arity, which is S1f.5.24's. The compiler's arms for
+/// the three are invariants since, so one the loader let through would panic
+/// here.
+#[test]
+fn the_compiler_refuses_nothing_the_loader_accepts() {
+    let (iters, seed) = budget();
+    let mut rng = Rng(seed | 1);
+    let seeds = seeds();
+    let mut loaded = 0usize;
+    for i in 0..iters {
+        let text = generated(&seeds, &mut rng);
+        let mut ast = Ast::new();
+        let Ok(forms) = parse(&mut ast, &text, None) else {
+            continue;
+        };
+        if ein_ir::load(&mut ast, &mut ein_core::Terms::new(), &forms, None).is_err() {
+            continue;
+        }
+        loaded += 1;
+        if let Some(why) = compile_refusal(&text) {
+            let small = minimise(&text, |t| compile_refusal(t).is_some());
+            panic!(
+                "iteration {i} (EIN_FUZZ_SEED={seed}): the compiler refuses a program the loader \
+                 accepts, {why}; minimised:\n---\n{small}\n---"
+            );
+        }
+    }
+    eprintln!("fuzz: {loaded} programs loaded, every plan compiled");
     assert!(
         loaded >= iters / 20,
         "only {loaded} of {iters} programs loaded, so the property is barely tested"

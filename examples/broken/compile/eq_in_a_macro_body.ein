@@ -1,0 +1,23 @@
+; M1f S1f.5.21 — `eq` at one argument, written in a macro's body.
+;
+; Written in a rule, `(eq ?x)` is a parse error: the grammar's `Guard` takes two
+; terms. A macro's body is a template, whose head may be any name at any arity
+; (`ein.y`'s `Template`), since a macro's parameters stand for whole premises, so
+; the grammar never reads the expanded rule and the compiler is the first to
+; see `(eq ?x)`. It refuses it where it compiles `r`, on every command that
+; compiles, with one line: the place in the macro's body, the rule, the form and
+; what to write instead. The views and `kb save` accept the program, since none
+; of them executes a rule; where this is refused is S1f.5.24's, on the user's
+; ruling on Q-M1f.67 (an unused malformed macro loads, and no path executes the
+; primitive).
+;
+; The one compile refusal a corpus program reaches since S1f.5.21, which moved
+; the others to the loader (`nested_or.ein`, now under `../load/`). Until then
+; this line was the Python IR's: `` `(eq …)` takes exactly 2 arguments and was
+; given 1: SForm(head=Atom(name='eq'), args=(Var(name='x'),)) at Loc(file=…,
+; line=…, col=…) — … ``, behind `ein.inference.compile.CompileError:` on
+; `ein saturate` and the file's name on `ein render kb`.
+(relation q T :why "q holds of {?1}")
+(macro one (?a) (eq ?a) :why "{?a} equals")
+(rule r () :match (and (q ?x) (one ?x)) :assert (q ?x) :why "{?x} is a q that equals, so a q")
+(q a)

@@ -1,0 +1,29 @@
+;;; A disjunction nested inside a conjunction, in a query's `:goal`, where R
+;;; is empty: every command answers — M1f **W62**, register row
+;;; `W62/nested-or-goal-no-state`, filed by S1f.5.21 (T1f.5.21.1,
+;;; 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `no` refutes root, so no state is answered from the goal and the goal is
+;;; never compiled. `examples/ein-bugs/query-goal-free-head-unsat.ein` is the
+;;; same asymmetry over a relation written as a variable (W64).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An `(or …)` is a whole `:goal`, so the query is refused at load, whatever
+;;; R is: every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `864b16ed`, release: every command answered, exit 0; `ein solve` R
+;;; empty, root dead, its core `(a k)`. Refused at load since S1f.5.21
+;;; (T1f.5.21.2).
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(a k)
+(p k)
+(rule no () :match (a ?x) :assert (false) :why "{?x} is an a, which no state may hold")
+(query :goal (and (a ?x) (or (p ?x) (q ?x))))

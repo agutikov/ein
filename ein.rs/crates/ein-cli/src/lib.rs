@@ -75,14 +75,24 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     _ => RuleMode::SideBySide,
                 };
             match sm.subcommand() {
-                Some(("rules", a)) => render::cmd_rules(&file(a), mode(a)),
+                Some(("rules", a)) => {
+                    render::cmd_rules(&file(a), mode(a), &common::load_options(a))
+                }
                 Some(("rule", a)) => render::cmd_rule(
                     &file(a),
                     a.get_one::<String>("name").expect("required"),
                     mode(a),
+                    &common::load_options(a),
                 ),
-                Some(("constraints", a)) => render::cmd_constraints(&file(a)),
-                Some(("program", a)) => render::cmd_program(&file(a), mode(a), a.get_flag("levi")),
+                Some(("constraints", a)) => {
+                    render::cmd_constraints(&file(a), &common::load_options(a))
+                }
+                Some(("program", a)) => render::cmd_program(
+                    &file(a),
+                    mode(a),
+                    a.get_flag("levi"),
+                    &common::load_options(a),
+                ),
                 Some(("kb", a)) => render::cmd_kb(
                     &file(a),
                     a.get_one::<String>("since").map(String::as_str),

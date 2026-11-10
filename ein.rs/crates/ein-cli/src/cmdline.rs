@@ -172,8 +172,10 @@ fn rule_mode() -> Arg {
 /// negative (`--no-types`, `--no-instances`), loads a program without them
 /// (Q-M1f.62). It sets [`ein_ir::LoadOptions::require_why`] false and nothing
 /// else, so it decides whether a program loads and never what a loaded one
-/// answers (*"yes, the flag only decides loading"*). One builder, as
-/// [`rule_mode`] and [`event_args`] are, so the seven commands cannot
+/// answers (*"yes, the flag only decides loading"*). The four views that draw
+/// a program as written take it since M1f S1f.5.21, which has them read the
+/// program through the loader first (Q-M1f.71). One builder, as
+/// [`rule_mode`] and [`event_args`] are, so the eleven commands cannot
 /// describe it differently.
 fn no_require_why() -> Arg {
     Arg::new("no-require-why")
@@ -225,7 +227,8 @@ fn render_command() -> Command {
             Command::new("rules")
                 .about("one DOT digraph per rule")
                 .arg(Arg::new("file").required(true))
-                .arg(rule_mode()),
+                .arg(rule_mode())
+                .arg(no_require_why()),
         )
         .subcommand(
             Command::new("rule")
@@ -238,12 +241,14 @@ fn render_command() -> Command {
                         .required(true)
                         .help("rule name to render"),
                 )
-                .arg(rule_mode()),
+                .arg(rule_mode())
+                .arg(no_require_why()),
         )
         .subcommand(
             Command::new("constraints")
                 .about("constraint-scope DOT (structural properties)")
-                .arg(Arg::new("file").required(true)),
+                .arg(Arg::new("file").required(true))
+                .arg(no_require_why()),
         )
         // M1e2 S1e2.1.3 — the two renderers Q-M1e.20 found produced, tested
         // and reachable from no command.
@@ -251,8 +256,9 @@ fn render_command() -> Command {
             Command::new("program")
                 .about(
                     "the program as written: one DOT digraph per group — rules, \
-                     ontology, facts, the query. Parsed, never loaded, so a \
-                     program the loader refuses still draws",
+                     ontology, facts, the query. Read through the loader first, \
+                     so a program it refuses is refused, as every command refuses \
+                     it; drawn as parsed, its imports unresolved",
                 )
                 .arg(Arg::new("file").required(true))
                 .arg(
@@ -264,7 +270,8 @@ fn render_command() -> Command {
                              octagons rather than labelled arrows",
                         ),
                 )
-                .arg(rule_mode()),
+                .arg(rule_mode())
+                .arg(no_require_why()),
         )
         .subcommand(
             Command::new("kb")

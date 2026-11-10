@@ -717,7 +717,7 @@ fn bench(
     let mut quiet = Events::off();
     let t = Instant::now();
     eng.compile_all(&ast, &mut terms, &kb, &mut quiet)
-        .map_err(crate::common::compile_error_line)?;
+        .map_err(|e| e.to_string())?;
     println!("compile:  {} ms", ms(t));
 
     let before = snapshot(&terms, &kb, &eng);

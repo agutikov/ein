@@ -1,0 +1,62 @@
+;;; A rule whose `:match` writes 257 distinct variables, compiled at root:
+;;; every command that compiles it stops, and the views and `kb save` answer — M1f **W63**, register row `W63/wide-match-stops`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.5.21 (T1f.5.21.1,
+;;; 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(p k)`, and a rule over 257 premises `(p ?v0)` … `(p ?v256)`.
+;;; The engine numbers a rule's variables into a register file of 256.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A rule binds at most 256 variables, so `wide` is refused at load: every
+;;; command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `864b16ed`, release: `ein solve` (every mode), `oracle` and `render
+;;; lattice` stopped, exit 1, *more than 256 distinct variables in one
+;;; `:match` — ein.rs numbers a rule's variables into a fixed register file
+;;; …*, `ein saturate` behind `ein.inference.compile.CompileError:`; the views
+;;; and `kb save` answered. Refused at load since S1f.5.21 (T1f.5.21.2).
+
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(p k)
+(rule wide ()
+  :match (and (p ?v0) (p ?v1) (p ?v2) (p ?v3) (p ?v4) (p ?v5) (p ?v6) (p ?v7)
+         (p ?v8) (p ?v9) (p ?v10) (p ?v11) (p ?v12) (p ?v13) (p ?v14) (p ?v15)
+         (p ?v16) (p ?v17) (p ?v18) (p ?v19) (p ?v20) (p ?v21) (p ?v22) (p ?v23)
+         (p ?v24) (p ?v25) (p ?v26) (p ?v27) (p ?v28) (p ?v29) (p ?v30) (p ?v31)
+         (p ?v32) (p ?v33) (p ?v34) (p ?v35) (p ?v36) (p ?v37) (p ?v38) (p ?v39)
+         (p ?v40) (p ?v41) (p ?v42) (p ?v43) (p ?v44) (p ?v45) (p ?v46) (p ?v47)
+         (p ?v48) (p ?v49) (p ?v50) (p ?v51) (p ?v52) (p ?v53) (p ?v54) (p ?v55)
+         (p ?v56) (p ?v57) (p ?v58) (p ?v59) (p ?v60) (p ?v61) (p ?v62) (p ?v63)
+         (p ?v64) (p ?v65) (p ?v66) (p ?v67) (p ?v68) (p ?v69) (p ?v70) (p ?v71)
+         (p ?v72) (p ?v73) (p ?v74) (p ?v75) (p ?v76) (p ?v77) (p ?v78) (p ?v79)
+         (p ?v80) (p ?v81) (p ?v82) (p ?v83) (p ?v84) (p ?v85) (p ?v86) (p ?v87)
+         (p ?v88) (p ?v89) (p ?v90) (p ?v91) (p ?v92) (p ?v93) (p ?v94) (p ?v95)
+         (p ?v96) (p ?v97) (p ?v98) (p ?v99) (p ?v100) (p ?v101) (p ?v102) (p ?v103)
+         (p ?v104) (p ?v105) (p ?v106) (p ?v107) (p ?v108) (p ?v109) (p ?v110) (p ?v111)
+         (p ?v112) (p ?v113) (p ?v114) (p ?v115) (p ?v116) (p ?v117) (p ?v118) (p ?v119)
+         (p ?v120) (p ?v121) (p ?v122) (p ?v123) (p ?v124) (p ?v125) (p ?v126) (p ?v127)
+         (p ?v128) (p ?v129) (p ?v130) (p ?v131) (p ?v132) (p ?v133) (p ?v134) (p ?v135)
+         (p ?v136) (p ?v137) (p ?v138) (p ?v139) (p ?v140) (p ?v141) (p ?v142) (p ?v143)
+         (p ?v144) (p ?v145) (p ?v146) (p ?v147) (p ?v148) (p ?v149) (p ?v150) (p ?v151)
+         (p ?v152) (p ?v153) (p ?v154) (p ?v155) (p ?v156) (p ?v157) (p ?v158) (p ?v159)
+         (p ?v160) (p ?v161) (p ?v162) (p ?v163) (p ?v164) (p ?v165) (p ?v166) (p ?v167)
+         (p ?v168) (p ?v169) (p ?v170) (p ?v171) (p ?v172) (p ?v173) (p ?v174) (p ?v175)
+         (p ?v176) (p ?v177) (p ?v178) (p ?v179) (p ?v180) (p ?v181) (p ?v182) (p ?v183)
+         (p ?v184) (p ?v185) (p ?v186) (p ?v187) (p ?v188) (p ?v189) (p ?v190) (p ?v191)
+         (p ?v192) (p ?v193) (p ?v194) (p ?v195) (p ?v196) (p ?v197) (p ?v198) (p ?v199)
+         (p ?v200) (p ?v201) (p ?v202) (p ?v203) (p ?v204) (p ?v205) (p ?v206) (p ?v207)
+         (p ?v208) (p ?v209) (p ?v210) (p ?v211) (p ?v212) (p ?v213) (p ?v214) (p ?v215)
+         (p ?v216) (p ?v217) (p ?v218) (p ?v219) (p ?v220) (p ?v221) (p ?v222) (p ?v223)
+         (p ?v224) (p ?v225) (p ?v226) (p ?v227) (p ?v228) (p ?v229) (p ?v230) (p ?v231)
+         (p ?v232) (p ?v233) (p ?v234) (p ?v235) (p ?v236) (p ?v237) (p ?v238) (p ?v239)
+         (p ?v240) (p ?v241) (p ?v242) (p ?v243) (p ?v244) (p ?v245) (p ?v246) (p ?v247)
+         (p ?v248) (p ?v249) (p ?v250) (p ?v251) (p ?v252) (p ?v253) (p ?v254) (p ?v255)
+         (p ?v256))
+  :assert (q ?v0)
+  :why "{?v0} and 256 more are each a p, so {?v0} is a q")

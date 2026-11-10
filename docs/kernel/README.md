@@ -236,7 +236,7 @@ explicit audience banner.
 - **Configuration**: [`configuration.md`](configuration.md) — every knob, on
   all three surfaces: the 2 `(config …)` flags a program can set and the
   fifteen retired ones (M1e2 S1e2.2.5, `ein-cli/tests/config_reference.rs`),
-  the 78 CLI options (`--no-require-why` among them since M1f T1f.5.14.7, `--require-why` from T1f.5.14.6), the `EIN_*` environment, and the precedence between them. Each flag row carries
+  the 82 CLI options (`--no-require-why` among them since M1f T1f.5.14.7, `--require-why` from T1f.5.14.6, on the four views too since S1f.5.21), the `EIN_*` environment, and the precedence between them. Each flag row carries
   its default, what it changes, **whether it changes what a run reports and
   whether it changes R** (the config principle: no option may), and how far
   it may be depended on. The defaults block is `ein solve --dump-config`'s own

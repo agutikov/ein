@@ -26,7 +26,7 @@
 //! moved is not.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 use ein_core::{Kb, ProvKind, Symbol, Terms};
@@ -473,31 +473,41 @@ fn a_load_failure_is_one_diagnostic_line_and_a_non_zero_exit() {
     }
 }
 
-/// **`render` views the IR, not the KB** — so it never reports a load error.
+/// **`render` draws the IR, after the loader has read it** — so it reports a
+/// load error as every command does.
 ///
-/// The rule views render the *parsed forms*; nothing builds a `KnowledgeBase`,
-/// and a file that would be refused by the loader still renders whatever rules
-/// it declares. On the load-negative fixture, which declares none, the
-/// diagnostic is about the missing rules and not about the cycle — and that
-/// difference is the claim: a `kb load error` here would mean the renderer had
-/// quietly acquired a dependency on the loader.
+/// The rule views render the *parsed forms*, as written; nothing they draw is
+/// the loaded `Kb`. Until M1f S1f.5.21 nothing built one either, and a file
+/// the loader refused still rendered whatever rules it declared, which this
+/// test held: on the load-negative fixture the diagnostic was about the missing
+/// rules and not about the cycle, *a `kb load error` here would mean the
+/// renderer had quietly acquired a dependency on the loader*. Since S1f.5.21 it
+/// has, on purpose (W65, Q-M1f.71): a view that drew a program every other
+/// command refused disagreed with them about whether it is one, so each view
+/// reads the program through the loader first and refuses it with the same
+/// line and exit.
 #[test]
-fn render_views_the_ir_and_never_reports_a_load_error() {
+fn render_reports_a_load_error_as_every_command_does() {
     let r = ein(&["render", "rules", LOAD_NEGATIVE]);
     assert_eq!(r.code, 1);
+    let solve = ein(&["solve", LOAD_NEGATIVE]);
+    assert_eq!(
+        r.err.lines().next(),
+        solve.err.lines().next(),
+        "the view and `ein solve` refuse the program with one line"
+    );
     assert!(
-        r.err.contains(&format!("no rule forms in {LOAD_NEGATIVE}")),
-        "the diagnostic is not about the missing rules: {}",
+        r.err.starts_with("kb load error: ") && r.err.contains("derivation cycle"),
+        "the diagnostic is the loader's: {}",
         r.err
     );
     assert!(
-        !r.err.contains("kb load error") && !r.out.contains("kb load error"),
-        "the renderer built a KB: {}{}",
-        r.out,
-        r.err
+        r.out.is_empty(),
+        "the renderer drew a refused program: {}",
+        r.out
     );
-    // The control: a file that *does* declare rules renders them, load-worthy
-    // or not, so the exit above is about the file's contents.
+    // The control: a file that loads renders its rules, so the exit above is
+    // about the load.
     let ok = ein(&["render", "rules", "examples/branching/04_two_levels.ein"]);
     ok.ok();
     assert!(ok.out.contains("digraph"), "no DOT came out");
@@ -3476,4 +3486,207 @@ fn eq_at_another_arity_is_refused_at_load() {
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(r.out.contains("(hit a :rule two)"), "{}", r.out);
     assert!(!r.out.contains(":rule one"), "{}", r.out);
+}
+
+/// What the Python IR's spelling and the compiler's history put on stderr until
+/// M1f S1f.5.21, none of which a command prints since (the close review's
+/// finding 1): the class, the IR's repr, a position as `Loc(…)`, a stage id and
+/// *the M1 compiler*.
+const PYTHON_SPELLINGS: [&str; 7] = [
+    "CompileError",
+    "SForm(",
+    "Atom(name=",
+    "Var(name=",
+    "Loc(",
+    "S1.8.",
+    "M1 compiler",
+];
+
+/// Every command that reads a program, with the file last and `{einb}` the
+/// container `kb save` writes, and the exit it gives a program it refuses.
+fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
+    let cmds: [(&[&str], i32); 17] = [
+        (&["saturate"], 1),
+        (&["saturate", "--dump"], 1),
+        (&["solve"], 1),
+        (&["solve", "--minimal"], 1),
+        (&["solve", "--maximal"], 1),
+        (&["solve", "--single"], 1),
+        (&["solve", "--count"], 1),
+        (&["solve", "-n", "1"], 1),
+        (&["oracle"], 1),
+        (&["test"], 2),
+        (&["render", "lattice"], 1),
+        (&["render", "kb"], 1),
+        (&["render", "program"], 1),
+        (&["render", "rules"], 1),
+        (&["render", "rule", "--name", "r"], 1),
+        (&["render", "constraints"], 1),
+        (&["kb", "save"], 1),
+    ];
+    cmds.iter()
+        .map(|(c, code)| {
+            let mut args: Vec<String> = c.iter().map(|s| s.to_string()).collect();
+            args.push(file.to_string());
+            if c == &["kb", "save"] {
+                args.push(einb.to_string());
+            }
+            (args, *code)
+        })
+        .collect()
+}
+
+/// **A refusal the compiler made reads the same on every command, in Ein's
+/// words, and is made at load** — M1f S1f.5.21, on the user's ruling on the
+/// close review's finding 1 (*"new stage in p1f.5"*): W62, W63, W64 and W65.
+///
+/// Each witness on every command that reads a program, seventeen of them, the
+/// views and `kb save` among them: exit 1 (`ein test`: 2) and one first line,
+/// the loader's, behind `kb load error: `, with none of the Python IR's
+/// spelling on stderr. Until S1f.5.21 the compiler refused each where it
+/// compiled the plan, printed four ways (bare, behind
+/// `ein.inference.compile.CompileError:`, behind the file's name, and `solve`
+/// with the class where `oracle` printed it bare), while a command that never
+/// compiled the plan answered: a commitment's activator, an hrule, a goal, a
+/// rule no activator reached, and the four views and `kb save` always.
+///
+/// The one compile refusal a program still reaches, `(eq ?x)` in a macro's
+/// body (S1f.5.24's, Q-M1f.67), prints one line on every command that compiles,
+/// its position the macro body's, in Ein's words too; the views and `kb save`
+/// accept the program, which none of them executes.
+#[test]
+fn a_compile_refusal_reads_the_same_on_every_command() {
+    let scratch = ein_corpus::Scratch::new("ein-compile-refusal");
+    let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
+    let nested = |who: &str, clause: &str, split: &str| {
+        format!(
+            "{who}: its {clause} writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a \
+             whole {clause}, each of its premises one way it holds: lift it to the top of the \
+             {clause}, or {split}"
+        )
+    };
+    let rule = nested("rule 'r'", ":match", "split the rule");
+    let goal = nested("query", ":goal", "ask two queries");
+    let head = |form: &str| {
+        format!(
+            "query: its :goal writes {form} with ?R as its relation, which nothing binds — a \
+             relation is named by a name, or by a rule's parameter its activator binds, and a \
+             query has no activator"
+        )
+    };
+    let w = |name: &str| format!("examples/ein-bugs/wrong-answers/{name}.ein");
+    let witnesses: Vec<(String, String)> = vec![
+        (w("nested-or-stops"), rule.clone()),
+        (w("nested-or-under-commitment"), rule.clone()),
+        (
+            w("nested-or-hrule"),
+            nested("hrule 'h'", ":match", "split the rule"),
+        ),
+        (w("nested-or-never-compiled"), rule.clone()),
+        (w("nested-or-goal"), goal.clone()),
+        (w("nested-or-goal-no-state"), goal),
+        (
+            w("wide-match-stops"),
+            "rule 'wide': its :match writes 257 distinct variables, and a rule binds at most \
+             256 — split the rule"
+                .to_string(),
+        ),
+        (
+            w("wide-match-never-compiled"),
+            "rule 'wide': its :match writes 258 distinct variables, its parameters among them, \
+             and a rule binds at most 256 — split the rule"
+                .to_string(),
+        ),
+        (
+            w("wide-goal"),
+            "query: its :goal writes 257 distinct variables, and a goal binds at most 256 — ask \
+             two queries"
+                .to_string(),
+        ),
+        (
+            "examples/ein-bugs/query-goal-free-head.ein".to_string(),
+            head("(?R Rex Animal)"),
+        ),
+        (
+            "examples/ein-bugs/query-goal-free-head-unsat.ein".to_string(),
+            head("(?R a b)"),
+        ),
+        (
+            "examples/broken/load/nested_or.ein".to_string(),
+            rule.replace("rule 'r'", "rule 'nested-disjunction'"),
+        ),
+    ];
+    for (file, line) in &witnesses {
+        let want = format!("kb load error: {line}");
+        for (args, code) in every_command(file, &einb) {
+            let argv: Vec<&str> = args.iter().map(String::as_str).collect();
+            let r = ein(&argv);
+            assert_eq!(r.code, code, "ein {argv:?}:\n{}", r.err);
+            assert_eq!(r.err.lines().next(), Some(want.as_str()), "ein {argv:?}");
+            for python in PYTHON_SPELLINGS {
+                assert!(
+                    !r.err.contains(python),
+                    "ein {argv:?}: `{python}` is back:\n{}",
+                    r.err
+                );
+            }
+            assert!(
+                !Path::new(&einb).exists(),
+                "ein {argv:?} wrote a container of a refused program"
+            );
+        }
+    }
+
+    // The macro body's line, on every command that compiles; and on the
+    // container `kb save` writes, whose position names the program it stores.
+    let file = "examples/broken/compile/eq_in_a_macro_body.ein";
+    let line = "rule 'r': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it \
+                compares two values, so write one guard per pair";
+    for (args, code) in every_command(file, &einb) {
+        let argv: Vec<&str> = args.iter().map(String::as_str).collect();
+        let r = ein(&argv);
+        let draws = matches!(
+            argv[..2],
+            ["render", "program" | "rules" | "rule" | "constraints"]
+        ) || argv[0] == "kb";
+        if draws {
+            assert_eq!(
+                r.code, 0,
+                "ein {argv:?} (Q-M1f.67: no command executes it):\n{}",
+                r.err
+            );
+            continue;
+        }
+        if argv[0] == "test" {
+            // No `:expect`, so nothing to check: `ein test`'s contract.
+            assert_eq!(r.code, 2, "ein {argv:?}:\n{}", r.err);
+            continue;
+        }
+        assert_eq!(r.code, code, "ein {argv:?}:\n{}", r.err);
+        assert_eq!(
+            r.err.lines().next(),
+            Some(format!("{file}:21:18: {line}").as_str()),
+            "ein {argv:?}"
+        );
+        for python in PYTHON_SPELLINGS {
+            assert!(
+                !r.err.contains(python),
+                "ein {argv:?}: `{python}` is back:\n{}",
+                r.err
+            );
+        }
+    }
+    // The stored program is the text the loader read back, its comments gone
+    // and its forms as dumped, so its line and column are the stored text's
+    // (Q-M1f.15).
+    for cmd in ["saturate", "solve", "oracle"] {
+        let r = ein(&[cmd, &einb]);
+        assert_eq!(r.code, 1, "ein {cmd} on the container:\n{}", r.err);
+        let first = r.err.lines().next().unwrap_or_default();
+        assert!(
+            first.starts_with(&format!("<program stored in {einb}>:"))
+                && first.ends_with(&format!(": {line}")),
+            "ein {cmd} on the container: {first}"
+        );
+    }
 }

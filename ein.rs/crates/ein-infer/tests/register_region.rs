@@ -326,13 +326,14 @@ fn every_row_states_its_witness_s_region() {
         // command's own: the library answers the witness, and the row states
         // its region, as an answering row does. So is a solve's usage
         // refusal, exit 2 (schema /19, M1f S1f.5.12, W43): the binary refuses
-        // what the run was asked to write, and the library answers.
-        if let Some(want) = row
-            .now
-            .refused
-            .as_ref()
-            .filter(|_| !row.now.is_command() && row.now.exit != Some(2))
-        {
+        // what the run was asked to write, and the library answers. But a
+        // command's refusal where the right answer is one is the loader's
+        // (schema /20, M1f S1f.5.21, W62 to W65): the row states no region, and
+        // the library refuses the witness as the command does.
+        if let Some(want) = row.now.refused.as_ref().filter(|_| {
+            (!row.now.is_command() || (row.right.refused && row.region.is_none()))
+                && row.now.exit != Some(2)
+        }) {
             if let Some(e) = refusal(&row.witness) {
                 if *want != e {
                     bad.push(format!(

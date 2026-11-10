@@ -424,12 +424,9 @@ mod tests {
             "{FORALL}\n(rule r () :match (forall (p ?x)) :assert (done))"
         ))
         .expect_err("arity mismatch");
-        assert!(
-            err.0
-                .starts_with("macro forall/2 invoked with 1 args at Loc("),
-            "{}",
-            err.0
-        );
+        // The position in Ein's spelling since M1f S1f.5.21 (`loc_repr`,
+        // Q-M1f.75), where it was `at Loc(file=…, line=…, col=…)`.
+        assert_eq!(err.0, "macro forall/2 invoked with 1 args at <string>:2:20");
         // A keyword pair in a call is refused at the parse, at its keyword.
         let refused = parse(
             &mut Ast::new(),

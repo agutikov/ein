@@ -137,12 +137,15 @@ Every error the loader raises interpolates the form's source location, and a
 unknown relation `foo` at None
 ```
 
-**Fourteen of the 31 `examples/broken/load/` fixtures** have a message that
+**Fourteen of the 34 `examples/broken/load/` fixtures** have a message that
 ends this way, and `grep -L 'at None' examples/broken/load/*.expected` names
-the seventeen that do not (2026-11-09): the error is raised somewhere that
+the twenty that do not (2026-11-10, `nested_or` among them since M1f
+S1f.5.21; the page said 31 and seventeen when it was re-taken on 2026-11-09): the error is raised somewhere that
 *has* a location, or nowhere that has one at all — `macro_arity_mismatch`
-(inside macro expansion, on a nested node — it prints a real `Loc(file=…,
-line=6, col=20)`), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
+(inside macro expansion, on a nested node — it prints a real position,
+`<file>:6:20`, which was the Python IR's `Loc(file=…, line=6, col=20)` until
+M1f S1f.5.21 took that half of F23's D-2, Q-M1f.75), `nested_or` (since
+S1f.5.21, § 4.15), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
 the two `import_*` that name no module found, the two `expect_*` M1c added,
 the solve, query and region claims' five, and the four `reserved_open_*`,
 whose import of `reserved_open_direct.ein` is refused at its parse since M1f
@@ -565,7 +568,7 @@ names the failure's class, and exiting non-zero:
 |---|---|---|
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` (`ein saturate` printed `error: <path> not found` until M1f T1f.5.5.13) | 1 |
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
-| a rule that will not compile | `ein.inference.compile.CompileError: <message>` | 1 |
+| a rule that will not compile: since M1f S1f.5.21 only a macro's body that writes `eq` or `absent` at another arity (§ 4.3); every other refusal the compiler made a program reach is the loader's (§ 4.15) | `<file>:<line>:<col>: rule '<r>': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — …`, naming no class, the same on every command that compiles; `ein.inference.compile.CompileError: <message>` from `ein saturate` and the message alone from `ein solve` until S1f.5.21 | 1 |
 | a conclusion no fact can hold: since M1f S1f.5.5's swap only a macro's body that is a bare parameter, called in an `:assert`, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
@@ -652,12 +655,16 @@ firings*](#5-the-cli-surface).
 
 The class names are the strongest candidate on this page for deliberate
 change. Two changed in M1e2: the step limit's row left the table (S1e2.3.7),
-and `TypeError` gave way to the rule's own words (S1e2.2.18). The two left,
-`FileNotFoundError` and `ein.inference.compile.CompileError`, are Python's
-spellings that a command prints (`KeyError` a third until M1f S1f.5.18 retired
-its line); that is parked for the user in
-[S1e2.2.18 § Notes](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md#notes),
-beside S1e2.3.7's note on the ones no command prints.
+and `TypeError` gave way to the rule's own words (S1e2.2.18). Of the two left
+then, `ein.inference.compile.CompileError` went at M1f
+[S1f.5.21](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)
+(the close review's finding 1): a compile refusal is one line in Ein's words on
+every command, and the refusals a program reached are the loader's (§ 4.15).
+`FileNotFoundError` is the one Python spelling a command still prints, from
+the read path and not the compiler, and it is
+[F23](../../plans/followups/f23_diagnostics_in_eins_words.md)'s D-1
+(`KeyError` was another until M1f S1f.5.18 retired its line); S1e2.3.7's note
+names the ones no command prints.
 
 ### 4.1 The first errors that name no exception class — M1c S1c.1.2
 
@@ -769,15 +776,23 @@ read. Both are `CompileError`s now, refused before a `Step::Guard` exists.
 
 | input | message | exit |
 |---|---|---|
-| `eq` or `neq` at any arity but 2 | ``` `(eq …)` takes exactly 2 arguments and was given <n>: <repr> at <loc> — a built-in predicate compares exactly two values, so write one guard per pair. ``` | 1 |
-| `absent` at any arity but 1 | ``` `(absent …)` takes exactly 1 argument and was given <n>: <repr> at <loc> — negation-as-failure is over a single premise, so wrap several in an `(and …)`. ``` | 1 |
+| `eq` or `neq` at any arity but 2 | ``<file>:<line>:<col>: rule '<r>': its :match writes (eq ?x), and eq takes exactly 2 arguments, not <n> — it compares two values, so write one guard per pair`` | 1 |
+| `absent` at any arity but 1 | ``<file>:<line>:<col>: rule '<r>': its :match writes (absent …), and absent takes exactly 1 argument, not <n> — negation as failure is over one premise, so wrap several in an (and …)`` | 1 |
 
-They travel as `ein.inference.compile.CompileError: <message>` — §4's second
-row — because that is the layer they are raised at, and by §4.1's rule the
-messages themselves name no exception class. **`<loc>` is real**: unlike the
-loader messages of §1.5, which end in `at None` because a top-level form
-carries no position, a premise is a `generic_list` and the parser hands one a
-`Loc`. So these two read `at Loc(file='…', line=…, col=…)`.
+They are the compiler's, raised where it compiles the rule, and print the same
+first line on every command that compiles (`ein solve` in each mode, `oracle`,
+`saturate`, `test` with a claim, `render lattice`, `render kb`), naming no
+class and no IR repr since M1f
+[S1f.5.21](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md):
+until then each was ``` `(eq …)` takes exactly 2 arguments and was given <n>:
+<repr> at Loc(file='…', line=…, col=…) — … ```, behind
+`ein.inference.compile.CompileError:` on `ein saturate` and the file's name on
+`ein render kb`. **The position is real**: a premise has one, and it is where
+the form is written, a macro's body, so the line starts with it, as a parse
+error does; in a `.einb` it names the container, `<program stored in x.einb>`
+(Q-M1f.15). The views and `kb save` execute no rule, and accept the program
+(Q-M1f.67). `cli_semantics::a_compile_refusal_reads_the_same_on_every_command`
+holds it, on `examples/broken/compile/eq_in_a_macro_body.ein`.
 
 **Why only two rows for seven wrong cells.** The
 [S1e.1.6 sweep](../history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10) found
@@ -1038,9 +1053,9 @@ keyword no form takes (S1f.5.11). Pinned by `cli_semantics.rs`'
 **Until S1e2.2.20** (W20) a range was a slot that matched nothing, in silence,
 and one in an `:assert` stopped the run at the rule's first firing with
 § 4's *conclusion no fact can hold* line; a `_` head stopped compilation with
-§ 4's second row, `ein.inference.compile.CompileError: unbound relation head
-?Wildcard() in a premise of `SForm(head=Wildcard(), …)` …`, the Python IR's
-spelling, which no `_` reaches since. A variable head no parameter binds,
+§ 4's compile row as it read then, `ein.inference.compile.CompileError:
+unbound relation head ?Wildcard() in a premise of `SForm(head=Wildcard(), …)`
+…`, the Python IR's spelling, which no `_` reaches since. A variable head no parameter binds,
 `(?r a)`, still did until S1e2.2.24, which refuses it at load (§ 4.9).
 
 ### 4.9 A rule shape that reads nothing — M1e2 S1e2.2.24
@@ -1312,6 +1327,58 @@ conclusion stored `(eq a :rule r)`; and the written fact stored `(eq a)`,
 Q-M1f.33's check reading two arguments only. Pinned by `ein-ir`'s `from_ir.rs`
 `eq_at_another_arity_is_refused_at_load`, `ein-cli`'s `cli_semantics.rs`
 test of the same name, and `corpus/wrong_answers.toml`'s W60 and W61 rows.
+
+### 4.15 The compiler's refusals a program reached, at load — M1f S1f.5.21
+
+Three refusals the compiler made, which a program reached, are the loader's
+since M1f
+[S1f.5.21](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md),
+on the user's ruling on the close review's finding 1 (*"new stage in p1f.5"*):
+one line each, `; `-joined with every other loader error, exit 1 (`ein test`:
+2), on every command that reads the program, the four views and `kb save`
+among them. The compiler's arms for them are invariants (Q-M1f.9 (a)'s pattern).
+
+| input | message |
+|---|---|
+| an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or a top-level `(or …)`, in a rule's, an hrule's or an obligation's `:match` or a query's `:goal`, written or produced by a macro's expansion (Q-M1f.74) | `rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule`; a goal's `query: its :goal writes … — an (or …) is a whole :goal, … or ask two queries` |
+| a `:match` that writes more than 256 distinct variables, the rule's parameters among them, or a `:goal` that does (`ein_ir::MAX_MATCH_VARIABLES`, the register file's size, Q-M1f.73) | `rule 'wide': its :match writes 257 distinct variables, and a rule binds at most 256 — split the rule`, with *its parameters among them* where it has any; a goal's `query: its :goal writes 257 distinct variables, and a goal binds at most 256 — ask two queries` |
+| a query's `:goal` premise whose relation is a variable, under `and`, `or` and `absent` | `query: its :goal writes (?R Rex Animal) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator` |
+
+**Until S1f.5.21** each was the compiler's, met where a plan was compiled, in
+the Python IR's spelling (*nested `(or …)` in a `:match` premise:
+SForm(head=Atom(name='or'), …). Only a TOP-LEVEL `(or …)` is supported
+(S1.8.A13 …)*), printed bare by `ein solve`, behind
+`ein.inference.compile.CompileError:` by `ein saturate` (and by `ein solve` on
+a goal), and behind the file's name by `ein render kb`. A plan is compiled per
+activator, by the hypothesis layer for an hrule, and for a goal only where a
+state is answered from it, so the commands disagreed: under a commitment
+`saturate` and `solve --minimal` answered what describe stopped on, in an
+hrule or a goal `saturate` answered, and a rule no activator reached or a goal
+of an empty R loaded on every command (W62, W63, W64, sixteen rows with W65's).
+
+**The views refuse what the loader refuses** since the same stage (W65,
+Q-M1f.71): `ein render program`, `rules`, `rule` and `constraints` draw a
+program as written, its imports unresolved, and read it through the loader
+first, so a program it refuses is refused with its line and exit 1, as every
+other command refuses it. Until then they parsed it and never loaded it,
+so each drew a program every other command refused, exit 0; and `kb save`, which
+loads and never compiles, wrote a container of a program every command that
+opens one refused. Each view takes `--no-require-why`
+([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)).
+
+Pinned by `ein-ir`'s `from_ir::tests::the_compilers_refusals_a_program_reached_are_refused_at_load`,
+`ein-cli`'s `cli_semantics::a_compile_refusal_reads_the_same_on_every_command`
+(every witness on seventeen commands, one first line and one exit) and
+`render_doors::every_view_refuses_what_the_loader_refuses`,
+`corpus_cli::no_cell_prints_the_python_spelling`, `ein-infer`'s
+`compile_semantics::no_corpus_program_is_refused_in_the_python_spelling`,
+`fuzz_properties::the_compiler_refuses_nothing_the_loader_accepts`, and
+`corpus/wrong_answers.toml`'s W62 to W65 rows. **What is not refused**: a
+top-level `(or …)`, an `(or …)` as a pattern's argument (no premise), a macro
+whose body is an `(or …)` called as a whole `:match`, and a macro no rule uses;
+a query's pattern *inside* a pattern whose relation is a variable, `(p (?R
+?x))`, loads and matches nothing, as the compiler lowers it, which no
+`CompileError` ever reported (found by S1f.5.21's T1, outside its case).
 
 ## 5. The CLI surface
 

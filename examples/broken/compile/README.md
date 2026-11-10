@@ -5,8 +5,19 @@ Files that **parse** and **load** and then fail to **compile**: the shapes
 raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 
-**Two since M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-09)**: `nested_or` and
-`activator_arity`. The grammar states `eq`'s and `absent`'s shapes, `eq`
+**Two since M1f S1f.5.21 (2026-11-10)**: `activator_arity` and
+`eq_in_a_macro_body`. `nested_or` moved to `../load/` (W62): the loader refuses
+an `(or …)` written as a premise since, on every command, where the compiler
+refused it only where it compiled the rule, in the Python IR's spelling, and
+four commands that never compiled it answered. `eq_in_a_macro_body` is the one
+compile refusal a program still reaches, `(eq ?x)` written in a macro's body,
+which the grammar never reads expanded (S1f.5.24's, on the user's ruling on
+Q-M1f.67); its line is in Ein's words on every command that compiles, the
+place in the macro's body first, and the views and `kb save` accept the
+program, which none of them executes.
+
+**Two from M1f S1f.5.5's swap (T1f.5.5.4, 2026-11-09) until S1f.5.21**:
+`nested_or` and `activator_arity`. The grammar states `eq`'s and `absent`'s shapes, `eq`
 taking two terms and `absent` one premise, so the second batch below is
 refused at the parse, and its four fixtures moved to `../` beside the
 parse-negatives (Q-M1f.2 (a)), each `.expected` the parse report; what
@@ -47,10 +58,10 @@ both directions:
   because such a guard is `monotone`, its candidates are **retired
   permanently**.
 
-`nested_or.ein` is the one that showed both polarities in a single shape:
-`(and (a ?x) (or (p ?x) (q ?x)))` fired with neither `p` nor `q` in the KB
-(unsound), and `(absent (or (p ?x) (q ?x)))` never fired with neither present
-(incomplete).
+`nested_or.ein` (under `../load/` since M1f S1f.5.21) is the one that showed
+both polarities in a single shape: `(and (a ?x) (or (p ?x) (q ?x)))` fired
+with neither `p` nor `q` in the KB (unsound), and `(absent (or (p ?x) (q
+?x)))` never fired with neither present (incomplete).
 
 ## The odd one out
 
@@ -109,13 +120,16 @@ found no cell to fix.
 <name>.expected     the exact `CompileError` message, one line
 ```
 
-`{FILE}` is the fixture's own absolute path, and it appears in the four M1e
-messages only. A premise is a `generic_list`, the one production the parser
-hands a `Loc`, so a refusal of one can say **where** — `at Loc(file=…,
-line=…, col=…)`, the loader's own form. The S1.22.0 four predate anyone asking
-and end in nothing rather than in `at None`.
+`{FILE}` is the fixture's own absolute path, and it appears where the refused
+form has a position: since M1f S1f.5.21 the line starts with it,
+`{FILE}:<line>:<col>: rule 'r': …`, as a parse error places itself, where it
+ended `at Loc(file=…, line=…, col=…)` until then. A premise has a position, a
+top-level form none, so `activator_arity`'s line, about an activator, names
+the rule and no place.
 
 Consumers:
 [`ein.rs/crates/ein-infer/tests/compile_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs)
 and the corpus sweep, whose `compile-negative` group is this directory less
-`activator_arity.ein`.
+`activator_arity.ein`; and `ein-cli`'s
+`cli_semantics::a_compile_refusal_reads_the_same_on_every_command`, which
+holds `eq_in_a_macro_body`'s line on every command that compiles.

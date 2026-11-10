@@ -1,0 +1,36 @@
+;;; A disjunction nested inside a conjunction, in a rule only a commitment
+;;; activates: four solve questions answer and five stop — M1f **W62**,
+;;; register row `W62/nested-or-under-commitment`, filed by S1f.5.21
+;;; (T1f.5.21.1, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `r` has a parameter, so it is compiled once per activator `(r …)`, and
+;;; only `mk` writes one, from an `(s …)`, which no fact holds and the
+;;; candidate `(s k)` brings. Root compiles no plan of `r`; a commitment
+;;; holding `(s k)` does.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An `(or …)` is a whole `:match`, so `r` is refused at load, whether or
+;;; not a state activates it: every command exits 1 (`ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `864b16ed`, release, the commands disagreed: `ein saturate`, `ein
+;;; solve --minimal`, `--single` and `-n 1` answered, exit 0, never compiling
+;;; `r`; `ein solve` (describe), `--maximal`, `--count`, `oracle` and `render
+;;; lattice` stopped at the commitment that compiles it, exit 1, on the
+;;; compiler's line. Refused at load since S1f.5.21 (T1f.5.21.2).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(rule mk () :match (s ?x) :assert (r a) :why "{?x} is an s, so r is activated over a")
+(rule r (?R)
+  :match  (and (?R ?x) (or (p ?x) (q ?x)))
+  :assert (p ?x)
+  :why "{?R} holds of {?x}, and p or q does, so p does")

@@ -360,6 +360,13 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
 /// not a form and a relation variable no parameter binds (W24), each
 /// `.expected` its load line there.
 ///
+/// **Two since M1f S1f.5.21**, and the four arity fixtures at the parse since
+/// S1f.5.5's swap: `nested_or` moved to `broken/load/`, the loader refusing a
+/// nested `(or …)` (W62), and `eq_in_a_macro_body` is the one compile refusal a
+/// program still reaches, `(eq ?x)` written in a macro's body; each line in
+/// Ein's words since, `{FILE}:<line>:<col>: rule 'r': …` where the form has a
+/// position.
+///
 /// The walk runs with the arity filter **off**, because `activator_arity`'s
 /// error is unreachable with it on — see the next test but one.
 #[test]
@@ -380,10 +387,13 @@ fn every_compile_error_says_what_its_expected_file_says() {
                 .into_owned()
         })
         .collect();
+    // `nested_or` moved to `broken/load/` at M1f S1f.5.21, the loader refusing
+    // it (W62), and `eq_in_a_macro_body` arrived: the one compile refusal a
+    // program still reaches, through a macro's body (S1f.5.24's).
     assert_eq!(
         stems,
-        ["activator_arity", "nested_or"],
-        "one fixture per CompileError branch, in {}",
+        ["activator_arity", "eq_in_a_macro_body"],
+        "one fixture per CompileError branch a fixture reaches, in {}",
         dir.display()
     );
     for path in &fixtures {
@@ -412,6 +422,11 @@ fn every_compile_error_says_what_its_expected_file_says() {
 /// and, being monotone, retired its candidates for good. Only the positive
 /// site has a checked-in fixture, so the negative one is built here: a
 /// compiler that guarded only the site it had a fixture for would look correct.
+///
+/// **At load since M1f S1f.5.21** (W62): until then the compiler refused both
+/// where it compiled the rule, in the Python IR's spelling; the loader refuses
+/// each since, one line naming the rule, the disjunction and what it is a
+/// premise of, and the compiler's arm is an invariant.
 #[test]
 fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
     let decls = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n";
@@ -422,18 +437,22 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
             "(and (a ?x) (absent (or (p ?x) (q ?x))))",
         ),
     ] {
-        let mut l = load_text(&format!(
+        let err = load_error(&format!(
             "{decls}(rule r ()\n  :match {match_}\n  :assert (out ?x) :why \"a holds of {{?x}} and its premise over p or q holds, so out holds of {{?x}}\")\n"
         ));
-        let err = l.compile_error(true);
-        assert!(
-            err.starts_with("nested `(or …)` in a `:match` premise:"),
-            "{site}: {err}"
-        );
-        assert!(
-            err.contains("Only a TOP-LEVEL `(or …)` is supported"),
-            "{site}: the message has to say what *is* supported, or the author \
-             cannot act on it: {err}"
+        let within = if site == "positive premise" {
+            "and"
+        } else {
+            "absent"
+        };
+        assert_eq!(
+            err,
+            format!(
+                "rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of {within} — an \
+                 (or …) is a whole :match, each of its premises one way it holds: lift it to \
+                 the top of the :match, or split the rule"
+            ),
+            "{site}: the line has to say what *is* written, or the author cannot act on it"
         );
     }
 }
@@ -466,8 +485,15 @@ fn the_compile_and_firing_lines_a_macro_still_reaches() {
          (rule r () :match (and (p ?x) (two (p ?x) (p ?x))) :assert (hit ?x) :why \"p holds of {?x} and two's absent holds, so hit holds of {?x}\")\n",
     );
     let err = l.compile_error(true);
+    // In Ein's words since M1f S1f.5.21: the place in the macro's body, the
+    // rule, the form as expanded, and what to write.
     assert!(
-        err.starts_with("`(absent …)` takes exactly 1 argument and was given 2:"),
+        err.starts_with("<fixture>:1:")
+            && err.contains(
+                "rule 'r': its :match writes (absent (p ?x) (p ?x)), and absent takes exactly 1 \
+                 argument, not 2 — negation as failure is over one premise, so wrap several in \
+                 an (and …)"
+            ),
         "{err}"
     );
     let mut l = load_text(
@@ -476,7 +502,11 @@ fn the_compile_and_firing_lines_a_macro_still_reaches() {
     );
     let err = l.compile_error(true);
     assert!(
-        err.starts_with("`(eq …)` takes exactly 2 arguments and was given 3:"),
+        err.starts_with("<fixture>:1:")
+            && err.contains(
+                "rule 'r': its :match writes (eq ?x ?x ?x), and eq takes exactly 2 arguments, \
+                 not 3 — it compares two values, so write one guard per pair"
+            ),
         "{err}"
     );
     let mut l = load_text(
@@ -520,12 +550,14 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
     let mut l = load_text(&text);
 
     let err = l.compile_error(false);
+    // In Ein's words since M1f S1f.5.21, where it printed a Python tuple of
+    // each, `pairwise('r',)` and `('R', 'T')`.
     assert!(
-        err.contains("activator pairwise('r',) has 1 argument(s)"),
+        err.contains("its activator (pairwise r) has 1 argument"),
         "the message names the activator and its arity: {err}"
     );
     assert!(
-        err.contains("rule `pairwise` declares 2 parameter(s) ('R', 'T')"),
+        err.contains("it declares 2 parameters (?R ?T)"),
         "…and the parameter list it cannot bind: {err}"
     );
 
@@ -614,10 +646,14 @@ fn a_relation_parameter_a_rule_binds_to_a_nested_fact_is_refused() {
         let err = ein_infer::compile_rule(&l.ast, &mut l.terms, &rule, Some(activator))
             .expect_err("a relation head bound to a fact")
             .0;
+        // In Ein's words since M1f S1f.5.21: the place, the rule, the form whose
+        // relation the parameter names (inside `box`, the inner one) and the
+        // fact, where it placed the form `at Loc(…)`.
         assert!(
-            err.contains("the relation head ?R of ")
+            err.starts_with("<fixture>:3:")
                 && err.contains(
-                    "is bound to the fact (q A B) — a relation is named by a symbol, not a fact."
+                    "rule 'mirror': its :match writes (?R ?a ?b), and its activator binds ?R to \
+                     the fact (q A B) — a relation is named by a symbol, not a fact"
                 ),
             "{pattern}: the compiler names the head, the form and the fact: {err}"
         );
@@ -899,5 +935,87 @@ fn arity_three_is_unenumerated() {
         guessed,
         BTreeSet::from(["likes".to_string()]),
         "only the binary relation is filled"
+    );
+}
+
+/// **No corpus program is refused in the Python IR's spelling** — M1f
+/// S1f.5.21, the close review's finding 1.
+///
+/// The text every command prints when it refuses a program is the loader's
+/// line or the compiler's, behind at most `kb load error: ` (`ein-cli`'s
+/// `common`). So every corpus program is loaded, and where it loads, every plan
+/// its rules, hrules and obligations compile, one per activator as the engine
+/// compiles them, and every query's goal: no refusal holds the Python class,
+/// the IR's repr, a `Loc(…)`, a stage id or *the M1 compiler*. The one compile
+/// refusal a corpus program reaches is counted, and is the macro body's
+/// (`examples/broken/compile/eq_in_a_macro_body.ein`).
+#[test]
+fn no_corpus_program_is_refused_in_the_python_spelling() {
+    const PYTHON: [&str; 7] = [
+        "CompileError",
+        "SForm(",
+        "Atom(name=",
+        "Var(name=",
+        "Loc(",
+        "S1.8.",
+        "M1 compiler",
+    ];
+    let mut bad: Vec<String> = Vec::new();
+    let (mut loads, mut refusals, mut compiled) = (0usize, Vec::new(), Vec::new());
+    for path in ein_corpus::corpus_files() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .display()
+            .to_string();
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let kb = match ein_ir::load_file(&mut ast, &mut terms, &path) {
+            Ok(kb) => kb,
+            Err(e) => {
+                refusals.push(e.0);
+                continue;
+            }
+        };
+        loads += 1;
+        let program = kb.program();
+        let rules: Vec<_> = program
+            .rules
+            .values()
+            .chain(program.hrules.values())
+            .chain(program.obligations.values())
+            .cloned()
+            .collect();
+        for rule in &rules {
+            for activator in ein_infer::activators_for(&kb, &terms, rule) {
+                if let Err(e) = ein_infer::compile_rule(&ast, &mut terms, rule, activator) {
+                    compiled.push((rel.clone(), e.0));
+                }
+            }
+        }
+        let goals: Vec<_> = program
+            .queries
+            .iter()
+            .filter_map(|q| ein_infer::query_value(&ast, q, "goal"))
+            .collect();
+        for goal in goals {
+            if let Some(e) = ein_infer::verdict::goal_plan_error(&ast, &mut terms, &kb, Some(goal))
+            {
+                compiled.push((rel.clone(), e.0));
+            }
+        }
+    }
+    for line in refusals.iter().chain(compiled.iter().map(|(_, l)| l)) {
+        if let Some(p) = PYTHON.iter().find(|p| line.contains(**p)) {
+            bad.push(format!("`{p}` in: {line}"));
+        }
+    }
+    assert!(loads > 300, "only {loads} corpus programs loaded");
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    let files: BTreeSet<&str> = compiled.iter().map(|(f, _)| f.as_str()).collect();
+    assert_eq!(
+        files.into_iter().collect::<Vec<_>>(),
+        ["examples/broken/compile/eq_in_a_macro_body.ein"],
+        "the corpus programs the compiler refuses: {compiled:?}"
     );
 }

@@ -1,4 +1,4 @@
-//! `MAX_REGS` overflow is a clean error — S1a.3.1, and the engine's one
+//! `MAX_REGS` overflow is a clean refusal — S1a.3.1, and the engine's one
 //! compile-time bound.
 //!
 //! ein.rs resolves every variable to a register in a fixed-size file, because
@@ -10,6 +10,13 @@
 //! The bound gets a stated condition under which it becomes a bug (a real
 //! program hits it), and a fixture. The fixture is built here rather than
 //! checked into `examples/`.
+//!
+//! **Refused at load since M1f S1f.5.21** (W63, Q-M1f.73): the loader counts
+//! every distinct variable a `:match` writes, the rule's parameters among
+//! them, against [`ein_ir::MAX_MATCH_VARIABLES`], which `MAX_REGS` is, so every
+//! command refuses a rule past it alike and the compiler's check is an
+//! invariant. Until then the compiler refused it where it compiled the plan,
+//! so a rule no state activated loaded and answered.
 
 use ein_core::Terms;
 use ein_ir::{Ast, from_ir::load, parse};
@@ -50,16 +57,26 @@ fn a_rule_at_the_ceiling_compiles() {
     );
 }
 
+/// One variable past the ceiling is refused **at load**, with a line that
+/// says what to do — and never reaches the compiler, whose check is an
+/// invariant since M1f S1f.5.21.
 #[test]
-fn one_variable_past_the_ceiling_is_an_error_and_not_a_panic() {
-    let err = compile_wide(ein_infer::MAX_REGS + 1).expect_err("past the ceiling");
-    assert!(
-        err.contains("more than 256 distinct variables"),
-        "unhelpful message: {err}"
-    );
+fn one_variable_past_the_ceiling_is_refused_at_load() {
+    assert_eq!(ein_infer::MAX_REGS, ein_ir::MAX_MATCH_VARIABLES);
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let text = wide_rule(ein_infer::MAX_REGS + 1);
+    let forms = parse(&mut ast, &text, Some("<wide>")).expect("the fixture parses");
+    let err = load(&mut ast, &mut terms, &forms, None)
+        .expect_err("past the ceiling")
+        .0;
     // The point of the bound is a message, not a limit: it has to say what to
     // do.
-    assert!(err.contains("Split the rule."), "no remedy offered: {err}");
+    assert_eq!(
+        err,
+        "rule 'wide': its :match writes 257 distinct variables, and a rule binds at most 256 \
+         — split the rule"
+    );
 }
 
 /// The bound is two orders of magnitude past the corpus. If a shipping rule

@@ -1,0 +1,40 @@
+;;; A disjunction nested inside a conjunction, in a rule root compiles: every
+;;; command that compiles the rule stops, and four that do not answer — M1f
+;;; **W62**, register row `W62/nested-or-stops` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.5.21 (T1f.5.21.1, 2026-11-10) on the close review's finding 1
+;;; and the user's ruling on it (*"new stage in p1f.5"*). The same witness is
+;;; W65's, the four views and `kb save` that answer it.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(a k)`, and a rule whose `:match` writes an `(or …)` as a
+;;; premise of an `(and …)`. A top-level `(or …)` is one plan per disjunct;
+;;; a nested one is not lowered.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An `(or …)` is a whole `:match`, so the rule is refused, and refused
+;;; where a program is read: every command that reads the program exits 1
+;;; with the loader's one line (`ein test`: 2), whether or not it compiles
+;;; the rule, the views and `kb save` among them (the user's rule that no
+;;; two commands may disagree).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `864b16ed`, release: `ein solve` (every mode), `oracle` and `render
+;;; lattice` stopped, exit 1, on the compiler's line in the Python IR's
+;;; spelling, *nested `(or …)` in a `:match` premise: SForm(head=Atom(name=
+;;; 'or'), …)*, citing *S1.8.A13* and *the M1 compiler*; `ein saturate` put
+;;; `ein.inference.compile.CompileError:` in front and `render kb` the file
+;;; name; `render program`, `render rules`, `render rule` and `render
+;;; constraints` drew the rule and `kb save` wrote a container, exit 0.
+;;; Refused at load since S1f.5.21 (T1f.5.21.2), on every command.
+
+(relation a Thing :why "{?1} is an a")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(a k)
+(rule r ()
+  :match  (and (a ?x) (or (p ?x) (q ?x)))
+  :assert (p ?x)
+  :why "{?x} is an a, and a p or a q, so a p")
