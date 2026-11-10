@@ -12300,7 +12300,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a fact's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12333,7 +12333,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a nested fact's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12366,7 +12366,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a stored negation's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12399,7 +12399,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a pattern's relation inside a query's goal. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12432,7 +12432,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a nested fact's relation in a query's claim. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12465,7 +12465,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an activator's argument bound to a relation parameter, and a fact's relation. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12498,7 +12498,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an activator's argument bound to an obligation's relation parameter. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12533,7 +12533,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a fact's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12566,7 +12566,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an object's name. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12599,7 +12599,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a type in a relation's signature. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12632,7 +12632,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a premise pattern's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12665,7 +12665,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a guard's value. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12698,7 +12698,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a conclusion's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12731,7 +12731,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: an hrule's conclusion argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12764,7 +12764,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a conclusion's argument, an activator binding a relation parameter. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12797,7 +12797,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a query goal's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12830,7 +12830,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a query claim's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12863,7 +12863,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro call's argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12896,7 +12896,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a fact's `:rule` clause. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12929,7 +12929,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a `(solve …)` form's relation list. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12962,7 +12962,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a trace step's name. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -12997,7 +12997,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro's body. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -13030,7 +13030,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro's body. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 
@@ -13063,7 +13063,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.23 (T1f.5.23.2, 2026-11-10), one of the places a program wrote `open`, the stage's census: a macro's body no rule calls. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.23.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the parse at the `open`, with a note"
 
 [case.fixed]
-commit = "0000000"
+commit = "0caf9dd2"
 by     = "S1f.5.23 (T1f.5.23.3): `open` is no name: the grammar's `Name`, `FactHead` and `ArgHead` lose it, so it is written only as a rule's whole `:assert`, `(open)` or `(open ?R)`, and every other place is refused at the parse, at the `open`, with a note saying so (`ein_ir::grammar`'s `RESERVED_WORDS`, the user's ruling on Q-M1f.66); a macro's body writes no `open` (Q-M1f.86)"
 date   = "2026-11-10"
 

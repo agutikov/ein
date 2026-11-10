@@ -17,7 +17,8 @@ placement lines deleted and its five projection lines placed, the twenty-four ro
 ([§ Acceptance, re-taken](#acceptance-re-taken-2026-11-10)). Four questions taken by default, Q-M1f.86 to Q-M1f.89.
 The register reads 217 fixed, 13 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 2026-11-10). Four wrong answers found outside the stage are recorded in the T2 record, not fixed, for
-[P1f.7](../p1f.7_findings_outside_scope/README.md).
+[P1f.7](../p1f.7_findings_outside_scope/README.md), where they are S1f.7.6 to S1f.7.9. Committed as `0caf9dd2`, whose hash
+W70 to W72's `[case.fixed]` rows carry.
 **Depends on:** nothing since Q-M1f.66's ruling. It may edit `ein.y`, so it does not run beside
 [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md).
 
