@@ -680,13 +680,13 @@ both measured and declined, with the workload that would reopen them named).
 
 | path | what's in it |
 |---|---|
-| [`ein.rs/`](ein.rs/) | **the implementation** — a Cargo workspace of eight crates, `#![forbid(unsafe_code)]` in all but one |
+| [`ein.rs/`](ein.rs/) | **the implementation** — a Cargo workspace of eight crates, every library `#![forbid(unsafe_code)]` but one, and the binary's `main.rs` one audited call |
 | `ein.rs/crates/ein-core/` | interning, `Value` / `FactId` as integers, the layered copy-on-write KB and its indexes, provenance |
 | `ein.rs/crates/ein-ir/` | ein-lang: lexer, parser, typed AST, canonical dump, macros, imports, the embedded stdlib |
 | `ein.rs/crates/ein-infer/` | the engine: compile → match → saturate → the NAF boundary → the hypothesis loop; no-goods, contradiction, verdict |
 | `ein.rs/crates/ein-einb/` | the `.einb` binary KB container — the one crate whose `cast.rs` is permitted `unsafe`, audited |
 | `ein.rs/crates/ein-render/` | the DOT views, the markdown trace, the state / lattice dumps, the JSON summary |
-| `ein.rs/crates/ein-cli/` | the `ein` binary — `solve` · `test` · `saturate` · `render` · `kb` |
+| `ein.rs/crates/ein-cli/` | the `ein` binary — `solve` · `test` · `saturate` · `render` · `kb`; its `main.rs` restores `SIGPIPE`'s default, one audited `unsafe` call, so `ein … \| head` ends as `cat` does |
 | `ein.rs/crates/{ein-corpus,ein-narration}/` | dev-only: the corpus manifest, fixture helpers and the bench set; the one definition of narration-vs-content |
 | [`stdlib/`](stdlib/README.md) | the ein-lang standard library, seven `std.*` modules; `MANIFEST.sha256` keeps the embedded copy honest |
 | [`corpus/`](corpus/README.md) | `corpus.toml` — one entry per `.ein` with the runs it is exercised under and a measured `cost_ms`; `fuzz_findings/` |

@@ -29,10 +29,15 @@ class Invocation:
     code: int = 0
     stdout: str = ""
     stderr: str = ""
+    # Its stdout a pipe whose reader closed before it started (the register's
+    # schema /21, M1f S1f.5.25): nothing was read, and `code` is minus the
+    # signal that ended it, as `subprocess` reports one.
+    stdout_closed: bool = False
 
     def shell(self) -> str:
         env = " ".join(f"{k}={v}" for k, v in self.env.items())
-        return (env + " " if env else "") + " ".join(_quote(a) for a in self.argv)
+        line = (env + " " if env else "") + " ".join(_quote(a) for a in self.argv)
+        return line + ("  # stdout: a pipe whose reader closed before the run" if self.stdout_closed else "")
 
 
 def _quote(a: str) -> str:
@@ -50,6 +55,23 @@ def run(name: str, argv: list[str], env: dict[str, str] | None = None, cwd: Path
     except subprocess.TimeoutExpired as e:
         out = e.stdout.decode() if isinstance(e.stdout, bytes) else (e.stdout or "")
         return Invocation(name, argv, env, -2, out, f"(killed after {timeout} s)\n")
+
+
+def run_closed(name: str, argv: list[str], cwd: Path = REPO, timeout: float | None = None) -> Invocation:
+    """Run one process with its stdout a pipe whose reader closed before it
+    started, as `wrong_answers.rs` runs a row whose `now` states `stdout =
+    "closed"` (schema /21, M1f S1f.5.25): every write it makes meets no
+    reader. Its stderr is captured; its code is minus the signal that ended
+    it, where one did."""
+    r, w = os.pipe()
+    os.close(r)
+    try:
+        p = subprocess.run(argv, cwd=cwd, stdout=w, stderr=subprocess.PIPE, text=True, timeout=timeout)
+        return Invocation(name, argv, {}, p.returncode, "", p.stderr, stdout_closed=True)
+    except subprocess.TimeoutExpired:
+        return Invocation(name, argv, {}, -2, "", f"(killed after {timeout} s)\n", stdout_closed=True)
+    finally:
+        os.close(w)
 
 
 def write(path: Path, text: str) -> Path:

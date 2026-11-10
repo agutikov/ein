@@ -82,7 +82,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.65](#q-m1f65--may-a-comment-hold-unicode) | may a comment hold Unicode? | **ruled 2026-11-10, (b)**: a comment may hold Unicode; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
 | [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value) | may `open` be written as a value? | **ruled 2026-11-10, (a)**: refused; `open` is written only as a rule's verdict; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
 | [Q-M1f.67](#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) | where is a macro body that no rule could use refused? | **ruled 2026-11-10**, in the user's words: an unused malformed macro is allowed, and what matters is that `(eq <arg>)` is never executed; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
-| [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **ruled 2026-11-10, (b)**: handle `SIGPIPE` properly, its default disposition restored on the binary; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **ruled 2026-11-10, (b)**: handle `SIGPIPE` properly, its default disposition restored on the binary; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md); **built 2026-11-10** by S1f.5.25 (T1f.5.25.2, W75): `ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)` as `main`'s first statement, Unix only |
 | [Q-M1f.69](#q-m1f69--what-the-guides-pin-reads-in-a-program-block) | what the guide's pin reads in a program block | **defaulted 2026-11-10 (the stage's default, S1f.5.26): (a), the text decides: a block that writes `…` outside a string is an excerpt, a top-level form with one is elided; an excerpt's whole forms load together where they stand, and a whole program loads and `ein solve` answers it**; [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md) |
 | [Q-M1f.70](#q-m1f70--what-the-stage-does-with-what-t1-found-false-beside-the-blocks) | what the stage does with what T1 found false beside the blocks | **defaulted 2026-11-10 (the stage's default, S1f.5.26): (a), each fixed in the page: a block that misquotes its file or answers otherwise than its page says, and four sentences of prose; the test does not hold them**; [S1f.5.26](p1f.5_the_no_owner_items/s1f.5.26_the_tutorial_runs.md) |
 | [Q-M1f.71](#q-m1f71--does-a-view-draw-a-program-the-loader-refuses) | does a view draw a program the loader refuses? | **defaulted 2026-11-10 (the stage's default, S1f.5.21): (a), it refuses it: `render program`, `render rules`, `render rule` and `render constraints` read the program through the loader first, refuse what it refuses with its line, exit 1, and take `--no-require-why` as the other seven commands that load do**; [S1f.5.21](p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md) |
@@ -111,6 +111,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.94](#q-m1f94--a-directorys-and-an-unreadable-modules-line-and-a-missing-ones-none) | a directory's and an unreadable module's line, and a missing one's `(None)` | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), the program's lines, `IsADirectoryError: …` and `PermissionError: …`, F23's D-1 for both; `module not found at … (None)` for a module that does not exist stays, its `(None)` F23's D-2 with every import line's**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
 | [Q-M1f.95](#q-m1f95--how-many-characters-the-refusal-names) | how many characters the refusal names | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), the first, where the lexer stops: `lrpar` lexes a file before it parses it, so a lexing error is the file's one error**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
 | [Q-M1f.96](#q-m1f96--a-byte-order-mark) | a byte-order mark | **defaulted 2026-11-10 (the stage's default, S1f.5.22): (a), refused as any other character that is not ASCII, at 1:1, `'\u{feff}' (U+FEFF)`; it was a token that is not a name until then**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.97](#q-m1f97--how-a-test-closes-a-runs-stdout) | how a test closes a run's stdout | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), the register's runs and the pin's second reader close it before the run starts, so every write meets no reader whatever the timing; the pin's third reader closes after the first line, as `head -1`, on a one-page pipe, and holds a run to `SIGPIPE` where its stdout is more than that line and the page, to `SIGPIPE` or exit 0 where it fits, never 101 and never a word on stderr**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.98](#q-m1f98--which-of-the-closed-stdouts-moves-are-register-rows) | which of the closed stdout's moves are register rows | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), W75's eighteen rows, one per command and per `solve` question and `solve -c`, on two corpus programs, each a run that panicked, exit 101, its reader closed before the run; every other option, `--version`, `render region` and an artefact on `/dev/stdout` the pin's; and a move from exit 0 to the signal no row: `clap`'s help, which ignored its failed write, is no answer about a program, and a run whose writes landed before its reader closed exits 0 still**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.99](#q-m1f99--what-the-register-records-of-a-run-a-closed-stdout-ended) | what the register records of a run a closed stdout ended | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), schema `/21`: a `now` with `stdout = "closed"` is a command's run whatever its subcommand, and answers by `signal` (13, nothing on stderr) or `panicked` (exit 101, the panic's message); a `right` can be `signal = 13`, and a recorded answer the panic**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.100](#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone) | an artefact flag that writes to a pipe whose reader has gone | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), it ends the process by `SIGPIPE` too, the disposition being process-wide; `defined_behaviour.md` § 4.4's arm, the message and the exit code unchanged, holds for every other failure; shown to the user at the close, since it narrows § 4.4**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.101](#q-m1f101--a-closed-stdout-on-windows) | a closed stdout on Windows | **defaulted 2026-11-10 (the stage's default, S1f.5.25): (a), left as it is, `restore_sigpipe` a no-op there: Windows has no `SIGPIPE`, so a write to a closed pipe is an error and a `print!` would still panic, exit 101, which no host here can run; shown to the user at the close**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2094,3 +2099,88 @@ that is not a name, `` unexpected `\u{feff}…` ``; no corpus file starts with o
 
 **Defaulted 2026-11-10 (the stage's default): (a).** The ruling is *anywhere else than inside string literals*, with
 comments added by Q-M1f.65 (b). Re-opening it means (b).
+
+### Q-M1f.97 — How a test closes a run's stdout
+
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. The acceptance reads a run's stdout with *a reader that closes after
+its first line*. Whether such a reader meets a write is a race: a run whose writes all land in the pipe before the
+reader closes has met no closed pipe, and exits 0 before and after the fix, as `cat` does (T1's `ein solve … | head`,
+its read-out one `print!`). A test that took `head -1`'s reader alone would pass or fail by timing.
+
+- **(a) Close it before the run starts** in the register and in the pin's second reader, a pipe whose read end is
+  dropped before the spawn, so every write the run makes is one after its reader has gone and each run ends at its
+  first write; and keep `head -1`'s reader as the pin's third, on a pipe shrunk to one page (`F_SETPIPE_SZ`, Linux),
+  strict where a run's stdout, read in full, is more than the first line and what the pipe holds (it must write after
+  the close), and either way where it fits, `SIGPIPE` or exit 0.
+- **(b) `head -1`'s reader alone, run until it meets a write.**
+- **(c) A run slowed down** so that it writes after the reader closes.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It decides every run by construction: twenty-one of the
+sixty-eight runs fall in the strict arm and forty-seven either way (`cargo test -p ein-cli --test closed_stdout`,
+2026-11-10). (b) is a race, and (c) would need a lever in the binary. Re-opening it means (b) or (c).
+
+### Q-M1f.98 — Which of the closed stdout's moves are register rows
+
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. Its census ran seventy-two runs, every subcommand and every option that
+writes to stdout and `kb save`, with the reader closed before each: fifty-five panicked, exit 101; sixteen, `clap`'s
+help, exited 0, `clap` ignoring its write's failure; and `kb save`, which writes nothing to stdout, exited 0. Under
+`head -1` the 101s were the runs that wrote after `head` exited, and the rest exited 0 (the stage's T2 record).
+
+- **(a) One row per command and per `solve` question, and `solve -c`**, whose write comes before the read-out: eighteen
+  rows, W75, on two corpus programs, `examples/branching/05_mini_zebra.ein` (no claim, so no question prints a note)
+  and `examples/features/11_expect_ambiguity.ein` for `ein test` (a claim that holds); every other option dies at the
+  read-out's write or at one of its own, `--version` has no program, `render region` reads an oracle's directory, and
+  an artefact naming `/dev/stdout` writes another file: the pin's. A move from exit 0 to the signal is no row: the
+  help is no answer about a program, and a run whose writes all landed before its reader closed exits 0 still.
+- **(b) A row per run of the census that panicked**, fifty-five.
+- **(c) As (a), and a row for each help** too.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** Every option of a command meets the same `print!` the
+command's row does, and the pin holds each; a row per option would repeat one assertion fifty-five times. Re-opening
+it means (b) or (c).
+
+### Q-M1f.99 — What the register records of a run a closed stdout ended
+
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. The register's schema `/20` records an exit code and a line of stderr. A
+process `SIGPIPE` ends has no exit code (`ExitStatus::code()` is `None`, `signal()` 13), and a panic's first line
+carries a thread id and a source position in the toolchain's `std`, `thread 'main' (3134551) panicked at
+library/std/src/io/stdio.rs:1166:9:`.
+
+- **(a) Schema `/21`**: `[case.now]` gains `stdout = "closed"`, the run is a command's whatever its subcommand
+  (`Now::is_command`), and its answer is `signal = 13` (nothing on stderr) or `panicked`, the panic's message, the line
+  after `panicked at`, exit 101; `[case.right]` gains `signal`, and a recorded answer `stdout` and `panicked`.
+- **(b) `exit = 141`**, the shell's report, and `error` with the first line masked.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** 141 is what a shell makes of a signal, not what the process
+ended with, and the panic's first line is the toolchain's. `ein-corpus`'s `register` checks the fields
+(`a_closed_stdout_ends_a_run_by_a_signal_or_a_panic`), `wrong_answers.rs` runs them, and the review bundle reads and
+builds them, its smoke a `W75/solve` case per commit. Re-opening it means (b).
+
+### Q-M1f.100 — An artefact flag that writes to a pipe whose reader has gone
+
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. [`defined_behaviour.md` § 4.4](../../docs/kernel/defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35)
+rules that an artefact flag's failed write prints `error: --<flag> <path>: <os error>` and leaves the exit code
+unchanged. Its census ran `--events`, `--json-summary`, `--trace` and `--json-report` on `/dev/stdout`: under `head
+-1`, `solve --trace /dev/stdout` and `--json-summary /dev/stdout` printed that line and exited 0, the read-out's one
+write having landed first. A process-wide `SIGPIPE` reaches every pipe the process writes, the artefact's too, a FIFO
+`utils/layer_census.py` reads included.
+
+- **(a) It ends the process by `SIGPIPE` too**; § 4.4's arm holds for every other failure, a directory, a full disk,
+  a permission, and § 4.4 and § 4.19 say so.
+- **(b) Ignore `SIGPIPE` around an artefact's writes**, the disposition flipped per write.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is the ruling's own consequence: the disposition is
+process-wide, and flipping it per write is not thread-safe and is more `unsafe` for a case no corpus run reaches.
+It narrows a rule § 4.4 stated, so it is shown to the user at the close. Re-opening it means (b).
+
+### Q-M1f.101 — A closed stdout on Windows
+
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. Windows, a release target, has no `SIGPIPE`: a write to a closed pipe there
+is an error, which a `print!` turns into the same panic, exit 101. No host here runs Windows, so no probe shows it,
+and the standard of proof refutes a behaviour only with one.
+
+- **(a) Leave it**: `restore_sigpipe` is a no-op off Unix, and the case is shown to the user at the close.
+- **(b) A quiet stop on Windows**, Q-M1f.68's (a), every stdout write through one writer there.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The ruling is about `SIGPIPE`, which Windows does not have, and
+(b) is the writer the ruling chose not to build. Re-opening it means (b).

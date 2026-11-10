@@ -1045,9 +1045,12 @@ constrained-reasoning research.
   is the eleven lines on which a rule's constant missing from the candidates
   cost a model, W4), **`ein-einb`** (the
   `.einb` binary KB container — [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container),
-  and the **only crate that is not `#![forbid(unsafe_code)]`**: its `cast.rs`
-  is the one audited module design/12 §2 permits `unsafe` in, which is why it
-  is a crate at all), `ein-render` (DOT views, the read-out, the region trace,
+  and the **only library crate that is not `#![forbid(unsafe_code)]`**: its
+  `cast.rs` is the one audited module design/12 §2 permits `unsafe` in, which
+  is why it is a crate at all; the other audited `unsafe` is the binary's,
+  `ein-cli/src/main.rs`'s one `libc::signal(SIGPIPE, SIG_DFL)` as `main`'s
+  first statement, since M1f S1f.5.25, so a closed stdout ends `ein` by
+  `SIGPIPE` as it ends `cat`, where every `print!` panicked, exit 101), `ein-render` (DOT views, the read-out, the region trace,
   the answer and lattice dumps, the JSON summary) and `ein-cli`. They stack linearly up
   to `ein-infer` and fork there — `ein-einb` and `ein-render` are siblings
   above it, and `ein-cli` depends on both. `ein-cli` fronts **five**

@@ -115,7 +115,28 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// answered a program every other command refused; and a row whose right
 /// answer is a refusal states no [`Region`] whatever its `now` runs, a
 /// command's included, since a program refused at load has no R, W62 to W65's.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/20";
+/// `/21` since M1f S1f.5.25 (T1f.5.25.2, 2026-11-10): a `now` can run with its
+/// **stdout closed** ([`Now::stdout`], [`STDOUT_CLOSED`]), a pipe whose reader
+/// closed before the run started, so every write to it is a write after its
+/// reader has gone; such a run is a command's whatever its subcommand
+/// ([`Now::is_command`]), and its answer is how it ended: by a signal, with
+/// nothing on stderr ([`Now::signal`], [`Right::signal`], [`SIGPIPE`]), or by
+/// a panic, exit 101 ([`Now::panicked`], [`Answer::panicked`]), W75's: every
+/// command's first write to such a pipe panicked with *failed printing to
+/// stdout: Broken pipe*, where the user ruled that `ein` die by `SIGPIPE`, as
+/// `cat` does (Q-M1f.68 (b)).
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/21";
+
+/// What a run's stdout is when it is not read in full (schema /21,
+/// [`Now::stdout`], [`Answer::stdout`]): `closed`, a pipe whose reader closed
+/// before the run started.
+pub const STDOUT_CLOSED: &str = "closed";
+
+/// The one signal a register row records a run ended by (schema /21,
+/// [`Now::signal`], [`Right::signal`]): `SIGPIPE`, which the kernel sends a
+/// process that writes to a pipe no reader holds, 13 on every Unix the
+/// binary ships for.
+pub const SIGPIPE: i32 = 13;
 
 /// Where a [`Printed`] line is read (schema /17): the run's stdout, or the
 /// read-out `--dump-answer DIR` writes uncut, `DIR/answer.txt`.
@@ -431,6 +452,24 @@ pub struct Now {
     /// states its [`Region`] (W43's open `now`: `--dump-answer` on a `.einb`).
     #[serde(default)]
     pub exit: Option<i32>,
+    /// The run's stdout is not read in full (schema /21, M1f S1f.5.25, W75):
+    /// [`STDOUT_CLOSED`], a pipe whose reader closed before the run started.
+    /// Such a run is a command's ([`Self::is_command`]), whatever its
+    /// subcommand, and its answer is how it ended: [`Self::signal`] or
+    /// [`Self::panicked`], exactly one.
+    #[serde(default)]
+    pub stdout: Option<String>,
+    /// The signal that ended a run whose stdout is closed (schema /21), with
+    /// nothing on stderr: [`SIGPIPE`], as `cat` ends, the user's ruling on
+    /// Q-M1f.68 (b).
+    #[serde(default)]
+    pub signal: Option<i32>,
+    /// A run whose stdout is closed panicked (schema /21, W75's open `now`):
+    /// exit 101, and this is the panic's message, the line of stderr after
+    /// `thread 'main' (…) panicked at …:`, whose thread id and source position
+    /// are the toolchain's.
+    #[serde(default)]
+    pub panicked: Option<String>,
     #[serde(default)]
     pub exhausted: bool,
     /// The states it lists.
@@ -573,11 +612,19 @@ pub fn sorted_nogoods(n: &[Nogood]) -> Vec<Nogood> {
 }
 
 impl Now {
-    /// Is the run a command's that is not a solve (schema /16)? Then it writes
-    /// no summary, and its answer is a refusal, an error or
-    /// [`Self::answered`].
+    /// Is the run a command's that is not a solve (schema /16), or one whose
+    /// stdout is closed (schema /21)? Then it writes no summary, and its
+    /// answer is a refusal, an error or [`Self::answered`], or how a closed
+    /// stdout ended it.
     pub fn is_command(&self) -> bool {
-        !self.run.starts_with("solve")
+        !self.run.starts_with("solve") || self.stdout_closed()
+    }
+
+    /// Does the run write to a pipe whose reader closed before it started
+    /// (schema /21)? Then it is a command's run whatever its subcommand, and
+    /// its answer is a signal or a panic.
+    pub fn stdout_closed(&self) -> bool {
+        self.stdout.as_deref() == Some(STDOUT_CLOSED)
     }
 
     /// The verdict word its states make: `Solution` for one, `Ambiguity` for
@@ -615,6 +662,23 @@ impl Now {
                     "an answer"
                 }
             ));
+            return out;
+        }
+        // A run whose stdout is closed (schema /21) answers by how it ended:
+        // a signal, with nothing on stderr, or a panic.
+        if let Some(s) = right.signal {
+            match (self.signal, &self.panicked) {
+                (Some(n), _) if n == s => {}
+                (Some(n), _) => out.push(format!("right: ended by signal {s}, now: by signal {n}")),
+                (None, Some(m)) => out.push(format!(
+                    "right: ended by signal {s}, now: a panic, exit 101: {m}"
+                )),
+                (None, None) => out.push(format!("right: ended by signal {s}, now: no signal")),
+            }
+            return out;
+        }
+        if self.signal.is_some() || self.panicked.is_some() {
+            out.push("right: an answer, now: a run a closed stdout ended".to_string());
             return out;
         }
         // A command's answer (schema /16) is that it answered: no verdict,
@@ -843,6 +907,15 @@ pub struct Answer {
     /// command refused).
     #[serde(default)]
     pub answered: bool,
+    /// The run's stdout was closed, as [`Now::stdout`] (schema /21). A record.
+    #[serde(default)]
+    pub stdout: Option<String>,
+    /// A run whose stdout was closed panicked (schema /21, M1f S1f.5.25,
+    /// W75's `wrong`): `exit` is 101 and this is the panic's message, as
+    /// [`Now::panicked`]; `verdict`, `k` and `exhausted` are not stated. A
+    /// record.
+    #[serde(default)]
+    pub panicked: Option<String>,
     /// `NAME=value`, set for the run.
     #[serde(default)]
     pub env: Vec<String>,
@@ -964,6 +1037,12 @@ pub struct Right {
     /// verdict, `k` or model.
     #[serde(default)]
     pub answered: bool,
+    /// The answer is that a run whose stdout is closed ends by this signal,
+    /// with nothing on stderr (schema /21, M1f S1f.5.25, W75): [`SIGPIPE`],
+    /// as `cat` ends, the user's ruling on Q-M1f.68 (b). It states no
+    /// refusal, verdict, `k` or model. Compared with [`Now::signal`].
+    #[serde(default)]
+    pub signal: Option<i32>,
     #[serde(default)]
     pub verdict: Option<String>,
     #[serde(default)]
@@ -1094,6 +1173,7 @@ impl Register {
             if r.status == "fixed"
                 && !r.right.refused
                 && !r.right.answered
+                && r.right.signal.is_none()
                 && (r.right.k.is_none() || (r.right.verdict.is_none() && r.right.others.is_none()))
             {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
@@ -1267,6 +1347,8 @@ impl Register {
                     r.now.refused.is_some(),
                     r.now.error.is_some(),
                     r.now.answered,
+                    r.now.signal.is_some(),
+                    r.now.panicked.is_some(),
                 ]
                 .into_iter()
                 .filter(|b| *b)
@@ -1274,7 +1356,8 @@ impl Register {
                 if ends != 1 {
                     out.push(at(format!(
                         "[now] run {:?} is a command's (schema /16): its answer is exactly one of \
-                         a refusal, an error or `answered`",
+                         a refusal, an error or `answered`, or with its stdout closed a signal or \
+                         a panic (schema /21)",
                         r.now.run
                     )));
                 }
@@ -1303,9 +1386,11 @@ impl Register {
                             .to_string(),
                     ));
                 }
-                if !r.right.refused && !r.right.answered {
+                if !r.right.refused && !r.right.answered && r.right.signal.is_none() {
                     out.push(at(
-                        "a command's [right] (schema /16) is a refusal or `answered`".to_string(),
+                        "a command's [right] (schema /16) is a refusal or `answered`, or a signal \
+                         (schema /21)"
+                            .to_string(),
                     ));
                 }
             } else if r.now.answered || r.right.answered {
@@ -1313,6 +1398,54 @@ impl Register {
                     "`answered` is a command's (schema /16): a solve's answer is its summary"
                         .to_string(),
                 ));
+            }
+            // A run whose stdout is closed (schema /21, M1f S1f.5.25, W75): its
+            // answer is how it ended, a signal or a panic, and a right that is
+            // a signal is such a run's.
+            if let Some(o) = &r.now.stdout
+                && o != STDOUT_CLOSED
+            {
+                out.push(at(format!(
+                    "[now] stdout {o:?} is not {STDOUT_CLOSED:?} (schema /21)"
+                )));
+            }
+            if r.now.stdout_closed() != (r.now.signal.is_some() || r.now.panicked.is_some()) {
+                out.push(at(
+                    "[now] ends by a signal or a panic exactly when its stdout is closed (schema /21)"
+                        .to_string(),
+                ));
+            }
+            if r.now.stdout_closed() && (r.now.container || r.now.exit.is_some()) {
+                out.push(at(
+                    "a [now] whose stdout is closed (schema /21) reads the witness and states no \
+                     exit: a panic's is 101, and a signal ends a run with none"
+                        .to_string(),
+                ));
+            }
+            if let Some(n) = r.now.signal
+                && n != SIGPIPE
+            {
+                out.push(at(format!(
+                    "[now] signal {n}: a closed stdout ends a run by SIGPIPE, {SIGPIPE} (schema /21)"
+                )));
+            }
+            if r.right.signal.is_some() != r.now.stdout_closed() {
+                out.push(at(
+                    "[right] states a signal exactly when [now]'s stdout is closed (schema /21)"
+                        .to_string(),
+                ));
+            }
+            if let Some(n) = r.right.signal
+                && (n != SIGPIPE
+                    || r.right.refused
+                    || r.right.answered
+                    || r.right.verdict.is_some()
+                    || r.right.k.is_some())
+            {
+                out.push(at(format!(
+                    "a [right] that is a signal is SIGPIPE's, {SIGPIPE}, and states no refusal, \
+                     `answered`, verdict or k (schema /21); this one is {n}"
+                )));
             }
             if r.right.answered
                 && (r.right.refused || r.right.verdict.is_some() || r.right.k.is_some())
@@ -1456,17 +1589,55 @@ impl Register {
             for (label, a) in r.answers() {
                 let at = |m: String| format!("{} [{label}]: {m}", r.id);
                 let command = a.by.as_deref() == Some("command");
-                if command == a.run.starts_with("solve") {
+                // A run whose stdout was closed is a command's whatever its
+                // subcommand (schema /21).
+                if command == (a.run.starts_with("solve") && a.stdout.is_none()) {
                     out.push(at(format!(
                         "run {:?}: a recorded run is a solve, or a command's that is not one \
-                         with `by = \"command\"` (schema /16)",
+                         with `by = \"command\"` (schema /16), or one whose stdout was closed \
+                         (schema /21)",
                         a.run
                     )));
                 }
-                if command && a.error.is_none() && a.refused.is_none() && !a.answered {
+                if command
+                    && a.error.is_none()
+                    && a.refused.is_none()
+                    && !a.answered
+                    && a.panicked.is_none()
+                {
                     out.push(at(
                         "a command's recorded answer (schema /16) is its refusal or its error, \
-                         or that it answered (schema /20)"
+                         or that it answered (schema /20), or that it panicked (schema /21)"
+                            .to_string(),
+                    ));
+                }
+                if let Some(o) = &a.stdout
+                    && o != STDOUT_CLOSED
+                {
+                    out.push(at(format!(
+                        "stdout {o:?} is not {STDOUT_CLOSED:?} (schema /21)"
+                    )));
+                }
+                if a.stdout.is_some() != a.panicked.is_some() {
+                    out.push(at(
+                        "a recorded run whose stdout was closed is its panic, and a panic is \
+                         recorded on such a run alone (schema /21)"
+                            .to_string(),
+                    ));
+                }
+                if a.panicked.is_some()
+                    && (!command
+                        || a.exit != 101
+                        || a.error.is_some()
+                        || a.refused.is_some()
+                        || a.answered
+                        || !a.verdict.is_empty()
+                        || a.k != 0
+                        || a.exhausted)
+                {
+                    out.push(at(
+                        "a recorded panic (schema /21) is a command's run, exit 101, and states \
+                         no error, refusal, `answered`, verdict or k"
                             .to_string(),
                     ));
                 }
@@ -1519,7 +1690,10 @@ impl Register {
                                 .to_string(),
                         ));
                     }
-                } else if !a.answered && !VERDICTS.contains(&a.verdict.as_str()) {
+                } else if !a.answered
+                    && a.panicked.is_none()
+                    && !VERDICTS.contains(&a.verdict.as_str())
+                {
                     // A command that answered (schema /20) states no verdict.
                     out.push(at(format!(
                         "verdict {:?} is not one of {VERDICTS:?}",
@@ -2108,6 +2282,9 @@ queries   = [{ classes = 1, expect = "none" }]
             refused: None,
             error: Some("a line".to_string()),
             exit: None,
+            stdout: None,
+            signal: None,
+            panicked: None,
             exhausted: false,
             k: 0,
             empty: None,
@@ -2695,6 +2872,9 @@ goal_text = ["{?n*} is a q"]
             refused: r.wrong.refused.clone(),
             error: None,
             exit: Some(2),
+            stdout: None,
+            signal: None,
+            panicked: None,
             exhausted: false,
             k: 0,
             empty: None,
@@ -2807,6 +2987,112 @@ goal_text = ["{?n*} is a q"]
                 .iter()
                 .any(|d| d.contains("a refused [now] lists nothing"))
         );
+    }
+
+    /// **A run whose stdout is closed answers by how it ended**, schema /21
+    /// (M1f S1f.5.25, W75): a signal with nothing on stderr, or a panic, exit
+    /// 101, exactly one; such a run is a command's whatever its subcommand;
+    /// and a right that is a signal is such a run's, SIGPIPE's.
+    #[test]
+    fn a_closed_stdout_ends_a_run_by_a_signal_or_a_panic() {
+        let reg = register();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        let row = reg
+            .case
+            .iter()
+            .find(|r| r.id == "W75/solve")
+            .expect("W75's solve row");
+        assert!(defects(row).is_empty(), "{:?}", defects(row));
+        assert!(row.now.stdout_closed() && row.now.is_command());
+        assert_eq!(row.right.signal, Some(SIGPIPE));
+        // The row open, its `now` the panic: [now] is not [right].
+        let mut open = row.clone();
+        if open.status == "fixed" {
+            open.status = "open".to_string();
+            open.fixed = None;
+            open.open_because = Some("the panic".to_string());
+            open.now.signal = None;
+            open.now.panicked = open.wrong.panicked.clone();
+        }
+        assert!(defects(&open).is_empty(), "{:?}", defects(&open));
+        assert_eq!(
+            open.now.against(&open.right),
+            [format!(
+                "right: ended by signal 13, now: a panic, exit 101: {}",
+                open.wrong
+                    .panicked
+                    .as_deref()
+                    .expect("W75's wrong is a panic")
+            )]
+        );
+        // Fixed: the signal answers the right, and nothing else does.
+        let mut fixed = open.clone();
+        fixed.status = "fixed".to_string();
+        fixed.open_because = None;
+        fixed.fixed = Some(Fixed {
+            commit: "0000000".to_string(),
+            by: "a test".to_string(),
+            date: "2026-11-10".to_string(),
+        });
+        assert!(
+            defects(&fixed)
+                .iter()
+                .any(|d| d.contains("fixed, and [now] is not [right]"))
+        );
+        fixed.now.panicked = None;
+        fixed.now.signal = Some(SIGPIPE);
+        assert!(defects(&fixed).is_empty(), "{:?}", defects(&fixed));
+        // A closed stdout states how it ended, once.
+        let mut s = fixed.clone();
+        s.now.signal = None;
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("exactly when its stdout is closed"))
+        );
+        let mut s = fixed.clone();
+        s.now.panicked = open.now.panicked.clone();
+        assert!(defects(&s).iter().any(|d| d.contains("exactly one of")));
+        // Another signal, or another word for the stdout, is none of this.
+        let mut s = fixed.clone();
+        s.now.signal = Some(9);
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("ends a run by SIGPIPE"))
+        );
+        let mut s = fixed.clone();
+        s.now.stdout = Some("half-read".to_string());
+        assert!(defects(&s).iter().any(|d| d.contains("is not \"closed\"")));
+        // A signal is the right of a closed stdout alone, and states nothing else.
+        let mut s = fixed.clone();
+        s.right.k = Some(1);
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("a [right] that is a signal"))
+        );
+        let mut s = fixed.clone();
+        s.now.stdout = None;
+        s.now.signal = None;
+        assert!(
+            defects(&s)
+                .iter()
+                .any(|d| d.contains("[right] states a signal exactly"))
+        );
+        // The recorded panic is a closed run's, exit 101.
+        let mut s = fixed.clone();
+        s.wrong.exit = 1;
+        assert!(defects(&s).iter().any(|d| d.contains("a recorded panic")));
+        let mut s = fixed.clone();
+        s.wrong.stdout = None;
+        assert!(defects(&s).iter().any(|d| d.contains("is its panic")));
     }
 
     #[test]

@@ -77,6 +77,13 @@
 //! `refused`; and `{out}` in a recorded line is the run's scratch directory,
 //! as `run`'s `{out}` is.
 //!
+//! **Since M1f S1f.5.25 a `now` can run with its stdout closed** (schema
+//! /21, W75): the run's stdout is a pipe whose reader was dropped before the
+//! run was spawned, so every write the run makes meets no reader, whatever
+//! the timing. Its answer is how it ended: by a signal, `SIGPIPE`, with
+//! nothing on stderr, or by a panic, exit 101, whose message is the line
+//! after `thread 'main' (…) panicked at …:`.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -89,7 +96,7 @@
 //! ```
 
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command, ExitStatus, Stdio};
 
 use ein_corpus::register::{Nogood, Now, Printed, QueryAnswer, Row, Stale, sorted_nogoods};
 use ein_corpus::{Scratch, plan, register, repo_root};
@@ -101,6 +108,8 @@ struct Got {
     /// it (schema /16).
     file: String,
     code: i32,
+    /// The signal that ended the run, where one did (schema /21).
+    signal: Option<i32>,
     stdout: String,
     stderr: String,
     summary: Option<J>,
@@ -156,11 +165,21 @@ fn run(row: &Row, dir: &Path) -> Got {
         argv.push("--dump-answer".to_string());
         argv.push(answer.display().to_string());
     }
-    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
-        .args(&argv)
-        .current_dir(repo_root())
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
+    cmd.args(&argv).current_dir(repo_root());
+    // A closed stdout (schema /21): a pipe whose reader is dropped before the
+    // run is spawned, so every write the run makes is one after its reader
+    // has gone, whatever the timing.
+    if row.now.stdout_closed() {
+        let (reader, writer) = std::io::pipe().expect("a pipe");
+        drop(reader);
+        cmd.stdout(Stdio::from(writer));
+    }
+    let out = cmd
         .output()
         .unwrap_or_else(|e| panic!("{}: {}: {e}", row.id, row.witness));
+    // `cmd` holds the pipe's writer until it is dropped; the run has ended.
+    drop(cmd);
     let summary = std::fs::read_to_string(dir.join("summary.json"))
         .ok()
         .map(|s| serde_json::from_str(&s).expect("summary.json parses"));
@@ -171,12 +190,72 @@ fn run(row: &Row, dir: &Path) -> Got {
     Got {
         file,
         code: out.status.code().unwrap_or(-1),
+        signal: signal_of(out.status),
         stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
         stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
         summary,
         nogoods,
         answer_txt,
     }
+}
+
+/// The signal that ended a run, where one did.
+#[cfg(unix)]
+fn signal_of(status: ExitStatus) -> Option<i32> {
+    use std::os::unix::process::ExitStatusExt;
+    status.signal()
+}
+
+#[cfg(not(unix))]
+fn signal_of(_: ExitStatus) -> Option<i32> {
+    None
+}
+
+/// A panic's message (schema /21): the line of stderr after `thread 'main'
+/// (…) panicked at …:`, whose thread id and source position are the
+/// toolchain's.
+fn panic_message(stderr: &str) -> Option<&str> {
+    let mut lines = stderr.lines();
+    lines.find(|l| l.contains(" panicked at "))?;
+    lines.next()
+}
+
+/// How a run whose stdout is closed ended (schema /21, M1f S1f.5.25, W75):
+/// by the signal `now` records, with nothing on stderr, or by the panic it
+/// records, exit 101.
+fn closed(row: &Row, got: &Got) -> Vec<String> {
+    let mut d = Vec::new();
+    let ended = match (got.signal, got.code) {
+        (Some(n), _) => format!("signal {n}"),
+        (None, c) => format!("exit {c}"),
+    };
+    match (row.now.signal, &row.now.panicked) {
+        (Some(want), _) => {
+            if got.signal != Some(want) {
+                d.push(format!(
+                    "recorded: ended by signal {want}, got {ended} — stderr: {}",
+                    got.stderr
+                        .lines()
+                        .find(|l| !l.is_empty())
+                        .unwrap_or("<empty>")
+                ));
+            }
+            if !got.stderr.is_empty() {
+                d.push(format!("the run wrote stderr: {:?}", got.stderr));
+            }
+        }
+        (None, Some(want)) => {
+            if got.code != 101 || got.signal.is_some() {
+                d.push(format!("recorded: a panic, exit 101, got {ended}"));
+            }
+            let said = panic_message(&got.stderr);
+            if said != Some(want.as_str()) {
+                d.push(format!("panicked: recorded {want:?}, got {said:?}"));
+            }
+        }
+        (None, None) => d.push("a [now] whose stdout is closed records how it ended".to_string()),
+    }
+    d
 }
 
 /// A command's stdout as two runs of it are compared (schema /16): the lines
@@ -502,6 +581,9 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
         refused: None,
         error: None,
         exit: None,
+        stdout: None,
+        signal: None,
+        panicked: None,
         exhausted: region["exhausted"] == true,
         k: states.len(),
         empty,
@@ -637,7 +719,10 @@ fn every_row_answers_what_the_register_records() {
             (None, Some(want)) => Some(("error", "an error", want)),
             (None, None) => None,
         };
-        let diffs = if let Some((field, what, want)) = ended {
+        let diffs = if row.now.stdout_closed() {
+            // A run whose stdout is closed (schema /21, W75).
+            closed(row, &got)
+        } else if let Some((field, what, want)) = ended {
             // `{FILE}` is the path the run was handed (schema /16), and
             // `{out}` the run's scratch directory (schema /19).
             let want = &want

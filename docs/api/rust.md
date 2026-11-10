@@ -61,9 +61,17 @@ ein-core  ← ein-ir ← ein-infer ← ein-einb    (the .einb container)
                                     ← ein-cli
 ```
 
-Every crate is `#![forbid(unsafe_code)]` except `ein-einb`, which is
-`deny` plus one `allow`ed module — `cast.rs`, the zero-copy reads, and the
-only `unsafe` in the repository. **There is no async runtime anywhere**: the
+Every library crate is `#![forbid(unsafe_code)]` except `ein-einb`, which is
+`deny` plus one `allow`ed module — `cast.rs`, the zero-copy reads. The one
+other `unsafe` the engine ships is the binary's, not a library's:
+`ein-cli/src/main.rs`, its own crate root outside `lib.rs`'s `forbid`, calls
+`libc::signal(SIGPIPE, SIG_DFL)` once, as `main`'s first statement, so a
+closed stdout ends `ein` by `SIGPIPE` as it ends `cat` (M1f S1f.5.25,
+[`defined_behaviour.md` § 4.19](../kernel/defined_behaviour.md#419-a-closed-stdout-ends-ein-by-sigpipe--m1f-s1f525)).
+A program that embeds the crates keeps its own disposition: the library
+`ein_cli::run` leaves it alone, and the engine crates write nothing to stdout
+(no `print!` in `ein-core`, `ein-ir`, `ein-infer`, `ein-einb` or
+`ein-render`, 2026-11-10). **There is no async runtime anywhere**: the
 engine is synchronous and `Send`, and `--jobs N` is a `rayon` pool built
 inside a route.
 

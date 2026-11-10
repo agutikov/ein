@@ -32,17 +32,26 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from review.util import (REPO, Invocation, SvgJob, SvgResult, details, image, read, rel, render_svgs, run, size_of,
-                         split_digraphs, table, write)
+from review.util import (REPO, Invocation, SvgJob, SvgResult, details, image, read, rel, render_svgs, run, run_closed,
+                         size_of, split_digraphs, table, write)
 
 # The register's `{out}` and the container, kept apart: a `kb save` run writes
 # into `{out}`, and every file there is the run's own.
 SCRATCH, CONTAINER, WITNESS_OUT = "out", "container", "witness-out"
 
 
-def is_command(run_name: str) -> bool:
-    """`ein_corpus::register::Now::is_command`: a run that is not a solve."""
-    return not run_name.startswith("solve")
+def is_command(run_name: str, stdout: str | None = None) -> bool:
+    """`ein_corpus::register::Now::is_command`: a run that is not a solve, or
+    one whose stdout is closed (schema /21), whatever its subcommand."""
+    return stdout == "closed" or not run_name.startswith("solve")
+
+
+def panic_message(stderr: str) -> str | None:
+    """`wrong_answers.rs`' `panic_message`: the line of stderr after `thread
+    'main' (…) panicked at …:` (schema /21)."""
+    ls = lines_of(stderr)
+    at = next((i for i, l in enumerate(ls) if " panicked at " in l), None)
+    return ls[at + 1] if at is not None and at + 1 < len(ls) else None
 
 
 def plan_argv(run_name: str, file: str, out: Path | str) -> list[str]:
@@ -114,8 +123,10 @@ def shown(path: Path) -> str:
 
 
 def answer_of(inv: Invocation) -> str:
-    """A command's answer in the register's words: `answered`, or the exit
-    and stderr's first line."""
+    """A command's answer in the register's words: `answered`, the signal that
+    ended it (schema /21), or the exit and stderr's first line."""
+    if inv.code < 0:
+        return f"**ended by signal {-inv.code}**" + (", with stderr" if inv.stderr.strip() else ", nothing on stderr")
     if inv.code == 0:
         return "**answered**" + (", with stderr" if inv.stderr.strip() else "")
     return f"exit {inv.code}: {code_span(first_line(inv.stderr))}"
@@ -176,9 +187,21 @@ def differences(now: dict, r: CommandRun) -> list[str]:
     `every_row_answers_what_the_register_records` reads a command's row: a
     refusal or an error is its exit and stderr's first line, `{FILE}` the path
     handed and `{out}` the scratch directory; `answered` is exit 0, nothing on
-    stderr, and with `container` the witness's stdout, compared."""
+    stderr, and with `container` the witness's stdout, compared; and a run
+    whose stdout is closed (schema /21) the signal that ended it, nothing on
+    stderr, or its panic, exit 101, and the panic's message."""
     inv = r.main
     first = first_line(inv.stderr)
+    if now.get("stdout") == "closed":
+        ended = f"signal {-inv.code}" if inv.code < 0 else f"exit {inv.code}"
+        if now.get("signal") is not None:
+            d = [] if inv.code == -now["signal"] else [f"recorded: ended by signal {now['signal']}, got {ended}"]
+            return d + ([f"the run wrote stderr: {first}"] if inv.stderr else [])
+        d = [] if inv.code == 101 else [f"recorded: a panic, exit 101, got {ended}"]
+        said = panic_message(inv.stderr)
+        if said != now.get("panicked"):
+            d.append(f"panicked: recorded {json.dumps(now.get('panicked'))}, got {json.dumps(said)}")
+        return d
     ended = (("refused", "a refusal") if now.get("refused") is not None else
              ("error", "an error") if now.get("error") is not None else None)
     if ended:
@@ -231,7 +254,8 @@ def drive(row: dict, out: Path, bin: str) -> CommandRun:
         if save.code != 0:
             raise RuntimeError(f"`ein kb save {witness}` exited {save.code}: {first_line(save.stderr)}")
         file = shown(einb)
-    main = run("main", [bin, *plan_argv(now["run"], file, shown(scratch))])
+    argv = [bin, *plan_argv(now["run"], file, shown(scratch))]
+    main = run_closed("main", argv) if now.get("stdout") == "closed" else run("main", argv)
     invs.append(main)
     r = CommandRun(out, file, scratch, invs, main, save, einb)
     if now.get("container"):
@@ -300,7 +324,8 @@ def drawn(r: CommandRun, name: str, page: Path) -> list[str]:
 
 def streams(r: CommandRun, inv: Invocation, page: Path) -> list[str]:
     """One invocation's exit, stdout and stderr: the files, then each in full."""
-    return [f"`{inv.shell()}` — exit **{inv.code}** ({raw_link(r, inv.name, 'exit', page)}); stdout "
+    ended = f"signal **{-inv.code}**" if inv.code < 0 else f"exit **{inv.code}**"
+    return [f"`{inv.shell()}` — {ended} ({raw_link(r, inv.name, 'exit', page)}); stdout "
             f"{raw_link(r, inv.name, 'stdout', page)}; stderr {raw_link(r, inv.name, 'stderr', page)}", "",
             "**stdout**", "", *fenced(inv.stdout), "", "**stderr**", "", *fenced(inv.stderr), ""]
 
@@ -310,8 +335,10 @@ def run_page(row: dict, r: CommandRun) -> Path:
     full, every invocation and every raw file."""
     page = r.out / "run.md"
     now = row["now"]
-    lines = [f"# {row['id']} — now: `ein {now['run']}`" + (" on the container" if r.container else ""), "",
-             f"> `{r.main.shell()}` · exit **{r.main.code}** · {answer_of(r.main)} · "
+    lines = [f"# {row['id']} — now: `ein {now['run']}`" + (" on the container" if r.container else "")
+             + (", its stdout closed" if r.main.stdout_closed else ""), "",
+             f"> `{r.main.shell()}` · " + (f"signal **{-r.main.code}**" if r.main.code < 0 else f"exit **{r.main.code}**")
+             + f" · {answer_of(r.main)} · "
              f"[raw/command.txt]({rel(r.raw / 'command.txt', page)})", ""]
     if r.save is not None:
         lines += ["## The container", "", "The witness saved as a `.einb` first, as `wrong_answers.rs` saves it:", ""]
@@ -369,7 +396,7 @@ def command_case(row: dict, out: Path, bin: str, page: Path, head: list[str], ca
                   f"stdout and stderr are [run.md]({rel(run_md, page)})'s § The container.", ""]
 
     # 3 — the answers, side by side.
-    recorded_line = w.get("refused") or w.get("error")
+    recorded_line = w.get("refused") or w.get("error") or w.get("panicked")
     lines += ["## 3 · The answers, side by side", "",
               "The *wrong* column is the register's record of " + recorded_what(w)
               + f"; **now** is run here, through the corpus's run planner (`ein_corpus::plan::argv`), `{{out}}` "
@@ -381,9 +408,12 @@ def command_case(row: dict, out: Path, bin: str, page: Path, head: list[str], ca
          f"[`ein {now['run']}`]({rel(run_md, page)}){on}", "*(the definitions)*"],
         ["file", "the witness saved as a `.einb`" if w.get("container") else "the witness",
          f"`{r.file}`", "—"],
-        ["exit", w.get("exit", 0), r.main.code, "—"],
-        ["stderr, first line", code_span(recorded_line) if recorded_line else "—",
-         code_span(first_line(r.main.stderr)) if r.main.stderr.strip() else "*(empty)*", "—"],
+        ["exit", w.get("exit", 0), f"signal {-r.main.code}" if r.main.code < 0 else r.main.code,
+         f"signal {right['signal']}" if right.get("signal") is not None else "—"],
+        ["stderr, first line" + (" (a panic's message)" if w.get("panicked") else ""),
+         code_span(recorded_line) if recorded_line else "—",
+         code_span((panic_message(r.main.stderr) if w.get("panicked") else None) or first_line(r.main.stderr))
+         if r.main.stderr.strip() else "*(empty)*", "—"],
         ["answer", recorded_answer(w), answer_of(r.main), recorded_answer(right) if right else "—"],
     ]
     if r.witness is not None:
@@ -496,7 +526,11 @@ def recorded_what(a: dict) -> str:
 
 def recorded_answer(a: dict) -> str:
     """A recorded block's answer in a word: a refusal, an error, `answered`,
-    or its verdict and k."""
+    a signal or a panic (schema /21), or its verdict and k."""
+    if a.get("signal") is not None:
+        return f"**ended by signal {a['signal']}**, nothing on stderr"
+    if a.get("panicked"):
+        return "**a panic**, exit 101"
     refused = a.get("refused")
     if refused is True:
         return "**a refusal**"

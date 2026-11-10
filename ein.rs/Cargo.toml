@@ -102,6 +102,15 @@ snmalloc-rs = "0.7"
 # (`docs/kernel/defined_behaviour.md` § 5). `cli` only; the engine crates stay
 # dependency-light.
 clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
+# `signal(SIGPIPE, SIG_DFL)`, once, at the top of the binary's `main` (M1f
+# S1f.5.25, the user's ruling on Q-M1f.68 (b), "why not handle sigpipe
+# properly?"): Rust's runtime ignores SIGPIPE before `main`, so a write to a
+# pipe whose reader has gone failed with EPIPE and every `print!` panicked,
+# exit 101. The disposition is process-wide, so it is the binary's choice, as
+# the allocator is, and `ein-cli` on Unix only; no engine crate takes it. It
+# is in every build already, through the parser's `lrpar` and its `filetime`
+# (`cargo tree -i libc`, 2026-11-10); MIT OR Apache-2.0.
+libc        = "0.2"
 
 # grmtools' parser runtime, patched (M1f S1f.5.5 F11): `lrpar` 0.15.0's
 # error recovery was not deterministic. It ranked equal repairs in a

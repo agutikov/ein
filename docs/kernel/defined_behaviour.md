@@ -922,6 +922,7 @@ What happens when the write fails:
 | **the exit code** | **unchanged** — 0 on a run that answered. The four flags whose `--help` says *additive: stdout, stderr and the exit code are unchanged* keep saying it: the answer on stdout is correct and complete, and the artefact is paperwork |
 | **the exception** | **`--dump-answer`**, **`--dump-lattice`** and **`oracle --dump`** exit 1 when they cannot make their directory, without solving: the directory is made before the run, so a failure there means the run cannot do what it was asked. `--dump-states` took this arm first, until it was retired. Its files are written after the answer exists, and a failure there is the additive arm's — the message, and the exit code unchanged |
 | **an empty path** | a **usage error**: exit 2, refused by the value parser before anything runs, for all seven |
+| **a pipe whose reader has gone** | since M1f S1f.5.25 the write ends the process by `SIGPIPE`, whichever file it goes to, `/dev/stdout` or a FIFO: the disposition is process-wide (§ 4.19, [Q-M1f.100](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone)); until then the message, and the exit code unchanged |
 
 **The empty path is the one that was a defect rather than a policy.** It
 reached all five options; three then failed with a bare *No such file or
@@ -1619,6 +1620,51 @@ pins it: `ein-cli/tests/unicode_only_in_a_string.rs`'s
 `an_imported_module_is_read_as_the_program_is`, each way on twenty commands,
 and each line held to the one the module's path gives as a program.
 
+### 4.19 A closed stdout ends `ein` by `SIGPIPE` — M1f S1f.5.25
+
+> **New 2026-11-10** — [S1f.5.25](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md), on the user's
+> ruling of that day on the close review's finding 5,
+> [Q-M1f.68](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout) (b):
+> *"why not handle sigpipe properly?"*.
+
+A write to a pipe whose reader has gone, `ein saturate x.ein | head`, a pager
+quit before the end, a closed socket, ends the process by `SIGPIPE` at that
+write, as it ends `cat`, `grep` and `head`. Nothing is printed, and a shell
+reports 141, 128 + 13, so `set -o pipefail` reads `ein` as it reads them.
+That holds for every command and every option that writes to stdout, the help
+and `--version` among them:
+
+| | until S1f.5.25 | since |
+|---|---|---|
+| a write to stdout after its reader has gone | `thread 'main' (…) panicked at …:` and *failed printing to stdout: Broken pipe (os error 32)* on stderr, exit 101, the close review's finding 5 | ended by `SIGPIPE`, nothing on stderr |
+| the help, `clap`'s | exit 0, its write's failure ignored and the help lost | ended by `SIGPIPE` |
+| an artefact flag naming a pipe whose reader has gone, `--events /dev/stdout` or a FIFO | `error: --<flag> <path>: Broken pipe (os error 32)`, the exit unchanged (§ 4.4) | ended by `SIGPIPE` ([Q-M1f.100](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone)) |
+| a run whose writes all landed in the pipe before its reader closed | exit 0 | exit 0, as `cat`'s |
+
+**Under `| head` it was a race.** A run whose only write landed before
+`head` exited answered 0, `ein solve x.ein | head` among them, its read-out
+one `print!`; one that wrote again after it panicked. What differs now is the
+second case alone: a run that finishes writing before its reader closes has
+seen no closed pipe, and exits 0 as `cat` does.
+
+**It is not an exit code.** *Exit non-zero only on error* is a rule about the
+codes Ein returns, and a process the kernel ends returns none (§ 5's table is
+the codes). The disposition is the binary's: Rust's runtime sets `SIGPIPE` to
+ignored before `main`, and `ein-cli/src/main.rs`'s `restore_sigpipe` restores
+the default as `main`'s first statement, one audited `libc::signal` call on
+Unix, the second `unsafe` site beside `ein-einb`'s `cast.rs`. A program that
+embeds the engine links the library, not `main.rs`, and keeps its own
+disposition ([`docs/api/rust.md`](../api/rust.md)). Windows has no `SIGPIPE`
+([Q-M1f.101](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f101--a-closed-stdout-on-windows)).
+
+What pins it: `ein-cli/tests/closed_stdout.rs`, sixty-eight runs, every
+subcommand and every option that writes to stdout, each read in full, with
+its reader closed before the run, which ends every one by `SIGPIPE` with
+nothing on stderr, and with a reader that closes after the first line, which
+ends by `SIGPIPE` every run that must write again; and the register's eighteen
+W75 rows, a command or a `solve` question each, run with the reader closed
+before the run (schema `/21`).
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands
@@ -1644,6 +1690,11 @@ and its exit codes **deliberately differ** from the other three's:
 S1e2.1a.5 a `solve --single` exits 0 whatever its word, and a run its budget
 stopped writes one `note:` to stderr and exits 0 (the user's ruling of
 2026-10-16, [`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#9-exit-codes)).
+
+**A closed stdout is no code either.** Since M1f S1f.5.25 a write to a pipe
+whose reader has gone ends any of the five subcommands by `SIGPIPE`, with
+nothing on stderr, which a shell reports as 141 (§ 4.19); until then it
+panicked, exit 101, where the write came after the reader's exit.
 
 **Most of the rest of § 5 is the walk's surface as M1c–M1e defined it** — the
 verdict words' qualifiers, `--max-set-size 0`, `--models` on the `Ambiguity`

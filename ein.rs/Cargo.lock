@@ -331,6 +331,7 @@ dependencies = [
  "ein-infer",
  "ein-ir",
  "ein-render",
+ "libc",
  "serde_json",
  "sha2",
  "snmalloc-rs",

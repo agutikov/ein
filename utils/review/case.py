@@ -411,10 +411,12 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
     part = {"all": "all of R", "maximal": "the maximal line", "minimal": "the minimal line"}.get(now.get("line"), "?")
     on = " on the container" if now.get("container") else ""
     won = " on the container" if w.get("container") else ""
-    if is_command(now["run"]):
+    if is_command(now["run"], now.get("stdout")):
         # A command's run (schema /16, M1f S1f.5.19): its answer is a refusal,
-        # an error, or that it answered.
-        said = (f"now **refuses the program**, exit {now.get('exit', 1)}: *{now['refused']}*" if now.get("refused") else
+        # an error, or that it answered; with its stdout closed (schema /21),
+        # the signal that ended it.
+        said = (f"now **ends by signal {now['signal']}**, nothing on stderr" if now.get("signal") is not None else
+                f"now **refuses the program**, exit {now.get('exit', 1)}: *{now['refused']}*" if now.get("refused") else
                 f"now ends in **an error**, exit 1: *{now['error']}*" if now.get("error") else
                 "now **answers**: exit 0, nothing on stderr"
                 + (", and its stdout is the same run's on the witness" if now.get("container") else ""))
@@ -529,6 +531,11 @@ def answer_words(a: dict) -> str:
     solve's usage refusal, exit 2, W43), or that a command answered."""
     if a.get("error"):
         return f"**an error**, exit {a.get('exit', 1)}: {code_span(a['error'])}"
+    # A run whose stdout is closed (schema /21, M1f S1f.5.25, W75).
+    if a.get("panicked"):
+        return f"**a panic**, exit 101: {code_span(a['panicked'])}"
+    if a.get("signal") is not None:
+        return f"**ended by signal {a['signal']}** (SIGPIPE), nothing on stderr"
     if isinstance(a.get("refused"), str):
         return f"**refused**, exit {a.get('exit', 1)}: {code_span(a['refused'])}"
     if a.get("answered"):
@@ -551,10 +558,12 @@ def case_rows(row: dict, page: Path) -> list[list[str]]:
     now, right, w = row["now"], row["right"], row["wrong"]
     owner = owner_page(row["owner"])
     on = " on the container" if now.get("container") else ""
-    if is_command(now["run"]):
-        # A command's run (schema /16): no line, no states.
-        now_cell = (f"`ein {now['run']}`{on} → " + answer_words(now) + " — *the command's run the register holds the "
-                    "row to*")
+    if is_command(now["run"], now.get("stdout")):
+        # A command's run (schema /16): no line, no states; its stdout closed
+        # (schema /21), whatever its subcommand.
+        closed = ", its stdout a pipe whose reader closed before the run" if now.get("stdout") == "closed" else ""
+        now_cell = (f"`ein {now['run']}`{on}{closed} → " + answer_words(now) + " — *the command's run the register "
+                    "holds the row to*")
     else:
         now_cell = ((f"`ein {now['run']}`{on} → **refused**, exit {now.get('exit', 1)}: `{now['refused']}`"
                      if now.get("refused") else
@@ -576,6 +585,8 @@ def case_rows(row: dict, page: Path) -> list[list[str]]:
         ["now", now_cell],
         ["region", region_cell(row.get("region"))],
         ["right", (("**a refusal** — " + right.get("derived", "")) if right.get("refused") else
+                   (f"**ended by signal {right['signal']}** (SIGPIPE), nothing on stderr — " + right.get("derived", ""))
+                   if right.get("signal") is not None else
                    ("**answered** — " + right.get("derived", "")) if right.get("answered") else
                    (f"{right.get('verdict', '—')}, k = {right.get('k', '—')}"
                     + (f", exhausted = {str(right['exhausted']).lower()}" if "exhausted" in right else "")))
@@ -610,7 +621,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     now = row["now"]
     w = row["wrong"]
     head = [f"# {row['id']} — {row['title']}", ""] + fixed_callout(row, page)
-    if is_command(now["run"]):
+    if is_command(now["run"], now.get("stdout")):
         r = command_case(row, out, bin, page, head, case_rows(row, page), checklist(row))
         write_right(out, row, None)
         return page, [Col("wrong", None, None, w, recorded=True), Col("now", None, r, now),
@@ -844,6 +855,10 @@ def answer_cell(a: dict, recorded: bool = True) -> str:
         s = "refused" + (f", exit {a['exit']}" if a.get("exit", 1) != 1 else "")
     elif a.get("error"):
         s = "an error"
+    elif a.get("panicked"):
+        s = "a panic, exit 101"
+    elif a.get("signal") is not None:
+        s = f"signal {a['signal']}"
     elif a.get("answered"):
         s = "answered"
     else:
@@ -866,6 +881,8 @@ def differs_cell(row: dict) -> str:
         differs.append("a refusal")
     if r.get("answered") and not w.get("answered"):
         differs.append("answered")
+    if r.get("signal") is not None and w.get("signal") != r["signal"]:
+        differs.append("a signal")
     return ", ".join(differs) or ("*a reading*" if r.get("reading") else "—")
 
 
@@ -879,7 +896,8 @@ def now_cell(row: dict, got) -> str:
         return f"`{now['run']}`{on} *(not run)*"
     diffs = got.diffs if isinstance(got, CommandRun) else now_differences(now, got.now, got)
     if isinstance(got, CommandRun):
-        cell = f"`{now['run']}`{on} " + ("answered" if got.main.code == 0 else f"exit {got.main.code}")
+        cell = f"`{now['run']}`{on} " + ("answered" if got.main.code == 0 else
+                                          f"signal {-got.main.code}" if got.main.code < 0 else f"exit {got.main.code}")
     else:
         cell = (f"`{now['run']}`{on} refused" if now.get("refused") else
                 f"`{now['run']}`{on} an error" if now.get("error") else
@@ -912,7 +930,7 @@ def register_pass(rows: list[dict] | None = None) -> list[tuple[str, str]]:
             [f"# {row['id']} — {row['title']}"] + fixed_callout(row, case)
             table(["", ""], case_rows(row, case))
             checklist(row)
-            if is_command(row["now"]["run"]):
+            if is_command(row["now"]["run"], row["now"].get("stdout")):
                 plan_argv(row["now"]["run"], row["witness"], "out")
             else:
                 flags_of(row["now"]["run"])

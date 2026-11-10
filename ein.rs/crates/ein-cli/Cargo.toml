@@ -43,6 +43,13 @@ snmalloc-rs = { workspace = true, optional = true }
 # same reason the allocator is here: this is the program, not the library.
 sha2.workspace = true
 
+# The one `unsafe` call outside `ein-einb`'s `cast.rs`: `main.rs` restores
+# SIGPIPE's default disposition before the program does anything, so a closed
+# stdout ends `ein` as it ends `cat` (M1f S1f.5.25, Q-M1f.68 (b)). Unix only:
+# Windows has no SIGPIPE, and a write to a closed pipe there is an error.
+[target.'cfg(unix)'.dependencies]
+libc.workspace = true
+
 [lib]
 name = "ein_cli"
 path = "src/lib.rs"

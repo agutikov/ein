@@ -22,9 +22,10 @@ all of R). `--corpus` builds one for every corpus entry with a declared
 `--smoke` builds one small case, and one program whose solve is refused, into
 a temporary directory and link-checks it: the per-commit gate's step, using
 the debug `ein` `cargo test` built. Since M1f S1f.5.19 it also builds two
-cases whose run is not a solve, and first reads every register row with no
-run through the index and the case pages' register-only parts. What it
-checks, in order: the register pass; the four builds, each a case that
+cases whose run is not a solve, and since M1f S1f.5.25 one whose stdout is
+closed (the register's schema /21), and first reads every register row with
+no run through the index and the case pages' register-only parts. What it
+checks, in order: the register pass; the five builds, each a case that
 builds and every DOT drawn (below); every SVG non-empty; and every link and
 image reference resolving (`doc_audit.py --links --check`). `--keep DIR`
 builds into DIR, new or empty, and leaves it, so a red smoke's DOTs can be
@@ -141,8 +142,8 @@ def cmd_bundle(args: list[str]) -> int:
             page, cols = case_page(row, out / row["id"], bin)
             built.append((row, page, cols))
             got = next(c.result for c in cols if c.result is not None)
-            said = (f"exit={got.main.code}" if isinstance(got, CommandRun) else
-                    f"k={got.k} exhausted={str(got.exhausted).lower()}")
+            said = ((f"signal={-got.main.code}" if got.main.code < 0 else f"exit={got.main.code}")
+                    if isinstance(got, CommandRun) else f"k={got.k} exhausted={str(got.exhausted).lower()}")
             print(f"{row['id']:32s} {row['now']['run']:16s} {said} — {page.relative_to(out)}")
         except Exception as e:  # noqa: BLE001 — a case that fails is reported, not fatal
             failed.append((row["id"], f"{type(e).__name__}: {e}"))
@@ -207,7 +208,10 @@ def cmd_smoke(args: list[str]) -> int:
     of the register read with no run (`register_pass`): the index's cells and
     each case page's register-only parts. The whole bundle, the nightly's, had
     been the only reader of a row shape, and stopped on W41's from `fc53818f`
-    to S1f.5.19 behind a green gate.
+    to S1f.5.19 behind a green gate. Since M1f S1f.5.25 a third, `W75/solve`,
+    a solve's run with its stdout closed (schema /21), which the bundle runs
+    with its reader closed before the run (`util.run_closed`), as
+    `wrong_answers.rs` does.
 
     Every DOT it keeps has its drawing: a graph Graphviz refused fails it,
     each printed with what Graphviz said (`cmd_bundle`, M1f S1f.5.29). The
@@ -233,7 +237,7 @@ def cmd_smoke(args: list[str]) -> int:
 
     def build(out: Path) -> int:
         code = cmd_bundle(["--bin", bin, "--out", str(out), "W2/forced-2", "W40/kb-save", "W41/saturate-import",
-                           "examples/ein-bugs/query-goal-free-head.ein"])
+                           "W75/solve", "examples/ein-bugs/query-goal-free-head.ein"])
         if code:
             return code
         svgs = list(out.rglob("*.svg"))

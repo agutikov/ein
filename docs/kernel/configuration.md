@@ -398,7 +398,9 @@ command: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
 `--single` and `-n N` ask one question about it, answered by
 [`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs), held to
 the oracle by `ein-infer/tests/explore.rs`, and printed in the read-out
-[`inference/read_out.md`](inference/read_out.md) defines row by row. Every answer exits 0. **Nine options retired** and stay in the
+[`inference/read_out.md`](inference/read_out.md) defines row by row. Every answer exits 0; a write to a stdout whose
+reader has gone ends the run by `SIGPIPE` instead, which is no exit code and which no option changes (M1f S1f.5.25,
+[`defined_behaviour.md` § 4.19](defined_behaviour.md#419-a-closed-stdout-ends-ein-by-sigpipe--m1f-s1f525)). **Nine options retired** and stay in the
 parser hidden, so a stale argv is refused, exit 2, with what replaced it
 (`ein-cli/src/solve.rs`'s `RETIRED`), and S1e2.1c.5 retired two more, `-L`
 and `-K` (§ 3.2):

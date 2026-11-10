@@ -1152,6 +1152,28 @@
 # reads **231 rows fixed, 13 open and 1 not-wrong** (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
 #
+# **W75 was filed and fixed on 2026-11-10 by M1f S1f.5.25**, on the user's
+# ruling on the close review's finding 5, Q-M1f.68 (b), *"why not handle
+# sigpipe properly?"*: a run whose stdout is a pipe whose reader has gone ends
+# by SIGPIPE, with nothing on stderr, as `cat` does. Rust's runtime ignored
+# SIGPIPE before `main`, so such a write failed with EPIPE and every `print!`
+# panicked, *failed printing to stdout: Broken pipe (os error 32)*, exit 101,
+# `ein saturate … | head` the finding's case; under `| head` it was a race,
+# and a run whose one write landed before the reader exited answered 0.
+# Eighteen rows, one per command and per `solve` question, and `solve -c`,
+# whose write comes before the read-out, each run with its reader closed
+# before the run starts, so every write meets none (Q-M1f.97, Q-M1f.98).
+# **Schema /21**: a `now` can run with its stdout closed (`stdout =
+# "closed"`), a command's run whatever its subcommand, and answers by how it
+# ended, a signal with nothing on stderr (`signal`) or a panic (`panicked`);
+# a `right` can be that signal; and a recorded answer can be that panic.
+# T1f.5.25.2 filed the eighteen `open`, each `now` the panic, held to the
+# unchanged engine, and fixed them the same day: the binary restores SIGPIPE's
+# default disposition as the first statement of `main`. Each `[case.fixed]`
+# carries the null id. The register reads **249 rows fixed, 13 open and 1
+# not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+# 2026-11-10).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -1174,8 +1196,9 @@
 #              /11), a claim's outcome and each query's classes (schema
 #              /12), what `refuted by` names (schema /14), the
 #              sentences a query's `:goal-text` prints (schema /15),
-#              whether a command's run answers (schema /16), and the lines
-#              it prints at a label (schema /17).
+#              whether a command's run answers (schema /16), the lines
+#              it prints at a label (schema /17), and how a run whose
+#              stdout is closed ended (schema /21).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
 #   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
@@ -1220,9 +1243,19 @@
 #               that is not a solve, `saturate --dump`, `render rules`, `kb save
 #               {out}/again.einb`, which writes no summary: its answer is a
 #               `refused` or an `error` line, or `answered`, and it states
-#               nothing else below
+#               nothing else below; or since schema /21 a run whose stdout is
+#               closed, whatever its subcommand, a command's too
 #     line      all | minimal | maximal — which part of R its states are; not
 #               stated on a command's run (schema /16)
+#     stdout    (schema /21, M1f S1f.5.25) `"closed"`: the run's stdout is a
+#               pipe whose reader closed before the run started, so every
+#               write it makes meets no reader; its answer is `signal` or
+#               `panicked`, exactly one, and it states nothing else below
+#     signal    (schema /21) `13`: the run with its stdout closed ended by
+#               SIGPIPE, with nothing on stderr (W75's fixed `now`)
+#     panicked  (schema /21) the run with its stdout closed panicked: exit
+#               101, and this is the panic's message, the line of stderr
+#               after `thread 'main' (…) panicked at …:` (W75's open `now`)
 #     container (schema /16) `true`: the run reads the witness saved as a
 #               `.einb`, `ein kb save WITNESS DIR/<stem>.einb` first; `{FILE}`
 #               in a `refused` or `error` line is the path the run was handed
@@ -1328,6 +1361,10 @@
 #     answered  (schema /20, M1f S1f.5.21) `true`: the command answered, exit 0,
 #               where the right answer is a refusal, and verdict, k and
 #               exhausted are not stated (W65's `wrong`)
+#     stdout, panicked  (schema /21, M1f S1f.5.25) the run's stdout was
+#               closed, as `[case.now]`'s, and it panicked: `exit` is 101,
+#               `panicked` the panic's message, and verdict, k and exhausted
+#               are not stated (W75's `wrong`)
 #     witness   (control, twin) another file; default: the row's witness
 #     run       a corpus run name — `ein <run>` with the file elided, so
 #               `"solve -e -L"` is `ein solve <witness> -e -L`
@@ -1387,7 +1424,10 @@
 #     rules root's `refuted by` should name, in order (W36). `answered = true`
 #     (schema /16, M1f S1f.5.5) says the answer is that a command answers the
 #     program, as another command does, and states no refusal, verdict or `k`
-#     (W40, W41).
+#     (W40, W41). `signal = 13` (schema /21, M1f S1f.5.25) says the answer is
+#     that a run whose stdout is closed ends by SIGPIPE, with nothing on
+#     stderr, as `cat` ends (Q-M1f.68 (b), W75), and states no refusal,
+#     verdict or `k`.
 #
 #   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
 #     describes it; absent on a row whose `now` is a refusal, or since schema
@@ -1437,7 +1477,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/20"
+schema = "ein-wrong-answers/21"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -13575,3 +13615,798 @@ derived   = "An imported module is read through the one read every command makes
 [case.now]
 run     = "kb save {out}/again.einb"
 refused = "kb load error: IsADirectoryError: [Errno 21] Is a directory: 'examples/ein-bugs/wrong-answers/import-module-directory-module.ein'"
+
+# ══ W75 — a run whose stdout is closed panics, exit 101, where it should end by SIGPIPE ══
+[[case]]
+id       = "W75/saturate"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein saturate`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate"
+by        = "command"
+stdout    = "closed"
+why       = "`ein saturate` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "saturate"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein saturate --dump` ══
+[[case]]
+id       = "W75/saturate-dump"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein saturate --dump`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+stdout    = "closed"
+why       = "`ein saturate --dump` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "saturate --dump"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve` ══
+[[case]]
+id       = "W75/solve"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve --minimal` ══
+[[case]]
+id       = "W75/solve-minimal"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --minimal`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve --minimal"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve --minimal` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve --minimal"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve --maximal` ══
+[[case]]
+id       = "W75/solve-maximal"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --maximal`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve --maximal` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve --maximal"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve --single` ══
+[[case]]
+id       = "W75/solve-single"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --single`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve --single"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve --single` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve --single"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve --count` ══
+[[case]]
+id       = "W75/solve-count"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --count`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve --count"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve --count` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve --count"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve -n 2` ══
+[[case]]
+id       = "W75/solve-n"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve -n 2`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve -n 2"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve -n 2` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve -n 2"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve --monotone` ══
+[[case]]
+id       = "W75/solve-monotone"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --monotone`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve --monotone"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve --monotone` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve --monotone"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein solve -c` ══
+[[case]]
+id       = "W75/solve-dump-config"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve -c`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve -c"
+by        = "command"
+stdout    = "closed"
+why       = "`ein solve -c` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "solve -c"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein oracle` ══
+[[case]]
+id       = "W75/oracle"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein oracle`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "oracle"
+by        = "command"
+stdout    = "closed"
+why       = "`ein oracle` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "oracle"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein test` ══
+[[case]]
+id       = "W75/test"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/features/11_expect_ambiguity.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein test`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "test"
+by        = "command"
+stdout    = "closed"
+why       = "`ein test` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 7
+k_c      = 7
+minimal  = [[]]
+maximal  = [
+  ["(seat Ann S1)", "(seat Bob S2)"],
+  ["(seat Ann S2)", "(seat Bob S1)"],
+]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "test"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein render rules` ══
+[[case]]
+id       = "W75/render-rules"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render rules`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render rules"
+by        = "command"
+stdout    = "closed"
+why       = "`ein render rules` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "render rules"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein render rule --name functional` ══
+[[case]]
+id       = "W75/render-rule"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render rule --name functional`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render rule --name functional"
+by        = "command"
+stdout    = "closed"
+why       = "`ein render rule --name functional` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "render rule --name functional"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein render constraints` ══
+[[case]]
+id       = "W75/render-constraints"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render constraints`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render constraints"
+by        = "command"
+stdout    = "closed"
+why       = "`ein render constraints` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "render constraints"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein render program` ══
+[[case]]
+id       = "W75/render-program"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render program`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render program"
+by        = "command"
+stdout    = "closed"
+why       = "`ein render program` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "render program"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein render kb` ══
+[[case]]
+id       = "W75/render-kb"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render kb`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render kb"
+by        = "command"
+stdout    = "closed"
+why       = "`ein render kb` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "render kb"
+stdout    = "closed"
+signal    = 13
+
+# ══ W75 — a run whose stdout is closed panics: `ein render lattice` ══
+[[case]]
+id       = "W75/render-lattice"
+case     = "W75"
+title    = "a run whose stdout is closed panics, *failed printing to stdout: Broken pipe*, exit 101, where a closed stdout ends it by SIGPIPE"
+class    = "exit"
+settings = "default"
+owner    = "S1f.5.25"
+question = ["the close review's finding 5", "Q-M1f.68"]
+witness  = "examples/branching/05_mini_zebra.ein"
+status   = "fixed"
+note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render lattice`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "render lattice"
+by        = "command"
+stdout    = "closed"
+why       = "`ein render lattice` on the witness, its stdout a pipe whose reader closed before the run started, release, at 0d0e529e (2026-11-10): exit 101, the panic's message on stderr (the census of T1f.5.25.2)"
+exit      = 101
+panicked  = "failed printing to stdout: Broken pipe (os error 32)"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 5
+k_c      = 8
+minimal  = [[]]
+maximal  = [["(co-located Bob Coffee)", "(co-located Bob Dog)", "(co-located Coffee Dog)"]]
+
+[case.right]
+signal    = 13
+reading   = "the user's ruling of 2026-11-10 on Q-M1f.68, (b): *\"why not handle sigpipe properly?\"*"
+derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`, `grep` and `head`: the shell reports 141, 128 + 13, and `set -o pipefail` reads it as it reads theirs. The process never reaches an exit code of its own, so *exit non-zero only on error*, a rule about the codes Ein returns, is not engaged; a panic, exit 101, is no answer at all"
+
+[case.now]
+run       = "render lattice"
+stdout    = "closed"
+signal    = 13
