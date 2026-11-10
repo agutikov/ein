@@ -352,3 +352,28 @@ On the working tree at `566c9e3d`, item by item:
   0 failed, `nightly_steps.rs`' nine and `gate_steps.rs`' three among them; the smoke built its 4 cases with 0 DOTs
   refused; the link check read 409 pages, 0 findings. The edits after it started are this file's prose, re-checked by
   `doc_audit.py --links --check` on the final tree. **Met.**
+
+## T4 record, 2026-11-10: the nightly in the runner's image
+
+The stage changed a CI workflow, so it is done only when `utils/ci_container.sh` is green on its commit
+([Q-M1f.77](../open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)). The coordinator ran
+`utils/ci_container.sh --nightly` on `089511fe`, the stage's commit, and it exited 0
+(`build/ci-container-nightly-089511fe.log`, 2026-11-10). The image was Ubuntu 26.04.1 with Graphviz 14.1.2,
+`libpathplan4` amd64v3 and the `fdp` layout present. It ran the nightly's twelve steps and no others: no
+`id_order_invariance`, `stdlib_census.py` or `review_bundle.py` step. Each test step reported 0 failed. The test
+times were the ones `cargo test` printed in that log:
+
+| step | `finished in` |
+|---|---:|
+| corpus_cli, slow | 100.23 s |
+| answer_dump | 40.79 s |
+| answer_round_trip, slow | 150.96 s |
+| lever_invariance, slow | 16.54 s |
+| corpus_cores, slow | 205.99 s |
+| region, slow | 25.55 s |
+| obligation_rung, slow | 71.19 s |
+| fuzz, seed 1, 20 000 inputs | 41.12 s |
+| fuzz, seed 987654321, 20 000 inputs | 38.17 s |
+
+The mutation census reported 167 of 217 killed, matching the bank. The bench smoke passed. The runner's own times are
+the first GitHub nightly's after the user's push.
