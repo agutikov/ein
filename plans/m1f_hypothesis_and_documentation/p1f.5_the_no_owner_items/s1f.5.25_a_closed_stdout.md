@@ -16,7 +16,8 @@ rows `fixed`, and the pin, `ein-cli/tests/closed_stdout.rs`; T1f.5.25.3 ([its re
 the acceptance re-taken ([§ Acceptance, re-taken](#acceptance-re-taken-2026-11-10)). Five questions taken by default,
 Q-M1f.97 to Q-M1f.101, two of them shown at the close (Q-M1f.100, Q-M1f.101). The register reads 249 fixed, 13 open
 and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10). No wrong answer was found
-outside the stage.
+outside the stage. Committed as `b95d6a4c`, whose hash W75's `[case.fixed]` rows carry; `utils/ci_container.sh` is run on the
+records commit that follows it (Q-M1f.77).
 **Depends on:** nothing since Q-M1f.68's ruling. It touches the binary, `ein-cli/src/main.rs`, and the register's
 readers (`ein-corpus`'s `register`, `wrong_answers.rs`, the review bundle).
 

@@ -13630,7 +13630,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein saturate`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13674,7 +13674,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein saturate --dump`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13718,7 +13718,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13762,7 +13762,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --minimal`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13806,7 +13806,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --maximal`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13850,7 +13850,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --single`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13894,7 +13894,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --count`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13938,7 +13938,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve -n 2`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -13982,7 +13982,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve --monotone`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14026,7 +14026,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein solve -c`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14070,7 +14070,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein oracle`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14114,7 +14114,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein test`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14161,7 +14161,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render rules`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14205,7 +14205,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render rule --name functional`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14249,7 +14249,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render constraints`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14293,7 +14293,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render program`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14337,7 +14337,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render kb`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
@@ -14381,7 +14381,7 @@ status   = "fixed"
 note     = "Filed by S1f.5.25 (T1f.5.25.2, 2026-11-10), from the close review's finding 5, *`ein saturate … | head` panics*: Rust's runtime sets SIGPIPE to ignored before `main`, so a write to a pipe no reader holds fails with EPIPE, and every stdout write in `ein-cli` is a `print!` or a `println!`, which panic on a failed write: *failed printing to stdout: Broken pipe (os error 32)*, exit 101. Whether `| head` met it was a race, a run that wrote once and before the reader closed exiting 0 (T1's record); the row's run closes the reader before the run starts (schema /21), so every write meets no reader. One row per command and per `solve` question, and `-c`, whose write comes before the read-out; every other option, `--version`, `render region` and an artefact flag naming `/dev/stdout` die at a write of their own and are the pin's (Q-M1f.98). This row: `ein render lattice`; fixed by T1f.5.25.2 (2026-11-10): the run ends by SIGPIPE, signal 13, with nothing on stderr"
 
 [case.fixed]
-commit = "0000000"
+commit = "b95d6a4c"
 by     = "S1f.5.25 (T1f.5.25.2): the binary restores SIGPIPE's default disposition as the first statement of `main` (`ein-cli/src/main.rs`'s `restore_sigpipe`, one audited `libc::signal(SIGPIPE, SIG_DFL)`, Unix only), so a write to a pipe no reader holds ends the process by SIGPIPE, with nothing on stderr, as it ends `cat`"
 date   = "2026-11-10"
 
