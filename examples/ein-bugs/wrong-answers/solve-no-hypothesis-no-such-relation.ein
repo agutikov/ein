@@ -1,0 +1,31 @@
+;;; A `(solve :no-hypothesis …)` list that names a relation the program does not
+;;; have loads, and restricts nothing —
+;;; M1f **W76**, register row `W76/no-hypothesis`, filed by S1f.7.8 (T1f.7.8.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The program's relation is `likes`, and its `(solve …)` writes `like`. With
+;;; the name spelt right, `(solve :no-hypothesis (likes is-a))`: H is empty and R
+;;; is {∅}.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The program names no relation `like` outside the list: the program is
+;;; refused at load, at the `like`, one line, on every command (exit 1,
+;;; `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `63f1e569`, release: The program loads. `likes` is not excluded, so H is the two
+;;; candidates of `likes`, `(likes Ann Red)` and `(likes Red Ann)`, and R is four
+;;; states, exit 0 on every command.
+;;; Refused at load since S1f.7.8 (T1f.7.8.3).
+
+(relation likes Person Color :why "{?1} likes {?2}")
+(rule glad ()
+  :match  (likes ?p ?c)
+  :assert (glad ?p)
+  :why "{?p} likes {?c}, so {?p} is glad")
+(is-a Ann Person) (is-a Red Color)
+(solve :no-hypothesis (like is-a))

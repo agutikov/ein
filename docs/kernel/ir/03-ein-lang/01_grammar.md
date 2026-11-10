@@ -819,6 +819,25 @@ region and about specific solutions"*.
   a relation name ([`00_ebnf.md`](00_ebnf.md)).
 - `:hrules` is read by the hrule rung, the other two by the candidate filter
   ([`06_reserved_names.md` § Hypothesis / query control](06_reserved_names.md#hypothesis--query-control)).
+- **Every name a list holds names something the program has** (M1f S1f.7.8,
+  W76), or the program is refused at load, one line per name, on every
+  command
+  ([`defined_behaviour.md` § 4.20](../../defined_behaviour.md#420-a-solve--list-names-what-the-program-has--m1f-s1f78)):
+  - `:hrules (h (a b) (c d) …)`: `h`, and every bare name after it, is an
+    hrule the program declares. Each `(a b)` is an activator, which binds
+    `h`'s parameters once, so it has as many arguments as `h` has parameters.
+    An argument at a parameter that names a relation, one that heads a form
+    of the hrule as `?R` does in `(?R ?a ?b)`, is a relation of the program.
+    An argument at any other parameter is a value, a type or an object, and
+    is not checked.
+  - `:hypothesis-relations` and `:no-hypothesis`: every name is a relation of
+    the program. `()` names none.
+  - **A relation of the program** is a name the program writes as a relation
+    outside the three lists: one it declares or states a fact of, `is-a`,
+    `eq` and `neq`, the relation of a form in a rule's, an hrule's or a
+    query's `:goal`, or a name it passes where a relation's name is held,
+    `(bijective color-loc)`. A relation only a rule's `:assert` derives is
+    one.
 
 #### The expected region — `(solve … :expect …)`
 

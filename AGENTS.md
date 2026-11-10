@@ -807,6 +807,21 @@ constrained-reasoning research.
   program's answer is not shown to the user**: it is fixed in place if quick,
   or a row of [F25](plans/followups/f25_roughness_found_outside_zebra.md),
   until a corpus of real Ein programs exists (P1f.6's calculator onward).
+  **S1f.7.8 ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md#t1-record-2026-11-11),
+  Q-M1f.114 to .116 defaulted): every name a `(solve …)` list holds names
+  something the program has, or the loader refuses the program on every
+  command, one line at the name (`ein_ir::from_ir`'s `refuse_solve_names`,
+  `defined_behaviour.md` § 4.20): an `:hrules` name is a declared hrule, an
+  activator has as many arguments as its hrule has parameters, and an
+  activator's argument at a parameter that names a relation, and every name
+  of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program
+  writes outside the lists, one only a rule derives among them. W76's five
+  rows filed and fixed, `examples/syntax/query-full.ein` declaring the two
+  hrules it names, and no other corpus answer moved: 254 fixed, 13 open and
+  1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+  2026-11-11). An activator's argument that is a value is not checked, F25's
+  R-2.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

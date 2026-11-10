@@ -754,6 +754,16 @@
 0    examples/ein-bugs/wrong-answers/saturate-import.ein :: saturate
 0    examples/ein-bugs/wrong-answers/saturate-import.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/saturate-import.ein :: solve
+1    examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein :: saturate
+1    examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein :: solve
+1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein :: saturate
+1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein :: solve
+1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein :: saturate
+1    examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein :: solve
+1    examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein :: saturate
+1    examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein :: solve
+1    examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein :: saturate
+1    examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
 1    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
 1    examples/ein-bugs/wrong-answers/str-in-absent.ein :: saturate
@@ -1199,7 +1209,7 @@
 0    examples/syntax/negation.ein :: saturate
 1    examples/syntax/nullary.ein :: render rules
 0    examples/syntax/nullary.ein :: saturate
-1    examples/syntax/query-full.ein :: render rules
+0    examples/syntax/query-full.ein :: render rules
 0    examples/syntax/query-full.ein :: saturate
 1    examples/syntax/relation-decls.ein :: render rules
 0    examples/syntax/relation-decls.ein :: saturate

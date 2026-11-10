@@ -15,7 +15,10 @@ pieces from this guide, in layers:
 
 (relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; the schema
 (relation color-loc  Color       House :why "{?2} is painted {?1}")
-;; … drink-loc, smoke-loc, pet-loc, right-of, next-to, is-a and is-a* likewise
+(relation drink-loc  Drink       House :why "{?1} is drunk in {?2}")
+(relation smoke-loc  Cigarette   House :why "{?1} is smoked in {?2}")
+(relation pet-loc    Pet         House :why "the {?1} is kept in {?2}")
+;; … right-of, next-to, is-a and is-a* likewise
 
 (symmetric next-to) (transitive is-a*)              ; activate the properties
 (bijective color-loc) (bijective nation-loc) …

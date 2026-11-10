@@ -155,7 +155,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `classes-int-name.ein`'s `"1"` (strings, S1f.5.2), W32's
 /// `kwpair-in-pattern.ein` and `kwpair-in-assert.ein`'s `v` (S1f.5.11), and
 /// W29's `underscore-nested-fact-arg.ein`'s `a` (S1f.5.1).
-const SEEDED: [(&str, &[&str]); 30] = [
+///
+/// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
+/// `Tea`, constants of the two hrules its `:hrules` names, declared since the
+/// loader refuses a list naming an hrule the program does not declare.
+const SEEDED: [(&str, &[&str]); 31] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -264,6 +268,14 @@ const SEEDED: [(&str, &[&str]); 30] = [
     (
         "examples/syntax/negation.ein",
         &["`a`, in (not (r a b))", "`b`, in (not (r a b))"],
+    ),
+    (
+        "examples/syntax/query-full.ein",
+        &[
+            "`House`, matched by hrule `h1`",
+            "`Tea`, asserted by hrule `h2`",
+            "`Water`, asserted by hrule `h1`",
+        ],
     ),
     (
         "examples/syntax/relation-decls.ein",

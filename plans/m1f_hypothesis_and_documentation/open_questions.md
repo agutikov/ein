@@ -126,6 +126,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.109](#q-m1f109--a-texts-line-break-in-the-traces-markdown) | a text's line break in the trace's markdown | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), a hard break, two spaces before it, the line after it in its block (`> ` in a `:why`'s quote), as Q-M1f.19 took the read-out's; shown to the user at the close, since it moves the bytes Q-M1f.12 holds the trace to**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
 | [Q-M1f.110](#q-m1f110--a-container-saved-again) | a container saved again | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), the writer stops at the last provenance record the KB references, so a re-save is byte-identical and no id moves; shown to the user at the close, since S1f.5.19 recorded the growth and left it**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
 | [Q-M1f.111](#q-m1f111--the-fuzz-tests-shape) | the fuzz test's shape | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), the stream parsed once, on every thread the process may use, each property keeping its test, its place-by-place reading and its own failure report; 4.3× less CPU at 20 000 inputs, 3.9× and 4.2× less wall on four P-core threads**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
+| [Q-M1f.114](#q-m1f114--what-a-relation-in-a-solve--list-must-be) | what a relation in a `(solve …)` list must be | **defaulted 2026-11-11 (the stage's default, S1f.7.8): (b), a name the program writes as a relation outside the lists, so a relation only a rule derives is accepted and a name written nowhere else is refused**; [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) |
+| [Q-M1f.115](#q-m1f115--what-else-of-an-hrules-list-is-refused) | what else of an `:hrules` list is refused | **defaulted 2026-11-11 (the stage's default, S1f.7.8): (a), every bare name is a declared hrule and an activator has as many arguments as its hrule has parameters**; [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) |
+| [Q-M1f.116](#q-m1f116--an-activators-argument-that-is-a-value) | an activator's argument that is a value | **defaulted 2026-11-11 (the stage's default, S1f.7.8): (b), not checked, and the missing word that an entry proposes nothing is F25's R-2**; [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2427,3 +2430,53 @@ finding and the user's question of that day (what such a fact would be used for,
 treats what it finds outside its scope: fixed in place if quick, or a row of
 [F25](../followups/f25_roughness_found_outside_zebra.md), and not shown for review unless it moves an existing
 zebra program's answer.
+
+### Q-M1f.114 — What a relation in a `(solve …)` list must be
+
+**Raised** 2026-11-11 by [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)'s T1. The stage refuses a name in `:hypothesis-relations`, in
+`:no-hypothesis` or at an activator's relation parameter that names no relation of the program, and has to say
+what a relation of the program is.
+
+- **(a) Declared or a fact's**, as a claim's relation is checked (`validate_solve`): it refuses a relation only a
+  rule's `:assert` derives, which the phase's analysis names as that check's over-refusal (S1f.7.11).
+- **(b) Named elsewhere**: a name the program writes as a relation outside the three lists: declared, a fact's,
+  `is-a`, `eq`, `neq`, the relation of a form in a rule's, an hrule's or an obligation's `:match` or `:assert`, in a
+  goal or in a fact's argument, or a name passed where a relation's name is held (`(bijective color-loc)`,
+  S1f.5.18's positions).
+- **(c) Made by something**: declared, a fact's or concluded. It cannot tell `att` from `at` at an activator, since
+  the activator's hrule concludes whatever relation it is given, and it refuses a list that names a relation the
+  program only reads.
+
+**Defaulted 2026-11-11 (the stage's default): (b).** It refuses every misspelt name the stage's witnesses hold and
+no program of the corpus but `examples/syntax/query-full.ein`, whose two hrules were not declared (a sweep of 612
+tracked `.ein` files, the binary at `63f1e569` against the stage's, `ein saturate`, 2026-11-11). It can be
+narrowed to (c) for the two relation lists once S1f.7.11 has said what *makes* a relation.
+
+### Q-M1f.115 — What else of an `:hrules` list is refused
+
+**Raised** 2026-11-11 by [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)'s T1. Beside the list's first name, an `:hrules` list holds bare names
+after it, which the engine reads as nothing (`tests/region/01_states.ein` writes `guess` three times), and
+activators, of which one with another number of arguments than its hrule has parameters is skipped in silence, as
+is any activator of an hrule without parameters.
+
+- **(a) Refuse both**: every bare name is an hrule the program declares, and an activator has as many arguments as
+  its hrule has parameters.
+- **(b) Refuse the first name only**, and leave the rest read as nothing.
+
+**Defaulted 2026-11-11 (the stage's default): (a)**, the stage's rule, *every name a list holds names something
+the program declares*, and an activator that binds nothing is the same silence (W76's third row). No corpus program
+moved. That a bare name selects nothing is F25's R-3.
+
+### Q-M1f.116 — An activator's argument that is a value
+
+**Raised** 2026-11-11 by the [analysis of that day](p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11)
+and [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)'s T1: `(guess (at Colour House))`, a misspelt type at a parameter that names no relation,
+gives the hrule no match and H is empty.
+
+- **(a) Refuse a value the program names nowhere else.** A value is any name, and an activator may name one first:
+  `examples/features/11_expect_ambiguity.ein`'s `(guess (Ann S1) …)` gives objects.
+- **(b) Do not check it**, and say in the read-out that an `:hrules` entry proposes nothing at root.
+
+**Defaulted 2026-11-11 (the stage's default): (b)**, as the stage's brief has it. The read-out row is not built
+here: it is a new `Row` and a line of `read_out.md`, and is [F25](../followups/f25_roughness_found_outside_zebra.md)'s
+R-2.

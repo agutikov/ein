@@ -1665,6 +1665,63 @@ ends by `SIGPIPE` every run that must write again; and the register's eighteen
 W75 rows, a command or a `solve` question each, run with the reader closed
 before the run (schema `/21`).
 
+### 4.20 A `(solve …)` list names what the program has — M1f S1f.7.8
+
+The three lists of a `(solve …)`, `:hrules`, `:hypothesis-relations` and
+`:no-hypothesis`, choose the candidates, and so the lattice the answer is a
+region of. Since M1f
+[S1f.7.8](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md)
+every name one holds names something the program has, or the loader refuses
+the program, one line per name, placed at the name, on every command that
+reads it, the views and `kb save` among them, exit 1 (`ein test`: 2)
+(`ein_ir::from_ir`'s `refuse_solve_names`, Q-M1f.114 to .116, defaulted):
+
+| the list writes | the line, after `kb load error: <file>:<line>:<col>: solve: its ` |
+|---|---|
+| `:hrules (gues …)`, and no hrule is named `gues` | `:hrules names gues, and the program declares no hrule gues — it declares guess` |
+| `:hrules (guess (at Color))`, and `guess` takes three arguments | `:hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3, (?R ?T1 ?T2) — an activator binds each parameter once` |
+| `:hrules (guess (att Color House))`, `?R` naming a relation, and no relation is named `att` | `:hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which names a relation, and the program names no relation att — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
+| `:hypothesis-relations (like)` or `:no-hypothesis (like)`, and no relation is named `like` | `:no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal` |
+
+**A relation of the program** is a name the program writes as a relation
+outside the three lists: one it declares or states a fact of; `is-a`, `eq` and
+`neq`; the relation of any form in a rule's, an hrule's or an obligation's
+`:match` or `:assert`, in a query's `:goal` or in a fact's argument; and a
+name a fact or a conclusion passes where a relation's name is held, as
+`(bijective color-loc)` passes `color-loc` (§ 4.9's positions). So a relation
+only a rule's or an hrule's `:assert` derives is one, an imported rule's
+included, where a claim's relation must be declared or a fact's. The test is
+*named elsewhere*, not *made by something*, because an activator's hrule makes
+the relation it is given, `att` as it makes `at`: what tells a misspelt name
+is that the program writes it nowhere else (Q-M1f.114). A parameter names a
+relation where it heads a form of the hrule, or is passed on to a position
+that holds one. A program the loader has already refused gets no line from
+this check.
+
+**What is not refused.** An activator's argument at a parameter that names no
+relation is a value, a type or an object, which no declaration lists, so
+`(guess (at Colour House))` loads and proposes nothing, and the read-out's
+`universe` row says *no candidate*; so does a parameterised hrule that no
+activator names. A bare name in `:hrules` selects nothing: every hrule
+without parameters proposes whether the list names it or not. All three are
+[F25](../../plans/followups/f25_roughness_found_outside_zebra.md)'s (R-2,
+R-3).
+
+**Until S1f.7.8** a name that matched nothing was read as one that matches
+none, in silence, and one misspelt character moved H and R: on the stage's
+witnesses `gues` for `guess` and an activator of two arguments left H empty
+and R {∅} where the program meant four states, `att` for `at` proposed three
+facts of a relation `functional at` does not read, R eight states, `like` in
+`:hypothesis-relations` left H empty, and `like` in `:no-hypothesis` excluded
+nothing. Five register rows, W76, filed and fixed by the stage. One corpus
+fixture named hrules it did not declare, `examples/syntax/query-full.ein`,
+and declares them since; no other corpus answer moved.
+
+Pinned by `ein-cli`'s `solve_lists.rs` (nine shapes and the five witnesses,
+each on twenty commands: one first line, the same on each, and no container;
+and fourteen programs whose lists name what the program has, each loading)
+and `corpus/wrong_answers.toml`'s W76 rows.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands

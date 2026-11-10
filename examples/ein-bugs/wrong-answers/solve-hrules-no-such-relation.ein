@@ -1,0 +1,38 @@
+;;; A `(solve :hrules …)` activator that names a relation the program does not
+;;; have loads, and proposes facts of it —
+;;; M1f **W76**, register row `W76/hrules-activator-relation`, filed by S1f.7.8 (T1f.7.8.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The hrule's first parameter, `?R`, names the relation it proposes facts of.
+;;; The program's relation is `at`, and its `(solve …)` writes `att`. With the
+;;; name spelt right, `(solve :hrules (guess (at Color House)))`: H is the three candidates
+;;; `(at Red H1)`, `(at Red H2)`, `(at Red H3)`, `functional at` kills every pair,
+;;; and R is four states.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The program names no relation `att` outside the list, so the activator
+;;; names nothing the program has: the program is refused at load, at the `att`,
+;;; one line, on every command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `63f1e569`, release: The program loads. H is three candidates of `att`,
+;;; `(att Red H1)` and the rest, which `functional at` does not read, so R is all
+;;; eight subsets, exit 0 on every command.
+;;; Refused at load since S1f.7.8 (T1f.7.8.3).
+
+(relation at Color House :why "{?1} is at {?2}")
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why "{?R} is not functional: {?a} has both {?b} and {?c}")
+(hrule guess (?R ?T1 ?T2)
+  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (?R ?a ?b)
+  :why "guess that {?R} holds of {?a} and {?b}")
+(functional at)
+(is-a Red Color) (is-a H1 House) (is-a H2 House) (is-a H3 House)
+(solve :hrules (guess (att Color House)))

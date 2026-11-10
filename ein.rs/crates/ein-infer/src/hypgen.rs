@@ -938,8 +938,13 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
 /// The relation-name set under a `(query … :KEYWORD …)` keyword.
 ///
 /// `None` means the keyword is absent — for `:hypothesis-relations` that is
-/// "unrestricted", and note that an *empty* list is unrestricted too. The
-/// **first** matching keyword wins, not the last.
+/// "unrestricted". A written `()` is a list that names none, so it
+/// whitelists nothing. The **first** matching keyword wins, not the last.
+///
+/// Since M1f S1f.7.8 every name a list holds is a relation the program
+/// writes outside it, or the loader refuses the program
+/// (`ein_ir::from_ir`'s `refuse_solve_names`), so a misspelt name reaches
+/// neither this nor [`crate::hrule`]'s activators.
 fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> {
     // On `(solve …)` since M1e2 S1e2.1a.4: the candidate list is the lattice's,
     // stated once for every query.
@@ -955,8 +960,8 @@ fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> 
             continue;
         }
         let (names, declared) = coerce_relation_names(s, value);
-        // An *empty list* is unrestricted. What
-        // decides that is how many names the keyword **declared**, not how
+        // What decides whether the list restricts
+        // is how many names the keyword **declared**, not how
         // many resolved: a name no fact or declaration ever used has no
         // `Symbol`, and dropping it silently would turn a whitelist of one
         // misspelled relation — which excludes everything — into no whitelist

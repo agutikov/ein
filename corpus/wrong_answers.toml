@@ -14410,3 +14410,169 @@ derived   = "A write to a pipe no reader holds ends the process by SIGPIPE, with
 run       = "render lattice"
 stdout    = "closed"
 signal    = 13
+
+# ══ W76 — a `(solve …)` list that names nothing the program has loads, and moves H ══
+[[case]]
+id       = "W76/hrules-name"
+case     = "W76"
+title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.8"
+question = ["Q-M1f.114"]
+witness  = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hrules` list naming an hrule the program does not declare, `gues` for `guess`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 63f1e569 (2026-11-11): the program loads; no activator reaches `guess`, so H is empty and R is {∅}, where `guess` spelt right gives H of three candidates and R of four states; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.8's default, the direction its stage file names (Q-M1f.114, defaulted): a query's `:over` and a claim's relation are refused at load when they name nothing, and so is a name in a `(solve …)` list"
+derived   = "No hrule of the program is named `gues`, so the list names nothing the program declares: refused at load, at the `gues`, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein:37:17: solve: its :hrules names gues, and the program declares no hrule gues — it declares guess"
+
+[[case]]
+id       = "W76/hrules-activator-relation"
+case     = "W76"
+title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.8"
+question = ["Q-M1f.114"]
+witness  = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hrules` activator naming a relation the program does not have, `att` for `at`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 63f1e569 (2026-11-11): the program loads; H is three candidates of `att`, a relation nothing else names, which `functional at` does not read, so R is eight states, where `at` spelt right gives R of four; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.8's default, the direction its stage file names (Q-M1f.114, defaulted): a query's `:over` and a claim's relation are refused at load when they name nothing, and so is a name in a `(solve …)` list"
+derived   = "The activator's first argument is the hrule's parameter `?R`, which names a relation, and the program names no relation `att` outside the list: refused at load, at the `att`, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein:38:24: solve: its :hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which names a relation, and the program names no relation att — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
+
+[[case]]
+id       = "W76/hrules-activator-arity"
+case     = "W76"
+title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.8"
+question = ["Q-M1f.114"]
+witness  = "examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hrules` activator giving its hrule another number of arguments, `(at Color)` for `guess (?R ?T1 ?T2)`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 63f1e569 (2026-11-11): the program loads; the activator is skipped, so H is empty and R is {∅}, where all three arguments give H of three candidates and R of four states; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.8's default, the direction its stage file names (Q-M1f.114, defaulted): a query's `:over` and a claim's relation are refused at load when they name nothing, and so is a name in a `(solve …)` list"
+derived   = "An activator binds each parameter of its hrule once, and two arguments bind no `guess`, which takes three: refused at load, at the activator, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein:36:24: solve: its :hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3, (?R ?T1 ?T2) — an activator binds each parameter once"
+
+[[case]]
+id       = "W76/hypothesis-relations"
+case     = "W76"
+title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.8"
+question = ["Q-M1f.114"]
+witness  = "examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:hypothesis-relations` list naming a relation the program does not have, `like` for `likes`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 63f1e569 (2026-11-11): the program loads; no relation of the program is in the list, so H is empty and R is {∅}, where `likes` spelt right gives H of two candidates and R of four states; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.8's default, the direction its stage file names (Q-M1f.114, defaulted): a query's `:over` and a claim's relation are refused at load when they name nothing, and so is a name in a `(solve …)` list"
+derived   = "The program names no relation `like` outside the list: refused at load, at the `like`, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein:31:31: solve: its :hypothesis-relations names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
+
+[[case]]
+id       = "W76/no-hypothesis"
+case     = "W76"
+title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.8"
+question = ["Q-M1f.114"]
+witness  = "examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.8 (T1f.7.8.2, 2026-11-11), from S1f.5.23's T2 record (its out-of-scope finding 3) and the analysis of 2026-11-11: a `:no-hypothesis` list naming a relation the program does not have, `like` for `likes`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.8.3 (2026-11-11): every command that reads the program exits 1 (`ein test`: 2), refused at load at the name, one line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.8 (T1f.7.8.3): the loader reads every name a `(solve …)` list holds against the program (`ein_ir::from_ir`'s `refuse_solve_names`): a `:hrules` name is an hrule it declares, an activator gives its hrule as many arguments as it has parameters, and an activator's argument at a parameter that names a relation, and every name of `:hypothesis-relations` and `:no-hypothesis`, is a relation the program writes outside the lists; one line per name, placed at it"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 63f1e569 (2026-11-11): the program loads; `likes` is not excluded, so H is its two candidates and R is four states, where `likes` spelt right gives H empty and R {∅}; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.8's default, the direction its stage file names (Q-M1f.114, defaulted): a query's `:over` and a claim's relation are refused at load when they name nothing, and so is a name in a `(solve …)` list"
+derived   = "The program names no relation `like` outside the list: refused at load, at the `like`, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein:31:24: solve: its :no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"

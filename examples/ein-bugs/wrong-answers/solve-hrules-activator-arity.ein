@@ -1,0 +1,36 @@
+;;; A `(solve :hrules …)` activator that gives its hrule another number of
+;;; arguments loads, and proposes nothing —
+;;; M1f **W76**, register row `W76/hrules-activator-arity`, filed by S1f.7.8 (T1f.7.8.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; The hrule `guess` takes three arguments, `(?R ?T1 ?T2)`, and the `(solve …)`
+;;; gives it two, `(at Color)`. With all three, `(solve :hrules (guess (at Color House)))`: H is the three candidates
+;;; `(at Red H1)`, `(at Red H2)`, `(at Red H3)`, `functional at` kills every pair,
+;;; and R is four states.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; An activator binds each parameter once, so two arguments bind no `guess`:
+;;; the program is refused at load, at the activator, one line, on every command
+;;; (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `63f1e569`, release: The program loads. The activator is skipped, so H is
+;;; empty and R is {∅}, exit 0 on every command.
+;;; Refused at load since S1f.7.8 (T1f.7.8.3).
+
+(relation at Color House :why "{?1} is at {?2}")
+(rule functional (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :why "{?R} is not functional: {?a} has both {?b} and {?c}")
+(hrule guess (?R ?T1 ?T2)
+  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
+  :assert (?R ?a ?b)
+  :why "guess that {?R} holds of {?a} and {?b}")
+(functional at)
+(is-a Red Color) (is-a H1 House) (is-a H2 House) (is-a H3 House)
+(solve :hrules (guess (at Color)))

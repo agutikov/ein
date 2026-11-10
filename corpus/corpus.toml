@@ -2147,6 +2147,36 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W74 (`W74/directory-*`), filed by S1f.5.22's T1f.5.22.2 (2026-11-10), from the close review's finding 2: a file-relative import of a module that resolves to a directory, `import-module-directory-module.ein/`, beside it, which every command reported as `module not found … (None)`. An imported module is read as the program a command is given is read, and a path that exists and cannot be read as text is refused with that read's line, naming the module's path."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W76 (`W76/hrules-name`), filed by S1f.7.8's T1f.7.8.2 (2026-11-11): a `:hrules` list naming an hrule the program does not declare, `gues` for `guess`, which loaded and was answered. Fixed by S1f.7.8's T1f.7.8.3 (2026-11-11): refused at load, at the name, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W76 (`W76/hrules-activator-relation`), filed by S1f.7.8's T1f.7.8.2 (2026-11-11): a `:hrules` activator naming a relation the program does not have, `att` for `at`, which loaded and was answered. Fixed by S1f.7.8's T1f.7.8.3 (2026-11-11): refused at load, at the name, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W76 (`W76/hrules-activator-arity`), filed by S1f.7.8's T1f.7.8.2 (2026-11-11): a `:hrules` activator giving its hrule another number of arguments, `(at Color)` for `guess (?R ?T1 ?T2)`, which loaded and was answered. Fixed by S1f.7.8's T1f.7.8.3 (2026-11-11): refused at load, at the name, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W76 (`W76/hypothesis-relations`), filed by S1f.7.8's T1f.7.8.2 (2026-11-11): a `:hypothesis-relations` list naming a relation the program does not have, `like` for `likes`, which loaded and was answered. Fixed by S1f.7.8's T1f.7.8.3 (2026-11-11): refused at load, at the name, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W76 (`W76/no-hypothesis`), filed by S1f.7.8's T1f.7.8.2 (2026-11-11): a `:no-hypothesis` list naming a relation the program does not have, `like` for `likes`, which loaded and was answered. Fixed by S1f.7.8's T1f.7.8.3 (2026-11-11): refused at load, at the name, one line, on every command."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

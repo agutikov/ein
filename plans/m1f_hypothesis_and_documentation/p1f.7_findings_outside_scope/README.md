@@ -9,7 +9,7 @@ starts, and whether its questions stop the stage or take a default. **P1f.5 clos
 found no wrong answer outside their scope, so this phase has the nine stages below. **Running since 2026-11-11**, on
 the user's answer of that day, *"p1f.7 runs before p1f.6, it's questions take a default"*: it runs before P1f.6, and a question
 a stage raises takes the stage's default, recorded as a Q-M1f row marked *defaulted* and shown at this phase's close
-([§ How every stage runs](#how-every-stage-runs)). **Re-planned 2026-11-11** on the user's rulings on the
+([§ How every stage runs](#how-every-stage-runs)). **S1f.7.8 is done** (2026-11-11, W76). **Re-planned 2026-11-11** on the user's rulings on the
 [analysis of that day](#the-analysis-of-2026-11-11): S1f.7.8 runs first, S1f.7.9's fix moved to
 [F24](../../followups/f24_written_provenance.md), and three findings of the analysis are S1f.7.10 to S1f.7.12.
 **Depends on:** P1f.5. Its stages use [S1f.5.21](../p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s
@@ -76,7 +76,7 @@ it, on the release binary at `4bf6da73`: with `(h (eq k j)) (h (eq k k))` and `:
 | [S1f.7.5](s1f.7.5_a_macro_called_in_a_goal.md) | A macro called in a query's `:goal` | the call is never expanded, so the goal has no row, in silence | S1f.5.28 item 16; S1f.5.24's T2 record | new 2026-11-10 |
 | [S1f.7.6](s1f.7.6_a_false_fact_with_an_argument.md) | A written `(false k)`: `false` with an argument | kills root, the argument dropped, where a rule's is refused | S1f.5.23's T2 record, finding 1 | new 2026-11-10 |
 | [S1f.7.7](s1f.7.7_an_absent_fact.md) | A written or concluded `(absent k)` | stores a fact no premise can read | S1f.5.23's T2 record, finding 2 | new 2026-11-10 |
-| [S1f.7.8](s1f.7.8_a_solve_list_naming_nothing.md) | A `(solve …)` list that names nothing the program declares | `:hrules (zzz)` and the rest load in silence and move H | S1f.5.23's T2 record, finding 3 | new 2026-11-10 |
+| [S1f.7.8](s1f.7.8_a_solve_list_naming_nothing.md) | A `(solve …)` list that names nothing the program declares | `:hrules (zzz)` and the rest load in silence and move H | S1f.5.23's T2 record, finding 3 | **done 2026-11-11**: W76, five rows filed and fixed; refused at load |
 | [S1f.7.9](s1f.7.9_a_facts_rule_that_names_no_rule.md) | A fact's `:rule` that names no rule | `(p k :rule zzz)` stored as derived by a rule the program lacks | S1f.5.23's T2 record, finding 4 | rows only since 2026-11-11: the fix is [F24](../../followups/f24_written_provenance.md)'s |
 | [S1f.7.10](s1f.7.10_an_eq_fact_as_a_value.md) | `(eq k j)` as a value | `(q (eq k j))` is stored, and a pattern matches it by shape, where `(q (neq k j))` is a parse error | the analysis of 2026-11-11 | new 2026-11-11 |
 | [S1f.7.11](s1f.7.11_a_goal_over_a_relation_nothing_makes.md) | A goal over a relation nothing in the program makes | `(query :goal (zzz ?x))` loads and has no row, in silence | the analysis of 2026-11-11 | new 2026-11-11 |

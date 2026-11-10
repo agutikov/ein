@@ -275,7 +275,8 @@ pub fn load_query_with(
     validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
     // …and one a rule could derive, read off the program (M1f S1f.5.18,
     // Q-M1f.1 (b)).
-    refuse_derived_relation_activators(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
+    let relation_places =
+        refuse_derived_relation_activators(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
 
     // Every query block, in source order — plural since M1c S1c.1.2, because a
     // second one used to load and be discarded in silence. `config` keeps
@@ -299,6 +300,9 @@ pub fn load_query_with(
         kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
     });
     validate_solve(ast, terms, &kb, &mut errors);
+    // A `(solve …)` list that names an hrule or a relation the program does
+    // not have (M1f S1f.7.8, W76).
+    refuse_solve_names(ast, terms, &kb, &facts, &relation_places, &mut errors);
     validate_queries(ast, terms, &kb, &mut errors);
     if let Some(&last) = config_blocks.last() {
         let args: Vec<NodeId> = ast.form_args(last).to_vec();
@@ -521,6 +525,245 @@ fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
                 ));
             }
         }
+    }
+}
+
+/// Where a program holds relation names, as
+/// [`refuse_derived_relation_activators`] reads them off it.
+#[derive(Default)]
+struct RelationPlaces {
+    /// `(name, index)`: a rule's or an hrule's parameter, or a marker's
+    /// argument, that holds a relation's name.
+    positions: BTreeSet<(String, usize)>,
+    /// Every name a fact or a conclusion writes at one.
+    passed: BTreeSet<String>,
+}
+
+/// **A `(solve …)` list names what the program has** — M1f S1f.7.8 (W76).
+///
+/// The three lists choose the candidates, so a name in one that matches
+/// nothing moved H, and R with it, in silence: `:hrules (gues …)` beside an
+/// hrule `guess` proposed nothing, an activator `(att Color House)` proposed
+/// facts of a relation `att` nothing else names, and `:no-hypothesis (like)`
+/// restricted nothing. Each is refused here, one line per name, placed at
+/// the name:
+///
+/// - **`:hrules`**: the list's first name, and every bare name after it, is
+///   an hrule the program declares; an activator gives its hrule as many
+///   arguments as the hrule has parameters; and an activator's argument at a
+///   parameter that names a relation is a relation of the program.
+/// - **`:hypothesis-relations`**, **`:no-hypothesis`**: every name is a
+///   relation of the program.
+///
+/// **A relation of the program** is a name the program writes as a relation
+/// outside the `(solve …)` lists: one it declares or states a fact of,
+/// `is-a`, the relation of any form in a rule's, an hrule's or an
+/// obligation's `:match` or `:assert`, of a query's `:goal` or of a fact's
+/// argument, and a name a fact or a conclusion passes where a relation's name
+/// is held, `(bijective color-loc)`. So a relation only a rule's `:assert`
+/// derives is one, where the claim check ([`validate_solve`]) refuses it. It
+/// is not *a relation something makes*: an activator's hrule makes the
+/// relation it is given, `att` as well as `at`, so what tells a misspelt name
+/// is that the program writes it nowhere else (Q-M1f.114).
+///
+/// An activator's argument at a parameter that names no relation is a value,
+/// a type or an object, and is not checked: `(guess (at Colour House))`
+/// loads, and proposes nothing (F25's R-2).
+fn refuse_solve_names(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    facts: &[NodeId],
+    places: &RelationPlaces,
+    errors: &mut Vec<String>,
+) {
+    /// The relation of every form at or under `node`, where it is a name.
+    fn heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
+        match ast.node(node) {
+            Node::SForm { head, .. } => {
+                if let Node::Atom(s) = ast.node(head) {
+                    out.insert(ast.sym(s).to_string());
+                }
+                for &a in ast.form_args(node) {
+                    heads(ast, a, out);
+                }
+            }
+            Node::KwPair { value, .. } => heads(ast, value, out),
+            _ => {}
+        }
+    }
+    /// A list's names with their nodes: a bare name, or a form's head and
+    /// its atom arguments. `()` holds none.
+    fn names(ast: &Ast, value: NodeId) -> Vec<(NodeId, String)> {
+        let nodes: Vec<NodeId> = match ast.node(value) {
+            Node::Atom(_) => vec![value],
+            Node::SForm { head, .. } => std::iter::once(head)
+                .chain(ast.form_args(value).iter().copied())
+                .collect(),
+            _ => Vec::new(),
+        };
+        nodes
+            .into_iter()
+            .filter_map(|n| ast.atom_name(n).map(|s| (n, s.to_string())))
+            .filter(|(_, s)| !ein_core::text::INTERNAL_NAMES.contains(&s.as_str()))
+            .collect()
+    }
+
+    let Some(solve) = kb.program().solve() else {
+        return;
+    };
+    // A program already refused is not read further: a rule the loader
+    // refused may be missing from the registries this reads.
+    if !errors.is_empty() {
+        return;
+    }
+    let program = kb.program();
+    let mut known: BTreeSet<String> = places.passed.clone();
+    // `is-a` and the two relations of equality are every program's.
+    known.extend(["is-a", "eq", "neq"].map(str::to_string));
+    for (name, _) in program.relations.iter() {
+        known.insert(terms.sym(name).to_string());
+    }
+    for registry in [&program.rules, &program.hrules, &program.obligations] {
+        for (_, rule) in registry.iter() {
+            for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
+                .into_iter()
+                .flatten()
+            {
+                heads(ast, NodeId(pat.expr.0), &mut known);
+            }
+        }
+    }
+    for query in &program.queries {
+        if let Some(goal) = query_keyword(ast, query, "goal") {
+            heads(ast, goal, &mut known);
+        }
+    }
+    for &f in facts {
+        heads(ast, f, &mut known);
+    }
+    let hrules: Vec<String> = program
+        .hrules
+        .iter()
+        .map(|(n, _)| terms.sym(n).to_string())
+        .collect();
+    let declared_hrules = if hrules.is_empty() {
+        "it declares no hrule".to_string()
+    } else {
+        format!("it declares {}", hrules.join(", "))
+    };
+    const RELATION: &str = "a relation of the program is one it declares, states a fact of, or \
+                            writes in a rule, an hrule or a goal";
+
+    for &pair in solve.kw_pairs.iter() {
+        let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
+            continue;
+        };
+        let Node::Keyword(key) = ast.node(key) else {
+            continue;
+        };
+        match ast.sym(key) {
+            list @ ("hypothesis-relations" | "no-hypothesis") => {
+                for (node, name) in names(ast, value) {
+                    if !known.contains(&name) {
+                        errors.push(format!(
+                            "{}solve: its :{list} names {name}, and the program names no \
+                             relation {name} — {RELATION}",
+                            placed_or(ast, node, value),
+                        ));
+                    }
+                }
+            }
+            "hrules" => {
+                let Node::SForm { head, .. } = ast.node(value) else {
+                    continue;
+                };
+                let mut hrule: Option<String> = None;
+                for item in std::iter::once(head).chain(ast.form_args(value).iter().copied()) {
+                    match ast.node(item) {
+                        // `()` is the list that names none.
+                        Node::Atom(s) if ein_core::text::INTERNAL_NAMES.contains(&ast.sym(s)) => {}
+                        Node::Atom(s) => {
+                            let name = ast.sym(s).to_string();
+                            if hrule.is_none() {
+                                hrule = Some(name.clone());
+                            }
+                            if !hrules.contains(&name) {
+                                errors.push(format!(
+                                    "{}solve: its :hrules names {name}, and the program \
+                                     declares no hrule {name} — {declared_hrules}",
+                                    placed_or(ast, item, value),
+                                ));
+                            }
+                        }
+                        Node::SForm { .. } => {
+                            let Some(h) = hrule.as_ref().filter(|h| hrules.contains(h)) else {
+                                continue;
+                            };
+                            let rule = terms
+                                .syms
+                                .get(h)
+                                .and_then(|sym| program.hrules.get(sym))
+                                .expect("a declared hrule");
+                            let args = names(ast, item);
+                            let written = crate::dump::dump_compact(ast, item);
+                            if args.len() != rule.params.len() {
+                                let params: Vec<String> = rule
+                                    .params
+                                    .iter()
+                                    .map(|&p| format!("?{}", terms.sym(p)))
+                                    .collect();
+                                errors.push(format!(
+                                    "{}solve: its :hrules gives hrule '{h}' {written}, {}, and \
+                                     {h} takes {}, ({}) — an activator binds each parameter once",
+                                    placed_or(ast, item, value),
+                                    count(args.len(), "argument"),
+                                    rule.params.len(),
+                                    params.join(" "),
+                                ));
+                                continue;
+                            }
+                            for (i, (node, name)) in args.iter().enumerate() {
+                                if places.positions.contains(&(h.clone(), i))
+                                    && !known.contains(name)
+                                {
+                                    errors.push(format!(
+                                        "{}solve: its :hrules gives hrule '{h}' {written}, \
+                                         whose {name} is its parameter ?{}, which names a \
+                                         relation, and the program names no relation {name} — \
+                                         {RELATION}",
+                                        placed_or(ast, *node, item),
+                                        terms.sym(rule.params[i]),
+                                    ));
+                                }
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+/// `n argument`, `n arguments`.
+fn count(n: usize, what: &str) -> String {
+    if n == 1 {
+        format!("1 {what}")
+    } else {
+        format!("{n} {what}s")
+    }
+}
+
+/// [`placed`] at `node`, or at `outer` where the parser kept no position for
+/// it.
+fn placed_or(ast: &Ast, node: NodeId, outer: NodeId) -> String {
+    let at = placed(ast, node);
+    if at.is_empty() {
+        placed(ast, outer)
+    } else {
+        at
     }
 }
 
@@ -2121,6 +2364,11 @@ fn validate_relation_parameters(
 /// program writes as an argument (Q-M1f.42 (a)), which is where a rule's name
 /// can come from. `(not P)` is read as `P`, in a premise, a conclusion and a
 /// fact, since a stored negative holds the values its positive would.
+///
+/// **What it returns** (M1f S1f.7.8): the positions that hold relation names,
+/// and every name the program writes at one, in a fact or a conclusion — the
+/// relations a program names only by passing them to a rule, which
+/// [`refuse_solve_names`] reads.
 fn refuse_derived_relation_activators(
     ast: &Ast,
     terms: &Terms,
@@ -2128,7 +2376,7 @@ fn refuse_derived_relation_activators(
     facts: &[NodeId],
     solve_blocks: &[NodeId],
     errors: &mut Vec<String>,
-) {
+) -> RelationPlaces {
     /// A position: a relation's name and an argument's index.
     type Pos = (String, usize);
     /// Why a position holds relation names.
@@ -2335,7 +2583,7 @@ fn refuse_derived_relation_activators(
         }
     }
     if rp.is_empty() {
-        return;
+        return RelationPlaces::default();
     }
     let declared: BTreeSet<String> = program
         .relations
@@ -2588,6 +2836,34 @@ fn refuse_derived_relation_activators(
         solve_blocks,
         errors,
     });
+
+    // What the program passes where a relation name is held: a fact's
+    // argument, and a conclusion's (M1f S1f.7.8).
+    let mut places = RelationPlaces {
+        positions: rp.keys().cloned().collect(),
+        passed: BTreeSet::new(),
+    };
+    for &f in facts {
+        let p = positive(ast, f);
+        let Some(rel) = relation_of(ast, p) else {
+            continue;
+        };
+        for (k, &a) in ast.form_args(p).iter().enumerate() {
+            if let Node::Atom(s) = ast.node(a)
+                && rp.contains_key(&(rel.clone(), k))
+            {
+                places.passed.insert(ast.sym(s).to_string());
+            }
+        }
+    }
+    for s in &sites {
+        if let Node::Atom(a) = ast.node(s.arg)
+            && rp.contains_key(&s.to)
+        {
+            places.passed.insert(ast.sym(a).to_string());
+        }
+    }
+    return places;
 
     /// What [`refuse_eq_at_another_arity`] reads off the check above.
     struct EqArity<'a> {
