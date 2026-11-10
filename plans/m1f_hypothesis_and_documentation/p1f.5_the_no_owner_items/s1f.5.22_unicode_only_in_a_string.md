@@ -4,8 +4,9 @@
 **Status:** specified 2026-11-10 on the user's ruling on the close review's finding 2
 ([close_review.md § Findings with no owner](close_review.md#findings-with-no-owner)). T1f.5.22.1, the census, was
 taken by the coordinator the same day ([its record](#t1-record-2026-11-10)), and its question on comments,
-[Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode), was put to the user.
-**Depends on:** Q-M1f.65's ruling, for T1f.5.22.2's scope. It edits `ein.l` and the grammar's table, so it does
+[Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode), was put to the user and **ruled the same
+day, (b): a comment may hold Unicode**, so no file is rewritten and T1f.5.22.3 is the lexer's refusal alone.
+**Depends on:** nothing since Q-M1f.65's ruling. It edits `ein.l` and the grammar's table, so it does
 not run beside [S1f.5.23](s1f.5.23_open_is_reserved.md), which may too.
 
 ## The ruling
@@ -60,7 +61,8 @@ Unicode may stand. In the comments, 88 % of the characters are the box-drawing r
 
 Whether a comment may hold Unicode is the one thing the ruling's words leave to read: *"anywhere else than inside
 string literals"* includes comments if read literally, and then 429 files' comments are rewritten in ASCII.
-Put to the user as [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode).
+Put to the user as [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode), and ruled the same day:
+the user chose *"Comments may hold Unicode"*, (b).
 
 ## What it changes
 

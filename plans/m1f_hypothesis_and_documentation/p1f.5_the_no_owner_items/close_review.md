@@ -288,10 +288,10 @@ Approved by the user on 2026-11-10 (*"Yes, build cleanup OK"*), and done the sam
    | finding | stage | stops for the user |
    |---|---|---|
    | 1, a compile error's first line | [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md) | no |
-   | 2, Unicode, and a non-UTF-8 import | [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md) | [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode), comments |
-   | 3, `open` | [S1f.5.23](s1f.5.23_open_is_reserved.md) | [Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value), `open` as a value |
-   | 4, `(eq ?a)` in a macro | [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md) | [Q-M1f.67](../open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused), where |
-   | 5, `\| head` | [S1f.5.25](s1f.5.25_a_closed_stdout.md) | [Q-M1f.68](../open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout), the fix |
+   | 2, Unicode, and a non-UTF-8 import | [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md) | [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode), ruled (b): comments may |
+   | 3, `open` | [S1f.5.23](s1f.5.23_open_is_reserved.md) | [Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value), ruled (a): refused |
+   | 4, `(eq ?a)` in a macro | [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md) | [Q-M1f.67](../open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused), ruled: allowed unused; never executed |
+   | 5, `\| head` | [S1f.5.25](s1f.5.25_a_closed_stdout.md) | [Q-M1f.68](../open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout), ruled (b): `SIGPIPE`'s default |
    | 6, the tutorial | [S1f.5.26](s1f.5.26_the_tutorial_runs.md) | no |
    | 7, the slow counts | answered above; the prose fix in S1f.5.28, by default | no |
    | 8, the nightly | [S1f.5.27](s1f.5.27_the_nightly_reduced.md) | no |

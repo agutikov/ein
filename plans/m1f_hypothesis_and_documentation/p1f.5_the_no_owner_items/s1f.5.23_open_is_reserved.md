@@ -5,8 +5,9 @@
 ([close_review.md § Findings with no owner](close_review.md#findings-with-no-owner)). T1f.5.23.1, the explanation the
 ruling asks for, was taken by the coordinator the same day ([its record](#t1-record-2026-11-10)), and its one open
 part, `open` as a value, was put to the user as
-[Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value).
-**Depends on:** Q-M1f.66's ruling, for T1f.5.23.3's scope. It may edit `ein.y`, so it does not run beside
+[Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value) and **ruled the same day, (a)**: refused
+(the user chose *"Refuse it"*), so `open` is written only as a rule's `(open)` or `(open ?R)`.
+**Depends on:** nothing since Q-M1f.66's ruling. It may edit `ein.y`, so it does not run beside
 [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md).
 
 ## The ruling

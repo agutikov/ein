@@ -78,10 +78,10 @@ what bears on it.
 | [Q-M1f.62](#q-m1f62--the-option-that-loads-a-program-without-a-why-once-the-default-is-true) | the option that loads a program without a `:why`, once the default is true | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), `--no-require-why` replaces `--require-why`, and `LoadOptions::default()` requires**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.63](#q-m1f63--what-each-program-generator-does-about-why) | what each program generator does about `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), the engine fuzzers and synthesisers write an honest mechanical `:why` on every form, keeping their random draws; `fuzz_properties` keeps its draws**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.64](#q-m1f64--existing-whys-that-are-placeholders-or-name-nothing) | existing `:why`s that are placeholders or name nothing | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), each fixed, the references by the check's commit and the placeholders by the migration; none is a register row**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
-| [Q-M1f.65](#q-m1f65--may-a-comment-hold-unicode) | may a comment hold Unicode? | **put to the user 2026-11-10**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
-| [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value) | may `open` be written as a value? | **put to the user 2026-11-10**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
-| [Q-M1f.67](#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) | where is a macro body that no rule could use refused? | **put to the user 2026-11-10**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
-| [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **put to the user 2026-11-10**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
+| [Q-M1f.65](#q-m1f65--may-a-comment-hold-unicode) | may a comment hold Unicode? | **ruled 2026-11-10, (b)**: a comment may hold Unicode; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value) | may `open` be written as a value? | **ruled 2026-11-10, (a)**: refused; `open` is written only as a rule's verdict; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
+| [Q-M1f.67](#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) | where is a macro body that no rule could use refused? | **ruled 2026-11-10**, in the user's words: an unused malformed macro is allowed, and what matters is that `(eq <arg>)` is never executed; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **ruled 2026-11-10, (b)**: handle `SIGPIPE` properly, its default disposition restored on the binary; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1512,6 +1512,9 @@ more.
 - **(b) A comment may hold Unicode.** A comment is free text, as a string is, and the refusal says *inside a
   string literal or a comment*.
 
+**Ruled 2026-11-10, (b)** (the user chose *"Comments may hold Unicode"*). Only a token may not hold a character
+that is not ASCII; no file changes.
+
 ### Q-M1f.66 — May `open` be written as a value?
 
 **Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T1, on the user's ruling
@@ -1523,6 +1526,8 @@ other position words do. No corpus program writes it there.
 - **(a) Refuse it**: `open` is written only as a rule's `(open)` or `(open ?R)` conclusion.
 - **(b) Keep it as a value**, a position word like `model`; refused only as a relation name.
 
+**Ruled 2026-11-10, (a)** (the user chose *"Refuse it"*). `open` is reserved in the plain sense.
+
 ### Q-M1f.67 — Where is a macro body that no rule could use refused?
 
 **Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T1.
@@ -1532,6 +1537,13 @@ other position words do. No corpus program writes it there.
 - **(a) At its definition where its literal head decides, and at each use after expansion otherwise.**
 - **(b) At each use, after expansion**; a macro no rule uses loads whatever its body.
 - **(c) At compile, as today**, in S1f.5.21's words.
+
+**Ruled 2026-11-10.** The user: *"So the question is "do we allow invalid macro if it is not instantiated - the
+answer is yes, we allow, error will raise later during either compilation of instantiation or even later, the
+ultimate goal in this case is not allow execution of (eq <arg>)"*. So a macro body is not refused at its
+definition. The refusal may come at expansion, at compile or later, and the requirement is that no path executes a
+malformed primitive. Today's compile-time refusal meets it wherever every executing path compiles first, which
+S1f.5.24 shows and pins.
 
 ### Q-M1f.68 — What Ein does when its reader closes stdout
 
@@ -1543,3 +1555,11 @@ more than once after its reader has gone.
   with one line.
 - **(b) Die by `SIGPIPE`**, as `cat` does: the shell sees 141; needs `unsafe` or a dependency in `ein-cli`.
 - **(c) Exit 1 with one line** saying stdout was closed.
+
+**Ruled 2026-11-10, (b).** The user: *"why not handle sigpipe properly?"* The coordinator had weighed (b) down
+for its `unsafe` and its 141. Neither holds up. The disposition is a process-wide choice that belongs on the
+binary, as the global allocator does (`ein-cli/src/main.rs`), not in the library an embedder links, and
+`main.rs` is not under `lib.rs`'s `#![forbid(unsafe_code)]`. And a death by `SIGPIPE` is the Unix filter's
+convention (`cat`, `grep`), not an exit Ein chooses. Rust 1.97.1 has no stable option for it
+(`rustc -C help`), so it is one audited `libc::signal(SIGPIPE, SIG_DFL)` call on the binary, the second
+audited `unsafe` site beside `ein-einb`'s `cast.rs` (design/12 § 2).
