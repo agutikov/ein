@@ -32,6 +32,10 @@ citation, so the coordinator placed it here by default, recorded as a Q-M1f row.
 | 10 | The fuzz property costs about 27 s per 20 000 inputs | S1f.5.10 |
 | 11 | Finding 7: the `corpus/corpus.toml` header says *"Two entries are"* slow and `corpus/README.md` § `slow` says *"Three"*, naming `features/04_open`, which is not slow since M1e2 S1e2.1a.5. That README and `ein-cli/tests/corpus_cli.rs` line 112 cite `the_slow_set_is_exactly_these_three`, a test renamed `…_these_fourteen` (`ein-corpus/src/manifest.rs`). 14 entries are slow (`grep -c '^slow *= *true' corpus/corpus.toml`, 2026-11-10) | the close review |
 
+| 12 | `(query :goal (p (?R ?x)))`, a variable relation in a nested pattern of a goal, loads and matches nothing in silence ("the goal has no row"); the same shape in a rule is refused (W24). No register row yet | S1f.5.21's T1 record, given here by the coordinator on 2026-11-10 |
+
+Item 12 is a wrong answer by its record, so T2 files it as a register row before anything fixes it.
+
 Item 10 is S1f.5.27's to measure (its T1 attributes the fuzz job's cost). This stage takes it only for what that
 measurement leaves to fix.
 

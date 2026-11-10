@@ -11178,7 +11178,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), one of the ways the engine answers a program whose `:match` nests an `(or …)`, the stage's census: root compiles the rule, and every command that compiles stops. An `(or …)` under an `(absent …)`, or written by a macro's expansion, `forall`'s or a program's own, reaches the same stop (`examples/broken/load/nested_or.ein`, S1a.3.1's fixture, the first, under `broken/compile/` until S1f.5.21). A stop is no answer, and the ruling's is a refusal (Q-M1f.36's reading: a stop where a refusal is right is a row, as W57's was); fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11212,7 +11212,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a rule with a parameter is compiled once per activator, and only a commitment writes this one's, so the commands that never reach the commitment answered and those that do stopped. The row's `now` is describe's stop, since a run that stops states no region; its `wrong` names the commands that answered; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11246,7 +11246,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): an hrule is compiled where the hypothesis layer asks it for candidates, which a saturation never does, so `ein saturate` answered a program every solve question stopped on; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11280,7 +11280,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a rule no activator activates is never compiled, so every command answered. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its witness has an R (four states), which a refused row does not state (schema /20); fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11314,7 +11314,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a query's goal is compiled as a rule's `:match` is, by the compiler, and only where a state is answered from it; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11348,7 +11348,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): the goal is compiled only where a state is listed, so a program whose R is empty answered, the asymmetry `examples/ein-bugs/query-goal-free-head-unsat.ein` pinned for a relation written as a variable (W64). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses an `(or …)` written as a premise, of an `(and …)`, an `(absent …)` or another `(or …)`, in a rule's, an hrule's or a query's goal, one line naming the rule or the query, the disjunction and what holds it, on every command (`ein_ir::from_ir`'s `refuse_nested_disjunctions`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11386,7 +11386,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): the engine's one compile-time bound, refused by the compiler where it compiles the rule. Under a commitment and in an hrule the bound is met as W62's rows meet the disjunction, one plan per activator; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a rule's `:match` or a query's `:goal` that writes more distinct variables than a plan's register file holds, 256, a rule's parameters among them, one line on every command (`ein_ir::from_ir`'s `refuse_wide_matches`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11420,7 +11420,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a rule no activator activates is never compiled. The row's `now` is `ein saturate --dump`, which answered while the row was open; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a rule's `:match` or a query's `:goal` that writes more distinct variables than a plan's register file holds, 256, a rule's parameters among them, one line on every command (`ein_ir::from_ir`'s `refuse_wide_matches`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11454,7 +11454,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10): a goal is compiled into the register file a rule is, and only where a state is answered from it; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a rule's `:match` or a query's `:goal` that writes more distinct variables than a plan's register file holds, 256, a rule's parameters among them, one line on every command (`ein_ir::from_ir`'s `refuse_wide_matches`); the compiler's line is an invariant since"
 date   = "2026-11-10"
 
@@ -11491,7 +11491,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), on S1a.6.6's fixture (2026-08-20), whose refusal was the compiler's, reached where a state is answered from the goal, so `ein saturate`, which reads no query, answered it. In a rule the same premise is refused at load since M1e2 S1e2.2.24 (W24); `examples/features/02_star_in_identifiers.ein` wrote it too, rewritten by T1f.5.21.2 (Q-M1f.76); fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a query's `:goal` premise whose relation is a variable, which no activator binds in a goal, one line on every command (`ein_ir::from_ir`'s `refuse_goal_relation_variables`); the compiler's line is an invariant for a goal since"
 date   = "2026-11-10"
 
@@ -11525,7 +11525,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), on the fixture that pinned the asymmetry (*the goal is never compiled and the run exits 0*). The row's `now` is `ein saturate --dump`, which answered while the row was open; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): the loader refuses a query's `:goal` premise whose relation is a variable, which no activator binds in a goal, one line on every command (`ein_ir::from_ir`'s `refuse_goal_relation_variables`); the compiler's line is an invariant for a goal since"
 date   = "2026-11-10"
 
@@ -11563,7 +11563,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
 date   = "2026-11-10"
 
@@ -11595,7 +11595,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
 date   = "2026-11-10"
 
@@ -11627,7 +11627,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
 date   = "2026-11-10"
 
@@ -11659,7 +11659,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). The four views that draw a program parsed it and never loaded it (*\"Parsed, never loaded, so a program the loader refuses still draws\"*, M1e2 S1e2.1.3), so they drew this one, and every program the loader refuses; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
 date   = "2026-11-10"
 
@@ -11691,7 +11691,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.21 (T1f.5.21.1, 2026-11-10), from the close review's finding 1 (*`ein render program` and `ein render rules` draw the rule and exit 0*). `kb save` loads the program and never compiles it, so it wrote a container of a program every command that opens one refused; fixed by T1f.5.21.2 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
 
 [case.fixed]
-commit = "0000000"
+commit = "4e3c0c9d"
 by     = "S1f.5.21 (T1f.5.21.2): `render program`, `render rules`, `render rule` and `render constraints` read a program through the loader before they draw it, as every other command does, and refuse what it refuses, with its line, taking `--no-require-why` as the six other commands that load do (Q-M1f.71); and `kb save` refuses the three shapes the compiler refused, which the loader refuses since"
 date   = "2026-11-10"
 
