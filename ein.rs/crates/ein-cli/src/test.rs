@@ -719,7 +719,9 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     for (i, query) in kb.program().queries.iter().enumerate() {
         let goal = ein_infer::query_value(&ast, query, "goal");
         let mut r = row(i + 1, n_queries, "query", "no-expect");
-        r.goal = goal.map(|g| ein_ir::dump_compact(&ast, g));
+        // The goal as written; its relations, and what is matched, are the
+        // expansion's (M1f S1f.7.5).
+        r.goal = ein_infer::goal_written(&ast, query).map(|g| ein_ir::dump_compact(&ast, g));
         r.goal_relations = goal
             .map(|g| ein_ir::pattern_relations(&ast, g))
             .unwrap_or_default();

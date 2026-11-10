@@ -281,12 +281,15 @@ pub fn load_query_with(
     // Every query block, in source order — plural since M1c S1c.1.2, because a
     // second one used to load and be discarded in silence. `config` keeps
     // last-wins: a config is a setting, a query is content.
-    let queries: Vec<Query> = query_blocks
-        .iter()
-        .map(|&form| Query {
-            kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
-        })
-        .collect();
+    //
+    // A goal is a premise, so a macro called in one is expanded as a rule's
+    // `:match` is (M1f S1f.7.5, W77): every reader of the query's `:goal`
+    // meets the expansion, and `Query::goal_written` keeps the goal as the
+    // program wrote it, for the surfaces that print it.
+    let mut queries: Vec<Query> = Vec::with_capacity(query_blocks.len());
+    for &form in &query_blocks {
+        queries.push(expand_goal(ast, form, &declared_macros, &mut errors));
+    }
     kb.program_mut().queries = queries;
     // One lattice per program (M1e2 S1e2.1a.4): a second `(solve …)` would be
     // a second R, which is what splitting solving from asking removed.
@@ -299,11 +302,34 @@ pub fn load_query_with(
     kb.program_mut().solve = solve_blocks.first().map(|&form| Solve {
         kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
     });
-    validate_solve(ast, terms, &kb, &mut errors);
+    // The relations of the program, as it writes them outside its goals and
+    // its `(solve …)` lists (M1f S1f.7.8's notion, Q-M1f.114): what a claim
+    // may list and a goal may ask about (S1f.7.11). A program already refused
+    // is not read for them, since a rule the loader refused may be missing
+    // from the registries they are read off.
+    let relations_of = errors
+        .is_empty()
+        .then(|| program_relations(ast, terms, &kb, &facts, &relation_places));
+    // What a state can hold a fact of: those, and the relations a
+    // `(solve :hrules …)` activator has its hrule propose.
+    let holdable = relations_of.as_ref().map(|known| {
+        let mut all = known.clone();
+        all.extend(activator_relations(ast, &kb, &relation_places));
+        all
+    });
+    validate_solve(ast, &kb, holdable.as_ref(), &mut errors);
     // A `(solve …)` list that names an hrule or a relation the program does
     // not have (M1f S1f.7.8, W76).
-    refuse_solve_names(ast, terms, &kb, &facts, &relation_places, &mut errors);
-    validate_queries(ast, terms, &kb, &mut errors);
+    if let Some(known) = relations_of.as_ref() {
+        refuse_solve_names(ast, terms, &kb, known, &relation_places, &mut errors);
+    }
+    let stdlib_macros = Resolver::new().stdlib_macro_names();
+    let unimported: Vec<String> = stdlib_macros
+        .iter()
+        .filter(|n| !declared_macros.contains_key(*n))
+        .cloned()
+        .collect();
+    validate_queries(ast, &kb, holdable.as_ref(), &unimported, &mut errors);
     if let Some(&last) = config_blocks.last() {
         let args: Vec<NodeId> = ast.form_args(last).to_vec();
         kb.program_mut().config = Some(config_from_kw_pairs(ast, &args));
@@ -320,15 +346,22 @@ pub fn load_query_with(
     ] {
         for (name, rule) in registry.iter() {
             if let Some(p) = rule.match_.as_ref() {
-                rule_matches.push((terms.sym(name).to_string(), NodeId(p.expr.0)));
+                rule_matches.push((format!("rule '{}'", terms.sym(name)), NodeId(p.expr.0)));
             }
+        }
+    }
+    // …and a goal, which is a premise too (M1f S1f.7.5, W77): unexpanded, the
+    // call matched nothing and the goal had no row in any state.
+    for query in &kb.program().queries {
+        if let Some(goal) = query_keyword(ast, query, "goal") {
+            rule_matches.push(("query".to_string(), goal));
         }
     }
     errors.extend(macros::unimported_macro_errors(
         ast,
         &rule_matches,
         &declared_macros,
-        &Resolver::new().stdlib_macro_names(),
+        &stdlib_macros,
     ));
 
     intern_program_names(ast, terms, &kb);
@@ -471,7 +504,12 @@ fn intern_guard_facts(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<(), 
 /// form had an allow-list here, `SOLVE_KEYWORDS` and `QUERY_KEYWORDS` (M1c
 /// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects),
 /// M1e2 S1e2.1a.4), which no program the grammar accepts reached since.
-fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
+fn validate_solve(
+    ast: &Ast,
+    kb: &Kb,
+    relations_of: Option<&BTreeSet<String>>,
+    errors: &mut Vec<String>,
+) {
     let Some(solve) = kb.program().solve() else {
         return;
     };
@@ -514,13 +552,14 @@ fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
                 }
                 continue;
             }
-            let known = terms
-                .syms
-                .get(fact.relation)
-                .is_some_and(|sym| kb.program().relations.get(sym).is_some());
+            // A relation of the program (M1f S1f.7.11, W78): until then one
+            // a declaration or a fact makes, which refused a claim listing a
+            // fact only a rule's `:assert` derives.
+            let known = relations_of.is_none_or(|k| k.contains(fact.relation));
             if !known && reported.insert(fact.relation.to_string()) {
                 errors.push(format!(
-                    "(solve … :expect …) names {}, which no declaration or fact makes a relation",
+                    "(solve … :expect …) names {0}, and the program names no relation {0} — \
+                     {CLAIM_RELATION}",
                     fact.relation
                 ));
             }
@@ -569,29 +608,107 @@ struct RelationPlaces {
 /// An activator's argument at a parameter that names no relation is a value,
 /// a type or an object, and is not checked: `(guess (at Colour House))`
 /// loads, and proposes nothing (F25's R-2).
-fn refuse_solve_names(
+/// The relation of every form at or under `node`, where it is a name.
+fn relation_heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
+    match ast.node(node) {
+        Node::SForm { head, .. } => {
+            if let Node::Atom(s) = ast.node(head) {
+                out.insert(ast.sym(s).to_string());
+            }
+            for &a in ast.form_args(node) {
+                relation_heads(ast, a, out);
+            }
+        }
+        Node::KwPair { value, .. } => relation_heads(ast, value, out),
+        _ => {}
+    }
+}
+
+/// What a claim's refusal, and a goal's, says a relation of the program is.
+const CLAIM_RELATION: &str = "a relation of the program is one it declares, states a fact of, or \
+                              writes in a rule or an hrule";
+
+/// **The relations of the program**, as it writes them outside its goals and
+/// its `(solve …)` lists — M1f S1f.7.8's notion (Q-M1f.114), which S1f.7.11
+/// holds a goal and a claim to: a relation it declares or states a fact of,
+/// `is-a`, `eq` and `neq`, the relation of any form at any depth in a rule's,
+/// an hrule's or an obligation's `:match` or `:assert`, as expanded, or in a
+/// fact, a name a fact or a conclusion passes where a relation's name is held
+/// (`places.passed`). So a relation only a rule's `:assert` derives is one.
+///
+/// A goal's own relations are not among them: a goal reads, and a relation
+/// only a goal names is one no state holds a fact of. [`refuse_solve_names`]
+/// adds them for its lists (Q-M1f.114 (b)).
+fn program_relations(
     ast: &Ast,
     terms: &Terms,
     kb: &Kb,
     facts: &[NodeId],
     places: &RelationPlaces,
-    errors: &mut Vec<String>,
-) {
-    /// The relation of every form at or under `node`, where it is a name.
-    fn heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
-        match ast.node(node) {
-            Node::SForm { head, .. } => {
-                if let Node::Atom(s) = ast.node(head) {
-                    out.insert(ast.sym(s).to_string());
-                }
-                for &a in ast.form_args(node) {
-                    heads(ast, a, out);
-                }
+) -> BTreeSet<String> {
+    let program = kb.program();
+    let mut known: BTreeSet<String> = places.passed.clone();
+    // `is-a` and the two relations of equality are every program's.
+    known.extend(["is-a", "eq", "neq"].map(str::to_string));
+    for (name, _) in program.relations.iter() {
+        known.insert(terms.sym(name).to_string());
+    }
+    for registry in [&program.rules, &program.hrules, &program.obligations] {
+        for (_, rule) in registry.iter() {
+            for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
+                .into_iter()
+                .flatten()
+            {
+                relation_heads(ast, NodeId(pat.expr.0), &mut known);
             }
-            Node::KwPair { value, .. } => heads(ast, value, out),
-            _ => {}
         }
     }
+    for &f in facts {
+        relation_heads(ast, f, &mut known);
+    }
+    known
+}
+
+/// The relations a `(solve :hrules …)` activator gives its hrule at a
+/// parameter that names a relation: that hrule proposes facts of each, so a
+/// state can hold one, and a goal may ask about it and a claim list it
+/// (M1f S1f.7.11). [`refuse_solve_names`] holds each to the program's other
+/// relations, a goal's among them.
+fn activator_relations(ast: &Ast, kb: &Kb, places: &RelationPlaces) -> BTreeSet<String> {
+    let mut known: BTreeSet<String> = BTreeSet::new();
+    if let Some(solve) = kb.program().solve()
+        && let Some(value) = solve_keyword(ast, &solve.kw_pairs, "hrules")
+        && let Node::SForm { head, .. } = ast.node(value)
+    {
+        let mut hrule: Option<&str> = None;
+        for item in std::iter::once(head).chain(ast.form_args(value).iter().copied()) {
+            match ast.node(item) {
+                Node::Atom(s) if hrule.is_none() => hrule = Some(ast.sym(s)),
+                Node::SForm { head: h, .. } => {
+                    let Some(name) = hrule else { continue };
+                    for (i, &a) in std::iter::once(&h).chain(ast.form_args(item)).enumerate() {
+                        if let Some(arg) = ast.atom_name(a)
+                            && places.positions.contains(&(name.to_string(), i))
+                        {
+                            known.insert(arg.to_string());
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    known
+}
+
+fn refuse_solve_names(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    relations_of: &BTreeSet<String>,
+    places: &RelationPlaces,
+    errors: &mut Vec<String>,
+) {
     /// A list's names with their nodes: a bare name, or a form's head and
     /// its atom arguments. `()` holds none.
     fn names(ast: &Ast, value: NodeId) -> Vec<(NodeId, String)> {
@@ -618,29 +735,12 @@ fn refuse_solve_names(
         return;
     }
     let program = kb.program();
-    let mut known: BTreeSet<String> = places.passed.clone();
-    // `is-a` and the two relations of equality are every program's.
-    known.extend(["is-a", "eq", "neq"].map(str::to_string));
-    for (name, _) in program.relations.iter() {
-        known.insert(terms.sym(name).to_string());
-    }
-    for registry in [&program.rules, &program.hrules, &program.obligations] {
-        for (_, rule) in registry.iter() {
-            for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
-                .into_iter()
-                .flatten()
-            {
-                heads(ast, NodeId(pat.expr.0), &mut known);
-            }
-        }
-    }
+    // The program's relations, and here every relation a goal reads too.
+    let mut known: BTreeSet<String> = relations_of.clone();
     for query in &program.queries {
         if let Some(goal) = query_keyword(ast, query, "goal") {
-            heads(ast, goal, &mut known);
+            relation_heads(ast, goal, &mut known);
         }
-    }
-    for &f in facts {
-        heads(ast, f, &mut known);
     }
     let hrules: Vec<String> = program
         .hrules
@@ -767,40 +867,6 @@ fn placed_or(ast: &Ast, node: NodeId, outer: NodeId) -> String {
     }
 }
 
-/// A query's `:goal` that writes an `eq` or `neq` guard over a form holding a
-/// variable, refused as a rule's is ([`refuse_no_fact_holds`], Q-M1f.30): one
-/// line per form, in Ein's spelling.
-fn refuse_guard_patterns(ast: &Ast, node: NodeId, errors: &mut Vec<String>) {
-    let Node::SForm { args, .. } = ast.node(node) else {
-        return;
-    };
-    let args = ast.args(args).to_vec();
-    if matches!(ast.head_name(node), Some("eq") | Some("neq")) {
-        let mut seen: Vec<String> = Vec::new();
-        for &a in &args {
-            let mut vars = Vec::new();
-            walk_pattern(ast, a, &mut vars, &mut Vec::new());
-            let text = crate::dump::dump_compact(ast, a);
-            if matches!(ast.node(a), Node::SForm { .. })
-                && !vars.is_empty()
-                && !seen.contains(&text)
-            {
-                errors.push(format!(
-                    "query: its :goal writes {}, and the form {text} holds a variable — a guard \
-                     compares two values, each a variable, a name, or a fact that holds no \
-                     variable",
-                    crate::dump::dump_compact(ast, node),
-                ));
-                seen.push(text);
-            }
-        }
-        return;
-    }
-    for a in args {
-        refuse_guard_patterns(ast, a, errors);
-    }
-}
-
 /// A `(solve …)` keyword's value node. The **first** match wins.
 fn solve_keyword(ast: &Ast, kw_pairs: &[ExprRef], want: &str) -> Option<NodeId> {
     for &pair in kw_pairs {
@@ -823,7 +889,13 @@ fn solve_keyword(ast: &Ast, kw_pairs: &[ExprRef], want: &str) -> Option<NodeId> 
 /// Runs after the fact pass, because two of the three `:expect` rules are
 /// about the *program*: a relation it names must be one the program knows, and
 /// the goal's relations must be among the ones it closes.
-fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
+fn validate_queries(
+    ast: &Ast,
+    kb: &Kb,
+    relations_of: Option<&BTreeSet<String>>,
+    unimported: &[String],
+    errors: &mut Vec<String>,
+) {
     for query in &kb.program().queries {
         if let Some(text) = string_value(ast, query_keyword(ast, query, "goal-text")) {
             let mut vars: Vec<String> = Vec::new();
@@ -833,12 +905,30 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
             refuse_unreachable_references("query", ":goal-text", text, &vars, errors);
         }
         if let Some(goal) = query_keyword(ast, query, "goal") {
-            refuse_guard_patterns(ast, goal, errors);
+            // A goal is a premise, held to what a rule's `:match` is held to
+            // (M1f S1f.7.5, S1f.7.1): the one walk a rule's clauses get reads
+            // it, a guard over a form holding a variable (Q-M1f.30), a
+            // premise that is no form, which a macro's expansion can leave,
+            // and a relation written as a variable, at the top level (M1f
+            // S1f.5.21, W64) and inside a pattern (S1f.7.1, W79).
+            let n_refused = errors.len();
+            refuse_no_fact_holds(ast, "query", &[], ":goal", goal, errors);
             // A goal is compiled as a rule's `:match` is, and refused where the
-            // compiler would refuse it (M1f S1f.5.21: W62, W63, W64).
+            // compiler would refuse it (M1f S1f.5.21: W62, W63).
             refuse_nested_disjunctions(ast, "query", ":goal", goal, errors);
             refuse_wide_matches(ast, "query", ":goal", &[], goal, errors);
-            refuse_goal_relation_variables(ast, goal, errors);
+            // A kernel primitive in a shape only a macro's expansion writes
+            // (S1f.5.24's walk, S1f.7.5).
+            if errors.len() == n_refused {
+                refuse_malformed_primitives(ast, "query", ":goal", goal, errors);
+            }
+            // A relation the goal asks about is a relation of the program
+            // (S1f.7.11, W78).
+            if errors.len() == n_refused
+                && let Some(known) = relations_of
+            {
+                refuse_goal_relations(ast, goal, known, unimported, errors);
+            }
         }
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
@@ -862,15 +952,18 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
                 // fact makes them one, and the check below is the goal's. So
                 // is an `(absent …)` the goal writes, whose instance a class
                 // lists beside the rest (S1f.5.7's T1f.5.7.6, W56, Q-M1f.35).
+                //
+                // Since M1f S1f.7.11 (W78) the rest is a relation of the
+                // program, [`program_relations`]: until then one a declaration
+                // or a fact makes, which refused a claim listing a fact only a
+                // rule's `:assert` derives.
                 let known = is_predicate(fact.relation)
                     || fact.relation == "absent"
-                    || terms
-                        .syms
-                        .get(fact.relation)
-                        .is_some_and(|sym| kb.program().relations.get(sym).is_some());
+                    || relations_of.is_none_or(|k| k.contains(fact.relation));
                 if !known {
                     errors.push(format!(
-                        ":expect names {}, which no declaration or fact makes a relation",
+                        ":expect names {0}, and the program names no relation {0} — \
+                         {CLAIM_RELATION}",
                         fact.relation
                     ));
                 }
@@ -1235,21 +1328,13 @@ fn ingest_rules(
                 _ => None,
             })
             .collect();
-        refuse_no_fact_holds(ast, &head, &name, &param_vars, ":match", match_node, errors);
-        refuse_no_fact_holds(
-            ast,
-            &head,
-            &name,
-            &param_vars,
-            ":assert",
-            assert_node,
-            errors,
-        );
+        let who = format!("{head} '{name}'");
+        refuse_no_fact_holds(ast, &who, &param_vars, ":match", match_node, errors);
+        refuse_no_fact_holds(ast, &who, &param_vars, ":assert", assert_node, errors);
         // An `(or …)` written as a premise, and a `:match` past the register
         // file: the compiler's two refusals a program reached, read here since
         // M1f S1f.5.21 (W62, W63), after expansion, so a macro's `(or …)` too
         // (Q-M1f.74).
-        let who = format!("{head} '{name}'");
         refuse_nested_disjunctions(ast, &who, ":match", match_node, errors);
         refuse_wide_matches(ast, &who, ":match", &param_vars, match_node, errors);
         if errors.len() != n_refused {
@@ -1407,10 +1492,22 @@ fn ingest_rules(
 /// `(absent …)` whose body is no form, stopped compilation with a
 /// `CompileError` in the Python IR's spelling, and in an `:assert` the firing
 /// stopped with `NotAFact`'s line.
+///
+/// **A query's `:goal` is read by the same walk** since M1f S1f.7.5 and
+/// S1f.7.1, `who` being `query` and `clause` `:goal`: a goal is a premise.
+/// A query has no activator, so every relation written as a variable is
+/// refused, at the top level (M1f S1f.5.21, W64: until then the compiler
+/// refused it where a state was answered from the goal, so `ein saturate` and
+/// `ein solve` on a program whose R is empty answered it) and inside a
+/// pattern (S1f.7.1, W79: until then the compiler lowered the inner pattern as
+/// a slot that matches nothing, so `(p (?R ?x))` had no row beside `(p (g
+/// k))`, and under an `(absent …)` held in every state). Until S1f.7.5 a goal
+/// had two walks of its own, `refuse_guard_patterns` and
+/// `refuse_goal_relation_variables`, and neither read a premise that is no
+/// form, which a macro's expansion leaves in a goal as in a rule.
 fn refuse_no_fact_holds(
     ast: &Ast,
-    head: &str,
-    name: &str,
+    who: &str,
     params: &[&str],
     clause: &str,
     node: NodeId,
@@ -1578,7 +1675,7 @@ fn refuse_no_fact_holds(
         params,
         out: Vec::new(),
     };
-    if clause == ":match" {
+    if clause != ":assert" {
         let mut bound: Vec<String> = params.iter().map(|p| p.to_string()).collect();
         walk.premise(node, None, &mut bound);
     } else {
@@ -1591,8 +1688,15 @@ fn refuse_no_fact_holds(
                          that holds no variable";
     for f in walk.out {
         errors.push(match f {
+            Found::FreeHead(form, h) if clause == ":goal" => format!(
+                "{who}: its {clause} writes {} with {} as its relation, which nothing binds — a \
+                 relation is named by a name, or by a rule's parameter its activator binds, \
+                 and a query has no activator",
+                dc(form),
+                dc(h)
+            ),
             Found::FreeHead(form, h) => format!(
-                "{head} '{name}': its {clause} writes {} with {} as its relation, which no \
+                "{who}: its {clause} writes {} with {} as its relation, which no \
                  parameter binds — a relation is named by a name or by a parameter its \
                  activator binds",
                 dc(form),
@@ -1606,12 +1710,12 @@ fn refuse_no_fact_holds(
                     _ => format!("is {}", dc(p)),
                 };
                 format!(
-                    "{head} '{name}': its {clause} {place}, and {} is no premise — {PREMISE}",
+                    "{who}: its {clause} {place}, and {} is no premise — {PREMISE}",
                     dc(p)
                 )
             }
             Found::GuardNode(guard, arg) => format!(
-                "{head} '{name}': its {clause} writes {}, and the form {} holds a variable — \
+                "{who}: its {clause} writes {}, and the form {} holds a variable — \
                  {GUARD}",
                 dc(guard),
                 dc(arg)
@@ -2168,40 +2272,112 @@ fn refuse_wide_matches(
     ));
 }
 
-/// **A goal names the relations it asks about** — M1f S1f.5.21, W64.
+/// **A goal asks about relations of the program** — M1f S1f.7.11, W78.
 ///
-/// A premise whose relation is a variable is a rule's, whose parameter its
-/// activator binds (Q29); in a rule one no parameter binds is refused at load
-/// since M1e2 S1e2.2.24 (W24, `refuse_no_fact_holds`). A query has no
-/// activator, so in a goal every such premise is refused, one line each, at the
-/// depths the compiler reads a premise: under `(and …)`, `(or …)` and
-/// `(absent …)`. Until S1f.5.21 the compiler refused it where a state was
-/// answered from the goal, `ein.inference.compile.CompileError: unbound
-/// relation head ?R in a premise of `SForm(…)``, so `ein saturate`, which reads
-/// no query, and `ein solve` on a program whose R is empty answered it
-/// (S1a.6.6's `query-goal-free-head.ein` and its `-unsat` sibling).
-fn refuse_goal_relation_variables(ast: &Ast, node: NodeId, errors: &mut Vec<String>) {
-    let Node::SForm { head, .. } = ast.node(node) else {
-        return;
-    };
-    match ast.head_name(node) {
-        Some("and") | Some("or") | Some("absent") => {
-            for &a in ast.form_args(node) {
-                refuse_goal_relation_variables(ast, a, errors);
+/// A premise of a goal over a relation the program names nowhere else can
+/// have no row in any state, and under an `(absent …)` holds in every one, so
+/// a relation misspelt in a goal read as a goal that is undetermined. Each is
+/// refused, one line per name, placed at the pattern: the relation of every
+/// pattern the goal writes, at any depth, a nested pattern's and a stored
+/// negation's too, must be one of `known`, [`program_relations`]. `eq` and
+/// `neq` are every program's; the connectives and `absent` are not patterns;
+/// and a pattern over a kernel relation, `(relation ?R ?A ?B)`, reads what the
+/// loader stores.
+fn refuse_goal_relations(
+    ast: &Ast,
+    goal: NodeId,
+    known: &BTreeSet<String>,
+    unimported: &[String],
+    errors: &mut Vec<String>,
+) {
+    fn walk(ast: &Ast, node: NodeId, out: &mut Vec<(NodeId, String)>) {
+        let Node::SForm { head, .. } = ast.node(node) else {
+            return;
+        };
+        if let Node::Atom(s) = ast.node(head) {
+            let name = ast.sym(s);
+            if !is_reserved(name)
+                && !is_predicate(name)
+                && !matches!(name, "and" | "or" | "absent" | "not")
+                && !ein_core::text::INTERNAL_NAMES.contains(&name)
+                && !out.iter().any(|(_, n)| n == name)
+            {
+                out.push((node, name.to_string()));
             }
         }
-        _ => {
-            if let Node::Var(_) = ast.node(head) {
-                let dc = |n: NodeId| crate::dump::dump_compact(ast, n);
-                errors.push(format!(
-                    "query: its :goal writes {} with {} as its relation, which nothing binds — a \
-                     relation is named by a name, or by a rule's parameter its activator binds, \
-                     and a query has no activator",
-                    dc(node),
-                    dc(head)
-                ));
-            }
+        for &a in ast.form_args(node) {
+            walk(ast, a, out);
         }
+    }
+    let mut found: Vec<(NodeId, String)> = Vec::new();
+    walk(ast, goal, &mut found);
+    for (node, name) in found {
+        // A `std.macro` call the program did not import has its own line
+        // (`macros::unimported_macro_errors`).
+        if !known.contains(&name) && !unimported.contains(&name) {
+            errors.push(format!(
+                "{}query: its :goal writes {}, and the program names no relation {name} — \
+                 {CLAIM_RELATION}, so no state holds a fact of {name}",
+                placed_or(ast, node, goal),
+                crate::dump::dump_compact(ast, node),
+            ));
+        }
+    }
+}
+
+/// One `(query …)` as the program holds it: its clauses, with the macro calls
+/// of its `:goal` expanded as a rule's `:match`'s are — M1f S1f.7.5, W77.
+///
+/// A goal is a premise. Until S1f.7.5 only a rule's clauses were expanded, so
+/// a call in a goal, `(unknown (p ?x))`, was read as a pattern over a relation
+/// `unknown`: the goal had no row in any state, `:expect (model)` held of it,
+/// and the claim that lists what the macro means was refused at load. The
+/// expansion replaces the `:goal` pair's value, so every reader of the query
+/// meets it, and [`Query::goal_written`] keeps the goal as written, which the
+/// read-out and `ein test` print (Q-M1f.117). A call that does not expand, by
+/// its arity or by a macro that expands to itself, is one line, and the goal
+/// is left as written.
+fn expand_goal(
+    ast: &mut Ast,
+    form: NodeId,
+    macros: &BTreeMap<String, IrMacro>,
+    errors: &mut Vec<String>,
+) -> Query {
+    let mut pairs: Vec<ExprRef> = ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect();
+    let mut goal_written = None;
+    if !macros.is_empty() {
+        for slot in pairs.iter_mut() {
+            let pair = NodeId(slot.0);
+            let Node::KwPair { key, value } = ast.node(pair) else {
+                continue;
+            };
+            if !matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "goal") {
+                continue;
+            }
+            match macros::expand_macros(ast, value, macros) {
+                Ok(expanded) => {
+                    let loc = ast.loc(pair);
+                    *slot = ExprRef(
+                        ast.push(
+                            Node::KwPair {
+                                key,
+                                value: expanded,
+                            },
+                            loc,
+                        )
+                        .0,
+                    );
+                    goal_written = Some(ExprRef(value.0));
+                }
+                Err(e) => errors.push(format!("query: its :goal: {e}")),
+            }
+            // The first `:goal` is the query's (`query_keyword`).
+            break;
+        }
+    }
+    Query {
+        kw_pairs: pairs.into_boxed_slice(),
+        goal_written,
     }
 }
 
@@ -4933,8 +5109,12 @@ mod tests {
     /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`).
     #[test]
     fn every_query_is_kept_and_the_last_config_still_wins() {
-        let (_terms, kb) = ok("(query :goal (a ?x))\n(query :goal (b ?x) :over all)\n\
-             (config :record-alternative-justifications false)\n(config :lattice-sanity-check true)");
+        // The facts make `a` and `b` relations of the program, which a goal
+        // asks about since M1f S1f.7.11.
+        let (_terms, kb) = ok(
+            "(a k) (b k)\n(query :goal (a ?x))\n(query :goal (b ?x) :over all)\n\
+             (config :record-alternative-justifications false)\n(config :lattice-sanity-check true)",
+        );
         let p = kb.program();
         assert_eq!(p.queries.len(), 2, "both blocks load");
         assert_eq!(p.queries[0].kw_pairs.len(), 1);
@@ -4969,7 +5149,14 @@ mod tests {
              (query :goal (p A ?h) :expect (model (p A H) (nosuch A)))",
         );
         assert!(e.contains("nosuch"), "{e}");
-        assert!(e.contains("no declaration or fact makes a relation"), "{e}");
+        assert!(e.contains("the program names no relation nosuch"), "{e}");
+        // A relation only a rule's `:assert` derives is the program's (M1f
+        // S1f.7.11, W78): a claim may list a fact of it.
+        ok(
+            "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
+             (rule r () :match (p ?a ?h) :assert (won ?a) :why \"{?a} won\")\n\
+             (query :goal (won ?a) :expect (model (won A)))",
+        );
     }
 
     /// Since M1e2 S1e2.1a.5 a query's `:expect` lists projection classes —
@@ -5043,7 +5230,7 @@ mod tests {
     /// wrote `:mode all`, which the grammar refuses (S1f.5.11).
     #[test]
     fn a_later_query_is_reachable_by_index() {
-        let src = "(query :goal (a ?x))\n(query :goal (b ?x) :over all)";
+        let src = "(a k) (b k)\n(query :goal (a ?x))\n(query :goal (b ?x) :over all)";
         let mut ast = Ast::new();
         let mut terms = Terms::new();
         let forms = crate::parse(&mut ast, src, None).expect("parses");

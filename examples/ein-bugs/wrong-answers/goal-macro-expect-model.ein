@@ -1,0 +1,32 @@
+;;; A macro called in a query's `:goal` is not expanded, so the goal has no row
+;;; and the claim that it has none holds —
+;;; M1f **W77**, register row `W77/goal-macro-expect-model`, filed by S1f.7.5 (T1f.7.5.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, no candidate, and a macro of the program's
+;;; own, `(settled ?g)`, which is `(paid ?g)`. The goal asks who has settled, and
+;;; the claim says nobody: `(model)`, the class of a goal with no row.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is root's state alone. `(settled ?g)` is `(paid ?g)`, whose one row is `?g =
+;;; Ann`, so the query's one class is `(paid Ann)`. The claim lists `(model)`,
+;;; which is no class of it: FAILED, exit 1.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: the program loads, the goal is read as a pattern over a
+;;; relation `settled`, which nothing holds, *the goal has no row: undetermined
+;;; here*, and the claim `(model)` holds, exit 0. The right claim, `(model (paid
+;;; Ann))`, was refused at load.
+;;; The goal's macro calls are expanded at load since S1f.7.5 (T1f.7.5.3): the claim
+;;; is FAILED, exit 1.
+
+(relation paid Guest :why "{?1} has paid")
+(macro settled (?g) (paid ?g) :why "{?g} has settled")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(solve :hypothesis-relations ())
+(query :goal (settled ?g) :expect (model))

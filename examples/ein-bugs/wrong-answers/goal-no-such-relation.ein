@@ -1,0 +1,28 @@
+;;; A query's `:goal` over a relation the program names nowhere else loads, and
+;;; has no row —
+;;; M1f **W78**, register row `W78/goal-no-such-relation`, filed by S1f.7.11 (T1f.7.11.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and no candidate. The goal asks `(payed
+;;; ?g)`, where the program's relation is `paid`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; No declaration, fact, rule or hrule of the program names `payed`, so no state
+;;; holds a fact of it and the goal can have no row: refused at load, at the
+;;; pattern, one line, on every command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: the program loads, and every state reports *the goal has no
+;;; row: undetermined here*, exit 0 on every command, as a goal over `paid` does
+;;; in a state that holds no `paid` fact.
+;;; Refused at load since S1f.7.11 (T1f.7.11.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(solve :hypothesis-relations ())
+(query :goal (payed ?g))

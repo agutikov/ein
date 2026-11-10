@@ -316,8 +316,9 @@ pub fn expand_rule_clauses(
     Ok(out)
 }
 
-/// The S1.8a.f20 guard: a rule whose `:match` names a `std.macro` macro that
-/// was never imported.
+/// The S1.8a.f20 guard: a rule whose `:match`, or since M1f S1f.7.5 a query
+/// whose `:goal`, names a `std.macro` macro that was never imported. `rules`
+/// pairs who writes the premise, `rule 'r'` or `query`, with the premise.
 ///
 /// Unexpanded, the invocation survives into the compiled pattern and the rule
 /// **silently never fires** — the failure mode this check exists for. It is
@@ -341,13 +342,13 @@ pub fn unimported_macro_errors(
         return Vec::new();
     }
     let mut out = Vec::new();
-    for (name, match_node) in rules {
+    for (who, match_node) in rules {
         let mut heads = Vec::new();
         concrete_heads(ast, *match_node, &mut heads);
         for head in &unimported {
             if heads.iter().any(|h| h == *head) {
                 out.push(format!(
-                    "rule '{name}': '({head} …)' is a std.macro pattern macro used \
+                    "{who}: '({head} …)' is a std.macro pattern macro used \
                      without importing it — add (import std.macro :symbols ({head})); \
                      unexpanded it would silently never match"
                 ));
@@ -483,7 +484,7 @@ mod tests {
                 _ => None,
             })
             .expect("a :match");
-        let rules = vec![("undefeated".to_string(), match_node)];
+        let rules = vec![("rule 'undefeated'".to_string(), match_node)];
         let stdlib = vec!["forall".to_string(), "unknown".to_string()];
         let errs = unimported_macro_errors(&ast, &rules, &declared, &stdlib);
         assert_eq!(errs.len(), 1, "{errs:?}");

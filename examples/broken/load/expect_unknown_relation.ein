@@ -1,6 +1,6 @@
-;; `:expect` closes every relation it names, so a name no declaration and no
-;; fact makes a relation would close something that does not exist — and pass,
-;; vacuously, for ever.
+;; `:expect` closes every relation it names, so a name the program writes as a
+;; relation nowhere (no declaration, no fact, no rule or hrule; M1f S1f.7.11)
+;; would close something that does not exist — and pass, vacuously, for ever.
 
 (relation p Thing Place :why "p holds of {?1} and {?2}")
 (p A H1)

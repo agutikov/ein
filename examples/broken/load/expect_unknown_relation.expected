@@ -1,1 +1,1 @@
-:expect names nosuch, which no declaration or fact makes a relation
+:expect names nosuch, and the program names no relation nosuch — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule

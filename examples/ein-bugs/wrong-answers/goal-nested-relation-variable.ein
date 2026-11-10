@@ -1,0 +1,30 @@
+;;; A query's `:goal` that writes a pattern inside a pattern with a variable as
+;;; its relation loads, and matches nothing —
+;;; M1f **W79**, register row `W79/goal-nested-relation-variable`, filed by S1f.7.1 (T1f.7.1.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Two guests, a relation `says` whose argument is a statement, the fact `(says
+;;; (paid Bob))`, and no candidate. The goal asks what is said, `(says (?R ?g))`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; In a rule the shape is refused at load since M1e2 S1e2.2.24 (W24): a relation
+;;; is named by a name or by a parameter its activator binds, and a query has no
+;;; activator. Refused at load, one line, on every command (exit 1, `ein test`:
+;;; 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: the program loads, the inner pattern is lowered as a slot that
+;;; matches nothing, and the goal has no row beside `(says (paid Bob))`, the fact
+;;; it asks about, exit 0 on every command.
+;;; Refused at load since S1f.7.1 (T1f.7.1.3).
+
+(relation says Guest :why "{?1} says something")
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(says (paid Bob))
+(solve :hypothesis-relations ())
+(query :goal (says (?R ?g)))

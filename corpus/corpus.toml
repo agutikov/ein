@@ -2177,6 +2177,66 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W76 (`W76/no-hypothesis`), filed by S1f.7.8's T1f.7.8.2 (2026-11-11): a `:no-hypothesis` list naming a relation the program does not have, `like` for `likes`, which loaded and was answered. Fixed by S1f.7.8's T1f.7.8.3 (2026-11-11): refused at load, at the name, one line, on every command."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-macro-unknown.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W77 (`W77/goal-macro-unknown`), filed by S1f.7.5's T1f.7.5.2 (2026-11-11): the stdlib's `unknown`, imported, called in a query's `:goal`, with the claim that lists what it means, which was refused at load, the call never expanded. Fixed by S1f.7.5's T1f.7.5.3 (2026-11-11): the goal's macro calls are expanded at load, and the claim holds."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-macro-expect-model.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W77 (`W77/goal-macro-expect-model`), filed by S1f.7.5's T1f.7.5.2 (2026-11-11): a macro of the program's own called in a query's `:goal`, with the claim `(model)`, which held of a goal that had no row. Fixed by S1f.7.5's T1f.7.5.3 (2026-11-11): the goal is expanded, its class is `(paid Ann)`, and the claim is FAILED, `solve`'s exit 1."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-macro-unimported.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W77 (`W77/goal-macro-unimported`), filed by S1f.7.5's T1f.7.5.2 (2026-11-11): the stdlib's `unknown` called in a query's `:goal` without its import, which loaded and had no row. Fixed by S1f.7.5's T1f.7.5.3 (2026-11-11): refused at load, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-macro-arity.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W77 (`W77/goal-macro-arity`), filed by S1f.7.5's T1f.7.5.2 (2026-11-11): a macro called in a query's `:goal` with two arguments where it takes one, which loaded and had no row. Fixed by S1f.7.5's T1f.7.5.3 (2026-11-11): refused at load, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-no-such-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W78 (`W78/goal-no-such-relation`), filed by S1f.7.11's T1f.7.11.2 (2026-11-11): a query's `:goal` over a relation the program names nowhere else, `payed` for `paid`, which loaded and had no row. Fixed by S1f.7.11's T1f.7.11.3 (2026-11-11): refused at load, at the pattern, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W78 (`W78/goal-absent-no-such-relation`), filed by S1f.7.11's T1f.7.11.2 (2026-11-11): a query's `:goal` whose `(absent …)` is over a relation the program names nowhere else, which loaded and held of every guest. Fixed by S1f.7.11's T1f.7.11.3 (2026-11-11): refused at load, at the pattern, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/claim-derived-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W78 (`W78/claim-derived-relation`), filed by S1f.7.11's T1f.7.11.2 (2026-11-11): a query's claim listing a fact of a relation only a rule's `:assert` derives, which was refused at load. Fixed by S1f.7.11's T1f.7.11.3 (2026-11-11): a claim's relation is a relation of the program, and the claim holds."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/solve-claim-derived-relation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W78 (`W78/solve-claim-derived-relation`), filed by S1f.7.11's T1f.7.11.2 (2026-11-11): a region claim listing a fact of a relation only a rule's `:assert` derives, which was refused at load. Fixed by S1f.7.11's T1f.7.11.3 (2026-11-11): a claim's relation is a relation of the program, and the claim holds."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W79 (`W79/goal-nested-relation-variable`), filed by S1f.7.1's T1f.7.1.2 (2026-11-11): a query's `:goal` writing a pattern inside a pattern with a variable as its relation, `(says (?R ?g))`, which loaded and matched nothing. Fixed by S1f.7.1's T1f.7.1.3 (2026-11-11): refused at load, one line, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/goal-absent-nested-relation-variable.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W79 (`W79/goal-absent-nested-relation-variable`), filed by S1f.7.1's T1f.7.1.2 (2026-11-11): a query's `:goal` whose `(absent …)` writes a pattern inside a pattern with a variable as its relation, which loaded and held in every state. Fixed by S1f.7.1's T1f.7.1.3 (2026-11-11): refused at load, one line, on every command."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

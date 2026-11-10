@@ -1,0 +1,31 @@
+;;; A region claim that lists a fact of a relation only a rule's `:assert` derives
+;;; is refused —
+;;; M1f **W78**, register row `W78/solve-claim-derived-relation`, filed by S1f.7.11 (T1f.7.11.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `claim-derived-relation.ein` with its claim about the state: `(solve … :expect
+;;; (region (model (admitted Ann) (paid Ann))))`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; R is root's state alone, and of `admitted` and `paid`, the relations the claim
+;;; names, it holds `(admitted Ann)` and `(paid Ann)`: the claim holds, exit 0.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: refused at load, *(solve … :expect …) names admitted, which
+;;; no declaration or fact makes a relation*, exit 1 on every command.
+;;; A claim's relation is a relation of the program since S1f.7.11 (T1f.7.11.3):
+;;; the claim loads and holds.
+
+(relation paid Guest :why "{?1} has paid")
+(rule welcome ()
+  :match  (paid ?g)
+  :assert (admitted ?g)
+  :why "{?g} has paid, so {?g} is admitted")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(solve :hypothesis-relations ()
+       :expect (region (model (admitted Ann) (paid Ann))))

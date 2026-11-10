@@ -1,0 +1,28 @@
+;;; A `std.macro` macro called in a query's `:goal` without its import loads, and
+;;; the goal has no row —
+;;; M1f **W77**, register row `W77/goal-macro-unimported`, filed by S1f.7.5 (T1f.7.5.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `goal-macro-unknown.ein` without its import and its claim: the goal calls
+;;; `unknown`, which the program does not import.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; In a rule's `:match` the call is refused at load, *a std.macro pattern macro
+;;; used without importing it*, since unexpanded it would never match. A goal is a
+;;; premise: refused at load, one line, on every command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: the program loads, `(unknown (paid ?g))` is read as a pattern
+;;; over a relation `unknown`, and the goal has no row in any state, with no word
+;;; of the import, exit 0 on every command.
+;;; Refused at load since S1f.7.5 (T1f.7.5.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(solve :hypothesis-relations ())
+(query :goal (and (is-a ?g Guest) (unknown (paid ?g))))

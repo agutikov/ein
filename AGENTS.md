@@ -822,6 +822,31 @@ constrained-reasoning research.
   1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
   2026-11-11). An activator's argument that is a value is not checked, F25's
   R-2.
+  **S1f.7.5, S1f.7.11 and S1f.7.1 ran to their end the same day**, in one
+  subagent
+  ([S1f.7.5's records](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md#t1-record-2026-11-11),
+  [S1f.7.11's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md#t1-record-2026-11-11)
+  and [S1f.7.1's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md#t1-record-2026-11-11),
+  Q-M1f.117 to .121 defaulted): **a query's `:goal` is held to what a rule's
+  `:match` is held to** (`defined_behaviour.md` § 4.21). A macro call in a
+  goal is expanded at load (`ein_ir::from_ir`'s `expand_goal`), matched on its
+  expansion and printed as written (`ein_core::Query::goal_written`), so the
+  stdlib's `unknown` and `forall` work in a goal, and a `std.macro` call
+  without its import, a call of another arity and an expansion a rule would be
+  refused for are refused (W77). Every relation a goal asks about, at any
+  depth, and every relation a claim lists a fact of, is a relation of the
+  program, S1f.7.8's notion without the goals (`program_relations`), or one a
+  `:hrules` activator has its hrule propose: a goal over any other name is
+  refused at the pattern, and a claim over a relation only a rule's `:assert`
+  derives loads, where it was refused (W78). And one walk reads a rule's
+  clauses and a goal (`refuse_no_fact_holds`), so a relation written as a
+  variable inside a goal's pattern, `(says (?R ?g))`, is refused as the
+  top-level one is (W79). Ten rows filed and fixed, no fixture's program
+  rewritten and no other corpus answer moved, one refusal reworded
+  (`examples/broken/load/expect_unknown_relation.ein`): 264 fixed, 13 open and 1 not wrong (`grep
+  '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11). The pin
+  is `ein-cli/tests/goal_premises.rs`. A rule whose `:match` reads a relation
+  nothing makes is not refused, F25's R-6.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

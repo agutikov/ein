@@ -1,0 +1,28 @@
+;;; A macro called in a query's `:goal` with another number of arguments than it
+;;; takes loads, and the goal has no row —
+;;; M1f **W77**, register row `W77/goal-macro-arity`, filed by S1f.7.5 (T1f.7.5.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `goal-macro-expect-model.ein` with no claim and a call of two arguments,
+;;; `(settled ?g Guest)`, where `settled` takes one.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; In a rule's `:match` the call is refused at load, *macro settled/1 invoked with
+;;; 2 args*. A goal is a premise: refused at load, one line, on every command
+;;; (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: the program loads, the call is read as a pattern over a
+;;; relation `settled`, and the goal has no row, exit 0 on every command.
+;;; Refused at load since S1f.7.5 (T1f.7.5.3).
+
+(relation paid Guest :why "{?1} has paid")
+(macro settled (?g) (paid ?g) :why "{?g} has settled")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(solve :hypothesis-relations ())
+(query :goal (settled ?g Guest))

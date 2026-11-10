@@ -14576,3 +14576,409 @@ derived   = "The program names no relation `like` outside the list: refused at l
 [case.now]
 run     = "saturate --dump"
 refused = "kb load error: examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein:31:24: solve: its :no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
+
+# ══ W77 — a macro called in a query's `:goal` is never expanded ══
+[[case]]
+id       = "W77/goal-macro-unknown"
+case     = "W77"
+title    = "a macro called in a query's `:goal` is not expanded: the goal has no row, `:expect (model)` holds of it, and the claim that lists what the macro means is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.7.5"
+question = ["Q-M1f.117", "Q-M1f.118"]
+witness  = "examples/ein-bugs/wrong-answers/goal-macro-unknown.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.7.5 (T1f.7.5.2, 2026-11-11): the stdlib's `unknown`, imported, in a goal, with the claim that lists what it means. Its `wrong` is the record of what every command answered at 73a0c17d; fixed by T1f.7.5.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.5 (T1f.7.5.3): the loader expands the macro calls of a query's `:goal` as it expands a rule's `:match` (`ein_ir::from_ir`'s `expand_goal`), every reader of the goal meeting the expansion and the read-out printing the goal as written, and holds the expanded goal to the checks a rule's `:match` gets after expansion: an unimported `std.macro` call, a premise that is no form and a kernel primitive in another shape than the grammar's are refused, one line each"
+date   = "2026-11-11"
+
+[case.wrong]
+run     = "saturate --dump"
+by      = "command"
+why     = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): refused at load, *:expect lists (absent (not (paid Bob))), which no atom of the query's :goal matches*, exit 1 on every command: the goal's `(unknown (paid ?g))` is read as a pattern over a relation `unknown`. Without the claim the program loads and the goal has no row"
+exit    = 1
+refused = "kb load error: :expect lists (absent (not (paid Bob))), which no atom of the query's :goal matches — a query's claim lists its projection classes; a claim about the state is (solve … :expect (region …))'s; :expect lists (absent (paid Bob)), which no atom of the query's :goal matches — a query's claim lists its projection classes; a claim about the state is (solve … :expect (region …))'s"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "A goal is a premise, and a macro call in one means what it means in a rule's `:match` (S1f.7.5's default, the direction its stage file names): `(unknown P)` is `(and (absent P) (absent (not P)))`, and a query's class is the goal's atoms under its rows, an `(absent …)`'s among them (Q-M1f.35)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "R is root's state alone. `(paid Ann)` holds, and neither `(paid Bob)` nor `(not (paid Bob))` does, so the goal's one row is `?g = Bob`; its class is `(absent (not (paid Bob)))`, `(absent (paid Bob))` and `(is-a Bob Guest)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W77/goal-macro-expect-model"
+case     = "W77"
+title    = "a macro called in a query's `:goal` is not expanded: the goal has no row, `:expect (model)` holds of it, and the claim that lists what the macro means is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.7.5"
+question = ["Q-M1f.117", "Q-M1f.118"]
+witness  = "examples/ein-bugs/wrong-answers/goal-macro-expect-model.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.7.5 (T1f.7.5.2, 2026-11-11): a macro of the program's own in a goal, with the claim `(model)`, which held. Its `wrong` is the record of what every command answered at 73a0c17d; fixed by T1f.7.5.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.5 (T1f.7.5.3): the loader expands the macro calls of a query's `:goal` as it expands a rule's `:match` (`ein_ir::from_ir`'s `expand_goal`), every reader of the goal meeting the expansion and the read-out printing the goal as written, and holds the expanded goal to the checks a rule's `:match` gets after expansion: an unimported `std.macro` call, a premise that is no form and a kernel primitive in another shape than the grammar's are refused, one line each"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 73a0c17d (2026-11-11): the program loads; the goal `(settled ?g)` is read as a pattern over a relation `settled`, which nothing holds, so the query's one class is the empty one, *the goal has no row: undetermined here*, and the claim `(model)` holds, exit 0. The right claim, `(model (paid Ann))`, is refused at load"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "held" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "A goal is a premise, and a macro call in one means what it means in a rule's `:match` (S1f.7.5's default): `(settled ?g)` is `(paid ?g)`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "failed" }]
+derived   = "R is root's state alone. The goal's one row is `?g = Ann` and its class `(paid Ann)`, so the claim `(model)` lists no class of the query: FAILED, exit 1, which `wrong_answers.rs` holds"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "failed" }]
+
+[[case]]
+id       = "W77/goal-macro-unimported"
+case     = "W77"
+title    = "a macro called in a query's `:goal` is not expanded: the goal has no row, `:expect (model)` holds of it, and the claim that lists what the macro means is refused"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.5"
+question = ["Q-M1f.117", "Q-M1f.118"]
+witness  = "examples/ein-bugs/wrong-answers/goal-macro-unimported.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.5 (T1f.7.5.2, 2026-11-11): the stdlib's `unknown` called in a goal without its import. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.5.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.5 (T1f.7.5.3): the loader expands the macro calls of a query's `:goal` as it expands a rule's `:match` (`ein_ir::from_ir`'s `expand_goal`), every reader of the goal meeting the expansion and the read-out printing the goal as written, and holds the expanded goal to the checks a rule's `:match` gets after expansion: an unimported `std.macro` call, a premise that is no form and a kernel primitive in another shape than the grammar's are refused, one line each"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): the program loads; `(unknown (paid ?g))` is read as a pattern over a relation `unknown`, and the goal has no row in any state, with no word of the import; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.5's default: the expanded goal is held to the checks a rule's `:match` gets, and a rule that calls a `std.macro` macro without importing it is refused at load (S1.8a.f20's guard)"
+derived   = "The program does not import `unknown`, so the call cannot be expanded: refused at load, one line naming the import to add, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: query: '(unknown …)' is a std.macro pattern macro used without importing it — add (import std.macro :symbols (unknown)); unexpanded it would silently never match"
+
+[[case]]
+id       = "W77/goal-macro-arity"
+case     = "W77"
+title    = "a macro called in a query's `:goal` is not expanded: the goal has no row, `:expect (model)` holds of it, and the claim that lists what the macro means is refused"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.5"
+question = ["Q-M1f.117", "Q-M1f.118"]
+witness  = "examples/ein-bugs/wrong-answers/goal-macro-arity.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.5 (T1f.7.5.2, 2026-11-11): a macro called in a goal with two arguments where it takes one. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.5.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.5 (T1f.7.5.3): the loader expands the macro calls of a query's `:goal` as it expands a rule's `:match` (`ein_ir::from_ir`'s `expand_goal`), every reader of the goal meeting the expansion and the read-out printing the goal as written, and holds the expanded goal to the checks a rule's `:match` gets after expansion: an unimported `std.macro` call, a premise that is no form and a kernel primitive in another shape than the grammar's are refused, one line each"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): the program loads; `(settled ?g Guest)` is read as a pattern over a relation `settled`, and the goal has no row; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.5's default: a macro call in a goal is expanded as in a rule's `:match`, where a call of another arity is refused at load"
+derived   = "`settled` takes one argument and the call gives two: refused at load, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: query: its :goal: macro settled/1 invoked with 2 args at examples/ein-bugs/wrong-answers/goal-macro-arity.ein:28:15"
+
+# ══ W78 — a goal over a relation nothing in the program names, and a claim over one only a rule derives ══
+[[case]]
+id       = "W78/goal-no-such-relation"
+case     = "W78"
+title    = "a goal over a relation the program names nowhere loads and has no row, and a claim over a relation only a rule's `:assert` derives is refused"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.11"
+question = ["Q-M1f.119", "Q-M1f.120"]
+witness  = "examples/ein-bugs/wrong-answers/goal-no-such-relation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.11 (T1f.7.11.2, 2026-11-11): a goal over `payed`, where the program's relation is `paid`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.11.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.11 (T1f.7.11.3): the loader holds the relation of every pattern a goal writes, and of every fact a claim lists, to the relations of the program (`ein_ir::from_ir`'s `program_relations`, S1f.7.8's notion without the goals): one it declares, states a fact of, or writes in a rule or an hrule, and one a `(solve :hrules …)` activator has its hrule propose; a goal over any other is refused, one line per name, placed at the pattern, and a claim over one a rule's `:assert` derives loads"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): the program loads, and every state reports *the goal has no row: undetermined here*; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.11's default (a), with S1f.7.8's notion of a relation of the program (Q-M1f.114, Q-M1f.119): a claim's relation is refused at load when the program names none, and so is a goal's"
+derived   = "No declaration, fact, rule or hrule names `payed`, so no state holds a fact of it: refused at load, at the pattern, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/goal-no-such-relation.ein:28:15: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of payed"
+
+[[case]]
+id       = "W78/goal-absent-no-such-relation"
+case     = "W78"
+title    = "a goal over a relation the program names nowhere loads and has no row, and a claim over a relation only a rule's `:assert` derives is refused"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.11"
+question = ["Q-M1f.119", "Q-M1f.120"]
+witness  = "examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.11 (T1f.7.11.2, 2026-11-11): a goal whose `(absent …)` is over `payed`, where the program's relation is `paid`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.11.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.11 (T1f.7.11.3): the loader holds the relation of every pattern a goal writes, and of every fact a claim lists, to the relations of the program (`ein_ir::from_ir`'s `program_relations`, S1f.7.8's notion without the goals): one it declares, states a fact of, or writes in a rule or an hrule, and one a `(solve :hrules …)` activator has its hrule propose; a goal over any other is refused, one line per name, placed at the pattern, and a claim over one a rule's `:assert` derives loads"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): the program loads, and the goal `(and (is-a ?g Guest) (absent (payed ?g)))` has two rows, `?g = Ann` and `?g = Bob`: Ann, who has paid, is answered as one who has not; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "S1f.7.11's default (a): a goal's premise over a relation the program does not name is refused at load, under `(absent …)` too, where it holds whatever the state holds"
+derived   = "No declaration, fact, rule or hrule names `payed`: refused at load, at the pattern, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein:29:44: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of payed"
+
+[[case]]
+id       = "W78/claim-derived-relation"
+case     = "W78"
+title    = "a goal over a relation the program names nowhere loads and has no row, and a claim over a relation only a rule's `:assert` derives is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.7.11"
+question = ["Q-M1f.119", "Q-M1f.120"]
+witness  = "examples/ein-bugs/wrong-answers/claim-derived-relation.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.7.11 (T1f.7.11.2, 2026-11-11): a query's claim listing `(admitted Ann)`, which only rule `welcome` derives. Its `wrong` is the record of what every command answered at 73a0c17d; fixed by T1f.7.11.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.11 (T1f.7.11.3): the loader holds the relation of every pattern a goal writes, and of every fact a claim lists, to the relations of the program (`ein_ir::from_ir`'s `program_relations`, S1f.7.8's notion without the goals): one it declares, states a fact of, or writes in a rule or an hrule, and one a `(solve :hrules …)` activator has its hrule propose; a goal over any other is refused, one line per name, placed at the pattern, and a claim over one a rule's `:assert` derives loads"
+date   = "2026-11-11"
+
+[case.wrong]
+run     = "saturate --dump"
+by      = "command"
+why     = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): refused at load, *:expect names admitted, which no declaration or fact makes a relation*, exit 1 on every command, where the goal alone loads and answers `?g = Ann`"
+exit    = 1
+refused = "kb load error: :expect names admitted, which no declaration or fact makes a relation"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "A relation of the program is one it declares, states a fact of, or writes in a rule or an hrule (S1f.7.8's notion, Q-M1f.114), so one only a rule's `:assert` derives is a relation a claim may list (S1f.7.11)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "R is root's state alone, which holds `(admitted Ann)` by rule `welcome`. The goal's one row is `?g = Ann`, its class `(admitted Ann)`, and the claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W78/solve-claim-derived-relation"
+case     = "W78"
+title    = "a goal over a relation the program names nowhere loads and has no row, and a claim over a relation only a rule's `:assert` derives is refused"
+class    = "claim"
+settings = "default"
+owner    = "S1f.7.11"
+question = ["Q-M1f.119", "Q-M1f.120"]
+witness  = "examples/ein-bugs/wrong-answers/solve-claim-derived-relation.ein"
+status   = "fixed"
+look_at  = ["summary"]
+note     = "Filed by S1f.7.11 (T1f.7.11.2, 2026-11-11): a region claim listing `(admitted Ann)`, which only rule `welcome` derives. Its `wrong` is the record of what every command answered at 73a0c17d; fixed by T1f.7.11.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.11 (T1f.7.11.3): the loader holds the relation of every pattern a goal writes, and of every fact a claim lists, to the relations of the program (`ein_ir::from_ir`'s `program_relations`, S1f.7.8's notion without the goals): one it declares, states a fact of, or writes in a rule or an hrule, and one a `(solve :hrules …)` activator has its hrule propose; a goal over any other is refused, one line per name, placed at the pattern, and a claim over one a rule's `:assert` derives loads"
+date   = "2026-11-11"
+
+[case.wrong]
+run     = "saturate --dump"
+by      = "command"
+why     = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): refused at load, *(solve … :expect …) names admitted, which no declaration or fact makes a relation*, exit 1 on every command"
+exit    = 1
+refused = "kb load error: (solve … :expect …) names admitted, which no declaration or fact makes a relation"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "A relation of the program is one it declares, states a fact of, or writes in a rule or an hrule (S1f.7.8's notion, Q-M1f.114), so one only a rule's `:assert` derives is a relation a region claim may list (S1f.7.11)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "R is root's state alone, and of `admitted` and `paid` it holds `(admitted Ann)` and `(paid Ann)`: the region claim holds, exit 0, which `wrong_answers.rs` holds: a claim that does not hold is an exit 1"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+# ══ W79 — a goal's nested pattern whose relation is a variable matches nothing, in silence ══
+[[case]]
+id       = "W79/goal-nested-relation-variable"
+case     = "W79"
+title    = "a goal's pattern inside a pattern whose relation is a variable loads and matches nothing, and under `(absent …)` holds in every state"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.1"
+question = ["Q-M1f.121"]
+witness  = "examples/ein-bugs/wrong-answers/goal-nested-relation-variable.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.1 (T1f.7.1.2, 2026-11-11): a goal `(says (?R ?g))` beside the fact `(says (paid Bob))`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.1.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.1 (T1f.7.1.3): a goal is read by the walk a rule's clauses are read by (`ein_ir::from_ir`'s `refuse_no_fact_holds`), which descends into a pattern's arguments, so a relation written as a variable is refused at any depth of a goal, under `(absent …)` too, with the line a goal's top-level one has had since S1f.5.21"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): the program loads; the compiler lowers the inner pattern `(?R ?g)` as a slot that matches nothing, and the goal has no row beside `(says (paid Bob))`; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The user's rulings on Q-M1e2.16 (1) and Q-M1e2.18 (W24): a pattern inside a pattern whose relation is a variable no parameter binds is refused at load in a rule. A query has no activator, and S1f.7.1's default is the same refusal in a goal"
+derived   = "The goal writes `(?R ?g)` inside `(says …)`, and nothing binds `?R`: refused at load, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: query: its :goal writes (?R ?g) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator"
+
+[[case]]
+id       = "W79/goal-absent-nested-relation-variable"
+case     = "W79"
+title    = "a goal's pattern inside a pattern whose relation is a variable loads and matches nothing, and under `(absent …)` holds in every state"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.1"
+question = ["Q-M1f.121"]
+witness  = "examples/ein-bugs/wrong-answers/goal-absent-nested-relation-variable.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.1 (T1f.7.1.2, 2026-11-11): a goal `(absent (says (?R ?g)))` beside the fact `(says (paid Bob))`. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.7.1.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.1 (T1f.7.1.3): a goal is read by the walk a rule's clauses are read by (`ein_ir::from_ir`'s `refuse_no_fact_holds`), which descends into a pattern's arguments, so a relation written as a variable is refused at any depth of a goal, under `(absent …)` too, with the line a goal's top-level one has had since S1f.5.21"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 73a0c17d (2026-11-11): the program loads; the inner pattern matches nothing, so the `(absent …)` holds, and the read-out answers *the goal holds: it binds no variable* beside `(says (paid Bob))`; exit 0 on every command"
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "As `W79/goal-nested-relation-variable`: the shape is refused at load in a rule (W24), and in a goal at every depth the compiler reads a premise, under `(absent …)` too"
+derived   = "The goal writes `(?R ?g)` inside `(absent (says …))`, and nothing binds `?R`: refused at load, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: query: its :goal writes (?R ?g) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator"
+

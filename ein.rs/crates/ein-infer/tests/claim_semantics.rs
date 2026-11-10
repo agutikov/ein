@@ -463,7 +463,7 @@ fn the_loader_refuses_what_is_not_a_claim() {
     );
     refused(
         &format!("{body} (solve :expect (region (model (nosuch A))))"),
-        "names nosuch, which no declaration or fact makes a relation",
+        "names nosuch, and the program names no relation nosuch",
     );
     refused(
         &format!("{body} (solve :expect (region (owing (model)) (owing (model))))"),

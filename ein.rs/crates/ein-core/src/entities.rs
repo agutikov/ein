@@ -124,6 +124,11 @@ pub struct Macro {
 #[derive(Clone, Debug, Default)]
 pub struct Query {
     pub kw_pairs: Box<[ExprRef]>,
+    /// The `:goal` as the program wrote it, where the loader expanded a macro
+    /// call in it (M1f S1f.7.5): `kw_pairs` holds the expansion, which is what
+    /// is matched, and a surface that prints the goal prints this. `None`
+    /// where the program declares no macro, and the goal is the pair's value.
+    pub goal_written: Option<ExprRef>,
 }
 
 /// The `(solve …)` block — M1e2 S1e2.1a.4: the problem's lattice, stated once.

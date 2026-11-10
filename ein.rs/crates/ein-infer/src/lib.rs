@@ -99,4 +99,4 @@ pub use shape::{
     explain_shape, hyp_shape, hyp_shape_with, match_shape, naf_map, plan_shape, plan_shape_with,
     saturate_events,
 };
-pub use verdict::{goal_bindings, query_value, solve_value};
+pub use verdict::{goal_bindings, goal_written, query_value, solve_value};

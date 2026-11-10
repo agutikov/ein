@@ -80,6 +80,16 @@ compares two values, so write one guard per pair` (`defined_behaviour.md`
 so it loads whatever its body: the user's ruling of 2026-11-10 on
 [Q-M1f.67](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused),
 *"the ultimate goal in this case is not allow execution of (eq <arg>)"*.
+**A query's `:goal` is a premise, and since M1f
+[S1f.7.5](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md)
+a macro call in one is expanded and read the same way**: `(query :goal (unknown
+(paid ?g)))` asks what `(and (absent (paid ?g)) (absent (not (paid ?g))))`
+asks, the expanded goal is held to the table's shapes, and a `std.macro` call
+the program did not import is refused as it is in a rule. Until then only a
+rule's clauses were expanded, and a call in a goal was a pattern over a
+relation of the macro's name, which matched nothing
+([`defined_behaviour.md` § 4.21](../../defined_behaviour.md#421-a-goal-is-held-to-what-a-rules-match-is-held-to--m1f-s1f75-s1f711-s1f71)).
+A macro call written as a fact, or listed in a claim, is not expanded.
 **Until S1f.5.24** the compiler refused `eq` and `absent` at another arity
 where it compiled the plan (M1e
 [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),

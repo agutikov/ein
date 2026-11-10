@@ -26,7 +26,7 @@ use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
 use crate::explore::{self, Answer, Ask, Verdict, Which};
 use crate::region::Nodes;
-use crate::verdict::{goal_bindings, query_value, solve_value};
+use crate::verdict::{goal_bindings, goal_written, query_value, solve_value};
 use ein_ir::expect::Over;
 
 /// One binding row: `(variable, value)`, sorted by variable.
@@ -477,7 +477,7 @@ pub fn of_answer(
                 .expect
                 .map(|node| query_claim(ast, node, g.over, as_asked, exact, &classes, &answer));
             Query {
-                goal: ein_ir::dump::dump_compact(ast, g.goal),
+                goal: ein_ir::dump::dump_compact(ast, g.written),
                 over: g.over,
                 as_asked,
                 exact,
@@ -506,7 +506,10 @@ pub fn of_answer(
 
 /// One `(query …)` as the program writes it.
 struct Asked {
+    /// The goal as matched, its macro calls expanded.
     goal: NodeId,
+    /// The goal as written, which is what is printed (M1f S1f.7.5).
+    written: NodeId,
     text: Option<String>,
     over: Over,
     expect: Option<NodeId>,
@@ -529,6 +532,7 @@ fn asked(root: &Kb, ast: &Ast) -> Vec<Asked> {
                 .unwrap_or_default();
             Some(Asked {
                 goal,
+                written: goal_written(ast, q).unwrap_or(goal),
                 text,
                 over,
                 expect: query_value(ast, q, "expect"),
@@ -600,7 +604,7 @@ fn counted(
     let queries = goals
         .iter()
         .map(|g| Query {
-            goal: ein_ir::dump::dump_compact(ast, g.goal),
+            goal: ein_ir::dump::dump_compact(ast, g.written),
             over: g.over,
             as_asked: false,
             exact: false,
@@ -842,13 +846,13 @@ fn bindings(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Vec<Row> {
     rows
 }
 
+/// The goal's atoms, an `(and …)` flattened at every depth, as the loader
+/// reads them for a claim (`ein_ir::expect::goal_atoms`). Until M1f S1f.7.5
+/// only the top `(and …)` was, so a goal holding an `(and …)` inside one,
+/// which a macro's expansion writes (`unknown`), had a class listing `(and
+/// …)`, which no claim can write.
 fn conjuncts(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
-    if let Node::SForm { head, args } = ast.node(goal)
-        && matches!(ast.node(head), Node::Atom(s) if ast.sym(s) == "and")
-    {
-        return ast.args(args).to_vec();
-    }
-    vec![goal]
+    ein_ir::expect::goal_atoms(ast, goal)
 }
 
 /// A conjunct with a row's bindings substituted, at any depth: `(not (eq ?x

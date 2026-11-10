@@ -1,0 +1,28 @@
+;;; A query's `:goal` whose `(absent …)` writes a pattern inside a pattern with a
+;;; variable as its relation loads, and holds in every state —
+;;; M1f **W79**, register row `W79/goal-absent-nested-relation-variable`, filed by S1f.7.1 (T1f.7.1.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `goal-nested-relation-variable.ein` with its goal negated: `(absent (says (?R
+;;; ?g)))`, nothing is said.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Refused at load, as the pattern is without the `(absent …)`, one line, on every
+;;; command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `73a0c17d`, release: the program loads, the inner pattern matches nothing, so the
+;;; `(absent …)` holds, and the read-out answers *the goal holds* beside `(says
+;;; (paid Bob))`, exit 0 on every command.
+;;; Refused at load since S1f.7.1 (T1f.7.1.3).
+
+(relation says Guest :why "{?1} says something")
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(says (paid Bob))
+(solve :hypothesis-relations ())
+(query :goal (absent (says (?R ?g))))

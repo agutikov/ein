@@ -12,7 +12,9 @@
 //! on every command.
 //!
 //! What must keep loading is held beside it: a relation only a rule's or an
-//! hrule's `:assert` derives, one named only by a goal or a premise, one the
+//! hrule's `:assert` derives, one named only by a goal that an activator of
+//! the list has its hrule propose (since S1f.7.11 a goal over a relation
+//! nothing else names is itself refused), one the
 //! program only passes to a rule (`(functional at)`), an imported rule's,
 //! `is-a`, `eq`, the empty list, and an activator's argument that is a value.
 
@@ -125,7 +127,12 @@ const ACCEPTED: [(&str, &str); 12] = [
     ),
     ("a-rules-conclusion", "(solve :hypothesis-relations (glad))"),
     ("an-hrules-conclusion", "(solve :no-hypothesis (seen is-a))"),
-    ("a-premise-of-a-goal", "(solve :no-hypothesis (wanted))"),
+    // Named only by the goal below, which may ask about it because this
+    // activator has `guess` propose it (M1f S1f.7.11).
+    (
+        "a-premise-of-a-goal",
+        "(solve :hrules (guess (wanted Color House)))",
+    ),
     ("is-a-alone", "(solve :hypothesis-relations (is-a))"),
     ("the-empty-lists", "(solve :hypothesis-relations ())"),
     ("the-empty-hrules", "(solve :hrules ())"),
@@ -272,10 +279,20 @@ fn the_registers_witnesses_are_refused_on_every_command() {
 fn a_list_naming_what_the_program_has_loads() {
     let scratch = Scratch::new("ein-solve-lists-accepted");
     let mut bad = Vec::new();
-    let goal = "(query :goal (and (at Red ?h) (absent (wanted ?h))))\n";
+    // `wanted` is named only by this goal, and a goal may ask about it only
+    // where the list's activator has `guess` propose it (M1f S1f.7.11).
+    let wanted = "(query :goal (and (at Red ?h) (absent (wanted Red ?h))))\n";
+    let goal = "(query :goal (and (at Red ?h) (absent (glad ?h))))\n";
     let mut programs: Vec<(String, String)> = ACCEPTED
         .iter()
-        .map(|(shape, solve)| (shape.to_string(), format!("{HEAD}{solve}\n{goal}")))
+        .map(|(shape, solve)| {
+            let goal = if *shape == "a-premise-of-a-goal" {
+                wanted
+            } else {
+                goal
+            };
+            (shape.to_string(), format!("{HEAD}{solve}\n{goal}"))
+        })
         .collect();
     // A relation only an imported rule concludes, and `eq` given to a
     // parameter that names a relation.

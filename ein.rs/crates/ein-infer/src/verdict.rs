@@ -20,6 +20,16 @@ pub fn query_value(ast: &Ast, query: &Query, kw_name: &str) -> Option<NodeId> {
     kw_value(ast, &query.kw_pairs, kw_name)
 }
 
+/// A query's `:goal` as the program wrote it, for a surface that prints it:
+/// [`query_value`]'s `goal` is the goal with its macro calls expanded, which
+/// is what is matched (M1f S1f.7.5, Q-M1f.117).
+pub fn goal_written(ast: &Ast, query: &Query) -> Option<NodeId> {
+    query
+        .goal_written
+        .map(|e| NodeId(e.0))
+        .or_else(|| query_value(ast, query, "goal"))
+}
+
 /// A `(solve …)` keyword's value, by keyword name — M1e2 S1e2.1a.4, where the
 /// lattice's keywords moved. The **first** match wins, as in [`query_value`].
 pub fn solve_value(ast: &Ast, solve: &ein_core::Solve, kw_name: &str) -> Option<NodeId> {

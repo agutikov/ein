@@ -751,10 +751,10 @@ Five arrived on 2026-08-23 with
 | a `(solve … :expect …)` that is not `(false)` or `(region …)`, or a region item that is not `(model …)`, `(merged …)` or `(owing …)` of their shapes | a parse error at the first token that is not † | 1 |
 | `(owing …)` beside states of R | `` (region …) — `(owing …)` says R is empty, and the region lists states `` | 1 |
 | a `(merged …)` whose `<to>` is not a listed state | `(merged …) — its state is not one the region lists` | 1 |
-| a claim naming a relation the program does not have | `(solve … :expect …) names <r>, which no declaration or fact makes a relation` | 1 |
+| a claim naming a relation the program does not have (§ 4.21; one only a rule's `:assert` derives is the program's since M1f S1f.7.11) | `(solve … :expect …) names <r>, and the program names no relation <r> — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule` | 1 |
 | a claim naming `eq` or `neq` (M1f S1f.5.7) | `(solve … :expect …) names <r>, which a state never stores — eq and neq are computed from their definition, so a region claim, which lists a state's facts, holds neither` | 1 |
 | `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | a parse error at the first token that is not † | 1 |
-| `:expect` naming a relation the program does not have (`eq` and `neq`, which a goal may ask about, excepted since M1f S1f.5.7) | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
+| `:expect` naming a relation the program does not have (`eq` and `neq`, which a goal may ask about, excepted since M1f S1f.5.7) | `:expect names <r>, and the program names no relation <r> — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule` (§ 4.21, M1f S1f.7.11) | 1 |
 | a `:goal` whose `eq` or `neq` compares a form that holds a variable (M1f S1f.5.7, Q-M1f.30) | `query: its :goal writes (neq ?x (f ?y)), and the form (f ?y) holds a variable — a guard compares two values, each a variable, a name, or a fact that holds no variable` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
 | a `?var` or `_` inside an `:expect` | a parse error at the variable, or at the `_` with S1f.5.1's note † | 1 |
@@ -1721,6 +1721,79 @@ Pinned by `ein-cli`'s `solve_lists.rs` (nine shapes and the five witnesses,
 each on twenty commands: one first line, the same on each, and no container;
 and fourteen programs whose lists name what the program has, each loading)
 and `corpus/wrong_answers.toml`'s W76 rows.
+
+### 4.21 A goal is held to what a rule's `:match` is held to — M1f S1f.7.5, S1f.7.11, S1f.7.1
+
+A query's `:goal` is a premise. Since M1f
+[S1f.7.5](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md),
+[S1f.7.11](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md)
+and
+[S1f.7.1](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md)
+the loader reads it as it reads a rule's `:match`, on every command that reads
+the program, the views and `kb save` among them (Q-M1f.117 to .121,
+defaulted):
+
+- **A macro call in a goal is expanded** (`ein_ir::from_ir`'s `expand_goal`),
+  as a rule's `:match`'s is, so `(unknown (paid ?g))` in a goal is `(and
+  (absent (paid ?g)) (absent (not (paid ?g))))`. The expansion is what is
+  matched, what a claim's facts are held to and what a class lists; the
+  read-out, the summary and `ein test` print the goal as written (Q-M1f.117).
+  A macro call in a claim is not expanded: a claim lists facts, and one headed
+  by a macro's name names no relation (Q-M1f.118).
+- **The expanded goal gets the checks a rule's `:match` gets**: one walk reads
+  both (`refuse_no_fact_holds`, `refuse_nested_disjunctions`,
+  `refuse_wide_matches`, `refuse_malformed_primitives`,
+  `macros::unimported_macro_errors`).
+- **Every relation a goal asks about, and every relation a claim lists a fact
+  of, is a relation of the program** (`program_relations`): § 4.20's notion
+  without the goals, so one the program declares, states a fact of, or writes
+  in a rule, an hrule or an obligation, at any depth, a rule's `:assert`
+  among them, and one a `(solve :hrules …)` activator has its hrule propose.
+  `is-a`, `eq`, `neq` and the kernel's own relations, `(relation ?R ?T)`, are
+  every program's.
+
+| the goal writes | the line, after `kb load error: ` |
+|---|---|
+| `(unknown (paid ?g))`, and the program does not import `unknown` | `query: '(unknown …)' is a std.macro pattern macro used without importing it — add (import std.macro :symbols (unknown)); unexpanded it would silently never match` |
+| `(settled ?g Guest)`, and the macro `settled` takes one argument | `query: its :goal: macro settled/1 invoked with 2 args at <file>:<line>:<col>` |
+| a call of a macro that expands to itself | `query: its :goal: macro expansion exceeded depth 50 — a macro likely expands to itself` |
+| a call whose expansion leaves a name where a premise goes | `query: its :goal writes Ann as a premise of and, and Ann is no premise — a premise is a pattern (relation argument …), a guard (eq a b) or (neq a b), an (absent …), or an (and …) or (or …) of premises` |
+| a call whose expansion writes a kernel primitive in another shape (§ 4.16) | `<file>:<line>:<col>: query: its :goal writes (eq ?g), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair` |
+| `(payed ?g)`, at any depth, under `(absent …)` and `(not …)` too, and no relation is named `payed` | `<file>:<line>:<col>: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of payed` |
+| `(says (?R ?g))`, a relation written as a variable inside a pattern, under `(absent …)` too | `query: its :goal writes (?R ?g) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator` |
+
+A line that names a place names where the pattern writes its relation. A
+program the loader has already refused gets no line about its relations, as
+in § 4.20. A relation only a rule's `:match` reads is a relation of the
+program, so a goal over it loads and has no row: a library rule may read a
+relation its importer supplies, and a rule that can never fire is reported
+nowhere ([F25](../../plans/followups/f25_roughness_found_outside_zebra.md)'s
+R-6, Q-M1f.120).
+
+**Until these stages** a macro call in a goal was read as a pattern over a
+relation of the macro's name: the goal had no row in any state, `:expect
+(model)` held of it, and the claim that lists what the macro means was
+refused at load, *lists …, which no atom of the query's :goal matches*. A
+goal over a relation the program names nowhere had no row, as a goal that is
+undetermined has none, and under `(absent …)` it held of everything. A
+pattern inside a pattern whose relation is a variable was lowered as a slot
+that matches nothing, so `(says (?R ?g))` had no row beside `(says (paid
+Bob))`, and under `(absent …)` the goal held in every state; a rule writing
+the shape is refused since M1e2 S1e2.2.24 (§ 4.9), and a goal's top-level one
+since M1f S1f.5.21 (§ 4.15). And a claim listing a fact of a relation only a
+rule's `:assert` derives was refused, *which no declaration or fact makes a
+relation*. Ten register rows, W77 to W79, filed and fixed by the stages. The
+read-out's class of a goal holding an `(and …)` inside its `(and …)`, which a
+macro's expansion writes, lists the inner premises one by one since, as the
+loader reads them for a claim; until then it listed `(and …)`, which no claim
+can write.
+
+Pinned by `ein-cli`'s `goal_premises.rs` (nineteen shapes and the six
+witnesses whose right answer is a refusal, each on twenty commands: one first
+line, the same on each, and no container; nine programs answered, the goal
+printed as written; and sixteen goals over relations of the program, each
+loading, a container answering as its text) and `corpus/wrong_answers.toml`'s
+W77, W78 and W79 rows.
 
 ## 5. The CLI surface
 

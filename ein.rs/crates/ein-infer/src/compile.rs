@@ -1014,7 +1014,8 @@ impl<'a> Compiler<'a> {
                     // run where a state was answered from it, in the Python
                     // IR's spelling (S1a.6.6's fixture, W64). The loader
                     // refuses a goal's relation variable since
-                    // (`refuse_goal_relation_variables`), so only a direct
+                    // (`refuse_no_fact_holds`, which reads a goal since M1f
+                    // S1f.7.1, at every depth), so only a direct
                     // caller compiling a rule with parameters and no activator
                     // reaches this line (Q-M1f.75), in Ein's words since.
                     None => {

@@ -129,6 +129,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.114](#q-m1f114--what-a-relation-in-a-solve--list-must-be) | what a relation in a `(solve …)` list must be | **defaulted 2026-11-11 (the stage's default, S1f.7.8): (b), a name the program writes as a relation outside the lists, so a relation only a rule derives is accepted and a name written nowhere else is refused**; [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) |
 | [Q-M1f.115](#q-m1f115--what-else-of-an-hrules-list-is-refused) | what else of an `:hrules` list is refused | **defaulted 2026-11-11 (the stage's default, S1f.7.8): (a), every bare name is a declared hrule and an activator has as many arguments as its hrule has parameters**; [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) |
 | [Q-M1f.116](#q-m1f116--an-activators-argument-that-is-a-value) | an activator's argument that is a value | **defaulted 2026-11-11 (the stage's default, S1f.7.8): (b), not checked, and the missing word that an entry proposes nothing is F25's R-2**; [S1f.7.8](p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) |
+| [Q-M1f.117](#q-m1f117--a-goal-with-a-macro-call-printed-as-written-or-as-expanded) | a goal with a macro call: printed as written, or as expanded | **defaulted 2026-11-11 (S1f.7.5): expanded at load as a rule's `:match` is, matched on the expansion, printed as written**; [S1f.7.5](p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md) |
+| [Q-M1f.118](#q-m1f118--a-macro-call-in-a-claim) | a macro call in a claim | **defaulted 2026-11-11 (S1f.7.5): not expanded; a claim lists facts, so it names no relation and is refused**; [S1f.7.5](p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md) |
+| [Q-M1f.119](#q-m1f119--which-relations-a-goal-may-ask-about) | which relations a goal may ask about | **defaulted 2026-11-11 (the stage's default (a), S1f.7.11): refused at load unless a relation of the program, S1f.7.8's notion without the goals, or one a `:hrules` activator has its hrule propose**; [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md) |
+| [Q-M1f.120](#q-m1f120--a-rules-match-over-a-relation-nothing-makes) | a rule's `:match` over a relation nothing makes | **defaulted 2026-11-11 (the stage's default, S1f.7.11): reported in the stage's record and not refused; F25's R-6**; [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md) |
+| [Q-M1f.121](#q-m1f121--the-line-a-goals-nested-relation-variable-is-refused-with) | the line a goal's nested relation variable is refused with | **defaulted 2026-11-11 (S1f.7.1): the goal's own line, the one its top-level relation variable has had since S1f.5.21, from the one walk a rule's clauses get**; [S1f.7.1](p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2480,3 +2485,84 @@ gives the hrule no match and H is empty.
 **Defaulted 2026-11-11 (the stage's default): (b)**, as the stage's brief has it. The read-out row is not built
 here: it is a new `Row` and a line of `read_out.md`, and is [F25](../followups/f25_roughness_found_outside_zebra.md)'s
 R-2.
+
+### Q-M1f.117 — A goal with a macro call: printed as written, or as expanded
+
+**Raised** 2026-11-11 by the [analysis of that day](p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11)
+and [S1f.7.5](p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md)'s T1. The stage file names two directions, expanding a goal's macro calls as a rule's `:match`'s are, or
+refusing a call in a goal, the second a question for the user only if expansion in a goal cannot mean what it means
+in a rule. T1 found that it can: a goal is compiled as a rule's `:match` is (`ein_infer::goal_bindings`'s
+synthetic rule). What is left open is what a surface prints.
+
+- **(a) As written**: the read-out's `query` row, the summary's `goal` and `ein test`'s report print `(unknown
+  (paid ?g))`; the goal is matched on its expansion, and a class and a claim list the expansion's instances.
+- **(b) As expanded**: every surface prints `(and (absent (paid ?g)) (absent (not (paid ?g))))`.
+
+**Defaulted 2026-11-11: expansion, and (a).** The author reads back the question as asked, and the row below it,
+`as :expect`, shows what the macro means. The cost is one field, `ein_core::Query::goal_written`, set where the
+loader expanded a goal. With it the read-out's classes read a goal's atoms as the loader reads them for a claim,
+an `(and …)` inside an `(and …)` flattened, since `unknown`'s expansion writes one and a class listing `(and …)` is
+one no claim can write.
+
+### Q-M1f.118 — A macro call in a claim
+
+**Raised** 2026-11-11 by [S1f.7.5](p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md)'s T1, which the stage file asks to state for each clause of a query that holds a
+fact: `:expect (model (settled Ann))` beside a macro `settled`, and the same in a `(solve … :expect (region …))`.
+
+- **(a) Not expanded**: a claim lists facts, a macro is a premise's shorthand, and a fact headed by a macro's name
+  is a fact of no relation, refused at load as any claim naming no relation of the program is.
+- **(b) Expanded**, so that a claim may be written in the goal's own words. An expansion is a premise, `(and
+  (absent …) …)`, which is no fact.
+
+**Defaulted 2026-11-11: (a).** Before the stage the claim was refused with the same line, so nothing moved. A macro
+call written as a fact is [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s.
+
+### Q-M1f.119 — Which relations a goal may ask about
+
+**Raised** 2026-11-11 by [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md). Its default is (a), refused at load, against (b), a warning row in the read-out.
+The stage file words (a) as *no declaration, no fact, and no rule's, hrule's or obligation's conclusion names it*;
+the phase's coordinator asked for S1f.7.8's notion of a relation of the program
+([Q-M1f.114](#q-m1f114--what-a-relation-in-a-solve--list-must-be) (b)) rather than a second one.
+
+- **(a1) Made by something**: declared, a fact's or concluded.
+- **(a2) S1f.7.8's notion without the goals**: a name the program writes as a relation in a declaration, a fact, or
+  a rule's, an hrule's or an obligation's `:match` or `:assert`, at any depth, or passes where a relation's name is
+  held; and a relation a `(solve :hrules …)` activator gives its hrule at a parameter that names one, which that
+  hrule proposes facts of.
+
+**Defaulted 2026-11-11: (a), as (a2).** One notion serves the lists, a goal and a claim, and the claim check's
+over-refusal of a relation only a rule's `:assert` derives is fixed by reading the same list. A goal's own relations
+do not count for a goal or a claim, and still count for the lists, where a relation named only by a goal and by an
+activator is what the activator makes. Under (a2) a goal over a relation only a rule's `:match` reads loads and
+has no row; (a1) would refuse it, and would refuse an importer's goal over a relation a library rule reads. The
+relation of a pattern inside a pattern, and of a stored negation, is held to the same list. No corpus program moved
+(a sweep of 612 tracked `.ein` files, the binary at `73a0c17d` against the stage's, `ein saturate` and `ein solve`,
+2026-11-11).
+
+### Q-M1f.120 — A rule's `:match` over a relation nothing makes
+
+**Raised** 2026-11-11 by [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md)'s stage file: a rule whose `:match` reads a relation no declaration, fact or
+conclusion makes can never fire.
+
+- **(a) Refused at load**, as the goal is.
+- **(b) Reported and not refused**: a library rule may read a relation its importer supplies, and the stdlib's
+  rules read marker relations, `functional`, `total`, whose absence means the rule does not fire.
+
+**Defaulted 2026-11-11 (the stage's default): (b).** It is reported in the stage's T1 record and is
+[F25](../followups/f25_roughness_found_outside_zebra.md)'s R-6; no surface says that a rule can never fire.
+
+### Q-M1f.121 — The line a goal's nested relation variable is refused with
+
+**Raised** 2026-11-11 by [S1f.7.1](p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md), whose acceptance says *refused on every command with the rule's line*. A rule's
+line, `rule 'r': its :match writes (?R ?x) with ?R as its relation, which no parameter binds — a relation is named
+by a name or by a parameter its activator binds`, speaks of a parameter, and a query has none. A goal's top-level
+relation variable has had its own line since S1f.5.21 (W64): *which nothing binds — a relation is named by a name,
+or by a rule's parameter its activator binds, and a query has no activator*.
+
+- **(a) The goal's line**, at every depth.
+- **(b) The rule's line**, word for word.
+
+**Defaulted 2026-11-11: (a).** One shape in one clause reads one way at every depth. The walk is the rule's
+(`refuse_no_fact_holds`), which reads a goal since the stage, so a goal has no walk of its own; the giving of a
+meaning to the shape, a nested pattern whose relation the match binds, would reverse the W24 ruling and is not
+taken.

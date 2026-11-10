@@ -938,6 +938,35 @@ SOLVE. A `:mode` keyword on the query was **obsolete** (vestigial; the
 engine ignored it) and is refused at the parse since M1f S1f.5.5's swap, as
 any keyword a query does not take is (S1f.5.11's default).
 
+**A `:goal` is a premise, read as a rule's `:match` is** (M1f
+[S1f.7.5](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md),
+[S1f.7.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md),
+[S1f.7.1](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md);
+[`defined_behaviour.md` § 4.21](../../defined_behaviour.md#421-a-goal-is-held-to-what-a-rules-match-is-held-to--m1f-s1f75-s1f711-s1f71)).
+Three things follow, each refused or done at load, on every command:
+
+- **A macro call in a goal is expanded**, as in a rule: `(query :goal (and
+  (is-a ?g Guest) (unknown (paid ?g))))` asks which guest it is unknown of
+  whether they paid, and its class lists the expansion's instances, `(model
+  (absent (not (paid Bob))) (absent (paid Bob)) (is-a Bob Guest))`. The
+  read-out prints the goal as written. A `std.macro` call the program did not
+  import, a call of another arity and an expansion a rule would be refused for
+  are refused, one line each. A claim lists facts, so a macro call in an
+  `:expect` is not expanded and names no relation.
+- **A goal asks about relations of the program.** The relation of every
+  pattern it writes, at any depth, under `(absent …)` and `(not …)` too, is one
+  the program declares, states a fact of, or writes in a rule or an hrule, or
+  one a `(solve :hrules …)` activator has its hrule propose; `is-a`, `eq`,
+  `neq` and the kernel's `relation` are every program's. A goal over any other
+  name, `(payed ?g)` for `paid`, is refused at the pattern: no state holds a
+  fact of it, so the goal would have no row, and under `(absent …)` would hold
+  of everything. A claim's relations are held to the same list, so a claim
+  may list a fact only a rule's `:assert` derives.
+- **A goal names its relations.** A relation written as a variable is a
+  rule's, whose parameter its activator binds; a query has no activator, so
+  `(?R ?x)` is refused in a goal at the top level (M1f S1f.5.21) and inside a
+  pattern, `(says (?R ?g))` (S1f.7.1).
+
 **`:expect` — what the answer should be (M1c
 [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)).**
 A query may state its own answer, and the engine checks it: `ein solve` exits
@@ -986,8 +1015,9 @@ facts, and a state stores neither, so one that names `eq` or `neq` is refused
 at load.
 
 The value is checked at *load*: an expectation that is not one of the three
-shapes, that names a relation no declaration or fact makes (`eq` and `neq`
-excepted, above), that omits the
+shapes, that names a relation the program does not have (`eq` and `neq`
+excepted, above; a relation only a rule's `:assert` derives is the program's
+since M1f S1f.7.11), that omits the
 goal's relations, or that contains a `?var` (an expectation is an answer, not
 a pattern) is a load error. `examples/features/10_expect.ein` is the worked
 fixture and `examples/broken/load/expect_*.ein` are the four refusals.
