@@ -1258,7 +1258,7 @@ fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
             route,
             format!(
                 "root, H and every node visited: {} saturation{}",
-                r.answer.saturations,
+                ein_render::read_out::group(r.answer.saturations),
                 if r.answer.saturations == 1 { "" } else { "s" }
             ),
         ),

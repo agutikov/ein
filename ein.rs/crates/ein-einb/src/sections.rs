@@ -295,29 +295,86 @@ impl ProvTables {
     }
 }
 
-/// The whole arena, then the primary map and the alternative lists.
+/// The records a file writes: the arena up to the last record the KB
+/// references, a believed fact's primary or alternative or a closure's
+/// smallest arrival (M1f S1f.5.28's item 9). Each keeps its position, so
+/// every id a section stores is the one the KB holds.
 ///
-/// The arena is written in full — including records no *believed* fact points
-/// at any more — because a `ProvId` is only meaningful as an index into it and
-/// every other section stores one. Since T1a.7.1.7 that is a much smaller
-/// claim than it was: what a search left behind used to be every record every
-/// fork ever derived (2 135 093 of them on `features/01 -e`, of which twelve
-/// were live) and is now only what root itself wrote.
+/// **Until S1f.5.28 the writer wrote the whole arena.** Opening a container
+/// pushes the file's records and then the loader's own, rebuilding the
+/// registries ([`read_program_names`] says why in that order), and where the
+/// derived state is kept the loader's are referenced by nothing. So `ein kb
+/// save` of a container wrote them too, after the file's, and each save of a
+/// save grew: 40 bytes a given fact, 1 248 → 1 288 → 1 328 bytes on
+/// `examples/ein-bugs/wrong-answers/einb-every-command.ein`, and a saturated
+/// `zebra2.einb` saved again passed design/10 §6's 64 KB (2026-11-10), with
+/// the same answers. Only the records past the last one referenced go, so no
+/// id moves: a record inside the prefix that nothing references, a fact
+/// stated twice, is written as before, and a first save of a program whose
+/// arena ends on one is that record shorter.
 ///
-/// **A fork's id is not writable.** The id stored below is the record's
-/// position in the scan above, which holds for the arena proper and for
-/// nothing else; a `ProvId` from the fork region indexes a table this file
-/// does not carry and would not survive the run. Saving happens between
+/// **A fork's id is not writable.** The id a section stores is a position in
+/// the arena proper; a `ProvId` from the fork region indexes a table this
+/// file does not carry and would not survive the run. Saving happens between
 /// enterings, so there are none — asserted rather than assumed, because the
 /// failure is a saved KB whose derivations silently point at the wrong
 /// records.
-pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
+pub struct Kept {
+    count: u32,
+}
+
+impl Kept {
+    pub fn of(kb: &Kb) -> Kept {
+        let mut count = 0u32;
+        let mut mark = |p: ProvId| {
+            assert!(!p.is_fork(), "a fork's provenance cannot be saved");
+            count = count.max(p.0 + 1);
+        };
+        for f in kb.facts() {
+            if let Some(p) = kb.primary(f) {
+                mark(p);
+            }
+            for &p in kb.alternatives(f) {
+                mark(p);
+            }
+        }
+        for (_, _, best) in kb.closures() {
+            if let Some(b) = best {
+                mark(b);
+            }
+        }
+        Kept { count }
+    }
+
+    /// `p`'s position in the file, which is its position in the arena.
+    fn at(&self, p: ProvId) -> u32 {
+        assert!(!p.is_fork(), "a fork's provenance cannot be saved");
+        assert!(
+            p.0 < self.count,
+            "a section stores a provenance id the file does not keep"
+        );
+        p.0
+    }
+
+    /// The kept records, each with its position.
+    fn records<'a>(&self, terms: &'a Terms) -> impl Iterator<Item = (u32, &'a Prov)> {
+        terms
+            .provs
+            .scan()
+            .take(self.count as usize)
+            .enumerate()
+            .map(|(i, p)| (i as u32, p))
+    }
+}
+
+/// The kept records ([`Kept`]), then the primary map and the alternative
+/// lists, each id its record's position in the file.
+pub fn write_prov(kb: &Kb, terms: &Terms, kept: &Kept) -> Vec<u8> {
     let mut w = Writer::new();
-    w.u32(terms.provs.len() as u32);
+    w.u32(kept.count);
     // `scan`, not `get`: this walks the arena end to end rather than
-    // following a reference, and a record a finished fork left behind is
-    // exactly what the comment above says it writes.
-    for record in terms.provs.scan() {
+    // following a reference, keeping the records [`Kept`] marked.
+    for (_, record) in kept.records(terms) {
         write_record(&mut w, record);
     }
     let believed: Vec<FactId> = kb.facts().collect();
@@ -327,9 +384,8 @@ pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
         .collect();
     w.u32(primary.len() as u32);
     for (f, p) in primary {
-        assert!(!p.is_fork(), "a fork's provenance cannot be saved");
         w.u32(f.0);
-        w.u32(p.0);
+        w.u32(kept.at(p));
     }
     let alts: Vec<(FactId, &[ProvId])> = believed
         .iter()
@@ -340,9 +396,8 @@ pub fn write_prov(kb: &Kb, terms: &Terms) -> Vec<u8> {
     for (f, a) in alts {
         w.u32(f.0);
         w.u32(a.len() as u32);
-        for p in a {
-            assert!(!p.is_fork(), "a fork's provenance cannot be saved");
-            w.u32(p.0);
+        for &p in a {
+            w.u32(kept.at(p));
         }
     }
     w.align(crate::header::ALIGN);
@@ -604,10 +659,11 @@ pub fn program_section(
     let text = ein_ir::dump_canonical(ast, &resolved);
     // Only the file names provenance can name: the rebuilt registries' own
     // `Loc`s point into the canonical text and are not preserved.
-    // As `write_prov`: a scan of the arena, not a walk of what is live. It
-    // therefore sizes the file table against records a finished fork left
-    // behind too, which is a superset and so harmless — but it is why this
-    // reads through `scan`.
+    // A scan of the whole arena, not a walk of what is live, where
+    // `write_prov` stops at the last record the KB references (`Kept`). It
+    // therefore sizes the file table against records the file may not carry,
+    // which is a superset and so harmless — but it is why this reads through
+    // `scan`.
     let max = terms
         .provs
         .scan()
@@ -751,18 +807,16 @@ pub fn read_nogoods(body: &[u8], kb: &Kb, maps: &Maps) -> Result<()> {
 
 /// The facts each derivation record's universals read
 /// ([`ein_core::Prov::universal`], M1e2 S1e2.2.21): a row per record that
-/// has some, by its position in the arena as `PROV` writes it, ascending.
+/// has some, by its position in the file as `PROV` writes it, ascending.
 /// Root's derivations carry them as a node's do, and a node's core follows
 /// root's facts down to their frontiers, so a `.einb` that dropped them would
 /// report other cores than its `.ein`. Empty when no record has any, and
 /// then not written.
-pub fn write_universal(terms: &Terms) -> Vec<u8> {
-    let rows: Vec<(u32, &[FactId])> = terms
-        .provs
-        .scan()
-        .enumerate()
+pub fn write_universal(terms: &Terms, kept: &Kept) -> Vec<u8> {
+    let rows: Vec<(u32, &[FactId])> = kept
+        .records(terms)
         .filter(|(_, p)| !p.universal.is_empty())
-        .map(|(i, p)| (i as u32, &p.universal[..]))
+        .map(|(i, p)| (i, &p.universal[..]))
         .collect();
     if rows.is_empty() {
         return Vec::new();
@@ -808,7 +862,7 @@ fn read_universal(body: &[u8], maps: &Maps) -> Result<Vec<(u32, Box<[FactId]>)>>
 /// Empty when the KB has no closure entry, and then not written.
 ///
 /// [`Kb::record_justification`]: ein_core::Kb::record_justification
-pub fn write_closure(kb: &Kb) -> Vec<u8> {
+pub fn write_closure(kb: &Kb, kept: &Kept) -> Vec<u8> {
     let rows = kb.closures();
     if rows.is_empty() {
         return Vec::new();
@@ -818,10 +872,7 @@ pub fn write_closure(kb: &Kb) -> Vec<u8> {
     for (fact, closure, best) in rows {
         w.u32(fact.0);
         w.u32(closure);
-        if let Some(b) = best {
-            assert!(!b.is_fork(), "a fork's provenance cannot be saved");
-        }
-        w.opt_u32(best.map(|b| b.0));
+        w.opt_u32(best.map(|b| kept.at(b)));
     }
     w.align(crate::header::ALIGN);
     w.into_vec()

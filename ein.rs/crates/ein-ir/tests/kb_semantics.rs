@@ -242,7 +242,7 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
     let body = |head: &str| {
         format!(
             r#"
-            (relation player T T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}")
+            (relation player T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}")
             (rule r ()
               :match (and (player ?p)
                           ({head} ?q (and (player ?q) (neq ?p ?q)) (beats ?p ?q)))
@@ -297,7 +297,7 @@ fn importing_a_module_whole_requalifies_what_it_imported_flat() {
         &dir,
         "main.ein",
         "(import mid)\n\
-         (relation player T T :why \"{?1} is a player\") (relation beats T T :why \"{?1} beats {?2}\")\n\
+         (relation player T :why \"{?1} is a player\") (relation beats T T :why \"{?1} beats {?2}\")\n\
          (rule r () :match (and (player ?p) (mid.wrap (player ?p) (beats ?p ?p)))\n\
          \x20 :assert (ok ?p) :why \"{?p} is a player and beats {?p} wherever {?p} is a player, so {?p} is ok\")\n",
     );

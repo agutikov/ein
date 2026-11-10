@@ -44,7 +44,7 @@ them. What the session found was one thing, and it is about the DOT renderer:
 
 | file | property | what it is |
 |---|---|---|
-| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing had chosen one, so it was a defined-behaviour question rather than a crash to paper over. **Fixed 2026-11-03 by M1e2 S1e2.3.2** (the user's ruling (a): `value_label` labels a keyword pair `:key value`), and promoted to the corpus as `examples/ein-bugs/kwpair-below-the-filter.ein`; the note and this `.ein` stay as the dedup signature and a frontend-fuzzer seed |
+| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing had chosen one, so it was a defined-behaviour question rather than a crash to paper over. **Fixed 2026-11-03 by M1e2 S1e2.3.2** (the user's ruling (a): `value_label` labels a keyword pair `:key value`), and promoted to the corpus as `examples/ein-bugs/kwpair-below-the-filter.ein`; **refused at the parse since M1f S1f.5.5's swap**, and the witness moved to [`examples/broken/kwpair-below-the-filter.ein`](../../examples/broken/kwpair-below-the-filter.ein); the note and this `.ein` stay as the dedup signature and a frontend-fuzzer seed |
 
 ### 2026-10-14 — M1e2's register, and two files that are not a fuzzer's
 
@@ -87,12 +87,12 @@ minimum from a different seed and then failing it under a permuted id space:
 
 Both are corpus entries since, `d3-goal-row-order.ein` by M1e2 S1e2.3.4 and
 `d3-unsat-core.ein` by S1e2.2.12 (2026-11-04), under `examples/ein-bugs/`.
-Both were one command to reproduce, and since M1e2 S1e2.2.5 the first exits 1
-with *forbid*'s refusal —
+Both were one command to reproduce, `ein solve FILE --max-set-size 2`, the
+second reading against a build with `EIN_FORK_DELTA=0`. Neither command is
+there to run since: `--max-set-size` is refused since M1e2 S1e2.1a.5's switch,
+and the fork-delta build went with the walk at S1e2.1c.5. The first file exits 1
+with *forbid*'s refusal since S1e2.2.5:
 
 ```sh
-ein solve corpus/fuzz_findings/d3-unsat-core.ein --max-set-size 2
+ein solve corpus/fuzz_findings/d3-unsat-core.ein
 ```
-
-— and against `ein.rs/target-fd/release/ein` with `EIN_FORK_DELTA=0` for the
-second reading.

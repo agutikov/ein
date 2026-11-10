@@ -41,13 +41,23 @@
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the CI nightly raises it to 20 000 a seed and the dev host to P1a.1's
-//! 1 000 000 (M1f S1f.5.27, `ein-cli/tests/nightly_steps.rs`). Five of the
-//! properties below parse every input of the stream, each on its own, and
-//! the parse is the cost (S1f.5.27's T1). `EIN_FUZZ_SEED` moves the stream. Both are
-//! deterministic: the same pair reproduces the same run, which is what makes a
-//! find replayable.
+//! 1 000 000 (M1f S1f.5.27, `ein-cli/tests/nightly_steps.rs`). `EIN_FUZZ_SEED`
+//! moves the stream. Both are deterministic: the same pair reproduces the same
+//! run, which is what makes a find replayable.
+//!
+//! **The stream is parsed once** ([`stream`], M1f S1f.5.28's item 10). The
+//! parse is the cost, 99 % of an input's, most of it a refusal's recovery
+//! search (S1f.5.27's T1), and five properties each generated and parsed the
+//! whole stream for itself. Property 1 is that one parse, spread over the
+//! threads the process may use; each other property regenerates the stream,
+//! which costs microseconds, and reads again only the inputs it accepted,
+//! which parse in tens of them. A property still reads every input it read,
+//! by its place in the stream, and still reports and minimises its own
+//! failure; property 4 compares a refusal's report with the one this parse
+//! took, which is a second parse in the same process as it was.
 
 use std::path::PathBuf;
+use std::sync::OnceLock;
 
 use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::dump::{dump_canonical, dump_compact};
@@ -340,6 +350,154 @@ fn generated(seeds: &[String], rng: &mut Rng) -> String {
     text
 }
 
+/// What the one parse of an input answered.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Verdict {
+    Accepted,
+    Refused,
+    /// No answer: the parser panicked, which property 1 reports.
+    Panicked,
+}
+
+/// A refusal as property 4 compares it: the report, and the recovery's steps
+/// and whether it was cut.
+struct Refusal {
+    report: String,
+    steps: u64,
+    cut: bool,
+}
+
+/// The stream, parsed once (the module's § *The stream is parsed once*).
+struct Stream {
+    iters: usize,
+    seed: u64,
+    /// Each input's verdict, by its place in the stream.
+    verdicts: Vec<Verdict>,
+    /// Property 4's places, every [`Stream::stride`]-th, and the report of
+    /// each one refused.
+    stride: usize,
+    refusals: std::collections::HashMap<usize, Refusal>,
+    /// The first input the parser panicked on: its place, its text, and the
+    /// panic's message.
+    panicked: Option<(usize, String, String)>,
+}
+
+/// What one parse found: the verdict, the refusal property 4 keeps, and a
+/// panic's message.
+type Parsed = (Verdict, Option<Refusal>, Option<String>);
+
+/// One input through the parser, a panic caught so that it is a verdict.
+fn parse_once(text: &str, keep: bool) -> Parsed {
+    match std::panic::catch_unwind(|| parse(&mut Ast::new(), text, None)) {
+        Ok(Ok(_)) => (Verdict::Accepted, None, None),
+        Ok(Err(e)) => (
+            Verdict::Refused,
+            keep.then(|| Refusal {
+                report: e.to_string(),
+                steps: e.recovery_steps,
+                cut: e.cut,
+            }),
+            None,
+        ),
+        Err(payload) => {
+            let msg = payload
+                .downcast_ref::<&str>()
+                .map(|s| s.to_string())
+                .or_else(|| payload.downcast_ref::<String>().cloned())
+                .unwrap_or_else(|| "a panic with no message".to_string());
+            (Verdict::Panicked, None, Some(msg))
+        }
+    }
+}
+
+/// The stream's inputs, generated in order and parsed once, on every thread
+/// the process may use: each thread takes the next unparsed input of a chunk,
+/// so one slow refusal does not hold a share of the chunk behind it, and each
+/// verdict is stored at its input's place, so the threads move nothing.
+fn stream() -> &'static Stream {
+    static STREAM: OnceLock<Stream> = OnceLock::new();
+    STREAM.get_or_init(|| {
+        use std::sync::Mutex;
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        const CHUNK: usize = 16_384;
+        let (iters, seed) = budget();
+        let stride = (iters / 10_000).max(4);
+        let seeds = seeds();
+        let mut rng = Rng(seed | 1);
+        let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
+        let mut out = Stream {
+            iters,
+            seed,
+            verdicts: Vec::with_capacity(iters),
+            stride,
+            refusals: std::collections::HashMap::new(),
+            panicked: None,
+        };
+        let mut start = 0;
+        while start < iters {
+            let texts: Vec<String> = (0..CHUNK.min(iters - start))
+                .map(|_| generated(&seeds, &mut rng))
+                .collect();
+            let next = AtomicUsize::new(0);
+            let done: Mutex<Vec<(usize, Parsed)>> = Mutex::new(Vec::with_capacity(texts.len()));
+            std::thread::scope(|s| {
+                for _ in 0..threads.min(texts.len()) {
+                    s.spawn(|| {
+                        let mut mine = Vec::new();
+                        loop {
+                            let k = next.fetch_add(1, Ordering::Relaxed);
+                            let Some(text) = texts.get(k) else { break };
+                            mine.push((k, parse_once(text, (start + k).is_multiple_of(stride))));
+                        }
+                        done.lock().expect("no worker panicked").extend(mine);
+                    });
+                }
+            });
+            let mut done = done.into_inner().expect("no worker panicked");
+            done.sort_by_key(|(k, _)| *k);
+            for (k, (verdict, refusal, panic)) in done {
+                out.verdicts.push(verdict);
+                if let Some(r) = refusal {
+                    out.refusals.insert(start + k, r);
+                }
+                if let (Some(msg), None) = (panic, &out.panicked) {
+                    out.panicked = Some((start + k, texts[k].clone(), msg));
+                }
+            }
+            start += texts.len();
+        }
+        out
+    })
+}
+
+/// The stream's inputs again, each with its place, where `keep` takes its
+/// place and verdict: regenerated, which costs microseconds, not re-parsed.
+fn inputs(keep: impl Fn(usize, Verdict) -> bool) -> impl Iterator<Item = (usize, String)> {
+    let s = stream();
+    let seeds = seeds();
+    let mut rng = Rng(s.seed | 1);
+    (0..s.iters).filter_map(move |i| {
+        let text = generated(&seeds, &mut rng);
+        keep(i, s.verdicts[i]).then_some((i, text))
+    })
+}
+
+/// The stream's inputs its parse accepted, each with its place.
+fn accepted_inputs() -> impl Iterator<Item = (usize, String)> {
+    inputs(|_, v| v == Verdict::Accepted)
+}
+
+/// An input the stream's parse accepted, parsed again: the forms, or a panic
+/// saying the parser answered it two ways.
+fn reparsed(ast: &mut Ast, i: usize, text: &str) -> Vec<NodeId> {
+    parse(ast, text, None).unwrap_or_else(|e| {
+        panic!(
+            "iteration {i} (EIN_FUZZ_SEED={}) was accepted once and refused once, {e}:\n---\n{text}\n---",
+            stream().seed
+        )
+    })
+}
+
 /// **Generated input is answered, never survived.**
 ///
 /// Every mutation either parses or comes back as a `ParseError` — there is
@@ -347,21 +505,19 @@ fn generated(seeds: &[String], rng: &mut Rng) -> String {
 /// panic. The counters are reported because a generator that stopped producing
 /// *rejected* input would leave the diagnostic paths untested while still
 /// passing: a run that accepted everything would be a run that mutated
-/// nothing.
+/// nothing. This is the stream's one parse ([`stream`]), whose verdicts the
+/// other properties read.
 #[test]
 fn generated_input_is_always_parsed_or_diagnosed() {
-    let (iters, seed) = budget();
-    let mut rng = Rng(seed | 1);
-    let seeds = seeds();
-    let (mut accepted, mut refused) = (0usize, 0usize);
-    for _ in 0..iters {
-        let text = generated(&seeds, &mut rng);
-        let mut ast = Ast::new();
-        match parse(&mut ast, &text, None) {
-            Ok(_) => accepted += 1,
-            Err(_) => refused += 1,
-        }
+    let s = stream();
+    if let Some((i, text, msg)) = &s.panicked {
+        panic!(
+            "iteration {i} (EIN_FUZZ_SEED={}): the parser panicked, {msg}:\n---\n{text}\n---",
+            s.seed
+        );
     }
+    let count = |v: Verdict| s.verdicts.iter().filter(|&&x| x == v).count();
+    let (accepted, refused, iters) = (count(Verdict::Accepted), count(Verdict::Refused), s.iters);
     eprintln!("fuzz: {accepted} accepted, {refused} refused of {iters}");
     assert_eq!(accepted + refused, iters);
     assert!(
@@ -378,14 +534,13 @@ fn generated_input_is_always_parsed_or_diagnosed() {
 /// re-finds them forever (`corpus/README.md` § Growth rule).
 #[test]
 fn everything_that_parses_round_trips_through_the_dumper() {
-    let (iters, seed) = budget();
-    let mut rng = Rng(seed | 1);
-    let seeds = seeds();
+    let (iters, seed) = (stream().iters, stream().seed);
     let mut round_tripped = 0usize;
-    for i in 0..iters {
-        let text = generated(&seeds, &mut rng);
+    for (i, text) in accepted_inputs() {
         match round_trip(&text) {
-            None => continue,
+            None => {
+                reparsed(&mut Ast::new(), i, &text);
+            }
             Some(Ok(())) => round_tripped += 1,
             Some(Err(why)) => {
                 let small = minimise(&text, |t| matches!(round_trip(t), Some(Err(_))));
@@ -457,39 +612,33 @@ fn every_seed_and_finding_parses_the_way_it_was_recorded() {
 /// that take 10 000 steps or more are three quarters of the stream's parse
 /// time, and an accepted input parses in tens of microseconds), and three in
 /// four of these inputs are refused, so the dev
-/// host's 1 000 000 would take an hour a seed. 500 inputs per commit, in
-/// about three seconds of a debug build, 5 000 a seed in the CI nightly's
-/// 20 000, and 10 000 a seed on the dev host (M1f S1f.5.27).
+/// host's 1 000 000 would take an hour a seed. 500 inputs per commit, 5 000 a
+/// seed in the CI nightly's 20 000, and 10 000 a seed on the dev host (M1f
+/// S1f.5.27). The first of the two parses is the stream's ([`stream`], M1f
+/// S1f.5.28), which kept each read input's report, so each is parsed here
+/// once more.
 #[test]
 fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
     use ein_ir::grammar::{self, RECOVERY_STEP_BUDGET};
-    let (iters, seed) = budget();
-    let mut rng = Rng(seed | 1);
-    let seeds = seeds();
-    let stride = (iters / 10_000).max(4);
+    let s = stream();
+    let seed = s.seed;
     let (mut read, mut refused) = (0usize, 0usize);
-    for i in 0..iters {
-        let text = generated(&seeds, &mut rng);
-        if i % stride != 0 {
-            continue;
-        }
+    for (i, text) in inputs(|i, v| i.is_multiple_of(s.stride) && v != Verdict::Panicked) {
         read += 1;
-        let once = grammar::parse(&mut Ast::new(), &text, None);
         let twice = grammar::parse(&mut Ast::new(), &text, None);
-        match (once, twice) {
-            (Ok(_), Ok(_)) => {}
-            (Err(a), Err(b)) => {
+        match (s.refusals.get(&i), twice) {
+            (None, Ok(_)) => {}
+            (Some(a), Err(b)) => {
                 refused += 1;
                 assert_eq!(
-                    a.to_string(),
+                    a.report,
                     b.to_string(),
                     "iteration {i} (EIN_FUZZ_SEED={seed}) reported two ways:\n---\n{text}\n---"
                 );
                 assert!(
-                    a.recovery_steps <= RECOVERY_STEP_BUDGET
-                        && (!a.cut || a.recovery_steps == RECOVERY_STEP_BUDGET),
+                    a.steps <= RECOVERY_STEP_BUDGET && (!a.cut || a.steps == RECOVERY_STEP_BUDGET),
                     "iteration {i} (EIN_FUZZ_SEED={seed}): {} steps, cut {}:\n---\n{text}\n---",
-                    a.recovery_steps,
+                    a.steps,
                     a.cut
                 );
             }
@@ -600,16 +749,11 @@ fn keywords_listed(
 /// side of the stream writes a pair inside a term too.
 #[test]
 fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
-    let (iters, seed) = budget();
-    let mut rng = Rng(seed | 1);
-    let seeds = seeds();
+    let seed = stream().seed;
     let (mut accepted, mut pairs) = (0usize, 0usize);
-    for i in 0..iters {
-        let text = generated(&seeds, &mut rng);
+    for (i, text) in accepted_inputs() {
         let mut ast = Ast::new();
-        let Ok(forms) = parse(&mut ast, &text, None) else {
-            continue;
-        };
+        let forms = reparsed(&mut ast, i, &text);
         accepted += 1;
         for &form in &forms {
             let list = listed(ast.head_name(form).unwrap_or(""));
@@ -732,16 +876,11 @@ fn unbound_conclusion(text: &str) -> Option<String> {
 /// as are those it accepts, so a stream that reached neither would say so.
 #[test]
 fn no_firing_meets_an_unbound_variable() {
-    let (iters, seed) = budget();
-    let mut rng = Rng(seed | 1);
-    let seeds = seeds();
+    let (iters, seed) = (stream().iters, stream().seed);
     let (mut loaded, mut refused) = (0usize, 0usize);
-    for i in 0..iters {
-        let text = generated(&seeds, &mut rng);
+    for (i, text) in accepted_inputs() {
         let mut ast = Ast::new();
-        let Ok(forms) = parse(&mut ast, &text, None) else {
-            continue;
-        };
+        let forms = reparsed(&mut ast, i, &text);
         match ein_ir::load(&mut ast, &mut ein_core::Terms::new(), &forms, None) {
             Ok(_) => loaded += 1,
             Err(e) if e.0.contains("which no premise or parameter binds") => refused += 1,
@@ -821,16 +960,11 @@ fn compile_refusal(text: &str) -> Option<String> {
 /// through would panic here.
 #[test]
 fn the_compiler_refuses_nothing_the_loader_accepts() {
-    let (iters, seed) = budget();
-    let mut rng = Rng(seed | 1);
-    let seeds = seeds();
+    let (iters, seed) = (stream().iters, stream().seed);
     let mut loaded = 0usize;
-    for i in 0..iters {
-        let text = generated(&seeds, &mut rng);
+    for (i, text) in accepted_inputs() {
         let mut ast = Ast::new();
-        let Ok(forms) = parse(&mut ast, &text, None) else {
-            continue;
-        };
+        let forms = reparsed(&mut ast, i, &text);
         if ein_ir::load(&mut ast, &mut ein_core::Terms::new(), &forms, None).is_err() {
             continue;
         }

@@ -169,9 +169,9 @@ pub fn run(m: &ArgMatches) -> i32 {
         "{}   {} dead node{} with an alive superset · {} discharged node{} with an owing \
          superset{}",
         ein_render::read_out::Row::TheCube.label(),
-        violations.0,
+        ein_render::read_out::group(violations.0),
         if violations.0 == 1 { "" } else { "s" },
-        violations.1,
+        ein_render::read_out::group(violations.1),
         if violations.1 == 1 { "" } else { "s" },
         match (monotone, violations == (0, 0)) {
             (true, true) => " — the static verdict holds".to_string(),

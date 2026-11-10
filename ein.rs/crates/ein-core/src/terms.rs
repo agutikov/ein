@@ -182,18 +182,23 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// Names a declarator — `rule` / `hrule` / `relation` / `macro` — may not
 /// **bind**.
 ///
-/// The grammar already SYMBOL-excludes `not` / `and` / `or` / `neq` / `rule` /
-/// `hrule` / `query` / `config` / `trace` / `macro` / `import`, so what still
-/// reaches the loader as a declared name is the structural primitives, the
-/// predicates, and `relation` — kept a plain SYMBOL so `(relation ?R ?A ?B)`
-/// stays a legal pattern. This is about *binding* a name: a fact may still
-/// have a reserved head, such as a stored `(not X)` octagon.
+/// The grammar never reads thirteen words as a name (`ein-ir`'s
+/// `grammar::RESERVED_WORDS`, and the printer's copy,
+/// [`crate::text::LEXER_KEYWORDS`]): `not` / `and` / `or` / `neq` / `rule` /
+/// `hrule` / `query` / `solve` / `config` / `trace` / `macro` / `import` /
+/// `open`. So what still reaches the loader as a declared name is the
+/// structural primitives a position gives a meaning to (`absent`, `false`),
+/// the predicate `eq`, `relation` — a name wherever a name goes, so
+/// `(relation ?R ?A ?B)` stays a legal pattern — and the two dunders. This is
+/// about *binding* a name: a fact may still have a reserved head, such as a
+/// stored `(not X)` octagon.
 ///
-/// **The set the sentence above refers to is `ein-ir`'s `LEXER_KEYWORDS`, and
-/// it is not this one.** It was also called `RESERVED` until M1e S1e.4.2
-/// (`SE-L2`); the two overlap in four names and neither contains the other.
-/// The one that matters is `open`: it is **here** and it must never be there,
-/// because `(open ?R)` is an ordinary fact head and has to lex as a `SYMBOL`.
+/// **That set is not this one.** It was also called `RESERVED` until M1e
+/// S1e.4.2 (`SE-L2`); the two overlap in five names (`and`, `neq`, `not`,
+/// `open`, `or`) and neither contains the other. `open` is in both since M1f
+/// S1f.5.23 (the user's ruling on Q-M1f.66): the grammar reads it only as the
+/// verdict a rule's `:assert` writes, `(open)` or `(open ?R)`, and never as a
+/// name, so no program binds it and none writes it as a value.
 ///
 /// **The kernel's two dunders are here since M1f S1f.5.5's T1f.5.5.11**
 /// (2026-11-08), on the user's ruling of that day on Q-M1f.7, *"Never bound

@@ -7,11 +7,13 @@
 #
 # `slow = true` keeps an entry out of the default sweep, and since S1a.9.0 it
 # is a claim with a threshold behind it: an entry is slow when its declared
-# runs cost **1 s or more together**, which is what `cost_ms` records. **Two
-# entries are**, where three were until M1a T1a.7.2.0 made
-# `branching/07_lookahead_off.ein` 2.8x cheaper and the flag stopped being
-# true — which is what a measured flag is for. The rule, and why the sum
-# rather than the slowest run, is corpus/README.md § `slow`; the measurement is
+# runs cost **1 s or more together**, which is what `cost_ms` records. Which
+# entries are is `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen`'s to
+# say, per commit, and this header does not copy its list. A re-take moves the
+# flag both ways, which is what a measured flag is for: M1a T1a.7.2.0 made
+# `branching/07_lookahead_off.ein` 2.8x cheaper and took it out, and M1e2's
+# re-takes moved entries in and out again. The rule, and why the sum rather
+# than the slowest run, is corpus/README.md § `slow`; the measurement is
 # docs/history/m1a_rust/measurements/corpus_cost.md and
 # `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
 #
@@ -1381,13 +1383,13 @@ note   = "M1e2 W24 (`W24/nested-unbound-head`), banked by S1e2.2.24 from the inv
 path   = "examples/ein-bugs/wrong-answers/form-in-guard.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/form-in-guard`), banked by S1e2.2.24 from its step 1's probe `g-nested-rule.ein`: the form `(f a)` as a guard's argument. A guard compared it as a raw IR node, equal to no value, so `(eq ?x (f a))` never held, even where `?x` is the fact `(f a)`, and `(neq ?x (f a))` always did, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (i)(a)): refused at load, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/form-in-guard`), banked by S1e2.2.24 from its step 1's probe `g-nested-rule.ein`: the form `(f a)` as a guard's argument. A guard compared it as a raw IR node, equal to no value, so `(eq ?x (f a))` never held, even where `?x` is the fact `(f a)`, and `(neq ?x (f a))` always did, in silence. Ruled the same day refused at load (Q-M1e2.18 (i)(a)), which it was from S1e2.2.24's fix until M1f S1f.5.7: the user's ruling of 2026-11-07 (Q-M1e2.26) supersedes it, a nested fact being a value, so since T1f.5.7.3 (2026-11-09) the program loads, both runs exit 0, and root holds `(hit-eq (f a))` and three `hit-neq` facts, the register's restated right."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/guard-before-binder.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W24 (`W24/guard-before-binder`), banked by S1e2.2.24 from its step 1's probe `g-order-rule.ein`: `(and (eq ?x a) (p ?x))` and `(and (neq ?x a) (p ?x))`, a guard written before the premise that binds its variable. The guard compared the unbound `?x` as a null, so `e` never fired and `n` fired for every `?x`, `a` included, in silence. Right, the user's ruling of 2026-11-05 (Q-M1e2.18 (ii)(a)): refused at load, naming the variable, which it is since S1e2.2.24's fix the same day, both runs exit 1 with the loader's line."
+note   = "M1e2 W24 (`W24/guard-before-binder`), banked by S1e2.2.24 from its step 1's probe `g-order-rule.ein`: `(and (eq ?x a) (p ?x))` and `(and (neq ?x a) (p ?x))`, a guard written before the premise that binds its variable. The guard compared the unbound `?x` as a null, so `e` never fired and `n` fired for every `?x`, `a` included, in silence. Ruled the same day refused at load, naming the variable (Q-M1e2.18 (ii)(a)), which it was from S1e2.2.24's fix until M1f S1f.5.7: the user's ruling of 2026-11-07 (Q-M1e2.26, a `:match` means the same in any order of its conjuncts) supersedes it, so since T1f.5.7.3 (2026-11-09) the program loads, both runs exit 0, each guard judged after `(p ?x)`, and root holds `(hit-eq a)` and three `hit-neq` facts, the register's restated right."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/kwpair-in-guard.ein"
@@ -1513,19 +1515,19 @@ note   = "M1f W29 (`W29/core-two-ways`'s twin), banked by S1f.5.0 from P1f.5's F
 path   = "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W30 (`W30/assert-neq-w-x`), banked by S1f.5.0 from the inventory of 2026-11-06's G-21 (its probe `assert_neq.ein`): a rule's concluded `neq` is stored as a fact, `(neq w a)` at root and the false `(neq w w)` at `{(p w)}`, and R is two states. Open, owned by S1f.5.7: a concluded `neq` is checked, never stored, and `{(p w)}` is dead (Q-M1e2.26, G-21). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+note   = "M1f W30 (`W30/assert-neq-w-x`), banked by S1f.5.0 from the inventory of 2026-11-06's G-21 (its probe `assert_neq.ein`): a rule's concluded `neq` is stored as a fact, `(neq w a)` at root and the false `(neq w w)` at `{(p w)}`, and R is two states. Open, owned by S1f.5.7: a concluded `neq` is checked, never stored, and `{(p w)}` is dead (Q-M1e2.26, G-21). Its state files do not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-neq-x-x.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W30 (`W30/assert-neq-x-x`), banked by S1f.5.0 from S1f.5.7's § Conclusions: the false conclusion `(neq a a)` is stored, and R is {∅}. Open, owned by S1f.5.7: root is dead (Q-M1e2.26, G-21). Its state file does not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix."
+note   = "M1f W30 (`W30/assert-neq-x-x`), banked by S1f.5.0 from S1f.5.7's § Conclusions: the false conclusion `(neq a a)` is stored, and R is {∅}. Open, owned by S1f.5.7: root is dead (Q-M1e2.26, G-21). Its state file does not load, which `answer_round_trip.rs` and `answer_dump.rs` name until the fix. Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-eq-x-w.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W30 (`W30/assert-eq-x-w`), banked by S1f.5.0 from S1f.5.7's § Conclusions: the false conclusion `(eq a w)` is stored, and R is two states. Open, owned by S1f.5.7: root is dead (Q-M1e2.26, G-21)."
+note   = "M1f W30 (`W30/assert-eq-x-w`), banked by S1f.5.0 from S1f.5.7's § Conclusions: the false conclusion `(eq a w)` is stored, and R is two states. Open, owned by S1f.5.7: root is dead (Q-M1e2.26, G-21). Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
@@ -1681,91 +1683,91 @@ note   = "M1f W43 (`W43/einb-dump-answer`), filed by S1f.5.12's T1f.5.12.4 (2026
 path   = "examples/ein-bugs/wrong-answers/fact-eq-false.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W50 (`W50/fact-eq-false`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a written `(eq a w)` is stored, which no guard reads, and R is two states. Open, owned by S1f.5.7: a fact of `eq` is checked as a conclusion with no premise, so root is dead (Q-M1e2.26, G-21, Q-M1f.33)."
+note   = "M1f W50 (`W50/fact-eq-false`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a written `(eq a w)` is stored, which no guard reads, and R is two states. Open, owned by S1f.5.7: a fact of `eq` is checked as a conclusion with no premise, so root is dead (Q-M1e2.26, G-21, Q-M1f.33). Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-eq-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W51 (`W51/not-eq-premise`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a premise `(not (eq ?x ?y))` matches only stored negations, so the rule never fires. Open, owned by S1f.5.7: it is `(neq ?x ?y)` (Q-M1f.31)."
+note   = "M1f W51 (`W51/not-eq-premise`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a premise `(not (eq ?x ?y))` matches only stored negations, so the rule never fires. Open, owned by S1f.5.7: it is `(neq ?x ?y)` (Q-M1f.31). Fixed by S1f.5.7's T1f.5.7.3 (`6841faff`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-eq-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W51 (`W51/not-eq-fact`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a written `(not (eq a a))` is stored, and kills nothing. Open, owned by S1f.5.7: it is the false `(neq a a)`, so root is dead (Q-M1f.31, Q-M1f.33)."
+note   = "M1f W51 (`W51/not-eq-fact`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a written `(not (eq a a))` is stored, and kills nothing. Open, owned by S1f.5.7: it is the false `(neq a a)`, so root is dead (Q-M1f.31, Q-M1f.33). Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/not-eq-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W51 (`W51/not-eq-assert`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a rule's conclusion `(not (eq ?x ?x))` is stored, and kills nothing. Open, owned by S1f.5.7: it is `(neq ?x ?x)`, checked as W30's are (Q-M1f.31, G-21)."
+note   = "M1f W51 (`W51/not-eq-assert`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a rule's conclusion `(not (eq ?x ?x))` is stored, and kills nothing. Open, owned by S1f.5.7: it is `(neq ?x ?x)`, checked as W30's are (Q-M1f.31, G-21). Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/relvar-eq-premise.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W52 (`W52/relvar-eq-premise`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a premise whose relation a parameter binds to `eq` scans stored `eq` facts, so the rule never fires. Open, owned by S1f.5.7: it is the `eq` guard (Q-M1e2.26)."
+note   = "M1f W52 (`W52/relvar-eq-premise`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a premise whose relation a parameter binds to `eq` scans stored `eq` facts, so the rule never fires. Open, owned by S1f.5.7: it is the `eq` guard (Q-M1e2.26). Fixed by S1f.5.7's T1f.5.7.3 (`6841faff`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/relvar-eq-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W52 (`W52/relvar-eq-assert`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: `W30/assert-eq-x-w`'s conclusion with its relation a parameter bound to `eq`, stored as a fact. Open, owned by S1f.5.7: checked as W30's (G-21)."
+note   = "M1f W52 (`W52/relvar-eq-assert`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: `W30/assert-eq-x-w`'s conclusion with its relation a parameter bound to `eq`, stored as a fact. Open, owned by S1f.5.7: checked as W30's (G-21). Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-eq.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W53 (`W53/hrule-eq`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: an hrule concluding `(eq ?x ?y)` proposes four `eq` hypotheses, each a stored fact under its commitment, `(eq a b)` among them, and R is sixteen states. Open, owned by S1f.5.7: an `eq` or `neq` instance is no hypothesis (Q-M1f.32)."
+note   = "M1f W53 (`W53/hrule-eq`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: an hrule concluding `(eq ?x ?y)` proposes four `eq` hypotheses, each a stored fact under its commitment, `(eq a b)` among them, and R is sixteen states. Open, owned by S1f.5.7: an `eq` or `neq` instance is no hypothesis (Q-M1f.32). Fixed by S1f.5.7's T1f.5.7.4 (`31a68fdf`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-nested-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W54 (`W54/goal-nested-var`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a query's class grounds a goal conjunct one level deep, so `(not (p ?x))`'s two rows print one fact with `?x` in it, and the claim stating the two instances is FAILED. Open, owned by S1f.5.7: the rows are substituted at every depth."
+note   = "M1f W54 (`W54/goal-nested-var`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a query's class grounds a goal conjunct one level deep, so `(not (p ?x))`'s two rows print one fact with `?x` in it, and the claim stating the two instances is FAILED. Open, owned by S1f.5.7: the rows are substituted at every depth. Fixed by S1f.5.7's T1f.5.7.2 (`e5ae6946`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-neq-free.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W55 (`W55/goal-neq-free`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its case, the inventory's S-18 (`goal_guard.ein`) with the claim its right answer states: refused at load, the claim naming `neq`. Open, owned by S1f.5.7: the goal answers a row per name of the program but `w`, and the claim loads and holds (Q-M1e2.26)."
+note   = "M1f W55 (`W55/goal-neq-free`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its case, the inventory's S-18 (`goal_guard.ein`) with the claim its right answer states: refused at load, the claim naming `neq`. Open, owned by S1f.5.7: the goal answers a row per name of the program but `w`, and the claim loads and holds (Q-M1e2.26). Fixed by S1f.5.7's T1f.5.7.2 (`e5ae6946`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-guard-before-binder.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W55 (`W55/goal-guard-before-binder`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a goal's `(neq a ?y)` written before `(p ?y)` is judged on a null and holds, so the class is `(model (neq a a) (p a))` and the claim `(model)` is FAILED. Open, owned by S1f.5.7: a conjunction means the same in any order (Q-M1e2.26)."
+note   = "M1f W55 (`W55/goal-guard-before-binder`), filed by S1f.5.7's T1f.5.7.1 (2026-11-09) from its step 1: a goal's `(neq a ?y)` written before `(p ?y)` is judged on a null and holds, so the class is `(model (neq a a) (p a))` and the claim `(model)` is FAILED. Open, owned by S1f.5.7: a conjunction means the same in any order (Q-M1e2.26). Fixed by S1f.5.7's T1f.5.7.2 (`e5ae6946`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/goal-absent.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W56 (`W56/goal-absent`), filed by S1f.5.7's T1f.5.7.5 (2026-11-09) outside its case: a goal's `(absent (q ?y))` is never judged, so `?y = b` is a row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance is refused at load. Open, owned by S1f.5.7 (Q-M1f.35): T1f.5.7.6 judges the goal's lifted guards and lets the claim load, which then holds."
+note   = "M1f W56 (`W56/goal-absent`), filed by S1f.5.7's T1f.5.7.5 (2026-11-09) outside its case: a goal's `(absent (q ?y))` is never judged, so `?y = b` is a row beside `(q b)`, and a claim listing the goal's `(absent (q a))` instance is refused at load. Open, owned by S1f.5.7 (Q-M1f.35): T1f.5.7.6 judges the goal's lifted guards and lets the claim load, which then holds. Fixed by S1f.5.7's T1f.5.7.6 (`607c5d88`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-var-stops.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W57 (`W57/assert-var-stops`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule root fires, so every command stops at the firing, exit 1, with `unbound var ?y in :assert — bindings: {'x': 'a'}`. Open, owned by S1f.5.10: the program is refused at load (F13)."
+note   = "M1f W57 (`W57/assert-var-stops`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule root fires, so every command stops at the firing, exit 1, with `unbound var ?y in :assert — bindings: {'x': 'a'}`. Open, owned by S1f.5.10: the program is refused at load (F13). Fixed by S1f.5.10's T1f.5.10.2 (`bef85fe0`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-var-under-commitment.ein"
 group  = "regression"
 runs   = ["solve", "solve --minimal", "saturate"]
-note   = "M1f W57 (`W57/assert-var-under-commitment`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule only a commitment fires, so `saturate` and `solve --minimal` answer, exit 0, where describe stops, exit 1, the three runs banking the disagreement. Open, owned by S1f.5.10: the program is refused at load on every command (F13)."
+note   = "M1f W57 (`W57/assert-var-under-commitment`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable no premise binds, in a rule only a commitment fires, so `saturate` and `solve --minimal` answer, exit 0, where describe stops, exit 1, the three runs banking the disagreement. Open, owned by S1f.5.10: the program is refused at load on every command (F13). Fixed by S1f.5.10's T1f.5.10.2 (`bef85fe0`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-assert-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W57 (`W57/hrule-assert-var`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): an hrule's template writes a variable no premise binds, builds no fact, and proposes nothing, in silence: H empty, R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13)."
+note   = "M1f W57 (`W57/hrule-assert-var`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): an hrule's template writes a variable no premise binds, builds no fact, and proposes nothing, in silence: H empty, R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13). Fixed by S1f.5.10's T1f.5.10.2 (`bef85fe0`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W57 (`W57/assert-var-never-fires`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable nothing binds, in a rule whose `:match` is `()`, which never fires (F12), so the program loads and answers R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13), before S1f.5.9 makes an empty `:match` fire."
+note   = "M1f W57 (`W57/assert-var-never-fires`), filed by S1f.5.10's T1f.5.10.1 (2026-11-09): a conclusion's variable nothing binds, in a rule whose `:match` is `()`, which never fires (F12), so the program loads and answers R {∅}. Open, owned by S1f.5.10: the program is refused at load (F13), before S1f.5.9 makes an empty `:match` fire. Fixed by S1f.5.10's T1f.5.10.2 (`bef85fe0`, 2026-11-09), its register row `fixed`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/parameter-nested-assert.ein"

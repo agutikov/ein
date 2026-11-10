@@ -225,16 +225,20 @@ the build and machine
 `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
 the sweep it has just run, at a 4× tolerance).
 
-**Three** entries are slow: `features/01_not_and_absent`, `features/04_open`,
-and, since M1e2 (2026-10-16), `lattice/07_two_pairs_two_tables`, whose question
-is a region of 2¹⁶ nodes. They are named in `ein-corpus` and pinned per commit
-by `the_slow_set_is_exactly_these_three` (M1e S1e.3.6). Together they are 17
-cells and **17.1 s** of engine.
+**Which entries are slow is a test's to say**, and this page does not copy its
+list: `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen` names them, in
+path order, and fails per commit when the set moves (M1e S1e.3.6; its name has
+moved with the set), and `grep -c '^slow *= *true' corpus/corpus.toml` counts
+them. A re-take moves the flag both ways: `features/04_open` lost it at M1e2
+S1e2.1a.5's switch, when no cell ran the walk any more, and the six `square-*`
+gained it at S1e2.1c.2. What each costs is
+[`corpus_cost.md`](../docs/history/m1a_rust/measurements/corpus_cost.md)'s, whose
+§ 10 is the latest re-take (2026-11-03).
 
 The **cell count** is `wc -l ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt`:
 the exit golden is one line per cell of the full selection, so it is the number
 and it cannot drift from the sweep that writes it. The default selection is
-that minus the three slow entries' seventeen. What the sweep costs is a
+that minus the slow entries' cells. What the sweep costs is a
 measurement — **5.3 s** of `cargo test` by default and **22.2 s** with
 `EIN_CORPUS_SLOW=1`, where before S1a.9.0 they took **307 s** (2026-08-22, and
 `utils/corpus_cost.py` re-takes it).
@@ -246,7 +250,7 @@ measurement — **5.3 s** of `cargo test` by default and **22.2 s** with
 > process, not the engine.
 
 > **Three, until M1a T1a.7.2.0.** `branching/07_lookahead_off`'s seven cells
-> cost 2.12 s when S1a.9.0 measured them and cost **754 ms** now: coalescing
+> cost 2.12 s when S1a.9.0 measured them and **754 ms** after it: coalescing
 > root's layer stack at the search's layer barrier is 2.8× on that entry, and
 > the flag stopped being true. Nothing was dropped and nothing was tuned — a
 > re-take found it, which is the whole reason `slow` carries a number
@@ -263,12 +267,13 @@ Three decisions are worth knowing before editing the column:
   under a per-run line and over the sum's — and it is now under both.
 - **One second**, because the whole default selection is under three seconds:
   past that an entry stops being part of the sweep and becomes the reason it
-  is slow. The measured distribution leaves room on both sides — the slow
-  entries cost 3.5 s and 9.7 s, and the most expensive unflagged one 0.75 s —
-  so a machine would have to be 3.5× faster or 1.3× slower before the line
-  moved. It was 2.1 s / 4.1 s / 10.2 s against 0.38 s until T1a.7.2.0 took the
-  2.1 s entry to 0.75 s, and that entry is now the one nearest the line from
-  below: the room on the *slow* side grew, the room below it shrank.
+  is slow. When the line was drawn the measured distribution left room on both
+  sides (M1a T1a.7.2.0, 2026-08-22, `corpus_cost.md` § 7): the two slow
+  entries cost 3.5 s and 9.7 s, and the most expensive unflagged one 0.75 s,
+  so a machine would have had to be 3.5× faster or 1.3× slower before the
+  line moved. It was 2.1 s / 4.1 s / 10.2 s against 0.38 s until T1a.7.2.0
+  took the 2.1 s entry to 0.75 s. The distribution since is each re-take's in
+  `corpus_cost.md`, which moved entries across the line both ways.
 - **`cost_ms` is recorded only where something checks it**: on a `slow` entry,
   or on one within 4× of the threshold. Below that the sweep's own tolerance
   swallows it and it would be a number nobody verifies — which is exactly what

@@ -9498,7 +9498,7 @@ adfb6c69df13d5fd       24L  examples/features/15_unicode_escapes.ein::dot[kb-sin
 472f88f1d12eebbd       30L  examples/features/15_unicode_escapes.ein::read-out[minimal]
 6cc8ad9c2a41bcea       31L  examples/features/15_unicode_escapes.ein::read-out[single]
 7430d2790548ebff       31L  examples/features/15_unicode_escapes.ein::read-out[n2]
-0803c8cb81508f15       86L  examples/features/15_unicode_escapes.ein::region-trace
+ebef5192e6c7482f       86L  examples/features/15_unicode_escapes.ein::region-trace
 6bdc22dba1fae60a        9L  examples/features/15_unicode_escapes.ein::states
 2be7f38d98b483dc        7L  examples/features/15_unicode_escapes.ein::region-lattice
 ffc820d8d39f5877       90L  examples/features/15_unicode_escapes.ein::cores[describe]
@@ -15504,7 +15504,7 @@ fc444bcbf2179d23       38L  tests/text/01_unicode.ein::read-out[describe]
 6f32c0a86830c362       29L  tests/text/01_unicode.ein::read-out[minimal]
 e1e07853f2587b93       29L  tests/text/01_unicode.ein::read-out[single]
 b0bf13a22c8881b8       29L  tests/text/01_unicode.ein::read-out[n2]
-f79407d3bf1cde8e       71L  tests/text/01_unicode.ein::region-trace
+0bb9541c1cbd892b       74L  tests/text/01_unicode.ein::region-trace
 8a6fae0498aba696       11L  tests/text/01_unicode.ein::states
 2c6b148663450949        7L  tests/text/01_unicode.ein::region-lattice
 edd152e3cf6d3557       90L  tests/text/01_unicode.ein::cores[describe]

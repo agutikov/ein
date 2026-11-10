@@ -1255,7 +1255,7 @@ constrained-reasoning research.
 EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test fuzz_properties     # the nightly's fuzz job, once per seed (1, 987654321); the dev host runs 1000000
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 14 slow entries
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fourteen names
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance   # the dev host's, since M1f S1f.5.27
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens

@@ -595,3 +595,166 @@ fn the_warning_says_what_is_assumed_where_there_is_a_site() {
         assert!(!r.out.contains("monotone lattice"), "{file}");
     }
 }
+
+/// The block's fields as `region_dump.md` § The `monotonicity` block names
+/// them: each leaf, a list of objects written `name[]` and its elements'
+/// fields under it, a `null` or an empty list being the field it stands in.
+fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
+    match v {
+        J::Object(m) => {
+            for (k, c) in m {
+                let name = if at.is_empty() {
+                    k.clone()
+                } else {
+                    format!("{at}.{k}")
+                };
+                monotonicity_fields(c, &name, out);
+            }
+        }
+        J::Array(items) if items.iter().any(J::is_object) => {
+            for c in items {
+                monotonicity_fields(c, &format!("{at}[]"), out);
+            }
+        }
+        _ => {
+            out.insert(at.to_string());
+        }
+    }
+}
+
+/// **Every field of the `monotonicity` block is defined on the page** (M1f
+/// S1f.5.28's item 1: the page named the block's keys and not seven of its
+/// fields, `reads.dynamic_*` and `paths.dead_parents` among them, and no
+/// test held it). Both directions: every field a run writes, over runs that
+/// reach each of the five statuses (exercised, conservative, past the limit,
+/// not read, root dead), `paths.unprinted`, `-y`'s spot check on a monotone
+/// program, `--monotone` and `ein oracle --dump`'s `region.json`, is a row of
+/// the page's table, and every row is a field one of them writes. A `null`
+/// or an empty list stands in for its fields only where no run fills them.
+#[test]
+fn every_monotonicity_field_is_defined_on_the_page() {
+    let page = std::fs::read_to_string(repo_root().join("docs/kernel/inference/region_dump.md"))
+        .expect("the page");
+    let section = page
+        .split("### The `monotonicity` block, field by field")
+        .nth(1)
+        .and_then(|s| s.split("\n## ").next())
+        .expect("§ The `monotonicity` block, field by field");
+    let rows: BTreeSet<String> = section
+        .lines()
+        .filter_map(|l| l.strip_prefix("| `"))
+        .filter_map(|l| l.split('`').next())
+        .map(str::to_string)
+        .collect();
+
+    let tmp = scratch("fields");
+    let dead = tmp.join("dead-root.ein");
+    std::fs::write(
+        &dead,
+        "(relation thing Thing :why \"{?1} is a thing\")\n\
+         (relation p Thing :why \"{?1} is p\")\n\
+         (relation q Thing :why \"{?1} is q\")\n\
+         (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) \
+         :why \"no q for {?x}, so p\")\n\
+         (rule derive-q () :match (and (thing ?x) (absent (p ?x))) :assert (q ?x) \
+         :why \"no p for {?x}, so q\")\n\
+         (rule clash () :match (thing ?x) :assert (false) :why \"every thing is a contradiction\")\n\
+         (thing one :source \"the only object\")\n",
+    )
+    .expect("the dead-root program is written");
+    let dead = dead.to_string_lossy().to_string();
+    let runs: [(&str, &[&str]); 9] = [
+        ("conservative", &["examples/features/07_unstratifiable.ein"]),
+        (
+            "exercised",
+            &["examples/lattice/04_obligation_trigger_hole.ein"],
+        ),
+        (
+            "past the limit",
+            &["examples/lattice/10_fifo_gap.ein", "--region-limit", "1"],
+        ),
+        (
+            "not read",
+            &[
+                "examples/lattice/04_obligation_trigger_hole.ein",
+                "--minimal",
+            ],
+        ),
+        ("root dead", &[&dead]),
+        (
+            "unprinted",
+            &["examples/lattice/04_obligation_trigger_hole.ein", "--count"],
+        ),
+        (
+            "stale",
+            &["examples/features/07_unstratifiable.ein", "--single"],
+        ),
+        (
+            "-y, monotone",
+            &["examples/branching/04_two_levels.ein", "-y"],
+        ),
+        (
+            "--monotone",
+            &["examples/features/07_unstratifiable.ein", "--monotone"],
+        ),
+    ];
+    let mut fields: BTreeSet<String> = BTreeSet::new();
+    let mut bits: BTreeSet<String> = BTreeSet::new();
+    for (i, (what, args)) in runs.iter().enumerate() {
+        let summary = tmp.join(format!("summary-{i}.json"));
+        let s = summary.to_string_lossy().to_string();
+        let mut argv = vec!["solve"];
+        argv.extend_from_slice(args);
+        argv.extend(["--json-summary", &s]);
+        let r = ein(&argv, &[]);
+        assert_eq!(r.code, 0, "{what}: {}", r.err);
+        let m = json(&summary)["monotonicity"].clone();
+        if let Some(b) = m["status"]["why"].as_str().or(m["status"]["bit"].as_str()) {
+            bits.insert(b.to_string());
+        }
+        monotonicity_fields(&m, "", &mut fields);
+    }
+    let dir = tmp.join("oracle");
+    let r = dump("examples/lattice/04_obligation_trigger_hole.ein", &[], &dir);
+    assert_eq!(r.code, 0, "{}", r.err);
+    monotonicity_fields(
+        &json(&dir.join("region.json"))["monotonicity"],
+        "",
+        &mut fields,
+    );
+    // The five statuses, each reached: a run that stopped reaching one would
+    // leave its fields to the others, or to no run.
+    assert_eq!(
+        bits.into_iter().collect::<Vec<_>>(),
+        [
+            "conservative",
+            "exercised",
+            "past --region-limit",
+            "root is dead (L0)",
+            "the run did not read every node"
+        ],
+        "the runs no longer reach every status"
+    );
+    // A `null` or an empty list is a field only where no run fills it.
+    let leaves: BTreeSet<String> = fields
+        .iter()
+        .filter(|f| {
+            !fields.iter().any(|g| {
+                g.len() > f.len()
+                    && g.starts_with(f.as_str())
+                    && matches!(g.as_bytes()[f.len()], b'.' | b'[')
+            })
+        })
+        .cloned()
+        .collect();
+    assert!(
+        leaves.contains("paths.unprinted.saturations") && leaves.contains("absents[].class"),
+        "the runs did not reach every field: {leaves:?}"
+    );
+    let unnamed: Vec<&String> = leaves.difference(&rows).collect();
+    let unwritten: Vec<&String> = rows.difference(&leaves).collect();
+    assert!(
+        unnamed.is_empty() && unwritten.is_empty(),
+        "region_dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
+    );
+}

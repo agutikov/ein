@@ -100,9 +100,14 @@ no listing: it reads no state.
 
 **A partial description** prints what it certified and bounds the rest. The state route stops between sizes, so it
 is complete up to states of k candidates; route 1 stops between layers, complete up to commitments of L candidates.
-Describe takes route 1 only on a flagged program whose root is dead, which reads root alone, so no corpus run prints
-route 1's *stopped before layer L* (the census of 2026-11-09,
-[S1f.5.16 § T1 record](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md#t1-record-2026-11-09)).
+Describe takes route 1 only on a flagged program whose root is dead, which reads root alone, so no `ein` run prints
+route 1's *stopped before layer L*: layer 0 is root, which the route projects at one fact and the smallest
+`--region-budget` the command takes, 1, admits, and a dead root leaves layer 1 empty (the census of 2026-11-09,
+[S1f.5.16 § T1 record](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md#t1-record-2026-11-09);
+M1f S1f.5.28, `read_out_reference.rs`' `route_1_never_stops_on_an_ein_run`). The row stays, since
+`explore::describe_by`, which the tests call to hold two routes to one read-out, takes route 1 on a monotone program
+and stops it at the budget
+([Q-M1f.108](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f108--route-1s-stopped-before-layer-l-which-no-ein-run-prints)).
 Where ∅ and ⊤ are both in R it is decided as the whole cube (L1, L2), and only its states are not all counted
 ([X11](read_out_examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube)). A flagged program past
 `--region-limit` visits the cube in layer order up to 2^limit nodes and certifies the minimal line's members met with
@@ -311,6 +316,11 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 The clock rows print after the read-out, `-s`'s `wall` first and then, after the forms, `-t`'s table under a line
 `timing`, in its own layout (the phase at two spaces, the time right-aligned, then what the phase did). A clock is no
 golden's: `read_out_reference.rs` holds them by the run below, its times masked.
+
+**Every count prints in digit groups of three**, `2 048`, as every row above does: `-t`'s `route` row and `the cube`'s
+two counts too, since M1f S1f.5.28, where they printed plain digits. A `2^n` exponent and an echoed `--region-budget`
+print as written. `read_out_reference.rs`' `the_clock_and_the_cube_group_their_counts` holds it on a program whose
+counts pass a thousand.
 
 <!-- rows: clock -->
 | label | printed when | says | kind | summary | example |

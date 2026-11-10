@@ -121,6 +121,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.104](#q-m1f104--a-critical-step-the-runners-spread-puts-on-the-line) | a critical step the runner's spread puts on the line | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), `corpus_cores`' slow half stays whole in the nightly: 256 s on the latest run, 428 s and 436 s on the two before, on a runner slower in every step, and its slow half has no budget to cut**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
 | [Q-M1f.105](#q-m1f105--how-the-dev-hosts-list-is-held) | how the dev host's list is held | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), a third copy in `run_tests.sh`, held by `nightly_steps.rs` to the nightly's as a superset whose other steps `DEV_HOST_ONLY` names with why, with a floor, the two fuzz budgets pinned, and a census of the targets that read `EIN_CORPUS_SLOW`**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
 | [Q-M1f.106](#q-m1f106--the-whole-review-bundle-on-the-runners-graphviz) | the whole review bundle on the runner's Graphviz | **defaulted 2026-11-10 (the stage's default, S1f.5.27): (a), it runs on the dev host, here or in the runner's image (`utils/ci_container.sh --dev-host`); per commit the runner draws every view with `dot` (`dot_wellformed`) and the smoke's 31 DOTs with their own engines, and Q-M1f.77 is unchanged**; [S1f.5.27](p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md) |
+| [Q-M1f.107](#q-m1f107--where-the-close-reviews-finding-7-is-fixed) | where the close review's finding 7, the stale slow counts, is fixed | **defaulted 2026-11-10 (the coordinator's default, recorded by S1f.5.28): (a), S1f.5.28's item 11, three prose edits citing `the_slow_set_is_exactly_these_fourteen` in place of a count; shown to the user at the close**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
+| [Q-M1f.108](#q-m1f108--route-1s-stopped-before-layer-l-which-no-ein-run-prints) | route 1's *stopped before layer L*, which no `ein` run prints | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), the row stays for `explore::describe_by`, and `read_out.md` says why no `ein` run prints it, pinned by `read_out_reference.rs`' `route_1_never_stops_on_an_ein_run`**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
+| [Q-M1f.109](#q-m1f109--a-texts-line-break-in-the-traces-markdown) | a text's line break in the trace's markdown | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), a hard break, two spaces before it, the line after it in its block (`> ` in a `:why`'s quote), as Q-M1f.19 took the read-out's; shown to the user at the close, since it moves the bytes Q-M1f.12 holds the trace to**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
+| [Q-M1f.110](#q-m1f110--a-container-saved-again) | a container saved again | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), the writer stops at the last provenance record the KB references, so a re-save is byte-identical and no id moves; shown to the user at the close, since S1f.5.19 recorded the growth and left it**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
+| [Q-M1f.111](#q-m1f111--the-fuzz-tests-shape) | the fuzz test's shape | **defaulted 2026-11-10 (the stage's default, S1f.5.28): (a), the stream parsed once, on every thread the process may use, each property keeping its test, its place-by-place reading and its own failure report; 4.3× less CPU at 20 000 inputs, 3.9× and 4.2× less wall on four P-core threads**; [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2301,3 +2306,91 @@ before, and what it guards is the review's pages, not an answer.
 
 **Defaulted 2026-11-10 (the stage's default): (a).** The 612 refusals S1f.5.29 found were every `fdp` view, which the
 smoke draws, and no view kind the bundle draws is outside `dot_wellformed`'s and the smoke's. Re-opening it means (b).
+
+### Q-M1f.107 — Where the close review's finding 7 is fixed
+
+**Raised** 2026-11-10 by the coordinator, writing [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md). The close review's finding 7, the stale slow
+counts, drew a question from the user and no ruling (*"so what? what does mean slow here? slow for what? compared to
+what?"*); the review answered it: no behaviour is wrong, and two places state a count that drifted and two cite a test
+by a name it no longer has, Q-M1e.4's rule broken. The stage file says the placement is recorded as a Q-M1f row, and
+none was until S1f.5.28 wrote this one.
+
+- **(a) S1f.5.28's item 11**: `corpus/README.md` § `slow`, the `corpus/corpus.toml` header and `corpus_cli.rs` cite
+  `the_slow_set_is_exactly_these_fourteen`, which names the entries per commit, and state no count of their own.
+- **(b) A stage of its own**, for three prose edits.
+- **(c) Left**, the counts drifting until a docs pass.
+
+**Defaulted 2026-11-10 (the coordinator's default): (a).** S1f.5.28's T3 record has the edits. The user may move it.
+
+### Q-M1f.108 — Route 1's *stopped before layer L*, which no `ein` run prints
+
+**Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s T1 (its item 4, from S1f.5.16). Describe takes route 1 only on a flagged
+program whose root is dead: route 1 reads root at layer 0, projected at one fact, which the smallest `--region-budget`
+the command takes, 1, admits, and a dead root leaves layer 1 empty, so no `ein` run stops it at the budget. The
+read-out's arm for it is reached by `explore::describe_by`, which `route_invariance.rs` calls to hold route 1 and the
+state route to one read-out, and which stops route 1 at the budget on a monotone program.
+
+- **(a) Keep the arm**, and say on `read_out.md` why no `ein` run prints it, with a test that the one shape describe
+  takes route 1 on exhausts at `--region-budget 1`.
+- **(b) Delete the arm**, making it an invariant: `describe_by` would need a text of its own for the stop.
+- **(c) Make an `ein` run reach it**, an option that picks route 1, which the module's rule (*no option chooses it*)
+  does not have.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The arm is the library's, and a page that says when a row is
+printed is what S1f.5.16's reference is for. Re-opening it means (b) or (c).
+
+### Q-M1f.109 — A text's line break in the trace's markdown
+
+**Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s T1 (its item 5, from S1f.5.16). `--trace` writes markdown, and wrote a
+text's `\n` or `\r` as it stands, which markdown reads as a soft break: a rule's `:why` in a quote, a premise's
+`:source`, a relation's statement and an owed instance each rendered as one line. Q-M1f.12 holds the trace to *the
+characters*, which a soft break keeps and a renderer joins.
+
+- **(a) A hard break**: each line break two spaces and a newline, the line after it led by its block's marker (`> `
+  in the quote, the item's indent in a list), as Q-M1f.19 (a) took the read-out's lines to their column.
+- **(b) The characters as written**, the soft break documented.
+- **(c) A text as a code span or block**, which keeps its lines and stops reading as prose.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The characters stay, each line of the text a line of the
+rendered page; `ein-cli/tests/natural_language_text.rs` holds it. Two `corpus_shapes` digests moved, the region traces
+of `tests/text/01_unicode.ein` and `examples/features/15_unicode_escapes.ein`. Shown to the user, since it moves the
+bytes Q-M1f.12 holds. Re-opening it means (b) or (c).
+
+### Q-M1f.110 — A container saved again
+
+**Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s T1 (its item 9, from S1f.5.19's record, which recorded it and did not file
+it). `ein kb save` of a container answered as the program did, and wrote 40 bytes more a given fact each time: opening
+a container pushes the file's provenance records and then the loader's, and where the derived state is kept the
+loader's are referenced by nothing, and the writer wrote the whole arena. A saturated `zebra2.einb` saved again passed
+design/10 §6's 64 KB.
+
+- **(a) Write up to the last record the KB references**, a believed fact's primary or alternative or a closure's
+  arrival: a re-save is byte-identical, and no id moves, so a first save keeps its bytes but where its arena ends on a
+  record nothing references (a fact stated twice).
+- **(b) Write only the referenced records, ids remapped**: every unreferenced record goes, and a fact stated twice
+  moves the ids of the records after its second statement, which `ein-einb`'s round trip compares (`Kb::diff`).
+- **(c) Leave it**, a private cache format.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** design/10 §6's size bound is the criterion, and (a) meets it with
+no id moved; (b) failed the round trip's id identity on `examples/syntax/unary-and-nary.ein`. Pinned by
+`einb_cli.rs`' `a_container_saved_again_is_the_container`. Shown to the user, since S1f.5.19 left it. Re-opening it
+means (b).
+
+### Q-M1f.111 — The fuzz test's shape
+
+**Raised** 2026-11-10 by [S1f.5.28](p1f.5_the_no_owner_items/s1f.5.28_the_unchecked_findings_triaged.md)'s item 10, on S1f.5.27's T1: the parse is 99 % of an input's cost, and five
+properties of `ein-ir/tests/fuzz_properties.rs` each generated and parsed the whole stream. The recovery search's cost
+at its budget is [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it)'s, parked for the close,
+and not this.
+
+- **(a) One parse, shared**: a process-wide cache parses the stream once, on every thread the process may use, and
+  keeps each input's verdict by its place, and property 4's sample's reports; each property keeps its test, reads every
+  input it read by its place, re-parses only the accepted ones, and reports and minimises its own failure.
+- **(b) One test**, every property in one loop: one parse, and one name for seven properties, a failure in one hiding
+  the others.
+- **(c) Leave it**, five parses.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** At 20 000 inputs, seed 1, one P-core: 197.3 s → 46.1 s; on four
+P-core threads, the runner's count: 92.3 s → 23.6 s (seed 1) and 87.4 s → 21.0 s (seed 987654321), every property's
+counters the same (`utils/bench_env.sh`, release, 2026-11-10, S1f.5.28's T2 record). Each property still fails on a
+mutation of its check, by its iteration and seed. Re-opening it means (b), or the budgets raised.

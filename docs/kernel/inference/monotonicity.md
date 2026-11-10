@@ -461,6 +461,12 @@ and every program under `examples/lattice/synth/`. Within the limit that is
 | [`lattice/synth/trivial_line.ein`](../../../examples/lattice/synth/trivial_line.ein) | 5 | 0 | 1 (1) | 24 | yes | 32 / 32 |
 | [`tests/region/07_cube.ein`](../../../tests/region/07_cube.ein) | 2 | 1 | 2 (2) | 3 | yes | 7 / 4 |
 
+**Re-taken 2026-11-10** (`python3 utils/guard_split.py --corpus`, M1f S1f.5.28): the script had taken a cell's route
+as route 1 alone, so from S1e2.1c.2, when describe's route on a monotone program became the state route, it split no
+program. Read either since: 32 programs, 25 within the limit agree with the oracle node for node, none disagrees, and
+7 are past the limit. The table above is 2026-11-02's: W8's two witnesses and the `synth/` programs *forbid* refuses
+left the selection when `ein oracle` began refusing them (M1e2 S1e2.2.5).
+
 **Where it disagrees.** On W8's two witnesses, `stale-naf-fork` and its
 `-warn` twin, the split puts `{(q one)}` in R and the oracle does not. The
 oracle builds a node by fork from root, which already holds `(p one)`, derived

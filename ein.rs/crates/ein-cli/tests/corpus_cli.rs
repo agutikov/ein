@@ -54,10 +54,12 @@
 //! that makes some corpus program stop terminating is not a red gate but a
 //! **hung** one, with no output and no name — and this file is the only test
 //! in the workspace that runs unbounded search from a process it did not
-//! write the arguments for. The slowest cell today is
-//! `features/04_open.ein :: render lattice` at **10.2 s**, which is a blind
-//! enumerator over a domain the demo never bounds; it is why that entry is
-//! `slow`. It used to be `square-unique/cul-de-sac.ein :: render lattice` at
+//! write the arguments for. The slowest cell on 2026-08-22 was
+//! `features/04_open.ein :: render lattice` at **10.2 s**, a blind
+//! enumerator over a domain the demo never bounds, which made that entry
+//! `slow` until M1e2 S1e2.1a.5's switch; what each cell costs since is
+//! `utils/corpus_cost.py`'s (`docs/history/m1a_rust/measurements/corpus_cost.md`).
+//! It used to be `square-unique/cul-de-sac.ein :: render lattice` at
 //! **94 s** — 125 s for its sibling `corner-house` — and those two cells were
 //! 90 % of the whole sweep until S1a.9.0 asked what they were for. A cell at
 //! 125 s against a 300 s timeout is also a red gate waiting for a slower
@@ -108,12 +110,12 @@ impl Cell {
 }
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
-/// `ein_corpus::manifest::SLOW_MS` or more together. **Three** of them, named
-/// in `ein-corpus` and pinned by `the_slow_set_is_exactly_these_three` (M1e
-/// S1e.3.6; the third is M1e2's, a 2^16 region), where there were seventeen at
+/// `ein_corpus::manifest::SLOW_MS` or more together. Which ones is
+/// `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen`'s to say, per commit
+/// (M1e S1e.3.6), where there were seventeen at
 /// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced),
-/// one of them `zebra2.ein` at 16 ms. They add ~16 s to a default
-/// selection that costs 3.5, so they are still nightly's.
+/// one of them `zebra2.ein` at 16 ms. Their cells run in the CI nightly's
+/// `deep-corpus` job and on the dev host, not per commit (`nightly_steps.rs`).
 ///
 /// `EIN_BLESS=1` implies it: a golden blessed from the default selection would
 /// silently *shrink* by the slow entries' lines, which is the one way a table

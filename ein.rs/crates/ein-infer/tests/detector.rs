@@ -30,11 +30,14 @@ const STRATIFIED_STALE: &str = "(relation thing T :why \"{?1} is a thing\") (rel
      (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :why \"{?x} is a thing and r does not hold of it, so q holds of {?x}\")
      (query :goal (r ?x))";
 
-/// `lattice/10_fifo_gap.ein` with the reader `r2` at priority 100: it is
-/// admitted before `r1` in every written order, so no equal-priority pair
-/// exists for a reorder to move, and the order check still reports it (the
-/// proposal's § 7, item 4).
-const FIFO_GAP_PRIORITY: &str = "(relation thing T :why \"{?1} is a thing\") (relation a T :why \"a holds of {?1}\") (relation b T :why \"b holds of {?1}\")
+/// `lattice/10_fifo_gap.ein`'s program, written here with its own `:why`s.
+/// Until M1f S1f.5.15 removed `:priority` it carried the reader `r2` at
+/// priority 100, admitted before `r1` in every written order, so no
+/// equal-priority pair existed for a reorder to move, and the order check
+/// still reported it (the proposal's § 7, item 4). With the clause gone it is
+/// the file's program, `r2` written first, and its race is the written
+/// order's, as the file's is.
+const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?1} is a thing\") (relation a T :why \"a holds of {?1}\") (relation b T :why \"b holds of {?1}\")
      (relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\") (relation z T :why \"z holds of {?1}\")
      (thing one)
      (hrule guess-a () :match (thing ?x) :assert (a ?x) :why \"guess that a holds of {?x}, a thing\")
@@ -257,7 +260,7 @@ fn the_order_check_finds_every_fifo_race() {
     // The reader at an earlier priority was the one order no reorder moved,
     // until M1f S1f.5.15 took `:priority` out: written so, it is a race like
     // any other, the written order's.
-    let (m, _) = written(FIFO_GAP_PRIORITY);
+    let (m, _) = written(FIFO_GAP_WRITTEN);
     assert_eq!(races(&m.detector), ["r2 ← r1: q"]);
     // The static variant: `q` is outside D, so the program is monotone and
     // the gated detector reads nothing (monotonicity.md § 7.6).

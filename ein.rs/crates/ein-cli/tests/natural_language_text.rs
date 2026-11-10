@@ -15,7 +15,7 @@
 //! | surface | which text | as |
 //! |---|---|---|
 //! | the read-out, `ein solve` and `--dump-answer`'s `answer.txt` | `:goal-text`, filled | the characters, in `“…”`, each line after a line break at the sentence's column |
-//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and since M1f S1f.5.14 the derived fact's relation's `:why`, filled | the characters |
+//! | `--trace` | a rule's `:why`, filled at its firing, a premise's `:source`, and since M1f S1f.5.14 the derived fact's relation's `:why`, filled | the characters, each line break (`\n`, `\r`) a markdown hard break and the line after it in the same block, `> ` in the `:why`'s quote (since M1f S1f.5.28, Q-M1f.109) |
 //! | `ein saturate --dump` | `:source`, `:goal-text` | quoted, as the printer quotes |
 //! | a `--dump-answer` state file | all three, the program re-written | quoted, and it reloads to the same text |
 //! | a `--dump-answer` state file's fact comments (M1f S1f.5.14) | a rule's `:why` filled at the fact's first recorded justification, and the relation's `:why` filled with the fact's arguments | the characters, each line after a line break a comment line of its own (`;   `) |
@@ -137,8 +137,20 @@ fn the_read_out_prints_the_goal_text_as_written() {
     assert_eq!(t.code, 0, "{}{}", t.out, t.err);
 }
 
-/// `--trace` prints the rule's `:why` filled at each firing and each
-/// premise's `:source` beside it.
+/// A text as the trace's markdown writes it: each line break, `\n` and `\r`
+/// alike, a hard break, two spaces before it, and the line after it led by
+/// `lead`, its block's marker (M1f S1f.5.28's item 5, Q-M1f.109): the
+/// characters otherwise, byte for byte.
+fn markdown(text: &str, lead: &str) -> String {
+    text.split(['\n', '\r'])
+        .collect::<Vec<_>>()
+        .join(&format!("  \n{lead}"))
+}
+
+/// `--trace` prints the rule's `:why` filled at each firing, as a quote, and
+/// each premise's `:source` beside it, each line of each a line of the
+/// rendered page: until M1f S1f.5.28 a text's line break was written as it
+/// stands, which markdown reads as a soft break.
 #[test]
 fn the_trace_prints_the_rules_why_and_the_premises_source() {
     let scratch = Scratch::new("ein-nl-text-trace");
@@ -147,9 +159,13 @@ fn the_trace_prints_the_rules_why_and_the_premises_source() {
     assert_eq!(r.code, 0, "{}", r.err);
     let page = std::fs::read_to_string(&trace).expect("the trace");
     for (p, h, source) in [("Ann", "H1", SOURCE_ANN), ("Bob", "H2", SOURCE_BOB)] {
-        let why = RULE_WHY.replace("{?p}", p).replace("{?h}", h);
+        let why = format!(
+            "\n> {}\n",
+            markdown(&RULE_WHY.replace("{?p}", p).replace("{?h}", h), "> ")
+        );
         assert!(page.contains(&why), "the trace: no {why:?}");
-        assert!(page.contains(source), "the trace: no {source:?}");
+        let source = markdown(source, "");
+        assert!(page.contains(&source), "the trace: no {source:?}");
         // What the derived fact says, its relation's `:why` (M1f S1f.5.14).
         let derives = format!("Derives `housed({p})` — {}", HOUSED_WHY.replace("{?1}", p));
         assert!(page.contains(&derives), "the trace: no {derives:?}");

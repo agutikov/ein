@@ -107,7 +107,9 @@ A state file from `ein solve examples/zebra.ein --dump-answer DIR`, `DIR/models/
 **What is not rendered.** The read-out's `(model …)` blocks and its `as :expect` are Ein text a claim can be pasted
 from, so they stay s-expressions, as `ein solve`'s stdout and `answer.txt` do; a state file reloads to its facts
 because the English is a comment (`ein-cli/tests/answer_round_trip.rs`), a line break in it a comment line of its
-own.
+own. `--trace` writes markdown, so there a text's line break is a hard break and the line after it stays in its block,
+a rule's `:why` in its quote (M1f S1f.5.28, [Q-M1f.109](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f109--a-texts-line-break-in-the-traces-markdown);
+`ein-cli/tests/natural_language_text.rs`): written as it stands, markdown read it as a soft break and joined the lines.
 
 **What it costs.** Nothing on a bare `ein solve`, which renders no fact. On `--dump-answer` and `--trace` over the
 zebra family the rendering is within the runs' spread: [§ T1f.5.14.2 record](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5142-record-2026-11-10)

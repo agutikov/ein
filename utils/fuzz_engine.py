@@ -462,7 +462,7 @@ PANIC = re.compile(r"panicked at|RUST_BACKTRACE", re.I)
 # script masks.
 DURATION = re.compile(r"\d+\.\d+ ms")
 
-# `panicked at crates/ein-infer/src/hrule.rs:113:13:` and the line after it.
+# `panicked at crates/ein-infer/src/hrule.rs:130:13:` and the line after it.
 # Two panics at the same site with the same message are one finding, however
 # many programs reach it — see `report`'s dedup.
 PANIC_SITE = re.compile(r"panicked at ([^\n]+)\n([^\n]*)")

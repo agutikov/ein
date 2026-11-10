@@ -256,6 +256,74 @@ that load and saturate, **150** have a cube of at most 16 candidates and
 `lattice/04_obligation_trigger_hole.ein`. The zebra family and every program
 under `tests/stdlib/` have none.
 
+
+### The `monotonicity` block, field by field
+
+The block is the same object in `--json-summary` (every run, monotone or not, `ein-summary/2` having one shape) and in
+`region.json`, which adds `absents` and writes `status`, `state` and `paths` only on a flagged program. A list of
+objects is written `name[]`, and its rows name the fields of each element. Every field a run writes has a row here and
+every row is a field some run writes, held both ways by `ein-cli/tests/region_dump.rs`'
+`every_monotonicity_field_is_defined_on_the_page` (M1f S1f.5.28; until then the page named the block's keys and not
+these fields).
+
+| field | what |
+|---|---|
+| `monotone` | the static verdict: no site |
+| `hypothesised` | `H`, the candidates' relations, sorted |
+| `dynamic` | `D`, the relations a commitment can change, sorted; `¬R` for a stored negative |
+| `plans.saturation` | how many saturation plans the check read |
+| `plans.obligation` | how many obligation plans it read |
+| `reads.static` | every read of a relation outside `D`, in every plan, at any `absent` depth |
+| `reads.dynamic_monotone` | every read of a relation in `D` whose polarity is monotone: even `absent` depth in a saturation rule, odd in an obligation |
+| `reads.dynamic_non_monotone` | every read of a relation in `D` whose polarity is not: odd depth in a saturation rule, even (the trigger) in an obligation. Each is a site |
+| `absent_reads.static` | as `reads.static`, counting only the reads inside an `absent` (depth 1 or more) |
+| `absent_reads.dynamic_monotone` | as `reads.dynamic_monotone`, inside an `absent` |
+| `absent_reads.dynamic_non_monotone` | as `reads.dynamic_non_monotone`, inside an `absent` |
+| `absents[].rule` | `region.json` only: every read inside an `absent`, in site order; the rule that reads it |
+| `absents[].activator` | the arguments of the activator its plan was compiled from, empty for a rule with none |
+| `absents[].kind` | the plan's kind, `saturation` or `obligation` |
+| `absents[].relation` | the relation read |
+| `absents[].depth` | its `absent` depth |
+| `absents[].class` | `static`, `dynamic-monotone` or `dynamic-non-monotone` |
+| `sites[].rule` | each site, sorted and distinct: the rule |
+| `sites[].activator` | its activator's arguments, empty for an activator site, which is about the rule |
+| `sites[].kind` | `absent`, `obligation-trigger` or `activator` |
+| `sites[].relation` | the relation it reads in `D`, or its activator relation |
+| `sites[].depth` | the read's `absent` depth, 0 for a top-level premise |
+| `sites[].concludes` | what the rule concludes, the detector's reading: `(false)`, `(not …)`, `a positive fact`, `(open …)`, or that root compiled no plan of it |
+| `sites[].at_stake` | what the site puts at stake: the state, the state and death, or what the status owes, directly or through a node's plan |
+| `assumes.node` | on a flagged program, how a node is built, `fork from root`; `assumes` is `null` on a monotone one |
+| `assumes.open` | what is open about a node on such a program: Q-M1e2.2, F21 |
+| `cycles[].relations` | each cycle through an `absent` over `D`, a strongly connected part of the rules' dependency graph with a negative edge in it: its relations, sorted |
+| `cycles[].negative` | its negative edges, sorted, `rule: a →¬ b` |
+| `cycles[].odd` | whether some cycle in it has an odd number of negative edges: a state with no stale fact need not exist; where none has, there can be several |
+| `order[].reader` | each order finding: the rule that reads under an `absent` what another concludes |
+| `order[].writer` | the rule that concludes it |
+| `order[].relations` | the relations between them |
+| `status.read` | what the status was read from, `the cube`, or `null` where it is not known |
+| `status.bit` | whether a site bit on the cube: `exercised`, `conservative` or `not known` |
+| `status.by` | the rules a violation is attributed to, on an exercised site; empty otherwise |
+| `status.holes` | the cube's holes |
+| `status.dead_not_upward_closed` | its dead nodes with an alive superset |
+| `status.discharged_not_upward_closed` | its discharged nodes with an owing superset |
+| `status.why` | where the status is not known, why: past `--region-limit`, the run did not read every node, or root is dead (L0) |
+| `status.n` | there, the candidates |
+| `status.limit` | there, the `--region-limit` the run took, where the reason has one |
+| `state.read` | what the stale-fact check read: `the cube`, or every node the run computed |
+| `state.nodes` | how many nodes that is |
+| `state.stale_nodes` | how many of them hold a stale fact, a fact whose `absent` guard the node's own fixpoint falsifies |
+| `state.stale[].node` | each such node, in the order the run computed it: its commitment |
+| `state.stale[].class` | its class, `R`, `owing` or `dead` |
+| `state.stale[].facts` | its stale facts, each with the rule and the `absent` that derived it |
+| `paths.bound` | the parent-path spot check: the parents it reads per printed state, `null` under `-y`, which reads every one |
+| `paths.states` | the printed states of two commitments or more |
+| `paths.parents` | the parents it checked: alive, built, the fact written, saturated |
+| `paths.dead_parents` | the parents it skipped as dead |
+| `paths.saturations` | the saturations the check took |
+| `paths.differ` | each path that reaches another state, `{state} by way of its parent without h` |
+| `paths.unprinted.members` | where the read-out prints no state to check and the run met some it did not print: how many it met; `unprinted` is `null` otherwise |
+| `paths.unprinted.saturations` | what checking theirs would cost at most |
+
 ## The limit
 
 `--region-limit N`, default 16, is the largest `n` computed. The thresholds

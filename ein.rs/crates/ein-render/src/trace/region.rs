@@ -20,7 +20,7 @@ use ein_infer::read_out::{Listing, ReadOut};
 use ein_ir::Ast;
 
 use super::ast::TraceStep;
-use super::render::{dot_block, premises_line};
+use super::render::{dot_block, md_text, premises_line};
 
 /// One state's section.
 pub struct StateTrace {
@@ -62,7 +62,7 @@ pub struct RegionTrace {
 /// statement as its template writes it.
 fn derives_line(step: &TraceStep) -> String {
     match &step.statement {
-        Some(s) => format!("Derives `{}` — {s}", step.derived_label()),
+        Some(s) => format!("Derives `{}` — {}", step.derived_label(), md_text(s, "")),
         None => format!("Derives `{}`.", step.derived_label()),
     }
 }
@@ -73,7 +73,7 @@ fn step(step: &TraceStep, diagrams: bool) -> Vec<String> {
         String::new(),
     ];
     if !step.why.is_empty() {
-        out.push(format!("> {}", step.why));
+        out.push(format!("> {}", md_text(&step.why, "> ")));
         out.push(String::new());
     }
     out.push(premises_line(step));
@@ -108,7 +108,7 @@ fn steps(steps: &[TraceStep], diagrams: bool, reorder: bool) -> Vec<String> {
             let why = if s.why.is_empty() {
                 String::new()
             } else {
-                format!(" — {}", s.why)
+                format!(" — {}", md_text(&s.why, ""))
             };
             out.push(format!(
                 "**Step {}** · `{}` → `{}`{why}",
@@ -192,7 +192,7 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
         for (set, owed) in &t.owing {
             lines.push(format!("- **{set}** owes"));
             for w in owed {
-                lines.push(format!("  - {w}"));
+                lines.push(format!("  - {}", md_text(w, "    ")));
             }
         }
         lines.push(String::new());

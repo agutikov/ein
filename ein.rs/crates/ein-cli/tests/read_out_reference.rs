@@ -28,6 +28,13 @@
 //! 4. [`each_row_prints_its_summary_fields_number`]: on every example run,
 //!    every row whose summary column names a field prints that field's
 //!    number — *one label, one number*.
+//! 5. [`the_clock_and_the_cube_group_their_counts`]: `-t`'s `route` row and
+//!    `ein oracle`'s `the cube` print their counts in digit groups of three,
+//!    as every other row does (M1f S1f.5.28's item 3).
+//! 6. [`route_1_never_stops_on_an_ein_run`]: the page's § 4 says no `ein`
+//!    run prints route 1's *stopped before layer L*; the one program shape
+//!    describe takes route 1 on, at the smallest budget the command takes,
+//!    is exhausted (M1f S1f.5.28's item 4).
 //!
 //! [`docs/kernel/inference/read_out.md`]: ../../../../docs/kernel/inference/read_out.md
 //! [`docs/kernel/inference/read_out_examples.md`]: ../../../../docs/kernel/inference/read_out_examples.md
@@ -765,4 +772,112 @@ fn each_row_prints_its_summary_fields_number() {
     }
     assert!(checked > 500, "{checked} row fields checked");
     assert!(failures.is_empty(), "{PAGE}:\n{}", failures.join("\n"));
+}
+
+/// **The clock and the cube group their counts** (M1f S1f.5.28's item 3, the
+/// page's § 9): `-t`'s `route` row and `the cube`'s two counts print in digit
+/// groups of three, as every row of the read-out does, where until S1f.5.28
+/// they printed plain digits. No corpus run prints a count past a thousand on
+/// either, so the program is written here: eleven slots an hrule guesses, and
+/// an obligation `(h A)` triggers that nothing pays, so the cube is 2^11
+/// nodes, 2 048 saturations, and each of the 1 024 nodes without `(h A)` is
+/// discharged with an owing superset.
+#[test]
+fn the_clock_and_the_cube_group_their_counts() {
+    let tmp = Scratch::new("ein-read-out-groups");
+    let file = tmp.path().join("groups.ein");
+    std::fs::write(
+        &file,
+        "(relation slot T :why \"{?1} is a slot\")\n\
+         (relation h T :why \"h holds of {?1}\")\n\
+         (relation need T T :why \"h holding of {?2} pays debt {?1}\")\n\
+         (slot A) (slot B) (slot C) (slot D) (slot E) (slot F) (slot G) (slot H) (slot I) (slot J) (slot K)\n\
+         (need K1 Z)\n\
+         (hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of {?x}\")\n\
+         (rule owe () :match (and (h A) (absent (and (need K1 ?y) (h ?y)))) :assert (open h) \
+         :why \"h holds of A and of nothing that pays debt K1: one such is still owed\")\n",
+    )
+    .expect("the program is written");
+    let file = file.to_string_lossy().to_string();
+    let line = |args: &[&str], head: &str| -> String {
+        let out = ein(&args.iter().map(|a| a.to_string()).collect::<Vec<_>>());
+        assert_eq!(
+            out.status.code(),
+            Some(0),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        let text = String::from_utf8_lossy(&out.stdout).to_string();
+        text.lines()
+            .find(|l| l.starts_with(head) && (head != "  route" || l.contains(" ms ")))
+            .unwrap_or_else(|| panic!("{args:?} prints no `{head}` line:\n{text}"))
+            .to_string()
+    };
+    let route = line(&["solve", &file, "-t"], "  route");
+    assert!(
+        route.ends_with("root, H and every node visited: 2 048 saturations"),
+        "-t's route row: {route}"
+    );
+    let cube = line(&["oracle", &file], "the cube ");
+    assert!(
+        cube.starts_with(
+            "the cube   0 dead nodes with an alive superset · 1 024 discharged nodes with an \
+             owing superset"
+        ),
+        "the cube's line: {cube}"
+    );
+}
+
+/// **Route 1 never stops on an `ein` run** (M1f S1f.5.28's item 4, the page's
+/// § 4): describe takes route 1 only on a flagged program whose root is dead,
+/// whose layer 0 is root, projected at one fact, which the smallest
+/// `--region-budget` the command takes admits, and a dead root leaves layer 1
+/// empty. So on that shape, at `--region-budget 1`, the route exhausts, and
+/// the budget 0 that would stop it before layer 0 is refused. The printer's
+/// arm stays for `explore::describe_by`, which `route_invariance.rs` stops at
+/// the budget on a monotone program.
+#[test]
+fn route_1_never_stops_on_an_ein_run() {
+    let tmp = Scratch::new("ein-read-out-route-1");
+    let file = tmp.path().join("dead-root.ein");
+    std::fs::write(
+        &file,
+        "(relation thing Thing :why \"{?1} is a thing\")\n\
+         (relation p Thing :why \"{?1} is p\")\n\
+         (relation q Thing :why \"{?1} is q\")\n\
+         (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) \
+         :why \"no q for {?x}, so p\")\n\
+         (rule derive-q () :match (and (thing ?x) (absent (p ?x))) :assert (q ?x) \
+         :why \"no p for {?x}, so q\")\n\
+         (rule clash () :match (thing ?x) :assert (false) :why \"every thing is a contradiction\")\n\
+         (thing one :source \"the only object\")\n",
+    )
+    .expect("the program is written");
+    let file = file.to_string_lossy().to_string();
+    let run = |budget: &str| {
+        ein(&[
+            "solve".to_string(),
+            file.clone(),
+            "--region-budget".to_string(),
+            budget.to_string(),
+        ])
+    };
+    let out = run("1");
+    let text = String::from_utf8_lossy(&out.stdout).to_string();
+    assert_eq!(
+        out.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(
+        text.contains("\n  route             1, the alive down-set"),
+        "describe no longer takes route 1 on a flagged program whose root is dead:\n{text}"
+    );
+    assert!(
+        text.contains("\n  exhausted         yes") && !text.contains("stopped before layer"),
+        "route 1 stopped at --region-budget 1:\n{text}"
+    );
+    let zero = run("0");
+    assert_eq!(zero.status.code(), Some(2), "--region-budget 0 is refused");
 }

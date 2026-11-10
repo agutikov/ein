@@ -239,7 +239,8 @@ pub fn save_to_vec(
     bodies.push((Kind::Ints, sections::write_ints()));
     bodies.push((Kind::Facts, sections::write_facts(terms)));
     bodies.push((Kind::Present, sections::write_present(kb)));
-    bodies.push((Kind::Prov, sections::write_prov(kb, terms)));
+    let kept = sections::Kept::of(kb);
+    bodies.push((Kind::Prov, sections::write_prov(kb, terms, &kept)));
     bodies.push((Kind::Program, program));
     let nogoods = sections::write_nogoods(kb);
     if !nogoods.is_empty() {
@@ -248,11 +249,11 @@ pub fn save_to_vec(
     if let Some(s) = &opts.solutions {
         bodies.push((Kind::Solutions, solutions::write(s)));
     }
-    let universal = sections::write_universal(terms);
+    let universal = sections::write_universal(terms, &kept);
     if !universal.is_empty() {
         bodies.push((Kind::Universal, universal));
     }
-    let closure = sections::write_closure(kb);
+    let closure = sections::write_closure(kb, &kept);
     if !closure.is_empty() {
         bodies.push((Kind::Closure, closure));
     }

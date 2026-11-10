@@ -35,8 +35,10 @@ of the *relaxed* program (every guard read empty, every derivable activator
 compiled, every candidate given) bounds the facts any node can hold, and a
 guard is such a fact, not given, that a rewritten read can match (g of them).
 Each of the 2^g cells is solved by `ein solve` with no flag, which on a
-monotone program is route 1, and read back from `--json-summary`: a state's
-commitments are the intervals [minimal generator … closure], exact because
+monotone program was route 1 and is the state route since M1e2 S1e2.1c.2,
+whose read-out is route 1's where both finish, and read back from
+`--json-summary`: a state's commitments are the intervals [minimal
+generator … closure], exact because
 saturation is a closure operator on a monotone cube
 (`ein-infer/tests/region.rs`). The union is held to `ein oracle --dump` on
 the original program, node for node. Nothing here enumerates the cube except
@@ -389,14 +391,19 @@ def ein_bin(arg: str | None) -> str:
     return arg or os.environ.get("EIN_BIN") or str(REPO / "ein.rs/target/release/ein")
 
 
-def oracle(path: Path, bin: str, limit: int | None = None) -> dict | None:
+def oracle(path: Path, bin: str, limit: int | None = None) -> tuple[dict | None, str]:
+    """`ein oracle --dump`'s `region.json`, or `None` and why there is none:
+    the command's exit and its first stderr line, which says whether the
+    program did not load or loaded and was refused, by *forbid* say (M1f
+    S1f.5.28's item 8: this said *does not load* of both)."""
     with tempfile.TemporaryDirectory(prefix="guard-split-") as d:
         cmd = [bin, "oracle", str(path), "--dump", d] + (["--region-limit", str(limit)] if limit is not None else [])
-        subprocess.run(cmd, capture_output=True, text=True)
+        p = subprocess.run(cmd, capture_output=True, text=True)
         try:
-            return json.loads((Path(d) / "region.json").read_text())
+            return json.loads((Path(d) / "region.json").read_text()), ""
         except FileNotFoundError:
-            return None
+            first = next((l for l in p.stderr.splitlines() if l.strip()), "no message")
+            return None, f"`ein oracle` exits {p.returncode}: {first[:160]}{'…' if len(first) > 160 else ''}"
 
 
 def saturated_facts(text: str, bin: str, tmp: Path) -> set[Atom]:
@@ -456,9 +463,9 @@ def consistency(guards: list[Atom], gamma: int) -> list[list]:
 def split(path: Path, bin: str, keep: Path | None, max_g: int) -> dict:
     t0 = time.monotonic()
     row: dict = {"program": rel_path(path)}
-    region = oracle(path, bin)
+    region, why = oracle(path, bin)
     if region is None:
-        return row | {"skipped": "does not load"}
+        return row | {"skipped": why}
     row["n"] = n = region["n"]
     mono = region["monotonicity"]
     row["sites"] = sorted({s["kind"] for s in mono["sites"]})
@@ -490,9 +497,9 @@ def split(path: Path, bin: str, keep: Path | None, max_g: int) -> dict:
                 continue
             (tmp / "max.ein").write_text("\n".join(ser(f) for f in sp.forms(act, given_gs, True, [])) + "\n",
                                          encoding="utf-8")
-            mx = oracle(tmp / "max.ein", bin, limit=0)
+            mx, why = oracle(tmp / "max.ein", bin, limit=0)
             if mx is None:
-                raise Unsupported("the template does not load")
+                raise Unsupported(f"the template has no static check: {why}")
             left = mx["monotonicity"]["sites"]
             if not left:
                 break
@@ -524,7 +531,11 @@ def split(path: Path, bin: str, keep: Path | None, max_g: int) -> dict:
             if not s["monotonicity"]["monotone"]:
                 raise Unsupported(f"cell {gamma} is not monotone: {s['monotonicity']['sites']}")
             reg = s["region"]
-            if reg.get("route") != "1" or not reg.get("exhausted"):
+            # Route 1 when the script was written, the state route since M1e2
+            # S1e2.1c.2 (describe's on a monotone program), whose read-out is
+            # route 1's where both finish (`ein-cli/tests/route_invariance.rs`):
+            # until M1f S1f.5.28 this took route 1 alone, and split nothing.
+            if reg.get("route") not in ("1", "states") or not reg.get("exhausted"):
                 raise Unsupported(f"cell {gamma}: route {reg.get('route')}, exhausted {reg.get('exhausted')}")
             # A candidate the cell's root already derives is not proposed
             # there, and committing to it changes no node: the cell's region
@@ -549,7 +560,7 @@ def split(path: Path, bin: str, keep: Path | None, max_g: int) -> dict:
                             cls.add(gm | sum(1 << i for i in sub))
                 if len(cls) != st["commitments"]:
                     raise Unsupported(f"cell {gamma}: a state's intervals give {len(cls)} commitments, "
-                                      f"route 1 counts {st['commitments']}")
+                                      f"the cell's route counts {st['commitments']}")
                 cls = {m | sum(1 << i for i in sub) for m in cls
                        for k in range(len(free_held) + 1) for sub in itertools.combinations(free_held, k)}
                 for m in cls:
@@ -603,7 +614,7 @@ def corpus_selection(bin: str) -> list[Path]:
     for f in sorted(files | synth):
         if not f.exists() or f.suffix != ".ein":
             continue
-        r = oracle(f, bin, limit=0)
+        r, _ = oracle(f, bin, limit=0)
         if r is None:
             continue
         if f in synth or not r["monotonicity"]["monotone"]:

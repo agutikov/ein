@@ -36,6 +36,10 @@
 //!    the eleven commands that load a program (seven until M1f S1f.5.21), the default refuses there what
 //!    its row says and the option loads it, and it moves nothing a program
 //!    prints (M1f T1f.5.14.6, T1f.5.14.7).
+//! 8. [`the_leftover_row_names_every_key_of_its_block`] — the `EIN_LEFTOVER`
+//!    row names every key of `--json-summary`'s `leftover` block, and the
+//!    block is what the row says, with the variable and without (M1f
+//!    S1f.5.28's item 2: the row named none of them until then).
 //!
 //! [`docs/kernel/configuration.md`]: ../../../../docs/kernel/configuration.md
 
@@ -748,5 +752,88 @@ fn the_surface_table_agrees_with_the_sections_it_summarises() {
     assert!(
         text.contains(&format!("**{n}** read by the shipped binary")),
         "§ 1 does not say {n} environment variables reach the binary"
+    );
+}
+
+/// **The `EIN_LEFTOVER` row names every key of its block** (M1f S1f.5.28's
+/// item 2). The page owns `--json-summary`'s `leftover` block
+/// (`read_out.md`'s owners table), and its row described the block without
+/// naming a key, `states_by_relation` among them. Both directions: every key
+/// a summary writes is a backticked name in the row, and the block is what the
+/// row says, `taken` the variable, `states` one count per listed state and
+/// `states_by_relation` one object per listed state whose counts sum to it,
+/// both lists empty without the variable.
+#[test]
+fn the_leftover_row_names_every_key_of_its_block() {
+    let text = page();
+    let row = text
+        .lines()
+        .find(|l| l.starts_with("| `EIN_LEFTOVER` |"))
+        .expect("the page has an EIN_LEFTOVER row");
+    let dir = Scratch::new("ein-config-reference");
+    let block = |leftover: bool| -> serde_json::Value {
+        let json = dir.join(format!("summary-{leftover}.json"));
+        let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
+        cmd.args([
+            "solve",
+            "--maximal",
+            "examples/branching/04_two_levels.ein",
+            "--json-summary",
+            &json.to_string_lossy(),
+        ])
+        .current_dir(repo_root())
+        .env_remove("EIN_LEFTOVER");
+        if leftover {
+            cmd.env("EIN_LEFTOVER", "1");
+        }
+        let out = cmd.output().expect("the binary runs");
+        assert_eq!(
+            out.status.code(),
+            Some(0),
+            "{}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        let summary: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&json).expect("the summary"))
+                .expect("JSON");
+        summary["leftover"].clone()
+    };
+    let on = block(true);
+    let mut keys: Vec<String> = on.as_object().expect("an object").keys().cloned().collect();
+    keys.sort();
+    assert_eq!(
+        keys,
+        ["states", "states_by_relation", "taken"],
+        "the block's keys moved"
+    );
+    for key in &keys {
+        assert!(
+            row.contains(&format!("`{key}`")),
+            "the EIN_LEFTOVER row does not name the block's `{key}`:\n{row}"
+        );
+    }
+    assert_eq!(on["taken"], serde_json::Value::Bool(true));
+    let states = on["states"].as_array().expect("a list");
+    let by = on["states_by_relation"].as_array().expect("a list");
+    assert!(!states.is_empty(), "the fixture lists no state: {on}");
+    assert_eq!(states.len(), by.len(), "one object per listed state: {on}");
+    for (n, split) in states.iter().zip(by) {
+        let sum: u64 = split
+            .as_object()
+            .expect("an object from relation to count")
+            .values()
+            .map(|v| v.as_u64().expect("a count"))
+            .sum();
+        assert_eq!(
+            Some(sum),
+            n.as_u64(),
+            "a state's split does not sum to its count: {on}"
+        );
+    }
+    let off = block(false);
+    assert_eq!(
+        off,
+        serde_json::json!({"taken": false, "states": [], "states_by_relation": []}),
+        "the block without the variable"
     );
 }

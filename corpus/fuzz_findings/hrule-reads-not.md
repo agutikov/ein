@@ -17,7 +17,7 @@
 ## What happens
 
 ```
-thread 'no_observable_depends_on_the_order_ids_were_assigned_in' panicked at crates/ein-infer/src/hrule.rs:113:13:
+thread 'no_observable_depends_on_the_order_ids_were_assigned_in' panicked at crates/ein-infer/src/hrule.rs:130:13:
 an hrule reads `not`, which hypgen's kill cache writes mid-enumeration — see `Hrules::candidates`
 ```
 
@@ -25,13 +25,20 @@ an hrule reads `not`, which hypgen's kill cache writes mid-enumeration — see `
 message** and seeds that set from these notes — a note that paraphrases the
 abort gets the same finding re-filed every session.)
 
+The site is the line the assertion is on today (`ein.rs/target/debug/ein solve
+corpus/fuzz_findings/hrule-reads-not.ein`, 2026-11-10, M1f S1f.5.28); it was
+`hrule.rs:113:13` when the note was written, and a site that moves is a
+finding re-filed, so the line is kept current here.
+
 Reproduce, both ways:
 
 ```sh
 # release: answers, exit 0 — the assertion is compiled out
-ein solve corpus/fuzz_findings/hrule-reads-not.ein --max-set-size 2
+# (`--max-set-size 2` until M1e2 S1e2.1a.5's switch retired the walk's options)
+ein solve corpus/fuzz_findings/hrule-reads-not.ein
 
 # debug: aborts on the assertion
+ein.rs/target/debug/ein solve corpus/fuzz_findings/hrule-reads-not.ein
 EIN_ID_FILES=$PWD/corpus/fuzz_findings \
   cargo test --manifest-path ein.rs/Cargo.toml -p ein-render \
              --test id_order_invariance

@@ -534,3 +534,56 @@ fn the_two_magic_constants_agree() {
     // Five bytes are not eight, which is the whole finding.
     assert!(!ein_einb::is_einb(b"EINB\0xyz"));
 }
+
+/// **A container saved again is the container** (M1f S1f.5.28's item 9).
+/// `ein kb save` of a `.einb` writes the bytes the first save wrote, the
+/// loaded state and the saturated one alike, however many times, and each
+/// answers as the program it was saved from. Until S1f.5.28 each save of a
+/// save also wrote the provenance records the open had pushed and nothing
+/// referenced, the loader's for each given fact: the witness's container went
+/// 1 248 → 1 288 → 1 328 bytes, and a saturated `zebra2.einb` saved once more
+/// passed design/10 §6's 64 KB, with the same answers.
+#[test]
+fn a_container_saved_again_is_the_container() {
+    let dir = scratch("saved-again");
+    for (source, flags) in [
+        (
+            "examples/ein-bugs/wrong-answers/einb-every-command.ein",
+            &[][..],
+        ),
+        ("examples/zebra2.ein", &["--saturate"][..]),
+    ] {
+        let path = |n: usize| dir.join(format!("{n}.einb")).to_string_lossy().to_string();
+        let mut args = vec!["kb", "save"];
+        args.extend_from_slice(flags);
+        let first = path(0);
+        args.extend([source, first.as_str()]);
+        let r = ein(&args);
+        assert_eq!(r.code, 0, "{source}: {}", r.stderr);
+        for n in 1..=2 {
+            let (from, to) = (path(n - 1), path(n));
+            let r = ein(&["kb", "save", &from, &to]);
+            assert_eq!(r.code, 0, "{source}, save {n}: {}", r.stderr);
+            let (a, b) = (
+                std::fs::read(&from).expect("read"),
+                std::fs::read(&to).expect("read"),
+            );
+            assert!(
+                a == b,
+                "{source}: save {n} of the container is {} bytes where the one it was saved \
+                 from is {}",
+                b.len(),
+                a.len()
+            );
+        }
+        let from_text = ein(&["solve", source]);
+        let last = path(2);
+        let from_container = ein(&["solve", &last]);
+        assert_eq!(from_container.code, from_text.code, "{source}");
+        assert_eq!(
+            normalise(&from_container.stdout, &last, source),
+            from_text.stdout,
+            "{source}: the container saved again answers otherwise"
+        );
+    }
+}
