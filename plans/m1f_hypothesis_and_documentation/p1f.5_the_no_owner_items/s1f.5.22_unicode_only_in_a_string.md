@@ -18,7 +18,8 @@ character, by every command, with a line naming it, its code point and where Uni
 `fixed`, and the pin; T1f.5.22.4 ([its record](#t4-record-2026-11-10)), the pages; the acceptance re-taken
 ([§ Acceptance, re-taken](#acceptance-re-taken-2026-11-10)). Seven questions taken by default, Q-M1f.90 to Q-M1f.96.
 The register reads 231 fixed, 13 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
-2026-11-10). No wrong answer was found outside the stage.
+2026-11-10). No wrong answer was found outside the stage. Committed as `c8579504`, whose hash W73 and W74's
+`[case.fixed]` rows carry.
 **Depends on:** nothing since Q-M1f.65's ruling. It edits `ein.l` and the grammar's table, so it does
 not run beside [S1f.5.23](s1f.5.23_open_is_reserved.md), which may too.
 

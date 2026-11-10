@@ -13118,7 +13118,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the no-break space, U+00A0, between a relation and its value. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
 date   = "2026-11-10"
 
@@ -13151,7 +13151,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the no-break space, U+00A0, inside what is written as one value. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
 date   = "2026-11-10"
 
@@ -13184,7 +13184,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the ideographic space, U+3000, between a relation and its value. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
 date   = "2026-11-10"
 
@@ -13217,7 +13217,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the line separator, U+2028, between two facts. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
 date   = "2026-11-10"
 
@@ -13250,7 +13250,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), one of the Unicode spaces the stage's census found loading in every place a token can stand: the next-line control, U+0085, between two facts. Every other character the census wrote outside a string and a comment (`é`, `→`, `─`, a zero-width space, a fullwidth paren, a character outside the BMP, a byte-order mark, a right-to-left override) was refused already, as a token that is not a name, so only its line moves, which is no row (Q-M1f.36). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.5.22.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2), refused at the lexer, at the character, with a line naming it, its code point and where Unicode is allowed"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.3): a character that is not ASCII is written only inside a string literal or a comment (the user's ruling of 2026-11-10, Q-M1f.65 (b)): `ein.l`'s catch-alls and its skip rule's whitespace are ASCII, so no rule matches any other character there, the lexer stops at it, and the parse error names it, its code point and where Unicode is allowed (`ein_ir::grammar::not_ascii`)"
 date   = "2026-11-10"
 
@@ -13284,7 +13284,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13318,7 +13318,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13352,7 +13352,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13386,7 +13386,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13420,7 +13420,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13454,7 +13454,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13488,7 +13488,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13522,7 +13522,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
@@ -13556,7 +13556,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.5.22 (T1f.5.22.2, 2026-11-10), from the close review's finding 2: an imported module that is not UTF-8 was reported as missing, *module not found … (None)*, where the same file given to `ein solve` is refused at its byte. The resolver read a module with `std::fs::read_to_string(…).ok()` behind `is_file()`, so a module that is not UTF-8, one that cannot be read, a `.einb` container and a directory were each *not found*, and the `None` is the import's position, which a top-level form does not carry. The witness's module is the one of the four git can keep, a directory (the stage's census; Q-M1f.90); one row per command run the register can run, each printing the same line (`ein test`, exit 2, and the `solve` modes, whose refusal the register records only as a `now`, are the pin's); fixed by T1f.5.22.2 (2026-11-10): every command exits 1 (`ein test`: 2) with the line the module's path gives as a program, `IsADirectoryError: …`, naming it"
 
 [case.fixed]
-commit = "0000000"
+commit = "c8579504"
 by     = "S1f.5.22 (T1f.5.22.2): an imported module is read through the read every command makes of the program it is given (`ein_ir::read::read_program`, moved from `ein-cli`'s `common`), so a module that exists and cannot be read as text is refused with that read's line, naming the path the import resolves to (Q-M1f.93); a directory's line is the program's, Python's spelling, F23's D-1 (Q-M1f.94)"
 date   = "2026-11-10"
 
