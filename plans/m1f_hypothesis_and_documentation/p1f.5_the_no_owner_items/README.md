@@ -548,6 +548,13 @@ user, and writes no `docs/history/` record here.
   `read_out_examples.md` by `ein-cli/tests/read_out_reference.rs` and `read_out_examples.rs`; S1f.5.15 added no page.
 - **`RUSTDOCFLAGS="-D warnings" cargo doc` is green — met**, a step of every gate above.
 
+### The close review, 2026-11-10
+
+[close_review.md](close_review.md) is written for the user's review. It has every stage's status, commits and
+register rows; the user's rulings and the 55 decisions taken by default, each linked to its row; the findings with
+no owner, re-checked on 2026-11-10; and the `build/` cleanup the user approved that day, which is done. The close
+record waits for the user's answers on overrides and on the findings.
+
 ## The ids
 
 | until 2026-11-08 | since | stage |
