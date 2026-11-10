@@ -10,7 +10,7 @@
 //! | layering holds after a load | [`layering_holds_after_every_load`], its own sweep |
 //! | the 32-body `(config …)` coercion | [`the_config_coercion_table_is_stable`], against a checked-in table |
 //! | the accumulated message | [`load_errors_accumulate_in_pass_order`], the same way |
-//! | the 18 `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
+//! | 16 of the `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
 //! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag (M1f T1f.5.14.6) | [`require_why_refuses_each_form_without_one`] |
 //! | a macro is asked for a `:why` too, since S1f.5.5's swap made its parser the one that reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
 //! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB, and since M1f T1f.5.14.7 it refuses none | [`require_why_decides_loading_only`] |
@@ -109,8 +109,12 @@ fn the_load_negative_fixtures_are_byte_identical() {
     // `relation_reserved_name` and `rule_reserved_name`; and
     // `relation_parameter_int` retired (S1f.5.4's Q2 (a)), `(mirror 3)`
     // naming the relation `3`.
+    // `eq_in_a_macro_body` since M1f S1f.5.24 (W66), which moved it from
+    // `examples/broken/compile/`: the loader holds a macro's expansion to the
+    // grammar's shapes, its line the macro body's position first.
     for name in [
         "derivation_cycle",
+        "eq_in_a_macro_body",
         "hrule_duplicate_name",
         "macro_arity_mismatch",
         "macro_duplicate",

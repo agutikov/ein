@@ -1,0 +1,34 @@
+;;; A macro whose body writes `false` with an argument, called as a conclusion:
+;;; the rule fires, stores `(false k)`, and root is read as dead —
+;;; M1f **W68**, register row `W68/macro-false-argument`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `bad`'s body is `(false ?a)`, so `:assert (bad ?x)` expands to `(false ?x)`,
+;;; which the grammar refuses where a rule writes it: `(false)` concludes that the
+;;; state is impossible, and names nothing.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `false`, so `r` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
+;;; stored `(false k :rule r)`, which the contradiction detector read as
+;;; `(false)`: root is dead, R is empty, `refuted by r`.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro bad (?a) (false ?a) :why "{?a} is impossible")
+(rule r ()
+  :match  (a ?x)
+  :assert (bad ?x)
+  :why "{?x} is an a, so it is impossible")

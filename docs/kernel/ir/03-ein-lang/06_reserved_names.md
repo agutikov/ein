@@ -297,6 +297,17 @@ the one guard shape that can flip false→true during saturation — so its
 candidate stays parked and is re-judged at every later quiescence
 (S1.21.8; the saturator's absent-flip full-match, §C5 there, is retired).
 
+**What a call expands to is held to the grammar** since M1f
+[S1f.5.24](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md):
+`unknown`'s `(not P)` is the stored negation of one fact, so `(unknown (and (p
+?x) (q ?x)))`, whose `(not (and …))` negates no fact, is refused at load, its
+line placed at the call in the program's file; until then it was matched as a
+pattern no fact holds, so its `absent` held (W67). The same holds of a program's
+own macros, a kernel primitive's name among them: a body or a call that writes
+`eq`, `absent`, `not`, `false` or `or` in another shape than the grammar gives
+it where a rule writes it is refused where the macro is called, and a macro no
+rule calls loads ([`02_patterns.md`](02_patterns.md), `defined_behaviour.md` § 4.16).
+
 ## Hypothesis / query control
 
 | name | form | meaning | engine site |

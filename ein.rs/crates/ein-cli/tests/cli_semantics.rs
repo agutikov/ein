@@ -3550,10 +3550,12 @@ fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
 /// compiled the plan answered: a commitment's activator, an hrule, a goal, a
 /// rule no activator reached, and the four views and `kb save` always.
 ///
-/// The one compile refusal a program still reaches, `(eq ?x)` in a macro's
-/// body (S1f.5.24's, Q-M1f.67), prints one line on every command that compiles,
-/// its position the macro body's, in Ein's words too; the views and `kb save`
-/// accept the program, which none of them executes.
+/// The last compile refusal a program reached, `(eq ?x)` in a macro's body,
+/// is the loader's since M1f S1f.5.24 (W66, Q-M1f.80): one line on every
+/// command, its position the macro body's, the views and `kb save` refusing it
+/// too. Until then it was refused only where the rule was compiled, and the
+/// views and `kb save` accepted the program; every shape a macro's body
+/// malforms is held on every command by `macro_bodies.rs`.
 #[test]
 fn a_compile_refusal_reads_the_same_on_every_command() {
     let scratch = ein_corpus::Scratch::new("ein-compile-refusal");
@@ -3615,6 +3617,13 @@ fn a_compile_refusal_reads_the_same_on_every_command() {
             "examples/broken/load/nested_or.ein".to_string(),
             rule.replace("rule 'r'", "rule 'nested-disjunction'"),
         ),
+        (
+            "examples/broken/load/eq_in_a_macro_body.ein".to_string(),
+            "examples/broken/load/eq_in_a_macro_body.ein:23:18: rule 'r': its :match writes \
+             (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so \
+             write one guard per pair"
+                .to_string(),
+        ),
     ];
     for (file, line) in &witnesses {
         let want = format!("kb load error: {line}");
@@ -3635,58 +3644,5 @@ fn a_compile_refusal_reads_the_same_on_every_command() {
                 "ein {argv:?} wrote a container of a refused program"
             );
         }
-    }
-
-    // The macro body's line, on every command that compiles; and on the
-    // container `kb save` writes, whose position names the program it stores.
-    let file = "examples/broken/compile/eq_in_a_macro_body.ein";
-    let line = "rule 'r': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it \
-                compares two values, so write one guard per pair";
-    for (args, code) in every_command(file, &einb) {
-        let argv: Vec<&str> = args.iter().map(String::as_str).collect();
-        let r = ein(&argv);
-        let draws = matches!(
-            argv[..2],
-            ["render", "program" | "rules" | "rule" | "constraints"]
-        ) || argv[0] == "kb";
-        if draws {
-            assert_eq!(
-                r.code, 0,
-                "ein {argv:?} (Q-M1f.67: no command executes it):\n{}",
-                r.err
-            );
-            continue;
-        }
-        if argv[0] == "test" {
-            // No `:expect`, so nothing to check: `ein test`'s contract.
-            assert_eq!(r.code, 2, "ein {argv:?}:\n{}", r.err);
-            continue;
-        }
-        assert_eq!(r.code, code, "ein {argv:?}:\n{}", r.err);
-        assert_eq!(
-            r.err.lines().next(),
-            Some(format!("{file}:21:18: {line}").as_str()),
-            "ein {argv:?}"
-        );
-        for python in PYTHON_SPELLINGS {
-            assert!(
-                !r.err.contains(python),
-                "ein {argv:?}: `{python}` is back:\n{}",
-                r.err
-            );
-        }
-    }
-    // The stored program is the text the loader read back, its comments gone
-    // and its forms as dumped, so its line and column are the stored text's
-    // (Q-M1f.15).
-    for cmd in ["saturate", "solve", "oracle"] {
-        let r = ein(&[cmd, &einb]);
-        assert_eq!(r.code, 1, "ein {cmd} on the container:\n{}", r.err);
-        let first = r.err.lines().next().unwrap_or_default();
-        assert!(
-            first.starts_with(&format!("<program stored in {einb}>:"))
-                && first.ends_with(&format!(": {line}")),
-            "ein {cmd} on the container: {first}"
-        );
     }
 }

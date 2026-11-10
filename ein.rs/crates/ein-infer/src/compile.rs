@@ -679,16 +679,23 @@ impl<'a> Compiler<'a> {
         // dropped the rest, firing a guard weaker than the one written.
         //
         // [`00_ebnf.md` §2]: ../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md
+        //
+        // **An invariant since M1f S1f.5.24** (W66): the grammar takes `absent`
+        // at one premise since S1f.5.5's swap, and what a macro's expansion
+        // writes is held to the grammar's shapes at load
+        // (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80), so
+        // no program reaches another arity here. Until then this was the
+        // compiler's line, met only where the plan was compiled, so a rule
+        // only a commitment activated, an hrule and an obligation loaded and
+        // some commands answered (Q-M1f.9 (a)'s pattern, as S1f.5.21's nested
+        // `(or …)`).
         if head_name.as_deref() == Some("absent") {
-            if args.len() != 1 {
-                return Err(self.bad_arity(
-                    node,
-                    "absent",
-                    1,
-                    args.len(),
-                    "negation as failure is over one premise, so wrap several in an (and …)",
-                ));
-            }
+            assert!(
+                args.len() == 1,
+                "{}: absent takes one premise, which the grammar and the loader's \
+                 refuse_malformed_primitives hold",
+                ein_ir::dump_compact(self.ast, node)
+            );
             return self.absent(node, args[0], top, out);
         }
 
@@ -745,16 +752,21 @@ impl<'a> Compiler<'a> {
         // b)` (Q-M1f.31, taken by default on the user's instruction of
         // 2026-11-09). Until then each was an ordinary pattern over stored
         // facts, which no state holds, and matched nothing (W51, W52).
+        //
+        // **An invariant since M1f S1f.5.24** (W66): a written guard is
+        // shaped by the grammar, one a macro's expansion writes is refused at
+        // load (`ein_ir::from_ir`'s `refuse_malformed_primitives`), and one
+        // whose relation is a parameter its activator binds to `eq` is
+        // refused at load since S1f.5.9 (`refuse_eq_at_another_arity`, W60),
+        // so no program reaches another arity here.
         if let Some((pred, args)) = self.guard_form(node) {
-            if args.len() != pred.arity() {
-                return Err(self.bad_arity(
-                    node,
-                    pred.as_str(),
-                    pred.arity(),
-                    args.len(),
-                    "it compares two values, so write one guard per pair",
-                ));
-            }
+            assert!(
+                args.len() == pred.arity(),
+                "{}: {} compares two values, which the grammar and the loader's \
+                 refuse_malformed_primitives and refuse_eq_at_another_arity hold",
+                ein_ir::dump_compact(self.ast, node),
+                pred.as_str()
+            );
             let start = self.guard_args.len() as u32;
             for &arg in &args {
                 let ga = self.guard_arg(node, arg)?;
@@ -885,41 +897,6 @@ impl<'a> Compiler<'a> {
             monotone,
         });
         Ok(())
-    }
-
-    /// A kernel meta-primitive written at an arity it does not have — M1e
-    /// S1e.2.1, `CO-H1` and its class.
-    ///
-    /// **Only a macro's body reaches it** since M1f S1f.5.5's swap: the
-    /// grammar takes `eq` and `neq` at two terms and `absent` at one premise,
-    /// and S1f.5.9 refuses at load a relation parameter bound to `eq` at
-    /// another arity. A macro's body is a template whose head may be any name
-    /// at any arity, so its expansion is first read here (S1f.5.24's, on the
-    /// user's ruling on Q-M1f.67: an unused malformed macro loads, and no path
-    /// executes the primitive).
-    ///
-    /// The line, in Ein's words since M1f S1f.5.21: the place, the rule, the
-    /// form as written and what to write instead. A premise has a position,
-    /// and it is the macro body's, where the form is written, so the line
-    /// starts with it. Until S1f.5.21 it quoted the IR's `repr` and placed it
-    /// `at Loc(file=…, line=…, col=…)`.
-    fn bad_arity(
-        &self,
-        node: NodeId,
-        name: &str,
-        want: usize,
-        got: usize,
-        advice: &str,
-    ) -> CompileError {
-        CompileError(format!(
-            "{}{}: its {} writes {}, and {name} takes exactly {want} argument{}, not {got} — \
-             {advice}",
-            self.place(node),
-            self.who,
-            self.clause,
-            ein_ir::dump_compact(self.ast, node),
-            if want == 1 { "" } else { "s" },
-        ))
     }
 
     /// Where `node` is written, `<file>:<line>:<col>: `, as a parse error

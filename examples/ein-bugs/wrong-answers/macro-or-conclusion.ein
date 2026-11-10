@@ -1,0 +1,34 @@
+;;; A macro whose body writes an `(or …)`, called as a conclusion: the rule fires
+;;; and stores the disjunction as a fact of the relation `or` —
+;;; M1f **W68**, register row `W68/macro-or-conclusion`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `either`'s body is `(or (p ?a) (q ?a))`, so `:assert (either ?x)` expands
+;;; to the conclusion `(or (p ?x) (q ?x))`, which the grammar refuses where a rule
+;;; writes it: a rule concludes every conclusion it writes, and a disjunction is
+;;; a `:match`'s.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `or`, so `r` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
+;;; stored `(or (p k) (q k) :rule r)` (`ein saturate --dump`).
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro either (?a) (or (p ?a) (q ?a)) :why "{?a} is a p or a q")
+(rule r ()
+  :match  (a ?x)
+  :assert (either ?x)
+  :why "{?x} is an a, so a p or a q")

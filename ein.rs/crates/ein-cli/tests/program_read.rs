@@ -235,49 +235,79 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 /// every position in it carries: `<program stored in x.einb>` and the stored
 /// text's line, where it was `<string>` (or the first file name the
 /// provenance table held) and the same line (Q-M1f.15).
+///
+/// The program is one whose error names a position: a macro whose template
+/// writes `eq` with one argument (`02_patterns.md`). Since M1f S1f.5.24 the
+/// loader refuses it, `g.ein:3:18:` first, the macro body's position (W66,
+/// Q-M1f.80), so `ein kb save` does too, and the container is written here
+/// through `ein_einb::save` with that program stored beside a KB that loads:
+/// what a command reads back from a container is its stored program, which it
+/// loads as it loads a `.ein`. Until S1f.5.24 `kb save` wrote it, the compiler
+/// refusing the rule only where it compiled it (Q-M1f.67); until M1f S1f.5.18
+/// this test wrote G-14's residue, a relation parameter an activator a rule
+/// derives binds to a nested fact, which the loader refuses since (W59); and
+/// until M1f S1f.5.9 a pattern whose relation a parameter binds to `eq`,
+/// `(?R ?x)` under `(r eq)`, which the loader refuses since (W60). Since M1f
+/// S1f.5.21 the line names the position in Ein's words, `g.ein:3:18:`, where
+/// it wrote `at Loc(file='g.ein', line=3, col=18)`.
 #[test]
 fn a_containers_positions_name_its_stored_program() {
     let scratch = Scratch::new("ein-program-read");
     let dir = scratch.path();
-    // An error past the load that names a position: a macro whose template
-    // writes `eq` with one argument, which the compiler refuses where the rule
-    // is compiled (M1e S1e.2.1's arity check, which a macro's body still
-    // reaches, `02_patterns.md`). Until M1f S1f.5.18 this test wrote G-14's
-    // residue, a relation parameter an activator a rule derives binds to a
-    // nested fact, which the loader refuses since (W59); and until M1f
-    // S1f.5.9 a pattern whose relation a parameter binds to `eq`, `(?R ?x)`
-    // under `(r eq)`, which the loader refuses since (W60), so `kb save` does
-    // too. Since M1f S1f.5.21 the compiler's line names the position in Ein's
-    // words, `g.ein:3:18:`, where it wrote `at Loc(file='g.ein', line=3,
-    // col=18)`, and the views and `kb save` still accept the program, which no
-    // command executes (Q-M1f.67).
-    std::fs::write(
-        dir.join("g.ein"),
-        "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"{?1} is hit\")\n\
-         (p a)\n\
-         (macro one (?a) (eq ?a) :why \"the equality (eq {?a}), written with one argument\")\n\
-         (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x) :why \"p holds of {?x} and the pattern one holds of {?x}, so {?x} is hit\")\n\
-         (query :goal (hit ?x))\n",
-    )
-    .expect("written");
-    assert_eq!(ein_in(dir, &["kb", "save", "g.ein", "g.einb"]).code, 0);
+    let text = "(relation p Node :why \"p holds of {?1}\") (relation hit Node :why \"{?1} is hit\")\n\
+                (p a)\n\
+                (macro one (?a) (eq ?a) :why \"the equality (eq {?a}), written with one argument\")\n\
+                (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x) :why \"p holds of {?x} and the pattern one holds of {?x}, so {?x} is hit\")\n\
+                (query :goal (hit ?x))\n";
+    std::fs::write(dir.join("g.ein"), text).expect("written");
+    let line = "rule 'r': its :match writes (eq ?x), and eq takes";
     let plain = ein_in(dir, &["saturate", "g.ein"]);
     assert!(
         plain
             .stderr
-            .starts_with("g.ein:3:18: rule 'r': its :match writes (eq ?x)"),
+            .starts_with(&format!("kb load error: g.ein:3:18: {line}")),
         "{}",
         plain.stderr
     );
+    let saved = ein_in(dir, &["kb", "save", "g.ein", "g.einb"]);
+    assert_eq!(saved.code, 1, "kb save refuses what the loader refuses");
+    assert!(
+        !dir.join("g.einb").exists(),
+        "a container of a refused program"
+    );
+
+    // The stored program is the refused one; the KB beside it is a program's
+    // that loads.
+    let mut ast = ein_ir::Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let forms = ein_ir::parse(&mut ast, text, Some("g.ein")).expect("it parses");
+    let held = ein_ir::parse(
+        &mut ast,
+        "(relation p Node :why \"p holds of {?1}\") (p a)",
+        Some("k.ein"),
+    )
+    .expect("it parses");
+    let kb = ein_ir::load(&mut ast, &mut terms, &held, None).expect("it loads");
+    ein_einb::save(
+        &dir.join("g.einb"),
+        &kb,
+        &terms,
+        &mut ast,
+        &forms,
+        Some(dir),
+        &ein_einb::SaveOptions::default(),
+    )
+    .expect("a container is written");
     for args in [&["saturate", "g.einb"][..], &["solve", "g.einb"]] {
         let r = ein_in(dir, args);
         assert_eq!(r.code, 1, "{args:?}: {}", r.stderr);
         // The position is the stored text's, as the loader read it back
-        // (Q-M1f.15), so its line and column are that text's.
+        // (Q-M1f.15), so its line and column are that text's; a stored
+        // program the loader refuses is said to be one.
         assert!(
-            r.stderr.starts_with("<program stored in g.einb>:")
-                && r.stderr
-                    .contains(": rule 'r': its :match writes (eq ?x), and eq takes"),
+            r.stderr.starts_with(
+                "kb load error: .einb PROGRAM does not load: <program stored in g.einb>:"
+            ) && r.stderr.contains(&format!(": {line}")),
             "{args:?}: {}",
             r.stderr
         );

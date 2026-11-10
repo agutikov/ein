@@ -1,0 +1,34 @@
+;;; A macro whose body heads a form with its parameter, called with `eq` and one
+;;; argument in an obligation: `ein saturate` answers and every solve question stops —
+;;; M1f **W66**, register row `W66/macro-eq-obligation`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `app`'s body is `(?R ?a)`, so `(app eq ?x)` expands to `(eq ?x)`. `o`
+;;; asserts `(open)`, so it is an obligation, compiled by the pass that reads what
+;;; a quiescent state owes, which a saturation never runs.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `eq`, so `o` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every solve question, `oracle` and `render lattice`
+;;; stopped where the obligation pass compiles `o`, exit 1, on the compiler's
+;;; line; `ein saturate` and `render kb` answered, exit 0.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro app (?R ?a) (?R ?a) :why "{?R} holds of {?a}")
+(rule o ()
+  :match  (and (a ?x) (app eq ?x))
+  :assert (open)
+  :why "{?x} is an a that equals, so the state owes")

@@ -32,7 +32,9 @@ S1f.5.11's T1f.5.11.2 retired the drop.
 
 **Where a malformed primitive is caught** is one of two places, and the split
 is not stylistic: the grammar, where a rule writes the primitive, and the
-compiler, where a macro's body does.
+loader, after macro expansion, where a macro's body or a call's argument does
+(the compiler until M1f S1f.5.24, below). Either way every command refuses the
+program before any path compiles, fires, proposes or owes the rule.
 
 | primitive | arity | refused by |
 |---|---|---|
@@ -56,27 +58,42 @@ fired (W31), and `:assert ()` stored a fact under that head (W34).
 **Since M1f S1f.5.5's swap** (2026-11-09) each row is a production of
 [`ein.y`](../../../../ein.rs/crates/ein-ir/src/ein.y), the grammar
 [`00_ebnf.md` § 2](00_ebnf.md#2-phrase-grammar) prints. A macro's body is a
-`Template`, which takes any head at any arity, so `(macro two (?a ?b) (absent
-?a ?b))` reaches the compiler, whose arity lines for `eq` and `absent` stay,
-each a positioned refusal (M1e
+`Template`, which takes any head at any arity, and a call takes any premise as
+an argument, so the grammar never reads the expanded rule: `(macro two (?a ?b)
+(absent ?a ?b))`, `(macro app (?R ?a) (?R ?a))` called `(app eq ?x)`, `(macro
+neg (?a) (not ?a))` called with a conjunction, `std.macro`'s `unknown` called
+with one, and as a conclusion `(eq ?a)`, `(false ?a)`, an `(or …)` or a body
+that is a bare parameter. **Since M1f
+[S1f.5.24](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)
+the loader reads it** (`ein_ir::from_ir`'s `refuse_malformed_primitives`): a
+rule's, an hrule's and an obligation's clauses, expanded, are held to the shapes
+the table gives a written rule, by position (a premise, a pattern's argument, a
+value, the pattern a `not` negates, a conclusion, which is a form), and a form
+in another shape is refused at load, on every command, the views and `kb save`
+among them, one line each in the compiler's words since
+[S1f.5.21](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md):
+the place where the expanded form is written, the rule, the form as expanded
+and what to write, `examples/broken/load/eq_in_a_macro_body.ein:23:18: rule
+'r': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it
+compares two values, so write one guard per pair` (`defined_behaviour.md`
+§ 4.16; `ein-cli/tests/macro_bodies.rs`). A macro no rule calls is not read,
+so it loads whatever its body: the user's ruling of 2026-11-10 on
+[Q-M1f.67](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused),
+*"the ultimate goal in this case is not allow execution of (eq <arg>)"*.
+**Until S1f.5.24** the compiler refused `eq` and `absent` at another arity
+where it compiled the plan (M1e
 [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),
-[Q-M1e.18](../../../history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments);
-`compile_semantics::the_compile_and_firing_lines_a_macro_still_reaches`).
-They are the only refusals the compiler makes that a program reaches since
-M1f [S1f.5.21](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md),
-and each reads the same on every command that compiles, in Ein's words: the
-place in the macro's body, the rule, the form as expanded and what to write,
-`examples/broken/compile/eq_in_a_macro_body.ein:21:18: rule 'r': its :match
-writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two
-values, so write one guard per pair`; until then it quoted the Python IR's
-repr and placed it `at Loc(file=…, line=…, col=…)`, and `ein saturate` put
-`ein.inference.compile.CompileError:` in front. Where a macro body's
-primitive is refused is [S1f.5.24](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s,
-on the user's ruling on Q-M1f.67: an unused malformed macro loads, and no
-path executes the primitive; the views and `kb save`, which execute no rule,
-accept the program. **An `(or …)` written as a premise** is no primitive at
-another arity but a shape, and the loader refuses it since S1f.5.21, a
-macro's expansion included (`defined_behaviour.md` § 4.15).
+[Q-M1e.18](../../../history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments)),
+so a rule only a commitment activated, an hrule, an obligation and a rule no
+activator reached loaded and some or every command answered (W66), the views
+and `kb save` accepting the program; and the rest went unchecked, a `not` of no
+fact and a connective as a value matched (W67), `(eq k)`, `(false k)`, an `(or
+…)`, `(not k)` and a conjunction as a value concluded or proposed (W68), and a
+conclusion that is no form stopped only the firing that met it (W69). Until
+S1f.5.21 the compiler's line quoted the Python IR's repr and placed it `at
+Loc(file=…, line=…, col=…)`. **An `(or …)` written as a premise** is no
+primitive at another arity but a shape, and the loader refuses it since
+S1f.5.21, a macro's expansion included (`defined_behaviour.md` § 4.15).
 **Until the swap** the hand-written grammar pinned `not` (`NotForm ::= '('
 'not' Value KwPair* ')'`), `neq` (`NeqForm`) and `and` / `or` (`Value+`),
 and `eq` and `absent` were plain `SYMBOL`s a rule could pattern-match on,

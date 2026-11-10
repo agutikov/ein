@@ -1,0 +1,1 @@
+{FILE}:23:18: rule 'r': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair

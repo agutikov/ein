@@ -137,15 +137,16 @@ Every error the loader raises interpolates the form's source location, and a
 unknown relation `foo` at None
 ```
 
-**Fourteen of the 34 `examples/broken/load/` fixtures** have a message that
+**Fourteen of the 35 `examples/broken/load/` fixtures** have a message that
 ends this way, and `grep -L 'at None' examples/broken/load/*.expected` names
-the twenty that do not (2026-11-10, `nested_or` among them since M1f
-S1f.5.21; the page said 31 and seventeen when it was re-taken on 2026-11-09): the error is raised somewhere that
+the twenty-one that do not (2026-11-10, `nested_or` among them since M1f
+S1f.5.21 and `eq_in_a_macro_body` since S1f.5.24; the page said 31 and seventeen when it was re-taken on 2026-11-09): the error is raised somewhere that
 *has* a location, or nowhere that has one at all — `macro_arity_mismatch`
 (inside macro expansion, on a nested node — it prints a real position,
 `<file>:6:20`, which was the Python IR's `Loc(file=…, line=6, col=20)` until
 M1f S1f.5.21 took that half of F23's D-2, Q-M1f.75), `nested_or` (since
-S1f.5.21, § 4.15), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
+S1f.5.21, § 4.15), `eq_in_a_macro_body` (since S1f.5.24, § 4.16, whose line
+starts with the macro body's position), `unbound_head`, `derivation_cycle`, `unimported_std_macro`,
 the two `import_*` that name no module found, the two `expect_*` M1c added,
 the solve, query and region claims' five, and the four `reserved_open_*`,
 whose import of `reserved_open_direct.ein` is refused at its parse since M1f
@@ -568,8 +569,8 @@ names the failure's class, and exiting non-zero:
 |---|---|---|
 | missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` (`ein saturate` printed `error: <path> not found` until M1f T1f.5.5.13) | 1 |
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not, since M1f T1f.5.5.13; `UnicodeDecodeError: 'utf-8' codec can't decode bytes in '<path>'` until then, Python's spelling | 1 (`ein test`: 2, the file an `ERROR` row) |
-| a rule that will not compile: since M1f S1f.5.21 only a macro's body that writes `eq` or `absent` at another arity (§ 4.3); every other refusal the compiler made a program reach is the loader's (§ 4.15) | `<file>:<line>:<col>: rule '<r>': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — …`, naming no class, the same on every command that compiles; `ein.inference.compile.CompileError: <message>` from `ein saturate` and the message alone from `ein solve` until S1f.5.21 | 1 |
-| a conclusion no fact can hold: since M1f S1f.5.5's swap only a macro's body that is a bare parameter, called in an `:assert`, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `rule '<r>': its :assert …`, naming no class (below) | 1 |
+| a rule that will not compile: since M1f S1f.5.24 none, every refusal the compiler made a program reach being the loader's (§ 4.15, § 4.16); from S1f.5.21 until then only a macro's body that wrote `eq` or `absent` at another arity (§ 4.3) | `kb load error: <file>:<line>:<col>: rule '<r>': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — …` since S1f.5.24, on every command, the views and `kb save` among them (§ 4.16); the same line bare, on every command that compiled, from S1f.5.21; `ein.inference.compile.CompileError: …` and the IR's repr until then | 1 |
+| a conclusion no fact can hold: since M1f S1f.5.24 none at a firing, a macro's body that is a bare parameter, called in an `:assert`, being refused at load (§ 4.16); from S1f.5.5's swap until then only that, the grammar refusing every other shape at the parse (a keyword pair, a `_`, a name, a variable or a string where a conclusion or its argument goes) | `kb load error: <file>:<line>:<col>: rule '<r>': its :assert concludes ?y, which is not a fact — …` since S1f.5.24; `rule '<r>': its :assert …` at the firing until then, naming no class (below) | 1 |
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 **`KeyError` left the table at M1f
@@ -614,8 +615,10 @@ them, in three forms:
 - `rule 's': its :assert concludes foo, which is not a fact — a conclusion is
   a fact (relation argument …), or an (and …) of facts` (an atom or a
   variable where a fact belongs, through a macro whose body is a bare
-  parameter since M1f S1f.5.5's swap; a string too until the swap, which
-  refuses one there, § 4.12);
+  parameter from M1f S1f.5.5's swap until S1f.5.24, which refuses it at load
+  with the same words, its position first, § 4.16, so no program reaches the
+  firing's line since; a string too until the swap, which refuses one there,
+  § 4.12);
 - `rule 's': its :assert writes (?x a b), whose relation ?x its activator
   does not bind — a relation written as a variable is one of the rule's
   parameters, which its activator binds to a name`, which no program the
@@ -631,8 +634,8 @@ shapes that reached the first line until M1f S1f.5.5's swap, each a parse
 error since, under `ein saturate` and `ein solve` (four shapes until the swap,
 eight until M1e2 S1e2.2.20, the range among them, and seven until S1e2.2.24,
 a nested keyword pair and the two relation variables among them), and
-`ein-infer`'s `compile_semantics::the_compile_and_firing_lines_a_macro_still_reaches`
-the second, which a macro still reaches. A **string** reached this line
+`ein-infer`'s `compile_semantics::the_lines_a_macro_body_reaches_are_the_loaders`
+the second, which a macro reached until S1f.5.24 and the loader refuses since. A **string** reached this line
 until the same stage, which lowered a string in a rule as the loader lowers
 one in a fact, the symbol it names (M1e2's W18;
 [`01_grammar.md`'s `STRING` row](ir/03-ein-lang/01_grammar.md)).
@@ -790,9 +793,14 @@ until then each was ``` `(eq …)` takes exactly 2 arguments and was given <n>:
 `ein render kb`. **The position is real**: a premise has one, and it is where
 the form is written, a macro's body, so the line starts with it, as a parse
 error does; in a `.einb` it names the container, `<program stored in x.einb>`
-(Q-M1f.15). The views and `kb save` execute no rule, and accept the program
-(Q-M1f.67). `cli_semantics::a_compile_refusal_reads_the_same_on_every_command`
-holds it, on `examples/broken/compile/eq_in_a_macro_body.ein`.
+(Q-M1f.15). The views and `kb save` executed no rule, and accepted the program
+(Q-M1f.67). **Since M1f S1f.5.24 both rows are the loader's** (§ 4.16): the
+same words behind `kb load error: `, on every command, the views and `kb save`
+among them, since a rule only a commitment activated, an hrule, an obligation
+and a rule no activator reached loaded and some commands answered (W66); the
+compiler's two arms are invariants. `cli_semantics::a_compile_refusal_reads_the_same_on_every_command`
+holds it, on `examples/broken/load/eq_in_a_macro_body.ein`, under
+`broken/compile/` until then.
 
 **Why only two rows for seven wrong cells.** The
 [S1e.1.6 sweep](../history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10) found
@@ -1379,6 +1387,68 @@ whose body is an `(or …)` called as a whole `:match`, and a macro no rule uses
 a query's pattern *inside* a pattern whose relation is a variable, `(p (?R
 ?x))`, loads and matches nothing, as the compiler lowers it, which no
 `CompileError` ever reported (found by S1f.5.21's T1, outside its case).
+
+### 4.16 A malformed primitive a macro's expansion writes, at load — M1f S1f.5.24
+
+A macro's body is a template the grammar never reads expanded, and a call takes
+any premise as an argument, so a kernel primitive can reach a rule in a shape
+the grammar refuses where a rule writes it. Since M1f
+[S1f.5.24](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md),
+on the user's ruling of 2026-11-10 on Q-M1f.67 (*"the ultimate goal in this
+case is not allow execution of (eq <arg>)"*), the loader holds a rule's, an
+hrule's and an obligation's `:match` and `:assert`, after expansion, to the
+grammar's shapes by position (`ein_ir::from_ir`'s `refuse_malformed_primitives`,
+Q-M1f.80, Q-M1f.81), and refuses a form in another, one line each,
+`; `-joined with every other loader error, exit 1 (`ein test`: 2), on every
+command that reads the program, the views and `kb save` among them, before any
+path compiles, fires, proposes or owes the rule. **A macro no rule calls is not
+read**, so it loads whatever its body (the ruling).
+
+| a macro's expansion writes | message, behind `kb load error: <file>:<line>:<col>: <rule>: its <clause> writes <form>, and …` |
+|---|---|
+| `eq` or `neq` at any arity but 2, in a `:match` or as a conclusion | `eq takes exactly 2 arguments, not <n> — it compares two values, so write one guard per pair` |
+| `absent` at any arity but 1 | `absent takes exactly 1 argument, not <n> — negation as failure is over one premise, so wrap several in an (and …)` |
+| `not` of what is no pattern: a conjunction, a disjunction, a `not`, a `neq`, a name, or in a `:match` a variable (`std.macro`'s `unknown` called with a conjunction among them) | `not takes a pattern (relation argument …), not <arg> — it is the stored negation of one fact; negation as failure is (absent …)`; as a conclusion, *a pattern (relation argument …) or a variable* |
+| a connective where a value goes: an `(and …)`, an `(or …)` or a `(neq …)` as a guard's argument, a conclusion's or a negated pattern's | `<value> is a connective where a value goes — <c> heads no fact, and a value is a name, a variable or a fact (relation argument …)` |
+| `false` with an argument, as a conclusion | `false takes no argument, not <n> — (false) concludes that the state is impossible, and names nothing` |
+| an `(or …)` as a conclusion | `an (or …) is no conclusion — a rule concludes every conclusion it writes, and a disjunction is a :match's, one way it holds per premise: write one rule per disjunct` |
+| a conclusion that is no form: a body that is its parameter, called with a variable or a name | `kb load error: <file>:<line>:<col>: <rule>: its :assert concludes ?y, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts` |
+
+**The position** is where the expanded form is written (Q-M1f.82): the macro
+body's for a form the body writes, `(eq ?a)`; for one the grammar builds for a
+keyword, `(not …)`, `(neq …)` or `(or …)`, which keeps none, its first part's,
+the call's argument, so a form `std.macro`'s `unknown` writes is placed in the
+program's file; in a `.einb`, the stored program, `<program stored in x.einb>`.
+**The rule** is named as the loader names it, `hrule 'h'` for an hrule, where
+the compiler's line said `rule 'h'`.
+
+**Until S1f.5.24** the compiler refused `eq` and `absent` at another arity where
+it compiled the plan (§ 4.3), the firing refused a conclusion that is no form
+where it fired (§ 4's table), and nothing read the rest. A plan is compiled per
+activator, by the hypothesis layer for an hrule and by the obligation pass for
+an obligation, so under a commitment `saturate`, `solve --minimal`, `--single`
+and `-n 1` answered what describe stopped on, in an hrule or an obligation
+`saturate` answered, and a rule no activator reached loaded on every command
+(W66, W69); a `not` of no fact and a connective as a guard's value were
+matched (W67), and `(eq k)`, `(false k)`, an `(or …)`, `(not k)` and a
+conjunction as a value were concluded, or proposed by an hrule (W68): sixteen
+register rows, filed and fixed by the stage. The views and `kb save` accepted
+every such program. The compiler's two arms and the firing's line are
+invariants since (Q-M1f.84).
+
+Pinned by `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes`
+(each shape at each site, and every shape the grammar takes, written and through
+a macro, loading), `ein-cli`'s `macro_bodies.rs` (eighteen shapes at every site,
+eighty programs, and the sixteen witnesses, each on twenty commands: one first
+line, no container, no step of the rule in `--events`; and every malformed
+macro, called by no rule, answered by every command),
+`grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`,
+`fuzz_properties::the_compiler_refuses_nothing_the_loader_accepts`, and
+`corpus/wrong_answers.toml`'s W66 to W69 rows. **What is not refused**: a
+connective as a premise pattern's argument, `(p (and (q ?x)))`, which the
+grammar takes so a macro can be called there and which reads nothing; and a
+macro called in a query's `:goal`, which is not expanded (both found by
+S1f.5.24's T2, outside its case).
 
 ## 5. The CLI surface
 

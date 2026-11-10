@@ -1,0 +1,40 @@
+;;; A macro whose body writes `eq` with one argument, called in a rule only a
+;;; commitment activates: some commands answer and the others stop —
+;;; M1f **W66**, register row `W66/macro-eq-under-commitment`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `one`'s body is `(eq ?a)`, so `(one ?x)` expands to `(eq ?x)`, which the
+;;; grammar refuses where a rule writes it (`eq` compares two values). `r` has a
+;;; parameter, so it is compiled once per activator `(r …)`, and only `mk` writes
+;;; one, from an `(s …)`, which the candidate `(s k)` brings. Root compiles no plan
+;;; of `r`; a commitment holding `(s k)` does.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `eq`, so `r` is refused where the macro is
+;;; used, at load, whether or not a state activates it: every command exits 1
+;;; (`ein test`: 2), and none answers (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release, the commands disagreed: `ein saturate`, `ein solve
+;;; --minimal`, `--single`, `-n 1` and `render kb` answered, exit 0, never
+;;; compiling `r`; `ein solve` (describe), `--maximal`, `--count`, `oracle`, `test`
+;;; and `render lattice` stopped at the commitment that compiles it, exit 1, on
+;;; the compiler's line.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro one (?a) (eq ?a) :why "{?a} equals")
+(rule mk () :match (s ?x) :assert (r a) :why "{?x} is an s, so r is activated over a")
+(rule r (?R)
+  :match  (and (?R ?x) (one ?x))
+  :assert (p ?x)
+  :why "{?R} holds of {?x}, which equals, so p does")

@@ -1,0 +1,34 @@
+;;; A macro whose body writes `(neq ?a ?b)`, called with a conjunction as a value:
+;;; the guard compares a name to a connective, holds, and the rule fires —
+;;; M1f **W67**, register row `W67/macro-neq-connective`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `diff`'s body is `(neq ?a ?b)`, so `(diff ?x (and (p k)))` expands to
+;;; `(neq ?x (and (p k)))`, which the grammar refuses where a rule writes it:
+;;; `neq` compares two values, and a conjunction is a connective, no value.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `neq`, so `r` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. The guard compared
+;;; `k` to the conjunction as if it were a fact, held, and `r` fired, deriving
+;;; `(p k)` (`ein saturate --dump`).
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro diff (?a ?b) (neq ?a ?b) :why "{?a} is not {?b}")
+(rule r ()
+  :match  (and (a ?x) (diff ?x (and (p k))))
+  :assert (p ?x)
+  :why "{?x} is an a, and not the conjunction, so p")

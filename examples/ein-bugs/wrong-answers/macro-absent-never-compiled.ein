@@ -1,0 +1,35 @@
+;;; A macro whose body heads a form with its parameter, called with `absent` and
+;;; two premises in a rule no activator reaches: every command answers —
+;;; M1f **W66**, register row `W66/macro-absent-never-compiled`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `app2`'s body is `(?R ?a ?b)`, so `(app2 absent (p ?x) (q ?x))` expands to
+;;; an `absent` of two premises. `r` has a parameter and nothing writes an `(r …)`,
+;;; so no plan of `r` is ever compiled.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `absent`, so `r` is refused at load, whether
+;;; or not anything activates it: every command exits 1 (`ein test`: 2)
+;;; (Q-M1f.67, Q-M1f.80). The macro is used, so it is instantiated; a macro no
+;;; rule uses still loads (the user's ruling on Q-M1f.67).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0, with no word of
+;;; the `absent`.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro app2 (?R ?a ?b) (?R ?a ?b) :why "{?R} of {?a} and {?b}")
+(rule r (?R)
+  :match  (and (?R ?x) (app2 absent (p ?x) (q ?x)))
+  :assert (p ?x)
+  :why "{?R} holds of {?x}, and neither p nor q does, so p does")

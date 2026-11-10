@@ -102,23 +102,6 @@ impl Loaded {
             .expect("the fixture saturates");
     }
 
-    /// The line the closure stops with, for the fixtures whose point is that
-    /// a firing stops it.
-    fn saturate_error(&mut self) -> String {
-        let mut events = Events::off();
-        let mut s = Session {
-            kb: &mut self.kb,
-            terms: &mut self.terms,
-            ast: &self.ast,
-            events: &mut events,
-            memo: SharedMemo::default(),
-        };
-        let mut sat = Saturator::new(&mut s).expect("the fixture compiles");
-        sat.saturate(&mut s, None, &mut |_| {})
-            .expect_err("the closure must stop")
-            .to_string()
-    }
-
     /// Every fact under `head`, as s-expressions, sorted — the readable form
     /// of "what did this rule conclude".
     fn facts_under(&self, head: &str) -> Vec<String> {
@@ -362,10 +345,15 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
 ///
 /// **Two since M1f S1f.5.21**, and the four arity fixtures at the parse since
 /// S1f.5.5's swap: `nested_or` moved to `broken/load/`, the loader refusing a
-/// nested `(or …)` (W62), and `eq_in_a_macro_body` is the one compile refusal a
-/// program still reaches, `(eq ?x)` written in a macro's body; each line in
+/// nested `(or …)` (W62), and `eq_in_a_macro_body` was the one compile refusal
+/// a program still reached, `(eq ?x)` written in a macro's body; each line in
 /// Ein's words since, `{FILE}:<line>:<col>: rule 'r': …` where the form has a
 /// position.
+///
+/// **One since M1f S1f.5.24**: `eq_in_a_macro_body` moved to `broken/load/`,
+/// the loader holding a macro's expansion to the grammar's shapes (W66 to
+/// W69), so no program reaches a compile refusal, and `activator_arity`'s is
+/// a direct caller's.
 ///
 /// The walk runs with the arity filter **off**, because `activator_arity`'s
 /// error is unreachable with it on — see the next test but one.
@@ -388,11 +376,12 @@ fn every_compile_error_says_what_its_expected_file_says() {
         })
         .collect();
     // `nested_or` moved to `broken/load/` at M1f S1f.5.21, the loader refusing
-    // it (W62), and `eq_in_a_macro_body` arrived: the one compile refusal a
-    // program still reaches, through a macro's body (S1f.5.24's).
+    // it (W62), and `eq_in_a_macro_body` arrived, the one compile refusal a
+    // program still reached, through a macro's body; it moved to
+    // `broken/load/` at S1f.5.24 (W66).
     assert_eq!(
         stems,
-        ["activator_arity", "eq_in_a_macro_body"],
+        ["activator_arity"],
         "one fixture per CompileError branch a fixture reaches, in {}",
         dir.display()
     );
@@ -457,8 +446,8 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
     }
 }
 
-/// **The compiler's and the firing's lines a macro's body still reaches** —
-/// M1f S1f.5.5, T1f.5.5.5.
+/// **The lines a macro's body reaches are the loader's** — M1f S1f.5.5,
+/// T1f.5.5.5, and S1f.5.24.
 ///
 /// An `(absent …)` that compiled to no steps was refused here until T5 (work-list
 /// `an-absent-whose-sub-plan-is-empty-is-refused`): an empty sub-plan is not "a
@@ -471,52 +460,50 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
 /// still writes, is the loader's refusal (`Found::NotAForm`). So T5 made it an
 /// assertion, and deleted the line.
 ///
-/// The census counted three more lines the grammar's, and each is still
+/// The census counted three more lines the grammar's, and each was still
 /// reached, through a macro: a macro's body is a template whose head may be
 /// any name (`ein.y`'s `Template`), `absent` and `eq` among them, at any
-/// arity, so the compiler's arity checks stay; and a body that is a bare
-/// parameter, called in an `:assert`, leaves a variable as the whole
-/// conclusion, which the firing refuses. So do a relation variable no parameter
-/// binds under an `absent`, the loader's since S1e2.2.24.
+/// arity, which the compiler refused where it compiled the plan; and a body
+/// that is a bare parameter, called in an `:assert`, left a variable as the
+/// whole conclusion, which the firing refused. **Since M1f S1f.5.24 the loader
+/// refuses all three** (`ein_ir::from_ir`'s `refuse_malformed_primitives`,
+/// W66 and W69), with the same words, the position where the expanded form is
+/// written first, so a rule only a commitment activates, an hrule and an
+/// obligation are refused by every command, not only where they are compiled
+/// or fired; the compiler's two arms and the firing's line are invariants. So
+/// is a relation variable no parameter binds under an `absent`, the loader's
+/// since S1e2.2.24.
 #[test]
-fn the_compile_and_firing_lines_a_macro_still_reaches() {
-    let mut l = load_text(
+fn the_lines_a_macro_body_reaches_are_the_loaders() {
+    let err = load_error(
         "(macro two (?a ?b) (absent ?a ?b) :why \"an absent of both {?a} and {?b}, two premises where it takes one\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
          (rule r () :match (and (p ?x) (two (p ?x) (p ?x))) :assert (hit ?x) :why \"p holds of {?x} and two's absent holds, so hit holds of {?x}\")\n",
     );
-    let err = l.compile_error(true);
-    // In Ein's words since M1f S1f.5.21: the place in the macro's body, the
-    // rule, the form as expanded, and what to write.
-    assert!(
-        err.starts_with("<fixture>:1:")
-            && err.contains(
-                "rule 'r': its :match writes (absent (p ?x) (p ?x)), and absent takes exactly 1 \
-                 argument, not 2 — negation as failure is over one premise, so wrap several in \
-                 an (and …)"
-            ),
-        "{err}"
+    // In Ein's words since M1f S1f.5.21, at load since S1f.5.24: the place in
+    // the macro's body, the rule, the form as expanded, and what to write.
+    assert_eq!(
+        err,
+        "<fixture>:1:21: rule 'r': its :match writes (absent (p ?x) (p ?x)), and absent takes \
+         exactly 1 argument, not 2 — negation as failure is over one premise, so wrap several \
+         in an (and …)"
     );
-    let mut l = load_text(
+    let err = load_error(
         "(macro three (?a ?b ?c) (eq ?a ?b ?c) :why \"{?a}, {?b} and {?c} are equal, three arguments where eq takes two\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
          (rule r () :match (and (p ?x) (three ?x ?x ?x)) :assert (hit ?x) :why \"p holds of {?x}, which three calls equal to itself, so hit holds of {?x}\")\n",
     );
-    let err = l.compile_error(true);
-    assert!(
-        err.starts_with("<fixture>:1:")
-            && err.contains(
-                "rule 'r': its :match writes (eq ?x ?x ?x), and eq takes exactly 2 arguments, \
-                 not 3 — it compares two values, so write one guard per pair"
-            ),
-        "{err}"
+    assert_eq!(
+        err,
+        "<fixture>:1:26: rule 'r': its :match writes (eq ?x ?x ?x), and eq takes exactly 2 \
+         arguments, not 3 — it compares two values, so write one guard per pair"
     );
-    let mut l = load_text(
+    let err = load_error(
         "(macro id (?x) ?x :why \"{?x} itself, unchanged\")\n(relation p T :why \"p holds of {?1}\") (relation hit T :why \"hit holds of {?1}\")\n(p a)\n\
          (rule r () :match (p ?y) :assert (id ?y) :why \"p holds of {?y}, so the conclusion is {?y} itself\")\n",
     );
     assert_eq!(
-        l.saturate_error(),
-        "rule 'r': its :assert concludes ?y, which is not a fact — a conclusion is a fact \
-         (relation argument …), or an (and …) of facts"
+        err,
+        "<fixture>:4:38: rule 'r': its :assert concludes ?y, which is not a fact — a conclusion \
+         is a fact (relation argument …), or an (and …) of facts"
     );
     let unbound = load_error(
         "(relation a T :why \"a holds of {?1}\") (relation out T :why \"out holds of {?1}\")\n\
@@ -946,9 +933,10 @@ fn arity_three_is_unenumerated() {
 /// `common`). So every corpus program is loaded, and where it loads, every plan
 /// its rules, hrules and obligations compile, one per activator as the engine
 /// compiles them, and every query's goal: no refusal holds the Python class,
-/// the IR's repr, a `Loc(…)`, a stage id or *the M1 compiler*. The one compile
-/// refusal a corpus program reaches is counted, and is the macro body's
-/// (`examples/broken/compile/eq_in_a_macro_body.ein`).
+/// the IR's repr, a `Loc(…)`, a stage id or *the M1 compiler*. The compile
+/// refusals a corpus program reaches are counted, and there are none since M1f
+/// S1f.5.24, which moved the last, the macro body's
+/// (`examples/broken/load/eq_in_a_macro_body.ein`), to the loader.
 #[test]
 fn no_corpus_program_is_refused_in_the_python_spelling() {
     const PYTHON: [&str; 7] = [
@@ -1012,10 +1000,8 @@ fn no_corpus_program_is_refused_in_the_python_spelling() {
     }
     assert!(loads > 300, "only {loads} corpus programs loaded");
     assert!(bad.is_empty(), "{}", bad.join("\n"));
-    let files: BTreeSet<&str> = compiled.iter().map(|(f, _)| f.as_str()).collect();
-    assert_eq!(
-        files.into_iter().collect::<Vec<_>>(),
-        ["examples/broken/compile/eq_in_a_macro_body.ein"],
+    assert!(
+        compiled.is_empty(),
         "the corpus programs the compiler refuses: {compiled:?}"
     );
 }

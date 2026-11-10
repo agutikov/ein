@@ -18,6 +18,14 @@ that reads a program since the same stage, the four views that draw one
 and never loaded a program until then (W65), so twelve of these fixtures'
 `render rules` cells exit 1 where they drew (`corpus_exits.txt`).
 
+**`eq_in_a_macro_body` moved here from `../compile/` at M1f S1f.5.24** (W66,
+2026-11-10): the loader holds a rule's clauses, after macro expansion, to the
+shapes the grammar gives a written rule, so `(eq ?x)` written in a macro's body
+is refused where the macro is called, one line placed at the macro's body,
+where the compiler refused it only where it compiled the rule and the views and
+`kb save` accepted it; a macro no rule calls still loads (the user's ruling on
+Q-M1f.67). It was the last compile refusal a program reached.
+
 **Twenty-one moved to `../` at M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09,
 Q-M1f.2 (a)), each refused at the parse since, its `.expected` the parse
 report: `config_bad_value`, `config_retired_flag`, `config_unknown_flag`,

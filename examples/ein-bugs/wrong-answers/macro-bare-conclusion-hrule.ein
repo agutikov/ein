@@ -1,0 +1,36 @@
+;;; A macro whose body is its parameter, called as an hrule's conclusion: the
+;;; hypothesis layer proposes nothing, in silence —
+;;; M1f **W69**, register row `W69/macro-bare-conclusion-hrule`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `h`'s `:assert` expands to the conclusion `?x`, as
+;;; `macro-bare-conclusion-under-commitment.ein`'s rule's does. The hypothesis
+;;; layer builds a candidate from an hrule's conclusion and drops one that is no
+;;; fact.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion leaves a conclusion that is no form, so `h` is refused at load:
+;;; every command exits 1 (`ein test`: 2) (Q-M1f.80, Q-M1f.81).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0, H empty and R
+;;; `{∅}`, with no word of the conclusion, where a rule writing the same
+;;; conclusion stops the run that fires it.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro id (?x) ?x :why "{?x} itself")
+(hrule h ()
+  :match  (a ?x)
+  :assert (id ?x)
+  :why "{?x} is an a, so guess {?x}")
+(solve :hrules (h))

@@ -146,6 +146,10 @@ impl Hrules {
                 match build_fact(s.terms, s.ast, plan, env, template) {
                     Ok(fact) => f(s, fact)?,
                     // `NotAFact` — a malformed template yields no candidate.
+                    // No template is a whole conclusion that is no fact since
+                    // M1f S1f.5.24, which refuses one a macro's expansion
+                    // writes at load; until then it proposed nothing, in
+                    // silence (`W69/macro-bare-conclusion-hrule`).
                     // No template reads a variable nothing binds since M1f
                     // S1f.5.10: the loader refuses one no premise or
                     // parameter binds, and S1f.5.18 retired the error it

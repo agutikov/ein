@@ -1,0 +1,34 @@
+;;; A macro whose body writes a conjunction as an argument, called as a
+;;; conclusion: the rule fires and stores `(q (and (p k)))` —
+;;; M1f **W68**, register row `W68/macro-connective-value`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `wrap`'s body is `(q (and (p ?a)))`, so `:assert (wrap ?x)` expands to
+;;; `(q (and (p ?x)))`, which the grammar refuses where a rule writes it: a
+;;; conclusion's argument is a name, a variable or a fact, and `(and …)` is a
+;;; connective.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes an `and` where a value goes, so `r` is refused at load:
+;;; every command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
+;;; stored `(q (and (p k)) :rule r)` (`ein saturate --dump`).
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro wrap (?a) (q (and (p ?a))) :why "q holds of p of {?a}")
+(rule r ()
+  :match  (a ?x)
+  :assert (wrap ?x)
+  :why "{?x} is an a, so q holds of the conjunction")

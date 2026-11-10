@@ -5,7 +5,15 @@ Files that **parse** and **load** and then fail to **compile**: the shapes
 raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 
-**Two since M1f S1f.5.21 (2026-11-10)**: `activator_arity` and
+**One since M1f S1f.5.24 (2026-11-10)**: `activator_arity`, a `positive` whose
+error only a direct caller of `compile_rule` reaches. `eq_in_a_macro_body`
+moved to `../load/` (W66): the loader holds a macro's expansion to the
+grammar's shapes since, so it refuses `(eq ?x)` written in a macro's body where
+the macro is called, on every command, the views and `kb save` among them,
+and no program reaches a compile refusal; the `compile-negative` group has no
+corpus entry.
+
+**Two from M1f S1f.5.21 (2026-11-10) until then**: `activator_arity` and
 `eq_in_a_macro_body`. `nested_or` moved to `../load/` (W62): the loader refuses
 an `(or …)` written as a premise since, on every command, where the compiler
 refused it only where it compiled the rule, in the Python IR's spelling, and

@@ -1,0 +1,37 @@
+;;; A macro whose body is its parameter, called as a conclusion in a rule only a
+;;; commitment activates: `ein saturate` answers and describe stops at the firing —
+;;; M1f **W69**, register row `W69/macro-bare-conclusion-under-commitment`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `id`'s body is `?x`, its parameter, so `:assert (id ?x)` expands to the
+;;; conclusion `?x`, which the grammar refuses where a rule writes it: a
+;;; conclusion is a fact, or an `(and …)` of facts. `r` is activated only by a
+;;; commitment holding `(s k)`, as in `macro-eq-under-commitment.ein`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion leaves a conclusion that is no form, so `r` is refused at
+;;; load: every command exits 1 (`ein test`: 2) (Q-M1f.80, Q-M1f.81).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release, the commands disagreed: `ein saturate`, `ein solve
+;;; --minimal`, `--single`, `-n 1` and `render kb` answered, exit 0; `ein solve`
+;;; (describe), `--maximal`, `--count`, `oracle`, `test` and `render lattice`
+;;; stopped where `r` fires, exit 1, on the firing's line.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro id (?x) ?x :why "{?x} itself")
+(rule mk () :match (s ?x) :assert (r a) :why "{?x} is an s, so r is activated over a")
+(rule r (?R)
+  :match  (?R ?x)
+  :assert (id ?x)
+  :why "{?R} holds of {?x}, so {?x}")

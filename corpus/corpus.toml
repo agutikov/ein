@@ -1869,23 +1869,116 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W63 (`W63/wide-goal`), filed by S1f.5.21's T1f.5.21.1 (2026-11-10): a query's goal writing 257 distinct variables, compiled only where a state is answered from it, so `saturate` answered where `solve` stopped. Fixed by S1f.5.21's T1f.5.21.2 (2026-11-10): refused at load, every command, one line."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-eq-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "solve --minimal", "saturate"]
+note   = "M1f W66 (`W66/macro-eq-under-commitment`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(eq ?x)` from a macro's body, in a rule only a commitment activates, so `saturate` and `solve --minimal` answered, exit 0, where describe stopped on the compiler's line, exit 1, the three runs banking the disagreement. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-absent-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W66 (`W66/macro-absent-hrule`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): an `absent` of two premises from a macro's body, in an hrule, which `saturate` never compiles, so it answered where `solve` stopped. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-eq-obligation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W66 (`W66/macro-eq-obligation`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(eq ?x)` from a macro's body headed by its parameter, in an obligation, which `saturate` never compiles, so it answered where `solve` stopped. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W66 (`W66/macro-absent-never-compiled`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): an `absent` of two premises from a macro's body headed by its parameter, in a rule no activator reaches, so every command answered. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-not-conjunction.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W67 (`W67/macro-not-conjunction`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(not (and …))` from a macro's body under an `absent`, which the matcher read as a pattern no fact holds, so the rule fired at root and every command answered. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-neq-connective.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W67 (`W67/macro-neq-connective`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(neq ?x (and (p k)))` from a macro's body, a guard comparing a name to a connective, which held, so the rule fired and every command answered. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-neq-connective-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W67 (`W67/macro-neq-connective-hrule`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): the same `(neq ?x (and (p k)))` in an hrule, which the hypothesis layer evaluated, proposing `(p k)`. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-not-conjunction-obligation.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W67 (`W67/macro-not-conjunction-obligation`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): the same `(not (and …))` in an obligation, which the obligation pass matched, so every state owed. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-eq-conclusion.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W68 (`W68/macro-eq-conclusion`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(eq ?x)` from a macro's body as a conclusion, which the rule fired, storing `(eq k)`: the user's case, *not allow execution of (eq <arg>)*. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-false-argument.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W68 (`W68/macro-false-argument`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(false ?x)` from a macro's body as a conclusion, which the rule fired, storing `(false k)`, read as `(false)`: root dead. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-or-conclusion.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W68 (`W68/macro-or-conclusion`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(or (p ?x) (q ?x))` from a macro's body as a conclusion, which the rule fired, storing the disjunction as a fact. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-not-name-conclusion.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W68 (`W68/macro-not-name-conclusion`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(not k)` from a macro's body as a conclusion, which the rule fired, storing the negation of a name. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-connective-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W68 (`W68/macro-connective-value`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(q (and (p ?x)))` from a macro's body as a conclusion, which the rule fired, storing a conjunction as a value. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-eq-candidate.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W68 (`W68/macro-eq-candidate`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): `(eq ?x)` from a macro's body as an hrule's conclusion, which the hypothesis layer proposed, so a state held `(eq k)`. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "solve --minimal", "saturate"]
+note   = "M1f W69 (`W69/macro-bare-conclusion-under-commitment`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): a conclusion that is a bare variable, from a macro whose body is its parameter, in a rule only a commitment activates, so `saturate` and `solve --minimal` answered where describe stopped on the firing's line. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W69 (`W69/macro-bare-conclusion-hrule`), filed by S1f.5.24's T1f.5.24.2 (2026-11-10): the same bare conclusion in an hrule, which the hypothesis layer dropped in silence, proposing nothing. Fixed by S1f.5.24's T1f.5.24.3 (2026-11-10): refused at load, every command, one line."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused
 # by the compiler. S1a.3.1's three left one by one: `empty_absent` and
 # `unbound_head` to `broken/load/` at M1e2 S1e2.2.24, the loader refusing both,
-# and `nested_or` at M1f S1f.5.21 (W62); `eq_in_a_macro_body` is S1f.5.21's,
-# the one compile refusal a program still reaches, through a macro's body. Their messages are not left unchecked: each
+# and `nested_or` at M1f S1f.5.21 (W62); `eq_in_a_macro_body`, S1f.5.21's, the
+# last compile refusal a program reached, through a macro's body, left at M1f
+# S1f.5.24 (W66), the loader holding a macro's expansion to the grammar's
+# shapes. **No program reaches a compile refusal since**, so the group has no
+# entry; `activator_arity` stays here as a `positive`. Their messages were not left unchecked: each
 # has a `.expected` beside it, held byte-for-byte by
 # `ein-infer/tests/compile_semantics.rs` (`examples/broken/compile/README.md`).
 # `render rules` is deliberately not among the runs: it never reaches the
 # compiler, so the cell would record an exit code and discard the output.
-
-[[entry]]
-path   = "examples/broken/compile/eq_in_a_macro_body.ein"
-group  = "compile-negative"
-runs   = ["solve", "saturate"]
-note   = "M1f S1f.5.21: `(eq ?x)` written in a macro's body, which the grammar never reads expanded, so the compiler is the first to see it and refuses it where it compiles the rule, with one line in Ein's words on every command that compiles; the one compile refusal a corpus program reaches since the stage moved the others to the loader. Where it is refused is S1f.5.24's (Q-M1f.67)."
 
 # M1e S1e.2.1 — `CO-H1`'s class. The grammar shape-pins four of the seven
 # kernel meta-primitives (`00_ebnf.md` §2's *Kernel meta-primitives*
@@ -2243,6 +2336,12 @@ path   = "examples/broken/load/unbound_head.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 note   = "`(?R ?x)`, a relation variable no parameter binds, at the top level. A compile-negative fixture (S1a.3.1) until M1e2 S1e2.2.24, refused by the compiler's unbound-head CompileError in the Python spelling; since then the loader refuses it (W24, the stage's default 1), and it moved here from `examples/broken/compile/`, with `render rules` among its runs."
+
+[[entry]]
+path   = "examples/broken/load/eq_in_a_macro_body.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.5.21's `(eq ?x)` written in a macro's body, which the grammar never reads expanded. The one compile-negative fixture from S1f.5.21 to S1f.5.24, refused by the compiler where it compiled the rule, so a rule only a commitment activated, an hrule and an obligation loaded and some commands answered (W66), and the views and `kb save` accepted it; since S1f.5.24 the loader holds a rule's clauses, after expansion, to the grammar's shapes and refuses it, one line on every command, the macro body's position first (Q-M1f.80)."
 
 [[entry]]
 path   = "examples/broken/load/nested_or.ein"

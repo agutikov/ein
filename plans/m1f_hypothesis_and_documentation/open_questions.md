@@ -94,6 +94,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.77](#q-m1f77--when-is-utilsci_containersh-part-of-done) | when is `utils/ci_container.sh` part of done? | **defaulted 2026-11-10 (the stage's default, S1f.5.29): (a), a stage that changes a DOT writer, the review bundle or what CI installs is not done until `utils/ci_container.sh` is green on its commit; AGENTS.md's *Running the gate* says so**; [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) |
 | [Q-M1f.78](#q-m1f78--where-the-runners-missing-fdp-is-fixed) | where the runner's missing `fdp` is fixed | **defaulted 2026-11-10 (the coordinator's default, S1f.5.29): (a), the runner installs the plugin: `libgvplugin-neato-layout8` beside `graphviz` in the three workflows and `utils/ci_container.sh`'s image, and `run_tests.sh` exits 127 where `fdp` lays out no graph; no view, golden or drawing moves**; [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) |
 | [Q-M1f.79](#q-m1f79--does-a-refused-dot-fail-the-whole-bundle) | does a refused DOT fail the whole bundle? | **defaulted 2026-11-10 (the coordinator's default, S1f.5.29): (a), yes, as in the smoke: `utils/review_bundle.py` exits 1 on a DOT Graphviz refused, printing what Graphviz said under its path; a lattice past `DAG_NODES_DRAWN`, kept undrawn by design, says so beside its DOT and is not a refusal**; [S1f.5.29](p1f.5_the_no_owner_items/s1f.5.29_the_review_bundle_smoke_on_the_runner.md) |
+| [Q-M1f.80](#q-m1f80--where-a-malformed-primitive-a-macros-expansion-writes-is-refused) | where a malformed primitive a macro's expansion writes is refused | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), at load, after expansion, the instantiation the ruling on Q-M1f.67 allows: every command refuses the program, the views and `kb save` among them, before any path compiles, fires, proposes or owes the rule; a macro no rule calls still loads**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.81](#q-m1f81--what-a-malformed-primitive-is) | what a malformed primitive is | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), every form the grammar would refuse where it stands if the expanded rule were written: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or, concluded, a variable), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.82](#q-m1f82--the-line-a-malformed-primitive-is-refused-with) | the line a malformed primitive is refused with | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), the compiler's, S1f.5.21's spelling, behind `kb load error: `: the position where the expanded form is written, the rule as the loader names it (`hrule 'h'`), the clause, the form as Ein text and what to write instead**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.83](#q-m1f83--which-of-what-the-refusal-replaces-is-a-register-row) | which of what the refusal replaces is a register row | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), a row per way the engine answered where a refusal is right, W66's four, W67's four, W68's six and W69's two, each fixed by T1f.5.24.3; the compile stop and the firing stop at root, which the ruling allows, are no row, and the views' and `kb save`'s exits on such a program move under Q-M1f.71**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.84](#q-m1f84--the-compilers-arity-arms-and-the-firings-whole-conclusion-line) | the compiler's arity arms and the firing's whole-conclusion line | **defaulted 2026-11-10 (the stage's default, S1f.5.24): (a), invariants, as S1f.5.21's nested `(or …)` arm (Q-M1f.9 (a)'s pattern): the loader's check makes each unreachable, and `fuzz_properties` holds the compiler to refuse nothing the loader accepts**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1792,3 +1797,90 @@ whose page says so.
 **Defaulted 2026-11-10 (the coordinator's default): (a).** A review artefact missing its drawings is what the user's
 rule against incomplete review artefacts forbids, and the nightly is the only run that builds the whole bundle.
 Re-opening it means (b).
+
+### Q-M1f.80 — Where a malformed primitive a macro's expansion writes is refused
+
+**Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T2. The user's ruling on Q-M1f.67 allows the refusal *"during either compilation of
+instantiation or even later"* and requires that `(eq <arg>)` is never executed. T2 found that the compile-time
+refusal met that only at root: under a commitment, in an hrule, in an obligation and in a rule no activator reaches,
+some commands answered a program others refused (W66, W69), and seven shapes the compiler never checked were
+matched, concluded or proposed, `(eq k)` stored among them (W67, W68).
+
+- **(a) At load, after expansion**: the loader holds a rule's clauses, expanded, to the shapes the grammar gives a
+  written rule (`ein_ir::from_ir`'s `refuse_malformed_primitives`), so every command refuses the program, one line,
+  before any path runs the rule, as Q-M1f.74 (a) refuses a nested `(or …)` a macro writes. A macro no rule calls
+  still loads. The views and `kb save` refuse such a program too, a view refusing what the loader refuses
+  (Q-M1f.71), so `kb save` writes no container every other command refuses.
+- **(b) An eager check before execution**: every command that compiles or fires runs the same walk over every rule
+  before it starts, and the views and `kb save` keep accepting the program, as the stage's section on the ruling
+  expected while the compile-time refusal was thought to suffice. A second walk to wire into six commands and the
+  container's, and `kb save` writes a container every executing command refuses, which W65 is about.
+- **(c) Where compiled or fired, as today**, with checks added to the compiler for conclusions: the root sites only;
+  the commitment, hrule, obligation and no-activator disagreements stay.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is a refusal at instantiation, which the ruling allows, the
+one place before every path, and the precedent's (Q-M1f.74). Re-opening it means (b).
+
+### Q-M1f.81 — What a malformed primitive is
+
+**Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T2. The ruling names `(eq <arg>)`; the stage file names a literal head, a head
+through a parameter, and `absent` or `not` given a premise list. T2 found more shapes a macro's expansion writes
+that the grammar refuses where a rule writes them, each matched or concluded today.
+
+- **(a) Every form the grammar would refuse where it stands**: `eq` and `neq` at two values (`Guard`), `absent` at
+  one premise, `not` of one pattern, or as a conclusion of a variable too, `false` with nothing, no `(or …)` as a
+  conclusion, no connective where a value goes (`Term`), and a conclusion that is a form (`Conclusion`). One walk,
+  the grammar's productions by position, so a written rule never fails it.
+- **(b) `eq`'s and `absent`'s arity only**, the compiler's two lines; the rest left matched or concluded.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** Each of (b)'s leftovers is a wrong answer T2 found (W67, W68,
+W69), and the ruling's property is about every malformed primitive, `(eq k)` concluded among them. Re-opening it
+means (b).
+
+### Q-M1f.82 — The line a malformed primitive is refused with
+
+**Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T3. S1f.5.21 gave the compiler's line a position, the macro body's, since the form it
+names is the macro's (Q-M1f.72 (a)), and the loader's lines none.
+
+- **(a) The compiler's line, behind `kb load error: `**: `<file>:<line>:<col>: rule 'r': its :match writes (eq ?x),
+  and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair`. The position is
+  the first one at or under the expanded form: the macro body's for a form the body writes as `(eq ?a)`, and, for
+  one the grammar builds for a keyword (`(not …)`, `(neq …)`, `(or …)`, which keep none), its first part's, the
+  call's argument, so a form `std.macro`'s `unknown` writes is placed in the program's file. The rule is named as
+  the loader names it, `hrule 'h'` for an hrule.
+- **(b) The loader's precedent, no position**: one spelling for every loader line, and the macro body's line loses
+  the position S1f.5.21 gave it.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It keeps S1f.5.21's line, as the brief asks, and the form is
+the macro's, which a position finds. Re-opening it means (b).
+
+### Q-M1f.83 — Which of what the refusal replaces is a register row
+
+**Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T2: eighteen shapes at four or five sites, eighty programs, and for each some or every
+command answered, stopped, or executed the primitive.
+
+- **(a) A row per way the engine answered where a refusal is right** (Q-M1f.36's reading, as Q-M1f.76): W66's four
+  (`eq` or `absent` under a commitment, in an hrule, in an obligation, in a rule no activator reaches, the last
+  standing for that site in W67 to W69), W67's four (matched at root twice, by the hypothesis layer, by the
+  obligation pass), W68's six (concluded at root five times, proposed by an hrule once) and W69's two (a commitment,
+  an hrule). The compile stop and the firing stop at root are no row: the ruling allows an error at compile or
+  later, and nothing executes; their views' and `kb save`'s exits move with the loader's refusal (Q-M1f.71), as
+  S1f.5.21's twelve load-negatives' `render rules` did.
+- **(b) A row per shape and site**, eighty.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The precedent filed every way, not every program; the stage's
+pin holds all eighty. Re-opening it means (b).
+
+### Q-M1f.84 — The compiler's arity arms and the firing's whole-conclusion line
+
+**Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T3. Once the loader refuses each shape, three lines no program reaches remain: the
+compiler's `absent` and `eq` arities and the firing's *its :assert concludes ?y, which is not a fact*.
+
+- **(a) Invariants**, an `assert!` naming the loader's check, as S1f.5.21's nested `(or …)` arm (Q-M1f.9 (a)'s
+  pattern); `fuzz_properties::the_compiler_refuses_nothing_the_loader_accepts` loses its exemption for a macro
+  body's arity.
+- **(b) Library errors** for a direct caller of `compile_rule` with a hand-built tree, as Q-M1f.75 (a) kept the three
+  the loader does not cover.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The loader covers each, which is (a)'s precedent; (b)'s three
+are the ones it does not. Re-opening it means (b).

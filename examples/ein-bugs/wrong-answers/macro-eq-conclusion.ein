@@ -1,0 +1,34 @@
+;;; A macro whose body writes `eq` with one argument, called as a conclusion:
+;;; the rule fires and stores `(eq k)` —
+;;; M1f **W68**, register row `W68/macro-eq-conclusion`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `one`'s body is `(eq ?a)`, so `:assert (one ?x)` expands to the conclusion
+;;; `(eq ?x)`, which the grammar refuses where a rule writes it: `eq` holds
+;;; between two values, and is computed, never stored (G-21).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `eq`, so `r` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80). This is the user's
+;;; case: *"the ultimate goal in this case is not allow execution of (eq <arg>)"*.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
+;;; stored `(eq k :rule r)` (`ein saturate --dump`): the conclusion was executed.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro one (?a) (eq ?a) :why "{?a} equals")
+(rule r ()
+  :match  (a ?x)
+  :assert (one ?x)
+  :why "{?x} is an a, so it equals")

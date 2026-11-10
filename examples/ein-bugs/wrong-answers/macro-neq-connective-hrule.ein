@@ -1,0 +1,35 @@
+;;; The same `(neq ?x (and …))` in an hrule: the hypothesis layer matches it and
+;;; proposes a candidate —
+;;; M1f **W67**, register row `W67/macro-neq-connective-hrule`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `h`'s `:match` expands to `(and (a ?x) (neq ?x (and (p k))))`, as
+;;; `macro-neq-connective.ein`'s rule does. An hrule's `:match` is read by the
+;;; hypothesis layer, which proposes its conclusion where the match holds.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `neq`, so `h` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release and debug: every command answered, exit 0. The
+;;; hypothesis layer evaluated the malformed guard, which held, and `h` proposed
+;;; `(p k)`: R is two states.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro diff (?a ?b) (neq ?a ?b) :why "{?a} is not {?b}")
+(hrule h ()
+  :match  (and (a ?x) (diff ?x (and (p k))))
+  :assert (p ?x)
+  :why "{?x} is an a, and not the conjunction, so guess p")
+(solve :hrules (h))

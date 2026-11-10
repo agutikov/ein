@@ -1012,6 +1012,14 @@ fn ingest_rules(
         if errors.len() != n_refused {
             continue;
         }
+        // A kernel primitive the grammar shapes, which a macro's expansion
+        // wrote in another shape (M1f S1f.5.24, W66 to W69, Q-M1f.80): read
+        // here, after expansion, so no command compiles, fires or proposes it.
+        refuse_malformed_primitives(ast, &who, ":match", match_node, errors);
+        refuse_malformed_primitives(ast, &who, ":assert", assert_node, errors);
+        if errors.len() != n_refused {
+            continue;
+        }
         // A conclusion's variable nothing binds (M1f S1f.5.10, F13).
         refuse_unbound_conclusions(
             ast,
@@ -1570,6 +1578,311 @@ fn refuse_nested_disjunctions(
              or {split}",
             crate::dump::dump_compact(ast, or),
         ));
+    }
+}
+
+/// **A macro's expansion is held to the shapes the grammar gives a written
+/// rule** — M1f S1f.5.24, on the user's ruling of 2026-11-10 on Q-M1f.67
+/// (*"the ultimate goal in this case is not allow execution of (eq
+/// <arg>)"*), W66 to W69.
+///
+/// A macro's body is a template whose head may be any name at any arity
+/// (`ein.y`'s `Template`), and a call's argument may be any premise, so the
+/// grammar, which shapes each kernel primitive where a rule writes it, never
+/// reads the expanded rule. Until S1f.5.24 what it wrote was met where it was
+/// used, or not at all: `eq` and `absent` at another arity by the compiler,
+/// where it compiled the plan, so a rule only a commitment activates, an hrule,
+/// an obligation and a rule no activator reaches loaded and some or every
+/// command answered (W66); a `not` of no fact, a connective where a value goes,
+/// `false` with an argument and an `(or …)` concluded were matched, concluded
+/// or proposed as they stood, `(eq k)` stored (W67, W68); and a conclusion that
+/// is no form stopped the firing that met it and was dropped by the hypothesis
+/// layer (W69). An unused macro is not read here, so one that no rule calls
+/// loads whatever its body (the ruling); one a rule calls is refused where it
+/// is called, at load, on every command (Q-M1f.80).
+///
+/// The walk is the grammar's, by position (Q-M1f.81): a premise (`Premise`), a
+/// pattern's argument (`Arg`, which takes a connective so a macro can be called
+/// there), a value (`Term`), the pattern a `not` negates (`Pattern`) and a
+/// conclusion (`Conclusion`). It reads a form headed by `eq`, `neq`, `absent`,
+/// `not`, `false`, `and` or `or` against the shape the grammar gives it there,
+/// and a conclusion that is no form; what other checks read it leaves to them:
+/// `open` (`validate_open`), a premise that is no form and a relation variable
+/// no parameter binds (`refuse_no_fact_holds`), and an `(or …)` written as a
+/// premise (`refuse_nested_disjunctions`). A written rule never fails it, since
+/// the grammar refused the same shapes at the parse. One line per form, in the
+/// compiler's spelling (S1f.5.21's): the position where the expanded form is
+/// written, which is the macro's body or the call's argument, then the rule,
+/// the clause, the form as Ein text and what to write instead (Q-M1f.82).
+fn refuse_malformed_primitives(
+    ast: &Ast,
+    who: &str,
+    clause: &str,
+    node: NodeId,
+    errors: &mut Vec<String>,
+) {
+    let mut walk = Shapes {
+        ast,
+        who,
+        clause,
+        found: Vec::new(),
+    };
+    if clause == ":assert" {
+        walk.conclusion(node);
+    } else {
+        walk.premise(node);
+    }
+    errors.extend(walk.found);
+}
+
+/// What a node is, to [`Shapes`]: no form, or a form and its head's name
+/// (`None` for a head that is a variable).
+enum Shape<'a> {
+    Leaf,
+    Form(Option<&'a str>),
+}
+
+/// [`refuse_malformed_primitives`]' walk: one method per position of
+/// `ein.y` a rule's clause reaches.
+struct Shapes<'a> {
+    ast: &'a Ast,
+    who: &'a str,
+    clause: &'a str,
+    found: Vec<String>,
+}
+
+impl<'a> Shapes<'a> {
+    fn shape(&self, node: NodeId) -> Shape<'a> {
+        let ast: &'a Ast = self.ast;
+        match ast.node(node) {
+            Node::SForm { .. } => Shape::Form(ast.head_name(node)),
+            _ => Shape::Leaf,
+        }
+    }
+
+    fn args(&self, node: NodeId) -> Vec<NodeId> {
+        self.ast.form_args(node).to_vec()
+    }
+
+    fn text(&self, node: NodeId) -> String {
+        crate::dump::dump_compact(self.ast, node)
+    }
+
+    /// `<file>:<line>:<col>: `, where the expanded form is written: the first
+    /// position at or under it, in the order it is written. A form the
+    /// macro's body writes as `(eq ?a)` has its own, the body's; one the
+    /// grammar builds for a keyword, `(not …)`, `(neq …)`, `(and …)` or
+    /// `(or …)`, has none (`at None`, F23's D-2), so its first part's is
+    /// taken, which is the call's argument where the argument is what is
+    /// malformed, and in the program's file where `std.macro`'s `unknown`
+    /// wrote the form. Nothing where no part has one.
+    fn place(&self, node: NodeId) -> String {
+        fn first(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
+            if let Some(l) = ast.loc(node) {
+                return Some(l);
+            }
+            match ast.node(node) {
+                Node::SForm { head, .. } => first(ast, head)
+                    .or_else(|| ast.form_args(node).iter().find_map(|&a| first(ast, a))),
+                _ => None,
+            }
+        }
+        match first(self.ast, node) {
+            Some(loc) => format!("{}: ", loc_repr(self.ast, Some(loc))),
+            None => String::new(),
+        }
+    }
+
+    /// `<place><who>: its <clause> writes <form>, and <what>`.
+    fn refuse(&mut self, node: NodeId, what: String) {
+        let line = format!(
+            "{}{}: its {} writes {}, and {what}",
+            self.place(node),
+            self.who,
+            self.clause,
+            self.text(node)
+        );
+        self.found.push(line);
+    }
+
+    /// `eq` and `neq` compare two values (`ein.y`'s `Guard`).
+    fn guard(&mut self, node: NodeId, name: &str) {
+        let args = self.args(node);
+        if args.len() != 2 {
+            self.refuse(
+                node,
+                format!(
+                    "{name} takes exactly 2 arguments, not {} — it compares two values, so write \
+                     one guard per pair",
+                    args.len()
+                ),
+            );
+            return;
+        }
+        for a in args {
+            self.term(node, a);
+        }
+    }
+
+    /// A premise (`ein.y`'s `Premise`): a pattern, or a connective.
+    fn premise(&mut self, node: NodeId) {
+        let Shape::Form(head) = self.shape(node) else {
+            return; // a premise that is no form: `refuse_no_fact_holds`'s
+        };
+        let args = self.args(node);
+        match head {
+            Some("and" | "or") => {
+                for a in args {
+                    self.premise(a);
+                }
+            }
+            Some("absent") => {
+                if args.len() != 1 {
+                    self.refuse(
+                        node,
+                        format!(
+                            "absent takes exactly 1 argument, not {} — negation as failure is \
+                             over one premise, so wrap several in an (and …)",
+                            args.len()
+                        ),
+                    );
+                    return;
+                }
+                self.premise(args[0]);
+            }
+            Some("not") => self.negation(node, false),
+            Some(g @ ("eq" | "neq")) => self.guard(node, g),
+            Some("open") => {} // `validate_open`'s
+            _ => {
+                for a in args {
+                    self.arg(a);
+                }
+            }
+        }
+    }
+
+    /// A premise pattern's argument (`ein.y`'s `Arg`): a value, a pattern, or
+    /// a connective, which the grammar takes there so a macro can be called.
+    fn arg(&mut self, node: NodeId) {
+        match self.shape(node) {
+            Shape::Form(Some("and" | "or" | "not" | "absent" | "eq" | "neq")) => self.premise(node),
+            Shape::Form(_) => {
+                for a in self.args(node) {
+                    self.arg(a);
+                }
+            }
+            Shape::Leaf => {}
+        }
+    }
+
+    /// A value (`ein.y`'s `Term`) in the form `within`: a name, a variable, a
+    /// fact, or the stored negation of one; never a connective.
+    fn term(&mut self, within: NodeId, node: NodeId) {
+        match self.shape(node) {
+            Shape::Form(Some(c @ ("and" | "or" | "neq"))) => {
+                let what = format!(
+                    "{} is a connective where a value goes — {c} heads no fact, and a value is a \
+                     name, a variable or a fact (relation argument …)",
+                    self.text(node)
+                );
+                self.refuse(within, what);
+            }
+            Shape::Form(Some("not")) => self.negation(node, false),
+            Shape::Form(_) => {
+                for a in self.args(node) {
+                    self.term(node, a);
+                }
+            }
+            Shape::Leaf => {}
+        }
+    }
+
+    /// `(not P)`: the stored negation of one fact (`ein.y`'s `(not Pattern)`),
+    /// and, as a conclusion, of a variable bound to one (`(not Var)`).
+    fn negation(&mut self, node: NodeId, conclusion: bool) {
+        let args = self.args(node);
+        if args.len() != 1 {
+            self.refuse(
+                node,
+                format!(
+                    "not takes exactly 1 argument, not {} — it is the stored negation of one fact",
+                    args.len()
+                ),
+            );
+            return;
+        }
+        let p = args[0];
+        let fits = match (self.ast.node(p), self.shape(p)) {
+            (Node::Var(_), _) => conclusion,
+            (_, Shape::Form(Some("and" | "or" | "not" | "neq"))) => false,
+            (_, Shape::Form(_)) => true,
+            _ => false,
+        };
+        if !fits {
+            let takes = if conclusion {
+                "a pattern (relation argument …) or a variable"
+            } else {
+                "a pattern (relation argument …)"
+            };
+            let what = format!(
+                "not takes {takes}, not {} — it is the stored negation of one fact; negation as \
+                 failure is (absent …)",
+                self.text(p)
+            );
+            self.refuse(node, what);
+            return;
+        }
+        if matches!(self.shape(p), Shape::Form(_)) {
+            for a in self.args(p) {
+                self.term(p, a);
+            }
+        }
+    }
+
+    /// A conclusion (`ein.y`'s `Assert` and `Conclusion`): a form.
+    fn conclusion(&mut self, node: NodeId) {
+        let Shape::Form(head) = self.shape(node) else {
+            let line = format!(
+                "{}{}: its :assert concludes {}, which is not a fact — a conclusion is a fact \
+                 (relation argument …), or an (and …) of facts",
+                self.place(node),
+                self.who,
+                self.text(node)
+            );
+            self.found.push(line);
+            return;
+        };
+        let args = self.args(node);
+        match head {
+            Some("and") => {
+                for a in args {
+                    self.conclusion(a);
+                }
+            }
+            Some("or") => self.refuse(
+                node,
+                "an (or …) is no conclusion — a rule concludes every conclusion it writes, and a \
+                 disjunction is a :match's, one way it holds per premise: write one rule per \
+                 disjunct"
+                    .to_string(),
+            ),
+            Some("not") => self.negation(node, true),
+            Some("false") if !args.is_empty() => self.refuse(
+                node,
+                format!(
+                    "false takes no argument, not {} — (false) concludes that the state is \
+                     impossible, and names nothing",
+                    args.len()
+                ),
+            ),
+            Some(g @ ("eq" | "neq")) => self.guard(node, g),
+            Some("open") => {} // `validate_open`'s
+            _ => {
+                for a in args {
+                    self.term(node, a);
+                }
+            }
+        }
     }
 }
 
@@ -3526,6 +3839,185 @@ mod tests {
             "(macro either (?x) (or (p ?x) (q ?x)) :why \"either, used by no rule\")".to_string(),
         ] {
             ok(&format!("{pre}{text}"));
+        }
+    }
+
+    /// **A macro's expansion is held to the grammar's shapes** — M1f S1f.5.24,
+    /// on the user's ruling on Q-M1f.67, W66 to W69.
+    ///
+    /// Each shape a macro's body or a call's argument can malform, in a rule's,
+    /// an hrule's and an obligation's `:match` and as a conclusion, refused at
+    /// load with one line naming the rule, the clause and the expanded form,
+    /// the position where it is written first. Then what loads: an unused
+    /// malformed macro (the ruling), and every shape the grammar takes where a
+    /// rule writes it, written and through a macro, so the walk refuses no
+    /// written rule the grammar accepts.
+    #[test]
+    fn a_macros_expansion_is_held_to_the_grammars_shapes() {
+        let pre = "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\") \
+                   (relation q T :why \"q holds of {?1}\")\n(a k)\n";
+        let m = [
+            "(macro one (?a) (eq ?a) :why \"one\")",
+            "(macro app (?R ?a) (?R ?a) :why \"app\")",
+            "(macro two (?a ?b) (absent ?a ?b) :why \"two\")",
+            "(macro app2 (?R ?a ?b) (?R ?a ?b) :why \"app2\")",
+            "(macro neg (?a) (not ?a) :why \"neg\")",
+            "(macro diff (?a ?b) (neq ?a ?b) :why \"diff\")",
+            "(macro bad (?a) (false ?a) :why \"bad\")",
+            "(macro either (?a) (or (p ?a) (q ?a)) :why \"either\")",
+            "(macro wrap (?a) (q (and (p ?a))) :why \"wrap\")",
+            "(macro id (?x) ?x :why \"id\")",
+            "(import std.macro :symbols (unknown))",
+        ]
+        .join("\n");
+        let prem = |call: &str| {
+            [
+                format!("(rule r () :match (and (a ?x) {call}) :assert (p ?x) :why \"r\")"),
+                format!("(rule r (?R) :match (and (?R ?x) {call}) :assert (p ?x) :why \"r\")"),
+                format!("(hrule r () :match (and (a ?x) {call}) :assert (p ?x) :why \"r\")"),
+                format!("(rule r () :match (and (a ?x) {call}) :assert (open) :why \"r\")"),
+            ]
+        };
+        let concl = |call: &str| {
+            [
+                format!("(rule r () :match (a ?x) :assert {call} :why \"r\")"),
+                format!("(rule r (?R) :match (?R ?x) :assert {call} :why \"r\")"),
+                format!("(hrule r () :match (a ?x) :assert {call} :why \"r\")"),
+            ]
+        };
+        let refusals: Vec<(Vec<String>, &str)> = vec![
+            (
+                prem("(one ?x)").to_vec(),
+                ":match writes (eq ?x), and eq takes exactly 2 arguments, not 1",
+            ),
+            (
+                prem("(app eq ?x)").to_vec(),
+                ":match writes (eq ?x), and eq takes exactly 2 arguments, not 1",
+            ),
+            (
+                prem("(two (p ?x) (q ?x))").to_vec(),
+                ":match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2",
+            ),
+            (
+                prem("(app2 absent (p ?x) (q ?x))").to_vec(),
+                ":match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2",
+            ),
+            (
+                prem("(absent (neg (and (p ?x) (q ?x))))").to_vec(),
+                ":match writes (not (and (p ?x) (q ?x))), and not takes a pattern (relation \
+                 argument …), not (and (p ?x) (q ?x))",
+            ),
+            (
+                prem("(unknown (and (p ?x) (q ?x)))").to_vec(),
+                ":match writes (not (and (p ?x) (q ?x))), and not takes a pattern",
+            ),
+            (
+                prem("(neg ?x)").to_vec(),
+                ":match writes (not ?x), and not takes a pattern (relation argument …), not ?x",
+            ),
+            (
+                prem("(diff ?x (and (p k)))").to_vec(),
+                ":match writes (neq ?x (and (p k))), and (and (p k)) is a connective where a value \
+                 goes",
+            ),
+            (
+                concl("(one ?x)").to_vec(),
+                ":assert writes (eq ?x), and eq takes exactly 2 arguments, not 1",
+            ),
+            (
+                concl("(app eq ?x)").to_vec(),
+                ":assert writes (eq ?x), and eq takes exactly 2 arguments, not 1",
+            ),
+            (
+                concl("(bad ?x)").to_vec(),
+                ":assert writes (false ?x), and false takes no argument, not 1",
+            ),
+            (
+                concl("(app false ?x)").to_vec(),
+                ":assert writes (false ?x), and false takes no argument, not 1",
+            ),
+            (
+                concl("(either ?x)").to_vec(),
+                ":assert writes (or (p ?x) (q ?x)), and an (or …) is no conclusion",
+            ),
+            (
+                concl("(neg k)").to_vec(),
+                ":assert writes (not k), and not takes a pattern (relation argument …) or a \
+                 variable, not k",
+            ),
+            (
+                concl("(wrap ?x)").to_vec(),
+                ":assert writes (q (and (p ?x))), and (and (p ?x)) is a connective where a value goes",
+            ),
+            (
+                concl("(id ?x)").to_vec(),
+                ":assert concludes ?x, which is not a fact",
+            ),
+            (
+                concl("(id k)").to_vec(),
+                ":assert concludes k, which is not a fact",
+            ),
+        ];
+        for (texts, want) in &refusals {
+            for text in texts {
+                let got = err(&format!("{pre}{m}\n{text}"));
+                let who = if text.starts_with("(hrule") {
+                    "hrule 'r'"
+                } else {
+                    "rule 'r'"
+                };
+                assert!(
+                    got.lines().count() == 1 && got.contains(&format!("{who}: its {want}")),
+                    "{text}\nwants {who}: its {want}\ngot {got}"
+                );
+            }
+        }
+        // The position is where the expanded form is written: the macro's body
+        // for a form it writes, the call's argument for one the grammar builds.
+        assert!(
+            err(&format!(
+                "{pre}{m}\n(rule r () :match (a ?x) :assert (one ?x) :why \"r\")"
+            ))
+            .starts_with("<string>:3:18: rule 'r': its :assert writes (eq ?x)"),
+        );
+        // What loads: every macro above, used by no rule; and every shape the
+        // grammar takes where a rule writes it, written and through a macro.
+        ok(&format!("{pre}{m}"));
+        for text in [
+            "(rule r () :match (and (a ?x) (not (eq ?x k))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (absent (not (absent (p ?x))))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (p (eq k k))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (p (not (q k)))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (p (and (q ?x)))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (eq ?x (absent (p k)))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (false ?x)) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (not (p ?x)) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (and (p ?x) (q (eq ?x k))) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (absent (p ?x)) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (neq ?x k) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (false) :why \"r\")",
+            "(rule r () :match () :assert () :why \"r\")",
+            "(rule r (?R) :match (and (a ?x) (absent (?R ?x ?y))) :assert (open ?R) :why \"r\")",
+            "(rule r () :match (and (a ?x) (one ?x ?x)) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (app q ?x)) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (two (p ?x))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (absent (neg (p ?x)))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (unknown (p ?x))) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (diff ?x k)) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (neg ?x) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (id (p ?x)) :why \"r\")",
+        ] {
+            let (one, two) = (
+                "(macro one (?a ?b) (eq ?a ?b) :why \"one\")",
+                "(macro two (?a) (absent ?a) :why \"two\")",
+            );
+            let rest = m
+                .lines()
+                .filter(|l| !l.starts_with("(macro one") && !l.starts_with("(macro two"))
+                .collect::<Vec<_>>()
+                .join("\n");
+            ok(&format!("{pre}{one}\n{two}\n{rest}\n{text}"));
         }
     }
 

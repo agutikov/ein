@@ -1,0 +1,37 @@
+;;; A macro whose body writes `absent` over two premises, called in an hrule:
+;;; `ein saturate` answers and every solve question stops —
+;;; M1f **W66**, register row `W66/macro-absent-hrule`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `two`'s body is `(absent ?a ?b)`, so `(two (p ?x) (q ?x))` expands to an
+;;; `absent` of two premises, which the grammar refuses where a rule writes it
+;;; (negation as failure is over one premise). An hrule is compiled where the
+;;; hypothesis layer asks it for candidates, which a saturation never does.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `absent`, so `h` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every solve question, `oracle` and `render lattice`
+;;; stopped where the hypothesis layer compiles `h`, exit 1, on the compiler's
+;;; line; `ein saturate` and `render kb`, which ask no hrule for candidates,
+;;; answered, exit 0.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro two (?a ?b) (absent ?a ?b) :why "neither {?a} nor {?b}")
+(hrule h ()
+  :match  (and (a ?x) (two (p ?x) (q ?x)))
+  :assert (p ?x)
+  :why "{?x} is an a, and neither a p nor a q, so guess it is a p")
+(solve :hrules (h))

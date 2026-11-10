@@ -1,0 +1,35 @@
+;;; A macro whose body writes `eq` with one argument, called as an hrule's
+;;; conclusion: the hypothesis layer proposes `(eq k)`, and a state holds it —
+;;; M1f **W68**, register row `W68/macro-eq-candidate`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `h`'s `:assert` expands to `(eq ?x)`, as `macro-eq-conclusion.ein`'s rule's
+;;; does. An hrule's conclusion is what the hypothesis layer proposes, so `(eq k)`
+;;; is a candidate, H.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `eq`, so `h` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. H was `{(eq k)}`,
+;;; and R two states, the second holding `(eq k)` (`ein solve --maximal`): the
+;;; conclusion was executed by the hypothesis layer.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro one (?a) (eq ?a) :why "{?a} equals")
+(hrule h ()
+  :match  (a ?x)
+  :assert (one ?x)
+  :why "{?x} is an a, so guess it equals")
+(solve :hrules (h))

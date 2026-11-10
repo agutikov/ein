@@ -795,9 +795,7 @@ fn compile_refusal(text: &str) -> Option<String> {
             refusals.push(e.0);
         }
     }
-    refusals
-        .into_iter()
-        .find(|r| !r.contains(" takes exactly "))
+    refusals.into_iter().next()
 }
 
 /// **The compiler refuses nothing the loader accepts** (M1f S1f.5.21, the
@@ -807,11 +805,13 @@ fn compile_refusal(text: &str) -> Option<String> {
 /// compiled, so a command that never compiled it answered what one that did
 /// stopped on; and each was printed in the Python IR's spelling. The loader
 /// refuses each since (a nested `(or …)`, W62; a clause past the register
-/// file, W63; a goal's relation variable, W64), so for every generated program
-/// it accepts, every plan compiles ([`compile_refusal`]), but a macro body's
-/// primitive at another arity, which is S1f.5.24's. The compiler's arms for
-/// the three are invariants since, so one the loader let through would panic
-/// here.
+/// file, W63; a goal's relation variable, W64), and since M1f S1f.5.24 a
+/// primitive a macro's expansion writes in another shape than the grammar's,
+/// `eq` or `absent` at another arity among them (W66 to W69), which the
+/// compiler met only where it compiled the plan. So for every generated
+/// program it accepts, every plan compiles ([`compile_refusal`]). The
+/// compiler's arms for each are invariants since, so one the loader let
+/// through would panic here.
 #[test]
 fn the_compiler_refuses_nothing_the_loader_accepts() {
     let (iters, seed) = budget();

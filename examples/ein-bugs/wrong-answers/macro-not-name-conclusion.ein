@@ -1,0 +1,34 @@
+;;; A macro whose body writes `(not ?a)`, called with a name as a conclusion: the
+;;; rule fires and stores `(not k)`, the negation of a name —
+;;; M1f **W68**, register row `W68/macro-not-name-conclusion`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `neg`'s body is `(not ?a)`, so `:assert (neg k)` expands to `(not k)`,
+;;; which the grammar refuses where a rule writes it: a stored negation is of one
+;;; fact, or of a variable bound to one, and `k` is a name.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `not`, so `r` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. `r` fired and
+;;; stored `(not k :rule r)` (`ein saturate --dump`), a fact no program can
+;;; write.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro neg (?a) (not ?a) :why "the negation of {?a} is stored")
+(rule r ()
+  :match  (a ?x)
+  :assert (neg k)
+  :why "{?x} is an a, so k is negated")

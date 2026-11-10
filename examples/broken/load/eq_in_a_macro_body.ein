@@ -1,0 +1,25 @@
+; M1f S1f.5.21 — `eq` at one argument, written in a macro's body; at load since
+; M1f S1f.5.24.
+;
+; Written in a rule, `(eq ?x)` is a parse error: the grammar's `Guard` takes two
+; terms. A macro's body is a template, whose head may be any name at any arity
+; (`ein.y`'s `Template`), since a macro's parameters stand for whole premises, so
+; the grammar never reads the expanded rule. Since S1f.5.24 the loader does: it
+; holds a rule's clauses, after expansion, to the shapes the grammar gives a
+; written rule (`ein_ir::from_ir`'s `refuse_malformed_primitives`), so `r` is
+; refused where the macro is used, on every command, the views and `kb save`
+; among them, with one line: the place in the macro's body, the rule, the form
+; and what to write instead (Q-M1f.80). A macro no rule uses still loads, the
+; user's ruling on Q-M1f.67 (*"the ultimate goal in this case is not allow
+; execution of (eq <arg>)"*).
+;
+; Under `../compile/` from S1f.5.21 to S1f.5.24, the one compile refusal a
+; corpus program reached: the compiler refused it where it compiled `r`, so a
+; rule only a commitment activated, an hrule and an obligation loaded and some
+; commands answered (W66), and the views and `kb save` accepted it. Until
+; S1f.5.21 the line was the Python IR's, `` `(eq …)` takes exactly 2 arguments
+; and was given 1: SForm(head=Atom(name='eq'), …) at Loc(file=…) — … ``.
+(relation q T :why "q holds of {?1}")
+(macro one (?a) (eq ?a) :why "{?a} equals")
+(rule r () :match (and (q ?x) (one ?x)) :assert (q ?x) :why "{?x} is a q that equals, so a q")
+(q a)

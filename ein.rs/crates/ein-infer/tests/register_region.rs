@@ -335,7 +335,11 @@ fn every_row_states_its_witness_s_region() {
                 && row.now.exit != Some(2)
         }) {
             if let Some(e) = refusal(&row.witness) {
-                if *want != e {
+                // `{FILE}` is the path the run was handed, as `wrong_answers.rs`
+                // reads it (schema /16): a line that places its form, a
+                // macro's expansion's since M1f S1f.5.24 (W66 to W69).
+                let want = want.replace("{FILE}", &row.witness);
+                if want != e {
                     bad.push(format!(
                         "{} ({}): [now] is the refusal {want:?} and the loader says {e:?}",
                         row.id, row.witness

@@ -1085,6 +1085,30 @@
 # yet written. The register reads **177 rows fixed, 13 open and 1 not-wrong**
 # (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
 #
+# **W66 to W69 were filed and fixed on 2026-11-10 by M1f S1f.5.24**, on the
+# user's ruling of that day on Q-M1f.67: an unused malformed macro loads, and
+# *"the ultimate goal in this case is not allow execution of (eq <arg>)"*. A
+# macro's body is a template the grammar never reads expanded, so what a call
+# wrote was met where it was used, or not at all. W66, `eq` or `absent` at
+# another arity in a `:match`, four rows: refused only where the compiler met
+# it, so under a commitment, in an hrule and in an obligation some commands
+# answered what others stopped on, and in a rule no activator reached every
+# command answered (a row that stands for that site in W67 to W69 too). W67,
+# a `not` of no fact or a connective as a guard's value in a `:match`, four
+# rows: matched at root, by the hypothesis layer and by the obligation pass.
+# W68, a malformed conclusion, six rows: `(eq k)`, `(false k)`, `(or …)`,
+# `(not k)` and a conjunction as a value stored, and `(eq k)` proposed by an
+# hrule. W69, a conclusion that is no form, two rows: stopped only where a
+# firing met it, and dropped in silence by the hypothesis layer. The macro
+# body's compile stop at root, which the ruling allows, is no row. T1f.5.24.2
+# filed the sixteen `open`, each `now` held to the unchanged engine, and
+# T1f.5.24.3 fixed them: the loader holds a rule's clauses, after expansion,
+# to the shapes the grammar gives a written rule (`ein_ir::from_ir`'s
+# `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81). No schema change. Each
+# `[case.fixed]` carries the null id. The register reads **193 rows fixed, 13
+# open and 1 not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort |
+# uniq -c`, 2026-11-10).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -11708,3 +11732,532 @@ derived   = "a program every other command refuses is refused by this one too, w
 [case.now]
 run     = "kb save {out}/again.einb"
 refused = "kb load error: rule 'r': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+
+
+# ══ W66 — a malformed `eq` or `absent` a macro's expansion writes in a `:match` loads, and is refused only where the compiler meets it ══
+
+[[case]]
+id       = "W66/macro-eq-under-commitment"
+case     = "W66"
+title    = "a malformed `eq` or `absent` a macro's expansion writes in a `:match` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-eq-under-commitment.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: a rule with a parameter is compiled once per activator, and only a commitment writes this one's, so the commands that never reach the commitment answered and those that do stopped. The row's `now` is describe's stop; its `wrong` names the commands that answered; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` (describe) on the witness, release, at dbfd7862 (2026-11-10): the commitment holding `(s k)` activates `r`, whose plan stops the run on the compiler's line, exit 1; `--maximal`, `--count`, `oracle`, `test` and `render lattice` the same; `ein saturate`, `ein solve --minimal`, `--single`, `-n 1` and `render kb` answered, exit 0, never compiling `r`, which the user's rule that no two commands may disagree forbids"
+exit      = 1
+error     = "examples/ein-bugs/wrong-answers/macro-eq-under-commitment.ein:35:18: rule 'r': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+
+[case.right]
+refused   = true
+derived   = "`one`'s body writes `(eq ?a)`, so `r`'s `:match` expands to `(eq ?x)`, which the grammar refuses where a rule writes it: `r` is refused where the macro is used, at load, whatever activates it, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: {FILE}:35:18: rule 'r': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+
+[[case]]
+id       = "W66/macro-absent-hrule"
+case     = "W66"
+title    = "a malformed `eq` or `absent` a macro's expansion writes in a `:match` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-absent-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: an hrule is compiled where the hypothesis layer asks it for candidates, which a saturation never does, so `ein saturate` answered a program every solve question stopped on; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at dbfd7862 (2026-11-10): the hypothesis layer compiles `h` and the run stops on the compiler's line, exit 1; every solve question, `oracle` and `render lattice` the same; `ein saturate` and `render kb`, which ask no hrule for candidates, answered, exit 0"
+exit      = 1
+error     = "examples/ein-bugs/wrong-answers/macro-absent-hrule.ein:32:21: rule 'h': its :match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2 — negation as failure is over one premise, so wrap several in an (and …)"
+
+[case.right]
+refused   = true
+derived   = "`two`'s body writes `(absent ?a ?b)`, so `h`'s `:match` expands to an `absent` of two premises, which the grammar refuses where a rule writes it: `h` is refused at load, an hrule's clause as a rule's, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: {FILE}:32:21: hrule 'h': its :match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2 — negation as failure is over one premise, so wrap several in an (and …)"
+
+[[case]]
+id       = "W66/macro-eq-obligation"
+case     = "W66"
+title    = "a malformed `eq` or `absent` a macro's expansion writes in a `:match` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-eq-obligation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: an obligation is compiled by the pass that reads what a quiescent state owes, which a saturation never runs, so `ein saturate` answered a program every solve question stopped on. The `eq` is reached through the macro's parameter, written as its head; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at dbfd7862 (2026-11-10): the obligation pass compiles `o` and the run stops on the compiler's line, exit 1; every solve question, `oracle` and `render lattice` the same; `ein saturate` and `render kb`, which read no obligation, answered, exit 0"
+exit      = 1
+error     = "examples/ein-bugs/wrong-answers/macro-eq-obligation.ein:30:21: rule 'o': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+
+[case.right]
+refused   = true
+derived   = "`app`'s body is `(?R ?a)`, so `(app eq ?x)` expands to `(eq ?x)`, which the grammar refuses where a rule writes it: the obligation `o` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: {FILE}:30:21: rule 'o': its :match writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+
+[[case]]
+id       = "W66/macro-absent-never-compiled"
+case     = "W66"
+title    = "a malformed `eq` or `absent` a macro's expansion writes in a `:match` loads, and is refused only where the compiler meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: a rule no activator activates is never compiled, so every command answered. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open. It stands for the same site in W67, W68 and W69: a rule no activator reaches is never compiled or fired, whatever its clauses write; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): no `(r …)` is written, so no plan of `r` is compiled, and every command answered, exit 0, with no word of the `absent` (R eight states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`app2`'s body is `(?R ?a ?b)`, so `(app2 absent (p ?x) (q ?x))` expands to an `absent` of two premises: `r` is refused at load, whether or not anything activates it, and every command exits 1 (`ein test`: 2). The macro is used, so instantiated; one no rule uses still loads (the user's ruling on Q-M1f.67)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:31:25: rule 'r': its :match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2 — negation as failure is over one premise, so wrap several in an (and …)"
+
+# ══ W67 — a malformed primitive a macro's expansion writes in a `:match` loads, and is matched ══
+
+[[case]]
+id       = "W67/macro-not-conjunction"
+case     = "W67"
+title    = "a malformed primitive a macro's expansion writes in a `:match` loads, and is matched"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-not-conjunction.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `not` is matched where `r` is compiled, at root. `std.macro`'s `unknown` writes the same shape, `(absent (not ?P))`, when called with a conjunction, `(unknown (and (p ?x) (q ?x)))`, which the stage's pin holds; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; the matcher read `(not (and (p k) (q k)))` as a pattern no fact holds, the `absent` held, and `r` fired at root, deriving `(p k)`; every command answered (R four states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`neg`'s body writes `(not ?a)`, so `(neg (and (p ?x) (q ?x)))` expands to `(not (and (p ?x) (q ?x)))`, which the grammar refuses where a rule writes it (a stored negation is of one fact): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:32:42: rule 'r': its :match writes (not (and (p ?x) (q ?x))), and not takes a pattern (relation argument …), not (and (p ?x) (q ?x)) — it is the stored negation of one fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W67/macro-neq-connective"
+case     = "W67"
+title    = "a malformed primitive a macro's expansion writes in a `:match` loads, and is matched"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-neq-connective.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed guard is evaluated where `r` is compiled, at root; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; the guard compared `k` to `(and (p k))` as to a fact, held, and `r` fired at root, deriving `(p k)`; every command answered (R four states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`diff`'s body writes `(neq ?a ?b)`, so `(diff ?x (and (p k)))` expands to `(neq ?x (and (p k)))`, which the grammar refuses where a rule writes it (a guard compares two values, and a conjunction is a connective): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:32:29: rule 'r': its :match writes (neq ?x (and (p k))), and (and (p k)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W67/macro-neq-connective-hrule"
+case     = "W67"
+title    = "a malformed primitive a macro's expansion writes in a `:match` loads, and is matched"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-neq-connective-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the hypothesis layer's path: an hrule's `:match` is matched where H is built. The row's `now` is `ein oracle`, a command's run, which answered while the row was open. The same hrule written with `macro-not-conjunction.ein`'s `(not (and …))` stops a debug build on `hrule.rs`'s assertion that no hrule reads `not`, which a written `(not (p ?x))` stops on too (the stage's T2 record); fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "oracle"
+by        = "command"
+why       = "`ein oracle` on the witness, release and debug, at dbfd7862 (2026-11-10): exit 0; the hypothesis layer evaluated `(neq k (and (p k)))`, which held, and `h` proposed `(p k)`: R two states; every command answered"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`h`'s `:match` expands to `(and (a ?x) (neq ?x (and (p k))))`, which the grammar refuses where a rule writes it: `h` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "oracle"
+refused = "kb load error: {FILE}:32:29: hrule 'h': its :match writes (neq ?x (and (p k))), and (and (p k)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W67/macro-not-conjunction-obligation"
+case     = "W67"
+title    = "a malformed primitive a macro's expansion writes in a `:match` loads, and is matched"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-not-conjunction-obligation.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the obligation pass's path: an obligation's `:match` is matched over each quiescent state. The row's `now` is `ein oracle`, a command's run, which answered while the row was open; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "oracle"
+by        = "command"
+why       = "`ein oracle` on the witness, release, at dbfd7862 (2026-11-10): exit 0; the obligation pass matched the malformed `not`, the `absent` held, and every alive state owed: R empty, `Open`; every command answered"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`o`'s `:match` expands to `(and (a ?x) (absent (not (and (p ?x) (q ?x)))))`, which the grammar refuses where a rule writes it: the obligation `o` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "oracle"
+refused = "kb load error: {FILE}:32:42: rule 'o': its :match writes (not (and (p ?x) (q ?x))), and not takes a pattern (relation argument …), not (and (p ?x) (q ?x)) — it is the stored negation of one fact; negation as failure is (absent …)"
+
+# ══ W68 — a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded ══
+
+[[case]]
+id       = "W68/macro-eq-conclusion"
+case     = "W68"
+title    = "a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-eq-conclusion.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the user's case, *\"the ultimate goal in this case is not allow execution of (eq <arg>)\"* (Q-M1f.67): the conclusion was executed; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; `r` fired at root and stored `(eq k :rule r)`; every command answered (R eight states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`one`'s body writes `(eq ?a)`, so `r`'s `:assert` expands to `(eq ?x)`, which the grammar refuses where a rule writes it (`eq` holds between two values, and is computed, never stored, G-21): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:30:18: rule 'r': its :assert writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+
+[[case]]
+id       = "W68/macro-false-argument"
+case     = "W68"
+title    = "a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-false-argument.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `false` was concluded, and decided R; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; `r` fired at root and stored `(false k :rule r)`, which the contradiction detector read as `(false)`: root dead, R empty, `refuted by r`; every command answered"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`bad`'s body writes `(false ?a)`, so `r`'s `:assert` expands to `(false ?x)`, which the grammar refuses where a rule writes it (`(false)` names nothing): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:30:18: rule 'r': its :assert writes (false ?x), and false takes no argument, not 1 — (false) concludes that the state is impossible, and names nothing"
+
+[[case]]
+id       = "W68/macro-or-conclusion"
+case     = "W68"
+title    = "a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-or-conclusion.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `or` was concluded; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; `r` fired at root and stored `(or (p k) (q k) :rule r)`, a fact of a relation `or`; every command answered (R eight states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`either`'s body writes `(or (p ?a) (q ?a))`, so `r`'s `:assert` expands to a disjunction, which the grammar refuses as a conclusion (a rule concludes every conclusion it writes): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:30:25: rule 'r': its :assert writes (or (p ?x) (q ?x)), and an (or …) is no conclusion — a rule concludes every conclusion it writes, and a disjunction is a :match's, one way it holds per premise: write one rule per disjunct"
+
+[[case]]
+id       = "W68/macro-not-name-conclusion"
+case     = "W68"
+title    = "a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-not-name-conclusion.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `not` was concluded; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; `r` fired at root and stored `(not k :rule r)`, the negation of a name, a fact no program can write; every command answered (R eight states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`neg`'s body writes `(not ?a)`, so `r`'s `:assert` expands to `(not k)`, which the grammar refuses where a rule writes it (a stored negation is of one fact, or of a variable bound to one): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:33:16: rule 'r': its :assert writes (not k), and not takes a pattern (relation argument …) or a variable, not k — it is the stored negation of one fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W68/macro-connective-value"
+case     = "W68"
+title    = "a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-connective-value.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the malformed `and` was concluded, as a value; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump` on the witness, release, at dbfd7862 (2026-11-10): exit 0; `r` fired at root and stored `(q (and (p k)) :rule r)`, a conjunction as a value; every command answered (R eight states)"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`wrap`'s body writes `(q (and (p ?a)))`, so `r`'s `:assert` expands to `(q (and (p ?x)))`, which the grammar refuses where a rule writes it (a conclusion's argument is a name, a variable or a fact): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: {FILE}:30:19: rule 'r': its :assert writes (q (and (p ?x))), and (and (p ?x)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W68/macro-eq-candidate"
+case     = "W68"
+title    = "a malformed primitive a macro's expansion writes as a conclusion loads, and is concluded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-eq-candidate.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the hypothesis layer's path: an hrule's conclusion is what it proposes, so the malformed `eq` was committed. The row's `now` is `ein oracle`, a command's run, which answered while the row was open; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "oracle"
+by        = "command"
+why       = "`ein oracle` on the witness, release, at dbfd7862 (2026-11-10): exit 0; the hypothesis layer proposed `(eq k)`, H `{(eq k)}`, and R two states, the second holding it (`ein solve --maximal`); every command answered"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`h`'s `:assert` expands to `(eq ?x)`, which the grammar refuses where a rule writes it: `h` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "oracle"
+refused = "kb load error: {FILE}:30:18: hrule 'h': its :assert writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+
+# ══ W69 — a conclusion a macro's expansion leaves no form loads, and is refused only where a firing meets it ══
+
+[[case]]
+id       = "W69/macro-bare-conclusion-under-commitment"
+case     = "W69"
+title    = "a conclusion a macro's expansion leaves no form loads, and is refused only where a firing meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: a firing refuses a conclusion that is no fact, and only a commitment activates `r`, so the commands that never reach it answered and those that do stopped. The row's `now` is describe's stop; its `wrong` names the commands that answered; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` (describe) on the witness, release, at dbfd7862 (2026-11-10): the commitment holding `(s k)` activates `r`, which fires and stops the run on the firing's line, exit 1; `--maximal`, `--count`, `oracle`, `test` and `render lattice` the same; `ein saturate`, `ein solve --minimal`, `--single`, `-n 1` and `render kb` answered, exit 0, never firing `r`"
+exit      = 1
+error     = "rule 'r': its :assert concludes ?x, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
+
+[case.right]
+refused   = true
+derived   = "`id`'s body is its parameter, so `r`'s `:assert` expands to the conclusion `?x`, which the grammar refuses where a rule writes it (a conclusion is a fact, or an `(and …)` of facts): `r` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: {FILE}:36:15: rule 'r': its :assert concludes ?x, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
+
+[[case]]
+id       = "W69/macro-bare-conclusion-hrule"
+case     = "W69"
+title    = "a conclusion a macro's expansion leaves no form loads, and is refused only where a firing meets it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.5.24"
+question = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
+witness  = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.5.24 (T1f.5.24.2, 2026-11-10), one of the ways the engine answered a program a macro's expansion makes malformed, the stage's census: the hypothesis layer drops a conclusion that is no fact (`hrule.rs`, *a malformed template yields no candidate*), where a rule's firing stops on it. The row's `now` is `ein oracle`, a command's run, which answered while the row was open; fixed by T1f.5.24.3 (2026-11-10): every command that reads the program exits 1 (`ein test`: 2) with the loader's line"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.5.24 (T1f.5.24.3): the loader holds a rule's, an hrule's and an obligation's clauses, after macro expansion, to the shapes the grammar gives a written rule's: `eq` and `neq` at two values, `absent` at one premise, `not` of one pattern (or a variable, as a conclusion), `false` with nothing, no `(or …)` as a conclusion, no connective where a value goes, and a conclusion that is a form; one line per form, the expanded form's position first (`ein_ir::from_ir`'s `refuse_malformed_primitives`, Q-M1f.80, Q-M1f.81); the compiler's arity arms and the firing's whole-conclusion line are invariants since"
+date   = "2026-11-10"
+
+[case.wrong]
+run       = "oracle"
+by        = "command"
+why       = "`ein oracle` on the witness, release, at dbfd7862 (2026-11-10): exit 0; the hypothesis layer built no candidate from the conclusion `?x` and dropped it in silence, H empty, R `{∅}`; every command answered"
+answered  = true
+
+[case.right]
+refused   = true
+derived   = "`h`'s `:assert` expands to the conclusion `?x`, which the grammar refuses where a rule writes it: `h` is refused at load, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run     = "oracle"
+refused = "kb load error: {FILE}:34:15: hrule 'h': its :assert concludes ?x, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"

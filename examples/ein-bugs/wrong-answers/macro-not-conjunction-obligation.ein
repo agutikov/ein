@@ -1,0 +1,34 @@
+;;; The same `(not (and …))` in an obligation: the obligation pass matches it,
+;;; and the state owes —
+;;; M1f **W67**, register row `W67/macro-not-conjunction-obligation`,
+;;; filed by S1f.5.24 (T1f.5.24.2, 2026-11-10).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `o`'s `:match` expands to `(and (a ?x) (absent (not (and (p ?x) (q ?x)))))`,
+;;; as `macro-not-conjunction.ein`'s rule does, and `o` asserts `(open)`, so the
+;;; pass that reads what a quiescent state owes matches it.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The expansion writes a malformed `not`, so `o` is refused at load: every
+;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `dbfd7862`, release: every command answered, exit 0. The obligation pass
+;;; matched the malformed `not`, the `absent` held, and root owes (`Open`):
+;;; R is empty, every state owing.
+;;; Refused at load since S1f.5.24 (T1f.5.24.3).
+
+(relation a Thing :why "{?1} is an a")
+(relation s Thing :why "{?1} is an s")
+(relation p Thing :why "{?1} is a p")
+(relation q Thing :why "{?1} is a q")
+(is-a k Thing)
+(a k)
+(macro neg (?a) (not ?a) :why "the negation of {?a} is stored")
+(rule o ()
+  :match  (and (a ?x) (absent (neg (and (p ?x) (q ?x)))))
+  :assert (open)
+  :why "{?x} is an a, and no negation of p and q is stored of it, so the state owes")

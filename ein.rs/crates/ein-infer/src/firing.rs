@@ -228,10 +228,16 @@ fn not_a_fact(
              a variable or a fact",
             terms.sym(rel)
         ),
-        (None, None) => format!(
-            "rule '{rule}': its :assert concludes {written}, which is not a fact \
-             — a conclusion is a fact (relation argument …), or an (and …) of \
-             facts"
+        // A whole conclusion that is no fact, `?y` or a name: only a macro's
+        // body writes one (`(macro id (?x) ?x)` called as a conclusion), and
+        // until M1f S1f.5.24 this line stopped the firing that met it, so a
+        // rule only a commitment activated loaded and some commands answered,
+        // and an hrule's was dropped in silence (W69). The loader refuses it
+        // since, after expansion, with the same words (`ein_ir::from_ir`'s
+        // `refuse_malformed_primitives`), so no program reaches it.
+        (None, None) => unreachable!(
+            "rule '{rule}': its :assert concludes {written}, which is not a fact — the grammar \
+             and the loader's refuse_malformed_primitives hold a conclusion to be a form"
         ),
     })
 }

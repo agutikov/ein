@@ -369,10 +369,18 @@ different messages, and the corpus has a fixture directory for each
   and a guard on a variable no premise before it binds
   ([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
 - **What a macro's body expands to.** A `Template` takes any head at any
-  arity, so a premise that is a name, an `(absent …)` with two premises or a
-  conclusion that is a bare variable reach the loader and the compiler through
-  a macro, which refuse each (S1f.5.5's T5 kept the twelve lines a program
-  still reaches that way, `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`).
+  arity, and a call takes any premise as an argument (`Arg`'s `Connective`), so
+  a premise that is a name, `eq` or `absent` at another arity, a `not` of no
+  fact, a connective where a value goes, `false` with an argument, an `(or …)`
+  as a conclusion and a conclusion that is a bare variable reach the loader
+  through a macro, which refuses each after expansion, holding the expanded
+  rule to this grammar's shapes by position (`refuse_malformed_primitives`,
+  M1f S1f.5.24, W66 to W69; until then the compiler refused the two arities
+  where it compiled a plan and the firing the bare conclusion where it fired,
+  and the rest were matched or concluded). A macro no rule calls is not read,
+  so it loads whatever its body (the user's ruling on Q-M1f.67). S1f.5.5's T5
+  kept the lines a program still reaches that way, and S1f.5.24 added its own,
+  `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`.
 - **Where an `(or …)` sits, how many variables a clause writes, and a goal's
   relations.** `Connective` takes an `(or …)` wherever a premise goes, so an
   `(or …)` written as a premise of an `(and …)`, an `(absent …)` or a

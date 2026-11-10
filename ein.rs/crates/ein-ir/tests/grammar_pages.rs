@@ -1915,9 +1915,15 @@ fn load_error(text: &str) -> String {
 /// - **A premise that is not a form** (`Found::NotAForm`): a macro whose body
 ///   is a bare parameter puts its argument where a premise goes.
 ///
-/// The compiler's `absent` and `eq` arities and the firing's whole conclusion
-/// that is no fact are reached the same way, through a macro's body, and held
-/// in `ein-infer/tests/compile_semantics.rs`.
+/// - **A kernel primitive in another shape than the grammar gives it**
+///   (`refuse_malformed_primitives`, M1f S1f.5.24, W66 to W69): a macro's
+///   body writes `eq` or `absent` at any arity, `false` with an argument and
+///   an `(or …)` as a conclusion, and a call's argument puts a connective where
+///   `not` takes a pattern or a guard a value; a body that is a bare parameter
+///   leaves a conclusion that is no form. Until S1f.5.24 the compiler refused
+///   the two arities where it compiled the plan and the firing the bare
+///   conclusion where it fired, and the rest were matched or concluded; every
+///   shape on every command is `ein-cli/tests/macro_bodies.rs`'.
 #[test]
 fn the_lines_the_grammar_does_not_cover_are_still_reached() {
     for (text, want) in [
@@ -1969,6 +1975,42 @@ fn the_lines_the_grammar_does_not_cover_are_still_reached() {
             "(macro all (?b ?G ?B) (absent (and ?G (absent ?B))))\n(relation hit T)\n\
              (rule r () :match (all ?x foo bar) :assert (hit a))",
             "rule 'r': its :match writes foo as a premise of and, and foo is no premise",
+        ),
+        (
+            "(macro one (?a) (eq ?a))\n(relation p T) (relation hit T)\n\
+             (rule r () :match (and (p ?x) (one ?x)) :assert (hit ?x))",
+            "<loader>:1:18: rule 'r': its :match writes (eq ?x), and eq takes exactly 2 \
+             arguments, not 1",
+        ),
+        (
+            "(macro two (?a ?b) (absent ?a ?b))\n(relation p T) (relation hit T)\n\
+             (rule r () :match (and (p ?x) (two (p ?x) (hit ?x))) :assert (hit ?x))",
+            "rule 'r': its :match writes (absent (p ?x) (hit ?x)), and absent takes exactly 1 \
+             argument, not 2",
+        ),
+        (
+            "(macro neg (?a) (not ?a))\n(relation p T) (relation hit T)\n\
+             (rule r () :match (and (p ?x) (absent (neg (and (p ?x) (hit ?x))))) :assert (hit ?x))",
+            "rule 'r': its :match writes (not (and (p ?x) (hit ?x))), and not takes a pattern",
+        ),
+        (
+            "(macro diff (?a ?b) (neq ?a ?b))\n(relation p T) (relation hit T)\n\
+             (rule r () :match (and (p ?x) (diff ?x (and (p a)))) :assert (hit ?x))",
+            "rule 'r': its :match writes (neq ?x (and (p a))), and (and (p a)) is a connective \
+             where a value goes",
+        ),
+        (
+            "(macro bad (?a) (false ?a))\n(relation p T)\n(rule r () :match (p ?x) :assert (bad ?x))",
+            "rule 'r': its :assert writes (false ?x), and false takes no argument, not 1",
+        ),
+        (
+            "(macro either (?a) (or (p ?a) (hit ?a)))\n(relation p T) (relation hit T)\n\
+             (rule r () :match (p ?x) :assert (either ?x))",
+            "rule 'r': its :assert writes (or (p ?x) (hit ?x)), and an (or …) is no conclusion",
+        ),
+        (
+            "(macro id (?x) ?x)\n(relation p T)\n(rule r () :match (p ?y) :assert (id ?y))",
+            "rule 'r': its :assert concludes ?y, which is not a fact",
         ),
     ] {
         let got = load_error(text);
