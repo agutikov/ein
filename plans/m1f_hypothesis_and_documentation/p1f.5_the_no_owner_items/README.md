@@ -29,6 +29,10 @@ same day and stopped before any removal, on [Q-M1f.4](../open_questions.md#q-m1f
 and [Q-M1f.5](../open_questions.md#q-m1f5--the-alternatives-flag-moves-refuted-by-beside-an-unmoved-core).
 On a fifth, *"yes, land the :why flag early"*, S1f.5.14's flag, `--require-why`, landed the same day
 ([T1f.5.14.6](s1f.5.14_nl_required.md#t1f5146-record-2026-11-08)); the stage keeps only the flip, last.
+**Every stage done on 2026-11-10, and re-opened the same day** on the user's answers to
+[the close review](close_review.md): every default stands, accepted without review, and each of its nine findings
+with no owner became a stage, S1f.5.21 to S1f.5.28, with finding 7's prose given to S1f.5.28
+([§ The order](#the-order), item 12).
 **Was P1e2.5**, in [M1e2](../../m1e2_correctness/README.md), until 2026-11-08. No stage had run. Each kept
 its number, `S1e2.5.<n>` → `S1f.5.<n>`, and the two stages P1f.5 had follow them
 ([§ The ids](#the-ids)). The questions the review raised keep their ids, `Q-M1e2.22` to `.28`, as M1f's
@@ -302,6 +306,14 @@ S1f.5.18's, which fixed it the same day.
 | [S1f.5.18](s1f.5.18_an_activator_binds_a_nested_fact.md) | An activator's nested fact: a value parameter binds it, and a relation parameter is refused at load | 1.5 d | W33; G-14's derived activator ([Q-M1f.1](../open_questions.md#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) (b)); W58 and `FireError::UnboundVar`'s retirement (Q-M1f.37) | **done 2026-11-09**, on lane 2 in five commits ([the records](s1f.5.18_an_activator_binds_a_nested_fact.md#t1f5181-record-2026-11-09)): T1f.5.18.1, every move listed, W59 filed (`e96a8d45`); T1f.5.18.2, a nested fact binds its parameter, W33 and W58 fixed, `FireError::UnboundVar` retired, `Plan::activator_args` every argument (`2901cac1`); T1f.5.18.3, the load-time check, W59 fixed (`52d45b11`); T1f.5.18.4, the pages (`73f9a448`); T1f.5.18.5, the acceptance re-taken. [Q-M1f.41](../open_questions.md#q-m1f41--what-can-hold-a-fact-means-for-g-14s-derived-activator) to Q-M1f.44 taken by default; on the lane the register read 148 fixed, 18 open and 1 not wrong; merged into master at `a90c452b` |
 | [S1f.5.16](s1f.5.16_the_read_out_reference.md) | The read-out reference: every row and number `ein solve` prints, on one live page the printer is held to | — | was S1f.5.3; [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings), [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) and AR-M1, and [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s read-out half | **done 2026-11-09**, in five commits ([its records](s1f.5.16_the_read_out_reference.md#t1-record-2026-11-09)): T1f.5.16.1, the census, 3 221 runs, Q1 defaulted (a) ([Q-M1f.18](../open_questions.md#q-m1f18--which-object-the-word-model-names-on-the-read-out)) and findings documented, not moved ([Q-M1f.20](../open_questions.md#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another), [Q-M1f.21](../open_questions.md#q-m1f21--regionstoppedlayer-on-two-routes)), and a third at T1f.5.16.4, a sixteen-character class label glued to its value in `answer.txt` ([Q-M1f.22](../open_questions.md#q-m1f22--a-class-label-of-sixteen-characters-glues-to-its-value)); T1f.5.16.5, S1f.5.2's line-break item fixed ([Q-M1f.19](../open_questions.md#q-m1f19--a-texts-line-break-on-the-read-out)), ten read-out digests moved, no answer; T1f.5.16.2, [`docs/kernel/inference/read_out.md`](../../../docs/kernel/inference/read_out.md) and its examples page; T1f.5.16.3, `ein_render::read_out::Row` and `ein-cli/tests/read_out_reference.rs`, mutation-checked; T1f.5.16.4, the pointers. Specified 2026-11-08 on the user's instruction (*"Ok, schedule S1f.5.16 also"*). It runs after S1f.5.5's swap and its non-grammar halves, and before S1f.5.7 ([§ The order](#the-order), item 9), so that every later stage that changes the read-out writes the live page. The page is `docs/kernel/inference/read_out.md`: each row and number, what it counts (R, what lies around R, the run, or the listing), and the summary field that holds it, together with `--json-summary`'s seven answer keys. The read-out's golden page is generated beside it, and `ein-cli/tests/read_out_reference.rs` holds both to the printer. M1e2's [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) and `read_out_examples.md` stay the record, with one line each. [P1f.20](../p1f.20_docs_refactor/README.md)'s S1f.20.2 places the two pages. One question, Q-M1e.7's read-out half, has the default (a): document it |
 | [S1f.5.19](s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md) | The review bundle reads every register row, and a command's run gets a case page of its own | — | [Q-M1f.52](../open_questions.md#q-m1f52--the-nightlys-review-bundle-and-the-registers-runs-that-are-not-a-solve) (b): the nightly red at `utils/review_bundle.py` since `fc53818f` | **done 2026-11-09**, in three commits ([its records](s1f.5.19_the_review_bundle_and_runs_that_are_not_a_solve.md#t2-record-2026-11-09)), specified the same day by the coordinator, who placed Q-M1f.52 as a stage of its own and took its (b) by default on the user's instruction of that day, after S1f.5.13 and the merge (T1f.5.M), before S1f.5.14: T1f.5.19.1, the stage file (`919380c2`); T1f.5.19.2, the fix (`00c4ed34`): the index reads every answer a register block states, a command's run has a case page of its own (`utils/review/command.py`: the command, its exit, its stdout and stderr in full, against `wrong`, `now` and `right` as `wrong_answers.rs` reads them, every artefact linked and drawn), a container solve runs on the container, and the per-commit smoke reads all 175 rows with no run and builds two command cases (0.81 to 0.87 s before, 1.33 to 1.36 s after); on the way, every rule view the bundle drew, refused by Graphviz since S1e2.1.5 (654 graphs), drawn; the whole bundle 175 cases, 0 failed; T1f.5.19.3, the merged tree's first nightly, every job and step green in 81 min 54 s, and the records. Q-M1f.53 to Q-M1f.55 defaulted |
+| [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md) | A refusal the compiler makes reads the same on every command, in Ein's words | — | the close review's finding 1; F23's D-1, its `CompileError` half | **new 2026-11-10** |
+| [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md) | Unicode only inside a string literal, and the refusal says so | — | finding 2 | **new 2026-11-10**; T1 (the census) done; waits on [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode) |
+| [S1f.5.23](s1f.5.23_open_is_reserved.md) | `open` is reserved: a program writes it only as a rule's verdict | — | finding 3 | **new 2026-11-10**; T1 (the explanation) done; waits on [Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value) |
+| [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md) | A macro's body is checked where a rule's is: at load | — | finding 4 | **new 2026-11-10**; T1 (the explanation) done; waits on [Q-M1f.67](../open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) |
+| [S1f.5.25](s1f.5.25_a_closed_stdout.md) | A closed stdout: `ein … \| head` | — | finding 5 | **new 2026-11-10**; T1 (the root cause) done; waits on [Q-M1f.68](../open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout) |
+| [S1f.5.26](s1f.5.26_the_tutorial_runs.md) | The tutorial's programs run on today's engine | — | finding 6 | **new 2026-11-10** |
+| [S1f.5.27](s1f.5.27_the_nightly_reduced.md) | The nightly reduced: long-running steps to the dev host, critical ones kept in CI | — | finding 8; [Q-M1f.51](../open_questions.md#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) | **new 2026-11-10** |
+| [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) | The findings taken from the stage records: confirmed, triaged, fixed | — | finding 9, and finding 7's prose | **new 2026-11-10** |
 
 ### The order
 
@@ -490,6 +502,22 @@ The order, as those rulings leave it:
     load carrying its `:why`s, and the phase's acceptance re-taken item by item below; the close is the coordinator's,
     with the user. Until these rulings this item read
     *S1f.5.14 and S1f.5.15 last, as the user placed them*; S1f.5.15 is item 3 since.
+12. **The close review's findings, re-opening the phase** (the user's rulings of 2026-11-10 in
+    [close_review.md](close_review.md#findings-with-no-owner)). Each runs alone on the main tree, in this order.
+    A stage that waits on a question runs once the question is ruled, and a later stage that does not wait goes
+    ahead of it:
+    [S1f.5.26](s1f.5.26_the_tutorial_runs.md), the tutorial (pages and a test, first);
+    [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md), the compiler's refusals in Ein's words and at load;
+    [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md), the macro body (after S1f.5.21, whose line it
+    uses; Q-M1f.67);
+    [S1f.5.23](s1f.5.23_open_is_reserved.md), `open` (Q-M1f.66);
+    [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md), Unicode (Q-M1f.65; after S1f.5.23, since both may edit the
+    grammar);
+    [S1f.5.25](s1f.5.25_a_closed_stdout.md), the closed stdout (Q-M1f.68);
+    [S1f.5.27](s1f.5.27_the_nightly_reduced.md), the nightly;
+    [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md), the unchecked findings, last, on the tree the others leave.
+    The T1 of S1f.5.22, .23, .24 and .25 was taken by the coordinator on 2026-11-10, when the stages were written,
+    and the four questions were put to the user together.
 
 It costs about what the old order did, a quarter of a day more on paper (the estimate above): the four hand-written
 lexer edits and the loader lines S1f.5.11 would have added for T5 to delete are not written, and the attribution
@@ -552,8 +580,9 @@ user, and writes no `docs/history/` record here.
 
 [close_review.md](close_review.md) is written for the user's review. It has every stage's status, commits and
 register rows; the user's rulings and the 55 decisions taken by default, each linked to its row; the findings with
-no owner, re-checked on 2026-11-10; and the `build/` cleanup the user approved that day, which is done. The close
-record waits for the user's answers on overrides and on the findings.
+no owner, re-checked on 2026-11-10; and the `build/` cleanup the user approved that day, which is done. **The user
+answered the same day**: no override, every default accepted without review, and every finding a stage, S1f.5.21
+to S1f.5.28 ([§ The order](#the-order), item 12). The close record waits for those stages.
 
 ## The ids
 
@@ -565,6 +594,7 @@ record waits for the user's answers on overrides and on the findings.
 | `S1f.5.5` | **`S1f.5.14`** | Every statement convertible to NL |
 | `S1f.5.6` | **`S1f.5.15`** | Remove `:priority`; derive the order from the rules |
 | `S1f.5.3`, proposed | `S1f.5.16`, specified 2026-11-08 | The read-out reference |
+| — | `S1f.5.21` … `S1f.5.28` | the close review's findings, new on 2026-11-10. `S1f.5.20` is not reused: it was the docs refactor's id until that became [P1f.20](../p1f.20_docs_refactor/README.md) |
 
 **`S1f.5.5` and `S1f.5.6` now name other stages.** A citation written before 2026-11-08 means the old
 ones. M1e's record cites `S1f.5.6` twice as the `:priority` stage

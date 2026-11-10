@@ -7,6 +7,12 @@ M1f was created on 2026-08-29 by moving two phases out of
 [M1e](../../docs/history/m1e_review_processing/README.md). The first questions it raised came from
 [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s paper grammar on 2026-11-08.
 
+**Every row marked *defaulted* was accepted by the user on 2026-11-10, without review**, at P1f.5's close
+([close_review.md](p1f.5_the_no_owner_items/close_review.md#decided-by-default)): *"I accept all decisions as is
+without review. Please remember that any decision may be changed later due to new findings, new research results,
+new requirements etc."* So a defaulted row stands as taken and is not a ruling. Any one may be reopened, naming
+what bears on it.
+
 | id | question | state |
 |---|---|---|
 | [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and [S1f.5.18](p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md); **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41) |
@@ -72,6 +78,10 @@ M1f was created on 2026-08-29 by moving two phases out of
 | [Q-M1f.62](#q-m1f62--the-option-that-loads-a-program-without-a-why-once-the-default-is-true) | the option that loads a program without a `:why`, once the default is true | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), `--no-require-why` replaces `--require-why`, and `LoadOptions::default()` requires**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.63](#q-m1f63--what-each-program-generator-does-about-why) | what each program generator does about `:why` | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), the engine fuzzers and synthesisers write an honest mechanical `:why` on every form, keeping their random draws; `fuzz_properties` keeps its draws**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
 | [Q-M1f.64](#q-m1f64--existing-whys-that-are-placeholders-or-name-nothing) | existing `:why`s that are placeholders or name nothing | **defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a), each fixed, the references by the check's commit and the placeholders by the migration; none is a register row**; [S1f.5.14](p1f.5_the_no_owner_items/s1f.5.14_nl_required.md) |
+| [Q-M1f.65](#q-m1f65--may-a-comment-hold-unicode) | may a comment hold Unicode? | **put to the user 2026-11-10**; [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md) |
+| [Q-M1f.66](#q-m1f66--may-open-be-written-as-a-value) | may `open` be written as a value? | **put to the user 2026-11-10**; [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md) |
+| [Q-M1f.67](#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused) | where is a macro body that no rule could use refused? | **put to the user 2026-11-10**; [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md) |
+| [Q-M1f.68](#q-m1f68--what-ein-does-when-its-reader-closes-stdout) | what Ein does when its reader closes stdout | **put to the user 2026-11-10**; [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -1487,3 +1497,49 @@ twin), each printing as written; and the migration's helpers found `:why`s that 
 **Defaulted 2026-11-10 (the user's instruction of 2026-11-09): (a).** The user overrode the refusal of rung (d) on the
 understanding that each `:why` is honest. None is a wrong answer: a `:why` moves no R, N, H, claim or exit code, so
 none is a register row. Terse but true ones (`"{?rel} sym"`) are left.
+
+### Q-M1f.65 — May a comment hold Unicode?
+
+**Raised** 2026-11-10 by [S1f.5.22](p1f.5_the_no_owner_items/s1f.5.22_unicode_only_in_a_string.md)'s census, on the
+user's ruling of that day: *"Unicode is not allowed anywhere else than inside string literals, and the error must
+say it explicitely"*. No corpus program writes a character that is not ASCII outside a string or a comment. 429 of
+the 454 `.ein` files write 35 590 of them in comments, 88 % the box-drawing `─`, and the doc pages' Ein blocks carry
+more.
+
+- **(a) Refuse it in a comment too**, the ruling read literally. Every comment is rewritten in ASCII first by a
+  mapping written before the edit (`─` → `-`, `→` → `->`, `⟹` → `=>`, …), mechanically, moving no answer and no
+  position a refusal prints.
+- **(b) A comment may hold Unicode.** A comment is free text, as a string is, and the refusal says *inside a
+  string literal or a comment*.
+
+### Q-M1f.66 — May `open` be written as a value?
+
+**Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T1, on the user's ruling
+of that day: *"`open` is reserved word, here it appers as what? as relation name? - then it is an error, if not -
+then explain"*. As a relation name (a fact's head, a nested fact's head, a pattern's head, a relation parameter's
+binding) it is refused by the ruling. As a value, `(p open)`, it is a name `p` holds, which loads today, as the
+other position words do. No corpus program writes it there.
+
+- **(a) Refuse it**: `open` is written only as a rule's `(open)` or `(open ?R)` conclusion.
+- **(b) Keep it as a value**, a position word like `model`; refused only as a relation name.
+
+### Q-M1f.67 — Where is a macro body that no rule could use refused?
+
+**Raised** 2026-11-10 by [S1f.5.24](p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s T1.
+`(macro one (?a) (eq ?a))` parses and loads, and is refused only when a rule using it is compiled. `kb save`,
+`render program` and `render rules` accept it.
+
+- **(a) At its definition where its literal head decides, and at each use after expansion otherwise.**
+- **(b) At each use, after expansion**; a macro no rule uses loads whatever its body.
+- **(c) At compile, as today**, in S1f.5.21's words.
+
+### Q-M1f.68 — What Ein does when its reader closes stdout
+
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T1. Rust ignores
+`SIGPIPE`, `print!` panics on the failed write, and the run exits 101. That happens on every command that writes
+more than once after its reader has gone.
+
+- **(a) Stop quietly and exit 0**, a `BrokenPipe` on stdout ending the command; any other write error is exit 1
+  with one line.
+- **(b) Die by `SIGPIPE`**, as `cat` does: the shell sees 141; needs `unsafe` or a dependency in `ein-cli`.
+- **(c) Exit 1 with one line** saying stdout was closed.

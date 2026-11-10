@@ -767,6 +767,14 @@ constrained-reasoning research.
   one by default, `--no-require-why` loading a program without; the register
   unmoved, 161 fixed, 13 open and 1 not wrong (`grep '^status'
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-10).
+  **P1f.5 was re-opened the same day** on the user's answers to
+  [its close review](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/close_review.md):
+  every decision taken by default stands, *accepted without review* and open to
+  revision on a new finding, and each of the review's nine findings with no
+  owner became a stage, S1f.5.21 to S1f.5.28 (a compile error in Ein's words,
+  Unicode only in a string, `open` reserved, a macro's body checked at load, a
+  closed stdout, the tutorial, the nightly reduced, the unchecked findings),
+  four of them waiting on Q-M1f.65 to .68.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

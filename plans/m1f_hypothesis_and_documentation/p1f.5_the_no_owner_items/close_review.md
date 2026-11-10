@@ -3,8 +3,11 @@
 **Phase:** [P1f.5](README.md)
 **Status:** written 2026-11-10 for the user's review, at `f454de3b`. Every stage is done, and the phase's
 acceptance has been re-checked point by point and is met ([README § Acceptance re-taken](README.md#acceptance-re-taken-2026-11-10)).
-The close waits on the user's two answers in [§ What the close needs](#what-the-close-needs). The `build/` cleanup,
-the third question, was approved on 2026-11-10 and is done ([§ `build/`](#build)).
+**The user answered both questions the same day**, in this file, and each answer is recorded where it was given:
+every default stands, accepted without review ([§ Decided by default](#decided-by-default)), and every finding
+became a stage, eight of them, S1f.5.21 to S1f.5.28, so **the phase is re-opened** and closes when they are done
+([§ What the close needs](#what-the-close-needs)). The `build/` cleanup, the third question, was approved on
+2026-11-10 and is done ([§ `build/`](#build)).
 
 ## Where the phase stands
 
@@ -158,6 +161,10 @@ worth a look.
   `"p holds of {?1}"` kind, on toy relations. They are true but say little. The 66 broken template references the
   new check found were all fixed; none was a register row.
 
+
+**Ruled 2026-11-10, the overrides.** The user: *"I accept all decisions as is without review. Please remember that any decision may be changed later due to new findings, new research results, new requirements etc."* Every decision taken by default (Q-M1f.8, .10 to .48, .50 to .64) stands as taken, **accepted without review**, and none is a ruling: each may be reopened when a finding, a research result or a requirement bears on it ([open_questions.md](../open_questions.md), its header).
+
+
 ## Findings with no owner
 
 Re-checked on 2026-11-10 with the release binary at `f454de3b`, unless marked otherwise. None is yet a register
@@ -172,27 +179,68 @@ row. The register rule applies: a finding that turns out to be a wrong answer is
 
    Every one prints `SForm(head=Atom(name='or'), …)` and cites "S1.8.A13" and "the M1 compiler", and the
    fixture's `nested_or.expected` pins that text. This breaks the one-tool rule.
+
+**Ruled 2026-11-10.** The user: *"new stage in p1f.5"* → [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md).
+
 2. **A non-UTF-8 imported module is reported as missing.** With `(import badmod :symbols (q))` and a
    `badmod.ein` holding a `0xff` byte, `ein solve` prints
    `kb load error: (import badmod) — module not found at …/badmod.ein (None)`, so a Rust `None` leaks into the
    message. `ein solve badmod.ein` on the same file prints the right line, `badmod.ein:3:4: byte 0xff is not UTF-8:
    …`. The cause is `imports.rs`'s `read_to_string(…).ok()`.
+
+**Ruled 2026-11-10.** The user: *"new stage - Unicode is not allowed anywhere else than inside string literals, and the error must say it explicitely"* → [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md). Its census: no corpus program writes a character that is not ASCII outside a string or a comment, and 429 of 454 write one in a comment, which is [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode).
+
 3. **`(p (open x))` loads and answers**: R has 2 states. Yet no rule may match `(open …)`, the verdict atom. It is
    open whether such a fact should be refused at load.
+
+**Ruled 2026-11-10.** The user: *"new stage, Explain in more details, with program example, `open` is reserved word, here it appers as what? as relation name? - then it is an error, if not - then explain"* → [S1f.5.23](s1f.5.23_open_is_reserved.md), whose T1 record explains each place `open` can be written, with a program and today's answer for each. In `(p (open x))` it is a relation name, the head of a nested fact, so it is refused. As a plain value, `(p open)`, it is [Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value).
+
 4. **A macro template `(eq ?a)` loads, then every command refuses it at compile, all in the same way** (S1f.5.9's
    record; not re-checked).
+
+**Ruled 2026-11-10.** The user: *"new stage, explain"* → [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md), whose T1 record explains it. A macro's body is a `Template`, which takes any head at any arity because its variables stand for whole premises, so the grammar never reads the expanded rule and the compiler is the first to see `(eq ?x)`. `kb save` and the two views accept the program. Where it should be refused is [Q-M1f.67](../open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused).
+
 5. **New today: `ein saturate … | head` panics.** It prints `failed printing to stdout: Broken pipe (os error 32)`
    and exits 101. `ein solve … | head` exits 0.
+
+**Ruled 2026-11-10.** The user: *"new stage, investigate and exaplain the root cause, propose fix, then I will decide"* → [S1f.5.25](s1f.5.25_a_closed_stdout.md), whose T1 record has the root cause. Rust ignores `SIGPIPE`, so a write to a closed pipe fails, and `print!` panics on any write error, which exits 101. `ein solve` exits 0 only because its read-out is one write that fits the pipe's buffer, and `ein solve --dump-config | head -1` exits 101. The fix is [Q-M1f.68](../open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout).
+
 6. **The tutorial is broken.**
    [`docs/guide/04_solving_the_whole_puzzle.md`](../../../docs/guide/04_solving_the_whole_puzzle.md) line 13 writes
    the retired `(config :enable-pre-branch-lookahead true)`, so a reader who copies it gets a refusal.
+
+**Ruled 2026-11-10.** The user: *"fix the tutorial, new stage"* → [S1f.5.26](s1f.5.26_the_tutorial_runs.md).
+
 7. **Stale slow counts.** There are 14 slow entries (`grep -c '^slow *= *true' corpus/corpus.toml`, 2026-11-10),
    pinned by `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen`. But:
    - the `corpus/corpus.toml` header says *"Two entries are"* slow;
    - [`corpus/README.md`](../../../corpus/README.md) line 228 says *"Three"*;
    - that README and `ein-cli/tests/corpus_cli.rs` line 112 cite the test as `…_these_three`.
+
+**Asked 2026-11-10.** The user: *"so what? what does mean slow here? slow for what? compared to what?"*
+
+**The answer.** `slow = true` is a flag on a corpus entry in `corpus/corpus.toml`. It means *the entry's declared
+runs cost 1 s or more of release wall time, together* ([`corpus/README.md` § `slow`](../../../corpus/README.md)).
+The sum is measured by `utils/corpus_cost.py` and recorded in the entry's `cost_ms`.
+- **Slow for what:** the per-commit gate. `cargo test`'s corpus sweep (`corpus_cli`) skips a slow entry unless
+  `EIN_CORPUS_SLOW=1`, so the gate stays short. The nightly's `deep-corpus` job sets it and runs them.
+- **Compared to what:** the fixed 1 s threshold, not other entries. Two tests hold the flag to it both ways:
+  `slow_matches_the_recorded_cost`, exact against `cost_ms`, and `the_slow_flag_still_describes_the_sweep`, against
+  the sweep's own wall clock at a 4× tolerance.
+
+**So what:** no behaviour is wrong. 14 entries are flagged, the test pins the set, and CI runs them nightly.
+What is wrong is prose. Two places state a count that drifted (*two*, *three*), and one of them names
+`features/04_open`, which has not been slow since M1e2 S1e2.1a.5. Two cite a test by a name it no longer has
+(`…_these_three`), so a reader who greps for it finds nothing. That is Q-M1e.4's rule broken: a count in prose
+with no test or command behind it. The fix is to cite the test and drop the number, placed by default in
+[S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) as its item 11.
+
+
 8. **[`run_tests.sh`](../../../run_tests.sh) line 81 says the fuzz and bench jobs are in the nightly "because they
    are cheap"**, but the fuzz job takes about 25 min per seed since the parser swap.
+
+**Ruled 2026-11-10.** The user: *"reduce nightly job, remove long running tests, we will eventually run them on dev host, retain critical tests in CI"* → [S1f.5.27](s1f.5.27_the_nightly_reduced.md).
+
 9. **Taken from the stage records and not re-checked today:**
    - [`region_dump.md`](../../../docs/kernel/inference/region_dump.md) never names seven fields: `reads.dynamic_*`,
      `absent_reads.dynamic_*`, `cycles[].negative`, `paths.dead_parents`, `paths.saturations`,
@@ -211,6 +259,9 @@ row. The register rule applies: a finding that turns out to be a wrong answer is
    - `ein kb save` of a container writes 1 288 B, where the `.ein` gives 1 248 B for the same KB (S1f.5.19).
    - The fuzz property costs about 27 s per 20 000 inputs (S1f.5.10).
 
+**Ruled 2026-11-10.** The user: *"new stage for investigation, confirmation, triage and fixes"* → [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md), which also takes finding 7's prose.
+
+
 ## `build/`
 
 Approved by the user on 2026-11-10 (*"Yes, build cleanup OK"*), and done the same day.
@@ -224,11 +275,27 @@ Approved by the user on 2026-11-10 (*"Yes, build cleanup OK"*), and done the sam
 - **Size:** `build/` is 62 GB, where it was 206 GB (`du -sh build`, 2026-11-10).
 - **Left as is:** `ci-container` (38 GB, the image `utils/ci_container.sh` uses), `inventory-2026-11-06` (16 GB,
   the evidence the phase README cites) and `review` (3.1 GB, rebuilt by every nightly).
+- **Since then:** when the coordinator came back to the tree later on 2026-11-10, `build/` and `ein.rs/target/`
+  were both gone (`ls build`), so every `build/…` path a record cites, logs included, no longer resolves here. The
+  stages S1f.5.21 to S1f.5.28 write their evidence under a new `build/`.
 
 ## What the close needs
 
-1. **Overrides.** Does the user override any of the defaulted decisions above? Each override becomes a small stage.
-2. **The findings.** Do the findings become one cleanup stage in P1f.5, or are they only listed in the close record?
+1. **Overrides: none.** The user, 2026-11-10: every decision taken by default stands, accepted without review and
+   revisable on a new finding.
+2. **The findings: eight new stages in P1f.5**, the user's rulings of 2026-11-10 under each finding above:
 
-Then the close record goes into the phase README. P1f.6, the calculator, is next, and its S1f.6.1 stops for the
-user.
+   | finding | stage | stops for the user |
+   |---|---|---|
+   | 1, a compile error's first line | [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md) | no |
+   | 2, Unicode, and a non-UTF-8 import | [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md) | [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode), comments |
+   | 3, `open` | [S1f.5.23](s1f.5.23_open_is_reserved.md) | [Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value), `open` as a value |
+   | 4, `(eq ?a)` in a macro | [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md) | [Q-M1f.67](../open_questions.md#q-m1f67--where-is-a-macro-body-that-no-rule-could-use-refused), where |
+   | 5, `\| head` | [S1f.5.25](s1f.5.25_a_closed_stdout.md) | [Q-M1f.68](../open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout), the fix |
+   | 6, the tutorial | [S1f.5.26](s1f.5.26_the_tutorial_runs.md) | no |
+   | 7, the slow counts | answered above; the prose fix in S1f.5.28, by default | no |
+   | 8, the nightly | [S1f.5.27](s1f.5.27_the_nightly_reduced.md) | no |
+   | 9, the unchecked findings | [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) | only for what no criterion settles |
+
+When they are done, the close record goes into the phase README. P1f.6, the calculator, is next, and its S1f.6.1
+stops for the user.
