@@ -73,7 +73,8 @@ and P1f.20's rule is *fix first, then move*. P1f.6 writes its theory in the lang
 stage runs once S1f.5.5's swap has made digits names, and its theory stages after P1f.5 closes. P1f.7, added on
 2026-11-10, takes the wrong answers P1f.5's re-opened stages find outside their scope, so that P1f.5 can close; it
 runs after that close, and the coordinator stops there (the user: *"stop in the end of the phase"*), so where P1f.7
-falls against P1f.6 is the user's call then. It shares no
+falls against P1f.6 is the user's call then. **P1f.5 closed on 2026-11-11**
+([its close](p1f.5_the_no_owner_items/README.md#the-close-2026-11-11)), with P1f.7 at nine stages, none started. It shares no
 file with P1f.10 or P1f.20, except the kernel pages P1f.20 moves, which it does not edit.
 
 They also meet in one place, and it is worth naming because it is the only

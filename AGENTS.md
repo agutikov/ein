@@ -779,6 +779,15 @@ constrained-reasoning research.
   [P1f.7](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md),
   a stage each, so that P1f.5 can close (the user, 2026-11-10), and the
   coordinator stops at P1f.5's close (*"stop in the end of the phase"*).
+  **P1f.5 closed on 2026-11-11**
+  ([its close](plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/README.md#the-close-2026-11-11)):
+  the nine re-opened stages done, S1f.5.21 to S1f.5.29, W62 to W75 filed and
+  fixed, 249 fixed, 13 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11); the nine wrong
+  answers they found outside their scope are P1f.7's S1f.7.1 to S1f.7.9, none
+  started; and the defaults Q-M1f.69 to .111 stand, the ones that touch a
+  ruling listed there for the user. What runs next, P1f.7 or P1f.6, is the
+  user's call.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -4,7 +4,9 @@
 **Status:** planned 2026-11-10, on the user's instruction of that day ([§ The instruction](#the-instruction)). No
 stage has started. It runs after [P1f.5](../p1f.5_the_no_owner_items/README.md) closes. The coordinator stops at
 that close (the user, 2026-11-10: *"stop in the end of the phase"*), so the user decides then when this phase
-starts, and whether its questions stop the stage or take a default.
+starts, and whether its questions stop the stage or take a default. **P1f.5 closed on 2026-11-11**
+([its close](../p1f.5_the_no_owner_items/README.md#the-close-2026-11-11)): S1f.5.22, S1f.5.25, S1f.5.27 and S1f.5.28
+found no wrong answer outside their scope, so this phase has the nine stages below, and it waits for the user.
 **Depends on:** P1f.5. Its stages use [S1f.5.21](../p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s
 refusal line and [S1f.5.24](../p1f.5_the_no_owner_items/s1f.5.24_a_macro_body_checked_where_a_rule_is.md)'s walk of
 a rule's clauses after macro expansion (`ein_ir::from_ir::refuse_malformed_primitives`).

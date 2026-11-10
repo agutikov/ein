@@ -36,7 +36,9 @@ with no owner became a stage, S1f.5.21 to S1f.5.28, with finding 7's prose given
 own since the same day, [P1f.7](../p1f.7_findings_outside_scope/README.md)**, a stage each, so this phase can close
 (the user: *"new batch of findings … creates new phase p1f.7 with stage per finding to allow to close current
 phase"*). The first five, S1f.5.28's items 12 to 16, are S1f.7.1 to S1f.7.5. **The coordinator stops at this
-phase's close** (the user, 2026-11-10: *"stop in the end of the phase"*).
+phase's close** (the user, 2026-11-10: *"stop in the end of the phase"*). **Closed on 2026-11-11**, when S1f.5.28 was committed
+(`34c2b672`), every re-opened stage done ([§ The close](#the-close-2026-11-11)); the coordinator stopped there for the
+user.
 **Was P1e2.5**, in [M1e2](../../m1e2_correctness/README.md), until 2026-11-08. No stage had run. Each kept
 its number, `S1e2.5.<n>` → `S1f.5.<n>`, and the two stages P1f.5 had follow them
 ([§ The ids](#the-ids)). The questions the review raised keep their ids, `Q-M1e2.22` to `.28`, as M1f's
@@ -595,6 +597,100 @@ answered the same day**: no override, every default accepted without review, and
 to S1f.5.28 ([§ The order](#the-order), item 12). The close record waits for those stages. It names the wrong
 answers they found outside their scope as [P1f.7](../p1f.7_findings_outside_scope/README.md)'s, and then the
 coordinator stops for the user.
+
+### The close, 2026-11-11
+
+**P1f.5 closed on 2026-11-11**, when its last re-opened stage, S1f.5.28, was committed (`34c2b672`). Like M1e2's
+close, it writes no `docs/history/` record, and this directory stays where it is. The coordinator stops here for the
+user (*"stop in the end of the phase"*). [P1f.7](../p1f.7_findings_outside_scope/README.md) has not started. When it
+starts, where it falls against [P1f.6](../p1f.6_calculator/README.md), and whether its questions stop a stage or take a
+default are the user's to decide.
+
+**The re-opened stages.** Each of the close review's nine findings with no owner became a stage, and the per-commit
+CI's red smoke became one more. All nine are done, each with its records and its acceptance re-taken in its file:
+
+| stage | what it did | commits | register rows |
+|---|---|---|---|
+| [S1f.5.21](s1f.5.21_a_compile_error_in_eins_words.md) | a refusal the compiler made is made at load, the same on every command, in Ein's words | `4e3c0c9d`, `28da7eb5` | W62–W65, 16 |
+| [S1f.5.22](s1f.5.22_unicode_only_in_a_string.md) | a character that is not ASCII is written only in a string literal or a comment; an imported module is read as the main file is | `c8579504`, `0d0e529e` | W73–W74, 14 |
+| [S1f.5.23](s1f.5.23_open_is_reserved.md) | `open` is never a name, written only as a rule's or an hrule's whole `:assert` | `0caf9dd2`, `724c11e8` | W70–W72, 24 |
+| [S1f.5.24](s1f.5.24_a_macro_body_checked_where_a_rule_is.md) | a rule's clauses are held to the grammar's shapes after macro expansion, at load | `ddc5c28a`, `f62e34e1` | W66–W69, 16 |
+| [S1f.5.25](s1f.5.25_a_closed_stdout.md) | a closed stdout ends `ein` by `SIGPIPE`, as it ends `cat`, where every command panicked | `b95d6a4c`, `566c9e3d`, `f2c6391b` | W75, 18 |
+| [S1f.5.26](s1f.5.26_the_tutorial_runs.md) | the tutorial's programs run on today's engine, and a test reads every block | `864b16ed` | — |
+| [S1f.5.27](s1f.5.27_the_nightly_reduced.md) | the CI nightly keeps what guards an answer within 5 min on the runner; `./run_tests.sh --dev-host` runs the rest | `089511fe`, `8bab6123` | — |
+| [S1f.5.28](s1f.5.28_the_unchecked_findings_triaged.md) | the eleven unchecked findings confirmed, none a wrong answer, each fixed: pages with their pins, digit groups, the trace's line breaks, a container saved again byte for byte, `guard_split.py`, the fuzz stream parsed once, the slow counts cited | `34c2b672` | — |
+| [S1f.5.29](s1f.5.29_the_review_bundle_smoke_on_the_runner.md) | the runner's Graphviz gets a layout for `fdp`, and a refused DOT fails any bundle | `15c7f45b`, `dbfd7862`, `2d525e3e` | — |
+
+**The phase's acceptance, re-taken for these stages**, item by item:
+
+- **Every item is fixed with the test that holds it, has an owner the user accepted, or is ruled to stay: met.** Each of
+  the nine stages is done, and each fix has a pin named in its stage file. What the phase leaves open has an owner. The
+  register's 13 `open` rows are the ones the close review listed, each owned by F21, F22 or M1f's S1f.10.6. The nine
+  wrong answers found outside the stages' scope are P1f.7's (below). The defaults are Q-M1f rows, each marked
+  *defaulted*.
+- **A wrong answer is a register row before it is fixed: met.** W62 to W75, 88 rows, were each filed `open` and held to
+  the unchanged engine before their fix. The register reads 249 fixed, 13 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11), where the close review read 161, 13 and 1.
+- **Every golden a stage moves is named in its file before it moves: met**, in each stage's T-records and commit body.
+- **The grammar changes once, at S1f.5.5's swap: met, with three later edits on record.** Since the earlier re-take,
+  `ein.l` and `ein.y` changed twice more (`git log -- ein.rs/crates/ein-ir/src/ein.l ein.rs/crates/ein-ir/src/ein.y`).
+  `c8579504` (S1f.5.22) makes the lexer ASCII outside a string and a comment, on the user's ruling on
+  [Q-M1f.65](../open_questions.md#q-m1f65--may-a-comment-hold-unicode). `0caf9dd2` (S1f.5.23) takes `open` out of the
+  name positions, on the ruling on [Q-M1f.66](../open_questions.md#q-m1f66--may-open-be-written-as-a-value). Each was
+  filed as register rows first, and `00_ebnf.md`'s generated blocks follow both (`ein-ir/tests/grammar_pages.rs`).
+- **`./run_tests.sh` is green at every stage boundary: met.** Each stage's commit was gated (`build/gate-s1f.5.2*.log`),
+  and each stage that changed a DOT writer, the review bundle or CI's installs was also green in the runner's image
+  (`utils/ci_container.sh` on `dbfd7862`, `566c9e3d` and, `--nightly`, on `089511fe`; Q-M1f.77).
+- **Every page these stages added is pinned by something that runs: met.** S1f.5.26 by `ein-cli/tests/guide_programs.rs`;
+  S1f.5.28's page fixes by `region_dump.rs`, `config_reference.rs` and `read_out_reference.rs`; S1f.5.27's tiers by
+  `nightly_steps.rs`.
+- **`RUSTDOCFLAGS="-D warnings" cargo doc` is green: met**, a step of every gate above.
+
+**The wrong answers found outside the stages' scope are [P1f.7](../p1f.7_findings_outside_scope/README.md)'s**, a
+stage each. None has a register row yet; each stage files its own before its fix. S1f.5.22, S1f.5.25, S1f.5.27 and
+S1f.5.28 found none:
+
+| P1f.7 stage | finding | found by |
+|---|---|---|
+| [S1f.7.1](../p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md) | a goal's nested pattern whose relation is a variable loads and matches nothing | S1f.5.21 |
+| [S1f.7.2](../p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md) | an hrule that reads `not` stops a debug build, exit 101, where release answers; `corpus/fuzz_findings/hrule-reads-not.md` has recorded it since 2026-08-21 | S1f.5.24 |
+| [S1f.7.3](../p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md) | a connective written as a premise pattern's argument reads nothing | S1f.5.24 |
+| [S1f.7.4](../p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md) | a conclusion `(not ?x)` whose variable binds a name stores `(not k)` | S1f.5.24 |
+| [S1f.7.5](../p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md) | a macro called in a query's `:goal` is not expanded | S1f.5.24 |
+| [S1f.7.6](../p1f.7_findings_outside_scope/s1f.7.6_a_false_fact_with_an_argument.md) | a written `(false k)` kills root, the argument dropped | S1f.5.23 |
+| [S1f.7.7](../p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md) | a written or concluded `(absent k)` is a fact no premise can read | S1f.5.23 |
+| [S1f.7.8](../p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md) | a `(solve …)` list naming nothing the program declares loads in silence | S1f.5.23 |
+| [S1f.7.9](../p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md) | a fact's `:rule` that names no rule is stored as derived by it | S1f.5.23 |
+
+**The defaults taken since the close review** are Q-M1f.69 to Q-M1f.111, each recorded in
+[M1f's open questions](../open_questions.md). Q-M1f.85 and Q-M1f.107 are the coordinator's; every other row is its
+stage's. They stand as the user ruled the earlier ones: *accepted without review*, and open to revision on a new
+finding. The rows below reverse, narrow or touch a ruling or a stated rule, or are the coordinator's placement, so
+they are shown here:
+
+| row | default | why it is shown |
+|---|---|---|
+| [Q-M1f.80](../open_questions.md#q-m1f80--where-a-malformed-primitive-a-macros-expansion-writes-is-refused) | a malformed primitive that a macro's expansion writes is refused at load, on every command, the views and `kb save` included | Q-M1f.67's ruling allowed the refusal at compilation or later; this is the earliest place, and the one that reaches every path |
+| [Q-M1f.86](../open_questions.md#q-m1f86--may-a-macros-body-write-open) | a macro's body may not write `open`; it is refused at the parse whether or not a rule calls the macro | it touches Q-M1f.67's ruling, under which an unused malformed macro loads |
+| [Q-M1f.90](../open_questions.md#q-m1f90--which-of-the-import-reads-moves-are-register-rows-and-where-their-witnesses-live) | a module that is not UTF-8, the close review's finding 2's own case, is held by the pin only, with no register row | the finding's own shape has no row: a non-UTF-8 file under a corpus root breaks the suites that read every corpus file as text |
+| [Q-M1f.94](../open_questions.md#q-m1f94--a-directorys-and-an-unreadable-modules-line-and-a-missing-ones-none) | a directory's and an unreadable module's line keep the main file's Python spelling, `IsADirectoryError: [Errno 21] …` | the stage file asked for the OS's reason in Ein's words; that spelling is F23's D-1 |
+| [Q-M1f.100](../open_questions.md#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone) | an artefact flag writing to a pipe whose reader has gone ends `ein` by `SIGPIPE` too | it narrows [`defined_behaviour.md` § 4.4](../../../docs/kernel/defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35), under which an artefact's failed write leaves the exit code unchanged |
+| [Q-M1f.101](../open_questions.md#q-m1f101--a-closed-stdout-on-windows) | Windows is left as it is: a closed stdout there still panics, exit 101 | no host here runs Windows, so no probe shows it |
+| [Q-M1f.107](../open_questions.md#q-m1f107--where-the-close-reviews-finding-7-is-fixed) | the close review's finding 7, the stale slow counts, is fixed in S1f.5.28 | the coordinator placed it there, after the user asked what *slow* means |
+| [Q-M1f.109](../open_questions.md#q-m1f109--a-texts-line-break-in-the-traces-markdown) | `--trace` writes each line break in a `:why` or `:source` as a markdown hard break | it moves the bytes Q-M1f.12 holds the trace to, and two `corpus_shapes` digests |
+| [Q-M1f.110](../open_questions.md#q-m1f110--a-container-saved-again) | `ein kb save` writes the provenance arena only up to its last referenced record, so a container saved again is byte-identical | S1f.5.19 recorded the growth and left it |
+
+**What the close leaves for the user**:
+
+- When P1f.7 starts, its order against P1f.6, and whether its questions stop a stage or take a default
+  ([P1f.7 § Status](../p1f.7_findings_outside_scope/README.md)).
+- The runner's first runs after the push. S1f.5.27's nightly at twelve steps has no runner time yet. S1f.5.29's
+  per-commit fix was green in the runner-like container (`build/ci-container-dbfd7862.log`, 2026-11-10).
+- Six local Docker images that `utils/ci_container.sh` no longer builds. Since S1f.5.29 it builds tags ending in the
+  Dockerfile's hash (`-eca9ef96`, `docker images`, 2026-11-11). The six are `ein-ci-probe:v3-neato`, from probing
+  S1f.5.29's cause, and five older tags: `ein-ci:ubuntu-26.04-amd64v3-rust1.97.1`, which has no `fdp` plugin,
+  `ein-ci:ubuntu-24.04-rust1.97.1`, `ein-ci:26.04`, `ein-ci:24.04` and `ein-ci:26.04-amd64`. Nothing reads them, and
+  removing them is the user's call.
 
 ## The ids
 
