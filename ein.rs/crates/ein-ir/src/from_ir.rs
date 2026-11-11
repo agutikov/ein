@@ -251,7 +251,7 @@ pub fn load_query_with(
         }
     }
     // Pass 1 — relations, with their auto-stored declaration facts.
-    for form in relations {
+    for &form in &relations {
         ingest_relation(ast, terms, &mut kb, form, opts, &mut errors)?;
     }
     // Pass 2 — rules. After this, rule-name resolution is possible.
@@ -270,6 +270,17 @@ pub fn load_query_with(
     }
     // A written fact of `eq` at another arity (M1f S1f.5.9, W61).
     refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
+    // A macro's call written as a fact, which nothing expands, and a relation
+    // declared under a macro's name (M1f S1f.7.12, W86).
+    let stdlib_macros = Resolver::new().stdlib_macro_names();
+    refuse_macro_facts(
+        ast,
+        &relations,
+        &facts,
+        &declared_macros,
+        &stdlib_macros,
+        &mut errors,
+    );
     // A rule parameter that names a relation, bound to a nested fact by an
     // activator the program writes down (M1e2 S1e2.2.4, S1e2.2.24).
     validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
@@ -326,13 +337,18 @@ pub fn load_query_with(
     if let Some(known) = relations_of.as_ref() {
         refuse_solve_names(ast, terms, &kb, known, &relation_places, &mut errors);
     }
-    let stdlib_macros = Resolver::new().stdlib_macro_names();
     let unimported: Vec<String> = stdlib_macros
         .iter()
         .filter(|n| !declared_macros.contains_key(*n))
         .cloned()
         .collect();
     validate_queries(ast, &kb, holdable.as_ref(), &unimported, &mut errors);
+    // …and one a claim lists, which is a fact too (S1f.7.12). A claim headed
+    // by the call names no relation of the program and has its own line
+    // (Q-M1f.118), so this one is for a program nothing else refuses.
+    if errors.is_empty() {
+        refuse_macro_claims(ast, &kb, &declared_macros, &stdlib_macros, &mut errors);
+    }
     if let Some(&last) = config_blocks.last() {
         let args: Vec<NodeId> = ast.form_args(last).to_vec();
         kb.program_mut().config = Some(config_from_kw_pairs(ast, &args));
@@ -4150,6 +4166,187 @@ fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Ve
     }
 }
 
+/// **A macro's call is a premise, a conclusion or a goal, and never a fact** —
+/// M1f [S1f.7.12](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)
+/// (W86).
+///
+/// The loader expands a macro's call in a rule's or an hrule's `:match` and
+/// `:assert` and, since S1f.7.5, in a query's `:goal`. Until S1f.7.12 a fact
+/// headed by a macro's name, `(pp j)` beside `(macro pp (?a) (p ?a))`, was
+/// stored as a fact of a relation `pp`: the fact the body spells was not, no
+/// premise could read the one stored, since `(pp ?x)` in a `:match` is the
+/// call, and nothing said so. The same held at any depth, `(q (pp j))`, under
+/// `(not …)` and in a fact's `:using`, of an imported `std.macro` macro,
+/// `(unknown (p j))`, and of one the program did not import, which a rule's
+/// `:match` has been refused for since S1.8a.f20.
+///
+/// Refused here, one line per call at the call (the stage's default (a)), and
+/// with it a `(relation …)` declared under a macro's name, of which no fact
+/// could be written and no premise read (Q-M1f.131). A call is not expanded
+/// into the fact its body spells: a body with a connective spells none, and
+/// the macro would have a second meaning.
+fn refuse_macro_facts(
+    ast: &Ast,
+    relations: &[NodeId],
+    facts: &[NodeId],
+    declared: &BTreeMap<String, IrMacro>,
+    stdlib_macros: &[String],
+    errors: &mut Vec<String>,
+) {
+    for &form in relations {
+        let Some(&first) = ast.form_args(form).first() else {
+            continue;
+        };
+        if let Some(name) = ast.atom_name(first)
+            && let Some(m) = declared.get(name)
+        {
+            errors.push(format!(
+                "{}relation '{name}': {name} is a macro too, {} — a premise ({name} …) is the \
+                 macro's call, replaced by its body, and a fact ({name} …) is refused, so nothing \
+                 could be of the relation; give one of the two another name",
+                placed_form(ast, form),
+                macro_as_written(ast, m),
+            ));
+        }
+    }
+    for &fact in facts {
+        for (call, what) in macro_calls_under(ast, fact, declared, stdlib_macros) {
+            let subject = if call == fact {
+                format!(
+                    "the fact {} is a call of {what}",
+                    crate::dump::dump_compact(ast, fact)
+                )
+            } else {
+                format!(
+                    "the fact {} holds {}, a call of {what}",
+                    crate::dump::dump_compact(ast, fact),
+                    crate::dump::dump_compact(ast, call)
+                )
+            };
+            errors.push(format!(
+                "{}{subject} — {MACRO_CALL_IS_NO_FACT}",
+                placed_form(ast, call)
+            ));
+        }
+    }
+}
+
+/// [`placed`], reading the form's head and then its arguments where the parser
+/// kept no position for the form itself, as it keeps none for a top-level one.
+fn placed_form(ast: &Ast, node: NodeId) -> String {
+    fn first(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
+        ast.loc(node).or_else(|| match ast.node(node) {
+            Node::SForm { head, .. } => {
+                first(ast, head).or_else(|| ast.form_args(node).iter().find_map(|&a| first(ast, a)))
+            }
+            _ => None,
+        })
+    }
+    match first(ast, node) {
+        Some(l) => format!("{}: ", loc_repr(ast, Some(l))),
+        None => String::new(),
+    }
+}
+
+/// What every line about a macro's call written as a fact ends with.
+const MACRO_CALL_IS_NO_FACT: &str = "a macro is called in a :match, an :assert or a :goal, where \
+     its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write \
+     the fact itself";
+
+/// A claim that lists a macro's call — M1f S1f.7.12. A claim lists facts
+/// (Q-M1f.118), so the call is expanded in none: one inside a listed fact,
+/// `(model (q (pp j)))`, loaded and the claim failed against a state holding
+/// `(q (p j))`, the call *no class*. Refused as a written fact's is.
+fn refuse_macro_claims(
+    ast: &Ast,
+    kb: &Kb,
+    declared: &BTreeMap<String, IrMacro>,
+    stdlib_macros: &[String],
+    errors: &mut Vec<String>,
+) {
+    let mut claims: Vec<(&str, NodeId)> = Vec::new();
+    for query in &kb.program().queries {
+        if let Some(node) = query_keyword(ast, query, "expect") {
+            claims.push(("query", node));
+        }
+    }
+    if let Some(solve) = kb.program().solve()
+        && let Some(node) = solve_keyword(ast, &solve.kw_pairs, "expect")
+    {
+        claims.push(("solve", node));
+    }
+    for (who, claim) in claims {
+        for (call, what) in macro_calls_under(ast, claim, declared, stdlib_macros) {
+            errors.push(format!(
+                "{}{who}: its :expect lists {}, a call of {what} — a claim lists facts, and \
+                 {MACRO_CALL_IS_NO_FACT}",
+                placed_form(ast, call),
+                crate::dump::dump_compact(ast, call),
+            ));
+        }
+    }
+}
+
+/// `(macro pp (?a) (p ?a))`, a macro as its declaration writes it, its `:why`
+/// aside.
+fn macro_as_written(ast: &Ast, m: &IrMacro) -> String {
+    let params: Vec<String> = m.params.iter().map(|p| format!("?{p}")).collect();
+    format!(
+        "(macro {} ({}) {})",
+        m.name,
+        params.join(" "),
+        crate::dump::dump_compact(ast, m.body)
+    )
+}
+
+/// Every form under `node`, `node` included, whose head is a macro's name, in
+/// source order, each with what the macro is: one the program declares or
+/// imports, as written, or `std.macro`'s where the program imports none of
+/// that name. A call's own arguments are not read: the line is the call's.
+fn macro_calls_under(
+    ast: &Ast,
+    node: NodeId,
+    declared: &BTreeMap<String, IrMacro>,
+    stdlib_macros: &[String],
+) -> Vec<(NodeId, String)> {
+    fn walk(
+        ast: &Ast,
+        node: NodeId,
+        declared: &BTreeMap<String, IrMacro>,
+        stdlib_macros: &[String],
+        out: &mut Vec<(NodeId, String)>,
+    ) {
+        match ast.node(node) {
+            Node::SForm { .. } => {
+                if let Some(name) = ast.head_name(node) {
+                    if let Some(m) = declared.get(name) {
+                        out.push((
+                            node,
+                            format!("the macro {name}, {}", macro_as_written(ast, m)),
+                        ));
+                        return;
+                    }
+                    if stdlib_macros.iter().any(|n| n == name) {
+                        out.push((
+                            node,
+                            format!("std.macro's macro {name}, which the program does not import"),
+                        ));
+                        return;
+                    }
+                }
+                for &a in ast.form_args(node) {
+                    walk(ast, a, declared, stdlib_macros, out);
+                }
+            }
+            Node::KwPair { value, .. } => walk(ast, value, declared, stdlib_macros, out),
+            _ => {}
+        }
+    }
+    let mut out = Vec::new();
+    walk(ast, node, declared, stdlib_macros, &mut out);
+    out
+}
+
 /// Does `?param` stand as the head of a form anywhere under `node`?
 fn names_relation(ast: &Ast, node: NodeId, param: &str) -> bool {
     match ast.node(node) {
@@ -6276,5 +6473,66 @@ mod tests {
             "duplicate macro 'm' at None; duplicate relation 'dup' at None; \
              rule '__closed__' shadows a reserved kernel name at None"
         );
+    }
+
+    /// **A macro's call written as a fact is refused at load** — M1f S1f.7.12
+    /// (W86): a fact headed by a macro's name, at any depth, one of
+    /// `std.macro`'s the program does not import, a relation declared under a
+    /// macro's name, and a call inside a fact a claim lists. A call in a
+    /// `:match`, an `:assert` or a `:goal` is expanded, and the name written
+    /// as a value is a name.
+    #[test]
+    fn a_macros_call_written_as_a_fact_is_refused_at_load() {
+        let pre = "(relation p T :why \"p holds of {?1}\") (relation q T :why \"q holds of {?1}\")\n\
+                   (macro pp (?a) (p ?a) :why \"pp of {?a}\")\n";
+        let tail = "a macro is called in a :match, an :assert or a :goal, where its call is \
+                    replaced by its body; a fact is not expanded, and no fact is of a macro: write \
+                    the fact itself";
+        for (text, want) in [
+            (
+                "(pp j)",
+                "<string>:3:2: the fact (pp j) is a call of the macro pp, (macro pp (?a) (p ?a))"
+                    .to_string(),
+            ),
+            (
+                "(q (pp j))",
+                "<string>:3:5: the fact (q (pp j)) holds (pp j), a call of the macro pp, (macro \
+                 pp (?a) (p ?a))"
+                    .to_string(),
+            ),
+            (
+                "(not (pp j))",
+                "the fact (not (pp j)) holds (pp j), a call of the macro pp".to_string(),
+            ),
+            (
+                "(unknown (p j))",
+                "the fact (unknown (p j)) is a call of std.macro's macro unknown, which the \
+                 program does not import"
+                    .to_string(),
+            ),
+            (
+                "(relation pp T :why \"pp holds of {?1}\")",
+                "relation 'pp': pp is a macro too, (macro pp (?a) (p ?a))".to_string(),
+            ),
+            (
+                "(q (p j))\n(query :goal (q ?x) :expect (model (q (pp j))))",
+                "query: its :expect lists (pp j), a call of the macro pp".to_string(),
+            ),
+        ] {
+            let message = err(&format!("{pre}{text}"));
+            assert!(message.contains(&want), "{text}: {message}");
+            if !text.starts_with("(relation") {
+                assert!(message.ends_with(tail), "{text}: {message}");
+            }
+        }
+        for text in [
+            "(p j)\n(rule r () :match (pp ?x) :assert (q ?x) :why \"r\")",
+            "(q j)\n(rule r () :match (q ?x) :assert (pp ?x) :why \"r\")",
+            "(p j)\n(query :goal (pp ?x))",
+            "(q pp)",
+        ] {
+            let (_ast, _terms, kb) = load_text(&format!("{pre}{text}"));
+            kb.unwrap_or_else(|e| panic!("{text}: {}", e.0));
+        }
     }
 }

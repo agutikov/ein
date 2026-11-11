@@ -1,0 +1,32 @@
+;;; A macro's call inside a fact is stored as written, and the pattern that calls the macro does not
+;;; match it —
+;;; M1f **W86**, register row `W86/macro-call-nested-fact`, filed by S1f.7.12 (T1f.7.12.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; Two guests, a macro `settled`, the fact `(says (settled Ann))`, and a rule that trusts
+;;; whoever is said to have settled. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; The rule's pattern `(says (settled ?g))` is expanded to `(says (paid ?g))`; the fact is not
+;;; expanded, so it holds `(settled Ann)`, which the pattern does not match. Refused at load, at
+;;; the call, one line, on every command. The author writes `(says (paid Ann))`.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; `(says (settled Ann))` is stored; the rule
+;;; matches nothing, so nobody is trusted and the goal has no row. R is {∅}, exit 0 on every
+;;; command.
+;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(relation trusted Guest :why "{?1} is trusted")
+(macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
+(says (settled Ann))
+(rule trust () :match (says (settled ?g)) :assert (trusted ?g) :why "{?g} is trusted: it is said that they settled")
+(solve :hypothesis-relations ())
+(query :goal (trusted ?g))

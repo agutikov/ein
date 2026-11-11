@@ -270,7 +270,9 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
 /// [`expand_macros`].
 ///
 /// Note what is *not* expanded: a `(forall …)` appearing as a **fact** stays
-/// as it is, because the loader only ever runs the expander over rule clauses.
+/// as it is, because the loader only ever runs the expander over rule clauses
+/// and, since M1f S1f.7.5, a goal. Since M1f S1f.7.12 the loader refuses such a
+/// fact (`from_ir`'s `refuse_macro_facts`, W86): a macro's call is no fact.
 pub fn expand_rule_clauses(
     ast: &mut Ast,
     forms: &[NodeId],
@@ -409,7 +411,8 @@ mod tests {
     #[test]
     fn only_rule_clauses_are_expanded() {
         // A `(forall …)` *fact* is left alone: the loader only ever runs the
-        // expander over `:match` / `:assert`.
+        // expander over `:match` / `:assert`, and refuses the fact (M1f
+        // S1f.7.12).
         let out = expand_src(&format!("{FORALL}\n(forall a b)")).expect("expands");
         assert!(out.contains("(forall a b)"), "{out}");
     }

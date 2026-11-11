@@ -121,6 +121,18 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
 /// nothing, so no state holds the fact. Empty since.
 const DO_NOT_LOAD: [&str; 0] = [];
 
+/// **The state files that reload a fact with a provenance today**, each the
+/// witness of an open register row (M1f S1f.7.9, 2026-11-11): W87, a fact the
+/// program writes with a `:rule`, `(paid Ann :rule zzz)`. A state file writes
+/// the program as loaded, so that fact with its written `:rule`, and the loader
+/// stores what is written: the reloaded state holds one fact that is not a
+/// given, beside the same fact written as a given under *the state*. It is the
+/// row's own wrong answer, [F24](../../../../plans/followups/f24_written_provenance.md)'s,
+/// so the file is named rather than checked, and it must still reload so: the
+/// commit that fixes W87 takes it off the list.
+const WRITTEN_PROVENANCE: [&str; 1] =
+    ["examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"];
+
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
     let lost: Vec<&String> = want.difference(got).take(3).collect();
@@ -211,9 +223,17 @@ fn check(
                 if got != want {
                     bad.push(format!("{file}: {path}: {}", diff(&want, &got)));
                 }
-                if not_given > 0 {
+                let written = WRITTEN_PROVENANCE.contains(&file);
+                if not_given > 0 && !written {
                     bad.push(format!(
                         "{file}: {path}: {not_given} facts reload with a provenance, not as given"
+                    ));
+                }
+                if not_given == 0 && written {
+                    bad.push(format!(
+                        "{file}: {path}: every fact reloads as given, and WRITTEN_PROVENANCE \
+                         names it: its row (W87) is fixed, so drop it from the list in the same \
+                         commit"
                     ));
                 }
             }

@@ -1,0 +1,26 @@
+;;; The twin of `written-rule-leaves-core.ein`: the same program with `(paid Ann)` written without a
+;;; `:rule` —
+;;; M1f **W87**, register row `W87/written-rule-leaves-core`'s twin, filed by S1f.7.9 (T1f.7.9.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; One guest, the fact `(paid Ann)`, the rules `seat` and `clash`. Root is dead. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; The refutation rests on `(paid Ann)`, the one fact the program writes: the core is `(paid
+;;; Ann)`.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: R is empty, root dead, `unsat core (paid Ann)`, `refuted by clash`.
+;;; This is the right answer.
+
+(relation paid Guest :why "{?1} has paid")
+(relation seated Guest :why "{?1} is seated")
+(is-a Ann Guest)
+(paid Ann)
+(rule seat () :match (paid ?g) :assert (seated ?g) :why "{?g} is seated: they have paid")
+(rule clash () :match (and (seated ?g) (paid ?g)) :assert (false) :why "{?g} is seated and has paid, which this party forbids")
+(solve :hypothesis-relations ())

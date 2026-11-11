@@ -1,0 +1,28 @@
+;;; A macro's call inside a fact a `(solve … :expect (region …))` claim lists loads, and the claim
+;;; can never hold —
+;;; M1f **W86**, register row `W86/macro-call-in-region-claim`, filed by S1f.7.12 (T1f.7.12.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; Two guests, a macro `settled`, the fact `(says (paid Ann))`, and a region claim whose model
+;;; lists `(says (settled Ann))`. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; A region claim lists a state's stored facts, and a fact is not expanded: no state holds the
+;;; listed one. Refused at load, at the call, one line, on every command.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; R is {∅}, and the claim is FAILED, *the model
+;;; lists (says (settled Ann)), which the state does not hold*: `ein solve` exits 1, every other
+;;; command 0.
+;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
+(says (paid Ann))
+(solve :hypothesis-relations () :expect (region (model (says (settled Ann)))))

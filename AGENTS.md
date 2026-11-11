@@ -896,6 +896,29 @@ constrained-reasoning research.
   wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
   2026-11-11). The pins are `ein-cli/tests/negated_names.rs` and
   `hrule_reads_not.rs`.
+  **S1f.7.12 and S1f.7.9, the phase's last two stages, ran the same day**, in
+  one subagent
+  ([S1f.7.12's records](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md#t1-record-2026-11-11)
+  and [S1f.7.9's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md#t1-record-2026-11-11),
+  Q-M1f.130 to .134 defaulted; `defined_behaviour.md` § 4.24). **A macro's
+  call is no fact**: a fact that is or holds, at any depth, a form headed by
+  a macro's name, one the program declares or imports or `std.macro`'s where
+  it imports none, is refused at load, one line on every command, and so is
+  such a form inside a fact a claim lists and a relation declared under a
+  macro's name (`ein_ir::from_ir`'s `refuse_macro_facts` and
+  `refuse_macro_claims`; W86, eight rows). The call is not expanded into the
+  fact its body spells, and a call in a rule's or an hrule's `:assert` is
+  expanded as it was. **S1f.7.9 filed its rows and fixed nothing**: W87, three
+  rows, `open` and owned by
+  [F24](plans/followups/f24_written_provenance.md), a written fact's `:rule`
+  naming a rule the program lacks, a written `:rule` fact leaving every core,
+  and a `:using` naming a fact no state holds; what a written provenance may
+  claim is the user's question, so each row's `right` is the answer under
+  one named reading with the others as alternatives, as W8's are. No other
+  corpus answer moved: 301 fixed, 16 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11). The pin is
+  `ein-cli/tests/macro_facts.rs`. Every stage of P1f.7 has run; its close is
+  the coordinator's.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -142,6 +142,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.127](#q-m1f127--what-the-loader-reads-to-see-that-a-negated-variable-can-hold-a-name) | what the loader reads to see that a negated variable can hold a name | **defaulted 2026-11-11 (S1f.7.4): what the program's own text shows, a written fact, a declaration, a rule's or an hrule's conclusion, an activator, a declared relation the hypotheses are taken from and a guard alone; a position that holds a name and a fact is refused; a pattern whose relation is a parameter is read through its written activators, and not through a derived one**; [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md) |
 | [Q-M1f.128](#q-m1f128--what-a-firing-does-with-the-negation-of-a-name-the-loader-did-not-foresee) | what a firing does with the negation of a name the loader did not foresee | **defaulted 2026-11-11 (S1f.7.4): it builds no fact, so the firing stores nothing for that conclusion and an hrule proposes nothing; not `(false)`, not a stop**; [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md), F25's R-1 |
 | [Q-M1f.129](#q-m1f129--the-assertion-that-no-hrule-reads-not-removed-or-kept-where-the-kill-cache-is-on) | the assertion that no hrule reads `not`: removed, or kept where the kill cache is on | **defaulted 2026-11-11 (S1f.7.2): removed, and where an hrule reads `not` every hrule is matched before any candidate is emitted, so the cache's writes are not visible with it on; the rows filed and fixed in one commit**; [S1f.7.2](p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md) |
+| [Q-M1f.130](#q-m1f130--a-macros-call-as-a-conclusion-refused-or-expanded-as-it-is) | a macro's call as a conclusion: refused, or expanded as it is | **defaulted 2026-11-11 (S1f.7.12): expanded, as it is today; the stage's default refuses the call in a fact, and T1 found a conclusion's call expanded already**; [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md) |
+| [Q-M1f.131](#q-m1f131--a-relation-declared-under-a-macros-name) | a relation declared under a macro's name | **defaulted 2026-11-11 (S1f.7.12): refused at load, one line at the declaration; no corpus program declares one**; [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md) |
+| [Q-M1f.132](#q-m1f132--a-stdmacro-macro-the-program-does-not-import-written-as-a-fact) | a `std.macro` macro the program does not import, written as a fact | **defaulted 2026-11-11 (S1f.7.12): refused, as a rule's `:match` writing it has been since S1.8a.f20; a relation of that name is not refused where it is declared**; [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md) |
+| [Q-M1f.133](#q-m1f133--a-macros-call-inside-a-fact-a-claim-lists-and-in-a-facts-using) | a macro's call inside a fact a claim lists, and in a fact's `:using` | **defaulted 2026-11-11 (S1f.7.12): refused as a written fact's is; a claim headed by the call keeps Q-M1f.118's line**; [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md) |
+| [Q-M1f.134](#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled) | what a register row records as `right` while F24's question is not ruled | **defaulted 2026-11-11 (S1f.7.9): the answer under one named reading of F24's (a), (b), (c), each other reading an alternative, the review `deferred`, as W8's rows record Q-M1e2.2**; [S1f.7.9](p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md), [F24](../followups/f24_written_provenance.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2701,3 +2706,75 @@ witnesses are corpus programs whose shape digest `cargo test` takes. (c) refuses
 unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it, and the
 register reads `debug_panic` in no test since M1e2 S1e2.2.16. W85's three rows are filed `fixed` in the fixing
 commit, their `wrong` recording the release answer and the debug build's stop, and the stage's T2 record says so.
+
+### Q-M1f.130 — A macro's call as a conclusion: refused, or expanded as it is
+
+**Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. The stage file lists a rule's and an hrule's `:assert` among the sites where a
+macro's name heads a form that is not expanded, and its default (a) refuses a conclusion headed by one. T1 found the
+opposite: the loader runs the expander over `:assert` as over `:match` (`from_ir`'s `expand_pair`), so `:assert (pp
+?x)` beside `(macro pp (?a) (p ?a))` stores `(p k :rule r)`, and `:assert (s (pp ?x))` stores `(s (p k))`. Ten corpus
+witnesses call a macro in an `:assert` (eight `macro-*.ein`, `not-name-macro.ein` and `open-macro-verdict.ein` under
+`examples/ein-bugs/wrong-answers/`), and each one's recorded refusal reads the expansion.
+
+- **(a) Expanded, as today.** The stage refuses the call where nothing expands it: a fact and a claim.
+- **(b) Refused**: a macro's call is a premise only. It moves the ten witnesses' lines and S1f.5.24's reading of a
+  conclusion's expansion.
+
+**Defaulted 2026-11-11: (a).** The finding is a call that is not expanded, and a conclusion's is. (b) would undo
+what S1f.5.24 and S1f.7.4 hold a conclusion's expansion to, on the user's ruling that a macro's body is checked where
+a rule is. The refusal's line says where a macro is called: *in a :match, an :assert or a :goal*.
+
+### Q-M1f.131 — A relation declared under a macro's name
+
+**Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. `(relation pp T)` beside `(macro pp (?a) (p ?a))` loads. A premise `(pp ?x)` is
+the macro's call, so no premise reads the relation, and since the stage no fact is of it. No corpus program declares
+a relation and a macro of one name (`git ls-files '*.ein'`, 651 files, the stage's census, 2026-11-11).
+
+- **(a) Refused at load**, one line at the declaration.
+- **(b) Left**: the declaration loads, and each fact of the relation is refused.
+
+**Defaulted 2026-11-11: (a).** A relation nothing can hold or read is a mistake in the name, and the declaration is
+where the author reads about it. A rule and a macro of one name still load: the rule's activator fact is refused as
+the macro's call ([F25](../followups/f25_roughness_found_outside_zebra.md)'s R-8).
+
+### Q-M1f.132 — A `std.macro` macro the program does not import, written as a fact
+
+**Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. `(unknown (p j))` in a program that does not import `std.macro` is stored as a
+fact of a relation `unknown`. A rule's `:match` that writes `(unknown …)` without the import has been refused since
+S1.8a.f20, and a goal's since S1f.7.5, so no premise of the program can read that fact.
+
+- **(a) Refused**, the line saying the macro is `std.macro`'s and not imported.
+- **(b) Stored**: without the import `unknown` is an ordinary name.
+
+**Defaulted 2026-11-11: (a).** The guard already makes `unknown` and `forall` names a premise cannot use as a
+relation, so a fact of either is read by nothing. No corpus program writes one. A `(relation unknown …)` declaration
+in such a program is not refused where it stands (F25's R-8).
+
+### Q-M1f.133 — A macro's call inside a fact a claim lists, and in a fact's `:using`
+
+**Raised** 2026-11-11 by [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)'s T1. Q-M1f.118 has a claim headed by a macro's call refused: it names no relation.
+A call inside a listed fact, `(model (q (pp j)))`, loaded, and the claim failed against a state holding `(q (p j))`.
+A fact's `:using ((pp j))` loaded too.
+
+- **(a) Refused as a written fact's is**: a claim lists facts, and a `:using` names facts.
+- **(b) Left to the claim's check**, which fails it at the run.
+
+**Defaulted 2026-11-11: (a).** A claim that can never hold is refused at load elsewhere (`eq` in a region claim,
+S1f.5.7). The claim's line is added only where nothing else refused the program, so Q-M1f.118's line stays the one
+a claim headed by the call prints.
+
+### Q-M1f.134 — What a register row records as `right` while F24's question is not ruled
+
+**Raised** 2026-11-11 by [S1f.7.9](p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md)'s T2. The stage files F24's three table rows `open`, owned by F24, and the right
+answer of each depends on F24's question, (a) refused, (b) checked, (c) as given and marked, which is the user's
+and is not ruled.
+
+- **(a) One named reading, the others as alternatives**, the review `deferred`: how W8's rows record Q-M1e2.2 for
+  F21 (`[case.right]` with a `reading`, `[[case.right.alternative]]` per other reading, class *contested*).
+- **(b) No `right`**: the schema requires one.
+
+**Defaulted 2026-11-11: (a).** `W87/written-rule-no-such-rule` states (b)'s refusal, which was S1f.7.9's own first
+direction, with (a) and (c) as alternatives. The two core rows state (c)'s core, `(paid Ann)`, with (a)'s and (b)'s
+refusals as alternatives: a row whose `right` is a refusal may not hold today's core beside it while a live row can
+show it (`ein-corpus`'s `beside_a_refusal_now_records_what_today_reports`), and the core is what F24's table says
+is wrong. The choice of reading rules nothing: F24's question stays the user's.

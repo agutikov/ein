@@ -1,0 +1,27 @@
+;;; A `std.macro` macro the program does not import, written as a fact, is stored as a fact of its
+;;; name —
+;;; M1f **W86**, register row `W86/macro-call-stdlib-unimported`, filed by S1f.7.12 (T1f.7.12.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; Two guests and the fact `(unknown (paid Bob))`, with no import. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; A rule whose `:match` writes `(unknown …)` without importing `std.macro` has been refused
+;;; since S1.8a.f20, and a goal's since S1f.7.5: unexpanded, the call would never match. A fact
+;;; of that name is the same call, and no premise of any program can read it. Refused at load,
+;;; at the fact, one line, on every command.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; `(unknown (paid Bob))` is stored. R is {∅}, exit
+;;; 0 on every command.
+;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(unknown (paid Bob))
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

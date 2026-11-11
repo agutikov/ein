@@ -653,11 +653,27 @@
 1    examples/ein-bugs/wrong-answers/macro-absent-hrule.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein :: saturate
 1    examples/ein-bugs/wrong-answers/macro-absent-never-compiled.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein :: saturate
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein :: saturate
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-bare-conclusion-under-commitment.ein :: solve --minimal
+1    examples/ein-bugs/wrong-answers/macro-call-fact.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-fact.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-call-in-claim.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-in-claim.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein :: solve
+1    examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein :: saturate
+1    examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-connective-value.ein :: saturate
 1    examples/ein-bugs/wrong-answers/macro-connective-value.ein :: solve
 1    examples/ein-bugs/wrong-answers/macro-eq-candidate.ein :: saturate
@@ -916,6 +932,14 @@
 0    examples/ein-bugs/wrong-answers/wild-in-match-twin.ein :: solve
 1    examples/ein-bugs/wrong-answers/wild-in-match.ein :: saturate
 1    examples/ein-bugs/wrong-answers/wild-in-match.ein :: solve
+0    examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein :: saturate
+0    examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein :: solve
+0    examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein :: saturate
+0    examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein :: solve
+0    examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein :: saturate
+0    examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein :: solve
+0    examples/ein-bugs/wrong-answers/written-using-never-held.ein :: saturate
+0    examples/ein-bugs/wrong-answers/written-using-never-held.ein :: solve
 0    examples/ein-bugs/zebra2-bad.ein :: render constraints
 0    examples/ein-bugs/zebra2-bad.ein :: render lattice
 0    examples/ein-bugs/zebra2-bad.ein :: render rules

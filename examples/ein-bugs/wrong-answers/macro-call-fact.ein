@@ -1,0 +1,32 @@
+;;; A macro's call written as a fact is stored as a fact of the macro's name, and the fact its body
+;;; spells is not —
+;;; M1f **W86**, register row `W86/macro-call-fact`, filed by S1f.7.12 (T1f.7.12.2, 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; Two guests, a macro `settled` whose body is `(paid ?g)`, the fact `(settled Ann)`, and a
+;;; rule that welcomes whoever has settled. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; A macro is called in a `:match`, an `:assert` or a `:goal`, where its call is replaced by
+;;; its body. A fact is not expanded, and `settled` is no relation: a premise `(settled ?g)` is
+;;; the call, so no premise can read a fact of that name. Refused at load, at the fact, one
+;;; line, on every command. The author writes `(paid Ann)`.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; `(settled Ann)` is stored, a fact of an
+;;; auto-vivified relation `settled`, and `(paid Ann)` is not; the rule's premise is `(paid
+;;; ?g)`, which matches nothing, so nobody is welcome and the goal has no row. R is {∅}, exit 0
+;;; on every command.
+;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation welcome Guest :why "{?1} is welcome")
+(macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
+(settled Ann)
+(rule greet () :match (settled ?g) :assert (welcome ?g) :why "{?g} is welcome: they have settled")
+(solve :hypothesis-relations ())
+(query :goal (welcome ?g))

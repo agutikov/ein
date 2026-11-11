@@ -1,0 +1,29 @@
+;;; A macro's call under a written `(not …)` is stored as the negation of a fact nothing holds, so
+;;; the state it contradicts is alive —
+;;; M1f **W86**, register row `W86/macro-call-negated-fact`, filed by S1f.7.12 (T1f.7.12.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Bob has paid, a macro `settled`, and the fact `(not (settled Bob))`. No
+;;; candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; The author means that Bob has not paid, which contradicts `(paid Bob)`: written `(not (paid
+;;; Bob))` the program has an empty R, its root dead. The fact is not expanded, so it is refused
+;;; at load, at the call, one line, on every command.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; `(not (settled Bob))` is stored beside `(paid
+;;; Bob)` and contradicts nothing. R is {∅}, root alive, exit 0 on every command.
+;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
+(paid Bob)
+(not (settled Bob))
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

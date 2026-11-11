@@ -1,0 +1,32 @@
+;;; A relation declared under a macro's name loads: its facts are stored and no premise can read
+;;; them —
+;;; M1f **W86**, register row `W86/macro-and-relation-one-name`, filed by S1f.7.12 (T1f.7.12.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; Two guests, a declared relation `settled`, a macro of the same name whose body is `(paid
+;;; ?g)`, the fact `(settled Ann)`, and a rule that welcomes whoever has settled. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; One name is a macro and a relation. A premise `(settled ?g)` is the macro's call, replaced
+;;; by `(paid ?g)`, so no premise reads the relation, and since S1f.7.12 no fact is of it. The
+;;; declaration is refused at load, one line, and the fact with it, on every command.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; `(settled Ann)` is stored, a fact of the declared
+;;; relation; the rule's premise is `(paid ?g)`, so nobody is welcome and the goal has no row. R
+;;; is {∅}, exit 0 on every command.
+;;; Refused at load since S1f.7.12 (T1f.7.12.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation settled Guest :why "{?1} has settled")
+(relation welcome Guest :why "{?1} is welcome")
+(macro settled (?g) (paid ?g) :why "{?g} has settled: they have paid")
+(settled Ann)
+(rule greet () :match (settled ?g) :assert (welcome ?g) :why "{?g} is welcome: they have settled")
+(solve :hypothesis-relations ())
+(query :goal (welcome ?g))

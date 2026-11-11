@@ -1218,7 +1218,7 @@
 #             S1e2.1c.5 dropped its P1e2.2 stage (S1e2.1a.5; S1e2.1a.6 for W13),
 #             or where the revisit did (S1e2.1.7: W12's, S1e2.1a.5); for a row
 #             whose reading the user deferred, the followup (W8/features-07's:
-#             F21; W10/alt-cap-shared's: F22), or another milestone's stage
+#             F21; W10/alt-cap-shared's: F22; W87's: F24, M1f S1f.7.9), or another milestone's stage
 #             (W26's: S1f.10.6, schema /10), or since M1f S1f.5.0 the P1f.5
 #             stage that fixes an open row (W29's S1f.5.1, W30's S1f.5.7,
 #             W31's S1f.5.9, W32's S1f.5.11). A case's rows of one status share an owner, and fixed rows
@@ -16016,3 +16016,464 @@ models    = [
   [],
   ["(paid Ann)"],
 ]
+
+# ══ W86 — a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded ══
+[[case]]
+id       = "W86/macro-call-fact"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-fact.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A top-level `(settled Ann)` beside `(macro settled (?g) (paid ?g))` is stored as a fact of `settled`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads; `(settled Ann)` is stored and `(paid Ann)` is not, so the rule `greet`, whose premise is the macro's body, derives nothing and the goal has no row. R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The fact is a call of the macro `settled`: refused at load, at the fact, one line, on every command (exit 1, `ein test`: 2)."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-fact.ein:29:2: the fact (settled Ann) is a call of the macro settled, (macro settled (?g) (paid ?g)) — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-call-nested-fact"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A macro's call inside a fact, `(says (settled Ann))`, is stored as written. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads; `(says (settled Ann))` is stored, and the rule `trust`, whose pattern is expanded to `(says (paid ?g))`, matches nothing. R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The fact holds a call of the macro `settled`: refused at load, at the call, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein:29:8: the fact (says (settled Ann)) holds (settled Ann), a call of the macro settled, (macro settled (?g) (paid ?g)) — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-call-negated-fact"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(not (settled Bob))` beside `(paid Bob)` is alive: the negation is of a fact of `settled`, not of `(paid Bob)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads; `(not (settled Bob))` is stored beside `(paid Bob)`, and root is alive, R {∅}, where the negation of the macro's body would kill it. Exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The fact holds a call of the macro `settled`: refused at load, at the call, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein:27:7: the fact (not (settled Bob)) holds (settled Bob), a call of the macro settled, (macro settled (?g) (paid ?g)) — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-call-stdlib-fact"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(unknown (paid Bob))` with `std.macro`'s `unknown` imported is stored as a fact. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads and `(unknown (paid Bob))` is stored, a fact of a relation `unknown` no premise can read. R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The fact is a call of the macro `unknown`: refused at load, at the fact, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein:26:2: the fact (unknown (paid Bob)) is a call of the macro unknown, (macro unknown (?P) (and (absent ?P) (absent (not ?P)))) — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-call-stdlib-unimported"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(unknown (paid Bob))` with no import is stored as a fact, where a rule's `:match` writing the same is refused. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads and `(unknown (paid Bob))` is stored. R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The fact is a call of `std.macro`'s macro `unknown`, which the program does not import: refused at load, at the fact, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein:25:2: the fact (unknown (paid Bob)) is a call of std.macro's macro unknown, which the program does not import — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-call-in-claim"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-in-claim.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A claim that lists `(says (settled Ann))` loads and fails. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads on every command; `ein solve` answers R {∅}, one class `?c = (paid Ann)`, and the claim FAILED, exit 1, the listed fact *no class*."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The claim lists a call of the macro `settled`: refused at load, at the call, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-in-claim.ein:29:46: query: its :expect lists (settled Ann), a call of the macro settled, (macro settled (?g) (paid ?g)) — a claim lists facts, and a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-call-in-region-claim"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A region claim that lists `(says (settled Ann))` loads and fails. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads on every command; `ein solve` answers R {∅} and the claim FAILED, exit 1, *the model lists (says (settled Ann)), which the state does not hold*."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "The claim lists a call of the macro `settled`: refused at load, at the call, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein:28:63: solve: its :expect lists (settled Ann), a call of the macro settled, (macro settled (?g) (paid ?g)) — a claim lists facts, and a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+[[case]]
+id       = "W86/macro-and-relation-one-name"
+case     = "W86"
+title    = "a macro's call written as a fact is stored as a fact of the macro's name, and the macro is not expanded"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.12"
+question = ["Q-M1f.130", "Q-M1f.131", "Q-M1f.132", "Q-M1f.133"]
+witness  = "examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(relation settled Guest)` beside `(macro settled …)` loads, and its fact is stored where no premise reads it. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads; `(settled Ann)` is stored, a fact of the declared relation, and the rule `greet`, whose premise is the macro's call, derives nothing. R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "A macro is a pattern alias, expanded where a rule's clause or a goal calls it (`ein_ir::macros`); a fact is not expanded. S1f.7.12's default, (a): a fact at any depth whose head is a macro's name is refused at load, and the call is not expanded into the fact its body spells, which would give a macro a second meaning and a body with a connective none (Q-M1f.130 to .133)"
+derived   = "A relation declared under a macro's name can hold no fact and be read by no premise: the declaration is refused at load, one line, and the fact as a call of the macro, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein:26:11: relation 'settled': settled is a macro too, (macro settled (?g) (paid ?g)) — a premise (settled …) is the macro's call, replaced by its body, and a fact (settled …) is refused, so nothing could be of the relation; give one of the two another name; examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein:29:2: the fact (settled Ann) is a call of the macro settled, (macro settled (?g) (paid ?g)) — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself"
+
+# ══ W87 — a written fact's `:rule` and `:using` are stored unchecked: a rule the program lacks, a fact no state holds, and a core that leaves the written fact out ══
+[[case]]
+id       = "W87/written-rule-no-such-rule"
+case     = "W87"
+title    = "a written fact's `:rule` and `:using` are stored unchecked: a rule the program lacks, a fact no state holds, and a core that leaves the written fact out"
+class    = "refusal, contested"
+settings = "default"
+owner    = "F24"
+question = ["Q-M1f.134"]
+witness  = "examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"
+status   = "open"
+open_because = "deferred to F24 (the user, 2026-11-11, *\"yes S1f.7.9 moves to a new F24\"*): the loader stores a written fact's `:rule` as its provenance and checks it against nothing, so `(paid Ann :rule zzz)` is a fact derived by a rule the program does not declare. Refusing the unknown name alone, S1f.7.9's first default, would leave the core of `W87/written-rule-leaves-core` as it is and move two corpus fixtures and four test files that write provenance by hand; what a written provenance may claim is F24's question"
+look_at  = ["root"]
+note     = "Filed by S1f.7.9 (T1f.7.9.2, 2026-11-11), F24's first table row: `(paid Ann :rule zzz)` beside one declared rule, `seat`. `ein saturate --dump` prints the fact among the derived, `(paid Ann :rule zzz)`; `ein render kb` draws it as derived by `zzz`; the state file `ein solve --dump-answer` writes says `(paid Ann) ; rule zzz — Ann has paid`. The row's `now` is `ein saturate --dump`, a command's run, which answers: the register records that it loads, and the surfaces that name `zzz` are in S1f.7.9's T1 record. The state file reloads `(paid Ann)` with that provenance, not as a given, which `answer_round_trip.rs` holds by name (WRITTEN_PROVENANCE) until F24 fixes the row"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 91b12be8 (2026-11-11): the program loads, exit 0, and `(paid Ann :rule zzz)` is stored and printed as derived by `zzz`, a rule the program does not declare."
+answered  = true
+
+[case.right]
+reading   = "F24 (b), checked: `:rule` names a declared rule and `:using` facts the program holds. Not ruled: F24's question is the user's"
+refused   = true
+derived   = "The program declares `seat` and no `zzz`, so under (b) the fact is refused at load, one line, on every command. S1f.7.9's own first direction was this refusal"
+
+[[case.right.alternative]]
+reading   = "F24 (a), refused: a program may not write `:rule` or `:using`; provenance is what the engine records"
+refused   = true
+derived   = "refused at load, whatever the `:rule` names"
+
+[[case.right.alternative]]
+reading   = "F24 (c), as given, and marked: loaded as written and printed as not checked on every surface that names it"
+answered  = true
+derived   = "loads, as today, and `ein saturate --dump`, `ein render kb` and the state file each say that `zzz` is a provenance the program wrote and nothing checked"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-11"
+bundle  = "91b12be8"
+note    = "The user's ruling of 2026-11-11 on the analysis of that day, *\"yes S1f.7.9 moves to a new F24\"*: what a written provenance may claim, F24's (a) refused, (b) checked or (c) as given and marked, is the user's question and is not ruled, so the row is open with F24 as owner, its `right` the answer under the reading named and each other reading an alternative, as W8's rows record Q-M1e2.2 (Q-M1f.134)."
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W87/written-rule-leaves-core"
+case     = "W87"
+title    = "a written fact's `:rule` and `:using` are stored unchecked: a rule the program lacks, a fact no state holds, and a core that leaves the written fact out"
+class    = "core, contested"
+settings = "default"
+owner    = "F24"
+question = ["Q-M1f.134"]
+witness  = "examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein"
+status   = "open"
+open_because = "deferred to F24 (the user, 2026-11-11, *\"yes S1f.7.9 moves to a new F24\"*): the loader stores a fact written with a `:rule` as a derivation with no premises, whether or not the rule is declared, so the core search follows `(paid Ann)` to nothing and root's core is the empty set, where the refutation rests on the one fact the program writes. Whether such a fact is refused, checked or a given in every core is F24's question"
+look_at  = ["refuted", "summary"]
+note     = "Filed by S1f.7.9 (T1f.7.9.2, 2026-11-11), F24's second table row. The twin, written-rule-leaves-core-twin.ein, writes `(paid Ann)` with no `:rule` and reports the core `(paid Ann)`. `:rule seat`, a declared rule, gives the empty core too (S1f.7.9's T1 record), so the defect is not the name. `nogoods.json` writes `\"core\": []` for ∅'s member of N, and the read-out *unsat core ∅, the empty set: the refutation rests on no fact*. R is not moved: empty, root dead, either way"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 91b12be8 (2026-11-11): R is empty, root dead, `refuted by clash`, and root's core (the summary's `region.core`) is the empty set"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein"
+run       = "solve"
+by        = "region"
+why       = "`(paid Ann)` written with no `:rule`, at 91b12be8 (2026-11-11), release: the same R, the same `refuted by clash`, and root's core is the fact the program writes"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(paid Ann)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "F24 (c), as given, and marked: a written fact with a provenance is loaded as written and is a given in every core. Not ruled: F24's question is the user's"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(paid Ann)"]
+derived   = "`clash` reads `(seated Ann)` and `(paid Ann)`, and `seat` derives the first from the second, so the refutation rests on `(paid Ann)`, the one fact the program writes: the twin's core. A core is a set of the program's own facts that suffices, and the empty set does not: without `(paid Ann)` root is alive"
+
+[[case.right.alternative]]
+reading   = "F24 (a), refused: a program may not write `:rule` or `:using`"
+refused   = true
+derived   = "refused at load, so no core is reported"
+
+[[case.right.alternative]]
+reading   = "F24 (b), checked: `:rule` names a declared rule, and a written fact with a provenance is a given in every core"
+refused   = true
+derived   = "`zzz` is no rule of the program, so this witness is refused at load; written `:rule seat`, a declared rule, it loads and its core is `(paid Ann)`"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-11"
+bundle  = "91b12be8"
+note    = "The user's ruling of 2026-11-11 on the analysis of that day, *\"yes S1f.7.9 moves to a new F24\"*: what a written provenance may claim, F24's (a) refused, (b) checked or (c) as given and marked, is the user's question and is not ruled, so the row is open with F24 as owner, its `right` the answer under the reading named and each other reading an alternative, as W8's rows record Q-M1e2.2 (Q-M1f.134)."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
+core      = []
+
+[[case]]
+id       = "W87/written-using-never-held"
+case     = "W87"
+title    = "a written fact's `:rule` and `:using` are stored unchecked: a rule the program lacks, a fact no state holds, and a core that leaves the written fact out"
+class    = "core, contested"
+settings = "default"
+owner    = "F24"
+question = ["Q-M1f.134"]
+witness  = "examples/ein-bugs/wrong-answers/written-using-never-held.ein"
+status   = "open"
+open_because = "deferred to F24 (the user, 2026-11-11, *\"yes S1f.7.9 moves to a new F24\"*): the loader reads a written `:using` as the premises of the fact's derivation and checks none of them, so `:using ((invited Zoe))` names a fact no state holds, the program loads, and root's core is the empty set. What `:using` may name is F24's question"
+look_at  = ["refuted", "summary"]
+note     = "Filed by S1f.7.9 (T1f.7.9.2, 2026-11-11), F24's third table row: `(paid Ann :rule seat :using ((invited Zoe)))`, where nothing states or derives `(invited Zoe)`. `ein saturate --dump` prints the fact as `(paid Ann :rule seat)`, its `:using` not printed. A `:using` with no `:rule`, `(paid Ann :using ((invited Zoe)))`, is stored as the given `(paid Ann)` and the core is `(paid Ann)` (S1f.7.9's T1 record)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 91b12be8 (2026-11-11): the program loads; R is empty, root dead, `refuted by clash`, and root's core (the summary's `region.core`) is the empty set"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
+[case.right]
+reading   = "F24 (c), as given, and marked: loaded as written, printed as not checked, and a given in every core. Not ruled: F24's question is the user's"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(paid Ann)"]
+derived   = "Loaded as written, the refutation rests on `(paid Ann)`, the one fact the program writes, as `W87/written-rule-leaves-core`'s does: `clash` reads `(seated Ann)` and `(paid Ann)`, and `seat` derives the first from the second. The empty set does not suffice: without `(paid Ann)` root is alive"
+
+[[case.right.alternative]]
+reading   = "F24 (a), refused: a program may not write `:rule` or `:using`"
+refused   = true
+derived   = "refused at load, whatever the `:using` names"
+
+[[case.right.alternative]]
+reading   = "F24 (b), checked: `:rule` names a declared rule and `:using` facts the program holds"
+refused   = true
+derived   = "No state holds `(invited Zoe)`: nothing states it and no rule derives it. The fact is refused at load, one line, on every command"
+
+[case.review]
+verdict = "deferred"
+date    = "2026-11-11"
+bundle  = "91b12be8"
+note    = "The user's ruling of 2026-11-11 on the analysis of that day, *\"yes S1f.7.9 moves to a new F24\"*: what a written provenance may claim, F24's (a) refused, (b) checked or (c) as given and marked, is the user's question and is not ruled, so the row is open with F24 as owner, its `right` the answer under the reading named and each other reading an alternative, as W8's rows record Q-M1e2.2 (Q-M1f.134)."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []
+core      = []

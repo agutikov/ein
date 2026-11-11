@@ -1,0 +1,31 @@
+;;; A written fact's `:using` that names a fact no state holds loads, and the refutation that rests
+;;; on the fact reports the empty core —
+;;; M1f **W87**, register row `W87/written-using-never-held`, filed by S1f.7.9 (T1f.7.9.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; One guest, the fact `(paid Ann :rule seat :using ((invited Zoe)))`, and the rules `seat` and
+;;; `clash`. Nothing states or derives `(invited Zoe)`, and `Zoe` is named nowhere else. Root is
+;;; dead. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; Not ruled: it is F24's question. Under (a) and (b) the program is refused at load: under
+;;; (b), `:using` names facts the program holds. Under (c) it loads as written, marked as not
+;;; checked, and the written fact is a given in every core, so the core is `(paid Ann)`.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads; R is empty, root dead, `unsat core ∅, the empty
+;;; set: the refutation rests on no fact`, `refuted by clash`. `ein saturate --dump` prints
+;;; `(paid Ann :rule seat)`: the `:using` is not printed.
+;;; Open, and F24's: what a written provenance may claim is the user's question, not ruled.
+
+(relation paid Guest :why "{?1} has paid")
+(relation seated Guest :why "{?1} is seated")
+(is-a Ann Guest)
+(paid Ann :rule seat :using ((invited Zoe)))
+(rule seat () :match (paid ?g) :assert (seated ?g) :why "{?g} is seated: they have paid")
+(rule clash () :match (and (seated ?g) (paid ?g)) :assert (false) :why "{?g} is seated and has paid, which this party forbids")
+(solve :hypothesis-relations ())

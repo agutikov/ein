@@ -12,7 +12,9 @@ a stage raises takes the stage's default, recorded as a Q-M1f row marked *defaul
 ([§ How every stage runs](#how-every-stage-runs)). **S1f.7.8 is done** (2026-11-11, W76), and so are **S1f.7.5,
 S1f.7.11 and S1f.7.1** (2026-11-11, W77 to W79), a query's `:goal` held to what a rule's `:match` is held to, and
 **S1f.7.7, S1f.7.6, S1f.7.10 and S1f.7.3** (2026-11-11, W80 to W83), the value rule held in the grammar and the loader,
-and **S1f.7.4 and S1f.7.2** (2026-11-11, W84 and W85), the two about `not`. **Re-planned 2026-11-11** on the user's rulings on the
+and **S1f.7.4 and S1f.7.2** (2026-11-11, W84 and W85), the two about `not`. **S1f.7.12 is done** (2026-11-11, W86), a macro's call
+written as a fact refused at load, and **S1f.7.9 is done as reduced** (2026-11-11, W87), its three rows `open` and
+[F24](../../followups/f24_written_provenance.md)'s: every stage has run. **Re-planned 2026-11-11** on the user's rulings on the
 [analysis of that day](#the-analysis-of-2026-11-11): S1f.7.8 runs first, S1f.7.9's fix moved to
 [F24](../../followups/f24_written_provenance.md), and three findings of the analysis are S1f.7.10 to S1f.7.12.
 **Depends on:** P1f.5. Its stages use [S1f.5.21](../p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s
@@ -80,10 +82,10 @@ it, on the release binary at `4bf6da73`: with `(h (eq k j)) (h (eq k k))` and `:
 | [S1f.7.6](s1f.7.6_a_false_fact_with_an_argument.md) | A written `(false k)`: `false` with an argument | kills root, the argument stored (the finding said dropped), where a rule's is refused | S1f.5.23's T2 record, finding 1 | **done 2026-11-11**: W81, five rows filed and fixed; `false` takes no argument anywhere |
 | [S1f.7.7](s1f.7.7_an_absent_fact.md) | A written or concluded `(absent k)` | stores a fact no premise can read | S1f.5.23's T2 record, finding 2 | **done 2026-11-11**: W80, five rows filed and fixed; refused at the parse, with a note pointing at `(not …)` |
 | [S1f.7.8](s1f.7.8_a_solve_list_naming_nothing.md) | A `(solve …)` list that names nothing the program declares | `:hrules (zzz)` and the rest load in silence and move H | S1f.5.23's T2 record, finding 3 | **done 2026-11-11**: W76, five rows filed and fixed; refused at load |
-| [S1f.7.9](s1f.7.9_a_facts_rule_that_names_no_rule.md) | A fact's `:rule` that names no rule | `(p k :rule zzz)` stored as derived by a rule the program lacks | S1f.5.23's T2 record, finding 4 | rows only since 2026-11-11: the fix is [F24](../../followups/f24_written_provenance.md)'s |
+| [S1f.7.9](s1f.7.9_a_facts_rule_that_names_no_rule.md) | A fact's `:rule` that names no rule | `(p k :rule zzz)` stored as derived by a rule the program lacks | S1f.5.23's T2 record, finding 4 | **done 2026-11-11, as reduced**: W87, three rows filed `open`, owned by [F24](../../followups/f24_written_provenance.md), whose fix it is |
 | [S1f.7.10](s1f.7.10_an_eq_fact_as_a_value.md) | `(eq k j)` as a value | `(q (eq k j))` is stored, and a pattern matches it by shape, where `(q (neq k j))` is a parse error | the analysis of 2026-11-11 | **done 2026-11-11**: W82, four rows filed and fixed; `(eq …)` is no value |
 | [S1f.7.11](s1f.7.11_a_goal_over_a_relation_nothing_makes.md) | A goal over a relation nothing in the program makes | `(query :goal (zzz ?x))` loads and has no row, in silence | the analysis of 2026-11-11 | **done 2026-11-11**: W78, four rows filed and fixed; refused at load, and a claim over a derived relation loads |
-| [S1f.7.12](s1f.7.12_a_macro_call_written_as_a_fact.md) | A macro call written as a fact | `(pp j)` is stored as a fact of `pp`, the macro not expanded | the analysis of 2026-11-11 | new 2026-11-11 |
+| [S1f.7.12](s1f.7.12_a_macro_call_written_as_a_fact.md) | A macro call written as a fact | `(pp j)` is stored as a fact of `pp`, the macro not expanded | the analysis of 2026-11-11 | **done 2026-11-11**: W86, eight rows filed and fixed; refused at load, a conclusion's call still expanded |
 
 ## How every stage runs
 

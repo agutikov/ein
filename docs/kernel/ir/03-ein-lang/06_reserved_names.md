@@ -69,7 +69,7 @@ same set.
 | `query` | `(query :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
 | `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect <claim>])` | the problem's lattice, at most one per file, and its expected region (M1e2 S1e2.1a.4) | `kb.from_ir` (`ein_core::Solve`); `hypgen`, `hrule`; `ein-ir/claim.rs`, `ein-infer/claim.rs` |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
-| `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation, and since M1f S1f.7.5 a query's `:goal`'s, expands to BODY before compilation (P1.8 S1.5.9) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
+| `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation, and since M1f S1f.7.5 a query's `:goal`'s, expands to BODY before compilation (P1.8 S1.5.9); a fact headed by `N`, or holding such a form, is refused at load since M1f S1f.7.12, and so is a relation declared as `N` | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective (P1.8 S1.8.A1–A2) | `kb.from_ir` (grammar A2; resolve A3) |
 | `trace` | `(trace <event>*)` | **engine-emitted** derivation log — parsed by [`ein-render/trace/ast.rs`](../../../../ein.rs/crates/ein-render/src/trace/ast.rs), ignored by `kb.from_ir`; a *sibling*, not part of the declarator-vs-fact dichotomy | `trace/` |
 

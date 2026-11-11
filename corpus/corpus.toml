@@ -2411,6 +2411,78 @@ group  = "regression"
 runs   = ["solve", "saturate", "test"]
 note   = "M1f W85 (`W85/hrule-reads-unknown`), filed by S1f.7.2's T1f.7.2.2 (2026-11-11): An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. Fixed by S1f.7.2's T1f.7.2.3 (2026-11-11): a debug build answers as a release build does."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-fact`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): A top-level `(settled Ann)` beside `(macro settled (?g) (paid ?g))` is stored as a fact of `settled`. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-nested-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-nested-fact`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): A macro's call inside a fact, `(says (settled Ann))`, is stored as written. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-negated-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-negated-fact`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): `(not (settled Bob))` beside `(paid Bob)` is alive: the negation is of a fact of `settled`, not of `(paid Bob)`. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-stdlib-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-stdlib-fact`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): `(unknown (paid Bob))` with `std.macro`'s `unknown` imported is stored as a fact. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-stdlib-unimported.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-stdlib-unimported`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): `(unknown (paid Bob))` with no import is stored as a fact, where a rule's `:match` writing the same is refused. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-in-claim.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-in-claim`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): A claim that lists `(says (settled Ann))` loads and fails. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-call-in-region-claim.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-call-in-region-claim`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): A region claim that lists `(says (settled Ann))` loads and fails. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/macro-and-relation-one-name.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W86 (`W86/macro-and-relation-one-name`), filed by S1f.7.12's T1f.7.12.2 (2026-11-11): `(relation settled Guest)` beside `(macro settled …)` loads, and its fact is stored where no premise reads it. Fixed by S1f.7.12's T1f.7.12.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W87 (`W87/written-rule-no-such-rule`), filed by S1f.7.9's T1f.7.9.2 (2026-11-11): `(paid Ann :rule zzz)` is stored as derived by a rule the program does not declare. Open, deferred to F24."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/written-rule-leaves-core.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W87 (`W87/written-rule-leaves-core`), filed by S1f.7.9's T1f.7.9.2 (2026-11-11): a fact written with a `:rule` leaves every core, so a refutation resting on it reports the empty core. Open, deferred to F24."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/written-rule-leaves-core-twin.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W87 (`W87/written-rule-leaves-core`'s twin), filed by S1f.7.9's T1f.7.9.2 (2026-11-11): the witness with `(paid Ann)` written without a `:rule`, whose root core is `(paid Ann)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/written-using-never-held.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W87 (`W87/written-using-never-held`), filed by S1f.7.9's T1f.7.9.2 (2026-11-11): a `:using` that names a fact no state holds loads, and the core is the empty set. Open, deferred to F24."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

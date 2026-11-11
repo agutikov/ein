@@ -434,6 +434,19 @@ via its `:source`; the un-annotated property tag is background):
 (symmetric  co-located)                              ; property tag — implicit, background
 ```
 
+**A fact is not a macro's call** (M1f
+[S1f.7.12](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md);
+[`defined_behaviour.md` § 4.24](../../defined_behaviour.md#424-a-macros-call-is-no-fact--m1f-s1f712)).
+A `(macro …)` is called in a rule's or an hrule's `:match` and `:assert` and
+in a query's `:goal`, where the loader replaces the call by the macro's body.
+A fact is not expanded. So a fact headed by a macro's name, `(settled Ann)`
+beside `(macro settled (?g) (paid ?g))`, is refused at load, and so is one
+that holds the call at any depth, `(says (settled Ann))`, `(not (settled
+Bob))`, one a claim lists, and a `(relation …)` declared under a macro's name.
+The same holds of `std.macro`'s `unknown` and `forall`, imported or not. The
+author writes the fact itself, `(paid Ann)`. A macro's name written as a
+value, `(word settled)`, is a name.
+
 ### Derived facts — engine working memory
 
 The engine *derives* facts at runtime and dumps them as flat forms

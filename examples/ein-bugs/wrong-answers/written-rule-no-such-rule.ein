@@ -1,0 +1,30 @@
+;;; A written fact's `:rule` that names no rule of the program is stored as derived by it —
+;;; M1f **W87**, register row `W87/written-rule-no-such-rule`, filed by S1f.7.9 (T1f.7.9.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ────────────────────────────────────────────────────
+;;;
+;;; One guest, the fact `(paid Ann :rule zzz)`, and one rule, `seat`. The program declares no
+;;; rule `zzz`. No candidate.
+;;;
+;;; ── The answer, by hand ─────────────────────────────────────────────────────
+;;;
+;;; Not ruled: it is F24's question. Under (a), a program may not write `:rule`, and under (b),
+;;; `:rule` must name a declared rule, the program is refused at load. Under (c) it loads as
+;;; written and every surface that names `zzz` says the provenance was not checked.
+;;;
+;;; ── What the engine answered ────────────────────────────────────────────────
+;;;
+;;; At `91b12be8`, release: the program loads on every command, exit 0. `ein saturate --dump`
+;;; prints `(paid Ann :rule zzz)` among the derived facts, `ein render kb` draws it as derived
+;;; by `zzz`, and the state file `ein solve --dump-answer` writes says `(paid Ann) ; rule zzz —
+;;; Ann has paid`.
+;;; Open, and F24's: what a written provenance may claim is the user's question, not ruled.
+
+(relation paid Guest :why "{?1} has paid")
+(relation seated Guest :why "{?1} is seated")
+(is-a Ann Guest)
+(paid Ann :rule zzz)
+(rule seat () :match (paid ?g) :assert (seated ?g) :why "{?g} is seated: they have paid")
+(solve :hypothesis-relations ())
+(query :goal (seated ?g))

@@ -1993,6 +1993,68 @@ hrules of which one reads what the other could be asked about), `ein-ir`'s
 `from_ir` unit test `a_conclusion_negating_a_name_is_refused_at_load`, and
 `corpus/wrong_answers.toml`'s W84 and W85 rows.
 
+### 4.24 A macro's call is no fact — M1f S1f.7.12
+
+A stage of M1f
+[P1f.7](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md),
+[S1f.7.12](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)
+(Q-M1f.130 to .133, defaulted).
+
+**A macro is called where the loader expands it**: in a rule's or an hrule's
+`:match` and `:assert`, at any depth, and in a query's `:goal` (§ 4.21). There
+the call is replaced by the macro's body. Nothing else is expanded, so a form
+headed by a macro's name anywhere else is no call. In a fact it is refused at
+load (`ein_ir::from_ir`'s `refuse_macro_facts`), one line per call, at the
+call's name, on every command (exit 1, `ein test`: 2):
+
+```
+kb load error: <file>:<line>:<col>: the fact (settled Ann) is a call of the macro settled, (macro settled (?g) (paid ?g)) — a macro is called in a :match, an :assert or a :goal, where its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write the fact itself
+```
+
+| the program writes | the line, after the position |
+|---|---|
+| a fact headed by a macro's name, at any arity | `the fact (settled Ann) is a call of the macro settled, (macro settled (?g) (paid ?g)) — …` |
+| the call inside a fact, at any depth, under `(not …)`, as an `is-a` fact's argument or in a fact's `:using` | `the fact (says (settled Ann)) holds (settled Ann), a call of the macro settled, (macro settled (?g) (paid ?g)) — …` |
+| an imported macro, flat or qualified (`std.macro.unknown`) | `the fact (unknown (paid Bob)) is a call of the macro unknown, (macro unknown (?P) (and (absent ?P) (absent (not ?P)))) — …` |
+| a `std.macro` macro the program does not import, `unknown` or `forall` | `the fact (unknown (paid Bob)) is a call of std.macro's macro unknown, which the program does not import — …` |
+| the call inside a fact a claim lists, a query's or a `(solve … :expect (region …))`'s | `query: its :expect lists (settled Ann), a call of the macro settled, (macro settled (?g) (paid ?g)) — a claim lists facts, and …` |
+| a `(relation …)` declared under a macro's name | `relation 'settled': settled is a macro too, (macro settled (?g) (paid ?g)) — a premise (settled …) is the macro's call, replaced by its body, and a fact (settled …) is refused, so nothing could be of the relation; give one of the two another name` |
+
+Every line but the last ends *a macro is called in a :match, an :assert or a
+:goal, where its call is replaced by its body; a fact is not expanded, and no
+fact is of a macro: write the fact itself*.
+
+**The call is not expanded into the fact its body spells** (the stage's
+default (a)). A macro's body is a pattern: `unknown`'s is two `absent`s, a
+test of a state, and spells no fact. Expanding only a body that is one ground
+form would give a macro a second meaning.
+
+**What stays.** A call as a conclusion, `:assert (settled ?g)`, is expanded,
+as it was before the stage, and stores the body's fact, `(paid Ann)`; an
+expansion that is no conclusion is refused by § 4.16
+([Q-M1f.130](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f130--a-macros-call-as-a-conclusion-refused-or-expanded-as-it-is)).
+A macro's name written as a value, `(word settled)`, is a name. A claim headed
+by the call, `(model (settled Ann))`, names no relation of the program and
+keeps § 4.21's line (Q-M1f.118); the line above is for a program nothing else
+refuses. A relation named `unknown` or `forall` in a program that does not
+import `std.macro` is not refused where it is declared: no fact of it can be
+written, by the fourth row, and no premise read, since S1.8a.f20.
+
+**Until this stage** `(settled Ann)` beside the macro was stored as a fact of a
+relation `settled`, which no premise could read, a premise `(settled ?g)`
+being the call. `(paid Ann)` was not stored, so a rule over the macro derived
+nothing, and no line said so. `(not (settled Bob))` beside `(paid Bob)` left
+root alive. A claim that listed `(says (settled Ann))` loaded and failed, the
+listed fact *no class*. Eight register rows, W86, filed and fixed by the
+stage.
+
+Pinned by `ein-cli`'s `macro_facts.rs` (fifteen refused shapes and W86's eight
+witnesses, each on twenty commands: one stderr, the same on each, and no
+container; seven programs that keep loading, each storing what its call's
+body spells and no fact of the macro's name), `ein-ir`'s `from_ir` unit test
+`a_macros_call_written_as_a_fact_is_refused_at_load`, and
+`corpus/wrong_answers.toml`'s W86 rows.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands
