@@ -91,6 +91,7 @@ makes of these.
 | [S1f.6.8](s1f.6.8_rational_numbers.md) | Extension: rational numbers, an integer numerator over a natural denominator | — | S1f.6.7 | planned |
 | [S1f.6.9](s1f.6.9_width.md) | Width: overflow detection, width extension, and numbers written in reverse order (variadic or nested) | — | S1f.6.6 | planned; **stops for the user** on the representation |
 | [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | — | S1f.6.8, S1f.6.9 | planned; a report |
+| [S1f.6.20](s1f.6.20_word_problems.md) | An application: elementary-school word problems, the calculator imported among other relations; the words' meaning as rules, and a missing quantity detected and named | — | S1f.6.6, the protocol ruled | planned 2026-11-11; **stops for the user** with examples |
 
 No stage carries an estimate (the user's ruling of 2026-11-08).
 
@@ -106,6 +107,8 @@ No stage carries an estimate (the user's ruling of 2026-11-08).
 4. **S1f.6.9, the width.** It may run beside S1f.6.7 and S1f.6.8 if it changes no file they touch. If the user
    rules a new representation, it is applied to all four operations and both extensions.
 5. **S1f.6.10, the investigation, last.**
+6. **S1f.6.20, the word problems**, added by the user on 2026-11-11, any time after S1f.6.6: it needs the four
+   operations and not the extensions. Its number leaves 11 to 19 unassigned, as the user gave it.
 
 ## Acceptance
 
