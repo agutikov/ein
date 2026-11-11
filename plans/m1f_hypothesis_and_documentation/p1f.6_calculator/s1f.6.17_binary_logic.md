@@ -1,7 +1,10 @@
 # S1f.6.17 — Binary logic: truth tables, gates, and what they are good for
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-11, on the user's instruction of that day. Not started.
+**Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
+page shown to the user: [`binary_logic.md`](binary_logic.md).** Nothing shipped; T2 and T3 wait for the user's
+rulings on that page's questions. T1 re-counted this page's tables from the rows and corrected three hand
+counts, each marked below.
 **Depends on:** [S1f.6.16](s1f.6.16_binary_arithmetic.md), for the two digit names and the binary adder it
 rebuilds from gates.
 
@@ -66,8 +69,10 @@ the user may change any.
   one-input negations. They are functions of two inputs all the same, and the module has them, so that *every
   column of four bits has a name* is true and a test holds it. The other ten are the ones that read both.
 - **`Randn` and `Rorn` are `Andn` and `Orn` with the inputs swapped,** as `Rimp` is `Imp` swapped and `Nrimp`
-  is `Nimp` swapped; `Fst`/`Snd` and `Nfst`/`Nsnd` are the same pairing. So the sixteen are ten up to the
-  order of the inputs, and a spelling that says *swapped* by one letter keeps the family readable.
+  is `Nimp` swapped; `Fst`/`Snd` and `Nfst`/`Nsnd` are the same pairing. So the sixteen are **twelve** up to the
+  order of the inputs, four pairs and eight that are their own swap, and a spelling that says *swapped* by one
+  letter keeps the family readable. (This said *ten* until T1 counted it, 2026-11-11: ten is how many read
+  both inputs, another count.)
 - **One table, generated.** `(gate2 NAME A B OUT)`, 64 rows, written by the tables' generator with its
   `--check`, each row held to the function's four-bit column by a test; or a relation per function, which the
   stage compares on the prototype. A systematic second name, the column itself, `f0110` for `Xor`, costs
@@ -88,9 +93,9 @@ and does not trust this page.
 
 | fact | meaning | holds of |
 |---|---|---|
-| `(swap-of F G)` | G is F with its inputs exchanged: G(a, b) = F(b, a) | six pairs: `Andn`/`Randn`, `Fst`/`Snd`, `Nfst`/`Nsnd`, `Orn`/`Rorn` (as connectives `Nimp`/`Nrimp`, `Rimp`/`Imp`); the other eight are their own swap |
+| `(swap-of F G)` | G is F with its inputs exchanged: G(a, b) = F(b, a) | **four** pairs: `Andn`/`Randn`, `Fst`/`Snd`, `Nfst`/`Nsnd`, `Orn`/`Rorn` (the first and the last are the connectives `Nimp`/`Nrimp` and `Rimp`/`Imp`); the other eight are their own swap. Sixteen facts. (*six pairs* until T1's count, which had listed two of the four twice, under their connective names) |
 | `(complement-of F G)` | G is F with its output negated | eight pairs: `Zero`/`One`, `And`/`Nand`, `Or`/`Nor`, `Xor`/`Xnor`, `Fst`/`Nfst`, `Snd`/`Nsnd`, `Andn`/`Rorn`, `Randn`/`Orn` |
-| `(dual-of F G)` | De Morgan's dual: G(a, b) = not F(not a, not b) | `And`/`Or`, `Nand`/`Nor`, `Xor`/`Xnor`, `Zero`/`One`, `Andn`/`Rorn`, `Randn`/`Orn`; the four that are their own dual are below |
+| `(dual-of F G)` | De Morgan's dual: G(a, b) = not F(not a, not b) | `And`/`Or`, `Nand`/`Nor`, `Xor`/`Xnor`, `Zero`/`One`, **`Andn`/`Orn`, `Randn`/`Rorn`**; the four that are their own dual are below. (The last two pairs read `Andn`/`Rorn`, `Randn`/`Orn` until T1's count: those are the complements, the row above. The dual of *a and not b* is *a or not b*) |
 | `(left-negated F G)`, `(right-negated F G)` | G is F with one input negated: the family a gate with an inverted input belongs to | every function, twice |
 
 **Properties of one function:**

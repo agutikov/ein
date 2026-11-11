@@ -1,7 +1,9 @@
 # S1f.6.16 — Arithmetic with binary numbers
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-11, on the user's instruction of that day. Not started.
+**Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
+page shown to the user: [`binary_arithmetic.md`](binary_arithmetic.md)**, the three ways each tried and measured,
+with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruling on that page's questions.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
