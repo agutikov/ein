@@ -81,7 +81,7 @@ makes of these.
 
 | ID | title | est. | depends on | status |
 |---|---|---|---|---|
-| [S1f.6.1](s1f.6.1_design_proposal.md) | The design proposal: representations, the request protocol, and target programs computed on a prototype | — | S1f.5.5's swap | planned; **stops for the user** |
+| [S1f.6.1](s1f.6.1_design_proposal.md) | The design proposal: representations, the request protocol, and target programs computed on a prototype | — | S1f.5.5's swap | run 2026-11-11, [`design.md`](design.md); **stopped for the user** |
 | [S1f.6.2](s1f.6.2_digits_and_tables.md) | The digits and the hardcoded tables: full adder, full subtractor, digit product, comparator, short division | — | S1f.6.1 ruled, P1f.5 closed | planned |
 | [S1f.6.3](s1f.6.3_addition.md) | Addition: the ripple-carry adder, with overflow | — | S1f.6.2 | planned |
 | [S1f.6.4](s1f.6.4_subtraction.md) | Subtraction with remainder: two numbers, and the comparator | — | S1f.6.3 | planned |

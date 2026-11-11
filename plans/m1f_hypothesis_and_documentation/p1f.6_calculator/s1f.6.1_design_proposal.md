@@ -1,7 +1,8 @@
 # S1f.6.1 — The design proposal: representations, the request protocol, and target programs computed on a prototype
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-08. It runs once S1f.5.5's swap has landed, and **stops for the user** at its end.
+**Status:** run 2026-11-11, and **stopped for the user**: the page is [`design.md`](design.md), every target
+program computed on the prototype under `build/s1f.6/prototype/`, H empty on each. Not committed. Planned 2026-11-08.
 **Depends on:** S1f.5.5's swap, so its programs are written in the final grammar, with digits as names.
 
 ## What it delivers
