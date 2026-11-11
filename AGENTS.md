@@ -1147,6 +1147,14 @@ constrained-reasoning research.
   and no existing program's `ein solve` (`python3 build/s1f.6.4/sweep.py
   --old build/s1f.6.6/old/stdlib --ref b2c4b238`, 691 files, 2026-11-11);
   the register is unmoved.
+  **Two plans were added on 2026-11-11, on the user's instructions of that day.**
+  [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
+  and has no M1h beside it: propositional logic with valuations as hypotheses,
+  proof systems, first-order logic, Peano and induction, and the engine work
+  they turn out to need; it promotes F1b, and P1f.6's S1f.6.16 and S1f.6.17,
+  binary arithmetic and binary logic, are its starting point.
+  [F26](plans/followups/f26_consistency_and_completeness.md) sets Ein's
+  *alive*, *owes* and *exhausted* beside logic's consistency and completeness.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

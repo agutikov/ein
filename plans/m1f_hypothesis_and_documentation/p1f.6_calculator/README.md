@@ -136,6 +136,9 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.9](s1f.6.9_width.md) | What is left of the width: how long a number may be (the nesting limit, the size of a state) | S1f.6.6 | planned; one choice **for the user** |
 | [S1f.6.20](s1f.6.20_word_problems.md) | An application: elementary-school word problems, the calculator imported among other relations; the words' meaning as rules, and a missing quantity detected and named | S1f.6.6 | planned 2026-11-11; its first task **stops for the user** |
 | [S1f.6.14](s1f.6.14_expressions.md) | Optional: nested expressions, `(calc E)` and `(let NAME E)` | S1f.6.6, and the user's ruling | **waits for the user**; S1f.6.20 is where the need will show |
+| [S1f.6.15](s1f.6.15_load_against_calculation.md) | Long numbers and many calculations: examples that set load time against calculation time (the user, 2026-11-11) | S1f.6.6 | planned |
+| [S1f.6.16](s1f.6.16_binary_arithmetic.md) | Arithmetic with binary numbers: whether the rules get simpler, and whether the theory is generic in its base (the user, 2026-11-11) | S1f.6.6 | planned; T1 stops for the user |
+| [S1f.6.17](s1f.6.17_binary_logic.md) | Binary logic: truth tables, gates, a circuit as a program, and six applications tried; the starting point of [M1g](../../m1g_logic/README.md) (the user, 2026-11-11) | S1f.6.16 | planned; T1 stops for the user |
 | [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | S1f.6.8, S1f.6.9 | planned; a report |
 
 No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 15 to 19 are unassigned.
