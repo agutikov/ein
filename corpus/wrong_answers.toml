@@ -16477,3 +16477,216 @@ empty     = "dead"
 relations = []
 models    = []
 core      = []
+
+# ══ W88 — a flat import brings none of its module's facts: `:symbols` keeps the listed declarations and their closure, and drops every fact ══
+[[case]]
+id       = "W88/import-facts-flat"
+case     = "W88"
+title    = "a flat import brings none of its module's facts: `:symbols` keeps the listed declarations and their closure, and drops every fact"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.11"
+question = ["P1f.6 design.md § G", "Q-M1f.135"]
+witness  = "examples/ein-bugs/wrong-answers/import-facts-flat.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11), from finding 1 of P1f.6's design (design.md § G), on the user's ruling of that day. The row holds the query's `:goal-text`, a sentence per row of the goal, since R is {∅} either way and a state's `(model …)` names the candidates' relations: what the import drops is root's facts. `ein saturate --dump` lists no `is-a` fact; `(import import-facts-library :as o)` keeps both, renamed `(o.is-a …)`. Fixed by T1f.6.11.3 (2026-11-11): root holds the two facts, the first background and the second given, and the goal has two rows"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 7f574423 (2026-11-11): the program loads with `is-a` declared and no fact of it, R is {∅}, and the query's one class says *the goal has no row: undetermined here*, exit 0, with no word; `ein saturate --dump`, `ein oracle` and `ein test` the same root"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+goal_text = []
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-11, *\"importing facts is mandatory\"*, and S1f.6.11's point (a), taken by default (Q-M1f.135): a listed name selects the module's declaration of it, if any, and every top-level fact whose relation it is, and the closure follows names, so a kept declaration that names a relation brings that relation's facts"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+goal_text = ["Milk is a drink", "Tea is a drink"]
+derived   = "The library states `(is-a Tea Drink)` and `(is-a Milk Drink :source \"the ontology\")`, and the program lists `is-a`: root holds both, the first background and the second given, as if written in the program. No candidate, so R is {∅}, and the goal `(is-a ?x Drink)` has two rows in its one class. The library's `likes` facts and its rule `liquids` are not listed and no kept declaration names them, so they stay behind"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+goal_text = ["Milk is a drink", "Tea is a drink"]
+
+[[case]]
+id       = "W88/import-facts-rule"
+case     = "W88"
+title    = "a flat import brings none of its module's facts: `:symbols` keeps the listed declarations and their closure, and drops every fact"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.11"
+question = ["P1f.6 design.md § G", "Q-M1f.135"]
+witness  = "examples/ein-bugs/wrong-answers/import-facts-rule.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11), beside `W88/import-facts-flat`: the same library, with its rule listed and its relation not. The closure always brought `is-a`'s declaration, the rule naming it; it brought no fact, so the rule was kept and never fired. Fixed by T1f.6.11.3 (2026-11-11): root holds the two `is-a` facts and the two `liquid` facts the rule derives from them"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 7f574423 (2026-11-11): the rule `liquids` and the declaration of `is-a` are kept and no fact, the rule never fires, R is {∅}, and the query's one class says *the goal has no row: undetermined here*, exit 0, with no word"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+goal_text = []
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-11, *\"importing facts is mandatory\"*, and S1f.6.11's point (a), taken by default (Q-M1f.135): a listed name selects the module's declaration of it, if any, and every top-level fact whose relation it is, and the closure follows names, so a kept declaration that names a relation brings that relation's facts"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+goal_text = ["Milk is a liquid", "Tea is a liquid"]
+derived   = "`liquids` reads `(is-a ?x Drink)`, so the closure holds `is-a` and the import brings its two facts; the rule fires on each, root holds `(liquid Tea :rule liquids)` and `(liquid Milk :rule liquids)`, and the goal `(liquid ?x)` has two rows"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+goal_text = ["Milk is a liquid", "Tea is a liquid"]
+
+[[case]]
+id       = "W88/import-facts-table"
+case     = "W88"
+title    = "a flat import brings none of its module's facts: `:symbols` keeps the listed declarations and their closure, and drops every fact"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.11"
+question = ["P1f.6 design.md § G", "Q-M1f.135"]
+witness  = "examples/ein-bugs/wrong-answers/import-facts-table.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11): the calculator's case, finding 1 of P1f.6's design, `build/s1f.6/prototype/findings/flat-import-drops-facts.ein` with the rule alone listed. The workaround until the fix was to write each table as a rule with an empty `:match`. Fixed by T1f.6.11.3 (2026-11-11): root holds the two rows and the sum"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 7f574423 (2026-11-11): `add2` and the four declarations it names are kept and the two `fa` rows dropped, so the rule never fires on the request `(add (num2 0 9) (num2 0 1))`, R is {∅}, and the query's one class says *the goal has no row: undetermined here*, exit 0, with no word"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+goal_text = []
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-11, *\"importing facts is mandatory\"*, and S1f.6.11's point (a), taken by default (Q-M1f.135): a listed name selects the module's declaration of it, if any, and every top-level fact whose relation it is, and the closure follows names, so a kept declaration that names a relation brings that relation's facts"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+goal_text = ["(num2 0 9) + (num2 0 1) = (num2 1 0)"]
+derived   = "`add2` names `add`, `num2`, `fa` and `sum-of`, so the import brings the two table rows. The units column is `(fa 9 1 0 0 1)`, digit 0 and carry 1, and the tens column `(fa 0 0 1 1 0)`, digit 1 and no carry: root holds `(sum-of (num2 0 9) (num2 0 1) (num2 1 0) :rule add2)`, the goal's one row"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+goal_text = ["(num2 0 9) + (num2 0 1) = (num2 1 0)"]
+
+[[case]]
+id       = "W88/import-facts-undeclared"
+case     = "W88"
+title    = "a flat import brings none of its module's facts: `:symbols` keeps the listed declarations and their closure, and drops every fact"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.11"
+question = ["P1f.6 design.md § G", "Q-M1f.135"]
+witness  = "examples/ein-bugs/wrong-answers/import-facts-undeclared.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11), the second half of point (a), design.md § G's option a3: a relation needs no declaration, so a library may state facts of one it does not declare, and under a2 alone such a fact could never be listed. Its `wrong` is the record of what every command answered at 7f574423. Fixed by T1f.6.11.3 (2026-11-11): the program loads on every command, root holds `(likes Tea Milk)` and `(not (likes Milk Tea))`, and the goal's one row is `?y = Milk`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
+date   = "2026-11-11"
+
+[case.wrong]
+run     = "saturate --dump"
+by      = "command"
+why     = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 7f574423 (2026-11-11): refused at load, exit 1 (`ein test`: 2)"
+exit    = 1
+refused = "kb load error: (import import-facts-library :symbols …) — not provided by the module: likes at None"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the user's ruling of 2026-11-11, *\"importing facts is mandatory\"*, and S1f.6.11's point (a), taken by default (Q-M1f.135): a listed name selects the module's declaration of it, if any, and every top-level fact whose relation it is, and the closure follows names, so a kept declaration that names a relation brings that relation's facts; a listed name may be a relation the module only states facts of"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "The library states `(likes Tea Milk)` and `(not (likes Milk Tea))` and declares no `likes`. The program lists `likes`, so root holds both, the stored negation being a fact of the relation it negates. No candidate, so R is {∅}; the goal `(likes Tea ?y)` has one row, `?y = Milk`"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]

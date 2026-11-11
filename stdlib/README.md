@@ -209,6 +209,13 @@ Three tiers (Python-style — see the A1 decision record):
 `:symbols` keeps the listed names **plus their dependency closure** (S1.8a.f20),
 following name references across the modules a symbol's own module imports; an
 entry rule pulls what it asserts/matches without the importer enumerating it.
+**It keeps facts too** (M1f S1f.6.11, 2026-11-11): every top-level fact of the
+module whose relation is a name of that closure comes with it, as written, so
+a library of facts, an ontology or a table, is imported flat like a library
+of rules, and a listed name may be a relation the module only states facts
+of. None of the seven `std.*` modules holds a fact today. The whole rule,
+and what a qualified import does with a module's facts, is
+[`01_grammar.md` § Import](../docs/kernel/ir/03-ein-lang/01_grammar.md#import).
 Importing the same declaration twice (the diamond a module's self-imports
 create) is idempotent — identical collapses, a same-name conflict errors.
 `:as` and `:symbols` are mutually exclusive. Names are logical and dotted

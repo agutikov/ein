@@ -1,0 +1,27 @@
+;;; A flat import cannot name a relation its module only states facts of —
+;;; M1f **W88**, register row `W88/import-facts-undeclared`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.6.11 (T1f.6.11.2, 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `import-facts-library.ein`, beside this file, states `(likes Tea Milk)`
+;;; and `(not (likes Milk Tea))` and declares no relation `likes`: a relation
+;;; needs no declaration. This program lists `likes`, and asks what Tea likes.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; A listed name may be a relation the module only states facts of
+;;; (S1f.6.11's point (a)): the import brings the two facts, the stored
+;;; negation with its relation's, and the goal has one row, *Tea likes Milk*.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `7f574423`, release: refused at load on every command, `(import
+;;; import-facts-library :symbols …) — not provided by the module: likes`,
+;;; exit 1 (`ein test`: 2), since a fact was nothing a selection could name.
+;;; The answer above by hand since S1f.6.11 (T1f.6.11.3).
+
+(import import-facts-library :symbols (likes))
+
+(solve :hypothesis-relations ())
+(query :goal (likes Tea ?y) :goal-text "Tea likes {?y}")

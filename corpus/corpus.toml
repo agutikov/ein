@@ -2483,6 +2483,42 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W87 (`W87/written-using-never-held`), filed by S1f.7.9's T1f.7.9.2 (2026-11-11): a `:using` that names a fact no state holds loads, and the core is the empty set. Open, deferred to F24."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-facts-library.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W88's library of facts, an ontology: `is-a` declared with two facts, a fact and a stored negation of `likes`, which it does not declare, and a rule that reads its `is-a` facts. `import-facts-flat`, `-rule` and `-undeclared` import it flat. A program of its own too, R {∅}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-facts-flat.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W88 (`W88/import-facts-flat`), filed by S1f.6.11's T1f.6.11.2 (2026-11-11) on the user's ruling of that day, *importing facts is mandatory*: `(import import-facts-library :symbols (is-a))`, which kept the declaration and dropped the library's two `is-a` facts, so the goal had no row. Fixed by S1f.6.11's T1f.6.11.3 (2026-11-11): a listed name brings the facts whose relation it is, and the goal has two rows."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-facts-rule.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W88 (`W88/import-facts-rule`), filed by S1f.6.11's T1f.6.11.2 (2026-11-11): `(import import-facts-library :symbols (liquids))`, which kept the rule and the declaration it reads and dropped the facts, so the rule never fired. Fixed by S1f.6.11's T1f.6.11.3 (2026-11-11): the closure brings the facts of every relation a kept declaration names, and root holds `(liquid Tea)` and `(liquid Milk)`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-facts-undeclared.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W88 (`W88/import-facts-undeclared`), filed by S1f.6.11's T1f.6.11.2 (2026-11-11): `(import import-facts-library :symbols (likes))`, a relation the library only states facts of, which was refused at load, *not provided by the module: likes*. Fixed by S1f.6.11's T1f.6.11.3 (2026-11-11): a listed name may be such a relation, and root holds `(likes Tea Milk)` and `(not (likes Milk Tea))`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-facts-table-module.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W88's table module, the calculator's case: two rows of the full adder's table as facts of `fa`, and the rule `add2` that looks them up. `import-facts-table` imports it flat. A program of its own too, R {∅}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-facts-table.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W88 (`W88/import-facts-table`), filed by S1f.6.11's T1f.6.11.2 (2026-11-11), finding 1 of P1f.6's design: `(import import-facts-table-module :symbols (add2))`, which kept the rule and dropped the table it reads, so 9 + 1 was never answered. Fixed by S1f.6.11's T1f.6.11.3 (2026-11-11): root holds `(sum-of (num2 0 9) (num2 0 1) (num2 1 0))`."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

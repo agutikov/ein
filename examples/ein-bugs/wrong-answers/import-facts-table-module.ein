@@ -1,0 +1,25 @@
+;;; A table written as facts, and the rule that looks it up: the module
+;;; `import-facts-table.ein` imports flat — M1f **W88**
+;;; (`corpus/wrong_answers.toml`), S1f.6.11 (2026-11-11); the calculator's
+;;; case, from P1f.6's design. A program of its own as well.
+;;;
+;;; `fa` is the full adder's table, two of its rows: digit + digit + carry in
+;;; is a digit and a carry out. `add2` answers a request `(add …)` over
+;;; two-digit numbers with a `(sum-of …)`, column by column.
+
+(relation fa Digit Digit Digit Digit Digit :why "{?1} + {?2} + carry {?3} is digit {?4}, carry {?5}")
+(relation num2 Digit Digit :why "the number {?1}{?2}")
+(relation add Number Number :why "asked: {?1} + {?2}")
+(relation sum-of Number Number Number :why "{?1} + {?2} = {?3}")
+
+(fa 9 1 0 0 1)
+(fa 0 0 1 1 0)
+
+(rule add2 ()
+  :match  (and (add (num2 ?a1 ?a0) (num2 ?b1 ?b0))
+               (fa ?a0 ?b0 0 ?s0 ?c1)
+               (fa ?a1 ?b1 ?c1 ?s1 0))
+  :assert (sum-of (num2 ?a1 ?a0) (num2 ?b1 ?b0) (num2 ?s1 ?s0))
+  :why    "{?a1}{?a0} + {?b1}{?b0} is {?s1}{?s0}, column by column")
+
+(solve :hypothesis-relations ())

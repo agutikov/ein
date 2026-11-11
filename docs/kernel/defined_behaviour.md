@@ -2055,6 +2055,74 @@ body spells and no fact of the macro's name), `ein-ir`'s `from_ir` unit test
 `a_macros_call_written_as_a_fact_is_refused_at_load`, and
 `corpus/wrong_answers.toml`'s W86 rows.
 
+### 4.25 A flat import brings a module's facts — M1f S1f.6.11
+
+A stage of M1f
+[P1f.6](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md),
+[S1f.6.11](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md),
+on the user's ruling of 2026-11-11, *"importing facts is mandatory"*
+(Q-M1f.135 to .144, defaulted).
+
+**`(import M :symbols (n …))` keeps, of `M`'s top-level forms, every
+declaration whose name is in the selection's closure and every fact whose
+relation is**, unrenamed and in the module's order (`ein_ir::imports`'
+`select`). The closure is the listed names and every name a selected
+declaration writes, followed through the module's declarations.
+
+| of the module | `(import M)`, `(import M :as o)` | `:symbols`, its name in the closure | `:symbols`, its name not in the closure |
+|---|---|---|---|
+| a declared relation, a rule, an hrule, a macro | kept, renamed `o.name`, and every reference to it | kept as written | dropped |
+| a fact of a declared relation | kept, **its relation renamed**: `(o.is-a Tea Drink)` | **kept as written**, with its `:source` | dropped |
+| a fact of a relation the module does not declare | kept as written | **kept as written**: the relation may be listed | dropped |
+| a stored negation, `(not (likes Milk Tea))` | kept, renamed as a fact is | kept: a fact of the relation it negates | dropped |
+| a constant in a fact | as written | as written | — |
+| `(query …)`, `(solve …)`, `(config …)` | kept | never brought | never brought |
+
+- **A listed name** is one the module declares or states a fact of. Any other
+  is refused, on every command: `kb load error: (import M :symbols …) — not
+  provided by the module: n at …`.
+- **The closure follows declarations, and not the names inside a fact**
+  ([Q-M1f.141](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f141--does-a-selections-closure-follow-the-names-inside-a-kept-fact)):
+  a kept rule that reads `is-a` brings `is-a`'s facts; a kept fact `(owns Ann
+  cat)` brings neither a declaration of `cat` nor its facts.
+- **A fact of a kernel relation comes as any fact does**
+  ([Q-M1f.142](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f142--a-stored-negation-and-a-fact-of-a-kernel-relation-under-a-selection)):
+  `(__closed__ r)` when `__closed__` is listed or a kept rule writes it.
+- **An unlisted rule is dropped** even where the imported facts would fire it:
+  a selection is a selection.
+- **An imported fact is a fact of the program**: its provenance is its own, a
+  `:source` or none, with no stamp of the module; its constants are names of
+  the program, and enter the blind enumerator's objects.
+- **A fact that arrives by two paths is one statement.** A module is parsed
+  once per resolution, so a diamond of flat imports of one library, or the
+  library imported flat twice, yields each fact once, where it first arrived
+  ([Q-M1f.143](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f143--a-fact-that-arrives-twice-through-flat-imports)).
+  The same fact stated twice with two `:source`s, by a module and the program
+  or by two modules, keeps its first statement and loses the second with no
+  word, as it does written twice in one file: stated here, not ruled, and
+  [F24](../../plans/followups/f24_written_provenance.md)'s to decide.
+- **A qualified import is unmoved.** It renames what the module declares, so
+  its facts land in `o.is-a` and do not join the program's `is-a`: a library
+  of facts is imported flat.
+
+**Until this stage** a selection kept declarations alone. A module's facts
+were dropped with no word, so a program that imported a library of facts flat
+and asked a goal over it was answered *the goal has no row*, exit 0; a rule
+of the library that read its facts was kept and never fired; and a relation
+the module only stated facts of could not be listed, *not provided by the
+module*. No tracked program imported a module that holds a fact, and the
+stdlib's seven modules hold none (`python3
+build/s1f.6/prototype/scan_imports.py`, 2026-11-11), so no other answer
+moved. Four register rows, W88, filed and fixed by the stage.
+
+Pinned by `ein-ir`'s `imports_semantics.rs`
+(`what_each_import_form_brings_of_a_module`, a case per cell of the table;
+`a_selection_follows_declarations_and_not_the_names_inside_a_fact`;
+`a_diamond_of_flat_imports_yields_each_fact_once`), `ein-cli`'s
+`import_facts.rs` (W88's four witnesses, each with a claim, on twelve
+commands: the import answers as the selected forms written in its place, and
+its saved container as the file), and `corpus/wrong_answers.toml`'s W88 rows.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands

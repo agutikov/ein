@@ -939,6 +939,33 @@ constrained-reasoning research.
   module; division by zero derives a flag and `(false)` from it. The phase
   keeps what it finds in its own `findings.md`, and S1f.6.20, word problems,
   is its first application.
+  **S1f.6.11, the phase's engine stage, ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md#t1-record-2026-11-11),
+  Q-M1f.135 to .144 defaulted; `defined_behaviour.md` § 4.25). **A flat
+  import brings a module's facts** (the user's ruling of 2026-11-11,
+  *"importing facts is mandatory"*): `(import M :symbols (…))` keeps, beside
+  every declaration whose name is in the selection's closure, every top-level
+  fact of `M` whose relation is, as written and in the module's order, a
+  stored negation with the relation it negates (`ein_ir::imports`' `select`).
+  A listed name may be a relation the module only states facts of; the
+  closure follows the names a kept declaration writes and not the names
+  inside a fact; a rule nothing names is still dropped; an imported fact is a
+  fact of the program, its constants names of the program; and a fact that
+  arrives by two flat paths is one statement. A qualified import is unmoved:
+  it renames what the module declares, so its facts land in `o.is-a`, and a
+  library of facts is imported flat
+  ([`01_grammar.md` § Import](docs/kernel/ir/03-ein-lang/01_grammar.md#import)).
+  Until the stage a selection kept declarations alone, so a library of facts
+  arrived empty, in silence. W88's four rows filed and fixed, the witnesses
+  the `import-facts-*` family; no tracked program imported a module that
+  holds a fact, and the sweep, old release binary against new over 669 `.ein`
+  files, moved the four witnesses alone (`python3 build/s1f.6.11/sweep.py`,
+  2026-11-11): 305 fixed, 16 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11). The pins are
+  `ein-ir/tests/imports_semantics.rs` and `ein-cli/tests/import_facts.rs`.
+  The stage found E-8, a qualified import bringing a module's `(query …)`,
+  `(solve …)` and `(config …)`, kept in the phase's `findings.md`. S1f.6.2,
+  the tables, is next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

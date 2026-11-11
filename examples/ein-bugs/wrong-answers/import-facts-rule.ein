@@ -1,0 +1,29 @@
+;;; A flat import keeps a library's rule and drops the facts the rule reads —
+;;; M1f **W88**, register row `W88/import-facts-rule`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.6.11 (T1f.6.11.2, 2026-11-11).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `import-facts-library.ein`, beside this file, states `(is-a Tea Drink)`
+;;; and `(is-a Milk Drink)` and holds the rule `liquids`, *a drink is a
+;;; liquid*. This program lists the rule alone, and asks what is a liquid. No
+;;; candidate, so R is {∅}.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The selection's closure follows names: `liquids` reads `is-a`, so the
+;;; import brings `is-a`'s declaration, as it always did, and `is-a`'s facts
+;;; (S1f.6.11's point (a)). The rule fires on each: root holds `(liquid Tea)`
+;;; and `(liquid Milk)`, and the goal has two rows.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `7f574423`, release: the rule and the declaration are kept and the
+;;; facts dropped, so the rule never fires and the goal has no row, exit 0,
+;;; with no word.
+;;; The answer above by hand since S1f.6.11 (T1f.6.11.3).
+
+(import import-facts-library :symbols (liquids))
+
+(solve :hypothesis-relations ())
+(query :goal (liquid ?x) :goal-text "{?x} is a liquid")

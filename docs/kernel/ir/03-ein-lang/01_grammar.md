@@ -122,6 +122,7 @@ key on it).
 | `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:over …] [:expect …])`; several per file |
 | `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect …])`; at most one per file |
 | `config` | solver knobs | `(config [:lattice-sanity-check true\|false] [:record-alternative-justifications true\|false])` |
+| `import` | bring a module's declarations and facts into the program ([§ Import](#import)) | `(import <module> [:as <alias> \| :symbols (<name>+)])` |
 | `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace (step …)*)` |
 | *anything else* | **a fact** | `(not <fact> …)` · generic `(<NAME> <args>* [:source "…"] [:rule <name> :using (<fact>+)])` |
 
@@ -153,7 +154,7 @@ Which keywords a form requires, and that each appears once, stay the loader's.
 | `solve` | `:hrules`, `:hypothesis-relations`, `:no-hypothesis` | what may be guessed: the lattice | no |
 | | `:expect` | a claim about the region | no |
 | `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags, `true` or `false` ([`configuration.md`](../../configuration.md)) | no |
-| `import` | `:symbols` | the names imported | no |
+| `import` | `:symbols` | the names imported, flat: each selects the module's declaration of it and its facts of that relation ([§ Import](#import)) | no |
 | | `:as` | an alias | no |
 | `macro` | `:why` | a string, after the body (the user's ruling of 2026-11-08) | at load, by default |
 | `trace` | none; its `step` takes `:rule`, `:using`, `:derives`, `:source`, `:assumes` | one derivation step | no |
@@ -1117,6 +1118,76 @@ The division of labour: a `(relation … :why)` template renders an individual
 *fact* to text (a state file's comment after the fact, `--trace`'s *Derives*
 line); the `(query … :goal-text)` template renders the *headline result* from
 the goal bindings, a projection class's sentence on the read-out.
+
+### Import
+
+```lisp
+(import onto)                        ; whole module, every declared name prefixed onto.
+(import onto :as o)                  ; the same, prefixed o.
+(import onto :symbols (is-a things)) ; flat: the listed names, their closure, and their facts
+```
+
+A module is a `.ein` file: `std.x` resolves under the
+[stdlib](../../../../stdlib/README.md#importing), any other name against the
+importing file's directory. An import is replaced, before the loader runs, by
+forms of the module, and the three shapes differ in which forms and under
+which names. `:as` and `:symbols` are mutually exclusive.
+
+**A flat import, `:symbols`, brings declarations and facts** (M1f
+[S1f.6.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md),
+the user's ruling of 2026-11-11, *"importing facts is mandatory"*; W88). The
+selection is a set of names, the **closure** of the list: every listed name,
+and every name a selected declaration writes, followed through the module's
+declarations. Of the module's top-level forms it keeps, unrenamed and in the
+module's order:
+
+- every **declaration** (`relation`, `rule`, `hrule`, `macro`) whose name is
+  in the closure;
+- every **fact** whose relation is in the closure, with its `:source`. A
+  stored negation, `(not (likes Milk Tea))`, is a fact of `likes`.
+
+So `(import onto :symbols (is-a))` brings `is-a`'s declaration and the
+module's `is-a` facts, and `(import onto :symbols (things))`, where the rule
+`things` reads `is-a`, brings the rule, the declaration and the same facts. A
+relation needs no declaration, so a listed name may be a relation the module
+only states facts of. A listed name the module neither declares nor states a
+fact of is refused, *not provided by the module*.
+
+What a flat import does not bring: a declaration or a fact no name in the
+closure reaches, so a rule nobody names stays behind even where the imported
+facts would fire it; the names written *inside* a fact, which the closure
+does not follow (`(owns Ann cat)` brings no declaration of `cat`); and the
+module's `(query …)`, `(solve …)` and `(config …)`, which are the module's
+own as a program. `(__closed__ r)` is a fact of `__closed__` like another: a
+library that closes its own relations has the marker listed, or writes it in
+a rule the selection names.
+
+**An imported fact is a fact of the program.** It is stored as if written
+where the import stands: background, or given where it carries a `:source`.
+Its constants are names of the program, so they are among the objects the
+blind enumerator proposes facts about
+([`solution_semantics.md` § 1.2](../../inference/solution_semantics.md#12-names));
+a program that wants no guesses about a library's relation closes it. A fact
+that arrives twice, through a diamond of flat imports or one module imported
+flat twice, is one fact. The same fact stated with two `:source`s keeps its
+first statement and loses the second in silence, as it does written twice in
+one file
+([F24](../../../../plans/followups/f24_written_provenance.md)'s question).
+
+**A qualified import, bare or `:as`, brings every form** and prefixes each
+name the module *declares*, wherever it stands, the relation heading a fact
+included: the module's `(is-a Tea Drink)` is `(o.is-a Tea Drink)`, a relation
+apart from the program's own `is-a`. A relation the module does not declare
+and every constant are left as written. So a library of facts, an ontology or
+a table, is imported flat, where its facts join the program's vocabulary; a
+qualified import keeps a library's theory apart under its own names.
+
+Every cell of this is `ein-ir`'s
+[`imports_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_semantics.rs)
+(`what_each_import_form_brings_of_a_module`), and `ein-cli`'s
+[`import_facts.rs`](../../../../ein.rs/crates/ein-cli/tests/import_facts.rs)
+holds that a flat import of facts answers, on every command that loads a
+program, as the same forms written in place.
 
 ### Trace
 

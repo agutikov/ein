@@ -147,6 +147,16 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.132](#q-m1f132--a-stdmacro-macro-the-program-does-not-import-written-as-a-fact) | a `std.macro` macro the program does not import, written as a fact | **defaulted 2026-11-11 (S1f.7.12): refused, as a rule's `:match` writing it has been since S1.8a.f20; a relation of that name is not refused where it is declared**; [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md) |
 | [Q-M1f.133](#q-m1f133--a-macros-call-inside-a-fact-a-claim-lists-and-in-a-facts-using) | a macro's call inside a fact a claim lists, and in a fact's `:using` | **defaulted 2026-11-11 (S1f.7.12): refused as a written fact's is; a claim headed by the call keeps Q-M1f.118's line**; [S1f.7.12](p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md) |
 | [Q-M1f.134](#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled) | what a register row records as `right` while F24's question is not ruled | **defaulted 2026-11-11 (S1f.7.9): the answer under one named reading of F24's (a), (b), (c), each other reading an alternative, the review `deferred`, as W8's rows record Q-M1e2.2**; [S1f.7.9](p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md), [F24](../followups/f24_written_provenance.md) |
+| [Q-M1f.135](#q-m1f135--which-facts-a-flat-import-brings) | which facts a flat import brings | **defaulted 2026-11-11 (S1f.6.11): a name in the selection's closure selects the module's declaration of it and every top-level fact whose relation it is; a listed name may be a relation the module only states facts of (design.md § G's a3)**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.136](#q-m1f136--what-a-qualified-import-does-to-the-names-inside-a-fact) | what a qualified import does to the names inside a fact | **defaulted 2026-11-11 (S1f.6.11): unchanged, it renames declared names; a library of facts is imported flat**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.137](#q-m1f137--are-an-imported-facts-constants-names-of-the-program) | are an imported fact's constants names of the program? | **defaulted 2026-11-11 (S1f.6.11): yes, as an imported fact is a fact of the program**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.138](#q-m1f138--the-provenance-of-an-imported-fact) | the provenance of an imported fact | **defaulted 2026-11-11 (S1f.6.11): its own `:source`, or background; no module stamp, F24's**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.139](#q-m1f139--the-same-fact-from-two-places) | the same fact from two places | **defaulted 2026-11-11 (S1f.6.11): identical facts are one; two `:source`s keep the first statement, stated on the page and handed to F24**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.140](#q-m1f140--a-rule-of-the-module-the-selection-does-not-name) | a rule of the module the selection does not name | **defaulted 2026-11-11 (S1f.6.11): still dropped: a selection is a selection**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.141](#q-m1f141--does-a-selections-closure-follow-the-names-inside-a-kept-fact) | does a selection's closure follow the names inside a kept fact? | **defaulted 2026-11-11 (S1f.6.11): no: it follows the names a kept declaration writes, as before the stage**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.142](#q-m1f142--a-stored-negation-and-a-fact-of-a-kernel-relation-under-a-selection) | a stored negation, and a fact of a kernel relation, under a selection | **defaulted 2026-11-11 (S1f.6.11): a negation is a fact of the relation it negates; `(__closed__ r)` and a written `(eq a b)` come as any fact does, when the relation's name is in the closure**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.143](#q-m1f143--a-fact-that-arrives-twice-through-flat-imports) | a fact that arrives twice through flat imports | **defaulted 2026-11-11 (S1f.6.11): one statement, kept where it first arrived**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.144](#q-m1f144--what-w88s-rows-record) | what W88's rows record | **defaulted 2026-11-11 (S1f.6.11): the sentences a query's `:goal-text` prints, and a refusal; no schema change**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2778,3 +2788,131 @@ direction, with (a) and (c) as alternatives. The two core rows state (c)'s core,
 refusals as alternatives: a row whose `right` is a refusal may not hold today's core beside it while a live row can
 show it (`ein-corpus`'s `beside_a_refusal_now_records_what_today_reports`), and the core is what F24's table says
 is wrong. The choice of reading rules nothing: F24's question stays the user's.
+
+### Q-M1f.135 — Which facts a flat import brings
+
+**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (a), and taken by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md). The user ruled that day that *"importing facts is
+mandatory"*; a fact has no name to list, so which facts `(import M :symbols (…))` brings is a choice.
+
+- **(a1) Every fact of the module, always.**
+- **(a2) The facts whose relation is in the selection's closure.**
+- **(a3) a2, and a listed name may be a relation the module only states facts of.**
+- **(a4) A new form for the whole module, flat**, or the bare form redefined: a grammar change, or six corpus
+  imports moved.
+
+**Defaulted 2026-11-11: (a3)**, the design's recommendation. A selection stays a selection, nothing comes
+unasked, and everything is reachable. `(import std.arith :symbols (arith))` keeps working, the closing rule
+naming every relation. Held by `imports_semantics.rs`, W88's four rows and `defined_behaviour.md` § 4.25.
+
+### Q-M1f.136 — What a qualified import does to the names inside a fact
+
+**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (b). A qualified import renames every name the module declares, the relation
+heading a fact among them, so a library's `is-a` facts land in `o.is-a` and do not join the program's `is-a`.
+
+- **(b1) Keep it, and say nothing.**
+- **(b2) Never rename a relation that heads a fact**: the module's own rules, renamed, would stop reading them.
+- **(b3) Keep it, and say on the page that a library of facts is imported flat.**
+
+**Defaulted 2026-11-11: (b3).** Renaming is what a qualified import is. `01_grammar.md` § Import says it.
+
+### Q-M1f.137 — Are an imported fact's constants names of the program?
+
+**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (c). They were under a qualified import, and they enter the blind
+enumerator's objects: importing an ontology of n constants widens the universe of every open relation by n.
+
+- **(a) Yes**: an imported fact is a fact of the program, and `solution_semantics.md` § 1.2 defines the names as
+  the constants the program's facts and rules write.
+- **(b) Mark library constants**, so the enumerator skips them.
+
+**Defaulted 2026-11-11: (a).** A program that wants no guesses about a library's relation closes it, or the
+library closes its own.
+
+### Q-M1f.138 — The provenance of an imported fact
+
+**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (d).
+
+- **(a) Its own**: a `:source` where the module wrote one, otherwise background, as if written in the program.
+- **(b) Stamped with the module's name** where it has no `:source`.
+
+**Defaulted 2026-11-11: (a).** What a written provenance may claim is
+[F24](../followups/f24_written_provenance.md)'s, and a stamp is the same question.
+
+### Q-M1f.139 — The same fact from two places
+
+**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (e); E-6 of [`findings.md`](p1f.6_calculator/findings.md). A fact stated by
+a module and by the program, or by two modules, with different `:source`s keeps its first statement, and the
+later `:source` is gone with no word, as it is for a fact written twice in one file.
+
+- **(a) State the behaviour, and hand the question to F24.**
+- **(b) Refuse, or warn, here.**
+
+**Defaulted 2026-11-11: (a).** The stage does not make it worse or better: `defined_behaviour.md` § 4.25 and
+`01_grammar.md` § Import state it, and E-6 names F24. Identical facts are one fact (Q-M1f.143).
+
+### Q-M1f.140 — A rule of the module the selection does not name
+
+**Raised** 2026-11-11 by [design.md § G](p1f.6_calculator/design.md#g-the-flat-import-finding-a-specification-for-importing-facts), point (f). `(import onto :symbols (is-a))` brings the `is-a` facts and neither of
+the module's rules over `is-a`, though the facts would fire them.
+
+- **(a) Still dropped.**
+- **(b) Brought by the facts it reads.**
+
+**Defaulted 2026-11-11: (a).** A selection is a selection; one name that brings a theory is a rule that names
+its rules, as the calculator's closing rule does.
+
+### Q-M1f.141 — Does a selection's closure follow the names inside a kept fact?
+
+**Raised** 2026-11-11 by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md)'s T3. The closure followed the names a kept *declaration* writes. Once facts are
+kept, a kept fact writes names too: `(owns Ann cat)`, where `cat` is a relation the module declares and states
+facts of.
+
+- **(a) No**: declarations only, as before the stage. `(owns Ann cat)` brings neither `cat`'s declaration nor
+  its facts.
+- **(b) Yes**: every name a kept form writes is followed, so a constant that happens to be a declared name
+  brings a declaration nobody asked for, and a fact's `:rule` brings the rule.
+
+**Defaulted 2026-11-11: (a).** Point (a)'s default says *the closure follows names as today*, and nothing comes
+unasked. Held by `a_selection_follows_declarations_and_not_the_names_inside_a_fact`.
+
+### Q-M1f.142 — A stored negation, and a fact of a kernel relation, under a selection
+
+**Raised** 2026-11-11 by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md)'s T3. `(not (likes Milk Tea))` is headed `not`, and `(__closed__ is-a)` and a
+written `(eq a b)` are headed by reserved names.
+
+- **(a) A negation is a fact of the relation it negates, and a kernel relation's fact comes as any fact does**:
+  when its relation's name is in the closure, listed (`:symbols (is-a __closed__)`) or written by a kept
+  declaration (a rule that asserts `(__closed__ …)`).
+- **(b) A kernel relation's fact is never brought**, or `(__closed__ r)` comes with `r`.
+
+**Defaulted 2026-11-11: (a).** One rule and no special case. Its cost: listing `__closed__` brings every
+`(__closed__ …)` fact of the module, the ones about relations the selection left behind too, and listing `is-a`
+alone leaves `(__closed__ is-a)` behind. A library that closes its own relations for a flat importer has the
+marker listed or writes it in a rule the selection names, as the calculator's closing rule does.
+
+### Q-M1f.143 — A fact that arrives twice through flat imports
+
+**Raised** 2026-11-11 by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md)'s T3 and T4. A flat diamond over declarations collapses, identical ones being one.
+A fact has no name to collapse on, so a library reached by two flat paths put each of its facts in the form
+list twice. The KB is a set, so no answer differs.
+
+- **(a) One statement, kept where it first arrived**: a module is parsed once per resolution, so the second
+  arrival is the same node, and `dedup_declarations` drops it.
+- **(b) Leave both for the loader.**
+
+**Defaulted 2026-11-11: (a).** The calculator's tables are over a thousand rows, and every module that imports
+them would hand them to the loader again. It also drops the second copy of an undeclared relation's fact under
+two qualified imports of one module, which the loader folded already. A fact the program writes itself beside
+the library's is another statement and is left to the loader (Q-M1f.139).
+
+### Q-M1f.144 — What W88's rows record
+
+**Raised** 2026-11-11 by [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md)'s T2. The witnesses have no candidate, so R is {∅} before and after, and a
+state's `(model …)` names the candidates' relations: what the import drops is root's facts.
+
+- **(a) The sentences the query's `:goal-text` prints**, one per row of the goal (schema /15, W37's), and for
+  the name that could not be listed, the refusal.
+- **(b) A new field for root's facts**: a schema change.
+- **(c) A claim**: a witness's `:expect` states today's answer until the fix, so the row would read *held*
+  before and after.
+
+**Defaulted 2026-11-11: (a).** No schema change, as the stage file expected.

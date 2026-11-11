@@ -8,7 +8,14 @@
 //! |---|---|
 //! | `(import std.macro)` | every defined name prefixed `std.macro.` |
 //! | `(import std.macro :as m)` | prefixed `m.` |
-//! | `(import std.macro :symbols (forall))` | the listed declarations, flat and unrenamed |
+//! | `(import std.macro :symbols (forall))` | the listed declarations and their closure, flat and unrenamed, and the module's facts of every relation the closure names |
+//!
+//! **A flat import brings a module's facts** since M1f S1f.6.11 (W88, the
+//! user's ruling of 2026-11-11, *"importing facts is mandatory"*): a listed
+//! name selects the module's declaration of it, if any, and every top-level
+//! fact whose relation it is, unrenamed and in the module's order
+//! (`select`). Until then a selection kept declarations alone, so a library
+//! of facts, an ontology, arrived empty.
 //!
 //! so "merge" is list concatenation and conflict detection is the loader's
 //! existing duplicate-name guard. Resolution is recursive, bottom-up and
@@ -40,6 +47,12 @@ const STDLIB_ALIAS: &str = "std";
 
 /// The four heads that *bind* a name.
 const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
+
+/// The heads of the top-level forms that are neither a declaration nor a
+/// fact: what a program asks, how it is solved and configured, an engine's
+/// trace, and an import. The loader's own dispatch (`from_ir`'s
+/// `load_query_with`) reads every other head as a fact's relation.
+const DIRECTIVES: [&str; 5] = ["query", "solve", "config", "trace", "import"];
 
 /// A load-time failure. The message is output, byte for byte — the
 /// `examples/broken/load/*.expected` fixtures are the gate.
@@ -577,6 +590,25 @@ fn decl_name(ast: &Ast, form: NodeId) -> Option<String> {
         .map(str::to_string)
 }
 
+/// The relation a top-level fact is of, or `None` for a form that is no fact:
+/// a declaration, or one of [`DIRECTIVES`].
+///
+/// A stored negation, `(not (likes Milk Tea))`, is a fact of the relation it
+/// negates, so a selection that names `likes` brings it (M1f S1f.6.11).
+fn fact_relation(ast: &Ast, form: NodeId) -> Option<String> {
+    let mut form = form;
+    loop {
+        let head = ast.head_name(form)?;
+        if DECLARATORS.contains(&head) || DIRECTIVES.contains(&head) {
+            return None;
+        }
+        if head != "not" {
+            return Some(head.to_string());
+        }
+        form = *ast.form_args(form).first()?;
+    }
+}
+
 /// Names a form list *declares*.
 fn defined_names(ast: &Ast, forms: &[NodeId]) -> BTreeSet<String> {
     forms.iter().filter_map(|f| decl_name(ast, *f)).collect()
@@ -648,15 +680,30 @@ fn rename_atoms(ast: &mut Ast, node: NodeId, mapping: &BTreeMap<String, String>)
 }
 
 /// Keep the listed names **plus their dependency closure**, flat and
-/// unrenamed.
+/// unrenamed, and the module's **facts** of every relation the closure names.
 ///
 /// Auto-closure (S1.8a.f20): a listed declaration drags in every *other*
 /// declaration of this module it references, so importing an entry rule pulls
 /// the machinery it asserts and matches without the importer enumerating it.
 /// Names referenced but not declared here — cross-module deps, kernel
 /// primitives — are left for the importer's other imports, so a module need
-/// not be self-contained. A listed name the module does not declare is an
-/// error: there is no re-export of the absent.
+/// not be self-contained.
+///
+/// **Facts** (M1f S1f.6.11, W88; point (a) of the stage, design.md § G's a3).
+/// A name in the closure, listed or named by a kept declaration, selects every
+/// top-level fact of the module whose relation it is ([`fact_relation`]), as
+/// written and in the module's order: `(import onto :symbols (is-a))` brings
+/// the `is-a` facts, and listing a rule that reads `is-a` brings them too. The
+/// closure follows the names a kept *declaration* writes, as it always did,
+/// and not the names inside a kept fact: `(likes Tea Milk)` brings no
+/// declaration of `Tea` (Q-M1f.141). A relation needs no declaration, so a
+/// listed name may be one the module only states facts of. Until this stage a
+/// selection kept declarations alone, and a module's facts were dropped in
+/// silence.
+///
+/// A listed name the module neither declares nor states a fact of is an
+/// error: there is no re-export of the absent. A rule nothing names is still
+/// dropped (point (f)): a selection is a selection.
 fn select(
     ast: &Ast,
     forms: &[NodeId],
@@ -665,12 +712,18 @@ fn select(
     loc: &str,
 ) -> Result<Vec<NodeId>, LoadError> {
     let mut decls: BTreeMap<String, NodeId> = BTreeMap::new();
+    let mut stated: BTreeSet<String> = BTreeSet::new();
     for &f in forms {
         if let Some(n) = decl_name(ast, f) {
             decls.insert(n, f); // last wins
+        } else if let Some(r) = fact_relation(ast, f) {
+            stated.insert(r);
         }
     }
-    let missing: Vec<&String> = symbols.iter().filter(|s| !decls.contains_key(*s)).collect();
+    let missing: Vec<&String> = symbols
+        .iter()
+        .filter(|s| !decls.contains_key(*s) && !stated.contains(*s))
+        .collect();
     if !missing.is_empty() {
         let mut names: Vec<&str> = missing.iter().map(|s| s.as_str()).collect();
         names.sort_unstable();
@@ -680,6 +733,9 @@ fn select(
             names.join(", ")
         )));
     }
+    // Every name the closure reaches: the listed ones, and the ones a kept
+    // declaration writes. A declaration is kept when its name is here, and so
+    // is a fact when its relation is.
     let mut keep: BTreeSet<String> = BTreeSet::new();
     let mut work: Vec<String> = symbols.to_vec();
     // A repeated symbol is one item; the closure makes that immaterial, but
@@ -690,16 +746,21 @@ fn select(
         if keep.contains(&n) {
             continue;
         }
-        let Some(&f) = decls.get(&n) else { continue };
+        if let Some(&f) = decls.get(&n) {
+            let mut names = BTreeSet::new();
+            referenced_names(ast, f, &mut names);
+            work.extend(names);
+        }
         keep.insert(n);
-        let mut names = BTreeSet::new();
-        referenced_names(ast, f, &mut names);
-        work.extend(names);
     }
     Ok(forms
         .iter()
         .copied()
-        .filter(|f| decl_name(ast, *f).is_some_and(|n| keep.contains(&n)))
+        .filter(|f| {
+            decl_name(ast, *f)
+                .or_else(|| fact_relation(ast, *f))
+                .is_some_and(|n| keep.contains(&n))
+        })
         .collect())
 }
 
@@ -710,15 +771,27 @@ fn select(
 /// trip a duplicate-name error. A second declaration of the same name *and
 /// kind* with a different body is a genuine conflict.
 ///
+/// **A fact that arrives twice is kept once** since M1f S1f.6.11, when a flat
+/// import began to bring facts: a diamond of flat imports of one facts library
+/// yields each of its facts once, in the place of its first arrival.
+///
 /// The key is `(kind, name)`, not the name alone: a `(rule undefeated …)` and
 /// a `(relation undefeated …)` share a name but are distinct declarations — a
 /// rule that produces a same-named relation is idiomatic.
 fn dedup_declarations(ast: &Ast, forms: &[NodeId]) -> Result<Vec<NodeId>, LoadError> {
     let mut seen: BTreeMap<(String, String), NodeId> = BTreeMap::new();
+    let mut facts: BTreeSet<NodeId> = BTreeSet::new();
     let mut out: Vec<NodeId> = Vec::new();
     for &f in forms {
         let Some(name) = decl_name(ast, f) else {
-            out.push(f);
+            // One statement of one module, arriving by two paths, is one
+            // statement (M1f S1f.6.11): a module is parsed once per resolution
+            // ([`ModuleCache`]) and a flat import does not rebuild a fact, so
+            // the second arrival is the same node. A fact the program writes
+            // twice is two nodes, and is left to the loader, as it was.
+            if fact_relation(ast, f).is_none() || facts.insert(f) {
+                out.push(f);
+            }
             continue;
         };
         let kind = ast

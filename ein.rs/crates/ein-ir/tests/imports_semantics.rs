@@ -14,10 +14,13 @@
 //! | `std.macro`'s exported names | [`stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`], which re-parses `stdlib/macro.ein` at test time |
 //! | the 14-module mangling | a checked-in table |
 //! | one module under two qualifications | [`one_module_under_two_qualifications_does_not_leak_either_way`] |
+//! | what each import form brings of a module's relations, rules, macros and facts | [`what_each_import_form_brings_of_a_module`] (M1f S1f.6.11's table) |
+//! | a facts library reached by two flat paths | [`a_diamond_of_flat_imports_yields_each_fact_once`] |
 //! | the 9 `.expected` fixtures of the resolver and the expander | [`the_import_and_macro_failures_are_byte_identical`] (12 until M1f S1f.5.5's swap moved three to `examples/broken/`, refused at the parse) |
 
 use std::path::{Path, PathBuf};
 
+use ein_core::Value;
 use ein_corpus::{Scratch, golden, golden_path, repo_root};
 use ein_ir::dump::dump_canonical;
 use ein_ir::imports::Resolver;
@@ -644,4 +647,290 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     // `<KnowledgeBase relations=N rules=N facts=N>` — the three counts
     // minimisation can get wrong, in one comparison.
     assert_eq!(format!("{got:?}"), format!("{want:?}"));
+}
+
+// ── M1f S1f.6.11: a flat import brings a module's facts ──────────────────────
+
+/// The ontology library of S1f.6.11's table: a declared relation with two
+/// facts, one carrying a `:source`; a relation nothing mentions; a fact and a
+/// stored negation of a relation the module does not declare; two rules over
+/// `is-a`; a macro; and the three forms that are neither declaration nor fact.
+const ONTO: &str = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n\
+     (relation unused Thing :why \"{?1} is never mentioned\")\n\
+     (is-a Tea Drink)\n\
+     (is-a Milk Drink :source \"the ontology\")\n\
+     (likes Tea Milk)\n\
+     (not (likes Milk Tea))\n\
+     (rule things () :match (is-a ?x Drink) :assert (thing ?x) :why \"{?x} is a thing\")\n\
+     (rule liquids () :match (is-a ?x Drink) :assert (liquid ?x) :why \"{?x} is a liquid\")\n\
+     (macro both (?a ?b) (and ?a ?b) :why \"{?a} and {?b}\")\n\
+     (query :goal (is-a ?x Drink))\n\
+     (solve :hypothesis-relations ())\n\
+     (config :record-alternative-justifications false)\n";
+
+/// Each form `src` resolves to against `modules`, one a line, in order, with
+/// every `:why` dropped so a row reads as the form it is.
+fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> {
+    let scratch = Scratch::new("ein-import-facts");
+    for (name, text) in modules {
+        std::fs::write(scratch.path().join(format!("{name}.ein")), text).expect("written");
+    }
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, src, Some("<program>")).map_err(|e| e.to_string())?;
+    let out = Resolver::new()
+        .resolve_imports(&mut ast, &forms, Some(scratch.path()))
+        .map_err(|e| e.0)?;
+    Ok(out
+        .iter()
+        .map(|&n| {
+            let line = ein_ir::dump::dump_compact(&ast, n);
+            match line.find(" :why ") {
+                Some(i) => format!("{})", &line[..i]),
+                None => line,
+            }
+        })
+        .collect())
+}
+
+/// **What each import form brings of a module** — M1f S1f.6.11's table, a
+/// case per cell (W88).
+///
+/// Until the stage `:symbols` kept the listed declarations and their closure
+/// and dropped every fact, in silence, so a library of facts arrived empty;
+/// and a relation the module only states facts of could not be listed. The
+/// user ruled on 2026-11-11 that *importing facts is mandatory*. A qualified
+/// import is unmoved (point (b)): it keeps every form and renames each
+/// declared name wherever it stands, so the module's `is-a` facts are
+/// `o.is-a` facts, and a library of facts is imported flat.
+#[test]
+fn what_each_import_form_brings_of_a_module() {
+    let onto = [("onto", ONTO)];
+    let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    // Whole-module and aliased: every form, the declared names renamed
+    // wherever they stand, the relation heading a fact among them; an
+    // undeclared relation (`likes`, and the `thing` a rule asserts) and every
+    // constant as written. The query, the solve form and the config come too.
+    for (import, p) in [("(import onto)", "onto"), ("(import onto :as o)", "o")] {
+        assert_eq!(
+            resolved(&onto, import).expect("resolves"),
+            lines(&[
+                &format!("(relation {p}.is-a Thing Type)"),
+                &format!("(relation {p}.unused Thing)"),
+                &format!("({p}.is-a Tea Drink)"),
+                &format!("({p}.is-a Milk Drink :source \"the ontology\")"),
+                "(likes Tea Milk)",
+                "(not (likes Milk Tea))",
+                &format!("(rule {p}.things () :match ({p}.is-a ?x Drink) :assert (thing ?x))"),
+                &format!("(rule {p}.liquids () :match ({p}.is-a ?x Drink) :assert (liquid ?x))"),
+                &format!("(macro {p}.both (?a ?b) (and ?a ?b))"),
+                &format!("(query :goal ({p}.is-a ?x Drink))"),
+                "(solve :hypothesis-relations ())",
+                "(config :record-alternative-justifications false)",
+            ]),
+            "{import}"
+        );
+    }
+    // A listed relation: its declaration and its facts, as written and in the
+    // module's order, a `:source` kept. Nothing else: not the relation
+    // nothing names, not `likes`, not the rules that would fire on the facts
+    // (point (f)), not the macro, and never a query, a solve form or a config.
+    assert_eq!(
+        resolved(&onto, "(import onto :symbols (is-a))").expect("resolves"),
+        lines(&[
+            "(relation is-a Thing Type)",
+            "(is-a Tea Drink)",
+            "(is-a Milk Drink :source \"the ontology\")",
+        ])
+    );
+    // A listed rule: the closure follows the names it writes, so `is-a`'s
+    // declaration comes, as it always did, and `is-a`'s facts with it.
+    assert_eq!(
+        resolved(&onto, "(import onto :symbols (things))").expect("resolves"),
+        lines(&[
+            "(relation is-a Thing Type)",
+            "(is-a Tea Drink)",
+            "(is-a Milk Drink :source \"the ontology\")",
+            "(rule things () :match (is-a ?x Drink) :assert (thing ?x))",
+        ])
+    );
+    // A relation the module only states facts of may be listed, and a stored
+    // negation is a fact of the relation it negates.
+    assert_eq!(
+        resolved(&onto, "(import onto :symbols (likes))").expect("resolves"),
+        lines(&["(likes Tea Milk)", "(not (likes Milk Tea))"])
+    );
+    // A macro and a relation with no fact: declarations alone, as before.
+    assert_eq!(
+        resolved(&onto, "(import onto :symbols (both unused))").expect("resolves"),
+        lines(&[
+            "(relation unused Thing)",
+            "(macro both (?a ?b) (and ?a ?b))"
+        ])
+    );
+    // Everything listed, in the module's order whatever the list's.
+    assert_eq!(
+        resolved(
+            &onto,
+            "(import onto :symbols (both likes liquids unused things))"
+        )
+        .expect("resolves"),
+        lines(&[
+            "(relation is-a Thing Type)",
+            "(relation unused Thing)",
+            "(is-a Tea Drink)",
+            "(is-a Milk Drink :source \"the ontology\")",
+            "(likes Tea Milk)",
+            "(not (likes Milk Tea))",
+            "(rule things () :match (is-a ?x Drink) :assert (thing ?x))",
+            "(rule liquids () :match (is-a ?x Drink) :assert (liquid ?x))",
+            "(macro both (?a ?b) (and ?a ?b))",
+        ])
+    );
+    // A name the module neither declares nor states a fact of is still
+    // refused: `thing` is written only in a rule's `:assert`, and `Tea` only
+    // as a value.
+    for name in ["thing", "Tea", "nope"] {
+        assert_eq!(
+            resolved(&onto, &format!("(import onto :symbols ({name}))")),
+            Err(format!(
+                "(import onto :symbols …) — not provided by the module: {name} at None"
+            )),
+            "{name}"
+        );
+    }
+}
+
+/// **The closure follows the names a kept declaration writes, and not the
+/// names inside a kept fact** (Q-M1f.141), and a fact of a kernel relation
+/// comes as any fact does (Q-M1f.142).
+#[test]
+fn a_selection_follows_declarations_and_not_the_names_inside_a_fact() {
+    let m = "(relation owns Person Thing :why \"{?1} owns {?2}\")\n\
+         (relation cat Thing :why \"{?1} is a cat\")\n\
+         (owns Ann cat)\n\
+         (cat Tom)\n\
+         (__closed__ owns)\n\
+         (__closed__ cat)\n\
+         (rule close () :match () :assert (__closed__ pets) :why \"pets is closed\")\n";
+    let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    // `(owns Ann cat)` names `cat`, a declared relation with a fact; neither
+    // comes with `owns`, and neither does `(__closed__ owns)`.
+    assert_eq!(
+        resolved(&[("m", m)], "(import m :symbols (owns))").expect("resolves"),
+        lines(&["(relation owns Person Thing)", "(owns Ann cat)"])
+    );
+    // The marker is a relation's name like another: listed, it brings the
+    // module's `(__closed__ …)` facts; and a kept rule that writes it does.
+    assert_eq!(
+        resolved(&[("m", m)], "(import m :symbols (owns __closed__))").expect("resolves"),
+        lines(&[
+            "(relation owns Person Thing)",
+            "(owns Ann cat)",
+            "(__closed__ owns)",
+            "(__closed__ cat)",
+        ])
+    );
+    assert_eq!(
+        resolved(&[("m", m)], "(import m :symbols (close))").expect("resolves"),
+        lines(&[
+            "(__closed__ owns)",
+            "(__closed__ cat)",
+            "(rule close () :match () :assert (__closed__ pets))",
+        ])
+    );
+}
+
+/// **A diamond of flat imports of one facts library yields each fact once**
+/// (M1f S1f.6.11's T4).
+///
+/// A flat diamond over *declarations* always collapsed, identical ones being
+/// one (`dedup_declarations`). A fact has no name to collapse on, and a
+/// module is parsed once per resolution, so a statement that arrives a second
+/// time is the same node and is kept once, where it first arrived. The same
+/// library imported flat twice by one program is the same case. A fact the
+/// program itself writes beside the library's is another statement and stays,
+/// for the loader, to which a fact stated twice is one fact.
+#[test]
+fn a_diamond_of_flat_imports_yields_each_fact_once() {
+    let modules = [
+        ("onto", ONTO),
+        (
+            "left",
+            "(import onto :symbols (is-a))\n(is-a Cola Drink)\n\
+             (rule fizzy () :match (is-a ?x Drink) :assert (fizzy ?x) :why \"{?x} is fizzy\")\n",
+        ),
+        (
+            "right",
+            "(import onto :symbols (is-a likes))\n(is-a Water Drink)\n\
+             (rule wet () :match (is-a ?x Drink) :assert (wet ?x) :why \"{?x} is wet\")\n",
+        ),
+    ];
+    let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    // Each side re-exports the library's facts: they are facts of the side.
+    let got = resolved(
+        &modules,
+        "(import left :symbols (fizzy))\n(import right :symbols (wet likes))\n(is-a Tea Drink)\n",
+    )
+    .expect("resolves");
+    assert_eq!(
+        got,
+        lines(&[
+            "(relation is-a Thing Type)",
+            "(is-a Tea Drink)",
+            "(is-a Milk Drink :source \"the ontology\")",
+            "(is-a Cola Drink)",
+            "(rule fizzy () :match (is-a ?x Drink) :assert (fizzy ?x))",
+            "(likes Tea Milk)",
+            "(not (likes Milk Tea))",
+            "(is-a Water Drink)",
+            "(rule wet () :match (is-a ?x Drink) :assert (wet ?x))",
+            // The program's own statement of a fact the library states.
+            "(is-a Tea Drink)",
+        ])
+    );
+    // One library, imported flat twice by one program.
+    assert_eq!(
+        resolved(
+            &modules,
+            "(import onto :symbols (is-a))\n(import onto :symbols (things))\n"
+        )
+        .expect("resolves"),
+        lines(&[
+            "(relation is-a Thing Type)",
+            "(is-a Tea Drink)",
+            "(is-a Milk Drink :source \"the ontology\")",
+            "(rule things () :match (is-a ?x Drink) :assert (thing ?x))",
+        ])
+    );
+    // And loaded, the diamond's program holds each fact once.
+    let scratch = Scratch::new("ein-import-facts-diamond");
+    for (name, text) in modules {
+        std::fs::write(scratch.path().join(format!("{name}.ein")), text).expect("written");
+    }
+    let mut ast = Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let forms = parse(
+        &mut ast,
+        "(import left :symbols (fizzy))\n(import right :symbols (wet likes))\n",
+        Some("<program>"),
+    )
+    .expect("parses");
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, Some(scratch.path())).expect("loads");
+    let mut facts: Vec<String> = kb
+        .facts()
+        .map(|f| terms.display(Value::fact(f)))
+        .filter(|f| !f.starts_with("(relation "))
+        .collect();
+    facts.sort();
+    assert_eq!(
+        facts,
+        lines(&[
+            "(is-a Cola Drink)",
+            "(is-a Milk Drink)",
+            "(is-a Tea Drink)",
+            "(is-a Water Drink)",
+            "(likes Tea Milk)",
+            "(not (likes Milk Tea))",
+        ])
+    );
 }

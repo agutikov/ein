@@ -581,6 +581,22 @@
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: saturate
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: solve
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: test
+0    examples/ein-bugs/wrong-answers/import-facts-flat.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-facts-flat.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/import-facts-flat.ein :: solve
+0    examples/ein-bugs/wrong-answers/import-facts-library.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-facts-library.ein :: solve
+0    examples/ein-bugs/wrong-answers/import-facts-rule.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-facts-rule.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/import-facts-rule.ein :: solve
+0    examples/ein-bugs/wrong-answers/import-facts-table-module.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-facts-table-module.ein :: solve
+0    examples/ein-bugs/wrong-answers/import-facts-table.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-facts-table.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/import-facts-table.ein :: solve
+0    examples/ein-bugs/wrong-answers/import-facts-undeclared.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-facts-undeclared.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/import-facts-undeclared.ein :: solve
 1    examples/ein-bugs/wrong-answers/import-module-directory.ein :: saturate
 1    examples/ein-bugs/wrong-answers/import-module-directory.ein :: solve
 0    examples/ein-bugs/wrong-answers/kw-and-in-assert-twin.ein :: saturate

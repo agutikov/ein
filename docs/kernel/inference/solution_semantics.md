@@ -54,10 +54,17 @@ hints, in context"*.
 | **ontology** | facts a solution needs that the problem does not state, because they are obvious | `(is-a Tea Drink)` |
 | **context** | theory + ontology | everything that carries no `:source` and is not a hint or the query |
 | **problem** | facts + query + hypothesis hints, stated in a context | the clue facts, each with `:source "condition (n)"`, the `(query …)`, the `(hrule guess …)` |
-| **program** | context + problem, as Ein text. Its imports bring theory in from the [stdlib](../../../stdlib/) | one `.ein` file |
+| **program** | context + problem, as Ein text. Its imports bring context in: theory from the [stdlib](../../../stdlib/), and ontology from a library of facts | one `.ein` file |
 
 **The boundary is not in the language.** One file mixes all four, and only
-zebra2's `:source` comments mark which part is which. **R is a property of a
+zebra2's `:source` comments mark which part is which. **An import can carry
+either half of a context** since M1f S1f.6.11 (the user, 2026-11-11:
+*"together with theory libs that are rule libs we probably would want to have
+ontology libs that are facts libs"*): a flat import brings a library's facts
+as it brings its rules
+([`01_grammar.md` § Import](../ir/03-ein-lang/01_grammar.md#import)), and an
+imported fact is a fact of the program, its constants names of the program
+(§ 1.2). **R is a property of a
 problem in a context**: the same problem in another context has another
 region.
 

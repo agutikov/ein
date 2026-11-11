@@ -4,8 +4,10 @@
 **Status:** planned 2026-11-08, on the user's instruction of that day ([§ The instruction](#the-instruction)).
 **S1f.6.1, the design, is done (2026-11-11):** three rounds on a prototype and the user's rulings of that day,
 recorded in [`design.md` § The rulings](design.md#the-rulings-2026-11-11). **The phase was re-planned to them the
-same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). No theory stage has started; S1f.6.11,
-the import fix, runs first.
+same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). **S1f.6.11, the import fix, is done
+(2026-11-11):** a flat import brings a module's facts, W88's four rows filed and fixed
+([its records](s1f.6.11_importing_facts.md#t1-record-2026-11-11)). No theory stage has started; S1f.6.2, the
+tables, is next.
 **Depends on:** [P1f.5](../p1f.5_the_no_owner_items/README.md), for the language the theory is written in.
 [S1f.5.4](../p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) makes `0` to `9` plain names, so
 `(num9 0 0 0 1 2 3 0 7 8)` is nine names and not nine ints. It lands with S1f.5.5's swap, and T1f.5.4.3 retires
@@ -111,7 +113,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | ID | title | depends on | status |
 |---|---|---|---|
 | [S1f.6.1](s1f.6.1_design_proposal.md) | The design proposal: representations, the protocol, and target programs computed on a prototype | S1f.5.5's swap | **done 2026-11-11**: [`design.md`](design.md), three rounds and the rulings |
-| [S1f.6.11](s1f.6.11_importing_facts.md) | A flat import brings a module's facts: the engine fix, with its register rows, its census and its sweep | — | planned; **runs first** |
+| [S1f.6.11](s1f.6.11_importing_facts.md) | A flat import brings a module's facts: the engine fix, with its register rows, its census and its sweep | — | **done 2026-11-11**: W88 ×4 filed and fixed, the sweep moved the witnesses alone, Q-M1f.135 to .144 defaulted, E-8 found |
 | [S1f.6.2](s1f.6.2_digits_and_tables.md) | The digits and the hardcoded tables, as a library of facts, `std.digits`, generated with a `--check` | S1f.6.11 | planned |
 | [S1f.6.3](s1f.6.3_addition.md) | Addition, and the machinery every circuit shares: the number, the protocol, named constants, accumulators and tags, and the test of the rule of the theory | S1f.6.2 | planned |
 | [S1f.6.4](s1f.6.4_subtraction.md) | Subtraction with its two numbers, and comparison | S1f.6.3 | planned |
@@ -131,7 +133,7 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 15 t
 ## The order
 
 1. **S1f.6.11, the import fix, first.** The tables are plain facts imported flat, so nothing of the theory can be
-   written as ruled before a flat import brings facts.
+   written as ruled before a flat import brings facts. **Done 2026-11-11.**
 2. **S1f.6.2, the tables,** as the stdlib's first library of facts.
 3. **S1f.6.3 to S1f.6.6, the four operations and comparison, in order.** S1f.6.3 writes the machinery the others
    call, and the test of the rule of the theory that each later stage extends to its own rules.
@@ -203,7 +205,8 @@ that takes it, or says *open, shown, no owner yet*.
   relation beside the theory is the program's to close (the user's ruling on round 1's finding 2).
 - **The import fix moves an answer nobody expected.** Round 2's scan found no tracked program importing a module
   that holds a fact, and did not scan the Rust test suites' inline programs. S1f.6.11's census does, and its
-  sweep compares every tracked program before and after.
+  sweep compares every tracked program before and after. **It did not** (2026-11-11): no inline module imported flat
+  holds a fact, and the sweep moved the four witnesses alone.
 - **Detection of a malformed number costs every well-formed request.** S1f.6.12's investigation measures that
   before anything is built, and the user rules on its table.
 - **The nesting limit.** The parser nests to 1 000, so a request holds at most 999 digits, a rule can derive

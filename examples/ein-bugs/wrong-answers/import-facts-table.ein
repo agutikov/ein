@@ -1,0 +1,33 @@
+;;; A table imported flat arrives empty, so the rule that looks it up never
+;;; fires — M1f **W88**, register row `W88/import-facts-table`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.6.11 (T1f.6.11.2, 2026-11-11);
+;;; the calculator's case, finding 1 of P1f.6's design.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `import-facts-table-module.ein`, beside this file, writes two rows of the
+;;; full adder's table as facts of `fa`, and the rule `add2`, which answers a
+;;; request `(add …)` by looking the table up. This program lists the rule,
+;;; asks 9 + 1, and reads the sum. No candidate, so R is {∅}.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `add2` names `add`, `num2`, `fa` and `sum-of`, so the import brings their
+;;; declarations and the two `fa` rows (S1f.6.11's point (a)). The units
+;;; column is `(fa 9 1 0 0 1)`, digit 0 and carry 1, and the tens column
+;;; `(fa 0 0 1 1 0)`, digit 1: root holds `(sum-of (num2 0 9) (num2 0 1)
+;;; (num2 1 0))`, and the goal has that one row.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `7f574423`, release: the rule and the four declarations are kept and
+;;; the table dropped, so `add2` never fires and the goal has no row, exit 0,
+;;; with no word.
+;;; The answer above by hand since S1f.6.11 (T1f.6.11.3).
+
+(import import-facts-table-module :symbols (add2))
+
+(add (num2 0 9) (num2 0 1))
+
+(solve :hypothesis-relations ())
+(query :goal (sum-of ?x ?y ?s) :goal-text "{?x} + {?y} = {?s}")

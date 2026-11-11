@@ -1,0 +1,23 @@
+;;; A library of facts, an ontology, which the `import-facts-*` witnesses
+;;; import flat — M1f **W88** (`corpus/wrong_answers.toml`), S1f.6.11
+;;; (2026-11-11). A program of its own as well.
+;;;
+;;; It declares `is-a` and states two facts of it, one with a `:source`;
+;;; states a fact of `likes` and a negation of one, a relation it does not
+;;; declare; and holds one rule that reads its `is-a` facts. `unused` is a
+;;; relation nothing mentions.
+
+(relation is-a Thing Type :why "{?1} is a {?2}")
+(relation unused Thing :why "{?1} is never mentioned")
+
+(is-a Tea Drink)
+(is-a Milk Drink :source "the ontology")
+(likes Tea Milk)
+(not (likes Milk Tea))
+
+(rule liquids ()
+  :match  (is-a ?x Drink)
+  :assert (liquid ?x)
+  :why    "{?x} is a drink, so {?x} is a liquid")
+
+(solve :hypothesis-relations ())
