@@ -13,6 +13,10 @@ answer below is pasted from a run of `ein.rs/target/release/ein`, built from the
 [§ Round 2](#round-2-2026-11-11-the-users-answers-and-the-experiments-they-asked-for) at the end, and each
 question and finding below carries its state after it. The rest of the page is round 1, kept as written.
 
+**Round 3** (the same day): several number representations at once, on the user's question. It is
+[§ Round 3](#round-3-2026-11-11-several-representations-at-once) at the end, and it changes the recommendation
+for question 1.
+
 
 > **Moved 2026-11-11.** Where this page says a finding is a row for F25, read
 > [`findings.md`](findings.md): the user ruled the same day that F25 was for P1f.7 alone, and the rows this
@@ -431,6 +435,8 @@ the protocol unless the loader checks arity. It is a row for F25 too.
 
 **State after round 2: open.** The user asked for the little-endian nested list; it is built, with all four
 operations ([§ A](#a-little-endian-nested-numbers-questions-1-and-4-finding-3)).
+**State after round 3: open, with a changed recommendation:** nested, units outermost, computed with
+accumulators and continuations ([§ 5](#5-question-1-after-round-3)).
 
 **Recommend (a), the user's `(num9 d8 … d0)`,** one relation per width. It is what the prototype runs, a number
 reads as written, and one rule destructures all nine digits at once, which is what makes addition a single
@@ -1330,3 +1336,345 @@ edit F25. The first bears on question 1, which is why it is spelled out above.
 **What the stop asks now:** question 1, on the costs above; question 2, on the examples; inside question 2,
 whether `sub` in an expression is strict; question 5's overflow half if `num9` stays; whether the spelling
 `z` and `d` stands; and § G's points (a) to (f) on importing facts, with where that fix is scheduled.
+
+## Round 3 (2026-11-11): several representations at once
+
+The user, on round 2:
+
+> "little-endian or big-endian nested lists? pros and cons"
+
+> "21 vs 416 firings is still acceptable, but, what about using multiple representations at the same time, having
+> conversion rules and using optimal variant of operations?"
+
+This round measures both. Everything was run on the same binary on 2026-11-11; the files are under
+`build/s1f.6/prototype/r3/`, written by `gen_r3.py`. Nothing was committed and nothing outside the prototype and
+this page was touched. Every theory here writes no `absent` and no `not` and has one stratum, and every program
+run on them has *universe: no candidate*, k_s 1 and R {∅}.
+
+**Round 3 in one paragraph.** The 416 firings of a division are not the price of the digit order: walking to the
+top digit is 5 % of them, and 79 % is trying all nine multiples by digit-by-digit subtraction. A true big-endian
+spelling was built and is no better at arithmetic, since carries start at the far end and it must turn its
+operands round to add. Mixing representations works, in three ways that were built: a fast path through `num9`'s
+wide rules for numbers that fit nine digits (a division in 29 firings instead of 416), four-digit words, and one
+that changes the answer to question 1. In that last design, `r3/k.ein`, the public shape stays little-endian;
+each circuit walks its operands once from the units and builds its answer in an accumulator, which comes out
+most significant digit first, drops its high zeros there, and is turned round; and every internal call carries a
+tag saying what to do with its answer. No rule in it joins two facts on a number, so the engine's missing index
+on nested facts (E-3 of [`findings.md`](findings.md)) never bites: 4 000 nine-digit divisions take
+2.2 s where round 2's theory did not finish 1 000 in 45 s, and it is faster at volume than `num9`'s wide
+rules on all five operations.
+
+### 1. Where a division's 416 firings go
+
+`python3 r3_breakdown.py` reads the event log of 127645 ÷ 25 on round 2's theory (`le/out/div/events.jsonl`):
+
+```text
+  22     5 %  walking to the top digit and back (div-down, div-bring, div-up, the start and the end)
+  11     3 %  putting a digit under a number in normal form (mk)
+  53    13 %  the nine multiples (mulc and its way up)
+ 109    26 %  the trial subtractions, on the way down (subc)
+ 107    26 %  the trial subtractions, on the way up (digits and borrows)
+ 114    27 %  bookkeeping of the trials (div-try, div-fits, div-too-big, div-digit)
+ 416  wiring firings
+```
+
+- **The digit order costs 33 firings, 8 %.** Long division starts at the most significant digit, which a
+  little-endian number holds innermost, so the recursion walks in and back and normalises on the way.
+- **The multiples cost 53, 13 %,** once per division whatever the dividend's length.
+- **Trying every multiple costs 330, 79 %.** For each of the six dividend digits, all nine multiples are
+  subtracted from what is left, a firing per digit down and a firing per digit up, and each trial is recorded.
+  `num9` does the same nine subtractions per digit as premises of one rule: one firing. This is the gap between
+  21 and 416, and it is the price of one firing per table lookup, not of the digit order.
+
+Two things follow, and round 3 builds both: try fewer multiples (bisect: at most four of the nine), and make a
+firing cover more than one lookup (wide rules over a fixed-width word).
+
+### 2. Three nested spellings
+
+| | spelling | 123078 | zero |
+|---|---|---|---|
+| **L** | units outermost, the digit first | `(d 8 (d 7 (d 0 (d 3 (d 2 (d 1 z))))))` | `z` |
+| **S** | units outermost, the number first: ten times the number, plus the digit | `(n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)` | `z` |
+| **B** | most significant digit outermost | `(b 1 (b 2 (b 3 (b 0 (b 7 (b 8 z))))))` | `z` |
+
+**S is L with its two arguments swapped.** `r3/s.ein` is `le/nat.ein` respelt by `gen_r3.py`: the same 80 rules
+and 50 relations, the same firings, depths and facts on every request, and the same times within noise
+([the table](#4-the-table)). What changes is how a program reads: the digits stand in reading order.
+`r3/s-word-problem.ein`, the pencils problem of round 2:
+
+```lisp
+(let pencils   (mul (n (n z 1) 2) (n (n (n z 1) 4) 4)))
+(let to-share  (sub pencils (n (n (n z 2) 5) 0)))
+(let per-class (div to-share (n (n z 3) 1)))
+(let left-over (mod to-share (n (n z 3) 1)))
+```
+
+```text
+                      ?v = (n (n (n (n z 1) 4) 7) 8) · ?what = to-share
+                      ?v = (n (n (n (n z 1) 7) 2) 8) · ?what = pencils
+                      ?v = (n (n z 2) 1) · ?what = left-over
+                      ?v = (n (n z 4) 7) · ?what = per-class
+  :expect           holds
+```
+
+`r3/s-gcd.ein` is Euclid's four rules unchanged but for the one pattern that says *not zero*, `(gcd ?a (n ?p ?q))`;
+gcd(1071, 462) is `(n (n z 2) 1)`, held. The cost of S is on the page and not in the engine: the opening
+parentheses pile up on the left, and a rule that takes the units digit writes `(n ?rest ?digit)`.
+
+**B, built honestly** (`r3/b.ein`, 62 rules, 47 relations; add, sub, cmp and div, no mul). What each operation
+has to do because the most significant digit is outermost:
+
+- **Comparison is where B is good.** Both numbers are walked from the top in one pass: the longer is the larger,
+  and with equal lengths the first differing digit decides. No answer is built, so there is no way back up.
+  It needs normal forms, since a high zero would make a number look longer, so it drops high zeros first, which
+  in B are outermost and cost a firing each.
+- **Addition and subtraction have to start at the far end.** The units are innermost and the numbers may differ
+  in length, so the columns cannot be paired from the outside. `b.ein` turns both operands round (a firing per
+  digit each), adds from the units, and puts each column's digit in front of the answer so far, which leaves the
+  answer most significant digit outermost with nothing more to do. Subtraction's high zeros are outermost and
+  drop cheaply. The alternative, a first pass to align the lengths and the carries coming back on the way out,
+  was not built.
+- **Division gets its dividend in the right order for nothing,** and pays elsewhere: each digit brought down goes
+  to the remainder's units end, which is innermost, so the remainder is walked and rebuilt at every step. The
+  comparisons with the nine multiples are cheap, and the one subtraction per digit turns its operands round.
+
+Pros and cons, from what was measured:
+
+| | L (and S) | B |
+|---|---|---|
+| reads | units first; S puts the digits in reading order at the price of left-nested parentheses | as written: `1 2 3 0 7 8` |
+| add, sub | the units are outermost: one walk | must turn both operands round first |
+| compare | walks to the end and back, or subtracts | one walk from the top, nothing built |
+| divide | walks in to find the top digit, 8 % of its work | the dividend is ready; the remainder is rebuilt at each step |
+| times ten, bring a digit down | one constructor: `(d 0 X)`, `(d a R)` | a walk to the far end and back |
+| high zeros | innermost: dropped only on the way out of a recursion | outermost: dropped by a firing each |
+| an answer built in an accumulator from the units | comes out as B | comes out as L |
+
+The last row is the one that matters for mixing: **a circuit that reads one order writes the other.**
+
+### 3. Mixed representations, each conversion asked for
+
+Three designs, each with one public shape, L, and others inside that only a circuit asks for. In all three a
+conversion is a request: no rule converts a number because it exists. Every answer comes back in L, in normal
+form.
+
+#### mix: `num9` wide rules for numbers that fit
+
+`r3/mix.ein` is round 2's theory with its operations renamed inward, round 1's `num9` circuit under names of its
+own, and between them:
+
+- **Conversions that are one firing.** `(to9 X)` is answered by `(as9 X (num9 …))` through ten rules, one per
+  count of digits, each matching the whole nested number in its pattern, and by `(big X)` through an eleventh
+  that matches ten digits and a rest. `(from9 W)` is answered by `(of9 W X)` through ten more, one per count of
+  high zeros, so the answer is in normal form.
+- **Routing.** Each public request asks for both operands as nine digits. If both fit, the `num9` request is
+  stated; its answer is converted back. If either is `big`, or the `num9` circuit answers *overflow*, the
+  digit-by-digit circuit is asked.
+- **For numbers that do not fit, division is `divb`:** it asks for the dividend turned round once, steps down it,
+  and bisects the multiples, at most four trial subtractions a digit where round 2 made nine.
+
+`r3/targets-mix.ein` asks round 1's five requests, a division by zero and three requests past nine digits; six
+`:expect`s hold. Where the firings go (`ein saturate --events`, counted by rule name):
+
+```text
+mix · add 123078+4567: 8 wiring firings = 3 conversions + 4 routing + 1 in the num9 circuit + 0 reversing + 0 digit by digit
+mix · div 127645/25: 29 wiring firings = 4 conversions + 4 routing + 21 in the num9 circuit + 0 reversing + 0 digit by digit
+mix · add 999999999+1 (overflows nine digits): 28 wiring firings = 2 conversions + 4 routing + 1 in the num9 circuit + 0 reversing + 21 digit by digit
+mix · div 15148194084/123078 (eleven digits): 675 wiring firings = 2 conversions + 3 routing + 0 in the num9 circuit + 13 reversing + 657 digit by digit
+```
+
+So the user's division is 29 firings where L alone takes 416 and `num9` alone 21: the mixing costs 8. Held to
+Python on operands straddling the nine-digit line: `python3 check_r3.py mix 12 80 3`, 435 requests, 0 wrong, every
+answer in normal form.
+
+**Its limit is the batch.** The routing rules join a request with the two conversion answers, on the numbers,
+which are nested facts. That is E-3 again, and [the table](#4-the-table) shows it: fewer firings than L, and
+still quadratic.
+
+#### K: an accumulator in the other order, and a continuation on every call
+
+`r3/k.ein` (74 rules, 52 relations; the five operations, no expression layer) takes the last row of the table in
+§ 2 as its design.
+
+- **One walk, from the units, and the answer in an accumulator.** `(ak TAG X Y carry ACC)` takes the units
+  column of X and Y through the table and puts its digit in front of ACC: `(b s ACC)`. When both run out, ACC
+  holds the sum most significant digit outermost, in B.
+- **High zeros are dropped there,** where they are outermost: a firing each, and none for an answer that has
+  none.
+- **Then it is turned round** into L, a firing per digit, and handed over as `(done TAG ANSWER)`.
+- **Every call carries its continuation.** The tag is a nested fact that holds whatever the caller needs next:
+  `(sum X Y)` for a public sum, `(m1 X Y REST ACC)` for a multiplication waiting for a row. The rule that goes
+  on has one premise, `(done (m1 ?x ?y ?rest (d ?p ?q)) ?row)`, and reads its whole state out of the tag.
+  **No rule has two premises that share a number,** so nothing is ever looked up by a nested fact.
+- **Comparison** is one walk from the units with no answer to build: a table gives the order so far, and a
+  higher differing digit overrules it. A number that has run out counts as zeros, so it is by value.
+- **Multiplication** turns the multiplier round once and goes down it from the top: the sum so far times ten,
+  which is one constructor in L, plus the row of the next digit.
+- **Division** computes the nine multiples in a chain, each call's tag holding the ones before; turns the
+  dividend round once; and at each digit bisects: the quotient digit lies between 0 and 10, the middle multiple
+  is subtracted, and *it fits* or *it borrows* halves the range. The multiples travel in the state as one fact
+  of nine arguments, so choosing one is a pattern and not a lookup.
+
+`r3/targets-k.ein`, the same nine requests: six `:expect`s hold, H empty. Held to Python:
+`python3 check_r3.py K 6 100 3`, 520 requests, 0 wrong; `python3 check_r3.py K 12 100 4`, 520 requests, 0 wrong,
+56 565 firings in 106 ms of saturation. High zeros in operands are read by value and never come back
+(`r3/k-zeros.ein`: 5 written `(d 5 (d 0 (d 0 z)))` plus 7 written `(d 7 (d 0 z))` is `(d 2 (d 1 z))`;
+`(cmp (d 5 (d 0 (d 0 z))) (d 5 z))` is `eq`; `(div (d 7 z) (d 0 z))` is a division by zero).
+
+#### Limbs: four-digit words
+
+`r3/limb.ein` (28 rules, 21 relations; addition only) is a nested list of words, `(w (num4 d3 d2 d1 d0) REST)`,
+units word outermost. A word step is one firing over four table rows. `(add X Y)` on L numbers converts both
+to limbs, adds word by word, and converts the sum back in normal form. 304 requests of up to twelve digits
+agree with Python (`python3 check_r3.py limb 12 300 3`).
+
+```text
+limb · add 123078+4567: 22 wiring firings = 11 conversions + 7 word steps + 4 asking and answering
+limb · add of two 40-digit numbers: 91 wiring firings = 64 conversions + 23 word steps + rest
+k · add of two 40-digit numbers: 86 wiring firings
+L · add of two 40-digit numbers: 83 wiring firings
+```
+
+The word steps are a quarter of the digit steps, as expected, and the conversions eat the gain: three numbers
+converted, a firing per word in and a firing per word back, each. **Limbs pay only where numbers stay in limbs
+across many steps,** inside a long multiplication or division, or as the public shape. Neither was built.
+
+#### What a program sees of the shapes inside
+
+- **Answers are always in the public shape,** in normal form: `sum-of`, `diff-of`, `product-of`, `quot-of` and
+  `cmp-of` never hold a `num9`, a `(b …)` or a word.
+- **The internal facts are in the state, and a query that names them sees them.** `r3/mix-inside.ein` asks
+  `(as9 ?number ?word)` and gets `?number = (d 7 (d 6 (d 5 (d 4 z)))) · ?word = (num9 0 0 0 0 0 4 5 6 7)`;
+  `(sum9 ?a ?b ?s)` lists the `num9` sum. On `k.ein`, `(done ?tag ?v)` lists every finished call, among them
+  `?tag = (mrev (d 5 (d 0 z)) (d 0 (d 0 z))) · ?v = (b 0 (b 0 z))`, a number in B. Nothing hides a relation
+  from a query; the theory's page would say which relations are its interface.
+- **Ein's own `eq` holds between no two shapes.** `(and (as9 ?number ?word) (eq ?number ?word))` has no row:
+  `(num9 0 0 0 0 0 4 5 6 7)` and `(d 7 (d 6 (d 5 (d 4 z))))` are different facts. Equality by value is `cmp`,
+  on the public shape.
+- **The store stays bounded by the requests.** A conversion fires for a number a request names and for nothing
+  else: on `mix.ein` one sum stores 10 facts and one division 42; on `k.ein`
+  18 and 221 ([the table](#4-the-table), *facts it stores*). No relation holds a number
+  that no request led to.
+
+### 4. The table
+
+`python3 r3_table.py > r3/table.md` (2026-11-11). **One request:** 123078 + 4567, 123078 − 4567, 123 × 456,
+127645 ÷ 25, and 123078 against 4567; the wiring firings, the depth, and the facts the request adds to the
+store, itself included. **Batches:** 250, 1 000 and 4 000 random requests in one program, the saturator's own
+milliseconds; two numbers of up to nine digits for add, sub and cmp, two of up to four for mul, up to nine
+digits by 1 to 999 for div. A run is stopped at 45 s, and a larger batch is then not tried.
+
+| operation | design | wiring firings | depth | facts it stores | 250 requests, ms | 1 000 | 4 000 |
+|---|---|---:|---:|---:|---:|---:|---:|
+| add | num9 | 1 | 1 | 2 | 17 | 66 | 255 |
+| add | L | 15 | 15 | 23 | 23 | 231 | 3 053 |
+| add | S | 15 | 15 | 23 | 23 | 227 | 3 012 |
+| add | B | 23 | 17 | 25 | 12 | 61 | 572 |
+| add | mix | 8 | 7 | 10 | 345 | 18 648 | > 45 s |
+| add | K | 17 | 17 | 18 | 6.9 | 28 | 115 |
+| add | limb | 22 | 19 | 32 | 18 | 153 | 1 866 |
+| sub | num9 | 1 | 1 | 2 | 18 | 67 | 258 |
+| sub | L | 28 | 15 | 43 | 62 | 750 | 9 839 |
+| sub | S | 28 | 15 | 43 | 62 | 753 | 9 823 |
+| sub | B | 33 | 21 | 37 | 16 | 95 | 825 |
+| sub | mix | 9 | 7 | 12 | 864 | > 45 s | > 45 s |
+| sub | K | 24 | 17 | 26 | 9.8 | 42 | 178 |
+| mul | num9 | 15 | 12 | 20 | 43 | 212 | 1 313 |
+| mul | L | 51 | 36 | 77 | 109 | 1 028 | 11 145 |
+| mul | S | 51 | 36 | 77 | 109 | 1 029 | 11 137 |
+| mul | mix | 22 | 18 | 28 | 270 | 9 553 | > 45 s |
+| mul | K | 66 | 66 | 67 | 20 | 80 | 341 |
+| div | num9 | 21 | 12 | 32 | 193 | 1 473 | 8 147 |
+| div | L | 416 | 82 | 579 | 7 040 | > 45 s | > 45 s |
+| div | S | 416 | 82 | 579 | 7 070 | > 45 s | > 45 s |
+| div | B | 523 | 160 | 612 | 2 703 | 40 163 | > 45 s |
+| div | mix | 29 | 18 | 42 | 1 177 | 41 171 | > 45 s |
+| div | K | 220 | 220 | 221 | 116 | 509 | 2 175 |
+| cmp | num9 | 1 | 1 | 2 | 18 | 64 | 255 |
+| cmp | L | 28 | 15 | 43 | 67 | 763 | 9 733 |
+| cmp | S | 28 | 15 | 43 | 67 | 759 | 9 793 |
+| cmp | B | 11 | 9 | 13 | 7.2 | 50 | 521 |
+| cmp | mix | 6 | 5 | 8 | 14 | 129 | 1 876 |
+| cmp | K | 8 | 8 | 9 | 5.0 | 18 | 70 |
+
+**Sizes.** Rules and relations of each theory (`python3 gen_r3.py` prints them; `num9` and L by
+`grep -c '^(rule'`):
+
+| design | what it is | rules | relations | operations |
+|---|---|---:|---:|---|
+| num9 | round 1's wide rules, with round 2's comparison and expressions (`n9/arith9r2.ein`) | 47 | 30 | all five, expressions |
+| L | round 2's theory (`le/nat.ein`) | 80 | 50 | all five, expressions (56 rules without them) |
+| S | L respelt | 80 | 50 | the same |
+| B | most significant digit outermost | 62 | 47 | add, sub, cmp, div |
+| mix | L, `num9` inside, a bisecting division for long numbers | 180 | 100 | all five, expressions |
+| K | L outside, B accumulators, continuation tags | 74 | 52 | all five |
+| limb | four-digit words | 28 | 21 | add |
+
+**How to read it.**
+
+- **Fewest firings for one request:** `num9`, where the numbers fit, since a wide rule is one firing for nine
+  columns: 1, 1, 15, 21, 1. Among the nested designs it is mix, which borrows those rules: 8, 9, 22, 29, 6.
+- **Best at volume: K, on all five operations,** and it is the only nested design whose time grows with the
+  requests and no faster: 4 000 sums in 115 ms, differences in 178, products in 341, divisions in 2 175,
+  comparisons in 70. It is also ahead of `num9` on all five at every batch size (255, 258, 1 313, 8 147 and
+  255 ms at 4 000).
+- **`num9` is not linear on division either:** its step rule joins the state with the divisor's multiples, and
+  the divisor is a nested fact. 250 divisions take 193 ms and 4 000 take 8.1 s.
+- **L and S are the same numbers,** quadratic on every operation, and a thousand divisions do not finish in 45 s.
+- **B** adds, subtracts and compares at volume better than L, since its walks are accumulators and only the
+  first rule of each joins. Its division is the heaviest single request on the page, 523 firings, and
+  quadratic.
+- **mix has the fewest firings and the worst batches.** Its routing rules have three to six premises that
+  share numbers, so the scans nest: a thousand sums take 18.6 s. The glue would have to be written with
+  continuations, as K is; that was not built.
+- **limb** is no better than L on a sum and quadratic for the same reason as mix.
+
+**Best per operation.** One request, numbers of at most nine digits: `num9`, or mix where the public shape must
+be nested. Any batch, or any number longer than nine digits: K, on every operation.
+
+**What the mixing costs in complexity.**
+
+- **mix** is two theories and the glue between them: 180 rules against 80, every operation with two circuits
+  and six to nine routing rules, and an answer that can arrive by either path. It is the design to avoid as
+  built.
+- **K** is 74 rules for the five operations, where round 2's theory has 56 without its expression layer; the
+  extra is the bisection and the chain of multiples. Its cost is of another kind.
+  A circuit is a sequence, so its depth equals its firings: 220 for the division against 82 on L. Its facts are
+  steps of a state machine with the whole state in each, which is what `--trace` will print. And the
+  continuation tags are a style the theory's author has to keep to: one rule with two premises over numbers,
+  and the batch is quadratic again.
+- **The expression layer** of round 2 (`calc`, `let`) joins a request with its operands' values, on numbers. On
+  top of K it would have to be rewritten with tags to keep K's scaling. That was not built.
+
+### 5. Question 1 after round 3
+
+**Recommend: nested numbers, units outermost, computed the way `r3/k.ein` computes them.** The public shape is
+L, `z` and `(d DIGIT NUMBER)`, or S, `(n NUMBER DIGIT)`, which costs the same and reads in digit order. Inside,
+each circuit builds its answer in the other order and turns it round, and calls carry continuations. This is the
+user's *multiple representations with conversion rules*, with the conversion being a reversal that costs a
+firing per digit and joins nothing.
+
+What it settles, against round 2's cost section: the quadratic batch is gone without an engine change, and the
+division is 220 firings, not 416. E-3 stays a finding, since any theory written with ordinary joins over nested
+values still meets it, and round 2's own theory is the witness.
+
+The alternatives, each built and measured above:
+
+| design | for | against |
+|---|---|---|
+| **K** (recommended) | any length; no overflow; normal forms; linear at volume and the fastest batch on every operation | 17 to 220 firings a request; depth equals firings; a continuation style to keep to; expressions not yet written on it |
+| `num9` | fewest firings, 1 for a sum; reads as written | a fixed width and overflow; slower than K at volume; division quadratic |
+| L or S with frames (round 2) | the plainest rules to read; expressions built | quadratic at volume; 416 firings a division |
+| B as the public shape | reads as written; the best comparison | every sum turns its operands round; division 523 firings; mul not built |
+| mix (a `num9` fast path) | fewest firings of any nested design for numbers that fit | 180 rules; the worst batches as built; two paths to every answer |
+| limbs | a quarter of the steps where numbers stay in limbs | conversions eat the gain on one operation; add only |
+
+**Two things are still the user's.** The spelling: L, S or B. L and S are the same theory. A public B is K with
+the turning moved from the end of each circuit to its start, one walk more per operand; it was not built in K's
+style. And whether the stdlib theory keeps a `num9` beside it at all: after this round nothing measured argues
+for one, except a reader who wants `(num9 0 0 0 1 2 3 0 7 8)` on the page.
+
+**State after round 3:** question 1 is **open, with a changed recommendation**: nested, units outermost, K's
+circuits. Question 4 still follows it. Question 2's expression layer needs rewriting on K before S1f.6.2 starts.
+Question 9, how a circuit is written, now has a sixth answer for the nested shape, and it is the one that
+scales.

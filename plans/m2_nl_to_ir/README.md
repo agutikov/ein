@@ -225,6 +225,41 @@ M5):
    analysis; the records released; the paper ([M5](../m5_presentation/README.md));
    one command that runs the demo in § Stage Q.
 
+## The reasoning as a program (the user's idea, 2026-11-11)
+
+The user, 2026-11-11:
+
+> idea for M2 - LLM's reasoning steps (chain of thoughts, tree of thoughts) could be not plain text but the
+> program in formal language (ein in our case) and LLM improves it step by step using solver output, so the
+> output became not only plain answer but the whole reasoning logic implemented as self-explained ein program
+
+Kept here as stated; no phase or stage is changed by it yet. Read against the plan above, the coordinator's
+reading, which the user may correct:
+
+- **The loop is already this one.** `x → T₀ → E(T₀) → T₁ → ⋯ → Tₙ` improves an Ein program step by step on the
+  kernel's output. What the idea adds is **what the loop is for**: the plan measures `Tₙ` as a route to a
+  correct answer, and the idea makes `Tₙ` **the output**, the reasoning itself, in place of the free-text
+  chain of thought a model would otherwise write beside its answer.
+- **Self-explained** has a meaning in Ein since M1f S1f.5.14: every relation and rule carries a `:why`, and a
+  derived fact reads as English from its justification
+  ([`09_natural_language.md`](../../docs/kernel/ir/03-ein-lang/09_natural_language.md)). So a program is a
+  chain of thought whose every step the kernel has checked, and whose trace is the explanation.
+- **A tree of thoughts** has a counterpart the kernel already computes, the hypothesis lattice: a branch is a
+  commitment, a dead branch has a core that says why, and the answer is the region R. Whether a model's
+  branching should be written as hypotheses is open.
+- **It bears on faithfulness** ([S2.4.4](p2.4_loop/s2.4.4_faithfulness.md)): a reasoning the reader can read
+  rule by rule is one whose invented constraint can be seen.
+
+**The first worked instances are M1f's.** [S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) solves elementary-school word problems (*"Bob has 5
+apples. He gave 2 to Alice. How many apples they have together?"*) as Ein programs written by hand: the
+arithmetic is an imported theory, the meaning of the words is rules (*gave* is a subtraction, *together* a
+sum), and a missing quantity is detected and named instead of assumed. Each problem there is recorded as the
+sentence beside the facts it was encoded as, which is the pair this milestone's formalizer has to produce, and
+each solved program is an example of the output this idea asks for. Its results, when it has run, are this
+milestone's to take up: as benchmark instances with a gold program
+([P2.3](p2.3_benchmark/README.md)), among them instances whose right answer is *not enough information*, and
+as a second domain beside the puzzles ([P2.7](p2.7_failure_scaling_generalization/README.md)).
+
 ## Open questions
 
 [`open_questions.md`](open_questions.md). The old set — Q7–Q11, Q23–Q25 —
@@ -272,5 +307,7 @@ and whether the fixed point is syntactic or semantic
   [`docs/install.md`](../../docs/install.md), `--json-summary`
   (`ein-summary/1`) and [`--events`](../../docs/kernel/inference/events.md)
   (`ein-events/1`) — what a Python one drives; Q25 chooses.
+- [M1f S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) — word problems as hand-written Ein programs over the calculator theory: the first
+  instances of § The reasoning as a program, and candidates for the benchmark once it has run.
 - [M20](../m20_gui/README.md) — displays whatever the loop records; not a
   dependency either way.

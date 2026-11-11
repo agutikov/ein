@@ -41,7 +41,9 @@ answers back as facts about the people. Three things are looked at, the user's t
 ## What it is not
 
 - **Not natural-language parsing.** The problem's English is in `:source` strings and comments; its facts are
-  written by hand. Turning the sentence into the facts is [M2](../../m2_nl_to_ir/README.md)'s. The stage does
+  written by hand. Turning the sentence into the facts is [M2](../../m2_nl_to_ir/README.md)'s, which links here: its
+  [§ The reasoning as a program](../../m2_nl_to_ir/README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11)
+  takes this stage's programs as its first worked instances. The stage does
   record, per problem, the sentence beside the facts it was encoded as, since that pair is what M2 would have
   to produce.
 - **Not engine arithmetic**, and no new built-in. Q-M1e2.24 stands.

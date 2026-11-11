@@ -25,5 +25,13 @@ ruled as it stands, or given an owner, before the phase closes. A wrong answer a
 | E-6 | **A fact stated twice keeps its first statement and silently loses the later `:source`** | the import probes under `build/s1f.6/prototype/g/imp/` ([design.md § Round 2](design.md)); F24's neighbour | S1f.6.1's round 2 | loads, no word | open |
 | E-7 | **The blind enumerator proposes as objects the relation names a rule asserts as values** | the import probes' `liquid`, `thing` (`build/s1f.6/prototype/g/imp/`; [design.md § Round 2](design.md)); E-1's neighbour | S1f.6.1's round 2 | loads; the names are candidate objects | open |
 
+**On E-3, from S1f.6.1's round 3** ([design.md § Round 3](design.md#round-3-2026-11-11-several-representations-at-once)):
+a theory can avoid it. A rule whose premises share no nested value is never matched by a scan, and
+`build/s1f.6/prototype/r3/k.ein` computes the five operations over nested numbers with such rules alone, each
+call carrying a continuation tag: 4 000 nine-digit divisions in 2.2 s, where the theory of round 2 does not
+finish 1 000 in 45 s (`python3 r3_table.py`, 2026-11-11). The same table shows E-3 on fixed-width numbers too:
+`num9`'s division joins its state with the divisor's multiples on the divisor, 193 ms for 250 divisions and
+8.1 s for 4 000. The row stays open: a join on a nested value is the natural way to write a rule.
+
 The flat import that drops a module's facts is not a row here: it is [`design.md`](design.md)'s finding 1, with
 a fix specification of its own in § Round 2.
