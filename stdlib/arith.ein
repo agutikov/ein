@@ -1,6 +1,7 @@
 ;;; Ein stdlib — `std.arith`: school arithmetic on natural numbers of any
 ;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3;
-;;; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5).
+;;; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5; division,
+;;; S1f.6.6).
 ;;;
 ;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
 ;;; This module is a *theory* written in Ein over the ten digit names `0` to
@@ -9,7 +10,8 @@
 ;;; nothing is guessed: on a program that imports the theory and states
 ;;; requests, the universe has no candidate, R is {∅}, and the answer is
 ;;; root's fixpoint under `ein solve`, `ein saturate` and `ein test` alike.
-;;; No `absent`, no `not` premise, one stratum.
+;;; No `absent`, no `not` premise, one stratum. One rule concludes `(false)`:
+;;; a program that divides by zero is a contradiction (below).
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -53,6 +55,17 @@
 ;;;
 ;;;     (mul X Y)          asked: X x Y
 ;;;     (product-of X Y P) the answer; a product has no width to overflow
+;;;
+;;;     (div X Y)          asked: X divided by Y
+;;;     (quot-of X Y Q R)  the answer: the quotient and the remainder,
+;;;                        X = Q x Y + R, and R less than Y
+;;;
+;;; **Division by zero is a contradiction, in two steps.** A request whose
+;;; divisor is zero, however it is written, derives the flag
+;;; `(division-by-zero (div X Y))`, and the flag derives `(false)`. So root is
+;;; dead: R is empty, no query of the program has an answer, and the request
+;;; is what `ein solve` names as the reason. A program that must not die
+;;; compares its divisor with zero first, and asks only where it is not.
 ;;;
 ;;; A program reads an answer with a goal that has a variable in the result's
 ;;; place, `(sum-of X Y ?s)`, and a rule of the program may match it like any
@@ -98,6 +111,15 @@
 ;;; constructor, `(n SUM 0)`, plus the row, is the addition walk above. The
 ;;; tag of each call holds the multiplier's digits still to come.
 ;;;
+;;; **Division is school long division, the quotient's digit by bisection.**
+;;; The divisor's multiples by 1 to 9 are computed once, each a row of
+;;; multiplication, and travel on in the state as one fact. The dividend is
+;;; turned round, and each of its digits is one step: the digit is brought
+;;; down beside what is left over, and the quotient's digit, which is at
+;;; least 0 and less than 10, is found by halving that range. A trial takes
+;;; the middle multiple from the number by subtraction's walk: it fits, or
+;;; it is short. At most four trials a digit, each decided by the tables.
+;;;
 ;;; ── THE RULE OF THE THEORY: no rule joins two facts on a number ────────────
 ;;;
 ;;; A rule here has **one** premise that holds numbers. Its other premises are
@@ -125,19 +147,24 @@
 ;;;
 ;;; Imported flat, these names mean what this file says, and a program must
 ;;; not use them otherwise: `z`, `n`, `b`, `let`; the requests `add`, `sub`,
-;;; `cmp` and `mul`; the results `sum-of`, `diff-of`, `cmp-of` and
-;;; `product-of`, and the orders `lt`, `eq` and `gt`; the circuit's own
-;;; `named`, `operand`, `operand-is`, `add-walk`, `sub-walk`, `cmp-walk`,
-;;; `mul-walk`, `strip`, `turn`, `top-first`, `top-first-is`, `done`, `short`,
-;;; `order-is`, `mul-call`, `mul-step`; the tags `sum`, `add-first`,
-;;; `add-second`, `difference`, `shortfall`, `sub-first`, `sub-second`,
-;;; `order`, `cmp-first`, `cmp-second`, `product`, `mul-first`, `mul-second`,
-;;; `mul-digits`, `mul-row-of`, `mul-sum`; `arith-rule`; and the tables of
-;;; `std.digits` it reads, `fa`, `fs`, `md`, `cl` and `nz`. The interface is
-;;; `n`, `z`, `let`, the requests, the results and the three orders; the rest
-;;; is in the state for a query or a `--trace` to see, and is not a promise.
+;;; `cmp`, `mul` and `div`; the results `sum-of`, `diff-of`, `cmp-of`,
+;;; `product-of` and `quot-of`, the flag `division-by-zero`, and the orders
+;;; `lt`, `eq` and `gt`; the circuit's own `named`, `operand`, `operand-is`,
+;;; `add-walk`, `sub-walk`, `cmp-walk`, `mul-walk`, `strip`, `turn`,
+;;; `top-first`, `top-first-is`, `done`, `short`, `order-is`, `mul-call`,
+;;; `mul-step`, `div-call`, `div-done`, `multiples`, `div-step`,
+;;; `div-choose`, `div-digit`; the tags `sum`, `add-first`, `add-second`,
+;;; `difference`, `shortfall`, `sub-first`, `sub-second`, `order`,
+;;; `cmp-first`, `cmp-second`, `product`, `mul-first`, `mul-second`,
+;;; `mul-digits`, `mul-row-of`, `mul-sum`, `quotient`, `div-first`,
+;;; `div-second`, `div-m1` to `div-m9`, `div-digits`, `div-trial`;
+;;; `arith-rule`; and the seven tables of `std.digits`, `fa`, `fs`, `md`,
+;;; `cl`, `nz`, `mid` and `adj`, with the bound `10`. The interface is `n`,
+;;; `z`, `let`, the requests, the results, the flag and the three orders; the
+;;; rest is in the state for a query or a `--trace` to see, and is not a
+;;; promise.
 
-(import std.digits :symbols (fa fs md cl nz))
+(import std.digits :symbols (fa fs md cl nz mid adj))
 
 ;; ── The number, and the accumulator ─────────────────────────────────────────
 (relation n Number Digit
@@ -164,6 +191,12 @@
   :why "asked: {?1} x {?2}")
 (relation product-of Operand Operand Number
   :why "{?1} x {?2} = {?3}")
+(relation div Operand Operand
+  :why "asked: {?1} divided by {?2}")
+(relation quot-of Operand Operand Number Number
+  :why "{?1} divided by {?2} = {?3}, remainder {?4}")
+(relation division-by-zero Request
+  :why "{?1} divides by zero")
 
 ;; ── The circuit's own facts: each is one step of a computation, and carries
 ;;    the whole of its state ──────────────────────────────────────────────────
@@ -199,6 +232,18 @@
   :why "wanted, for {?1}: {?2} x {?3}")
 (relation mul-step Tag Number Digits Number
   :why "multiplying, for {?1}: {?2} by the digits {?3} still to come, and the sum so far is {?4}")
+(relation div-call Tag Number Number
+  :why "wanted, for {?1}: {?2} divided by {?3}")
+(relation div-done Tag Number Number
+  :why "the answer for {?1} is {?2}, remainder {?3}")
+(relation multiples Number Number Number Number Number Number Number Number Number
+  :why "the divisor's multiples: {?1}, {?2}, {?3}, {?4}, {?5}, {?6}, {?7}, {?8} and {?9}")
+(relation div-step Tag Multiples Digits Number Number
+  :why "dividing, for {?1}: the digits {?3} are still to bring down, {?4} is left over, and the quotient so far is {?5}")
+(relation div-choose Tag Multiples Digits Number Number Bound Bound Number
+  :why "dividing, for {?1}: how often the divisor goes into {?5} is at least {?6} and less than {?7}; {?8} is left over at {?6} times")
+(relation div-digit Tag Multiples Digits Number Digit Number
+  :why "dividing, for {?1}: the next digit of the quotient is {?5}, and {?6} is left over")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation sum Operand Operand
@@ -233,6 +278,34 @@
   :why "a row, for {?1}: {?2} times one digit, with the digits {?3} still to come and the sum so far {?4}")
 (relation mul-sum Tag Number Digits
   :why "the sum so far, for {?1}, which multiplies {?2}, with the digits {?3} still to come")
+(relation quotient Operand Operand
+  :why "{?1} divided by {?2}")
+(relation div-first Operand Operand
+  :why "the first operand of {?1} divided by {?2}")
+(relation div-second Operand Operand Number
+  :why "the second operand of {?1} divided by {?2}, whose first is {?3}")
+(relation div-m1 Tag Number
+  :why "1 times the divisor, for {?1}, which divides {?2}")
+(relation div-m2 Tag Number Number
+  :why "2 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}")
+(relation div-m3 Tag Number Number Number
+  :why "3 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}")
+(relation div-m4 Tag Number Number Number Number
+  :why "4 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}")
+(relation div-m5 Tag Number Number Number Number Number
+  :why "5 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}")
+(relation div-m6 Tag Number Number Number Number Number Number
+  :why "6 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}")
+(relation div-m7 Tag Number Number Number Number Number Number Number
+  :why "7 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}, {?8}")
+(relation div-m8 Tag Number Number Number Number Number Number Number Number
+  :why "8 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}")
+(relation div-m9 Tag Number Number Number Number Number Number Number Number Number
+  :why "9 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}, {?4}, {?5}, {?6}, {?7}, {?8}, {?9}, {?10}")
+(relation div-digits Tag Multiples
+  :why "the digits of the dividend, for {?1}")
+(relation div-trial Tag Multiples Digits Number Number Bound Bound Number Digit
+  :why "a trial, for {?1}: {?9} times the divisor taken from {?5}")
 
 ;; ── The operands ────────────────────────────────────────────────────────────
 ;; A number stands for itself, whatever high zeros it is written with; the
@@ -546,6 +619,233 @@
   :assert (product-of ?x ?y ?p)
   :why    "{?x} x {?y} = {?p}")
 
+;; ── Division ────────────────────────────────────────────────────────────────
+;; School long division, the quotient's digit found by bisection: X divided
+;; by Y is a quotient Q and a remainder R, X = Q x Y + R, and R less than Y.
+;;
+;; `(div-call TAG X Y)`: X divided by Y for whoever TAG says, answered by
+;; `(div-done TAG QUOTIENT REMAINDER)`. First the divisor's nine multiples,
+;; each a row of multiplication, in a chain whose tags hold the multiples
+;; already known. Y times 1 is Y in normal form, and shows whether Y is zero.
+(rule div-multiples ()
+  :match  (div-call ?k ?u ?v)
+  :assert (mul-walk (div-m1 ?k ?u) ?v 1 0 z)
+  :why    "to divide {?u} by {?v}: first {?v} x 1, the divisor in normal form")
+
+(rule div-multiple-2 ()
+  :match  (done (div-m1 ?k ?u) (n ?p ?a))
+  :assert (mul-walk (div-m2 ?k ?u (n ?p ?a)) (n ?p ?a) 2 0 z)
+  :why    "the divisor is not zero: next, 2 times the divisor")
+
+(rule div-multiple-3 ()
+  :match  (done (div-m2 ?k ?u ?m1) ?m2)
+  :assert (mul-walk (div-m3 ?k ?u ?m1 ?m2) ?m1 3 0 z)
+  :why    "2 times the divisor is {?m2}: next, 3 times the divisor")
+
+(rule div-multiple-4 ()
+  :match  (done (div-m3 ?k ?u ?m1 ?m2) ?m3)
+  :assert (mul-walk (div-m4 ?k ?u ?m1 ?m2 ?m3) ?m1 4 0 z)
+  :why    "3 times the divisor is {?m3}: next, 4 times the divisor")
+
+(rule div-multiple-5 ()
+  :match  (done (div-m4 ?k ?u ?m1 ?m2 ?m3) ?m4)
+  :assert (mul-walk (div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4) ?m1 5 0 z)
+  :why    "4 times the divisor is {?m4}: next, 5 times the divisor")
+
+(rule div-multiple-6 ()
+  :match  (done (div-m5 ?k ?u ?m1 ?m2 ?m3 ?m4) ?m5)
+  :assert (mul-walk (div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5) ?m1 6 0 z)
+  :why    "5 times the divisor is {?m5}: next, 6 times the divisor")
+
+(rule div-multiple-7 ()
+  :match  (done (div-m6 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5) ?m6)
+  :assert (mul-walk (div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6) ?m1 7 0 z)
+  :why    "6 times the divisor is {?m6}: next, 7 times the divisor")
+
+(rule div-multiple-8 ()
+  :match  (done (div-m7 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6) ?m7)
+  :assert (mul-walk (div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7) ?m1 8 0 z)
+  :why    "7 times the divisor is {?m7}: next, 8 times the divisor")
+
+(rule div-multiple-9 ()
+  :match  (done (div-m8 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7) ?m8)
+  :assert (mul-walk (div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8) ?m1 9 0 z)
+  :why    "8 times the divisor is {?m8}: next, 9 times the divisor")
+
+;; The nine multiples travel on as one fact, `(multiples M1 … M9)`, and the
+;; dividend is turned round, so that its top digit comes first.
+(rule div-turn ()
+  :match  (done (div-m9 ?k ?u ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8) ?m9)
+  :assert (top-first (div-digits ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9)) ?u z)
+  :why    "9 times the divisor is {?m9}: the nine multiples are known. Now the digits of {?u}, the top one first")
+
+;; `(div-step TAG MULTIPLES DIGITS LEFT QUOTIENT)`: the dividend's digits
+;; still to come, what is left over so far, and the quotient so far.
+(rule div-begin ()
+  :match  (top-first-is (div-digits ?k ?ms) ?t)
+  :assert (div-step ?k ?ms ?t z z)
+  :why    "start at the top digit: nothing is left over yet, and the quotient is zero")
+
+;; A digit is brought down beside what is left over: ten times that, plus the
+;; digit, which is one constructor. Three rules, so that no high zero is
+;; ever written.
+(rule div-bring ()
+  :match  (div-step ?k ?ms (b ?a ?rest) (n ?p ?c) ?w)
+  :assert (div-choose ?k ?ms ?rest ?w (n (n ?p ?c) ?a) 0 10 (n (n ?p ?c) ?a))
+  :why    "bring down {?a} beside what is left over: the next digit of the quotient is at least 0 and less than 10")
+
+(rule div-bring-first ()
+  :match  (and (div-step ?k ?ms (b ?a ?rest) z ?w) (nz ?a))
+  :assert (div-choose ?k ?ms ?rest ?w (n z ?a) 0 10 (n z ?a))
+  :why    "nothing was left over: bring down {?a}. The next digit of the quotient is at least 0 and less than 10")
+
+(rule div-bring-zero ()
+  :match  (div-step ?k ?ms (b 0 ?rest) z ?w)
+  :assert (div-digit ?k ?ms ?rest ?w 0 z)
+  :why    "nothing was left over and the digit brought down is 0: the next digit of the quotient is 0")
+
+;; `(div-choose TAG MULTIPLES DIGITS QUOTIENT NUMBER LOW HIGH LEFT)`: the
+;; next digit of the quotient is at least LOW and less than HIGH, and LEFT is
+;; NUMBER less LOW times the divisor. The multiple in the middle is tried: it
+;; is taken from NUMBER by subtraction's walk, which either has an answer or
+;; is short. Nothing is guessed: at most four subtractions find the digit.
+;; Nine rules, one a multiple, alike but for the digit and the multiple.
+(rule div-try-1 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 1))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 1)
+                    ?u ?m1 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 1, and take 1 times the divisor, {?m1}, from {?u}")
+
+(rule div-try-2 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 2))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 2)
+                    ?u ?m2 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 2, and take 2 times the divisor, {?m2}, from {?u}")
+
+(rule div-try-3 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 3))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 3)
+                    ?u ?m3 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 3, and take 3 times the divisor, {?m3}, from {?u}")
+
+(rule div-try-4 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 4))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 4)
+                    ?u ?m4 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 4, and take 4 times the divisor, {?m4}, from {?u}")
+
+(rule div-try-5 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 5))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 5)
+                    ?u ?m5 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 5, and take 5 times the divisor, {?m5}, from {?u}")
+
+(rule div-try-6 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 6))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 6)
+                    ?u ?m6 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 6, and take 6 times the divisor, {?m6}, from {?u}")
+
+(rule div-try-7 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 7))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 7)
+                    ?u ?m7 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 7, and take 7 times the divisor, {?m7}, from {?u}")
+
+(rule div-try-8 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 8))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 8)
+                    ?u ?m8 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 8, and take 8 times the divisor, {?m8}, from {?u}")
+
+(rule div-try-9 ()
+  :match  (and (div-choose ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left)
+               (mid ?lo ?hi 9))
+  :assert (sub-walk (div-trial ?k (multiples ?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9) ?rest ?w ?u ?lo ?hi ?left 9)
+                    ?u ?m9 0 z)
+  :why    "the digit is at least {?lo} and less than {?hi}: try 9, and take 9 times the divisor, {?m9}, from {?u}")
+
+(rule div-fits ()
+  :match  (done (div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j) ?t)
+  :assert (div-choose ?k ?ms ?rest ?w ?u ?j ?hi ?t)
+  :why    "{?j} times the divisor fits, and leaves {?t}: the digit is at least {?j}")
+
+(rule div-too-big ()
+  :match  (short (div-trial ?k ?ms ?rest ?w ?u ?lo ?hi ?left ?j))
+  :assert (div-choose ?k ?ms ?rest ?w ?u ?lo ?j ?left)
+  :why    "{?j} times the divisor does not fit: the digit is less than {?j}")
+
+(rule div-digit-found ()
+  :match  (and (div-choose ?k ?ms ?rest ?w ?u ?lo ?hi ?left) (adj ?lo ?hi))
+  :assert (div-digit ?k ?ms ?rest ?w ?lo ?left)
+  :why    "nothing lies between {?lo} and {?hi}: the digit is {?lo}, and {?left} is left over")
+
+;; `(div-digit TAG MULTIPLES DIGITS QUOTIENT DIGIT LEFT)`: the digit goes
+;; after the quotient so far. Three rules, so that no high zero is written.
+(rule div-next ()
+  :match  (and (div-digit ?k ?ms ?rest ?w ?j ?t) (nz ?j))
+  :assert (div-step ?k ?ms ?rest ?t (n ?w ?j))
+  :why    "the digit {?j} goes after the quotient so far")
+
+(rule div-next-zero ()
+  :match  (div-digit ?k ?ms ?rest (n ?p ?c) 0 ?t)
+  :assert (div-step ?k ?ms ?rest ?t (n (n ?p ?c) 0))
+  :why    "the digit 0 goes after a quotient that is not zero")
+
+(rule div-next-none ()
+  :match  (div-digit ?k ?ms ?rest z 0 ?t)
+  :assert (div-step ?k ?ms ?rest ?t z)
+  :why    "the digit is 0 and the quotient so far is zero: no high zero is written")
+
+(rule div-end ()
+  :match  (div-step ?k ?ms z ?t ?w)
+  :assert (div-done ?k ?w ?t)
+  :why    "no digit is left: the quotient is {?w} and the remainder {?t}")
+
+(rule div-ask ()
+  :match  (div ?x ?y)
+  :assert (operand (div-first ?x ?y) ?x)
+  :why    "{?x} divided by {?y} is asked: first, the number {?x} stands for")
+
+(rule div-ask-second ()
+  :match  (operand-is (div-first ?x ?y) ?u)
+  :assert (operand (div-second ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule div-start ()
+  :match  (operand-is (div-second ?x ?y ?u) ?v)
+  :assert (div-call (quotient ?x ?y) ?u ?v)
+  :why    "divide {?u} by {?v}")
+
+(rule div-answer ()
+  :match  (div-done (quotient ?x ?y) ?q ?r)
+  :assert (quot-of ?x ?y ?q ?r)
+  :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
+
+;; ── Division by zero, in two steps ──────────────────────────────────────────
+;; A request whose divisor is zero has no answer. It is flagged, and the flag
+;; is a contradiction: the program asked for what does not exist. Two rules
+;; (the user's ruling of 2026-11-11), so that a trace shows the flag as a
+;; step of its own and the contradiction as the next. The second is the one
+;; rule of the theory that concludes `(false)`.
+(rule div-by-zero ()
+  :match  (done (div-m1 (quotient ?x ?y) ?u) z)
+  :assert (division-by-zero (div ?x ?y))
+  :why    "the divisor of {?x} divided by {?y} is zero")
+
+(rule division-by-zero-is-false ()
+  :match  (division-by-zero ?request)
+  :assert (false)
+  :why    "{?request} divides by zero: no number is the answer")
+
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Arithmetic is computed and never guessed: every relation of the theory, and
 ;; each table it reads, is closed, so the search has no candidate among them.
@@ -568,12 +868,14 @@
 (rule arith ()
   :match  ()
   :assert (and (__closed__ fa) (__closed__ fs) (__closed__ md) (__closed__ cl)
-               (__closed__ nz)
+               (__closed__ nz) (__closed__ mid) (__closed__ adj)
                (__closed__ n) (__closed__ b)
                (__closed__ let) (__closed__ add) (__closed__ sum-of)
                (__closed__ sub) (__closed__ diff-of)
                (__closed__ cmp) (__closed__ cmp-of)
                (__closed__ mul) (__closed__ product-of)
+               (__closed__ div) (__closed__ quot-of)
+               (__closed__ division-by-zero)
                (__closed__ named) (__closed__ operand) (__closed__ operand-is)
                (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
                (__closed__ done)
@@ -581,12 +883,21 @@
                (__closed__ cmp-walk) (__closed__ order-is)
                (__closed__ top-first) (__closed__ top-first-is)
                (__closed__ mul-walk) (__closed__ mul-call) (__closed__ mul-step)
+               (__closed__ div-call) (__closed__ div-done)
+               (__closed__ multiples) (__closed__ div-step)
+               (__closed__ div-choose) (__closed__ div-digit)
                (__closed__ sum) (__closed__ add-first) (__closed__ add-second)
                (__closed__ difference) (__closed__ shortfall)
                (__closed__ sub-first) (__closed__ sub-second)
                (__closed__ order) (__closed__ cmp-first) (__closed__ cmp-second)
                (__closed__ product) (__closed__ mul-first) (__closed__ mul-second)
                (__closed__ mul-digits) (__closed__ mul-row-of) (__closed__ mul-sum)
+               (__closed__ quotient) (__closed__ div-first)
+               (__closed__ div-second) (__closed__ div-m1) (__closed__ div-m2)
+               (__closed__ div-m3) (__closed__ div-m4) (__closed__ div-m5)
+               (__closed__ div-m6) (__closed__ div-m7) (__closed__ div-m8)
+               (__closed__ div-m9) (__closed__ div-digits)
+               (__closed__ div-trial)
                (__closed__ arith-rule)
                (arith-rule operand-zero) (arith-rule operand-number)
                (arith-rule let-named) (arith-rule operand-name)
@@ -616,5 +927,23 @@
                (arith-rule mul-add-row) (arith-rule mul-next)
                (arith-rule mul-end)
                (arith-rule mul-ask) (arith-rule mul-ask-second)
-               (arith-rule mul-start) (arith-rule mul-answer))
+               (arith-rule mul-start) (arith-rule mul-answer)
+               (arith-rule div-multiples) (arith-rule div-multiple-2)
+               (arith-rule div-multiple-3) (arith-rule div-multiple-4)
+               (arith-rule div-multiple-5) (arith-rule div-multiple-6)
+               (arith-rule div-multiple-7) (arith-rule div-multiple-8)
+               (arith-rule div-multiple-9) (arith-rule div-turn)
+               (arith-rule div-begin) (arith-rule div-bring)
+               (arith-rule div-bring-first) (arith-rule div-bring-zero)
+               (arith-rule div-try-1) (arith-rule div-try-2)
+               (arith-rule div-try-3) (arith-rule div-try-4)
+               (arith-rule div-try-5) (arith-rule div-try-6)
+               (arith-rule div-try-7) (arith-rule div-try-8)
+               (arith-rule div-try-9) (arith-rule div-fits)
+               (arith-rule div-too-big) (arith-rule div-digit-found)
+               (arith-rule div-next) (arith-rule div-next-zero)
+               (arith-rule div-next-none) (arith-rule div-end)
+               (arith-rule div-ask) (arith-rule div-ask-second)
+               (arith-rule div-start) (arith-rule div-answer)
+               (arith-rule div-by-zero) (arith-rule division-by-zero-is-false))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

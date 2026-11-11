@@ -1,7 +1,7 @@
 # S1f.6.5 — Multiplication
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: 16 rules and 13 relations added to `stdlib/arith.ein`, 53 rules in all; `(mul X Y)`
+**Status:** **done 2026-11-11** (`b2c4b238`): 16 rules and 13 relations added to `stdlib/arith.ein`, 53 rules in all; `(mul X Y)`
 answered by `(product-of X Y P)`, held to Rust's integers, search-free, and under the rule of the theory on the
 text and on the counter; four decisions taken by default, Q-M1f.159 to .162, and no finding
 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08; re-planned 2026-11-11 to

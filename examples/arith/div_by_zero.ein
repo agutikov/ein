@@ -1,0 +1,44 @@
+;;; A division by zero: the flag, and the contradiction. M1f P1f.6 (S1f.6.6).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A shop's day: 120 was taken from a number of customers, and the program
+;;; asks for the average. The number of customers is zero.
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; `std.arith` has no answer for a division by zero and does not make one
+;;; up. It says so in two steps (the user's ruling of 2026-11-11):
+;;;
+;;;   1. the request derives a flag that names it,
+;;;      `(division-by-zero (div takings customers))`;
+;;;   2. the flag derives `(false)`.
+;;;
+;;; So the program is a contradiction: root is dead, R is empty, and no
+;;; query has an answer, the sum of 2 and 2 among them, though root's state
+;;; holds it. `ein solve` says why, naming the request and the two `let`s
+;;; its operands were looked up by:
+;;;
+;;;   unsat core        (div takings customers)
+;;;   unsat core        (let customers z)
+;;;   unsat core        (let takings (n (n (n z 1) 2) 0))
+;;;   refuted by        division-by-zero-is-false
+;;;
+;;; `ein solve examples/arith/div_by_zero.ein --trace T.md` shows the flag
+;;; and the contradiction as two steps, and `ein saturate --dump` shows
+;;; root's state, the flag and `(false)` in it, each with its rule.
+;;;
+;;; `(solve :expect (false))` is the one claim such a program can make. A
+;;; program that must not die compares its divisor with zero first, `(cmp
+;;; customers z)`, and derives its `div` request by a rule that matches
+;;; `(cmp-of customers z gt)`.
+
+(import std.arith :symbols (arith))
+
+(let takings   (n (n (n z 1) 2) 0))
+(let customers z)
+
+(add (n z 2) (n z 2))
+(div takings customers)
+
+(solve :expect (false))

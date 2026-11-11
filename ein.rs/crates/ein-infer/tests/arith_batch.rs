@@ -58,18 +58,27 @@ const IMPORT: &str = "(import std.arith :symbols (arith))\n";
 /// The request relations a batch is made of, each with its result relation.
 /// A batch is measured per operation, so that one operation's proportion is
 /// not hidden in another's count.
-const REQUESTS: [(&str, &str); 4] = [
+const REQUESTS: [(&str, &str); 5] = [
     ("add", "sum-of"),
     ("sub", "diff-of"),
     ("cmp", "cmp-of"),
     ("mul", "product-of"),
+    ("div", "quot-of"),
 ];
+
+/// The digits of a request's second operand. Nine, as the first has, but
+/// for a division: a dividend of nine digits by a divisor of four has a
+/// quotient of five or six digits, where nine by nine has one. A number's
+/// top digit is not zero, so no divisor is.
+fn second_digits(op: &str) -> u32 {
+    if op == "div" { 4 } else { 9 }
+}
 
 /// What a request of each operation may cost at the smallest batch, in
 /// `candidates`: a bound a little above the measure, so that a scan of the
 /// batch, which adds the batch's size to it, fails here as well as in the
 /// proportion.
-const BOUND: [f64; 4] = [250.0, 500.0, 1000.0, 20000.0];
+const BOUND: [f64; 5] = [250.0, 500.0, 1000.0, 20000.0, 40000.0];
 
 /// Per-request work at a larger batch may exceed the smallest batch's by this
 /// factor and no more. The operands differ from batch to batch, so the counts
@@ -101,7 +110,7 @@ fn batch(op: &str, count: usize, lets: usize) -> String {
         src.push_str(&format!("(let c{i} {})\n", number(&mut names, 9)));
     }
     for _ in 0..count {
-        let (x, y) = (number(&mut rng, 9), number(&mut rng, 9));
+        let (x, y) = (number(&mut rng, 9), number(&mut rng, second_digits(op)));
         src.push_str(&format!("({op} {x} {y})\n"));
     }
     src

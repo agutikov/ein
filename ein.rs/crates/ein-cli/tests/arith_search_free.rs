@@ -20,6 +20,10 @@
 //! its examples. A program joins by being put there, and an operation by
 //! adding its result relation to [`RESULTS`]; nothing else here names a file.
 //!
+//! **A program that divides by zero** (S1f.6.6) is the one kind whose R is
+//! not {∅}: it claims [`DEAD`], and [`division_by_zero`] holds what it is
+//! held to instead, an empty R decided by root alone.
+//!
 //! What this file does not ask is whether the answers are *right*: that is
 //! `ein-infer/tests/arith_theory.rs`, against Rust's integers.
 
@@ -33,7 +37,10 @@ use ein_corpus::{Scratch, ein_files_under, repo_root};
 const ROOTS: [&str; 2] = ["tests/stdlib/arith", "examples/arith"];
 
 /// The relations an answer is a fact of.
-const RESULTS: [&str; 4] = ["sum-of", "diff-of", "cmp-of", "product-of"];
+const RESULTS: [&str; 5] = ["sum-of", "diff-of", "cmp-of", "product-of", "quot-of"];
+
+/// What a program that divides by zero claims: root is dead and R is empty.
+const DEAD: &str = "(solve :expect (false))";
 
 struct Run {
     code: i32,
@@ -104,7 +111,99 @@ fn balanced(text: &str) -> String {
     out
 }
 
-fn search_free(path: &Path, scratch: &Scratch) {
+/// **A program that divides by zero is search-free too**, and dead: no
+/// candidate, one saturation and no fork, and no state at all, since root's
+/// own fixpoint derives `(false)`. The core is the request and nothing
+/// else, `refuted by` names the rule that concludes `(false)` from the flag
+/// (the user's ruling of 2026-11-11: two steps), `ein saturate` shows the
+/// flag and `(false)` in root's state, each by its own rule, and `ein test`
+/// holds the one claim such a program can make.
+fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
+    let region = &json["region"];
+    assert_eq!(region["k_s"], 0, "{file}: k_s");
+    assert_eq!(region["k_c"], 0, "{file}: k_c");
+    assert_eq!(region["exhausted"], true, "{file}");
+    assert_eq!(region["root"], "dead", "{file}: root derives (false)");
+    assert_eq!(
+        region["states"],
+        serde_json::json!([]),
+        "{file}: R is empty"
+    );
+    assert_eq!(json["work"]["saturations"], 1, "{file}: one saturation");
+    assert_eq!(json["monotonicity"]["monotone"], true, "{file}");
+    // The core is the request, and what its divisor's zero rests on: nothing
+    // where the divisor is written `z`; the `let` where it is a name; and the
+    // rows of `md` that put a zero written with digits into normal form, since
+    // a table row is a premise like any other fact (S1f.6.2's measured cost).
+    let core: Vec<&str> = region["core"]
+        .as_array()
+        .expect("root's core")
+        .iter()
+        .map(|f| f.as_str().expect("a fact"))
+        .collect();
+    assert_eq!(
+        core.iter().filter(|f| f.starts_with("(div ")).count(),
+        1,
+        "{file}: the core names the request: {core:?}"
+    );
+    assert!(
+        core.iter()
+            .all(|f| ["(div ", "(let ", "(md "].iter().any(|h| f.starts_with(h))),
+        "{file}: the core is the request, a `let` and rows of `md`: {core:?}"
+    );
+    assert_eq!(
+        region["refuted_by"],
+        serde_json::json!(["division-by-zero-is-false"]),
+        "{file}"
+    );
+    assert!(
+        !dump.join("models").exists()
+            || std::fs::read_dir(dump.join("models")).is_ok_and(|mut d| d.next().is_none()),
+        "{file}: a dead root has no state file"
+    );
+
+    let saturate = ein(&["saturate", "--dump", file]);
+    assert_eq!(
+        saturate.code, 0,
+        "{file}: ein saturate\n{}",
+        saturate.stderr
+    );
+    let fact = |start: &str, rule: &str| {
+        saturate.stdout.lines().any(|l| {
+            let l = l.trim();
+            l.starts_with(start) && l.ends_with(&format!(":rule {rule})"))
+        })
+    };
+    assert!(
+        fact("(division-by-zero (div ", "div-by-zero"),
+        "{file}: the flag, by its own rule"
+    );
+    assert!(
+        fact("(false", "division-by-zero-is-false"),
+        "{file}: (false), by the second rule"
+    );
+    assert!(
+        !saturate
+            .stdout
+            .lines()
+            .any(|l| l.trim().starts_with("(quot-of ")),
+        "{file}: a division by zero is never answered with a number"
+    );
+
+    let test = ein(&["test", file]);
+    assert_eq!(
+        test.code, 0,
+        "{file}: ein test\n{}{}",
+        test.stdout, test.stderr
+    );
+    assert!(
+        test.stdout.contains("0 FAILED, 0 not checked, 0 errors"),
+        "{file}: {}",
+        test.stdout
+    );
+}
+
+fn search_free(path: &Path, scratch: &Scratch, dead: bool) {
     let root = repo_root();
     let file = path
         .strip_prefix(&root)
@@ -139,6 +238,10 @@ fn search_free(path: &Path, scratch: &Scratch) {
         "{file}: something is left outside the universe"
     );
     assert_eq!(json["root"]["hypgen"]["emitted"], 0, "{file}");
+    if dead {
+        division_by_zero(file, &json, &dump);
+        return;
+    }
     assert_eq!(region["k_s"], 1, "{file}: k_s");
     assert_eq!(region["k_c"], 1, "{file}: k_c");
     assert_eq!(region["exhausted"], true, "{file}");
@@ -216,6 +319,6 @@ fn every_arithmetic_program_is_search_free() {
             "{}: under an arithmetic root and does not import std.arith",
             path.display()
         );
-        search_free(path, &scratch);
+        search_free(path, &scratch, text.contains(DEAD));
     }
 }

@@ -1104,7 +1104,49 @@ constrained-reasoning research.
   `examples/arith/mul.ein` is the example. No engine source moved and no
   existing program's `ein solve` (`python3 build/s1f.6.4/sweep.py --old
   build/s1f.6.5/old/stdlib --ref 088a1f87`, 687 files, 2026-11-11); the
-  register is unmoved. S1f.6.6, division, is next.
+  register is unmoved.
+  **S1f.6.6, division, ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md#t1-record-2026-11-11),
+  Q-M1f.163 to .165 defaulted), and with it **the four operations and
+  comparison are built**: `std.arith` is 88 rules and its closing rule, over
+  all seven tables. `(div X Y)` is answered by `(quot-of X Y Q R)`, school
+  long division: the divisor's multiples by 1 to 9, each a row of
+  multiplication, computed once and carried as one fact; the dividend turned
+  round; a step a digit, the digit brought down beside what is left over;
+  and the quotient's digit found **by bisection**, each trial a subtraction
+  of the middle multiple that either answers, `(done TAG LEFT)`, or is
+  `(short TAG)`, at most four a digit. Tagged, `(div-call TAG X Y)` answered
+  by `(div-done TAG Q R)`. The nine trial rules, `div-try-1` to `-9`, are
+  one rule written nine times, since a rule cannot pick the J-th multiple by
+  a digit without joining on a number, and
+  `the_rules_of_a_family_differ_by_their_digit_alone` holds them alike.
+  127645 ÷ 25 is 220 firings, one chain, and 4 000 divisions saturate in
+  2.6 s (`python3 build/s1f.6.4/batch.py div`, 2026-11-11); 6 030 candidates
+  a request, the same at 250, 1 000 and 4 000. **Division by zero is a
+  contradiction, in two steps** (the user's ruling of 2026-11-11):
+  `div-by-zero` derives `(division-by-zero (div X Y))`, the request as
+  written, for a divisor that is zero by value, and
+  `division-by-zero-is-false` derives `(false)` from the flag, the one rule
+  of the theory that concludes it. Root is dead, R is empty, every command
+  exits 0, `ein solve` names the request in the unsat core (with the `let`s
+  of named operands, and the `md` rows of a zero written with digits) and
+  the second rule under `refuted by`, `--trace` shows two steps, `ein
+  saturate --dump` shows the flag and `(false)` in root's state, and such a
+  program can claim only `(solve :expect (false))`: every other query of it
+  loses its answer
+  ([the record's § T2](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md#t2-record-2026-11-11-division-by-zero-on-every-surface)
+  has every surface). `arith_search_free.rs` holds a program that claims
+  `(false)` to an empty R decided by root alone, where it holds the others
+  to R = {∅}. Six programs activate the 36 rules, 166 of 166 over the
+  stdlib, and the mutation sweep kills all 18 of their mutants, 234 of 284:
+  the module's 67 mutants have no survivor (`python3
+  utils/stdlib_mutants.py`, 2026-11-11). `examples/arith/div.ein`, with the
+  chain of `design.md`, and `div_by_zero.ein` are the examples. A program
+  that imports the theory now holds 1 664 table rows: `ein test tests/`
+  takes 681 ms for twenty-one arithmetic programs. No engine source moved
+  and no existing program's `ein solve` (`python3 build/s1f.6.4/sweep.py
+  --old build/s1f.6.6/old/stdlib --ref b2c4b238`, 691 files, 2026-11-11);
+  the register is unmoved.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -1314,7 +1356,8 @@ constrained-reasoning research.
   the calculator's programs): every stdlib rule is
   activated by a program *here* — **77 of 77**, 96 of 96 since M1f
   S1f.6.3's `std.arith`, 114 of 114 since S1f.6.4's subtraction and
-  comparison and 130 of 130 since S1f.6.5's multiplication (`cat stdlib/*.ein | grep -c '^(rule '`,
+  comparison, 130 of 130 since S1f.6.5's multiplication and 166 of 166
+  since S1f.6.6's division (`cat stdlib/*.ein | grep -c '^(rule '`,
   2026-11-11), with no `examples/` entry
   contributing — and every program here states an expectation. **Activation is
   two events since S1d.2.4**: `fire` for a saturation rule and `owe` for an

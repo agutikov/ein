@@ -17,7 +17,9 @@
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `absent`, no `not`, no `or`: one stratum | [`the_theory_writes_no_negation`] |
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
-//! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`] |
+//! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
+//! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
+//! | division's two families of nine rules are alike but for the digit | [`the_rules_of_a_family_differ_by_their_digit_alone`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -32,7 +34,7 @@
 //! its result and what the integers say, and by a pin of its circuit; the
 //! three static tests read the whole module and need no change to cover a new
 //! rule. Subtraction and comparison joined at S1f.6.4, multiplication at
-//! S1f.6.5.
+//! S1f.6.5, division at S1f.6.6.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -171,17 +173,19 @@ struct Op {
     result: &'static str,
     /// The longest sampled operand, in digits: the answer must stay in `u128`.
     max_digits: u32,
-    answer: fn(u128, u128) -> Vec<String>,
+    /// `None` where the request has no answer: a division by zero, which
+    /// the harness does not ask here ([`a_division_by_zero_is_flagged_and_false`]).
+    answer: fn(u128, u128) -> Option<Vec<String>>,
 }
 
 /// The operations, in the order the stages added them. A later operation
 /// joins the harness by a row here.
-const OPS: [Op; 4] = [
+const OPS: [Op; 5] = [
     Op {
         request: "add",
         result: "sum-of",
         max_digits: MAX_DIGITS,
-        answer: |a, b| vec![normal(a + b)],
+        answer: |a, b| Some(vec![normal(a + b)]),
     },
     // Two numbers: the difference where the first is not the smaller, and
     // what the first is short by where it is; the other is zero.
@@ -189,21 +193,26 @@ const OPS: [Op; 4] = [
         request: "sub",
         result: "diff-of",
         max_digits: MAX_DIGITS,
-        answer: |a, b| vec![normal(a.saturating_sub(b)), normal(b.saturating_sub(a))],
+        answer: |a, b| {
+            Some(vec![
+                normal(a.saturating_sub(b)),
+                normal(b.saturating_sub(a)),
+            ])
+        },
     },
     Op {
         request: "cmp",
         result: "cmp-of",
         max_digits: MAX_DIGITS,
         answer: |a, b| {
-            vec![
+            Some(vec![
                 match a.cmp(&b) {
                     std::cmp::Ordering::Less => "lt",
                     std::cmp::Ordering::Equal => "eq",
                     std::cmp::Ordering::Greater => "gt",
                 }
                 .to_string(),
-            ]
+            ])
         },
     },
     // A product of two numbers of 19 digits has at most 38, which `u128`
@@ -212,7 +221,15 @@ const OPS: [Op; 4] = [
         request: "mul",
         result: "product-of",
         max_digits: 19,
-        answer: |a, b| vec![normal(a * b)],
+        answer: |a, b| Some(vec![normal(a * b)]),
+    },
+    // The quotient and the remainder. A zero divisor has no answer and is a
+    // contradiction, so one such request would kill the whole program.
+    Op {
+        request: "div",
+        result: "quot-of",
+        max_digits: MAX_DIGITS,
+        answer: |a, b| (b != 0).then(|| vec![normal(a / b), normal(a % b)]),
     },
 ];
 
@@ -226,10 +243,10 @@ fn hold(op: &Op, cases: &[(Operand, Operand)]) {
     let mut want: BTreeMap<(String, String), Vec<String>> = BTreeMap::new();
     let mut body = String::new();
     for ((x, a), (y, b)) in cases {
-        if want
-            .insert((x.clone(), y.clone()), (op.answer)(*a, *b))
-            .is_none()
-        {
+        let Some(answer) = (op.answer)(*a, *b) else {
+            continue;
+        };
+        if want.insert((x.clone(), y.clone()), answer).is_none() {
             body.push_str(&format!("({} {x} {y})\n", op.request));
         }
     }
@@ -380,10 +397,13 @@ fn named_operands_work_for_every_request() {
         for (x, a) in &names {
             for (y, b) in names.iter().step_by(7) {
                 // By two names, and by a name and a number.
+                let Some(answer) = (op.answer)(*a, *b) else {
+                    continue;
+                };
                 src.push_str(&format!("({} {x} {y})\n", op.request));
-                want.insert((x.clone(), y.clone()), (op.answer)(*a, *b));
+                want.insert((x.clone(), y.clone()), answer.clone());
                 src.push_str(&format!("({} {x} {})\n", op.request, normal(*b)));
-                want.insert((x.clone(), normal(*b)), (op.answer)(*a, *b));
+                want.insert((x.clone(), normal(*b)), answer);
             }
         }
         let mut got = BTreeMap::new();
@@ -397,6 +417,55 @@ fn named_operands_work_for_every_request() {
         }
         assert_eq!(got, want, "{} by name", op.request);
     }
+}
+
+// ── division by zero ───────────────────────────────────────────────
+
+/// **Division by zero, in two steps** (the user's ruling of 2026-11-11). A
+/// request whose divisor is zero, written `z`, with digits, or by a name,
+/// derives the flag `(division-by-zero (div X Y))`, the request as written;
+/// the flag derives `(false)`; and the request is never answered with a
+/// number. Requests whose divisor is not zero are not flagged.
+///
+/// The saturator here runs root to its fixpoint whatever it derives, so the
+/// other requests of the program are answered in root's state beside the
+/// contradiction; what a *solve* makes of a dead root, an empty R, is
+/// `ein-cli/tests/arith_search_free.rs`'s.
+#[test]
+fn a_division_by_zero_is_flagged_and_false() {
+    let zeros = ["z".to_string(), written("0"), written("000"), "none".into()];
+    let dividends = ["z".to_string(), written("7"), written("120"), "none".into()];
+    let mut body = String::from("(let none z)\n(let some (n z 3))\n");
+    let mut want = BTreeSet::new();
+    for x in &dividends {
+        for y in &zeros {
+            body.push_str(&format!("(div {x} {y})\n"));
+            want.insert(format!("(division-by-zero (div {x} {y}))"));
+        }
+        body.push_str(&format!("(div {x} some)\n(div {x} (n z 3))\n"));
+    }
+    let flags: BTreeSet<String> = run(&body, "division-by-zero").into_iter().collect();
+    assert_eq!(
+        flags, want,
+        "the flags are the requests that divide by zero"
+    );
+    assert_eq!(run(&body, "false"), ["(false)"], "the flag derives (false)");
+    for fact in run(&body, "quot-of") {
+        let p = parts(&fact);
+        assert!(
+            !zeros.contains(&p[2]),
+            "a division by zero answered with a number: {fact}"
+        );
+    }
+    assert_eq!(
+        run(&body, "quot-of").len(),
+        2 * dividends.len(),
+        "the requests that do not divide by zero are each answered"
+    );
+    // No flag and no contradiction without a zero divisor.
+    let fine = "(div (n z 7) (n z 3))\n(div z (n z 3))\n";
+    assert!(run(fine, "division-by-zero").is_empty());
+    assert!(run(fine, "false").is_empty());
 }
 
 // ── the circuit's measure ──────────────────────────────────────────
@@ -555,6 +624,32 @@ fn the_circuit_of_one_multiplication() {
     );
 }
 
+/// **One division, as a circuit.** 127645 divided by 25: the divisor's nine
+/// multiples, each a row of two columns; the dividend's six digits turned
+/// round; then a step a digit, each three trials, and a trial a subtraction
+/// with its strip and turn where it fits. One chain, so its depth is its
+/// size. A divisor of one digit and a dividend of one are the two ends.
+#[test]
+fn the_circuit_of_one_division() {
+    let div = |x: &str, y: &str| circuit(&format!("(div {} {})\n", written(x), written(y)));
+    assert_eq!(
+        div("127645", "25"),
+        (220, 220),
+        "127645 / 25: (firings, depth)"
+    );
+    assert_eq!(div("7", "3"), (84, 84), "7 / 3");
+    assert_eq!(div("999999", "7"), (229, 229), "six digits by one");
+    assert_eq!(div("999999999999", "7"), (394, 394), "twelve digits by one");
+    assert_eq!(
+        div("999999999999", "777777"),
+        (655, 655),
+        "twelve digits by six"
+    );
+    // A division by zero stops at the divisor's normal form: the operands,
+    // one row, its strip, the flag and the contradiction.
+    assert_eq!(div("127645", ""), (10, 10), "127645 / 0");
+}
+
 // ── the module's text ──────────────────────────────────────────────
 
 /// The seven tables of `std.digits`: a premise over one is a lookup by digits.
@@ -570,6 +665,9 @@ const TABLES: [&str; 7] = ["fa", "fs", "md", "cl", "nz", "mid", "adj"];
 /// states the exception; adding a rule here is a decision about the theory's
 /// cost, not a way to make a test pass.
 const NAME_LOOKUP: (&str, [&str; 3]) = ("operand-name", ["operand", "named", "let"]);
+
+/// The one rule that concludes `(false)`.
+const FALSE_RULE: &str = "division-by-zero-is-false";
 
 struct Module {
     ast: Ast,
@@ -723,10 +821,32 @@ fn the_theory_writes_no_negation() {
         let mut heads = Vec::new();
         m.heads(m.clause(rule, "match"), &mut heads);
         m.heads(m.clause(rule, "assert"), &mut heads);
-        for banned in ["absent", "not", "or", "neq", "false"] {
+        for banned in ["absent", "not", "or", "neq"] {
             assert!(
                 !heads.iter().any(|h| h == banned),
                 "rule {name} writes `{banned}`"
+            );
+        }
+        // One rule concludes `(false)`, from the flag and nothing else: a
+        // program that divides by zero is a contradiction (the user's ruling
+        // of 2026-11-11). It reads no `absent`, so the theory is monotone
+        // still, and no other rule may conclude it.
+        let concludes_false = heads.iter().any(|h| h == "false");
+        assert_eq!(
+            concludes_false,
+            name == FALSE_RULE,
+            "`(false)` is concluded by {FALSE_RULE} and by no other rule: {name}"
+        );
+        if name == FALSE_RULE {
+            let premises: Vec<&str> = m
+                .conjuncts(m.clause(rule, "match"))
+                .iter()
+                .filter_map(|&p| m.ast.head_name(p))
+                .collect();
+            assert_eq!(
+                premises,
+                ["division-by-zero"],
+                "{FALSE_RULE} reads the flag"
             );
         }
     }
@@ -846,4 +966,58 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         [("arith-rule".to_string(), vec!["arith".to_string()])],
         "the module writes one fact, the closing rule's own name"
     );
+}
+
+/// **A family of rules is one rule written nine times.** Division tries a
+/// multiple of the divisor by a rule a multiple, `div-try-1` to `div-try-9`,
+/// since a rule cannot pick the J-th of nine by a digit without joining on a
+/// number; and it computes the multiples by a chain, `div-multiple-3` to
+/// `div-multiple-9`. They are written by hand, so this holds that they are
+/// alike: each rule's text is the family's first with its digit, and the
+/// variable that names its multiple, exchanged.
+#[test]
+fn the_rules_of_a_family_differ_by_their_digit_alone() {
+    let path = repo_root().join("stdlib/arith.ein");
+    let text = std::fs::read_to_string(&path).expect("std.arith");
+    let rule = |name: &str| -> String {
+        let start = text
+            .find(&format!("(rule {name} ()"))
+            .unwrap_or_else(|| panic!("no rule {name}"));
+        let end = text[start..].find("\n\n").map_or(text.len(), |e| start + e);
+        text[start..end].to_string()
+    };
+    // The trials: `div-try-J` reads `(mid ?lo ?hi J)`, tags its trial J, and
+    // subtracts `?mJ`. The list of the nine multiples is the same in each.
+    let list = "?m1 ?m2 ?m3 ?m4 ?m5 ?m6 ?m7 ?m8 ?m9";
+    let shape = |j: u32| {
+        rule(&format!("div-try-{j}"))
+            .replace(list, "<multiples>")
+            .replace(&format!("?m{j}"), "<multiple>")
+            .replace(&j.to_string(), "<digit>")
+    };
+    let first = shape(1);
+    assert_eq!(first.matches("<digit>").count(), 5, "{first}");
+    assert_eq!(first.matches("<multiple>").count(), 2, "{first}");
+    for j in 2..=9 {
+        assert_eq!(shape(j), first, "div-try-{j} against div-try-1");
+    }
+    // The chain: `div-multiple-J` reads J−1 times the divisor out of the tag
+    // `div-m(J−1)`, which holds the multiples before it, and asks for J.
+    for j in 3..=9u32 {
+        let known: Vec<String> = (1..j - 1).map(|i| format!("?m{i}")).collect();
+        let known = known.join(" ");
+        let before = if known.is_empty() {
+            String::new()
+        } else {
+            format!(" {known}")
+        };
+        let want = format!(
+            "(rule div-multiple-{j} ()\n  \
+             :match  (done (div-m{p} ?k ?u{before}) ?m{p})\n  \
+             :assert (mul-walk (div-m{j} ?k ?u{before} ?m{p}) ?m1 {j} 0 z)\n  \
+             :why    \"{p} times the divisor is {{?m{p}}}: next, {j} times the divisor\")",
+            p = j - 1
+        );
+        assert_eq!(rule(&format!("div-multiple-{j}")), want);
+    }
 }

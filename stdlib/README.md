@@ -124,13 +124,14 @@ the gates and this module's rules are the wiring. Every step is a table lookup
 whose outcome the table decides, so nothing is guessed: on a program that
 imports the theory and states requests the universe has no candidate, R is
 {∅}, and the answer is root's fixpoint under `ein solve`, `ein saturate` and
-`ein test` alike. No `absent`, no `not` premise, one stratum. Ein still has no
+`ein test` alike. No `absent`, no `not` premise, one stratum; one rule
+concludes `(false)`, from a division by zero. Ein still has no
 numbers (the user's ruling of 2026-11-06): nothing in the engine knows what
 `7` is.
 
 **Addition** (S1f.6.3), **subtraction and comparison** (S1f.6.4),
-**multiplication** (S1f.6.5); division is the phase's next stage and joins
-this module.
+**multiplication** (S1f.6.5) and **division** (S1f.6.6): the four operations
+and comparison, 88 rules and the closing rule.
 
 ```lisp
 (import std.arith :symbols (arith))
@@ -147,6 +148,8 @@ this module.
 | **subtraction** | `(sub X Y)` is answered by `(diff-of X Y D R)`, **two numbers**: D is X − Y where X is not the smaller and `z` otherwise, and R is what X is short by, Y − X, where X is the smaller and `z` otherwise. One of the two is always `z`, both when X = Y. The theory has no negative number, and R is its place: a rule that matches `(diff-of X Y z (n ?p ?a))` holds exactly where X is the smaller, with no negation written |
 | **comparison** | `(cmp X Y)` is answered by `(cmp-of X Y O)`, O one of the names `lt`, `eq`, `gt`, by value: 5 and 005 are `eq` |
 | **multiplication** | `(mul X Y)` is answered by `(product-of X Y P)`. A product has no width to overflow: 123078 × 123078 is the eleven digits of 15148194084 |
+| **division** | `(div X Y)` is answered by `(quot-of X Y Q R)`, the quotient and the remainder: X = Q × Y + R, and R less than Y |
+| **division by zero** | a contradiction, **in two steps** (the user's ruling of 2026-11-11): a request whose divisor is zero, however written, derives the flag `(division-by-zero (div X Y))`, and the flag derives `(false)`. Root is dead, R is empty, and no query of the program has an answer; `ein solve` names the request in the unsat core and `division-by-zero-is-false` as what refuted it. A program that must not die compares its divisor with zero first and derives its `div` request by a rule over `(cmp-of Y z gt)` |
 | **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name no `let` states is never answered |
 | **the one entry** | `arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
 
@@ -186,6 +189,23 @@ lengths (`arith_theory.rs`'s `the_circuit_of_one_multiplication`). 4 000
 products of numbers of up to nine digits saturate in 1.1 s (`python3
 build/s1f.6.4/batch.py mul`, 2026-11-11).
 
+**Division is school long division, the quotient's digit by bisection.** The
+divisor's multiples by 1 to 9 are computed once a division, each a row of
+multiplication, in a chain whose tags hold the multiples already known, and
+travel on as one fact, `(multiples M1 … M9)`; the first, the divisor times 1,
+is the divisor in normal form and shows whether it is zero. The dividend is
+turned round, and each digit is a step: it is brought down beside what is
+left over, one constructor, and the quotient's digit, at least 0 and less
+than 10, is found by halving the range through the `mid` and `adj` tables.
+A trial takes the middle multiple from the number by subtraction's walk: `(done
+TAG LEFT)`, it fits, or `(short TAG)`, it does not. At most four trials a
+digit, nothing guessed. The nine trial rules, `div-try-1` to `div-try-9`, are
+one rule written nine times, since a rule cannot pick the J-th of nine by a
+digit without joining on a number; `arith_theory.rs` holds that they differ
+by the digit alone. 127645 ÷ 25 is 220 firings, one chain
+(`the_circuit_of_one_division`); 4 000 divisions of numbers of up to nine
+digits saturate in 2.6 s (`python3 build/s1f.6.4/batch.py div`, 2026-11-11).
+
 **The rule of the theory: no rule joins two facts on a number.** A rule has
 one premise that holds numbers; its other premises are rows of `std.digits`
 looked up by digits. The engine's fact index does not key on a nested fact
@@ -211,20 +231,18 @@ normal form.
 [`ein-cli/tests/arith_search_free.rs`](../ein.rs/crates/ein-cli/tests/arith_search_free.rs)
 holds the search-free claim on every program under `tests/stdlib/arith/` and
 `examples/arith/`. [`examples/arith/add.ein`](../examples/arith/add.ein) is
-the program to read first, then [`sub.ein`](../examples/arith/sub.ein) and
-[`mul.ein`](../examples/arith/mul.ein).
+the program to read first, then [`sub.ein`](../examples/arith/sub.ein),
+[`mul.ein`](../examples/arith/mul.ein), [`div.ein`](../examples/arith/div.ein)
+and [`div_by_zero.ein`](../examples/arith/div_by_zero.ein).
 
-**The names it occupies.** Imported flat, `z`, `n`, `b`, `let`, the requests
-`add`, `sub`, `cmp` and `mul`, the results `sum-of`, `diff-of`, `cmp-of` and
-`product-of`, the orders `lt`, `eq` and `gt`, the circuit's `named`,
-`operand`, `operand-is`, `add-walk`, `sub-walk`, `cmp-walk`, `mul-walk`,
-`strip`, `turn`, `top-first`, `top-first-is`, `done`, `short`, `order-is`,
-`mul-call`, `mul-step`, the tags (`sum`, `difference`, `shortfall`, `order`,
-`product`, `mul-digits`, `mul-row-of`, `mul-sum`, and each request's `-first`
-and `-second`), `arith-rule`, and the tables `fa`, `fs`, `md`, `cl` and `nz`
-mean what the module says; the module's header has the list.
-Only `n`, `z`, `let`, the requests, the results and the three orders are its
-interface. What a clash does, and what a malformed number does, is the
+**The names it occupies.** Imported flat, the module's names mean what the
+module says, and its header has the list: `z`, `n`, `b`, `let`; the requests
+`add`, `sub`, `cmp`, `mul` and `div`; the results `sum-of`, `diff-of`,
+`cmp-of`, `product-of` and `quot-of`; the flag `division-by-zero`; the orders
+`lt`, `eq` and `gt`; some sixty names of the circuit's own, its walks, its
+hand-overs and its tags; `arith-rule`; and the seven tables of `std.digits`.
+Only `n`, `z`, `let`, the requests, the results, the flag and the three orders
+are its interface. What a clash does, and what a malformed number does, is the
 phase's S1f.6.12.
 
 ## What tests these modules
@@ -249,8 +267,8 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — half a second, and **130 of 130** since `std.arith`'s 53
-joined the 77 (M1f S1f.6.3 to S1f.6.5), which is a number this page may
+them activated — half a second, and **166 of 166** since `std.arith`'s 89
+joined the 77 (M1f S1f.6.3 to S1f.6.6), which is a number this page may
 state exactly because `every_stdlib_rule_is_activated_by_a_program` fails
 the day it stops being true (`cat stdlib/*.ein | grep -c '^(rule '` is the
 denominator). `python3 utils/stdlib_census.py --check` is the same census with
@@ -288,7 +306,7 @@ install-relative import could not find it.
 | module | file | provides | stage |
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
-| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)` and multiplication `(product-of X Y P)` so far ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.5 |
+| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6 |
 | `std.digits` | [`digits.ein`](digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.digits`](#stddigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |

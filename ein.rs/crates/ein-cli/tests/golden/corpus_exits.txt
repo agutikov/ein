@@ -3,6 +3,17 @@
 0    examples/arith/add.ein :: solve
 0    examples/arith/add.ein :: solve --trace {out}/trace.md
 0    examples/arith/add.ein :: test
+0    examples/arith/div.ein :: render rules
+0    examples/arith/div.ein :: saturate
+0    examples/arith/div.ein :: saturate --dump
+0    examples/arith/div.ein :: solve
+0    examples/arith/div.ein :: solve --trace {out}/trace.md
+0    examples/arith/div.ein :: test
+0    examples/arith/div_by_zero.ein :: saturate
+0    examples/arith/div_by_zero.ein :: saturate --dump
+0    examples/arith/div_by_zero.ein :: solve
+0    examples/arith/div_by_zero.ein :: solve --trace {out}/trace.md
+0    examples/arith/div_by_zero.ein :: test
 0    examples/arith/mul.ein :: render rules
 0    examples/arith/mul.ein :: saturate
 0    examples/arith/mul.ein :: saturate --dump
@@ -1673,6 +1684,36 @@
 0    tests/stdlib/arith/15_mul_long_and_named.ein :: saturate
 0    tests/stdlib/arith/15_mul_long_and_named.ein :: solve
 0    tests/stdlib/arith/15_mul_long_and_named.ein :: test
+0    tests/stdlib/arith/16_div.ein :: render constraints
+1    tests/stdlib/arith/16_div.ein :: render rules
+0    tests/stdlib/arith/16_div.ein :: saturate
+0    tests/stdlib/arith/16_div.ein :: solve
+0    tests/stdlib/arith/16_div.ein :: test
+0    tests/stdlib/arith/17_div_every_digit.ein :: render constraints
+1    tests/stdlib/arith/17_div_every_digit.ein :: render rules
+0    tests/stdlib/arith/17_div_every_digit.ein :: saturate
+0    tests/stdlib/arith/17_div_every_digit.ein :: solve
+0    tests/stdlib/arith/17_div_every_digit.ein :: test
+0    tests/stdlib/arith/18_div_small_and_zeros.ein :: render constraints
+1    tests/stdlib/arith/18_div_small_and_zeros.ein :: render rules
+0    tests/stdlib/arith/18_div_small_and_zeros.ein :: saturate
+0    tests/stdlib/arith/18_div_small_and_zeros.ein :: solve
+0    tests/stdlib/arith/18_div_small_and_zeros.ein :: test
+0    tests/stdlib/arith/19_div_named_and_chained.ein :: render constraints
+0    tests/stdlib/arith/19_div_named_and_chained.ein :: render rules
+0    tests/stdlib/arith/19_div_named_and_chained.ein :: saturate
+0    tests/stdlib/arith/19_div_named_and_chained.ein :: solve
+0    tests/stdlib/arith/19_div_named_and_chained.ein :: test
+0    tests/stdlib/arith/20_div_by_zero.ein :: render constraints
+1    tests/stdlib/arith/20_div_by_zero.ein :: render rules
+0    tests/stdlib/arith/20_div_by_zero.ein :: saturate
+0    tests/stdlib/arith/20_div_by_zero.ein :: solve
+0    tests/stdlib/arith/20_div_by_zero.ein :: test
+0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: render constraints
+1    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: render rules
+0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: saturate
+0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: solve
+0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate

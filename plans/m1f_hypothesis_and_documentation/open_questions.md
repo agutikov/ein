@@ -175,6 +175,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.160](#q-m1f160--a-zero-digit-of-the-multiplier) | a zero digit of the multiplier | **defaulted 2026-11-11 (S1f.6.5): a row like any other, no rule tells it apart**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
 | [Q-M1f.161](#q-m1f161--the-dot-sweep-several-files-at-a-time) | the DOT sweep, several files at a time | **defaulted 2026-11-11 (S1f.6.5): the corpus files shared out among the cores, the report in the files' order; what the sweep holds unchanged. With Q-M1f.147 and .153, for the user to confirm**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
 | [Q-M1f.162](#q-m1f162--the-longest-sampled-operand-of-a-product) | the longest sampled operand of a product | **defaulted 2026-11-11 (S1f.6.5): 19 digits, so the product stays in `u128`**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
+| [Q-M1f.163](#q-m1f163--division-called-with-a-tag-and-whose-division-by-zero-is-flagged) | division called with a tag, and whose division by zero is flagged | **defaulted 2026-11-11 (S1f.6.6): `(div-call TAG X Y)` answered by `(div-done TAG Q R)`; the flag is derived for a public request, `(quotient X Y)`, and a later theory that calls division says what its own zero divisor is**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
+| [Q-M1f.164](#q-m1f164--divisions-families-of-nine-rules-by-hand-or-generated) | division's families of nine rules: by hand or generated? | **defaulted 2026-11-11 (S1f.6.6): by hand, and a test holds that the rules of a family differ by their digit alone**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
+| [Q-M1f.165](#q-m1f165--what-search-free-means-of-a-program-that-divides-by-zero) | what search-free means of a program that divides by zero | **defaulted 2026-11-11 (S1f.6.6): no candidate, one saturation, R empty and decided by root, the request in the core; the test holds such a program to that where it holds the others to R = {∅}**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3199,4 +3202,46 @@ some 9 000 edges and takes the bounded layout 2.2 s. The suite has eighteen such
 - **(b) 30 digits, as the other operations,** against a multiplier written in the test.
 
 **Defaulted 2026-11-11: (a),** for Q-M1f.154's reason: a length is not a boundary of the theory.
+
+### Q-M1f.163 — Division called with a tag, and whose division by zero is flagged
+
+**Raised** 2026-11-11 by [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md)'s T1. Division is tagged as multiplication is (Q-M1f.159): `(div-call TAG U V)`
+is answered by `(div-done TAG Q R)`. The flag the user ruled names a request, `(division-by-zero (div X Y))`,
+and a call from inside a later theory has no request to name.
+
+- **(a) The flag is the public request's:** `div-by-zero` matches the tag `(quotient X Y)`. A call under
+  another tag whose divisor is zero derives nothing, and the theory that makes the call writes a rule of its
+  own for it, with a flag that names its own request.
+- **(b) A flag that names the tag:** `(division-by-zero TAG)` for any call. The flag of a public request then
+  reads `(division-by-zero (quotient X Y))`, which is not the ruled spelling.
+
+**Defaulted 2026-11-11: (a).** The ruling's spelling holds, and S1f.6.8's rationals, the first caller, decide
+what a zero denominator is where they are built.
+
+### Q-M1f.164 — Division's families of nine rules: by hand or generated?
+
+**Raised** 2026-11-11 by [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md)'s T1, on Q-M1f.152, defaulted *by hand, while a rule is not a family of nine*.
+Division has two: nine trial rules, one a multiple, and eight rules of the multiples' chain.
+
+- **(a) By hand, held by a test:** the seventeen rules are in `arith.ein` as text, and `arith_theory.rs` holds
+  that the rules of a family differ by their digit alone.
+- **(b) Generated:** a script writes the two families, or the module, with a `--check` in the gate, as
+  `std.digits` is.
+- **(c) One rule:** not without a premise that joins on a number, or a change to the language.
+
+**Defaulted 2026-11-11: (a).** The module stays one hand-written file a reader can follow, and what a
+generator would guarantee the test holds.
+
+### Q-M1f.165 — What search-free means of a program that divides by zero
+
+**Raised** 2026-11-11 by [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md)'s T2. The phase's claim is *H empty, k_s 1, R {∅}* on every arithmetic program, and
+the user ruled a division by zero `(false)`: such a program's R is empty, k_s 0.
+
+- **(a) Held to what is true of it:** no candidate, one saturation and no fork, monotone, R empty and decided
+  by root alone, the request in the core, the second rule in `refuted by`. `arith_search_free.rs` takes this
+  branch for a program that claims `(solve :expect (false))`.
+- **(b) Kept out of the search-free roots:** the programs live elsewhere and the test's claim stays uniform.
+
+**Defaulted 2026-11-11: (a).** Nothing is searched in either case, which is the claim; the count of states is
+what the ruling changed.
 

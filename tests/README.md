@@ -85,7 +85,7 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
-| [`stdlib/arith/`](stdlib/arith/) | 53 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
+| [`stdlib/arith/`](stdlib/arith/) | 89 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -207,6 +207,21 @@ through every length, and requests by name.
 | `13_mul.ein` | multiplication's whole chain, 123 × 456 and the operands exchanged: `mul-ask`, `mul-ask-second`, `mul-start`, `mul-turn`, `top-first-step`, `top-first-end`, `mul-begin`, `mul-row`, `mul-column`, `mul-carry-out`, `mul-walk-end`, `mul-first-row`, `mul-add-row`, `mul-next`, `mul-end`, `mul-answer` | a row added without the shift, the multiplier's digits taken from the wrong end, a product filed under the operands exchanged |
 | `14_mul_zeros_and_carries.ein` | zero on either side, rows of zeros inside the multiplier, high zeros, one, a carry out of every row and none | a product that is not in normal form |
 | `15_mul_long_and_named.ein` | 123078 × 123078, eleven digits; `mul` by `(let NAME NUMBER)`; `done`'s extent for the public products | an answer handed over twice, a request answered under another spelling |
+| `16_div.ein` | division's whole chain, 127645 ÷ 25 = 5105 remainder 20: `div-ask`, `div-ask-second`, `div-start`, `div-multiples`, `div-multiple-2` to `-9`, `div-turn`, `div-begin`, `div-bring-first`, `div-bring`, `div-try-5`, `-7`, `-6`, `-2`, `-1`, `div-fits`, `div-too-big`, `div-digit-found`, `div-next`, `div-next-zero`, `div-next-none`, `div-end`, `div-answer` | a wrong digit, a remainder not less than the divisor, a high zero in the quotient |
+| `17_div_every_digit.ein` | a quotient with every digit, 1234567890: all of `div-try-1` to `div-try-9`; and a divisor of three digits | a trial rule that reads the wrong multiple |
+| `18_div_small_and_zeros.ein` | `div-bring-zero`; a dividend smaller than the divisor, equal numbers, a divisor of one, zero divided, high zeros on both sides, zeros inside the quotient | a quotient or a remainder that is not in normal form |
+| `19_div_named_and_chained.ein` | `div` by `(let NAME NUMBER)`, and a `div` request a rule of the program derives from a `product-of` | a derived request left unanswered |
+| `20_div_by_zero.ein` | `div-by-zero` and `division-by-zero-is-false`, firing: the divisor `z`; `(solve :expect (false))` | a division by zero answered, or passed over in silence |
+| `21_div_by_zero_spelt_and_named.ein` | the same two, the zero written 00 and named by a `let` | a zero that is not seen because it is not written `z` |
+
+**A division by zero gets the refutation idiom**, *one file where it fires and
+one where it is loaded and satisfied*: `20` and `21` fire the two rules, and
+`16` to `19` load them on divisors that are not zero and claim an R of one
+state. A program that divides by zero can claim only `(false)`: root is dead,
+so no query of it has an answer. `arith_search_free.rs` holds such a program
+to an empty R decided by root alone, one saturation, the request in the core,
+and `refuted by` naming the second rule; `arith_theory.rs` holds the flag to
+the requests that divide by zero and to no other.
 
 `arith`, the closing rule, fires once at root in each. **The mutation sweep
 kills every mutant of the module**, 21 of 21: the sweep reads 188 of 238 where
@@ -388,6 +403,12 @@ A product is symmetric in its operands, so `13_mul.ein` asks 123 × 456 both
 ways round and claims each under its own operands: `(mul ?x ?y)` read as
 `(mul ?y ?x)` files both under the wrong ones. **The bank is unmoved**, 50
 lines.
+
+**234 of 284 on 2026-11-11: division added 18 mutants and the suite kills
+every one** (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.6](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)).
+**The bank is unmoved**, 50 lines: `std.arith`'s 89 rules have 67 mutants and
+no survivor.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 46] = [
+const SEEDED: [(&str, &[&str]); 51] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -308,6 +308,10 @@ const SEEDED: [(&str, &[&str]); 46] = [
         &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
     ),
     (
+        "examples/arith/div.ein",
+        &["`z`, in (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))"],
+    ),
+    (
         "examples/arith/mul.ein",
         &["`z`, in (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))"],
     ),
@@ -359,6 +363,22 @@ const SEEDED: [(&str, &[&str]); 46] = [
     (
         "tests/stdlib/arith/15_mul_long_and_named.ein",
         &["`z`, in (let price (n (n (n z 2) 5) 0))"],
+    ),
+    (
+        "tests/stdlib/arith/16_div.ein",
+        &["`z`, in (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))"],
+    ),
+    (
+        "tests/stdlib/arith/17_div_every_digit.ein",
+        &["`z`, in (div (n (n (n (n (n (n (n (n (n (n z 8) 6) 4) 1) 9) 7) 5) 2) 3) 3) (n z 7))"],
+    ),
+    (
+        "tests/stdlib/arith/19_div_named_and_chained.ein",
+        &["`z`, in (let price (n (n (n z 1) 2) 5))"],
+    ),
+    (
+        "tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein",
+        &["`z`, in (let none (n (n z 0) 0))"],
     ),
     (
         "stdlib/elim.ein",

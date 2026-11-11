@@ -213,8 +213,9 @@ row to Rust's integers.
 
 ## `std.arith` — school arithmetic on natural numbers (requests and results)
 
-M1f P1f.6 (addition, S1f.6.3; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5). A theory over `std.digits`' tables, computed by
-saturation alone: no hypothesis, no `absent`, one stratum. The module-level
+M1f P1f.6 (addition, S1f.6.3; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5; division, S1f.6.6). A theory over `std.digits`' tables, computed by
+saturation alone: no hypothesis, no `absent`, one stratum; one rule concludes
+`(false)`, from a division by zero. The module-level
 account, the rule of the theory and what holds it, is
 [`stdlib/README.md` § `std.arith`](../../../../stdlib/README.md#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6).
 
@@ -239,19 +240,22 @@ zeros and is read by value; an answer never has one.
 | `(cmp-of X Y O)` | the theory: the result | O is the name `lt`, `eq` or `gt`, by value: operands that differ only in high zeros are `eq` |
 | `(mul X Y)` | the program: a request | X × Y is asked |
 | `(product-of X Y P)` | the theory: the result | X × Y = P, of whatever length: there is no overflow |
+| `(div X Y)` | the program: a request | X divided by Y is asked |
+| `(quot-of X Y Q R)` | the theory: the result | the quotient and the remainder: X = Q × Y + R, and R less than Y |
+| `(division-by-zero (div X Y))` | the theory: a **flag** | the request `(div X Y)`, as written, has a divisor that is zero by value. A second rule derives `(false)` from the flag, so the program is a contradiction: R is empty and no query has an answer. The request is never answered with a number |
 | `(let NAME NUMBER)` | the program | NAME names NUMBER; a request may name an operand. A name stands for a number, not for another name |
 
 A request is answered once. The same request written with other spellings of its
 operands, a name for a number, a high zero more, is another request with its
 own answer. A request naming a name no `let` states is never answered.
 
-The circuit's own relations are in the state and are not an interface:
-`named`, `operand`, `operand-is`, `add-walk`, `sub-walk`, `cmp-walk`,
-`mul-walk`, `strip`, `turn`, `top-first`, `top-first-is`, `done`, `short`,
-`order-is`, `mul-call`, `mul-step`, the tags `sum`, `difference`,
-`shortfall`, `order`, `product`, `mul-digits`, `mul-row-of`, `mul-sum` and
-each request's `-first` and `-second`, the accumulator's `b`, and
-`arith-rule`.
+The circuit's own relations are in the state and are not an interface: its
+walks (`add-walk`, `sub-walk`, `cmp-walk`, `mul-walk`, `top-first`, `strip`,
+`turn`), its hand-overs (`done`, `short`, `order-is`, `top-first-is`,
+`div-done`), its calls and steps (`operand`, `operand-is`, `named`,
+`mul-call`, `mul-step`, `div-call`, `div-step`, `div-choose`, `div-digit`,
+`multiples`), its tags, the accumulator's `b`, and `arith-rule`. The module's
+header lists every name.
 
 ## See also
 
