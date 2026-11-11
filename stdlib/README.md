@@ -117,6 +117,80 @@ names the row**, since a row is a premise like any other fact:
 [`tests/stdlib/digits/02_a_core_names_its_rows.ein`](../tests/stdlib/digits/02_a_core_names_its_rows.ein)
 refutes `(column 7 5 3)` and its unsat core is that fact and `(fa 7 5 0 2 1)`.
 
+## `std.arith`: school arithmetic, computed by saturation alone (M1f P1f.6)
+
+A theory written **in** Ein over the ten digit names: `std.digits`' tables are
+the gates and this module's rules are the wiring. Every step is a table lookup
+whose outcome the table decides, so nothing is guessed: on a program that
+imports the theory and states requests the universe has no candidate, R is
+{∅}, and the answer is root's fixpoint under `ein solve`, `ein saturate` and
+`ein test` alike. No `absent`, no `not` premise, one stratum. Ein still has no
+numbers (the user's ruling of 2026-11-06): nothing in the engine knows what
+`7` is.
+
+**It begins with addition** (S1f.6.3); subtraction, comparison,
+multiplication and division are the phase's next stages and join this module.
+
+```lisp
+(import std.arith :symbols (arith))
+
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+
+(query :goal (sum-of ?x ?y ?s))      ; ?s = (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5)
+```
+
+| | |
+|---|---|
+| **the number** | `z`, zero, or `(n PREFIX DIGIT)`, ten times the prefix plus the digit, so it reads as written: 42 is `(n (n z 4) 2)`. Any length: no width, no overflow. The normal form has no high zero; an operand written with high zeros is read by value, and every answer is in normal form |
+| **the protocol** | a request fact `(add X Y)` is answered by a result fact that repeats its operands, `(sum-of X Y S)`. A goal reads it with a variable in the result's place, and a rule of the program may match it. Nothing is computed that was not asked for |
+| **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name no `let` states is never answered |
+| **the one entry** | `arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
+
+**How it computes** (design K of the phase's
+[`design.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#k-an-accumulator-in-the-other-order-and-a-continuation-on-every-call)):
+each operand is looked up; one walk from the units takes each column through
+the full adder's table and puts its digit in front of an accumulator, `(b
+DIGIT REST)`, which so holds the answer most significant digit outermost;
+high zeros are dropped there; the answer is turned round into the public
+shape and handed over as `(done TAG ANSWER)`. Every call carries its
+continuation as the TAG, a nested fact holding what the caller needs next.
+123078 + 4567 is 21 firings, each the next step of one chain, so the circuit
+is 21 deep (`arith_theory.rs`'s `the_circuit_of_one_addition`); 4 000 sums of
+numbers of up to nine digits saturate in 110 ms (`python3
+build/s1f.6.3/batch.py`, 2026-11-11).
+
+**The rule of the theory: no rule joins two facts on a number.** A rule has
+one premise that holds numbers; its other premises are rows of `std.digits`
+looked up by digits. The engine's fact index does not key on a nested fact
+(E-3 of the phase's
+[`findings.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)),
+so a join on a number scans a relation for every fact of the other and a
+batch costs the square of its count; written this way it costs in proportion.
+Two tests hold it, and **whoever adds a rule keeps to it**:
+[`ein-infer/tests/arith_theory.rs`](../ein.rs/crates/ein-infer/tests/arith_theory.rs)
+on the module's text, and
+[`arith_batch.rs`](../ein.rs/crates/ein-infer/tests/arith_batch.rs) on the
+matcher's own count of its work, under `--features counters`, a gate step.
+The one stated exception is `operand-name`, a join with a `let` on the
+*name*, behind a `(named ?x)` check that keeps a number operand from walking
+the `let` facts.
+
+**What holds the answers.** `arith_theory.rs` holds every sum to Rust's
+integers: all pairs up to 120, a sample of every pair of lengths up to 30
+digits, carries through every length, and operands padded with high zeros,
+each request answered exactly once and in normal form.
+[`ein-cli/tests/arith_search_free.rs`](../ein.rs/crates/ein-cli/tests/arith_search_free.rs)
+holds the search-free claim on every program under `tests/stdlib/arith/` and
+`examples/arith/`. [`examples/arith/add.ein`](../examples/arith/add.ein) is
+the program to read first.
+
+**The names it occupies.** Imported flat, `z`, `n`, `b`, `let`, `add`,
+`sum-of`, the circuit's `named`, `operand`, `operand-is`, `add-walk`, `strip`,
+`turn`, `done`, the tags `sum`, `add-first`, `add-second`, and `arith-rule` mean what
+the module says. Only `n`, `z`, `let`, the requests and the results are its
+interface. What a clash does, and what a malformed number does, is the
+phase's S1f.6.12.
+
 ## What tests these modules
 
 [**`tests/stdlib/`**](../tests/README.md) — one program per rule or tight
@@ -139,9 +213,10 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — 0.04 s, and **77 of 77**, which is a number this page may
+them activated — half a second, and **96 of 96** since `std.arith`'s 19
+joined the 77 (M1f S1f.6.3), which is a number this page may
 state exactly because `every_stdlib_rule_is_activated_by_a_program` fails
-the day it stops being true (`grep -hc '^(rule ' stdlib/*.ein` is the
+the day it stops being true (`cat stdlib/*.ein | grep -c '^(rule '` is the
 denominator). `python3 utils/stdlib_census.py --check` is the same census with
 the numbers, over every corpus entry rather than the suite.
 
@@ -177,6 +252,7 @@ install-relative import could not find it.
 | module | file | provides | stage |
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
+| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition so far ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 |
 | `std.digits` | [`digits.ein`](digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.digits`](#stddigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |

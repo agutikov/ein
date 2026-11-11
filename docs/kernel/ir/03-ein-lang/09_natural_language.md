@@ -57,7 +57,7 @@ s-expression.** So a `:why` says what its form says, in English:
 - a made-up name (`p`, `r1`) is said as what it is, `"p holds of {?1}"`, and never given a meaning it does not have.
 
 [`stdlib/`](../../../../stdlib/) is the house style, and lived by the rule before it was one: 77 of 77 rules
-(`ein-infer/tests/stdlib_coverage.rs`). T1f.5.14.7 migrated the corpus, the Rust suites' inline programs and the doc
+then (`ein-infer/tests/stdlib_coverage.rs`). T1f.5.14.7 migrated the corpus, the Rust suites' inline programs and the doc
 pages' code blocks, every `:why` written by reading the program (the stage file's
 [§ T1f.5.14.7 record](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.14_nl_required.md#t1f5147-record-2026-11-10)),
 and `utils/nl_census.py --check` exits 1 while any program the loader reads lacks one.

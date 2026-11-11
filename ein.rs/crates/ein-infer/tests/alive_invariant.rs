@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 31] = [
+const SEEDED: [(&str, &[&str]); 39] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -299,6 +299,38 @@ const SEEDED: [(&str, &[&str]); 31] = [
             "`c`, in (reasoning (r b c))",
             "`r`, in (ontology (relation r T T) (is-a a T))",
         ],
+    ),
+    // M1f S1f.6.3 — the calculator. `z`, zero, is the innermost name of every
+    // number, so a program that writes no bare `z` holds it only inside a
+    // nested fact, and the module only in a rule's `:match`.
+    (
+        "examples/arith/add.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    ("stdlib/arith.ein", &["`z`, matched by rule `operand-zero`"]),
+    (
+        "tests/stdlib/arith/01_add.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "tests/stdlib/arith/02_carry_out.ein",
+        &["`z`, in (add (n (n (n (n (n (n (n (n (n z 9) 9) 9) 9) 9) 9) 9) 9) 9) (n z 1))"],
+    ),
+    (
+        "tests/stdlib/arith/03_lengths.ein",
+        &["`z`, in (add (n z 7) (n (n (n z 1) 2) 3))"],
+    ),
+    (
+        "tests/stdlib/arith/05_high_zeros.ein",
+        &["`z`, in (add (n (n (n z 0) 0) 5) (n (n z 0) 7))"],
+    ),
+    (
+        "tests/stdlib/arith/06_named.ein",
+        &["`z`, in (let price (n (n (n z 2) 5) 0))"],
+    ),
+    (
+        "tests/stdlib/arith/07_only_what_is_asked.ein",
+        &["`z`, in (let a (n (n z 1) 9))"],
     ),
     (
         "stdlib/elim.ein",

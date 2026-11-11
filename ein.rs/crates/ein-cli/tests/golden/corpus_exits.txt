@@ -1,3 +1,8 @@
+0    examples/arith/add.ein :: saturate
+0    examples/arith/add.ein :: saturate --dump
+0    examples/arith/add.ein :: solve
+0    examples/arith/add.ein :: solve --trace {out}/trace.md
+0    examples/arith/add.ein :: test
 0    examples/branching/01_saturate_only.ein :: render constraints
 0    examples/branching/01_saturate_only.ein :: render lattice
 0    examples/branching/01_saturate_only.ein :: render rules
@@ -1401,6 +1406,10 @@
 0    stdlib/algebra.ein :: render rules
 0    stdlib/algebra.ein :: saturate
 0    stdlib/algebra.ein :: solve
+0    stdlib/arith.ein :: render constraints
+0    stdlib/arith.ein :: render rules
+0    stdlib/arith.ein :: saturate
+0    stdlib/arith.ein :: solve
 0    stdlib/bijection.ein :: render constraints
 0    stdlib/bijection.ein :: render rules
 0    stdlib/bijection.ein :: saturate
@@ -1577,6 +1586,41 @@
 0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: saturate
 0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: solve
 0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: test
+0    tests/stdlib/arith/01_add.ein :: render constraints
+1    tests/stdlib/arith/01_add.ein :: render rules
+0    tests/stdlib/arith/01_add.ein :: saturate
+0    tests/stdlib/arith/01_add.ein :: solve
+0    tests/stdlib/arith/01_add.ein :: test
+0    tests/stdlib/arith/02_carry_out.ein :: render constraints
+1    tests/stdlib/arith/02_carry_out.ein :: render rules
+0    tests/stdlib/arith/02_carry_out.ein :: saturate
+0    tests/stdlib/arith/02_carry_out.ein :: solve
+0    tests/stdlib/arith/02_carry_out.ein :: test
+0    tests/stdlib/arith/03_lengths.ein :: render constraints
+1    tests/stdlib/arith/03_lengths.ein :: render rules
+0    tests/stdlib/arith/03_lengths.ein :: saturate
+0    tests/stdlib/arith/03_lengths.ein :: solve
+0    tests/stdlib/arith/03_lengths.ein :: test
+0    tests/stdlib/arith/04_zero.ein :: render constraints
+1    tests/stdlib/arith/04_zero.ein :: render rules
+0    tests/stdlib/arith/04_zero.ein :: saturate
+0    tests/stdlib/arith/04_zero.ein :: solve
+0    tests/stdlib/arith/04_zero.ein :: test
+0    tests/stdlib/arith/05_high_zeros.ein :: render constraints
+1    tests/stdlib/arith/05_high_zeros.ein :: render rules
+0    tests/stdlib/arith/05_high_zeros.ein :: saturate
+0    tests/stdlib/arith/05_high_zeros.ein :: solve
+0    tests/stdlib/arith/05_high_zeros.ein :: test
+0    tests/stdlib/arith/06_named.ein :: render constraints
+1    tests/stdlib/arith/06_named.ein :: render rules
+0    tests/stdlib/arith/06_named.ein :: saturate
+0    tests/stdlib/arith/06_named.ein :: solve
+0    tests/stdlib/arith/06_named.ein :: test
+0    tests/stdlib/arith/07_only_what_is_asked.ein :: render constraints
+1    tests/stdlib/arith/07_only_what_is_asked.ein :: render rules
+0    tests/stdlib/arith/07_only_what_is_asked.ein :: saturate
+0    tests/stdlib/arith/07_only_what_is_asked.ein :: solve
+0    tests/stdlib/arith/07_only_what_is_asked.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate

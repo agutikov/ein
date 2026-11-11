@@ -1,0 +1,54 @@
+;;; A sum, computed by saturation alone: 123078 + 4567 = 127645.
+;;; M1f P1f.6 (S1f.6.3); the addition program of the phase's `design.md`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; Ein has no numbers and no arithmetic. `std.arith` is a theory written in
+;;; Ein that knows school arithmetic the way a circuit does: the ten digits
+;;; are plain names, what is known about them is tables of facts
+;;; (`std.digits`), and the theory's rules are the wiring. This program
+;;; imports it with one name, states one request, and reads the answer.
+;;;
+;;;   (n PREFIX DIGIT)     a number, in reading order: ten times the prefix,
+;;;                        plus the digit; `z` is zero. 42 is (n (n z 4) 2)
+;;;   (add X Y)            a request fact: X + Y is asked
+;;;   (sum-of X Y S)       the answer, repeating the operands
+;;;   (let NAME NUMBER)    a named constant; a request may name its operands
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; Nothing is guessed. The theory closes its own relations, so the universe
+;;; has no candidate, R is {∅}, and the answer is root's fixpoint: `ein
+;;; solve`, `ein saturate` and `ein test` read the same facts. The sum is one
+;;; walk from the units, a column a step, each column a row of the full
+;;; adder's table:
+;;;
+;;;     1 2 3 0 7 8
+;;;   +     4 5 6 7        8 + 7 is 5, carry 1;  7 + 6 + 1 is 4, carry 1;
+;;;   ─────────────        0 + 5 + 1 is 6;  3 + 4 is 7;  then 2, then 1
+;;;     1 2 7 6 4 5
+;;;
+;;; `ein solve examples/arith/add.ein --trace T.md` writes every step as a
+;;; sentence; the first request takes 21 of them.
+;;;
+;;; The second request names its operands. Its answer repeats the names, so
+;;; the goal `(sum-of apples pears ?fruit)` reads it.
+
+(import std.arith :symbols (arith))
+
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+
+(let apples (n (n z 1) 7))
+(let pears  (n z 5))
+(add apples pears)
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                              (n (n (n (n z 4) 5) 6) 7)
+                              (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))
+                      (sum-of apples pears (n (n z 2) 2))))
+
+(query :goal (sum-of apples pears ?fruit)
+       :goal-text "there are {?fruit} pieces of fruit"
+       :expect (model (sum-of apples pears (n (n z 2) 2))))

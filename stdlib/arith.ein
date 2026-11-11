@@ -1,0 +1,295 @@
+;;; Ein stdlib — `std.arith`: school arithmetic on natural numbers of any
+;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; This module is a *theory* written in Ein over the ten digit names `0` to
+;;; `9`: the tables of `std.digits` are the gates, and the rules below are the
+;;; wiring. Every step is a table lookup whose outcome the table decides, so
+;;; nothing is guessed: on a program that imports the theory and states
+;;; requests, the universe has no candidate, R is {∅}, and the answer is
+;;; root's fixpoint under `ein solve`, `ein saturate` and `ein test` alike.
+;;; No `absent`, no `not` premise, one stratum.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.arith :symbols (arith))
+;;;
+;;; `arith` is the theory's one entry: the closing rule at the end of this
+;;; file. It names every rule and closes every relation of the theory and the
+;;; tables it reads, so that one name brings all of it, the rows of the tables
+;;; included, and leaves nothing of the theory for the search to guess. A
+;;; relation the importing program declares itself is the program's to close.
+;;;
+;;; ── The number ─────────────────────────────────────────────────────────────
+;;;
+;;; A natural number is `z`, zero, or `(n PREFIX DIGIT)`: ten times the
+;;; prefix, plus the digit. It reads in the order it is written:
+;;;
+;;;     7        (n z 7)
+;;;     42       (n (n z 4) 2)
+;;;     123078   (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+;;;
+;;; Any length; there is no width and no overflow. The **normal form** has no
+;;; high zero, so zero is `z` and never `(n z 0)`. An operand may be written
+;;; with high zeros and is read by value; every answer is in normal form.
+;;;
+;;; ── The protocol: a request fact, answered by a result fact ────────────────
+;;;
+;;;     (add X Y)          asked: X + Y
+;;;     (sum-of X Y S)     the answer, repeating the operands as written
+;;;
+;;; A program reads an answer with a goal that has a variable in the result's
+;;; place, `(sum-of X Y ?s)`, and a rule of the program may match it like any
+;;; fact. Nothing is computed that was not asked for: the theory enumerates no
+;;; numbers.
+;;;
+;;; **Named constants.** `(let NAME NUMBER)` names a number, and a request may
+;;; name an operand: with `(let price …)` and `(let qty …)`, `(add price qty)`
+;;; is answered by `(sum-of price qty S)`, the names repeated as written. The
+;;; same sum written with the numbers is another request, with its own answer.
+;;; A name stands for a number, not for another name, and a name no `let`
+;;; states is an operand that is never answered.
+;;;
+;;; ── How it computes (design K of P1f.6's `design.md`, round 3) ─────────────
+;;;
+;;;   1. **The operands.** Each is looked up: a number stands for itself, a
+;;;      name for the number its `let` states.
+;;;   2. **One walk from the units,** which are outermost: each column goes
+;;;      through the full adder's table with the carry, and its digit is put
+;;;      *in front of* an accumulator, `(b DIGIT REST)`. So the accumulator
+;;;      holds the answer most significant digit outermost: a second shape,
+;;;      which only the theory writes.
+;;;   3. **High zeros are dropped there,** where they are outermost.
+;;;   4. **The answer is turned round** into the public shape, a firing per
+;;;      digit, and handed over as `(done TAG ANSWER)`.
+;;;
+;;; **Every call carries its continuation** as a TAG, a nested fact that holds
+;;; what the caller needs next: `(sum X Y)` for a public sum. The rule that
+;;; goes on has one premise, `(done (sum ?x ?y) ?s)`, and reads everything out
+;;; of the tag.
+;;;
+;;; ── THE RULE OF THE THEORY: no rule joins two facts on a number ────────────
+;;;
+;;; A rule here has **one** premise that holds numbers. Its other premises are
+;;; rows of `std.digits`, looked up by digits. The reason is measured: the
+;;; engine's fact index does not key on a nested fact (E-3 of P1f.6's
+;;; `findings.md`), so a join of two facts on a number scans a relation for
+;;; every fact of the other, and a batch of requests would cost the square of
+;;; its count. Written this way, a batch costs in proportion to its count.
+;;; `ein-infer/tests/arith_theory.rs` holds the rule on this file's text, and
+;;; `arith_batch.rs` holds the proportion on a counter of the matcher's work.
+;;; Whoever adds a rule keeps to it: a second premise that looks a fact up by
+;;; a number, with a slot of its own left to bind, changes no answer and
+;;; makes every batch quadratic.
+;;;
+;;; The one stated exception is `operand-name`, which joins an operand with a
+;;; `(let NAME NUMBER)` **on the name**, and its premises are in the order
+;;; that keeps that true. It first asks `(named ?x)`, a fact with every
+;;; argument bound, which the engine answers by one lookup whatever `?x` is;
+;;; only a name gets past it to the `let`, which the index finds by the name.
+;;; So an operand that is a number costs one lookup however many `let`s the
+;;; program states. Written without `(named ?x)`, every number operand walked
+;;; every `let` (the stage's record has both measurements).
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Imported flat, these names mean what this file says, and a program must
+;;; not use them otherwise: `z`, `n`, `b`, `let`, `add`, `sum-of`; the
+;;; circuit's own `named`, `operand`, `operand-is`, `add-walk`, `strip`,
+;;; `turn`, `done`; the tags `sum`, `add-first`, `add-second`; `arith-rule`;
+;;; and the tables of `std.digits` it reads, `fa` and `nz`. The interface is
+;;; `n`, `z`, `let`, the requests and the results; the rest is in the state
+;;; for a query or a `--trace` to see, and is not a promise.
+
+(import std.digits :symbols (fa nz))
+
+;; ── The number, and the accumulator ─────────────────────────────────────────
+(relation n Number Digit
+  :why "the number written {?1}, then the digit {?2}")
+(relation b Digit Digits
+  :why "the digit {?1} in front of the digits {?2}")
+
+;; ── The protocol ────────────────────────────────────────────────────────────
+(relation let Name Number
+  :why "{?1} names the number {?2}")
+(relation add Operand Operand
+  :why "asked: {?1} + {?2}")
+(relation sum-of Operand Operand Number
+  :why "{?1} + {?2} = {?3}")
+
+;; ── The circuit's own facts: each is one step of a computation, and carries
+;;    the whole of its state ──────────────────────────────────────────────────
+(relation named Name
+  :why "{?1} is a named constant")
+(relation operand Tag Operand
+  :why "wanted, for {?1}: the number {?2} stands for")
+(relation operand-is Tag Number
+  :why "found, for {?1}: the number {?2}")
+(relation add-walk Tag Number Number Digit Digits
+  :why "adding, for {?1}: {?2} and {?3} are still to add, the carry is {?4}, and the digits so far are {?5}")
+(relation strip Tag Digits
+  :why "for {?1}: the digits {?2}, high zeros not yet dropped")
+(relation turn Tag Digits Number
+  :why "for {?1}: the digits {?2} are still to turn round, and {?3} is turned")
+(relation done Tag Number
+  :why "the answer for {?1} is {?2}")
+
+;; ── The tags: what a call's answer is for ───────────────────────────────────
+(relation sum Operand Operand
+  :why "the sum of {?1} and {?2}")
+(relation add-first Operand Operand
+  :why "the first operand of {?1} + {?2}")
+(relation add-second Operand Operand Number
+  :why "the second operand of {?1} + {?2}, whose first is {?3}")
+
+;; ── The operands ────────────────────────────────────────────────────────────
+;; A number stands for itself, whatever high zeros it is written with; the
+;; walk reads it by value. Two rules, because "is a number" has two shapes
+;; and no negation is used to tell a number from a name.
+(rule operand-zero ()
+  :match  (operand ?k z)
+  :assert (operand-is ?k z)
+  :why    "zero stands for itself")
+
+(rule operand-number ()
+  :match  (operand ?k (n ?p ?a))
+  :assert (operand-is ?k (n ?p ?a))
+  :why    "a number stands for itself")
+
+;; The stated exception to the rule of the theory (the header): a join on the
+;; NAME. `(named ?x)` comes first and must: every argument of it is bound, so
+;; it is one lookup, and an operand that is a number stops there and never
+;; walks the `let` facts. `arith_theory.rs` holds the order.
+(rule let-named ()
+  :match  (let ?x ?v)
+  :assert (named ?x)
+  :why    "{?x} is the name of a number")
+
+(rule operand-name ()
+  :match  (and (operand ?k ?x) (named ?x) (let ?x ?v))
+  :assert (operand-is ?k ?v)
+  :why    "{?x} names {?v}")
+
+;; ── The walk shared by every circuit that adds ──────────────────────────────
+;; `(add-walk TAG X Y CARRY ACC)`: one column a firing, from the units. A
+;; number that has run out counts as zeros, so the two operands need not be of
+;; one length.
+(rule add-column ()
+  :match  (and (add-walk ?k (n ?p ?a) (n ?q ?c) ?e ?acc)
+               (fa ?a ?c ?e ?s ?f))
+  :assert (add-walk ?k ?p ?q ?f (b ?s ?acc))
+  :why    "{?a} + {?c} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
+
+(rule add-column-first ()
+  :match  (and (add-walk ?k (n ?p ?a) z ?e ?acc)
+               (fa ?a 0 ?e ?s ?f))
+  :assert (add-walk ?k ?p z ?f (b ?s ?acc))
+  :why    "the second number has run out: {?a} + carry {?e} is {?s}, carry {?f}")
+
+(rule add-column-second ()
+  :match  (and (add-walk ?k z (n ?q ?c) ?e ?acc)
+               (fa 0 ?c ?e ?s ?f))
+  :assert (add-walk ?k z ?q ?f (b ?s ?acc))
+  :why    "the first number has run out: {?c} + carry {?e} is {?s}, carry {?f}")
+
+(rule add-end ()
+  :match  (add-walk ?k z z 0 ?acc)
+  :assert (strip ?k ?acc)
+  :why    "no column is left and no carry: the digits are {?acc}")
+
+;; A carry out of the top column is the top digit, and it is not zero, so the
+;; digits go straight to the turn.
+(rule add-carry-out ()
+  :match  (add-walk ?k z z 1 ?acc)
+  :assert (turn ?k (b 1 ?acc) z)
+  :why    "no column is left: the carry is the top digit, in front of {?acc}")
+
+;; ── The normal form: high zeros dropped, then the turn ──────────────────────
+;; The accumulator has its most significant digit outermost, so a high zero is
+;; the first thing a rule sees.
+(rule strip-zero ()
+  :match  (strip ?k (b 0 ?r))
+  :assert (strip ?k ?r)
+  :why    "a high zero is dropped")
+
+(rule strip-top ()
+  :match  (and (strip ?k (b ?a ?r)) (nz ?a))
+  :assert (turn ?k (b ?a ?r) z)
+  :why    "the top digit {?a} is not zero: no high zero is left")
+
+(rule strip-none ()
+  :match  (strip ?k z)
+  :assert (done ?k z)
+  :why    "no digit is left: the answer is zero")
+
+(rule turn-step ()
+  :match  (turn ?k (b ?a ?r) ?acc)
+  :assert (turn ?k ?r (n ?acc ?a))
+  :why    "the digit {?a} goes after {?acc}")
+
+(rule turn-end ()
+  :match  (turn ?k z ?acc)
+  :assert (done ?k ?acc)
+  :why    "turned round: the answer is {?acc}")
+
+;; ── Addition ────────────────────────────────────────────────────────────────
+(rule add-ask ()
+  :match  (add ?x ?y)
+  :assert (operand (add-first ?x ?y) ?x)
+  :why    "{?x} + {?y} is asked: first, the number {?x} stands for")
+
+(rule add-ask-second ()
+  :match  (operand-is (add-first ?x ?y) ?u)
+  :assert (operand (add-second ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule add-start ()
+  :match  (operand-is (add-second ?x ?y ?u) ?v)
+  :assert (add-walk (sum ?x ?y) ?u ?v 0 z)
+  :why    "add {?u} and {?v} from the units, with no carry in")
+
+(rule add-answer ()
+  :match  (done (sum ?x ?y) ?s)
+  :assert (sum-of ?x ?y ?s)
+  :why    "{?x} + {?y} = {?s}")
+
+;; ── The closing rule, and the theory's one entry ────────────────────────────
+;; Arithmetic is computed and never guessed: every relation of the theory, and
+;; each table it reads, is closed, so the search has no candidate among them.
+;; The rule also names every rule of the module, which is what makes
+;; `(import std.arith :symbols (arith))` bring the whole theory: a selection's
+;; closure follows the names a kept declaration writes.
+;; `ein-infer/tests/arith_theory.rs` holds that no relation and no rule of
+;; this file is missing here.
+(relation arith-rule Rule
+  :why "{?1} is a rule of std.arith")
+
+;; The closing rule's own name, as a written fact. A selection brings it,
+;; since `arith-rule` is a name `arith` writes, and it is what keeps `arith`
+;; in a program that is inlined and tree-shaken, as the program a
+;; `--dump-answer` state file re-writes is: the tree-shake keeps a rule that a
+;; name or a premise reaches, and nothing else reaches a rule that matches on
+;; nothing (E-11 of P1f.6's `findings.md`).
+(arith-rule arith)
+
+(rule arith ()
+  :match  ()
+  :assert (and (__closed__ fa) (__closed__ nz)
+               (__closed__ n) (__closed__ b)
+               (__closed__ let) (__closed__ add) (__closed__ sum-of)
+               (__closed__ named) (__closed__ operand) (__closed__ operand-is)
+               (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
+               (__closed__ done)
+               (__closed__ sum) (__closed__ add-first) (__closed__ add-second)
+               (__closed__ arith-rule)
+               (arith-rule operand-zero) (arith-rule operand-number)
+               (arith-rule let-named) (arith-rule operand-name)
+               (arith-rule add-column) (arith-rule add-column-first)
+               (arith-rule add-column-second)
+               (arith-rule add-end) (arith-rule add-carry-out)
+               (arith-rule strip-zero) (arith-rule strip-top)
+               (arith-rule strip-none)
+               (arith-rule turn-step) (arith-rule turn-end)
+               (arith-rule add-ask) (arith-rule add-ask-second)
+               (arith-rule add-start) (arith-rule add-answer))
+  :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

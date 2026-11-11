@@ -161,6 +161,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.146](#q-m1f146--how-stddigits-closes-its-tables-for-a-flat-importer) | how `std.digits` closes its tables for a flat importer | **defaulted 2026-11-11 (S1f.6.2): written `(__closed__ R)` facts, which a direct importer brings by listing `__closed__`; a theory that reads a table closes it in its own closing rule**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
 | [Q-M1f.147](#q-m1f147--the-dot-sweep-and-a-view-no-layout-finishes) | the DOT sweep and a view no layout finishes | **defaulted 2026-11-11 (S1f.6.2): past 1 500 edges `dot_wellformed.rs` asks Graphviz under `fdp` stopped after one iteration; grammar and attributes held, `dot`'s layout of it not. For the user to confirm**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
 | [Q-M1f.148](#q-m1f148--one-module-for-the-seven-tables) | one module for the seven tables | **defaulted 2026-11-11 (S1f.6.2): one, as the stage file says; an importer parses all 28.8 KB, about 12 ms, whichever tables it lists**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
+| [Q-M1f.149](#q-m1f149--what-let-name-number-does-as-built) | what `(let NAME NUMBER)` does, as built | **defaulted 2026-11-11 (S1f.6.3): the rulings' default reading; every operand of a request is looked up, a number standing for itself and a name for the number its `let` states, four firings a request; a name no `let` states is never answered**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
+| [Q-M1f.150](#q-m1f150--the-counter-and-how-the-measured-test-is-in-the-gate) | the counter, and how the measured test is in the gate | **defaulted 2026-11-11 (S1f.6.3): `candidates`, under `--features counters`, in a gate step of its own**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
+| [Q-M1f.151](#q-m1f151--the-names-of-the-circuits-own-relations) | the names of the circuit's own relations | **defaulted 2026-11-11 (S1f.6.3): words, `add-walk`, `strip`, `turn`, `operand`; what a clash does is S1f.6.12's**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
+| [Q-M1f.152](#q-m1f152--are-stdariths-rules-written-by-hand-or-generated) | are `std.arith`'s rules written by hand or generated? | **defaulted 2026-11-11 (S1f.6.3): by hand, while a rule is not a family of nine**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
+| [Q-M1f.153](#q-m1f153--the-dot-sweeps-bound-under-the-smallest-table) | the DOT sweep's bound, under the smallest table | **defaulted 2026-11-11 (S1f.6.3): 1 000 edges, where S1f.6.2 took 1 500: a view that holds a table is past it. With Q-M1f.147, for the user to confirm**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
+| [Q-M1f.154](#q-m1f154--the-bounds-of-the-harness-against-the-integers) | the bounds of the harness against the integers | **defaulted 2026-11-11 (S1f.6.3): every pair to 120, every pair of lengths to 30 digits on a fixed-seed sample, `u128` the oracle**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2991,3 +2997,97 @@ the generated parser: `ein test` of a program that imports `fa` alone takes 17.9
 **Defaulted 2026-11-11: (a).** The stage file's, and one name for the ontology. The cost is per program, not
 per request: a program that does not import the module pays nothing. (b) stays open if a suite of many small
 arithmetic programs makes the 12 ms matter.
+
+### Q-M1f.149 — What `(let NAME NUMBER)` does, as built
+
+**Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T2. The user ruled *"(let NAME NUMBER) is ok"*; what a request may do with a name
+is item 2 of [`design.md` § what is open](p1f.6_calculator/design.md#what-is-open-after-the-rulings), the
+coordinator's reading, the user's to overrule.
+
+- **(a) A request may name an operand,** and its answer repeats the names: `(add price qty)` is answered by
+  `(sum-of price qty S)`. The same sum by numbers is another request with its own answer.
+- **(b) A name is only a label,** and requests take numbers alone.
+
+**Defaulted 2026-11-11: (a), built as an operand lookup.** Every operand of a request goes through
+`(operand TAG X)` and comes back as `(operand-is TAG NUMBER)`: a number stands for itself, a name for the number
+its `let` states. What that settles and costs:
+
+- four firings a request, numbers too: 21 for 123078 + 4567;
+- a name no `let` states is never answered, with no word; a name stands for a number, not for another name;
+  both are S1f.6.12's to flag or not;
+- the lookup is the one rule of the theory with a second premise over a program's facts, and it asks
+  `(named ?x)` first, a premise with every slot bound, so a number operand costs one lookup however many `let`s
+  there are. The stage's T2 record has both measurements.
+
+### Q-M1f.150 — The counter, and how the measured test is in the gate
+
+**Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T4, which asks for *a deterministic count of the matcher's work per request (a
+counter of `ein_core::counters`, which the stage picks and names, not the wall clock)*. The counters are behind
+the `counters` feature and compiled out of every build the gate made: an increment on the engine's hottest
+path.
+
+- **(a) `candidates`, in a gate step of its own:** `cargo test -p ein-infer --features counters --test
+  arith_batch`, in `run_tests.sh` and `per-commit.yml`. `ein-infer` is built a second time with the feature,
+  for one test; 15 s the first time here.
+- **(b) The static check alone,** and the measured test run by hand: the check reads the module's text, and a
+  cost that is not a second premise is not in the text.
+- **(c) The feature on in the workspace's test build,** by a dev-dependency: every test binary, the `ein` the
+  corpus sweep times among them, would count.
+
+**Defaulted 2026-11-11: (a).** `candidates` is the facts the matcher offered to a premise and unified against,
+which is what a scan inflates and nothing else does: 181.38 a request at 250, 1 000 and 4 000 requests. Without
+the feature the same file holds the firings a request, in `cargo test --workspace`.
+
+### Q-M1f.151 — The names of the circuit's own relations
+
+**Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T1. The stage file names `n`, `z`, `b`, `add`, `sum-of`, `let`, `done` and the tag
+`sum`. The prototype's other relations are `ak`, `sb`, `bk`.
+
+- **(a) Words:** `add-walk`, `strip`, `turn`, `operand`, `operand-is`, `named`, `add-first`, `add-second`,
+  `arith-rule`. A `--trace` and a state file print them.
+- **(b) The prototype's two letters:** unlikely to clash with a program's names, and unreadable.
+- **(c) A prefix,** `arith.walk`: a dot is what a qualified import writes, and would read as one.
+
+**Defaulted 2026-11-11: (a).** Imported flat, every one is a name the program may not use otherwise, `done`,
+`sum`, `strip` and `turn` among them; the module's header lists them. What a clash does and what the loader
+should say is [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md)'s.
+
+### Q-M1f.152 — Are `std.arith`'s rules written by hand or generated?
+
+**Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T1. The tables are generated (the user's ruling). The prototype generated its
+rules too, since division has a rule for each of nine multiples.
+
+- **(a) By hand,** in `stdlib/arith.ein`, with comments beside the rules.
+- **(b) Generated,** with the same `--check`.
+
+**Defaulted 2026-11-11: (a), for addition.** 19 rules, none a family. The stage that writes division's
+`div-multiple-2` to `-9` and `div-try-1` to `-9` meets the question again; a generated block inside a
+hand-written module would need its own check.
+
+### Q-M1f.153 — The DOT sweep's bound, under the smallest table
+
+**Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T6, on Q-M1f.147's bound of 1 500 edges. The KB view of a program that imports
+`std.arith` holds `fa`'s 200 rows, some 1 200 edges; `dot` draws it in 0.55 s, and each program has six KB
+views.
+
+- **(a) 1 000 edges:** a view that holds a table is past the bound; the bounded layout takes 0.1 s on it.
+- **(b) 1 500:** `dot` still lays out the addition programs, 3.3 s each, 26 s for the stage's eight, and more
+  with every program a later stage adds until it imports a second table.
+
+**Defaulted 2026-11-11: (a).** The largest view the corpus had before the tables has 361 edges, so what `dot`
+lays out is what it laid out then. With Q-M1f.147, for the user to confirm.
+
+### Q-M1f.154 — The bounds of the harness against the integers
+
+**Raised** 2026-11-11 by [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md)'s T3, which asks for *random operands of every length up to a stated bound*.
+
+- **(a) Exhaustive to 120, sampled to 30 digits:** every pair from 0 to 120; every pair of lengths from 0 to
+  30 digits, twice; a carry through every length to 30; 1 500 operands padded with high zeros. The oracle is
+  `u128`, which holds 38 digits. A second of test time.
+- **(b) Longer operands,** against a decimal adder written in the test: an oracle that is itself a column
+  adder.
+
+**Defaulted 2026-11-11: (a).** The theory has no width, so a length is not a boundary of it: the walk at the
+thirtieth column is the walk at the third. S1f.6.9, on how long a number may be, is where the nesting limit of
+1 000 is met.
+

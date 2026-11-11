@@ -88,9 +88,15 @@ enum Verdict {
 /// of `fa` alone (1 014 edges) takes `dot` 0.5 s, `fa` and `fs` (2 021) 3.2 s,
 /// with `cl` (3 227) 9.9 s, and `md` alone (4 514) 23.7 s (2026-11-11). The
 /// largest view the corpus had before that module has 361 edges, and its
-/// slowest took 0.43 s, so
-/// no view that `dot` drew then is past the bound, and a program that imports
-/// one small table is not either.
+/// slowest took 0.43 s, so no view that `dot` drew then is past the bound.
+///
+/// **The bound is under the smallest table** since M1f S1f.6.3 (it was 1 500
+/// for a stage): the KB view of a program that imports `std.arith` holds
+/// `fa`'s 200 rows, some 1 200 edges, and `dot` takes 0.55 s on each of its
+/// six KB views, where the bounded layout takes 0.1 s. One such program is
+/// affordable and a suite of them is not, and a later operation's programs
+/// hold `md`'s 900 rows. So a view that holds a table is past the bound, and
+/// what `dot` lays out is what it laid out before the tables.
 ///
 /// What a view past the bound is still held to is this file's claim, that
 /// **Graphviz accepts the bytes**: the same parser reads the same grammar,
@@ -99,7 +105,7 @@ enum Verdict {
 /// not held to is `dot`'s own layout of it, which nobody can wait for.
 /// Not a skip: every view still goes to Graphviz, and one it complains of
 /// fails.
-const DOT_LAYOUT_BOUND: usize = 1500;
+const DOT_LAYOUT_BOUND: usize = 1000;
 
 /// The layout past [`DOT_LAYOUT_BOUND`]: `fdp`, the one every KB view names
 /// as its *suggested layout*, stopped after one iteration, with no overlap

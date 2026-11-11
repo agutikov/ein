@@ -1,0 +1,40 @@
+;;; `std.arith` — nothing is computed that was not asked for, and a name no
+;;; `let` states is never answered. M1f S1f.6.3.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The theory is demand-driven: a rule answers a request, and the requests
+;;; the circuit makes itself. Nothing enumerates the numbers, and a `let`
+;;; alone asks for nothing.
+;;;
+;;; This program names three numbers and asks for one sum of two of them, and
+;;; for one sum that names `rebate`, which no `let` states.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(done TAG ANSWER)` is how a finished call hands its answer over, and the
+;;; tag says whose it is. The claim is `done`'s whole extent: **one** call
+;;; finished, the sum of `a` and `b`. No sum was computed for `c`, which is
+;;; named and never used, and none for `a + rebate`: its first operand was
+;;; found and its second is still wanted, so no walk began. That request is
+;;; not refused and not answered; the second claim is `sum-of`'s whole
+;;; extent, one row. (Whether a request the theory cannot answer should be
+;;; flagged is P1f.6's S1f.6.12.)
+
+(import std.arith :symbols (arith))
+
+(let a (n (n z 1) 9))
+(let b (n (n z 2) 3))
+(let c (n z 7))
+
+(add a b)
+(add a rebate)
+
+(solve :expect (region (model)))
+
+(query :goal (done ?tag ?answer)
+       :expect (model (done (sum a b) (n (n z 4) 2))))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of a b (n (n z 4) 2))))

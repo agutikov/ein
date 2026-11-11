@@ -265,6 +265,12 @@ runs   = ["solve", "test", "saturate", "render program"]
 note   = "M1f S1f.5.7 (T1f.5.7.3) — `eq` and `neq` in a rule's premise, in any order (the user's ruling of 2026-11-07, Q-M1e2.26): a guard before the premise that binds its variable, a fact as a guard's argument, and a guard whose variable no premise binds, ranging over the program's names; `(solve :hypothesis-relations ())` keeps R root's state, and `ein test` holds the four claims about it."
 
 [[entry]]
+path   = "examples/arith/add.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.3 — the calculator's first program, the addition program of P1f.6's `design.md` in the ruled spelling: `(import std.arith :symbols (arith))`, a request `(add X Y)` over nested numbers, 123078 + 4567 = 127645, and a second request that names its operands with `(let NAME NUMBER)`. Search-free: no candidate, R {∅}, the answer root's fixpoint, the same under `solve`, `saturate` and `test` (`ein-cli/tests/arith_search_free.rs`)."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
@@ -2938,6 +2944,12 @@ group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "stdlib/arith.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
+
+[[entry]]
 path   = "stdlib/bijection.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
@@ -3121,6 +3133,48 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/algebra/26_surjective_owed_satisfied.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/arith/01_add.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: 123078 + 4567 = 127645, the whole chain once; `sum-of`'s whole extent claimed, and R = {∅} on the solve form, as every program of this directory claims it."
+
+[[entry]]
+path   = "tests/stdlib/arith/02_carry_out.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: `add-carry-out`: 999999999 + 1 has ten digits and 5 + 5 two; no width and no overflow."
+
+[[entry]]
+path   = "tests/stdlib/arith/03_lengths.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: operands of different lengths, each pair asked both ways round: `add-column-first` and `add-column-second`, a carry running through the longer number."
+
+[[entry]]
+path   = "tests/stdlib/arith/04_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: zero is `z`, asked, added and answered: `operand-zero` and `strip-none`."
+
+[[entry]]
+path   = "tests/stdlib/arith/05_high_zeros.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: `strip-zero`: operands written with high zeros are read by value, and the answer is in normal form; a zero inside a number stays."
+
+[[entry]]
+path   = "tests/stdlib/arith/06_named.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: `(let NAME NUMBER)`: `let-named` and `operand-name`; a request by name is answered under the names, and the same sum by numbers is a request of its own."
+
+[[entry]]
+path   = "tests/stdlib/arith/07_only_what_is_asked.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.3, `std.arith`: demand-driven: `done`'s whole extent is one finished call; a `let` nobody asks about computes nothing, and a request naming a name no `let` states is never answered."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"

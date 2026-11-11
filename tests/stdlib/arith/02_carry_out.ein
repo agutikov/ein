@@ -1,0 +1,27 @@
+;;; `std.arith` — a carry out of the top column lengthens the answer:
+;;; 999999999 + 1 = 1000000000, nine digits and one give ten. M1f S1f.6.3.
+;;;
+;;; There is no width and no overflow in `std.arith`: a number is as long as
+;;; it needs to be. The carry that leaves the last column is the answer's top
+;;; digit (`add-carry-out`), and since a 1 is not zero the digits go straight
+;;; to the turn, with nothing to strip.
+;;;
+;;; The second pair is the same carry where both numbers end together,
+;;; 5 + 5 = 10: `add-column` once, then `add-carry-out`.
+;;;
+;;; The claim is `sum-of`'s whole extent, so an answer of nine digits (the
+;;; carry lost) or of eleven fails the file.
+
+(import std.arith :symbols (arith))
+
+(add (n (n (n (n (n (n (n (n (n z 9) 9) 9) 9) 9) 9) 9) 9) 9) (n z 1))
+(add (n z 5) (n z 5))
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n (n (n (n (n (n (n (n (n z 9) 9) 9) 9) 9) 9) 9) 9) 9)
+                              (n z 1)
+                              (n (n (n (n (n (n (n (n (n (n z 1) 0) 0) 0) 0) 0) 0) 0) 0) 0))
+                      (sum-of (n z 5) (n z 5) (n (n z 1) 0))))

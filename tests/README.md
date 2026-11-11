@@ -85,6 +85,7 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
+| [`stdlib/arith/`](stdlib/arith/) | 19 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition): one program per rule or tight family, each claiming `sum-of`'s whole extent and R = {∅}; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -161,6 +162,47 @@ program can show:
 |---|---|
 | `01_tables.ein` | a flat import brings a listed table's rows (S1f.6.11's fix, W88, seen from the stdlib); each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and with `__closed__` listed the module's own closing facts leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
 | `02_a_core_names_its_rows.ein` | a refutation through a lookup: root is dead and the unsat core is `(column 7 5 3)` and `(fa 7 5 0 2 1)`, the claim and the row it was checked against. The agreeing `(column 7 5 2)` is there so the rule is matched and silent once (*a refutation rule gets two files*, here two facts) |
+
+### `stdlib/arith/`: a theory whose answers a program cannot check
+
+M1f [S1f.6.3](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md).
+`std.arith` is school arithmetic written in Ein over `std.digits`' tables,
+computed by saturation alone. Its programs are written like the others here,
+one per rule or tight family, each claiming `sum-of`'s whole extent, with two
+differences worth knowing before adding one.
+
+**Every program claims R = {∅}** on its `(solve …)` form, with no
+`:hypothesis-relations` list. The theory closes its own relations, and that
+claim is what fails if a relation added to the module is left out of the
+closing rule. `ein-cli/tests/arith_search_free.rs` reads the same off every
+program in this directory and in `examples/arith/`: no candidate, one state,
+one saturation, and the same result facts under `ein solve`, `ein saturate`
+and `ein test`. A new program joins by being here.
+
+**Right is held from outside the language.** A program here can claim a
+handful of sums, written out by hand. Whether the theory adds *correctly* is
+`ein-infer/tests/arith_theory.rs`, against Rust's integers: every pair up to
+120, every pair of lengths up to 30 digits on a fixed-seed sample, a carry
+through every length, and operands padded with high zeros. The same file
+holds the rule of the theory on the module's text, and `arith_batch.rs` holds
+it on the matcher's count of its work.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `01_add.ein` | the whole chain once, 123078 + 4567: `add-ask`, `add-ask-second`, `add-start`, `operand-number`, `add-column`, `add-column-first`, `add-end`, `strip-top`, `turn-step`, `turn-end`, `add-answer` | a wrong digit, a second answer, an answer filed under the operands exchanged |
+| `02_carry_out.ein` | `add-carry-out`: 999999999 + 1 has ten digits, and 5 + 5 two | the carry lost at the top |
+| `03_lengths.ein` | `add-column-second` beside `add-column-first`, each pair asked both ways round, with a carry running through the longer number | the two column rules confused |
+| `04_zero.ein` | `operand-zero`, `strip-none`: zero is `z`, asked, added and answered | a zero answered as `(n z 0)` |
+| `05_high_zeros.ein` | `strip-zero`: operands written with high zeros, read by value; a zero inside a number stays | an answer that is not in normal form |
+| `06_named.ein` | `let-named` and `operand-name`: `(let NAME NUMBER)`, a request by name, by a name and a number, and the same sum by numbers as a request of its own | a request answered under another spelling of its operands |
+| `07_only_what_is_asked.ein` | nothing fires for a `let` nobody asks about, and a request naming a name no `let` states is never answered: `done`'s whole extent is one call | a theory that computes what was not asked |
+
+`arith`, the closing rule, fires once at root in each. **The mutation sweep
+kills every mutant of the module**, 21 of 21: the sweep reads 188 of 238 where
+it read 167 of 217, and the bank's 50 survivors are the ones it had
+(`python3 utils/stdlib_mutants.py --check`, 2026-11-11). `03_lengths.ein` is
+written both ways round because of it: `(add ?x ?y)` with its operands
+exchanged survives any program whose requests are symmetric.
 
 ### Five things about how they are written
 
@@ -308,6 +350,17 @@ bisect run` over `3ee7796a..916d97ac` names `597b2b7e`. At its parent
 refused. `stdlib/` and `tests/` are unchanged since `3ee7796a`, the last green
 nightly's commit (S1f.5.17, 2026-11-08). **The bank's diff is those two lines,
 removed, and nothing added**: 52 → 50.
+
+**188 of 238 on 2026-11-11: `std.arith` added 21 mutants and the suite kills
+every one** (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.3](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md)).
+The module's rules have no `neq` and no `absent`, so its mutants are the two
+exchange families: a premise's two arguments, a tag and a number, and a
+conclusion's. Exchanged, a step hands its answer to nobody, the chain stops,
+and the program's `sum-of` claim fails for want of a row; the one mutant
+that still answers, `(add ?x ?y)` read as `(add ?y ?x)`, files the sum under
+the operands exchanged, which `arith/01_add.ein` refuses. `std.digits` has no
+rule and adds none. **The bank is unmoved**, 50 lines.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

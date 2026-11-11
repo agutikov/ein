@@ -2,11 +2,11 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # six static checks, the tests and their scratch check, the review-bundle smoke, the bench smoke
+#     ./run_tests.sh                 # six static checks, the tests, the arithmetic batch under the counters, their scratch check, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1) and 8 id seeds
 #     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --dev-host      # instead of the gate: the nightly's steps at full budget, and the steps CI no longer runs
-#     ./run_tests.sh --tests-only    # cargo test, its scratch check and the review-bundle smoke — no static checks, no bench smoke
+#     ./run_tests.sh --tests-only    # cargo test, the arithmetic batch, their scratch check and the review-bundle smoke — no static checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **The gate needs Graphviz on `PATH`**: `ein-render/tests/dot_wellformed.rs`
@@ -400,6 +400,17 @@ trap 'rm -rf "${GATE_TMP}"' EXIT
 
 step "cargo test --workspace"
 TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
+
+# M1f S1f.6.3 — the measured half of the rule of `std.arith`: a batch of
+# requests costs in proportion to its count, by `ein_core::counters`'
+# `candidates`, the matcher's own count of the facts it tried. The counters
+# are compiled out of every other build (an increment on the engine's hottest
+# path), so the step above builds `arith_batch` without them and holds only
+# its weaker half; this builds `ein-infer` once more with the feature, for
+# that one test. A rule of the theory that joins two facts on a number changes
+# no answer and fails here.
+step "cargo test -p ein-infer --features counters --test arith_batch"
+TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --features counters --test arith_batch
 
 # Everything a test left in its `TMPDIR`, named with the file that wrote it;
 # exit 1 if there is anything. Reached only after a green `cargo test`.
