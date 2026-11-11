@@ -77,7 +77,9 @@ fn dump_then_parse_is_a_fixed_point() {
         assert_eq!(text, dump_canonical(&ast, &twice), "{}", path.display());
     }
     assert!(
-        read >= 300 && refused < read / 4,
+        // A third since M1f P1f.7, whose stages bank a refusal witness per
+        // shape the grammar came to refuse (a quarter until then).
+        read >= 300 && refused < read / 3,
         "{read} corpus files read, {refused} refused — the sweep stopped looking"
     );
 }

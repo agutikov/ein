@@ -341,9 +341,11 @@ firings within a single fork dedupe (`Fact` identity is
 preserved. That's enough for "is this branch dead?" and for
 the unsat-core frontier walk (`unsat_core` via
 `walk_premises`) to identify the responsible
-hypothesis from the first firing's premise chain. Promote to `(false <witness>)`
-with per-firing args if a future puzzle needs all parallel
-contradictions individually addressable.
+hypothesis from the first firing's premise chain. `false` takes no argument:
+since M1f S1f.7.6 the grammar and the loader refuse `(false k)` wherever it
+is written, on the user's ruling of 2026-11-11 that a value is a name or a
+fact a state could hold, so parallel contradictions are told apart by their
+provenance, not by a witness argument.
 
 ## 7. Open design seams
 

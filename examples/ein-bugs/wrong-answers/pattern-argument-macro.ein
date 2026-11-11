@@ -1,0 +1,30 @@
+;;; A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires —
+;;; M1f **W83**, register row `W83/pattern-argument-macro`, filed by S1f.7.3 (T1f.7.3.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, the fact `(says (paid Ann))`, a macro `said` whose body is `(says ?c)`,
+;;; and a rule that calls it with a conjunction under `(absent …)`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; The grammar takes a connective as a call's argument, since a macro such as `forall`
+;;; takes premises; the expansion is `(says (and (paid ?g)))`, refused at load, at the
+;;; macro's body, one line, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads; the expanded pattern matches nothing, so the
+;;; rule derives `(welcome Ann)` and `(welcome Bob)`, exit 0 on every command.
+;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(relation welcome Guest :why "{?1} is welcome")
+(macro said (?c) (says ?c) :why "it is said that {?c}")
+(says (paid Ann))
+(rule greet () :match (and (is-a ?g Guest) (absent (said (and (paid ?g))))) :assert (welcome ?g) :why "{?g} is welcome: nobody says they paid")
+(solve :hypothesis-relations ())
+(query :goal (welcome ?g))

@@ -440,7 +440,11 @@ fn rule_name(tok: u32) -> Option<&'static str> {
 /// sentences), the paper grammar's default 5 (the loader's two lines a
 /// keyword's position no longer reaches), on a string with an escape it does
 /// not read, each such escape and where it is (S1f.5.2's escapes, T1f.5.2.5),
-/// and at an `open`, where the verdict is written (S1f.5.23, [`OPEN_NOTE`]).
+/// at an `open`, where the verdict is written (S1f.5.23, [`OPEN_NOTE`]), and,
+/// since M1f S1f.7.7, S1f.7.6 and S1f.7.10, at a word the value rule keeps out
+/// of a value: an `absent` that opens a form ([`ABSENT_NOTE`]), an `eq` or a
+/// `neq` that opens a form inside another, and an argument written after
+/// `(false` ([`FALSE_NOTE`]).
 fn notes(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
     lines: &b::Lines,
@@ -481,6 +485,21 @@ fn notes(
         }
         Some(")") => out.extend(empty_connective(lexer, at)),
         Some("open") => out.push(OPEN_NOTE.to_string()),
+        Some("absent") if written_before(lexer, at, 1) == ["("] => {
+            out.push(ABSENT_NOTE.to_string())
+        }
+        Some(k @ ("eq" | "neq")) if nested_head(lexer, at) => out.push(format!(
+            "{k} is computed and never stored, so ({k} a b) is no value: write it as a \
+                 premise or a conclusion of its own, where it is checked, and never inside \
+                 another fact or pattern"
+        )),
+        Some(k)
+            if !k.starts_with(':')
+                && k != ")"
+                && written_before(lexer, at, 2) == ["(", "false"] =>
+        {
+            out.push(FALSE_NOTE.to_string())
+        }
         _ if found.starts_with(':') && top_form(lexer, at) == Some("config") => {
             if let Some((flag, stage, why)) = RETIRED.iter().find(|(f, _, _)| *f == &found[1..]) {
                 out.push(format!(
@@ -491,6 +510,53 @@ fn notes(
         _ => {}
     }
     out
+}
+
+/// What an `absent` that is no premise's connective is told (M1f S1f.7.7): a
+/// fact, a value or a conclusion headed `absent` is refused, and the author who
+/// wrote one where a negation was meant is pointed at `(not …)`.
+const ABSENT_NOTE: &str = "absent is negation as failure, a test a premise makes of a state, \
+                           (absent <premise>) in a :match or a :goal, so no fact, value or \
+                           conclusion is of it: the stored negation of a fact is (not …)";
+
+/// What an argument written after `false` is told (M1f S1f.7.6).
+const FALSE_NOTE: &str = "false takes no argument: (false) says that the state is impossible, \
+                          and names nothing";
+
+/// Is the lexeme `at` the head of a form written inside another form?
+fn nested_head(
+    lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
+    at: &lrlex::DefaultLexeme<u32>,
+) -> bool {
+    let (mut depth, mut last) = (0usize, "");
+    for l in lexer.iter().flatten() {
+        if l.span().start() >= at.span().start() {
+            break;
+        }
+        last = lexer.span_str(l.span());
+        match last {
+            "(" => depth += 1,
+            ")" => depth = depth.saturating_sub(1),
+            _ => {}
+        }
+    }
+    last == "(" && depth >= 2
+}
+
+/// The last `n` tokens written before the lexeme `at`, as written; fewer where
+/// fewer were written.
+fn written_before<'i>(
+    lexer: &dyn NonStreamingLexer<'i, DefaultLexerTypes<u32>>,
+    at: &lrlex::DefaultLexeme<u32>,
+    n: usize,
+) -> Vec<&'i str> {
+    let before: Vec<&str> = lexer
+        .iter()
+        .flatten()
+        .take_while(|l| l.span().start() < at.span().start())
+        .map(|l| lexer.span_str(l.span()))
+        .collect();
+    before[before.len().saturating_sub(n)..].to_vec()
 }
 
 /// `(and)` and `(or)`, which the grammar refuses, `and` and `or` each taking

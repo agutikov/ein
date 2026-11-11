@@ -267,10 +267,10 @@ Declared once in [`ein-core/terms.rs`](../../../../ein.rs/crates/ein-core/src/te
 | name | arity | meaning | engine site |
 |------|-------|---------|-------------|
 | `not` | 1 | propositional negation; `(not X)` is a stored octagon fact whose arg is the negated proposition | matcher (`match_.rs`) + contradiction detector (`contradiction.rs`) |
-| `false` | 0+ | direct ⊥ — `(false)` asserts the firing rule reached a contradiction (args empty by convention) | contradiction detector |
+| `false` | 0 | direct ⊥ — `(false)` asserts the firing rule reached a contradiction. It takes no argument, as a fact, a value, a premise and a conclusion: `(false k)` is refused since M1f S1f.7.6 (until then a written one was stored with its argument and killed root) | contradiction detector |
 | `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.rs`) |
 | `or` | 2+ | disjunction; a **top-level** `(or …)` in a `:match` is lowered to one rule per disjunct at load time | loader (`kb.from_ir._match_disjuncts`) |
-| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (the guard lift) + the saturator's boundary phase |
+| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom, so no fact, value or conclusion is headed by it: a written or concluded `(absent k)` is refused since M1f S1f.7.7 (until then it stored a fact no premise can read), and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (the guard lift) + the saturator's boundary phase |
 
 ## Computed predicates
 
@@ -287,6 +287,12 @@ guard, `eq` to the other side's value and `neq` over the program's names
 |------|-------|---------|-------------|
 | `eq` | 2 | `(eq ?a ?b)` holds iff the two values are one; a free side is bound to the other | matcher `Guard` opcode |
 | `neq` | 2 | `(neq ?a ?b)` holds iff the two values differ; a free side ranges over the program's names but the other | matcher `Guard` opcode |
+
+Neither heads a value: `(q (eq k j))`, as `(q (neq k j))`, is refused, in a
+fact, a conclusion and a pattern, since M1f S1f.7.10 (the user's ruling of
+2026-11-11, (a)). Until then a nested `(eq k j)` was stored, computed by
+nothing, and a pattern's argument `(eq ?a ?b)` matched it by its shape, a
+second meaning of the one spelling.
 
 ## Pattern-macro sugar (`forall` / `unknown`) — NOT reserved
 
@@ -325,6 +331,11 @@ own macros, a kernel primitive's name among them: a body or a call that writes
 `eq`, `absent`, `not`, `false` or `or` in another shape than the grammar gives
 it where a rule writes it is refused where the macro is called, and a macro no
 rule calls loads ([`02_patterns.md`](02_patterns.md), `defined_behaviour.md` § 4.16).
+**A value is a name, or a fact a state could hold** (the user's ruling of
+2026-11-11, M1f P1f.7's value rule): `eq`, `neq`, `absent`, `and`, `or` and
+`false` with an argument head no value, written or left by a macro's expansion,
+and `not` does, a stored negation being a fact
+([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
 
 ## Hypothesis / query control
 

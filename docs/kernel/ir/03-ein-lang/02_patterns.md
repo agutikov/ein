@@ -90,6 +90,19 @@ rule's clauses were expanded, and a call in a goal was a pattern over a
 relation of the macro's name, which matched nothing
 ([`defined_behaviour.md` § 4.21](../../defined_behaviour.md#421-a-goal-is-held-to-what-a-rules-match-is-held-to--m1f-s1f75-s1f711-s1f71)).
 A macro call written as a fact, or listed in a claim, is not expanded.
+**A pattern's argument is what a value can be** since M1f
+[S1f.7.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md): a name, a
+variable, a pattern of an ordinary relation, or `(not <pattern>)`, a stored
+negation. The grammar takes a connective there so that a macro such as
+`forall` can be called with premises; once the macros are expanded, `(and …)`,
+`(or …)`, `(neq …)`, `(eq …)`, `(absent …)` and `(false …)` with an argument as
+a pattern's argument are refused at load, in a rule, an hrule, an obligation
+and a goal. Until then `(q (and (p ?x)))` loaded and matched nothing, and under
+an `(absent …)` held, so the rule fired (W83). The same rule, *a value is a
+name, or a fact a state could hold*, refuses at the parse a premise `(false
+?s)`, a conclusion headed `absent`, and `(eq …)`, `(absent …)` or `(false k)`
+as a conclusion's or a guard's value (S1f.7.6, S1f.7.7, S1f.7.10;
+[`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
 **Until S1f.5.24** the compiler refused `eq` and `absent` at another arity
 where it compiled the plan (M1e
 [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),

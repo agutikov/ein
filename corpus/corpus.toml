@@ -2237,6 +2237,120 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W79 (`W79/goal-absent-nested-relation-variable`), filed by S1f.7.1's T1f.7.1.2 (2026-11-11): a query's `:goal` whose `(absent …)` writes a pattern inside a pattern with a variable as its relation, which loaded and held in every state. Fixed by S1f.7.1's T1f.7.1.3 (2026-11-11): refused at load, one line, on every command."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/absent-fact-for-not.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W80 (`W80/absent-fact-for-not`), filed by S1f.7.7's T1f.7.7.2 (2026-11-11): A written `(absent (paid Ann))` beside `(paid Ann)` loads, alive, the constraint ignored. Fixed by S1f.7.7's T1f.7.7.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/absent-fact-name.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W80 (`W80/absent-fact-name`), filed by S1f.7.7's T1f.7.7.2 (2026-11-11): A written `(absent Bob)` adds `Bob` to the program's names, and H grows. Fixed by S1f.7.7's T1f.7.7.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W80 (`W80/absent-fact-nested`), filed by S1f.7.7's T1f.7.7.2 (2026-11-11): A value `(absent (paid Bob))` inside a fact is stored. Fixed by S1f.7.7's T1f.7.7.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/absent-concluded.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W80 (`W80/absent-concluded`), filed by S1f.7.7's T1f.7.7.2 (2026-11-11): A rule's `:assert (absent (paid ?g))` stores a fact of `absent`. Fixed by S1f.7.7's T1f.7.7.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W80 (`W80/absent-hrule-concluded`), filed by S1f.7.7's T1f.7.7.2 (2026-11-11): An hrule's `:assert (absent (paid ?g))` splits R on a fact nothing reads. Fixed by S1f.7.7's T1f.7.7.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/false-fact-argument.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W81 (`W81/false-fact-argument`), filed by S1f.7.6's T1f.7.6.2 (2026-11-11): A written `(false Bob)` is stored, kills root, and names `Bob`. Fixed by S1f.7.6's T1f.7.6.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/false-fact-nested.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W81 (`W81/false-fact-nested`), filed by S1f.7.6's T1f.7.6.2 (2026-11-11): A value `(false Bob)` inside a fact is stored. Fixed by S1f.7.6's T1f.7.6.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/false-fact-negated.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W81 (`W81/false-fact-negated`), filed by S1f.7.6's T1f.7.6.2 (2026-11-11): A written `(not (false Bob))` is stored. Fixed by S1f.7.6's T1f.7.6.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/false-premise-argument.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W81 (`W81/false-premise-argument`), filed by S1f.7.6's T1f.7.6.2 (2026-11-11): A premise `(absent (false ?g))` holds of everything, so the rule fires. Fixed by S1f.7.6's T1f.7.6.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/false-goal-argument.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W81 (`W81/false-goal-argument`), filed by S1f.7.6's T1f.7.6.2 (2026-11-11): A goal's `(absent (false ?g))` holds of everything. Fixed by S1f.7.6's T1f.7.6.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-value-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W82 (`W82/eq-value-fact`), filed by S1f.7.10's T1f.7.10.2 (2026-11-11): A value `(eq Ann Bob)` inside a fact is stored. Fixed by S1f.7.10's T1f.7.10.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-value-concluded.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W82 (`W82/eq-value-concluded`), filed by S1f.7.10's T1f.7.10.2 (2026-11-11): A rule's `:assert (asked (eq ?x ?y))` stores equalities as values. Fixed by S1f.7.10's T1f.7.10.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-value-matched-by-shape.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W82 (`W82/eq-value-matched-by-shape`), filed by S1f.7.10's T1f.7.10.2 (2026-11-11): A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape. Fixed by S1f.7.10's T1f.7.10.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/eq-value-negation-concluded.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W82 (`W82/eq-value-negation-concluded`), filed by S1f.7.10's T1f.7.10.2 (2026-11-11): `(not ?s)` concluded of a stored `(eq k k)` stores `(not (eq k k))` and no `(false)`. Fixed by S1f.7.10's T1f.7.10.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pattern-argument-and.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W83 (`W83/pattern-argument-and`), filed by S1f.7.3's T1f.7.3.2 (2026-11-11): A premise `(says (and (paid ?g)))` loads and never matches. Fixed by S1f.7.3's T1f.7.3.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pattern-argument-and-under-absent.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W83 (`W83/pattern-argument-and-under-absent`), filed by S1f.7.3's T1f.7.3.2 (2026-11-11): Under `(absent …)` the dead pattern `(says (and (paid ?g)))` holds, and the rule fires. Fixed by S1f.7.3's T1f.7.3.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W83 (`W83/pattern-argument-hrule`), filed by S1f.7.3's T1f.7.3.2 (2026-11-11): An hrule's premise `(says (or …))` loads and proposes nothing. Fixed by S1f.7.3's T1f.7.3.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pattern-argument-goal.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W83 (`W83/pattern-argument-goal`), filed by S1f.7.3's T1f.7.3.2 (2026-11-11): A goal's `(absent (says (neq ?g Bob)))` holds of everything. Fixed by S1f.7.3's T1f.7.3.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/pattern-argument-macro.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W83 (`W83/pattern-argument-macro`), filed by S1f.7.3's T1f.7.3.2 (2026-11-11): A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires. Fixed by S1f.7.3's T1f.7.3.3 (2026-11-11): refused at load, on every command."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

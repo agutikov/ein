@@ -134,6 +134,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.119](#q-m1f119--which-relations-a-goal-may-ask-about) | which relations a goal may ask about | **defaulted 2026-11-11 (the stage's default (a), S1f.7.11): refused at load unless a relation of the program, S1f.7.8's notion without the goals, or one a `:hrules` activator has its hrule propose**; [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md) |
 | [Q-M1f.120](#q-m1f120--a-rules-match-over-a-relation-nothing-makes) | a rule's `:match` over a relation nothing makes | **defaulted 2026-11-11 (the stage's default, S1f.7.11): reported in the stage's record and not refused; F25's R-6**; [S1f.7.11](p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md) |
 | [Q-M1f.121](#q-m1f121--the-line-a-goals-nested-relation-variable-is-refused-with) | the line a goal's nested relation variable is refused with | **defaulted 2026-11-11 (S1f.7.1): the goal's own line, the one its top-level relation variable has had since S1f.5.21, from the one walk a rule's clauses get**; [S1f.7.1](p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md) |
+| [Q-M1f.122](#q-m1f122--where-absent-still-heads-a-form-that-is-no-premise) | where `absent` still heads a form that is no premise | **defaulted 2026-11-11 (S1f.7.7): in a claim's class and nowhere else; the refusal is the grammar's, with a note pointing at `(not …)`**; [S1f.7.7](p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md) |
+| [Q-M1f.123](#q-m1f123--false-with-no-argument-as-a-value) | `(false)` with no argument as a value | **defaulted 2026-11-11 (S1f.7.6): it stays, `(q (false))` and `(not (false))` load; the rule refuses `false` with an argument**; [S1f.7.6](p1f.7_findings_outside_scope/s1f.7.6_a_false_fact_with_an_argument.md) |
+| [Q-M1f.124](#q-m1f124--where-eq-a-b-is-still-written-once-it-is-no-value) | where `(eq a b)` is still written, once it is no value | **defaulted 2026-11-11 (S1f.7.10): a fact, a premise, a conclusion and a claim of its own, and under a `(not …)` that is one of those; never under a `(not …)` that is a value, in `:using` or in a trace**; [S1f.7.10](p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md) |
+| [Q-M1f.125](#q-m1f125--a-connective-as-a-patterns-argument-the-grammar-or-the-loader) | a connective as a pattern's argument: the grammar or the loader | **defaulted 2026-11-11 (S1f.7.3): the loader, after macro expansion, since `Arg` takes a connective for a macro's call; `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument refused, `not` kept**; [S1f.7.3](p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md) |
+| [Q-M1f.126](#q-m1f126--a-relation-parameter-bound-to-absent-false-or-eq) | a relation parameter bound to `absent`, `false` or `eq` | **defaulted 2026-11-11 (S1f.7.7, S1f.7.6, S1f.7.10): refused at load where § 4.14's reading sees it, fixed in place**; [S1f.7.7](p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2566,3 +2571,69 @@ or by a rule's parameter its activator binds, and a query has no activator*.
 (`refuse_no_fact_holds`), which reads a goal since the stage, so a goal has no walk of its own; the giving of a
 meaning to the shape, a nested pattern whose relation the match binds, would reverse the W24 ruling and is not
 taken.
+
+### Q-M1f.122 — Where `absent` still heads a form that is no premise
+
+**Raised** 2026-11-11 by [S1f.7.7](p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md)'s T1. The stage's direction is that `FactHead`, `ArgHead` and `ConclusionHead` lose
+`absent`. Its sweep found one more place the word heads a form: a claim. A query's claim lists its projection
+classes, and the class of a goal's `(absent (q ?y))` is written `(absent (q a))`, as
+`examples/ein-bugs/wrong-answers/goal-absent.ein` and `goal-macro-unknown.ein` write it and as the read-out's
+`as :expect` row prints it.
+
+- **(a) A claim keeps it**: `ClaimFact` takes `(absent <fact>)`, a class atom, which is no fact and no value.
+- **(b) A claim loses it too**, and a class over an `absent` cannot be claimed.
+
+**Defaulted 2026-11-11: (a).** (b) would take away what M1e2's classes and S1f.7.5's read-out give, and move two
+register witnesses. The refusal everywhere else is the grammar's, and its error carries a note for the author who
+meant negation: *the stored negation of a fact is (not …)*.
+
+### Q-M1f.123 — `(false)` with no argument as a value
+
+**Raised** 2026-11-11 by [S1f.7.6](p1f.7_findings_outside_scope/s1f.7.6_a_false_fact_with_an_argument.md)'s T1. `(q (false))`, `(not (false))` and a premise `(false)` load today. The value
+rule names *`false` with an argument*.
+
+- **(a) `(false)` stays** wherever it is written today, and only an argument is refused.
+- **(b) `false` heads no value at all**, with or without an argument.
+
+**Defaulted 2026-11-11: (a).** The rule's own words, and `(false)` is a fact a state could hold: a dead state holds
+it. What `(not (false))` and `(q (false))` mean is [F25](../followups/f25_roughness_found_outside_zebra.md)'s R-7.
+
+### Q-M1f.124 — Where `(eq a b)` is still written, once it is no value
+
+**Raised** 2026-11-11 by [S1f.7.10](p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md)'s T1. S1f.5.7 has a written `(eq a b)` and `(not (eq a b))`, a premise and a
+conclusion of either, and a claim's, each checked. The ruling (a) refuses `eq` as a nested head. Three places sit
+between the two: `(q (not (eq a b)))`, a fact's `:using ((eq a b))`, and a trace's `:derives (eq a b)`.
+
+- **(a) Refused in all three**: `(not (eq a b))` is the negation of no fact a state could hold, so it is no value;
+  `:using` lists facts a derivation rested on and a trace's step derives a fact, and no state stores an equality.
+- **(b) Kept in `:using` and a trace**, which are provenance and not values.
+
+**Defaulted 2026-11-11: (a).** No corpus program writes any of the three (the sweep of T3). `(eq a b)` and `(not
+(eq a b))` stay where S1f.5.7 checks them (`ein.y`'s `EqFact` and `Negated`).
+
+### Q-M1f.125 — A connective as a pattern's argument: the grammar or the loader
+
+**Raised** 2026-11-11 by [S1f.7.3](p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md)'s stage file: *if no macro call needs it, the grammar refuses the written shape at
+the parse*. T1 read why `ein.y`'s `Arg` takes a `Connective`: a macro is called as a pattern, and `std.macro`'s
+`forall` takes premises, `(forall ?b (and …) (B))`. A context-free grammar cannot tell a macro's name from a
+relation's.
+
+- **(a) The loader**, after macro expansion, by the walk S1f.5.24 gave a rule's clauses.
+- **(b) The grammar**, with a macro's call given a syntax of its own.
+
+**Defaulted 2026-11-11: (a).** (b) is a language change. The refused heads are what no value has: `and`, `or`,
+`neq`, with S1f.5.24's line, and `eq`, `absent` and `false` with an argument, which S1f.7.10, S1f.7.7 and S1f.7.6
+left no fact able to hold. `(not <pattern>)` stays: a stored negation is a value and is matched.
+
+### Q-M1f.126 — A relation parameter bound to `absent`, `false` or `eq`
+
+**Raised** 2026-11-11 by the three stages' T1: with `(mk absent)` and `(rule mk (?R) :match (p ?x) :assert (?R
+?x))` the rule stored `(absent a)`; with `(mk false)`, `(false a)`; and with `(mk eq)` and `:assert (q (?R ?x
+?x))`, `(q (eq a a))`. The grammar reads a variable where the relation is written.
+
+- **(a) Refused at load where the loader can see the binding**, as S1f.5.9 refuses a parameter that can hold `eq`
+  heading a form of another arity (`defined_behaviour.md` § 4.14).
+- **(b) A row of F25**, the firing storing what it is given.
+
+**Defaulted 2026-11-11: (a), fixed in place.** The check of § 4.14 runs once per word, and reads a parameter that
+heads a form where a value goes too.

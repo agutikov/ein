@@ -1400,7 +1400,9 @@ names the first such source and each conclusion it passes through: *the fact
 (mark eq), through rule 'mk''s conclusion (r ?f)*, *rule 'mk''s conclusion (r
 eq)*, or *an eq or neq guard of rule 'mk', over the program's names, eq among
 them, through its conclusion (r ?f)*. A parameter heading a pattern inside a
-pattern's argument fills a value, `(p (eq a))`, and is not read; nor is a
+pattern's argument fills a value, and since M1f S1f.7.10 a value is no form of
+`eq`, so it is refused at every arity (§ 4.22; until then `(p (eq a))` was a
+value and was not read). Not read is a
 declared relation of another arity, `(?R ?x)` under `(r q)` with `q` binary,
 which matches nothing, as `(q ?x)` written directly does, matching being
 arity-coupled. `neq` is no name a program can write, so no parameter holds it.
@@ -1581,9 +1583,9 @@ container; and a container that stores `open` as a name refused), `ein-ir`'s
 `DELETED`, `grammar::tests::the_reserved_words_are_the_printers`, and
 `corpus/wrong_answers.toml`'s W70 to W72 rows. **What is not refused**: the
 position words a fact's head admits, each a name by Q-M1e2.17 (`eq` checked,
-S1f.5.7's); a written `(false k)` kills root as `(false)` does, and a written
-`(absent k)` stores a fact no premise reads (both found by S1f.5.23's T2,
-outside its case).
+S1f.5.7's). A written `(false k)` and a written `(absent k)`, which S1f.5.23's
+T2 found outside its case, are refused since M1f S1f.7.6 and S1f.7.7
+(§ 4.22).
 
 ### 4.18 An imported module is read as the program is — M1f S1f.5.22
 
@@ -1794,6 +1796,106 @@ line, the same on each, and no container; nine programs answered, the goal
 printed as written; and sixteen goals over relations of the program, each
 loading, a container answering as its text) and `corpus/wrong_answers.toml`'s
 W77, W78 and W79 rows.
+
+### 4.22 A value is a name, or a fact a state could hold — M1f S1f.7.7, S1f.7.6, S1f.7.10, S1f.7.3
+
+The user's ruling of 2026-11-11
+([the value rule](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-value-rule), Q-M1f.113): *a value is a
+name, or a fact a state could hold: an atom of an ordinary relation, or its
+negation.* A fact inside a fact, a pattern inside a pattern, and a
+conclusion's or a guard's argument are values. Four stages hold the language
+to it, on every command that reads the program, the views and `kb save`
+among them (Q-M1f.122 to .126, defaulted):
+
+- **`absent` heads no fact, value or conclusion**
+  ([S1f.7.7](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md)). It is negation as failure, a
+  test a premise or a goal makes of a state, `(absent <premise>)`. A claim's
+  class still lists what a goal's `(absent …)` says a state does not hold,
+  `(model (absent (q a)) (p a))` (`ein.y`'s `ClaimAtom`).
+- **`false` takes no argument**
+  ([S1f.7.6](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.6_a_false_fact_with_an_argument.md)): a fact, a value,
+  a premise, a goal and a conclusion write it only as `(false)`. `(false)` as
+  a value, `(q (false))`, stays (Q-M1f.123).
+- **`(eq …)` is no value**, as `(neq …)` never was
+  ([S1f.7.10](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md)): `eq` is computed and
+  never stored (§ 4.14, M1f S1f.5.7). A fact `(eq a b)` and `(not (eq a b))`,
+  a premise and a conclusion of either, and a claim's, stay, each checked
+  (`ein.y`'s `EqFact` and `Negated`); `(not (eq a b))` inside a fact or a
+  pattern is refused (Q-M1f.124).
+- **A premise pattern's argument is what a value can be**
+  ([S1f.7.3](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md)): a name, a
+  variable, a pattern of an ordinary relation, or `(not <pattern>)`, a stored
+  negation. `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument
+  there are refused, in a rule, an hrule, an obligation and a goal. The
+  grammar takes a connective as a pattern's argument, since a macro such as
+  `forall` is called as a pattern and takes premises, so this refusal is the
+  loader's, read off the clause once its macros are expanded
+  (`ein_ir::from_ir`'s `Shapes::arg`, § 4.16's walk; Q-M1f.125).
+
+The grammar refuses each shape a program writes, at the parse (`ein.y`'s
+`FactHead`, `ValueHead`, `NestedFact`, `Premise`, `Pattern` and `Negated`;
+[`00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)), and the error carries a note:
+
+| the program writes | the error is at | the note |
+|---|---|---|
+| `(absent k)`, `(absent (p a))`, `(q (absent k))`, `(not (absent k))`, `:assert (absent (p ?x))` in a rule or an hrule, `:assert (q (absent ?x))` | `absent`: *unexpected \`absent\`* | `absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)` |
+| `(false k)`, `(q (false k))`, `(not (false k))`, a premise or a goal `(false ?s)`, `(absent (false ?s))`, a pattern's argument `(q (false ?s))`, `:assert (q (false ?x))`, a claim's `(false k)` | the argument: *unexpected \`k\`: a name* | `false takes no argument: (false) says that the state is impossible, and names nothing` |
+| `(q (eq k j))`, `(q (not (eq k j)))`, `:assert (q (eq ?x ?y))`, a guard's `(eq ?y (eq ?x b))`, a claim's `(p (eq a b))`; `neq` in each | `eq`: *unexpected \`eq\`* | `eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern` |
+
+The loader refuses what the grammar cannot see, one line per form, in
+§ 4.16's spelling, placed where the expanded form is written:
+
+| the clause holds, once its macros are expanded | the line, after `kb load error: <file>:<line>:<col>: ` |
+|---|---|
+| a pattern's argument `(and …)`, `(or …)` or `(neq …)`, under `(absent …)` too | `rule 'r': its :match writes (q (and (p ?x))), and (and (p ?x)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)` |
+| a pattern's argument `(eq ?a ?b)`, or a value of it in a conclusion | `rule 'r': its :match writes (q (eq ?a ?b)), and (eq ?a ?b) is written where a value goes — eq is computed and never stored, and a value is a name, a variable, or a fact a state could hold, (relation argument …) or its negation` |
+| a pattern's argument `(absent …)`, as `forall` called inside a pattern leaves | `rule 'r': its :match writes (q (absent (q ?x))), and (absent (q ?x)) is written where a value goes — absent is negation as failure, a premise's test that no fact is of, and a value is a name, a variable, or a fact a state could hold, (relation argument …) or its negation; the stored negation of a fact is (not …)` |
+| a value `(false ?x)` | `rule 'r': its :match writes (q (false ?x)), and (false ?x) is written where a value goes — false takes no argument, and a value is a name, a variable, or a fact a state could hold, (relation argument …) or its negation` |
+| a premise `(false ?x)` | `rule 'r': its :match writes (false ?x), and false takes no argument, not 1 — (false) holds where the state is impossible, and names nothing` |
+| a conclusion `(absent ?x)` | `rule 'r': its :assert writes (absent ?x), and absent is negation as failure, a premise's test, and no fact is of it — a conclusion is a fact (relation argument …); the stored negation of a fact is (not …)` |
+
+A goal's line reads `query: its :goal writes …`. **A relation parameter that
+an activator can bind to one of the three words** is read as § 4.14 reads one
+that can hold `eq` (`refuse_eq_at_another_arity`, once per word): it is
+refused for each premise or conclusion it heads that the grammar refuses
+written out, `(absent ?x)` at any arity and `(false ?x)` at one argument or
+more, and for each form it heads where a value goes, `(q (?R ?x ?y))` under
+`(mk eq)` (Q-M1f.126). These lines name the rule and have no place:
+
+```
+kb load error: rule 'mk': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (mk absent) binds ?R to absent — absent is negation as failure, a premise's test, and no fact is of it
+kb load error: rule 'mk': its parameter ?R heads (?R ?x ?x), written where a value goes, and the fact (mk eq) binds ?R to eq — eq is computed and never stored, and a value is a name, or a fact a state could hold
+```
+
+The three words stay names: `(h absent)`, `(h false)` and `(mk eq)` are
+facts.
+
+**Until these stages** each shape loaded. A fact `(absent (paid Ann))`,
+written where `(not (paid Ann))` was meant, was stored as a fact of a
+relation `absent` that no premise can read, and the state stayed alive
+beside `(paid Ann)`; a written `(absent Bob)` made `Bob` a name of the
+program, so the blind enumerator's H grew; a rule's `:assert (absent …)`
+stored one and an hrule's proposed one, splitting R on a fact nothing reads.
+A written `(false Bob)` was stored with its argument and killed root; a
+premise `(false ?s)` matched nothing, so `(absent (false ?s))` held and its
+rule fired. A value `(eq Ann Bob)` was stored, a pattern's argument `(eq ?a
+?b)` matched it by its shape, deriving a conclusion of two names that are
+not equal, and `(not ?s)` concluded of a stored `(eq k k)` stored `(not (eq k
+k))` and no `(false)`, where a concluded `(not (eq k k))` is checked. And a
+connective as a pattern's argument was lowered as a pattern over a relation
+`and`, `or` or `neq`, which no fact holds: the rule never fired, and under an
+`(absent …)` it fired for every binding. Nineteen register rows, W80 to W83,
+filed and fixed by the stages.
+
+Pinned by `ein-cli`'s `value_rule.rs` (fifty-five shapes and the nineteen
+witnesses, each on twenty commands: one stderr, the same on each, its first
+line at the shape and its note under it, and no container; nineteen programs
+that keep loading, `(false)`, a stored negation as a value, `(not (eq a b))`
+written of its own, `absent` in a claim's class and the three words as names
+among them; and the rule of a witness written as it was meant, answered),
+`ein-ir`'s
+`grammar_pages` table (a row per place the grammar takes the refusal, banked
+in `grammar_table.txt`) and `corpus/wrong_answers.toml`'s W80 to W83 rows.
 
 ## 5. The CLI surface
 

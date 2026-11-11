@@ -1,0 +1,32 @@
+;;; A premise `(says (and (paid ?g)))` loads and never matches —
+;;; M1f **W83**, register row `W83/pattern-argument-and`, filed by S1f.7.3 (T1f.7.3.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, the fact `(says (paid Ann))`, and a rule that
+;;; welcomes a guest it is said has paid, its premise written `(says (and (paid
+;;; ?g)))`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; A pattern's argument is what a value can be, and `and` heads no fact: refused at
+;;; load, at the pattern, one line, on every command. With `(says (paid ?g))` the rule
+;;; derives `(welcome Ann)`.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads; the compiler lowers `(and (paid ?g))` as a
+;;; pattern over a relation `and`, which no fact holds, so the rule never fires and
+;;; the goal has no row, exit 0 on every command.
+;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(relation welcome Guest :why "{?1} is welcome")
+(paid Ann)
+(says (paid Ann))
+(rule greet () :match (and (is-a ?g Guest) (says (and (paid ?g)))) :assert (welcome ?g) :why "{?g} is welcome: it is said they paid")
+(solve :hypothesis-relations ())
+(query :goal (welcome ?g))

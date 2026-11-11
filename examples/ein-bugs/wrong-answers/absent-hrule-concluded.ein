@@ -1,0 +1,24 @@
+;;; An hrule's `:assert (absent (paid ?g))` splits R on a fact nothing reads —
+;;; M1f **W80**, register row `W80/absent-hrule-concluded`, filed by S1f.7.7 (T1f.7.7.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests and an hrule that proposes `(absent (paid ?g))` of each.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; No conclusion is headed `absent`, an hrule's neither: refused at the parse, on every
+;;; command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads; H is `(absent (paid Ann))` and
+;;; `(absent (paid Bob))`, and R is four states that differ only in facts of `absent`,
+;;; which no premise can read: the goal has no row in any, exit 0 on every command.
+;;; Refused at load since S1f.7.7 (T1f.7.7.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(hrule guess () :match (is-a ?g Guest) :assert (absent (paid ?g)) :why "suppose {?g} has not paid")
+(query :goal (paid ?g))

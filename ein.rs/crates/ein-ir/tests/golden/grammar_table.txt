@@ -574,6 +574,7 @@
 ## 77. a query's claim (was: expect-false-args)
     (query :goal (p ?x) :expect (false A))
 <row>:1:36: unexpected `A`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
   repair: Delete `A`
 
 ## 78. a query's claim (was: expect-and)
@@ -683,6 +684,7 @@
 ## 95. a solve's claim (was: claim-false-args)
     (solve :expect (false A))
 <row>:1:23: unexpected `A`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
   repair: Delete `A`
 
 ## 96. a solve's claim (was: claim-model-or-or)
@@ -2030,8 +2032,8 @@
 <row>:3:35: unexpected `)`
   note: rule 'r''s :match writes (and) — and takes one premise or more
   repair: Delete `)`, Delete `)`, Delete `:assert`
-  repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a name, Insert `)`
+  repair: Insert `(`, Insert a variable, Insert `)`
   and 6 more repairs
 <row>:3:55: unexpected end of input
   repair: Insert `)`, Insert `)`
@@ -2050,8 +2052,8 @@
     (relation p T) (p a) (query :goal (and))
 <row>:1:39: unexpected `)`
   note: the query's :goal writes (and) — and takes one argument or more
-  repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a name, Insert `)`
+  repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a variable, Shift `)`, Insert `)`
   and 3 more repairs
 
@@ -2409,4 +2411,250 @@
 ## 356. inside a name, a bidirectional override (was: —)
     (relation p T) (p k‮j)
 <row>:1:20: '\u{202e}' (U+202E) is not ASCII: Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment
+
+## 357. a top-level fact's relation (was: —)
+    (absent k)
+<row>:1:2: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a name
+
+## 358. a top-level fact's relation (was: —)
+    (relation p T) (p a) (absent (p a))
+<row>:1:23: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Insert a name
+
+## 359. a nested fact's relation (was: —)
+    (relation p T) (p (absent k))
+<row>:1:20: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a name
+
+## 360. a stored negation's relation (was: —)
+    (not (absent k))
+<row>:1:7: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a name
+
+## 361. a fact's :using (was: —)
+    (relation p T) (p k :rule copy :using ((absent k)))
+<row>:1:41: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a name
+
+## 362. a conclusion's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (absent (p ?x)))
+<row>:3:35: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Insert `neq`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 363. an hrule's conclusion's relation (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (n ?x) :assert (absent ?x))
+<row>:3:36: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert `neq`
+  repair: Insert a variable
+  and 1 more repair
+
+## 364. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (box (absent ?x)))
+<row>:3:40: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 365. the pattern a conclusion's not negates (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (not (absent ?x)))
+<row>:3:40: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 366. the pattern a premise's not negates (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (not (absent ?x))) :assert (hit ?x))
+<row>:3:37: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 367. a guard's value (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (neq ?x (absent k))) :assert (hit ?x))
+<row>:3:40: unexpected `absent`
+  note: absent is negation as failure, a test a premise makes of a state, (absent <premise>) in a :match or a :goal, so no fact, value or conclusion is of it: the stored negation of a fact is (not …)
+  repair: Delete `absent`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 368. a top-level fact's relation (was: —)
+    (false k)
+<row>:1:8: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+  repair: Insert `:rule`
+
+## 369. a nested fact's relation (was: —)
+    (relation p T) (p (false k))
+<row>:1:26: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+
+## 370. a stored negation's relation (was: —)
+    (not (false k))
+<row>:1:13: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+
+## 371. a fact's :using (was: —)
+    (relation p T) (p k :rule copy :using ((false k)))
+<row>:1:47: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+
+## 372. a premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (false ?x)) :assert (hit ?x))
+<row>:3:38: unexpected `?x`: a variable
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `?x`
+
+## 373. a premise under an absent (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (absent (false ?x))) :assert (hit ?x))
+<row>:3:46: unexpected `?x`: a variable
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `?x`
+
+## 374. a pattern's relation inside a premise (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (p (false ?x))) :assert (hit ?x))
+<row>:3:41: unexpected `?x`: a variable
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `?x`
+
+## 375. the pattern a premise's not negates (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (not (false k))) :assert (hit ?x))
+<row>:3:43: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+
+## 376. a guard's value (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (neq ?x (false k))) :assert (hit ?x))
+<row>:3:46: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+
+## 377. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (box (false ?x)))
+<row>:3:46: unexpected `?x`: a variable
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `?x`
+
+## 378. the pattern a conclusion's not negates (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (not (false ?x)))
+<row>:3:46: unexpected `?x`: a variable
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `?x`
+
+## 379. a goal (was: —)
+    (relation p T) (query :goal (false ?s))
+<row>:1:36: unexpected `?s`: a variable
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `?s`
+
+## 380. a claim's fact (was: —)
+    (relation p T) (query :goal (p ?x) :expect (model (false k)))
+<row>:1:58: unexpected `k`: a name
+  note: false takes no argument: (false) says that the state is impossible, and names nothing
+  repair: Delete `k`
+
+## 381. a nested fact's relation (was: —)
+    (relation p T) (p (eq k j))
+<row>:1:20: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
+
+## 382. a nested fact's relation (was: —)
+    (relation p T) (p (neq k j))
+<row>:1:20: unexpected `neq`
+  note: neq is computed and never stored, so (neq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `neq`
+
+## 383. a nested stored negation's relation (was: —)
+    (relation p T) (p (not (eq k j)))
+<row>:1:25: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
+
+## 384. a fact's :using (was: —)
+    (relation p T) (p k :rule copy :using ((eq k k)))
+<row>:1:41: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
+
+## 385. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (n ?y)) :assert (box (eq ?x ?y)))
+<row>:3:53: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
+
+## 386. a conclusion's argument, negated (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (box (not (eq ?x k))))
+<row>:3:45: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 387. a guard's value (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (and (n ?x) (eq ?y (eq ?x k))) :assert (hit ?y))
+<row>:3:39: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
+  repair: Insert a variable
+  repair: Insert a name
+
+## 388. a claim's value (was: —)
+    (relation p T) (query :goal (p ?x) :expect (model (p (eq a b))))
+<row>:1:55: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+  repair: Delete `eq`
 

@@ -1947,6 +1947,18 @@ fn refuse_nested_disjunctions(
 /// loads whatever its body (the ruling); one a rule calls is refused where it
 /// is called, at load, on every command (Q-M1f.80).
 ///
+/// **Since M1f S1f.7.7, S1f.7.6, S1f.7.10 and S1f.7.3 the walk holds the value
+/// rule too** (the user's ruling of 2026-11-11, Q-M1f.113: *a value is a name,
+/// or a fact a state could hold: an atom of an ordinary relation, or its
+/// negation*; W80 to W83). The grammar refuses what a program writes of it,
+/// through `ValueHead`; what is left to this walk is what a macro's expansion
+/// writes, and the one shape the grammar cannot refuse, a connective as a
+/// premise pattern's argument, which it takes so that a macro can be called
+/// with premises ([`Shapes::arg`]). So here, a rule's too: `and`, `or`, `neq`,
+/// `eq`, `absent` and `false` with an argument where a value goes, a premise
+/// `(false ?x)`, a conclusion headed `absent`, and a `(not …)` that is a value
+/// negating an equality.
+///
 /// The walk is the grammar's, by position (Q-M1f.81): a premise (`Premise`), a
 /// pattern's argument (`Arg`, which takes a connective so a macro can be called
 /// there), a value (`Term`), the pattern a `not` negates (`Pattern`) and a
@@ -1957,8 +1969,9 @@ fn refuse_nested_disjunctions(
 /// rule's whole `:assert` since M1f S1f.5.23, and a macro's body and a call's
 /// argument write no `open`), a premise that is no form and a relation variable
 /// no parameter binds (`refuse_no_fact_holds`), and an `(or …)` written as a
-/// premise (`refuse_nested_disjunctions`). A written rule never fails it, since
-/// the grammar refused the same shapes at the parse. One line per form, in the
+/// premise (`refuse_nested_disjunctions`). Until M1f S1f.7.3 a written rule
+/// never failed it, the grammar having refused the same shapes at the parse;
+/// since, a connective written as a pattern's argument does. One line per form, in the
 /// compiler's spelling (S1f.5.21's): the position where the expanded form is
 /// written, which is the macro's body or the call's argument, then the rule,
 /// the clause, the form as Ein text and what to write instead (Q-M1f.82).
@@ -2098,46 +2111,99 @@ impl<'a> Shapes<'a> {
                 }
                 self.premise(args[0]);
             }
-            Some("not") => self.negation(node, false),
+            Some("not") => self.negation(node, false, false),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
+            // `false` takes no argument, as a premise too (M1f S1f.7.6).
+            Some("false") if !args.is_empty() => self.false_with_arguments(node, "holds where"),
             // No premise is `(open …)` since M1f S1f.5.23: the grammar writes
             // `open` only as a rule's whole `:assert`, which `validate_open`
             // holds; until then this arm left one to `validate_open`'s refusal.
             _ => {
                 for a in args {
-                    self.arg(a);
+                    self.arg(node, a);
                 }
             }
         }
     }
 
-    /// A premise pattern's argument (`ein.y`'s `Arg`): a value, a pattern, or
-    /// a connective, which the grammar takes there so a macro can be called.
-    fn arg(&mut self, node: NodeId) {
+    /// A premise pattern's argument in the pattern `within` (`ein.y`'s `Arg`):
+    /// what a value can be, a name, a variable, a pattern of an ordinary
+    /// relation, or `(not <pattern>)`, a stored negation.
+    ///
+    /// The grammar takes a connective there, so that a macro such as `forall`
+    /// can be called with premises; once the macros are expanded, one that is
+    /// still a pattern's argument is a pattern no fact matches (M1f S1f.7.3,
+    /// W83). Until then `(q (and (p ?x)))` loaded and matched nothing, in
+    /// silence, and under an `(absent …)` held, so the rule fired.
+    fn arg(&mut self, within: NodeId, node: NodeId) {
+        if let Some(what) = self.no_value(node) {
+            self.refuse(within, what);
+            return;
+        }
         match self.shape(node) {
-            Shape::Form(Some("and" | "or" | "not" | "absent" | "eq" | "neq")) => self.premise(node),
+            Shape::Form(Some("not")) => self.negation(node, false, true),
             Shape::Form(_) => {
                 for a in self.args(node) {
-                    self.arg(a);
+                    self.arg(node, a);
                 }
             }
             Shape::Leaf => {}
         }
     }
 
-    /// A value (`ein.y`'s `Term`) in the form `within`: a name, a variable, a
-    /// fact, or the stored negation of one; never a connective.
-    fn term(&mut self, within: NodeId, node: NodeId) {
+    /// Why the form `node` is no value, where it is one of the heads no value
+    /// has (M1f P1f.7's value rule, the user's ruling of 2026-11-11: *a value
+    /// is a name, or a fact a state could hold: an atom of an ordinary
+    /// relation, or its negation*): a connective, `and`, `or` or `neq`, as
+    /// S1f.5.24 refused; `eq`, computed and never stored (S1f.7.10); `absent`,
+    /// a premise's test (S1f.7.7); and `false` with an argument (S1f.7.6).
+    fn no_value(&self, node: NodeId) -> Option<String> {
+        const VALUE: &str = "a value is a name, a variable, or a fact a state could hold, \
+                             (relation argument …) or its negation";
+        let text = self.text(node);
         match self.shape(node) {
-            Shape::Form(Some(c @ ("and" | "or" | "neq"))) => {
-                let what = format!(
-                    "{} is a connective where a value goes — {c} heads no fact, and a value is a \
-                     name, a variable or a fact (relation argument …)",
-                    self.text(node)
-                );
-                self.refuse(within, what);
-            }
-            Shape::Form(Some("not")) => self.negation(node, false),
+            Shape::Form(Some(c @ ("and" | "or" | "neq"))) => Some(format!(
+                "{text} is a connective where a value goes — {c} heads no fact, and a value is a \
+                 name, a variable or a fact (relation argument …)"
+            )),
+            Shape::Form(Some("eq")) => Some(format!(
+                "{text} is written where a value goes — eq is computed and never stored, and \
+                 {VALUE}"
+            )),
+            Shape::Form(Some("absent")) => Some(format!(
+                "{text} is written where a value goes — absent is negation as failure, a \
+                 premise's test that no fact is of, and {VALUE}; the stored negation of a fact \
+                 is (not …)"
+            )),
+            Shape::Form(Some("false")) if !self.args(node).is_empty() => Some(format!(
+                "{text} is written where a value goes — false takes no argument, and {VALUE}"
+            )),
+            _ => None,
+        }
+    }
+
+    /// `(false k)` written as a premise or a conclusion (M1f S1f.7.6).
+    fn false_with_arguments(&mut self, node: NodeId, says: &str) {
+        let n = self.args(node).len();
+        self.refuse(
+            node,
+            format!(
+                "false takes no argument, not {n} — (false) {says} the state is impossible, and \
+                 names nothing"
+            ),
+        );
+    }
+
+    /// A value (`ein.y`'s `Term`) in the form `within`: a name, a variable, a
+    /// fact, or the stored negation of one; never a connective, and never a
+    /// form of `eq`, of `absent` or of `false` with an argument.
+    fn term(&mut self, within: NodeId, node: NodeId) {
+        if let Some(what) = self.no_value(node) {
+            self.refuse(within, what);
+            return;
+        }
+        match self.shape(node) {
+            Shape::Form(Some("not")) => self.negation(node, false, true),
             Shape::Form(_) => {
                 for a in self.args(node) {
                     self.term(node, a);
@@ -2148,8 +2214,11 @@ impl<'a> Shapes<'a> {
     }
 
     /// `(not P)`: the stored negation of one fact (`ein.y`'s `(not Pattern)`),
-    /// and, as a conclusion, of a variable bound to one (`(not Var)`).
-    fn negation(&mut self, node: NodeId, conclusion: bool) {
+    /// and, as a conclusion, of a variable bound to one (`(not Var)`). Written
+    /// as a premise or a conclusion of its own it may negate an equality,
+    /// `(not (eq a b))`, which is computed (`ein.y`'s `Negated`); as a `value`,
+    /// inside a pattern or a conclusion, it negates a fact a state could hold.
+    fn negation(&mut self, node: NodeId, conclusion: bool, value: bool) {
         let args = self.args(node);
         if args.len() != 1 {
             self.refuse(
@@ -2162,6 +2231,15 @@ impl<'a> Shapes<'a> {
             return;
         }
         let p = args[0];
+        match self.shape(p) {
+            Shape::Form(Some("eq")) if !value => return self.guard(p, "eq"),
+            Shape::Form(Some("eq" | "absent" | "false")) => {
+                if let Some(what) = self.no_value(p) {
+                    return self.refuse(node, what);
+                }
+            }
+            _ => {}
+        }
         let fits = match (self.ast.node(p), self.shape(p)) {
             (Node::Var(_), _) => conclusion,
             (_, Shape::Form(Some("and" | "or" | "not" | "neq"))) => false,
@@ -2216,14 +2294,15 @@ impl<'a> Shapes<'a> {
                  disjunct"
                     .to_string(),
             ),
-            Some("not") => self.negation(node, true),
-            Some("false") if !args.is_empty() => self.refuse(
+            Some("not") => self.negation(node, true, false),
+            Some("false") if !args.is_empty() => self.false_with_arguments(node, "concludes that"),
+            // No fact is of `absent`, so no conclusion is (M1f S1f.7.7).
+            Some("absent") => self.refuse(
                 node,
-                format!(
-                    "false takes no argument, not {} — (false) concludes that the state is \
-                     impossible, and names nothing",
-                    args.len()
-                ),
+                "absent is negation as failure, a premise's test, and no fact is of it — a \
+                 conclusion is a fact (relation argument …); the stored negation of a fact is \
+                 (not …)"
+                    .to_string(),
             ),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
             // The verdict, a rule's whole `:assert`: `validate_open`'s.
@@ -3001,17 +3080,22 @@ fn refuse_derived_relation_activators(
         }
     }
 
-    refuse_eq_at_another_arity(EqArity {
-        ast,
-        terms,
-        program,
-        rp: &rp,
-        sites: &sites,
-        written: &written,
-        facts,
-        solve_blocks,
-        errors,
-    });
+    // `eq` at another arity, and each of the three words that head no value
+    // (M1f P1f.7's value rule): `eq`, `absent`, and `false` with an argument.
+    for word in ["eq", "absent", "false"] {
+        refuse_eq_at_another_arity(EqArity {
+            ast,
+            terms,
+            program,
+            word,
+            rp: &rp,
+            sites: &sites,
+            written: &written,
+            facts,
+            solve_blocks,
+            errors: &mut *errors,
+        });
+    }
 
     // What the program passes where a relation name is held: a fact's
     // argument, and a conclusion's (M1f S1f.7.8).
@@ -3046,6 +3130,8 @@ fn refuse_derived_relation_activators(
         ast: &'a Ast,
         terms: &'a Terms,
         program: &'a ein_core::program::Program,
+        /// `eq`, `absent` or `false`: the name a parameter may be bound to.
+        word: &'static str,
         rp: &'a BTreeMap<Pos, Holds>,
         sites: &'a [Site],
         written: &'a BTreeSet<String>,
@@ -3074,6 +3160,17 @@ fn refuse_derived_relation_activators(
     /// program's names, while the program writes `eq` as a name; to a
     /// fixpoint. A parameter that can hold `eq` is refused for each premise or
     /// conclusion it heads whose arity is not 2, one line each.
+    ///
+    /// **The same reading holds a parameter to the value rule** since M1f
+    /// S1f.7.7, S1f.7.6 and S1f.7.10 (the user's ruling of 2026-11-11: a value
+    /// is a name, or a fact a state could hold). `c.word` is `eq`, `absent` or
+    /// `false`, and a parameter that can hold it is refused for each premise
+    /// or conclusion it heads that the grammar refuses written out, `(absent
+    /// ?x)` at any arity and `(false ?x)` at one argument or more, and for
+    /// each form it heads where a value goes, inside a pattern or a conclusion,
+    /// which for `eq` is `(q (?R ?x ?y))`. Until then `(?R ?x)` concluded with
+    /// `?R` bound to `absent` stored `(absent a)`, and `(q (?R ?x ?x))` with
+    /// `?R` bound to `eq` stored `(q (eq a a))`.
     fn refuse_eq_at_another_arity(c: EqArity<'_>) {
         /// Why a position can hold `eq`: where it is written, or what passes
         /// it on from a position that can.
@@ -3099,13 +3196,13 @@ fn refuse_derived_relation_activators(
             },
         }
         /// Where `eq` comes from, written down first.
-        fn render(ast: &Ast, at: &BTreeMap<Pos, EqFrom>, pos: &Pos) -> String {
+        fn render(ast: &Ast, w: &str, at: &BTreeMap<Pos, EqFrom>, pos: &Pos) -> String {
             let dump = |n: NodeId| crate::dump::dump_compact(ast, n);
             match &at[pos] {
                 EqFrom::Fact(f) => format!("the fact {}", dump(*f)),
                 EqFrom::Hrules(s) => dump(*s),
                 EqFrom::Signature(r) => {
-                    format!("the declaration of {r}, which writes eq as a type")
+                    format!("the declaration of {r}, which writes {w} as a type")
                 }
                 EqFrom::Conclusion {
                     head,
@@ -3117,7 +3214,7 @@ fn refuse_derived_relation_activators(
                     rule,
                     conclusion,
                 } => format!(
-                    "an eq or neq guard of {head} '{rule}', over the program's names, eq among \
+                    "an eq or neq guard of {head} '{rule}', over the program's names, {w} among \
                      them, through its conclusion {}",
                     dump(*conclusion)
                 ),
@@ -3128,12 +3225,13 @@ fn refuse_derived_relation_activators(
                     from,
                 } => format!(
                     "{}, through {head} '{rule}''s conclusion {}",
-                    render(ast, at, from),
+                    render(ast, w, at, from),
                     dump(*conclusion)
                 ),
             }
         }
-        let is_eq = |n: NodeId| matches!(c.ast.node(n), Node::Atom(s) if c.ast.sym(s) == "eq");
+        let w = c.word;
+        let is_eq = |n: NodeId| matches!(c.ast.node(n), Node::Atom(s) if c.ast.sym(s) == w);
         let mut at: BTreeMap<Pos, EqFrom> = BTreeMap::new();
         // Written: a fact's argument, and a `(solve :hrules …)` activator's.
         for &f in c.facts {
@@ -3178,13 +3276,13 @@ fn refuse_derived_relation_activators(
         // first.
         for (name, r) in c.program.relations.iter() {
             for (j, &t) in r.signature.iter().enumerate() {
-                if c.terms.sym(t) == "eq" {
+                if c.terms.sym(t) == w {
                     at.entry(("relation".to_string(), j + 1))
                         .or_insert(EqFrom::Signature(c.terms.sym(name).to_string()));
                 }
             }
         }
-        let eq_named = c.written.contains("eq") || !at.is_empty();
+        let eq_named = c.written.contains(w) || !at.is_empty();
         // Derived: a conclusion's argument, to a fixpoint. A variable its
         // `:match` binds where relation names are held, in some disjunct, can
         // hold `eq` where every such position can; one only a guard binds
@@ -3255,21 +3353,44 @@ fn refuse_derived_relation_activators(
         /// Where `?param` heads a premise under `node`: through `and`, `or`,
         /// `not` and `absent`, never inside a pattern's argument, which a
         /// nested value fills.
-        fn premises(ast: &Ast, node: NodeId, param: &str, out: &mut Vec<NodeId>) {
+        fn premises(
+            ast: &Ast,
+            node: NodeId,
+            param: &str,
+            out: &mut Vec<NodeId>,
+            values: &mut Vec<NodeId>,
+        ) {
             let Node::SForm { head, .. } = ast.node(node) else {
                 return;
             };
             match ast.head_name(node) {
                 Some("and" | "or" | "not" | "absent") => {
                     for &a in ast.form_args(node) {
-                        premises(ast, a, param, out);
+                        premises(ast, a, param, out, values);
                     }
                 }
                 _ => {
                     if matches!(ast.node(head), Node::Var(s) if ast.sym(s) == param) {
                         out.push(node);
                     }
+                    for &a in ast.form_args(node) {
+                        nested(ast, a, param, values);
+                    }
                 }
+            }
+        }
+        /// Where `?param` heads a value under `node`: a form inside a
+        /// pattern, a conclusion or a guard, at any depth, a `(not …)`'s
+        /// among them.
+        fn nested(ast: &Ast, node: NodeId, param: &str, values: &mut Vec<NodeId>) {
+            let Node::SForm { head, .. } = ast.node(node) else {
+                return;
+            };
+            if matches!(ast.node(head), Node::Var(s) if ast.sym(s) == param) {
+                values.push(node);
+            }
+            for &a in ast.form_args(node) {
+                nested(ast, a, param, values);
             }
         }
         let registries: [(&'static str, &ein_core::entities::Registry<Rule>); 3] = [
@@ -3287,8 +3408,9 @@ fn refuse_derived_relation_activators(
                     }
                     let param = c.terms.sym(p);
                     let mut forms: Vec<NodeId> = Vec::new();
+                    let mut values: Vec<NodeId> = Vec::new();
                     if let Some(m) = rule.match_.as_ref() {
-                        premises(c.ast, NodeId(m.expr.0), param, &mut forms);
+                        premises(c.ast, NodeId(m.expr.0), param, &mut forms, &mut values);
                     }
                     if let Some(a) = rule.assert_.as_ref() {
                         for conclusion in top_conjuncts(c.ast, NodeId(a.expr.0)) {
@@ -3298,26 +3420,61 @@ fn refuse_derived_relation_activators(
                             {
                                 forms.push(conclusion);
                             }
+                            for &a in c.ast.form_args(conclusion) {
+                                nested(c.ast, a, param, &mut values);
+                            }
                         }
                     }
-                    let source = render(c.ast, &at, &pos);
+                    let source = render(c.ast, w, &at, &pos);
                     let binds = match at[&pos] {
                         EqFrom::Fact(_) | EqFrom::Hrules(_) => {
-                            format!("{source} binds ?{param} to eq")
+                            format!("{source} binds ?{param} to {w}")
                         }
-                        _ => format!("?{param} can be bound to eq by {source}"),
+                        _ => format!("?{param} can be bound to {w} by {source}"),
                     };
                     for form in forms {
                         let n = c.ast.form_args(form).len();
-                        if n == 2 {
-                            continue;
-                        }
+                        let why = match w {
+                            "eq" if n == 2 => continue,
+                            "eq" => {
+                                "eq is the relation of equality, which holds between exactly two \
+                                 values"
+                            }
+                            "false" if n == 0 => continue,
+                            "false" => {
+                                "false takes no argument: (false) says that the state is \
+                                 impossible, and names nothing"
+                            }
+                            _ => {
+                                "absent is negation as failure, a premise's test, and no fact is \
+                                 of it"
+                            }
+                        };
                         c.errors.push(format!(
                             "{head} '{rule_name}': its parameter ?{param} heads {}, a form of {n} \
-                             argument{}, and {binds} — eq is the relation of equality, which \
-                             holds between exactly two values",
+                             argument{}, and {binds} — {why}",
                             crate::dump::dump_compact(c.ast, form),
                             if n == 1 { "" } else { "s" },
+                        ));
+                    }
+                    // A value: a fact a state could hold (M1f P1f.7's value
+                    // rule), so never one of `eq` (S1f.7.10), of `absent`
+                    // (S1f.7.7) or of `false` with an argument (S1f.7.6).
+                    for form in values {
+                        let n = c.ast.form_args(form).len();
+                        if w == "false" && n == 0 {
+                            continue;
+                        }
+                        let why = match w {
+                            "eq" => "eq is computed and never stored",
+                            "false" => "false takes no argument",
+                            _ => "absent is negation as failure, a premise's test",
+                        };
+                        c.errors.push(format!(
+                            "{head} '{rule_name}': its parameter ?{param} heads {}, written where \
+                             a value goes, and {binds} — {why}, and a value is a name, or a fact a \
+                             state could hold",
+                            crate::dump::dump_compact(c.ast, form),
                         ));
                     }
                 }
@@ -3337,7 +3494,8 @@ fn refuse_derived_relation_activators(
 /// is no fact of equality, true or false, and the grammar refuses `(eq ?x)` as
 /// a premise and a conclusion; until S1f.5.9 it was stored as an ordinary fact
 /// (W61). One line per fact, `; `-joined with the loader's others. A nested
-/// `(box (eq a))` is a value, as `(box (eq a b))` is, and loads.
+/// `(box (eq a))` was a value until M1f S1f.7.10, as `(box (eq a b))` was, and
+/// loaded; since, `eq` heads no value, and each is a parse error.
 fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
     let terms_of = |node: NodeId| -> Vec<NodeId> {
         ast.form_args(node)
@@ -4405,18 +4563,62 @@ mod tests {
         // What loads: every macro above, used by no rule; and every shape the
         // grammar takes where a rule writes it, written and through a macro.
         ok(&format!("{pre}{m}"));
+        // Seven shapes loaded here until M1f S1f.7.7, S1f.7.6, S1f.7.10 and
+        // S1f.7.3: a value is a name, or a fact a state could hold, so
+        // `absent`, `eq`, a connective and `false` with an argument head none,
+        // and no conclusion is of `absent`. The grammar refuses five written
+        // out, and the walk the two it cannot tell from a macro's call.
+        for (text, want) in [
+            (
+                "(rule r () :match (and (a ?x) (absent (not (absent (p ?x))))) :assert (p ?x) :why \"r\")",
+                None,
+            ),
+            (
+                "(rule r () :match (and (a ?x) (eq ?x (absent (p k)))) :assert (p ?x) :why \"r\")",
+                None,
+            ),
+            (
+                "(rule r () :match (and (a ?x) (false ?x)) :assert (p ?x) :why \"r\")",
+                None,
+            ),
+            (
+                "(rule r () :match (a ?x) :assert (and (p ?x) (q (eq ?x k))) :why \"r\")",
+                None,
+            ),
+            (
+                "(rule r () :match (a ?x) :assert (absent (p ?x)) :why \"r\")",
+                None,
+            ),
+            (
+                "(rule r () :match (and (a ?x) (p (eq k k))) :assert (p ?x) :why \"r\")",
+                Some(":match writes (p (eq k k)), and (eq k k) is written where a value goes"),
+            ),
+            (
+                "(rule r () :match (and (a ?x) (p (and (q ?x)))) :assert (p ?x) :why \"r\")",
+                Some(
+                    ":match writes (p (and (q ?x))), and (and (q ?x)) is a connective where a value goes",
+                ),
+            ),
+        ] {
+            let src = format!("{pre}{text}");
+            match want {
+                None => assert!(
+                    crate::parse(&mut Ast::new(), &src, Some("<string>")).is_err(),
+                    "parses: {text}"
+                ),
+                Some(want) => {
+                    let got = err(&src);
+                    assert!(got.contains(want), "{text}: {got}");
+                }
+            }
+        }
         for text in [
             "(rule r () :match (and (a ?x) (not (eq ?x k))) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (and (a ?x) (absent (not (absent (p ?x))))) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (and (a ?x) (p (eq k k))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (p (not (q k)))) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (and (a ?x) (p (and (q ?x)))) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (and (a ?x) (eq ?x (absent (p k)))) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (and (a ?x) (false ?x)) :assert (p ?x) :why \"r\")",
+            "(rule r () :match (and (a ?x) (absent (false))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
             "(rule r () :match (a ?x) :assert (not (p ?x)) :why \"r\")",
-            "(rule r () :match (a ?x) :assert (and (p ?x) (q (eq ?x k))) :why \"r\")",
-            "(rule r () :match (a ?x) :assert (absent (p ?x)) :why \"r\")",
+            "(rule r () :match (a ?x) :assert (and (p ?x) (not (eq ?x k))) :why \"r\")",
             "(rule r () :match (a ?x) :assert (neq ?x k) :why \"r\")",
             "(rule r () :match (a ?x) :assert (false) :why \"r\")",
             "(rule r () :match () :assert () :why \"r\")",
@@ -4806,10 +5008,24 @@ mod tests {
         ] {
             assert_eq!(err(&src), want, "{src}");
         }
+        // A parameter heading a pattern inside an argument, a value, loaded
+        // until M1f S1f.7.10: a value is no form of `eq`, at any arity. And a
+        // nested `(eq a)`, which loaded too, is a parse error since.
+        for (form, n) in [("(?R ?x)", 1), ("(?R ?x ?y)", 2)] {
+            let got = err(&format!(
+                "{pre}(rule r (?R) :match (p {form}) :assert (hit ?x) :why \"p holds of ({{?R}} …), so hit holds of {{?x}}\")\n(r eq)"
+            ));
+            assert!(
+                got.contains(&format!(
+                    "rule 'r': its parameter ?R heads {form}, written where a value goes, and \
+                     the fact (r eq) binds ?R to eq — eq is computed and never stored"
+                )),
+                "{n}: {got}"
+            );
+        }
         // What loads: two arguments, the guard (S1f.5.7); a declared relation
         // of another arity, which matches nothing; a guard while `eq` is no
-        // name of the program; a parameter heading a pattern inside an
-        // argument, a value; a written `(eq a b)`; and a nested `(eq a)`.
+        // name of the program; and a written `(eq a b)`.
         for src in [
             format!(
                 "{pre}(rule r (?R) :match (and (p ?x) (?R ?x ?x)) :assert (hit ?x) :why \"p holds of {{?x}} and {{?R}} holds of {{?x}} and {{?x}}, so hit holds of {{?x}}\")\n(r eq)"
@@ -4818,11 +5034,7 @@ mod tests {
             format!(
                 "{pre}{r}\n(rule mk () :match (and (p ?y) (eq ?f ?f)) :assert (r ?f) :why \"p holds of {{?y}} and {{?f}} is any name of the program, so rule r is switched on for {{?f}}\")"
             ),
-            format!(
-                "{pre}(rule r (?R) :match (p (?R ?x)) :assert (hit ?x) :why \"p holds of ({{?R}} {{?x}}), so hit holds of {{?x}}\")\n(r eq)"
-            ),
             format!("{pre}(eq a a)"),
-            format!("{pre}(relation box Node :why \"box holds of {{?1}}\")\n(box (eq a))"),
         ] {
             ok(&src);
         }

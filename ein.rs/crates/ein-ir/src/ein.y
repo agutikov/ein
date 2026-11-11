@@ -70,33 +70,37 @@ DeclName -> b::Id:
   ;
 // A top-level fact's relation: not `relation`, which declares, not a
 // claim's `region`, `merged` or `owing`, which belong under `(solve :expect)`,
-// and not `open`, the verdict, which no fact is of (M1f S1f.5.23).
+// and not `open`, the verdict, which no fact is of (M1f S1f.5.23). Not
+// `absent`, which is negation as failure, a premise's test and no relation a
+// state holds a fact of (M1f S1f.7.7), and not `false`, which is shaped below:
+// it takes no argument (M1f S1f.7.6). `eq` stays: a written equality is
+// checked, never stored (M1f S1f.5.7).
 FactHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "step" { b::name(p, $lexer, $1) } | "eq" { b::name(p, $lexer, $1) }
-  | "absent" { b::name(p, $lexer, $1) } | "false" { b::name(p, $lexer, $1) }
   | "true" { b::name(p, $lexer, $1) }
   | "model" { b::name(p, $lexer, $1) }
   ;
-// A premise's relation: not `eq` or `absent`, which are shaped below, and
-// not `open`, a verdict and never a premise.
-PremiseHead -> b::Id:
+// The relation of a value: of a fact inside a fact, a pattern inside a
+// pattern, a conclusion's or a guard's argument. A value is a name, or a fact
+// a state could hold, an atom of an ordinary relation or its negation (the
+// user's ruling of 2026-11-11, M1f P1f.7's value rule): so never `eq`, which
+// is computed (S1f.7.10), `absent`, a test (S1f.7.7), or `false`, which takes
+// no argument and is shaped where it is written (S1f.7.6).
+ValueHead -> b::Id:
     "NAME" { b::name(p, $lexer, $1) }
   | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
-  | "false" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
-  | "model" { b::name(p, $lexer, $1) } | "region" { b::name(p, $lexer, $1) }
-  | "merged" { b::name(p, $lexer, $1) } | "owing" { b::name(p, $lexer, $1) }
-  | Var { $1 }
+  | "true" { b::name(p, $lexer, $1) } | "model" { b::name(p, $lexer, $1) }
+  | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
+  | "owing" { b::name(p, $lexer, $1) }
   ;
-// A conclusion's relation: not `eq`, `false` or `open`, which are shaped.
-ConclusionHead -> b::Id:
-    "NAME" { b::name(p, $lexer, $1) }
-  | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
-  | "absent" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
-  | "model" { b::name(p, $lexer, $1) } | "region" { b::name(p, $lexer, $1) }
-  | "merged" { b::name(p, $lexer, $1) } | "owing" { b::name(p, $lexer, $1) }
-  | Var { $1 }
-  ;
+// A premise's relation: not `eq` or `absent`, which are shaped below, not
+// `false`, which takes no argument (M1f S1f.7.6), and not `open`, a verdict
+// and never a premise.
+PremiseHead -> b::Id: ValueHead { $1 } | Var { $1 } ;
+// A conclusion's relation: not `eq`, `false` or `open`, which are shaped,
+// and not `absent`, which no fact is of (M1f S1f.7.7).
+ConclusionHead -> b::Id: ValueHead { $1 } | Var { $1 } ;
 Var -> b::Id: "VAR" { b::var(p, $lexer, $1) } ;
 Text -> b::Id: "TEXT" { b::text(p, $lexer, $1) } ;
 Bool -> b::Id: "true" { b::name(p, $lexer, $1) } | "false" { b::name(p, $lexer, $1) } ;
@@ -117,13 +121,22 @@ NameListPlus -> b::Id: "(" Name Names ")" { b::list(p, $2, $3) } ;
 // and facts.
 Fact -> b::Id:
     "(" FactHead FactArgs FactClauses ")" { b::top(p, $2, $3, $4) }
+  | "(" "false" FactClauses ")" { b::top(p, b::name(p, $lexer, $2), b::none(), $3) }
   ;
+// The stored negation of a fact, or `(not (eq a b))`, which is checked as a
+// written `(eq a b)` is (S1f.5.7).
 NotFact -> b::Id:
     "(" "not" NestedFact FactClauses ")" { b::named(p, "not", b::cat(b::one($3), $4)) }
+  | "(" "not" EqFact FactClauses ")" { b::named(p, "not", b::cat(b::one($3), $4)) }
   ;
+// A fact as a value: its relation is an ordinary one, or it is `(false)`.
 NestedFact -> b::Id:
-    "(" Name FactArgs ")" { b::list(p, $2, $3) }
+    "(" ValueHead FactArgs ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   ;
+// `(eq a b)` where a fact of equality may be written and is checked: under a
+// top-level `(not …)` and in a claim. Never a value.
+EqFact -> b::Id: "(" "eq" FactArgs ")" { b::list(p, b::name(p, $lexer, $2), $3) } ;
 FactArg -> b::Id:
     Name { $1 }
   | NestedFact { $1 }
@@ -168,6 +181,7 @@ RuleClauses -> Vec<b::Id>: { b::none() } | RuleClauses RuleClause { b::push($1, 
 Match -> b::Id: "(" ")" { b::empty(p) } | Premise { $1 } ;
 Premise -> b::Id:
     "(" PremiseHead Args ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   | Connective { $1 }
   ;
 Premises -> Vec<b::Id>: Premise { b::one($1) } | Premises Premise { b::push($1, $2) } ;
@@ -176,9 +190,15 @@ Premises -> Vec<b::Id>: Premise { b::one($1) } | Premises Premise { b::push($1, 
 Connective -> b::Id:
     "(" "and" Premises ")" { b::named(p, "and", $3) }
   | "(" "or" Premises ")" { b::named(p, "or", $3) }
-  | "(" "not" Pattern ")" { b::named(p, "not", b::one($3)) }
+  | "(" "not" Negated ")" { b::named(p, "not", b::one($3)) }
   | "(" "absent" Premise ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
   | Guard { $1 }
+  ;
+// What a premise's or a conclusion's `(not …)` negates: a pattern, or an
+// equality, `(not (eq a b))`, which is computed as `(neq a b)` is (S1f.5.7).
+Negated -> b::Id:
+    Pattern { $1 }
+  | "(" "eq" Term Term ")" { b::list(p, b::name(p, $lexer, $2), vec![$3, $4]) }
   ;
 // `eq` and `neq` compare two values (S1f.5.7): a name, a variable, or a
 // fact, which is a value (W24/form-in-guard, ruled answered).
@@ -189,22 +209,27 @@ Guard -> b::Id:
 // A pattern's argument: a name, a variable, a pattern inside it, or, since
 // a macro such as `forall` is called as a pattern and takes premises, a
 // connective. Its relation is a name or a variable, but never `eq` or
-// `absent`, which the connectives shape, and never `open`, the verdict (M1f
-// S1f.5.23; the loader refused one here until then).
+// `absent`, which the connectives shape, never `false` with an argument (M1f
+// S1f.7.6), and never `open`, the verdict (M1f S1f.5.23; the loader refused
+// one here until then). A connective that is still a pattern's argument once
+// the macros are expanded is the loader's to refuse (M1f S1f.7.3): the
+// grammar cannot tell a macro's call from a pattern.
 Args -> Vec<b::Id>: { b::none() } | Args Arg { b::push($1, $2) } ;
-Arg -> b::Id: Name { $1 } | Var { $1 } | "(" ArgHead Args ")" { b::list(p, $2, $3) } | Connective { $1 } ;
-ArgHead -> b::Id:
-    "NAME" { b::name(p, $lexer, $1) }
-  | "relation" { b::name(p, $lexer, $1) } | "step" { b::name(p, $lexer, $1) }
-  | "false" { b::name(p, $lexer, $1) } | "true" { b::name(p, $lexer, $1) }
-  | "model" { b::name(p, $lexer, $1) }
-  | "region" { b::name(p, $lexer, $1) } | "merged" { b::name(p, $lexer, $1) }
-  | "owing" { b::name(p, $lexer, $1) } | Var { $1 }
+Arg -> b::Id:
+    Name { $1 } | Var { $1 } | "(" ArgHead Args ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
+  | Connective { $1 }
   ;
+ArgHead -> b::Id: ValueHead { $1 } | Var { $1 } ;
 
 // A term: a fact with variables in it, as a conclusion, a stored negation or
-// a guard holds one, and a negated one, as a fact may hold. No connective.
-Pattern -> b::Id: "(" AnyHead Terms ")" { b::list(p, $2, $3) } ;
+// a guard holds one, and a negated one, as a fact may hold. No connective,
+// and its relation is a value's (`ValueHead`), or a variable.
+Pattern -> b::Id:
+    "(" ValueHead Terms ")" { b::list(p, $2, $3) }
+  | "(" Var Terms ")" { b::list(p, $2, $3) }
+  | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
+  ;
 AnyHead -> b::Id: Name { $1 } | Var { $1 } ;
 Term -> b::Id:
     Name { $1 } | Var { $1 } | Pattern { $1 }
@@ -225,7 +250,7 @@ Assert -> b::Id:
 Conclusion -> b::Id:
     "(" ConclusionHead Terms ")" { b::list(p, $2, $3) }
   | "(" "and" Conclusions ")" { b::named(p, "and", $3) }
-  | "(" "not" Pattern ")" { b::named(p, "not", b::one($3)) }
+  | "(" "not" Negated ")" { b::named(p, "not", b::one($3)) }
   | "(" "not" Var ")" { b::named(p, "not", b::one($3)) }
   | "(" "false" ")" { b::list(p, b::name(p, $lexer, $2), b::none()) }
   | Guard { $1 }
@@ -252,8 +277,20 @@ Models -> Vec<b::Id>: Model { b::one($1) } | Models Model { b::push($1, $2) } ;
 // A claim lists facts, a stored negation, or an `eq` / `neq` fact (S1f.5.7).
 ClaimFact -> b::Id:
     NestedFact { $1 }
+  | EqFact { $1 }
   | "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) }
+  | "(" "not" EqFact ")" { b::named(p, "not", b::one($3)) }
+  | "(" "absent" ClaimAtom ")" { b::list(p, b::name(p, $lexer, $2), b::one($3)) }
   | "(" "neq" FactArg FactArg ")" { b::named(p, "neq", vec![$3, $4]) }
+  ;
+// What a class says a state does not hold: the atom of a goal's `(absent …)`.
+// The one place `absent` heads a form that is no premise, and no fact either:
+// a claim lists a query's projection classes (M1e2 S1e2.1a.5).
+ClaimAtom -> b::Id:
+    NestedFact { $1 }
+  | EqFact { $1 }
+  | "(" "not" NestedFact ")" { b::named(p, "not", b::one($3)) }
+  | "(" "not" EqFact ")" { b::named(p, "not", b::one($3)) }
   ;
 ClaimFacts -> Vec<b::Id>: { b::none() } | ClaimFacts ClaimFact { b::push($1, $2) } ;
 

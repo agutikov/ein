@@ -393,7 +393,17 @@ changes them: `(neq …)` is no fact the grammar takes, and a written `(eq a b)`
 or `(not (eq a b))`, is checked as a conclusion with no premise, a true one not
 stored and a false one `(false)`, written where it stands (Q-M1f.33, Q-M1f.31),
 and one at any other arity, `(eq a)`, is refused at load since M1f S1f.5.9 (W61);
-until S1f.5.7 each was stored as an ordinary fact, which no guard read — and the
+until S1f.5.7 each was stored as an ordinary fact, which no guard read. **A
+value is a name, or a fact a state could hold**, an atom of an ordinary
+relation or its negation (the user's ruling of 2026-11-11,
+[the value rule](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-value-rule)): so `(eq a b)` is written
+only as a fact of its own, never inside another, `(q (eq a b))`, as `(q (neq a
+b))` never was (M1f S1f.7.10); no fact or value is headed `absent`, which is
+negation as failure, a premise's test, and the stored negation of a fact is
+`(not …)` (S1f.7.7); and `false` takes no argument, `(false)` alone, as a
+fact and as a value (S1f.7.6). Each is a parse error with a note
+([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)); until those stages each was
+stored. And the
 declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
 heads either (each is a reserved word, never a name). Everything else —
 `instance`, `type`, `symmetric`, `co-located`, `lives-in`, … — is an

@@ -1,0 +1,24 @@
+;;; A value `(false Bob)` inside a fact is stored —
+;;; M1f **W81**, register row `W81/false-fact-nested`, filed by S1f.7.6 (T1f.7.6.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests and what Ann says, `(says Ann (false Bob))`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `false` takes no argument, as a value too: refused at the parse, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and stores `(says Ann (false Bob))`, and the
+;;; goal answers `?c = (false Bob)`, exit 0 on every command.
+;;; Refused at load since S1f.7.6 (T1f.7.6.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Guest Claim :why "{?1} says {?2}")
+(says Ann (false Bob))
+(solve :hypothesis-relations ())
+(query :goal (says ?g ?c))

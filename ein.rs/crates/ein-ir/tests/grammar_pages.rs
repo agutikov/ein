@@ -30,7 +30,10 @@
 //!   a form, and a keyword pair in each place in a term. S1f.5.9's follow
 //!   (T1f.5.9.3): `(and)` and `(or)`, which the grammar refused already, each
 //!   with the note naming the rule and the clause that the ruling on F12 asks
-//!   for, in each place a connective is written.
+//!   for, in each place a connective is written. S1f.7.7's, S1f.7.6's and
+//!   S1f.7.10's are the last (T1f.7.7.3): `absent` as a fact's, a value's and
+//!   a conclusion's relation, `false` with an argument, and `(eq …)` as a
+//!   value, each in every place the grammar takes the refusal.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -2076,6 +2079,151 @@ const TABLE: &[Row] = &[
         "inside a name, a bidirectional override",
         &[],
         "(relation p T) (p k\u{202e}j)",
+    ),
+    // ── S1f.7.7: `absent` is negation as failure, a premise's test, and heads
+    // no fact, value or conclusion (the value rule, Q-M1f.113) ──
+    row("a top-level fact's relation", &[], "(absent k)"),
+    row(
+        "a top-level fact's relation",
+        &[],
+        "(relation p T) (p a) (absent (p a))",
+    ),
+    row(
+        "a nested fact's relation",
+        &[],
+        "(relation p T) (p (absent k))",
+    ),
+    row("a stored negation's relation", &[], "(not (absent k))"),
+    row(
+        "a fact's :using",
+        &[],
+        "(relation p T) (p k :rule copy :using ((absent k)))",
+    ),
+    row(
+        "a conclusion's relation",
+        &[],
+        "(rule r () :match (n ?x) :assert (absent (p ?x)))",
+    ),
+    row(
+        "an hrule's conclusion's relation",
+        &[],
+        "(hrule h () :match (n ?x) :assert (absent ?x))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (n ?x) :assert (box (absent ?x)))",
+    ),
+    row(
+        "the pattern a conclusion's not negates",
+        &[],
+        "(rule r () :match (n ?x) :assert (not (absent ?x)))",
+    ),
+    row(
+        "the pattern a premise's not negates",
+        &[],
+        "(rule r () :match (and (n ?x) (not (absent ?x))) :assert (hit ?x))",
+    ),
+    row(
+        "a guard's value",
+        &[],
+        "(rule r () :match (and (n ?x) (neq ?x (absent k))) :assert (hit ?x))",
+    ),
+    // ── S1f.7.6: `false` takes no argument, wherever it is written ──
+    row("a top-level fact's relation", &[], "(false k)"),
+    row(
+        "a nested fact's relation",
+        &[],
+        "(relation p T) (p (false k))",
+    ),
+    row("a stored negation's relation", &[], "(not (false k))"),
+    row(
+        "a fact's :using",
+        &[],
+        "(relation p T) (p k :rule copy :using ((false k)))",
+    ),
+    row(
+        "a premise",
+        &[],
+        "(rule r () :match (and (n ?x) (false ?x)) :assert (hit ?x))",
+    ),
+    row(
+        "a premise under an absent",
+        &[],
+        "(rule r () :match (and (n ?x) (absent (false ?x))) :assert (hit ?x))",
+    ),
+    row(
+        "a pattern's relation inside a premise",
+        &[],
+        "(rule r () :match (and (n ?x) (p (false ?x))) :assert (hit ?x))",
+    ),
+    row(
+        "the pattern a premise's not negates",
+        &[],
+        "(rule r () :match (and (n ?x) (not (false k))) :assert (hit ?x))",
+    ),
+    row(
+        "a guard's value",
+        &[],
+        "(rule r () :match (and (n ?x) (neq ?x (false k))) :assert (hit ?x))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (n ?x) :assert (box (false ?x)))",
+    ),
+    row(
+        "the pattern a conclusion's not negates",
+        &[],
+        "(rule r () :match (n ?x) :assert (not (false ?x)))",
+    ),
+    row("a goal", &[], "(relation p T) (query :goal (false ?s))"),
+    row(
+        "a claim's fact",
+        &[],
+        "(relation p T) (query :goal (p ?x) :expect (model (false k)))",
+    ),
+    // ── S1f.7.10: `(eq …)`, computed and never stored, is no value, as
+    // `(neq …)` is none ──
+    row(
+        "a nested fact's relation",
+        &[],
+        "(relation p T) (p (eq k j))",
+    ),
+    row(
+        "a nested fact's relation",
+        &[],
+        "(relation p T) (p (neq k j))",
+    ),
+    row(
+        "a nested stored negation's relation",
+        &[],
+        "(relation p T) (p (not (eq k j)))",
+    ),
+    row(
+        "a fact's :using",
+        &[],
+        "(relation p T) (p k :rule copy :using ((eq k k)))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (and (n ?x) (n ?y)) :assert (box (eq ?x ?y)))",
+    ),
+    row(
+        "a conclusion's argument, negated",
+        &[],
+        "(rule r () :match (n ?x) :assert (box (not (eq ?x k))))",
+    ),
+    row(
+        "a guard's value",
+        &[],
+        "(rule r () :match (and (n ?x) (eq ?y (eq ?x k))) :assert (hit ?y))",
+    ),
+    row(
+        "a claim's value",
+        &[],
+        "(relation p T) (query :goal (p ?x) :expect (model (p (eq a b))))",
     ),
 ];
 

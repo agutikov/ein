@@ -1,0 +1,25 @@
+;;; A written `(absent Bob)` adds `Bob` to the program's names, and H grows —
+;;; M1f **W80**, register row `W80/absent-fact-name`, filed by S1f.7.7 (T1f.7.7.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; One guest, Ann, a relation `paid`, and a fact `(absent Bob)`. The blind enumerator
+;;; builds H from the program's names.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; No fact is of `absent`: refused at the parse, on every command. Without the fact H
+;;; is `(paid Ann)` alone and R is two states.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and stores `(absent Bob)`; `Bob` is a name of
+;;; the program, so H is `(paid Ann)` and `(paid Bob)` and R is four states, exit 0 on
+;;; every command.
+;;; Refused at load since S1f.7.7 (T1f.7.7.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest)
+(absent Bob)
+(query :goal (paid ?g))

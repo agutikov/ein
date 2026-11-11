@@ -1,0 +1,31 @@
+;;; A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape —
+;;; M1f **W82**, register row `W82/eq-value-matched-by-shape`, filed by S1f.7.10 (T1f.7.10.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, what each says, `(says Ann (eq Ann Bob))` and `(says Bob (eq Bob
+;;; Bob))`, and a rule that believes them: `(says ?g (eq ?a ?b))` concludes `(same ?a
+;;; ?b)`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; As a premise `(eq ?a ?b)` holds only of two equal values; as a pattern's argument
+;;; it would be a second meaning of the one spelling. Refused at the parse, at the
+;;; first `eq` a fact holds, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads, and the rule derives `(same Ann Bob)`, of two
+;;; names that are not equal, and `(same Bob Bob)`, exit 0 on every command.
+;;; Refused at load since S1f.7.10 (T1f.7.10.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Guest Claim :why "{?1} says {?2}")
+(relation same Guest Guest :why "{?1} and {?2} are the same guest")
+(says Ann (eq Ann Bob))
+(says Bob (eq Bob Bob))
+(rule believe () :match (says ?g (eq ?a ?b)) :assert (same ?a ?b) :why "{?a} is {?b}: {?g} says so")
+(solve :hypothesis-relations ())
+(query :goal (same ?a ?b))

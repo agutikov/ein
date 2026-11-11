@@ -1,0 +1,27 @@
+;;; A value `(eq Ann Bob)` inside a fact is stored —
+;;; M1f **W82**, register row `W82/eq-value-fact`, filed by S1f.7.10 (T1f.7.10.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests and what Ann says, `(says Ann (eq Ann Bob))`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `eq` is the relation of equality, computed and never stored (S1f.5.7), so `(eq …)`
+;;; is no value: refused at the parse, at `eq`, on every command, as
+;;; `(says Ann (neq Ann Bob))` is.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and stores `(says Ann (eq Ann Bob))`, an
+;;; equality nothing computes, and the goal answers `?c = (eq Ann Bob)`, exit 0 on
+;;; every command.
+;;; Refused at load since S1f.7.10 (T1f.7.10.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Guest Claim :why "{?1} says {?2}")
+(says Ann (eq Ann Bob))
+(solve :hypothesis-relations ())
+(query :goal (says ?g ?c))

@@ -1,0 +1,27 @@
+;;; A premise `(absent (false ?g))` holds of everything, so the rule fires —
+;;; M1f **W81**, register row `W81/false-premise-argument`, filed by S1f.7.6 (T1f.7.6.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests and a rule that welcomes a guest of whom nothing is false,
+;;; `(absent (false ?g))`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `false` takes no argument, as a premise too: refused at the parse, on every
+;;; command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads; `(false ?g)` is a pattern no fact matches, so
+;;; the `(absent …)` holds and the rule derives `(welcome Ann)` and `(welcome Bob)`,
+;;; exit 0 on every command.
+;;; Refused at load since S1f.7.6 (T1f.7.6.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation welcome Guest :why "{?1} is welcome")
+(rule greet () :match (and (is-a ?g Guest) (absent (false ?g))) :assert (welcome ?g) :why "{?g} is welcome: nothing is false of them")
+(solve :hypothesis-relations ())
+(query :goal (welcome ?g))

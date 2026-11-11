@@ -1,0 +1,24 @@
+;;; A goal's `(absent (false ?g))` holds of everything —
+;;; M1f **W81**, register row `W81/false-goal-argument`, filed by S1f.7.6 (T1f.7.6.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and a goal asking of which guest nothing is
+;;; false. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `false` takes no argument, in a goal too: refused at the parse, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads, and the goal answers `?g = Ann` and
+;;; `?g = Bob`, exit 0 on every command.
+;;; Refused at load since S1f.7.6 (T1f.7.6.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(solve :hypothesis-relations ())
+(query :goal (and (is-a ?g Guest) (absent (false ?g))))

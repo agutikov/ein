@@ -1,0 +1,28 @@
+;;; An hrule's premise `(says (or …))` loads and proposes nothing —
+;;; M1f **W83**, register row `W83/pattern-argument-hrule`, filed by S1f.7.3 (T1f.7.3.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, the fact `(says (paid Ann))`, and an hrule that supposes a guest
+;;; welcome where it is said they paid or are welcome, `(says (or (paid ?g) (welcome
+;;; ?g)))`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `or` heads no fact: refused at load, at the pattern, one line, on every command.
+;;; With `(says (paid ?g))` H is `(welcome Ann)` and R is two states.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads; the hrule's premise matches nothing, H is
+;;; empty and R is {∅}, exit 0 on every command.
+;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(relation welcome Guest :why "{?1} is welcome")
+(says (paid Ann))
+(hrule guess () :match (and (is-a ?g Guest) (says (or (paid ?g) (welcome ?g)))) :assert (welcome ?g) :why "suppose {?g} is welcome")
+(query :goal (welcome ?g))

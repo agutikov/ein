@@ -1,0 +1,28 @@
+;;; `(not ?s)` concluded of a stored `(eq k k)` stores `(not (eq k k))` and no `(false)` —
+;;; M1f **W82**, register row `W82/eq-value-negation-concluded`, filed by S1f.7.10 (T1f.7.10.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; The probe that settled the value rule: two supposed equalities, `(h (eq k j))` and
+;;; `(h (eq k k))`, and a rule that concludes the negation of each, `(not ?s)`. No
+;;; candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; S1f.5.7 has a concluded `(not (eq …))` checked: `(not (eq k k))` is false, so were
+;;; `(eq …)` a value root would be dead. It is no value: refused at the parse, on every
+;;; command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads, and the rule stores `(not (eq k j))` and `(not
+;;; (eq k k))`; no `(false)` is derived, root is alive and R is {∅}, exit 0 on every
+;;; command.
+;;; Refused at load since S1f.7.10 (T1f.7.10.3).
+
+(relation h Claim :why "{?1} is supposed")
+(h (eq k j)) (h (eq k k))
+(rule r () :match (h ?s) :assert (not ?s) :why "not {?s}: it was only supposed")
+(solve :hypothesis-relations ())
+(query :goal (h ?s))

@@ -1,0 +1,29 @@
+;;; A written `(absent (paid Ann))` beside `(paid Ann)` loads, alive, the constraint ignored —
+;;; M1f **W80**, register row `W80/absent-fact-for-not`, filed by S1f.7.7 (T1f.7.7.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and a fact `(absent (paid Ann))`, written where
+;;; `(not (paid Ann))` was meant: *Ann has not paid*. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `absent` is negation as failure, a test a premise makes of a state, and no fact is
+;;; of it: refused at the parse, at `absent`, with a note pointing at `(not …)`, on
+;;; every command (exit 1, `ein test`: 2). With `(not (paid Ann))` root is dead and R
+;;; is empty.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and stores `(absent (paid Ann))`, a fact of a
+;;; relation `absent` that no premise can read; root is alive, R is {∅}, and the goal
+;;; answers `?g = Ann`, exit 0 on every command.
+;;; Refused at load since S1f.7.7 (T1f.7.7.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(absent (paid Ann))
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

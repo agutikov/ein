@@ -1,0 +1,25 @@
+;;; A rule's `:assert (asked (eq ?x ?y))` stores equalities as values —
+;;; M1f **W82**, register row `W82/eq-value-concluded`, filed by S1f.7.10 (T1f.7.10.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests and a rule that concludes `(asked (eq ?x ?y))` of every pair. No
+;;; candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `(eq …)` is no value, in a conclusion too: refused at the parse, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and the rule stores four facts, `(asked (eq Ann
+;;; Bob))` and `(asked (eq Bob Ann))` among them, exit 0 on every command.
+;;; Refused at load since S1f.7.10 (T1f.7.10.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation asked Claim :why "it was asked whether {?1}")
+(rule ask () :match (and (is-a ?x Guest) (is-a ?y Guest)) :assert (asked (eq ?x ?y)) :why "it was asked whether {?x} is {?y}")
+(solve :hypothesis-relations ())
+(query :goal (asked ?c))

@@ -124,7 +124,18 @@ Six terminal facts that are load-bearing and easy to lose:
    ?R)`, and an error found at any other `open` carries the note *open is
    reserved: it is the verdict a rule's :assert states, written as the whole
    :assert, (open) or (open ?R), and nowhere else, so it names no relation and
-   no value*.
+   no value*. Three of the position words are names and never the relation of
+   a value since M1f S1f.7.7, S1f.7.6 and S1f.7.10 (the value rule, the user's
+   ruling of 2026-11-11: *a value is a name, or a fact a state could hold*):
+   §2's `ValueHead` lists the words that may head a fact inside a fact, a
+   pattern inside a pattern and a conclusion's argument, and `eq`, `absent`
+   and `false` are not among them. `absent` heads only a premise's connective
+   and a claim's class atom, `false` is written only as `(false)`, and `(eq a
+   b)` only as a fact, a premise or a conclusion of its own. An error found at
+   an `absent` that opens a form, at an `eq` or `neq` that opens a form inside
+   another, and at an argument written after `(false`, carries a note saying
+   so
+   ([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
    A keyword is `:` and
    a run of name characters the same way: `:why` is the token `':why'`, and
    `:where` a `KEYWORD`, which no production of §2 takes, so a keyword a form
@@ -249,11 +260,10 @@ Form ::= Relation | Rule | Query | Solve | Config | Trace | Macro | Import | Not
 Name ::= NAME | 'relation' | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'model' | 'region'
        | 'merged' | 'owing'
 DeclName ::= NAME | 'step' | 'true' | 'model' | 'region' | 'merged' | 'owing'
-FactHead ::= NAME | 'step' | 'eq' | 'absent' | 'false' | 'true' | 'model'
-PremiseHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'model' | 'region' | 'merged'
-              | 'owing' | Var
-ConclusionHead ::= NAME | 'relation' | 'step' | 'absent' | 'true' | 'model' | 'region'
-                 | 'merged' | 'owing' | Var
+FactHead ::= NAME | 'step' | 'eq' | 'true' | 'model'
+ValueHead ::= NAME | 'relation' | 'step' | 'true' | 'model' | 'region' | 'merged' | 'owing'
+PremiseHead ::= ValueHead | Var
+ConclusionHead ::= ValueHead | Var
 Var ::= VAR
 Text ::= TEXT
 Bool ::= 'true' | 'false'
@@ -263,9 +273,10 @@ Vars ::= /* empty */ | Vars Var
 VarsPlus ::= Var | VarsPlus Var
 NameList ::= '(' ')' | '(' Name Names ')'
 NameListPlus ::= '(' Name Names ')'
-Fact ::= '(' FactHead FactArgs FactClauses ')'
-NotFact ::= '(' 'not' NestedFact FactClauses ')'
-NestedFact ::= '(' Name FactArgs ')'
+Fact ::= '(' FactHead FactArgs FactClauses ')' | '(' 'false' FactClauses ')'
+NotFact ::= '(' 'not' NestedFact FactClauses ')' | '(' 'not' EqFact FactClauses ')'
+NestedFact ::= '(' ValueHead FactArgs ')' | '(' 'false' ')'
+EqFact ::= '(' 'eq' FactArgs ')'
 FactArg ::= Name | NestedFact | '(' 'not' NestedFact ')'
 FactArgs ::= /* empty */ | FactArgs FactArg
 FactClause ::= ':source' Text | ':rule' Name | ':using' '(' NestedFacts ')'
@@ -279,21 +290,21 @@ Params ::= '(' Vars ')'
 RuleClause ::= ':match' Match | ':assert' Assert | ':why' Text
 RuleClauses ::= /* empty */ | RuleClauses RuleClause
 Match ::= '(' ')' | Premise
-Premise ::= '(' PremiseHead Args ')' | Connective
+Premise ::= '(' PremiseHead Args ')' | '(' 'false' ')' | Connective
 Premises ::= Premise | Premises Premise
-Connective ::= '(' 'and' Premises ')' | '(' 'or' Premises ')' | '(' 'not' Pattern ')'
+Connective ::= '(' 'and' Premises ')' | '(' 'or' Premises ')' | '(' 'not' Negated ')'
              | '(' 'absent' Premise ')' | Guard
+Negated ::= Pattern | '(' 'eq' Term Term ')'
 Guard ::= '(' 'eq' Term Term ')' | '(' 'neq' Term Term ')'
 Args ::= /* empty */ | Args Arg
-Arg ::= Name | Var | '(' ArgHead Args ')' | Connective
-ArgHead ::= NAME | 'relation' | 'step' | 'false' | 'true' | 'model' | 'region' | 'merged'
-          | 'owing' | Var
-Pattern ::= '(' AnyHead Terms ')'
+Arg ::= Name | Var | '(' ArgHead Args ')' | '(' 'false' ')' | Connective
+ArgHead ::= ValueHead | Var
+Pattern ::= '(' ValueHead Terms ')' | '(' Var Terms ')' | '(' 'false' ')'
 AnyHead ::= Name | Var
 Term ::= Name | Var | Pattern | '(' 'not' Pattern ')'
 Terms ::= /* empty */ | Terms Term
 Assert ::= '(' ')' | Conclusion | '(' 'open' ')' | '(' 'open' AnyHead ')'
-Conclusion ::= '(' ConclusionHead Terms ')' | '(' 'and' Conclusions ')' | '(' 'not' Pattern ')'
+Conclusion ::= '(' ConclusionHead Terms ')' | '(' 'and' Conclusions ')' | '(' 'not' Negated ')'
              | '(' 'not' Var ')' | '(' 'false' ')' | Guard
 Conclusions ::= Conclusion | Conclusions Conclusion
 Query ::= '(' 'query' QueryClausesPlus ')'
@@ -302,7 +313,9 @@ QueryClausesPlus ::= QueryClause | QueryClausesPlus QueryClause
 Claim ::= Model | '(' 'or' Models ')' | '(' 'false' ')'
 Model ::= '(' 'model' ClaimFacts ')'
 Models ::= Model | Models Model
-ClaimFact ::= NestedFact | '(' 'not' NestedFact ')' | '(' 'neq' FactArg FactArg ')'
+ClaimFact ::= NestedFact | EqFact | '(' 'not' NestedFact ')' | '(' 'not' EqFact ')'
+            | '(' 'absent' ClaimAtom ')' | '(' 'neq' FactArg FactArg ')'
+ClaimAtom ::= NestedFact | EqFact | '(' 'not' NestedFact ')' | '(' 'not' EqFact ')'
 ClaimFacts ::= /* empty */ | ClaimFacts ClaimFact
 Solve ::= '(' 'solve' SolveClauses ')'
 SolveClause ::= ':hrules' Hrules | ':hypothesis-relations' NameList | ':no-hypothesis' NameList
@@ -418,6 +431,19 @@ different messages, and the corpus has a fixture directory for each
   so it loads whatever its body (the user's ruling on Q-M1f.67). S1f.5.5's T5
   kept the lines a program still reaches that way, and S1f.5.24 added its own,
   `grammar_pages::the_lines_the_grammar_does_not_cover_are_still_reached`.
+- **A connective as a pattern's argument.** `Arg` takes a `Connective`, since
+  a macro such as `forall` is called as a pattern and takes premises, and the
+  grammar cannot tell a macro's call from a pattern. Once the macros are
+  expanded a connective that is still a pattern's argument, `(q (and (p
+  ?x)))`, `(q (eq ?a ?b))` or `(q (absent (p ?x)))`, is a pattern no fact
+  matches, and the loader refuses it since M1f S1f.7.3 (W83), in a rule, an
+  hrule, an obligation and a goal; `(not <pattern>)`, a stored negation,
+  stays. Until then it loaded, matched nothing, and under an `(absent …)`
+  held. The same walk refuses what a macro's expansion writes of the shapes
+  §2 refuses written out since S1f.7.7, S1f.7.6 and S1f.7.10: a fact, value
+  or conclusion of `absent`, `false` with an argument, and `(eq …)` as a
+  value
+  ([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
 - **Where an `(or …)` sits, how many variables a clause writes, and a goal's
   relations.** `Connective` takes an `(or …)` wherever a premise goes, so an
   `(or …)` written as a premise of an `(and …)`, an `(absent …)` or a

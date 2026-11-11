@@ -1,0 +1,26 @@
+;;; A goal's `(absent (says (neq ?g Bob)))` holds of everything —
+;;; M1f **W83**, register row `W83/pattern-argument-goal`, filed by S1f.7.3 (T1f.7.3.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, the fact `(says (paid Ann))`, and a goal whose `(absent …)` is over a
+;;; pattern holding a guard, `(says (neq ?g Bob))`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `neq` heads no fact: refused at load, at the pattern, one line, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads, and the goal answers `?g = Ann` and
+;;; `?g = Bob`, exit 0 on every command.
+;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(relation welcome Guest :why "{?1} is welcome")
+(says (paid Ann))
+(solve :hypothesis-relations ())
+(query :goal (and (is-a ?g Guest) (absent (says (neq ?g Bob)))))

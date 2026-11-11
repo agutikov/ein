@@ -103,8 +103,8 @@
 === "; M1e S1e.2.1 — `(absent)` with nothing to be absent.\n;\n; The sibling `empty_absent.ein` is `(absent ?x)`, whose sub-plan compiles to\n; no steps and which has had a *CompileError* naming that exact hazard since\n; S1.22.0 — \"the guard would fail against every KB and its candidates would be\n; retired permanently\". With no argument at all the same thing happened and\n; nothing said so: `absent` fell through to the ordinary relation path, matched\n; the empty extent of a relation nobody declared, and retired the rule for the\n; run in silence.\n;\n; So the two files are one hazard at two arities, and only one of them was\n; refused.\n(relation p T)\n(relation q T)\n\n(rule guard-of-nothing ()\n  :match  (and (p ?x) (absent))\n  :assert (q ?x))\n"
   refused <string>:17:30: unexpected `)`
   repair: Delete `)`, Delete `)`, Delete `:assert`
-  repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a name, Insert `)`
+  repair: Insert `(`, Insert a variable, Insert `)`
   and 6 more repairs
 <string>:19:1: unexpected end of input
   repair: Insert `)`, Insert `)`

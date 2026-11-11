@@ -1,7 +1,7 @@
 {FILE}:17:30: unexpected `)`
   repair: Delete `)`, Delete `)`, Delete `:assert`
-  repair: Insert `(`, Insert a variable, Insert `)`
   repair: Insert `(`, Insert a name, Insert `)`
+  repair: Insert `(`, Insert a variable, Insert `)`
   and 6 more repairs
 {FILE}:19:1: unexpected end of input
   repair: Insert `)`, Insert `)`

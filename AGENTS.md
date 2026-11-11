@@ -847,6 +847,32 @@ constrained-reasoning research.
   '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11). The pin
   is `ein-cli/tests/goal_premises.rs`. A rule whose `:match` reads a relation
   nothing makes is not refused, F25's R-6.
+  **S1f.7.7, S1f.7.6, S1f.7.10 and S1f.7.3 ran to their end the same day**, in
+  one subagent
+  ([S1f.7.7's records](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md#t1-record-2026-11-11),
+  [S1f.7.6's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.6_a_false_fact_with_an_argument.md#t1-record-2026-11-11),
+  [S1f.7.10's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md#t1-record-2026-11-11)
+  and [S1f.7.3's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md#t1-record-2026-11-11),
+  Q-M1f.122 to .126 defaulted): **a value is a name, or a fact a state could
+  hold**, an atom of an ordinary relation or its negation (the user's ruling
+  of 2026-11-11, Q-M1f.113; `defined_behaviour.md` § 4.22). No fact, value or
+  conclusion is headed `absent`, which is a premise's test and a claim's class
+  atom and nothing else (W80); `false` takes no argument anywhere, `(false)`
+  alone (W81); `(eq a b)` is a fact, a premise or a conclusion of its own,
+  checked, and never a value, as `(neq a b)` never was (W82); and a premise
+  pattern's argument is what a value can be, so `and`, `or`, `neq`, `eq`,
+  `absent` and `false` with an argument there are refused, `(not <pattern>)`
+  kept (W83). The grammar refuses what a program writes (`ein.y`'s
+  `ValueHead`, the one list of the relations a value may have), each error
+  with a note, the one at `absent` pointing at `(not …)`; the loader refuses
+  what only it can see, a connective a pattern's argument still is once the
+  macros are expanded, the same shapes left by a macro's expansion
+  (`ein_ir::from_ir`'s `Shapes` walk), and a relation parameter an activator
+  can bind to `absent`, `false` or, where a value goes, `eq`. Nineteen rows
+  filed and fixed, and no other corpus answer moved: 283 fixed, 13 open and
+  1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+  2026-11-11). The pin is `ein-cli/tests/value_rule.rs`. `(false)` with no
+  argument stays a value, F25's R-7.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

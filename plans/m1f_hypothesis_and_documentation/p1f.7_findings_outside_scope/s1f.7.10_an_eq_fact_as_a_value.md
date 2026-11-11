@@ -2,7 +2,9 @@
 
 **Phase:** [P1f.7](README.md) (The wrong answers P1f.5's stages found outside their scope)
 **Status:** new 2026-11-11, from the [analysis of 2026-11-11](README.md#the-analysis-of-2026-11-11), on the user's
-ruling of that day (*"yes - it become S1f.7.10 onward"*). Not started.
+ruling of that day (*"yes - it become S1f.7.10 onward"*). **Done 2026-11-11**: W82, four rows filed and fixed;
+`(eq …)` as a value refused at the parse, and at load as a pattern's argument
+([the records](#t1-record-2026-11-11)).
 **Depends on:** [S1f.7.7](s1f.7.7_an_absent_fact.md) and [S1f.7.6](s1f.7.6_a_false_fact_with_an_argument.md), which
 edit the same production, `ein.y`'s `ArgHead`. It runs before [S1f.7.3](s1f.7.3_a_connective_as_a_patterns_argument.md),
 whose walk refuses as a pattern's argument what no fact can hold.
@@ -56,3 +58,56 @@ and no `(false)` is derived, where S1f.5.7 has a concluded `(not (eq …))` chec
 - Every witness is a register row, `open` before the fix and `fixed` after it. No corpus answer moves but the
   witnesses' and the fixtures the stage names.
 - `./run_tests.sh` green.
+
+## T1 record, 2026-11-11
+
+**Confirmed**, on the release binary at `52e05fc1`: the finding's table re-taken row for row, and the probe that
+settled the ruling. The class beyond the table:
+
+| the program writes | at `52e05fc1` |
+|---|---|
+| `(h (eq k j)) (h (eq k k))` and `:match (h ?s) :assert (not ?s)` | `(not (eq k j))` and `(not (eq k k))` stored, no `(false)`, root alive: the probe |
+| `(q (not (eq k j)))` | stored |
+| `:assert (q (not (eq ?x b)))` | `(q (not (eq a b)))` stored |
+| a goal `(q (eq ?a ?b))` beside `(q (eq k j))` | a row, `?a = k · ?b = j`, matched by shape |
+| a macro whose body is `(q (eq ?a ?a))` called in an `:assert` | `(q (eq a a))` stored |
+| `(mk eq)` beside `:assert (q (?R ?x ?x))` | `(q (eq a a))` stored; § 4.14's check reads a parameter that heads a premise or a conclusion, not one inside a pattern |
+| a claim's `(model (p a) (q (eq a b)))` | refused at load already, *which no atom of the query's :goal matches* |
+| `(eq a b)`, `(not (eq a b))` as a fact; `(not (eq ?x b))` as a premise and a conclusion; `(eq a b)` in a claim | checked, S1f.5.7's: these stay (Q-M1f.124) |
+
+No tracked `.ein` file writes `(eq …)` as a value: the sweep of T3 moved none for it.
+
+## T2 record, 2026-11-11
+
+Four witnesses and rows of W82: `eq-value-fact` (stored), `eq-value-concluded` (a rule stores four),
+`eq-value-matched-by-shape` (`(same Ann Bob)` derived of two names that are not equal) and
+`eq-value-negation-concluded` (the probe, word for word). Filed `open` and held to the unchanged engine with
+S1f.7.7's ([its T2 record](s1f.7.7_an_absent_fact.md#t2-record-2026-11-11)).
+
+## T3 record, 2026-11-11
+
+Fixed with S1f.7.7, S1f.7.6 and S1f.7.3, one commit
+([S1f.7.7's T3 record](s1f.7.7_an_absent_fact.md#t3-record-2026-11-11) has the sweep, the goldens and the
+fixtures). **The grammar**'s `ValueHead` holds no `eq`, so `(eq …)` inside a fact, a conclusion, a guard's value
+and a claim's fact is a parse error, as `(neq …)` there was, each with the note *eq is computed and never stored,
+so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside
+another fact or pattern*. `(eq a b)` stays where S1f.5.7 checks it: a fact (`FactHead`), `(not (eq a b))` as a
+fact, a premise and a conclusion (`EqFact`, `Negated`), and a claim's (Q-M1f.124). **The loader** refuses `(eq
+…)` as a pattern's argument, which the grammar reads as a guard written where a macro's argument could be
+(S1f.7.3's walk), the same left by a macro's expansion, `(not (eq …))` where a value goes, and a relation parameter
+an activator can bind to `eq` heading a form where a value goes, at any arity.
+
+```
+examples/ein-bugs/wrong-answers/eq-value-fact.ein:25:12: unexpected `eq`
+  note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
+kb load error: <file>:<l>:<c>: rule 'r': its :match writes (q (eq ?a ?b)), and (eq ?a ?b) is written where a value goes — eq is computed and never stored, and a value is a name, a variable, or a fact a state could hold, (relation argument …) or its negation
+kb load error: rule 'mk': its parameter ?R heads (?R ?x ?x), written where a value goes, and the fact (mk eq) binds ?R to eq — eq is computed and never stored, and a value is a name, or a fact a state could hold
+```
+
+W82's four rows flipped to `fixed`. The probe's program, `eq-value-negation-concluded`, is refused at its first
+`(h (eq k j))`, so no state holds an `(eq …)` for `(not ?s)` to negate.
+
+## T4 record, 2026-11-11
+
+`defined_behaviour.md` § 4.22 and § 4.14 (a parameter heading a value is read since), `06_reserved_names.md`
+(§ Computed predicates), `01_grammar.md`, `00_ebnf.md` re-blessed, and this file.

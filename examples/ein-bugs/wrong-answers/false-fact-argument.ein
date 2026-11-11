@@ -1,0 +1,26 @@
+;;; A written `(false Bob)` is stored, kills root, and names `Bob` —
+;;; M1f **W81**, register row `W81/false-fact-argument`, filed by S1f.7.6 (T1f.7.6.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and a fact `(false Bob)`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `false` takes no argument: `(false)` says that the state is impossible, and names
+;;; nothing. Refused at the parse, at the argument, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and stores `(false Bob)`; root is dead and R
+;;; is empty, exit 0 on every command. A rule's written `(false ?x)` is a parse error
+;;; and a macro's is refused since S1f.5.24.
+;;; Refused at load since S1f.7.6 (T1f.7.6.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(false Bob)
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

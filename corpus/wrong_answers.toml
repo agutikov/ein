@@ -14982,3 +14982,633 @@ derived   = "The goal writes `(?R ?g)` inside `(absent (says …))`, and nothing
 run     = "saturate --dump"
 refused = "kb load error: query: its :goal writes (?R ?g) with ?R as its relation, which nothing binds — a relation is named by a name, or by a rule's parameter its activator binds, and a query has no activator"
 
+# ══ W80 — a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read ══
+[[case]]
+id       = "W80/absent-fact-for-not"
+case     = "W80"
+title    = "a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.7"
+question = ["Q-M1f.113", "Q-M1f.122"]
+witness  = "examples/ein-bugs/wrong-answers/absent-fact-for-not.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.7 (T1f.7.7.2, 2026-11-11): A written `(absent (paid Ann))` beside `(paid Ann)` loads, alive, the constraint ignored. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.7.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.7 (T1f.7.7.3): the grammar's `FactHead`, `ValueHead` and `ConclusionHead` take no `absent` (`ein.y`), so a fact, a value and a conclusion headed by it are parse errors with a note pointing at `(not …)`; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `absent`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(absent (paid Ann))`, a fact of a relation `absent` that no premise can read; root is alive, R is {∅}, and the goal answers `?g = Ann`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation. `absent` is negation as failure, a premise's test, so no fact, nested fact or conclusion is headed by it (S1f.7.7's default, as S1f.5.23 refused `open`)"
+derived   = "`absent` is negation as failure, a test a premise makes of a state, and no fact is of it: refused at the parse, at `absent`, with a note pointing at `(not …)`, on every command (exit 1, `ein test`: 2). With `(not (paid Ann))` root is dead and R is empty."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/absent-fact-for-not.ein:27:2: unexpected `absent`"
+
+[[case]]
+id       = "W80/absent-fact-name"
+case     = "W80"
+title    = "a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.7"
+question = ["Q-M1f.113", "Q-M1f.122"]
+witness  = "examples/ein-bugs/wrong-answers/absent-fact-name.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.7 (T1f.7.7.2, 2026-11-11): A written `(absent Bob)` adds `Bob` to the program's names, and H grows. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.7.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.7 (T1f.7.7.3): the grammar's `FactHead`, `ValueHead` and `ConclusionHead` take no `absent` (`ein.y`), so a fact, a value and a conclusion headed by it are parse errors with a note pointing at `(not …)`; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `absent`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(absent Bob)`; `Bob` is a name of the program, so H is `(paid Ann)` and `(paid Bob)` and R is four states, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation. `absent` is negation as failure, a premise's test, so no fact, nested fact or conclusion is headed by it (S1f.7.7's default, as S1f.5.23 refused `open`)"
+derived   = "No fact is of `absent`: refused at the parse, on every command. Without the fact H is `(paid Ann)` alone and R is two states."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/absent-fact-name.ein:24:2: unexpected `absent`"
+
+[[case]]
+id       = "W80/absent-fact-nested"
+case     = "W80"
+title    = "a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.7"
+question = ["Q-M1f.113", "Q-M1f.122"]
+witness  = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.7 (T1f.7.7.2, 2026-11-11): A value `(absent (paid Bob))` inside a fact is stored. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.7.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.7 (T1f.7.7.3): the grammar's `FactHead`, `ValueHead` and `ConclusionHead` take no `absent` (`ein.y`), so a fact, a value and a conclusion headed by it are parse errors with a note pointing at `(not …)`; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `absent`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(says Ann (absent (paid Bob)))`, and the goal answers `?c = (absent (paid Bob))`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation. `absent` is negation as failure, a premise's test, so no fact, nested fact or conclusion is headed by it (S1f.7.7's default, as S1f.5.23 refused `open`)"
+derived   = "A value is a name, or a fact a state could hold, and no state holds a fact of `absent`: refused at the parse, on every command. What Ann says is written `(says Ann (not (paid Bob)))`."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/absent-fact-nested.ein:24:12: unexpected `absent`"
+
+[[case]]
+id       = "W80/absent-concluded"
+case     = "W80"
+title    = "a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.7"
+question = ["Q-M1f.113", "Q-M1f.122"]
+witness  = "examples/ein-bugs/wrong-answers/absent-concluded.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.7 (T1f.7.7.2, 2026-11-11): A rule's `:assert (absent (paid ?g))` stores a fact of `absent`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.7.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.7 (T1f.7.7.3): the grammar's `FactHead`, `ValueHead` and `ConclusionHead` take no `absent` (`ein.y`), so a fact, a value and a conclusion headed by it are parse errors with a note pointing at `(not …)`; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `absent`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and the rule stores `(absent (paid Ann))` and `(absent (paid Bob))` beside `(paid Ann)`; root is alive and the goal answers `?g = Ann`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation. `absent` is negation as failure, a premise's test, so no fact, nested fact or conclusion is headed by it (S1f.7.7's default, as S1f.5.23 refused `open`)"
+derived   = "No conclusion is headed `absent`: refused at the parse, on every command. A rule that concludes a guest has not paid writes `(not (paid ?g))`, and this one would then kill root, since Ann has paid."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/absent-concluded.ein:26:49: unexpected `absent`"
+
+[[case]]
+id       = "W80/absent-hrule-concluded"
+case     = "W80"
+title    = "a fact, a value or a conclusion headed `absent` is stored, a fact no premise can read"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.7"
+question = ["Q-M1f.113", "Q-M1f.122"]
+witness  = "examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.7 (T1f.7.7.2, 2026-11-11): An hrule's `:assert (absent (paid ?g))` splits R on a fact nothing reads. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.7.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.7 (T1f.7.7.3): the grammar's `FactHead`, `ValueHead` and `ConclusionHead` take no `absent` (`ein.y`), so a fact, a value and a conclusion headed by it are parse errors with a note pointing at `(not …)`; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `absent`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads; H is `(absent (paid Ann))` and `(absent (paid Bob))`, and R is four states that differ only in facts of `absent`, which no premise can read: the goal has no row in any, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation. `absent` is negation as failure, a premise's test, so no fact, nested fact or conclusion is headed by it (S1f.7.7's default, as S1f.5.23 refused `open`)"
+derived   = "No conclusion is headed `absent`, an hrule's neither: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein:23:49: unexpected `absent`"
+
+# ══ W81 — `false` with an argument is stored as a fact, a value and a pattern ══
+[[case]]
+id       = "W81/false-fact-argument"
+case     = "W81"
+title    = "`false` with an argument is stored as a fact, a value and a pattern"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.6"
+question = ["Q-M1f.113", "Q-M1f.123"]
+witness  = "examples/ein-bugs/wrong-answers/false-fact-argument.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.6 (T1f.7.6.2, 2026-11-11): A written `(false Bob)` is stored, kills root, and names `Bob`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.6.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.6 (T1f.7.6.3): the grammar writes `false` only as `(false)` (`ein.y`'s `Fact`, `NestedFact`, `Premise`, `Arg` and `Pattern`), so an argument after it is a parse error with a note; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `false`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(false Bob)`; root is dead and R is empty, exit 0 on every command. A rule's written `(false ?x)` is a parse error and a macro's is refused since S1f.5.24."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113) and S1f.5.24's W68 (Q-M1f.81): `false` takes no argument wherever a rule concludes it, and S1f.7.6's default is the same in every place it is written, a fact, a value, a premise and a goal"
+derived   = "`false` takes no argument: `(false)` says that the state is impossible, and names nothing. Refused at the parse, at the argument, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/false-fact-argument.ein:24:8: unexpected `Bob`: a name"
+
+[[case]]
+id       = "W81/false-fact-nested"
+case     = "W81"
+title    = "`false` with an argument is stored as a fact, a value and a pattern"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.6"
+question = ["Q-M1f.113", "Q-M1f.123"]
+witness  = "examples/ein-bugs/wrong-answers/false-fact-nested.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.6 (T1f.7.6.2, 2026-11-11): A value `(false Bob)` inside a fact is stored. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.6.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.6 (T1f.7.6.3): the grammar writes `false` only as `(false)` (`ein.y`'s `Fact`, `NestedFact`, `Premise`, `Arg` and `Pattern`), so an argument after it is a parse error with a note; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `false`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(says Ann (false Bob))`, and the goal answers `?c = (false Bob)`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113) and S1f.5.24's W68 (Q-M1f.81): `false` takes no argument wherever a rule concludes it, and S1f.7.6's default is the same in every place it is written, a fact, a value, a premise and a goal"
+derived   = "`false` takes no argument, as a value too: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/false-fact-nested.ein:22:18: unexpected `Bob`: a name"
+
+[[case]]
+id       = "W81/false-fact-negated"
+case     = "W81"
+title    = "`false` with an argument is stored as a fact, a value and a pattern"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.6"
+question = ["Q-M1f.113", "Q-M1f.123"]
+witness  = "examples/ein-bugs/wrong-answers/false-fact-negated.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.6 (T1f.7.6.2, 2026-11-11): A written `(not (false Bob))` is stored. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.6.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.6 (T1f.7.6.3): the grammar writes `false` only as `(false)` (`ein.y`'s `Fact`, `NestedFact`, `Premise`, `Arg` and `Pattern`), so an argument after it is a parse error with a note; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `false`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(not (false Bob))`; root is alive and the goal answers `?g = Ann`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113) and S1f.5.24's W68 (Q-M1f.81): `false` takes no argument wherever a rule concludes it, and S1f.7.6's default is the same in every place it is written, a fact, a value, a premise and a goal"
+derived   = "`false` takes no argument, under a `(not …)` too: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/false-fact-negated.ein:23:13: unexpected `Bob`: a name"
+
+[[case]]
+id       = "W81/false-premise-argument"
+case     = "W81"
+title    = "`false` with an argument is stored as a fact, a value and a pattern"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.6"
+question = ["Q-M1f.113", "Q-M1f.123"]
+witness  = "examples/ein-bugs/wrong-answers/false-premise-argument.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.6 (T1f.7.6.2, 2026-11-11): A premise `(absent (false ?g))` holds of everything, so the rule fires. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.6.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.6 (T1f.7.6.3): the grammar writes `false` only as `(false)` (`ein.y`'s `Fact`, `NestedFact`, `Premise`, `Arg` and `Pattern`), so an argument after it is a parse error with a note; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `false`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads; `(false ?g)` is a pattern no fact matches, so the `(absent …)` holds and the rule derives `(welcome Ann)` and `(welcome Bob)`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113) and S1f.5.24's W68 (Q-M1f.81): `false` takes no argument wherever a rule concludes it, and S1f.7.6's default is the same in every place it is written, a fact, a value, a premise and a goal"
+derived   = "`false` takes no argument, as a premise too: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/false-premise-argument.ein:25:59: unexpected `?g`: a variable"
+
+[[case]]
+id       = "W81/false-goal-argument"
+case     = "W81"
+title    = "`false` with an argument is stored as a fact, a value and a pattern"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.6"
+question = ["Q-M1f.113", "Q-M1f.123"]
+witness  = "examples/ein-bugs/wrong-answers/false-goal-argument.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.6 (T1f.7.6.2, 2026-11-11): A goal's `(absent (false ?g))` holds of everything. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.6.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.6 (T1f.7.6.3): the grammar writes `false` only as `(false)` (`ein.y`'s `Fact`, `NestedFact`, `Premise`, `Arg` and `Pattern`), so an argument after it is a parse error with a note; `ein_ir::from_ir`'s `Shapes` walk refuses the same shapes a macro's expansion writes, and a relation parameter an activator binds to `false`"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads, and the goal answers `?g = Ann` and `?g = Bob`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113) and S1f.5.24's W68 (Q-M1f.81): `false` takes no argument wherever a rule concludes it, and S1f.7.6's default is the same in every place it is written, a fact, a value, a premise and a goal"
+derived   = "`false` takes no argument, in a goal too: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/false-goal-argument.ein:24:50: unexpected `?g`: a variable"
+
+# ══ W82 — `(eq k j)` as a value is stored and matched by shape, where `eq` is computed and never stored ══
+[[case]]
+id       = "W82/eq-value-fact"
+case     = "W82"
+title    = "`(eq k j)` as a value is stored and matched by shape, where `eq` is computed and never stored"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.10"
+question = ["Q-M1f.113", "Q-M1f.124"]
+witness  = "examples/ein-bugs/wrong-answers/eq-value-fact.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.10 (T1f.7.10.2, 2026-11-11): A value `(eq Ann Bob)` inside a fact is stored. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.10.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.10 (T1f.7.10.3): the grammar's `ValueHead` takes no `eq` (`ein.y`), so `(eq …)` inside a fact, a conclusion, a guard's value or a `(not …)` that is itself a value is a parse error with a note, as `(neq …)` there is; a pattern's argument `(eq …)` is refused by `ein_ir::from_ir`'s `Shapes` walk (S1f.7.3), which also refuses what a macro's expansion writes, and a relation parameter an activator binds to `eq` heading a value"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and stores `(says Ann (eq Ann Bob))`, an equality nothing computes, and the goal answers `?c = (eq Ann Bob)`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The user's ruling of 2026-11-11 on S1f.7.10, (a), *adopt the rule* (Q-M1f.113): a value is a name, or a fact a state could hold, so `eq`, computed and never stored (S1f.5.7), heads no value, as `neq` already did not"
+derived   = "`eq` is the relation of equality, computed and never stored (S1f.5.7), so `(eq …)` is no value: refused at the parse, at `eq`, on every command, as `(says Ann (neq Ann Bob))` is."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/eq-value-fact.ein:25:12: unexpected `eq`"
+
+[[case]]
+id       = "W82/eq-value-concluded"
+case     = "W82"
+title    = "`(eq k j)` as a value is stored and matched by shape, where `eq` is computed and never stored"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.10"
+question = ["Q-M1f.113", "Q-M1f.124"]
+witness  = "examples/ein-bugs/wrong-answers/eq-value-concluded.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.10 (T1f.7.10.2, 2026-11-11): A rule's `:assert (asked (eq ?x ?y))` stores equalities as values. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.10.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.10 (T1f.7.10.3): the grammar's `ValueHead` takes no `eq` (`ein.y`), so `(eq …)` inside a fact, a conclusion, a guard's value or a `(not …)` that is itself a value is a parse error with a note, as `(neq …)` there is; a pattern's argument `(eq …)` is refused by `ein_ir::from_ir`'s `Shapes` walk (S1f.7.3), which also refuses what a macro's expansion writes, and a relation parameter an activator binds to `eq` heading a value"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads and the rule stores four facts, `(asked (eq Ann Bob))` and `(asked (eq Bob Ann))` among them, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The user's ruling of 2026-11-11 on S1f.7.10, (a), *adopt the rule* (Q-M1f.113): a value is a name, or a fact a state could hold, so `eq`, computed and never stored (S1f.5.7), heads no value, as `neq` already did not"
+derived   = "`(eq …)` is no value, in a conclusion too: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/eq-value-concluded.ein:23:75: unexpected `eq`"
+
+[[case]]
+id       = "W82/eq-value-matched-by-shape"
+case     = "W82"
+title    = "`(eq k j)` as a value is stored and matched by shape, where `eq` is computed and never stored"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.10"
+question = ["Q-M1f.113", "Q-M1f.124"]
+witness  = "examples/ein-bugs/wrong-answers/eq-value-matched-by-shape.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.10 (T1f.7.10.2, 2026-11-11): A pattern's argument `(eq ?a ?b)` matches a stored `(eq Ann Bob)` by its shape. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.10.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.10 (T1f.7.10.3): the grammar's `ValueHead` takes no `eq` (`ein.y`), so `(eq …)` inside a fact, a conclusion, a guard's value or a `(not …)` that is itself a value is a parse error with a note, as `(neq …)` there is; a pattern's argument `(eq …)` is refused by `ein_ir::from_ir`'s `Shapes` walk (S1f.7.3), which also refuses what a macro's expansion writes, and a relation parameter an activator binds to `eq` heading a value"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads, and the rule derives `(same Ann Bob)`, of two names that are not equal, and `(same Bob Bob)`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The user's ruling of 2026-11-11 on S1f.7.10, (a), *adopt the rule* (Q-M1f.113): a value is a name, or a fact a state could hold, so `eq`, computed and never stored (S1f.5.7), heads no value, as `neq` already did not"
+derived   = "As a premise `(eq ?a ?b)` holds only of two equal values; as a pattern's argument it would be a second meaning of the one spelling. Refused at the parse, at the first `eq` a fact holds, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/eq-value-matched-by-shape.ein:27:12: unexpected `eq`"
+
+[[case]]
+id       = "W82/eq-value-negation-concluded"
+case     = "W82"
+title    = "`(eq k j)` as a value is stored and matched by shape, where `eq` is computed and never stored"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.10"
+question = ["Q-M1f.113", "Q-M1f.124"]
+witness  = "examples/ein-bugs/wrong-answers/eq-value-negation-concluded.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.10 (T1f.7.10.2, 2026-11-11): `(not ?s)` concluded of a stored `(eq k k)` stores `(not (eq k k))` and no `(false)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.10.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.10 (T1f.7.10.3): the grammar's `ValueHead` takes no `eq` (`ein.y`), so `(eq …)` inside a fact, a conclusion, a guard's value or a `(not …)` that is itself a value is a parse error with a note, as `(neq …)` there is; a pattern's argument `(eq …)` is refused by `ein_ir::from_ir`'s `Shapes` walk (S1f.7.3), which also refuses what a macro's expansion writes, and a relation parameter an activator binds to `eq` heading a value"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads, and the rule stores `(not (eq k j))` and `(not (eq k k))`; no `(false)` is derived, root is alive and R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The user's ruling of 2026-11-11 on S1f.7.10, (a), *adopt the rule* (Q-M1f.113): a value is a name, or a fact a state could hold, so `eq`, computed and never stored (S1f.5.7), heads no value, as `neq` already did not"
+derived   = "S1f.5.7 has a concluded `(not (eq …))` checked: `(not (eq k k))` is false, so were `(eq …)` a value root would be dead. It is no value: refused at the parse, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "examples/ein-bugs/wrong-answers/eq-value-negation-concluded.ein:25:5: unexpected `eq`"
+
+# ══ W83 — a connective as a premise pattern's argument loads and matches nothing, and under `(absent …)` holds, so the rule fires ══
+[[case]]
+id       = "W83/pattern-argument-and"
+case     = "W83"
+title    = "a connective as a premise pattern's argument loads and matches nothing, and under `(absent …)` holds, so the rule fires"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.3"
+question = ["Q-M1f.113", "Q-M1f.125"]
+witness  = "examples/ein-bugs/wrong-answers/pattern-argument-and.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.3 (T1f.7.3.2, 2026-11-11): A premise `(says (and (paid ?g)))` loads and never matches. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.3.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.3 (T1f.7.3.3): `ein_ir::from_ir`'s `Shapes::arg` refuses `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument as a pattern's argument once the macros are expanded, in a rule, an hrule, an obligation and a goal, with S1f.5.24's line; `(not <pattern>)`, a stored negation, stays"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads; the compiler lowers `(and (paid ?g))` as a pattern over a relation `and`, which no fact holds, so the rule never fires and the goal has no row, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113): a pattern's argument is what a value can be, a name, a variable, a pattern of an ordinary relation or `(not <pattern>)`. S1f.5.24 refused a connective where a conclusion's or a guard's value goes (W67, W68, Q-M1f.81), and S1f.7.3's default is the same refusal as a premise pattern's argument, after macro expansion"
+derived   = "A pattern's argument is what a value can be, and `and` heads no fact: refused at load, at the pattern, one line, on every command. With `(says (paid ?g))` the rule derives `(welcome Ann)`."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-and.ein:30:45: rule 'greet': its :match writes (says (and (paid ?g))), and (and (paid ?g)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W83/pattern-argument-and-under-absent"
+case     = "W83"
+title    = "a connective as a premise pattern's argument loads and matches nothing, and under `(absent …)` holds, so the rule fires"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.3"
+question = ["Q-M1f.113", "Q-M1f.125"]
+witness  = "examples/ein-bugs/wrong-answers/pattern-argument-and-under-absent.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.3 (T1f.7.3.2, 2026-11-11): Under `(absent …)` the dead pattern `(says (and (paid ?g)))` holds, and the rule fires. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.3.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.3 (T1f.7.3.3): `ein_ir::from_ir`'s `Shapes::arg` refuses `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument as a pattern's argument once the macros are expanded, in a rule, an hrule, an obligation and a goal, with S1f.5.24's line; `(not <pattern>)`, a stored negation, stays"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads; the inner pattern matches nothing, so the `(absent …)` holds of every guest and the rule derives `(welcome Ann)`, of whom it is said she paid, and `(welcome Bob)`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113): a pattern's argument is what a value can be, a name, a variable, a pattern of an ordinary relation or `(not <pattern>)`. S1f.5.24 refused a connective where a conclusion's or a guard's value goes (W67, W68, Q-M1f.81), and S1f.7.3's default is the same refusal as a premise pattern's argument, after macro expansion"
+derived   = "Refused at load, at the pattern, one line, on every command. With `(absent (says (paid ?g)))` the rule derives `(welcome Bob)` alone."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-and-under-absent.ein:27:53: rule 'greet': its :match writes (says (and (paid ?g))), and (and (paid ?g)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W83/pattern-argument-hrule"
+case     = "W83"
+title    = "a connective as a premise pattern's argument loads and matches nothing, and under `(absent …)` holds, so the rule fires"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.3"
+question = ["Q-M1f.113", "Q-M1f.125"]
+witness  = "examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.3 (T1f.7.3.2, 2026-11-11): An hrule's premise `(says (or …))` loads and proposes nothing. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.3.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.3 (T1f.7.3.3): `ein_ir::from_ir`'s `Shapes::arg` refuses `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument as a pattern's argument once the macros are expanded, in a rule, an hrule, an obligation and a goal, with S1f.5.24's line; `(not <pattern>)`, a stored negation, stays"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads; the hrule's premise matches nothing, H is empty and R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113): a pattern's argument is what a value can be, a name, a variable, a pattern of an ordinary relation or `(not <pattern>)`. S1f.5.24 refused a connective where a conclusion's or a guard's value goes (W67, W68, Q-M1f.81), and S1f.7.3's default is the same refusal as a premise pattern's argument, after macro expansion"
+derived   = "`or` heads no fact: refused at load, at the pattern, one line, on every command. With `(says (paid ?g))` H is `(welcome Ann)` and R is two states."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein:27:46: hrule 'guess': its :match writes (says (or (paid ?g) (welcome ?g))), and (or (paid ?g) (welcome ?g)) is a connective where a value goes — or heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W83/pattern-argument-goal"
+case     = "W83"
+title    = "a connective as a premise pattern's argument loads and matches nothing, and under `(absent …)` holds, so the rule fires"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.3"
+question = ["Q-M1f.113", "Q-M1f.125"]
+witness  = "examples/ein-bugs/wrong-answers/pattern-argument-goal.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.3 (T1f.7.3.2, 2026-11-11): A goal's `(absent (says (neq ?g Bob)))` holds of everything. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.3.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.3 (T1f.7.3.3): `ein_ir::from_ir`'s `Shapes::arg` refuses `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument as a pattern's argument once the macros are expanded, in a rule, an hrule, an obligation and a goal, with S1f.5.24's line; `(not <pattern>)`, a stored negation, stays"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads, and the goal answers `?g = Ann` and `?g = Bob`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113): a pattern's argument is what a value can be, a name, a variable, a pattern of an ordinary relation or `(not <pattern>)`. S1f.5.24 refused a connective where a conclusion's or a guard's value goes (W67, W68, Q-M1f.81), and S1f.7.3's default is the same refusal as a premise pattern's argument, after macro expansion"
+derived   = "`neq` heads no fact: refused at load, at the pattern, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-goal.ein:26:44: query: its :goal writes (says (neq ?g Bob)), and (neq ?g Bob) is a connective where a value goes — neq heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+[[case]]
+id       = "W83/pattern-argument-macro"
+case     = "W83"
+title    = "a connective as a premise pattern's argument loads and matches nothing, and under `(absent …)` holds, so the rule fires"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.3"
+question = ["Q-M1f.113", "Q-M1f.125"]
+witness  = "examples/ein-bugs/wrong-answers/pattern-argument-macro.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.3 (T1f.7.3.2, 2026-11-11): A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.3.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.3 (T1f.7.3.3): `ein_ir::from_ir`'s `Shapes::arg` refuses `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument as a pattern's argument once the macros are expanded, in a rule, an hrule, an obligation and a goal, with S1f.5.24's line; `(not <pattern>)`, a stored negation, stays"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 52e05fc1 (2026-11-11): the program loads; the expanded pattern matches nothing, so the rule derives `(welcome Ann)` and `(welcome Bob)`, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (Q-M1f.113): a pattern's argument is what a value can be, a name, a variable, a pattern of an ordinary relation or `(not <pattern>)`. S1f.5.24 refused a connective where a conclusion's or a guard's value goes (W67, W68, Q-M1f.81), and S1f.7.3's default is the same refusal as a premise pattern's argument, after macro expansion"
+derived   = "The grammar takes a connective as a call's argument, since a macro such as `forall` takes premises; the expansion is `(says (and (paid ?g)))`, refused at load, at the macro's body, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-macro.ein:26:19: rule 'greet': its :match writes (says (and (paid ?g))), and (and (paid ?g)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"

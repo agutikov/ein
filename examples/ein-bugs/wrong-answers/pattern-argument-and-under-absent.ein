@@ -1,0 +1,29 @@
+;;; Under `(absent …)` the dead pattern `(says (and (paid ?g)))` holds, and the rule fires —
+;;; M1f **W83**, register row `W83/pattern-argument-and-under-absent`, filed by S1f.7.3 (T1f.7.3.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, the fact `(says (paid Ann))`, and a rule that welcomes a guest nobody
+;;; says has paid, `(absent (says (and (paid ?g))))`. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; Refused at load, at the pattern, one line, on every command. With `(absent (says
+;;; (paid ?g)))` the rule derives `(welcome Bob)` alone.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads; the inner pattern matches nothing, so the
+;;; `(absent …)` holds of every guest and the rule derives `(welcome Ann)`, of whom it
+;;; is said she paid, and `(welcome Bob)`, exit 0 on every command.
+;;; Refused at load since S1f.7.3 (T1f.7.3.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation says Claim :why "it is said that {?1}")
+(relation welcome Guest :why "{?1} is welcome")
+(says (paid Ann))
+(rule greet () :match (and (is-a ?g Guest) (absent (says (and (paid ?g))))) :assert (welcome ?g) :why "{?g} is welcome: nobody says they paid")
+(solve :hypothesis-relations ())
+(query :goal (welcome ?g))

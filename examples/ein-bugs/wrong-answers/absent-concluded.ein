@@ -1,0 +1,28 @@
+;;; A rule's `:assert (absent (paid ?g))` stores a fact of `absent` —
+;;; M1f **W80**, register row `W80/absent-concluded`, filed by S1f.7.7 (T1f.7.7.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and a rule that concludes `(absent (paid ?g))`
+;;; of every guest. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; No conclusion is headed `absent`: refused at the parse, on every command. A rule
+;;; that concludes a guest has not paid writes `(not (paid ?g))`, and this one would
+;;; then kill root, since Ann has paid.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `52e05fc1`, release: the program loads and the rule stores `(absent (paid Ann))` and
+;;; `(absent (paid Bob))` beside `(paid Ann)`; root is alive and the goal answers
+;;; `?g = Ann`, exit 0 on every command.
+;;; Refused at load since S1f.7.7 (T1f.7.7.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(rule unpaid () :match (is-a ?g Guest) :assert (absent (paid ?g)) :why "{?g} has not paid")
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))
