@@ -1175,6 +1175,21 @@ constrained-reasoning research.
   in proportion to its count, 27, 37, 16, 486 and 589 firings a request; and
   a stored fact costs a kilobyte, 2.1 GB for 4 000 products (E-26). No
   engine source and no stdlib module moved; the register is unmoved.
+  **S1f.6.12's first task, the investigation, is done and stopped for the
+  user** (2026-11-11,
+  [`malformed_numbers.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/malformed_numbers.md)),
+  on the user's *"if theory can detect malformed numbers - do it, what
+  cons/objections?"*. Today every malformed request is answered by silence,
+  exit 0. On prototypes of the shipped `std.arith`: a digit's place holding
+  anything else, a number that ends in a digit or a named constant where
+  `z` goes, a digit where a number goes, and a constant named twice (which
+  today gives **two answers to one request**) can each be flagged with no
+  `absent` and no `not`, by ten `neq` guards or a lookup, for twenty firings
+  a request; a name no `let` states and a fact of another relation in a
+  number's place cannot, since *not of this shape* is a negation; and a
+  wrong count of arguments is the loader's to refuse, where a census finds
+  no program that loads today refused. Nothing is built: the page's six
+  questions are the user's, the loader's arity check (E-2) first.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,

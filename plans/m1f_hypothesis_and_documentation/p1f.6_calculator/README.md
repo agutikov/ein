@@ -18,6 +18,9 @@ same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). **S1f.6
 (2026-11-11):** `(quot-of X Y Q R)` by bisection, and division by zero as a flag and `(false)` from it, 36
 rules more; the four operations and comparison are built
 ([its records](s1f.6.6_division.md#t1-record-2026-11-11)).
+**S1f.6.12's investigation is done and stopped for the user (2026-11-11):** what a theory can detect of a
+malformed number without negation, what it costs, and what a name clash does today
+([`malformed_numbers.md`](malformed_numbers.md)).
 **S1f.6.15, load against calculation, is done (2026-11-11):** three generated examples and
 `utils/arith_cost.py`; the tables are the cost up to a hundred requests, and the parse past a thousand sums
 ([its records](s1f.6.15_load_against_calculation.md#t1-record-2026-11-11)).
@@ -132,7 +135,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.4](s1f.6.4_subtraction.md) | Subtraction with its two numbers, and comparison | S1f.6.3 | **done 2026-11-11**: 18 rules more, 37; `(sub X Y)` answered by `(diff-of X Y D R)`, two walks side by side, and `(cmp X Y)` by `(cmp-of X Y lt\|eq\|gt)`; every operation a row of the harness against the integers, and measured in batches of its own; Q-M1f.155 to .158 defaulted, E-12 found |
 | [S1f.6.5](s1f.6.5_multiplication.md) | Multiplication | S1f.6.3 | **done 2026-11-11**: 16 rules more, 53; `(mul X Y)` answered by `(product-of X Y P)`, the school method from the multiplier's top digit, tagged so a later theory can call it; 123 × 456 is 72 firings; the DOT sweep runs several files at a time; Q-M1f.159 to .162 defaulted |
 | [S1f.6.6](s1f.6.6_division.md) | Division with remainder, the quotient digit by bisection; division by zero as a flag and `(false)` from it | S1f.6.4, S1f.6.5 | **done 2026-11-11**: 36 rules more, 89; `(div X Y)` answered by `(quot-of X Y Q R)`, 127645 ÷ 25 in 220 firings; a division by zero derives the flag and the flag `(false)`, every surface shown in the record; the two families of nine rules held alike by a test; Q-M1f.163 to .165 defaulted |
-| [S1f.6.12](s1f.6.12_malformed_numbers.md) | Malformed numbers, and the names the theory occupies: an investigation first, then the detection | the prototype for its first task; S1f.6.6 for the build | planned; its first task **stops for the user** |
+| [S1f.6.12](s1f.6.12_malformed_numbers.md) | Malformed numbers, and the names the theory occupies: an investigation first, then the detection | the prototype for its first task; S1f.6.6 for the build | **T1 done 2026-11-11, stopped for the user**: [`malformed_numbers.md`](malformed_numbers.md), on the shipped theory: a digit's place, a number's end and a twice-named constant can be flagged with no negation for twenty firings a request; a name no `let` states and a foreign fact cannot; a wrong count of arguments is the loader's, and a census finds nothing that loads refused; six questions; E-27 found |
 | [S1f.6.13](s1f.6.13_num9.md) | Fixed-width numbers as a second module, `std.num9`, with overflow and conversions | S1f.6.2, S1f.6.6 | planned |
 | [S1f.6.7](s1f.6.7_negative_numbers.md) | Extension: negative numbers as a positive and a negative part, simplified until one is zero | S1f.6.6 | planned |
 | [S1f.6.8](s1f.6.8_rational_numbers.md) | Extension: rational numbers, an integer numerator over a natural denominator | S1f.6.7 | planned |

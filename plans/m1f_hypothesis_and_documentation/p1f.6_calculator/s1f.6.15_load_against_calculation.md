@@ -1,7 +1,7 @@
 # S1f.6.15 — Long numbers and many calculations: load time against calculation time
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: three generated examples under `examples/arith/`, each a corpus entry and
+**Status:** **done 2026-11-11** (`a8e58bba`): three generated examples under `examples/arith/`, each a corpus entry and
 search-free; `utils/arith_cost.py`, whose output is `stdlib/README.md`'s § What a program pays; one decision taken by
 default, Q-M1f.166, and three findings, E-24 to E-26 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-11,
 on the user's instruction of that day.

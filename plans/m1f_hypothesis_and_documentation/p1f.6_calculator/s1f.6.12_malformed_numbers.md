@@ -1,8 +1,9 @@
 # S1f.6.12 — Malformed numbers, and the names the theory occupies
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-11, on the user's ruling of that day. Its first task is an investigation on the
-prototype and **stops for the user** with what it found.
+**Status:** **T1 done 2026-11-11, stopped for the user:** [`malformed_numbers.md`](malformed_numbers.md) is what it
+found, on the shipped `std.arith`, with T2's probes: the table, a recommendation a row, and six questions
+([§ T1 record](#t1-record-2026-11-11)). Nothing is built. Planned 2026-11-11, on the user's ruling of that day.
 **Depends on:** the investigation needs only the prototype (`build/s1f.6/prototype/r3/k.ein`); the build needs
 [S1f.6.6](s1f.6.6_division.md), so every operation flags.
 
@@ -82,3 +83,43 @@ at load, is a language question the stage puts to the user with the probes and d
   module's page as answered by silence.
 - A well-formed request costs what T1 said it would.
 - E-2 is fixed by this stage or ruled.
+
+## T1 record, 2026-11-11
+
+Taken on the shipped `std.arith` (89 rules), not on the prototype `r3/k.ein` the plan named: S1f.6.6 was done, so
+the experiment could be made on what a detection would be built into. The page is
+[`malformed_numbers.md`](malformed_numbers.md); the probes, three prototype theories (`stdlib-b1`, `-b2`, `-a`,
+written by `proto.py` from the shipped `stdlib/`) and the scripts are under `build/s1f.6.12/`.
+
+**What it found, in the table's order:**
+
+| the malformation | detected with no `absent` and no `not`? | recommended |
+|---|---|---|
+| a name that is no digit where a digit goes | yes: ten `neq` guards on the digit's slot, which hold of any other name and of any fact | build |
+| a fact where a digit goes | yes, by the same rule | build |
+| a number that does not end in `z` | where it ends in a digit or a named constant, by a lookup; where it ends in another name, only by a guard over the program's names, whose cost grows with the program | build the first two; the third stays silent |
+| a digit where a number goes, `(add 7 X)` | yes, by a lookup | build |
+| a name where a number goes that no `let` states | **no**: it is a negation | the user's: silence, or one `absent` over `let` (Q2) |
+| a fact of another relation where a number goes | **no**: no rule can say *not of this shape* | stays silent |
+| `n`, or a request, with the wrong count of arguments | one count a pattern, not in general | **the loader** (Q1): a census finds no program that loads today refused |
+| a number written with high zeros | not malformed | — |
+| *found by T2:* a name stated twice with two numbers; `z` or a digit as a constant's name | yes, by a join on the name | build: today each gives **two answers to one request** |
+
+**What it costs:** twenty firings a request for the recommended set, one a digit of each operand, 0.03 ms; a batch
+still costs in proportion to its count. The guards inside a walk are free; the guard over the program's names is
+what does not scale (1 000 sums in 761 ms beside 4 000 named constants, where 37 ms shipped). The `candidates`
+counter sees none of it (E-27 of [`findings.md`](findings.md)).
+
+**The objections** that survived: completeness (no flag does not mean well-formed, and the page would have to say
+so); twenty-two rules more in a module of 89; `neq` in a theory that writes no guard today. The one that was dropped:
+a detection firing on other people's facts, since the check is asked for by an operand.
+
+**T2's probes:** a second declaration of any name of the theory is refused at load already, with the name in the
+message; facts of the theory's relations are not, and a written `(done (sum 2 2) 5)` is an answer nobody computed;
+`z` and the digits are names and are shared harmlessly; a qualified import prefixes the relations and not `z`.
+
+**E-2** is extended by it: a *top-level* fact with the wrong count of arguments loads too.
+
+**The questions for the user** are the page's § 8: the loader's arity check (Q1), a name no `let` states (Q2),
+whether to build the recommended set (Q3), whether a module may reserve its names (Q4), a prefix for the internal
+names (Q5), and `std.num9` (Q6). T3 onward waits for them.
