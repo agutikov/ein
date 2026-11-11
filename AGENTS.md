@@ -1147,6 +1147,34 @@ constrained-reasoning research.
   and no existing program's `ein solve` (`python3 build/s1f.6.4/sweep.py
   --old build/s1f.6.6/old/stdlib --ref b2c4b238`, 691 files, 2026-11-11);
   the register is unmoved.
+  **S1f.6.15, load against calculation, ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.15_load_against_calculation.md#t1-record-2026-11-11),
+  Q-M1f.166 defaulted), on the user's *"add examples with long numbers and
+  many calculations so we can compare load time with calculation time"*.
+  **Three examples under `examples/arith/` are generated**, by
+  `utils/gen_arith_examples.py`, whose `--check` is in the gate
+  (`arith_search_free.rs`): `long_numbers.ein`, five requests on operands of
+  100, 10 and 20 digits; `many_calculations.ein`, 100 requests on short
+  operands; and `factorial.ein`, 25! from one written fact by three rules of
+  the program's own. **They are small on purpose:** `ein solve` writes the
+  state as text, and a circuit's state as text grows as its facts times its
+  digits, so a 100-digit product is 125 ms under `ein saturate` and 4.0 s
+  under `ein solve` (E-24 of the phase's `findings.md`), and every corpus
+  program is solved, dumped and reloaded per commit. The plan's sizes are
+  **`utils/arith_cost.py`**'s sweep, run through `bench_env.sh`: parse, load,
+  saturate, firings, facts and peak RSS for the examples, as text and as a
+  `.einb`, and for requests by length (to 900 digits), by count (to 10 000)
+  and for the chain (to 200!), with `ein solve` beside `ein saturate`. Its
+  output is
+  [`stdlib/README.md` § What a program pays](stdlib/README.md#what-a-program-pays-the-tables-the-parse-the-calculation)
+  (2026-11-11): a program that imports the theory pays 20.6 ms of load
+  before its first request, 14.3 of it `std.digits`; **a `.einb` buys none
+  of it back**, 21.9 ms to open against 21.8 to parse and load (E-25; it did
+  while the theory read two tables); past a thousand sums the parse costs
+  more than the addition, 748 ms against 502 at 10 000 (E-16); a batch costs
+  in proportion to its count, 27, 37, 16, 486 and 589 firings a request; and
+  a stored fact costs a kilobyte, 2.1 GB for 4 000 products (E-26). No
+  engine source and no stdlib module moved; the register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,
@@ -1453,11 +1481,13 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **thirty-three scripts** (`ls utils/*.py utils/*.sh | wc -l`,
+- **`utils/`** — **thirty-five scripts** (`ls utils/*.py utils/*.sh | wc -l`,
   2026-11-11; the thirty-second, `nl_census.py`, is M1f S1f.5.14's: how much of
-  what Ein answers reads as English, and the thirty-third,
+  what Ein answers reads as English, the thirty-third,
   `gen_arith_tables.py`, M1f S1f.6.2's: it writes `stdlib/digits.ein` and runs
-  no engine), **all but two driving `ein.rs`**.
+  no engine, and the last two M1f S1f.6.15's: `gen_arith_examples.py` writes
+  three example programs, and `arith_cost.py` measures where an arithmetic
+  program's time goes), **all but three driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
   wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,

@@ -18,6 +18,9 @@ same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). **S1f.6
 (2026-11-11):** `(quot-of X Y Q R)` by bisection, and division by zero as a flag and `(false)` from it, 36
 rules more; the four operations and comparison are built
 ([its records](s1f.6.6_division.md#t1-record-2026-11-11)).
+**S1f.6.15, load against calculation, is done (2026-11-11):** three generated examples and
+`utils/arith_cost.py`; the tables are the cost up to a hundred requests, and the parse past a thousand sums
+([its records](s1f.6.15_load_against_calculation.md#t1-record-2026-11-11)).
 **Depends on:** [P1f.5](../p1f.5_the_no_owner_items/README.md), for the language the theory is written in.
 [S1f.5.4](../p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) makes `0` to `9` plain names, so
 `(num9 0 0 0 1 2 3 0 7 8)` is nine names and not nine ints. It lands with S1f.5.5's swap, and T1f.5.4.3 retires
@@ -136,7 +139,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.9](s1f.6.9_width.md) | What is left of the width: how long a number may be (the nesting limit, the size of a state) | S1f.6.6 | planned; one choice **for the user** |
 | [S1f.6.20](s1f.6.20_word_problems.md) | An application: elementary-school word problems, the calculator imported among other relations; the words' meaning as rules, and a missing quantity detected and named | S1f.6.6 | planned 2026-11-11; its first task **stops for the user** |
 | [S1f.6.14](s1f.6.14_expressions.md) | Optional: nested expressions, `(calc E)` and `(let NAME E)` | S1f.6.6, and the user's ruling | **waits for the user**; S1f.6.20 is where the need will show |
-| [S1f.6.15](s1f.6.15_load_against_calculation.md) | Long numbers and many calculations: examples that set load time against calculation time (the user, 2026-11-11) | S1f.6.6 | planned |
+| [S1f.6.15](s1f.6.15_load_against_calculation.md) | Long numbers and many calculations: examples that set load time against calculation time (the user, 2026-11-11) | S1f.6.6 | **done 2026-11-11**: `long_numbers.ein`, `many_calculations.ein` and `factorial.ein`, generated, sized to what every per-commit surface affords; `utils/arith_cost.py` and its tables in `stdlib/README.md`: 20.6 ms of load a program, a `.einb` that buys none of it back, the parse ahead of the calculation past a thousand sums, and `ein solve` 30 to 90 times `ein saturate` on long numbers; Q-M1f.166 defaulted, E-24 to E-26 found |
 | [S1f.6.16](s1f.6.16_binary_arithmetic.md) | Arithmetic with binary numbers: whether the rules get simpler, and whether the theory is generic in its base (the user, 2026-11-11) | S1f.6.6 | planned; T1 stops for the user |
 | [S1f.6.17](s1f.6.17_binary_logic.md) | Binary logic: truth tables, gates, a circuit as a program, and six applications tried; the starting point of [M1g](../../m1g_logic/README.md) (the user, 2026-11-11) | S1f.6.16 | planned; T1 stops for the user |
 | [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | S1f.6.8, S1f.6.9 | planned; a report |

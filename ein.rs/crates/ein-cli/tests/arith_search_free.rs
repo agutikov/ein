@@ -322,3 +322,37 @@ fn every_arithmetic_program_is_search_free() {
         search_free(path, &scratch, text.contains(DEAD));
     }
 }
+
+/// `utils/gen_arith_examples.py --check`, run here so that it is in the
+/// gate (M1f S1f.6.15): `examples/arith/long_numbers.ein`,
+/// `many_calculations.ein` and `factorial.ein` are generated, operands drawn
+/// with a fixed seed and every claimed answer computed by Python's integers.
+/// The test above then holds each of them search-free, and `ein test` holds
+/// the claims to the engine's own answers. The per-commit tier installs a
+/// `python3`, as for `utils/gen_arith_tables.py --check`
+/// (`ein-ir/tests/digit_tables.rs`, Q-M1f.145).
+#[test]
+fn the_generated_examples_are_what_the_generator_writes() {
+    let probe = Command::new("python3")
+        .args(["-c", "pass"])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status();
+    assert!(
+        matches!(probe, Ok(s) if s.success()),
+        "`python3` does not run ({probe:?}): three programs of `examples/arith/` are generated \
+         and `utils/gen_arith_examples.py --check` is the only check that compares their \
+         bytes with the script's — a missing gate, not a missing convenience"
+    );
+    let out = Command::new("python3")
+        .args(["utils/gen_arith_examples.py", "--check"])
+        .current_dir(repo_root())
+        .output()
+        .expect("python3 ran a moment ago");
+    assert!(
+        out.status.success(),
+        "a generated example is stale — run `python3 utils/gen_arith_examples.py`\n{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr),
+    );
+}

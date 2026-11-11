@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 51] = [
+const SEEDED: [(&str, &[&str]); 53] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -310,6 +310,16 @@ const SEEDED: [(&str, &[&str]); 51] = [
     (
         "examples/arith/div.ein",
         &["`z`, in (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))"],
+    ),
+    // M1f S1f.6.15 — two of the three generated examples; the third,
+    // `many_calculations.ein`, draws an operand that is zero and writes it `z`.
+    (
+        "examples/arith/factorial.ein",
+        &["`z`, in (let last (n (n z 2) 5))"],
+    ),
+    (
+        "examples/arith/long_numbers.ein",
+        &["`z`, in (let c (n (n (n (n (n (n (n (n (n (n z 9) 4) 9) 3) 5) 7) 8) 9) 2) 3))"],
     ),
     (
         "examples/arith/mul.ein",

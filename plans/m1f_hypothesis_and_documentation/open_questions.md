@@ -178,6 +178,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.163](#q-m1f163--division-called-with-a-tag-and-whose-division-by-zero-is-flagged) | division called with a tag, and whose division by zero is flagged | **defaulted 2026-11-11 (S1f.6.6): `(div-call TAG X Y)` answered by `(div-done TAG Q R)`; the flag is derived for a public request, `(quotient X Y)`, and a later theory that calls division says what its own zero divisor is**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.164](#q-m1f164--divisions-families-of-nine-rules-by-hand-or-generated) | division's families of nine rules: by hand or generated? | **defaulted 2026-11-11 (S1f.6.6): by hand, and a test holds that the rules of a family differ by their digit alone**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.165](#q-m1f165--what-search-free-means-of-a-program-that-divides-by-zero) | what search-free means of a program that divides by zero | **defaulted 2026-11-11 (S1f.6.6): no candidate, one saturation, R empty and decided by root, the request in the core; the test holds such a program to that where it holds the others to R = {∅}**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
+| [Q-M1f.166](#q-m1f166--the-sizes-of-the-generated-arithmetic-examples) | the sizes of the generated arithmetic examples | **defaulted 2026-11-11 (S1f.6.15): what every per-commit surface affords, 100-digit operands, 100 requests and 25!; the plan's sizes are the script's sweep and the generator's arguments**; [S1f.6.15](p1f.6_calculator/s1f.6.15_load_against_calculation.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3244,4 +3245,23 @@ the user ruled a division by zero `(false)`: such a program's R is empty, k_s 0.
 
 **Defaulted 2026-11-11: (a).** Nothing is searched in either case, which is the claim; the count of states is
 what the ruling changed.
+
+### Q-M1f.166 — The sizes of the generated arithmetic examples
+
+**Raised** 2026-11-11 by [S1f.6.15](p1f.6_calculator/s1f.6.15_load_against_calculation.md)'s T1. The plan asked for operands of some hundreds of
+digits, some thousands of requests an operation, and a chain whose answer has hundreds of digits. `ein solve`
+writes a state as text, and a circuit's state as text grows as its facts times its digits (E-24 of the phase's
+`findings.md`): a 100-digit product is 81 ms under `ein saturate` and 4.0 s under `ein solve`, and its state file
+reloads at 0.3 s a megabyte. Every corpus program is solved, dumped and reloaded per commit.
+
+- **(a) Under the line:** the shipped files are what every per-commit surface affords, 100-digit operands for a
+  sum, 10-digit for a product, 100 requests, 25!; `utils/arith_cost.py` runs the plan's sizes and larger as a
+  sweep of programs it writes itself, and the generator takes the sizes as arguments.
+- **(b) The plan's sizes, flagged `slow`:** the three leave the per-commit sweep and round trip for the nightly,
+  whose round trip then reloads state files of hundreds of megabytes.
+- **(c) The plan's sizes with `saturate` as the one declared run:** the round trip and the search-free test take
+  every entry whatever it declares, so they would need an exemption each.
+
+**Defaulted 2026-11-11: (a).** An example a reader can run under every command, and the sweep where the sizes
+are. What E-24 argues for is the user's to weigh; with it lifted the files can grow by an argument.
 

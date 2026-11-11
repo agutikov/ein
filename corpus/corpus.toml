@@ -295,6 +295,24 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/t
 note   = "M1f S1f.6.6 — a division by zero, in two steps (the user's ruling of 2026-11-11): the request derives `(division-by-zero (div takings customers))` and the flag derives `(false)`. Root is dead, R is empty, every command exits 0, the unsat core is the request and the two `let`s its operands were looked up by, and `refuted by` names `division-by-zero-is-false`. `(solve :expect (false))` holds."
 
 [[entry]]
+path   = "examples/arith/factorial.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render rules"]
+note   = "M1f S1f.6.15, generated (`utils/gen_arith_examples.py`) — a long chain: 25!, a number of 26 digits, from two written numbers and one fact, by three rules of the program's own that derive `add`, `cmp` and `mul` requests from each factorial known; it stops by itself where the comparison answers `eq`. The parse is small and the calculation is the program's whole cost. Search-free; `factorial` is the program's relation and the program closes it."
+
+[[entry]]
+path   = "examples/arith/long_numbers.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.15, generated (`utils/gen_arith_examples.py`) — few requests, long operands: a sum, a difference and a comparison of two numbers of 100 digits, a product of two of 10 and a quotient of 20 digits by 10, the operands named with `let`, each answer claimed. Sized to what every per-commit surface affords (the state as text is what grows, E-24 of P1f.6's `findings.md`); `utils/arith_cost.py` runs the sweep past it."
+
+[[entry]]
+path   = "examples/arith/many_calculations.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.15, generated (`utils/gen_arith_examples.py`) — many requests, short operands: 20 requests for each of the five operations on numbers of one to six digits, written with their numbers, the first answer of each operation claimed by a goal that writes its operands. The program's own text is what grows; `utils/arith_cost.py` runs the sweep to 10 000 requests an operation."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]

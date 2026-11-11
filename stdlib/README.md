@@ -233,7 +233,199 @@ holds the search-free claim on every program under `tests/stdlib/arith/` and
 `examples/arith/`. [`examples/arith/add.ein`](../examples/arith/add.ein) is
 the program to read first, then [`sub.ein`](../examples/arith/sub.ein),
 [`mul.ein`](../examples/arith/mul.ein), [`div.ein`](../examples/arith/div.ein)
-and [`div_by_zero.ein`](../examples/arith/div_by_zero.ein).
+and [`div_by_zero.ein`](../examples/arith/div_by_zero.ein); the three generated
+examples are the next section's.
+
+### What a program pays: the tables, the parse, the calculation
+
+The user, 2026-11-11: *"add examples with long numbers and many calculations
+so we can compare load time with calculation time"* (M1f
+[S1f.6.15](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.15_load_against_calculation.md)).
+`ein saturate FILE` prints three times of its own: `parse:`, the program's
+text; `kb load:`, macros, imports and facts; and `saturate:`, the calculation.
+Three generated examples make a program long in three ways,
+[`long_numbers.ein`](../examples/arith/long_numbers.ein),
+[`many_calculations.ein`](../examples/arith/many_calculations.ein) and
+[`factorial.ein`](../examples/arith/factorial.ein), and one script measures
+them and a sweep of sizes past them. Everything below the next line is its
+output, taken on 2026-11-11 through `utils/bench_env.sh` on one P-core of an
+i9-14900HX under the `powersave` governor (`utils/bench_env.sh python3
+utils/arith_cost.py`, some ten minutes; `--quick` is the first two sections).
+*wall* is the whole process and *rss* its peak resident memory.
+
+`ein 0.1.0`, best of 5, seed 20261111; `python3 utils/arith_cost.py`
+
+#### What a program pays before its first request
+
+| program | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| no import: one relation | 46 B | 1.02 | 0.13 | 0.01 | 0 | 2 | 17 | 3.99 |
+| `std.digits` alone, the seven tables | 54 B | 1.05 | 14.3 | 0.01 | 0 | 1 678 | 17 | 18.9 |
+| `std.arith`, the theory and the tables | 36 B | 1.07 | 20.6 | 0.29 | 1 | 1 975 | 17 | 25.8 |
+| `std.arith` and 17 + 5 | 64 B | 1.08 | 20.6 | 0.31 | 14 | 1 989 | 17 | 25.9 |
+
+#### The three examples
+
+`ein saturate FILE`, the program as text (`add.ein`, one sum and one by names, for scale):
+
+| example | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `add.ein` | 3 KB | 1.32 | 20.5 | 0.34 | 37 | 2 015 | 17 | 26.2 |
+| `long_numbers.ein` | 6 KB | 3.21 | 20.8 | 4.92 | 2 604 | 4 589 | 17 | 34.1 |
+| `many_calculations.ein` | 8 KB | 5.00 | 20.9 | 13.7 | 7 409 | 9 503 | 21 | 46.7 |
+| `factorial.ein` | 4 KB | 1.45 | 20.5 | 4.71 | 2 635 | 4 639 | 17 | 31.6 |
+
+The same programs saved by `ein kb save FILE OUT.einb`, under `ein saturate OUT.einb`, which opens the container where the text is parsed and loaded:
+
+| example | .einb | open ms | saturate ms | firings | wall ms | wall ms as text |
+|---|---:|---:|---:|---:|---:|---:|
+| `add.ein` | 209 KB | 21.9 | 0.34 | 37 | 26.2 | 26.2 |
+| `long_numbers.ein` | 257 KB | 23.8 | 4.70 | 2 604 | 34.3 | 34.1 |
+| `many_calculations.ein` | 230 KB | 25.7 | 13.4 | 7 409 | 46.8 | 46.7 |
+| `factorial.ein` | 209 KB | 22.1 | 4.38 | 2 635 | 32.0 | 31.6 |
+
+The whole process, by command:
+
+| example | saturate | solve | test | saturate .einb | solve .einb |
+|---|---:|---:|---:|---:|---:|
+| `add.ein` | 26.2 | 26.9 | 26.8 | 26.2 | 26.9 |
+| `long_numbers.ein` | 34.1 | 72.9 | 72.9 | 34.3 | 73.0 |
+| `many_calculations.ein` | 46.7 | 91.6 | 92.3 | 46.8 | 91.4 |
+| `factorial.ein` | 31.6 | 49.0 | 48.7 | 32.0 | 48.8 |
+
+#### One request, by the length of its operands
+
+A dividend has twice the digits of its divisor. A written number nests a level a digit, and the parser nests to 1 000, so 900 digits is near the longest number a program can write.
+
+| request | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| add, 9 digits | 154 B | 1.15 | 20.6 | 0.33 | 28 | 2 003 | 17 | 26.0 |
+| add, 30 digits | 406 B | 1.30 | 20.7 | 0.38 | 70 | 2 045 | 17 | 26.3 |
+| add, 100 digits | 1 KB | 1.82 | 20.6 | 0.54 | 210 | 2 185 | 17 | 27.0 |
+| add, 300 digits | 4 KB | 3.36 | 20.9 | 1.13 | 610 | 2 585 | 17 | 29.7 |
+| add, 900 digits | 11 KB | 7.89 | 20.9 | 2.68 | 1 810 | 3 785 | 17 | 35.6 |
+| sub, 9 digits | 154 B | 1.14 | 20.6 | 0.34 | 38 | 2 014 | 17 | 26.1 |
+| sub, 30 digits | 406 B | 1.31 | 20.7 | 0.43 | 101 | 2 077 | 17 | 26.4 |
+| sub, 100 digits | 1 KB | 1.82 | 20.6 | 0.70 | 311 | 2 287 | 17 | 27.2 |
+| sub, 300 digits | 4 KB | 3.31 | 20.9 | 1.56 | 911 | 2 887 | 17 | 30.1 |
+| sub, 900 digits | 11 KB | 8.03 | 21.1 | 4.40 | 2 711 | 4 687 | 17 | 38.7 |
+| cmp, 9 digits | 154 B | 1.14 | 20.6 | 0.32 | 17 | 1 992 | 17 | 26.0 |
+| cmp, 30 digits | 406 B | 1.29 | 20.4 | 0.36 | 38 | 2 013 | 17 | 25.9 |
+| cmp, 100 digits | 1 KB | 1.82 | 20.3 | 0.49 | 108 | 2 083 | 17 | 26.7 |
+| cmp, 300 digits | 4 KB | 3.38 | 21.0 | 0.91 | 308 | 2 283 | 17 | 29.6 |
+| cmp, 900 digits | 11 KB | 7.89 | 21.2 | 2.06 | 908 | 2 883 | 17 | 35.4 |
+| mul, 9 digits | 154 B | 1.14 | 20.6 | 1.01 | 490 | 2 465 | 17 | 26.9 |
+| mul, 30 digits | 406 B | 1.29 | 20.7 | 7.90 | 4 773 | 6 748 | 19 | 35.5 |
+| mul, 100 digits | 1 KB | 1.87 | 20.7 | 83.4 | 50 890 | 52 865 | 60 | 124 |
+| mul, 300 digits | 4 KB | 3.46 | 21.0 | 832 | 452 675 | 454 650 | 446 | 997 |
+| div, 18 by 9 | 208 B | 1.19 | 20.5 | 2.28 | 1 158 | 3 133 | 18 | 28.4 |
+| div, 60 by 30 | 586 B | 1.42 | 20.6 | 16.9 | 9 349 | 11 324 | 23 | 45.8 |
+| div, 200 by 100 | 2 KB | 2.25 | 20.7 | 175 | 91 659 | 93 634 | 111 | 233 |
+| div, 600 by 300 | 5 KB | 4.57 | 20.9 | 1 626 | 768 655 | 770 630 | 818 | 1 973 |
+
+#### Many requests on nine-digit operands, by their count
+
+| requests | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms | firings a request |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 100 x add | 12 KB | 8.52 | 20.9 | 3.98 | 2 701 | 4 775 | 18 | 38.7 | 27.0 |
+| 1 000 x add | 115 KB | 75.4 | 23.6 | 38.8 | 27 001 | 29 975 | 44 | 149 | 27.0 |
+| 10 000 x add | 1.1 MB | 748 | 51.9 | 502 | 270 001 | 281 975 | 358 | 1 412 | 27.0 |
+| 100 x sub | 12 KB | 8.33 | 20.7 | 5.79 | 3 701 | 5 875 | 22 | 40.2 | 37.0 |
+| 1 000 x sub | 115 KB | 75.4 | 23.6 | 61.8 | 37 001 | 40 975 | 58 | 176 | 37.0 |
+| 10 000 x sub | 1.1 MB | 741 | 52.0 | 720 | 370 001 | 391 975 | 464 | 1 648 | 37.0 |
+| 100 x cmp | 12 KB | 8.52 | 20.8 | 2.78 | 1 601 | 3 675 | 23 | 36.9 | 16.0 |
+| 1 000 x cmp | 115 KB | 75.6 | 23.5 | 28.0 | 16 001 | 18 975 | 33 | 135 | 16.0 |
+| 10 000 x cmp | 1.1 MB | 737 | 50.7 | 312 | 160 001 | 171 975 | 230 | 1 163 | 16.0 |
+| 100 x mul | 12 KB | 8.06 | 19.8 | 78.1 | 48 683 | 50 757 | 62 | 123 | 486.8 |
+| 1 000 x mul | 115 KB | 73.3 | 23.2 | 952 | 486 301 | 489 275 | 505 | 1 221 | 486.3 |
+| 4 000 x mul | 461 KB | 294 | 31.8 | 4 252 | 1 945 067 | 1 951 041 | 2131 | 5 314 | 486.3 |
+| 100 x div | 12 KB | 8.00 | 19.7 | 95.9 | 58 853 | 60 927 | 93 | 143 | 588.5 |
+| 1 000 x div | 115 KB | 71.2 | 22.6 | 1 247 | 588 598 | 591 572 | 777 | 1 643 | 588.6 |
+| 4 000 x div | 461 KB | 281 | 31.6 | 5 715 | 2 353 850 | 2 359 824 | 2790 | 7 623 | 588.5 |
+
+#### The factorial chain, by its last number
+
+| chain | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 25!, 26 digits | 4 KB | 1.29 | 19.6 | 4.16 | 2 635 | 4 639 | 23 | 29.9 |
+| 50!, 65 digits | 4 KB | 1.45 | 19.6 | 15.7 | 10 575 | 12 604 | 31 | 44.1 |
+| 100!, 158 digits | 5 KB | 1.96 | 19.6 | 73.7 | 46 915 | 48 994 | 70 | 114 |
+| 200!, 375 digits | 6 KB | 2.78 | 19.7 | 599 | 317 325 | 319 504 | 382 | 766 |
+
+#### `ein solve` beside `ein saturate`
+
+The same program, the whole process. `ein solve` saturates once, as `ein saturate` does, and then reads the state out. A run past 120 s is not waited for.
+
+| program | firings | facts | saturate wall ms | solve wall ms | solve / saturate |
+|---|---:|---:|---:|---:|---:|
+| `examples/arith/add.ein` | 37 | 2 015 | 25.4 | 25.6 | 1.0 |
+| `examples/arith/long_numbers.ein` | 2 604 | 4 589 | 33.3 | 71.9 | 2.2 |
+| `examples/arith/many_calculations.ein` | 7 409 | 9 503 | 45.1 | 91.7 | 2.0 |
+| `examples/arith/factorial.ein` | 2 635 | 4 639 | 31.8 | 48.0 | 1.5 |
+| add, 100 digits | 210 | 2 185 | 25.5 | 35.8 | 1.4 |
+| add, 300 digits | 610 | 2 585 | 27.9 | 120 | 4.3 |
+| add, 900 digits | 1 810 | 3 785 | 34.5 | 1 030 | 29.8 |
+| mul, 30 digits | 4 773 | 6 748 | 34.5 | 143 | 4.2 |
+| mul, 100 digits | 50 890 | 52 865 | 125 | 4 021 | 32.3 |
+| div, 60 by 30 | 9 349 | 11 324 | 45.9 | 638 | 13.9 |
+| div, 200 by 100 | 91 659 | 93 634 | 228 | 20 817 | 91.3 |
+| 1 000 x add, nine digits | 27 001 | 29 975 | 146 | 279 | 1.9 |
+| 10 000 x add, nine digits | 270 001 | 281 975 | 1 386 | 2 772 | 2.0 |
+| 100 x div, nine digits | 58 853 | 60 927 | 166 | 1 087 | 6.6 |
+| 1 000 x div, nine digits | 588 598 | 591 572 | 1 670 | 11 189 | 6.7 |
+| 50! | 10 575 | 12 604 | 47.9 | 229 | 4.8 |
+| 100! | 46 915 | 48 994 | 124 | 2 278 | 18.4 |
+
+**What it says, each with its number from the tables above.**
+
+- **Up to about a hundred requests the tables are the cost.** A program that
+  imports the theory pays 20.6 ms of `kb load` before its first request, 14.3
+  of it the 1 664 rows of `std.digits` and the rest the theory's 89 rules and
+  67 relations, where a program with no import loads in 0.13 ms and the whole
+  process takes 4.0 ms. One sum adds 0.02 ms of saturation to that.
+  `many_calculations.ein`, a hundred requests, is the first size where the
+  calculation, 13.7 ms, is of the load's order.
+- **A `.einb` does not buy the load back.** `ein kb save` caches a whole
+  program with its imports resolved, and `add.ein` saved so opens in 21.9 ms
+  where its text parses and loads in 21.8: the container holds the program's
+  1 800 facts, and opening it interns each again. It did buy it back while the theory read two
+  tables: on the stdlib of `277cfc44`, addition alone, a sum's `.einb` solved
+  in 6.7 ms against 18.1 as text (`ein kb save`, `ein solve`, best of 20,
+  2026-11-11). A library has no cache of its own (E-15 and E-25 of the
+  phase's
+  [`findings.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
+- **Past a thousand sums, parsing the program's numbers costs more than
+  adding them.** 10 000 nine-digit sums are 1.1 MB of text: 748 ms to parse
+  and 502 ms to saturate. A written number is one nested form a digit, the
+  parser's worst input so far (E-16). For a product or a quotient the
+  calculation leads from the start: 4 000 nine-digit products parse in 294 ms
+  and saturate in 4.3 s.
+- **A batch costs in proportion to its count,** as the rule of the theory
+  promises: 27.0, 37.0, 16.0, 486 and 589 firings a request for a sum, a
+  difference, a comparison, a product and a quotient of nine-digit numbers,
+  the same at 100 requests and at 10 000, and about two microseconds a
+  firing.
+- **By length:** a sum, a difference and a comparison cost a few firings a
+  digit, 1 810, 2 711 and 908 at 900 digits, under 5 ms each, where the
+  number's own text takes 7.9 ms to parse. A product costs the two lengths
+  multiplied, 452 675 firings and 0.83 s at 300 digits by 300, and a quotient
+  of 600 digits by 300 is 768 655 firings and 1.6 s.
+- **A chain needs no text.** `factorial.ein`'s program for 200! is 6 KB and
+  parses in 2.8 ms; its 317 325 firings take 0.6 s and end on a number of 375
+  digits that no line of the program writes.
+- **Memory is a kilobyte a stored fact.** Every step of a circuit is a fact
+  that holds its whole state, and nothing is forgotten: 4 000 products are
+  1.95 million facts and 2.1 GB resident, and 10 000 were 4.9 million and
+  6.0 GB (2026-11-11, the first run of the sweep, which now stops at 4 000
+  for a product and a quotient; E-26).
+- **`ein solve` writes the state, and the state as text is what explodes.**
+  `ein solve` saturates once, as `ein saturate` does, and then reads the state
+  out; `ein test` does the same. Stored, a circuit's facts share their
+  numbers; written, each fact repeats its own. A 900-digit sum is 34.5 ms
+  under `saturate` and 1.0 s under `solve`; a 100-digit product 125 ms and
+  4.0 s; a quotient of 200 digits by 100, 228 ms and 20.8 s (E-24). It is why
+  the shipped examples are the sizes they are: every corpus program is
+  solved, dumped and reloaded per commit.
 
 **The names it occupies.** Imported flat, the module's names mean what the
 module says, and its header has the list: `z`, `n`, `b`, `let`; the requests

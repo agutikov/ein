@@ -1,7 +1,10 @@
 # S1f.6.15 — Long numbers and many calculations: load time against calculation time
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-11, on the user's instruction of that day. Not started.
+**Status:** **done 2026-11-11**: three generated examples under `examples/arith/`, each a corpus entry and
+search-free; `utils/arith_cost.py`, whose output is `stdlib/README.md`'s § What a program pays; one decision taken by
+default, Q-M1f.166, and three findings, E-24 to E-26 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-11,
+on the user's instruction of that day.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), so the examples cover the four operations and comparison.
 
 ## The instruction
@@ -69,3 +72,109 @@ Two things it shows already, each to be confirmed:
 - The three times are printed per example by one command, and the page's table is that command's output.
 - Each claim about where the time goes carries its number and the command.
 - No engine change in this stage; what the numbers argue for is a finding, shown to the user.
+
+## T1 record, 2026-11-11
+
+**The three examples,** written by [`utils/gen_arith_examples.py`](../../../utils/gen_arith_examples.py), operands
+drawn with the seed 20261111 and every claimed answer computed by Python's integers; `--check` is in the gate as
+`arith_search_free.rs`'s `the_generated_examples_are_what_the_generator_writes`, as `gen_arith_tables.py --check` is in
+`digit_tables.rs`.
+
+| file | what is long | what it writes | its claims |
+|---|---|---|---|
+| `long_numbers.ein` | the operands | five `let`s: `a`, `b` of 100 digits, `c`, `d` of 10, `e` of 20; `(add a b)`, `(sub a b)`, `(cmp a b)`, `(mul c d)`, `(div e d)` | one a request, by a goal that names the operands |
+| `many_calculations.ein` | the count | 100 requests, 20 for each of the five operations, on numbers of one to six digits, written with their numbers; a divisor is never zero | the first request of each operation, by a goal that writes its operands |
+| `factorial.ein` | the chain | 1, 25, the fact 1! = 1, and three rules of the program's own, `next-number`, `next-product`, `next-factorial`, which derive `add`, `cmp` and `mul` requests; it stops where the comparison answers `eq` | 25! = 15511210043330985984000000 |
+
+`ein test examples/arith` holds every claim, 20 of 20 over the directory's eight files (2026-11-11). A goal with its
+operands written claims that one answer: naming a relation closes the *goal's* extent, so `(sum-of a b ?s)` does not
+have to list the other sums.
+
+**The plan's sizes did not fit the corpus, and the reason is a finding**
+([Q-M1f.166](../open_questions.md#q-m1f166--the-sizes-of-the-generated-arithmetic-examples), defaulted). The plan
+asked for operands of some hundreds of digits, some thousands of requests and an answer of hundreds of digits. The
+first probe of a 100-digit product: 81 ms under `ein saturate` and 4.0 s under `ein solve`; a quotient of 200 digits
+by 100, 171 ms and 20.7 s. `ein solve` writes every fact of the state as text, and each step of a circuit holds its
+whole state, so the text is the facts times the digits: E-24 of [`findings.md`](findings.md). Every corpus program is
+solved by `corpus_cli`, dumped and reloaded by `answer_round_trip` and solved, dumped and saturated by
+`arith_search_free`, per commit, and a state file reloads at 0.3 s a megabyte. So the shipped sizes are the ones every
+per-commit surface affords, and the plan's sizes are the script's sweep, and the generator's arguments:
+
+| file | `ein saturate` | `ein solve` | the state file | its reload |
+|---|---:|---:|---:|---:|
+| `long_numbers.ein` | 34 ms | 73 ms | 4.0 MB | 1.2 s |
+| `many_calculations.ein` | 47 ms | 92 ms | 4.9 MB | 1.3 s |
+| `factorial.ein` | 32 ms | 49 ms | 2.0 MB | 0.5 s |
+
+(`build/s1f.6.15/size.sh`, the release binary, 2026-11-11.) At the plan's sizes, `--digits 300 --short 60 --requests
+2000 --factorial 120`, the three would be slow entries whose dumps run to gigabytes.
+
+## T2 record, 2026-11-11: the corpus cost
+
+Three entries of group `positive`, runs `solve`, `test` and `saturate` (and `render rules` for `factorial.ein`, which
+has rules of its own). **None is `slow`:** their cells cost 0.1 to 0.2 s together on the release binary, and
+`corpus_cli`'s `the_slow_flag_still_describes_the_sweep` passes in the gate's build. **None is `heavy_dump`:** each
+writes one state file. What they add to the per-commit tier: `answer_round_trip` takes 10.9 s where S1f.5.13 left it
+at 8.6 s, and `arith_search_free` 6.3 s (the gate's build, 2026-11-11).
+
+The DOT sweep draws them as it draws every program of the theory, the KB views under the bounded layout
+(Q-M1f.153): the numbers are opaque nodes (E-13), so a long operand adds one node.
+
+## T3 record, 2026-11-11: the script
+
+[`utils/arith_cost.py`](../../../utils/arith_cost.py), run through `utils/bench_env.sh`. It reads the three times
+`ein saturate` prints of itself, with firings, stored facts, the process's wall and its peak RSS (`wait4`), best of
+five, and prints six tables: what a program pays before its first request; the three examples, as text and as a
+`.einb`, under `saturate`, `solve` and `test`; one request by the length of its operands, to 900 digits (the parser
+nests to 1 000); many requests by their count, to 10 000 for a sum, a difference and a comparison and to 4 000 for a
+product and a quotient, which hold 2 to 3 GB there; the factorial chain to 200!; and `ein solve` beside `ein
+saturate`. Its programs are written under `build/arith_cost/` by the generator's own functions, and none is a corpus
+entry. The whole run takes some ten minutes; `--quick` is the first two tables.
+
+## T4 record, 2026-11-11: the page, and where the time goes
+
+[`stdlib/README.md` § What a program pays](../../../stdlib/README.md#what-a-program-pays-the-tables-the-parse-the-calculation)
+is the script's output of 2026-11-11 and what it says. The coordinator's first measurement, re-taken:
+
+| | the first measurement, addition alone | re-taken, the whole theory |
+|---|---|---|
+| the load a program pays | 14.2 ms | 20.6 ms: 14.3 of it `std.digits`, the rest the 89 rules and 67 relations that are now the theory |
+| 1 sum | parse 1.7, saturate 0.1 ms | parse 1.1, saturate 0.3 ms, 0.02 of it the sum |
+| 1 sum of 900 digits | parse 11.5, saturate 2.3 ms | parse 7.9, saturate 2.7 ms |
+| 10 000 nine-digit sums | parse 718, saturate 452 ms | parse 748, saturate 502 ms |
+
+Both of its readings hold. **Up to about a hundred requests the tables are the cost,** and **past a thousand sums the
+parse costs more than the calculation**; a product or a quotient reverses the second, 294 ms of parse against 4.3 s
+of calculation at 4 000. Three things it did not show:
+
+- **A `.einb` buys nothing back** (E-25): a saved arithmetic program opens in 21.9 ms where its text parses and loads
+  in 21.8. E-15's 7.0 ms against 19.1 was taken while the theory read two tables, and is reproduced on that stdlib.
+- **`ein solve` costs the state's text** (E-24), 30 times `ein saturate` on a 900-digit sum and 91 times on a
+  quotient of 200 digits by 100.
+- **Memory ends a batch before time does** (E-26): a kilobyte a stored fact, 2.1 GB for 4 000 products.
+
+## T5 record, 2026-11-11
+
+- **No engine source and no stdlib module moved:** `git diff --stat e30cc8f8 -- 'stdlib/*.ein' stdlib/MANIFEST.sha256 'ein.rs/crates/*/src'` is empty, so
+  no existing program's answer can have moved and no sweep was run. The files that moved are named below.
+- **The goldens,** named before `EIN_BLESS=1`: `ein-cli/tests/golden/corpus_exits.txt`, ten new cells, the three
+  files' declared runs, each exit 0; `ein-render/tests/golden/corpus_shapes.md5`, 126 new lines, the three files' 42
+  renderings each, and no other line. `alive_invariant.rs`'s list gains `factorial.ein` and `long_numbers.ein`, whose
+  `z` is only inside a nested fact; `many_calculations.ein` draws an operand that is zero and writes it `z`.
+- **The register** is unmoved: 305 fixed, 16 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort |
+  uniq -c`, 2026-11-11).
+- **Pages:** `stdlib/README.md` (§ What a program pays, new), `examples/README.md`, `utils/README.md` (two scripts,
+  thirty-five), `AGENTS.md`, [`findings.md`](findings.md) (E-24 to E-26, and E-15's and E-16's re-takes), Q-M1f.166,
+  the phase README and this record. `tests/README.md` and `07_stdlib_api.md` are unmoved: no program under
+  `tests/stdlib/` and no relation of the module changed.
+
+## Acceptance re-taken, 2026-11-11
+
+- **The examples are corpus entries, search-free, and held by `arith_search_free.rs` and the round trip:** the three
+  entries; `every_arithmetic_program_is_search_free` reads `examples/arith/` whole; `answer_round_trip` takes every
+  entry that is neither `slow` nor `heavy_dump`, and these are neither.
+- **The three times are printed per example by one command, and the page's table is that command's output:**
+  `utils/bench_env.sh python3 utils/arith_cost.py`, § The three examples.
+- **Each claim about where the time goes carries its number and the command:** the page's last list.
+- **No engine change in this stage; what the numbers argue for is a finding, shown to the user:** E-24, E-25 and
+  E-26, and the re-takes of E-15 and E-16.
