@@ -3,7 +3,9 @@
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-08. A report: probes and a page, no change to the theory unless the user rules
 one.
-**Depends on:** [S1f.6.8](s1f.6.8_rational_numbers.md) and [S1f.6.9](s1f.6.9_width.md).
+**Depends on:** [S1f.6.8](s1f.6.8_rational_numbers.md) and [S1f.6.9](s1f.6.9_width.md). It works on the ruled design of
+2026-11-11 ([the rulings](design.md#the-rulings-2026-11-11)): nested numbers of any length, so a bound in a probe is a
+choice of the probe and no longer the theory's width.
 
 ## The question
 

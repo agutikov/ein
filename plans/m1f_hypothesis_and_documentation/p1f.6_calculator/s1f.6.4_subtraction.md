@@ -1,35 +1,35 @@
-# S1f.6.4 — Subtraction with remainder: two numbers, and the comparator
+# S1f.6.4 — Subtraction with its two numbers, and comparison
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-08.
+**Status:** planned 2026-11-08; re-planned 2026-11-11 to [the rulings](design.md#the-rulings-2026-11-11).
 **Depends on:** [S1f.6.3](s1f.6.3_addition.md).
 
 ## What it builds
 
-`(sub X Y)` answered by two numbers, as the user asked (*"sub with remainder … produces 2 numbers"*), in the
-form S1f.6.1's question 3 rules.
-- **Under (a)** the pair is `(d r)`: d = X − Y when X ≥ Y, otherwise 0, and r = Y − X when Y > X, otherwise 0.
-  One subtractor chain runs on X − Y. If its top borrow-out is 0, the difference is d and r is zero. If it is
-  1, a second chain on Y − X gives r, and d is zero. A comparator over the two numbers could pick the
-  direction instead; the stage measures both.
-- **Under (b)** it gives the difference modulo 10^width and the borrow flag, from one chain.
+**Subtraction** (the user's ruling on question 3, (a)). `(sub X Y)` is answered by `(diff-of X Y D R)`: D is
+X − Y when X is not the smaller and `z` otherwise, and R is Y − X when Y is the larger and `z` otherwise. It is
+the normal form S1f.6.7's negative numbers want. The circuit subtracts both ways with S1f.6.3's walk over the
+`fs` table; the walk that ends without a borrow hands its answer over, and the one that ends with a borrow
+derives `(short TAG)` and no number.
 
-**The number comparator:** `(compare X Y)` answered by `lt`, `eq` or `gt`. It is computed from the
-most significant column down by the digit comparator: the first column that differs decides, and if none does
-the answer is `eq`. It needs no `absent`, since each column's comparison is a table fact. Long division
-(S1f.6.6) uses the comparator to choose each quotient digit.
+**Comparison** (the user: *"what we forgot from school arithmetic is at least numbers comparison"*).
+`(cmp X Y)` is answered by `(cmp-of X Y lt)`, `eq` or `gt`: one walk from the units over the `cl` table, with no
+answer to build. A number that has run out counts as zeros, so the comparison is by value and holds across
+spellings with high zeros.
+
+`le`, `ge`, `max` and `min` are not built unless a later stage needs one; each is a rule over `cmp-of`.
 
 ## Tasks
 
-1. **The subtractor's rules and the second number,** as ruled.
-2. **The comparator's rules.**
-3. **The tests:** as for addition (one program per rule, the harness test, the search-free test), plus every
-   pair at the exhausting width where X < Y, X = Y and X > Y.
-4. **The circuit's measure:** firings and rounds of one subtraction and one comparison.
-5. **The example:** 123078 − 4567, and 4567 − 123078, the second number non-zero.
+1. **The two walks of subtraction, and the walk of comparison,** each under S1f.6.3's rule of the theory.
+2. **The tests,** as for addition: one program per rule, the harness test against the integers (X > Y, X < Y,
+   X = Y, operands with high zeros, zero on either side), the search-free test, and S1f.6.3's test of the rule
+   of the theory extended to these rules.
+3. **The circuit's measure:** firings and depth of one subtraction and one comparison.
+4. **The example:** 123078 − 4567, 4567 − 123078, and a comparison.
 
 ## Acceptance
 
-- Both of S1f.6.1's subtraction programs answer as the page showed, with two numbers each.
-- The comparator agrees with the integers on every pair at the exhausting width.
-- Search-free, held by the same test.
+- 123078 − 4567 is (118511, z) and 4567 − 123078 is (z, 118511).
+- Every comparison agrees with the integers, and `(cmp 5 5)` written with and without high zeros is `eq`.
+- The three tests pass.

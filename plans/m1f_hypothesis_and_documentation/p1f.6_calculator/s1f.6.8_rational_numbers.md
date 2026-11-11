@@ -1,7 +1,8 @@
 # S1f.6.8 — Extension: rational numbers, an integer numerator over a natural denominator
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-08.
+**Status:** planned 2026-11-08; restated 2026-11-11 to [the rulings](design.md#the-rulings-2026-11-11): the numbers
+under it are nested, of any length, and its rules follow S1f.6.3's rule of the theory.
 **Depends on:** [S1f.6.7](s1f.6.7_negative_numbers.md).
 
 ## What it builds
@@ -26,9 +27,9 @@ decrease. Dividing both parts by the gcd is two more divisions.
 A zero denominator, written by a program or reached by dividing by a zero rational, is reported, as
 S1f.6.1 ruled for division by zero.
 
-**The width matters most here.** Cross products need twice the operands' width, and a sum of them can need one
-more digit. Under S1f.6.1's question 4 (a) they overflow early. The stage states where, and S1f.6.9's
-width extension is what lifts the limit.
+**No width limits it.** Cross products are twice as long as their operands, and nested numbers hold them.
+The gcd chain is the program `le/p/gcd.ein` of [design.md § C](design.md#i-round-1s-request-and-answer-facts),
+rewritten with tags so that it follows the rule of the theory.
 
 ## Tasks
 

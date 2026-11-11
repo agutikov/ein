@@ -2,8 +2,10 @@
 
 **Milestone:** [M1f](../README.md)
 **Status:** planned 2026-11-08, on the user's instruction of that day ([§ The instruction](#the-instruction)).
-No stage has started. The design proposal (S1f.6.1) runs first and stops to show the user target programs
-before any theory is written.
+**S1f.6.1, the design, is done (2026-11-11):** three rounds on a prototype and the user's rulings of that day,
+recorded in [`design.md` § The rulings](design.md#the-rulings-2026-11-11). **The phase was re-planned to them the
+same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). No theory stage has started; S1f.6.11,
+the import fix, runs first.
 **Depends on:** [P1f.5](../p1f.5_the_no_owner_items/README.md), for the language the theory is written in.
 [S1f.5.4](../p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) makes `0` to `9` plain names, so
 `(num9 0 0 0 1 2 3 0 7 8)` is nine names and not nine ints. It lands with S1f.5.5's swap, and T1f.5.4.3 retires
@@ -36,117 +38,176 @@ and, the same day, on how it computes:
 > I expect ideally solving simple arithmetic will utilize only saturation with hardcoded summation, subtraction,
 > multiplication and divisiono tables like it is done in electronics, so search will not be involved at all
 
+## The design, as ruled (2026-11-11)
+
+The user's rulings, in their words, are [`design.md` § The rulings](design.md#the-rulings-2026-11-11). What they
+make of the plan:
+
+- **The number** is nested, of any length, in reading order: `z`, or `(n PREFIX DIGIT)`, ten times the prefix
+  plus the digit. 123078 is `(n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)`. Every answer is in normal form, with no
+  high zero. The user's own `(num9 0 0 0 1 2 3 0 7 8)` ships as a second module.
+- **Three modules:** `std.digits`, the tables as plain facts, the stdlib's first library of facts; `std.arith`,
+  the theory over nested numbers; `std.num9`, the fixed-width theory.
+- **The protocol:** a request fact, `(add X Y)`, answered by a result fact that repeats its operands,
+  `(sum-of X Y S)`, read by a goal with a variable in the result's place. Subtraction and division answer two
+  numbers. Named constants, `(let NAME NUMBER)`. **No expression layer in the core:** it waits for the user.
+- **Division by zero** derives a flag, and a second rule derives `(false)` from the flag. A malformed number
+  will do the same where the theory can detect it.
+- **A library of facts is importable flat,** by an engine fix that runs before the theory.
+
 ## The principle: a circuit, not a search
 
 The theory computes arithmetic the way hardware does. The digit tables are the gates and the rules are the
-wiring:
-- **Addition** is a ripple-carry adder: one full-adder table lookup per column, with the carry passed to the next.
-- **Subtraction** is a ripple-borrow subtractor.
-- **Multiplication** is an array multiplier: digit products from the multiplication table, shifted, then summed
-  by the adder.
-- **Division** is long division. At each step, a comparator picks the one quotient digit k with
-  k × divisor ≤ remainder < (k + 1) × divisor, out of the ten multiples the multiplier computed. A subtractor
-  then gives the next remainder.
+wiring. Every step is a table lookup whose outcome the tables decide, so **nothing is guessed**. In Ein's terms:
 
-Every step is a table lookup or a comparison whose outcome the tables decide, so **nothing is guessed**. In
-Ein's terms:
 - **No search.** The answer is root's fixpoint. On every arithmetic program H is empty, R is {∅} and k_s is 1,
   with no fork and no hypothesis. `ein solve`, `ein saturate` and `ein test` read the same facts.
-- **Monotone.** No `absent` and no `not` premise anywhere in the theory: a comparator derives `lt`, `eq` or `gt`
-  outright, so selecting a quotient digit needs no negation. The strata diagnostic reports one stratum.
-- **Demand-driven.** A program states a request, `(add X Y)`. Rules answer only that request, and requests the
-  circuit makes itself (the multiplier asking the adder for its partial sums, a division step asking for the
-  next). Nothing enumerates the numbers.
-- **Measured as a circuit.** Each operation reports its firings (the circuit's size) and its saturation rounds
-  (its depth), so a design is compared the way circuits are.
+- **Monotone.** No `absent` and no `not` premise anywhere in the theory. A comparison is derived outright, from
+  a borrow or from a table, so choosing a quotient digit needs no negation. One stratum.
+- **Demand-driven.** A program states a request, `(add X Y)`. Rules answer only that request, and the requests
+  the circuit makes itself. Nothing enumerates the numbers, and a conversion between shapes is a request too.
+- **Measured as a circuit.** Each operation reports its firings, the circuit's size, and its depth, the longest
+  chain of firings. Ein's saturator is an agenda with no rounds of its own; the depth is the rounds a
+  synchronous circuit would take (`design.md`, round 1).
 
-What breaks the principle is a finding, not a cost to accept. If one of the four operations cannot be computed
-without a hypothesis, or H is not empty on an arithmetic program, the stage stops and shows the user.
+**How the nested theory is wired** (design K, [`design.md` § Round 3](design.md#round-3-2026-11-11-several-representations-at-once)):
 
-**Where search does belong** is the phase's last stage. Once arithmetic is a circuit, an *inverse* question,
-such as which x makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and S1f.6.10 asks what it
-makes of these.
+- **One walk from the units,** each column through its table, its digit put in front of an accumulator. The
+  accumulator holds the answer in the other order, most significant digit outermost.
+- **High zeros are dropped there,** where they are outermost, and the answer is turned round into the public
+  shape.
+- **Every call carries its continuation,** a tag that holds what the caller needs next.
+- **Division bisects** the divisor's nine multiples: at most four trial subtractions for a quotient digit.
+
+**The rule of the theory: no rule joins two facts on a number.** A rule has one premise that holds numbers, and
+its other premises are table rows looked up by digits. It is a stated rule of `std.arith`, in the module's
+header, and a test holds it. The reason is measured: the engine's fact index does not key on a nested fact
+(E-3 of [`findings.md`](findings.md)), so an ordinary join on a number scans its relation, and a batch of
+requests costs quadratically. With the rule, 4 000 nine-digit divisions take 2.2 s on the prototype; round 2's
+theory, written with ordinary joins, did not finish 1 000 in 45 s (`python3 r3_table.py`, 2026-11-11).
+
+What breaks the principle is a finding, not a cost to accept. If an operation cannot be computed without a
+hypothesis, or H is not empty on an arithmetic program, the stage stops and shows the user.
+
+**Where search does belong** is S1f.6.10. Once arithmetic is a circuit, an *inverse* question, such as which x
+makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that stage asks what it makes of these.
 
 ## What this is not
 
 - **Not native numbers.** The user's ruling of 2026-11-06 stands
   ([Q-M1e2.24](../../m1e2_correctness/open_questions.md)): Ein has no numbers, no ranges, and no arithmetic
-  predicate or token. This phase writes a theory *in* Ein, over ten digit names, and adds nothing to the engine.
-- **Not an engine change, unless a ruling makes one.** The one candidate is variadic relations (S1f.6.9). It
-  is a grammar change, so it would need the user's ruling and its own stage, after P1f.5's grammar is final.
+  predicate or token. This phase writes a theory *in* Ein, over ten digit names.
+- **Not an engine change, except the ones a ruling made or may make.** One is ruled: a flat import brings a
+  module's facts ([S1f.6.11](s1f.6.11_importing_facts.md)). One is a question S1f.6.12 puts to the user: the
+  loader holding a nested fact to its relation's declared arity (E-2). Variadic relations are no longer asked
+  for.
+- **Not a language of function calls.** The user, 2026-11-11: *"Ein is not Lisp, is it?"*. A computation is a
+  request fact and a result fact, composed by rules. Nested expressions are a question, not a plan.
 - **Not the harness's arithmetic.** A test may hold the theory's answers to Rust's integers; that is the
   oracle for the theory, and it never enters a program.
 
 ## The stages
 
-| ID | title | est. | depends on | status |
-|---|---|---|---|---|
-| [S1f.6.1](s1f.6.1_design_proposal.md) | The design proposal: representations, the request protocol, and target programs computed on a prototype | — | S1f.5.5's swap | run 2026-11-11, [`design.md`](design.md); **stopped for the user** |
-| [S1f.6.2](s1f.6.2_digits_and_tables.md) | The digits and the hardcoded tables: full adder, full subtractor, digit product, comparator, short division | — | S1f.6.1 ruled, P1f.5 closed | planned |
-| [S1f.6.3](s1f.6.3_addition.md) | Addition: the ripple-carry adder, with overflow | — | S1f.6.2 | planned |
-| [S1f.6.4](s1f.6.4_subtraction.md) | Subtraction with remainder: two numbers, and the comparator | — | S1f.6.3 | planned |
-| [S1f.6.5](s1f.6.5_multiplication.md) | Multiplication: the array multiplier, with overflow | — | S1f.6.3 | planned |
-| [S1f.6.6](s1f.6.6_division.md) | Division with remainder: long division, the quotient digit chosen by the comparator | — | S1f.6.4, S1f.6.5 | planned |
-| [S1f.6.7](s1f.6.7_negative_numbers.md) | Extension: negative numbers as a positive and a negative part, simplified until one is zero | — | S1f.6.6 | planned |
-| [S1f.6.8](s1f.6.8_rational_numbers.md) | Extension: rational numbers, an integer numerator over a natural denominator | — | S1f.6.7 | planned |
-| [S1f.6.9](s1f.6.9_width.md) | Width: overflow detection, width extension, and numbers written in reverse order (variadic or nested) | — | S1f.6.6 | planned; **stops for the user** on the representation |
-| [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | — | S1f.6.8, S1f.6.9 | planned; a report |
-| [S1f.6.20](s1f.6.20_word_problems.md) | An application: elementary-school word problems, the calculator imported among other relations; the words' meaning as rules, and a missing quantity detected and named | — | S1f.6.6, the protocol ruled | planned 2026-11-11; **stops for the user** with examples |
+| ID | title | depends on | status |
+|---|---|---|---|
+| [S1f.6.1](s1f.6.1_design_proposal.md) | The design proposal: representations, the protocol, and target programs computed on a prototype | S1f.5.5's swap | **done 2026-11-11**: [`design.md`](design.md), three rounds and the rulings |
+| [S1f.6.11](s1f.6.11_importing_facts.md) | A flat import brings a module's facts: the engine fix, with its register rows, its census and its sweep | — | planned; **runs first** |
+| [S1f.6.2](s1f.6.2_digits_and_tables.md) | The digits and the hardcoded tables, as a library of facts, `std.digits`, generated with a `--check` | S1f.6.11 | planned |
+| [S1f.6.3](s1f.6.3_addition.md) | Addition, and the machinery every circuit shares: the number, the protocol, named constants, accumulators and tags, and the test of the rule of the theory | S1f.6.2 | planned |
+| [S1f.6.4](s1f.6.4_subtraction.md) | Subtraction with its two numbers, and comparison | S1f.6.3 | planned |
+| [S1f.6.5](s1f.6.5_multiplication.md) | Multiplication | S1f.6.3 | planned |
+| [S1f.6.6](s1f.6.6_division.md) | Division with remainder, the quotient digit by bisection; division by zero as a flag and `(false)` from it | S1f.6.4, S1f.6.5 | planned |
+| [S1f.6.12](s1f.6.12_malformed_numbers.md) | Malformed numbers, and the names the theory occupies: an investigation first, then the detection | the prototype for its first task; S1f.6.6 for the build | planned; its first task **stops for the user** |
+| [S1f.6.13](s1f.6.13_num9.md) | Fixed-width numbers as a second module, `std.num9`, with overflow and conversions | S1f.6.2, S1f.6.6 | planned |
+| [S1f.6.7](s1f.6.7_negative_numbers.md) | Extension: negative numbers as a positive and a negative part, simplified until one is zero | S1f.6.6 | planned |
+| [S1f.6.8](s1f.6.8_rational_numbers.md) | Extension: rational numbers, an integer numerator over a natural denominator | S1f.6.7 | planned |
+| [S1f.6.9](s1f.6.9_width.md) | What is left of the width: how long a number may be (the nesting limit, the size of a state) | S1f.6.6 | planned; one choice **for the user** |
+| [S1f.6.20](s1f.6.20_word_problems.md) | An application: elementary-school word problems, the calculator imported among other relations; the words' meaning as rules, and a missing quantity detected and named | S1f.6.6 | planned 2026-11-11; its first task **stops for the user** |
+| [S1f.6.14](s1f.6.14_expressions.md) | Optional: nested expressions, `(calc E)` and `(let NAME E)` | S1f.6.6, and the user's ruling | **waits for the user**; S1f.6.20 is where the need will show |
+| [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | S1f.6.8, S1f.6.9 | planned; a report |
 
-No stage carries an estimate (the user's ruling of 2026-11-08).
+No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 15 to 19 are unassigned.
 
 ## The order
 
-1. **S1f.6.1, the design, first.** The user's rule for any new syntax is real examples first. So it shows
-   target programs with their answers computed on a prototype, and asks the questions only the user can rule.
-   Nothing under `stdlib/` is written until the user has read it.
-2. **S1f.6.2 to S1f.6.6, the four operations, in order.** Each later circuit is built from the earlier ones: the
-   multiplier asks the adder; long division asks the multiplier, the comparator and the subtractor.
-3. **S1f.6.7 and S1f.6.8, the two extensions.** Each is a module over the natural-number theory and does not
+1. **S1f.6.11, the import fix, first.** The tables are plain facts imported flat, so nothing of the theory can be
+   written as ruled before a flat import brings facts.
+2. **S1f.6.2, the tables,** as the stdlib's first library of facts.
+3. **S1f.6.3 to S1f.6.6, the four operations and comparison, in order.** S1f.6.3 writes the machinery the others
+   call, and the test of the rule of the theory that each later stage extends to its own rules.
+4. **S1f.6.12's investigation** may run at any time, on the prototype, since its first task stops for the user;
+   its build follows S1f.6.6.
+5. **S1f.6.13, `std.num9`,** after S1f.6.6, since its conversions name `std.arith`'s numbers. It touches no file
+   of the nested theory.
+6. **S1f.6.20, the word problems,** any time after S1f.6.6. It is the first program that uses the calculator
+   among other relations, and where the need for nested expressions shows or does not.
+7. **S1f.6.14, expressions,** only on the user's ruling, after S1f.6.20's examples.
+8. **S1f.6.7 and S1f.6.8, the two extensions.** Each is a module over the natural-number theory and does not
    edit it. Negative numbers come first, because a rational's numerator is one.
-4. **S1f.6.9, the width.** It may run beside S1f.6.7 and S1f.6.8 if it changes no file they touch. If the user
-   rules a new representation, it is applied to all four operations and both extensions.
-5. **S1f.6.10, the investigation, last.**
-6. **S1f.6.20, the word problems**, added by the user on 2026-11-11, any time after S1f.6.6: it needs the four
-   operations and not the extensions. Its number leaves 11 to 19 unassigned, as the user gave it.
+9. **S1f.6.9, what is left of the width.** It may run beside the extensions.
+10. **S1f.6.10, the investigation, last.**
 
 ## Findings stay in the phase
 
 What a stage finds in the engine or the language outside its scope is a row of [`findings.md`](findings.md),
 not of F25 (the user's ruling of 2026-11-11: F25 was for P1f.7 alone). Each row is shown to the user and is
-fixed, ruled or given an owner before the phase closes.
+fixed, ruled or given an owner before the phase closes. After the re-plan each of E-1 to E-7 names the stage
+that takes it, or says *open, shown, no owner yet*.
 
 ## Acceptance
 
-- **Importable.** A program imports the theory and computes the user's four operations on fixed-width numbers
-  written as `(num9 0 0 0 1 2 3 0 7 8)`. Subtraction and division each give two numbers.
+- **Importable.** A program imports `std.arith` and computes the four operations and comparison on nested
+  numbers of any length written `(n (n z 1) 2)`. Subtraction and division each give two numbers. A program
+  imports `std.num9` and computes the same on `(num9 0 0 0 1 2 3 0 7 8)`.
+- **A library of facts is importable flat,** `std.digits` being the first, and the register's rows for the old
+  behaviour are fixed.
 - **Search-free, held by a test.** On every arithmetic program in the corpus:
   - H has no candidate, k_s is 1 and R is {∅}, and no fork happens;
   - the answer is root's fixpoint, and it is the same under `ein solve`, `ein saturate` and `ein test`;
   - the theory writes no `absent` and no `not` premise.
-- **Right, held by a test.** Every table row, and every answer on a sample of operands, agrees with the
-  harness's integers. At a width small enough to exhaust, the test covers every operand pair.
-- **Overflow and division by zero are reported as the design rules,** never as a wrong number.
-- **The stdlib's own gates hold.** Every rule of the theory is fired by a program under `tests/stdlib/`
-  (`stdlib_coverage.rs`), every program there states an `:expect`, and `utils/stdlib_mutants.py` covers the
-  new module.
+- **Right, held by a test.** Every table row, and every answer on a sample of operands of every length up to a
+  stated bound, agrees with the harness's integers; operands with high zeros are read by value; every answer is
+  in normal form. `std.num9` is covered exhaustively at a width small enough to exhaust.
+- **The rule of the theory, held by a test.** No rule of `std.arith` joins two facts on a number, checked on the
+  rules, and a batch of requests costs in proportion to its count, by a deterministic measure of the matcher's
+  work and not by the clock.
+- **Division by zero derives its flag and then `(false)`,** each by its own rule, and never a number. Overflow
+  exists in `std.num9` only and is reported there, never as a truncated number.
+- **Malformed numbers** are flagged where the user ruled after S1f.6.12's investigation, and named on the page
+  where they cannot be.
+- **The stdlib's own gates hold.** Every rule of each module is fired by a program under `tests/stdlib/`
+  (`stdlib_coverage.rs`), every program there states an `:expect`, `utils/stdlib_mutants.py` covers the new
+  modules, and each generator's `--check` is in the gate.
 - **The extensions.** Negative and rational numbers each have a module with the same four operations, the same
-  two tests, and a normal form.
-- **The width.** The user rules the representation question, and the ruled form is built.
+  tests, and a normal form.
+- **The expression layer** is built only if the user rules it in.
 - **The investigation** is a page whose every claim carries the command that re-takes it. Any wrong answer it
   finds in the engine is a register row before anything fixes it.
 - **Every relation and rule carries a `:why`.** S1f.5.14 makes it required.
+- **`findings.md` has no row without a ruling, a fix or an owner.**
 
 ## Risks, each with what checks it
 
-- **H is not empty by default.** A relation that a rule derives is a hypothesis candidate unless something
-  closes it. Before any theory existed, a prototype of a nested-fact request answered by two rules
-  (2026-11-08, `ein saturate --dump` and `ein solve`) stored the right facts. Its `ein solve` met a cube of 21
-  candidates and could not count it. S1f.6.1 rules how the theory keeps H empty, and the search-free test holds
-  it.
-- **Rule width.** A ripple-carry adder over `num9` is one rule with a premise per column, or one rule per column
-  over positions. S1f.6.1 measures both on a prototype.
-- **The nesting limit.** The generated parser nests to 1 000 (S1f.5.5's T3). A nested little-endian number
-  (S1f.6.9) is bounded by it.
-- **The 2^128 commitments limit** stops a describe run whose state route cannot count. A search-free program
-  never meets it, and the test that holds H empty holds this too.
+- **One ordinary join and a batch is quadratic again.** The rule of the theory is a discipline an author can
+  break without any answer changing. S1f.6.3's test is what fails, and every later stage extends it to its own
+  rules before it is done.
+- **A circuit is a sequence.** With a continuation on every call, depth equals firings: 220 for the prototype's
+  division, where round 2's theory had 82. A trace of a division is a long list of steps; each stage records its
+  circuit's size and depth, and S1f.6.9 states where a number is too long to be practical.
+- **A core names table rows.** With the tables as plain facts, a refutation that passed through arithmetic lists
+  the rows it used beside the request (`design.md` § G). The ruled `(false)` on division by zero reads no table,
+  so its core is the request alone; S1f.6.2 records one core that does name rows, and making cores canonical is
+  F22's.
+- **H is not empty by default.** A relation a rule derives is a hypothesis candidate unless something closes
+  it. Each module closes its own relations, and the search-free test holds it. A program's own unary or binary
+  relation beside the theory is the program's to close (the user's ruling on round 1's finding 2).
+- **The import fix moves an answer nobody expected.** Round 2's scan found no tracked program importing a module
+  that holds a fact, and did not scan the Rust test suites' inline programs. S1f.6.11's census does, and its
+  sweep compares every tracked program before and after.
+- **Detection of a malformed number costs every well-formed request.** S1f.6.12's investigation measures that
+  before anything is built, and the user rules on its table.
+- **The nesting limit.** The parser nests to 1 000, so a request holds at most 999 digits, a rule can derive
+  more, and such a state file does not load back (E-4). S1f.6.9 puts the choice to the user.
+- **The names of the theory clash with a program's.** `n`, `z` and the result relations mean what the theory
+  says once it is imported flat. S1f.6.12 establishes what a clash does today and what the module's page and
+  the loader should say.

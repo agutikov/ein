@@ -17,6 +17,9 @@ question and finding below carries its state after it. The rest of the page is r
 [§ Round 3](#round-3-2026-11-11-several-representations-at-once) at the end, and it changes the recommendation
 for question 1.
 
+**Ruled** (the same day): the user picked design K and answered every question. The record is
+[§ The rulings](#the-rulings-2026-11-11) at the end; the stage is done and the phase is re-planned to it.
+
 
 > **Moved 2026-11-11.** Where this page says a finding is a row for F25, read
 > [`findings.md`](findings.md): the user ruled the same day that F25 was for P1f.7 alone, and the rows this
@@ -1678,3 +1681,68 @@ for one, except a reader who wants `(num9 0 0 0 1 2 3 0 7 8)` on the page.
 circuits. Question 4 still follows it. Question 2's expression layer needs rewriting on K before S1f.6.2 starts.
 Question 9, how a circuit is written, now has a sixth answer for the nested shape, and it is the one that
 scales.
+
+## The rulings (2026-11-11)
+
+The user ruled after round 3. This section is the record; the three rounds above are the evidence and are kept
+as written, so where they recommend something else, this section stands. The reading of each answer into a
+ruling is the coordinator's, and the user may correct it. With it S1f.6.1 is done, and the phase's
+[README](README.md) and stage files are re-planned to it.
+
+First, on the design:
+
+> "Ok, let's pick K design"
+
+Then, on a numbered list (1 the public spelling; 2 whether `num9` ships; 3 the protocol; 4 a strict `sub` in
+expressions; 5 division by zero; 6 the import fix; 7 the tables as plain facts; 8 malformed numbers):
+
+> "1 - reading order; 2 - yes, ship num9 in stdlib, why not; 3 - ok, result facts like (sum-of X Y S) can be
+> reused for other purposes, the goal then has to be (sum-of x y ?s) with a variable on the result place, (let
+> NAME NUMBER) is ok, (let NAME Expression) is questionable, (calc E) is not function call, so (let NAME (calc
+> E)) is not the case, Ein is not Lisp, is it? 4 - yes; 5 - flag alone, but how then inference will stop after
+> flag? I expected the flag derived from division by zero and then flag cause (false), the cost is ok, program
+> contains division by zero, why we would want other queries results?; 6 - yes; 7 - yes plain facts; 8 - with
+> theory loaded names `n`, `d`, `z`, `sum-of` etc became occupated and must not be used with other meaning, so if
+> theory can detect malformed numbers - do it, what cons/objections?"
+
+| question | the user's words | the ruling | the stage |
+|---|---|---|---|
+| 1, the number's shape | "Ok, let's pick K design"; "reading order" | Nested numbers of any length in the reading-order spelling, `z` and `(n PREFIX DIGIT)`: 123078 is `(n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)`. Answers in normal form. Computed as round 3's K: accumulators in the other order, a continuation tag on every call, and no rule joining two facts on a number | [S1f.6.3](s1f.6.3_addition.md) to [S1f.6.6](s1f.6.6_division.md) |
+| 1, a second shape | "yes, ship num9 in stdlib, why not" | `num9` ships too, as a second module, `std.num9`, with its own tests | [S1f.6.13](s1f.6.13_num9.md) |
+| 2, the protocol | "result facts like (sum-of X Y S) can be reused for other purposes, the goal then has to be (sum-of x y ?s) with a variable on the result place" | A request fact answered by a result fact that repeats its operands; a goal reads it with a variable in the result's place | S1f.6.3 |
+| 2, names | "(let NAME NUMBER) is ok" | Named constants are in the core | S1f.6.3 |
+| 2, expressions | "(let NAME Expression) is questionable, (calc E) is not function call … Ein is not Lisp, is it?" | **Not ruled in.** The expression layer of round 2 stays out of the core theory. It is put back to the user as a question, once the word problems show the need | [S1f.6.14](s1f.6.14_expressions.md), waiting; [S1f.6.20](s1f.6.20_word_problems.md) |
+| 3, subtraction's two numbers | "I lean towards (a), any objections?" (round 2); no objection was found | (a): `(sub X Y)` is answered by the pair, `(diff-of X Y D R)` | [S1f.6.4](s1f.6.4_subtraction.md) |
+| 2, `sub` inside an expression | "4 - yes" | Strict, with a `negative` flag. It applies only if the expression layer is ruled in | S1f.6.14 |
+| 4, the width of a result | (follows question 1) | No width in `std.arith`. `std.num9` keeps its operands' width | [S1f.6.9](s1f.6.9_width.md), S1f.6.13 |
+| 5, division by zero | "I expected the flag derived from division by zero and then flag cause (false), the cost is ok, program contains division by zero, why we would want other queries results?" | Two steps: the request derives `(division-by-zero <request>)`, and a second rule derives `(false)` from the flag, so the trace shows both. The costs of § E are accepted | S1f.6.6 |
+| 5, overflow | not asked | Exists in `std.num9` only; the design's recommendation, a fact and no number, is that stage's default | S1f.6.13 |
+| 6, how H stays empty | "(a), it doesn't matter now actually" (round 2) | (a): the theory closes its own relations | every theory stage |
+| 7, the tables | "(a)" (round 2); "7 - yes plain facts" | Generated, with a `--check` in the gate, and written as plain facts | [S1f.6.2](s1f.6.2_digits_and_tables.md) |
+| 8, where the theory lives | "(a)" (round 2) | `std.arith` | S1f.6.3 |
+| 9, how a circuit is written | "implement all versions, will compare later"; then "let's pick K design" | K's style for the nested theory; round 1's wide rules for `std.num9` | S1f.6.3, S1f.6.13 |
+| finding 1, the flat import | "importing facts is mandatory"; "6 - yes" | Fixed, as an engine stage before the theory stages | [S1f.6.11](s1f.6.11_importing_facts.md) |
+| finding 2, the program's own relations | "I think it's ok for now … author knows what he's doing" (round 2) | Left as it is | — |
+| finding 3, malformed numbers | "if theory can detect malformed numbers - do it, what cons/objections?" | The theory detects what it can; a malformed request derives a flag and `(false)` from it. First an investigation that answers the user's question by experiment | [S1f.6.12](s1f.6.12_malformed_numbers.md) |
+| the names the theory uses | "names `n`, `d`, `z`, `sum-of` etc became occupated and must not be used with other meaning" | What a clash does today is established, and what should be said and refused is proposed | S1f.6.12 |
+
+### What is open after the rulings
+
+1. **The expression layer:** `(let NAME E)` and `(calc E)`. The user finds it questionable; it is not built until
+   ruled. [S1f.6.14](s1f.6.14_expressions.md) holds the question and its options.
+2. **What `(let NAME NUMBER)` does, with no expressions.** The reading taken as the default: a request may name
+   an operand, `(add price qty)`, and its answer repeats the names, `(sum-of price qty S)`, so a goal can be
+   `(sum-of price qty ?s)`; the same request written with the numbers is a separate request with its own answer.
+   The other reading: a name is only a label, `(is price N)`, and requests take numbers alone. Looking a name up
+   is a join on a name, which is indexed, so the default does not break the rule of the theory.
+3. **The decisions the re-plan took, each the user's to overrule:** the tables in a module of their own,
+   `std.digits`, which both arithmetic modules import; `std.num9` as the second module's name, one shipped
+   width, relation names of its own, and conversion requests to and from `std.arith`'s numbers but no routing
+   between the two; overflow in `std.num9` as a fact and not `(false)`.
+4. **The import fix's six design points,** defaulted to round 2's recommendations
+   ([S1f.6.11](s1f.6.11_importing_facts.md)).
+5. **Malformed numbers:** what can be detected without negation, at what cost, and whether the loader should
+   hold a nested fact to its relation's declared arity. S1f.6.12's first task answers by experiment and stops
+   for the user. With it, whether a module may reserve its names.
+6. **A number past 999 digits** (E-4): say it, flag it, or change the engine. [S1f.6.9](s1f.6.9_width.md) puts
+   it to the user.

@@ -928,6 +928,17 @@ constrained-reasoning research.
   owned by F21, F22, F24 or S1f.10.6; no zebra program's output moved; the
   defaults Q-M1f.114 to .134 stand unreviewed, and what the stages found
   outside their scope is F25's R-1 to R-8. **P1f.6, the calculator, is next.**
+  **P1f.6 started on 2026-11-11.** Its design stage, S1f.6.1, ran three rounds
+  of experiments on a prototype under `build/s1f.6/prototype/` and closed on
+  the user's rulings
+  ([`design.md` § The rulings](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md)):
+  a number is a nested fact of digit names in reading order, `(n (n (n z 1) 2)
+  3)`; the theory's circuits never join two facts on a number, so a batch is
+  linear; tables are plain facts, which needs a flat import to bring a
+  module's facts, the engine fix S1f.6.11, first; `num9` ships as a second
+  module; division by zero derives a flag and `(false)` from it. The phase
+  keeps what it finds in its own `findings.md`, and S1f.6.20, word problems,
+  is its first application.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

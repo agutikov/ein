@@ -3,9 +3,13 @@
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
 Not started. Its first task **stops for the user** with example programs before any theory is written.
-**Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations, and the protocol the user rules on
-[`design.md`](design.md)'s question 2. It does not need the extensions, S1f.6.7 to S1f.6.9; where a problem
-would need a negative number it says so ([§ What it may find](#what-it-may-find)).
+**Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations. The protocol is ruled
+([the rulings](design.md#the-rulings-2026-11-11)): request facts, result facts read by a goal with a variable in
+the result's place, and named constants. **No expression layer is in the core:** every *"together means sum"* is a
+rule of the problem's theory from facts to a request. How that reads, and how often a quantity needs two or three
+operations, is the evidence [S1f.6.14](s1f.6.14_expressions.md)'s question to the user waits for. It does not need
+the extensions, S1f.6.7 to S1f.6.9; where a problem would need a negative number it says so
+([§ What it may find](#what-it-may-find)).
 
 ## The instruction
 

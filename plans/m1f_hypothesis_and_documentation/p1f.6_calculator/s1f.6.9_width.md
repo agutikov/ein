@@ -1,53 +1,47 @@
-# S1f.6.9 — Width: overflow detection, width extension, and numbers written in reverse order
+# S1f.6.9 — What is left of the width: how long a number may be
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-08. **Stops for the user** on the representation before building it.
-**Depends on:** [S1f.6.6](s1f.6.6_division.md). It may run beside S1f.6.7 and S1f.6.8 where it changes no file
-they touch.
+**Status:** planned 2026-11-08; **restated 2026-11-11**: the representation question it was to put to the user is ruled
+([the rulings](design.md#the-rulings-2026-11-11)), and most of the stage dissolved with it.
+**Depends on:** [S1f.6.6](s1f.6.6_division.md). It may run beside S1f.6.7 and S1f.6.8.
 
-## What it settles
+## What dissolved
 
-The user: *"with overflow detection or width extension if it is possible, I'm not sure now but maybe relation
-could have variadic arguments then can write numbers in reverse order e.g. (num 8 7 0 3 2 1) == 123078"*.
+The user, 2026-11-08: *"with overflow detection or width extension if it is possible, I'm not sure now but maybe
+relation could have variadic arguments then can write numbers in reverse order e.g. (num 8 7 0 3 2 1) ==
+123078"*.
 
-1. **Overflow detection, audited.** Each operation reports overflow as S1f.6.1 ruled, and the audit checks
-   every operation and extension. A test holds that no result is ever a truncated number with no flag.
-2. **Width extension within the fixed form.**
-   - Widening: `num9` to `num18` by padding zeros on the left.
-   - Operations across two widths.
-   - If the user wants them, hardware's double-width results: a sum's carry, a product's high half.
-   - Whether one set of rules can serve every width while each width is its own relation; if not, the rules per
-     width are generated, as the tables are.
-3. **The representation, three candidates:**
-   - **(a) Fixed width, `(num9 …)`.** Today's form; the width is the relation.
-   - **(b) A nested little-endian list,** `(d 8 (d 7 (d 0 (d 3 (d 2 (d 1 nil))))))` for 123078.
-     - It needs no language change: a rule matches a head digit and a tail.
-     - Carries pass from the head down the tail, so the least significant digit comes first, the order the
-       user proposed.
-     - Any width up to the generated parser's nesting limit.
-     - The circuit is recursive: one rule per operation and case, not one per column.
-   - **(c) A variadic relation,** `(num 8 7 0 3 2 1)`, written flat.
-     - This is a grammar and matcher change. A relation would take any number of arguments, and a pattern
-       would match a first argument and *the rest*, which is list matching, and Ein has none.
-     - It needs the user's ruling and its own stage. The grammar is final at P1f.5's close, so this stage only
-       specifies it.
+- **The representation** is ruled: nested, `(n PREFIX DIGIT)`, any length. No variadic relation is needed, so
+  no grammar change is asked for.
+- **Width extension** has nothing to extend: a number is as long as its digits.
+- **Overflow** exists in `std.num9` only, and its detection and its test are
+  [S1f.6.13](s1f.6.13_num9.md)'s.
+
+## What is left
+
+1. **The nesting limit.** The parser nests to 1 000, so a request can hold a number of 999 digits, while a rule
+   can derive a longer one, and a `--dump-answer` state file holding such a fact does not load back (E-4 of
+   [`findings.md`](findings.md); 999 nines + 1 on the prototype). The stage re-takes it on the shipped theory
+   and puts the choice to the user:
+   - **(a)** say it on the page and leave it: a number past 999 digits is answered and cannot be reloaded;
+   - **(b)** the theory flags an answer longer than a stated bound, as `std.num9` flags overflow;
+   - **(c)** an engine change, so that what a rule can derive the parser can read.
+   The stage's recommendation is (a) until a program needs more.
+2. **The size of a step fact.** Each step of a circuit holds its operands whole, so the text of a state grows
+   with the square of the length: the 1 000-digit sum's state file was 32 MB. The stage measures facts, bytes
+   and time by length for the four operations (10, 100 and 999 digits) and states where a run stops being
+   practical.
+3. **Words.** Four-digit words were measured in round 3 and lost their gain to the conversions on a single
+   operation. They are not built. The stage states the one case that would reopen them, a multiplication or a
+   division that stays in words throughout, with its measurement if S1f.6.10 asks for long numbers.
 
 ## Tasks
 
-1. **The overflow audit and its test.**
-2. **Width extension,** for the ruled fixed form, with its tests.
-3. **The representation, on a prototype.** Addition, and multiplication if it is reachable, in (b), measured
-   against (a) by firings and rounds on the same operands. Then (c) written as a grammar proposal with real
-   programs: what a rule over a variadic number would look like, and what the matcher would need.
-4. **The stop.** Show the user (a), (b) and (c) with their programs and measures, and recommend one.
-5. **After the ruling:**
-   - (a) stays: nothing more.
-   - (b): the four operations and both extensions move to it, or gain conversions between the two forms, as
-     ruled.
-   - (c): a stage is specified for the grammar change, outside this phase.
+1. The limit re-taken, the three options shown with their probes, and the user's ruling applied.
+2. The cost by length, as a table with its command.
+3. The pages: the limit and the cost in the module's header and in `stdlib/README.md`.
 
 ## Acceptance
 
-- The overflow audit and its test.
-- Width extension for the fixed form, tested.
-- The user's ruling on the representation, recorded with their words, and built or specified as they ruled.
+- The limit and the cost by length are stated with the commands that re-take them.
+- E-4 is ruled or owned.

@@ -1,15 +1,17 @@
 # S1f.6.7 — Extension: negative numbers as a positive and a negative part, simplified until one is zero
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-08.
+**Status:** planned 2026-11-08; restated 2026-11-11 to [the rulings](design.md#the-rulings-2026-11-11): the numbers
+under it are nested, of any length, and its rules follow S1f.6.3's rule of the theory.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md).
 
 ## What it builds
 
 The user's proposal: *"numbers containing 2 parts - positive and negative, that can be simplified until one of
-them is zero"*. An integer is a pair of natural numbers `(int P N)` whose value is P − N. Simplifying a pair is
+them is zero"*. An integer is a pair of natural numbers `(int P N)` whose value is P − N, each part a number of `std.arith`,
+`z` or `(n PREFIX DIGIT)`. Simplifying a pair is
 S1f.6.4's subtraction of N from P, whose two numbers under S1f.6.1's question 3 (a) are already the simplified
-pair. So the normal form has one part zero, zero itself is `(int 0 0)`, and every integer has exactly one normal
+pair. So the normal form has one part zero, zero itself is `(int z z)`, and every integer has exactly one normal
 form.
 
 Each operation works on the parts with the natural-number circuits, then simplifies:
@@ -25,7 +27,10 @@ Each operation works on the parts with the natural-number circuits, then simplif
 
   The recommendation is Euclidean, the only one whose remainder is always a natural number.
 
-It is a module over the natural-number theory, which it does not edit, and it is search-free as the theory is.
+It is a module over the natural-number theory, which it does not edit, and it is search-free as the theory is. Its
+rules carry tags as the theory's do, and S1f.6.3's test of the rule of the theory covers the module. If the
+expression layer is ruled in ([S1f.6.14](s1f.6.14_expressions.md)), a `sub` whose second operand is the larger
+has a value here.
 
 ## Tasks
 
@@ -34,7 +39,7 @@ It is a module over the natural-number theory, which it does not edit, and it is
 3. **The tests:**
    - as for the natural numbers, against the harness's signed integers;
    - every sign combination at the exhausting width;
-   - an unsimplified operand, such as `(int 5 3)`, which must give the same answers as `(int 2 0)`.
+   - an unsimplified operand, such as (5, 3), which must give the same answers as (2, 0).
 4. **The example:** S1f.6.1's programs with negative operands.
 
 ## Acceptance
