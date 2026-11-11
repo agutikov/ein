@@ -192,6 +192,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.177](#q-m1f177--a-calls-tag-is-its-request-and-what-an-extension-writes-of-stdariths) | a call's tag is its request, and what an extension writes of `std.arith`'s | **defaulted 2026-11-12 (S1f.6.7), the user's to revise: the request is the tag; the module starts `std.arith`'s walks and writes `operand` and `operand-is`**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 | [Q-M1f.178](#q-m1f178--the-harness-of-stdint-a-sibling-file-exhaustive-on-one-digit-parts) | the harness of `std.int` | **defaulted 2026-11-12 (S1f.6.7): a sibling file, `int_theory.rs`, exhaustive on parts of one digit**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 | [Q-M1f.179](#q-m1f179--the-remainder-of-an-integer-division) | the remainder of an integer division: Euclidean, truncated or floored | **open, the user's; not defaulted.** Integer division is not built until it is ruled; the stage recommends Euclidean and shows the three as rules and computed examples; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.180](#q-m1f180--the-names-of-stdrat) | the names of `std.rat` | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: a prefix, `rat-add` answered by `rat-sum-of` and so on, `rat-div` by `rat-quot-of`, one rational; the entry `rat-arith`**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
+| [Q-M1f.181](#q-m1f181--what-stdrat-reads-as-an-operand) | what `std.rat` reads as an operand | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: a rational written out, `(rat (int P N) D)`, or a name through `std.arith`'s `let`; an integer or a natural number is not promoted**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
+| [Q-M1f.182](#q-m1f182--a-zero-denominator-is-stdariths-division-by-zero) | a zero denominator is `std.arith`'s division by zero | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: the same flag relation, the request as written, on any operand of any request, and on a `rat-div` by a rational that is zero**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
+| [Q-M1f.183](#q-m1f183--lowest-terms-by-stdariths-division-and-what-it-costs) | lowest terms by `std.arith`'s division, and what it costs | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: Euclid's chain over `div-call`, one reduction at the end of each operation, none in a comparison; 492 firings for 1/2 + 1/3**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
+| [Q-M1f.184](#q-m1f184--the-harness-of-stdrat-and-the-sizes-memory-allows) | the harness of `std.rat`, and the sizes memory allows | **defaulted 2026-11-12 (S1f.6.8): 28 operands exhaustively, 250 requests a saturation, batches of 100, 400 and 1 200**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3486,4 +3491,89 @@ on 924 requests against Python, with the table of answers and the cost of each, 
 (`python3 build/s1f.6.7/intdiv_proto.py`, 2026-11-12). With (a) there is a second question: whether R is
 answered as an integer, `(int R z)`, or as a number of `std.arith`. S1f.6.8 does not wait for this: the rationals
 never divide integers.
+
+### Q-M1f.180 — The names of `std.rat`
+
+**Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1. The stage file fixes the pair, `(rat Z D)`, and no other name.
+
+- **(a) `std.int`'s scheme, with `rat-`:** `rat-add` answered by `rat-sum-of`, `rat-sub` by `rat-diff-of`,
+  `rat-mul` by `rat-product-of`, `rat-div` by `rat-quot-of`, `rat-cmp` by `rat-cmp-of`, `rat-neg` by `rat-neg-of`,
+  `rat-simplify` by `rat-simple-of`; the module `std.rat`, its entry `rat-arith`; the two signs a tag carries,
+  `pos` and `neg`.
+- **(b)** `frac-`, or `q-`.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** `rat-quot-of` has **one** answer after its operands, where
+`std.arith`'s `quot-of` has two: a quotient of rationals is exact and has no remainder, so the same word names a
+relation of another arity under another prefix. `pos` and `neg` are two more names the module occupies; the
+orders `gt` and `lt` could have served and would have read worse in a trace.
+
+### Q-M1f.181 — What `std.rat` reads as an operand
+
+**Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1.
+
+- **(a) A rational written out, `(rat (int P N) D)`, or a name** that `std.arith`'s `(let NAME (rat (int P N) D))`
+  states. The numerator is an integer written out, simplified or not; the denominator a number, with or without
+  high zeros.
+- **(b) An integer or a natural number too,** promoted to a denominator of 1.
+- **(c) A name inside the pair,** `(rat debt (n z 4))`.
+
+**Defaulted 2026-11-12: (a), the user's to revise**, as Q-M1f.175 for the integers and for its reasons. 5 is
+written `(rat (int (n z 5) z) (n z 1))`. `rat_theory.rs`'s `an_integer_is_not_a_rational_operand` pins the
+silence. A tower in which each kind of number is an operand of the next is the expression layer's question
+(S1f.6.14).
+
+### Q-M1f.182 — A zero denominator is `std.arith`'s division by zero
+
+**Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1. The stage file: *a zero denominator, written by a program or reached by
+dividing by a zero rational, is reported, as S1f.6.1 ruled for division by zero*: a flag, then a rule that derives
+`(false)`.
+
+- **(a) The same flag,** `(division-by-zero REQUEST)`, the request as written, and `std.arith`'s own rule from it
+  to `(false)`: for a request any operand of which has a denominator of zero, whichever the operation, and for a
+  `rat-div` by a rational that is zero.
+- **(b) A flag of the module's own,** `(zero-denominator REQUEST)`, with a second rule to `(false)`.
+- **(c) The flag only where the denominator is used:** a comparison or a product by 3/0 has an arithmetic
+  reading; a sum's cross products do too.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** A rational over zero is a division by zero written down, and
+one flag relation is one thing for a program's rule to match and one rule that concludes `(false)` in the whole
+calculator, which `arith_theory.rs` holds of `std.arith` and `rat_theory.rs` of this module. Each operand's
+denominator is compared with zero as it is looked up, by `std.arith`'s comparison walk, so a zero written with
+digits is zero: a firing a digit of each denominator, on every request. The flag is derived only for an operand
+of a **request**: a `(let NAME (rat Z z))` nobody asks about is not flagged, as nothing in the calculator is
+computed that was not asked for. The cost is as ruled for `std.arith`: root is dead and every other query of the
+program loses its answer.
+
+### Q-M1f.183 — Lowest terms by `std.arith`'s division, and what it costs
+
+**Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1 and T3.
+
+- **(a) Euclid's chain over `div-call`,** as the stage file says, and two more divisions by what it finds; one
+  reduction at the end of each operation, on the parts as written, and none in a comparison.
+- **(b) A greatest common divisor by subtraction and halving** (Stein's), which needs no division: walks of
+  `std.arith` only, more steps and cheaper ones.
+- **(c) Operands reduced first,** so that the products are of smaller numbers.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** Measured (`rat_theory.rs`'s `the_circuit_of_each_operation`):
+1/2 + 1/3 is 492 firings, 2/3 × 3/4 is 459, 2/4 simplified 334, and 1/2 against 1/3 is 76. Most of a request is
+lowest terms, and most of that is `std.arith`'s division computing its divisor's nine multiples before its first
+digit, some 70 firings for a divisor of one digit, on each of the chain's steps and on the two divisions after
+it: a rational over a small denominator pays for a long division's preparation five or six times. (b) is the
+alternative if rationals are used at volume; it was not prototyped. What a program can do today is compare
+before it computes: a comparison reduces nothing.
+
+### Q-M1f.184 — The harness of `std.rat`, and the sizes memory allows
+
+**Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T3. The stage file: *every operand pair at the exhausting width*. A request
+of two one-digit fractions is some 450 to 650 firings and a stored fact about a kilobyte (E-26), so a program of
+4 000 such requests is two gigabytes.
+
+- **(a) A small exhausting set, in programs of bounded size:** the 28 fractions with a numerator from −3 to 3
+  over a denominator from 1 to 4, every pair under each of the five operations, 250 requests a saturation; a
+  sample past it; and batches of 100, 400 and 1 200 in `arith_batch.rs`, with a tolerance of 15 % where the
+  others take 5 %, since the length of Euclid's chain varies from request to request.
+- **(b) The other modules' sizes,** 4 000 requests a batch.
+
+**Defaulted 2026-11-12: (a).** The claim a batch holds is a proportion, and a join on a number multiplies the
+work by the batches' ratio, 4 and 12, which a tolerance of 15 % still catches.
 

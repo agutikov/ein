@@ -50,6 +50,12 @@
 0    examples/arith/num9_overflow.ein :: saturate
 0    examples/arith/num9_overflow.ein :: solve
 0    examples/arith/num9_overflow.ein :: test
+0    examples/arith/rat.ein :: render rules
+0    examples/arith/rat.ein :: saturate
+0    examples/arith/rat.ein :: saturate --dump
+0    examples/arith/rat.ein :: solve
+0    examples/arith/rat.ein :: solve --trace {out}/trace.md
+0    examples/arith/rat.ein :: test
 0    examples/arith/sub.ein :: render rules
 0    examples/arith/sub.ein :: saturate
 0    examples/arith/sub.ein :: saturate --dump
@@ -1491,6 +1497,10 @@
 0    stdlib/num9.ein :: render rules
 0    stdlib/num9.ein :: saturate
 0    stdlib/num9.ein :: solve
+0    stdlib/rat.ein :: render constraints
+0    stdlib/rat.ein :: render rules
+0    stdlib/rat.ein :: saturate
+0    stdlib/rat.ein :: solve
 0    stdlib/slots.ein :: render constraints
 0    stdlib/slots.ein :: render rules
 0    stdlib/slots.ein :: saturate
@@ -1942,6 +1952,71 @@
 0    tests/stdlib/num9/13_chain.ein :: saturate
 0    tests/stdlib/num9/13_chain.ein :: solve
 0    tests/stdlib/num9/13_chain.ein :: test
+0    tests/stdlib/rat/01_simplify.ein :: render constraints
+1    tests/stdlib/rat/01_simplify.ein :: render rules
+0    tests/stdlib/rat/01_simplify.ein :: saturate
+0    tests/stdlib/rat/01_simplify.ein :: solve
+0    tests/stdlib/rat/01_simplify.ein :: test
+0    tests/stdlib/rat/02_neg.ein :: render constraints
+1    tests/stdlib/rat/02_neg.ein :: render rules
+0    tests/stdlib/rat/02_neg.ein :: saturate
+0    tests/stdlib/rat/02_neg.ein :: solve
+0    tests/stdlib/rat/02_neg.ein :: test
+0    tests/stdlib/rat/03_add.ein :: render constraints
+1    tests/stdlib/rat/03_add.ein :: render rules
+0    tests/stdlib/rat/03_add.ein :: saturate
+0    tests/stdlib/rat/03_add.ein :: solve
+0    tests/stdlib/rat/03_add.ein :: test
+0    tests/stdlib/rat/04_sub.ein :: render constraints
+1    tests/stdlib/rat/04_sub.ein :: render rules
+0    tests/stdlib/rat/04_sub.ein :: saturate
+0    tests/stdlib/rat/04_sub.ein :: solve
+0    tests/stdlib/rat/04_sub.ein :: test
+0    tests/stdlib/rat/05_mul.ein :: render constraints
+1    tests/stdlib/rat/05_mul.ein :: render rules
+0    tests/stdlib/rat/05_mul.ein :: saturate
+0    tests/stdlib/rat/05_mul.ein :: solve
+0    tests/stdlib/rat/05_mul.ein :: test
+0    tests/stdlib/rat/06_div.ein :: render constraints
+1    tests/stdlib/rat/06_div.ein :: render rules
+0    tests/stdlib/rat/06_div.ein :: saturate
+0    tests/stdlib/rat/06_div.ein :: solve
+0    tests/stdlib/rat/06_div.ein :: test
+0    tests/stdlib/rat/07_cmp.ein :: render constraints
+1    tests/stdlib/rat/07_cmp.ein :: render rules
+0    tests/stdlib/rat/07_cmp.ein :: saturate
+0    tests/stdlib/rat/07_cmp.ein :: solve
+0    tests/stdlib/rat/07_cmp.ein :: test
+0    tests/stdlib/rat/08_unsimplified.ein :: render constraints
+1    tests/stdlib/rat/08_unsimplified.ein :: render rules
+0    tests/stdlib/rat/08_unsimplified.ein :: saturate
+0    tests/stdlib/rat/08_unsimplified.ein :: solve
+0    tests/stdlib/rat/08_unsimplified.ein :: test
+0    tests/stdlib/rat/09_named_and_chained.ein :: render constraints
+0    tests/stdlib/rat/09_named_and_chained.ein :: render rules
+0    tests/stdlib/rat/09_named_and_chained.ein :: saturate
+0    tests/stdlib/rat/09_named_and_chained.ein :: solve
+0    tests/stdlib/rat/09_named_and_chained.ein :: test
+0    tests/stdlib/rat/10_div_by_zero_rational.ein :: render constraints
+1    tests/stdlib/rat/10_div_by_zero_rational.ein :: render rules
+0    tests/stdlib/rat/10_div_by_zero_rational.ein :: saturate
+0    tests/stdlib/rat/10_div_by_zero_rational.ein :: solve
+0    tests/stdlib/rat/10_div_by_zero_rational.ein :: test
+0    tests/stdlib/rat/11_zero_denominator_first.ein :: render constraints
+1    tests/stdlib/rat/11_zero_denominator_first.ein :: render rules
+0    tests/stdlib/rat/11_zero_denominator_first.ein :: saturate
+0    tests/stdlib/rat/11_zero_denominator_first.ein :: solve
+0    tests/stdlib/rat/11_zero_denominator_first.ein :: test
+0    tests/stdlib/rat/12_zero_denominator_second.ein :: render constraints
+1    tests/stdlib/rat/12_zero_denominator_second.ein :: render rules
+0    tests/stdlib/rat/12_zero_denominator_second.ein :: saturate
+0    tests/stdlib/rat/12_zero_denominator_second.ein :: solve
+0    tests/stdlib/rat/12_zero_denominator_second.ein :: test
+0    tests/stdlib/rat/13_zero_denominator_one_operand.ein :: render constraints
+1    tests/stdlib/rat/13_zero_denominator_one_operand.ein :: render rules
+0    tests/stdlib/rat/13_zero_denominator_one_operand.ein :: saturate
+0    tests/stdlib/rat/13_zero_denominator_one_operand.ein :: solve
+0    tests/stdlib/rat/13_zero_denominator_one_operand.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

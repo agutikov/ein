@@ -1265,6 +1265,43 @@ constrained-reasoning research.
   modules, run and compared. No engine source moved and no existing
   program's answer (`python3 build/s1f.6.7/sweep.py`, 719 files,
   2026-11-12); the register is unmoved.
+  **S1f.6.8, rational numbers, ran to its end on 2026-11-12**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md#t1-record-2026-11-12),
+  Q-M1f.180 to .184 defaulted). **`std.rat` is the stdlib's twelfth module**,
+  [`stdlib/rat.ein`](stdlib/rat.ein), written by hand over `std.int` and
+  `std.arith`, which it calls and edits neither: a rational is `(rat Z D)`,
+  an integer `(int P N)` over a natural number that is not zero, and every
+  answer is **in lowest terms**, zero written 0 over 1. Requests
+  `rat-simplify`, `rat-neg`, `rat-add`, `rat-sub`, `rat-mul`, `rat-div` and
+  `rat-cmp`, answered by `rat-simple-of`, `rat-neg-of`, `rat-sum-of`,
+  `rat-diff-of`, `rat-product-of`, `rat-quot-of` (one rational, exact, no
+  remainder) and `rat-cmp-of`; imported by one name, `(import std.rat
+  :symbols (rat-arith))`, whose closing rule names `int-arith` and `arith`. A
+  sum is the cross products over the product of the denominators; **a
+  comparison is the cross products of the difference and nothing more**; a
+  quotient is a product with the divisor turned over; and lowest terms is
+  Euclid's chain, each step a division of `std.arith`. **It needed no
+  division of integers**, so it did not wait for Q-M1f.179. **A zero
+  denominator is a division by zero**: a request with such an operand,
+  however the zero is written, and a `rat-div` by a rational that is zero,
+  derive `std.arith`'s flag, `(division-by-zero REQUEST)`, and its rule
+  derives `(false)`; no rule of the module concludes `(false)`. Every rule
+  has one premise. 1/2 + 1/3 is 492 firings and 1/2 against 1/3 is 76
+  (`cargo test -p ein-infer --test rat_theory the_circuit`, 2026-11-12): most
+  of a request is lowest terms, a long division's nine multiples computed
+  for each step of the chain (Q-M1f.183). `ein-infer/tests/rat_theory.rs`
+  holds it to exact fractions, every pair of 28 small fractions under five
+  operations; **its sizes are small on purpose**, 250 requests a saturation
+  and batches of 100, 400 and 1 200 in `arith_batch.rs`, since a stored fact
+  costs a kilobyte (E-26). Thirteen programs under `tests/stdlib/rat/`
+  activate the 56 rules, 307 of 307 over the stdlib, four of them claiming
+  `(false)`; `arith_search_free.rs` reads what a division by zero may be
+  from three lists, `DIVIDES`, `RESTS_ON` and `FLAGGERS`; and the mutation
+  sweep kills all 44 of its mutants, 361 of 411, the bank unmoved (`python3
+  utils/stdlib_mutants.py --check`, 2026-11-12).
+  `examples/arith/rat.ein` is the example. No engine source moved and no
+  existing program's answer (`python3 build/s1f.6.8/sweep.py`, 729 files,
+  2026-11-12); the register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,
@@ -1445,7 +1482,10 @@ constrained-reasoning research.
   S1f.6.7 `std.int` extends it** (2026-11-12): integers, `(int P N)`, by
   rules of one premise each over `std.arith`'s walks, imported as `(import
   std.int :symbols (int-arith))`; a module over a module names the lower
-  one's entry in its own closing rule;
+  one's entry in its own closing rule. **Since S1f.6.8 `std.rat` extends
+  that**: rationals in lowest terms, `(rat Z D)`, imported as `(import
+  std.rat :symbols (rat-arith))`; a zero denominator is `std.arith`'s
+  division by zero;
   [`stdlib/README.md`](stdlib/README.md) has a section for each.
 - **`tests/`** — **the ein-lang test suites**, and since M1c S1c.1.4 a third
   corpus root beside `examples/` and `stdlib/`: a `.ein` here with no
@@ -1491,8 +1531,8 @@ constrained-reasoning research.
   S1f.6.3's `std.arith`, 114 of 114 since S1f.6.4's subtraction and
   comparison, 130 of 130 since S1f.6.5's multiplication, 166 of 166
   since S1f.6.6's division, 213 of 213 since S1f.6.13's `std.num9` and
-  250 of 250 since S1f.6.7's `std.int`
-  (`cat stdlib/*.ein | grep -c '^(rule '`, 2026-11-12), with no `examples/`
+  250 of 250 since S1f.6.7's `std.int` and 307 of 307 since S1f.6.8's
+  `std.rat` (`cat stdlib/*.ein | grep -c '^(rule '`, 2026-11-12), with no `examples/`
   entry contributing — and every program here states an expectation. **Activation is
   two events since S1d.2.4**: `fire` for a saturation rule and `owe` for an
   obligation one, which can never produce a `fire`. Scoping the

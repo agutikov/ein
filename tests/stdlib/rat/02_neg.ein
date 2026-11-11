@@ -1,0 +1,38 @@
+;;; `std.rat` — negation: the numerator's parts change places. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(rat-neg X)` is answered by `(rat-neg-of X S)`: S is 0 - X, in lowest
+;;; terms.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; `rat-neg-ask` asks what the operand stands for, `rat-neg-start` puts it in
+;;; lowest terms with its numerator's parts exchanged, and `rat-neg-answer`
+;;; hands the answer over.
+;;;
+;;;   3/4 → -3/4     -3/4 → 3/4     0/5 → 0/1     2/4 → -1/2
+;;;   (1 less 4)/6 → 1/2
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `rat-neg-of`'s whole extent. An operand that is not in lowest terms is
+;;; negated by value and answered in lowest terms.
+
+(import std.rat :symbols (rat-arith))
+
+(rat-neg (rat (int (n z 3) z) (n z 4)))
+(rat-neg (rat (int z (n z 3)) (n z 4)))
+(rat-neg (rat (int z z) (n z 5)))
+(rat-neg (rat (int (n z 2) z) (n z 4)))
+(rat-neg (rat (int (n z 1) (n z 4)) (n z 6)))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-neg-of ?x ?s)
+       :goal-text "{?x} negated is {?s}"
+       :expect (model (rat-neg-of (rat (int (n z 3) z) (n z 4)) (rat (int z (n z 3)) (n z 4)))
+                      (rat-neg-of (rat (int z (n z 3)) (n z 4)) (rat (int (n z 3) z) (n z 4)))
+                      (rat-neg-of (rat (int z z) (n z 5)) (rat (int z z) (n z 1)))
+                      (rat-neg-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 1)) (n z 2)))
+                      (rat-neg-of (rat (int (n z 1) (n z 4)) (n z 6)) (rat (int (n z 1) z) (n z 2)))))

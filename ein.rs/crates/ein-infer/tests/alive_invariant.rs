@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 79] = [
+const SEEDED: [(&str, &[&str]); 94] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -428,6 +428,128 @@ const SEEDED: [(&str, &[&str]); 79] = [
     (
         "tests/stdlib/int/08_named_and_chained.ein",
         &["`z`, in (let balance (int (n (n z 4) 0) z))"],
+    ),
+    // M1f S1f.6.8 — `std.rat`: `z` as above, and the two signs, `pos` and `neg`,
+    // which only the module's rules write, in a tag.
+    (
+        "examples/arith/rat.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "stdlib/rat.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, matched by rule `operand-zero`",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/01_simplify.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-simplify (rat (int (n z 2) z) (n z 4)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/02_neg.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-neg (rat (int (n z 3) z) (n z 4)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/03_add.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/04_sub.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/05_mul.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/06_div.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int (n z 3) z) (n z 4)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/07_cmp.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/08_unsimplified.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/09_named_and_chained.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (let half (rat (int (n z 1) z) (n z 2)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/10_div_by_zero_rational.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/11_zero_denominator_first.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/12_zero_denominator_second.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/13_zero_denominator_one_operand.ein",
+        &[
+            "`neg`, asserted by rule `rat-reduce-neg`",
+            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
     ),
     (
         "stdlib/elim.ein",

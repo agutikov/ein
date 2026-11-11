@@ -88,6 +88,7 @@ alone.
 | [`stdlib/arith/`](stdlib/arith/) | 89 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/num9/`](stdlib/num9/) | 47 | `std.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibnum9-wide-rules-and-a-generated-module) |
 | [`stdlib/int/`](stdlib/int/) | 37 | `std.int`, integers as a positive and a negative part over `std.arith` (M1f S1f.6.7): eight programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; and operands by name with two rules of the program's own. See [below](#stdlibint-a-theory-over-a-theory) |
+| [`stdlib/rat/`](stdlib/rat/) | 57 | `std.rat`, rational numbers in lowest terms over `std.int` and `std.arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand. See [below](#stdlibrat-lowest-terms-and-four-ways-to-divide-by-zero) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -303,6 +304,46 @@ bank is unmoved (`python3 utils/stdlib_mutants.py --check`, 2026-11-12).
 Integer division has no program here because it is not built: its remainder
 convention is the user's question (Q-M1f.179).
 
+### `stdlib/rat/`: lowest terms, and four ways to divide by zero
+
+M1f [S1f.6.8](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md).
+`std.rat` is the calculator's second extension: a rational is `(rat Z D)`, an
+integer of `std.int` over a natural number, answered in lowest terms. What
+`stdlib/int/` says of its programs holds of these: every rule of the module
+has one premise, nine of the thirteen claim R = {∅}, and right is held from
+outside the language, by `ein-infer/tests/rat_theory.rs` against exact
+fractions. Each claim here was computed by Python's fractions when the
+program was drafted.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `01_simplify.ein` | `rat-operand`, `rat-operand-check`, `-found`, `rat-simplify-ask`, `-start`, `-answer`, `rat-norm-numerator`, `-reduce`, `rat-reduce-pos`, `-neg`, `rat-gcd-step`, `-next`, `-end`, `rat-lowest-numerator`, `-denominator`, `-pos`, `-neg`: eleven operands, 1071/462 = 51/22 by a chain of three divisions | a common divisor that is not the greatest; a zero that is not 0/1; a sign lost in the reduction |
+| `02_neg.ein` | `rat-neg-ask`, `-start`, `-answer` | a negation not put in lowest terms |
+| `03_add.ein` | `rat-operand-second`, `rat-add-ask`, `-start`, `-answer`, the seven rules of the cross products, `rat-sum-denominator`, `rat-sum-norm`: eight sums in every combination of signs | a cross product with the wrong denominator; a part on the wrong side |
+| `04_sub.ein` | `rat-sub-ask`, `-start`, `-answer`: seven differences | the second numerator's parts not exchanged, which is a sum |
+| `05_mul.ein` | `rat-mul-ask`, `-start`, `-answer`, `rat-mul-numerator`, `-denominator`, `-reduce`: seven products | a product not reduced; a sign |
+| `06_div.ein` | `rat-div-ask`, `-start`, `-answer`, `rat-div-pos`, `rat-div-neg`: six quotients | the divisor not turned over; its sign lost |
+| `07_cmp.ein` | `rat-cmp-ask`, `-start`, `-answer`, `rat-cmp-sides`: ten comparisons, 22/7 against 355/113 | the denominators ignored; the order of a negative pair |
+| `08_unsimplified.ein` | the stage's own case: 2/4 and 1/2 under each of the five operations | an operand read by its spelling |
+| `09_named_and_chained.ein` | names through `std.arith`'s `let`; two rules of the program's own, each deriving a request from an answer | a named rational left unanswered; a derived request left unanswered |
+| `10_div_by_zero_rational.ein` | `rat-div-zero`: a divisor that is 0 over 5; `(solve :expect (false))` | a division by zero answered, or passed over in silence |
+| `11_zero_denominator_first.ein` | `rat-operand-zero`, `rat-zero-first` | a rational over zero computed with |
+| `12_zero_denominator_second.ein` | `rat-zero-second`: the operand named, the zero written `(n (n z 0) 0)` | a zero read by its spelling |
+| `13_zero_denominator_one_operand.ein` | `rat-zero-only`: `(rat-neg X)` with X over nothing | a request of one operand that is not checked |
+
+**Four programs are dead on purpose**, one a rule that derives the flag. Each
+states a sum beside the request that kills it, and claims only `(solve
+:expect (false))`: root's own fixpoint derives `(false)`, R is empty, and
+`arith_search_free.rs` holds each to that, the request named in the core and
+`std.arith`'s rule under `refuted by`. A core names the request, a `let`
+where the operand is named, and the rows of `cl` a denominator was compared
+with zero through.
+
+**The mutation sweep kills every mutant of the module**, 44 of 44, on its first
+run, and the bank is unmoved (`python3 utils/stdlib_mutants.py --check`,
+2026-11-12). No request here is another the other way round where both would
+be answered alike, `stdlib/num9/`'s lesson.
+
 ### Five things about how they are written
 
 **Naming a relation closes it.** An expectation lists a relation's *complete*
@@ -500,6 +541,12 @@ every one**, on its first run (`python3 utils/stdlib_mutants.py`, M1f
 Every rule of the module has one premise and no guard, so its mutants are the
 exchange families: a request's two operands, a hand-over's tag and answer.
 **The bank is unmoved**, 50 lines.
+
+**361 of 411 on 2026-11-12: `std.rat` added 44 mutants and the suite kills
+every one**, on its first run (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.8](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md)).
+As `std.int`'s, they are the exchange families. **The bank is unmoved**, 50
+lines.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

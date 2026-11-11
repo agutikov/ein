@@ -1,0 +1,102 @@
+;;; Fractions, computed by saturation alone: 1/2 + 1/3 = 5/6, 3/4 x 2/3 =
+;;; 1/2, and 2/4 is 1/2. M1f P1f.6 (S1f.6.8).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.rat` is the third theory of the calculator, over `std.int` (`int.ein`
+;;; beside this file) and `std.arith` (`add.ein`): a rational is an integer
+;;; over a natural number that is not zero, and every answer is in lowest
+;;; terms.
+;;;
+;;;   (rat Z D)              a rational: the integer Z over the number D.
+;;;                          1/2 is (rat (int (n z 1) z) (n z 2)), and -3/4
+;;;                          is (rat (int z (n z 3)) (n z 4))
+;;;   (rat-add X Y)          a request fact; (rat-sum-of X Y S) answers it
+;;;   (rat-sub X Y)          answered by (rat-diff-of X Y S)
+;;;   (rat-mul X Y)          answered by (rat-product-of X Y S)
+;;;   (rat-div X Y)          answered by (rat-quot-of X Y S): one rational,
+;;;                          exact, and no remainder
+;;;   (rat-cmp X Y)          answered by (rat-cmp-of X Y O), O lt, eq or gt
+;;;   (rat-neg X)            answered by (rat-neg-of X S)
+;;;   (rat-simplify X)       answered by (rat-simple-of X S)
+;;;   (let NAME (rat Z D))   a named rational; a request may name its operands
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; Nothing is guessed. A sum is the cross products over the product of the
+;;; denominators, and then lowest terms: the greatest common divisor by
+;;; Euclid's chain, each step a division of `std.arith`, and both terms
+;;; divided by it.
+;;;
+;;;   1/2 + 1/3:   1 x 3 + 1 x 2 = 5, over 2 x 3 = 6
+;;;                gcd(5, 6): 5 = 0 x 6 + 5;  6 = 1 x 5 + 1;  5 = 5 x 1 + 0
+;;;                so 1, and the answer is 5/6
+;;;
+;;; A comparison is cheaper than any of them: the cross products are
+;;; compared, and nothing is divided.
+;;;
+;;; ── The program's own rules ────────────────────────────────────────────
+;;;
+;;; A recipe for four takes 3/4 of a cup of flour, and the cook is baking
+;;; for six: `scale` is 6/4, written as it is said and not in lowest terms.
+;;; The rule `enough` asks whether the flour needed, which the theory
+;;; computed, is more than the cup the cook has, and `go-shopping` reads the
+;;; answer.
+;;;
+;;; `ein solve examples/arith/rat.ein --trace T.md` writes every step as a
+;;; sentence.
+
+(import std.rat :symbols (rat-arith))
+
+(relation short-of Name Rational
+  :why "there is not enough {?1}: {?2} is needed")
+(__closed__ short-of)
+
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
+(rat-sub (rat (int (n z 1) z) (n z 3)) (rat (int (n z 1) z) (n z 2)))
+(rat-div (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 4)))
+(rat-simplify (rat (int (n z 2) z) (n z 4)))
+
+(let flour (rat (int (n z 3) z) (n z 4)))
+(let scale (rat (int (n z 6) z) (n z 4)))
+(let cup   (rat (int (n z 1) z) (n z 1)))
+(rat-mul flour scale)
+
+(rule enough ()
+  :match  (rat-product-of flour scale ?needed)
+  :assert (rat-cmp ?needed cup)
+  :why    "{?needed} of a cup is needed: is that more than the cup there is?")
+
+(rule go-shopping ()
+  :match  (rat-cmp-of ?needed cup gt)
+  :assert (short-of flour ?needed)
+  :why    "{?needed} is more than a cup")
+
+(solve :expect (region (model)))
+
+(query :goal (rat-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3))
+                                  (rat (int (n z 5) z) (n z 6)))))
+
+(query :goal (rat-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (rat-diff-of (rat (int (n z 1) z) (n z 3)) (rat (int (n z 1) z) (n z 2))
+                                   (rat (int z (n z 1)) (n z 6)))))
+
+(query :goal (rat-quot-of ?x ?y ?s)
+       :goal-text "{?x} divided by {?y} = {?s}"
+       :expect (model (rat-quot-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 4))
+                                   (rat (int z (n z 2)) (n z 3)))))
+
+(query :goal (rat-simple-of ?x ?s)
+       :goal-text "{?x} is {?s}"
+       :expect (model (rat-simple-of (rat (int (n z 2) z) (n z 4)) (rat (int (n z 1) z) (n z 2)))))
+
+(query :goal (rat-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (rat-product-of flour scale (rat (int (n z 9) z) (n z 8)))))
+
+(query :goal (short-of ?what ?needed)
+       :goal-text "there is not enough {?what}: {?needed} is needed"
+       :expect (model (short-of flour (rat (int (n z 9) z) (n z 8)))))

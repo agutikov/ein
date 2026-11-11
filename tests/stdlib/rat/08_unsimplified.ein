@@ -1,0 +1,57 @@
+;;; `std.rat` — an operand that is not in lowest terms answers as its normal
+;;; form does. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An operand is read by value. 2/4 and 1/2 are the one rational, and every
+;;; operation gives the two the same answer, in lowest terms; the request is
+;;; repeated as it was written, so they are two requests with two result
+;;; facts.
+;;;
+;;;   1/2 + -3/5 = -1/10     1/2 - -3/5 = 11/10     1/2 x -3/5 = -3/10
+;;;   1/2 / -3/5 = -5/6      1/2 against -3/5: gt
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Five claims, each a result relation's whole extent: two facts, one for
+;;; each spelling of a half, with the same last argument.
+
+(import std.rat :symbols (rat-arith))
+
+(rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
+(rat-sub (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
+(rat-mul (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
+(rat-div (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
+(rat-cmp (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
+(rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
+(rat-mul (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
+(rat-div (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
+(rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (rat-sum-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 1)) (n (n z 1) 0)))
+                      (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 1)) (n (n z 1) 0)))))
+
+(query :goal (rat-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (rat-diff-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int (n (n z 1) 1) z) (n (n z 1) 0)))
+                      (rat-diff-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int (n (n z 1) 1) z) (n (n z 1) 0)))))
+
+(query :goal (rat-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (rat-product-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 3)) (n (n z 1) 0)))
+                      (rat-product-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 3)) (n (n z 1) 0)))))
+
+(query :goal (rat-quot-of ?x ?y ?s)
+       :goal-text "{?x} divided by {?y} = {?s}"
+       :expect (model (rat-quot-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 5)) (n z 6)))
+                      (rat-quot-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 5)) (n z 6)))))
+
+(query :goal (rat-cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (rat-cmp-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) gt)
+                      (rat-cmp-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) gt)))

@@ -343,6 +343,51 @@ operand as written. A natural number in an integer's place is never answered.
 `int-cmp-call`, with the hand-over `int-done`, are for a theory built on this
 one; the tags and `int-rule` are in the state and are not an interface.
 
+## `std.rat` — rational numbers in lowest terms (requests and results)
+
+M1f P1f.6 (S1f.6.8). The calculator's second extension, written over
+`std.int` and `std.arith`, which it calls and does not edit: computed by
+saturation alone, with no hypothesis, no `absent`, no guard and one stratum.
+The module-level account, with what a request costs, is
+[`stdlib/README.md` § `std.rat`](../../../../stdlib/README.md#stdrat-rational-numbers-in-lowest-terms-m1f-s1f68).
+
+```lisp
+(import std.rat :symbols (rat-arith))
+```
+
+`rat-arith` is the closing rule, the theory's one entry; it names `int-arith`
+and `arith`, so the one name brings the two theories below it.
+
+**The rational.** `(rat Z D)`: Z an integer of `std.int`, `(int P N)`, and D a
+number of `std.arith` that is not zero. 1/2 is `(rat (int (n z 1) z) (n z
+2))`. The normal form is in lowest terms, zero written 0 over 1; an operand is
+read by value and every answer is in normal form.
+
+| fact | who writes it | meaning |
+|------|---------------|---------|
+| `(rat-simplify X)` | the program: a **request** | X in lowest terms is asked |
+| `(rat-simple-of X S)` | the theory: the **result** | S is X's normal form |
+| `(rat-neg X)` | the program: a request | 0 − X is asked |
+| `(rat-neg-of X S)` | the theory: the result | S is X negated |
+| `(rat-add X Y)` | the program: a request | X + Y is asked |
+| `(rat-sum-of X Y S)` | the theory: the result | X + Y = S |
+| `(rat-sub X Y)` | the program: a request | X − Y is asked |
+| `(rat-diff-of X Y S)` | the theory: the result | X − Y = S |
+| `(rat-mul X Y)` | the program: a request | X × Y is asked |
+| `(rat-product-of X Y S)` | the theory: the result | X × Y = S |
+| `(rat-div X Y)` | the program: a request | X divided by Y is asked |
+| `(rat-quot-of X Y S)` | the theory: the result | X ÷ Y = S, one rational, exact; there is no remainder |
+| `(rat-cmp X Y)` | the program: a request | X is compared with Y |
+| `(rat-cmp-of X Y O)` | the theory: the result | O is the name `lt`, `eq` or `gt`, by value; nothing is reduced or divided for it |
+| `(division-by-zero REQUEST)` | the theory: a **flag**, `std.arith`'s | an operand of the request, as written, has a denominator of zero, or the request is a `rat-div` by a rational that is zero. `std.arith`'s rule derives `(false)` from the flag, so the program is a contradiction |
+
+An operand is a rational written out, `(rat (int P N) D)`, or a name that
+`std.arith`'s `let` states; the answer repeats the operand as written. An
+integer or a natural number in a rational's place is never answered. The
+calls `rat-norm`, `rat-mul-call` and `rat-cross`, with the hand-overs
+`rat-done` and `rat-cross-is`, are for a theory built on this one; the rest
+is in the state and is not an interface.
+
 ## See also
 
 - [`stdlib/README.md`](../../../../stdlib/README.md)

@@ -48,8 +48,8 @@
 //! and its bound to [`BOUND`]. Each operation is measured in batches of its
 //! own (S1f.6.4).
 //!
-//! `std.num9` (S1f.6.13) and `std.int` (S1f.6.7) have a test of their own
-//! each, below, of the same shape.
+//! `std.num9` (S1f.6.13), `std.int` (S1f.6.7) and `std.rat` (S1f.6.8) have a
+//! test of their own each, below, of the same shape.
 
 use ein_core::Terms;
 use ein_core::counters;
@@ -485,3 +485,128 @@ fn a_batch_of_integer_requests_costs_in_proportion_to_its_count() {
         }
     }
 }
+
+// ── std.rat (S1f.6.8) ──────────────────────────────────────────────
+
+const IMPORT_RAT: &str = "(import std.rat :symbols (rat-arith))\n";
+
+/// `std.rat`'s requests over two rationals, each with its result relation
+/// and what a request may cost at the smallest batch, in `candidates`: a
+/// little above the measure, as [`BOUND`] is.
+const REQUESTS_RAT: [(&str, &str, f64); 5] = [
+    ("rat-add", "rat-sum-of", BOUND_RAT_ADD),
+    ("rat-sub", "rat-diff-of", BOUND_RAT_ADD),
+    ("rat-mul", "rat-product-of", BOUND_RAT_MUL),
+    ("rat-div", "rat-quot-of", BOUND_RAT_MUL),
+    ("rat-cmp", "rat-cmp-of", BOUND_RAT_CMP),
+];
+const BOUND_RAT_ADD: f64 = 10000.0;
+const BOUND_RAT_MUL: f64 = 9500.0;
+const BOUND_RAT_CMP: f64 = 900.0;
+
+/// The batches of `std.rat`. Smaller than the others': lowest terms is a
+/// chain of divisions, some hundreds of firings a request, and a stored fact
+/// costs about a kilobyte (E-26 of P1f.6's `findings.md`).
+const SIZES_RAT: [usize; 3] = [100, 400, 1200];
+
+/// A rational of the batch: a numerator from 1 to 9 and either sign, never
+/// zero, so that it may divide, over a denominator from 2 to 9. Two-digit
+/// terms are more than twice the firings, 2.4 million for 1 600 sums.
+fn rational(rng: &mut u64) -> String {
+    let mut draw = |n: u64| {
+        *rng = rng
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
+        (*rng >> 33) % n
+    };
+    let spell = |v: u64| {
+        let mut out = String::from("z");
+        for ch in v.to_string().chars() {
+            out = format!("(n {out} {ch})");
+        }
+        out
+    };
+    let (num, den, negative) = (1 + draw(9), 2 + draw(8), draw(2) == 1);
+    if negative {
+        format!("(rat (int z {}) {})", spell(num), spell(den))
+    } else {
+        format!("(rat (int {} z) {})", spell(num), spell(den))
+    }
+}
+
+fn batch_rat(op: &str, count: usize) -> String {
+    let mut rng = 0x5146_0608_u64;
+    let mut src = String::from(IMPORT_RAT);
+    let mut seen = std::collections::BTreeSet::new();
+    while seen.len() < count {
+        let request = format!("({op} {} {})\n", rational(&mut rng), rational(&mut rng));
+        if seen.insert(request.clone()) {
+            src.push_str(&request);
+        }
+    }
+    src
+}
+
+/// **The rationals keep the rule of the theory.** Every rule of `std.rat`
+/// has one premise (`rat_theory.rs` holds that on the text): the cross
+/// products, Euclid's chain and the two divisions by what it finds are each
+/// a call of `std.arith` or `std.int` under a tag. Here: a request of each
+/// operation costs the same `candidates` and the same firings at 400 and at
+/// 1 200 requests as at 100.
+#[test]
+fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
+    let sizes = SIZES_RAT;
+    for (op, result, bound) in REQUESTS_RAT {
+        let work: Vec<Work> = sizes
+            .iter()
+            .map(|&n| saturate(&batch_rat(op, n), result))
+            .collect();
+        for (n, w) in sizes.iter().zip(&work) {
+            assert_eq!(w.answers, *n, "{n} `{op}` requests, each answered");
+            eprintln!(
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
+                w.firings,
+                per_request(w.firings, *n),
+                w.candidates,
+                per_request(w.candidates, *n)
+            );
+        }
+        let base_firings = per_request(work[0].firings, sizes[0]);
+        let base = per_request(work[0].candidates, sizes[0]);
+        for (n, w) in sizes.iter().zip(&work).skip(1) {
+            let firings = per_request(w.firings, *n);
+            assert!(
+                firings <= base_firings * TOLERANCE_RAT,
+                "`{op}`: firings per request grew with the batch: {base_firings:.1} at {} \
+                 and {firings:.1} at {n}",
+                sizes[0]
+            );
+            if cfg!(feature = "counters") {
+                let c = per_request(w.candidates, *n);
+                assert!(
+                    c <= base * TOLERANCE_RAT,
+                    "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.rat \
+                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     `rat_theory.rs` names the rule if it is written as two premises",
+                    sizes[0]
+                );
+            }
+        }
+        if cfg!(feature = "counters") {
+            assert!(base > 0.0, "the counters are on and counted nothing");
+            assert!(
+                base < bound,
+                "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
+                sizes[0]
+            );
+        }
+    }
+}
+
+/// What a request of `std.rat` costs depends on its operands more than a sum
+/// of two nine-digit numbers does: the length of Euclid's chain varies from
+/// request to request. A hundred requests are a small sample of that, so the
+/// per-request work at a larger batch may exceed the smallest's by this
+/// factor; a join on a number multiplies it by the batches' ratio, 4 and 12.
+const TOLERANCE_RAT: f64 = 1.15;

@@ -1,0 +1,21 @@
+;;; `std.rat` — a request of one operand whose denominator is zero. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `rat-simplify` and `rat-neg` look their one operand up as the others look
+;;; up two, and `rat-zero-only` derives the flag for either. Here `(rat-neg
+;;; X)` with X written 5 over nothing.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make. The sum beside
+;;; the request is computed in root's state all the same, and no query of the
+;;; program has an answer.
+
+(import std.rat :symbols (rat-arith))
+
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
+(rat-neg (rat (int (n z 5) z) z))
+
+(solve :expect (false))

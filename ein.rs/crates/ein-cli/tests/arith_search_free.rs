@@ -17,14 +17,15 @@
 //! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
 //!
 //! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
-//! theories, `std.arith`, `std.num9` (S1f.6.13) and `std.int` (S1f.6.7), and
-//! their examples. A
+//! theories, `std.arith`, `std.num9` (S1f.6.13), `std.int` (S1f.6.7) and
+//! `std.rat` (S1f.6.8), and their examples. A
 //! program joins by being put there, and an operation by adding its result
 //! relation to [`RESULTS`]; nothing else here names a file.
 //!
 //! **A program that divides by zero** (S1f.6.6) is the one kind whose R is
 //! not {∅}: it claims [`DEAD`], and [`division_by_zero`] holds what it is
-//! held to instead, an empty R decided by root alone.
+//! held to instead, an empty R decided by root alone. A rational with a
+//! denominator of zero is such a division (S1f.6.8).
 //!
 //! What this file does not ask is whether the answers are *right*: that is
 //! `ein-infer/tests/arith_theory.rs`, against Rust's integers.
@@ -36,18 +37,20 @@ use std::process::Command;
 use ein_corpus::{Scratch, ein_files_under, repo_root};
 
 /// Where the arithmetic programs live: `std.arith`'s tests, `std.num9`'s
-/// (S1f.6.13), `std.int`'s (S1f.6.7), and the examples of all.
-const ROOTS: [&str; 4] = [
+/// (S1f.6.13), `std.int`'s (S1f.6.7), `std.rat`'s (S1f.6.8), and the examples
+/// of all.
+const ROOTS: [&str; 5] = [
     "tests/stdlib/arith",
     "tests/stdlib/num9",
     "tests/stdlib/int",
+    "tests/stdlib/rat",
     "examples/arith",
 ];
 
 /// The relations an answer is a fact of: `std.arith`'s five results, and
 /// `std.num9`'s five, its overflow flag and its conversions' answers, and
-/// `std.int`'s six.
-const RESULTS: [&str; 20] = [
+/// `std.int`'s six and `std.rat`'s seven.
+const RESULTS: [&str; 27] = [
     "sum-of",
     "diff-of",
     "cmp-of",
@@ -68,14 +71,49 @@ const RESULTS: [&str; 20] = [
     "int-diff-of",
     "int-product-of",
     "int-cmp-of",
+    "rat-simple-of",
+    "rat-neg-of",
+    "rat-sum-of",
+    "rat-diff-of",
+    "rat-product-of",
+    "rat-quot-of",
+    "rat-cmp-of",
 ];
 
 /// The theories: a program under [`ROOTS`] imports one, or several.
-const THEORIES: [&str; 3] = [
+const THEORIES: [&str; 4] = [
     "(import std.arith ",
     "(import std.num9 ",
     "(import std.int ",
+    "(import std.rat ",
 ];
+
+/// The requests a division by zero can be, by the start of their text: a
+/// dead program's core names exactly one.
+const DIVIDES: [&str; 3] = ["(div ", "(div9 ", "(rat-"];
+
+/// What else such a core may hold: the `let` of a named operand, and the
+/// table rows a zero written with digits was read through, `md` where
+/// `std.arith` puts a divisor into normal form, `cl` where `std.rat`
+/// compares a denominator with zero, `fs` where `std.int` simplifies a
+/// divisor's numerator.
+const RESTS_ON: [&str; 4] = ["(let ", "(md ", "(cl ", "(fs "];
+
+/// The rules that derive the flag, each with the start of the flag it
+/// derives.
+const FLAGGERS: [(&str, &str); 6] = [
+    ("(division-by-zero (div ", "div-by-zero"),
+    ("(division-by-zero (div9 ", "div9-by-zero"),
+    ("(division-by-zero (rat-", "rat-div-zero"),
+    ("(division-by-zero (rat-", "rat-zero-only"),
+    ("(division-by-zero (rat-", "rat-zero-first"),
+    ("(division-by-zero (rat-", "rat-zero-second"),
+];
+
+/// The relations a division's answer is a fact of: a dead program stores
+/// none for the request that killed it. A program of rationals is asked one
+/// other request, a sum, so that its state is seen to be computed.
+const QUOTIENTS: [&str; 3] = ["(quot-of ", "(quot9-of ", "(rat-quot-of "];
 
 /// What a program that divides by zero claims: root is dead and R is empty.
 const DEAD: &str = "(solve :expect (false))";
@@ -181,16 +219,15 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         .collect();
     assert_eq!(
         core.iter()
-            .filter(|f| f.starts_with("(div ") || f.starts_with("(div9 "))
+            .filter(|f| DIVIDES.iter().any(|h| f.starts_with(h)))
             .count(),
         1,
         "{file}: the core names the request: {core:?}"
     );
     assert!(
-        core.iter().all(|f| ["(div ", "(div9 ", "(let ", "(md "]
-            .iter()
-            .any(|h| f.starts_with(h))),
-        "{file}: the core is the request, a `let` and rows of `md`: {core:?}"
+        core.iter()
+            .all(|f| DIVIDES.iter().chain(&RESTS_ON).any(|h| f.starts_with(h))),
+        "{file}: the core is the request, a `let` and table rows: {core:?}"
     );
     assert_eq!(
         region["refuted_by"],
@@ -216,8 +253,7 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         })
     };
     assert!(
-        fact("(division-by-zero (div ", "div-by-zero")
-            || fact("(division-by-zero (div9 ", "div9-by-zero"),
+        FLAGGERS.iter().any(|(start, rule)| fact(start, rule)),
         "{file}: the flag, by its own rule"
     );
     assert!(
@@ -228,7 +264,7 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         !saturate
             .stdout
             .lines()
-            .any(|l| l.trim().starts_with("(quot-of ") || l.trim().starts_with("(quot9-of ")),
+            .any(|l| QUOTIENTS.iter().any(|q| l.trim().starts_with(q))),
         "{file}: a division by zero is never answered with a number"
     );
 
