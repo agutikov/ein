@@ -120,4 +120,4 @@ F24's page had said no dump depends on the form; it is restated.
 The goldens gained the four files' lines: `corpus_exits.txt` (two runs each, exit 0) and `corpus_shapes.md5`. No
 engine source changed for this stage.
 
-F24's § Rows names the three and carries what this T1 added.
+F24's § Rows names the three and carries what this T1 added. Filed in `43587986`, gate green (`build/gate-s1f.7.12.log`).

@@ -132,7 +132,7 @@ position is the call's name: the parser keeps none for a form.
 30 s), on the release binary at `91b12be8` and on the stage's: no file's output differs, every zebra program among
 them (`diff -rq`, 2026-11-11, before the witnesses were written).
 
-**The rows** are `fixed`, each `now` the refusal's line: 301 fixed, 16 open and 1 not wrong (`grep '^status'
+**The rows** are `fixed` by `43587986`, each `now` the refusal's line: 301 fixed, 16 open and 1 not wrong (`grep '^status'
 corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11), the three more open rows S1f.7.9's.
 
 **The pin**, `ein-cli/tests/macro_facts.rs`: fifteen refused shapes and the eight witnesses, each on twenty
@@ -161,4 +161,4 @@ takes the fact, and the loader refuses it.
   shape, and no `(settled …)` line in any accepted program's `saturate --dump`.
 - *Every witness is a register row; no corpus answer moves but the witnesses'*: W86's eight; the sweep; the two
   goldens gained the witnesses' lines alone.
-- *`./run_tests.sh` green*: on the stage's commit.
+- *`./run_tests.sh` green*: on `43587986` (`build/gate-s1f.7.12.log`) and on the records' commit.

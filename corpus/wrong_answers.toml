@@ -16032,7 +16032,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A top-level `(settled Ann)` beside `(macro settled (?g) (paid ?g))` is stored as a fact of `settled`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16065,7 +16065,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A macro's call inside a fact, `(says (settled Ann))`, is stored as written. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16098,7 +16098,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(not (settled Bob))` beside `(paid Bob)` is alive: the negation is of a fact of `settled`, not of `(paid Bob)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16131,7 +16131,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(unknown (paid Bob))` with `std.macro`'s `unknown` imported is stored as a fact. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16164,7 +16164,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(unknown (paid Bob))` with no import is stored as a fact, where a rule's `:match` writing the same is refused. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16197,7 +16197,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A claim that lists `(says (settled Ann))` loads and fails. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16230,7 +16230,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): A region claim that lists `(says (settled Ann))` loads and fails. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
@@ -16263,7 +16263,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.12 (T1f.7.12.2, 2026-11-11): `(relation settled Guest)` beside `(macro settled …)` loads, and its fact is stored where no premise reads it. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.12.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "43587986"
 by     = "S1f.7.12 (T1f.7.12.3): `ein_ir::from_ir`'s `refuse_macro_facts` refuses a written fact that is or holds, at any depth, a form headed by a macro's name, one the program declares or imports or `std.macro`'s where it imports none of that name, and a `(relation …)` declared under a declared macro's name; `refuse_macro_claims` the same inside a fact a claim lists"
 date   = "2026-11-11"
 
