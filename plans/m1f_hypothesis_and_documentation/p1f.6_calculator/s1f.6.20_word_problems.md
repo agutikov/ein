@@ -102,6 +102,35 @@ How such a program is synthesised from the sentence is not this stage's, as the 
 written by hand, and [M2](../../m2_nl_to_ir/README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11)
 takes it as an instance of the output it wants.
 
+### The problem is a model, and says where it ends
+
+The user, 2026-11-11, on the variant with a remainder (13 apples, a box holds 3):
+
+> of course, 13 doesn't fit into 4 boxes of 3, so there are still potentially the gap, do we have to fill all
+> boxes and leave the remainder or we have to pack everything and accept partial box occupation? The problem is
+> intentionally ignores other real-world expansions like: every item has dimentions that may fit or not into
+> boxes, boxes can cost but we still can put every item in separate box - is "need" means minimal or not?
+> Because the real world is potentially infinite, while the problem and theory is a model.
+
+So the variant stays, and it is a **gap of a second kind**. The first kind is a missing quantity (Alice's
+apples before). This one is a missing **reading**: every number is stated, and the question's word, *need*,
+does not say which computation answers it. The page shows, on a prototype, what the program says for it:
+
+- **The readings the theory holds are named**, each a rule with its `:why`: *fill whole boxes and leave the
+  rest* (4 boxes, 1 apple over), *pack everything and accept a box that is not full* (5 boxes), and that
+  *need* is the least number of boxes and not any number that suffices (13 boxes, one apple each, also packs
+  everything).
+- **Where the problem does not choose between them, the answer says so**, as it does for a missing quantity:
+  either both answers, each under its named reading, or no answer and the reading named as what is missing.
+  Which of the two is a question for the stop. Where 12 ÷ 3 leaves nothing over the readings agree, and the
+  program says that the answer does not depend on the choice.
+- **What the model leaves out is the theory's to state, once, and not each problem's.** The theory counts
+  things and boxes by number alone: no sizes, no cost, no shape. That is a list of assumptions the theory
+  carries as text a run can print, so an answer can be read as *4 boxes, in a model where a box holds any 3
+  apples*. The stage does not try to detect what the world would add: the world is not bounded and the model
+  is, which is the user's point. It detects only a gap **inside** the model, a quantity or a reading the
+  theory's own rules ask for and the problem does not give.
+
 **The questions the stop puts to the user**, each with a recommendation computed on the prototype:
 
 1. **How a problem is written.** A problem has states and events in an order (*has*, then *gave*, then
@@ -118,6 +147,9 @@ takes it as an instance of the output it wants.
 3. **How an assumption is written and reported:** a fact with a marker the trace prints, an hrule, or a
    second program beside the first.
 4. **Where the theory lives**, and what it is called.
+6. **A missing reading: both answers, or none.** Whether the two readings are written as hypotheses, so that
+   the answer is a region of two states and the read-out's projection classes are the two answers, or as two
+   derived answers each marked with its reading, or as a named gap and no answer. Each is tried.
 5. **Which readings of a word the theory holds**, where a word has two (*gave* a number of things against
    *gave* all; *together* over the people named against everyone in the problem).
 
