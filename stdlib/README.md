@@ -128,7 +128,7 @@ imports the theory and states requests the universe has no candidate, R is
 numbers (the user's ruling of 2026-11-06): nothing in the engine knows what
 `7` is.
 
-**It begins with addition** (S1f.6.3); subtraction, comparison,
+**Addition** (S1f.6.3), **subtraction and comparison** (S1f.6.4);
 multiplication and division are the phase's next stages and join this module.
 
 ```lisp
@@ -143,6 +143,8 @@ multiplication and division are the phase's next stages and join this module.
 |---|---|
 | **the number** | `z`, zero, or `(n PREFIX DIGIT)`, ten times the prefix plus the digit, so it reads as written: 42 is `(n (n z 4) 2)`. Any length: no width, no overflow. The normal form has no high zero; an operand written with high zeros is read by value, and every answer is in normal form |
 | **the protocol** | a request fact `(add X Y)` is answered by a result fact that repeats its operands, `(sum-of X Y S)`. A goal reads it with a variable in the result's place, and a rule of the program may match it. Nothing is computed that was not asked for |
+| **subtraction** | `(sub X Y)` is answered by `(diff-of X Y D R)`, **two numbers**: D is X − Y where X is not the smaller and `z` otherwise, and R is what X is short by, Y − X, where X is the smaller and `z` otherwise. One of the two is always `z`, both when X = Y. The theory has no negative number, and R is its place: a rule that matches `(diff-of X Y z (n ?p ?a))` holds exactly where X is the smaller, with no negation written |
+| **comparison** | `(cmp X Y)` is answered by `(cmp-of X Y O)`, O one of the names `lt`, `eq`, `gt`, by value: 5 and 005 are `eq` |
 | **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name no `let` states is never answered |
 | **the one entry** | `arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
 
@@ -158,6 +160,17 @@ continuation as the TAG, a nested fact holding what the caller needs next.
 is 21 deep (`arith_theory.rs`'s `the_circuit_of_one_addition`); 4 000 sums of
 numbers of up to nine digits saturate in 110 ms (`python3
 build/s1f.6.3/batch.py`, 2026-11-11).
+
+**Subtraction is two walks side by side,** X − Y and Y − X over the full
+subtractor's table, since which number is the smaller is not known before the
+top column and nothing is guessed. The walk that ends with no borrow hands
+its answer over; the other derives `(short TAG)` and no number. 123078 − 4567
+is 28 firings and 21 deep, and so is the reverse. **Comparison is one walk**
+over the comparator's table that builds no number and hands over `(order-is
+TAG O)`: 13 firings for the same pair (`arith_theory.rs`'s
+`the_circuit_of_one_subtraction_and_one_comparison`). 4 000 subtractions
+saturate in 150 ms and 4 000 comparisons in 74 ms (`python3
+build/s1f.6.4/batch.py`, 2026-11-11).
 
 **The rule of the theory: no rule joins two facts on a number.** A rule has
 one premise that holds numbers; its other premises are rows of `std.digits`
@@ -175,19 +188,26 @@ The one stated exception is `operand-name`, a join with a `let` on the
 *name*, behind a `(named ?x)` check that keeps a number operand from walking
 the `let` facts.
 
-**What holds the answers.** `arith_theory.rs` holds every sum to Rust's
-integers: all pairs up to 120, a sample of every pair of lengths up to 30
-digits, carries through every length, and operands padded with high zeros,
-each request answered exactly once and in normal form.
+**What holds the answers.** `arith_theory.rs` holds every operation to Rust's
+integers, a row of its `OPS` each: all pairs up to 120, a sample of every
+pair of lengths up to 30 digits with equal operands and operands one apart at
+every length, carries and borrows through every length, operands padded with
+high zeros, and requests by name, each request answered exactly once and in
+normal form.
 [`ein-cli/tests/arith_search_free.rs`](../ein.rs/crates/ein-cli/tests/arith_search_free.rs)
 holds the search-free claim on every program under `tests/stdlib/arith/` and
 `examples/arith/`. [`examples/arith/add.ein`](../examples/arith/add.ein) is
-the program to read first.
+the program to read first, and [`sub.ein`](../examples/arith/sub.ein) the
+second.
 
-**The names it occupies.** Imported flat, `z`, `n`, `b`, `let`, `add`,
-`sum-of`, the circuit's `named`, `operand`, `operand-is`, `add-walk`, `strip`,
-`turn`, `done`, the tags `sum`, `add-first`, `add-second`, and `arith-rule` mean what
-the module says. Only `n`, `z`, `let`, the requests and the results are its
+**The names it occupies.** Imported flat, `z`, `n`, `b`, `let`, the requests
+`add`, `sub` and `cmp`, the results `sum-of`, `diff-of` and `cmp-of`, the
+orders `lt`, `eq` and `gt`, the circuit's `named`, `operand`, `operand-is`,
+`add-walk`, `sub-walk`, `cmp-walk`, `strip`, `turn`, `done`, `short`,
+`order-is`, the tags (`sum`, `difference`, `shortfall`, `order`, and each
+request's `-first` and `-second`), `arith-rule`, and the tables `fa`, `fs`,
+`cl` and `nz` mean what the module says; the module's header has the list.
+Only `n`, `z`, `let`, the requests, the results and the three orders are its
 interface. What a clash does, and what a malformed number does, is the
 phase's S1f.6.12.
 
@@ -213,8 +233,8 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — half a second, and **96 of 96** since `std.arith`'s 19
-joined the 77 (M1f S1f.6.3), which is a number this page may
+them activated — half a second, and **114 of 114** since `std.arith`'s 37
+joined the 77 (M1f S1f.6.3 and S1f.6.4), which is a number this page may
 state exactly because `every_stdlib_rule_is_activated_by_a_program` fails
 the day it stops being true (`cat stdlib/*.ein | grep -c '^(rule '` is the
 denominator). `python3 utils/stdlib_census.py --check` is the same census with
@@ -252,7 +272,7 @@ install-relative import could not find it.
 | module | file | provides | stage |
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
-| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition so far ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 |
+| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, and comparison `(cmp-of X Y lt|eq|gt)` so far ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3, S1f.6.4 |
 | `std.digits` | [`digits.ein`](digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.digits`](#stddigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |

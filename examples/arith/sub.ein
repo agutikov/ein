@@ -1,0 +1,84 @@
+;;; A difference both ways round, and a comparison, computed by saturation
+;;; alone: 123078 - 4567 = 118511, and 4567 is short of 123078 by 118511.
+;;; M1f P1f.6 (S1f.6.4).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.arith` is school arithmetic written in Ein over the digit tables of
+;;; `std.digits` (`add.ein` beside this file is the introduction). The theory
+;;; has natural numbers only, so a subtraction is answered by two numbers:
+;;;
+;;;   (sub X Y)            a request fact: X - Y is asked
+;;;   (diff-of X Y D R)    the answer. D is X - Y where X is not the smaller,
+;;;                        and zero otherwise; R is what X is short by, Y - X,
+;;;                        where X is the smaller, and zero otherwise
+;;;   (cmp X Y)            a request fact: X is compared with Y
+;;;   (cmp-of X Y O)       the answer: O is `lt`, `eq` or `gt`
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; Nothing is guessed. Which of two numbers is the smaller is not known
+;;; before their top column, so the circuit subtracts both ways at once, each
+;;; a walk from the units through the full subtractor's table. One walk ends
+;;; with no borrow and hands its digits over; the other ends with a borrow
+;;; and has no answer:
+;;;
+;;;     1 2 3 0 7 8          8 - 7 is 1;  7 - 6 is 1;  0 - 5 is 5, borrow 1;
+;;;   -     4 5 6 7          3 - 4 - 1 is 8, borrow 1;  2 - 1 is 1;  then 1
+;;;   ─────────────
+;;;     1 1 8 5 1 1
+;;;
+;;; A comparison is one walk from the units that carries the order of the
+;;; digits below; a column whose digits differ overrules it.
+;;;
+;;; ── The program's own rule ─────────────────────────────────────────────
+;;;
+;;; `stock` and `ordered` are named constants. The rule `cannot-ship` reads
+;;; the second number of the answer: it matches a shortfall that is a number
+;;; and not zero, so it holds exactly where the stock does not cover the
+;;; order, with no negation written.
+;;;
+;;; `ein solve examples/arith/sub.ein --trace T.md` writes every step as a
+;;; sentence.
+
+(import std.arith :symbols (arith))
+
+(relation missing Name Name Number
+  :why "{?1} is short of {?2} by {?3}")
+(__closed__ missing)
+
+(sub (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+(sub (n (n (n (n z 4) 5) 6) 7) (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+
+(let stock   (n (n z 4) 0))
+(let ordered (n (n z 5) 2))
+(sub stock ordered)
+(cmp stock ordered)
+
+(rule cannot-ship ()
+  :match  (diff-of ?have ?want z (n ?p ?a))
+  :assert (missing ?have ?want (n ?p ?a))
+  :why    "{?have} does not cover {?want}")
+
+(query :goal (diff-of ?x ?y ?d ?r)
+       :goal-text "{?x} - {?y} = {?d}, short by {?r}"
+       :expect (model (diff-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                               (n (n (n (n z 4) 5) 6) 7)
+                               (n (n (n (n (n (n z 1) 1) 8) 5) 1) 1)
+                               z)
+                      (diff-of (n (n (n (n z 4) 5) 6) 7)
+                               (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                               z
+                               (n (n (n (n (n (n z 1) 1) 8) 5) 1) 1))
+                      (diff-of stock ordered z (n (n z 1) 2))))
+
+(query :goal (cmp-of stock ordered ?o)
+       :goal-text "stock against ordered: {?o}"
+       :expect (model (cmp-of stock ordered lt)))
+
+(query :goal (missing ?have ?want ?by)
+       :goal-text "{?have} is short of {?want} by {?by}"
+       :expect (model (missing (n (n (n (n z 4) 5) 6) 7)
+                               (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                               (n (n (n (n (n (n z 1) 1) 8) 5) 1) 1))
+                      (missing stock ordered (n (n z 1) 2))))

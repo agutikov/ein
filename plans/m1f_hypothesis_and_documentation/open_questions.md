@@ -167,6 +167,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.152](#q-m1f152--are-stdariths-rules-written-by-hand-or-generated) | are `std.arith`'s rules written by hand or generated? | **defaulted 2026-11-11 (S1f.6.3): by hand, while a rule is not a family of nine**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
 | [Q-M1f.153](#q-m1f153--the-dot-sweeps-bound-under-the-smallest-table) | the DOT sweep's bound, under the smallest table | **defaulted 2026-11-11 (S1f.6.3): 1 000 edges, where S1f.6.2 took 1 500: a view that holds a table is past it. With Q-M1f.147, for the user to confirm**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
 | [Q-M1f.154](#q-m1f154--the-bounds-of-the-harness-against-the-integers) | the bounds of the harness against the integers | **defaulted 2026-11-11 (S1f.6.3): every pair to 120, every pair of lengths to 30 digits on a fixed-seed sample, `u128` the oracle**; [S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md) |
+| [Q-M1f.155](#q-m1f155--equal-operands-of-a-subtraction-two-walks-one-fact) | equal operands of a subtraction: two walks, one fact | **defaulted 2026-11-11 (S1f.6.4): both walks answer, and both derive the one `(diff-of X Y z z)`**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
+| [Q-M1f.156](#q-m1f156--comparison-called-with-a-tag) | comparison called with a tag | **defaulted 2026-11-11 (S1f.6.4): `(cmp-walk TAG X Y ORDER)` hands over `(order-is TAG O)`, a firing more than the prototype's, so a later theory can call it**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
+| [Q-M1f.157](#q-m1f157--each-request-looks-its-operands-up-by-rules-of-its-own) | each request looks its operands up by rules of its own | **defaulted 2026-11-11 (S1f.6.4): three rules and two tags a request, as `add` has them; addition's circuit unmoved**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
+| [Q-M1f.158](#q-m1f158--cls-column-order-and-the-index) | `cl`'s column order and the index | **defaulted 2026-11-11 (S1f.6.4): the table stays as S1f.6.2 shipped it; a comparison's column costs 100 candidates, a constant; E-12**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3090,4 +3094,57 @@ lays out is what it laid out then. With Q-M1f.147, for the user to confirm.
 **Defaulted 2026-11-11: (a).** The theory has no width, so a length is not a boundary of it: the walk at the
 thirtieth column is the walk at the third. S1f.6.9, on how long a number may be, is where the nesting limit of
 1 000 is met.
+
+### Q-M1f.155 — Equal operands of a subtraction: two walks, one fact
+
+**Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T1. The circuit subtracts both ways. When the operands are equal neither
+walk borrows, so both hand over zero.
+
+- **(a) Both answer:** `sub-answer` derives `(diff-of X Y z z)` from the one walk and `sub-answer-short` the
+  same fact from the other. One answer, with two derivations; two firings more than an unequal pair's one.
+- **(b) One walk is told to keep quiet on zero:** a rule more, or a shape test on the shortfall, `(n ?p ?a)`,
+  so that only a shortfall that is not zero answers.
+
+**Defaulted 2026-11-11: (a).** The answer is the same fact either way, the harness holds *exactly one answer a
+request*, and (b) buys two firings on equal pairs with a rule that reads less plainly.
+
+### Q-M1f.156 — Comparison called with a tag
+
+**Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T1. The prototype's comparison walk carried the request's operands and
+wrote `cmp-of` when it ran out of columns.
+
+- **(a) A tag, like every other walk:** `(cmp-walk TAG X Y ORDER)` ends in `(order-is TAG ORDER)`, and the
+  public request's rule reads `(order-is (order X Y) O)`. One firing more a request, 13 for 123078 against 4567.
+- **(b) As the prototype:** a firing fewer, and no way to call a comparison from inside the theory.
+
+**Defaulted 2026-11-11: (a).** S1f.6.7 and S1f.6.8 compare numbers inside their own circuits, and
+[S1f.6.3](p1f.6_calculator/s1f.6.3_addition.md#for-the-stages-that-follow)'s rule is that a call inside the theory starts a walk with a tag of its own.
+
+### Q-M1f.157 — Each request looks its operands up by rules of its own
+
+**Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T1. `add` has three rules and two tags, `add-first` and `add-second`, to look
+its two operands up. Every further request needs the same.
+
+- **(a) Repeat them:** three rules and two tag relations a request, 15 rules for the five requests.
+- **(b) Share them:** one pair lookup, `(operands TAG X Y)` answered by `(operands-are TAG U V)`, three rules
+  for all, and two a request to call it and go on. Every request costs two firings more, and addition's pinned
+  circuit, 21 firings, moves to 23.
+
+**Defaulted 2026-11-11: (a),** which is what S1f.6.3's last section tells a later stage to do. (b) is a
+refactoring any later stage can make with no answer moving.
+
+### Q-M1f.158 — `cl`'s column order and the index
+
+**Raised** 2026-11-11 by [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md)'s T2, on E-12 of the phase's `findings.md`. The matcher keys a premise on its
+first bound argument. `cl`'s first argument is the order below, shared by 100 of its 300 rows, so a column of a
+comparison offers the matcher 100 candidates where a column of a sum offers 20: 901 candidates a nine-digit
+comparison.
+
+- **(a) Leave the table:** the cost is a constant a column, the proportion holds, and 4 000 comparisons
+  saturate in 74 ms.
+- **(b) Put a digit first,** `(cl A B BELOW ORDER)`: 30 candidates a column. The generator, the table's test,
+  its `:why`, `tests/stdlib/digits/01_tables.ein` and three pages move.
+- **(c) The engine picks the most selective bound slot:** an engine change, outside P1f.6's theory stages.
+
+**Defaulted 2026-11-11: (a).** The row is kept as E-12 for whoever owns the index.
 

@@ -213,7 +213,7 @@ row to Rust's integers.
 
 ## `std.arith` — school arithmetic on natural numbers (requests and results)
 
-M1f P1f.6 (addition, S1f.6.3). A theory over `std.digits`' tables, computed by
+M1f P1f.6 (addition, S1f.6.3; subtraction and comparison, S1f.6.4). A theory over `std.digits`' tables, computed by
 saturation alone: no hypothesis, no `absent`, one stratum. The module-level
 account, the rule of the theory and what holds it, is
 [`stdlib/README.md` § `std.arith`](../../../../stdlib/README.md#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6).
@@ -233,15 +233,21 @@ zeros and is read by value; an answer never has one.
 |------|---------------|---------|
 | `(add X Y)` | the program: a **request** | X + Y is asked. An operand is a number or a name a `let` states |
 | `(sum-of X Y S)` | the theory: the **result** | X + Y = S, the operands repeated as the request wrote them, S in normal form. Read with a goal `(sum-of X Y ?s)` |
+| `(sub X Y)` | the program: a request | X − Y is asked |
+| `(diff-of X Y D R)` | the theory: the result | **two numbers.** D is X − Y where X is not the smaller, and `z` otherwise; R is what X is short by, Y − X, where X is the smaller, and `z` otherwise. One of the two is always `z`, both when X = Y. There is no negative number: `(diff-of X Y z (n ?p ?a))` matches exactly where X is the smaller |
+| `(cmp X Y)` | the program: a request | X is compared with Y |
+| `(cmp-of X Y O)` | the theory: the result | O is the name `lt`, `eq` or `gt`, by value: operands that differ only in high zeros are `eq` |
 | `(let NAME NUMBER)` | the program | NAME names NUMBER; a request may name an operand. A name stands for a number, not for another name |
 
-A request is answered once. The same sum written with other spellings of its
+A request is answered once. The same request written with other spellings of its
 operands, a name for a number, a high zero more, is another request with its
 own answer. A request naming a name no `let` states is never answered.
 
 The circuit's own relations are in the state and are not an interface:
-`named`, `operand`, `operand-is`, `add-walk`, `strip`, `turn`, `done`, the tags `sum`,
-`add-first`, `add-second`, the accumulator's `b`, and `arith-rule`.
+`named`, `operand`, `operand-is`, `add-walk`, `sub-walk`, `cmp-walk`, `strip`,
+`turn`, `done`, `short`, `order-is`, the tags `sum`, `difference`,
+`shortfall`, `order` and each request's `-first` and `-second`, the
+accumulator's `b`, and `arith-rule`.
 
 ## See also
 

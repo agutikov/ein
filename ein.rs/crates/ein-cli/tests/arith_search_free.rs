@@ -33,7 +33,7 @@ use ein_corpus::{Scratch, ein_files_under, repo_root};
 const ROOTS: [&str; 2] = ["tests/stdlib/arith", "examples/arith"];
 
 /// The relations an answer is a fact of.
-const RESULTS: [&str; 1] = ["sum-of"];
+const RESULTS: [&str; 3] = ["sum-of", "diff-of", "cmp-of"];
 
 struct Run {
     code: i32,

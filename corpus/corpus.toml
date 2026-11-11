@@ -271,6 +271,12 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/t
 note   = "M1f S1f.6.3 — the calculator's first program, the addition program of P1f.6's `design.md` in the ruled spelling: `(import std.arith :symbols (arith))`, a request `(add X Y)` over nested numbers, 123078 + 4567 = 127645, and a second request that names its operands with `(let NAME NUMBER)`. Search-free: no candidate, R {∅}, the answer root's fixpoint, the same under `solve`, `saturate` and `test` (`ein-cli/tests/arith_search_free.rs`)."
 
 [[entry]]
+path   = "examples/arith/sub.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.4 — subtraction with its two numbers, and comparison: 123078 - 4567 = 118511, 4567 - 123078 short by 118511, a `sub` and a `cmp` by named constants, and a rule of the program's own that reads the shortfall. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
@@ -2947,7 +2953,7 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/arith.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
+note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. S1f.6.4 added `(sub X Y)`, answered by the two numbers of `(diff-of X Y D R)`, and `(cmp X Y)`, answered by `(cmp-of X Y lt|eq|gt)`. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
 
 [[entry]]
 path   = "stdlib/bijection.ein"
@@ -3175,6 +3181,36 @@ path   = "tests/stdlib/arith/07_only_what_is_asked.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.3, `std.arith`: demand-driven: `done`'s whole extent is one finished call; a `let` nobody asks about computes nothing, and a request naming a name no `let` states is never answered."
+
+[[entry]]
+path   = "tests/stdlib/arith/08_sub.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.4, `std.arith`: `sub-walk`'s five rules and the four of the request: 123078 - 4567 = 118511 and 4567 - 123078 short by 118511; `diff-of`'s whole extent, and `short`'s: of four walks, the two that ended with a borrow."
+
+[[entry]]
+path   = "tests/stdlib/arith/09_sub_borrow_and_zeros.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.4, `std.arith`: a borrow through every column, high zeros dropped from the answer, equal numbers answered `z z` once, operands with high zeros, zero on either side."
+
+[[entry]]
+path   = "tests/stdlib/arith/10_sub_named.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.4, `std.arith`: `sub` by `(let NAME NUMBER)`, and a rule of the program's own that reads the shortfall, holding exactly where the first operand is the smaller, with no negation."
+
+[[entry]]
+path   = "tests/stdlib/arith/11_cmp.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.4, `std.arith`: `cmp-walk`'s rules and the four of the request: `lt`, `eq` and `gt`, a higher column overruling the order below."
+
+[[entry]]
+path   = "tests/stdlib/arith/12_cmp_lengths_and_names.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.4, `std.arith`: comparison by value: `cmp-column-first` and `cmp-column-second`, different lengths, high zeros, zero, and named operands."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"

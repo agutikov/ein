@@ -1044,7 +1044,41 @@ constrained-reasoning research.
   programs.
   No engine source moved and no existing program's answer (`python3
   build/s1f.6.3/sweep.py`, 681 files, 2026-11-11); the register is unmoved.
-  S1f.6.4, subtraction and comparison, is next.
+  **S1f.6.4, subtraction and comparison, ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.4_subtraction.md#t1-record-2026-11-11),
+  Q-M1f.155 to .158 defaulted). `(sub X Y)` is answered by **two numbers**,
+  `(diff-of X Y D R)`: D is X − Y where X is not the smaller and `z`
+  otherwise, R what X is short by where it is the smaller and `z` otherwise;
+  the theory has no negative number, and a rule that matches `(diff-of X Y z
+  (n ?p ?a))` holds exactly where X is the smaller. The circuit subtracts
+  **both ways at once**, two walks over `fs`: the one that ends with no
+  borrow hands over its answer and the other derives `(short TAG)` and no
+  number, which is what division's bisection will read. `(cmp X Y)` is
+  answered by `(cmp-of X Y O)`, O the name `lt`, `eq` or `gt`, by one walk
+  over `cl` that builds no number and hands over `(order-is TAG O)`.
+  123078 − 4567 is 28 firings and 21 deep, the comparison 13
+  (`arith_theory.rs`'s `the_circuit_of_one_subtraction_and_one_comparison`).
+  **`arith_theory.rs` is now a table of operations, `OPS`**: a later
+  operation joins the harness by a row, its request, its result and what
+  `u128` says, and is asked every case the others are, equal operands and
+  operands one apart at every length and requests by name among them.
+  `arith_batch.rs` measures each operation in batches of its own, a row of
+  `REQUESTS` and a bound: 181, 362 and 901 candidates a request for `add`,
+  `sub` and `cmp`, the same at 250, 1 000 and 4 000 (`cargo test -p
+  ein-infer --features counters --test arith_batch -- --nocapture`,
+  2026-11-11). The 901 is E-12 of the phase's `findings.md`: the matcher
+  keys a premise on its first bound argument, and `cl`'s first is the order
+  below, which a hundred rows share. Five programs under
+  `tests/stdlib/arith/` activate the 18 new rules, 114 of 114 over the
+  stdlib, and the mutation sweep kills all 15 of their mutants, 203 of 253
+  (`python3 utils/stdlib_mutants.py`, 2026-11-11).
+  `examples/arith/sub.ein` is the example. No engine source moved, and no
+  existing program's `ein solve`: the eight programs that imported the
+  theory hold more of it in `ein saturate --dump`, the two tables' rows and
+  the closing rule's new facts, and nothing they held is gone (`python3
+  build/s1f.6.4/sweep.py`, 681 files, the stdlib of `277cfc44` against the
+  tree's, 2026-11-11); the register is unmoved. S1f.6.5, multiplication, is
+  next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -1252,8 +1286,9 @@ constrained-reasoning research.
   S1c.1.5 two claims about this directory are in `cargo test`**
   (`ein-infer/tests/stdlib_coverage.rs`, 0.04 s then and half a second with
   the calculator's programs): every stdlib rule is
-  activated by a program *here* — **77 of 77**, and 96 of 96 since M1f
-  S1f.6.3's `std.arith` (`cat stdlib/*.ein | grep -c '^(rule '`,
+  activated by a program *here* — **77 of 77**, 96 of 96 since M1f
+  S1f.6.3's `std.arith` and 114 of 114 since S1f.6.4's subtraction and
+  comparison (`cat stdlib/*.ein | grep -c '^(rule '`,
   2026-11-11), with no `examples/` entry
   contributing — and every program here states an expectation. **Activation is
   two events since S1d.2.4**: `fire` for a saturation rule and `owe` for an

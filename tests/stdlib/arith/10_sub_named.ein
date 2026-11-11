@@ -1,0 +1,54 @@
+;;; `std.arith` — subtraction by name, and a rule of the program that reads
+;;; the two numbers. M1f S1f.6.4.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A `sub` request may name its operands with `(let NAME NUMBER)`, as an
+;;; `add` request may, and its answer repeats the names. The two numbers of
+;;; the answer are what a program branches on with no negation: a rule that
+;;; matches `(diff-of X Y ?d z)` with `?d` a number that is not zero holds
+;;; exactly where X is the larger, and one that matches `(diff-of X Y z (n ?p
+;;; ?a))` exactly where X is short.
+;;;
+;;;   budget = 500, cost = 725, paid = 500
+;;;   budget - cost       short by 225
+;;;   budget - paid       = 0, short by 0
+;;;   cost - 25           = 700
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The first claim is `diff-of`'s whole extent, the names as written. The
+;;; second is `overdrawn`'s: the program's own rule fired for the one request
+;;; whose first operand was short, with the number it is short by, and not
+;;; for the request whose two numbers are equal.
+
+(import std.arith :symbols (arith))
+
+(relation overdrawn Name Number
+  :why "{?1} is overdrawn by {?2}")
+(__closed__ overdrawn)
+
+(rule short-of-money ()
+  :match  (diff-of ?account ?cost z (n ?p ?a))
+  :assert (overdrawn ?account (n ?p ?a))
+  :why    "{?account} does not cover {?cost}")
+
+(let budget (n (n (n z 5) 0) 0))
+(let cost   (n (n (n z 7) 2) 5))
+(let paid   (n (n (n z 5) 0) 0))
+
+(sub budget cost)
+(sub budget paid)
+(sub cost (n (n z 2) 5))
+
+(solve :expect (region (model)))
+
+(query :goal (diff-of ?x ?y ?d ?r)
+       :goal-text "{?x} - {?y} = {?d}, short by {?r}"
+       :expect (model (diff-of budget cost z (n (n (n z 2) 2) 5))
+                      (diff-of budget paid z z)
+                      (diff-of cost (n (n z 2) 5) (n (n (n z 7) 0) 0) z)))
+
+(query :goal (overdrawn ?who ?by)
+       :goal-text "{?who} is overdrawn by {?by}"
+       :expect (model (overdrawn budget (n (n (n z 2) 2) 5))))

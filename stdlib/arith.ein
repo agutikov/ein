@@ -1,5 +1,6 @@
 ;;; Ein stdlib — `std.arith`: school arithmetic on natural numbers of any
-;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3).
+;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3;
+;;; subtraction and comparison, S1f.6.4).
 ;;;
 ;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
 ;;; This module is a *theory* written in Ein over the ten digit names `0` to
@@ -38,6 +39,18 @@
 ;;;     (add X Y)          asked: X + Y
 ;;;     (sum-of X Y S)     the answer, repeating the operands as written
 ;;;
+;;;     (sub X Y)          asked: X - Y
+;;;     (diff-of X Y D R)  the answer, two numbers. D is X - Y where X is not
+;;;                        the smaller, and `z` otherwise; R is what X is short
+;;;                        by, Y - X, where X is the smaller, and `z` otherwise.
+;;;                        So one of the two is always `z`, and both are when
+;;;                        X = Y. The theory has no negative number: R is how
+;;;                        it says "less than nothing, by this much"
+;;;
+;;;     (cmp X Y)          asked: X compared with Y
+;;;     (cmp-of X Y O)     the answer: O is `lt`, `eq` or `gt`, by value, so
+;;;                        5 and 005 compare `eq`
+;;;
 ;;; A program reads an answer with a goal that has a variable in the result's
 ;;; place, `(sum-of X Y ?s)`, and a rule of the program may match it like any
 ;;; fact. Nothing is computed that was not asked for: the theory enumerates no
@@ -68,6 +81,13 @@
 ;;; goes on has one premise, `(done (sum ?x ?y) ?s)`, and reads everything out
 ;;; of the tag.
 ;;;
+;;; **Subtraction is two walks,** X - Y and Y - X, each over the full
+;;; subtractor's table. The one that ends with no borrow hands its answer
+;;; over; the one that ends with a borrow says `(short TAG)` and no number.
+;;; Which of the two was the smaller is not known before the top column, and
+;;; nothing is guessed: both are computed. **Comparison is one walk** over the
+;;; comparator's table and builds no number; it hands over `(order-is TAG O)`.
+;;;
 ;;; ── THE RULE OF THE THEORY: no rule joins two facts on a number ────────────
 ;;;
 ;;; A rule here has **one** premise that holds numbers. Its other premises are
@@ -94,14 +114,18 @@
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Imported flat, these names mean what this file says, and a program must
-;;; not use them otherwise: `z`, `n`, `b`, `let`, `add`, `sum-of`; the
-;;; circuit's own `named`, `operand`, `operand-is`, `add-walk`, `strip`,
-;;; `turn`, `done`; the tags `sum`, `add-first`, `add-second`; `arith-rule`;
-;;; and the tables of `std.digits` it reads, `fa` and `nz`. The interface is
-;;; `n`, `z`, `let`, the requests and the results; the rest is in the state
-;;; for a query or a `--trace` to see, and is not a promise.
+;;; not use them otherwise: `z`, `n`, `b`, `let`; the requests `add`, `sub`
+;;; and `cmp`; the results `sum-of`, `diff-of` and `cmp-of`, and the orders
+;;; `lt`, `eq` and `gt`; the circuit's own `named`, `operand`, `operand-is`,
+;;; `add-walk`, `sub-walk`, `cmp-walk`, `strip`, `turn`, `done`, `short`,
+;;; `order-is`; the tags `sum`, `add-first`, `add-second`, `difference`,
+;;; `shortfall`, `sub-first`, `sub-second`, `order`, `cmp-first`,
+;;; `cmp-second`; `arith-rule`; and the tables of `std.digits` it reads, `fa`,
+;;; `fs`, `cl` and `nz`. The interface is `n`, `z`, `let`, the requests, the
+;;; results and the three orders; the rest is in the state for a query or a
+;;; `--trace` to see, and is not a promise.
 
-(import std.digits :symbols (fa nz))
+(import std.digits :symbols (fa fs cl nz))
 
 ;; ── The number, and the accumulator ─────────────────────────────────────────
 (relation n Number Digit
@@ -116,6 +140,14 @@
   :why "asked: {?1} + {?2}")
 (relation sum-of Operand Operand Number
   :why "{?1} + {?2} = {?3}")
+(relation sub Operand Operand
+  :why "asked: {?1} - {?2}")
+(relation diff-of Operand Operand Number Number
+  :why "{?1} - {?2} = {?3}, short by {?4}")
+(relation cmp Operand Operand
+  :why "asked: {?1} compared with {?2}")
+(relation cmp-of Operand Operand Order
+  :why "{?1} against {?2}: {?3}")
 
 ;; ── The circuit's own facts: each is one step of a computation, and carries
 ;;    the whole of its state ──────────────────────────────────────────────────
@@ -133,6 +165,14 @@
   :why "for {?1}: the digits {?2} are still to turn round, and {?3} is turned")
 (relation done Tag Number
   :why "the answer for {?1} is {?2}")
+(relation sub-walk Tag Number Number Digit Digits
+  :why "subtracting, for {?1}: {?3} is still to take from {?2}, the borrow is {?4}, and the digits so far are {?5}")
+(relation short Tag
+  :why "{?1} has no answer: the number taken from is the smaller")
+(relation cmp-walk Tag Number Number Order
+  :why "comparing, for {?1}: {?2} and {?3} are still to compare, and the order of the digits below is {?4}")
+(relation order-is Tag Order
+  :why "the answer for {?1} is {?2}")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation sum Operand Operand
@@ -141,6 +181,20 @@
   :why "the first operand of {?1} + {?2}")
 (relation add-second Operand Operand Number
   :why "the second operand of {?1} + {?2}, whose first is {?3}")
+(relation difference Operand Operand
+  :why "{?1} - {?2}")
+(relation shortfall Operand Operand
+  :why "what {?1} is short of {?2} by")
+(relation sub-first Operand Operand
+  :why "the first operand of {?1} - {?2}")
+(relation sub-second Operand Operand Number
+  :why "the second operand of {?1} - {?2}, whose first is {?3}")
+(relation order Operand Operand
+  :why "the order of {?1} and {?2}")
+(relation cmp-first Operand Operand
+  :why "the first operand of {?1} compared with {?2}")
+(relation cmp-second Operand Operand Number
+  :why "the second operand of {?1} compared with {?2}, whose first is {?3}")
 
 ;; ── The operands ────────────────────────────────────────────────────────────
 ;; A number stands for itself, whatever high zeros it is written with; the
@@ -253,6 +307,113 @@
   :assert (sum-of ?x ?y ?s)
   :why    "{?x} + {?y} = {?s}")
 
+;; ── Subtraction ─────────────────────────────────────────────────────────────
+;; `(sub-walk TAG X Y BORROW ACC)`: X - Y, one column a firing, from the
+;; units, as `add-walk` goes. A walk that ends with a borrow has no answer.
+(rule sub-column ()
+  :match  (and (sub-walk ?k (n ?p ?a) (n ?q ?c) ?e ?acc)
+               (fs ?a ?c ?e ?s ?f))
+  :assert (sub-walk ?k ?p ?q ?f (b ?s ?acc))
+  :why    "{?a} - {?c} - borrow {?e} is {?s}, borrow {?f}: {?s} goes in front of the digits so far")
+
+(rule sub-column-first ()
+  :match  (and (sub-walk ?k (n ?p ?a) z ?e ?acc)
+               (fs ?a 0 ?e ?s ?f))
+  :assert (sub-walk ?k ?p z ?f (b ?s ?acc))
+  :why    "the number taken away has run out: {?a} - borrow {?e} is {?s}, borrow {?f}")
+
+(rule sub-column-second ()
+  :match  (and (sub-walk ?k z (n ?q ?c) ?e ?acc)
+               (fs 0 ?c ?e ?s ?f))
+  :assert (sub-walk ?k z ?q ?f (b ?s ?acc))
+  :why    "the number taken from has run out: 0 - {?c} - borrow {?e} is {?s}, borrow {?f}")
+
+(rule sub-end ()
+  :match  (sub-walk ?k z z 0 ?acc)
+  :assert (strip ?k ?acc)
+  :why    "no column is left and no borrow: the digits are {?acc}")
+
+(rule sub-borrow-out ()
+  :match  (sub-walk ?k z z 1 ?acc)
+  :assert (short ?k)
+  :why    "no column is left and a borrow is: the number taken from is the smaller")
+
+;; Both ways at once: which number is the smaller is known at the top column
+;; and not before, and the theory does not guess.
+(rule sub-ask ()
+  :match  (sub ?x ?y)
+  :assert (operand (sub-first ?x ?y) ?x)
+  :why    "{?x} - {?y} is asked: first, the number {?x} stands for")
+
+(rule sub-ask-second ()
+  :match  (operand-is (sub-first ?x ?y) ?u)
+  :assert (operand (sub-second ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule sub-start ()
+  :match  (operand-is (sub-second ?x ?y ?u) ?v)
+  :assert (and (sub-walk (difference ?x ?y) ?u ?v 0 z)
+               (sub-walk (shortfall ?x ?y) ?v ?u 0 z))
+  :why    "take {?v} from {?u}, and {?u} from {?v}, from the units, with no borrow in: one of the two has an answer")
+
+(rule sub-answer ()
+  :match  (done (difference ?x ?y) ?d)
+  :assert (diff-of ?x ?y ?d z)
+  :why    "{?x} - {?y} = {?d}, and nothing is short")
+
+(rule sub-answer-short ()
+  :match  (done (shortfall ?x ?y) ?r)
+  :assert (diff-of ?x ?y z ?r)
+  :why    "{?x} is short of {?y} by {?r}: the difference is zero")
+
+;; ── Comparison ──────────────────────────────────────────────────────────────
+;; `(cmp-walk TAG X Y ORDER)`: one column a firing, from the units; ORDER is
+;; the order of the digits already passed, `eq` before the first. A higher
+;; digit overrules it, which is the comparator's table. A number that has run
+;; out counts as zeros, so the order is by value.
+(rule cmp-column ()
+  :match  (and (cmp-walk ?k (n ?p ?a) (n ?q ?c) ?o)
+               (cl ?o ?a ?c ?t))
+  :assert (cmp-walk ?k ?p ?q ?t)
+  :why    "the order below is {?o}; {?a} against {?c} above it makes it {?t}")
+
+(rule cmp-column-first ()
+  :match  (and (cmp-walk ?k (n ?p ?a) z ?o)
+               (cl ?o ?a 0 ?t))
+  :assert (cmp-walk ?k ?p z ?t)
+  :why    "the second number has run out: the order below is {?o}, and {?a} against nothing makes it {?t}")
+
+(rule cmp-column-second ()
+  :match  (and (cmp-walk ?k z (n ?q ?c) ?o)
+               (cl ?o 0 ?c ?t))
+  :assert (cmp-walk ?k z ?q ?t)
+  :why    "the first number has run out: the order below is {?o}, and nothing against {?c} makes it {?t}")
+
+(rule cmp-end ()
+  :match  (cmp-walk ?k z z ?o)
+  :assert (order-is ?k ?o)
+  :why    "no column is left: the order is {?o}")
+
+(rule cmp-ask ()
+  :match  (cmp ?x ?y)
+  :assert (operand (cmp-first ?x ?y) ?x)
+  :why    "{?x} compared with {?y} is asked: first, the number {?x} stands for")
+
+(rule cmp-ask-second ()
+  :match  (operand-is (cmp-first ?x ?y) ?u)
+  :assert (operand (cmp-second ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule cmp-start ()
+  :match  (operand-is (cmp-second ?x ?y ?u) ?v)
+  :assert (cmp-walk (order ?x ?y) ?u ?v eq)
+  :why    "compare {?u} with {?v} from the units: equal so far")
+
+(rule cmp-answer ()
+  :match  (order-is (order ?x ?y) ?o)
+  :assert (cmp-of ?x ?y ?o)
+  :why    "{?x} against {?y}: {?o}")
+
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Arithmetic is computed and never guessed: every relation of the theory, and
 ;; each table it reads, is closed, so the search has no candidate among them.
@@ -274,13 +435,20 @@
 
 (rule arith ()
   :match  ()
-  :assert (and (__closed__ fa) (__closed__ nz)
+  :assert (and (__closed__ fa) (__closed__ fs) (__closed__ cl) (__closed__ nz)
                (__closed__ n) (__closed__ b)
                (__closed__ let) (__closed__ add) (__closed__ sum-of)
+               (__closed__ sub) (__closed__ diff-of)
+               (__closed__ cmp) (__closed__ cmp-of)
                (__closed__ named) (__closed__ operand) (__closed__ operand-is)
                (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
                (__closed__ done)
+               (__closed__ sub-walk) (__closed__ short)
+               (__closed__ cmp-walk) (__closed__ order-is)
                (__closed__ sum) (__closed__ add-first) (__closed__ add-second)
+               (__closed__ difference) (__closed__ shortfall)
+               (__closed__ sub-first) (__closed__ sub-second)
+               (__closed__ order) (__closed__ cmp-first) (__closed__ cmp-second)
                (__closed__ arith-rule)
                (arith-rule operand-zero) (arith-rule operand-number)
                (arith-rule let-named) (arith-rule operand-name)
@@ -291,5 +459,15 @@
                (arith-rule strip-none)
                (arith-rule turn-step) (arith-rule turn-end)
                (arith-rule add-ask) (arith-rule add-ask-second)
-               (arith-rule add-start) (arith-rule add-answer))
+               (arith-rule add-start) (arith-rule add-answer)
+               (arith-rule sub-column) (arith-rule sub-column-first)
+               (arith-rule sub-column-second)
+               (arith-rule sub-end) (arith-rule sub-borrow-out)
+               (arith-rule sub-ask) (arith-rule sub-ask-second)
+               (arith-rule sub-start)
+               (arith-rule sub-answer) (arith-rule sub-answer-short)
+               (arith-rule cmp-column) (arith-rule cmp-column-first)
+               (arith-rule cmp-column-second) (arith-rule cmp-end)
+               (arith-rule cmp-ask) (arith-rule cmp-ask-second)
+               (arith-rule cmp-start) (arith-rule cmp-answer))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

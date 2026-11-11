@@ -8,15 +8,16 @@
 //!
 //! | claim | where |
 //! |---|---|
-//! | every sum of two numbers up to [`SMALL`] is right | [`every_small_sum_is_right`] |
-//! | sums of operands of every length up to [`MAX_DIGITS`] digits are right, on a sample | [`sums_of_every_length_are_right`] |
-//! | a carry runs through every column and out of the top, at every length | [`a_carry_runs_the_whole_length`] |
+//! | every request of each operation in [`OPS`] over two numbers up to [`SMALL`] is right | [`every_small_request_is_right`] |
+//! | requests over operands of every length up to the operation's longest are right, on a sample, with equal operands and operands one apart at every length | [`requests_of_every_length_are_right`] |
+//! | a carry or a borrow runs through every column and out of the top, at every length | [`a_carry_or_a_borrow_runs_the_whole_length`] |
 //! | operands written with high zeros are read by value | [`high_zeros_are_read_by_value`] |
-//! | **every answer is in normal form**, and each request has exactly one | all four, through [`sums`] |
+//! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
+//! | **every answer is in normal form**, and each request has exactly one | all five, through [`hold`] |
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `absent`, no `not`, no `or`: one stratum | [`the_theory_writes_no_negation`] |
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
-//! | what one addition costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`] |
+//! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -27,9 +28,10 @@
 //! proportion to its count, is `arith_batch.rs`; the search-free claim, on
 //! the binary, is `ein-cli/tests/arith_search_free.rs`.
 //!
-//! **A later operation joins this file** by adding its request and result
-//! relations to [`run`]'s callers and its cases beside these; the three
-//! static tests read the whole module and need no change to cover a new rule.
+//! **A later operation joins this file** by a row of [`OPS`], its request,
+//! its result and what the integers say, and by a pin of its circuit; the
+//! three static tests read the whole module and need no change to cover a new
+//! rule. Subtraction and comparison joined at S1f.6.4.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -39,9 +41,9 @@ use ein_infer::events::sexpr;
 use ein_infer::{Events, Saturator, Session, SharedMemo};
 use ein_ir::{Ast, Node, NodeId, parse};
 
-/// Every pair of operands from 0 to this is added: 121 × 121 sums, which
-/// cover every row of the full adder's table and the step from two digits to
-/// three.
+/// Every pair of operands from 0 to this is asked of every operation: 121 ×
+/// 121 requests each, which cover every row of the full adder's and the full
+/// subtractor's tables and the step from two digits to three.
 const SMALL: u128 = 120;
 
 /// The longest sampled operand, in digits.
@@ -159,109 +161,233 @@ fn run(body: &str, relation: &str) -> Vec<String> {
     kb.facts_of(rel).map(|f| sexpr(&terms, f)).collect()
 }
 
-/// Ask every `(x, y)` as one program and hold every answer: **exactly one**
-/// `sum-of` per request, repeating the operands as written, its sum the
-/// normal form of `want`. `cases` is `(x as written, y as written, x + y)`.
-fn sums(cases: &[(String, String, u128)]) {
-    let mut want: BTreeMap<(String, String), u128> = BTreeMap::new();
+/// One operation of the theory, as the harness asks it: its request and
+/// result relations, the longest operand it is sampled at, and what the
+/// integers say the result's arguments after the operands are, each in the
+/// theory's spelling.
+struct Op {
+    request: &'static str,
+    result: &'static str,
+    /// The longest sampled operand, in digits: the answer must stay in `u128`.
+    max_digits: u32,
+    answer: fn(u128, u128) -> Vec<String>,
+}
+
+/// The operations, in the order the stages added them. A later operation
+/// joins the harness by a row here.
+const OPS: [Op; 3] = [
+    Op {
+        request: "add",
+        result: "sum-of",
+        max_digits: MAX_DIGITS,
+        answer: |a, b| vec![normal(a + b)],
+    },
+    // Two numbers: the difference where the first is not the smaller, and
+    // what the first is short by where it is; the other is zero.
+    Op {
+        request: "sub",
+        result: "diff-of",
+        max_digits: MAX_DIGITS,
+        answer: |a, b| vec![normal(a.saturating_sub(b)), normal(b.saturating_sub(a))],
+    },
+    Op {
+        request: "cmp",
+        result: "cmp-of",
+        max_digits: MAX_DIGITS,
+        answer: |a, b| {
+            vec![
+                match a.cmp(&b) {
+                    std::cmp::Ordering::Less => "lt",
+                    std::cmp::Ordering::Equal => "eq",
+                    std::cmp::Ordering::Greater => "gt",
+                }
+                .to_string(),
+            ]
+        },
+    },
+];
+
+/// An operand as written, and its value.
+type Operand = (String, u128);
+
+/// Ask every pair as one program of `op` requests and hold every answer:
+/// **exactly one** result fact per request, repeating the operands as
+/// written, its other arguments what the integers say, in normal form.
+fn hold(op: &Op, cases: &[(Operand, Operand)]) {
+    let mut want: BTreeMap<(String, String), Vec<String>> = BTreeMap::new();
     let mut body = String::new();
-    for (x, y, sum) in cases {
-        if want.insert((x.clone(), y.clone()), *sum).is_none() {
-            body.push_str(&format!("(add {x} {y})\n"));
+    for ((x, a), (y, b)) in cases {
+        if want
+            .insert((x.clone(), y.clone()), (op.answer)(*a, *b))
+            .is_none()
+        {
+            body.push_str(&format!("({} {x} {y})\n", op.request));
         }
     }
-    let mut got: BTreeMap<(String, String), Vec<String>> = BTreeMap::new();
-    for fact in run(&body, "sum-of") {
+    let mut got: BTreeMap<(String, String), Vec<Vec<String>>> = BTreeMap::new();
+    for fact in run(&body, op.result) {
         let p = parts(&fact);
-        assert_eq!(p.len(), 4, "a sum-of of another arity: {fact}");
+        assert!(p.len() > 3, "a {} of another arity: {fact}", op.result);
         got.entry((p[1].clone(), p[2].clone()))
             .or_default()
-            .push(p[3].clone());
+            .push(p[3..].to_vec());
     }
-    for (request, sum) in &want {
+    for (request, answer) in &want {
         let answers = got.remove(request).unwrap_or_default();
         assert_eq!(
             answers,
-            [normal(*sum)],
-            "(add {} {}): the integers say {sum}, in normal form {}",
+            std::slice::from_ref(answer),
+            "({} {} {}): the integers say {answer:?}",
+            op.request,
             request.0,
             request.1,
-            normal(*sum)
         );
     }
     assert!(
         got.is_empty(),
-        "answers to requests nobody made: {:?}",
+        "{}: answers to requests nobody made: {:?}",
+        op.result,
         got.keys().collect::<Vec<_>>()
     );
+}
+
+fn value(v: u128) -> Operand {
+    (normal(v), v)
 }
 
 // ── right, held to the integers ────────────────────────────────────
 
 #[test]
-fn every_small_sum_is_right() {
+fn every_small_request_is_right() {
     let mut cases = Vec::new();
     for a in 0..=SMALL {
         for b in 0..=SMALL {
-            cases.push((normal(a), normal(b), a + b));
+            cases.push((value(a), value(b)));
         }
     }
-    sums(&cases);
+    for op in &OPS {
+        hold(op, &cases);
+    }
 }
 
 #[test]
-fn sums_of_every_length_are_right() {
-    let mut rng = Rng(0x5146_0603);
-    let mut cases = Vec::new();
-    // Every pair of lengths from 0 to MAX_DIGITS, twice: 31 × 31 × 2.
-    for la in 0..=MAX_DIGITS {
-        for lb in 0..=MAX_DIGITS {
-            for _ in 0..2 {
-                let (a, b) = (rng.number(la), rng.number(lb));
-                cases.push((normal(a), normal(b), a + b));
+fn requests_of_every_length_are_right() {
+    for op in &OPS {
+        let mut rng = Rng(0x5146_0603);
+        let mut cases = Vec::new();
+        // Every pair of lengths from 0 to the operation's longest, twice.
+        for la in 0..=op.max_digits {
+            for lb in 0..=op.max_digits {
+                for _ in 0..2 {
+                    cases.push((value(rng.number(la)), value(rng.number(lb))));
+                }
             }
         }
+        // Equal operands, and operands one apart, at every length: the
+        // difference of zero and of one, and the order decided in the units.
+        for l in 1..=op.max_digits {
+            let a = rng.number(l);
+            cases.push((value(a), value(a)));
+            cases.push((value(a), value(a - 1)));
+            cases.push((value(a - 1), value(a)));
+        }
+        hold(op, &cases);
     }
-    sums(&cases);
 }
 
 #[test]
-fn a_carry_runs_the_whole_length() {
-    let mut cases = Vec::new();
-    let mut nines: u128 = 0;
-    for _ in 1..=MAX_DIGITS {
-        nines = nines * 10 + 9;
-        // 99…9 + 1, 1 + 99…9, and 99…9 + 99…9: the answer is one digit longer.
-        cases.push((normal(nines), normal(1), nines + 1));
-        cases.push((normal(1), normal(nines), nines + 1));
-        cases.push((normal(nines), normal(nines), nines + nines));
+fn a_carry_or_a_borrow_runs_the_whole_length() {
+    for op in &OPS {
+        let mut cases = Vec::new();
+        let mut nines: u128 = 0;
+        for _ in 1..=op.max_digits.min(MAX_DIGITS) {
+            nines = nines * 10 + 9;
+            // 99…9 and 1, both ways, and 99…9 with itself: a sum one digit
+            // longer.
+            cases.push((value(nines), value(1)));
+            cases.push((value(1), value(nines)));
+            cases.push((value(nines), value(nines)));
+            // 100…0 and 1, and 100…0 and 99…9: a borrow through every zero,
+            // and an answer that loses every digit but one.
+            cases.push((value(nines + 1), value(1)));
+            cases.push((value(1), value(nines + 1)));
+            cases.push((value(nines + 1), value(nines)));
+            cases.push((value(nines), value(nines + 1)));
+        }
+        hold(op, &cases);
     }
-    sums(&cases);
 }
 
 #[test]
 fn high_zeros_are_read_by_value() {
-    let mut rng = Rng(0x5146_0604);
-    let pad = |rng: &mut Rng, v: u128| {
-        let zeros = "0".repeat(rng.below(4) as usize);
-        let digits = if v == 0 { String::new() } else { v.to_string() };
-        written(&format!("{zeros}{digits}"))
-    };
-    let mut cases = Vec::new();
-    for _ in 0..1500 {
-        let (la, lb) = (rng.below(13) as u32, rng.below(13) as u32);
-        let (a, b) = (rng.number(la), rng.number(lb));
-        let (x, y) = (pad(&mut rng, a), pad(&mut rng, b));
-        cases.push((x, y, a + b));
+    for op in &OPS {
+        let mut rng = Rng(0x5146_0604);
+        let pad = |rng: &mut Rng, v: u128| {
+            let zeros = "0".repeat(rng.below(4) as usize);
+            let digits = if v == 0 { String::new() } else { v.to_string() };
+            (written(&format!("{zeros}{digits}")), v)
+        };
+        let mut cases = Vec::new();
+        for _ in 0..1500 {
+            let (la, lb) = (rng.below(13) as u32, rng.below(13) as u32);
+            let (a, b) = (rng.number(la), rng.number(lb));
+            let (x, y) = (pad(&mut rng, a), pad(&mut rng, b));
+            cases.push((x, y));
+        }
+        // The same value, padded differently on the two sides.
+        for _ in 0..200 {
+            let l = rng.below(13) as u32;
+            let a = rng.number(l);
+            let (x, y) = (pad(&mut rng, a), pad(&mut rng, a));
+            cases.push((x, y));
+        }
+        // Zero written as nothing but zeros, on either side and both.
+        for zeros in ["0", "00", "000"] {
+            cases.push(((written(zeros), 0), (written("7"), 7)));
+            cases.push(((written("7"), 7), (written(zeros), 0)));
+            cases.push(((written(zeros), 0), (written(zeros), 0)));
+            cases.push(((written(zeros), 0), ("z".to_string(), 0)));
+        }
+        hold(op, &cases);
     }
-    // Zero written as nothing but zeros, on either side and both.
-    for zeros in ["0", "00", "000"] {
-        cases.push((written(zeros), written("7"), 7));
-        cases.push((written("7"), written(zeros), 7));
-        cases.push((written(zeros), written(zeros), 0));
-        cases.push((written(zeros), "z".to_string(), 0));
+}
+
+/// A request may name an operand of every operation, and the answer repeats
+/// the name: the same pairs, asked through `(let NAME NUMBER)`.
+#[test]
+fn named_operands_work_for_every_request() {
+    let mut rng = Rng(0x5146_0605);
+    let mut body = String::new();
+    let mut names = Vec::new();
+    for i in 0..40 {
+        let l = rng.below(10) as u32;
+        let v = rng.number(l);
+        body.push_str(&format!("(let c{i} {})\n", normal(v)));
+        names.push((format!("c{i}"), v));
     }
-    sums(&cases);
+    for op in &OPS {
+        let mut want = BTreeMap::new();
+        let mut src = body.clone();
+        for (x, a) in &names {
+            for (y, b) in names.iter().step_by(7) {
+                // By two names, and by a name and a number.
+                src.push_str(&format!("({} {x} {y})\n", op.request));
+                want.insert((x.clone(), y.clone()), (op.answer)(*a, *b));
+                src.push_str(&format!("({} {x} {})\n", op.request, normal(*b)));
+                want.insert((x.clone(), normal(*b)), (op.answer)(*a, *b));
+            }
+        }
+        let mut got = BTreeMap::new();
+        for fact in run(&src, op.result) {
+            let p = parts(&fact);
+            assert!(
+                got.insert((p[1].clone(), p[2].clone()), p[3..].to_vec())
+                    .is_none(),
+                "two answers: {fact}"
+            );
+        }
+        assert_eq!(got, want, "{} by name", op.request);
+    }
 }
 
 // ── the circuit's measure ──────────────────────────────────────────
@@ -349,6 +475,42 @@ fn the_circuit_of_one_addition() {
         circuit(&format!("(let a {six})\n(let b {four})\n(add a b)\n")),
         (23, 21),
         "the same sum by name"
+    );
+}
+
+/// **One subtraction and one comparison, as circuits.** A subtraction is two
+/// walks side by side, so its depth is less than its size: 123078 − 4567 is
+/// 5 firings to ask and find the operands, then one walk of six columns that
+/// ends with a borrow (7 firings) beside one of six columns, its end, the
+/// check for a high zero, six digits turned, the hand-over and the answer
+/// (16). The reverse request costs the same: the two walks exchange roles.
+/// A comparison builds no number: 5 firings for the operands, a column a
+/// firing, the end and the answer.
+#[test]
+fn the_circuit_of_one_subtraction_and_one_comparison() {
+    let six = written("123078");
+    let four = written("4567");
+    assert_eq!(
+        circuit(&format!("(sub {six} {four})\n")),
+        (28, 21),
+        "123078 - 4567: (firings, depth)"
+    );
+    assert_eq!(
+        circuit(&format!("(sub {four} {six})\n")),
+        (28, 21),
+        "4567 - 123078: (firings, depth)"
+    );
+    // Equal numbers: both walks end with no borrow, each drops its six
+    // zeros and hands over zero, and the two answer rules say the one fact.
+    assert_eq!(
+        circuit(&format!("(sub {six} {six})\n")),
+        (35, 20),
+        "123078 - 123078: (firings, depth)"
+    );
+    assert_eq!(
+        circuit(&format!("(cmp {six} {four})\n")),
+        (13, 13),
+        "123078 against 4567: (firings, depth)"
     );
 }
 

@@ -3,6 +3,12 @@
 0    examples/arith/add.ein :: solve
 0    examples/arith/add.ein :: solve --trace {out}/trace.md
 0    examples/arith/add.ein :: test
+0    examples/arith/sub.ein :: render rules
+0    examples/arith/sub.ein :: saturate
+0    examples/arith/sub.ein :: saturate --dump
+0    examples/arith/sub.ein :: solve
+0    examples/arith/sub.ein :: solve --trace {out}/trace.md
+0    examples/arith/sub.ein :: test
 0    examples/branching/01_saturate_only.ein :: render constraints
 0    examples/branching/01_saturate_only.ein :: render lattice
 0    examples/branching/01_saturate_only.ein :: render rules
@@ -1621,6 +1627,31 @@
 0    tests/stdlib/arith/07_only_what_is_asked.ein :: saturate
 0    tests/stdlib/arith/07_only_what_is_asked.ein :: solve
 0    tests/stdlib/arith/07_only_what_is_asked.ein :: test
+0    tests/stdlib/arith/08_sub.ein :: render constraints
+1    tests/stdlib/arith/08_sub.ein :: render rules
+0    tests/stdlib/arith/08_sub.ein :: saturate
+0    tests/stdlib/arith/08_sub.ein :: solve
+0    tests/stdlib/arith/08_sub.ein :: test
+0    tests/stdlib/arith/09_sub_borrow_and_zeros.ein :: render constraints
+1    tests/stdlib/arith/09_sub_borrow_and_zeros.ein :: render rules
+0    tests/stdlib/arith/09_sub_borrow_and_zeros.ein :: saturate
+0    tests/stdlib/arith/09_sub_borrow_and_zeros.ein :: solve
+0    tests/stdlib/arith/09_sub_borrow_and_zeros.ein :: test
+0    tests/stdlib/arith/10_sub_named.ein :: render constraints
+0    tests/stdlib/arith/10_sub_named.ein :: render rules
+0    tests/stdlib/arith/10_sub_named.ein :: saturate
+0    tests/stdlib/arith/10_sub_named.ein :: solve
+0    tests/stdlib/arith/10_sub_named.ein :: test
+0    tests/stdlib/arith/11_cmp.ein :: render constraints
+1    tests/stdlib/arith/11_cmp.ein :: render rules
+0    tests/stdlib/arith/11_cmp.ein :: saturate
+0    tests/stdlib/arith/11_cmp.ein :: solve
+0    tests/stdlib/arith/11_cmp.ein :: test
+0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: render constraints
+1    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: render rules
+0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: saturate
+0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: solve
+0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate

@@ -85,7 +85,7 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
-| [`stdlib/arith/`](stdlib/arith/) | 19 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition): one program per rule or tight family, each claiming `sum-of`'s whole extent and R = {∅}; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
+| [`stdlib/arith/`](stdlib/arith/) | 37 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -185,7 +185,10 @@ handful of sums, written out by hand. Whether the theory adds *correctly* is
 120, every pair of lengths up to 30 digits on a fixed-seed sample, a carry
 through every length, and operands padded with high zeros. The same file
 holds the rule of the theory on the module's text, and `arith_batch.rs` holds
-it on the matcher's count of its work.
+it on the matcher's count of its work. Every operation is a row of that
+file's `OPS` and is asked the same cases: subtraction and comparison since
+S1f.6.4, with equal operands and operands one apart at every length, a borrow
+through every length, and requests by name.
 
 | file | the rules it is there for | what would fail it |
 |---|---|---|
@@ -196,6 +199,11 @@ it on the matcher's count of its work.
 | `05_high_zeros.ein` | `strip-zero`: operands written with high zeros, read by value; a zero inside a number stays | an answer that is not in normal form |
 | `06_named.ein` | `let-named` and `operand-name`: `(let NAME NUMBER)`, a request by name, by a name and a number, and the same sum by numbers as a request of its own | a request answered under another spelling of its operands |
 | `07_only_what_is_asked.ein` | nothing fires for a `let` nobody asks about, and a request naming a name no `let` states is never answered: `done`'s whole extent is one call | a theory that computes what was not asked |
+| `08_sub.ein` | subtraction's whole chain, 123078 − 4567 and the reverse: `sub-ask`, `sub-ask-second`, `sub-start`, `sub-column`, `sub-column-first`, `sub-column-second`, `sub-end`, `sub-borrow-out`, `sub-answer`, `sub-answer-short`; `short`'s whole extent is claimed too | a wrong digit, the two numbers of the answer exchanged, a walk that ended with a borrow answering anyway |
+| `09_sub_borrow_and_zeros.ein` | a borrow through every column, high zeros dropped, equal numbers, operands with high zeros, zero on either side | an answer with a high zero, an equal pair answered twice |
+| `10_sub_named.ein` | `sub` by `(let NAME NUMBER)`, and a rule of the program's own that matches the shortfall `(diff-of X Y z (n ?p ?a))` | a request answered under the numbers its names stand for; a shortfall reported for an equal pair |
+| `11_cmp.ein` | comparison's whole chain: `cmp-ask`, `cmp-ask-second`, `cmp-start`, `cmp-column`, `cmp-end`, `cmp-answer`; `lt`, `eq`, `gt`, and a higher column overruling the order below | the order of the units answered as the order of the whole, a request answered with two orders |
+| `12_cmp_lengths_and_names.ein` | `cmp-column-first`, `cmp-column-second`: different lengths, high zeros, zero, named operands | a longer spelling read as a greater number |
 
 `arith`, the closing rule, fires once at root in each. **The mutation sweep
 kills every mutant of the module**, 21 of 21: the sweep reads 188 of 238 where
@@ -361,6 +369,14 @@ and the program's `sum-of` claim fails for want of a row; the one mutant
 that still answers, `(add ?x ?y)` read as `(add ?y ?x)`, files the sum under
 the operands exchanged, which `arith/01_add.ein` refuses. `std.digits` has no
 rule and adds none. **The bank is unmoved**, 50 lines.
+
+**203 of 253 on 2026-11-11: subtraction and comparison added 15 mutants and
+the suite kills every one** (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.4](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.4_subtraction.md)).
+They are the exchange families again. The ones that still answer file a
+difference or an order under the operands exchanged, which `arith/08_sub.ein`
+and `11_cmp.ein` refuse, each asking an unequal pair one way round or both
+with different answers. **The bank is unmoved**, 50 lines.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

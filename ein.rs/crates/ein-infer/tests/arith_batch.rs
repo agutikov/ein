@@ -44,7 +44,9 @@
 //! (2026-11-11): each operand walked every `let`, because the index does not
 //! key the nested fact it was asked with.
 //!
-//! A later operation joins this file by adding its request to [`REQUESTS`].
+//! A later operation joins this file by adding its request to [`REQUESTS`]
+//! and its bound to [`BOUND`]. Each operation is measured in batches of its
+//! own (S1f.6.4).
 
 use ein_core::Terms;
 use ein_core::counters;
@@ -53,8 +55,16 @@ use ein_ir::{Ast, parse};
 
 const IMPORT: &str = "(import std.arith :symbols (arith))\n";
 
-/// The request relations a batch is made of.
-const REQUESTS: [&str; 1] = ["add"];
+/// The request relations a batch is made of, each with its result relation.
+/// A batch is measured per operation, so that one operation's proportion is
+/// not hidden in another's count.
+const REQUESTS: [(&str, &str); 3] = [("add", "sum-of"), ("sub", "diff-of"), ("cmp", "cmp-of")];
+
+/// What a request of each operation may cost at the smallest batch, in
+/// `candidates`: a bound a little above the measure, so that a scan of the
+/// batch, which adds the batch's size to it, fails here as well as in the
+/// proportion.
+const BOUND: [f64; 3] = [250.0, 500.0, 1000.0];
 
 /// Per-request work at a larger batch may exceed the smallest batch's by this
 /// factor and no more. The operands differ from batch to batch, so the counts
@@ -76,20 +86,18 @@ fn number(rng: &mut u64, digits: u32) -> String {
     out
 }
 
-/// `count` requests of each relation over two nine-digit numbers, beside
-/// `lets` named constants nobody asks about. The requests are the same
-/// whatever `lets` is: the constants are drawn from a stream of their own.
-fn batch(count: usize, lets: usize) -> String {
+/// `count` requests of `op` over two nine-digit numbers, beside `lets` named
+/// constants nobody asks about. The requests are the same whatever `lets`
+/// is: the constants are drawn from a stream of their own.
+fn batch(op: &str, count: usize, lets: usize) -> String {
     let (mut rng, mut names) = (0x5146_0603_u64, 0x5146_0604_u64);
     let mut src = String::from(IMPORT);
     for i in 0..lets {
         src.push_str(&format!("(let c{i} {})\n", number(&mut names, 9)));
     }
-    for op in REQUESTS {
-        for _ in 0..count {
-            let (x, y) = (number(&mut rng, 9), number(&mut rng, 9));
-            src.push_str(&format!("({op} {x} {y})\n"));
-        }
+    for _ in 0..count {
+        let (x, y) = (number(&mut rng, 9), number(&mut rng, 9));
+        src.push_str(&format!("({op} {x} {y})\n"));
     }
     src
 }
@@ -103,7 +111,7 @@ struct Work {
     answers: usize,
 }
 
-fn saturate(src: &str) -> Work {
+fn saturate(src: &str, result: &str) -> Work {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, src, Some("<arith-batch>")).expect("the batch parses");
@@ -127,7 +135,7 @@ fn saturate(src: &str) -> Work {
     }
     let answers = terms
         .syms
-        .get("sum-of")
+        .get(result)
         .map_or(0, |rel| kb.facts_of(rel).count());
     Work {
         firings,
@@ -137,85 +145,93 @@ fn saturate(src: &str) -> Work {
 }
 
 fn per_request(total: u64, count: usize) -> f64 {
-    total as f64 / (count * REQUESTS.len()) as f64
+    total as f64 / count as f64
 }
 
 #[test]
 fn a_batch_costs_in_proportion_to_its_count() {
     let sizes = [250usize, 1000, 4000];
-    let work: Vec<Work> = sizes.iter().map(|&n| saturate(&batch(n, 0))).collect();
-    for (n, w) in sizes.iter().zip(&work) {
-        assert_eq!(w.answers, n * REQUESTS.len(), "{n} requests, each answered");
-    }
-    let base_firings = per_request(work[0].firings, sizes[0]);
-    let base = per_request(work[0].candidates, sizes[0]);
-    // The numbers themselves, for `-- --nocapture`: the stage records quote them.
-    for (n, w) in sizes.iter().zip(&work) {
-        eprintln!(
-            "{n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
-            w.firings,
-            per_request(w.firings, *n),
-            w.candidates,
-            per_request(w.candidates, *n)
-        );
-    }
-    for (n, w) in sizes.iter().zip(&work).skip(1) {
-        let firings = per_request(w.firings, *n);
-        assert!(
-            firings <= base_firings * TOLERANCE,
-            "firings per request grew with the batch: {base_firings:.1} at {} \
-             and {firings:.1} at {n}",
-            sizes[0]
-        );
-        if cfg!(feature = "counters") {
-            let c = per_request(w.candidates, *n);
+    for ((op, result), bound) in REQUESTS.into_iter().zip(BOUND) {
+        let work: Vec<Work> = sizes
+            .iter()
+            .map(|&n| saturate(&batch(op, n, 0), result))
+            .collect();
+        for (n, w) in sizes.iter().zip(&work) {
+            assert_eq!(w.answers, *n, "{n} `{op}` requests, each answered");
+        }
+        let base_firings = per_request(work[0].firings, sizes[0]);
+        let base = per_request(work[0].candidates, sizes[0]);
+        // The numbers themselves, for `-- --nocapture`: the stage records quote them.
+        for (n, w) in sizes.iter().zip(&work) {
+            eprintln!(
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
+                w.firings,
+                per_request(w.firings, *n),
+                w.candidates,
+                per_request(w.candidates, *n)
+            );
+        }
+        for (n, w) in sizes.iter().zip(&work).skip(1) {
+            let firings = per_request(w.firings, *n);
             assert!(
-                c <= base * TOLERANCE,
-                "the matcher's work per request grew with the batch: {base:.1} \
-                 candidates a request at {} and {c:.1} at {n}. A rule of \
-                 std.arith joins two facts on a number: the index does not key \
-                 a nested fact, so that premise walks its whole relation (E-3 \
-                 of P1f.6's findings.md). `arith_theory.rs` names the rule if \
-                 it is written as two premises",
+                firings <= base_firings * TOLERANCE,
+                "`{op}`: firings per request grew with the batch: {base_firings:.1} at {} \
+                 and {firings:.1} at {n}",
+                sizes[0]
+            );
+            if cfg!(feature = "counters") {
+                let c = per_request(w.candidates, *n);
+                assert!(
+                    c <= base * TOLERANCE,
+                    "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
+                     candidates a request at {} and {c:.1} at {n}. A rule of \
+                     std.arith joins two facts on a number: the index does not key \
+                     a nested fact, so that premise walks its whole relation (E-3 \
+                     of P1f.6's findings.md). `arith_theory.rs` names the rule if \
+                     it is written as two premises",
+                    sizes[0]
+                );
+            }
+        }
+        if cfg!(feature = "counters") {
+            assert!(base > 0.0, "the counters are on and counted nothing");
+            // A column's row is found among the rows its first digit keys:
+            // the count is some tens a firing, and a scan of the batch would
+            // add the batch's size to it.
+            assert!(
+                base < bound,
+                "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
                 sizes[0]
             );
         }
-    }
-    if cfg!(feature = "counters") {
-        assert!(base > 0.0, "the counters are on and counted nothing");
-        // A request is 27 firings, and a column's row is found among the
-        // twenty its first digit keys: the count is in the hundreds, and a
-        // scan of the batch would add the batch's size to it.
-        assert!(
-            base < 250.0,
-            "{base:.1} candidates a request at {} requests",
-            sizes[0]
-        );
     }
 }
 
 /// The stated exception costs a number operand one lookup: the same requests
 /// beside `lets` named constants cost what they cost beside none, plus what
-/// the constants cost themselves, a firing each, whatever the requests.
+/// the constants cost themselves, a firing each, whatever the requests. Every
+/// operation looks its operands up the same way, and each is held.
 #[test]
 fn a_number_operand_does_not_walk_the_lets() {
     if !cfg!(feature = "counters") {
         return;
     }
     let (requests, lets) = (500usize, 200usize);
-    let without = saturate(&batch(requests, 0));
-    let with = saturate(&batch(requests, lets));
-    let alone = saturate(&batch(0, lets));
-    eprintln!(
-        "{requests} requests: {} candidates beside no `let`, {} beside {lets}; \
-         the {lets} `let`s alone, {}",
-        without.candidates, with.candidates, alone.candidates
-    );
-    assert_eq!(
-        with.candidates,
-        without.candidates + alone.candidates,
-        "{requests} requests beside {lets} `let`s cost more than the requests \
-         and the `let`s cost apart: a number operand is walking the `let` \
-         facts. `operand-name` asks `(named ?x)` first so that it does not"
-    );
+    for (op, result) in REQUESTS {
+        let without = saturate(&batch(op, requests, 0), result);
+        let with = saturate(&batch(op, requests, lets), result);
+        let alone = saturate(&batch(op, 0, lets), result);
+        eprintln!(
+            "{op}: {requests} requests: {} candidates beside no `let`, {} beside {lets}; \
+             the {lets} `let`s alone, {}",
+            without.candidates, with.candidates, alone.candidates
+        );
+        assert_eq!(
+            with.candidates,
+            without.candidates + alone.candidates,
+            "{requests} `{op}` requests beside {lets} `let`s cost more than the requests \
+             and the `let`s cost apart: a number operand is walking the `let` \
+             facts. `operand-name` asks `(named ?x)` first so that it does not"
+        );
+    }
 }
