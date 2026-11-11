@@ -1409,6 +1409,10 @@
 0    stdlib/closure.ein :: render rules
 0    stdlib/closure.ein :: saturate
 0    stdlib/closure.ein :: solve
+0    stdlib/digits.ein :: render constraints
+1    stdlib/digits.ein :: render rules
+0    stdlib/digits.ein :: saturate
+0    stdlib/digits.ein :: solve
 0    stdlib/elim.ein :: render constraints
 0    stdlib/elim.ein :: render rules
 0    stdlib/elim.ein :: saturate
@@ -1618,6 +1622,16 @@
 0    tests/stdlib/closure/03_closed_and_owing.ein :: saturate
 0    tests/stdlib/closure/03_closed_and_owing.ein :: solve
 0    tests/stdlib/closure/03_closed_and_owing.ein :: test
+0    tests/stdlib/digits/01_tables.ein :: render constraints
+1    tests/stdlib/digits/01_tables.ein :: render rules
+0    tests/stdlib/digits/01_tables.ein :: saturate
+0    tests/stdlib/digits/01_tables.ein :: solve
+0    tests/stdlib/digits/01_tables.ein :: test
+0    tests/stdlib/digits/02_a_core_names_its_rows.ein :: render constraints
+0    tests/stdlib/digits/02_a_core_names_its_rows.ein :: render rules
+0    tests/stdlib/digits/02_a_core_names_its_rows.ein :: saturate
+0    tests/stdlib/digits/02_a_core_names_its_rows.ein :: solve
+0    tests/stdlib/digits/02_a_core_names_its_rows.ein :: test
 0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
 0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
 0    tests/stdlib/elim/01_domain_elimination.ein :: saturate

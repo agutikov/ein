@@ -693,7 +693,7 @@ both measured and declined, with the workload that would reopen them named).
 | `ein.rs/crates/ein-render/` | the DOT views, the markdown trace, the state / lattice dumps, the JSON summary |
 | `ein.rs/crates/ein-cli/` | the `ein` binary — `solve` · `test` · `saturate` · `render` · `kb`; its `main.rs` restores `SIGPIPE`'s default, one audited `unsafe` call, so `ein … \| head` ends as `cat` does |
 | `ein.rs/crates/{ein-corpus,ein-narration}/` | dev-only: the corpus manifest, fixture helpers and the bench set; the one definition of narration-vs-content |
-| [`stdlib/`](stdlib/README.md) | the ein-lang standard library, seven `std.*` modules; `MANIFEST.sha256` keeps the embedded copy honest |
+| [`stdlib/`](stdlib/README.md) | the ein-lang standard library, eight `std.*` modules, one of them a library of facts; `MANIFEST.sha256` keeps the embedded copy honest |
 | [`corpus/`](corpus/README.md) | `corpus.toml` — one entry per `.ein` with the runs it is exercised under and a measured `cost_ms`; `fuzz_findings/` |
 | [`examples/`](examples/README.md) | `zebra.ein` / `zebra2.ein` (the puzzle, two encodings), `zebra2-minus-15.ein` (32 models), `zebra2-hints.ein`; per-feature fixtures in `features/`, `branching/`, `saturation/`, `lattice/`, `domain_elim/`, `syntax/`; `ein-bugs/` regressions; `broken/` parse / load / compile negatives with expected messages |
 | [`c/`](c/README.md) | three plain-C Zebra baselines — what the kernel is not |

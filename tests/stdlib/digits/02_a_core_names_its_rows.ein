@@ -1,0 +1,39 @@
+;;; A refutation that passes through a table names the table's row in its
+;;; core — `std.digits`, M1f S1f.6.2.
+;;;
+;;; ── Why this file exists ───────────────────────────────────────────────────
+;;;
+;;; The tables are plain facts (the user's ruling of 2026-11-11), and a fact a
+;;; rule reads is a premise like any other. So when a contradiction is derived
+;;; through a lookup, the row that was looked up is part of the explanation:
+;;; the unsat core holds it beside the program's own fact. That is the
+;;; measured cost of plain facts (`design.md` § G of P1f.6), accepted there;
+;;; this program is the one place the suite shows it.
+;;;
+;;; ── The program, by hand ───────────────────────────────────────────────────
+;;;
+;;; Two columns of a sum, each claiming the digit of 7 + 5. The table says
+;;; `(fa 7 5 0 2 1)`: digit 2, carry 1. `(column 7 5 2)` agrees, so the rule
+;;; is matched and **silent** on it; `(column 7 5 3)` does not, and root is
+;;; dead. `ein solve` prints
+;;;
+;;;   unsat core        (column 7 5 3)
+;;;   unsat core        (fa 7 5 0 2 1)
+;;;   refuted by        column-wrong
+;;;
+;;; which is the claim and the row it was checked against, and not the
+;;; agreeing column or any other of the table's 200 rows.
+
+(import std.digits :symbols (fa __closed__))
+
+(relation column Digit Digit Digit :why "a column claims that {?1} + {?2} is the digit {?3}")
+
+(column 7 5 2)   ; agrees with the table: the rule is silent on it
+(column 7 5 3)   ; does not
+
+(rule column-wrong ()
+  :match  (and (fa ?a ?b 0 ?digit ?carry) (column ?a ?b ?claimed) (neq ?claimed ?digit))
+  :assert (false)
+  :why    "{?a} + {?b} is the digit {?digit}, not {?claimed}")
+
+(solve :expect (false))

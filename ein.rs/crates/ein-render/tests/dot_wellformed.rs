@@ -77,10 +77,51 @@ enum Verdict {
     Crashed(String),
 }
 
-/// Feed one DOT text to `dot -Tsvg`, discarding the SVG.
+/// A view with more edges than this is laid out by [`BOUNDED_LAYOUT`], not
+/// by `dot`'s own layout.
+///
+/// `dot`'s layered layout is superlinear in the edges, and a library of facts
+/// is where that shows. `stdlib/digits.ein` (M1f S1f.6.2) is the calculator's
+/// 1 664 table rows over eleven shared names, and every view of it has some
+/// 7 900 edges: `dot` 16.0.0 had not drawn one after five minutes, and `fdp`,
+/// the layout a KB view suggests, not after 100 s. Table by table, the KB view
+/// of `fa` alone (1 014 edges) takes `dot` 0.5 s, `fa` and `fs` (2 021) 3.2 s,
+/// with `cl` (3 227) 9.9 s, and `md` alone (4 514) 23.7 s (2026-11-11). The
+/// largest view the corpus had before that module has 361 edges, and its
+/// slowest took 0.43 s, so
+/// no view that `dot` drew then is past the bound, and a program that imports
+/// one small table is not either.
+///
+/// What a view past the bound is still held to is this file's claim, that
+/// **Graphviz accepts the bytes**: the same parser reads the same grammar,
+/// and the same renderer writes the same attributes to SVG and warns of the
+/// same unknown shape, arrow, style and colour (tried on each). What it is
+/// not held to is `dot`'s own layout of it, which nobody can wait for.
+/// Not a skip: every view still goes to Graphviz, and one it complains of
+/// fails.
+const DOT_LAYOUT_BOUND: usize = 1500;
+
+/// The layout past [`DOT_LAYOUT_BOUND`]: `fdp`, the one every KB view names
+/// as its *suggested layout*, stopped after one iteration, with no overlap
+/// removal and straight edges. The layout is not the subject, and this one
+/// takes about two seconds on the largest view there is, where `osage` took
+/// seven and `twopi` five.
+const BOUNDED_LAYOUT: [&str; 4] = ["-Kfdp", "-Gmaxiter=1", "-Goverlap=true", "-Gsplines=false"];
+
+/// The edges of a DOT text: its ` -> ` arrows.
+fn edges(dot: &str) -> usize {
+    dot.matches(" -> ").count()
+}
+
+/// Feed one DOT text to Graphviz, `-Tsvg`, discarding the SVG: `dot`'s
+/// layout, or [`BOUNDED_LAYOUT`] past [`DOT_LAYOUT_BOUND`].
 fn graphviz(dot: &str) -> Verdict {
+    let mut args = vec!["-Tsvg", "-o", "/dev/null"];
+    if edges(dot) > DOT_LAYOUT_BOUND {
+        args.extend(BOUNDED_LAYOUT);
+    }
     let mut child = Command::new("dot")
-        .args(["-Tsvg", "-o", "/dev/null"])
+        .args(&args)
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
         .stderr(Stdio::piped())

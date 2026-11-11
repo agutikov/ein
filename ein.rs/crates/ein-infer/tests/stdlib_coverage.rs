@@ -84,11 +84,14 @@ const SUITE: &str = "tests";
 /// The subject.
 const STDLIB: &str = "stdlib";
 
-/// The one module that declares no rules, and so is absent from the inventory
+/// The modules that declare no rules, and so are absent from the inventory
 /// by construction. Named rather than inferred: `std.macro` ships `forall` and
-/// `open`, which are *macros*, and a day when `algebra.ein` parses to zero
-/// rules must not read the same as this.
-const RULE_FREE_MODULE: &str = "std.macro";
+/// `open`, which are *macros*, and `std.digits` (M1f S1f.6.2) is a library of
+/// **facts**, the calculator's digit tables, with no rule for this gate to ask
+/// about: what holds its rows is `ein-ir/tests/digit_tables.rs`, every one
+/// against Rust's integers. A day when `algebra.ein` parses to zero rules must
+/// not read the same as either.
+const RULE_FREE_MODULES: [&str; 2] = ["std.digits", "std.macro"];
 
 // ── the declaration inventory ──────────────────────────────────────
 
@@ -386,12 +389,12 @@ fn every_stdlib_rule_is_activated_by_a_program() {
     let with_rules: BTreeSet<&str> = decls.iter().map(|d| d.module.as_str()).collect();
     let silent: Vec<&String> = imports
         .keys()
-        .filter(|m| m.as_str() != RULE_FREE_MODULE && !with_rules.contains(m.as_str()))
+        .filter(|m| !RULE_FREE_MODULES.contains(&m.as_str()) && !with_rules.contains(m.as_str()))
         .collect();
     assert!(
         silent.is_empty(),
         "modules that parsed to no rules at all: {silent:?} \
-         (only {RULE_FREE_MODULE} declares none)"
+         (only {RULE_FREE_MODULES:?} declare none)"
     );
 
     let t0 = Instant::now();

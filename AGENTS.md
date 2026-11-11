@@ -966,6 +966,36 @@ constrained-reasoning research.
   The stage found E-8, a qualified import bringing a module's `(query …)`,
   `(solve …)` and `(config …)`, kept in the phase's `findings.md`. S1f.6.2,
   the tables, is next.
+  **S1f.6.2, the digit tables, ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md#t1-record-2026-11-11),
+  Q-M1f.145 to .148 defaulted). **`std.digits` is the stdlib's first library
+  of facts**, [`stdlib/digits.ein`](stdlib/digits.ein): the calculator's seven
+  tables, `fa`, `fs`, `md`, `cl`, `nz`, `mid` and `adj`, 1 664 rows, a fact a
+  row and no rule (`python3 utils/gen_arith_tables.py`, 2026-11-11). **The
+  file is generated**, by `utils/gen_arith_tables.py`: edit the script, run
+  it, then `utils/stdlib_manifest.py --write`, never the rows.
+  `ein-ir/tests/digit_tables.rs` runs the script's `--check`, which is how it
+  is in the gate, and holds every row to Rust's integers, none missing and
+  none twice. The module closes its tables with written `(__closed__ R)`
+  facts, which a flat import brings only when `__closed__` is listed,
+  `(import std.digits :symbols (fa nz __closed__))`; without it `nz` and
+  `adj` are relations the search guesses rows of. A theory that reads the
+  tables closes them in its own closing rule. `stdlib_coverage.rs` names the
+  module as rule-free, beside `std.macro`, and the two programs under
+  `tests/stdlib/digits/` hold the import, R = {∅} with no candidate, and a
+  core that names the row it passed through, `(fa 7 5 0 2 1)`. **No picture
+  of a table can be drawn**: every view of the module is some 7 900 edges
+  and neither `dot` nor `fdp` finishes one in minutes (E-10 of the phase's
+  `findings.md`), so `ein-render/tests/dot_wellformed.rs` puts a view of more
+  than 1 500 edges to Graphviz under `fdp` stopped after one iteration, the
+  same grammar and attribute checks without `dot`'s layout
+  ([Q-M1f.147](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f147--the-dot-sweep-and-a-view-no-layout-finishes),
+  for the user to confirm); that sweep takes 171.9 s where it took 135.9 s
+  (`cargo test -p ein-render --test dot_wellformed`, 2026-11-11). A program
+  that does not import the module pays nothing, and one that does pays about
+  12 ms to parse it. No engine source moved and no existing program's answer
+  (`python3 build/s1f.6.2/sweep.py`, 672 files, 2026-11-11); the register is
+  unmoved. S1f.6.3, addition, is next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -1251,9 +1281,11 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **thirty-two scripts** (`ls utils/*.py utils/*.sh | wc -l`,
-  2026-11-10; the thirty-second, `nl_census.py`, is M1f S1f.5.14's: how much of
-  what Ein answers reads as English), **all but one driving `ein.rs`**.
+- **`utils/`** — **thirty-three scripts** (`ls utils/*.py utils/*.sh | wc -l`,
+  2026-11-11; the thirty-second, `nl_census.py`, is M1f S1f.5.14's: how much of
+  what Ein answers reads as English, and the thirty-third,
+  `gen_arith_tables.py`, M1f S1f.6.2's: it writes `stdlib/digits.ein` and runs
+  no engine), **all but two driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
   wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,

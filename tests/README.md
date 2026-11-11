@@ -85,6 +85,7 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
+| [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
 ### The obligation pairs, and the check that is not an `:expect`
@@ -135,6 +136,31 @@ obligation hands the whole call to the blind enumerator. So the file is also
 the corpus's one `mode=declined` fixture, and the obligation it added is
 *satisfied* on purpose: the decline is static, per activator, and must not
 depend on the KB happening to owe something.
+
+### A module of facts has no rule to activate
+
+M1f [S1f.6.2](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md).
+`std.digits` holds the calculator's seven digit tables as plain facts, 1 664
+rows, and no rule. The coverage gate asks that every stdlib *rule* be
+activated by a program here, so it has nothing to ask of this module, and
+`stdlib_coverage.rs` names it as rule-free, beside `std.macro`, rather than
+inferring that a module with no rule is fine. The mutation sweep likewise
+mutates rules and has none here.
+
+**What holds the rows is not a program here.** A wrong row is a wrong answer
+in every sum that reads it, and no `.ein` program can say what 7 + 5 is
+without the table it would be checking. So the rows are held from outside the
+language: [`ein-ir/tests/digit_tables.rs`](../ein.rs/crates/ein-ir/tests/digit_tables.rs)
+computes every table from Rust's integers and compares, none missing and none
+twice, and runs the generator's `--check`.
+
+The two programs under [`stdlib/digits/`](stdlib/digits/) hold what only a
+program can show:
+
+| file | what it holds |
+|---|---|
+| `01_tables.ein` | a flat import brings a listed table's rows (S1f.6.11's fix, W88, seen from the stdlib); each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and with `__closed__` listed the module's own closing facts leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
+| `02_a_core_names_its_rows.ein` | a refutation through a lookup: root is dead and the unsat core is `(column 7 5 3)` and `(fa 7 5 0 2 1)`, the claim and the row it was checked against. The agreeing `(column 7 5 2)` is there so the rule is matched and silent once (*a refutation rule gets two files*, here two facts) |
 
 ### Five things about how they are written
 

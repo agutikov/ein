@@ -157,6 +157,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.142](#q-m1f142--a-stored-negation-and-a-fact-of-a-kernel-relation-under-a-selection) | a stored negation, and a fact of a kernel relation, under a selection | **defaulted 2026-11-11 (S1f.6.11): a negation is a fact of the relation it negates; `(__closed__ r)` and a written `(eq a b)` come as any fact does, when the relation's name is in the closure**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
 | [Q-M1f.143](#q-m1f143--a-fact-that-arrives-twice-through-flat-imports) | a fact that arrives twice through flat imports | **defaulted 2026-11-11 (S1f.6.11): one statement, kept where it first arrived**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
 | [Q-M1f.144](#q-m1f144--what-w88s-rows-record) | what W88's rows record | **defaulted 2026-11-11 (S1f.6.11): the sentences a query's `:goal-text` prints, and a refusal; no schema change**; [S1f.6.11](p1f.6_calculator/s1f.6.11_importing_facts.md) |
+| [Q-M1f.145](#q-m1f145--how-the-table-generators-check-is-in-the-gate) | how the table generator's `--check` is in the gate | **defaulted 2026-11-11 (S1f.6.2): a cargo test runs it, as `gen_zebra2_variants.py --check` is run; no new gate step**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
+| [Q-M1f.146](#q-m1f146--how-stddigits-closes-its-tables-for-a-flat-importer) | how `std.digits` closes its tables for a flat importer | **defaulted 2026-11-11 (S1f.6.2): written `(__closed__ R)` facts, which a direct importer brings by listing `__closed__`; a theory that reads a table closes it in its own closing rule**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
+| [Q-M1f.147](#q-m1f147--the-dot-sweep-and-a-view-no-layout-finishes) | the DOT sweep and a view no layout finishes | **defaulted 2026-11-11 (S1f.6.2): past 1 500 edges `dot_wellformed.rs` asks Graphviz under `fdp` stopped after one iteration; grammar and attributes held, `dot`'s layout of it not. For the user to confirm**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
+| [Q-M1f.148](#q-m1f148--one-module-for-the-seven-tables) | one module for the seven tables | **defaulted 2026-11-11 (S1f.6.2): one, as the stage file says; an importer parses all 28.8 KB, about 12 ms, whichever tables it lists**; [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2916,3 +2920,74 @@ state's `(model …)` names the candidates' relations: what the import drops is 
   before and after.
 
 **Defaulted 2026-11-11: (a).** No schema change, as the stage file expected.
+
+### Q-M1f.145 — How the table generator's check is in the gate
+
+**Raised** 2026-11-11 by [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md)'s T1. The user ruled the tables generated, with a `--check` in the gate
+(`design.md`'s question 7, (a)). *In the gate* has two shapes in this repository.
+
+- **(a) A cargo test runs the script's `--check`**, as `ein-cli`'s `cli_semantics.rs` runs
+  `examples/gen_zebra2_variants.py --check`. `cargo test --workspace` is a gate step, and the per-commit job
+  installs a `python3` for that test already.
+- **(b) A step of its own** in `run_tests.sh`, `per-commit.yml` and `gate_steps.rs`, beside
+  `utils/stdlib_manifest.py`: a seventh static check, and the header's *six* in three places.
+
+**Defaulted 2026-11-11: (a).** The precedent, and the same test file holds every row to Rust's integers, so the
+generator and its oracle fail together. A machine without `python3` fails the test and says why.
+
+### Q-M1f.146 — How `std.digits` closes its tables for a flat importer
+
+**Raised** 2026-11-11 by [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md)'s T2. The stage file says the module closes its relations with written
+`(__closed__ R)` facts. By Q-M1f.142 such a fact comes with a selection only when `__closed__` is in the
+closure, so `(import std.digits :symbols (fa nz adj))` leaves `nz` and `adj` open, and `ein solve` stops at
+*a state's commitments pass 2^128*.
+
+- **(a) Written facts, and the importer lists `__closed__`**: `(import std.digits :symbols (fa nz
+  __closed__))`. All seven closing facts come, the ones about tables left behind harmless. A theory that reads
+  the tables closes the ones it reads in its own closing rule, so its importer lists one name.
+- **(b) A closing rule in the module**, `(rule digits () :match () :assert (and (__closed__ fa) …))`, listed by
+  the importer: one name brings every table and its rows, wanted or not, and the module is no longer facts
+  alone.
+- **(c) The engine brings `(__closed__ r)` with `r`**: Q-M1f.142's (b), an engine change.
+
+**Defaulted 2026-11-11: (a).** The stage file's wording, the module stays a library of facts, and an importer
+loads only the tables it lists. Its cost is one more name in a direct import, stated in the module's header,
+on `stdlib/README.md` and in `tests/stdlib/digits/01_tables.ein`, and a forgotten `__closed__` is not refused:
+it is searched. (c) would remove the cost and is the user's.
+
+### Q-M1f.147 — The DOT sweep and a view no layout finishes
+
+**Raised** 2026-11-11 by [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md)'s T4. `ein-render/tests/dot_wellformed.rs` puts every view of every corpus file
+through `dot -Tsvg`, per commit. Every view of `stdlib/digits.ein` has some 7 900 edges onto eleven shared
+names: `dot` 16.0.0 had not drawn one after five minutes, `fdp` not after 100 s, `sfdp` dumps core
+(2026-11-11). The gate did not finish. E-10 of [`findings.md`](p1f.6_calculator/findings.md) is the finding.
+
+- **(a) Past a bound, another layout:** a view of more than 1 500 edges goes to Graphviz under `fdp`, the
+  layout a KB view suggests, stopped after one iteration. The same parser, renderer and warnings; about two
+  seconds on the largest view. Not held: `dot`'s own layout of such a view.
+- **(b) `dot` with its effort cut** (`nslimit`, `mclimit`, no splines): 6.5 s a view on the largest, 3.4 s on
+  `md` alone, and every later program that imports `md` pays it six times.
+- **(c) Leave such a view out of the sweep,** by size or by name: the test's own header refuses a silent skip.
+- **(d) Keep a table out of the corpus's files:** not possible, the module is one.
+- **(e) Change what a KB view draws for a library of facts:** a DOT writer's change, an engine stage.
+
+**Defaulted 2026-11-11: (a), for the user to confirm.** No view the corpus had before is past the bound (the
+largest has 361 edges), so nothing that was checked by `dot` stopped being. The sweep takes 171.9 s where it
+took 135.9 s. Graphviz's version is part of what that test checks (S1f.5.17, S1f.5.29), so the bounded layout
+was tried on the runner image's Graphviz too, 14.1.2 in its x86-64-v3 build: the module's KB view and its
+program view in 2.1 s each and `md`'s KB view in 0.8 s, none with a warning (`dot -Kfdp -Gmaxiter=1
+-Goverlap=true -Gsplines=false -Tsvg` in `ein-ci:ubuntu-26.04-amd64v3`, 2026-11-11). (e) is the real answer to
+*a picture of a table* and is not this stage's.
+
+### Q-M1f.148 — One module for the seven tables
+
+**Raised** 2026-11-11 by [S1f.6.2](p1f.6_calculator/s1f.6.2_digits_and_tables.md)'s T4. A flat import of one table parses the whole module: 28.8 KB, about 12 ms on
+the generated parser: `ein test` of a program that imports `fa` alone takes 17.9 ms, and of a `std.macro` test
+5.8 ms (best of ten, release, 2026-11-11).
+
+- **(a) One module,** `stdlib/digits.ein`, as the stage file says.
+- **(b) A module per table,** `std.digits.fa` and so on: a program that adds parses 200 rows, not 1 664.
+
+**Defaulted 2026-11-11: (a).** The stage file's, and one name for the ontology. The cost is per program, not
+per request: a program that does not import the module pays nothing. (b) stays open if a suite of many small
+arithmetic programs makes the 12 ms matter.
