@@ -279,6 +279,15 @@ The instruction's last question, and how this plan answered it, under the schema
   search-free test, the harness against Rust's integers, and
   [S1f.6.10](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)'s bounded
   theorem checking, which P1g.5 continues.
+- **[P1f.8](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md)** (planned
+  2026-11-11, the user: *"between calculator and proof systems"*): school algebra and geometry, which runs
+  before this milestone as part of M1f. It hands over, by name
+  ([its § What is left to M1g](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md#what-is-left-to-m1g)):
+  equational proof, line by line, to P1g.3, with its polynomial normal form as the semantics to check against;
+  school proofs by contradiction and by cases as non-logical material for S1g.3.3; auxiliary constructions as
+  the first evidence for S1g.6.4's witnesses (C-8) from outside logic; and statements that need induction to
+  P1g.5. **No stage here depends on it:** M1g's programs are written without its theories, and Q-M1g.5 is asked
+  once, by whichever of S1g.3.3 and its S1f.8.8 runs first.
 - **[`docs/lib/03`](../../docs/lib/03-theorem-proving-formal-methods.md)** and
   **[`docs/lib/02`](../../docs/lib/02-solvers-csp-sat-smt.md):** the external systems each phase compares
   itself with.
