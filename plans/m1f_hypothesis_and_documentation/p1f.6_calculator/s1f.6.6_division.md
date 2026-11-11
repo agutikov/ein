@@ -1,7 +1,7 @@
 # S1f.6.6 — Division with remainder, and division by zero
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: 36 rules and 23 relations added to `stdlib/arith.ein`, 89 rules in all, and the module
+**Status:** **done 2026-11-11** (`8860d616`): 36 rules and 23 relations added to `stdlib/arith.ein`, 89 rules in all, and the module
 reads all seven tables; `(div X Y)` answered by `(quot-of X Y Q R)`, held to Rust's integers, search-free, and
 under the rule of the theory on the text and on the counter; division by zero a flag and `(false)` from it, each
 by its own rule, every surface shown below; three decisions taken by default, Q-M1f.163 to .165, and no finding
@@ -253,6 +253,21 @@ Pages: `stdlib/README.md`, `07_stdlib_api.md`, `tests/README.md`, `examples/READ
 utils/stdlib_mutants.py --check` pass on the tree. The register is unmoved: 305 fixed, 16 open and 1 not wrong
 (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11). The runner's image and the nightly
 are run after this commit, for the three stages, and recorded below it.
+
+## After the commit, 2026-11-11: the nightly and the runner's image, for S1f.6.4 to S1f.6.6
+
+Both on `8860d616`, the tree clean.
+
+- **The nightly,** `./run_tests.sh --nightly`, green in every step (`build/nightly-s1f.6.6.log`): the slow
+  corpus entries' cells, `answer_dump`, `answer_round_trip`'s slow and `heavy_dump` entries, the levers' slow
+  cells, the cores' slow entries, `region`'s and `obligation_rung`'s slow halves, the scratch check, the
+  mutation census at 234 of 284, the fuzzer at both seeds and the bench smoke. S1f.6.3 had not run it. The
+  whole review bundle is the dev host's step since S1f.5.27 and was not run; the gate's `--smoke` of it passes.
+- **The runner's image,** `utils/ci_container.sh`, the whole gate, green (`build/s1f.6.6/ci-container.log`):
+  Ubuntu 26.04.1 with Graphviz 14.1.2, `libpathplan4` in its x86-64-v3 build. The DOT sweep there took 104 s,
+  several files at a time, every view of the 26 arithmetic programs under the bounded layout among them, and
+  the step `cargo test -p ein-infer --features counters --test arith_batch` passed.
+- **Not run:** `./run_tests.sh --dev-host`.
 
 ## Acceptance re-taken, 2026-11-11
 
