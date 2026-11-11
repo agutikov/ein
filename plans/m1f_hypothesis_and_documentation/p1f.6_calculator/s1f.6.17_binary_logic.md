@@ -25,6 +25,55 @@ stage goes one level down, to the gates the tables are made of, and asks what Ei
 - **The binary full adder built from gates,** and its eight outputs held equal to S1f.6.16's table: the
   calculator's own gate, derived instead of written.
 
+## All sixteen functions of two inputs (the user, 2026-11-11)
+
+> about naming (And, Or, Not, Imp, Iff): there are 16 different boolean functions of 2 arguments, completely
+> defined by array of 4 bool result values indexed by input values; I want to have them all and in 2 forms -
+> binary gates in plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md (And, Nand,
+> XNand - all 16 possible) and in preposition logic - conjunction, disjunction, implication, pierse arrow -
+> also should be 16, if not - explain why.
+
+**There are sixteen in both forms, and each has a name in both.** A function of two bits is its column of four
+outputs, and 2⁴ = 16. Propositional logic has the same sixteen as binary connectives, since a connective *is*
+its truth table; a textbook writes five or so only because the rest are definable from them (and all sixteen
+from `Nand` alone, or from `Nor` alone).
+
+| table (a b = 00 01 10 11) | gate | in propositional logic | proposed gate name | proposed connective |
+|---|---|---|---|---|
+| 0000 | constant 0 | contradiction, ⊥ | `Zero` | `Bot` |
+| 0001 | AND | conjunction, a ∧ b | `And` | `And` |
+| 0010 | a AND NOT b (inhibit) | nonimplication, a ↛ b | `Andn` | `Nimp` |
+| 0011 | a (buffer on the first input) | projection on the first | `Fst` | `Fst` |
+| 0100 | NOT a AND b | converse nonimplication, a ↚ b | `Nand`-like, proposed `Randn` | `Nrimp` |
+| 0101 | b (buffer on the second input) | projection on the second | `Snd` | `Snd` |
+| 0110 | XOR | exclusive disjunction, a ⊕ b (non-equivalence) | `Xor` | `Xor` |
+| 0111 | OR | disjunction, a ∨ b | `Or` | `Or` |
+| 1000 | NOR | joint denial, Peirce's arrow, a ↓ b | `Nor` | `Nor` |
+| 1001 | XNOR | biconditional, a ↔ b (equivalence) | `Xnor` | `Iff` |
+| 1010 | NOT b | negation of the second | `Nsnd` | `Nsnd` |
+| 1011 | a OR NOT b | converse implication, a ← b | `Orn` | `Rimp` |
+| 1100 | NOT a | negation of the first | `Nfst` | `Nfst` |
+| 1101 | NOT a OR b | implication, a → b | proposed `Rorn` | `Imp` |
+| 1110 | NAND | alternative denial, Sheffer's stroke, a ↑ b | `Nand` | `Nand` |
+| 1111 | constant 1 | tautology, ⊤ | `One` | `Top` |
+
+The names are the coordinator's proposal, on the user's *"whatever"*; the stage shows them on programs and
+the user may change any.
+
+- **`XNand` is not one of them under that name.** The gate usually meant is XNOR, 1001, equivalence. Read
+  literally, *not (a xor-and b)* names no standard function.
+- **Six of the sixteen do not depend on both inputs:** the two constants, the two projections and the two
+  one-input negations. They are functions of two inputs all the same, and the module has them, so that *every
+  column of four bits has a name* is true and a test holds it. The other ten are the ones that read both.
+- **`Randn` and `Rorn` are `Andn` and `Orn` with the inputs swapped,** as `Rimp` is `Imp` swapped and `Nrimp`
+  is `Nimp` swapped; `Fst`/`Snd` and `Nfst`/`Nsnd` are the same pairing. So the sixteen are ten up to the
+  order of the inputs, and a spelling that says *swapped* by one letter keeps the family readable.
+- **One table, generated.** `(gate2 NAME A B OUT)`, 64 rows, written by the tables' generator with its
+  `--check`, each row held to the function's four-bit column by a test; or a relation per function, which the
+  stage compares on the prototype. A systematic second name, the column itself, `f0110` for `Xor`, costs
+  nothing and makes *all sixteen* checkable by enumeration.
+- **Of one input there are four** (identity, negation, the two constants), and of none, two.
+
 ## The applications, each tried and each answered with a program or a *no*
 
 1. **Simulation:** inputs given, outputs derived. No search.
