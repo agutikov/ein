@@ -15628,7 +15628,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15661,7 +15661,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15694,7 +15694,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` its parameter, which the activator `(deny Bob)` binds to a name. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15727,7 +15727,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15760,7 +15760,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15793,7 +15793,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15826,7 +15826,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
 date   = "2026-11-11"
 
@@ -15860,7 +15860,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.7.2 (T1f.7.2.2, 2026-11-11) and fixed in the same commit: An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build. `wrong_answers.rs` runs under a build with debug assertions, where the unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it; the row was not held open, and its `wrong` records the release answer, which is right, and the debug build's stop as `debug_panic`"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.2 (T1f.7.2.3): `ein_infer::hrule`'s `Hrules::candidates` holds no `debug_assert!` that no hrule reads `not`: where one does, every hrule is matched before any candidate is emitted, so no write the hypothesis pipeline makes between two candidates is visible to the enumeration, with the lookahead's kill cache on and off, and no shipped command has it on"
 date   = "2026-11-11"
 
@@ -15917,7 +15917,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.7.2 (T1f.7.2.2, 2026-11-11) and fixed in the same commit: An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a debug build. `wrong_answers.rs` runs under a build with debug assertions, where the unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it; the row was not held open, and its `wrong` records the release answer, which is right, and the debug build's stop as `debug_panic`"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.2 (T1f.7.2.3): `ein_infer::hrule`'s `Hrules::candidates` holds no `debug_assert!` that no hrule reads `not`: where one does, every hrule is matched before any candidate is emitted, so no write the hypothesis pipeline makes between two candidates is visible to the enumeration, with the lookahead's kill cache on and off, and no shipped command has it on"
 date   = "2026-11-11"
 
@@ -15974,7 +15974,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.7.2 (T1f.7.2.2, 2026-11-11) and fixed in the same commit: An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. `wrong_answers.rs` runs under a build with debug assertions, where the unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it; the row was not held open, and its `wrong` records the release answer, which is right, and the debug build's stop as `debug_panic`"
 
 [case.fixed]
-commit = "0000000"
+commit = "827887a9"
 by     = "S1f.7.2 (T1f.7.2.3): `ein_infer::hrule`'s `Hrules::candidates` holds no `debug_assert!` that no hrule reads `not`: where one does, every hrule is matched before any candidate is emitted, so no write the hypothesis pipeline makes between two candidates is visible to the enumeration, with the lookahead's kill cache on and off, and no shipped command has it on"
 date   = "2026-11-11"
 
